@@ -2,7 +2,7 @@
 from flask import session
 
 from models.api_errors import ApiErrors
-from models.db import db, auto_close_db_transaction
+from models.db import auto_close_db_transaction
 from models.pc_object import PcObject
 from models.user import User
 from repository.user_queries import find_user_by_email

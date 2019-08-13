@@ -2,6 +2,7 @@
 from flask.json import JSONEncoder
 from enum import Enum
 
+
 class EnumJSONEncoder(JSONEncoder):
 
     def default(self, obj):

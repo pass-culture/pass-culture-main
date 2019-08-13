@@ -1,33 +1,39 @@
 """ content """
 from random import randint
 
-def get_mediation (recommendation):
+
+def get_mediation(recommendation):
     return recommendation.get('mediation')
 
-def get_stock (stock_id, recommendation):
+
+def get_stock(stock_id, recommendation):
     return [o for o in recommendation.get('recommendationStocks', []) if o['id'] == stock_id][0]
 
+
 def get_source(mediation, stock):
-    return stock.get('eventOccurrence', {"event": None}).get('event') or\
-           stock.get('thing') or\
-           mediation.get('event') or\
+    return stock.get('eventOccurrence', {"event": None}).get('event') or \
+           stock.get('thing') or \
+           mediation.get('event') or \
            mediation.get('thing')
 
+
 def get_thumb_url(mediation, source, stock):
-    source_plural_model_name = (stock.get('eventOccurrence') and 'events') or\
-        (stock.get('thing') and 'things') or\
-        (mediation.get('event') and 'events') or\
-        (mediation.get('thing') and 'things') or ''
+    source_plural_model_name = (stock.get('eventOccurrence') and 'events') or \
+                               (stock.get('thing') and 'things') or \
+                               (mediation.get('event') and 'events') or \
+                               (mediation.get('thing') and 'things') or ''
     if mediation and mediation.get('thumbCount') > 0:
-        return '/mediations/'+ mediation['id']
+        return '/mediations/' + mediation['id']
     elif source and source.get('thumbCount') > 0:
         return source_plural_model_name + '/' + source['id']
 
+
 def get_venue(stock, source):
-    return stock.get('eventOccurrence', {'venue': None}).get('venue') or\
-    stock.get('venue') or\
-    source.get('eventOccurrence', {'venue': None}).get('venue') or\
-    source.get('venue')
+    return stock.get('eventOccurrence', {'venue': None}).get('venue') or \
+           stock.get('venue') or \
+           source.get('eventOccurrence', {'venue': None}).get('venue') or \
+           source.get('venue')
+
 
 def get_content(recommendation):
     content = {}

@@ -29,11 +29,7 @@ def install_scripts():
     import scripts.request
     import scripts.sandbox
     import scripts.send_final_booking_recaps
-    import scripts.testcafe
     import scripts.update_providables
     import scripts.storage
-    import scripts.init_titelive.clean_images_in_object_storage
-    import scripts.init_titelive.init_titelive
     import scripts.install_data
-    import scripts.migrate_images_for_event_and_thing_merge
     import scripts.payment.banishment_command

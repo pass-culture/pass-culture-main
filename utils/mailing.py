@@ -388,6 +388,7 @@ def _make_activation_notification_email_as_plain_text(first_name: str, set_passw
     support@passculture.app • pass.culture.fr
     """
 
+
 def make_user_validation_email(user: User, app_origin_url: str, is_webapp: bool) -> dict:
     if is_webapp:
         data = make_webapp_user_validation_email(user, app_origin_url)
@@ -395,9 +396,11 @@ def make_user_validation_email(user: User, app_origin_url: str, is_webapp: bool)
         data = make_pro_user_validation_email(user, app_origin_url)
     return data
 
+
 def make_user_waiting_for_validation_by_admin_email(user: User, app_origin_url: str, is_webapp: bool) -> dict:
     data = _pro_user_waiting_for_validation_by_admin_email(user, app_origin_url)
     return data
+
 
 def get_contact(user):
     mailjet_json_response = app.mailjet_client.contact.get(user.email).json()
@@ -708,21 +711,21 @@ def make_pro_user_validation_email(user: User, app_origin_url: str) -> dict:
 
 
 def _pro_user_waiting_for_validation_by_admin_email(user: User, app_origin_url: str):
-        from_name = 'pass Culture pro'
-        offerer_name = user.publicName
-        return {
-            'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
-            'FromName': from_name,
-            'Subject': f'[pass Culture pro] Votre structure {offerer_name} est en cours de validation',
-            'MJ-TemplateID': '778329',
-            'MJ-TemplateLanguage': 'true',
-            'Recipients': [
-                {
-                    "Email": user.email,
-                    "Name": offerer_name
-                }
-            ],
-            'Vars': {
-                'nom_structure': offerer_name
-            },
-        }
+    from_name = 'pass Culture pro'
+    offerer_name = user.publicName
+    return {
+        'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
+        'FromName': from_name,
+        'Subject': f'[pass Culture pro] Votre structure {offerer_name} est en cours de validation',
+        'MJ-TemplateID': '778329',
+        'MJ-TemplateLanguage': 'true',
+        'Recipients': [
+            {
+                "Email": user.email,
+                "Name": offerer_name
+            }
+        ],
+        'Vars': {
+            'nom_structure': offerer_name
+        },
+    }
