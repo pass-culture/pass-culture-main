@@ -22,9 +22,7 @@ const VersoControls = ({ showCancelView }) => {
           <ShareButtonContainer />
         </li>
         <li className="is-relative">
-          {showCancelView
-            ? <CancelThisLinkContainer />
-            : <BookThisLinkContainer />}
+          {showCancelView ? <CancelThisLinkContainer /> : <BookThisLinkContainer />}
         </li>
       </ul>
       <FinishableContainer />
@@ -32,8 +30,12 @@ const VersoControls = ({ showCancelView }) => {
   )
 }
 
+VersoControls.defaultProps = {
+  showCancelView: null,
+}
+
 VersoControls.propTypes = {
-  showCancelView: PropTypes.bool.isRequired
+  showCancelView: PropTypes.bool,
 }
 
 export default VersoControls

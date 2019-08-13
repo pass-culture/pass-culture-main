@@ -113,6 +113,7 @@
     "sass-loader": "^7.0.1",
     "source-map-explorer": "^1.6.0",
     "style-loader": "^1.0.0",
+    "stylelint-config-standard": "^18.3.0",
     "sw-precache-webpack-plugin": "0.11.4",
     "url-loader": "^2.1.0",
     "webpack": "3.8.1",
