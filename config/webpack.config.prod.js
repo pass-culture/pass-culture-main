@@ -1,21 +1,21 @@
-const autoprefixer = require('autoprefixer')
-const path = require('path')
-const webpack = require('webpack')
+const Autoprefixer = require('autoprefixer')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const getClientEnvironment = require('./env')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin')
 const ManifestPlugin = require('webpack-manifest-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
-const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin')
+const Path = require('path')
+const Paths = require('./paths')
 const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin')
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin')
-const paths = require('./paths')
-const getClientEnvironment = require('./env')
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const Webpack = require('webpack')
 
-const publicPath = paths.servedPath
-const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false'
+const publicPath = Paths.servedPath
 const publicUrl = publicPath.slice(0, -1)
 const env = getClientEnvironment(publicUrl)
+const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false'
 
 if (env.stringified['process.env'].NODE_ENV !== '"production"') {
   throw new Error('Production builds must have NODE_ENV=production.')
@@ -24,7 +24,7 @@ if (env.stringified['process.env'].NODE_ENV !== '"production"') {
 module.exports = {
   bail: true,
   devtool: shouldUseSourceMap ? 'source-map' : false,
-  entry: [require.resolve('./polyfills'), paths.appIndexJs],
+  entry: [require.resolve('./polyfills'), Paths.appIndexJs],
   mode: 'production',
   optimization: {
     minimizer: [new UglifyJsPlugin({
@@ -37,6 +37,7 @@ module.exports = {
           comments: false,
         },
         sourceMap: shouldUseSourceMap,
+        warnings: false,
       }
     })],
     splitChunks: {
@@ -51,26 +52,26 @@ module.exports = {
     },
   },
   output: {
-    path: paths.appBuild,
+    path: Paths.appBuild,
     filename: 'static/js/[name].[chunkhash:8].js',
     chunkFilename: 'static/js/[name].[chunkhash:8].chunk.js',
     publicPath: publicPath,
     devtoolModuleFilenameTemplate: info =>
-      path.relative(paths.appSrc, info.absoluteResourcePath).replace(/\\/g, '/'),
+      Path.relative(Paths.appSrc, info.absoluteResourcePath).replace(/\\/g, '/'),
   },
   resolve: {
-    modules: ['node_modules', paths.appNodeModules].concat(
-      process.env.NODE_PATH.split(path.delimiter)
+    modules: ['node_modules', Paths.appNodeModules].concat(
+      process.env.NODE_PATH.split(Path.delimiter)
         .filter(s => s !== '')
         .concat('src')
-        .join(path.delimiter)
+        .join(Path.delimiter)
     ),
     extensions: ['.web.js', '.mjs', '.js', '.json', '.web.jsx', '.jsx'],
     alias: {
       'react-native': 'react-native-web',
     },
     plugins: [
-      new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson]),
+      new ModuleScopePlugin(Paths.appSrc, [Paths.appPackageJson]),
     ],
   },
   module: {
@@ -80,7 +81,7 @@ module.exports = {
         oneOf: [
           {
             test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/, /\.ttf$/],
-            loader: require.resolve('url-loader'),
+            loader: 'url-loader',
             options: {
               limit: 10000,
               name: 'static/media/[name].[hash:8].[ext]',
@@ -88,9 +89,9 @@ module.exports = {
           },
           {
             test: /\.(js|jsx|mjs)$/,
-            exclude: process.env.HAS_WORKERS && /index\.(.*)\.worker\.js$/,
-            include: paths.appSrc,
-            loader: require.resolve('babel-loader'),
+            exclude: process.env.HAS_WORKERS && /index\.(.*)\.worker\.js$/ && /node_modules/,
+            include: Paths.appSrc,
+            loader: 'babel-loader',
             options: {
               compact: true,
             },
@@ -113,7 +114,7 @@ module.exports = {
                   ident: 'postcss',
                   plugins: () => [
                     require('postcss-flexbugs-fixes'),
-                    autoprefixer({
+                    Autoprefixer({
                       overrideBrowserslist: [
                         '>1%',
                         'last 4 versions',
@@ -145,13 +146,13 @@ module.exports = {
   plugins: [
     new CopyWebpackPlugin(
       ['bmp', 'pdf', 'jpg', 'jpeg', 'png'].map(extension => ({
-        from: path.resolve(`${paths.appPublic}/**/*.${extension}`),
-        to: path.resolve(`${paths.appBuild}/**/*.${extension}`),
+        from: Path.resolve(`${Paths.appPublic}/**/*.${extension}`),
+        to: Path.resolve(`${Paths.appBuild}/**/*.${extension}`),
       }))
     ),
     new HtmlWebpackPlugin({
       inject: true,
-      template: paths.appHtml,
+      template: Paths.appHtml,
       minify: {
         collapseWhitespace: true,
         keepClosingSlash: true,
@@ -168,8 +169,9 @@ module.exports = {
     new InterpolateHtmlPlugin(HtmlWebpackPlugin, env.raw),
     new MiniCssExtractPlugin({
       filename: '[name].css',
+      chunkFileName: '[id].css'
     }),
-    new webpack.DefinePlugin(env.stringified),
+    new Webpack.DefinePlugin(env.stringified),
     new ManifestPlugin({
       fileName: 'asset-manifest.json',
     }),
@@ -190,7 +192,7 @@ module.exports = {
       navigateFallbackWhitelist: [/^(?!\/__).*/],
       staticFileGlobsIgnorePatterns: [/\.map$/, /asset-manifest\.json$/],
     }),
-    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    new Webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
   ],
   node: {
     dgram: 'empty',
