@@ -1,7 +1,7 @@
 import pandas
 from sqlalchemy import func
 
-from models import Deposit, Booking, Payment, User
+from models import Deposit, Booking, Payment, User, Stock, Offer, Venue
 from models.db import db
 from models.payment_status import TransactionStatus
 
@@ -26,14 +26,18 @@ def get_total_amount_spent(departement_code=None):
         .scalar()
 
 
-def get_total_amount_to_pay():
-    return db.session.query(
-        func.coalesce(
-            func.sum(Payment.amount),
-            0
-        )
-    ) \
-        .filter(Payment.currentStatus != TransactionStatus.BANNED) \
+def get_total_amount_to_pay(departement_code=None):
+    query = db.session.query(func.coalesce(func.sum(Payment.amount), 0)) \
+        .filter(Payment.currentStatus != TransactionStatus.BANNED)
+
+    if departement_code:
+        query = query.join(Booking) \
+            .join(Stock) \
+            .join(Offer) \
+            .join(Venue) \
+            .filter(Venue.departementCode == departement_code)
+
+    return query \
         .scalar()
 
 
@@ -61,18 +65,6 @@ def get_not_cancelled_bookings_by_departement():
                             data=non_cancelled_booking_by_department)
 
 
-def _query_non_cancelled_bookings_by_departement():
-    return db.engine.execute(
-        """
-        SELECT "departementCode", COUNT(*) as "nb_bookings" 
-        FROM booking
-        JOIN "user" ON "user".id = booking."userId"
-        WHERE booking."isCancelled" IS FALSE
-        GROUP BY "user"."departementCode"
-        ORDER BY "user"."departementCode";
-        """).fetchall()
-
-
 def _query_get_top_20_offers_by_number_of_bookings():
     return db.engine.execute(
         """
@@ -84,6 +76,18 @@ def _query_get_top_20_offers_by_number_of_bookings():
         GROUP BY offer.id, offer.name
         ORDER BY quantity DESC, offer.name ASC
         LIMIT 20;
+        """).fetchall()
+
+
+def _query_non_cancelled_bookings_by_departement():
+    return db.engine.execute(
+        """
+        SELECT "departementCode", COUNT(*) as "nb_bookings" 
+        FROM booking
+        JOIN "user" ON "user".id = booking."userId"
+        WHERE booking."isCancelled" IS FALSE
+        GROUP BY "user"."departementCode"
+        ORDER BY "user"."departementCode";
         """).fetchall()
 
 

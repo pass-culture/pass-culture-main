@@ -218,6 +218,34 @@ class GetTotalAmountToPayTest:
         # Then
         assert total_amount_to_pay == 5
 
+    @clean_database
+    def test_returns_only_payment_total_by_department(self, app):
+        # Given
+        offerer = create_offerer(siren='111111111')
+        venue_in_35 = create_venue(offerer, postal_code='35238', siret='11111111100001')
+        venue_in_78 = create_venue(offerer, postal_code='78490', siret='11111111100002')
+        offer_in_35 = create_offer_with_thing_product(venue_in_35)
+        offer_in_78 = create_offer_with_thing_product(venue_in_78)
+        stock_in_35 = create_stock(price=20, offer=offer_in_35)
+        stock_in_78 = create_stock(price=10, offer=offer_in_78)
+
+        user = create_user(email='email@example.net')
+        create_deposit(user, amount=500)
+
+        booking_in_35 = create_booking(user, stock=stock_in_35, venue=venue_in_35)
+        booking_in_78 = create_booking(user, stock=stock_in_78, venue=venue_in_78)
+
+        payment1 = create_payment(booking_in_35, offerer, amount=20)
+        payment2 = create_payment(booking_in_78, offerer, amount=10)
+
+        PcObject.save(user, venue_in_78, venue_in_35, payment1, payment2)
+
+        # When
+        total_amount_to_pay = get_total_amount_to_pay('35')
+
+        # Then
+        assert total_amount_to_pay == 20
+
 
 class QueryGetTop20OffersByNumberOfBookingsTest:
     @clean_database
