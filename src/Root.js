@@ -5,7 +5,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom'
 
 import App from './App'
 import FeaturedRouteContainer from './components/router/FeaturedRouteContainer'
-import MatomoPageTracker from './components/matomo/MatomoPageTracker'
+import Matomo from './components/matomo/Matomo'
 import NotMatch from './components/pages/NotMatch'
 import browserRoutes from './components/router/browserRoutes'
 import { configureStore } from './utils/store'
@@ -30,7 +30,7 @@ const Root = () => (
               ))}
               <Route component={NotMatch} />
             </Switch>
-            <MatomoPageTracker />
+            <Matomo />
           </App>
         </BrowserRouter>
       </PersistGate>
