@@ -61,7 +61,7 @@ ShallowWrapper {
           <div
             className="geoloc-warning"
           >
-            Ce filtre est temporairement désactivé. Activez votre géolocalisation pour l'utiliser
+            Activez votre géolocalisation pour utiliser ce filtre.
           </div>
           <select
             className="pc-selectbox pl24 py5 fs19"
@@ -113,7 +113,7 @@ ShallowWrapper {
             <div
               className="geoloc-warning"
             >
-              Ce filtre est temporairement désactivé. Activez votre géolocalisation pour l'utiliser
+              Activez votre géolocalisation pour utiliser ce filtre.
             </div>,
             <select
               className="pc-selectbox pl24 py5 fs19"
@@ -166,11 +166,11 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": "Ce filtre est temporairement désactivé. Activez votre géolocalisation pour l'utiliser",
+              "children": "Activez votre géolocalisation pour utiliser ce filtre.",
               "className": "geoloc-warning",
             },
             "ref": null,
-            "rendered": "Ce filtre est temporairement désactivé. Activez votre géolocalisation pour l'utiliser",
+            "rendered": "Activez votre géolocalisation pour utiliser ce filtre.",
             "type": "div",
           },
           Object {
@@ -295,7 +295,7 @@ ShallowWrapper {
             <div
               className="geoloc-warning"
             >
-              Ce filtre est temporairement désactivé. Activez votre géolocalisation pour l'utiliser
+              Activez votre géolocalisation pour utiliser ce filtre.
             </div>
             <select
               className="pc-selectbox pl24 py5 fs19"
@@ -347,7 +347,7 @@ ShallowWrapper {
               <div
                 className="geoloc-warning"
               >
-                Ce filtre est temporairement désactivé. Activez votre géolocalisation pour l'utiliser
+                Activez votre géolocalisation pour utiliser ce filtre.
               </div>,
               <select
                 className="pc-selectbox pl24 py5 fs19"
@@ -400,11 +400,11 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": "Ce filtre est temporairement désactivé. Activez votre géolocalisation pour l'utiliser",
+                "children": "Activez votre géolocalisation pour utiliser ce filtre.",
                 "className": "geoloc-warning",
               },
               "ref": null,
-              "rendered": "Ce filtre est temporairement désactivé. Activez votre géolocalisation pour l'utiliser",
+              "rendered": "Activez votre géolocalisation pour utiliser ce filtre.",
               "type": "div",
             },
             Object {

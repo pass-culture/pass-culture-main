@@ -49,7 +49,8 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
     const wrapper = shallow(<VersoContentOffer {...props} />)
 
     // then
-    expect(wrapper.find('.distance').props()).toHaveProperty('target', '_blank')
+    const distanceElement = wrapper.find('.distance')
+    expect(distanceElement.props()).toHaveProperty('target', '_blank')
   })
 
   it('should match snapshot', () => {

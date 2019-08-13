@@ -146,8 +146,6 @@ describe('src | components | pages | search | FilterControls | FilterByDistance'
     })
 
     it('should display geolocation warning if no geolocation', () => {
-      // given
-
       // when
       const wrapper = shallow(<FilterByDistance {...props} />)
 
@@ -156,9 +154,7 @@ describe('src | components | pages | search | FilterControls | FilterByDistance'
       const selectInput = wrapper.find('select').props()
 
       expect(selectInput).toHaveProperty('disabled', true)
-      expect(warningMessage).toBe(
-        "Ce filtre est temporairement désactivé. Activez votre géolocalisation pour l'utiliser"
-      )
+      expect(warningMessage).toBe('Activez votre géolocalisation pour utiliser ce filtre.')
     })
 
     it('should not display geolocation warning if geolocation is active', () => {

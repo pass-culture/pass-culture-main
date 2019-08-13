@@ -19,11 +19,7 @@ class FilterByDistance extends PureComponent {
 
   render() {
     const { filterState, geolocation } = this.props
-    let geolocationActive = false
-    if (geolocation.latitude != null && geolocation.longitude != null) {
-      geolocationActive = true
-    }
-
+    const geolocationActive = geolocation.latitude != null && geolocation.longitude != null
     const distanceValue = filterState.params.distance || INFINITE_DISTANCE
 
     return (
@@ -35,9 +31,7 @@ class FilterByDistance extends PureComponent {
           <h2 className="distance-filter-title">{'Où'}</h2>
           {!geolocationActive && (
             <div className="geoloc-warning">
-              {
-                "Ce filtre est temporairement désactivé. Activez votre géolocalisation pour l'utiliser"
-              }
+              {'Activez votre géolocalisation pour utiliser ce filtre.'}
             </div>
           )}
           <select
