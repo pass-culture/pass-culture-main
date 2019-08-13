@@ -48,7 +48,6 @@ def delete_favorite(offer_id, mediation_id=None):
                                                           dehumanized_offer_id,
                                                           current_user.id) \
         .first_or_404()
-    favorite_id = favorite.id
 
     PcObject.delete(favorite)
 
@@ -79,12 +78,9 @@ def _serialize_favorites(favorites: List[Favorite]) -> List:
 def _serialize_favorite(favorite: Favorite) -> dict:
     dict_favorite = as_dict(favorite, include=FAVORITE_INCLUDES)
 
-    first_matching_booking = find_first_matching_booking_from_favorite(favorite, current_user)
-    if first_matching_booking:
-        dict_favorite['firstMatchingBooking'] = _serialize_booking(first_matching_booking)
+    booking = find_first_matching_booking_from_favorite(favorite, current_user)
+    if booking:
+        dict_favorite['firstMatchingBooking'] = as_dict(booking, include=WEBAPP_GET_BOOKING_INCLUDES)
 
     return dict_favorite
 
-
-def _serialize_booking(booking):
-    return booking.as_dict(include=WEBAPP_GET_BOOKING_INCLUDES)
