@@ -49,8 +49,8 @@ def get_top_20_offers_table(departement_code=None):
                             data=top_20_offers_by_number_of_bookings)
 
 
-def get_top_20_offerers_table_by_number_of_bookings():
-    top_20_offers_by_number_of_bookings = _query_get_top_20_offerers_by_number_of_bookings()
+def get_top_20_offerers_table_by_number_of_bookings(departement_code=None):
+    top_20_offers_by_number_of_bookings = _query_get_top_20_offerers_by_number_of_bookings(departement_code)
     return pandas.DataFrame(columns=['Structure', 'Nombre de réservations', 'Montant dépensé'],
                             data=top_20_offers_by_number_of_bookings)
 
@@ -108,20 +108,36 @@ def _query_non_cancelled_bookings_by_departement():
         """).fetchall()
 
 
-def _query_get_top_20_offerers_by_number_of_bookings():
-    return db.engine.execute(
-        """
-        SELECT offerer.name, SUM(booking.quantity) AS quantity, SUM(booking.quantity * booking.amount)
-        FROM offerer
-        JOIN venue ON venue."managingOffererId" = offerer.id
-        JOIN offer ON offer."venueId" = venue.id
-        JOIN stock ON stock."offerId" = offer.id
-        JOIN booking ON booking."stockId" = stock.id
-        WHERE booking."isCancelled" IS FALSE
-        GROUP BY offerer.id, offerer.name
-        ORDER BY quantity DESC, offerer.name ASC
-        LIMIT 20;
-        """).fetchall()
+def _query_get_top_20_offerers_by_number_of_bookings(departement_code=None):
+    if departement_code:
+        query = text("""
+            SELECT offerer.name, SUM(booking.quantity) AS quantity, SUM(booking.quantity * booking.amount)
+            FROM offerer
+            JOIN venue ON venue."managingOffererId" = offerer.id
+            JOIN offer ON offer."venueId" = venue.id
+            JOIN stock ON stock."offerId" = offer.id
+            JOIN booking ON booking."stockId" = stock.id
+            WHERE booking."isCancelled" IS FALSE
+            AND venue."departementCode" = :departementCode
+            GROUP BY offerer.id, offerer.name
+            ORDER BY quantity DESC, offerer.name ASC
+            LIMIT 20;
+            """).bindparams(departementCode=departement_code)
+    else:
+        query = """
+            SELECT offerer.name, SUM(booking.quantity) AS quantity, SUM(booking.quantity * booking.amount)
+            FROM offerer
+            JOIN venue ON venue."managingOffererId" = offerer.id
+            JOIN offer ON offer."venueId" = venue.id
+            JOIN stock ON stock."offerId" = offer.id
+            JOIN booking ON booking."stockId" = stock.id
+            WHERE booking."isCancelled" IS FALSE
+            GROUP BY offerer.id, offerer.name
+            ORDER BY quantity DESC, offerer.name ASC
+            LIMIT 20;
+            """
+
+    return db.engine.execute(query).fetchall()
 
 
 def _query_get_top_20_offerers_by_booking_amounts():

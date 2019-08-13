@@ -432,6 +432,30 @@ class QueryGetTop20OfferersByNumberOfBookingsTest:
         # Then
         assert bookings_counts == [('Offerer Name', 3, 50)]
 
+    @clean_database
+    def test_returns_offerers_filtered_by_departement(self, app):
+        # Given
+        offerer_in_30 = create_offerer(name='Offerer in 30', siren='111111111')
+        offerer_in_57 = create_offerer(name='Offerer in 57', siren='222222222')
+        venue_in_30 = create_venue(offerer_in_30, postal_code='30413', siret='11111111100001')
+        offer_in_30 = create_offer_with_thing_product(venue=venue_in_30, thing_name='First offer')
+        venue_in_57 = create_venue(offerer_in_57, postal_code='57000', siret='22222222200002')
+        offer_in_57 = create_offer_with_thing_product(venue=venue_in_57, thing_name='Second offer')
+        stock1 = create_stock(offer=offer_in_30, price=31)
+        stock2 = create_stock(offer=offer_in_57, price=20)
+        user = create_user()
+        create_deposit(user, amount=500)
+        booking1 = create_booking(user, stock1, quantity=3)
+        booking2 = create_booking(user, stock2, quantity=2)
+        booking3 = create_booking(user, stock2, quantity=1)
+        PcObject.save(offer_in_30, offer_in_57)
+
+        # When
+        bookings_counts = _query_get_top_20_offerers_by_number_of_bookings('30')
+
+        # Then
+        assert bookings_counts == [('Offerer in 30', 3, 93)]
+
 
 class GetTop20OfferersByNumberOfBookingsTest:
     @clean_database
