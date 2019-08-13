@@ -80,6 +80,17 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
                 }
             },
             {
+                "value": "Étudiant",
+                "type_de_champ":
+                    {
+                        "id":718094,
+                        "libelle":"Veuillez indiquer votre statut",
+                        "type_champ":"drop_down_list",
+                        "order_place":7,
+                        "description":""
+                    }
+            },
+            {
                 "value": "6 rue de la République",
                 "type_de_champ": {
                     "id": 582223, "libelle": "Adresse de résidence",
@@ -251,13 +262,17 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
 }
 
 
-def make_application_detail(id: int, state: str, postal_code='67200', department_code='67 - Bas-Rhin') -> dict:
+def make_application_detail(id: int, state: str, postal_code='67200', department_code='67 - Bas-Rhin',
+                            civility='Mme', activity='Étudiant') -> dict:
     application = copy.deepcopy(APPLICATION_DETAIL_STANDARD_RESPONSE)
     application['dossier']['id'] = id
     application['dossier']['state'] = state
+    application['dossier']['individual']['civilite'] = civility
     for field in application['dossier']['champs']:
         if field['type_de_champ']['libelle'] == 'Veuillez indiquer votre département':
             field['value'] = department_code
         if field['type_de_champ']['libelle'] == 'Code postal de votre adresse de résidence':
             field['value'] = postal_code
+        if field['type_de_champ']['libelle'] == 'Veuillez indiquer votre statut':
+            field['value'] = activity
     return application

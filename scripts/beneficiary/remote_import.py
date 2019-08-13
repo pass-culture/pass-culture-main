@@ -82,6 +82,7 @@ def parse_beneficiary_information(application_detail: dict) -> dict:
     information = {
         'last_name': dossier['individual']['nom'],
         'first_name': dossier['individual']['prenom'],
+        'civility': dossier['individual']['civilite'],
         'email': dossier['email'],
         'application_id': dossier['id']
     }
@@ -99,6 +100,8 @@ def parse_beneficiary_information(application_detail: dict) -> dict:
         if label == 'Code postal de votre adresse de résidence':
             space_free = value.strip().replace(' ', '')
             information['postal_code'] = re.search('^[0-9]{5}', space_free).group(0)
+        if label == 'Veuillez indiquer votre statut':
+            information['activity'] = value
 
     return information
 

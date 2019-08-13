@@ -57,6 +57,8 @@ def create_beneficiary_from_application(application_detail: dict) -> User:
     beneficiary.departementCode = application_detail['department']
     beneficiary.postalCode = application_detail['postal_code']
     beneficiary.dateOfBirth = application_detail['birth_date']
+    beneficiary.civility = application_detail['civility']
+    beneficiary.activity = application_detail['activity']
     beneficiary.canBookFreeOffers = True
     beneficiary.isAdmin = False
     beneficiary.password = random_password()

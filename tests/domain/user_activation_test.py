@@ -86,6 +86,8 @@ class CreateBeneficiaryFromApplicationTest:
             'department': '67',
             'last_name': 'Doe',
             'first_name': 'Jane',
+            'activity': 'Lycéen',
+            'civility': 'Mme',
             'birth_date': datetime(2000, 5, 1),
             'email': 'jane.doe@test.com',
             'phone': '0612345678',
@@ -110,6 +112,8 @@ class CreateBeneficiaryFromApplicationTest:
         assert beneficiary.password is not None
         assert beneficiary.resetPasswordToken is not None
         assert beneficiary.resetPasswordTokenValidityLimit.date() == THIRTY_DAYS_FROM_NOW
+        assert beneficiary.activity == 'Lycéen'
+        assert beneficiary.civility == 'Mme'
 
     def test_a_deposit_is_made_for_the_new_beneficiary(self):
         # given
@@ -117,6 +121,8 @@ class CreateBeneficiaryFromApplicationTest:
             'department': '67',
             'last_name': 'Doe',
             'first_name': 'Jane',
+            'activity': 'Lycéen',
+            'civility': 'Mme',
             'birth_date': datetime(2000, 5, 1),
             'email': 'jane.doe@test.com',
             'phone': '0612345678',

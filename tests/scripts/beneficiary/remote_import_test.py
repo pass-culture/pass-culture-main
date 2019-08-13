@@ -216,7 +216,9 @@ class ProcessBeneficiaryApplicationTest:
             'email': 'jane.doe@test.com',
             'phone': '0612345678',
             'postal_code': '67200',
-            'application_id': 123
+            'application_id': 123,
+            'civility': 'Mme',
+            'activity': 'Étudiant'
         }
 
         # when
@@ -226,6 +228,8 @@ class ProcessBeneficiaryApplicationTest:
         first = User.query.first()
         assert first.email == 'jane.doe@test.com'
         assert first.wallet_balance == 500
+        assert first.civility == 'Mme'
+        assert first.activity == 'Étudiant'
 
     @clean_database
     def test_an_import_status_is_saved_if_beneficiary_is_created(self, app):
@@ -240,7 +244,9 @@ class ProcessBeneficiaryApplicationTest:
             'email': 'jane.doe@test.com',
             'phone': '0612345678',
             'postal_code': '67200',
-            'application_id': 123
+            'application_id': 123,
+            'civility': 'Mme',
+            'activity': 'Étudiant'
         }
 
         # when
@@ -267,7 +273,9 @@ class ProcessBeneficiaryApplicationTest:
             'email': 'jane.doe@test.com',
             'phone': '0612345678',
             'postal_code': '67200',
-            'application_id': 123
+            'application_id': 123,
+            'civility': 'Mme',
+            'activity': 'Étudiant'
         }
 
         create_beneficiary_from_application.return_value = create_user()
@@ -294,7 +302,9 @@ class ProcessBeneficiaryApplicationTest:
             'email': 'jane.doe@test.com',
             'phone': '0612345678',
             'postal_code': '67200',
-            'application_id': 123
+            'application_id': 123,
+            'civility': 'Mme',
+            'activity': 'Étudiant'
         }
         create_beneficiary_from_application.side_effect = [User()]
         PcObject.save.side_effect = [ApiErrors({'postalCode': ['baaaaad value']})]
@@ -323,7 +333,9 @@ class ProcessBeneficiaryApplicationTest:
             'email': 'jane.doe@test.com',
             'phone': '0612345678',
             'postal_code': '67200',
-            'application_id': 123
+            'application_id': 123,
+            'civility': 'Mme',
+            'activity': 'Étudiant'
         }
         existing_user = create_user(first_name='Jane', last_name='Doe', date_of_birth=datetime(2000, 5, 1))
         PcObject.save(existing_user)
@@ -351,7 +363,9 @@ class ProcessBeneficiaryApplicationTest:
             'email': 'jane.doe@test.com',
             'phone': '0612345678',
             'postal_code': '67200',
-            'application_id': 123
+            'application_id': 123,
+            'civility': 'Mme',
+            'activity': 'Étudiant'
         }
         existing_user = create_user(first_name='Jane', last_name='Doe', date_of_birth=datetime(2000, 5, 1))
         PcObject.save(existing_user)
@@ -377,7 +391,9 @@ class ProcessBeneficiaryApplicationTest:
             'email': 'jane.doe@test.com',
             'phone': '0612345678',
             'postal_code': '67200',
-            'application_id': 123
+            'application_id': 123,
+            'civility': 'Mme',
+            'activity': 'Étudiant'
         }
         mocked_query = Mock(return_value=[create_user(idx=11), create_user(idx=22)])
 
@@ -400,6 +416,7 @@ class ParseBeneficiaryInformationTest:
         assert information['last_name'] == 'Doe'
         assert information['first_name'] == 'Jane'
         assert information['birth_date'] == datetime(2000, 5, 1)
+        assert information['civility'] == 'Mme'
         assert information['email'] == 'jane.doe@test.com'
         assert information['phone'] == '0123456789'
         assert information['postal_code'] == '67200'
@@ -488,3 +505,33 @@ class ParseBeneficiaryInformationTest:
 
         # then
         assert information['postal_code'] == '67200'
+
+    def test_handles_civility_parsing(self):
+        # given
+        application_detail = make_application_detail(1, 'closed', civility='M.')
+
+        # when
+        information = parse_beneficiary_information(application_detail)
+
+        # then
+        assert information['civility'] == 'M.'
+
+    def test_handles_activity_parsing(self):
+        # given
+        application_detail = make_application_detail(1, 'closed')
+
+        # when
+        information = parse_beneficiary_information(application_detail)
+
+        # then
+        assert information['activity'] == 'Étudiant'
+
+    def test_handles_activity_even_if_activity_is_not_filled(self):
+        # given
+        application_detail = make_application_detail(1, 'closed', activity=None)
+
+        # when
+        information = parse_beneficiary_information(application_detail)
+
+        # then
+        assert information['activity'] is None
