@@ -206,15 +206,20 @@ def find_all_ongoing_bookings_by_stock(stock) -> List[Booking]:
     return Booking.query.filter_by(stockId=stock.id, isCancelled=False, isUsed=False).all()
 
 
-def count_all_used_or_non_cancelled_bookings() -> int:
+def _query_get_used_or_non_cancelled_bookings():
     booking_on_event_finished_more_than_two_days_ago = (datetime.utcnow() > Stock.endDatetime + STOCK_DELETION_DELAY)
+
     return Booking.query \
         .join(Stock) \
         .join(Offer) \
         .join(Venue) \
         .join(Offerer) \
         .filter(Booking.isCancelled == False) \
-        .filter((Booking.isUsed == True) | booking_on_event_finished_more_than_two_days_ago) \
+        .filter((Booking.isUsed == True) | booking_on_event_finished_more_than_two_days_ago)
+
+
+def count_all_used_or_non_cancelled_bookings() -> int:
+    return _query_get_used_or_non_cancelled_bookings() \
         .count()
 
 
@@ -247,6 +252,10 @@ def _keep_eligible_bookings(query):
     return query\
         .filter(Booking.isCancelled == False) \
         .filter((Booking.isUsed == True) | booking_on_event_finished_more_than_two_days_ago) \
+
+def find_final_offerer_bookings(offerer_id) -> List[Booking]:
+    return _query_get_used_or_non_cancelled_bookings() \
+        .filter(Offerer.id == offerer_id) \
         .reset_joinpoint() \
         .outerjoin(Payment) \
         .order_by(Payment.id, Booking.dateCreated.asc())
