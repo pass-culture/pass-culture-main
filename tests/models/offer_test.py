@@ -86,7 +86,7 @@ class AddStockAlertMessageToOfferTest:
             result = offer.stockAlertMessage
 
             # then
-            assert result == 'plus de stock pour 1 offre'
+            assert result == 'plus de stock pour 2 offres'
 
         @clean_database
         def test_check_offer_with_one_available_zero_and_one_sold_out_stock(self, app):
@@ -207,7 +207,7 @@ class AddStockAlertMessageToOfferTest:
             result = offer.stockAlertMessage
 
             # then
-            assert result == 'plus de stock pour 2 offres'
+            assert result == 'plus de stock pour 3 offres'
 
     class EventOfferTest:
         @clean_database
@@ -270,7 +270,7 @@ class AddStockAlertMessageToOfferTest:
             result = offer.stockAlertMessage
 
             # then
-            assert result == 'plus de places pour 1 offre'
+            assert result == 'plus de places pour 2 offres'
 
         @clean_database
         def test_check_offer_with_one_available_zero_and_one_sold_out_stock(self, app):
@@ -391,7 +391,7 @@ class AddStockAlertMessageToOfferTest:
             result = offer.stockAlertMessage
 
             # then
-            assert result == 'plus de places pour 2 offres'
+            assert result == 'plus de places pour 3 offres'
 
 
 class BaseScoreTest:

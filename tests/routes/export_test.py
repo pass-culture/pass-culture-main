@@ -166,6 +166,8 @@ def test_pending_validation_return_only_requested_data(app):
               'modelName': 'UserOfferer',
               'user':
                   {'canBookFreeOffers': False,
+                   'activity': None,
+                   'civility': None,
                    'dateCreated': serialize(user_pro.dateCreated),
                    'departementCode': '93',
                    'email': 'user0@test.com',

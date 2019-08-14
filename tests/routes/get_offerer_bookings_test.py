@@ -85,6 +85,8 @@ class Get:
                 'firstName': user.firstName,
                 'email': user.email,
                 'lastName': user.lastName,
+                'civility': None,
+                'activity': None,
                 'modelName': 'User'
             }
 
@@ -116,6 +118,8 @@ class Get:
                 'firstName': user.firstName,
                 'email': user.email,
                 'lastName': user.lastName,
+                'civility': None,
+                'activity': None,
                 'modelName': 'User'
             }
 
