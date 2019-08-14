@@ -4,8 +4,9 @@ from models import Offerer, UserOfferer, Venue, Offer, Stock, Booking, EventType
 from models.db import db
 from repository.booking_queries import count_all_used_or_non_cancelled_bookings, \
     count_all_bookings, \
-    count_all_cancelled_bookings, \
-    count_bookings_by_departement
+    count_all_cancelled_bookings as query_count_all_cancelled_bookings,\
+    count_bookings_by_departement, \
+    count_all_cancelled_bookings_by_departement
 from repository.offer_queries import get_active_offers_ids_query
 from repository.offerer_queries import count_offerer, count_offerer_with_stock, count_offerer_by_departement, \
     count_offerer_with_stock_by_departement
@@ -88,9 +89,9 @@ def get_all_used_or_non_canceled_bookings() -> int:
     return count_all_used_or_non_cancelled_bookings()
 
 
-# TODO
-def get_all_cancelled_bookings_count():
-    return count_all_cancelled_bookings()
+def count_all_cancelled_bookings(departement_code=None):
+    return count_all_cancelled_bookings_by_departement(
+        departement_code) if departement_code else query_count_all_cancelled_bookings()
 
 
 def _get_offer_counts_grouped_by_type_and_medium(query_get_counts_per_type_and_digital, counts_column_name):

@@ -10,7 +10,7 @@ from scripts.dashboard.diversification_statistics import get_offerers_with_offer
     get_all_used_or_non_canceled_bookings, \
     _query_get_offer_counts_grouped_by_type_and_medium, _get_offers_grouped_by_type_and_medium, \
     _get_offer_counts_grouped_by_type_and_medium, _query_get_booking_counts_grouped_by_type_and_medium, \
-    get_offerer_count, get_offerer_with_stock_count, get_all_bookings_count
+    get_offerer_count, get_offerer_with_stock_count, get_all_bookings_count, count_all_cancelled_bookings
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_stock, \
     create_offer_with_thing_product, create_venue, create_mediation, create_offer_with_event_product, create_booking
@@ -1134,3 +1134,49 @@ class QueryGetBookingCountsPerTypeAndDigitalTest:
 
         # Then
         assert booking_counts == []
+
+
+class CountAllCancelledBookingsTest:
+    @clean_database
+    def test_returns_2_when_not_filtered(self, app):
+        # Given
+        user_in_76 = create_user(departement_code='76', email='user-76@example.net')
+        user_in_41 = create_user(departement_code='41', email='user-41@example.net')
+
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+
+        booking1 = create_booking(user_in_76, stock, is_cancelled=True)
+        booking2 = create_booking(user_in_41, stock, is_cancelled=True)
+        booking3 = create_booking(user_in_41, stock, is_cancelled=False)
+        PcObject.save(booking1, booking2, booking3)
+
+        # When
+        number_of_bookings = count_all_cancelled_bookings()
+
+        # Then
+        assert number_of_bookings == 2
+
+    @clean_database
+    def test_returns_1_when_filtered_on_user_departement(self, app):
+        # Given
+        user_in_76 = create_user(departement_code='76', email='user-76@example.net')
+        user_in_41 = create_user(departement_code='41', email='user-41@example.net')
+
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+
+        booking1 = create_booking(user_in_76, stock, is_cancelled=True)
+        booking2 = create_booking(user_in_41, stock, is_cancelled=True)
+        booking3 = create_booking(user_in_41, stock, is_cancelled=False)
+        PcObject.save(booking1, booking2, booking3)
+
+        # When
+        number_of_bookings = count_all_cancelled_bookings('41')
+
+        # Then
+        assert number_of_bookings == 1

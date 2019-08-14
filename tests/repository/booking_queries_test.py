@@ -20,7 +20,8 @@ from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     find_eligible_bookings_for_venue, \
     count_non_cancelled_bookings_by_departement, \
     count_non_cancelled_bookings, \
-    count_bookings_by_departement
+    count_bookings_by_departement, \
+    count_all_cancelled_bookings_by_departement
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, \
     create_deposit, \
@@ -963,6 +964,78 @@ class GetAllCancelledBookingsCountTest:
 
         # When
         number_of_bookings = count_all_cancelled_bookings()
+
+        # Then
+        assert number_of_bookings == 1
+
+
+class GetAllCancelledBookingsByDepartementCountTest:
+    @clean_database
+    def test_returns_0_if_no_cancelled_bookings(self, app):
+        # Given
+        less_than_48_hours_ago = datetime.utcnow() - timedelta(hours=47)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        event_offer = create_offer_with_event_product(venue)
+        event_stock = create_stock(
+            offer=event_offer,
+            price=0,
+            beginning_datetime=less_than_48_hours_ago,
+            end_datetime=less_than_48_hours_ago + timedelta(hours=1),
+            booking_limit_datetime=less_than_48_hours_ago - timedelta(hours=1)
+        )
+        user = create_user(departement_code='76')
+        booking = create_booking(user, event_stock, is_cancelled=False)
+        PcObject.save(booking)
+
+        # When
+        number_of_bookings = count_all_cancelled_bookings_by_departement('76')
+
+        # Then
+        assert number_of_bookings == 0
+
+    @clean_database
+    def test_returns_1_if_one_cancelled_bookings(self, app):
+        # Given
+        less_than_48_hours_ago = datetime.utcnow() - timedelta(hours=47)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        event_offer = create_offer_with_event_product(venue)
+        event_stock = create_stock(
+            offer=event_offer,
+            price=0,
+            beginning_datetime=less_than_48_hours_ago,
+            end_datetime=less_than_48_hours_ago + timedelta(hours=1),
+            booking_limit_datetime=less_than_48_hours_ago - timedelta(hours=1)
+        )
+        user = create_user(departement_code='76')
+        booking = create_booking(user, event_stock, is_cancelled=True)
+        PcObject.save(booking)
+
+        # When
+        number_of_bookings = count_all_cancelled_bookings_by_departement('76')
+
+        # Then
+        assert number_of_bookings == 1
+
+    @clean_database
+    def test_returns_1_when_filtered_on_user_departement(self, app):
+        # Given
+        user_in_76 = create_user(departement_code='76', email='user-76@example.net')
+        user_in_41 = create_user(departement_code='41', email='user-41@example.net')
+
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+
+        booking1 = create_booking(user_in_76, stock, is_cancelled=True)
+        booking2 = create_booking(user_in_41, stock, is_cancelled=True)
+        booking3 = create_booking(user_in_41, stock, is_cancelled=False)
+        PcObject.save(booking1, booking2, booking3)
+
+        # When
+        number_of_bookings = count_all_cancelled_bookings_by_departement('41')
 
         # Then
         assert number_of_bookings == 1

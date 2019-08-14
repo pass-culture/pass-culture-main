@@ -28,9 +28,9 @@ def count_all_bookings() -> int:
 
 
 def count_bookings_by_departement(departement_code) -> int:
-    return Booking.query\
-        .join(User)\
-        .filter(User.departementCode==departement_code)\
+    return Booking.query \
+        .join(User) \
+        .filter(User.departementCode == departement_code) \
         .count()
 
 
@@ -48,6 +48,14 @@ def count_non_cancelled_bookings_by_departement(departement_code) -> int:
 
 def count_all_cancelled_bookings() -> int:
     return Booking.query.filter_by(isCancelled=True).count()
+
+
+def count_all_cancelled_bookings_by_departement(departement_code) -> int:
+    return Booking.query \
+        .filter_by(isCancelled=True) \
+        .join(User) \
+        .filter(User.departementCode == departement_code) \
+        .count()
 
 
 def find_active_bookings_by_user_id(user_id) -> List[Booking]:
