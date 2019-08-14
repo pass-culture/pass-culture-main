@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import { getWalletValue } from '../../../utils/user'
+import { getWalletValue } from '../../../../utils/user'
 
 const Header = ({ currentUser }) => (
   <div

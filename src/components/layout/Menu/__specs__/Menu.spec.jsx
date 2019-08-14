@@ -7,10 +7,10 @@ import { Transition } from 'react-transition-group'
 import configureStore from 'redux-mock-store'
 
 import CloseLink from '../../Header/CloseLink'
-import Header from '../Header'
+import Header from '../Header/Header'
 import Menu from '../Menu'
-import MenuItem from '../MenuItem'
-import SignoutButtonContainer from '../SignoutButtonContainer'
+import MenuItem from '../MenuItem/MenuItem'
+import SignoutButtonContainer from '../SignoutButton/SignoutButtonContainer'
 
 jest.mock('../../../../reducers/overlay', () => ({
   toggleOverlay: jest.fn(),

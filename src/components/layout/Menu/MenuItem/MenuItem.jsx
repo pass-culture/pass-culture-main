@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
-
-import Item from './Item'
+import Item from './Item/Item'
 
 const MenuItem = ({ disabled, item }) => {
   const { icon, href, path, target, title } = item

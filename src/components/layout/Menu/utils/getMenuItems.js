@@ -1,4 +1,6 @@
-const getMenuItems = routes =>
+import routes from '../../../router/routes'
+
+export const getMenuItemsFromRoutes = routes =>
   routes.reduce((accumulator, currentRoute) => {
     if (currentRoute.icon) {
       const extended = {}
@@ -13,5 +15,7 @@ const getMenuItems = routes =>
 
     return accumulator
   }, [])
+
+const getMenuItems = getMenuItemsFromRoutes(routes)
 
 export default getMenuItems

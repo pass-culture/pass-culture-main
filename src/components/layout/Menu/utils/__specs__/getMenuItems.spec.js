@@ -1,12 +1,12 @@
-import getMenuItems from '../getMenuItems'
-import DiscoveryContainer from '../../../pages/discovery/DiscoveryContainer'
-import MyFavoritesContainer from '../../../pages/my-favorites/MyFavoritesContainer'
-import MyBookingsContainer from '../../../pages/my-bookings/MyBookingsContainer'
-import ProfileContainer from '../../../pages/profile/ProfileContainer'
-import SearchContainer from '../../../pages/search/SearchContainer'
-import routes from '../../../router/routes'
+import DiscoveryContainer from '../../../../pages/discovery/DiscoveryContainer'
+import MyFavoritesContainer from '../../../../pages/my-favorites/MyFavoritesContainer'
+import MyBookingsContainer from '../../../../pages/my-bookings/MyBookingsContainer'
+import ProfileContainer from '../../../../pages/profile/ProfileContainer'
+import SearchContainer from '../../../../pages/search/SearchContainer'
+import routes from '../../../../router/routes'
+import { getMenuItemsFromRoutes } from '../getMenuItems'
 
-describe('getMenuItems', () => {
+describe('getMenuItemsFromRoutes', () => {
   it('should filter routes for menu from mock', () => {
     const testRoutes = [
       { path: '/' },
@@ -18,7 +18,7 @@ describe('getMenuItems', () => {
       { href: 'mailto:mail.cool' },
       { href: 'mailto:mail.cool', icon: 'toto' },
     ]
-    const items = getMenuItems(testRoutes)
+    const items = getMenuItemsFromRoutes(testRoutes)
     const expected = [
       { icon: 'toto', path: '/toto' },
       { href: '/toto/:vars?', icon: 'toto' },
@@ -30,7 +30,7 @@ describe('getMenuItems', () => {
 
   it('should filter routes for menu from featured routes', () => {
     // when
-    const items = getMenuItems(routes)
+    const items = getMenuItemsFromRoutes(routes)
     const expected = [
       {
         component: DiscoveryContainer,

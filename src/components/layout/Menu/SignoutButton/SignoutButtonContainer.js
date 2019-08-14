@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { requestData } from 'redux-saga-data'
 
 import SignoutButton from './SignoutButton'
-import { toggleMainMenu } from '../../../reducers/menu'
+import { toggleMainMenu } from '../../../../reducers/menu'
 
 export const mapDispatchToProps = dispatch => ({
   onSignoutClick: ({ history, readRecommendations }) => () => {

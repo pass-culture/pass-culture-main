@@ -2,7 +2,7 @@ import { shallow } from 'enzyme'
 import React from 'react'
 
 import Item from '../Item'
-import Icon from '../../Icon'
+import Icon from '../../../../Icon'
 
 describe('src | components | menu | Item', () => {
   let props

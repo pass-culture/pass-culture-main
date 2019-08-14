@@ -2,10 +2,10 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Transition } from 'react-transition-group'
 
-import Header from './Header'
-import menuItems from './menuItems'
-import MenuItemContainer from './MenuItemContainer'
-import SignoutButtonContainer from './SignoutButtonContainer'
+import Header from './Header/Header'
+import getMenuItems from './utils/getMenuItems'
+import MenuItemContainer from './MenuItem/MenuItemContainer'
+import SignoutButtonContainer from './SignoutButton/SignoutButtonContainer'
 import CloseLink from '../Header/CloseLink'
 
 class Menu extends PureComponent {
@@ -19,8 +19,7 @@ class Menu extends PureComponent {
     toggleOverlay()
   }
 
-  urlWithoutMenuElement = history => () =>
-    history.location.pathname.replace('/menu', '')
+  urlWithoutMenuElement = history => () => history.location.pathname.replace('/menu', '')
 
   render() {
     const { currentUser, history, readRecommendations } = this.props
@@ -50,7 +49,7 @@ class Menu extends PureComponent {
                   className="flex-rows pb0"
                   id="main-menu-navigation"
                 >
-                  {menuItems.map(menuItem => (
+                  {getMenuItems.map(menuItem => (
                     <MenuItemContainer
                       item={menuItem}
                       key={menuItem.href || menuItem.path}

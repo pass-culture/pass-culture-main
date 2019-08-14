@@ -2,8 +2,8 @@ import { shallow } from 'enzyme'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import Item from '../Item'
 import MenuItem from '../MenuItem'
+import Item from '../Item/Item'
 
 describe('src | components | menu | MenuItem', () => {
   let props

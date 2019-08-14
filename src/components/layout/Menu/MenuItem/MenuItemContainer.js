@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 
 import MenuItem from './MenuItem'
-import selectIsFeatureDisabled from '../../router/selectors/selectIsFeatureDisabled'
+import selectIsFeatureDisabled from '../../../router/selectors/selectIsFeatureDisabled'
 
 export const mapStateToProps = (state, ownProps) => {
   const { item } = ownProps
