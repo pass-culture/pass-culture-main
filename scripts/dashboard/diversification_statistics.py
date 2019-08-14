@@ -62,10 +62,14 @@ def get_offers_with_user_offerer_and_stock_count(departement_code=None) -> int:
         .count()
 
 
-# TODO
-def get_offers_available_on_discovery_count() -> int:
+def get_offers_available_on_discovery_count(departement_code=None) -> int:
     offer_ids_subquery = get_active_offers_ids_query()
-    return Offer.query.filter(Offer.id.in_(offer_ids_subquery)).count()
+    query = Offer.query.filter(Offer.id.in_(offer_ids_subquery))
+
+    if departement_code:
+        query = query.join(Venue).filter(Venue.departementCode == departement_code)
+
+    return query.count()
 
 
 def get_offers_with_non_cancelled_bookings_count(departement_code=None) -> int:

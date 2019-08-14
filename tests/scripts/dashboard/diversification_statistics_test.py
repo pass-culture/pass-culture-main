@@ -667,14 +667,39 @@ class GetOffersAvailableOnDiscoveryCountTest:
         mediation1 = create_mediation(offer1)
         mediation2 = create_mediation(offer2)
         PcObject.save(stock1, stock2)
-        print(offer1.id)
-        print(offer2.id)
 
         # When
         number_of_offers = get_offers_available_on_discovery_count()
 
         # Then
         assert number_of_offers == 2
+
+    @clean_database
+    def test_returns_1_if_2_offers_returned_by_get_active_offers_but_only_one_in_departement(self, app):
+        # Given
+        first_user = create_user(email='user76@example.net')
+        first_offerer = create_offerer(siren='111111111')
+        create_user_offerer(first_user, first_offerer)
+        first_venue = create_venue(first_offerer, postal_code='76130', siret='11111111100001')
+        first_offer = create_offer_with_thing_product(first_venue)
+        first_mediation = create_mediation(first_offer)
+        first_stock = create_stock(offer=first_offer, price=0)
+
+        second_user = create_user(email='user41@example.net')
+        second_offerer = create_offerer(siren='222222222')
+        create_user_offerer(second_user, second_offerer)
+        second_venue = create_venue(second_offerer, postal_code='41571', siret='22222222200001')
+        second_offer = create_offer_with_thing_product(second_venue)
+        second_mediation = create_mediation(second_offer)
+        second_stock = create_stock(offer=second_offer, price=0)
+
+        PcObject.save(first_stock, second_stock)
+
+        # When
+        number_of_offers = get_offers_available_on_discovery_count('41')
+
+        # Then
+        assert number_of_offers == 1
 
 
 class GetOffersWithNonCancelledBookingsCountTest:
