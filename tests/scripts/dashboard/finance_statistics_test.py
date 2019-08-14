@@ -541,6 +541,36 @@ class QueryGetTop20OfferersByAmountTest:
         # Then
         assert bookings_counts == [('Offerer Name', 3, 50)]
 
+    @clean_database
+    def test_returns_offerers_filtered_by_departement_based_on_venue(self, app):
+        # Given
+        smallshop_only_in_76 = create_offerer(name='Small library', siren='111111111')
+        smallshop_venue = create_venue(smallshop_only_in_76, postal_code='76130', siret='11111111100001')
+        smallshop_offer = create_offer_with_thing_product(smallshop_venue)
+        smallshop_stock_in_76 = create_stock(offer=smallshop_offer, price=30)
+
+        bigstore = create_offerer(name='National book store', siren='222222222')
+        bigstore_venue_in_76 = create_venue(bigstore, postal_code='76130', siret='22222222200001')
+        bigstore_venue_in_77 = create_venue(bigstore, postal_code='77000', siret='22222222200002')
+        bigstore_offer_in_76 = create_offer_with_thing_product(venue=bigstore_venue_in_76)
+        bigstore_offer_in_77 = create_offer_with_thing_product(venue=bigstore_venue_in_77)
+        bigstore_stock_in_76 = create_stock(offer=bigstore_offer_in_76, price=10)
+        bigstore_stock_in_77 = create_stock(offer=bigstore_offer_in_77, price=10)
+
+        user = create_user()
+        create_deposit(user, amount=500)
+        create_booking(user, smallshop_stock_in_76, quantity=2)
+        create_booking(user, bigstore_stock_in_76, quantity=2)
+        create_booking(user, bigstore_stock_in_77, quantity=1)
+
+        PcObject.save(smallshop_stock_in_76, bigstore_stock_in_77, bigstore_stock_in_76)
+
+        # When
+        bookings_counts = _query_get_top_20_offerers_by_booking_amounts('76')
+
+        # Then
+        assert bookings_counts == [('Small library', 2, 60), ('National book store', 2, 20)]
+
 
 class GetTop20OfferersByAmountTable:
     @clean_database

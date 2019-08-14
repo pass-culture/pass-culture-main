@@ -55,8 +55,8 @@ def get_top_20_offerers_table_by_number_of_bookings(departement_code=None):
                             data=top_20_offers_by_number_of_bookings)
 
 
-def get_top_20_offerers_by_amount_table():
-    top_20_offers_by_number_of_bookings = _query_get_top_20_offerers_by_booking_amounts()
+def get_top_20_offerers_by_amount_table(departement_code=None):
+    top_20_offers_by_number_of_bookings = _query_get_top_20_offerers_by_booking_amounts(departement_code)
     return pandas.DataFrame(columns=['Structure', 'Nombre de réservations', 'Montant dépensé'],
                             data=top_20_offers_by_number_of_bookings)
 
@@ -140,9 +140,23 @@ def _query_get_top_20_offerers_by_number_of_bookings(departement_code=None):
     return db.engine.execute(query).fetchall()
 
 
-def _query_get_top_20_offerers_by_booking_amounts():
-    return db.engine.execute(
-        """
+def _query_get_top_20_offerers_by_booking_amounts(departement_code=None):
+    if departement_code:
+        query = text("""
+            SELECT offerer.name, SUM(booking.quantity) AS quantity, SUM(booking.quantity * booking.amount) AS booking_amount
+            FROM offerer
+            JOIN venue ON venue."managingOffererId" = offerer.id
+            JOIN offer ON offer."venueId" = venue.id
+            JOIN stock ON stock."offerId" = offer.id
+            JOIN booking ON booking."stockId" = stock.id
+            WHERE booking."isCancelled" IS FALSE
+            AND venue."departementCode" = :departementCode
+            GROUP BY offerer.id, offerer.name
+            ORDER BY booking_amount DESC, offerer.name ASC
+            LIMIT 20;
+            """).bindparams(departementCode=departement_code)
+    else:
+        query = """
         SELECT offerer.name, SUM(booking.quantity) AS quantity, SUM(booking.quantity * booking.amount) AS booking_amount
         FROM offerer
         JOIN venue ON venue."managingOffererId" = offerer.id
@@ -153,4 +167,5 @@ def _query_get_top_20_offerers_by_booking_amounts():
         GROUP BY offerer.id, offerer.name
         ORDER BY booking_amount DESC, offerer.name ASC
         LIMIT 20;
-        """).fetchall()
+        """
+    return db.engine.execute(query).fetchall()
