@@ -474,6 +474,31 @@ class GetOffersWithUserOffererAndStockCountTest:
         # Then
         assert number_of_offers == 1
 
+    @clean_database
+    def test_returns_1_when_two_offerers_but_filtered_by_departement(self, app):
+        # Given
+        first_user = create_user(email='user76@example.net')
+        first_offerer = create_offerer(siren='111111111')
+        create_user_offerer(first_user, first_offerer)
+        first_venue = create_venue(first_offerer, postal_code='76130', siret='11111111100001')
+        first_offer = create_offer_with_thing_product(first_venue)
+        first_stock = create_stock(offer=first_offer, price=0)
+
+        second_user = create_user()
+        second_offerer = create_offerer(siren='222222222')
+        create_user_offerer(second_user, second_offerer)
+        second_venue = create_venue(second_offerer, postal_code='41571', siret='22222222200001')
+        second_offer = create_offer_with_thing_product(second_venue)
+        second_stock = create_stock(offer=second_offer, price=0)
+
+        PcObject.save(first_stock, second_stock)
+
+        # When
+        number_of_offers = get_offers_with_user_offerer_and_stock_count('76')
+
+        # Then
+        assert number_of_offers == 1
+
 
 class GetOffersAvailableOnDiscoveryCountTest:
     @clean_database

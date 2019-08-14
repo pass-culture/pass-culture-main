@@ -46,10 +46,13 @@ def get_offerers_with_non_cancelled_bookings_count(departement_code=None) -> int
         .count()
 
 
-# TODO
-def get_offers_with_user_offerer_and_stock_count() -> int:
-    return Offer.query \
-        .join(Venue) \
+def get_offers_with_user_offerer_and_stock_count(departement_code=None) -> int:
+    query = Offer.query.join(Venue)
+
+    if departement_code:
+        query = query.filter(Venue.departementCode == departement_code)
+
+    return query \
         .join(Offerer) \
         .join(UserOfferer) \
         .join(Stock, Stock.offerId == Offer.id) \
