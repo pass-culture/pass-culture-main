@@ -11,7 +11,7 @@ module.exports = {
     '^react-native$': 'react-native-web',
   },
   setupFiles: ['<rootDir>/jest-polyfill.js', '<rootDir>/jest.setup.js'],
-  testEnvironment: 'jest-environment-jsdom-global',
+  testEnvironment: 'jest-environment-jsdom',
   testMatch: [
     '<rootDir>/src/**/__tests__/**/*.{js,jsx}',
     '<rootDir>/src/**/?(*.)(spec|test).{js,jsx}',
@@ -22,9 +22,6 @@ module.exports = {
     '^.+\\.(js|jsx)$': '<rootDir>/node_modules/babel-jest',
     '^.+\\.js$': 'babel-jest',
   },
-  transformIgnorePatterns: [
-    '<rootDir>/node_modules/',
-    '[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$',
-  ],
+  transformIgnorePatterns: ['<rootDir>/node_modules/', '[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$'],
   verbose: true,
 }

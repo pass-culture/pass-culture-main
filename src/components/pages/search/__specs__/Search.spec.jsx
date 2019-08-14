@@ -608,6 +608,7 @@ describe('src | components | pages | Search', () => {
           // then
           expect(wrapper.state()).toStrictEqual(expected)
         })
+
         it('should change query', () => {
           // when
           wrapperInstance.handleOnSubmit(event)

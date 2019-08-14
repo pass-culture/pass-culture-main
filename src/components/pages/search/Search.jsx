@@ -204,7 +204,7 @@ class Search extends PureComponent {
 
   isFirstPageRequest = queryParams => {
     const { page = '' } = queryParams
-    return page === ''
+    return page === '1' || page === ''
   }
 
   renderNavByOfferTypeContainer = typeSublabels => () => (
