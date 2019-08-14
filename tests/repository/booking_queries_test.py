@@ -19,7 +19,8 @@ from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     find_all_offerer_bookings, \
     find_eligible_bookings_for_venue, \
     count_non_cancelled_bookings_by_departement, \
-    count_non_cancelled_bookings
+    count_non_cancelled_bookings, \
+    count_bookings_by_departement
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, \
     create_deposit, \
@@ -1020,6 +1021,86 @@ class CountAllBookingsTest:
 
         # Then
         assert number_of_bookings == 2
+
+    @clean_database
+    def test_raises_error_on_booking_when_existing_booking_is_used_and_booking_date_is_after_last_update_on_stock(self,
+                                                                                                                  app):
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock_from_offer(offer, price=0, available=1)
+        user1 = create_user(email='used_booking@booking.com')
+        user2 = create_user(email='booked@email.com')
+        PcObject.save(stock)
+        date_after_stock_last_update = datetime.utcnow()
+        booking1 = create_booking(user1,
+                                  stock,
+                                  date_used=date_after_stock_last_update,
+                                  is_cancelled=False,
+                                  is_used=True)
+        PcObject.save(booking1)
+        date_after_last_booking = datetime.utcnow()
+        booking2 = create_booking(user2,
+                                  stock,
+                                  date_used=date_after_last_booking,
+                                  is_cancelled=False,
+                                  is_used=False)
+
+        # When
+        with pytest.raises(ApiErrors) as e:
+            PcObject.save(booking2)
+
+        # Then
+        assert e.value.errors['global'] == ['la quantité disponible pour cette offre est atteinte']
+
+
+class CountBookingsByDepartementTest:
+    @clean_database
+    def test_returns_0_when_no_bookings(self, app):
+        # When
+        number_of_bookings = count_bookings_by_departement('74')
+
+        # Then
+        assert number_of_bookings == 0
+
+    @clean_database
+    def test_returns_2_when_bookings_cancelled_or_not(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+        user = create_user(departement_code='74')
+        booking1 = create_booking(user, stock)
+        booking2 = create_booking(user, stock, is_cancelled=True)
+        PcObject.save(booking1, booking2)
+
+        # When
+        number_of_bookings = count_bookings_by_departement('74')
+
+        # Then
+        assert number_of_bookings == 2
+
+    @clean_database
+    def test_returns_1_when_bookings_are_filtered_by_departement(self, app):
+        # Given
+        user_in_76 = create_user(departement_code='76', email='user-76@example.net')
+        user_in_41 = create_user(departement_code='41', email='user-41@example.net')
+
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+
+        booking1 = create_booking(user_in_76, stock)
+        booking2 = create_booking(user_in_41, stock, is_cancelled=True)
+        PcObject.save(booking1, booking2)
+
+        # When
+        number_of_bookings = count_bookings_by_departement('76')
+
+        # Then
+        assert number_of_bookings == 1
 
     @clean_database
     def test_raises_error_on_booking_when_existing_booking_is_used_and_booking_date_is_after_last_update_on_stock(self,
