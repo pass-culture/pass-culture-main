@@ -1,8 +1,8 @@
 import moment from 'moment'
 
-import selectFirstMatchingBookingByStocks from '../selectFirstMatchingBookingByStocks'
+import selectFirstMatchingBookingByOfferId from '../selectFirstMatchingBookingByOfferId'
 
-describe('src | selectors | selectFirstMatchingBookingByStocks', () => {
+describe('src | selectors | selectFirstMatchingBookingByOfferId', () => {
   it('should return null when no stock', () => {
     // given
     const state = {
@@ -13,7 +13,7 @@ describe('src | selectors | selectFirstMatchingBookingByStocks', () => {
     }
 
     // when
-    const firstMatchingBooking = selectFirstMatchingBookingByStocks(state)
+    const firstMatchingBooking = selectFirstMatchingBookingByOfferId(state)
 
     // then
     expect(firstMatchingBooking).toBeNull()
@@ -29,7 +29,7 @@ describe('src | selectors | selectFirstMatchingBookingByStocks', () => {
     }
 
     // when
-    const firstMatchingBooking = selectFirstMatchingBookingByStocks(state)
+    const firstMatchingBooking = selectFirstMatchingBookingByOfferId(state)
 
     // then
     expect(firstMatchingBooking).toBeNull()
@@ -60,7 +60,7 @@ describe('src | selectors | selectFirstMatchingBookingByStocks', () => {
     }
 
     // when
-    const firstMatchingBooking = selectFirstMatchingBookingByStocks(state)
+    const firstMatchingBooking = selectFirstMatchingBookingByOfferId(state)
 
     // then
     expect(firstMatchingBooking).toStrictEqual(nextBooking)

@@ -5,7 +5,7 @@ import { compose } from 'redux'
 import MyFavorite from './MyFavorite'
 import { formatRecommendationDates } from '../../../../utils/date/date'
 import { getHumanizeRelativeDistance } from '../../../../utils/geolocation'
-import selectFirstMatchingBookingByStocks from '../../../../selectors/selectFirstMatchingBookingByStocks'
+import selectFirstMatchingBookingByOfferId from '../../../../selectors/selectFirstMatchingBookingByOfferId'
 import selectOfferById from '../../../../selectors/selectOfferById'
 import getHumanizeRelativeDate from '../../../../utils/date/getHumanizeRelativeDate'
 
@@ -78,9 +78,9 @@ export const mapStateToProps = (state, ownProps) => {
   const { offerId } = favorite
   const offer = selectOfferById(state, offerId)
   const { dateRange = [], isActive, isFinished, isFullyBooked, venue } = offer || {}
-  const firstMatchingBooking = selectFirstMatchingBookingByStocks(state)
+  const firstMatchingBooking = selectFirstMatchingBookingByOfferId(state, offerId)
   const isBooked = firstMatchingBooking ? !firstMatchingBooking.isCancelled : false
-  const hasBookings = typeof firstMatchingBooking !== 'undefined'
+  const hasBookings = firstMatchingBooking !== null
   const offerBeginningDate = dateRange[0] || null
   const humanizeRelativeDate = offerBeginningDate
     ? getHumanizeRelativeDate(offerBeginningDate)

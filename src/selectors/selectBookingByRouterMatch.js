@@ -1,7 +1,7 @@
 import createCachedSelector from 're-reselect'
 
 import selectBookingById from './selectBookingById'
-import selectFirstMatchingBookingByStocks from './selectFirstMatchingBookingByStocks'
+import selectFirstMatchingBookingByOfferId from './selectFirstMatchingBookingByOfferId'
 import selectOfferById from './selectOfferById'
 import selectStocksByOfferId from './selectStocksByOfferId'
 
@@ -21,9 +21,12 @@ const selectBookingByRouterMatch = createCachedSelector(
 
     if (offer) {
       const stocks = selectStocksByOfferId({ data: { stocks: allStocks } }, offer.id)
-      const firstMatchingBooking = selectFirstMatchingBookingByStocks({
-        data: { bookings, stocks },
-      })
+      const firstMatchingBooking = selectFirstMatchingBookingByOfferId(
+        {
+          data: { bookings, stocks },
+        },
+        offer.id
+      )
 
       return firstMatchingBooking
     }

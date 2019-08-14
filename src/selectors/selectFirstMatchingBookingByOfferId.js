@@ -1,12 +1,13 @@
 import createCachedSelector from 're-reselect'
 import moment from 'moment'
 
-const mapArgsToCacheKey = (state, stocks) => (stocks || []).map(stock => stock.id).join(' ')
+const mapArgsToCacheKey = (state, offerId) => offerId || ''
 
-export const selectFirstMatchingBookingByStocks = createCachedSelector(
+export const selectFirstMatchingBookingByOfferId = createCachedSelector(
   state => state.data.bookings,
   state => state.data.stocks,
-  (bookings, stocks) => {
+  (state, offerId) => offerId,
+  (bookings, stocks, offerId) => {
     if (stocks.length === 0) {
       return null
     }
@@ -18,7 +19,7 @@ export const selectFirstMatchingBookingByStocks = createCachedSelector(
     for (let i in stocks) {
       let stock = stocks[i]
 
-      if (moment(stock.beginningDatetime).isBefore(moment())) {
+      if (stock.offerId !== offerId || moment(stock.beginningDatetime).isBefore(moment())) {
         continue
       }
 
@@ -35,4 +36,4 @@ export const selectFirstMatchingBookingByStocks = createCachedSelector(
   }
 )(mapArgsToCacheKey)
 
-export default selectFirstMatchingBookingByStocks
+export default selectFirstMatchingBookingByOfferId
