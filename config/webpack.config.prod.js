@@ -8,7 +8,6 @@ const postCssFlexbugsFixes = require('postcss-flexbugs-fixes')
 const ManifestPlugin = require('webpack-manifest-plugin')
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin')
 const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin')
-const eslintFormatter = require('react-dev-utils/eslintFormatter')
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin')
 const paths = require('./paths')
 const getClientEnvironment = require('./env')
@@ -67,9 +66,7 @@ module.exports = {
     chunkFilename: 'static/js/[name].[chunkhash:8].chunk.js',
     // Point sourcemap entries to original disk location (format as URL on Windows)
     devtoolModuleFilenameTemplate: info =>
-      path
-        .relative(paths.appSrc, info.absoluteResourcePath)
-        .replace(/\\/g, '/'),
+      path.relative(paths.appSrc, info.absoluteResourcePath).replace(/\\/g, '/'),
     // We inferred the "public path" (such as / or /my-project) from homepage.
     publicPath,
   },
@@ -173,16 +170,12 @@ module.exports = {
                 {
                   fallback: {
                     loader: require.resolve('style-loader'),
-                    options: {
-                      hmr: false,
-                    },
                   },
                   use: [
                     {
                       loader: require.resolve('css-loader'),
                       options: {
                         importLoaders: 1,
-                        minimize: true,
                         sourceMap: shouldUseSourceMap,
                       },
                     },
@@ -195,7 +188,7 @@ module.exports = {
                         plugins: () => [
                           postCssFlexbugsFixes,
                           autoprefixer({
-                            browsers: [
+                            overrideBrowserslist: [
                               '>1%',
                               'last 4 versions',
                               'Firefox ESR',
@@ -339,7 +332,6 @@ module.exports = {
           // https://github.com/facebookincubator/create-react-app/issues/2612
           return
         }
-        console.log(message)
       },
       minify: true,
       // For unknown URLs, fallback to the index page
