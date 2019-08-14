@@ -346,6 +346,31 @@ class GetOfferersWithNonCancelledBookingsCountTest:
         assert number_of_offerers == 1
 
     @clean_database
+    def test_returns_0_when_venue_is_in_the_wrong_departement(self, app):
+        # Given
+        user = create_user()
+
+        first_offerer = create_offerer(siren='111111111')
+        first_venue = create_venue(first_offerer, postal_code='76130', siret='11111111100001')
+        first_offer = create_offer_with_thing_product(first_venue)
+        first_stock = create_stock(offer=first_offer, price=0)
+        first_booking = create_booking(user, first_stock)
+
+        second_offerer = create_offerer(siren='222222222')
+        second_venue = create_venue(second_offerer, postal_code='41571', siret='22222222200001')
+        second_offer = create_offer_with_thing_product(second_venue)
+        second_stock = create_stock(offer=second_offer, price=0)
+        second_booking = create_booking(user, second_stock)
+
+        PcObject.save(first_booking, second_booking)
+
+        # When
+        number_of_offerers = get_offerers_with_non_cancelled_bookings_count('41')
+
+        # Then
+        assert number_of_offerers == 1
+
+    @clean_database
     def test_returns_0_if_offerer_with_cancelled_bookings(self, app):
         # Given
         offerer = create_offerer()
