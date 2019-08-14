@@ -1,6 +1,6 @@
 {
   "name": "pass-culture-pro",
-  "version": "43.0.3",
+  "version": "44.0.0",
   "private": true,
   "homepage": ".",
   "engines": {
@@ -132,6 +132,3 @@
     }
   }
 }
-
-
-
