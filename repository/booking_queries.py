@@ -218,8 +218,13 @@ def _query_get_used_or_non_cancelled_bookings():
         .filter((Booking.isUsed == True) | booking_on_event_finished_more_than_two_days_ago)
 
 
-def count_all_used_or_non_cancelled_bookings() -> int:
-    return _query_get_used_or_non_cancelled_bookings() \
+def count_all_used_or_non_canceled_bookings(departement_code=None) -> int:
+    query = _query_get_used_or_non_cancelled_bookings()
+
+    if departement_code:
+        query = query.join(User).filter(User.departementCode == departement_code)
+
+    return query \
         .count()
 
 

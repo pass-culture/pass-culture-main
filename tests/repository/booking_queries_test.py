@@ -1287,3 +1287,29 @@ class CountAllUsedOrNonCancelledBookingsTest:
 
         # Then
         assert number_of_bookings == 0
+
+
+    @clean_database
+    def test_counts_2_out_of_3_when_filtered_by_user_departement(self, app):
+        # Given
+        more_than_48_hours_ago = datetime.utcnow() - timedelta(hours=49)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        event_offer = create_offer_with_event_product(venue)
+        event_stock = create_stock(offer=event_offer, price=0, beginning_datetime=more_than_48_hours_ago,
+                                   end_datetime=two_days_ago,
+                                   booking_limit_datetime=more_than_48_hours_ago - timedelta(hours=1))
+
+        user_in_76 = create_user(departement_code='76', email='user-76@example.net')
+        user_in_41 = create_user(departement_code='41', email='user-41@example.net')
+
+        booking1 = create_booking(user_in_76, event_stock)
+        booking2 = create_booking(user_in_41, event_stock)
+        booking3 = create_booking(user_in_41, event_stock)
+        PcObject.save(booking1, booking2, booking3)
+
+        # When
+        number_of_bookings = count_all_used_or_non_canceled_bookings('41')
+
+        # Then
+        assert number_of_bookings == 2

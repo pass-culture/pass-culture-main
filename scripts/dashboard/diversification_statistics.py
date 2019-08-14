@@ -5,7 +5,8 @@ from models.db import db
 from repository.booking_queries import count_all_bookings, \
     count_all_cancelled_bookings as query_count_all_cancelled_bookings, \
     count_bookings_by_departement, \
-    count_all_cancelled_bookings_by_departement, count_all_used_or_non_cancelled_bookings
+    count_all_cancelled_bookings_by_departement, \
+    count_all_used_or_non_canceled_bookings
 from repository.offer_queries import get_active_offers_ids_query
 from repository.offerer_queries import count_offerer, count_offerer_with_stock, count_offerer_by_departement, \
     count_offerer_with_stock_by_departement
@@ -87,8 +88,8 @@ def get_all_bookings_count(departement_code=None) -> int:
     return count_bookings_by_departement(departement_code) if departement_code else count_all_bookings()
 
 
-def get_all_used_or_non_canceled_bookings() -> int:
-    return count_all_used_or_non_cancelled_bookings()
+def get_all_used_or_non_canceled_bookings(departement_code=None) -> int:
+    return count_all_used_or_non_canceled_bookings(departement_code)
 
 
 def count_all_cancelled_bookings(departement_code=None):
