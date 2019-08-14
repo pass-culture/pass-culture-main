@@ -10,7 +10,7 @@ from scripts.dashboard.diversification_statistics import get_offerers_with_offer
     get_all_used_or_non_canceled_bookings, \
     _query_get_offer_counts_grouped_by_type_and_medium, _get_offers_grouped_by_type_and_medium, \
     _get_offer_counts_grouped_by_type_and_medium, _query_get_booking_counts_grouped_by_type_and_medium, \
-    get_offerer_count
+    get_offerer_count, get_offerer_with_stock_count
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_stock, \
     create_offer_with_thing_product, create_venue, create_mediation, create_offer_with_event_product, create_booking
@@ -52,6 +52,58 @@ class GetOffererCountTest:
 
         # When
         number_of_offerers = get_offerer_count('37')
+
+        # Then
+        assert number_of_offerers == 1
+
+
+class GetOffererCountWithStockTest:
+    @clean_database
+    def test_counts_every_offerer_when_not_filtered(self, app):
+        # Given
+        first_user = create_user(email='first@example.net')
+        first_offerer = create_offerer(siren='111111111')
+        first_venue = create_venue(first_offerer, postal_code='76130', siret='11111111100001')
+        first_offer = create_offer_with_thing_product(first_venue)
+        first_stock = create_stock(offer=first_offer)
+        first_user_offerer = create_user_offerer(first_user, first_offerer)
+
+        second_user = create_user(email='second@example.net')
+        second_offerer = create_offerer(siren='222222222')
+        second_venue = create_venue(second_offerer, postal_code='37150', siret='22222222200002')
+        second_offer = create_offer_with_thing_product(second_venue)
+        second_stock = create_stock(offer=second_offer)
+        create_user_offerer(second_user, second_offerer)
+
+        PcObject.save(first_offerer, first_venue, second_offerer, second_venue)
+
+        # When
+        number_of_offerers = get_offerer_with_stock_count()
+
+        # Then
+        assert number_of_offerers == 2
+
+    @clean_database
+    def test_counts_offerer_in_departement_when_filtered(self, app):
+        # Given
+        first_user = create_user(email='first@example.net')
+        first_offerer = create_offerer(siren='111111111')
+        first_venue = create_venue(first_offerer, postal_code='76130', siret='11111111100001')
+        first_offer = create_offer_with_thing_product(first_venue)
+        first_stock = create_stock(offer=first_offer)
+        first_user_offerer = create_user_offerer(first_user, first_offerer)
+
+        second_user = create_user(email='second@example.net')
+        second_offerer = create_offerer(siren='222222222')
+        second_venue = create_venue(second_offerer, postal_code='37150', siret='22222222200002')
+        second_offer = create_offer_with_thing_product(second_venue)
+        second_stock = create_stock(offer=second_offer)
+        create_user_offerer(second_user, second_offerer)
+
+        PcObject.save(first_offerer, first_venue, second_offerer, second_venue)
+
+        # When
+        number_of_offerers = get_offerer_with_stock_count('37')
 
         # Then
         assert number_of_offerers == 1

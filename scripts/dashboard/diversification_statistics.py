@@ -4,16 +4,16 @@ from models import Offerer, UserOfferer, Venue, Offer, Stock, Booking, EventType
 from models.db import db
 from repository.booking_queries import count_all_used_or_non_cancelled_bookings, count_all_bookings, count_all_cancelled_bookings
 from repository.offer_queries import get_active_offers_ids_query
-from repository.offerer_queries import count_offerer, count_offerer_with_stock, count_offerer_by_departement
+from repository.offerer_queries import count_offerer, count_offerer_with_stock, count_offerer_by_departement, \
+    count_offerer_with_stock_by_departement
 
 
 def get_offerer_count(departement_code=None) -> int:
     return count_offerer_by_departement(departement_code) if departement_code else count_offerer()
 
 
-# TODO
-def get_offerer_with_stock_count() -> int:
-    return count_offerer_with_stock()
+def get_offerer_with_stock_count(departement_code=None) -> int:
+    return count_offerer_with_stock_by_departement(departement_code) if departement_code else count_offerer_with_stock()
 
 
 # TODO

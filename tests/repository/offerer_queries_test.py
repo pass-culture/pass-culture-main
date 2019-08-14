@@ -7,7 +7,7 @@ from repository.offerer_queries import find_all_offerers_with_managing_user_info
     find_all_offerers_with_managing_user_information_and_not_virtual_venue, \
     find_all_offerers_with_venue, find_first_by_user_offerer_id, find_all_pending_validation, \
     find_filtered_offerers, filter_offerers_with_keywords_string, find_by_id, count_offerer, count_offerer_with_stock, \
-    count_offerer_by_departement
+    count_offerer_by_departement, count_offerer_with_stock_by_departement
 from repository.user_queries import find_all_emails_of_user_offerers_admins
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_venue, \
@@ -65,6 +65,7 @@ class CountOffererTest:
 
         # Then
         assert number_of_offerers == 0
+
 
 class CountOffererByDepartementTest:
     @clean_database
@@ -212,6 +213,108 @@ class CountOffererWithStockTest:
 
         # When
         number_of_offerers = count_offerer_with_stock()
+
+        # Then
+        assert number_of_offerers == 1
+
+
+class CountOffererWithStockByDepartementTest:
+    def test_return_zero_if_no_offerer(self, app):
+        # When
+        number_of_offerers = count_offerer_with_stock_by_departement('76')
+
+        # Then
+        assert number_of_offerers == 0
+
+    @clean_database
+    def test_return_0_if_offerer_without_user_offerer(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer)
+        PcObject.save(offerer, stock)
+
+        # When
+        number_of_offerers = count_offerer_with_stock_by_departement('76')
+
+        # Then
+        assert number_of_offerers == 0
+
+    @clean_database
+    def test_return_0_if_offerer_without_stock(self, app):
+        # Given
+        offerer = create_offerer()
+        user = create_user()
+        user_offerer = create_user_offerer(user, offerer)
+
+        PcObject.save(user_offerer)
+
+        # When
+        number_of_offerers = count_offerer_with_stock_by_departement('76')
+
+        # Then
+        assert number_of_offerers == 0
+
+    @clean_database
+    def test_return_1_if_offerer_with_user_offerer_and_two_stock(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer)
+        venue = create_venue(offerer, postal_code='76130')
+        offer = create_offer_with_thing_product(venue)
+        stock1 = create_stock(offer=offer)
+        stock2 = create_stock(offer=offer)
+        PcObject.save(user_offerer, stock1, stock2)
+
+        # When
+        number_of_offerers = count_offerer_with_stock_by_departement('76')
+
+        # Then
+        assert number_of_offerers == 1
+
+    @clean_database
+    def test_return_1_if_offerer_with_2_user_offerers_and_stock(self, app):
+        # Given
+        user1 = create_user()
+        user2 = create_user(email='other@email.com')
+        offerer = create_offerer()
+        user_offerer1 = create_user_offerer(user1, offerer)
+        user_offerer2 = create_user_offerer(user2, offerer)
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock1 = create_stock(offer=offer)
+        stock2 = create_stock(offer=offer)
+        PcObject.save(user_offerer1, user_offerer2, stock1, stock2)
+
+        # When
+        number_of_offerers = count_offerer_with_stock_by_departement('76')
+
+        # Then
+        assert number_of_offerers == 1
+
+    @clean_database
+    def test_return_1_if_offerer_with_2_user_offerers_and_stock(self, app):
+        # Given
+        first_user = create_user(email='first@example.net')
+        first_offerer = create_offerer(siren='111111111')
+        first_user_offerer = create_user_offerer(first_user, first_offerer)
+        first_venue = create_venue(first_offerer, siret='1111111110001', postal_code='75018')
+        first_offer = create_offer_with_thing_product(first_venue)
+        first_stock = create_stock(offer=first_offer)
+
+        second_user = create_user(email='second@example.net')
+        second_offerer = create_offerer(siren='222222222')
+        second_user_offerer = create_user_offerer(second_user, second_offerer)
+        second_venue = create_venue(second_offerer, siret='2222222220001', postal_code='76230')
+        second_offer = create_offer_with_thing_product(second_venue)
+        second_stock = create_stock(offer=second_offer)
+
+        PcObject.save(first_stock, first_user_offerer, second_stock, second_user_offerer)
+
+        # When
+        number_of_offerers = count_offerer_with_stock_by_departement('76')
 
         # Then
         assert number_of_offerers == 1
