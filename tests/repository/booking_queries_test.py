@@ -18,7 +18,8 @@ from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     count_all_cancelled_bookings, \
     find_all_offerer_bookings, \
     find_eligible_bookings_for_venue, \
-    count_non_cancelled_bookings_by_departement, count_non_cancelled_bookings
+    count_non_cancelled_bookings_by_departement, \
+    count_non_cancelled_bookings
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, \
     create_deposit, \
