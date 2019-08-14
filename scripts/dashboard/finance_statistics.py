@@ -1,5 +1,3 @@
-from pprint import pprint
-
 import pandas
 from sqlalchemy import func, text
 

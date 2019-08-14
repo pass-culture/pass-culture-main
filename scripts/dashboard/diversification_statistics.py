@@ -4,17 +4,19 @@ from models import Offerer, UserOfferer, Venue, Offer, Stock, Booking, EventType
 from models.db import db
 from repository.booking_queries import count_all_used_or_non_cancelled_bookings, count_all_bookings, count_all_cancelled_bookings
 from repository.offer_queries import get_active_offers_ids_query
-from repository.offerer_queries import count_offerer, count_offerer_with_stock
+from repository.offerer_queries import count_offerer, count_offerer_with_stock, count_offerer_by_departement
 
 
-def get_offerer_count() -> int:
-    return count_offerer()
+def get_offerer_count(departement_code=None) -> int:
+    return count_offerer_by_departement(departement_code) if departement_code else count_offerer()
 
 
+# TODO
 def get_offerer_with_stock_count() -> int:
     return count_offerer_with_stock()
 
 
+# TODO
 def get_offerers_with_offer_available_on_discovery_count() -> int:
     active_offers_ids = get_active_offers_ids_query()
     return Offerer.query \
@@ -25,6 +27,7 @@ def get_offerers_with_offer_available_on_discovery_count() -> int:
         .count()
 
 
+# TODO
 def get_offerers_with_non_cancelled_bookings_count() -> int:
     return Offerer.query \
         .join(Venue) \
@@ -36,6 +39,7 @@ def get_offerers_with_non_cancelled_bookings_count() -> int:
         .count()
 
 
+# TODO
 def get_offers_with_user_offerer_and_stock_count() -> int:
     return Offer.query \
         .join(Venue) \
@@ -46,11 +50,13 @@ def get_offers_with_user_offerer_and_stock_count() -> int:
         .count()
 
 
+# TODO
 def get_offers_available_on_discovery_count() -> int:
     offer_ids_subquery = get_active_offers_ids_query()
     return Offer.query.filter(Offer.id.in_(offer_ids_subquery)).count()
 
 
+# TODO
 def get_offers_with_non_cancelled_bookings_count() -> int:
     return Offer.query \
         .join(Stock) \
@@ -60,14 +66,17 @@ def get_offers_with_non_cancelled_bookings_count() -> int:
         .count()
 
 
+# TODO
 def get_all_bookings_count() -> int:
     return count_all_bookings()
 
 
+# TODO
 def get_all_used_or_non_canceled_bookings() -> int:
     return count_all_used_or_non_cancelled_bookings()
 
 
+# TODO
 def get_all_cancelled_bookings_count():
     return count_all_cancelled_bookings()
 

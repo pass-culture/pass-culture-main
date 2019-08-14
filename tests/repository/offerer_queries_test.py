@@ -6,7 +6,8 @@ from repository.offerer_queries import find_all_offerers_with_managing_user_info
     find_all_offerers_with_managing_user_information_and_venue, \
     find_all_offerers_with_managing_user_information_and_not_virtual_venue, \
     find_all_offerers_with_venue, find_first_by_user_offerer_id, find_all_pending_validation, \
-    find_filtered_offerers, filter_offerers_with_keywords_string, find_by_id, count_offerer, count_offerer_with_stock
+    find_filtered_offerers, filter_offerers_with_keywords_string, find_by_id, count_offerer, count_offerer_with_stock, \
+    count_offerer_by_departement
 from repository.user_queries import find_all_emails_of_user_offerers_admins
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_venue, \
@@ -61,6 +62,62 @@ class CountOffererTest:
 
         # When
         number_of_offerers = count_offerer()
+
+        # Then
+        assert number_of_offerers == 0
+
+class CountOffererByDepartementTest:
+    @clean_database
+    def test_return_zero_if_no_offerer(self, app):
+        # When
+        number_of_offerers = count_offerer_by_departement('54')
+
+        # Then
+        assert number_of_offerers == 0
+
+    @clean_database
+    def test_return_1_if_offerer_with_user_offerer(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer, postal_code='37160')
+        user_offerer = create_user_offerer(user, offerer)
+        PcObject.save(user_offerer)
+
+        # When
+        number_of_offerers = count_offerer_by_departement('37')
+
+        # Then
+        assert number_of_offerers == 1
+
+    @clean_database
+    def test_return_1_with_two_venues_but_only_on_in_the_departement(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer(siren='111111111')
+        first_venue = create_venue(offerer, postal_code='37160', siret='11111111100001')
+        second_venue = create_venue(offerer, postal_code='76130', siret='11111111100002')
+        user_offerer = create_user_offerer(user, offerer)
+
+        PcObject.save(user_offerer, first_venue, second_venue)
+
+        # When
+        number_of_offerers = count_offerer_by_departement('37')
+
+        # Then
+        assert number_of_offerers == 1
+
+    @clean_database
+    def test_return_0_if_offerer_without_venue(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer, postal_code='37160')
+        user_offerer = create_user_offerer(user, offerer)
+        PcObject.save(user_offerer)
+
+        # When
+        number_of_offerers = count_offerer_by_departement('36')
 
         # Then
         assert number_of_offerers == 0
