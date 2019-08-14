@@ -268,6 +268,33 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         # Then
         assert number_of_offerers == 1
 
+    @clean_database
+    def test_counts_only_offeres_with_venues_in_the_departement_when_filtered_by_departement_code(self, app):
+        # Given
+        first_user = create_user(email='first@example.net')
+        first_offerer = create_offerer(siren='111111111')
+        first_venue = create_venue(first_offerer, postal_code='76130', siret='11111111100001')
+        first_offer = create_offer_with_thing_product(first_venue)
+        first_stock = create_stock(offer=first_offer)
+        first_user_offerer = create_user_offerer(first_user, first_offerer)
+        mediation1 = create_mediation(first_offer)
+
+        second_user = create_user(email='second@example.net')
+        second_offerer = create_offerer(siren='222222222')
+        second_venue = create_venue(second_offerer, postal_code='37150', siret='22222222200002')
+        second_offer = create_offer_with_thing_product(second_venue)
+        second_stock = create_stock(offer=second_offer)
+        create_user_offerer(second_user, second_offerer)
+        mediation2 = create_mediation(second_offer)
+
+        PcObject.save(first_offerer, first_venue, second_offerer, second_venue)
+
+        # When
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count('76')
+
+        # Then
+        assert number_of_offerers == 1
+
 
 class GetOfferersWithNonCancelledBookingsCountTest:
     @clean_database

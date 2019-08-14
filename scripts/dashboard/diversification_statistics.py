@@ -2,7 +2,9 @@ import pandas
 
 from models import Offerer, UserOfferer, Venue, Offer, Stock, Booking, EventType, ThingType
 from models.db import db
-from repository.booking_queries import count_all_used_or_non_cancelled_bookings, count_all_bookings, count_all_cancelled_bookings
+from repository.booking_queries import count_all_used_or_non_cancelled_bookings, \
+    count_all_bookings, \
+    count_all_cancelled_bookings
 from repository.offer_queries import get_active_offers_ids_query
 from repository.offerer_queries import count_offerer, count_offerer_with_stock, count_offerer_by_departement, \
     count_offerer_with_stock_by_departement
@@ -16,13 +18,15 @@ def get_offerer_with_stock_count(departement_code=None) -> int:
     return count_offerer_with_stock_by_departement(departement_code) if departement_code else count_offerer_with_stock()
 
 
-# TODO
-def get_offerers_with_offer_available_on_discovery_count() -> int:
+def get_offerers_with_offer_available_on_discovery_count(departement_code=None) -> int:
     active_offers_ids = get_active_offers_ids_query()
-    return Offerer.query \
-        .join(Venue) \
-        .join(Offer) \
-        .filter(Offer.id.in_(active_offers_ids)) \
+    query = Offerer.query.join(Venue).join(Offer).filter(Offer.id.in_(active_offers_ids))
+
+    if departement_code:
+        query = query \
+            .filter(Venue.departementCode == departement_code)
+
+    return query \
         .distinct(Offerer.id) \
         .count()
 
@@ -92,11 +96,13 @@ def _get_offer_counts_grouped_by_type_and_medium(query_get_counts_per_type_and_d
         counts = offer_counts[2]
         support = 'Numérique' if is_digital else 'Physique'
         offers_by_type_and_digital_table.loc[
-            (offers_by_type_and_digital_table['type'] == offer_type) & (offers_by_type_and_digital_table['Support'] == support),
+            (offers_by_type_and_digital_table['type'] == offer_type) & (
+                    offers_by_type_and_digital_table['Support'] == support),
             counts_column_name] = counts
 
     offers_by_type_and_digital_table.drop('type', axis=1, inplace=True)
-    offers_by_type_and_digital_table.sort_values(by=[counts_column_name, 'Catégorie', 'Support'], ascending=[False, True, True], inplace=True)
+    offers_by_type_and_digital_table.sort_values(by=[counts_column_name, 'Catégorie', 'Support'],
+                                                 ascending=[False, True, True], inplace=True)
 
     return offers_by_type_and_digital_table.reset_index(drop=True)
 
@@ -127,7 +133,8 @@ def _get_offers_grouped_by_type_and_medium():
             types.append(str(product_type))
             digital_or_physical.append('Physique')
 
-    type_and_digital_dataframe = pandas.DataFrame(data={'Catégorie': human_types, 'Support': digital_or_physical, 'type': types})
+    type_and_digital_dataframe = pandas.DataFrame(
+        data={'Catégorie': human_types, 'Support': digital_or_physical, 'type': types})
     type_and_digital_dataframe.sort_values(by=['Catégorie', 'Support'], inplace=True, ascending=True)
     type_and_digital_dataframe.reset_index(drop=True, inplace=True)
 
