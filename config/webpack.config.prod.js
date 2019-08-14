@@ -188,7 +188,7 @@ module.exports = {
                         plugins: () => [
                           postCssFlexbugsFixes,
                           autoprefixer({
-                            overrideBrowserslist: [
+                            browsers: [
                               '>1%',
                               'last 4 versions',
                               'Firefox ESR',
