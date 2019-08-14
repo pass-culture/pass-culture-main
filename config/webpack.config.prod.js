@@ -27,19 +27,21 @@ module.exports = {
   entry: [require.resolve('./polyfills'), Paths.appIndexJs],
   mode: 'production',
   optimization: {
-    minimizer: [new UglifyJsPlugin({
-      uglifyOptions: {
-        compress: {
-          comparisons: false,
+    minimizer: [
+      new UglifyJsPlugin({
+        uglifyOptions: {
+          compress: {
+            comparisons: false,
+          },
+          output: {
+            ascii_only: true,
+            comments: false,
+          },
+          sourceMap: shouldUseSourceMap,
+          warnings: false,
         },
-        output: {
-          ascii_only: true,
-          comments: false,
-        },
-        sourceMap: shouldUseSourceMap,
-        warnings: false,
-      }
-    })],
+      }),
+    ],
     splitChunks: {
       cacheGroups: {
         styles: {
@@ -59,6 +61,10 @@ module.exports = {
     devtoolModuleFilenameTemplate: info =>
       Path.relative(Paths.appSrc, info.absoluteResourcePath).replace(/\\/g, '/'),
   },
+  performance: {
+    maxAssetSize: 2000000,
+    maxEntrypointSize: 3000000,
+  },
   resolve: {
     modules: ['node_modules', Paths.appNodeModules].concat(
       process.env.NODE_PATH.split(Path.delimiter)
@@ -70,9 +76,7 @@ module.exports = {
     alias: {
       'react-native': 'react-native-web',
     },
-    plugins: [
-      new ModuleScopePlugin(Paths.appSrc, [Paths.appPackageJson]),
-    ],
+    plugins: [new ModuleScopePlugin(Paths.appSrc, [Paths.appPackageJson])],
   },
   module: {
     strictExportPresence: true,
@@ -115,20 +119,15 @@ module.exports = {
                   plugins: () => [
                     require('postcss-flexbugs-fixes'),
                     Autoprefixer({
-                      overrideBrowserslist: [
-                        '>1%',
-                        'last 4 versions',
-                        'Firefox ESR',
-                        'not ie < 9',
-                      ],
+                      overrideBrowserslist: ['>1%', 'last 4 versions', 'Firefox ESR', 'not ie < 9'],
                       flexbox: 'no-2009',
                     }),
                   ],
                 },
               },
               {
-                loader: 'sass-loader'
-              }
+                loader: 'sass-loader',
+              },
             ],
           },
         ].concat([
@@ -169,7 +168,7 @@ module.exports = {
     new InterpolateHtmlPlugin(HtmlWebpackPlugin, env.raw),
     new MiniCssExtractPlugin({
       filename: '[name].css',
-      chunkFileName: '[id].css'
+      chunkFileName: '[id].css',
     }),
     new Webpack.DefinePlugin(env.stringified),
     new ManifestPlugin({
