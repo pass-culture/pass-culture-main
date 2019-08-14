@@ -10,6 +10,7 @@ from models.pc_object import PcObject
 class FeatureToggle(enum.Enum):
     WEBAPP_SIGNUP = 'Permettre aux bénéficiaires de créer un compte'
     FAVORITE_OFFER = 'Permettre aux bénéficiaires d''ajouter des offres en favoris'
+    REIMBURSEMENT_BY_VENUE = 'Permettre le calcul des remboursements par lieux'
 
 
 class Feature(PcObject, Model, DeactivableMixin):

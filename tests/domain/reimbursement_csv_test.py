@@ -6,12 +6,13 @@ from freezegun import freeze_time
 from domain.reimbursement import ReimbursementDetails
 from domain.reimbursement import generate_reimbursement_details_csv
 from models import Payment, PcObject
+from models.feature import FeatureToggle
 from models.payment_status import TransactionStatus, PaymentStatus
 from repository.reimbursement_queries import find_all_offerer_reimbursement_details
 from scripts.payment.batch_steps import generate_new_payments
 from tests.conftest import clean_database
 from tests.test_utils import create_bank_information, create_stock_with_thing_offer, \
-    create_deposit, create_venue, create_offerer, create_user, create_booking, create_user_offerer
+    create_deposit, create_venue, create_offerer, create_user, create_booking, create_user_offerer, deactivate_feature
 
 
 @freeze_time('2019-07-10')
@@ -32,6 +33,7 @@ class ReimbursementDetailsCSVTest:
     @clean_database
     def test_generate_payment_details_csv_with_right_values(self, app):
         # given
+        deactivate_feature(FeatureToggle.REIMBURSEMENT_BY_VENUE)
         user = create_user(email='user+plus@email.fr')
         deposit = create_deposit(user, amount=500, source='public')
         offerer1 = create_offerer()

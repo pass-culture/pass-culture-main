@@ -104,6 +104,7 @@ def find_by_managing_user(user: User) -> List[Venue]:
         .join(User)\
         .filter(User.id == user.id).all()
 
+
 def _filter_by_is_virtual(query, is_virtual):
     if is_virtual:
         query = query.filter(Venue.isVirtual == True)

@@ -33,6 +33,7 @@ from models.beneficiary_import import BeneficiaryImport
 from models.beneficiary_import_status import ImportStatus, BeneficiaryImportStatus
 from models.db import db
 from models.email import Email, EmailStatus
+from models.feature import FeatureToggle, Feature
 from models.payment import PaymentDetails
 from models.payment_status import PaymentStatus, TransactionStatus
 from models.pc_object import PcObject
@@ -850,3 +851,9 @@ def activate_provider(provider_classname):
     provider.enabledForPro = True
     PcObject.save(provider)
     return provider
+
+
+def deactivate_feature(feature_toggle: FeatureToggle):
+    feature = Feature.query.filter_by(name=feature_toggle.name).one()
+    feature.isActive = False
+    PcObject.save(feature)

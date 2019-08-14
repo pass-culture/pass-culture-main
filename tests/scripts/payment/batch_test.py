@@ -1,10 +1,12 @@
 from unittest.mock import patch
 
+from models import Feature, PcObject
+from models.feature import FeatureToggle
 from scripts.payment.batch import generate_and_send_payments
 from tests.conftest import clean_database
 
 
-class GenerateNewPaymentsTest:
+class GenerateAndSendPaymentsTest:
     @patch('os.environ', return_value={
         'PASS_CULTURE_IBAN': '1234567',
         'PASS_CULTURE_BIC': '1234567',
@@ -18,14 +20,20 @@ class GenerateNewPaymentsTest:
     @patch('scripts.payment.batch.send_payments_details', return_value=[])
     @patch('scripts.payment.batch.send_wallet_balances', return_value=[])
     @clean_database
-    def test_should_retrieve_all_steps_except_1BIS_when_messageId_is_None(self, generate_new_payments, \
-                                                                          concatenate_payments_with_errors_and_retries, \
-                                                                          send_transactions, \
-                                                                          send_payments_report, \
-                                                                          send_payments_details, \
+    def test_should_retrieve_all_steps_except_1BIS_when_messageId_is_None(self, \
                                                                           send_wallet_balances, \
+                                                                          send_payments_details, \
+                                                                          send_payments_report, \
+                                                                          send_transactions, \
+                                                                          concatenate_payments_with_errors_and_retries, \
+                                                                          generate_new_payments, \
                                                                           get_payments_by_message_id, \
                                                                           environment, app):
+        # Given
+        feature = Feature.query.filter_by(name=FeatureToggle.REIMBURSEMENT_BY_VENUE).first()
+        feature.isActive = False
+        PcObject.save(feature)
+
         # When
         generate_and_send_payments(None)
 
@@ -39,27 +47,27 @@ class GenerateNewPaymentsTest:
 
         get_payments_by_message_id.assert_not_called()
 
-
     @patch('os.environ', return_value={
         'PASS_CULTURE_IBAN': '1234567',
         'PASS_CULTURE_BIC': '1234567',
         'PASS_CULTURE_REMITTANCE_CODE': '1234567',
     })
-    @patch('scripts.payment.batch_steps.concatenate_payments_with_errors_and_retries', return_value=[])
+    @patch('scripts.payment.batch.get_payments_by_message_id')
     @patch('scripts.payment.batch.generate_new_payments', return_value=([], []))
-    @patch('scripts.payment.batch.get_payments_by_message_id', return_value=[])
+    @patch('scripts.payment.batch.concatenate_payments_with_errors_and_retries', return_value=[])
     @patch('scripts.payment.batch.send_transactions', return_value=[])
     @patch('scripts.payment.batch.send_payments_report', return_value=[])
     @patch('scripts.payment.batch.send_payments_details', return_value=[])
     @patch('scripts.payment.batch.send_wallet_balances', return_value=[])
     @clean_database
-    def test_should_start_script_at_1BIS_step_when_messageId_is_Given(self, get_payments_by_message_id, \
-                                                                      send_transactions, \
-                                                                      send_payments_report, \
-                                                                      send_payments_details, \
+    def test_should_start_script_at_1BIS_step_when_messageId_is_Given(self, \
                                                                       send_wallet_balances, \
+                                                                      send_payments_details, \
+                                                                      send_payments_report, \
+                                                                      send_transactions, \
+                                                                      concatenate_payments_with_errors_and_retries, \
                                                                       generate_new_payments, \
-                                                                      concatenate_payments_with_errors_and_retries,
+                                                                      get_payments_by_message_id, \
                                                                       environment, app):
         # When
         generate_and_send_payments('ar5y65dtre45')

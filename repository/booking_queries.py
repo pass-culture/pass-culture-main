@@ -195,21 +195,38 @@ def count_all_used_or_non_canceled_bookings() -> int:
         .count()
 
 
-def find_final_offerer_bookings(offerer_id) -> List[Booking]:
-    booking_on_event_finished_more_than_two_days_ago = (datetime.utcnow() > Stock.endDatetime + STOCK_DELETION_DELAY)
+def find_final_offerer_bookings(offerer_id: id) -> List[Booking]:
+    query = _build_final_booking_query()
+    query = query\
+        .join(Offerer)\
+        .filter(Offerer.id == offerer_id)
+    query = _filter_non_eligible_bookings_and_order_by_oldest_booking(query)
+    return query.all()
 
+
+def find_final_venue_bookings(venue_id: int) -> List[Booking]:
+    query = _build_final_booking_query()
+    query = query.filter(Venue.id == venue_id)
+    query = _filter_non_eligible_bookings_and_order_by_oldest_booking(query)
+    return query.all()
+
+
+def _build_final_booking_query():
     return Booking.query \
         .join(Stock) \
         .join(Offer) \
-        .join(Venue) \
-        .join(Offerer) \
-        .filter(Offerer.id == offerer_id) \
+        .join(Venue)
+
+
+def _filter_non_eligible_bookings_and_order_by_oldest_booking(query):
+    booking_on_event_finished_more_than_two_days_ago = (datetime.utcnow() > Stock.endDatetime + STOCK_DELETION_DELAY)
+
+    return query\
         .filter(Booking.isCancelled == False) \
         .filter((Booking.isUsed == True) | booking_on_event_finished_more_than_two_days_ago) \
         .reset_joinpoint() \
         .outerjoin(Payment) \
-        .order_by(Payment.id, Booking.dateCreated.asc()) \
-        .all()
+        .order_by(Payment.id, Booking.dateCreated.asc())
 
 
 def find_date_used(booking: Booking) -> datetime:

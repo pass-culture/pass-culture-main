@@ -15,7 +15,7 @@ from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     find_by, \
     find_all_digital_bookings_for_offerer, count_non_cancelled_bookings, count_all_bookings, \
     count_all_cancelled_bookings, \
-    find_all_offerer_bookings
+    find_all_offerer_bookings, find_final_venue_bookings
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, \
     create_deposit, \
@@ -463,6 +463,38 @@ class FindFinalOffererBookingsTest:
         # Then
         assert len(bookings) == 1
         assert booking1 in bookings
+
+
+class FindFinalVenueBookingsTest:
+    @clean_database
+    def test_returns_bookings_for_given_venue(self, app):
+        # Given
+        user = create_user()
+        deposit = create_deposit(user, amount=500)
+
+        offerer1 = create_offerer(siren='123456789')
+        venue1 = create_venue(offerer1, siret=offerer1.siren + '12345')
+        offer = create_offer_with_thing_product(venue1)
+        stock = create_stock_with_thing_offer(offerer1, venue1, offer)
+        booking1 = create_booking(user, stock=stock, venue=venue1, is_used=True)
+        booking2 = create_booking(user, stock=stock, venue=venue1, is_used=True)
+
+        offerer2 = create_offerer(siren='987654321')
+        venue2 = create_venue(offerer2, siret=offerer2.siren + '12345')
+        offer = create_offer_with_thing_product(venue2)
+        stock = create_stock_with_thing_offer(offerer2, venue2, offer)
+        booking3 = create_booking(user, stock=stock, venue=venue2, is_used=True)
+
+        PcObject.save(deposit, booking1, booking2, booking3)
+
+        # When
+        bookings = find_final_venue_bookings(venue1.id)
+
+        # Then
+        assert len(bookings) == 2
+        assert booking1 in bookings
+        assert booking2 in bookings
+        assert booking3 not in bookings
 
 
 class FindDateUsedTest:

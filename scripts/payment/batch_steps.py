@@ -13,10 +13,12 @@ from domain.payments import filter_out_already_paid_for_bookings, create_payment
 from domain.reimbursement import find_all_booking_reimbursements
 from models import Offerer, PcObject
 from models.db import db
+from models.feature import FeatureToggle
 from models.payment import Payment
 from models.payment_status import TransactionStatus
 from repository import payment_queries
-from repository.booking_queries import find_final_offerer_bookings
+from repository.booking_queries import find_final_offerer_bookings, find_final_venue_bookings
+from repository.feature_queries import is_active
 from repository.user_queries import get_all_users_wallet_balances
 from utils.logger import logger
 from utils.mailing import MailServiceException, send_raw_email
@@ -39,8 +41,15 @@ def generate_new_payments() -> Tuple[List[Payment], List[Payment]]:
     all_payments = []
 
     for offerer in offerers:
-        final_offerer_bookings = find_final_offerer_bookings(offerer.id)
-        booking_reimbursements = find_all_booking_reimbursements(final_offerer_bookings)
+        if is_active(FeatureToggle.REIMBURSEMENT_BY_VENUE):
+            booking_reimbursements = []
+            for venue in offerer.managedVenues:
+                final_bookings = find_final_venue_bookings(venue.id)
+                booking_reimbursements += find_all_booking_reimbursements(final_bookings)
+        else:
+            final_bookings = find_final_offerer_bookings(offerer.id)
+            booking_reimbursements = find_all_booking_reimbursements(final_bookings)
+
         booking_reimbursements_to_pay = filter_out_already_paid_for_bookings(
             filter_out_bookings_without_cost(booking_reimbursements)
         )
