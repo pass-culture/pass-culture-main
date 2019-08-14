@@ -5,9 +5,9 @@ jobs:
     machine:
       image: circleci/classic:latest
     working_directory: ~/
-    steps: # a collection of executable commands
+    steps:
       - run:
-          name: Init env
+          name: Initialization environment
           command: |
             git clone https://github.com/betagouv/pass-culture-main.git
             cd pass-culture-main
@@ -52,7 +52,7 @@ jobs:
             ./pc start-backend
           background: true
       - run:
-          name: Run Frontend
+          name: Running Frontend
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
@@ -61,13 +61,13 @@ jobs:
             yarn start
           background: true
       - run:
-          name: Running Test Backend (Local Providers)
+          name: Running industrial sandbox
           command: |
             cd pass-culture-main
             dockerize -wait http://localhost/health -timeout 3m -wait-retry-interval 5s
             ./pc sandbox --name=industrial
       - run:
-          name: Running tests
+          name: Running end2end tests
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
