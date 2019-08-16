@@ -7,7 +7,7 @@ jobs:
     working_directory: ~/
     steps:
       - run:
-          name: Init env
+          name: Initialization environment
           command: |
             git clone https://github.com/betagouv/pass-culture-main.git
             cd pass-culture-main
@@ -43,7 +43,7 @@ jobs:
             docker-compose up
           background: true
       - run:
-          name: Run Frontend
+          name: Running Frontend
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
@@ -53,14 +53,13 @@ jobs:
             yarn start
           background: true
       - run:
-          name: Running sandbox data import
+          name: Running industrial sandbox
           command: |
             cd pass-culture-main
             dockerize -wait http://localhost/health -timeout 5m -wait-retry-interval 5s
             ./pc sandbox --name=industrial
-
       - run:
-          name: Run End To End Tests
+          name: Running end2end tests
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
