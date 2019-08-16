@@ -9,12 +9,11 @@ import InvalidLink from '../InvalidLink'
 import Activation from '../Activation'
 
 describe('src | components | pages | activation | Activation', () => {
-  it('should match snapshot', () => {
+  it('should match the snapshot', () => {
     // when
     const wrapper = shallow(<Activation />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

@@ -9,7 +9,7 @@ const history = createBrowserHistory()
 history.push('/typeform')
 
 describe('src | components | pages | typeform | TypeForm', () => {
-  it('should match snapshots with required props', () => {
+  it('should match the snapshots with required props', () => {
     // given
     const props = {
       flagUserHasFilledTypeform: jest.fn(),
@@ -27,7 +27,6 @@ describe('src | components | pages | typeform | TypeForm', () => {
     )
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 })

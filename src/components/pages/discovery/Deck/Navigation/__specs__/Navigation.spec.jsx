@@ -5,7 +5,7 @@ import Navigation from '../Navigation'
 
 describe('src | components | pages | discovery | Deck | Navigation', () => {
   describe('snapshot', () => {
-    it('should match snapshot', () => {
+    it('should match the snapshot', () => {
       // given
       const props = {
         backgroundGradient: 'black',
@@ -20,11 +20,10 @@ describe('src | components | pages | discovery | Deck | Navigation', () => {
       const wrapper = shallow(<Navigation {...props} />)
 
       // then
-      expect(wrapper).toBeDefined()
       expect(wrapper).toMatchSnapshot()
     })
 
-    it('should match snapshot with flipHandler', () => {
+    it('should match the snapshot with flipHandler', () => {
       // given
       const props = {
         backgroundGradient: 'black',
@@ -39,7 +38,6 @@ describe('src | components | pages | discovery | Deck | Navigation', () => {
       const wrapper = shallow(<Navigation {...props} />)
 
       // then
-      expect(wrapper).toBeDefined()
       expect(wrapper).toMatchSnapshot()
     })
   })

@@ -9,24 +9,22 @@ const middlewares = []
 const mockStore = configureStore(middlewares)
 
 describe('src | components | App', () => {
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // given
-      const initialState = {}
-      const store = mockStore(initialState)
-      const props = {
-        location: {},
-      }
-      // when
-      const wrapper = shallow(
-        <Provider store={store}>
-          <App {...props} />
-        </Provider>
-      )
+  it('should match the snapshot', () => {
+    // given
+    const initialState = {}
+    const store = mockStore(initialState)
+    const props = {
+      location: {},
+    }
 
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+    // when
+    const wrapper = shallow(
+      <Provider store={store}>
+        <App {...props} />
+      </Provider>
+    )
+
+    // then
+    expect(wrapper).toMatchSnapshot()
   })
 })

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | RawBetaPage should match snapshot 1`] = `
+exports[`src | components | pages | RawBetaPage should match the snapshot 1`] = `
 initialize {
   "0": Object {
     "attribs": Object {

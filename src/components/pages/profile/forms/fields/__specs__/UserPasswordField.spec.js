@@ -17,12 +17,11 @@ describe('src | components | pages | profile | forms | fields | UserPasswordFiel
     }
   })
 
-  it('should match snapshot', () => {
+  it('should match the snapshot', () => {
     // when
     const wrapper = shallow(<UserPasswordField {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

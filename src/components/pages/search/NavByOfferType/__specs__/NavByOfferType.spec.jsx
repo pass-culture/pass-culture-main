@@ -22,7 +22,6 @@ describe('src | components | search | searchByType | NavByOfferType', () => {
     const wrapper = shallow(<NavByOfferType {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

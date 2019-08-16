@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | forms | FormFooter match snapshots hidden separator, cancel and submit buttons 1`] = `
+exports[`src | components | forms | FormFooter match the snapshots hidden separator, cancel and submit buttons 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <FormFooter
@@ -93,7 +93,7 @@ ShallowWrapper {
 }
 `;
 
-exports[`src | components | forms | FormFooter match snapshots hide cancel button 1`] = `
+exports[`src | components | forms | FormFooter match the snapshots hide cancel button 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <FormFooter
@@ -278,7 +278,7 @@ ShallowWrapper {
 }
 `;
 
-exports[`src | components | forms | FormFooter match snapshots show submit as a text link 1`] = `
+exports[`src | components | forms | FormFooter match the snapshots show submit as a text link 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <FormFooter
@@ -579,7 +579,7 @@ ShallowWrapper {
 }
 `;
 
-exports[`src | components | forms | FormFooter match snapshots show submit as submit button 1`] = `
+exports[`src | components | forms | FormFooter match the snapshots show submit as submit button 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <FormFooter

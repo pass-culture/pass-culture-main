@@ -20,7 +20,6 @@ describe('src | components | layout | Finishable', () => {
     const wrapper = shallow(<Finishable {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

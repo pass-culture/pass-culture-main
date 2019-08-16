@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | typeform | TypeForm should match snapshots with required props 1`] = `
+exports[`src | components | pages | typeform | TypeForm should match the snapshots with required props 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <MemoryRouter

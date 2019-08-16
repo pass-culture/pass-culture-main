@@ -38,7 +38,6 @@ describe('src | components | pages | profile | forms | ProfileForm', () => {
     const wrapper = shallow(<ProfileForm {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

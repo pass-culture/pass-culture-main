@@ -4,19 +4,16 @@ import { shallow } from 'enzyme'
 import RelativeFooter from '../RelativeFooter'
 
 describe('src | components | pages | RelativeFooter', () => {
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // given
-      const props = {
-        theme: 'fakeTheme',
-      }
+  it('should match the snapshot', () => {
+    // given
+    const props = {
+      theme: 'fakeTheme',
+    }
 
-      // when
-      const wrapper = shallow(<RelativeFooter {...props} />)
+    // when
+    const wrapper = shallow(<RelativeFooter {...props} />)
 
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+    // then
+    expect(wrapper).toMatchSnapshot()
   })
 })

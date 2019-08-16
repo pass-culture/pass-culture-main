@@ -4,20 +4,22 @@ import { shallow } from 'enzyme'
 import BookingHeader from '../BookingHeader'
 
 describe('src | components | booking | BookingHeader', () => {
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      const props = {
-        recommendation: {
-          offer: {
-            name: 'Titre de la recommendation',
-            product: { name: 'Titre de la recommendation' },
-            venue: { name: 'Titre de la venue ' },
-          },
+  it('should match the snapshot', () => {
+    // given
+    const props = {
+      recommendation: {
+        offer: {
+          name: 'Titre de la recommendation',
+          product: { name: 'Titre de la recommendation' },
+          venue: { name: 'Titre de la venue ' },
         },
-      }
-      const wrapper = shallow(<BookingHeader {...props} />)
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+      },
+    }
+
+    // when
+    const wrapper = shallow(<BookingHeader {...props} />)
+
+    // then
+    expect(wrapper).toMatchSnapshot()
   })
 })

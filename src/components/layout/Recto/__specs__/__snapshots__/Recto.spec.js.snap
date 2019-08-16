@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | recto | Recto snapshot should match snapshot with required props only 1`] = `
+exports[`src | components | recto | Recto should match the snapshot with required props only 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Recto

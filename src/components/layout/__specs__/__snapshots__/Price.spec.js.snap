@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | Price snapshots should match snapshot free prop defined and a zero price 1`] = `
+exports[`src | components | pages | Price should match the snapshot free prop defined and a zero price 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price
@@ -73,7 +73,7 @@ ShallowWrapper {
 }
 `;
 
-exports[`src | components | pages | Price snapshots should match snapshot with a price number 1`] = `
+exports[`src | components | pages | Price should match the snapshot with a price number 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price
@@ -146,7 +146,7 @@ ShallowWrapper {
 }
 `;
 
-exports[`src | components | pages | Price snapshots should match snapshot with an array of prices number 1`] = `
+exports[`src | components | pages | Price should match the snapshot with an array of prices number 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price
@@ -224,7 +224,7 @@ ShallowWrapper {
 }
 `;
 
-exports[`src | components | pages | Price snapshots should match snapshot with decimal prices 1`] = `
+exports[`src | components | pages | Price should match the snapshot with decimal prices 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price
@@ -302,7 +302,7 @@ ShallowWrapper {
 }
 `;
 
-exports[`src | components | pages | Price snapshots should match snapshot without props 1`] = `
+exports[`src | components | pages | Price should match the snapshot without props 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price

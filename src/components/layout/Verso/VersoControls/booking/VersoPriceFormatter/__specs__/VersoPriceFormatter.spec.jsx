@@ -3,7 +3,7 @@ import { shallow } from 'enzyme'
 import VersoPriceFormatter from '../VersoPriceFormatter'
 
 describe('src | components | VersoPriceFormatter', () => {
-  it('should match snapshot with required price', () => {
+  it('should match the snapshot with required price', () => {
     // given
     const props = {
       devise: 'poires',
@@ -15,7 +15,6 @@ describe('src | components | VersoPriceFormatter', () => {
     const wrapper = shallow(<VersoPriceFormatter {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

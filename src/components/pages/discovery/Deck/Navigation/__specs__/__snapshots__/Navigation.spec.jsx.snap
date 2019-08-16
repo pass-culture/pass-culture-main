@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | discovery | Deck | Navigation snapshot should match snapshot 1`] = `
+exports[`src | components | pages | discovery | Deck | Navigation snapshot should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Navigation
@@ -1254,7 +1254,7 @@ ShallowWrapper {
 }
 `;
 
-exports[`src | components | pages | discovery | Deck | Navigation snapshot should match snapshot with flipHandler 1`] = `
+exports[`src | components | pages | discovery | Deck | Navigation snapshot should match the snapshot with flipHandler 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Navigation

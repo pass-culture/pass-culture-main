@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | forgot-password | SuccessView should match snapshot with token 1`] = `
+exports[`src | components | pages | forgot-password | SuccessView should match the snapshot with token 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <SuccessView
@@ -299,7 +299,7 @@ ShallowWrapper {
 }
 `;
 
-exports[`src | components | pages | forgot-password | SuccessView should match snapshot without token 1`] = `
+exports[`src | components | pages | forgot-password | SuccessView should match the snapshot without token 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <SuccessView

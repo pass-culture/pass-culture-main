@@ -4,7 +4,7 @@ import { shallow } from 'enzyme'
 import HiddenField from '../HiddenField'
 
 describe('src | components | forms | inputs | HiddenField', () => {
-  it('should match snapshot', () => {
+  it('should match the snapshot', () => {
     // given
     const props = {
       name: 'the-input-name',
@@ -14,7 +14,6 @@ describe('src | components | forms | inputs | HiddenField', () => {
     const wrapper = shallow(<HiddenField {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

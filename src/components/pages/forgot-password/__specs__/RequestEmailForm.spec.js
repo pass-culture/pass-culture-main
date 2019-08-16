@@ -11,7 +11,6 @@ describe('src | components | pages | forgot-password | RawRequestEmailForm', () 
     const wrapper = shallow(<RawRequestEmailForm {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 })

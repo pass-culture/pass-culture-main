@@ -1,11 +1,6 @@
-import { mount, shallow } from 'enzyme'
-import { createBrowserHistory } from 'history'
+import { shallow } from 'enzyme'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { Route, Router, Switch } from 'react-router-dom'
 
-import { configureTestStore } from './configure'
-import { OnMountCaller } from './OnMountCaller'
 import withRequiredLogin, {
   handleFail,
   handleSuccess,
@@ -25,15 +20,12 @@ describe('src | components | pages | hocs | with-login | withRequiredLogin - uni
     fetch.resetMocks()
   })
 
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // when
-      const wrapper = shallow(<RequiredLoginTest />)
+  it('should match the snapshot', () => {
+    // when
+    const wrapper = shallow(<RequiredLoginTest />)
 
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+    // then
+    expect(wrapper).toMatchSnapshot()
   })
 
   describe('handleFail()', () => {

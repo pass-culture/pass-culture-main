@@ -4,25 +4,23 @@ import { shallow } from 'enzyme'
 import Card from '../Card'
 
 describe('src | components | pages | discovery | Deck | Card', () => {
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // given
-      const props = {
-        handleClickRecommendation: jest.fn(),
-        handleReadRecommendation: jest.fn(),
-        match: { params: {} },
-        position: 'position',
-        width: 500,
-      }
+  it('should match the snapshot', () => {
+    // given
+    const props = {
+      handleClickRecommendation: jest.fn(),
+      handleReadRecommendation: jest.fn(),
+      match: { params: {} },
+      position: 'position',
+      width: 500,
+    }
 
-      // when
-      const wrapper = shallow(<Card {...props} />)
+    // when
+    const wrapper = shallow(<Card {...props} />)
 
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+    // then
+    expect(wrapper).toMatchSnapshot()
   })
+
   describe('render', () => {
     describe('background Color', () => {
       describe('when no color given in recommendation', () => {

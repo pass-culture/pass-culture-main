@@ -18,7 +18,6 @@ describe('src | components | menu | SignoutButton', () => {
     const wrapper = shallow(<SignoutButton {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

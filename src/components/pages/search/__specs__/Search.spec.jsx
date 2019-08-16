@@ -94,12 +94,11 @@ describe('src | components | pages | Search', () => {
       }
     })
 
-    it('should match snapshot', () => {
+    it('should match the snapshot', () => {
       // when
       const wrapper = shallow(<Search {...props} />)
 
       // then
-      expect(wrapper).toBeDefined()
       expect(wrapper).toMatchSnapshot()
     })
   })

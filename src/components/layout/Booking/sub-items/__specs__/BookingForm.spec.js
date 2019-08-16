@@ -5,18 +5,24 @@ import BookingForm from '../BookingForm'
 
 describe('src | components | pages | search | BookingForm', () => {
   describe('snapshot', () => {
-    it('should match snapshot', () => {
+    it('should match the snapshot', () => {
+      // given
       const props = {
         disabled: false,
         formId: 'super-form-id',
         onMutation: () => {},
         onSubmit: () => {},
       }
+
+      // when
       const wrapper = shallow(<BookingForm {...props} />)
-      expect(wrapper).toBeDefined()
+
+      // then
       expect(wrapper).toMatchSnapshot()
     })
-    it('should match snapshot when is read-only', () => {
+
+    it('should match the snapshot when is read-only', () => {
+      // given
       const props = {
         disabled: false,
         formId: 'super-form-id',
@@ -24,8 +30,11 @@ describe('src | components | pages | search | BookingForm', () => {
         onMutation: () => {},
         onSubmit: () => {},
       }
+
+      // when
       const wrapper = shallow(<BookingForm {...props} />)
-      expect(wrapper).toBeDefined()
+
+      // then
       expect(wrapper).toMatchSnapshot()
     })
   })

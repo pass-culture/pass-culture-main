@@ -43,7 +43,6 @@ describe('src | components | pages | search | FilterControls | FilterByOfferType
     const wrapper = shallow(<FilterByOfferTypes {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

@@ -53,7 +53,7 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
     expect(distanceElement.props()).toHaveProperty('target', '_blank')
   })
 
-  it('should match snapshot', () => {
+  it('should match the snapshot', () => {
     // given
     offer.isThing = false
     offer.isEvent = true
@@ -239,7 +239,6 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
     const iconComponent = wrapper.find('.distance').find(Icon)
     expect(venueDistance.prop('href')).toBe('this is a fake url')
     expect(venueDistance.find('span').text()).toBe(`1${nbsp}`)
-    expect(iconComponent).toBeDefined()
     expect(iconComponent.prop('svg')).toBe('ico-geoloc-solid2')
     expect(iconComponent.prop('alt')).toBe('Géolocalisation dans Open Street Map')
   })

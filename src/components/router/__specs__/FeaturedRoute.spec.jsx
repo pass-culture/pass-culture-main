@@ -21,7 +21,6 @@ describe('src | components | router | FeaturedRoute', () => {
     const wrapper = shallow(<FeaturedRoute {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

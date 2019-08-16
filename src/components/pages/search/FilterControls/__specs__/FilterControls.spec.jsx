@@ -35,7 +35,6 @@ describe('src | components | pages | search | FilterControls', () => {
     const wrapper = shallow(<FilterControls {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

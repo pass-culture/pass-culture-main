@@ -28,7 +28,6 @@ describe('src | selectors | selectOfferById', () => {
     const result = selectOfferById(state, 'bar')
 
     // then
-    expect(result).toBeDefined()
     expect(result).toStrictEqual({ id: 'bar' })
     expect(result).toBe(state.data.offers[1])
   })

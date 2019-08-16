@@ -8,7 +8,7 @@ const digitalId = '#profile-digital-wallet-value'
 const physicalId = '#profile-physical-wallet-value'
 
 describe('src | components | MonPassCulture', () => {
-  it('should match snapshot with required props', () => {
+  it('should match the snapshot with required props', () => {
     // given
     const props = {
       currentUser: {
@@ -24,7 +24,6 @@ describe('src | components | MonPassCulture', () => {
     const wrapper = shallow(<MonPassCulture {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

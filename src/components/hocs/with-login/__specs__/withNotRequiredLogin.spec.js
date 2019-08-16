@@ -1,5 +1,4 @@
 import { shallow } from 'enzyme'
-import { createBrowserHistory } from 'history'
 import React from 'react'
 
 import withNotRequiredLogin, { handleSuccess } from '../withNotRequiredLogin'
@@ -16,7 +15,6 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
     const wrapper = shallow(<NotRequiredLoginTest />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

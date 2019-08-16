@@ -19,7 +19,6 @@ describe('src | components | share | ShareButton', () => {
     const wrapper = shallow(<ShareButton {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

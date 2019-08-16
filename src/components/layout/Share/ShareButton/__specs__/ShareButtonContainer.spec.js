@@ -17,7 +17,7 @@ const dispatchMock = jest.fn()
 
 describe('src | components | share | ShareButtonContainer', () => {
   describe('snapshot', () => {
-    it('should match snapshot', () => {
+    it('should match the snapshot', () => {
       // given
       const initialState = {
         options: {},

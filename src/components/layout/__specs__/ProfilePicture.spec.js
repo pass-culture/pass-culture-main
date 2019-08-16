@@ -6,18 +6,15 @@ import ProfilePicture from '../ProfilePicture'
 import { ROOT_PATH } from '../../../utils/config'
 
 describe('src | components | pages | ProfilePicture', () => {
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // given
-      const props = {}
+  it('should match the snapshot', () => {
+    // given
+    const props = {}
 
-      // when
-      const wrapper = shallow(<ProfilePicture {...props} />)
+    // when
+    const wrapper = shallow(<ProfilePicture {...props} />)
 
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+    // then
+    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {
@@ -32,8 +29,8 @@ describe('src | components | pages | ProfilePicture', () => {
       const img = wrapper.find('img').props()
 
       // then
-      expect(img.src).toStrictEqual(`${ROOT_PATH}/icons/ico-user-circled-w.svg`)
-      expect(img.alt).toStrictEqual('Avatar')
+      expect(img.src).toBe(`${ROOT_PATH}/icons/ico-user-circled-w.svg`)
+      expect(img.alt).toBe('Avatar')
     })
   })
 })

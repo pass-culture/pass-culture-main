@@ -19,12 +19,11 @@ const props = {
 }
 
 describe('src | components | verso | Verso', () => {
-  it('should match snapshot', () => {
+  it('should match the snapshot', () => {
     // when
     const wrapper = shallow(<Verso {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

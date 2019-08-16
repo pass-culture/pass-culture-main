@@ -39,7 +39,6 @@ describe('src | components | pages | discovery | Discovery', () => {
     const wrapper = shallow(<Discovery {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

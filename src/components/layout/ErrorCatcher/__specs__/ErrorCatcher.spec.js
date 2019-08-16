@@ -8,7 +8,7 @@ const routerProps = {
 }
 
 describe('src | components | layout | ErrorCatcher', () => {
-  it('match snapshot and render the children as is', () => {
+  it('should match the snapshot and render the children as is', () => {
     // given
     const props = { ...routerProps }
     const Children = () => <span>{'any child component'}</span>
@@ -21,10 +21,10 @@ describe('src | components | layout | ErrorCatcher', () => {
     ).dive()
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
-  it('match snapshot with error', () => {
+
+  it('should match the snapshot with error', () => {
     // given
     const Children = () => null
     const props = { ...routerProps }
@@ -39,9 +39,9 @@ describe('src | components | layout | ErrorCatcher', () => {
     wrapper.find(Children).simulateError(error)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
+
   it('do not render childrend if an error is throwned', () => {
     // given
     const Children = () => null
@@ -59,6 +59,7 @@ describe('src | components | layout | ErrorCatcher', () => {
     // then
     expect(Children).toHaveLength(0)
   })
+
   it('render catcher view if an error is throwned', () => {
     // given
     const Children = () => null
@@ -74,7 +75,6 @@ describe('src | components | layout | ErrorCatcher', () => {
     wrapper.find(Children).simulateError(error)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 })

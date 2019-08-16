@@ -12,12 +12,11 @@ describe('src | components | pages | profile | forms | fields | UserIdentifierFi
     }
   })
 
-  it('should match snapshot', () => {
+  it('should match the snapshot', () => {
     // when
     const wrapper = shallow(<UserIdentifierField {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

@@ -20,7 +20,6 @@ describe('src | components | menu | Header', () => {
     const wrapper = shallow(<Header {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

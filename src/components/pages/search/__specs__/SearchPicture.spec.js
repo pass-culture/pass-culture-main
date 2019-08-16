@@ -17,7 +17,6 @@ describe('src | components | pages | search | SearchPicture', () => {
     const wrapper = shallow(<SearchPicture {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

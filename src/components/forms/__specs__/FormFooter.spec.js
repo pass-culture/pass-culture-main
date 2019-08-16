@@ -6,6 +6,7 @@ import { FormFooter } from '../FormFooter'
 describe('src | components | forms | FormFooter', () => {
   describe('render', () => {
     const separatorSelector = 'hr.dotted-left-2x-white'
+
     it('hide separator when no submit and no cancel', () => {
       // given
       const props = {}
@@ -17,6 +18,7 @@ describe('src | components | forms | FormFooter', () => {
       // then
       expect(separator).toHaveLength(0)
     })
+
     it('hide separator when no cancel', () => {
       // given
       const props = {
@@ -34,6 +36,7 @@ describe('src | components | forms | FormFooter', () => {
       // then
       expect(separator).toHaveLength(0)
     })
+
     it('hide separator when no submit', () => {
       // given
       const props = {
@@ -52,6 +55,7 @@ describe('src | components | forms | FormFooter', () => {
       // then
       expect(separator).toHaveLength(0)
     })
+
     it('show separator when cancel and submit with no url', () => {
       // given
       const props = {
@@ -75,6 +79,7 @@ describe('src | components | forms | FormFooter', () => {
       // then
       expect(separator).toHaveLength(1)
     })
+
     it('show separator when cancel and submit with url', () => {
       // given
       const props = {
@@ -99,6 +104,7 @@ describe('src | components | forms | FormFooter', () => {
       // then
       expect(separator).toHaveLength(1)
     })
+
     it('render submit as submit button', () => {
       // given
       const props = {
@@ -156,7 +162,7 @@ describe('src | components | forms | FormFooter', () => {
     })
   })
 
-  describe('match snapshots', () => {
+  describe('match the snapshots', () => {
     it('hidden separator, cancel and submit buttons', () => {
       // given
       const props = {
@@ -169,7 +175,6 @@ describe('src | components | forms | FormFooter', () => {
       const wrapper = shallow(<FormFooter {...props} />)
 
       // then
-      expect(wrapper).toBeDefined()
       expect(wrapper).toMatchSnapshot()
     })
 
@@ -196,7 +201,6 @@ describe('src | components | forms | FormFooter', () => {
       const wrapper = shallow(<FormFooter {...props} />)
 
       // then
-      expect(wrapper).toBeDefined()
       expect(wrapper).toMatchSnapshot()
     })
 
@@ -224,7 +228,6 @@ describe('src | components | forms | FormFooter', () => {
       const wrapper = shallow(<FormFooter {...props} />)
 
       // then
-      expect(wrapper).toBeDefined()
       expect(wrapper).toMatchSnapshot()
     })
 
@@ -246,7 +249,6 @@ describe('src | components | forms | FormFooter', () => {
       const wrapper = shallow(<FormFooter {...props} />)
 
       // then
-      expect(wrapper).toBeDefined()
       expect(wrapper).toMatchSnapshot()
     })
   })

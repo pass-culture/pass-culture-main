@@ -20,7 +20,6 @@ describe('src | components | pages | search | NavResultsHeader', () => {
     const wrapper = shallow(<NavResultsHeader {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

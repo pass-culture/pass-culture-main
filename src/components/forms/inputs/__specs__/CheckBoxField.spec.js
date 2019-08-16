@@ -15,7 +15,6 @@ describe('src | components | forms | inputs | CheckBoxField', () => {
     const wrapper = shallow(<CheckBoxField {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 })

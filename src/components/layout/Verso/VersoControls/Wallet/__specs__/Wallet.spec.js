@@ -4,7 +4,7 @@ import React from 'react'
 import Wallet from '../Wallet'
 
 describe('src | components | verso | verso-controls | wallet | Wallet', () => {
-  it('should match snapshot', () => {
+  it('should match the snapshot', () => {
     // given
     const props = { value: 10 }
 
@@ -12,7 +12,6 @@ describe('src | components | verso | verso-controls | wallet | Wallet', () => {
     const wrapper = shallow(<Wallet {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

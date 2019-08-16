@@ -12,7 +12,6 @@ describe('src | components | verso | verso-content | VersoContentTuto', () => {
     const wrapper = shallow(<VersoContentTuto {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

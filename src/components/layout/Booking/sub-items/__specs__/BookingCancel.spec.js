@@ -15,12 +15,11 @@ describe('src | components | booking | sub-items | BookingCancel', () => {
     }
   })
 
-  it('should match snapshot', () => {
+  it('should match the snapshot', () => {
     // when
     const wrapper = shallow(<BookingCancel {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 
@@ -30,7 +29,6 @@ describe('src | components | booking | sub-items | BookingCancel', () => {
 
     // then
     const mainWrapper = wrapper.find('.text-center')
-    expect(mainWrapper).toBeDefined()
     const spans = mainWrapper.find('p span')
     expect(spans).toHaveLength(2)
     expect(spans.at(0).text()).toBe('12 € vont être recrédités sur votre pass.')

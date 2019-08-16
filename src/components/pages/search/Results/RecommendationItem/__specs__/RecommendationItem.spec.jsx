@@ -33,7 +33,6 @@ describe('src | components | pages | search | Result | RecommendationItem', () =
     const wrapper = shallow(<RecommendationItem {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

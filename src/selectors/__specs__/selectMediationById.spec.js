@@ -28,7 +28,6 @@ describe('src | selectors | selectMediationById', () => {
     const result = selectMediationById(state, 'bar')
 
     // then
-    expect(result).toBeDefined()
     expect(result).toStrictEqual({ id: 'bar' })
     expect(result).toBe(state.data.mediations[1])
   })

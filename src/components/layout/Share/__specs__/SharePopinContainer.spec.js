@@ -11,26 +11,24 @@ const mockStore = configureStore(middlewares)
 const dispatchMock = jest.fn()
 
 describe('src | components | share | SharePopinContainer', () => {
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // given
-      const initialState = {}
-      const store = mockStore(initialState)
-      const props = {
-        dispatch: dispatchMock,
-        options: true,
-        visible: true,
-      }
-      // when
-      const wrapper = shallow(
-        <Provider store={store}>
-          <SharePopinContainer {...props} />
-        </Provider>
-      )
+  it('should match the snapshot', () => {
+    // given
+    const initialState = {}
+    const store = mockStore(initialState)
+    const props = {
+      dispatch: dispatchMock,
+      options: true,
+      visible: true,
+    }
 
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+    // when
+    const wrapper = shallow(
+      <Provider store={store}>
+        <SharePopinContainer {...props} />
+      </Provider>
+    )
+
+    // then
+    expect(wrapper).toMatchSnapshot()
   })
 })

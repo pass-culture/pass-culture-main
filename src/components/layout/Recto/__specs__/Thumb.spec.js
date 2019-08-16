@@ -4,20 +4,17 @@ import { shallow } from 'enzyme'
 import Thumb from '../Thumb'
 
 describe('src | components | pages | Thumb', () => {
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // given
-      const props = {
-        title: 'fake title',
-      }
+  it('should match the snapshot', () => {
+    // given
+    const props = {
+      title: 'fake title',
+    }
 
-      // when
-      const wrapper = shallow(<Thumb {...props} />)
+    // when
+    const wrapper = shallow(<Thumb {...props} />)
 
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+    // then
+    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {
