@@ -5,19 +5,15 @@ import { Route } from 'react-router-dom'
 import BookingContainer from '../Booking/BookingContainer'
 import RectoContainer from '../Recto/RectoContainer'
 import VersoContainer from '../Verso/VersoContainer'
-import getAreDetailsVisible from '../../../helpers/getAreDetailsVisible'
 
 class Details extends PureComponent {
-  renderBooking = route => {
-    return (<BookingContainer
-      extraClassName="with-header"
-      {...route}
-            />)
-  }
+  renderBooking = route => (<BookingContainer
+    extraClassName="with-header"
+    {...route}
+                            />)
 
   render() {
-    const { bookingPath, match } = this.props
-    const showDetails = getAreDetailsVisible(match)
+    const { areDetails, bookingPath } = this.props
 
     return (
       <Fragment>
@@ -26,25 +22,25 @@ class Details extends PureComponent {
           render={this.renderBooking}
         />
         <VersoContainer
-          areDetailsVisible={showDetails}
+          areDetailsVisible={areDetails}
           extraClassName="with-header"
         />
-        {showDetails && <RectoContainer
+        {areDetails && <RectoContainer
           areDetailsVisible
           extraClassName="with-header"
-                        />}
+                       />}
       </Fragment>
     )
   }
 }
 
+Details.defaultProps = {
+  areDetails: false,
+}
+
 Details.propTypes = {
+  areDetails: PropTypes.bool,
   bookingPath: PropTypes.string.isRequired,
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      details: PropTypes.string,
-    }).isRequired,
-  }).isRequired,
 }
 
 export default Details

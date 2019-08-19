@@ -3,7 +3,7 @@ import React, { PureComponent } from 'react'
 
 import RectoContainer from '../../../../layout/Recto/RectoContainer'
 import VersoContainer from '../../../../layout/Verso/VersoContainer'
-import getAreDetailsVisible from '../../../../../helpers/getAreDetailsVisible'
+import areDetailsVisible from '../../../../../helpers/areDetailsVisible'
 import { getHeaderColor } from '../../../../../utils/colors'
 
 export class Card extends PureComponent {
@@ -24,8 +24,7 @@ export class Card extends PureComponent {
       recommendation,
       position,
     } = this.props
-    const areDetailsNowVisible = getAreDetailsVisible(match) &&
-      !getAreDetailsVisible(prevProps.match)
+    const areDetailsNowVisible = areDetailsVisible(match) && !areDetailsVisible(prevProps.match)
 
     const isCurrent = recommendation && position === 'current'
 
@@ -46,14 +45,9 @@ export class Card extends PureComponent {
   }
 
   render() {
-    const {
-      match,
-      position,
-      recommendation,
-      width
-    } = this.props
+    const { match, position, recommendation, width } = this.props
     const { firstThumbDominantColor, index } = recommendation || {}
-    const areDetailsVisible = getAreDetailsVisible(match)
+    const areDetails = areDetailsVisible(match)
     const headerColor = getHeaderColor(firstThumbDominantColor)
     const isCurrent = position === 'current'
     const translateTo = index * width
@@ -65,15 +59,13 @@ export class Card extends PureComponent {
           transform: `translate(${translateTo}px, 0)`,
         }}
       >
-        {recommendation && isCurrent && (
-          <VersoContainer
-            areDetailsVisible={areDetailsVisible}
-          />)}
+        {recommendation && isCurrent && <VersoContainer areDetailsVisible={areDetails} />}
         {recommendation && (
           <RectoContainer
-            areDetailsVisible={areDetailsVisible}
+            areDetailsVisible={areDetails}
             recommendation={recommendation}
-          />)}
+          />
+        )}
       </div>
     )
   }
@@ -88,8 +80,8 @@ Card.propTypes = {
   handleReadRecommendation: PropTypes.func.isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
-      detais: PropTypes.string
-    }).isRequired
+      detais: PropTypes.string,
+    }).isRequired,
   }).isRequired,
   position: PropTypes.string.isRequired,
   recommendation: PropTypes.shape(),

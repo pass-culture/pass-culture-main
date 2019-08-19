@@ -41,6 +41,7 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
           },
         },
       ],
+      handleEditMode: jest.fn(),
       requestGetMyFavorites: jest.fn(),
       resetPageData: jest.fn(),
     }
@@ -123,6 +124,22 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
         expect(noItems).toHaveLength(1)
         const myFavoriteContainer = wrapper.find(MyFavoriteContainer)
         expect(myFavoriteContainer).toHaveLength(0)
+      })
+    })
+
+    describe('when click on "Modifier', () => {
+      it('should call handleEditMode()', () => {
+        // given
+        const wrapper = shallow(<MyFavorites {...props} />)
+        wrapper.setState({
+          isLoading: false,
+        })
+
+        // when
+        wrapper.find('.mf-edit-btn').simulate('click')
+
+        // then
+        expect(props.handleEditMode).toHaveBeenCalledTimes(1)
       })
     })
   })

@@ -4,14 +4,8 @@ exports[`src | components | layout | Details | Details should match the snapshot
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Details
+    areDetails={false}
     bookingPath="fake/path"
-    match={
-      Object {
-        "params": Object {
-          "details": undefined,
-        },
-      }
-    }
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],

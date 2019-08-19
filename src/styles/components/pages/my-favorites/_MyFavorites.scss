@@ -1,7 +1,44 @@
+@mixin btn() {
+  border: none;
+  color: $white;
+  margin-left: 1rem;
+  padding: 1rem 1rem 1rem 2rem;
+}
+
 .mf-my-favorite {
   @include dotted($primary, bottom);
 
   background-color: $white;
+}
+
+.mf-edit {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.mf-done {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.mf-edit-btn {
+  @include btn();
+
+  background: transparent url(/icons/ico-edit.svg) no-repeat left center;
+}
+
+.mf-done-btn {
+  @include btn();
+
+  background: transparent url(/icons/checkbox-check-w.svg) no-repeat left center;
+}
+
+.mf-delete-btn {
+  @include btn();
+
+  background: transparent no-repeat left center;
 }
 
 .mf-wrapper {

@@ -6,7 +6,7 @@ import DeckContainer from './Deck/DeckContainer'
 import BookingContainer from '../../layout/Booking/BookingContainer'
 import AbsoluteFooterContainer from '../../layout/AbsoluteFooter/AbsoluteFooterContainer'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
-import getAreDetailsVisible from '../../../helpers/getAreDetailsVisible'
+import areDetailsVisible from '../../../helpers/areDetailsVisible'
 
 class Discovery extends PureComponent {
   constructor(props) {
@@ -120,7 +120,7 @@ class Discovery extends PureComponent {
   render() {
     const { match } = this.props
     const { hasError, isEmpty, isLoading } = this.state
-    const areDetailsVisible = getAreDetailsVisible(match)
+    const areDetails = areDetailsVisible(match)
 
     return (
       <Fragment>
@@ -143,7 +143,7 @@ class Discovery extends PureComponent {
             </Fragment>
           )}
           <AbsoluteFooterContainer
-            areDetailsVisible={areDetailsVisible}
+            areDetailsVisible={areDetails}
             borderTop
             id="deck-footer"
           />

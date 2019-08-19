@@ -1,10 +1,10 @@
-import getAreDetailsVisible from './getAreDetailsVisible'
+import areDetailsVisible from './areDetailsVisible'
 
 const getUrlWithoutDetailsPart = (location, match) => {
-  const areDetailsVisible = getAreDetailsVisible(match)
+  const areDetails = areDetailsVisible(match)
   const { pathname, search } = location
 
-  if (areDetailsVisible) {
+  if (areDetails) {
     return `${pathname.split('/details')[0]}${search}`
   }
 }

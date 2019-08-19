@@ -5,10 +5,13 @@ import { requestData } from 'redux-saga-data'
 import MyFavorites from './MyFavorites'
 import { withRequiredLogin } from '../../hocs'
 import { resetPageData } from '../../../reducers/data'
+import { toggleFavoritesEditMode } from '../../../reducers/favorites'
 import selectFavorites from '../../../selectors/selectFavorites'
+import selectIsFavoritesEditMode from '../../../selectors/selectIsFavoritesEditMode'
 import { favoriteNormalizer } from '../../../utils/normalizers'
 
 export const mapStateToProps = state => ({
+  editMode: selectIsFavoritesEditMode(state),
   myFavorites: selectFavorites(state),
 })
 
@@ -23,7 +26,12 @@ export const mapDispatchToProps = dispatch => ({
       })
     )
   },
-  resetPageData: () => dispatch(resetPageData()),
+  handleEditMode: () => {
+    dispatch(toggleFavoritesEditMode())
+  },
+  resetPageData: () => {
+    dispatch(resetPageData())
+  },
 })
 
 export default compose(
