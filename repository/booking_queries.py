@@ -218,14 +218,14 @@ def _query_get_used_or_non_cancelled_bookings():
         .filter((Booking.isUsed == True) | booking_on_event_finished_more_than_two_days_ago)
 
 
-def count_all_used_or_non_canceled_bookings() -> int:
+def count_all_used_or_non_cancelled_bookings() -> int:
     query = _query_get_used_or_non_cancelled_bookings()
 
     return query \
         .count()
 
 
-def count_all_used_or_non_canceled_bookings_by_departement(departement_code: str) -> int:
+def count_all_used_or_non_cancelled_bookings_by_departement(departement_code: str) -> int:
     query = _query_get_used_or_non_cancelled_bookings() \
         .join(User).filter(User.departementCode == departement_code)
 
@@ -233,42 +233,29 @@ def count_all_used_or_non_canceled_bookings_by_departement(departement_code: str
         .count()
 
 
-def find_eligible_bookings_for_offerer(offerer_id: int) -> List[Booking]:
-    query = _build_final_booking_query()
-    query = query\
-        .join(Offerer)\
-        .filter(Offerer.id == offerer_id)
-    query = _keep_eligible_bookings(query)
-    return query.all()
-
-
-def find_eligible_bookings_for_venue(venue_id: int) -> List[Booking]:
-    query = _build_final_booking_query()
-    query = query.filter(Venue.id == venue_id)
-    query = _keep_eligible_bookings(query)
-    return query.all()
-
-
-def _build_final_booking_query():
-    return Booking.query \
-        .join(Stock) \
-        .join(Offer) \
-        .join(Venue)
-
-
-def _keep_eligible_bookings(query):
-    booking_on_event_finished_more_than_two_days_ago = (datetime.utcnow() > Stock.endDatetime + STOCK_DELETION_DELAY)
-
-    return query\
-        .filter(Booking.isCancelled == False) \
-        .filter((Booking.isUsed == True) | booking_on_event_finished_more_than_two_days_ago) \
-
 def find_final_offerer_bookings(offerer_id) -> List[Booking]:
     return _query_get_used_or_non_cancelled_bookings() \
         .filter(Offerer.id == offerer_id) \
         .reset_joinpoint() \
         .outerjoin(Payment) \
         .order_by(Payment.id, Booking.dateCreated.asc())
+
+
+def find_eligible_bookings_for_offerer(offerer_id: int) -> List[Booking]:
+    query = _query_get_used_or_non_cancelled_bookings()
+    query = query \
+        .filter(Offerer.id == offerer_id) \
+        .reset_joinpoint() \
+        .outerjoin(Payment) \
+        .order_by(Payment.id, Booking.dateCreated.asc())
+
+    return query.all()
+
+
+def find_eligible_bookings_for_venue(venue_id: int) -> List[Booking]:
+    query = _query_get_used_or_non_cancelled_bookings()
+    query = query.filter(Venue.id == venue_id)
+    return query.all()
 
 
 def find_date_used(booking: Booking) -> datetime:
