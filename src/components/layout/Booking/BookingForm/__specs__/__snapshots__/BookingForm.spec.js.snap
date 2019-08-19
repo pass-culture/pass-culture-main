@@ -1,17 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+<<<<<<< HEAD
 exports[`src | components | pages | search | BookingForm snapshot should match the snapshot 1`] = `
+=======
+exports[`src | components | layout | Booking | BookingForm should match snapshot 1`] = `
+>>>>>>> (PC-2218): refactored BookingForm to make it testable
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <BookingForm
-    className=""
-    disabled={false}
-    formId="super-form-id"
-    initialValues={null}
-    isEvent={false}
+    className="fake className"
+    formId="fake form id"
+    initialValues={Object {}}
+    isEvent={true}
     isReadOnly={false}
-    onMutation={[Function]}
-    onSubmit={[Function]}
+    onMutation={[MockFunction]}
+    onSubmit={[MockFunction]}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -31,9 +34,8 @@ ShallowWrapper {
         [Function],
       ],
       "initialValues": Object {},
-      "onSubmit": [Function],
+      "onSubmit": [MockFunction],
       "render": [Function],
-      "validate": null,
     },
     "ref": null,
     "rendered": null,
@@ -49,8 +51,9 @@ ShallowWrapper {
           [Function],
         ],
         "initialValues": Object {},
-        "onSubmit": [Function],
+        "onSubmit": [MockFunction],
         "render": [Function],
+<<<<<<< HEAD
         "validate": null,
       },
       "ref": null,
@@ -140,6 +143,8 @@ ShallowWrapper {
         "onSubmit": [Function],
         "render": [Function],
         "validate": null,
+=======
+>>>>>>> (PC-2218): refactored BookingForm to make it testable
       },
       "ref": null,
       "rendered": null,

@@ -174,7 +174,6 @@ class Booking extends PureComponent {
   }
 
   render() {
-    const userConnected = false
     const { bookables, booking, extraClassName, match, offer, recommendation } = this.props
 
     const isBooking = getIsBooking(match)
@@ -241,7 +240,6 @@ class Booking extends PureComponent {
                   {showForm && (
                     <BookingForm
                       className="flex-1 flex-rows flex-center items-center"
-                      disabled={userConnected}
                       formId={BOOKING_FORM_ID}
                       initialValues={formInitialValues}
                       isEvent={isEvent}

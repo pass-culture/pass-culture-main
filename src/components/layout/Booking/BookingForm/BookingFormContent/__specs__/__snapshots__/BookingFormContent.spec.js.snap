@@ -1,0 +1,344 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | layout | Booking | BookingForm | BookingFormContent should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <Unknown
+    handleSubmit={[MockFunction]}
+    values={
+      Object {
+        "bookables": Array [],
+        "date": "2019-01-01",
+        "price": 12,
+      }
+    }
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "function",
+    "props": Object {
+      "children": Array [
+        <FormSpy
+          onChange={[MockFunction]}
+          subscription={
+            Object {
+              "dirty": true,
+              "errors": true,
+              "initialValues": true,
+              "invalid": true,
+              "pristine": true,
+              "values": true,
+            }
+          }
+        />,
+        <form
+          className="fake className"
+          id="fake formId"
+          onSubmit={[MockFunction]}
+        >
+          <p
+            className="text-center fs22"
+          >
+            <span
+              className="is-block"
+            >
+              Vous êtes sur le point de réserver
+            </span>
+            <span
+              className="is-block"
+            >
+              cette offre pour 12 €.
+            </span>
+          </p>
+        </form>,
+      ],
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "class",
+        "props": Object {
+          "onChange": [MockFunction],
+          "subscription": Object {
+            "dirty": true,
+            "errors": true,
+            "initialValues": true,
+            "invalid": true,
+            "pristine": true,
+            "values": true,
+          },
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            false,
+            <p
+              className="text-center fs22"
+            >
+              <span
+                className="is-block"
+              >
+                Vous êtes sur le point de réserver
+              </span>
+              <span
+                className="is-block"
+              >
+                cette offre pour 12 €.
+              </span>
+            </p>,
+          ],
+          "className": "fake className",
+          "id": "fake formId",
+          "onSubmit": [MockFunction],
+        },
+        "ref": null,
+        "rendered": Array [
+          false,
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <span
+                  className="is-block"
+                >
+                  Vous êtes sur le point de réserver
+                </span>,
+                <span
+                  className="is-block"
+                >
+                  cette offre pour 12 €.
+                </span>,
+              ],
+              "className": "text-center fs22",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Vous êtes sur le point de réserver",
+                  "className": "is-block",
+                },
+                "ref": null,
+                "rendered": "Vous êtes sur le point de réserver",
+                "type": "span",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "cette offre pour 12 €.",
+                  "className": "is-block",
+                },
+                "ref": null,
+                "rendered": "cette offre pour 12 €.",
+                "type": "span",
+              },
+            ],
+            "type": "p",
+          },
+        ],
+        "type": "form",
+      },
+    ],
+    "type": Symbol(react.fragment),
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "function",
+      "props": Object {
+        "children": Array [
+          <FormSpy
+            onChange={[MockFunction]}
+            subscription={
+              Object {
+                "dirty": true,
+                "errors": true,
+                "initialValues": true,
+                "invalid": true,
+                "pristine": true,
+                "values": true,
+              }
+            }
+          />,
+          <form
+            className="fake className"
+            id="fake formId"
+            onSubmit={[MockFunction]}
+          >
+            <p
+              className="text-center fs22"
+            >
+              <span
+                className="is-block"
+              >
+                Vous êtes sur le point de réserver
+              </span>
+              <span
+                className="is-block"
+              >
+                cette offre pour 12 €.
+              </span>
+            </p>
+          </form>,
+        ],
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "class",
+          "props": Object {
+            "onChange": [MockFunction],
+            "subscription": Object {
+              "dirty": true,
+              "errors": true,
+              "initialValues": true,
+              "invalid": true,
+              "pristine": true,
+              "values": true,
+            },
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              false,
+              <p
+                className="text-center fs22"
+              >
+                <span
+                  className="is-block"
+                >
+                  Vous êtes sur le point de réserver
+                </span>
+                <span
+                  className="is-block"
+                >
+                  cette offre pour 12 €.
+                </span>
+              </p>,
+            ],
+            "className": "fake className",
+            "id": "fake formId",
+            "onSubmit": [MockFunction],
+          },
+          "ref": null,
+          "rendered": Array [
+            false,
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <span
+                    className="is-block"
+                  >
+                    Vous êtes sur le point de réserver
+                  </span>,
+                  <span
+                    className="is-block"
+                  >
+                    cette offre pour 12 €.
+                  </span>,
+                ],
+                "className": "text-center fs22",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "Vous êtes sur le point de réserver",
+                    "className": "is-block",
+                  },
+                  "ref": null,
+                  "rendered": "Vous êtes sur le point de réserver",
+                  "type": "span",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "cette offre pour 12 €.",
+                    "className": "is-block",
+                  },
+                  "ref": null,
+                  "rendered": "cette offre pour 12 €.",
+                  "type": "span",
+                },
+              ],
+              "type": "p",
+            },
+          ],
+          "type": "form",
+        },
+      ],
+      "type": Symbol(react.fragment),
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+    Symbol(enzyme.__providerValues__): undefined,
+  },
+  Symbol(enzyme.__providerValues__): Map {},
+}
+`;

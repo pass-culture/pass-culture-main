@@ -3,6 +3,7 @@ import { shallow } from 'enzyme'
 
 import BookingError from '../BookingError'
 
+<<<<<<< HEAD
 describe('src | components | pages | search | BookingError', () => {
   it('should match the snapshot', () => {
     // given
@@ -13,6 +14,20 @@ describe('src | components | pages | search | BookingError', () => {
 
     // then
     expect(wrapper).toMatchSnapshot()
+=======
+describe('src | components | layout | Booking | BookingError', () => {
+  describe('snapshot', () => {
+    it('should match snapshot', () => {
+      // given
+      const errors = {}
+
+      // when
+      const wrapper = shallow(<BookingError errors={errors} />)
+
+      // then
+      expect(wrapper).toMatchSnapshot()
+    })
+>>>>>>> (PC-2218): refactored BookingForm to make it testable
   })
 
   describe('render', () => {
@@ -22,9 +37,13 @@ describe('src | components | pages | search | BookingError', () => {
 
       // when
       const wrapper = shallow(<BookingError {...props} />)
+<<<<<<< HEAD
       const list = wrapper.find('#booking-error-reasons p')
+=======
+>>>>>>> (PC-2218): refactored BookingForm to make it testable
 
       // then
+      const list = wrapper.find('#booking-error-reasons p')
       expect(list).toHaveLength(1)
     })
 
@@ -40,9 +59,13 @@ describe('src | components | pages | search | BookingError', () => {
 
       // when
       const wrapper = shallow(<BookingError {...props} />)
+<<<<<<< HEAD
       const list = wrapper.find('#booking-error-reasons p')
+=======
+>>>>>>> (PC-2218): refactored BookingForm to make it testable
 
       // then
+      const list = wrapper.find('#booking-error-reasons p')
       expect(list).toHaveLength(5)
       expect(list.at(1).text()).toStrictEqual('Reason value 1')
       expect(list.at(4).text()).toStrictEqual('Reason value 4')

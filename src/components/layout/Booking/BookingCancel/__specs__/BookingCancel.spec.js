@@ -3,7 +3,7 @@ import { shallow } from 'enzyme'
 
 import BookingCancel from '../BookingCancel'
 
-describe('src | components | booking | sub-items | BookingCancel', () => {
+describe('src | components | layout | Booking | BookingCancel', () => {
   let props
 
   beforeEach(() => {
