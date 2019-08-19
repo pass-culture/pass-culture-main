@@ -33,7 +33,7 @@ class ReimbursementDetailsCSVTest:
     @clean_database
     def test_generate_payment_details_csv_with_right_values(self, app):
         # given
-        deactivate_feature(FeatureToggle.REIMBURSEMENT_BY_VENUE)
+        deactivate_feature(FeatureToggle.DEGRESSIVE_REIMBURSEMENT_RATE)
         user = create_user(email='user+plus@email.fr')
         deposit = create_deposit(user, amount=500, source='public')
         offerer1 = create_offerer()

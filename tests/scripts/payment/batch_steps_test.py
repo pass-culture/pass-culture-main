@@ -22,7 +22,7 @@ class GenerateNewPaymentsTest:
         @clean_database
         def test_records_new_payment_lines_in_database(self, app):
             # Given
-            deactivate_feature(FeatureToggle.REIMBURSEMENT_BY_VENUE)
+            deactivate_feature(FeatureToggle.DEGRESSIVE_REIMBURSEMENT_RATE)
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
@@ -50,7 +50,7 @@ class GenerateNewPaymentsTest:
         @clean_database
         def test_returns_a_tuple_of_pending_and_not_processable_payments(self, app):
             # Given
-            deactivate_feature(FeatureToggle.REIMBURSEMENT_BY_VENUE)
+            deactivate_feature(FeatureToggle.DEGRESSIVE_REIMBURSEMENT_RATE)
             offerer1 = create_offerer(siren='123456789')
             offerer2 = create_offerer(siren='987654321')
             PcObject.save(offerer1)
@@ -81,7 +81,7 @@ class GenerateNewPaymentsTest:
         @clean_database
         def test_should_not_reimburse_offerer_if_he_has_more_than_20000_euros_in_bookings_on_several_venues(self, app):
             # Given
-            deactivate_feature(FeatureToggle.REIMBURSEMENT_BY_VENUE)
+            deactivate_feature(FeatureToggle.DEGRESSIVE_REIMBURSEMENT_RATE)
             offerer1 = create_offerer(siren='123456789')
             PcObject.save(offerer1)
             bank_information = create_bank_information(bic='BDFEFR2LCCB', iban='FR7630006000011234567890189',

@@ -183,7 +183,7 @@ def find_all_ongoing_bookings_by_stock(stock) -> List[Booking]:
     return Booking.query.filter_by(stockId=stock.id, isCancelled=False, isUsed=False).all()
 
 
-def count_all_used_or_non_canceled_bookings() -> int:
+def count_all_used_or_non_cancelled_bookings() -> int:
     booking_on_event_finished_more_than_two_days_ago = (datetime.utcnow() > Stock.endDatetime + STOCK_DELETION_DELAY)
     return Booking.query \
         .join(Stock) \
@@ -195,19 +195,19 @@ def count_all_used_or_non_canceled_bookings() -> int:
         .count()
 
 
-def find_final_offerer_bookings(offerer_id: id) -> List[Booking]:
+def find_eligible_bookings_for_offerer(offerer_id: int) -> List[Booking]:
     query = _build_final_booking_query()
     query = query\
         .join(Offerer)\
         .filter(Offerer.id == offerer_id)
-    query = _filter_non_eligible_bookings_and_order_by_oldest_booking(query)
+    query = _keep_eligible_bookings(query)
     return query.all()
 
 
-def find_final_venue_bookings(venue_id: int) -> List[Booking]:
+def find_eligible_bookings_for_venue(venue_id: int) -> List[Booking]:
     query = _build_final_booking_query()
     query = query.filter(Venue.id == venue_id)
-    query = _filter_non_eligible_bookings_and_order_by_oldest_booking(query)
+    query = _keep_eligible_bookings(query)
     return query.all()
 
 
@@ -218,7 +218,7 @@ def _build_final_booking_query():
         .join(Venue)
 
 
-def _filter_non_eligible_bookings_and_order_by_oldest_booking(query):
+def _keep_eligible_bookings(query):
     booking_on_event_finished_more_than_two_days_ago = (datetime.utcnow() > Stock.endDatetime + STOCK_DELETION_DELAY)
 
     return query\

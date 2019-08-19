@@ -7,7 +7,7 @@ from models import PcObject, ThingType, Booking
 from models.api_errors import ResourceNotFound, ApiErrors
 from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     find_offerer_bookings_paginated, \
-    find_final_offerer_bookings, \
+    find_eligible_bookings_for_offerer, \
     find_date_used, \
     find_user_activation_booking, \
     get_existing_tokens, \
@@ -15,7 +15,7 @@ from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     find_by, \
     find_all_digital_bookings_for_offerer, count_non_cancelled_bookings, count_all_bookings, \
     count_all_cancelled_bookings, \
-    find_all_offerer_bookings, find_final_venue_bookings
+    find_all_offerer_bookings, find_eligible_bookings_for_venue
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, \
     create_deposit, \
@@ -351,7 +351,7 @@ class FindFinalOffererBookingsTest:
         PcObject.save(deposit, booking1, booking2, booking3)
 
         # When
-        bookings = find_final_offerer_bookings(offerer1.id)
+        bookings = find_eligible_bookings_for_offerer(offerer1.id)
 
         # Then
         assert len(bookings) == 2
@@ -378,7 +378,7 @@ class FindFinalOffererBookingsTest:
         PcObject.save(deposit, booking1, booking2, booking3, booking4, payment1, payment2)
 
         # When
-        bookings = find_final_offerer_bookings(offerer.id)
+        bookings = find_eligible_bookings_for_offerer(offerer.id)
 
         # Then
         assert bookings[0] == booking3
@@ -402,7 +402,7 @@ class FindFinalOffererBookingsTest:
         PcObject.save(deposit, booking1, booking2)
 
         # When
-        bookings = find_final_offerer_bookings(offerer1.id)
+        bookings = find_eligible_bookings_for_offerer(offerer1.id)
 
         # Then
         assert len(bookings) == 1
@@ -424,7 +424,7 @@ class FindFinalOffererBookingsTest:
         PcObject.save(deposit, booking1, booking2)
 
         # When
-        bookings = find_final_offerer_bookings(offerer1.id)
+        bookings = find_eligible_bookings_for_offerer(offerer1.id)
 
         # Then
         assert len(bookings) == 1
@@ -458,7 +458,7 @@ class FindFinalOffererBookingsTest:
         PcObject.save(deposit, booking1, booking2)
 
         # When
-        bookings = find_final_offerer_bookings(offerer1.id)
+        bookings = find_eligible_bookings_for_offerer(offerer1.id)
 
         # Then
         assert len(bookings) == 1
@@ -488,7 +488,7 @@ class FindFinalVenueBookingsTest:
         PcObject.save(deposit, booking1, booking2, booking3)
 
         # When
-        bookings = find_final_venue_bookings(venue1.id)
+        bookings = find_eligible_bookings_for_venue(venue1.id)
 
         # Then
         assert len(bookings) == 2

@@ -30,7 +30,7 @@ class GenerateAndSendPaymentsTest:
                                                                           get_payments_by_message_id, \
                                                                           environment, app):
         # Given
-        feature = Feature.query.filter_by(name=FeatureToggle.REIMBURSEMENT_BY_VENUE).first()
+        feature = Feature.query.filter_by(name=FeatureToggle.DEGRESSIVE_REIMBURSEMENT_RATE).first()
         feature.isActive = False
         PcObject.save(feature)
 

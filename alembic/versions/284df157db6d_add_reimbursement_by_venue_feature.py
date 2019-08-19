@@ -19,7 +19,7 @@ depends_on = None
 
 
 previous_values = ('WEBAPP_SIGNUP', 'FAVORITE_OFFER')
-new_values = ('WEBAPP_SIGNUP', 'FAVORITE_OFFER', 'REIMBURSEMENT_BY_VENUE')
+new_values = ('WEBAPP_SIGNUP', 'FAVORITE_OFFER', 'DEGRESSIVE_REIMBURSEMENT_RATE')
 
 previous_enum = sa.Enum(*previous_values, name='featuretoggle')
 new_enum = sa.Enum(*new_values, name='featuretoggle')
@@ -37,7 +37,7 @@ def upgrade():
     op.execute("""
         INSERT INTO feature (name, description, "isActive")
         VALUES ('%s', '%s', FALSE);
-        """ % (FeatureToggle.REIMBURSEMENT_BY_VENUE.name, FeatureToggle.REIMBURSEMENT_BY_VENUE.value))
+        """ % (FeatureToggle.DEGRESSIVE_REIMBURSEMENT_RATE.name, FeatureToggle.DEGRESSIVE_REIMBURSEMENT_RATE.value))
     temporary_enum.drop(op.get_bind(), checkfirst=False)
 
 
@@ -47,7 +47,7 @@ def downgrade():
                ' USING name::text::tmp_featuretoggle')
     new_enum.drop(op.get_bind(), checkfirst=False)
     previous_enum.create(op.get_bind(), checkfirst=False)
-    op.execute("DELETE FROM feature WHERE name = 'REIMBURSEMENT_BY_VENUE'")
+    op.execute("DELETE FROM feature WHERE name = DDEGRESSIVE_REIMBURSEMENT_RATET_RATE")
     op.execute('ALTER TABLE feature ALTER COLUMN name TYPE featuretoggle'
                ' USING name::text::featuretoggle')
     temporary_enum.drop(op.get_bind(), checkfirst=False)

@@ -17,7 +17,7 @@ from models.feature import FeatureToggle
 from models.payment import Payment
 from models.payment_status import TransactionStatus
 from repository import payment_queries
-from repository.booking_queries import find_final_offerer_bookings, find_final_venue_bookings
+from repository.booking_queries import find_eligible_bookings_for_offerer, find_eligible_bookings_for_venue
 from repository.feature_queries import is_active
 from repository.user_queries import get_all_users_wallet_balances
 from utils.logger import logger
@@ -41,13 +41,13 @@ def generate_new_payments() -> Tuple[List[Payment], List[Payment]]:
     all_payments = []
 
     for offerer in offerers:
-        if is_active(FeatureToggle.REIMBURSEMENT_BY_VENUE):
+        if is_active(FeatureToggle.DEGRESSIVE_REIMBURSEMENT_RATE):
             booking_reimbursements = []
             for venue in offerer.managedVenues:
-                final_bookings = find_final_venue_bookings(venue.id)
+                final_bookings = find_eligible_bookings_for_venue(venue.id)
                 booking_reimbursements += find_all_booking_reimbursements(final_bookings)
         else:
-            final_bookings = find_final_offerer_bookings(offerer.id)
+            final_bookings = find_eligible_bookings_for_offerer(offerer.id)
             booking_reimbursements = find_all_booking_reimbursements(final_bookings)
 
         booking_reimbursements_to_pay = filter_out_already_paid_for_bookings(

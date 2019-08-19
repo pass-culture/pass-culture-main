@@ -18,7 +18,6 @@ from models import Booking, \
     EventType, \
     Mediation, \
     Offer, \
-    OfferCriterion, \
     Offerer, \
     Payment, \
     Recommendation, \
