@@ -33,7 +33,7 @@ def count_users_having_booked():
     return _query_user_having_booked().count()
 
 
-def count_users_having_booked_by_departement_code(departement_code):
+def count_users_having_booked_by_departement_code(departement_code: str):
     return _query_user_having_booked() \
         .filter(User.departementCode == departement_code) \
         .count()

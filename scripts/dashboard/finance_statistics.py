@@ -6,7 +6,7 @@ from models.db import db
 from models.payment_status import TransactionStatus
 
 
-def get_total_deposits(departement_code=None):
+def get_total_deposits(departement_code: str = None) -> int:
     query = db.session.query(func.coalesce(func.sum(Deposit.amount), 0))
 
     if departement_code:
@@ -15,7 +15,7 @@ def get_total_deposits(departement_code=None):
     return query.scalar()
 
 
-def get_total_amount_spent(departement_code=None):
+def get_total_amount_spent(departement_code: str = None) -> int:
     query = db.session.query(func.coalesce(func.sum(Booking.amount * Booking.quantity), 0))
 
     if departement_code:
@@ -26,7 +26,7 @@ def get_total_amount_spent(departement_code=None):
         .scalar()
 
 
-def get_total_amount_to_pay(departement_code=None):
+def get_total_amount_to_pay(departement_code: str = None) -> int:
     query = db.session.query(func.coalesce(func.sum(Payment.amount), 0)) \
         .filter(Payment.currentStatus != TransactionStatus.BANNED)
 
@@ -41,31 +41,31 @@ def get_total_amount_to_pay(departement_code=None):
         .scalar()
 
 
-def get_top_20_offers_table(departement_code=None):
+def get_top_20_offers_table(departement_code: str = None) -> pandas.DataFrame:
     top_20_offers_by_number_of_bookings = _query_get_top_20_offers_by_number_of_bookings(departement_code)
     return pandas.DataFrame(columns=['Offre', 'Nombre de réservations', 'Montant dépensé'],
                             data=top_20_offers_by_number_of_bookings)
 
 
-def get_top_20_offerers_table_by_number_of_bookings(departement_code=None):
+def get_top_20_offerers_table_by_number_of_bookings(departement_code: str = None) -> pandas.DataFrame:
     top_20_offers_by_number_of_bookings = _query_get_top_20_offerers_by_number_of_bookings(departement_code)
     return pandas.DataFrame(columns=['Structure', 'Nombre de réservations', 'Montant dépensé'],
                             data=top_20_offers_by_number_of_bookings)
 
 
-def get_top_20_offerers_by_amount_table(departement_code=None):
+def get_top_20_offerers_by_amount_table(departement_code: str = None) -> pandas.DataFrame:
     top_20_offers_by_number_of_bookings = _query_get_top_20_offerers_by_booking_amounts(departement_code)
     return pandas.DataFrame(columns=['Structure', 'Nombre de réservations', 'Montant dépensé'],
                             data=top_20_offers_by_number_of_bookings)
 
 
-def get_not_cancelled_bookings_by_departement():
+def get_not_cancelled_bookings_by_departement() -> pandas.DataFrame:
     non_cancelled_booking_by_department = _query_non_cancelled_bookings_by_departement()
     return pandas.DataFrame(columns=['Departement', 'Nombre de réservations'],
                             data=non_cancelled_booking_by_department)
 
 
-def _query_get_top_20_offers_by_number_of_bookings(departement_code=None):
+def _query_get_top_20_offers_by_number_of_bookings(departement_code: str = None):
     if departement_code:
         query = text("""
             SELECT offer.name, SUM(booking.quantity) AS quantity, SUM(booking.quantity * booking.amount)
@@ -106,7 +106,7 @@ def _query_non_cancelled_bookings_by_departement():
         """).fetchall()
 
 
-def _query_get_top_20_offerers_by_number_of_bookings(departement_code=None):
+def _query_get_top_20_offerers_by_number_of_bookings(departement_code: str = None):
     if departement_code:
         query = text("""
             SELECT offerer.name, SUM(booking.quantity) AS quantity, SUM(booking.quantity * booking.amount)
@@ -138,7 +138,7 @@ def _query_get_top_20_offerers_by_number_of_bookings(departement_code=None):
     return db.engine.execute(query).fetchall()
 
 
-def _query_get_top_20_offerers_by_booking_amounts(departement_code=None):
+def _query_get_top_20_offerers_by_booking_amounts(departement_code: str = None):
     if departement_code:
         query = text("""
             SELECT offerer.name, SUM(booking.quantity) AS quantity, SUM(booking.quantity * booking.amount) AS booking_amount

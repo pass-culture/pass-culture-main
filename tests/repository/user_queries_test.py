@@ -278,7 +278,7 @@ class CountActivatedUsersByDepartementTest:
         assert number_of_active_users == 1
 
     @clean_database
-    def test_returns_0_when_no_active_user(self, app):
+    def test_returns_0_when_no_active_user_in_departement(self, app):
         # Given
         user_activated = create_user(can_book_free_offers=False, departement_code='74')
         user_not_activated = create_user(can_book_free_offers=False, email='email2@test.com')
@@ -291,7 +291,7 @@ class CountActivatedUsersByDepartementTest:
         assert number_of_active_users == 0
 
     @clean_database
-    def test_returns_0_when_no_active_user(self, app):
+    def test_returns_0_when_no_active_user_in_departement(self, app):
         # Given
         user_activated = create_user(can_book_free_offers=True, departement_code='76')
         user_not_activated = create_user(can_book_free_offers=False, email='email2@test.com')

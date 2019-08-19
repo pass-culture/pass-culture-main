@@ -92,7 +92,7 @@ class CountOffererByDepartementTest:
         assert number_of_offerers == 1
 
     @clean_database
-    def test_return_1_with_two_venues_but_only_on_in_the_departement(self, app):
+    def test_return_1_with_two_venues_but_only_one_in_the_departement(self, app):
         # Given
         user = create_user()
         offerer = create_offerer(siren='111111111')
@@ -230,7 +230,7 @@ class CountOffererWithStockByDepartementTest:
     def test_return_0_if_offerer_without_user_offerer(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer)
+        venue = create_venue(offerer, postal_code='76214')
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer)
         PcObject.save(offerer, stock)
@@ -245,10 +245,11 @@ class CountOffererWithStockByDepartementTest:
     def test_return_0_if_offerer_without_stock(self, app):
         # Given
         offerer = create_offerer()
+        venue = create_venue(offerer, postal_code='76214')
         user = create_user()
         user_offerer = create_user_offerer(user, offerer)
 
-        PcObject.save(user_offerer)
+        PcObject.save(user_offerer, venue)
 
         # When
         number_of_offerers = count_offerer_with_stock_by_departement('76')
@@ -275,14 +276,14 @@ class CountOffererWithStockByDepartementTest:
         assert number_of_offerers == 1
 
     @clean_database
-    def test_return_1_if_offerer_with_2_user_offerers_and_stock(self, app):
+    def test_counts_offerer_only_once_even_if_it_has_multiple_user_offerers_and_stock_in_departement(self, app):
         # Given
         user1 = create_user()
-        user2 = create_user(email='other@email.com')
+        user2 = create_user(email='associate@email.com')
         offerer = create_offerer()
         user_offerer1 = create_user_offerer(user1, offerer)
         user_offerer2 = create_user_offerer(user2, offerer)
-        venue = create_venue(offerer)
+        venue = create_venue(offerer, postal_code='76130')
         offer = create_offer_with_thing_product(venue)
         stock1 = create_stock(offer=offer)
         stock2 = create_stock(offer=offer)
@@ -295,7 +296,7 @@ class CountOffererWithStockByDepartementTest:
         assert number_of_offerers == 1
 
     @clean_database
-    def test_return_1_if_offerer_with_2_user_offerers_and_stock(self, app):
+    def test_return_1_when_filtered_by_departement(self, app):
         # Given
         first_user = create_user(email='first@example.net')
         first_offerer = create_offerer(siren='111111111')
@@ -318,6 +319,31 @@ class CountOffererWithStockByDepartementTest:
 
         # Then
         assert number_of_offerers == 1
+
+    @clean_database
+    def test_return_0_when_filtered_by_departement_and_none_is_found(self, app):
+        # Given
+        first_user = create_user(email='first@example.net')
+        first_offerer = create_offerer(siren='111111111')
+        first_user_offerer = create_user_offerer(first_user, first_offerer)
+        first_venue = create_venue(first_offerer, siret='1111111110001', postal_code='75018')
+        first_offer = create_offer_with_thing_product(first_venue)
+        first_stock = create_stock(offer=first_offer)
+
+        second_user = create_user(email='second@example.net')
+        second_offerer = create_offerer(siren='222222222')
+        second_user_offerer = create_user_offerer(second_user, second_offerer)
+        second_venue = create_venue(second_offerer, siret='2222222220001', postal_code='76230')
+        second_offer = create_offer_with_thing_product(second_venue)
+        second_stock = create_stock(offer=second_offer)
+
+        PcObject.save(first_stock, first_user_offerer, second_stock, second_user_offerer)
+
+        # When
+        number_of_offerers = count_offerer_with_stock_by_departement('42')
+
+        # Then
+        assert number_of_offerers == 0
 
 
 

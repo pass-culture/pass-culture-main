@@ -63,7 +63,7 @@ def test_offerer_not_isVirtual_and_has_no_siret_cannot_have_null_address_nor_pos
     PcObject.save(offerer)
 
     venue = create_venue(offerer, siret=None, name='Venue_name', booking_email='booking@email.com', address=None,
-                         postal_code=None, city=None, departement_code=None, is_virtual=False)
+                         postal_code=None, city=None, departement_code =None, is_virtual=False)
 
     # When
     with pytest.raises(ApiErrors):

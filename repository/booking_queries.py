@@ -27,7 +27,7 @@ def count_all_bookings() -> int:
     return Booking.query.count()
 
 
-def count_bookings_by_departement(departement_code) -> int:
+def count_bookings_by_departement(departement_code: str) -> int:
     return Booking.query \
         .join(User) \
         .filter(User.departementCode == departement_code) \
@@ -38,11 +38,11 @@ def count_non_cancelled_bookings() -> int:
     return Booking.query.filter_by(isCancelled=False).count()
 
 
-def count_non_cancelled_bookings_by_departement(departement_code) -> int:
-    return Booking.query\
-        .join(User)\
-        .filter(Booking.isCancelled == False)\
-        .filter(User.departementCode == departement_code)\
+def count_non_cancelled_bookings_by_departement(departement_code: str) -> int:
+    return Booking.query \
+        .join(User) \
+        .filter(Booking.isCancelled == False) \
+        .filter(User.departementCode == departement_code) \
         .count()
 
 
@@ -50,7 +50,7 @@ def count_all_cancelled_bookings() -> int:
     return Booking.query.filter_by(isCancelled=True).count()
 
 
-def count_all_cancelled_bookings_by_departement(departement_code) -> int:
+def count_all_cancelled_bookings_by_departement(departement_code: str) -> int:
     return Booking.query \
         .filter_by(isCancelled=True) \
         .join(User) \
@@ -218,11 +218,16 @@ def _query_get_used_or_non_cancelled_bookings():
         .filter((Booking.isUsed == True) | booking_on_event_finished_more_than_two_days_ago)
 
 
-def count_all_used_or_non_canceled_bookings(departement_code=None) -> int:
+def count_all_used_or_non_canceled_bookings() -> int:
     query = _query_get_used_or_non_cancelled_bookings()
 
-    if departement_code:
-        query = query.join(User).filter(User.departementCode == departement_code)
+    return query \
+        .count()
+
+
+def count_all_used_or_non_canceled_bookings_by_departement(departement_code: str) -> int:
+    query = _query_get_used_or_non_cancelled_bookings() \
+        .join(User).filter(User.departementCode == departement_code)
 
     return query \
         .count()

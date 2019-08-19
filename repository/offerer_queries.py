@@ -17,7 +17,7 @@ def count_offerer() -> int:
     return _query_offerers_with_user_offerer().count()
 
 
-def count_offerer_by_departement(departement_code) -> int:
+def count_offerer_by_departement(departement_code: str) -> int:
     return _query_offerers_with_user_offerer() \
         .join(Venue, Venue.managingOffererId == Offerer.id) \
         .filter(Venue.departementCode == departement_code) \
@@ -28,7 +28,7 @@ def count_offerer_with_stock() -> int:
     return _query_offerers_with_stock().count()
 
 
-def count_offerer_with_stock_by_departement(departement_code) -> int:
+def count_offerer_with_stock_by_departement(departement_code: str) -> int:
     return _query_offerers_with_stock()\
         .filter(Venue.departementCode == departement_code)\
         .count()

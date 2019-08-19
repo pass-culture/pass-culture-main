@@ -22,7 +22,10 @@ from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     count_non_cancelled_bookings, \
     count_all_cancelled_bookings_by_departement, \
     count_bookings_by_departement, \
-    count_all_used_or_non_cancelled_bookings
+    count_non_cancelled_bookings_by_departement, count_non_cancelled_bookings, count_bookings_by_departement, \
+    count_all_cancelled_bookings_by_departement, count_all_used_or_non_canceled_bookings_by_departement, \
+    count_all_used_or_non_canceled_bookings
+from scripts.dashboard import get_all_used_or_non_canceled_bookings
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, \
     create_deposit, \
@@ -278,6 +281,7 @@ class FindAllDigitalBookingsForOffererTest:
         # then
         assert len(bookings) == 1
         assert bookings[0] == booking_for_offerer2
+
 
     @clean_database
     def test_returns_only_bookings_for_specified_offerer_and_thing_offer_and_booking_date(self, app):
@@ -946,7 +950,7 @@ class GetAllCancelledBookingsCountTest:
         assert number_of_bookings == 0
 
     @clean_database
-    def test_returns_0_if_no_cancelled_bookings(self, app):
+    def test_returns_1_if_one_cancelled_bookings(self, app):
         # Given
         less_than_48_hours_ago = datetime.utcnow() - timedelta(hours=47)
         offerer = create_offerer()
@@ -1096,37 +1100,6 @@ class CountAllBookingsTest:
         # Then
         assert number_of_bookings == 2
 
-    @clean_database
-    def test_raises_error_on_booking_when_existing_booking_is_used_and_booking_date_is_after_last_update_on_stock(self,
-                                                                                                                  app):
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock_from_offer(offer, price=0, available=1)
-        user1 = create_user(email='used_booking@booking.com')
-        user2 = create_user(email='booked@email.com')
-        PcObject.save(stock)
-        date_after_stock_last_update = datetime.utcnow()
-        booking1 = create_booking(user1,
-                                  stock,
-                                  date_used=date_after_stock_last_update,
-                                  is_cancelled=False,
-                                  is_used=True)
-        PcObject.save(booking1)
-        date_after_last_booking = datetime.utcnow()
-        booking2 = create_booking(user2,
-                                  stock,
-                                  date_used=date_after_last_booking,
-                                  is_cancelled=False,
-                                  is_used=False)
-
-        # When
-        with pytest.raises(ApiErrors) as e:
-            PcObject.save(booking2)
-
-        # Then
-        assert e.value.errors['global'] == ['la quantité disponible pour cette offre est atteinte']
-
 
 class CountBookingsByDepartementTest:
     @clean_database
@@ -1175,37 +1148,6 @@ class CountBookingsByDepartementTest:
 
         # Then
         assert number_of_bookings == 1
-
-    @clean_database
-    def test_raises_error_on_booking_when_existing_booking_is_used_and_booking_date_is_after_last_update_on_stock(self,
-                                                                                                                  app):
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock_from_offer(offer, price=0, available=1)
-        user1 = create_user(email='used_booking@booking.com')
-        user2 = create_user(email='booked@email.com')
-        PcObject.save(stock)
-        date_after_stock_last_update = datetime.utcnow()
-        booking1 = create_booking(user1,
-                                  stock,
-                                  date_used=date_after_stock_last_update,
-                                  is_cancelled=False,
-                                  is_used=True)
-        PcObject.save(booking1)
-        date_after_last_booking = datetime.utcnow()
-        booking2 = create_booking(user2,
-                                  stock,
-                                  date_used=date_after_last_booking,
-                                  is_cancelled=False,
-                                  is_used=False)
-
-        # When
-        with pytest.raises(ApiErrors) as e:
-            PcObject.save(booking2)
-
-        # Then
-        assert e.value.errors['global'] == ['la quantité disponible pour cette offre est atteinte']
 
 
 class CountAllUsedOrNonCancelledBookingsTest:
@@ -1289,6 +1231,104 @@ class CountAllUsedOrNonCancelledBookingsTest:
         assert number_of_bookings == 0
 
 
+class CountAllUsedOrNonCancelledBookingsByDepartementTest:
+    @clean_database
+    def test_return_1_if_booking_used_in_filtered_departement(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+        user = create_user(departement_code='76')
+        booking = create_booking(user, stock, is_used=True)
+        PcObject.save(booking)
+
+        # When
+        number_of_bookings = count_all_used_or_non_canceled_bookings_by_departement('76')
+
+        # Then
+        assert number_of_bookings == 1
+
+    @clean_database
+    def test_return_0_if_booking_used_in_other_departement(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+        user = create_user(departement_code='54')
+        booking = create_booking(user, stock, is_used=True)
+        PcObject.save(booking)
+
+        # When
+        number_of_bookings = count_all_used_or_non_canceled_bookings_by_departement('76')
+
+        # Then
+        assert number_of_bookings == 0
+
+    @clean_database
+    def test_return_0_if_thing_booking_not_used_in_departement(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        thing_offer = create_offer_with_thing_product(venue)
+        thing_stock = create_stock(offer=thing_offer, price=0)
+        user = create_user(departement_code='76')
+        thing_booking = create_booking(user, thing_stock, is_used=False)
+        PcObject.save(thing_booking)
+
+        # When
+        number_of_bookings = count_all_used_or_non_canceled_bookings_by_departement('76')
+
+        # Then
+        assert number_of_bookings == 0
+
+    @clean_database
+    def test_return_1_if_event_booking_started_more_than_48_hours_ago_in_departement(self, app):
+        # Given
+        more_than_48_hours_ago = datetime.utcnow() - timedelta(hours=49)
+        two_days_ago = datetime.utcnow() - timedelta(hours=48)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        event_offer = create_offer_with_event_product(venue)
+        event_stock = create_stock(offer=event_offer, price=0, beginning_datetime=more_than_48_hours_ago,
+                                   end_datetime=two_days_ago,
+                                   booking_limit_datetime=more_than_48_hours_ago - timedelta(hours=1))
+        user = create_user(departement_code='76')
+        event_booking = create_booking(user, event_stock, is_used=False)
+        PcObject.save(event_booking)
+
+        # When
+        number_of_bookings = count_all_used_or_non_canceled_bookings_by_departement('76')
+
+        # Then
+        assert number_of_bookings == 1
+
+    @clean_database
+    def test_return_0_if_event_booking_started_47_hours_ago_in_departement(self, app):
+        # Given
+        less_than_48_hours_ago = datetime.utcnow() - timedelta(hours=47)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        event_offer = create_offer_with_event_product(venue)
+        event_stock = create_stock(
+            offer=event_offer,
+            price=0,
+            beginning_datetime=less_than_48_hours_ago,
+            end_datetime=less_than_48_hours_ago + timedelta(hours=1),
+            booking_limit_datetime=less_than_48_hours_ago - timedelta(hours=1)
+        )
+        user = create_user(departement_code='76')
+        event_booking = create_booking(user, event_stock, is_used=False)
+        PcObject.save(event_booking)
+
+        # When
+        number_of_bookings = count_all_used_or_non_canceled_bookings_by_departement('76')
+
+        # Then
+        assert number_of_bookings == 0
+
+
     @clean_database
     def test_counts_2_out_of_3_when_filtered_by_user_departement(self, app):
         # Given
@@ -1309,7 +1349,7 @@ class CountAllUsedOrNonCancelledBookingsTest:
         PcObject.save(booking1, booking2, booking3)
 
         # When
-        number_of_bookings = count_all_used_or_non_canceled_bookings('41')
+        number_of_bookings = count_all_used_or_non_canceled_bookings_by_departement('41')
 
         # Then
         assert number_of_bookings == 2

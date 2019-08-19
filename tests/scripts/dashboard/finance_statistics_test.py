@@ -125,7 +125,7 @@ class GetTotalAmountSpentTest:
         assert total_amount_spent == 20
 
     @clean_database
-    def test_returns_20_if_two_bookings_but_only_one_the_filtered_departement(self, app):
+    def test_returns_15_if_two_bookings_but_only_one_the_filtered_departement(self, app):
         # Given
         user67 = create_user(email='email67@test.com', departement_code='67')
         create_deposit(user67, amount=500)

@@ -7,7 +7,6 @@ from models import PcObject, EventType, ThingType
 from scripts.dashboard.diversification_statistics import get_offerers_with_offer_available_on_discovery_count, \
     get_offerers_with_non_cancelled_bookings_count, get_offers_with_user_offerer_and_stock_count, \
     get_offers_available_on_discovery_count, get_offers_with_non_cancelled_bookings_count, \
-    get_all_used_or_non_canceled_bookings, \
     _query_get_offer_counts_grouped_by_type_and_medium, _get_offers_grouped_by_type_and_medium, \
     _get_offer_counts_grouped_by_type_and_medium, _query_get_booking_counts_grouped_by_type_and_medium, \
     get_offerer_count, get_offerer_with_stock_count, get_all_bookings_count, count_all_cancelled_bookings

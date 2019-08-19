@@ -2,25 +2,23 @@ import pandas
 
 from models import Offerer, UserOfferer, Venue, Offer, Stock, Booking, EventType, ThingType
 from models.db import db
-from repository.booking_queries import count_all_bookings, \
-    count_all_cancelled_bookings as query_count_all_cancelled_bookings, \
-    count_bookings_by_departement, \
-    count_all_cancelled_bookings_by_departement, \
-    count_all_used_or_non_canceled_bookings
+from repository.booking_queries import count_all_used_or_non_canceled_bookings_by_departement, count_all_bookings, \
+    count_all_cancelled_bookings as query_count_all_cancelled_bookings, count_bookings_by_departement, \
+    count_all_cancelled_bookings_by_departement
 from repository.offer_queries import get_active_offers_ids_query
 from repository.offerer_queries import count_offerer, count_offerer_with_stock, count_offerer_by_departement, \
     count_offerer_with_stock_by_departement
 
 
-def get_offerer_count(departement_code=None) -> int:
+def get_offerer_count(departement_code: str = None) -> int:
     return count_offerer_by_departement(departement_code) if departement_code else count_offerer()
 
 
-def get_offerer_with_stock_count(departement_code=None) -> int:
+def get_offerer_with_stock_count(departement_code: str = None) -> int:
     return count_offerer_with_stock_by_departement(departement_code) if departement_code else count_offerer_with_stock()
 
 
-def get_offerers_with_offer_available_on_discovery_count(departement_code=None) -> int:
+def get_offerers_with_offer_available_on_discovery_count(departement_code: str = None) -> int:
     active_offers_ids = get_active_offers_ids_query()
     query = Offerer.query.join(Venue).join(Offer).filter(Offer.id.in_(active_offers_ids))
 
@@ -33,7 +31,7 @@ def get_offerers_with_offer_available_on_discovery_count(departement_code=None) 
         .count()
 
 
-def get_offerers_with_non_cancelled_bookings_count(departement_code=None) -> int:
+def get_offerers_with_non_cancelled_bookings_count(departement_code: str = None) -> int:
     query = Offerer.query.join(Venue)
 
     if departement_code:
@@ -48,7 +46,7 @@ def get_offerers_with_non_cancelled_bookings_count(departement_code=None) -> int
         .count()
 
 
-def get_offers_with_user_offerer_and_stock_count(departement_code=None) -> int:
+def get_offers_with_user_offerer_and_stock_count(departement_code: str = None) -> int:
     query = Offer.query.join(Venue)
 
     if departement_code:
@@ -62,7 +60,7 @@ def get_offers_with_user_offerer_and_stock_count(departement_code=None) -> int:
         .count()
 
 
-def get_offers_available_on_discovery_count(departement_code=None) -> int:
+def get_offers_available_on_discovery_count(departement_code: str = None) -> int:
     offer_ids_subquery = get_active_offers_ids_query()
     query = Offer.query.filter(Offer.id.in_(offer_ids_subquery))
 
@@ -72,7 +70,7 @@ def get_offers_available_on_discovery_count(departement_code=None) -> int:
     return query.count()
 
 
-def get_offers_with_non_cancelled_bookings_count(departement_code=None) -> int:
+def get_offers_with_non_cancelled_bookings_count(departement_code: str = None) -> int:
     query = Offer.query.join(Stock).join(Booking)
 
     if departement_code:
@@ -84,15 +82,15 @@ def get_offers_with_non_cancelled_bookings_count(departement_code=None) -> int:
         .count()
 
 
-def get_all_bookings_count(departement_code=None) -> int:
+def get_all_bookings_count(departement_code: str = None) -> int:
     return count_bookings_by_departement(departement_code) if departement_code else count_all_bookings()
 
 
-def get_all_used_or_non_canceled_bookings(departement_code=None) -> int:
-    return count_all_used_or_non_canceled_bookings(departement_code)
+def get_all_used_or_non_canceled_bookings(departement_code: str = None) -> int:
+    return count_all_used_or_non_canceled_bookings_by_departement(departement_code)
 
 
-def count_all_cancelled_bookings(departement_code=None):
+def count_all_cancelled_bookings(departement_code: str = None):
     return count_all_cancelled_bookings_by_departement(
         departement_code) if departement_code else query_count_all_cancelled_bookings()
 
