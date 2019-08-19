@@ -18,6 +18,7 @@ class Details extends PureComponent {
   render() {
     const { bookingPath, match } = this.props
     const showDetails = getAreDetailsVisible(match)
+
     return (
       <Fragment>
         <Route

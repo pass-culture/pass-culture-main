@@ -1,19 +1,13 @@
 import moment from 'moment'
 import PropTypes from 'prop-types'
-import createDecorator from 'final-form-calculate'
 import React, { Component, Fragment } from 'react'
 import { Field, Form as FinalForm, FormSpy } from 'react-final-form'
 
-import {
-  getCalendarProvider,
-  parseHoursByStockId,
-  onCalendarUpdates,
-  onTimeUpdates,
-} from '../helpers'
+import { getCalendarProvider, parseHoursByStockId, } from '../utils'
 import { DatePickerField, HiddenField, SelectField } from '../../../forms/inputs'
+import decorators from './decorators/decorators'
 
 const spySubscriptions = {
-  // complete list of subscriptions
   // https://github.com/final-form/final-form#formstate
   dirty: true,
   errors: true,
@@ -23,19 +17,13 @@ const spySubscriptions = {
   values: true,
 }
 
-const decorators = [
-  createDecorator(
-    { field: 'date', updates: onCalendarUpdates },
-    { field: 'time', updates: onTimeUpdates }
-  ),
-]
-
-const datepickerPopper = React.createRef()
-
 class BookingForm extends Component {
   handleOnChange = input => date => {
-    // legacy ancien calendrier
     input.onChange({ date })
+  }
+
+  datepickerPopper = () => {
+    React.createRef()
   }
 
   renderField = values => ({ input }) => {
@@ -55,7 +43,7 @@ class BookingForm extends Component {
         onChange={this.handleOnChange(input)}
         placeholder={moment().format(dateFormat)}
         popperPlacement="bottom"
-        popperRefContainer={datepickerPopper}
+        popperRefContainer={this.datepickerPopper()}
         provider={calendarDates}
         readOnly={calendarReadOnly}
         selected={selectedValue}
@@ -93,7 +81,7 @@ class BookingForm extends Component {
               />
               <div
                 id="datepicker-popper-container"
-                ref={datepickerPopper}
+                ref={this.datepickerPopper()}
               />
               {hoursAndPrices && (
                 <SelectField

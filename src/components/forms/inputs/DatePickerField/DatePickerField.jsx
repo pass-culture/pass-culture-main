@@ -4,34 +4,8 @@ import PropTypes from 'prop-types'
 import { withSizes } from 'react-sizes'
 import DatePicker from 'react-datepicker'
 
-import InputLabel from '../InputLabel'
-
-const DatePickerCustomInput = React.forwardRef((props, ref) => {
-  const { readOnly, value } = props
-  const hasvalue = value && typeof value === 'string' && value.trim() !== ''
-  let cssclass = (hasvalue && 'selected') || ''
-  cssclass = `${cssclass} ${(readOnly && 'read-only') || ''}`
-  return (
-    <div className={`react-datepicker__input-container_wrapper ${cssclass}`}>
-      <input
-        {...props}
-        className="pc-final-form-datepicker-input"
-        readOnly
-        ref={ref}
-      />
-    </div>
-  )
-})
-
-DatePickerCustomInput.defaultProps = {
-  readOnly: false,
-  value: null,
-}
-
-DatePickerCustomInput.propTypes = {
-  readOnly: PropTypes.bool,
-  value: PropTypes.string,
-}
+import DatePickerCustomField from './DatePickerCustomField/DatePickerCustomField'
+import InputLabel from '../../InputLabel'
 
 const buildPopperContainer = ({ current }) => ({ children }) => {
   if (!current) return null
@@ -39,30 +13,30 @@ const buildPopperContainer = ({ current }) => ({ children }) => {
 }
 
 const DatePickerField = ({
-  className,
-  clearable,
-  dateFormat,
-  hideToday,
-  id,
-  label,
-  locale,
-  name,
-  placeholder,
-  provider,
-  onChange,
-  popperRefContainer,
-  readOnly,
-  required,
-  // NOTE -> Autres props du react-datepicker passées en option
-  // github.com/Hacker0x01/react-datepicker/blob/master/docs/datepicker.md
-  ...rest
-}) => {
-  const moreprops = { ...rest }
+                           className,
+                           clearable,
+                           dateFormat,
+                           hideToday,
+                           id,
+                           label,
+                           locale,
+                           name,
+                           placeholder,
+                           provider,
+                           onChange,
+                           popperRefContainer,
+                           readOnly,
+                           required,
+                           // NOTE -> Autres props du react-datepicker passées en option
+                           // github.com/Hacker0x01/react-datepicker/blob/master/docs/datepicker.md
+                           ...rest
+                         }) => {
+  const moreProps = { ...rest }
   if (popperRefContainer) {
-    moreprops.popperContainer = buildPopperContainer(popperRefContainer)
+    moreProps.popperContainer = buildPopperContainer(popperRefContainer)
   }
   if (!hideToday) {
-    moreprops.todayButton = `Aujourd'hui`
+    moreProps.todayButton = `Aujourd'hui`
   }
   const isClearable = !readOnly && clearable
   const inputName = id || name
@@ -75,10 +49,15 @@ const DatePickerField = ({
         {label && <InputLabel
           label={label}
           required={required}
-                  />}
+        />}
         <div className="pc-final-form-inner">
           <DatePicker
-            customInput={<DatePickerCustomInput readOnly={readOnly} />}
+            {...moreProps}
+            customInput={
+              <DatePickerCustomField
+                ref={popperRefContainer}
+              />
+            }
             dateFormat={dateFormat}
             id={inputName}
             includeDates={provider}
@@ -88,7 +67,6 @@ const DatePickerField = ({
             placeholderText={placeholder}
             readOnly={readOnly}
             shouldCloseOnSelect
-            {...moreprops}
           />
         </div>
       </label>
