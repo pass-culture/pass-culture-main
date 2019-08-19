@@ -46,10 +46,12 @@ const DatePickerField = ({
         className="pc-final-form-datepicker"
         htmlFor={inputName}
       >
-        {label && <InputLabel
-          label={label}
-          required={required}
-        />}
+        {label && (
+          <InputLabel
+            label={label}
+            required={required}
+          />
+        )}
         <div className="pc-final-form-inner">
           <DatePicker
             {...moreProps}

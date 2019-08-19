@@ -27,10 +27,7 @@ const timeSelectBox = Selector('#booking-form-time-picker-field')
 const dateSelectBox = Selector('#booking-form-date-picker-field')
 const myBookingsMenuButton = Selector('#main-menu-navigation a').nth(2)
 
-const pickerPopper = Selector('#datepicker-popper-container')
-const selectableDates = pickerPopper.find(
-  '.react-datepicker__day:not(.react-datepicker__day--disabled)'
-)
+const selectableDates = Selector('.react-datepicker__day:not(.react-datepicker__day--disabled)')
 const selectedTime = timeSelectBox.find('.ant-select-selection-selected-value')
 
 let offerPage = null

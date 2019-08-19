@@ -5,12 +5,13 @@ import decorators from './decorators/decorators'
 import BookingFormContent from './BookingFormContent/BookingFormContent'
 
 class BookingForm extends Component {
-  handleOnChange = (input) => (date) => {
+  handleOnChange = (input) => (date, event) => {
     input.onChange({ date })
+    event.preventDefault()
   }
 
   render() {
-    const { initialValues, onSubmit } = this.props
+    const { className, formId, initialValues, isEvent, isReadOnly, onMutation, onSubmit} = this.props
 
     return (
       <Form
@@ -18,8 +19,12 @@ class BookingForm extends Component {
         initialValues={initialValues}
         onSubmit={onSubmit}
         render={BookingFormContent({
+          className,
+          formId,
           handleOnChange: this.handleOnChange,
-          props: this.props,
+          isEvent,
+          isReadOnly,
+          onMutation
         })}
       />
     )

@@ -29,7 +29,7 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
 
   it('should match snapshot', () => {
     // when
-    const MyComponent = BookingFormContent({ handleChange, props })
+    const MyComponent = BookingFormContent({ handleChange, ...props })
     const wrapper = shallow(<MyComponent handleSubmit={handleSubmit} values={values} />)
 
     // then
@@ -39,7 +39,7 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
   describe('render', () => {
     it('should render a FormSpy component with the right props', () => {
       // when
-      const MyComponent = BookingFormContent({ handleChange, props })
+      const MyComponent = BookingFormContent({ handleChange, ...props })
       const wrapper = shallow(<MyComponent handleSubmit={handleSubmit} values={values} />)
 
       // then
@@ -60,7 +60,7 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
 
     it('should render a form element with the proper props when is not read only mode', () => {
       // when
-      const MyComponent = BookingFormContent({ handleChange, props })
+      const MyComponent = BookingFormContent({ handleChange, ...props })
       const wrapper = shallow(<MyComponent handleSubmit={handleSubmit} values={values} />)
 
       // then
@@ -76,7 +76,7 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
       props.isReadOnly = true
 
       // when
-      const MyComponent = BookingFormContent({ handleChange, props })
+      const MyComponent = BookingFormContent({ handleChange, ...props })
       const wrapper = shallow(<MyComponent handleSubmit={handleSubmit} values={values} />)
 
       // then
@@ -94,7 +94,7 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
 
       it('should render a Field component with the proper props', () => {
         // when
-        const MyComponent = BookingFormContent({ handleChange, props })
+        const MyComponent = BookingFormContent({ handleChange, ...props })
         const wrapper = shallow(<MyComponent handleSubmit={handleSubmit} values={values} />)
 
         // then
@@ -106,7 +106,7 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
 
       it('should render a SelectField component with the right props when no date has been selected', () => {
         // when
-        const MyComponent = BookingFormContent({ handleChange, props })
+        const MyComponent = BookingFormContent({ handleChange, ...props })
         const wrapper = shallow(<MyComponent handleSubmit={handleSubmit} values={values} />)
 
         // then
@@ -133,7 +133,7 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
         props.isEvent = false
 
         // when
-        const MyComponent = BookingFormContent({ handleChange, props })
+        const MyComponent = BookingFormContent({ handleChange, ...props })
         const wrapper = shallow(<MyComponent handleSubmit={handleSubmit} values={values} />)
 
         // then
