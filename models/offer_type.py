@@ -236,7 +236,7 @@ class ThingType(SearchableType):
     INSTRUMENT = {
         'proLabel': "Vente d’instruments de musique",
         'appLabel': "Achat d’instruments de musique",
-        'offlineOnly': False,
+        'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Pratiquer",
         'description': "Jamais osé monter sur les planches ? Tenter d’apprendre la guitare, le piano ou la photographie ? Partir cinq jours découvrir un autre monde ? Bricoler dans un fablab, ou pourquoi pas, enregistrer votre premier titre ?",
