@@ -26,5 +26,4 @@ Spectacle vivant,Physique,EventType.SPECTACLE_VIVANT
 Spectacle vivant — abonnements,Physique,ThingType.SPECTACLE_VIVANT_ABO
 Vente d'œuvres d'art,Numérique,ThingType.OEUVRE_ART
 Vente d'œuvres d'art,Physique,ThingType.OEUVRE_ART
-Vente d’instruments de musique,Numérique,ThingType.INSTRUMENT
 Vente d’instruments de musique,Physique,ThingType.INSTRUMENT
