@@ -1,10 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-<<<<<<< HEAD
-exports[`src | components | pages | search | BookingForm snapshot should match the snapshot 1`] = `
-=======
 exports[`src | components | layout | Booking | BookingForm should match snapshot 1`] = `
->>>>>>> (PC-2218): refactored BookingForm to make it testable
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <BookingForm
@@ -53,98 +49,6 @@ ShallowWrapper {
         "initialValues": Object {},
         "onSubmit": [MockFunction],
         "render": [Function],
-<<<<<<< HEAD
-        "validate": null,
-      },
-      "ref": null,
-      "rendered": null,
-      "type": [Function],
-    },
-  ],
-  Symbol(enzyme.__options__): Object {
-    "adapter": ReactSixteenAdapter {
-      "options": Object {
-        "enableComponentDidUpdateOnSetState": true,
-        "legacyContextMode": "parent",
-        "lifecycles": Object {
-          "componentDidUpdate": Object {
-            "onSetState": true,
-          },
-          "getChildContext": Object {
-            "calledByRenderer": false,
-          },
-          "getDerivedStateFromError": true,
-          "getDerivedStateFromProps": Object {
-            "hasShouldComponentUpdateBug": false,
-          },
-          "getSnapshotBeforeUpdate": true,
-          "setState": Object {
-            "skipsComponentDidUpdateOnNullish": true,
-          },
-        },
-      },
-    },
-    Symbol(enzyme.__providerValues__): undefined,
-  },
-  Symbol(enzyme.__providerValues__): Map {},
-  Symbol(enzyme.__childContext__): null,
-}
-`;
-
-exports[`src | components | pages | search | BookingForm snapshot should match the snapshot when is read-only 1`] = `
-ShallowWrapper {
-  Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <BookingForm
-    className=""
-    disabled={false}
-    formId="super-form-id"
-    initialValues={null}
-    isEvent={false}
-    isReadOnly={true}
-    onMutation={[Function]}
-    onSubmit={[Function]}
-  />,
-  Symbol(enzyme.__renderer__): Object {
-    "batchedUpdates": [Function],
-    "checkPropTypes": [Function],
-    "getNode": [Function],
-    "render": [Function],
-    "simulateError": [Function],
-    "simulateEvent": [Function],
-    "unmount": [Function],
-  },
-  Symbol(enzyme.__node__): Object {
-    "instance": null,
-    "key": undefined,
-    "nodeType": "class",
-    "props": Object {
-      "decorators": Array [
-        [Function],
-      ],
-      "initialValues": Object {},
-      "onSubmit": [Function],
-      "render": [Function],
-      "validate": null,
-    },
-    "ref": null,
-    "rendered": null,
-    "type": [Function],
-  },
-  Symbol(enzyme.__nodes__): Array [
-    Object {
-      "instance": null,
-      "key": undefined,
-      "nodeType": "class",
-      "props": Object {
-        "decorators": Array [
-          [Function],
-        ],
-        "initialValues": Object {},
-        "onSubmit": [Function],
-        "render": [Function],
-        "validate": null,
-=======
->>>>>>> (PC-2218): refactored BookingForm to make it testable
       },
       "ref": null,
       "rendered": null,

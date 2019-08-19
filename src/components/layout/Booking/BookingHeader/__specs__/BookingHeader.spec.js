@@ -3,18 +3,11 @@ import { shallow } from 'enzyme'
 
 import BookingHeader from '../BookingHeader'
 
-<<<<<<< HEAD
-describe('src | components | booking | BookingHeader', () => {
-  it('should match the snapshot', () => {
-    // given
-    const props = {
-=======
 describe('src | components | layout | Booking | BookingHeader ', () => {
   let props
 
   beforeEach(() => {
     props = {
->>>>>>> (PC-2218): refactored BookingForm to make it testable
       recommendation: {
         offer: {
           name: 'Titre de la recommendation',
@@ -23,13 +16,9 @@ describe('src | components | layout | Booking | BookingHeader ', () => {
         },
       },
     }
-<<<<<<< HEAD
-
-=======
   })
 
   it('should match snapshot', () => {
->>>>>>> (PC-2218): refactored BookingForm to make it testable
     // when
     const wrapper = shallow(<BookingHeader {...props} />)
 
