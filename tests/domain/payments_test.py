@@ -10,13 +10,15 @@ from domain.payments import create_payment_for_booking, filter_out_already_paid_
     create_all_payments_details, make_transaction_label, group_payments_by_status, \
     filter_out_bookings_without_cost, keep_only_pending_payments, keep_only_not_processable_payments, apply_banishment, \
     UnmatchedPayments
-from domain.reimbursement import BookingReimbursement, ReimbursementRules
+from domain.reimbursement import BookingReimbursement, CURRENT_RULES
 from models import Offer, Venue, Booking, Offerer
 from models.payment import Payment
 from models.payment_status import TransactionStatus
 from tests.test_utils import create_booking, create_stock, create_user, create_offerer, create_venue, create_payment, \
     create_offer_with_thing_product, create_bank_information
 
+
+PHYSICAL_OFFER_CURRENT_RULE = CURRENT_RULES[1]
 
 @freeze_time('2018-10-15 09:21:34')
 def test_create_payment_for_booking_with_common_information(app):
@@ -29,7 +31,7 @@ def test_create_payment_for_booking_with_common_information(app):
     offerer = create_offerer()
     offerer_bank_information = create_bank_information(bic='QSDFGH8Z555', iban='CF13QSDFGH456789', offerer=offerer)
     booking.stock.offer.venue.managingOfferer = offerer
-    booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
+    booking_reimbursement = BookingReimbursement(booking, PHYSICAL_OFFER_CURRENT_RULE, Decimal(10))
 
     # when
     payment = create_payment_for_booking(booking_reimbursement)
@@ -37,8 +39,8 @@ def test_create_payment_for_booking_with_common_information(app):
     # then
     assert payment.booking == booking
     assert payment.amount == Decimal(10)
-    assert payment.reimbursementRule == ReimbursementRules.PHYSICAL_OFFERS.value.description
-    assert payment.reimbursementRate == ReimbursementRules.PHYSICAL_OFFERS.value.rate
+    assert payment.reimbursementRule == PHYSICAL_OFFER_CURRENT_RULE.description
+    assert payment.reimbursementRate == PHYSICAL_OFFER_CURRENT_RULE.rate
     assert payment.comment is None
     assert payment.author == 'batch'
     assert payment.transactionLabel == 'pass Culture Pro - remboursement 2nde quinzaine 10-2018'
@@ -58,7 +60,7 @@ def test_create_payment_for_booking_when_iban_is_on_venue_should_take_payment_in
     booking.stock.offer = Offer()
     booking.stock.offer.venue = venue
     booking.stock.offer.venue.managingOfferer = offerer
-    booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
+    booking_reimbursement = BookingReimbursement(booking, PHYSICAL_OFFER_CURRENT_RULE, Decimal(10))
 
     # when
     payment = create_payment_for_booking(booking_reimbursement)
@@ -82,7 +84,7 @@ def test_create_payment_for_booking_when_no_iban_on_venue_should_take_payment_in
     booking.stock.offer = Offer()
     booking.stock.offer.venue = venue
     booking.stock.offer.venue.managingOfferer = offerer
-    booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
+    booking_reimbursement = BookingReimbursement(booking, PHYSICAL_OFFER_CURRENT_RULE, Decimal(10))
 
     # when
     payment = create_payment_for_booking(booking_reimbursement)
@@ -106,7 +108,7 @@ def test_create_payment_for_booking_takes_recipient_name_and_siren_from_offerer(
 
     booking.stock.offer.venue = venue
     booking.stock.offer.venue.managingOfferer = offerer
-    booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
+    booking_reimbursement = BookingReimbursement(booking, PHYSICAL_OFFER_CURRENT_RULE, Decimal(10))
 
     # when
     payment = create_payment_for_booking(booking_reimbursement)
@@ -124,7 +126,7 @@ def test_create_payment_for_booking_with_not_processable_status_when_no_bank_inf
     booking.stock.offer = Offer()
     booking.stock.offer.venue = Venue()
     booking.stock.offer.venue.managingOfferer = create_offerer(name='Test Offerer')
-    booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
+    booking_reimbursement = BookingReimbursement(booking, PHYSICAL_OFFER_CURRENT_RULE, Decimal(10))
 
     # when
     payment = create_payment_for_booking(booking_reimbursement)
@@ -146,7 +148,7 @@ def test_create_payment_for_booking_with_pending_status(app):
     offerer = create_offerer()
     booking.stock.offer.venue.managingOfferer = offerer
     offerer_bank_information = create_bank_information(bic='QSDFGH8Z555', iban='CF13QSDFGH456789', offerer=offerer)
-    booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
+    booking_reimbursement = BookingReimbursement(booking, PHYSICAL_OFFER_CURRENT_RULE, Decimal(10))
 
     # when
     payment = create_payment_for_booking(booking_reimbursement)
@@ -163,9 +165,9 @@ class FilterOutAlreadyPaidForBookingsTest:
         # Given
         booking_paid = Booking()
         booking_paid.payments = [Payment()]
-        booking_reimbursement1 = BookingReimbursement(booking_paid, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
+        booking_reimbursement1 = BookingReimbursement(booking_paid, PHYSICAL_OFFER_CURRENT_RULE, Decimal(10))
         booking_not_paid = Booking()
-        booking_reimbursement2 = BookingReimbursement(booking_not_paid, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
+        booking_reimbursement2 = BookingReimbursement(booking_not_paid, PHYSICAL_OFFER_CURRENT_RULE, Decimal(10))
         booking_reimbursements = [booking_reimbursement1, booking_reimbursement2]
 
         # When
@@ -179,11 +181,11 @@ class FilterOutAlreadyPaidForBookingsTest:
         # Given
         booking_paid1 = Booking()
         booking_paid1.payments = [Payment()]
-        booking_reimbursement1 = BookingReimbursement(booking_paid1, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
+        booking_reimbursement1 = BookingReimbursement(booking_paid1, PHYSICAL_OFFER_CURRENT_RULE, Decimal(10))
 
         booking_paid2 = Booking()
         booking_paid2.payments = [Payment()]
-        booking_reimbursement2 = BookingReimbursement(booking_paid2, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
+        booking_reimbursement2 = BookingReimbursement(booking_paid2, PHYSICAL_OFFER_CURRENT_RULE, Decimal(10))
 
         # When
         bookings_not_paid = filter_out_already_paid_for_bookings([booking_reimbursement1, booking_reimbursement2])
@@ -202,8 +204,8 @@ class FilterOutAlreadyPaidForBookingsTest:
 class FilterOutBookingsWithoutCost:
     def test_it_returns_reimbursements_on_bookings_with_reimbursed_value_greater_than_zero(self):
         # given
-        reimbursement1 = BookingReimbursement(Booking(), ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
-        reimbursement2 = BookingReimbursement(Booking(), ReimbursementRules.PHYSICAL_OFFERS, Decimal(0))
+        reimbursement1 = BookingReimbursement(Booking(), PHYSICAL_OFFER_CURRENT_RULE, Decimal(10))
+        reimbursement2 = BookingReimbursement(Booking(), PHYSICAL_OFFER_CURRENT_RULE, Decimal(0))
 
         # when
         bookings_reimbursements_with_cost = filter_out_bookings_without_cost([reimbursement1, reimbursement2])
@@ -214,8 +216,8 @@ class FilterOutBookingsWithoutCost:
 
     def test_it_returns_an_empty_list_if_everything_has_a_cost(self):
         # given
-        reimbursement1 = BookingReimbursement(Booking(), ReimbursementRules.PHYSICAL_OFFERS, Decimal(0))
-        reimbursement2 = BookingReimbursement(Booking(), ReimbursementRules.PHYSICAL_OFFERS, Decimal(0))
+        reimbursement1 = BookingReimbursement(Booking(), PHYSICAL_OFFER_CURRENT_RULE, Decimal(0))
+        reimbursement2 = BookingReimbursement(Booking(), PHYSICAL_OFFER_CURRENT_RULE, Decimal(0))
 
         # when
         bookings_reimbursements_with_cost = filter_out_bookings_without_cost([reimbursement1, reimbursement2])

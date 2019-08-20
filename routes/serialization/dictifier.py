@@ -19,7 +19,7 @@ def _(booking_reimbursement, column=None, includes: Iterable = ()):
     dict_booking = as_dict(booking_reimbursement.booking, includes=includes)
     dict_booking['token'] = dict_booking['token'] if dict_booking['isUsed'] else None
     dict_booking['reimbursed_amount'] = booking_reimbursement.reimbursed_amount
-    dict_booking['reimbursement_rule'] = booking_reimbursement.reimbursement.value.description
+    dict_booking['reimbursement_rule'] = booking_reimbursement.reimbursement.description
     return dict_booking
 
 

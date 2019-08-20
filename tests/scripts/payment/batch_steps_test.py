@@ -5,6 +5,7 @@ import pytest
 from freezegun import freeze_time
 from lxml.etree import DocumentInvalid
 
+from domain.reimbursement import ReimbursementRules
 from models import PcObject
 from models.feature import FeatureToggle
 from models.payment import Payment
@@ -200,7 +201,7 @@ class GenerateNewPaymentsTest:
             assert sum(p.amount for p in pending) == 30000
 
         @clean_database
-        def test_does_not_reimburse_offerer_for_venues_with_bookings_exceeding_20000_euros(self, app):
+        def test_does_reimburse_offerer_with_degressive_rate_for_venues_with_bookings_exceeding_20000_euros(self, app):
             # Given
             offerer1 = create_offerer(siren='123456789')
             PcObject.save(offerer1)
@@ -226,9 +227,9 @@ class GenerateNewPaymentsTest:
             pending, not_processable = generate_new_payments()
 
             # Then
-            assert len(pending) == 2
+            assert len(pending) == 3
             assert len(not_processable) == 0
-            assert sum(p.amount for p in pending) == 20000
+            assert sum(p.amount for p in pending) == 48500
 
 
 class ConcatenatePaymentsWithErrorsAndRetriesTest:

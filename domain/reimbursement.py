@@ -85,14 +85,71 @@ class MaxReimbursementByOfferer(ReimbursementRule):
             return kwargs['cumulative_value'] > 20000
 
 
+class ReimbursementRateByVenueBetween20000And40000(ReimbursementRule):
+    rate = Decimal(0.95)
+    description = 'Remboursement à 95% entre 20 000 € et 40 000 € par venue'
+    valid_from = None
+    valid_until = None
+
+    def is_relevant(self, booking: Booking, **kwargs):
+        if booking.stock.resolvedOffer.product.isDigital:
+            return False
+        else:
+            return 20000 < kwargs['cumulative_value'] <= 40000
+
+
+class ReimbursementRateByVenueBetween40000And100000(ReimbursementRule):
+    rate = Decimal(0.85)
+    description = 'Remboursement à 85% entre 40 000 € et 100 000 € par venue'
+    valid_from = None
+    valid_until = None
+
+    def is_relevant(self, booking: Booking, **kwargs):
+        if booking.stock.resolvedOffer.product.isDigital:
+            return False
+        else:
+            return 40000 < kwargs['cumulative_value'] <= 100000
+
+
+class ReimbursementRateByVenueAbove100000(ReimbursementRule):
+    rate = Decimal(0.65)
+    description = 'Remboursement à 65% au dessus de 100 000 € par venue'
+    valid_from = None
+    valid_until = None
+
+    def is_relevant(self, booking: Booking, **kwargs):
+        if booking.stock.resolvedOffer.product.isDigital:
+            return False
+        else:
+            return kwargs['cumulative_value'] > 100000
+
+
 class ReimbursementRules(Enum):
     DIGITAL_THINGS = DigitalThingsReimbursement()
     PHYSICAL_OFFERS = PhysicalOffersReimbursement()
+    BETWEEN_20000_AND_40000_EUROS = ReimbursementRateByVenueBetween20000And40000()
+    BETWEEN_40000_AND_100000_EUROS = ReimbursementRateByVenueBetween40000And100000()
+    ABOVE_100000_EUROS = ReimbursementRateByVenueAbove100000()
     MAX_REIMBURSEMENT = MaxReimbursementByOfferer()
 
 
+NEW_RULES = [
+    DigitalThingsReimbursement(),
+    PhysicalOffersReimbursement(),
+    ReimbursementRateByVenueBetween20000And40000(),
+    ReimbursementRateByVenueBetween40000And100000(),
+    ReimbursementRateByVenueAbove100000()
+]
+
+CURRENT_RULES = [
+    DigitalThingsReimbursement(),
+    PhysicalOffersReimbursement(),
+    MaxReimbursementByOfferer()
+]
+
+
 class BookingReimbursement:
-    def __init__(self, booking: Booking, reimbursement: ReimbursementRules, reimbursed_amount: Decimal):
+    def __init__(self, booking: Booking, reimbursement: ReimbursementRule, reimbursed_amount: Decimal):
         self.booking = booking
         self.reimbursement = reimbursement
         self.reimbursed_amount = reimbursed_amount
@@ -155,7 +212,6 @@ class ReimbursementDetails:
             payment_current_status = payment.currentStatus.status
             payment_current_status_details = payment.currentStatus.detail
 
-
             human_friendly_status = self._get_reimbursement_current_status_in_details(payment_current_status,
                                                                                       payment_current_status_details)
 
@@ -196,7 +252,8 @@ class ReimbursementDetails:
         ]
 
 
-def find_all_booking_reimbursements(bookings: List[Booking]):
+def find_all_booking_reimbursements(bookings: List[Booking],
+                                    active_rules: List[ReimbursementRule]) -> List[BookingReimbursement]:
     reimbursements = []
     cumulative_bookings_value = 0
 
@@ -204,18 +261,22 @@ def find_all_booking_reimbursements(bookings: List[Booking]):
         if ReimbursementRules.PHYSICAL_OFFERS.value.is_relevant(booking):
             cumulative_bookings_value = cumulative_bookings_value + booking.value
 
-        potential_rules = _find_potential_rules(booking, cumulative_bookings_value)
+        potential_rules = _find_potential_rules(booking, active_rules, cumulative_bookings_value)
         elected_rule = min(potential_rules, key=lambda x: x['amount'])
         reimbursements.append(BookingReimbursement(booking, elected_rule['rule'], elected_rule['amount']))
 
     return reimbursements
 
 
-def _find_potential_rules(booking: Booking, cumulative_bookings_value: int):
+def _find_potential_rules(booking: Booking,
+                          rules: List[ReimbursementRule],
+                          cumulative_bookings_value: int) -> List[ReimbursementRule]:
     relevant_rules = []
-    for rule in ReimbursementRules:
-        if rule.value.is_active and rule.value.is_relevant(booking, cumulative_value=cumulative_bookings_value):
-            reimbursed_amount = rule.value.apply(booking)
+    for rule in rules:
+        if rule.is_active and rule.is_relevant(booking, cumulative_value=cumulative_bookings_value):
+            reimbursed_amount = rule.apply(booking)
+            print("reimburse amount")
+            print(reimbursed_amount)
             relevant_rules.append({'rule': rule, 'amount': reimbursed_amount})
     return relevant_rules
 
