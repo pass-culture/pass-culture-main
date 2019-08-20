@@ -50,17 +50,9 @@ def generate_new_payments() -> Tuple[List[Payment], List[Payment]]:
             final_bookings = find_eligible_bookings_for_offerer(offerer.id)
             booking_reimbursements = find_all_booking_reimbursements(final_bookings, CURRENT_RULES)
 
-        print("booking_reimbursements")
-        for b in booking_reimbursements:
-            print(b.reimbursement)
-            print(b.reimbursed_amount)
-        print("///////////////////////////////::")
         booking_reimbursements_to_pay = filter_out_already_paid_for_bookings(
             filter_out_bookings_without_cost(booking_reimbursements)
         )
-        print("booking_reimbursements to pay")
-        print(booking_reimbursements_to_pay)
-        print("///////////////////////////////::")
 
         with db.session.no_autoflush:
             payments = list(map(create_payment_for_booking, booking_reimbursements_to_pay))

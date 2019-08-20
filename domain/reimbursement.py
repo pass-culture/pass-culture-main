@@ -74,7 +74,7 @@ class PhysicalOffersReimbursement(ReimbursementRule):
 
 class MaxReimbursementByOfferer(ReimbursementRule):
     rate = Decimal(0)
-    description = 'Pas de remboursement au dessus du plafond de 20 000 € par offreur'
+    description = 'Pas de remboursement au dessus du plafond de 20 000 € par acteur culturel'
     valid_from = None
     valid_until = None
 
@@ -87,7 +87,7 @@ class MaxReimbursementByOfferer(ReimbursementRule):
 
 class ReimbursementRateByVenueBetween20000And40000(ReimbursementRule):
     rate = Decimal(0.95)
-    description = 'Remboursement à 95% entre 20 000 € et 40 000 € par venue'
+    description = 'Remboursement à 95% entre 20 000 € et 40 000 € par lieu'
     valid_from = None
     valid_until = None
 
@@ -100,7 +100,7 @@ class ReimbursementRateByVenueBetween20000And40000(ReimbursementRule):
 
 class ReimbursementRateByVenueBetween40000And100000(ReimbursementRule):
     rate = Decimal(0.85)
-    description = 'Remboursement à 85% entre 40 000 € et 100 000 € par venue'
+    description = 'Remboursement à 85% entre 40 000 € et 100 000 € par lieu'
     valid_from = None
     valid_until = None
 
@@ -113,7 +113,7 @@ class ReimbursementRateByVenueBetween40000And100000(ReimbursementRule):
 
 class ReimbursementRateByVenueAbove100000(ReimbursementRule):
     rate = Decimal(0.65)
-    description = 'Remboursement à 65% au dessus de 100 000 € par venue'
+    description = 'Remboursement à 65% au dessus de 100 000 € par lieu'
     valid_from = None
     valid_until = None
 
@@ -134,22 +134,22 @@ class ReimbursementRules(Enum):
 
 
 NEW_RULES = [
-    DigitalThingsReimbursement(),
-    PhysicalOffersReimbursement(),
-    ReimbursementRateByVenueBetween20000And40000(),
-    ReimbursementRateByVenueBetween40000And100000(),
-    ReimbursementRateByVenueAbove100000()
+    ReimbursementRules.DIGITAL_THINGS,
+    ReimbursementRules.PHYSICAL_OFFERS,
+    ReimbursementRules.BETWEEN_20000_AND_40000_EUROS,
+    ReimbursementRules.BETWEEN_40000_AND_100000_EUROS,
+    ReimbursementRules.ABOVE_100000_EUROS
 ]
 
 CURRENT_RULES = [
-    DigitalThingsReimbursement(),
-    PhysicalOffersReimbursement(),
-    MaxReimbursementByOfferer()
+    ReimbursementRules.DIGITAL_THINGS,
+    ReimbursementRules.PHYSICAL_OFFERS,
+    ReimbursementRules.MAX_REIMBURSEMENT
 ]
 
 
 class BookingReimbursement:
-    def __init__(self, booking: Booking, reimbursement: ReimbursementRule, reimbursed_amount: Decimal):
+    def __init__(self, booking: Booking, reimbursement: ReimbursementRules, reimbursed_amount: Decimal):
         self.booking = booking
         self.reimbursement = reimbursement
         self.reimbursed_amount = reimbursed_amount
@@ -253,7 +253,7 @@ class ReimbursementDetails:
 
 
 def find_all_booking_reimbursements(bookings: List[Booking],
-                                    active_rules: List[ReimbursementRule]) -> List[BookingReimbursement]:
+                                    active_rules: List[ReimbursementRules]) -> List[BookingReimbursement]:
     reimbursements = []
     cumulative_bookings_value = 0
 
@@ -269,14 +269,12 @@ def find_all_booking_reimbursements(bookings: List[Booking],
 
 
 def _find_potential_rules(booking: Booking,
-                          rules: List[ReimbursementRule],
-                          cumulative_bookings_value: int) -> List[ReimbursementRule]:
+                          rules: List[ReimbursementRules],
+                          cumulative_bookings_value: Decimal) -> List[ReimbursementRules]:
     relevant_rules = []
     for rule in rules:
-        if rule.is_active and rule.is_relevant(booking, cumulative_value=cumulative_bookings_value):
-            reimbursed_amount = rule.apply(booking)
-            print("reimburse amount")
-            print(reimbursed_amount)
+        if rule.value.is_active and rule.value.is_relevant(booking, cumulative_value=cumulative_bookings_value):
+            reimbursed_amount = rule.value.apply(booking)
             relevant_rules.append({'rule': rule, 'amount': reimbursed_amount})
     return relevant_rules
 

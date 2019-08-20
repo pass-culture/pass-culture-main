@@ -49,8 +49,8 @@ def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> P
     payment = Payment()
     payment.booking = booking_reimbursement.booking
     payment.amount = booking_reimbursement.reimbursed_amount
-    payment.reimbursementRule = booking_reimbursement.reimbursement.description
-    payment.reimbursementRate = booking_reimbursement.reimbursement.rate
+    payment.reimbursementRule = booking_reimbursement.reimbursement.value.description
+    payment.reimbursementRate = booking_reimbursement.reimbursement.value.rate
     payment.author = 'batch'
     payment.transactionLabel = make_transaction_label(datetime.utcnow())
 
