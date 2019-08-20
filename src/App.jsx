@@ -1,9 +1,9 @@
 import classnames from 'classnames'
+import { compose } from 'redux'
+import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import React from 'react'
-import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
-import { compose } from 'redux'
 
 const App = ({ modalOpen, children }) => (
   <div className={classnames('app', { 'modal-open': modalOpen })}>
@@ -14,6 +14,7 @@ const App = ({ modalOpen, children }) => (
 function mapStateToProps(state) {
   return {
     modalOpen: state.modal.isActive,
+    user: state.user,
   }
 }
 
