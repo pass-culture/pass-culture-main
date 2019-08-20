@@ -1,9 +1,9 @@
 import React, { Fragment } from 'react'
-import { Icon } from 'antd'
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
+import Icon from '../../Icon'
 import { getDisplayPrice } from '../../../../helpers'
 
 const BookingSuccess = ({ isEvent, data }) => {
@@ -19,7 +19,7 @@ const BookingSuccess = ({ isEvent, data }) => {
           className="is-block mb12"
           style={{ color: '#27AE60', fontSize: '4.5rem' }}
         >
-          <Icon type="check-circle" />
+          <Icon svg="picto-validation" />
         </span>
         <span className="is-block mb36">
           {isEvent && 'Votre réservation est validée.'}
