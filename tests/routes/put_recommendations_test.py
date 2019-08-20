@@ -612,7 +612,6 @@ class Put:
             recommendation = create_recommendation(offer=offer2, user=user, mediation=mediation2, search="bla")
 
             PcObject.save(user, stock1, mediation1, stock2, mediation2, recommendation)
-            offer2_id = offer2.id
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -884,3 +883,35 @@ class Put:
             assert any(
                 [recommendations1.json[i]['id'] != recommendations2.json[i]['id'] for i in
                  range(0, len(recommendations1.json))])
+
+        @clean_database
+        def test_returns_stocks_with_isBookable_property(self, app):
+            # Given
+            expired_booking_limit_date = datetime(1970, 1, 1)
+
+            user = create_user()
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_offer_with_thing_product(venue, thing_name='Latium II')
+            mediation = create_mediation(offer, is_active=True)
+
+            create_stock_from_offer(offer, price=14)
+            create_stock_from_offer(offer, price=26, booking_limit_datetime=expired_booking_limit_date)
+
+            recommendation = create_recommendation(offer=offer, user=user, mediation=mediation)
+            PcObject.save(user, recommendation)
+
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
+
+            # When
+            recommendations_req = auth_request.put(RECOMMENDATION_URL, json={})
+
+            # Then
+            assert recommendations_req.status_code == 200
+            recommendations = recommendations_req.json
+            assert len(recommendations) == 1
+            recommendation = recommendations[0]
+            assert recommendation['offer']['name'] == 'Latium II'
+            assert len(recommendation['offer']['stocks']) == 2
+            assert recommendation['offer']['stocks'][0]['isBookable'] is True
+            assert recommendation['offer']['stocks'][1]['isBookable'] is False

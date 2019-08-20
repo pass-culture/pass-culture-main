@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 import pytest
+from freezegun import freeze_time
 
 from models import ApiErrors, PcObject
 from models.pc_object import DeletedRecordException
@@ -227,3 +228,35 @@ class StockRemainingQuantityTest:
 
         # Then
         assert Stock.query.get(stock.id).remainingQuantity == 1
+
+class IsBookableTest:
+    @freeze_time('2019-07-10')
+    def test_is_false_when_booking_limit_datetime_is_in_the_past(self):
+        # Given
+        limit_datetime = datetime(2019, 7, 10) + timedelta(minutes=-1)
+
+        # When
+        stock = create_stock(booking_limit_datetime=limit_datetime)
+
+        # Then
+        assert stock.isBookable is False
+
+    @freeze_time('2019-07-10')
+    def test_is_True_when_booking_limit_datetime_is_in_the_future(self):
+        # Given
+        limit_datetime = datetime(2019, 7, 11)
+
+        # When
+        stock = create_stock(booking_limit_datetime=limit_datetime)
+
+        # Then
+        assert stock.isBookable is True
+
+    def test_is_True_when_no_booking_datetime_limit(self):
+        # When
+        stock = Stock()
+        stock.bookingLimitDatetime = None
+
+        # Then
+        assert stock.isBookable is True
+

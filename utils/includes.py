@@ -150,7 +150,10 @@ RECOMMENDATION_INCLUDES = [
                 "key": "product",
                 "includes": ["thumbUrl", "offerType"]
             },
-            "stocks",
+            {
+                "key": "stocks",
+                "includes": ["isBookable"]
+            },
             {
                 "key": "venue",
                 "includes": ["managingOfferer"]
