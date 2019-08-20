@@ -1,6 +1,6 @@
 const onTimeUpdates = (selectedStockId, name, allFormValues) => {
   const resetObj = {}
-  const isvalid =
+  const isValid =
     selectedStockId &&
     typeof selectedStockId === 'string' &&
     allFormValues &&
@@ -8,9 +8,9 @@ const onTimeUpdates = (selectedStockId, name, allFormValues) => {
     typeof allFormValues.stockId === 'string' &&
     allFormValues.bookables &&
     Array.isArray(allFormValues.bookables)
-  if (!isvalid) return resetObj
+  if (!isValid) return resetObj
   const { bookables } = allFormValues
-  const { price, id: stockId } = bookables.find(o => o.id === selectedStockId)
+  const { price, id: stockId } = bookables.find(bookable => bookable.id === selectedStockId)
   return { price, stockId }
 }
 

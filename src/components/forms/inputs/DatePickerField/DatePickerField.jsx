@@ -1,8 +1,8 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
-import { withSizes } from 'react-sizes'
+import React from 'react'
 import DatePicker from 'react-datepicker'
+import ReactDOM from 'react-dom'
+import { withSizes } from 'react-sizes'
 
 import DatePickerCustomField from './DatePickerCustomField/DatePickerCustomField'
 import InputLabel from '../../InputLabel'
@@ -13,24 +13,23 @@ const buildPopperContainer = ({ current }) => ({ children }) => {
 }
 
 const DatePickerField = ({
-                           className,
-                           clearable,
-                           dateFormat,
-                           hideToday,
-                           id,
-                           label,
-                           locale,
-                           name,
-                           placeholder,
-                           provider,
-                           onChange,
-                           popperRefContainer,
-                           readOnly,
-                           required,
-                           // NOTE -> Autres props du react-datepicker passées en option
-                           // github.com/Hacker0x01/react-datepicker/blob/master/docs/datepicker.md
-                           ...rest
-                         }) => {
+  className,
+  clearable,
+  dateFormat,
+  hideToday,
+  id,
+  label,
+  locale,
+  name,
+  onChange,
+  placeholder,
+  popperRefContainer,
+  readOnly,
+  required,
+  // NOTE -> Autres props du react-datepicker passées en option
+  // github.com/Hacker0x01/react-datepicker/blob/master/docs/datepicker.md
+  ...rest
+}) => {
   const moreProps = { ...rest }
   if (popperRefContainer) {
     moreProps.popperContainer = buildPopperContainer(popperRefContainer)
@@ -46,23 +45,16 @@ const DatePickerField = ({
         className="pc-final-form-datepicker"
         htmlFor={inputName}
       >
-        {label && (
-          <InputLabel
-            label={label}
-            required={required}
-          />
-        )}
+        {label && <InputLabel
+          label={label}
+          required={required}
+                  />}
         <div className="pc-final-form-inner">
           <DatePicker
             {...moreProps}
-            customInput={
-              <DatePickerCustomField
-                ref={popperRefContainer}
-              />
-            }
+            customInput={<DatePickerCustomField ref={popperRefContainer} />}
             dateFormat={dateFormat}
             id={inputName}
-            includeDates={provider}
             isClearable={isClearable}
             locale={locale}
             onChange={onChange}
@@ -85,9 +77,8 @@ DatePickerField.defaultProps = {
   id: null,
   label: null,
   locale: 'fr',
-  placeholder: 'Par date...',
+  placeholder: '-',
   popperRefContainer: null,
-  provider: null,
   readOnly: false,
   required: false,
   withPortal: false,
@@ -106,7 +97,6 @@ DatePickerField.propTypes = {
   onChange: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
   popperRefContainer: PropTypes.shape(),
-  provider: PropTypes.arrayOf(PropTypes.shape()),
   readOnly: PropTypes.bool,
   required: PropTypes.bool,
   withPortal: PropTypes.bool,

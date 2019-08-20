@@ -1,78 +1,97 @@
-import { parseHoursByStockId } from '../../utils'
-import { Field, FormSpy } from 'react-final-form'
-import { SelectField } from '../../../../forms/inputs'
-import React, { Fragment } from 'react'
-import PropTypes from 'prop-types'
 import classnames from 'classnames'
-import BookingDatePickerField from './BookingDatePickerField/BookingDatePickerField'
+import PropTypes from 'prop-types'
+import React, { Component, Fragment } from 'react'
+import { Field } from 'react-final-form'
 
-// https://github.com/final-form/final-form#formstate
-const spySubscriptions = {
-  dirty: true,
-  errors: true,
-  initialValues: true,
-  invalid: true,
-  pristine: true,
-  values: true,
-}
+import { getCalendarProvider, parseHoursByStockId } from '../../utils'
+import { SelectField } from '../../../../forms/inputs'
+import DatePickerField from '../../../../forms/inputs/DatePickerField/DatePickerField'
 
-const BookingFormContent = ({
-  className,
-  formId,
-  isEvent,
-  isReadOnly,
-  onChange,
-  onMutation,
-  onSubmit,
-  values,
-}) => {
-  const { price } = values
-  const bookableDates = parseHoursByStockId(values)
-  const hasOneBookableDate = bookableDates.length === 1
-  const hourLabel = hasOneBookableDate ? '' : 'Choisissez une heure'
+class BookingFormContent extends Component {
+  componentDidUpdate(prevProps) {
+    const { invalid, onSetCanSubmitForm, values } = this.props
+    const { price, stockId } = values
+    if (stockId !== prevProps.values.stockId) {
+      const nextCanSubmitForm = Boolean(!invalid && stockId && price >= 0)
+      onSetCanSubmitForm(nextCanSubmitForm)
+    }
+  }
 
-  return (
-    <Fragment>
-      <FormSpy
-        onChange={onMutation}
-        subscription={spySubscriptions}
+  handleChangeAndRemoveCalendar = input => (value, event) => {
+    event.preventDefault()
+    input.onChange(value)
+  }
+
+  renderBookingDatePickerField = ({ input }) => {
+    const { values } = this.props
+    const { value } = input
+    const calendarDates = getCalendarProvider(values)
+    const calendarLabel = calendarDates.length === 1 ? '' : 'Choisissez une date'
+    const dateFormat = 'DD MMMM YYYY'
+    return (
+      <DatePickerField
+        {...input}
+        className="text-center mb36"
+        clearable={false}
+        dateFormat={dateFormat}
+        hideToday
+        id="booking-form-date-picker-field"
+        includeDates={calendarDates}
+        label={calendarLabel}
+        name="date"
+        onChange={this.handleChangeAndRemoveCalendar(input)}
+        popperPlacement="bottom"
+        readOnly={calendarDates.length === 1}
+        selected={value}
       />
-      <form
-        className={classnames(className, {
-          'is-read-only': isReadOnly,
-        })}
-        id={formId}
-        onSubmit={onSubmit}
-      >
-        {isEvent && (
-          <Fragment>
-            <Field
-              name="date"
-              render={BookingDatePickerField(onChange, values)}
-            />
-            {bookableDates && (
-              <SelectField
-                className="text-center"
-                id="booking-form-time-picker-field"
-                label={hourLabel}
-                name="time"
-                placeholder="Heure et prix"
-                provider={bookableDates}
-                readOnly={hasOneBookableDate}
-              />
-            )}
-          </Fragment>
-        )}
+    )
+  }
 
-        {!isEvent && (
-          <p className="text-center fs22">
-            <span className="is-block">{'Vous êtes sur le point de réserver'}</span>
-            <span className="is-block">{`cette offre pour ${price} €.`}</span>
-          </p>
-        )}
-      </form>
-    </Fragment>
-  )
+  render() {
+    const { className, formId, isEvent, isReadOnly, onSubmit, values } = this.props
+    const { price } = values
+    const bookableTimes = parseHoursByStockId(values)
+    const hasOneBookableTime = bookableTimes.length === 1
+    const hourLabel = hasOneBookableTime ? '' : 'Choisissez une heure'
+    return (
+      <Fragment>
+        <form
+          className={classnames(className, {
+            'is-read-only': isReadOnly,
+          })}
+          id={formId}
+          onSubmit={onSubmit}
+        >
+          {isEvent && (
+            <Fragment>
+              <Field
+                name="date"
+                render={this.renderBookingDatePickerField}
+              />
+              {bookableTimes && (
+                <SelectField
+                  className="text-center"
+                  id="booking-form-time-picker-field"
+                  label={hourLabel}
+                  name="time"
+                  options={bookableTimes}
+                  placeholder="Heure et prix"
+                  readOnly={hasOneBookableTime}
+                />
+              )}
+            </Fragment>
+          )}
+
+          {!isEvent && (
+            <p className="text-center fs22">
+              <span className="is-block">{'Vous êtes sur le point de réserver'}</span>
+              <span className="is-block">{`cette offre pour ${price} €.`}</span>
+            </p>
+          )}
+        </form>
+      </Fragment>
+    )
+  }
 }
 
 BookingFormContent.defaultProps = {
@@ -84,10 +103,10 @@ BookingFormContent.defaultProps = {
 BookingFormContent.propTypes = {
   className: PropTypes.string,
   formId: PropTypes.string.isRequired,
+  invalid: PropTypes.bool.isRequired,
   isEvent: PropTypes.bool,
   isReadOnly: PropTypes.bool,
-  onChange: PropTypes.func.isRequired,
-  onMutation: PropTypes.func.isRequired,
+  onSetCanSubmitForm: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
   values: PropTypes.shape().isRequired,
 }

@@ -12,8 +12,8 @@ const onCalendarUpdates = (selectedDate, name, allFormValues) => {
   if (!allFormValues) throw new Error('Missing arguments form values')
   if (!selectedDate) return allFormValues
   const resetObj = { price: null, stockId: null, time: null }
-  const isvalid = selectedDate.date && moment.isMoment(selectedDate.date)
-  if (!isvalid) return resetObj
+  const isValid = selectedDate && moment.isMoment(selectedDate)
+  if (!isValid) return resetObj
   // iteration sur l'array bookables
   // recupere le premier event pour la selection par l'user
   const { bookables } = allFormValues
@@ -23,7 +23,7 @@ const onCalendarUpdates = (selectedDate, name, allFormValues) => {
     bookables.length &&
     bookables
       .filter(o => o && o.beginningDatetime && moment.isMoment(o.beginningDatetime))
-      .find(o => isSameDayInEachTimezone(selectedDate.date, o.beginningDatetime))
+      .find(o => isSameDayInEachTimezone(selectedDate, o.beginningDatetime))
   if (!filtered) return resetObj
   return {
     price: filtered.price,

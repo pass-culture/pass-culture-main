@@ -1,89 +1,95 @@
-import React from 'react'
+import { Select } from 'antd'
 import PropTypes from 'prop-types'
-import { Form, Select } from 'antd'
+import React, { PureComponent } from 'react'
 import { Field } from 'react-final-form'
 
-import { renderLabel } from '../utils'
+const Option = Select.Option
 
 const filterOption = (input, option) => {
   const child = option.props.children
   return child.toLowerCase().indexOf(input.toLowerCase()) >= 0
 }
 
-class SelectField extends React.PureComponent {
+class SelectField extends PureComponent {
   constructor(props) {
     super(props)
     this.popupContainer = null
-  }
-
-  setContainerRef = ref => {
-    this.popupContainer = ref
-  }
-
-  renderSelect = (placeholder, canSearch, moreProps, provider) => {
-    return ({input}) => (
-      <Select
-        filterOption={filterOption}
-        getPopupContainer={this.getPopupContainer()}
-        onChange={input.onChange}
-        optionFilterProp="children"
-        placeholder={placeholder}
-        showSearch={canSearch}
-        size="large"
-        value={input.value || undefined}
-        {...moreProps}
-      >
-        {provider &&
-        provider.map(obj => (
-          <Select.Option
-            key={obj.id}
-            value={obj.id}
-          >
-            {obj.label}
-          </Select.Option>
-        ))}
-      </Select>
-    )
   }
 
   getPopupContainer = () => {
     return () => this.popupContainer
   }
 
-  render() {
-    const {
-      label,
-      help,
-      id,
-      name,
-      disabled,
-      provider,
-      className,
-      canSearch,
-      placeholder,
-      readOnly,
-      ...rest
-    } = this.props
-    const isDisabled = readOnly || disabled || !provider.length || provider.length === 1
-    const moreProps = {disabled: isDisabled}
+  setContainerRef = ref => {
+    this.popupContainer = ref
+  }
 
+  /*
+  renderSuffixIcon(prefixCls: string) {
+    const { loading, suffixIcon } = this.props;
+    if (suffixIcon) {
+      return React.isValidElement<{ className?: string }>(suffixIcon)
+        ? React.cloneElement(suffixIcon, {
+            className: classnames(suffixIcon.props.className, `${prefixCls}-arrow-icon`),
+          })
+        : suffixIcon;
+    }
+    if (loading) {
+      return <Icon type="loading" />;
+    }
+    return <Icon type="down" className={`${prefixCls}-arrow-icon`} />;
+  }
+  */
+  renderSelect = ({ input }) => {
+    const { canSearch, disabled, id, options, placeholder, readOnly, ...rest } = this.props
+    const hasNoOption = !options.length
+    const hasOneOption = options.length === 1
+    const isDisabled = readOnly || disabled || hasNoOption || hasOneOption
+
+    const moreProps = { ...rest }
     if (id) moreProps.id = id
 
+    const { onChange, value } = input
+
     return (
-      <Form.Item
-        {...rest}
-        className={`ant-select-custom ${className}`}
-        label={(label && renderLabel(label, help)) || null}
+      <Select
+        disabled={isDisabled}
+        filterOption={filterOption}
+        getPopupContainer={this.getPopupContainer()}
+        onChange={onChange}
+        optionFilterProp="children"
+        placeholder={placeholder}
+        showSearch={canSearch}
+        size="large"
+        value={value || undefined}
+        {...moreProps}
       >
+        {options &&
+          options.map(option => (
+            <Option
+              key={option.id}
+              value={option.id}
+            >
+              {option.label}
+            </Option>
+          ))}
+      </Select>
+    )
+  }
+
+  render() {
+    const { name, className } = this.props
+    return (
+      <div className={`ant-select-custom ${className}`}>
         <Field
           name={name}
-          render={this.renderSelect(placeholder, canSearch, moreProps, provider)}
+          render={this.renderSelect}
         />
         <div
           className="select-field-popup-container is-relative"
           ref={this.setContainerRef}
         />
-      </Form.Item>
+      </div>
     )
   }
 }
@@ -92,9 +98,7 @@ SelectField.defaultProps = {
   canSearch: false,
   className: '',
   disabled: false,
-  help: null,
   id: null,
-  label: null,
   placeholder: null,
   readOnly: false,
 }
@@ -103,12 +107,10 @@ SelectField.propTypes = {
   canSearch: PropTypes.bool,
   className: PropTypes.string,
   disabled: PropTypes.bool,
-  help: PropTypes.string,
   id: PropTypes.string,
-  label: PropTypes.string,
   name: PropTypes.string.isRequired,
+  options: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   placeholder: PropTypes.string,
-  provider: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   readOnly: PropTypes.bool,
 }
 

@@ -6,36 +6,27 @@ import BookingFormContent from './BookingFormContent/BookingFormContent'
 import decorators from './decorators/decorators'
 
 class BookingForm extends Component {
-  handleOnChange = input => (date, event) => {
-    input.onChange({ date })
-    event.preventDefault()
-  }
-
   renderBookingFormContent = formParams => {
-    const { className, formId, isEvent, isReadOnly, onMutation } = this.props
-    const { handleSubmit, values } = formParams
+    const { className, formId, isEvent, isReadOnly, onSetCanSubmitForm } = this.props
     return (
       <BookingFormContent
         className={className}
         formId={formId}
         isEvent={isEvent}
         isReadOnly={isReadOnly}
-        onChange={this.handleOnChange}
-        onMutation={onMutation}
-        onSubmit={handleSubmit}
-        values={values}
+        onSetCanSubmitForm={onSetCanSubmitForm}
+        {...formParams}
       />
     )
   }
 
   render() {
-    const { initialValues, onSubmit } = this.props
-
+    const { initialValues, onFormSubmit } = this.props
     return (
       <Form
         decorators={decorators}
         initialValues={initialValues}
-        onSubmit={onSubmit}
+        onSubmit={onFormSubmit}
         render={this.renderBookingFormContent}
       />
     )
@@ -55,8 +46,8 @@ BookingForm.propTypes = {
   initialValues: PropTypes.shape(),
   isEvent: PropTypes.bool,
   isReadOnly: PropTypes.bool,
-  onMutation: PropTypes.func.isRequired,
-  onSubmit: PropTypes.func.isRequired,
+  onFormSubmit: PropTypes.func.isRequired,
+  onSetCanSubmitForm: PropTypes.func.isRequired,
 }
 
 export default BookingForm

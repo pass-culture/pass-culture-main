@@ -1,5 +1,4 @@
 import classnames from 'classnames'
-import get from 'lodash.get'
 import moment from 'moment'
 import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
@@ -60,12 +59,11 @@ class Booking extends PureComponent {
     this.setState({ mounted })
   }
 
-  handleOnFormMutation = ({ invalid, values }) => {
-    const nextCanSubmitForm = Boolean(!invalid && values.stockId && values.price >= 0)
-    this.setState({ canSubmitForm: nextCanSubmitForm })
+  handleSetCanSubmitForm = canSubmitForm => {
+    this.setState({ canSubmitForm })
   }
 
-  handleOnFormSubmit = formValues => {
+  handleFormSubmit = formValues => {
     const { dispatch } = this.props
     const onSubmittingStateChanged = () => {
       dispatch(
@@ -182,25 +180,29 @@ class Booking extends PureComponent {
       return null
     }
 
-    const { bookedPayload, errors, isErrored, isSubmitting, mounted } = this.state
+    const { bookedPayload, canSubmitForm, errors, isErrored, isSubmitting, mounted } = this.state
     const { id: recommendationId } = recommendation || {}
     const { isEvent } = offer || {}
     const isConfirmingCancelling = getIsConfirmingCancelling(match)
     const showForm = !isSubmitting && !bookedPayload && !isErrored && !isConfirmingCancelling
-    const defaultBookable = !isEvent && get(bookables, '[0]')
-    const isReadOnly = isEvent && bookables.length === 1
-    let initialDate = null
-    if (isReadOnly) {
-      initialDate = get(bookables, '0.beginningDatetime')
-      initialDate = moment(initialDate)
+    const defaultBookable = bookables && bookables[0]
+
+    let date
+    let price
+    let stockId
+    const isReadOnly = bookables.length === 1
+    if (defaultBookable) {
+      date = moment(defaultBookable.beginningDatetime)
+      price = priceIsDefined(defaultBookable.price) ? defaultBookable.price : null
+      stockId = defaultBookable.id
     }
+
     const formInitialValues = {
       bookables,
-      date: (initialDate && { date: initialDate }) || null,
-      price:
-        defaultBookable && priceIsDefined(defaultBookable.price) ? defaultBookable.price : null,
+      date,
+      price,
       recommendationId,
-      stockId: (defaultBookable && defaultBookable.id) || null,
+      stockId,
     }
 
     return (
@@ -239,13 +241,14 @@ class Booking extends PureComponent {
 
                   {showForm && (
                     <BookingForm
+                      canSubmitForm={canSubmitForm}
                       className="flex-1 flex-rows flex-center items-center"
                       formId={BOOKING_FORM_ID}
                       initialValues={formInitialValues}
                       isEvent={isEvent}
                       isReadOnly={isReadOnly}
-                      onMutation={this.handleOnFormMutation}
-                      onSubmit={this.handleOnFormSubmit}
+                      onFormSubmit={this.handleFormSubmit}
+                      onSetCanSubmitForm={this.handleSetCanSubmitForm}
                     />
                   )}
                 </div>

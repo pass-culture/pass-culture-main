@@ -8,15 +8,14 @@ const parseHoursByStockId = (allFormValues, format = 'HH:mm') => {
     Array.isArray(allFormValues.bookables) &&
     allFormValues.bookables.length > 0 &&
     allFormValues.date &&
-    allFormValues.date.date &&
-    moment.isMoment(allFormValues.date.date)
+    moment.isMoment(allFormValues.date)
   if (!hasBookableDates) return []
   const { date, bookables } = allFormValues
 
   return bookables
     .filter(o => o.id && typeof o.id === 'string')
     .filter(o => moment.isMoment(o.beginningDatetime))
-    .filter(o => isSameDayInEachTimezone(date.date, o.beginningDatetime))
+    .filter(o => isSameDayInEachTimezone(date, o.beginningDatetime))
     .map(obj => {
       const time = obj.beginningDatetime.format(format)
       const devised = getDisplayPrice(obj.price)
