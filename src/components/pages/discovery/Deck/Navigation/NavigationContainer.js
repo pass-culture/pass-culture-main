@@ -28,6 +28,7 @@ const mapStateToProps = (state, ownProps) => {
     distanceClue = isVirtual ? 'offre en ligne' : distance
   }
   const priceRange = getPriceRangeFromStocks(stocks)
+
   const separator = offer ? '\u00B7' : ' '
   return {
     backgroundGradient,

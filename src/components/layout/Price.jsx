@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 
 import { getDisplayPrice } from '../../helpers'
 
-const Price = ({ format, free, value, className, ...rest }) => {
-  const price = getDisplayPrice(value, free, format)
+const Price = ({ free, value, className, ...rest }) => {
+  const price = getDisplayPrice(value, free)
   const classes = `price ${className}`
   return (
     <span
@@ -18,14 +18,12 @@ const Price = ({ format, free, value, className, ...rest }) => {
 
 Price.defaultProps = {
   className: '',
-  format: null,
   free: null,
   value: null,
 }
 
 Price.propTypes = {
   className: PropTypes.string,
-  format: PropTypes.func,
   free: PropTypes.string,
   value: PropTypes.oneOfType([PropTypes.array, PropTypes.number]),
 }
