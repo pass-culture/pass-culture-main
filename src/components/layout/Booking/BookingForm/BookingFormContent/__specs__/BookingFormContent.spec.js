@@ -1,36 +1,33 @@
-import React from 'react'
 import { shallow } from 'enzyme'
-import BookingFormContent from '../BookingFormContent'
+import React from 'react'
 import { Field, FormSpy } from 'react-final-form'
+
+import BookingFormContent from '../BookingFormContent'
 import { SelectField } from '../../../../../forms/inputs'
 
 describe('src | components | layout | Booking | BookingForm | BookingFormContent', () => {
   let props
-  let handleChange
-  let handleSubmit
-  let values
 
   beforeEach(() => {
-    handleChange = jest.fn()
-    handleSubmit = jest.fn()
-    values = {
-      bookables: [],
-      date: '2019-01-01',
-      price: 12
-    }
     props = {
       className: 'fake className',
       formId: 'fake formId',
       isEvent: false,
       isReadOnly: false,
-      onMutation: jest.fn()
+      onChange: jest.fn(),
+      onSubmit: jest.fn(),
+      onMutation: jest.fn(),
+      values: {
+        bookables: [],
+        date: '2019-01-01',
+        price: 12,
+      },
     }
   })
 
   it('should match snapshot', () => {
     // when
-    const MyComponent = BookingFormContent({ handleChange, ...props })
-    const wrapper = shallow(<MyComponent handleSubmit={handleSubmit} values={values} />)
+    const wrapper = shallow(<BookingFormContent {...props} />)
 
     // then
     expect(wrapper).toMatchSnapshot()
@@ -39,8 +36,7 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
   describe('render', () => {
     it('should render a FormSpy component with the right props', () => {
       // when
-      const MyComponent = BookingFormContent({ handleChange, ...props })
-      const wrapper = shallow(<MyComponent handleSubmit={handleSubmit} values={values} />)
+      const wrapper = shallow(<BookingFormContent {...props} />)
 
       // then
       const formSpy = wrapper.find(FormSpy)
@@ -53,15 +49,14 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
           initialValues: true,
           invalid: true,
           pristine: true,
-          values: true
-        }
+          values: true,
+        },
       })
     })
 
     it('should render a form element with the proper props when is not read only mode', () => {
       // when
-      const MyComponent = BookingFormContent({ handleChange, ...props })
-      const wrapper = shallow(<MyComponent handleSubmit={handleSubmit} values={values} />)
+      const wrapper = shallow(<BookingFormContent {...props} />)
 
       // then
       const form = wrapper.find('form')
@@ -76,8 +71,7 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
       props.isReadOnly = true
 
       // when
-      const MyComponent = BookingFormContent({ handleChange, ...props })
-      const wrapper = shallow(<MyComponent handleSubmit={handleSubmit} values={values} />)
+      const wrapper = shallow(<BookingFormContent {...props} />)
 
       // then
       const form = wrapper.find('form')
@@ -94,8 +88,7 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
 
       it('should render a Field component with the proper props', () => {
         // when
-        const MyComponent = BookingFormContent({ handleChange, ...props })
-        const wrapper = shallow(<MyComponent handleSubmit={handleSubmit} values={values} />)
+        const wrapper = shallow(<BookingFormContent {...props} />)
 
         // then
         const field = wrapper.find(Field)
@@ -106,8 +99,7 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
 
       it('should render a SelectField component with the right props when no date has been selected', () => {
         // when
-        const MyComponent = BookingFormContent({ handleChange, ...props })
-        const wrapper = shallow(<MyComponent handleSubmit={handleSubmit} values={values} />)
+        const wrapper = shallow(<BookingFormContent {...props} />)
 
         // then
         const selectField = wrapper.find(SelectField)
@@ -122,7 +114,7 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
           name: 'time',
           placeholder: 'Heure et prix',
           provider: [],
-          readOnly: false
+          readOnly: false,
         })
       })
     })
@@ -133,8 +125,7 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
         props.isEvent = false
 
         // when
-        const MyComponent = BookingFormContent({ handleChange, ...props })
-        const wrapper = shallow(<MyComponent handleSubmit={handleSubmit} values={values} />)
+        const wrapper = shallow(<BookingFormContent {...props} />)
 
         // then
         const spans = wrapper.find('span')

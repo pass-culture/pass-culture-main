@@ -17,14 +17,15 @@ const spySubscriptions = {
 }
 
 const BookingFormContent = ({
-                              className,
-                              formId,
-                              handleOnChange,
-                              isEvent,
-                              isReadOnly,
-                              onMutation
-                            }) => (formParams) => {
-  const { handleSubmit, values } = formParams
+  className,
+  formId,
+  isEvent,
+  isReadOnly,
+  onChange,
+  onMutation,
+  onSubmit,
+  values,
+}) => {
   const { price } = values
   const bookableDates = parseHoursByStockId(values)
   const hasOneBookableDate = bookableDates.length === 1
@@ -38,17 +39,16 @@ const BookingFormContent = ({
       />
       <form
         className={classnames(className, {
-            'is-read-only': isReadOnly
-          }
-        )}
+          'is-read-only': isReadOnly,
+        })}
         id={formId}
-        onSubmit={handleSubmit}
+        onSubmit={onSubmit}
       >
         {isEvent && (
           <Fragment>
             <Field
               name="date"
-              render={BookingDatePickerField(handleOnChange, values)}
+              render={BookingDatePickerField(onChange, values)}
             />
             {bookableDates && (
               <SelectField
@@ -84,13 +84,12 @@ BookingFormContent.defaultProps = {
 BookingFormContent.propTypes = {
   className: PropTypes.string,
   formId: PropTypes.string.isRequired,
-  formParams: PropTypes.shape({
-    handleSubmit: PropTypes.func.isRequired,
-    values: PropTypes.shape().isRequired
-  }).isRequired,
   isEvent: PropTypes.bool,
   isReadOnly: PropTypes.bool,
+  onChange: PropTypes.func.isRequired,
   onMutation: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  values: PropTypes.shape().isRequired,
 }
 
 export default BookingFormContent

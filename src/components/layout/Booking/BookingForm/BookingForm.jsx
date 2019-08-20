@@ -1,31 +1,42 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { Form } from 'react-final-form'
-import decorators from './decorators/decorators'
+
 import BookingFormContent from './BookingFormContent/BookingFormContent'
+import decorators from './decorators/decorators'
 
 class BookingForm extends Component {
-  handleOnChange = (input) => (date, event) => {
+  handleOnChange = input => (date, event) => {
     input.onChange({ date })
     event.preventDefault()
   }
 
+  renderBookingFormContent = formParams => {
+    const { className, formId, isEvent, isReadOnly, onMutation } = this.props
+    const { handleSubmit, values } = formParams
+    return (
+      <BookingFormContent
+        className={className}
+        formId={formId}
+        isEvent={isEvent}
+        isReadOnly={isReadOnly}
+        onChange={this.handleOnChange}
+        onMutation={onMutation}
+        onSubmit={handleSubmit}
+        values={values}
+      />
+    )
+  }
+
   render() {
-    const { className, formId, initialValues, isEvent, isReadOnly, onMutation, onSubmit} = this.props
+    const { initialValues, onSubmit } = this.props
 
     return (
       <Form
         decorators={decorators}
         initialValues={initialValues}
         onSubmit={onSubmit}
-        render={BookingFormContent({
-          className,
-          formId,
-          handleOnChange: this.handleOnChange,
-          isEvent,
-          isReadOnly,
-          onMutation
-        })}
+        render={this.renderBookingFormContent}
       />
     )
   }
