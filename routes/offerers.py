@@ -3,10 +3,8 @@ from flask_login import current_user, login_required
 
 from domain.admin_emails import maybe_send_offerer_validation_email
 from domain.discard_pc_objects import invalidate_recommendations_if_deactivating_object
-from domain.reimbursement import find_all_booking_reimbursements
 from models import Offerer, PcObject, RightsType, Venue
 from models.venue import create_digital_venue
-from repository.booking_queries import find_offerer_bookings_paginated
 from repository.offerer_queries import find_all_recommendations_for_offerer,\
                                        filter_offerers_with_keywords_string,\
                                        find_by_siren
@@ -14,7 +12,7 @@ from repository.user_offerer_queries import filter_query_where_user_is_user_offe
                                             filter_query_where_user_is_user_offerer_and_is_validated
 from routes.serialization import as_dict
 from utils.human_ids import dehumanize
-from utils.includes import PRO_BOOKING_INCLUDES, OFFERER_INCLUDES, NOT_VALIDATED_OFFERER_INCLUDES
+from utils.includes import OFFERER_INCLUDES, NOT_VALIDATED_OFFERER_INCLUDES
 from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, \
     expect_json_data, \
@@ -65,25 +63,6 @@ def get_offerer(id):
     ensure_current_user_has_rights(RightsType.editor, dehumanize(id))
     offerer = load_or_404(Offerer, id)
     return jsonify(get_dict_offerer(offerer)), 200
-
-
-@app.route('/offerers/<id>/bookings', methods=['GET'])
-@login_required
-def get_offerer_bookings(id):
-    ensure_current_user_has_rights(RightsType.editor, dehumanize(id))
-    order_by_key = request.args.get('order_by_column')
-    order = request.args.get('order')
-    order_by = _generate_orderby_criterium(order, order_by_key)
-    bookings = find_offerer_bookings_paginated(
-        dehumanize(id),
-        search=request.args.get('search'),
-        order_by=order_by,
-        page=request.args.get('page', 1)
-    )
-
-    bookings_reimbursements = find_all_booking_reimbursements(bookings)
-
-    return jsonify([as_dict(b, includes=PRO_BOOKING_INCLUDES) for b in bookings_reimbursements]), 200
 
 
 @app.route('/offerers', methods=['POST'])
