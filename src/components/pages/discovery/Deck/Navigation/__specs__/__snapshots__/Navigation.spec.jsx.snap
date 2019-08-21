@@ -108,7 +108,6 @@ ShallowWrapper {
                 <withRouter(Connect(Finishable))>
                   <Price
                     className=""
-                    format={null}
                     free="Gratuit"
                     id="deck-navigation-offer-price"
                     value={Array []}
@@ -211,7 +210,6 @@ ShallowWrapper {
                   <withRouter(Connect(Finishable))>
                     <Price
                       className=""
-                      format={null}
                       free="Gratuit"
                       id="deck-navigation-offer-price"
                       value={Array []}
@@ -319,7 +317,6 @@ ShallowWrapper {
                   <withRouter(Connect(Finishable))>
                     <Price
                       className=""
-                      format={null}
                       free="Gratuit"
                       id="deck-navigation-offer-price"
                       value={Array []}
@@ -381,7 +378,6 @@ ShallowWrapper {
                   <withRouter(Connect(Finishable))>
                     <Price
                       className=""
-                      format={null}
                       free="Gratuit"
                       id="deck-navigation-offer-price"
                       value={Array []}
@@ -452,7 +448,6 @@ ShallowWrapper {
                     <withRouter(Connect(Finishable))>
                       <Price
                         className=""
-                        format={null}
                         free="Gratuit"
                         id="deck-navigation-offer-price"
                         value={Array []}
@@ -514,7 +509,6 @@ ShallowWrapper {
                     "children": <withRouter(Connect(Finishable))>
                       <Price
                         className=""
-                        format={null}
                         free="Gratuit"
                         id="deck-navigation-offer-price"
                         value={Array []}
@@ -542,7 +536,6 @@ ShallowWrapper {
                       "children": Array [
                         <Price
                           className=""
-                          format={null}
                           free="Gratuit"
                           id="deck-navigation-offer-price"
                           value={Array []}
@@ -565,7 +558,6 @@ ShallowWrapper {
                         "nodeType": "function",
                         "props": Object {
                           "className": "",
-                          "format": null,
                           "free": "Gratuit",
                           "id": "deck-navigation-offer-price",
                           "value": Array [],
@@ -708,7 +700,6 @@ ShallowWrapper {
                   <withRouter(Connect(Finishable))>
                     <Price
                       className=""
-                      format={null}
                       free="Gratuit"
                       id="deck-navigation-offer-price"
                       value={Array []}
@@ -811,7 +802,6 @@ ShallowWrapper {
                     <withRouter(Connect(Finishable))>
                       <Price
                         className=""
-                        format={null}
                         free="Gratuit"
                         id="deck-navigation-offer-price"
                         value={Array []}
@@ -919,7 +909,6 @@ ShallowWrapper {
                     <withRouter(Connect(Finishable))>
                       <Price
                         className=""
-                        format={null}
                         free="Gratuit"
                         id="deck-navigation-offer-price"
                         value={Array []}
@@ -981,7 +970,6 @@ ShallowWrapper {
                     <withRouter(Connect(Finishable))>
                       <Price
                         className=""
-                        format={null}
                         free="Gratuit"
                         id="deck-navigation-offer-price"
                         value={Array []}
@@ -1052,7 +1040,6 @@ ShallowWrapper {
                       <withRouter(Connect(Finishable))>
                         <Price
                           className=""
-                          format={null}
                           free="Gratuit"
                           id="deck-navigation-offer-price"
                           value={Array []}
@@ -1114,7 +1101,6 @@ ShallowWrapper {
                       "children": <withRouter(Connect(Finishable))>
                         <Price
                           className=""
-                          format={null}
                           free="Gratuit"
                           id="deck-navigation-offer-price"
                           value={Array []}
@@ -1142,7 +1128,6 @@ ShallowWrapper {
                         "children": Array [
                           <Price
                             className=""
-                            format={null}
                             free="Gratuit"
                             id="deck-navigation-offer-price"
                             value={Array []}
@@ -1165,7 +1150,6 @@ ShallowWrapper {
                           "nodeType": "function",
                           "props": Object {
                             "className": "",
-                            "format": null,
                             "free": "Gratuit",
                             "id": "deck-navigation-offer-price",
                             "value": Array [],
@@ -1362,7 +1346,6 @@ ShallowWrapper {
                 <withRouter(Connect(Finishable))>
                   <Price
                     className=""
-                    format={null}
                     free="Gratuit"
                     id="deck-navigation-offer-price"
                     value={Array []}
@@ -1465,7 +1448,6 @@ ShallowWrapper {
                   <withRouter(Connect(Finishable))>
                     <Price
                       className=""
-                      format={null}
                       free="Gratuit"
                       id="deck-navigation-offer-price"
                       value={Array []}
@@ -1573,7 +1555,6 @@ ShallowWrapper {
                   <withRouter(Connect(Finishable))>
                     <Price
                       className=""
-                      format={null}
                       free="Gratuit"
                       id="deck-navigation-offer-price"
                       value={Array []}
@@ -1635,7 +1616,6 @@ ShallowWrapper {
                   <withRouter(Connect(Finishable))>
                     <Price
                       className=""
-                      format={null}
                       free="Gratuit"
                       id="deck-navigation-offer-price"
                       value={Array []}
@@ -1706,7 +1686,6 @@ ShallowWrapper {
                     <withRouter(Connect(Finishable))>
                       <Price
                         className=""
-                        format={null}
                         free="Gratuit"
                         id="deck-navigation-offer-price"
                         value={Array []}
@@ -1768,7 +1747,6 @@ ShallowWrapper {
                     "children": <withRouter(Connect(Finishable))>
                       <Price
                         className=""
-                        format={null}
                         free="Gratuit"
                         id="deck-navigation-offer-price"
                         value={Array []}
@@ -1796,7 +1774,6 @@ ShallowWrapper {
                       "children": Array [
                         <Price
                           className=""
-                          format={null}
                           free="Gratuit"
                           id="deck-navigation-offer-price"
                           value={Array []}
@@ -1819,7 +1796,6 @@ ShallowWrapper {
                         "nodeType": "function",
                         "props": Object {
                           "className": "",
-                          "format": null,
                           "free": "Gratuit",
                           "id": "deck-navigation-offer-price",
                           "value": Array [],
@@ -1962,7 +1938,6 @@ ShallowWrapper {
                   <withRouter(Connect(Finishable))>
                     <Price
                       className=""
-                      format={null}
                       free="Gratuit"
                       id="deck-navigation-offer-price"
                       value={Array []}
@@ -2065,7 +2040,6 @@ ShallowWrapper {
                     <withRouter(Connect(Finishable))>
                       <Price
                         className=""
-                        format={null}
                         free="Gratuit"
                         id="deck-navigation-offer-price"
                         value={Array []}
@@ -2173,7 +2147,6 @@ ShallowWrapper {
                     <withRouter(Connect(Finishable))>
                       <Price
                         className=""
-                        format={null}
                         free="Gratuit"
                         id="deck-navigation-offer-price"
                         value={Array []}
@@ -2235,7 +2208,6 @@ ShallowWrapper {
                     <withRouter(Connect(Finishable))>
                       <Price
                         className=""
-                        format={null}
                         free="Gratuit"
                         id="deck-navigation-offer-price"
                         value={Array []}
@@ -2306,7 +2278,6 @@ ShallowWrapper {
                       <withRouter(Connect(Finishable))>
                         <Price
                           className=""
-                          format={null}
                           free="Gratuit"
                           id="deck-navigation-offer-price"
                           value={Array []}
@@ -2368,7 +2339,6 @@ ShallowWrapper {
                       "children": <withRouter(Connect(Finishable))>
                         <Price
                           className=""
-                          format={null}
                           free="Gratuit"
                           id="deck-navigation-offer-price"
                           value={Array []}
@@ -2396,7 +2366,6 @@ ShallowWrapper {
                         "children": Array [
                           <Price
                             className=""
-                            format={null}
                             free="Gratuit"
                             id="deck-navigation-offer-price"
                             value={Array []}
@@ -2419,7 +2388,6 @@ ShallowWrapper {
                           "nodeType": "function",
                           "props": Object {
                             "className": "",
-                            "format": null,
                             "free": "Gratuit",
                             "id": "deck-navigation-offer-price",
                             "value": Array [],

@@ -5,7 +5,6 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price
     className=""
-    format={null}
     free={null}
     value={0}
   />,
@@ -78,7 +77,6 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price
     className=""
-    format={null}
     free={null}
     value={5}
   />,
@@ -151,7 +149,6 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price
     className=""
-    format={null}
     free={null}
     value={
       Array [
@@ -229,7 +226,6 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price
     className=""
-    format={null}
     free={null}
     value={
       Array [
@@ -307,7 +303,6 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price
     className=""
-    format={null}
     free={null}
     value={null}
   />,
@@ -325,11 +320,11 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "host",
     "props": Object {
-      "children": "",
+      "children": " €",
       "className": "price ",
     },
     "ref": null,
-    "rendered": "",
+    "rendered": " €",
     "type": "span",
   },
   Symbol(enzyme.__nodes__): Array [
@@ -338,11 +333,11 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "host",
       "props": Object {
-        "children": "",
+        "children": " €",
         "className": "price ",
       },
       "ref": null,
-      "rendered": "",
+      "rendered": " €",
       "type": "span",
     },
   ],

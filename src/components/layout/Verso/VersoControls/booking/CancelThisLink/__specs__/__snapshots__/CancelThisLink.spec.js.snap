@@ -53,7 +53,6 @@ ShallowWrapper {
         >
           <Price
             className=""
-            format={null}
             free="Gratuit"
             value={null}
           />
@@ -84,7 +83,6 @@ ShallowWrapper {
           "children": Array [
             <Price
               className=""
-              format={null}
               free="Gratuit"
               value={null}
             />,
@@ -103,7 +101,6 @@ ShallowWrapper {
             "nodeType": "function",
             "props": Object {
               "className": "",
-              "format": null,
               "free": "Gratuit",
               "value": null,
             },
@@ -153,7 +150,6 @@ ShallowWrapper {
           >
             <Price
               className=""
-              format={null}
               free="Gratuit"
               value={null}
             />
@@ -184,7 +180,6 @@ ShallowWrapper {
             "children": Array [
               <Price
                 className=""
-                format={null}
                 free="Gratuit"
                 value={null}
               />,
@@ -203,7 +198,6 @@ ShallowWrapper {
               "nodeType": "function",
               "props": Object {
                 "className": "",
-                "format": null,
                 "free": "Gratuit",
                 "value": null,
               },

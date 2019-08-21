@@ -10,6 +10,9 @@ describe('src | components | layout | Booking | BookingSuccess', () => {
     props = {
       data: {
         token: 'G8G8G8',
+        stock: {
+          price: 12.5,
+        },
       },
       isEvent: true,
     }

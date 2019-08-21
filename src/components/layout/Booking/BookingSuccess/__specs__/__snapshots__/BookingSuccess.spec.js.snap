@@ -6,6 +6,9 @@ ShallowWrapper {
   Symbol(enzyme.__unrendered__): <BookingSuccess
     data={
       Object {
+        "stock": Object {
+          "price": 12.5,
+        },
         "token": "G8G8G8",
       }
     }
@@ -52,7 +55,7 @@ ShallowWrapper {
           <span
             className="is-block"
           >
-            
+            12,5 €
              
             ont été déduits de votre pass.
           </span>
@@ -190,7 +193,7 @@ ShallowWrapper {
             <span
               className="is-block"
             >
-              
+              12,5 €
                
               ont été déduits de votre pass.
             </span>,
@@ -209,7 +212,7 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": Array [
-                "",
+                "12,5 €",
                 " ",
                 "ont été déduits de votre pass.",
               ],
@@ -217,7 +220,7 @@ ShallowWrapper {
             },
             "ref": null,
             "rendered": Array [
-              "",
+              "12,5 €",
               " ",
               "ont été déduits de votre pass.",
             ],
@@ -451,7 +454,7 @@ ShallowWrapper {
             <span
               className="is-block"
             >
-              
+              12,5 €
                
               ont été déduits de votre pass.
             </span>
@@ -589,7 +592,7 @@ ShallowWrapper {
               <span
                 className="is-block"
               >
-                
+                12,5 €
                  
                 ont été déduits de votre pass.
               </span>,
@@ -608,7 +611,7 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  "",
+                  "12,5 €",
                   " ",
                   "ont été déduits de votre pass.",
                 ],
@@ -616,7 +619,7 @@ ShallowWrapper {
               },
               "ref": null,
               "rendered": Array [
-                "",
+                "12,5 €",
                 " ",
                 "ont été déduits de votre pass.",
               ],
