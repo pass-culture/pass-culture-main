@@ -124,6 +124,54 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
           expect(redirect).toBeUndefined()
         })
       })
+
+      describe('when visiting for the first time', () => {
+        it('should redirect to tuto recommendation with a specified mediation', () => {
+          // given
+          const dispatch = jest.fn()
+          const loadedRecommendations = [{ id: 'QA3D', offerId: null, mediationId: 'A9' }]
+          const ownProps = {
+            history: {
+              replace: jest.fn(),
+            },
+            match: {
+              url: '/decouverte',
+              params: {},
+            },
+          }
+
+          // when
+          mapDispatchToProps(dispatch, ownProps).redirectToFirstRecommendationIfNeeded(
+            loadedRecommendations
+          )
+
+          // then
+          expect(ownProps.history.replace).toHaveBeenCalledWith('/decouverte/tuto/A9')
+        })
+
+        it('should redirect to tuto recommendation without mediation', () => {
+          // given
+          const dispatch = jest.fn()
+          const loadedRecommendations = [{ id: 'QA3D', offerId: null, mediationId: null }]
+          const ownProps = {
+            history: {
+              replace: jest.fn(),
+            },
+            match: {
+              url: '/decouverte',
+              params: {},
+            },
+          }
+
+          // when
+          mapDispatchToProps(dispatch, ownProps).redirectToFirstRecommendationIfNeeded(
+            loadedRecommendations
+          )
+
+          // then
+          expect(ownProps.history.replace).toHaveBeenCalledWith('/decouverte/tuto/vide')
+        })
+      })
     })
 
     describe('when mapping resetPageData', () => {
