@@ -11,19 +11,22 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
     fieldParams = {
       input: {
         value: {
-          date: '2019-01-01'
-        }
-      }
+          date: '2019-01-01',
+        },
+      },
     }
     handleChange = jest.fn()
     values = {
       bookables: [],
       date: '2019-01-01',
-      price: 12
+      price: 12,
     }
   })
 
   it('should match snapshot', () => {
+    // given
+    jest.spyOn(global.Date, 'now').mockImplementation(() => '2019/08/20')
+
     // when
     const MyComponent = BookingDatePickerField(handleChange, values)
     const wrapper = shallow(<MyComponent {...fieldParams} />)
