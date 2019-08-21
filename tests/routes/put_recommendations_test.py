@@ -892,7 +892,7 @@ class Put:
             user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue, thing_name='Latium II')
+            offer = create_offer_with_thing_product(venue, thing_name='Guitar for dummies')
             mediation = create_mediation(offer, is_active=True)
 
             create_stock_from_offer(offer, price=14)
@@ -911,7 +911,7 @@ class Put:
             recommendations = recommendations_req.json
             assert len(recommendations) == 1
             recommendation = recommendations[0]
-            assert recommendation['offer']['name'] == 'Latium II'
+            assert recommendation['offer']['name'] == 'Guitar for dummies'
             assert len(recommendation['offer']['stocks']) == 2
             assert recommendation['offer']['stocks'][0]['isBookable'] is True
             assert recommendation['offer']['stocks'][1]['isBookable'] is False

@@ -231,9 +231,9 @@ class StockRemainingQuantityTest:
 
 class IsBookableTest:
     @freeze_time('2019-07-10')
-    def test_is_false_when_booking_limit_datetime_is_in_the_past(self):
+    def test_is_False_when_booking_limit_datetime_is_in_the_past(self):
         # Given
-        limit_datetime = datetime(2019, 7, 10) + timedelta(minutes=-1)
+        limit_datetime = datetime(2019, 7, 9)
 
         # When
         stock = create_stock(booking_limit_datetime=limit_datetime)
@@ -254,8 +254,7 @@ class IsBookableTest:
 
     def test_is_True_when_no_booking_datetime_limit(self):
         # When
-        stock = Stock()
-        stock.bookingLimitDatetime = None
+        stock = create_stock(booking_limit_datetime=None)
 
         # Then
         assert stock.isBookable is True
