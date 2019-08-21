@@ -1,5 +1,8 @@
-import { mount } from 'enzyme'
+import configureMockStore from 'redux-mock-store'
 import { createBrowserHistory } from 'history'
+import { mount } from 'enzyme'
+import { Provider } from 'react-redux'
+
 import React from 'react'
 import { Router } from 'react-router'
 
@@ -8,6 +11,10 @@ import MatomoContainer from '../MatomoContainer'
 describe('src | components | matomo | Matomo', () => {
   let fakeMatomo
   let history
+  let initialState
+  let store
+
+  const mockStore = configureMockStore()
 
   beforeEach(() => {
     history = createBrowserHistory()
@@ -17,13 +24,17 @@ describe('src | components | matomo | Matomo', () => {
       push: jest.fn(),
     }
     window._paq = fakeMatomo
+    initialState = { user: null }
+    store = mockStore(initialState)
   })
 
   it('should push a new page displayed event', () => {
     // when
     mount(
       <Router history={history}>
-        <MatomoContainer />
+        <Provider store={store}>
+          <MatomoContainer />
+        </Provider>
       </Router>
     )
 
@@ -38,7 +49,9 @@ describe('src | components | matomo | Matomo', () => {
     // when
     mount(
       <Router history={history}>
-        <MatomoContainer />
+        <Provider store={store}>
+          <MatomoContainer />
+        </Provider>
       </Router>
     )
 
@@ -47,5 +60,46 @@ describe('src | components | matomo | Matomo', () => {
       'setDocumentTitle',
       'pass Culture page title',
     ])
+  })
+  it('should dispatch the user id when user is logged', () => {
+    // given
+    const fakeMatomoPageTracker = {
+      push: jest.fn(),
+    }
+    window._paq = fakeMatomoPageTracker
+
+    store = mockStore({ user: { id: 'TY' } })
+
+    // when
+    mount(
+      <Router history={history}>
+        <Provider store={store}>
+          <MatomoContainer />
+        </Provider>
+      </Router>
+    )
+
+    // then
+    expect(fakeMatomoPageTracker.push).toHaveBeenNthCalledWith(3, ['setUserId', 'TY'])
+  })
+
+  it('should dispatch Anonymous when user is not logged', () => {
+    // given
+    const fakeMatomoPageTracker = {
+      push: jest.fn(),
+    }
+    window._paq = fakeMatomoPageTracker
+
+    // when
+    mount(
+      <Router history={history}>
+        <Provider store={store}>
+          <MatomoContainer user={null} />
+        </Provider>
+      </Router>
+    )
+
+    // then
+    expect(fakeMatomoPageTracker.push).toHaveBeenNthCalledWith(3, ['setUserId', 'Anonymous'])
   })
 })

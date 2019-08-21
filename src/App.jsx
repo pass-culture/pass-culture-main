@@ -14,7 +14,6 @@ const App = ({ modalOpen, children }) => (
 function mapStateToProps(state) {
   return {
     modalOpen: state.modal.isActive,
-    user: state.user,
   }
 }
 
