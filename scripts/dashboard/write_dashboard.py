@@ -9,7 +9,8 @@ from scripts.dashboard import count_activated_users, count_users_having_booked, 
     get_top_20_offerers_table_by_number_of_bookings, get_top_20_offerers_by_amount_table
 from scripts.dashboard.diversification_statistics import get_offer_counts_grouped_by_type_and_medium, \
     query_get_offer_counts_grouped_by_type_and_medium, query_get_booking_counts_grouped_by_type_and_medium, \
-    count_all_cancelled_bookings
+    count_all_cancelled_bookings, query_get_offer_counts_grouped_by_type_and_medium_for_departement, \
+    query_get_booking_counts_grouped_by_type_and_medium_for_departement
 
 
 def write_dashboard(tab_name: str):
@@ -51,13 +52,8 @@ def write_dashboard(tab_name: str):
     current_row += space_between_tables
     current_row = _write_diversification_table(departement_code, worksheet, current_row, space_between_lines)
     current_row += space_between_tables
-    offer_counts_grouped_by_type_and_medium = get_offer_counts_grouped_by_type_and_medium(
-        query_get_offer_counts_grouped_by_type_and_medium,
-        'Nombre d\'offres')
-    worksheet.set_dataframe(offer_counts_grouped_by_type_and_medium, f'A{current_row}')
-    bookings_by_type_and_digital_counts = get_offer_counts_grouped_by_type_and_medium(
-        query_get_booking_counts_grouped_by_type_and_medium, 'Nombre de réservations')
-    worksheet.set_dataframe(bookings_by_type_and_digital_counts, f'E{current_row}')
+    _write_offer_counts_grouped_by_type_and_medium(departement_code, worksheet, current_row)
+    _write_bookings_by_type_and_digital_counts(departement_code, worksheet, current_row)
     current_row += space_between_sections + max_rows_for_category_and_digital_table
 
     worksheet.update_value(f'A{current_row}', '3/ FINANCEMENT')
@@ -73,6 +69,29 @@ def write_dashboard(tab_name: str):
     worksheet.set_dataframe(get_top_20_offerers_table_by_number_of_bookings(departement_code), f'A{current_row}')
     current_row += space_between_tables + top_20_table_size
     worksheet.set_dataframe(get_top_20_offerers_by_amount_table(departement_code), f'A{current_row}')
+
+
+def _write_bookings_by_type_and_digital_counts(departement_code, worksheet, current_row):
+    if departement_code:
+        bookings_by_type_and_digital_counts = get_offer_counts_grouped_by_type_and_medium(
+            query_get_booking_counts_grouped_by_type_and_medium, 'Nombre de réservations')
+        worksheet.set_dataframe(bookings_by_type_and_digital_counts, f'E{current_row}')
+    else:
+        bookings_by_type_and_digital_counts = get_offer_counts_grouped_by_type_and_medium(
+            query_get_booking_counts_grouped_by_type_and_medium_for_departement, 'Nombre de réservations')
+        worksheet.set_dataframe(bookings_by_type_and_digital_counts, f'E{current_row}')
+
+
+def _write_offer_counts_grouped_by_type_and_medium(departement_code, worksheet, current_row):
+    if departement_code:
+        offer_counts_grouped_by_type_and_medium = get_offer_counts_grouped_by_type_and_medium(
+            query_get_offer_counts_grouped_by_type_and_medium_for_departement,
+            'Nombre d\'offres')
+    else:
+        offer_counts_grouped_by_type_and_medium = get_offer_counts_grouped_by_type_and_medium(
+            query_get_offer_counts_grouped_by_type_and_medium,
+            'Nombre d\'offres')
+    worksheet.set_dataframe(offer_counts_grouped_by_type_and_medium, f'A{current_row}')
 
 
 def _write_finance_table(departement_code, worksheet, current_row, space_between_lines):
