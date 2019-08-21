@@ -1,22 +1,24 @@
 import { shallow } from 'enzyme'
 import React from 'react'
-import { Field, FormSpy } from 'react-final-form'
+import { Field } from 'react-final-form'
 
 import BookingFormContent from '../BookingFormContent'
 import { SelectField } from '../../../../../forms/inputs'
 
 describe('src | components | layout | Booking | BookingForm | BookingFormContent', () => {
   let props
+  let handleSubmit
 
   beforeEach(() => {
+    handleSubmit = jest.fn()
     props = {
       className: 'fake className',
       formId: 'fake formId',
+      invalid: false,
       isEvent: false,
       isReadOnly: false,
-      onChange: jest.fn(),
-      onSubmit: jest.fn(),
-      onMutation: jest.fn(),
+      handleSubmit,
+      onSetCanSubmitForm: jest.fn(),
       values: {
         bookables: [],
         date: '2019-01-01',
@@ -34,26 +36,6 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
   })
 
   describe('render', () => {
-    it('should render a FormSpy component with the right props', () => {
-      // when
-      const wrapper = shallow(<BookingFormContent {...props} />)
-
-      // then
-      const formSpy = wrapper.find(FormSpy)
-      expect(formSpy).toHaveLength(1)
-      expect(formSpy.props()).toStrictEqual({
-        onChange: expect.any(Function),
-        subscription: {
-          dirty: true,
-          errors: true,
-          initialValues: true,
-          invalid: true,
-          pristine: true,
-          values: true,
-        },
-      })
-    })
-
     it('should render a form element with the proper props when is not read only mode', () => {
       // when
       const wrapper = shallow(<BookingFormContent {...props} />)
@@ -63,7 +45,7 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
       expect(form).toHaveLength(1)
       expect(form.prop('className')).toBe('fake className')
       expect(form.prop('id')).toBe('fake formId')
-      expect(form.prop('onSubmit')).toStrictEqual(expect.any(Function))
+      expect(form.prop('onSubmit')).toStrictEqual(handleSubmit)
     })
 
     it('should render a form element with the proper props when is read only mode', () => {
@@ -78,7 +60,7 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
       expect(form).toHaveLength(1)
       expect(form.prop('className')).toBe('fake className is-read-only')
       expect(form.prop('id')).toBe('fake formId')
-      expect(form.prop('onSubmit')).toStrictEqual(expect.any(Function))
+      expect(form.prop('onSubmit')).toStrictEqual(handleSubmit)
     })
 
     describe('when isEvent', () => {
@@ -105,16 +87,15 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
         const selectField = wrapper.find(SelectField)
         expect(selectField).toHaveLength(1)
         expect(selectField.props()).toStrictEqual({
-          canSearch: false,
           className: 'text-center',
           disabled: false,
-          help: null,
           id: 'booking-form-time-picker-field',
           label: 'Choisissez une heure',
           name: 'time',
           placeholder: 'Heure et prix',
-          provider: [],
+          options: [],
           readOnly: false,
+          required: false,
         })
       })
     })

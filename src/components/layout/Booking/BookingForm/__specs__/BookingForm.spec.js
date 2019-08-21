@@ -5,16 +5,17 @@ import BookingForm from '../BookingForm'
 
 describe('src | components | layout | Booking | BookingForm', () => {
   let props
-
+  let onFormSubmit = jest.fn()
   beforeEach(() => {
     props = {
       className: 'fake className',
+      decorators: [],
       formId: 'fake form id',
       initialValues: {},
       isEvent: true,
       isReadOnly: false,
-      onMutation: jest.fn(),
-      onSubmit: jest.fn()
+      onFormSubmit,
+      onSetCanSubmitForm: jest.fn(),
     }
   })
 
@@ -35,8 +36,8 @@ describe('src | components | layout | Booking | BookingForm', () => {
       expect(wrapper.props()).toStrictEqual({
         decorators: expect.any(Array),
         initialValues: {},
-        onSubmit: expect.any(Function),
-        render: expect.any(Function)
+        onSubmit: onFormSubmit,
+        render: expect.any(Function),
       })
     })
   })

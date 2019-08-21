@@ -26,6 +26,7 @@ const DatePickerField = ({
   popperRefContainer,
   readOnly,
   required,
+  selected,
   // NOTE -> Autres props du react-datepicker passées en option
   // github.com/Hacker0x01/react-datepicker/blob/master/docs/datepicker.md
   ...rest
@@ -60,6 +61,7 @@ const DatePickerField = ({
             onChange={onChange}
             placeholderText={placeholder}
             readOnly={readOnly}
+            selected={selected || null}
             shouldCloseOnSelect
           />
         </div>
@@ -81,6 +83,7 @@ DatePickerField.defaultProps = {
   popperRefContainer: null,
   readOnly: false,
   required: false,
+  selected: null,
   withPortal: false,
 }
 
@@ -99,6 +102,7 @@ DatePickerField.propTypes = {
   popperRefContainer: PropTypes.shape(),
   readOnly: PropTypes.bool,
   required: PropTypes.bool,
+  selected: PropTypes.shape(),
   withPortal: PropTypes.bool,
 }
 

@@ -31,21 +31,21 @@ describe('src | components | booking | utils | parseHoursByStockId', () => {
     value = { date: null }
     result = parseHoursByStockId(value)
     expect(result).toStrictEqual(expected)
-    value = { bookables: [], date: { date: now } }
+    value = { bookables: [], date: now }
     result = parseHoursByStockId(value)
     expect(result).toStrictEqual(expected)
-    value = { bookables: [{ beginningDatetime: now }], date: { date: now } }
+    value = { bookables: [{ beginningDatetime: now }], date: now }
     result = parseHoursByStockId(value)
     expect(result).toStrictEqual(expected)
     value = {
       bookables: [{ beginningDatetime: now, id: 1234 }],
-      date: { date: now },
+      date: now,
     }
     result = parseHoursByStockId(value)
     expect(result).toStrictEqual(expected)
     value = {
       bookables: [{ beginningDatetime: 'Monday 12 June 2018', id: 1234 }],
-      date: { date: now },
+      date: now,
     }
     result = parseHoursByStockId(value)
     expect(result).toStrictEqual(expected)
@@ -65,22 +65,7 @@ describe('src | components | booking | utils | parseHoursByStockId', () => {
     const expected = [{ id: 'AAAAA', label: `${time} - ${devisedPrice}` }]
     const value = {
       bookables: [{ beginningDatetime: now }, { beginningDatetime: now, id: 'AAAAA', price }],
-      date: { date: now },
-    }
-    const result = parseHoursByStockId(value)
-    expect(result).toStrictEqual(expected)
-  })
-  it.skip('returns an array of objects in differents timezone', () => {
-    const format = 'HH:mm'
-    const now = moment()
-    const nowtz = moment().tz('America/Los_Angeles')
-    const price = 1
-    const time = moment().format(format)
-    const devisedPrice = getDisplayPrice(price)
-    const expected = [{ id: 'AAAAA', label: `${time} - ${devisedPrice}` }]
-    const value = {
-      bookables: [{ beginningDatetime: now }, { beginningDatetime: now, id: 'AAAAA', price }],
-      date: { date: nowtz },
+      date: now,
     }
     const result = parseHoursByStockId(value)
     expect(result).toStrictEqual(expected)

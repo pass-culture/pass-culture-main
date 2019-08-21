@@ -42,7 +42,10 @@ ShallowWrapper {
             }
           >
             <Icon
-              type="check-circle"
+              alt={null}
+              className={null}
+              src={null}
+              svg="picto-validation"
             />
           </span>
           <span
@@ -122,7 +125,10 @@ ShallowWrapper {
               }
             >
               <Icon
-                type="check-circle"
+                alt={null}
+                className={null}
+                src={null}
+                svg="picto-validation"
               />
             </span>,
             <span
@@ -141,7 +147,10 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": <Icon
-                type="check-circle"
+                alt={null}
+                className={null}
+                src={null}
+                svg="picto-validation"
               />,
               "className": "is-block mb12",
               "style": Object {
@@ -155,7 +164,10 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "function",
               "props": Object {
-                "type": "check-circle",
+                "alt": null,
+                "className": null,
+                "src": null,
+                "svg": "picto-validation",
               },
               "ref": null,
               "rendered": null,
@@ -441,7 +453,10 @@ ShallowWrapper {
               }
             >
               <Icon
-                type="check-circle"
+                alt={null}
+                className={null}
+                src={null}
+                svg="picto-validation"
               />
             </span>
             <span
@@ -521,7 +536,10 @@ ShallowWrapper {
                 }
               >
                 <Icon
-                  type="check-circle"
+                  alt={null}
+                  className={null}
+                  src={null}
+                  svg="picto-validation"
                 />
               </span>,
               <span
@@ -540,7 +558,10 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": <Icon
-                  type="check-circle"
+                  alt={null}
+                  className={null}
+                  src={null}
+                  svg="picto-validation"
                 />,
                 "className": "is-block mb12",
                 "style": Object {
@@ -554,7 +575,10 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "function",
                 "props": Object {
-                  "type": "check-circle",
+                  "alt": null,
+                  "className": null,
+                  "src": null,
+                  "svg": "picto-validation",
                 },
                 "ref": null,
                 "rendered": null,

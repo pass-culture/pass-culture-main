@@ -5,12 +5,13 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <BookingForm
     className="fake className"
+    decorators={Array []}
     formId="fake form id"
     initialValues={Object {}}
     isEvent={true}
     isReadOnly={false}
-    onMutation={[MockFunction]}
-    onSubmit={[MockFunction]}
+    onFormSubmit={[MockFunction]}
+    onSetCanSubmitForm={[MockFunction]}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],

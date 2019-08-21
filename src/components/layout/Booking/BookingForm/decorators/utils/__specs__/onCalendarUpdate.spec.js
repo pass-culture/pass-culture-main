@@ -99,26 +99,24 @@ describe('src | components | booking | utils | onCalendarUpdates', () => {
 
   it('returns expected if matching', () => {
     const mom = moment()
-    const selection = { date: mom }
     const match = { beginningDatetime: mom, id: 'AAA', price: 1 }
     const expected = { price: 1, stockId: 'AAA', time: 'AAA' }
     const formValues = {
       bookables: [match],
     }
-    const result = onCalendarUpdates(selection, null, formValues)
+    const result = onCalendarUpdates(mom, null, formValues)
     expect(result).toStrictEqual(expected)
   })
 
   it('returns first expected value if multiple matching', () => {
     const mom = moment()
-    const selection = { date: mom }
     const match1 = { beginningDatetime: mom, id: 'AAA', price: 1 }
     const match2 = { beginningDatetime: mom, id: 'BBB', price: 1 }
     const expected = { price: 1, stockId: 'AAA', time: 'AAA' }
     const formValues = {
       bookables: [match1, match2],
     }
-    const result = onCalendarUpdates(selection, null, formValues)
+    const result = onCalendarUpdates(mom, null, formValues)
     expect(result).toStrictEqual(expected)
   })
 })

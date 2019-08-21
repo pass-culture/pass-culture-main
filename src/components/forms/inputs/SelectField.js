@@ -56,7 +56,7 @@ class SelectField extends PureComponent {
   }
 
   render() {
-    const { className, id, label, name } = this.props
+    const { className, id, label, name, required } = this.props
     const inputName = id || name
     return (
       <div className={className}>
@@ -64,7 +64,10 @@ class SelectField extends PureComponent {
           className="pc-final-form-datepicker"
           htmlFor={inputName}
         >
-          {label && <InputLabel label={label} />}
+          {label && <InputLabel
+            label={label}
+            required={required}
+                    />}
           <Field
             name={name}
             render={this.renderSelect}
@@ -80,17 +83,16 @@ class SelectField extends PureComponent {
 }
 
 SelectField.defaultProps = {
-  canSearch: false,
   className: '',
   disabled: false,
   id: null,
   label: null,
   placeholder: null,
   readOnly: false,
+  required: false,
 }
 
 SelectField.propTypes = {
-  canSearch: PropTypes.bool,
   className: PropTypes.string,
   disabled: PropTypes.bool,
   id: PropTypes.string,
@@ -99,6 +101,7 @@ SelectField.propTypes = {
   options: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   placeholder: PropTypes.string,
   readOnly: PropTypes.bool,
+  required: PropTypes.bool,
 }
 
 export default SelectField
