@@ -95,12 +95,12 @@ def create_booking_for_thing(
         amount=50,
         quantity=1,
         user=None,
-        isCancelled=False,
-        type=ThingType.JEUX,
+        is_cancelled=False,
+        product_type=ThingType.JEUX,
         date_created=datetime.utcnow()
 ):
-    product = Product(from_dict={'url': url, 'type': str(type)})
-    offer = Offer()
+    product = Product(from_dict={'url': url, 'type': str(product_type)})
+    offer = Offer(from_dict={'type': str(product_type)})
     stock = Stock()
     booking = Booking(from_dict={'amount': amount})
     offer.product = product
@@ -108,7 +108,7 @@ def create_booking_for_thing(
     booking.stock = stock
     booking.quantity = quantity
     booking.user = user
-    booking.isCancelled = isCancelled
+    booking.isCancelled = is_cancelled
     booking.dateCreated = date_created
     return booking
 

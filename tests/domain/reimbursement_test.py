@@ -50,7 +50,7 @@ class DigitalThingsReimbursementTest:
 
     def test_is_not_relevant_for_digital_books(self):
         # given
-        booking = create_booking_for_thing(url='http://my.book', amount=40, quantity=3, type=ThingType.LIVRE_EDITION)
+        booking = create_booking_for_thing(url='http://my.book', amount=40, quantity=3, product_type=ThingType.LIVRE_EDITION)
 
         # when
         is_relevant = ReimbursementRules.DIGITAL_THINGS.value.is_relevant(booking)
@@ -102,7 +102,7 @@ class PhysicalOffersReimbursementTest:
 
     def test_is_relevant_for_booking_on_digital_books(self):
         # given
-        booking = create_booking_for_thing(url='http://my.book', amount=40, quantity=3, type=ThingType.LIVRE_EDITION)
+        booking = create_booking_for_thing(url='http://my.book', amount=40, quantity=3, product_type=ThingType.LIVRE_EDITION)
 
         # when
         is_relevant = ReimbursementRules.PHYSICAL_OFFERS.value.is_relevant(booking)
@@ -253,6 +253,102 @@ class ReimbursementRateByVenueBetween40000And100000Test:
 
         # then
         assert is_relevant is False
+
+
+class ReimbursementRateByVenueAbove100000Test:
+    def test_apply_for_booking_returns_a_reimbursed_amount(self):
+        # given
+        booking = create_booking_for_thing(url='http://', amount=40, quantity=3)
+
+        # when
+        reimbursed_amount = ReimbursementRules.ABOVE_100000_EUROS.value.apply(booking)
+
+        # then
+        assert reimbursed_amount == Decimal(0.65) * 40 * 3
+
+    def test_is_relevant_for_booking_on_physical_things_with_cumulative_value_above_100000(self):
+        # given
+        rule = ReimbursementRules.ABOVE_100000_EUROS.value
+        booking = create_booking_for_thing(url=None, amount=40, quantity=3)
+        cumulative_booking_value = 100100
+
+        # when
+        is_relevant = rule.is_relevant(booking, cumulative_value=cumulative_booking_value)
+
+        # then
+        assert is_relevant is True
+
+    def test_is_not_relevant_for_booking_on_events_with_cumulative_value_of_exactly_100000(self):
+        # given
+        rule = ReimbursementRules.ABOVE_100000_EUROS.value
+        booking = create_booking_for_event(amount=40, quantity=3)
+        cumulative_booking_value = 100000
+
+        # when
+        is_relevant = rule.is_relevant(booking, cumulative_value=cumulative_booking_value)
+
+        # then
+        assert is_relevant is False
+
+    def test_is_not_relevant_for_booking_on_physical_things_with_cumulative_value_below_100000(self):
+        # given
+        rule = ReimbursementRules.ABOVE_100000_EUROS.value
+        booking = create_booking_for_thing(url=None, amount=30, quantity=3)
+        cumulative_booking_value = 99000
+
+        # when
+        is_relevant = rule.is_relevant(booking, cumulative_value=cumulative_booking_value)
+
+        # then
+        assert is_relevant is False
+
+
+class ReimbursementRateForBookAbove20000Test:
+    def test_apply_for_booking_returns_a_reimbursed_amount(self):
+        # given
+        booking = create_booking_for_thing(product_type=ThingType.LIVRE_EDITION, url=None, amount=40, quantity=3)
+
+        # when
+        reimbursed_amount = ReimbursementRules.BOOK_REIMBURSEMENT.value.apply(booking)
+
+        # then
+        assert reimbursed_amount == Decimal(0.95) * 40 * 3
+
+    def test_is_relevant_for_booking_on_book_with_cumulative_value_below_20000(self):
+        # given
+        rule = ReimbursementRules.BOOK_REIMBURSEMENT.value
+        booking = create_booking_for_thing(product_type=ThingType.LIVRE_EDITION, url=None, amount=40, quantity=3)
+        cumulative_booking_value = 100
+
+        # when
+        is_relevant = rule.is_relevant(booking, cumulative_value=cumulative_booking_value)
+
+        # then
+        assert is_relevant is False
+
+    def test_is_not_relevant_for_booking_on_book_with_cumulative_value_of_exactly_20000(self):
+        # given
+        rule = ReimbursementRules.BOOK_REIMBURSEMENT.value
+        booking = create_booking_for_thing(product_type=ThingType.LIVRE_EDITION, url=None, amount=40, quantity=3)
+        cumulative_booking_value = 20000
+
+        # when
+        is_relevant = rule.is_relevant(booking, cumulative_value=cumulative_booking_value)
+
+        # then
+        assert is_relevant is False
+
+    def test_is_relevant_for_booking_on_book_with_cumulative_value_above_20000(self):
+        # given
+        rule = ReimbursementRules.BOOK_REIMBURSEMENT.value
+        booking = create_booking_for_thing(product_type=ThingType.LIVRE_EDITION, url=None, amount=40, quantity=3)
+        cumulative_booking_value = 55000
+
+        # when
+        is_relevant = rule.is_relevant(booking, cumulative_value=cumulative_booking_value)
+
+        # then
+        assert is_relevant is True
 
 
 class MaxReimbursementByOffererTest:
@@ -586,8 +682,10 @@ class FindAllBookingsReimbursementsTest:
 
             # then
             assert_total_reimbursement(booking_reimbursements[0], booking1)
-            assert_degressive_reimbursement(booking_reimbursements[2], booking3, cumulative_value_for_bookings_1_and_3_and_4)
-            assert_degressive_reimbursement(booking_reimbursements[3], booking4, cumulative_value_for_bookings_1_and_3_and_4)
+            assert_degressive_reimbursement(booking_reimbursements[2], booking3,
+                                            cumulative_value_for_bookings_1_and_3_and_4)
+            assert_degressive_reimbursement(booking_reimbursements[3], booking4,
+                                            cumulative_value_for_bookings_1_and_3_and_4)
             assert_no_reimbursement_for_digital(booking_reimbursements[1], booking2)
 
         def test_returns_85_reimbursement_rate_between_40000_and_100000_euros_for_most_recent_booking(self):
@@ -624,8 +722,10 @@ class FindAllBookingsReimbursementsTest:
             # then
             assert_total_reimbursement(booking_reimbursements[0], booking1)
             assert_no_reimbursement_for_digital(booking_reimbursements[1], booking2)
-            assert_degressive_reimbursement(booking_reimbursements[2], booking3, cumulative_value_for_bookings_1_and_3_and_4)
-            assert_degressive_reimbursement(booking_reimbursements[3], booking4, cumulative_value_for_bookings_1_and_3_and_4)
+            assert_degressive_reimbursement(booking_reimbursements[2], booking3,
+                                            cumulative_value_for_bookings_1_and_3_and_4)
+            assert_degressive_reimbursement(booking_reimbursements[3], booking4,
+                                            cumulative_value_for_bookings_1_and_3_and_4)
 
         def test_returns_65_reimbursement_rate_above_100000_euros_for_last_booking(self):
             # given

@@ -5,17 +5,15 @@ import pytest
 from freezegun import freeze_time
 from lxml.etree import DocumentInvalid
 
-from domain.reimbursement import ReimbursementRules
 from models import PcObject
-from models.feature import FeatureToggle
 from models.payment import Payment
 from models.payment_status import TransactionStatus, PaymentStatus
-from scripts.payment.batch_steps import generate_new_payments, send_transactions, send_payments_details, \
+from scripts.payment.batch_steps import send_transactions, send_payments_details, \
     send_wallet_balances, \
     send_payments_report, concatenate_payments_with_errors_and_retries
 from tests.conftest import clean_database, mocked_mail
 from tests.test_utils import create_offerer, create_venue, create_offer_with_thing_product, create_stock_from_offer, \
-    create_booking, create_user, create_deposit, create_payment, create_bank_information, deactivate_feature
+    create_booking, create_user, create_deposit, create_payment
 
 
 class ConcatenatePaymentsWithErrorsAndRetriesTest:

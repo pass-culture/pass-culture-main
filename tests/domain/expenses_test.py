@@ -10,7 +10,7 @@ class ExpensesTest:
             def test_online_offer_is_a_digital_expense(self):
                 # Given
                 bookings = [
-                    create_booking_for_thing(amount=50, url='http://on.line', type=ThingType.AUDIOVISUEL)
+                    create_booking_for_thing(amount=50, url='http://on.line', product_type=ThingType.AUDIOVISUEL)
                 ]
 
                 # When
@@ -23,7 +23,7 @@ class ExpensesTest:
             def test_offline_offer_is_a_physical_expense(self):
                 # Given
                 bookings = [
-                    create_booking_for_thing(amount=50, url=None, type=ThingType.AUDIOVISUEL)
+                    create_booking_for_thing(amount=50, url=None, product_type=ThingType.AUDIOVISUEL)
                 ]
 
                 # When
@@ -37,7 +37,7 @@ class ExpensesTest:
             def test_online_offer_is_a_digital_expense(self):
                 # Given
                 bookings = [
-                    create_booking_for_thing(amount=50, url='http://on.line', type=ThingType.JEUX_VIDEO)
+                    create_booking_for_thing(amount=50, url='http://on.line', product_type=ThingType.JEUX_VIDEO)
                 ]
 
                 # When
@@ -51,7 +51,7 @@ class ExpensesTest:
             def test_online_offer_is_a_digital_expense(self):
                 # Given
                 bookings = [
-                    create_booking_for_thing(amount=50, url='http://on.line', type=ThingType.MUSIQUE)
+                    create_booking_for_thing(amount=50, url='http://on.line', product_type=ThingType.MUSIQUE)
                 ]
 
                 # When
@@ -64,7 +64,7 @@ class ExpensesTest:
             def test_offline_offer_is_a_physical_expense(self):
                 # Given
                 bookings = [
-                    create_booking_for_thing(amount=50, url=None, type=ThingType.MUSIQUE)
+                    create_booking_for_thing(amount=50, url=None, product_type=ThingType.MUSIQUE)
                 ]
 
                 # When
@@ -78,7 +78,7 @@ class ExpensesTest:
             def test_online_offer_is_a_digital_expense(self):
                 # Given
                 bookings = [
-                    create_booking_for_thing(amount=50, url='http://on.line', type=ThingType.PRESSE_ABO)
+                    create_booking_for_thing(amount=50, url='http://on.line', product_type=ThingType.PRESSE_ABO)
                 ]
 
                 # When
@@ -92,7 +92,7 @@ class ExpensesTest:
             def test_online_offer_is_a_physical_expense(self):
                 # Given
                 bookings = [
-                    create_booking_for_thing(amount=50, url='http://on.line', type=ThingType.LIVRE_EDITION)
+                    create_booking_for_thing(amount=50, url='http://on.line', product_type=ThingType.LIVRE_EDITION)
                 ]
 
                 # When
@@ -105,7 +105,7 @@ class ExpensesTest:
             def test_offline_offer_is_a_physical_expense(self):
                 # Given
                 bookings = [
-                    create_booking_for_thing(amount=50, url=None, type=ThingType.LIVRE_EDITION)
+                    create_booking_for_thing(amount=50, url=None, product_type=ThingType.LIVRE_EDITION)
                 ]
 
                 # When
@@ -119,7 +119,7 @@ class ExpensesTest:
             def test_offline_offer_is_a_physical_expense(self):
                 # Given
                 bookings = [
-                    create_booking_for_thing(amount=50, url=None, type=ThingType.JEUX)
+                    create_booking_for_thing(amount=50, url=None, product_type=ThingType.JEUX)
                 ]
 
                 # When
@@ -133,7 +133,7 @@ class ExpensesTest:
             def test_offline_offer_is_not_capped(self):
                 # Given
                 bookings = [
-                    create_booking_for_thing(amount=50, url=None, type=ThingType.PRATIQUE_ARTISTIQUE_ABO)
+                    create_booking_for_thing(amount=50, url=None, product_type=ThingType.PRATIQUE_ARTISTIQUE_ABO)
                 ]
 
                 # When
@@ -147,7 +147,7 @@ class ExpensesTest:
             def test_offline_offer_is_not_capped(self):
                 # Given
                 bookings = [
-                    create_booking_for_thing(amount=50, url=None, type=ThingType.MUSIQUE_ABO)
+                    create_booking_for_thing(amount=50, url=None, product_type=ThingType.MUSIQUE_ABO)
                 ]
 
                 # When
@@ -161,7 +161,7 @@ class ExpensesTest:
             def test_offline_offer_is_not_capped(self):
                 # Given
                 bookings = [
-                    create_booking_for_thing(amount=50, url=None, type=ThingType.MUSEES_PATRIMOINE_ABO)
+                    create_booking_for_thing(amount=50, url=None, product_type=ThingType.MUSEES_PATRIMOINE_ABO)
                 ]
 
                 # When
@@ -175,7 +175,7 @@ class ExpensesTest:
             def test_offline_offer_is_not_capped(self):
                 # Given
                 bookings = [
-                    create_booking_for_thing(amount=50, url=None, type=ThingType.CINEMA_ABO)
+                    create_booking_for_thing(amount=50, url=None, product_type=ThingType.CINEMA_ABO)
                 ]
 
                 # When
@@ -189,7 +189,7 @@ class ExpensesTest:
             def test_offline_offer_is_capped(self):
                 # Given
                 bookings = [
-                    create_booking_for_thing(amount=50, url=None, type=ThingType.INSTRUMENT)
+                    create_booking_for_thing(amount=50, url=None, product_type=ThingType.INSTRUMENT)
                 ]
 
                 # When
@@ -203,7 +203,7 @@ class ExpensesTest:
             def test_offline_offer_is_not_capped(self):
                 # Given
                 bookings = [
-                    create_booking_for_thing(amount=50, url=None, type=ThingType.JEUX_VIDEO_ABO)
+                    create_booking_for_thing(amount=50, url=None, product_type=ThingType.JEUX_VIDEO_ABO)
                 ]
 
                 # When
@@ -340,9 +340,9 @@ class ExpensesTest:
         class PhysicalCapTest:
             def test_max_200_and_actual_50(self):
                 # Given
-                physical_cap_booking = create_booking_for_thing(amount=50, type=ThingType.AUDIOVISUEL)
+                physical_cap_booking = create_booking_for_thing(amount=50, product_type=ThingType.AUDIOVISUEL)
                 digital_cap_booking = create_booking_for_thing(url='http://test.com', amount=60,
-                                                               type=ThingType.AUDIOVISUEL)
+                                                               product_type=ThingType.AUDIOVISUEL)
 
                 bookings = [physical_cap_booking, digital_cap_booking]
 
@@ -366,9 +366,9 @@ class ExpensesTest:
         class DigitalCapTest:
             def test_returns_max_200_and_actual_110(self):
                 # Given
-                physical_cap_booking = create_booking_for_thing(amount=50, type=ThingType.CINEMA_ABO)
+                physical_cap_booking = create_booking_for_thing(amount=50, product_type=ThingType.CINEMA_ABO)
                 digital_cap_booking = create_booking_for_thing(url='http://test.com', amount=110,
-                                                               type=ThingType.MUSIQUE)
+                                                               product_type=ThingType.MUSIQUE)
 
                 bookings = [physical_cap_booking, digital_cap_booking]
 

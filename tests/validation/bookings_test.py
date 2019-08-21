@@ -22,7 +22,7 @@ class CheckExpenseLimitsTest:
             'digital': {'max': SUBVENTION_DIGITAL_THINGS, 'actual': 10}
         }
         booking = Booking(from_dict={'stockId': humanize(123), 'amount': 11, 'quantity': 1})
-        stock = create_booking_for_thing(url='http://on.line', type=ThingType.LIVRE_EDITION).stock
+        stock = create_booking_for_thing(url='http://on.line', product_type=ThingType.LIVRE_EDITION).stock
         mocked_query = Mock(return_value=stock)
 
         # when
@@ -40,7 +40,7 @@ class CheckExpenseLimitsTest:
             'digital': {'max': SUBVENTION_DIGITAL_THINGS, 'actual': 190}
         }
         booking = Booking(from_dict={'stockId': humanize(123), 'amount': 11, 'quantity': 1})
-        stock = create_booking_for_thing(url='http://on.line', type=ThingType.JEUX_VIDEO).stock
+        stock = create_booking_for_thing(url='http://on.line', product_type=ThingType.JEUX_VIDEO).stock
         mocked_query = Mock(return_value=stock)
 
         # when
