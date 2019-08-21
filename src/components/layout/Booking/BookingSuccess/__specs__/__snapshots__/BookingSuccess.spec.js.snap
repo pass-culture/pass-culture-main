@@ -55,7 +55,7 @@ ShallowWrapper {
           <span
             className="is-block"
           >
-            12,5 €
+            12,5 €
              
             ont été déduits de votre pass.
           </span>
@@ -193,7 +193,7 @@ ShallowWrapper {
             <span
               className="is-block"
             >
-              12,5 €
+              12,5 €
                
               ont été déduits de votre pass.
             </span>,
@@ -212,7 +212,7 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": Array [
-                "12,5 €",
+                "12,5 €",
                 " ",
                 "ont été déduits de votre pass.",
               ],
@@ -220,7 +220,7 @@ ShallowWrapper {
             },
             "ref": null,
             "rendered": Array [
-              "12,5 €",
+              "12,5 €",
               " ",
               "ont été déduits de votre pass.",
             ],
@@ -454,7 +454,7 @@ ShallowWrapper {
             <span
               className="is-block"
             >
-              12,5 €
+              12,5 €
                
               ont été déduits de votre pass.
             </span>
@@ -592,7 +592,7 @@ ShallowWrapper {
               <span
                 className="is-block"
               >
-                12,5 €
+                12,5 €
                  
                 ont été déduits de votre pass.
               </span>,
@@ -611,7 +611,7 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  "12,5 €",
+                  "12,5 €",
                   " ",
                   "ont été déduits de votre pass.",
                 ],
@@ -619,7 +619,7 @@ ShallowWrapper {
               },
               "ref": null,
               "rendered": Array [
-                "12,5 €",
+                "12,5 €",
                 " ",
                 "ont été déduits de votre pass.",
               ],

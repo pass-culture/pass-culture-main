@@ -55,7 +55,7 @@ ShallowWrapper {
           <span
             className="is-block"
           >
-            12 € vont être recrédités sur votre pass.
+            12 € vont être recrédités sur votre pass.
           </span>
           <span
             className="is-block"
@@ -157,7 +157,7 @@ ShallowWrapper {
             <span
               className="is-block"
             >
-              12 € vont être recrédités sur votre pass.
+              12 € vont être recrédités sur votre pass.
             </span>,
             <span
               className="is-block"
@@ -174,11 +174,11 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": "12 € vont être recrédités sur votre pass.",
+              "children": "12 € vont être recrédités sur votre pass.",
               "className": "is-block",
             },
             "ref": null,
-            "rendered": "12 € vont être recrédités sur votre pass.",
+            "rendered": "12 € vont être recrédités sur votre pass.",
             "type": "span",
           },
           Object {
@@ -235,7 +235,7 @@ ShallowWrapper {
             <span
               className="is-block"
             >
-              12 € vont être recrédités sur votre pass.
+              12 € vont être recrédités sur votre pass.
             </span>
             <span
               className="is-block"
@@ -337,7 +337,7 @@ ShallowWrapper {
               <span
                 className="is-block"
               >
-                12 € vont être recrédités sur votre pass.
+                12 € vont être recrédités sur votre pass.
               </span>,
               <span
                 className="is-block"
@@ -354,11 +354,11 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": "12 € vont être recrédités sur votre pass.",
+                "children": "12 € vont être recrédités sur votre pass.",
                 "className": "is-block",
               },
               "ref": null,
-              "rendered": "12 € vont être recrédités sur votre pass.",
+              "rendered": "12 € vont être recrédités sur votre pass.",
               "type": "span",
             },
             Object {

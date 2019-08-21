@@ -1,117 +1,117 @@
 import { getDisplayPrice, priceIsDefined } from '../getDisplayPrice'
 
+const RIGHTWARDS_ARROW = '\u2192'
+const NO_BREAK_SPACE = '\u00A0'
+
 describe('src | helper | getDisplayPrice', () => {
   describe('priceIsDefined', () => {
     it('returns false', () => {
-      const expected = false
-
       let value = null
       let result = priceIsDefined(value)
-      expect(result).toBe(expected)
+      expect(result).toBe(false)
 
       value = 'null'
       result = priceIsDefined(value)
-      expect(result).toBe(expected)
+      expect(result).toBe(false)
 
       value = undefined
       result = priceIsDefined(value)
-      expect(result).toBe(expected)
+      expect(result).toBe(false)
 
       value = new Error()
       result = priceIsDefined(value)
-      expect(result).toBe(expected)
+      expect(result).toBe(false)
     })
 
     it('returns true', () => {
-      const expected = true
-
       let value = 0
       let result = priceIsDefined(value)
-      expect(result).toBe(expected)
+      expect(result).toBe(true)
 
       value = '0'
       result = priceIsDefined(value)
-      expect(result).toBe(expected)
+      expect(result).toBe(true)
 
       value = ['this is not a price']
       result = priceIsDefined(value)
-      expect(result).toBe(expected)
+      expect(result).toBe(true)
 
       value = false
       result = priceIsDefined(value)
-      expect(result).toBe(expected)
+      expect(result).toBe(true)
 
       value = { prop: 'this is not a price' }
       result = priceIsDefined(value)
-      expect(result).toBe(expected)
+      expect(result).toBe(true)
     })
   })
 
   describe('getDisplayPrice', () => {
-    it('should return a empty string if empty array of numbers', () => {
-      // When
+    it('should return an empty string if empty array of numbers', () => {
+      // when
       const result = getDisplayPrice([])
 
-      // Then
+      // then
       expect(result).toBe('')
     })
 
     describe('with valid values', () => {
       it('should return simple value when one price is given', () => {
-        // Given
-        let value = 15.1
+        // given
+        const value = 15.1
+        const freeValue = 'Gratuit'
 
-        // When
-        let result = getDisplayPrice(value, 'Gratuit')
+        // when
+        const result = getDisplayPrice(value, freeValue)
 
-        // Then
-        expect(result).toBe('15,1 €')
+        // then
+        expect(result).toBe(`15,1${NO_BREAK_SPACE}€`)
       })
 
       it('should return free value if defined and price equals 0', () => {
-        // Given
+        // given
+        const value = [0]
         const freeValue = 'Gratuit'
-        let value = [0]
 
-        // When
-        let result = getDisplayPrice(value, freeValue)
+        // when
+        const result = getDisplayPrice(value, freeValue)
 
-        // Then
+        // then
         expect(result).toBe(freeValue)
       })
 
       it('should use Euro as default currency', () => {
-        // Given
-        let value = [18.2]
+        // given
+        const value = [18.2]
 
-        // When
+        // when
         const result = getDisplayPrice(value)
 
-        // Then
-        expect(result).toBe('18,2 €')
+        // then
+        expect(result).toBe(`18,2${NO_BREAK_SPACE}€`)
       })
 
       it('should return value with currency from array', () => {
-        // Given
+        // given
         const priceRange = [6, 12]
 
-        // When
+        // when
         const result = getDisplayPrice(priceRange)
 
-        // Then
-        expect(result).toBe('6 \u2192 12 €')
+        // then
+        expect(result).toBe(`6 ${RIGHTWARDS_ARROW} 12${NO_BREAK_SPACE}€`)
       })
 
       it('should use comma as floating point', () => {
         // given
         const value = [1.33, 6.78]
+        const freeValue = 'Gratuit'
 
         // when
-        const result = getDisplayPrice(value, 'Gratuit')
+        const result = getDisplayPrice(value, freeValue)
 
         // then
-        const expected = '1,33 \u2192 6,78 €'
-        expect(result).toBe(expected)
+        expect(result).toBe(`1,33 ${RIGHTWARDS_ARROW} 6,78${NO_BREAK_SPACE}€`)
       })
 
       it('should not preserve comma when round value', () => {
@@ -122,19 +122,20 @@ describe('src | helper | getDisplayPrice', () => {
         const result = getDisplayPrice(value)
 
         // then
-        expect(result).toBe('5 €')
+        expect(result).toBe(`5${NO_BREAK_SPACE}€`)
       })
 
       describe('when the only price possible is 0', () => {
         it('should return Gratuit', () => {
           // given
           const value = [0]
+          const freeValue = 'Gratuit'
 
           // when
-          const result = getDisplayPrice(value, 'Gratuit')
+          const result = getDisplayPrice(value, freeValue)
 
           // then
-          expect(result).toBe('Gratuit')
+          expect(result).toBe(freeValue)
         })
       })
     })

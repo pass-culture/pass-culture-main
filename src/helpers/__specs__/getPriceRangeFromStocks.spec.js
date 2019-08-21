@@ -3,28 +3,27 @@ import getPriceRangeFromStocks from '../getPriceRangeFromStocks'
 describe('src | helpers | getPriceRangeFromStocks', () => {
   describe('when stock is not in good format', () => {
     it('returns an empty array', () => {
-      const expected = []
       let stocks = []
       let result = getPriceRangeFromStocks(stocks)
-      expect(result).toStrictEqual(expected)
+      expect(result).toStrictEqual([])
       stocks = null
       result = getPriceRangeFromStocks(stocks)
-      expect(result).toStrictEqual(expected)
+      expect(result).toStrictEqual([])
       stocks = undefined
       result = getPriceRangeFromStocks(stocks)
-      expect(result).toStrictEqual(expected)
+      expect(result).toStrictEqual([])
       stocks = 1234
       result = getPriceRangeFromStocks(stocks)
-      expect(result).toStrictEqual(expected)
+      expect(result).toStrictEqual([])
       stocks = 'a string'
       result = getPriceRangeFromStocks(stocks)
-      expect(result).toStrictEqual(expected)
+      expect(result).toStrictEqual([])
       stocks = false
       result = getPriceRangeFromStocks(stocks)
-      expect(result).toStrictEqual(expected)
+      expect(result).toStrictEqual([])
       stocks = {}
       result = getPriceRangeFromStocks(stocks)
-      expect(result).toStrictEqual(expected)
+      expect(result).toStrictEqual([])
     })
 
     describe('when stocks exists', () => {
@@ -63,6 +62,7 @@ describe('src | helpers | getPriceRangeFromStocks', () => {
 
       // when
       const result = getPriceRangeFromStocks(stocks)
+
       // then
       expect(result).toStrictEqual([0])
     })
@@ -86,7 +86,7 @@ describe('src | helpers | getPriceRangeFromStocks', () => {
     })
   })
 
-  describe('when stocks contains price 0 and no stock ', () => {
+  describe('when stocks contains price 0 and no stock', () => {
     it('should return an array with the price', () => {
       // given
       const stocks = [
@@ -99,14 +99,13 @@ describe('src | helpers | getPriceRangeFromStocks', () => {
 
       // when
       const result = getPriceRangeFromStocks(stocks)
-      const expected = []
 
       // then
-      expect(result).toStrictEqual(expected)
+      expect(result).toStrictEqual([])
     })
   })
 
-  describe('when stocks contains prices with decimals and no stock ', () => {
+  describe('when stocks contains prices with decimals and no stock', () => {
     it('should not return the price of the offer without stock', () => {
       // given
       const stocks = [
@@ -124,14 +123,13 @@ describe('src | helpers | getPriceRangeFromStocks', () => {
 
       // when
       const result = getPriceRangeFromStocks(stocks)
-      const expected = [1.33]
 
       // then
-      expect(result).toStrictEqual(expected)
+      expect(result).toStrictEqual([1.33])
     })
   })
 
-  describe('when stock is not bookable ', () => {
+  describe('when stock is not bookable', () => {
     it('should not include that stock in the range', () => {
       // given
       const stocks = [

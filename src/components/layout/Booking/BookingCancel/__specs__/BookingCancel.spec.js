@@ -3,6 +3,8 @@ import { shallow } from 'enzyme'
 
 import BookingCancel from '../BookingCancel'
 
+const NO_BREAK_SPACE = '\u00A0'
+
 describe('src | components | layout | Booking | BookingCancel', () => {
   let props
 
@@ -31,7 +33,7 @@ describe('src | components | layout | Booking | BookingCancel', () => {
     const mainWrapper = wrapper.find('.text-center')
     const spans = mainWrapper.find('p span')
     expect(spans).toHaveLength(2)
-    expect(spans.at(0).text()).toBe('12 € vont être recrédités sur votre pass.')
+    expect(spans.at(0).text()).toBe(`12${NO_BREAK_SPACE}€ vont être recrédités sur votre pass.`)
     expect(spans.at(1).text()).toBe('Vous allez recevoir un e-mail de confirmation.')
   })
 

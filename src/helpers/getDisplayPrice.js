@@ -1,10 +1,13 @@
 import isEqual from 'lodash.isequal'
 
-const CURRENCY_SYMBOL = '€'
+const EURO_SYMBOL = '€'
+const SPACE = '\u0020'
+const NO_BREAK_SPACE = '\u00A0'
+const RIGHTWARDS_ARROW = '\u2192'
 
-const valueToNumber = v => {
-  const isString = typeof v === 'string'
-  return (!isString && v) || parseFloat(v, 10)
+const valueToNumber = value => {
+  const isString = typeof value === 'string'
+  return (!isString && value) || parseFloat(value, 10)
 }
 
 const valueToPrice = value => {
@@ -12,25 +15,23 @@ const valueToPrice = value => {
   return (value && `${value.toString().replace('.', ',')}`) || ''
 }
 
-const defaultOutputPriceFormatter = pricesArray => {
-  const SPACE = '\u0020'
-  const ARROW = '\u2192'
-  const spacedArrowSplitter = `${SPACE}${ARROW}${SPACE}`
+const formatPrice = prices => {
+  const separator = `${SPACE}${RIGHTWARDS_ARROW}${SPACE}`
 
-  const result = pricesArray.join(spacedArrowSplitter)
-  return `${result}${SPACE}${CURRENCY_SYMBOL}`
+  const result = prices.join(separator)
+  return `${result}${NO_BREAK_SPACE}${EURO_SYMBOL}`
 }
 
 export const priceIsDefined = value => {
-  const isDefined =
+  return (
     value !== null && value !== 'null' && !(value instanceof Error) && typeof value !== 'undefined'
-  return isDefined
+  )
 }
 
 export const getDisplayPrice = (simplePriceOrPriceRange, freeValue = null) => {
-  const priceRange = (Array.isArray(simplePriceOrPriceRange) && simplePriceOrPriceRange) || [
-    simplePriceOrPriceRange,
-  ]
+  const priceRange = Array.isArray(simplePriceOrPriceRange)
+    ? simplePriceOrPriceRange
+    : [simplePriceOrPriceRange]
 
   const parsedPrices = priceRange.map(valueToNumber)
 
@@ -39,8 +40,8 @@ export const getDisplayPrice = (simplePriceOrPriceRange, freeValue = null) => {
   const isFree = isEqual(priceRange, 0) || isEqual(priceRange, [0])
   if (isFree && freeValue) return freeValue
 
-  const pricesWithComma = parsedPrices.map(v => valueToPrice(v))
-  return defaultOutputPriceFormatter(pricesWithComma)
+  const pricesWithComma = parsedPrices.map(value => valueToPrice(value))
+  return formatPrice(pricesWithComma)
 }
 
 export default getDisplayPrice
