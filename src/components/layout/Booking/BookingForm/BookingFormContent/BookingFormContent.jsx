@@ -4,7 +4,7 @@ import React, { Component, Fragment } from 'react'
 import { Field } from 'react-final-form'
 
 import { getCalendarProvider, parseHoursByStockId } from '../../utils'
-import { SelectField } from '../../../../forms/inputs'
+import SelectField from '../../../../forms/inputs/SelectField'
 import DatePickerField from '../../../../forms/inputs/DatePickerField/DatePickerField'
 
 class BookingFormContent extends Component {
@@ -48,7 +48,7 @@ class BookingFormContent extends Component {
   }
 
   render() {
-    const { className, formId, isEvent, isReadOnly, onSubmit, values } = this.props
+    const { className, formId, handleSubmit, isEvent, isReadOnly, values } = this.props
     const { price } = values
     const bookableTimes = parseHoursByStockId(values)
     const hasOneBookableTime = bookableTimes.length === 1
@@ -60,7 +60,7 @@ class BookingFormContent extends Component {
             'is-read-only': isReadOnly,
           })}
           id={formId}
-          onSubmit={onSubmit}
+          onSubmit={handleSubmit}
         >
           {isEvent && (
             <Fragment>
@@ -103,11 +103,11 @@ BookingFormContent.defaultProps = {
 BookingFormContent.propTypes = {
   className: PropTypes.string,
   formId: PropTypes.string.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
   invalid: PropTypes.bool.isRequired,
   isEvent: PropTypes.bool,
   isReadOnly: PropTypes.bool,
   onSetCanSubmitForm: PropTypes.func.isRequired,
-  onSubmit: PropTypes.func.isRequired,
   values: PropTypes.shape().isRequired,
 }
 

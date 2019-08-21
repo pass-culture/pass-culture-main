@@ -86,10 +86,33 @@
 
 #form-create-booking.is-read-only {
   .pc-final-form-inner,
-  .ant-select-selection,
   .pc-final-form-inner input {
     border: 0 !important;
     border-radius: 0 !important;
     background-color: transparent !important;
+  }
+}
+
+#booking-card .select-field {
+  @extend .px12;
+
+  width: 264px;
+
+  .content {
+    background-color: white;
+    border: 0;
+    height: 37px;
+    font-size: 20px;
+    padding: 0 24px;
+    font-weight: bold;
+    text-align: center;
+    width: 100%;
+
+    &,
+    &:hover,
+    &:focus {
+      border-color: $grey-light;
+      outline: none;
+    }
   }
 }
