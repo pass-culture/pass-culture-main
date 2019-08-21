@@ -1,5 +1,4 @@
 import moment from 'moment'
-import { assignModalConfig } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
 import { createParseNumberValue } from 'react-final-form-utils'
@@ -10,16 +9,8 @@ import DateField from '../../../../../../../layout/form/fields/DateField'
 import HiddenField from '../../../../../../../layout/form/fields/HiddenField'
 import NumberField from '../../../../../../../layout/form/fields/NumberField'
 import Icon from '../../../../../../../layout/Icon'
-import PriceField from '../../../../../../../layout/form/fields/PriceField'
 
 class ProductFields extends Component {
-  static isParsedByForm = true
-
-  constructor() {
-    super()
-    this.isPriceInputDeactivate = false
-  }
-
   componentDidUpdate() {
     ReactTooltip.rebuild()
   }
@@ -30,22 +21,15 @@ class ProductFields extends Component {
   }
 
   handleOnPriceBlur = event => {
-    if (this.isPriceInputDeactivate) {
-      return
-    }
-
-    const { closeInfo, dispatch, hasIban, readOnly, showInfo } = this.props
+    const { assignModalConfig, hasIban, readOnly, showInfo } = this.props
     const formPrice = createParseNumberValue('number')(event.target.value)
 
     if (readOnly || hasIban || !formPrice) {
       return
     }
 
-    const priceInput = event.target
-    priceInput.focus()
-    this.isPriceInputDeactivate = true
-
-    dispatch(assignModalConfig({ extraClassName: 'modal-in-modal' }))
+    event.target.focus()
+    assignModalConfig('modal-in-modal')
 
     showInfo(
       <Fragment>
@@ -58,7 +42,7 @@ class ProductFields extends Component {
         <div className="has-text-right">
           <button
             className="button is-primary"
-            onClick={this.handleOnClick(dispatch, closeInfo)}
+            onClick={this.handleOnClick}
             type="button"
           >
             {'J’ai compris'}
@@ -68,13 +52,13 @@ class ProductFields extends Component {
     )
   }
 
-  handleOnClick = (dispatch, closeInfo) => () => {
-    dispatch(assignModalConfig({ extraClassName: null }))
+  handleOnClick = () => {
+    const { assignModalConfig, closeInfo } = this.props
+    assignModalConfig(null)
     closeInfo()
-    this.isPriceInputDeactivate = false
   }
 
-  handleRender = (readOnly, venue) => () => {
+  renderDateFieldValue = (readOnly, venue) => () => {
     if (readOnly) {
       return null
     }
@@ -89,14 +73,13 @@ class ProductFields extends Component {
         className="button tooltip tooltip-info"
         data-place="bottom"
         data-tip={`<p>${tip}</p>`}
-        data-type="info"
       >
         <Icon svg="picto-info" />
       </span>
     )
   }
 
-  handleRenderValue = readOnly => () => {
+  renderNumberFieldValue = readOnly => () => {
     if (readOnly) {
       return null
     }
@@ -105,7 +88,6 @@ class ProductFields extends Component {
         className="button tooltip tooltip-info"
         data-place="bottom"
         data-tip="<p>Laissez ce champ vide pour un nombre de places ou stock illimité.</p>"
-        data-type="info"
       >
         <Icon svg="picto-info" />
       </span>
@@ -128,7 +110,7 @@ class ProductFields extends Component {
             name="venueId"
             type="hidden"
           />
-          <PriceField
+          <NumberField
             format={formatPrice(readOnly)}
             name="price"
             onBlur={this.handleOnPriceBlur}
@@ -146,7 +128,7 @@ class ProductFields extends Component {
             name="bookingLimitDatetime"
             placeholder="Laissez vide si pas de limite"
             readOnly={readOnly}
-            renderValue={this.handleRender(readOnly, venue)}
+            renderValue={this.renderDateFieldValue(readOnly, venue)}
             timezone={timezone}
           />
         </td>
@@ -156,8 +138,8 @@ class ProductFields extends Component {
             name="available"
             placeholder="Illimité"
             readOnly={readOnly}
-            renderValue={this.handleRenderValue(readOnly)}
-            title="Stock[ou] Places affecté[es]"
+            renderValue={this.renderNumberFieldValue(readOnly)}
+            title="Stock[ou] Place[s] affecté[es]"
           />
         </td>
 
@@ -183,7 +165,6 @@ ProductFields.defaultProps = {
 ProductFields.propTypes = {
   beginningDatetime: PropTypes.string,
   closeInfo: PropTypes.func.isRequired,
-  dispatch: PropTypes.func.isRequired,
   hasIban: PropTypes.bool.isRequired,
   isEvent: PropTypes.bool,
   readOnly: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),

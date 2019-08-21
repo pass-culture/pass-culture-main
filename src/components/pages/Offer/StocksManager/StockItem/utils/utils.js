@@ -67,11 +67,5 @@ export const formatPrice = readOnly => value => {
     return 'Gratuit'
   }
 
-  if (typeof value === 'string') {
-    if (value.includes(',')) {
-      return value.replace(',', '.')
-    }
-  }
-
   return value
 }

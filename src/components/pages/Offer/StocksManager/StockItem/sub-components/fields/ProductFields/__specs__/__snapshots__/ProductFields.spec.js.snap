@@ -4,16 +4,20 @@ exports[`src | components | pages | Offer | StocksManager | StockItem | sub-comp
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <ProductFields
-    beginningDatetime={null}
+    beginningDatetime="2019-01-01"
     closeInfo={[MockFunction]}
-    dispatch={[MockFunction]}
     hasIban={false}
-    isEvent={true}
+    isEvent={false}
     parseFormChild={[MockFunction]}
-    readOnly={true}
+    readOnly={false}
     showInfo={[MockFunction]}
-    stock={null}
-    timezone={null}
+    stock={
+      Object {
+        "available": 2,
+        "remainingQuantity": 1,
+      }
+    }
+    timezone="UTC"
     venue={Object {}}
   />,
   Symbol(enzyme.__renderer__): Object {
@@ -44,12 +48,12 @@ ShallowWrapper {
             type="hidden"
             validator={[Function]}
           />
-          <PriceField
+          <NumberField
             format={[Function]}
             name="price"
             onBlur={[Function]}
             placeholder="Gratuit"
-            readOnly={true}
+            readOnly={false}
             title="Prix"
           />
         </td>,
@@ -67,13 +71,12 @@ ShallowWrapper {
             id={null}
             label=""
             locale="fr"
-            maxDate={null}
             name="bookingLimitDatetime"
             placeholder="Laissez vide si pas de limite"
-            readOnly={true}
+            readOnly={false}
             renderValue={[Function]}
             required={false}
-            timezone={null}
+            timezone="UTC"
             validate={null}
           />
         </td>,
@@ -84,15 +87,17 @@ ShallowWrapper {
             format={[Function]}
             name="available"
             placeholder="Illimité"
-            readOnly={true}
+            readOnly={false}
             renderValue={[Function]}
-            title="Stock[ou] Places affecté[es]"
+            title="Stock[ou] Place[s] affecté[es]"
           />
         </td>,
         <td
           className="is-small remaining-stock"
           id="remaining-stock"
-        />,
+        >
+          1
+        </td>,
       ],
     },
     "ref": null,
@@ -113,12 +118,12 @@ ShallowWrapper {
               type="hidden"
               validator={[Function]}
             />,
-            <PriceField
+            <NumberField
               format={[Function]}
               name="price"
               onBlur={[Function]}
               placeholder="Gratuit"
-              readOnly={true}
+              readOnly={false}
               title="Prix"
             />,
           ],
@@ -161,7 +166,7 @@ ShallowWrapper {
               "name": "price",
               "onBlur": [Function],
               "placeholder": "Gratuit",
-              "readOnly": true,
+              "readOnly": false,
               "title": "Prix",
             },
             "ref": null,
@@ -186,13 +191,12 @@ ShallowWrapper {
             id={null}
             label=""
             locale="fr"
-            maxDate={null}
             name="bookingLimitDatetime"
             placeholder="Laissez vide si pas de limite"
-            readOnly={true}
+            readOnly={false}
             renderValue={[Function]}
             required={false}
-            timezone={null}
+            timezone="UTC"
             validate={null}
           />,
           "className": "tooltiped",
@@ -213,13 +217,13 @@ ShallowWrapper {
             "id": null,
             "label": "",
             "locale": "fr",
-            "maxDate": null,
+            "maxDate": undefined,
             "name": "bookingLimitDatetime",
             "placeholder": "Laissez vide si pas de limite",
-            "readOnly": true,
+            "readOnly": false,
             "renderValue": [Function],
             "required": false,
-            "timezone": null,
+            "timezone": "UTC",
             "validate": null,
           },
           "ref": null,
@@ -237,9 +241,9 @@ ShallowWrapper {
             format={[Function]}
             name="available"
             placeholder="Illimité"
-            readOnly={true}
+            readOnly={false}
             renderValue={[Function]}
-            title="Stock[ou] Places affecté[es]"
+            title="Stock[ou] Place[s] affecté[es]"
           />,
           "className": "tooltiped",
         },
@@ -252,9 +256,9 @@ ShallowWrapper {
             "format": [Function],
             "name": "available",
             "placeholder": "Illimité",
-            "readOnly": true,
+            "readOnly": false,
             "renderValue": [Function],
-            "title": "Stock[ou] Places affecté[es]",
+            "title": "Stock[ou] Place[s] affecté[es]",
           },
           "ref": null,
           "rendered": null,
@@ -267,12 +271,12 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": undefined,
+          "children": 1,
           "className": "is-small remaining-stock",
           "id": "remaining-stock",
         },
         "ref": null,
-        "rendered": null,
+        "rendered": 1,
         "type": "td",
       },
     ],
@@ -298,12 +302,12 @@ ShallowWrapper {
               type="hidden"
               validator={[Function]}
             />
-            <PriceField
+            <NumberField
               format={[Function]}
               name="price"
               onBlur={[Function]}
               placeholder="Gratuit"
-              readOnly={true}
+              readOnly={false}
               title="Prix"
             />
           </td>,
@@ -321,13 +325,12 @@ ShallowWrapper {
               id={null}
               label=""
               locale="fr"
-              maxDate={null}
               name="bookingLimitDatetime"
               placeholder="Laissez vide si pas de limite"
-              readOnly={true}
+              readOnly={false}
               renderValue={[Function]}
               required={false}
-              timezone={null}
+              timezone="UTC"
               validate={null}
             />
           </td>,
@@ -338,15 +341,17 @@ ShallowWrapper {
               format={[Function]}
               name="available"
               placeholder="Illimité"
-              readOnly={true}
+              readOnly={false}
               renderValue={[Function]}
-              title="Stock[ou] Places affecté[es]"
+              title="Stock[ou] Place[s] affecté[es]"
             />
           </td>,
           <td
             className="is-small remaining-stock"
             id="remaining-stock"
-          />,
+          >
+            1
+          </td>,
         ],
       },
       "ref": null,
@@ -367,12 +372,12 @@ ShallowWrapper {
                 type="hidden"
                 validator={[Function]}
               />,
-              <PriceField
+              <NumberField
                 format={[Function]}
                 name="price"
                 onBlur={[Function]}
                 placeholder="Gratuit"
-                readOnly={true}
+                readOnly={false}
                 title="Prix"
               />,
             ],
@@ -415,7 +420,7 @@ ShallowWrapper {
                 "name": "price",
                 "onBlur": [Function],
                 "placeholder": "Gratuit",
-                "readOnly": true,
+                "readOnly": false,
                 "title": "Prix",
               },
               "ref": null,
@@ -440,13 +445,12 @@ ShallowWrapper {
               id={null}
               label=""
               locale="fr"
-              maxDate={null}
               name="bookingLimitDatetime"
               placeholder="Laissez vide si pas de limite"
-              readOnly={true}
+              readOnly={false}
               renderValue={[Function]}
               required={false}
-              timezone={null}
+              timezone="UTC"
               validate={null}
             />,
             "className": "tooltiped",
@@ -467,13 +471,13 @@ ShallowWrapper {
               "id": null,
               "label": "",
               "locale": "fr",
-              "maxDate": null,
+              "maxDate": undefined,
               "name": "bookingLimitDatetime",
               "placeholder": "Laissez vide si pas de limite",
-              "readOnly": true,
+              "readOnly": false,
               "renderValue": [Function],
               "required": false,
-              "timezone": null,
+              "timezone": "UTC",
               "validate": null,
             },
             "ref": null,
@@ -491,9 +495,9 @@ ShallowWrapper {
               format={[Function]}
               name="available"
               placeholder="Illimité"
-              readOnly={true}
+              readOnly={false}
               renderValue={[Function]}
-              title="Stock[ou] Places affecté[es]"
+              title="Stock[ou] Place[s] affecté[es]"
             />,
             "className": "tooltiped",
           },
@@ -506,9 +510,9 @@ ShallowWrapper {
               "format": [Function],
               "name": "available",
               "placeholder": "Illimité",
-              "readOnly": true,
+              "readOnly": false,
               "renderValue": [Function],
-              "title": "Stock[ou] Places affecté[es]",
+              "title": "Stock[ou] Place[s] affecté[es]",
             },
             "ref": null,
             "rendered": null,
@@ -521,12 +525,12 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": undefined,
+            "children": 1,
             "className": "is-small remaining-stock",
             "id": "remaining-stock",
           },
           "ref": null,
-          "rendered": null,
+          "rendered": 1,
           "type": "td",
         },
       ],

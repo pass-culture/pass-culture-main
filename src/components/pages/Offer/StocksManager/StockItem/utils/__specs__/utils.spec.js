@@ -108,31 +108,5 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
         expect(result).toBe('Gratuit')
       })
     })
-
-    describe('formatted price', () => {
-      it('should replace comma sign to dot sign when value is a string and contains numbers', () => {
-        // given
-        const value = '1,1'
-        const readOnly = false
-
-        // when
-        const result = formatPrice(readOnly)(value)
-
-        // then
-        expect(result).toStrictEqual('1.1')
-      })
-
-      it('should return a not formatted value when value contain a dot', () => {
-        // given
-        const value = '1.1'
-        const readOnly = false
-
-        // when
-        const result = formatPrice(readOnly)(value)
-
-        // then
-        expect(result).toStrictEqual('1.1')
-      })
-    })
   })
 })

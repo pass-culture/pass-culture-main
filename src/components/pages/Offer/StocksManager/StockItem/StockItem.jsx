@@ -1,20 +1,20 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { Form } from 'react-final-form'
-import { getCanSubmit, bindTimeFieldWithDateField } from 'react-final-form-utils'
+import { bindTimeFieldWithDateField, getCanSubmit } from 'react-final-form-utils'
 import { requestData } from 'redux-saga-data'
 
 import EditAndDeleteControl from './sub-components/EditAndDeleteControl/EditAndDeleteControl'
 import EventFields from './sub-components/fields/EventFields/EventFields'
 import adaptBookingLimitDatetimeGivenBeginningDatetime from './decorators/adaptBookingLimitDatetimeGivenBeginningDatetime'
 import fillEndDatimeWhenUpdatingBeginningDatetime from './decorators/fillEndDatimeWhenUpdatingBeginningDatetime'
-import ProductFields from './sub-components/fields/ProductFields/ProductFields'
 import SubmitAndCancelControlContainer from './sub-components/SubmitAndCancelControl/SubmitAndCancelControlContainer'
 import { errorKeyToFrenchKey } from './utils/utils'
+import ProductFieldsContainer from './sub-components/fields/ProductFields/ProductFieldsContainer'
 
 class StockItem extends Component {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
     this.state = {
       isRequestPending: false,
       tbodyElement: null,
@@ -26,7 +26,11 @@ class StockItem extends Component {
   }
 
   updateTBodyElement() {
-    this.setState({tbodyElement: this.tbodyElement})
+    this.setState({ tbodyElement: this.tbodyElement })
+  }
+
+  createTBodyRef = () => element => {
+    this.tbodyElement = element
   }
 
   handleRequestFail = () => (state, action) => {
@@ -123,10 +127,9 @@ class StockItem extends Component {
             values={values}
           />
         )}
-        <ProductFields
+        <ProductFieldsContainer
           beginningDatetime={beginningDatetime}
           closeInfo={closeInfo}
-          dispatch={dispatch}
           hasIban={hasIban}
           isEvent={isEvent}
           offer={offer}
@@ -192,7 +195,7 @@ class StockItem extends Component {
     }
 
     return (
-      <tbody>
+      <tbody ref={this.createTBodyRef()}>
         <Form
           decorators={decorators}
           initialValues={stockPatch}
