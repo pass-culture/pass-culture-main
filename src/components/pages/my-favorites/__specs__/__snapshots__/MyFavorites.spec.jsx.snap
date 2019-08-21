@@ -4,8 +4,9 @@ exports[`src | components | pages | my-favorites | MyFavorites should match the 
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <MyFavorites
-    editMode={false}
+    areFavoritesSelected={true}
     handleEditMode={[MockFunction]}
+    isEditMode={false}
     myFavorites={
       Array [
         Object {

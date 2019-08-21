@@ -6,8 +6,10 @@ import MyFavorite from './MyFavorite'
 import { formatRecommendationDates } from '../../../../utils/date/date'
 import { getHumanizeRelativeDistance } from '../../../../utils/geolocation'
 import selectFirstMatchingBookingByOfferId from '../../../../selectors/selectFirstMatchingBookingByOfferId'
+import selectIsFavoritesEditMode from '../../../../selectors/selectIsFavoritesEditMode'
 import selectOfferById from '../../../../selectors/selectOfferById'
 import getHumanizeRelativeDate from '../../../../utils/date/getHumanizeRelativeDate'
+import { handleToggleFavorite } from '../../../../reducers/favorites'
 
 export const isReserved = status =>
   !(status.length > 0 && status[0].class.match('cancelled|finished|fully-booked'))
@@ -75,7 +77,7 @@ export const reservationStatus = (
 
 export const mapStateToProps = (state, ownProps) => {
   const { favorite } = ownProps
-  const { offerId } = favorite
+  const { offerId, mediationId } = favorite
   const offer = selectOfferById(state, offerId)
   const { dateRange = [], isActive, isFinished, isFullyBooked, venue } = offer || {}
   const firstMatchingBooking = selectFirstMatchingBookingByOfferId(state, offerId)
@@ -100,8 +102,8 @@ export const mapStateToProps = (state, ownProps) => {
     venue.longitude
   )
   const { pathname, search } = location
-  const mediationId = favorite.mediationId ? `/${favorite.mediationId}` : ''
-  const detailsUrl = `${pathname}/details/${offer.id}${mediationId}${search}`
+  const stringifyMediationId = mediationId ? `/${mediationId}` : ''
+  const detailsUrl = `${pathname}/details/${offer.id}${stringifyMediationId}${search}`
   const date = isReserved(status)
     ? formatRecommendationDates(venue.departementCode, dateRange)
     : null
@@ -110,14 +112,25 @@ export const mapStateToProps = (state, ownProps) => {
     date,
     detailsUrl,
     humanizeRelativeDistance,
+    isEditMode: selectIsFavoritesEditMode(state),
     name: offer.name,
+    offerId,
     offerTypeLabel: offer.product.offerType.appLabel,
     status,
     thumbUrl: favorite.thumbUrl,
   }
 }
 
+export const mapDispatchToProps = dispatch => ({
+  handleToggleFavorite: offerId => () => {
+    dispatch(handleToggleFavorite(offerId))
+  },
+})
+
 export default compose(
   withRouter,
-  connect(mapStateToProps)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
 )(MyFavorite)

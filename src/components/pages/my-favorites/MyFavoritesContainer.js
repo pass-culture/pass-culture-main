@@ -6,12 +6,14 @@ import MyFavorites from './MyFavorites'
 import { withRequiredLogin } from '../../hocs'
 import { resetPageData } from '../../../reducers/data'
 import { toggleFavoritesEditMode } from '../../../reducers/favorites'
-import selectFavorites from '../../../selectors/selectFavorites'
+import selectAreNotFavoritesSelected from '../../../selectors/selectAreNotFavoritesSelected'
 import selectIsFavoritesEditMode from '../../../selectors/selectIsFavoritesEditMode'
+import selectFavorites from '../../../selectors/selectFavorites'
 import { favoriteNormalizer } from '../../../utils/normalizers'
 
 export const mapStateToProps = state => ({
-  editMode: selectIsFavoritesEditMode(state),
+  areFavoritesSelected: selectAreNotFavoritesSelected(state),
+  isEditMode: selectIsFavoritesEditMode(state),
   myFavorites: selectFavorites(state),
 })
 

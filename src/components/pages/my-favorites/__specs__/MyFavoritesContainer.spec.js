@@ -21,7 +21,8 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
 
       // then
       expect(myFavorites).toStrictEqual({
-        editMode: false,
+        areFavoritesSelected: true,
+        isEditMode: false,
         myFavorites: [],
       })
     })

@@ -6,8 +6,11 @@ ShallowWrapper {
   Symbol(enzyme.__unrendered__): <MyFavorite
     date="permanent"
     detailsUrl="fake/url"
+    handleToggleFavorite={[MockFunction]}
     humanizeRelativeDistance="10 km"
+    isEditMode={false}
     name="Fake offer name"
+    offerId="MEFA"
     offerTypeLabel="Fake offer type label"
     status={
       Array [
@@ -38,52 +41,54 @@ ShallowWrapper {
         replace={false}
         to="fake/url"
       >
-        <div
-          className="teaser-thumb"
-        />
-        <div
-          className="teaser-wrapper mf-wrapper"
-        >
+        <React.Fragment>
           <div
-            className="teaser-title"
-          >
-            Fake offer name
-          </div>
-          <div
-            className="teaser-sub-title"
-          >
-            Fake offer type label
-          </div>
-          <div
-            className="teaser-date"
-          >
-            permanent
-          </div>
-          <div
-            className="mf-infos"
-          >
-            <span
-              className="mf-status mf-booked"
-            >
-              Réservé
-            </span>
-            <span
-              className="teaser-distance"
-            >
-              10 km
-            </span>
-          </div>
-        </div>
-        <div
-          className="teaser-arrow"
-        >
-          <Icon
-            alt={null}
-            className="teaser-arrow-img"
-            src={null}
-            svg="ico-next-S"
+            className="teaser-thumb"
           />
-        </div>
+          <div
+            className="teaser-wrapper mf-wrapper"
+          >
+            <div
+              className="teaser-title"
+            >
+              Fake offer name
+            </div>
+            <div
+              className="teaser-sub-title"
+            >
+              Fake offer type label
+            </div>
+            <div
+              className="teaser-date"
+            >
+              permanent
+            </div>
+            <div
+              className="mf-infos"
+            >
+              <span
+                className="mf-status mf-booked"
+              >
+                Réservé
+              </span>
+              <span
+                className="teaser-distance"
+              >
+                10 km
+              </span>
+            </div>
+          </div>
+          <div
+            className="teaser-arrow"
+          >
+            <Icon
+              alt={null}
+              className="teaser-arrow-img"
+              src={null}
+              svg="ico-next-S"
+            />
+          </div>
+        </React.Fragment>
       </Link>,
       "className": "mf-my-favorite",
     },
@@ -93,247 +98,7 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "class",
       "props": Object {
-        "children": Array [
-          <div
-            className="teaser-thumb"
-          />,
-          <div
-            className="teaser-wrapper mf-wrapper"
-          >
-            <div
-              className="teaser-title"
-            >
-              Fake offer name
-            </div>
-            <div
-              className="teaser-sub-title"
-            >
-              Fake offer type label
-            </div>
-            <div
-              className="teaser-date"
-            >
-              permanent
-            </div>
-            <div
-              className="mf-infos"
-            >
-              <span
-                className="mf-status mf-booked"
-              >
-                Réservé
-              </span>
-              <span
-                className="teaser-distance"
-              >
-                10 km
-              </span>
-            </div>
-          </div>,
-          <div
-            className="teaser-arrow"
-          >
-            <Icon
-              alt={null}
-              className="teaser-arrow-img"
-              src={null}
-              svg="ico-next-S"
-            />
-          </div>,
-        ],
-        "className": "teaser-link",
-        "replace": false,
-        "to": "fake/url",
-      },
-      "ref": null,
-      "rendered": Array [
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": null,
-            "className": "teaser-thumb",
-          },
-          "ref": null,
-          "rendered": null,
-          "type": "div",
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": Array [
-              <div
-                className="teaser-title"
-              >
-                Fake offer name
-              </div>,
-              <div
-                className="teaser-sub-title"
-              >
-                Fake offer type label
-              </div>,
-              <div
-                className="teaser-date"
-              >
-                permanent
-              </div>,
-              <div
-                className="mf-infos"
-              >
-                <span
-                  className="mf-status mf-booked"
-                >
-                  Réservé
-                </span>
-                <span
-                  className="teaser-distance"
-                >
-                  10 km
-                </span>
-              </div>,
-            ],
-            "className": "teaser-wrapper mf-wrapper",
-          },
-          "ref": null,
-          "rendered": Array [
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": "Fake offer name",
-                "className": "teaser-title",
-              },
-              "ref": null,
-              "rendered": "Fake offer name",
-              "type": "div",
-            },
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": "Fake offer type label",
-                "className": "teaser-sub-title",
-              },
-              "ref": null,
-              "rendered": "Fake offer type label",
-              "type": "div",
-            },
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": "permanent",
-                "className": "teaser-date",
-              },
-              "ref": null,
-              "rendered": "permanent",
-              "type": "div",
-            },
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": Array [
-                  Array [
-                    <span
-                      className="mf-status mf-booked"
-                    >
-                      Réservé
-                    </span>,
-                  ],
-                  <span
-                    className="teaser-distance"
-                  >
-                    10 km
-                  </span>,
-                ],
-                "className": "mf-infos",
-              },
-              "ref": null,
-              "rendered": Array [
-                Object {
-                  "instance": null,
-                  "key": "booked",
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "Réservé",
-                    "className": "mf-status mf-booked",
-                  },
-                  "ref": null,
-                  "rendered": "Réservé",
-                  "type": "span",
-                },
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "10 km",
-                    "className": "teaser-distance",
-                  },
-                  "ref": null,
-                  "rendered": "10 km",
-                  "type": "span",
-                },
-              ],
-              "type": "div",
-            },
-          ],
-          "type": "div",
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": <Icon
-              alt={null}
-              className="teaser-arrow-img"
-              src={null}
-              svg="ico-next-S"
-            />,
-            "className": "teaser-arrow",
-          },
-          "ref": null,
-          "rendered": Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "function",
-            "props": Object {
-              "alt": null,
-              "className": "teaser-arrow-img",
-              "src": null,
-              "svg": "ico-next-S",
-            },
-            "ref": null,
-            "rendered": null,
-            "type": [Function],
-          },
-          "type": "div",
-        },
-      ],
-      "type": [Function],
-    },
-    "type": "li",
-  },
-  Symbol(enzyme.__nodes__): Array [
-    Object {
-      "instance": null,
-      "key": undefined,
-      "nodeType": "host",
-      "props": Object {
-        "children": <Link
-          className="teaser-link"
-          replace={false}
-          to="fake/url"
-        >
+        "children": <React.Fragment>
           <div
             className="teaser-thumb"
           />
@@ -380,14 +145,16 @@ ShallowWrapper {
               svg="ico-next-S"
             />
           </div>
-        </Link>,
-        "className": "mf-my-favorite",
+        </React.Fragment>,
+        "className": "teaser-link",
+        "replace": false,
+        "to": "fake/url",
       },
       "ref": null,
       "rendered": Object {
         "instance": null,
         "key": undefined,
-        "nodeType": "class",
+        "nodeType": "function",
         "props": Object {
           "children": Array [
             <div
@@ -437,9 +204,6 @@ ShallowWrapper {
               />
             </div>,
           ],
-          "className": "teaser-link",
-          "replace": false,
-          "to": "fake/url",
         },
         "ref": null,
         "rendered": Array [
@@ -615,6 +379,363 @@ ShallowWrapper {
             "type": "div",
           },
         ],
+        "type": Symbol(react.fragment),
+      },
+      "type": [Function],
+    },
+    "type": "li",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": <Link
+          className="teaser-link"
+          replace={false}
+          to="fake/url"
+        >
+          <React.Fragment>
+            <div
+              className="teaser-thumb"
+            />
+            <div
+              className="teaser-wrapper mf-wrapper"
+            >
+              <div
+                className="teaser-title"
+              >
+                Fake offer name
+              </div>
+              <div
+                className="teaser-sub-title"
+              >
+                Fake offer type label
+              </div>
+              <div
+                className="teaser-date"
+              >
+                permanent
+              </div>
+              <div
+                className="mf-infos"
+              >
+                <span
+                  className="mf-status mf-booked"
+                >
+                  Réservé
+                </span>
+                <span
+                  className="teaser-distance"
+                >
+                  10 km
+                </span>
+              </div>
+            </div>
+            <div
+              className="teaser-arrow"
+            >
+              <Icon
+                alt={null}
+                className="teaser-arrow-img"
+                src={null}
+                svg="ico-next-S"
+              />
+            </div>
+          </React.Fragment>
+        </Link>,
+        "className": "mf-my-favorite",
+      },
+      "ref": null,
+      "rendered": Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "class",
+        "props": Object {
+          "children": <React.Fragment>
+            <div
+              className="teaser-thumb"
+            />
+            <div
+              className="teaser-wrapper mf-wrapper"
+            >
+              <div
+                className="teaser-title"
+              >
+                Fake offer name
+              </div>
+              <div
+                className="teaser-sub-title"
+              >
+                Fake offer type label
+              </div>
+              <div
+                className="teaser-date"
+              >
+                permanent
+              </div>
+              <div
+                className="mf-infos"
+              >
+                <span
+                  className="mf-status mf-booked"
+                >
+                  Réservé
+                </span>
+                <span
+                  className="teaser-distance"
+                >
+                  10 km
+                </span>
+              </div>
+            </div>
+            <div
+              className="teaser-arrow"
+            >
+              <Icon
+                alt={null}
+                className="teaser-arrow-img"
+                src={null}
+                svg="ico-next-S"
+              />
+            </div>
+          </React.Fragment>,
+          "className": "teaser-link",
+          "replace": false,
+          "to": "fake/url",
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "children": Array [
+              <div
+                className="teaser-thumb"
+              />,
+              <div
+                className="teaser-wrapper mf-wrapper"
+              >
+                <div
+                  className="teaser-title"
+                >
+                  Fake offer name
+                </div>
+                <div
+                  className="teaser-sub-title"
+                >
+                  Fake offer type label
+                </div>
+                <div
+                  className="teaser-date"
+                >
+                  permanent
+                </div>
+                <div
+                  className="mf-infos"
+                >
+                  <span
+                    className="mf-status mf-booked"
+                  >
+                    Réservé
+                  </span>
+                  <span
+                    className="teaser-distance"
+                  >
+                    10 km
+                  </span>
+                </div>
+              </div>,
+              <div
+                className="teaser-arrow"
+              >
+                <Icon
+                  alt={null}
+                  className="teaser-arrow-img"
+                  src={null}
+                  svg="ico-next-S"
+                />
+              </div>,
+            ],
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": null,
+                "className": "teaser-thumb",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": "div",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <div
+                    className="teaser-title"
+                  >
+                    Fake offer name
+                  </div>,
+                  <div
+                    className="teaser-sub-title"
+                  >
+                    Fake offer type label
+                  </div>,
+                  <div
+                    className="teaser-date"
+                  >
+                    permanent
+                  </div>,
+                  <div
+                    className="mf-infos"
+                  >
+                    <span
+                      className="mf-status mf-booked"
+                    >
+                      Réservé
+                    </span>
+                    <span
+                      className="teaser-distance"
+                    >
+                      10 km
+                    </span>
+                  </div>,
+                ],
+                "className": "teaser-wrapper mf-wrapper",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "Fake offer name",
+                    "className": "teaser-title",
+                  },
+                  "ref": null,
+                  "rendered": "Fake offer name",
+                  "type": "div",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "Fake offer type label",
+                    "className": "teaser-sub-title",
+                  },
+                  "ref": null,
+                  "rendered": "Fake offer type label",
+                  "type": "div",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "permanent",
+                    "className": "teaser-date",
+                  },
+                  "ref": null,
+                  "rendered": "permanent",
+                  "type": "div",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      Array [
+                        <span
+                          className="mf-status mf-booked"
+                        >
+                          Réservé
+                        </span>,
+                      ],
+                      <span
+                        className="teaser-distance"
+                      >
+                        10 km
+                      </span>,
+                    ],
+                    "className": "mf-infos",
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    Object {
+                      "instance": null,
+                      "key": "booked",
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "Réservé",
+                        "className": "mf-status mf-booked",
+                      },
+                      "ref": null,
+                      "rendered": "Réservé",
+                      "type": "span",
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "10 km",
+                        "className": "teaser-distance",
+                      },
+                      "ref": null,
+                      "rendered": "10 km",
+                      "type": "span",
+                    },
+                  ],
+                  "type": "div",
+                },
+              ],
+              "type": "div",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": <Icon
+                  alt={null}
+                  className="teaser-arrow-img"
+                  src={null}
+                  svg="ico-next-S"
+                />,
+                "className": "teaser-arrow",
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {
+                  "alt": null,
+                  "className": "teaser-arrow-img",
+                  "src": null,
+                  "svg": "ico-next-S",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+              "type": "div",
+            },
+          ],
+          "type": Symbol(react.fragment),
+        },
         "type": [Function],
       },
       "type": "li",
@@ -646,5 +767,6 @@ ShallowWrapper {
     Symbol(enzyme.__providerValues__): undefined,
   },
   Symbol(enzyme.__providerValues__): Map {},
+  Symbol(enzyme.__childContext__): null,
 }
 `;

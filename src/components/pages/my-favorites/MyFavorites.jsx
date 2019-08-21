@@ -41,7 +41,7 @@ class MyFavorites extends Component {
     })
   }
 
-  renderFavoritesList = (editMode, handleEditMode, myFavorites) => {
+  renderFavoritesList = (areFavoritesSelected, handleEditMode, isEditMode, myFavorites) => {
     const isEmpty = myFavorites.length === 0
 
     return (
@@ -50,16 +50,17 @@ class MyFavorites extends Component {
           <NoItems sentence="Dès que vous aurez ajouté une offre en favori," />
         ) : (
           <section>
-            {editMode ? (
-              <div className="mf-done">
+            {isEditMode ? (
+              <div className="mf-edit">
                 <button
                   className="mf-delete-btn"
+                  disabled={areFavoritesSelected}
                   type="button"
                 >
                   {'Supprimer la sélection'}
                 </button>
                 <button
-                  className="mf-done-btn"
+                  className="mf-edit-btn"
                   onClick={handleEditMode}
                   type="button"
                 >
@@ -67,9 +68,9 @@ class MyFavorites extends Component {
                 </button>
               </div>
             ) : (
-              <div className="mf-edit">
+              <div className="mf-done">
                 <button
-                  className="mf-edit-btn"
+                  className="mf-done-btn"
                   onClick={handleEditMode}
                   type="button"
                 >
@@ -92,8 +93,8 @@ class MyFavorites extends Component {
   }
 
   render() {
-    const { editMode, handleEditMode, myFavorites } = this.props
-    const { isLoading, hasError } = this.state
+    const { areFavoritesSelected, handleEditMode, isEditMode, myFavorites } = this.props
+    const { hasError, isLoading } = this.state
 
     if (isLoading) {
       return (<LoaderContainer
@@ -108,7 +109,7 @@ class MyFavorites extends Component {
           shouldBackFromDetails
           title="Mes favoris"
         />
-        {this.renderFavoritesList(editMode, handleEditMode, myFavorites)}
+        {this.renderFavoritesList(areFavoritesSelected, handleEditMode, isEditMode, myFavorites)}
         <MyFavoriteDetailsContainer bookingPath="/favoris/:details(details|transition)/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:booking(reservation)?/:bookingId?/:cancellation(annulation)?/:confirmation(confirmation)?" />
         <RelativeFooterContainer
           className="dotted-top-red"
@@ -120,13 +121,15 @@ class MyFavorites extends Component {
 }
 
 MyFavorites.defaultProps = {
-  editMode: false,
+  areFavoritesSelected: true,
+  isEditMode: false,
   myFavorites: [],
 }
 
 MyFavorites.propTypes = {
-  editMode: PropTypes.bool,
+  areFavoritesSelected: PropTypes.bool,
   handleEditMode: PropTypes.func.isRequired,
+  isEditMode: PropTypes.bool,
   myFavorites: PropTypes.arrayOf(PropTypes.shape()),
   requestGetMyFavorites: PropTypes.func.isRequired,
   resetPageData: PropTypes.func.isRequired,
