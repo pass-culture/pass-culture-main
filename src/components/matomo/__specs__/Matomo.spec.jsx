@@ -1,5 +1,8 @@
-import { mount } from 'enzyme'
+import configureMockStore from 'redux-mock-store'
 import { createBrowserHistory } from 'history'
+import { getCurrentUserUUID } from 'with-react-redux-login'
+import { mount } from 'enzyme'
+import { Provider } from 'react-redux'
 import React from 'react'
 import { Router } from 'react-router'
 
@@ -8,6 +11,10 @@ import MatomoContainer from '../MatomoContainer'
 describe('src | components | matomo | Matomo', () => {
   let fakeMatomo
   let history
+  let initialState
+  let store
+
+  const mockStore = configureMockStore()
 
   beforeEach(() => {
     history = createBrowserHistory()
@@ -17,13 +24,17 @@ describe('src | components | matomo | Matomo', () => {
       push: jest.fn(),
     }
     window._paq = fakeMatomo
+    initialState = { data: { users: [] } }
+    store = mockStore(initialState)
   })
 
   it('should push a new page displayed event', () => {
     // when
     mount(
       <Router history={history}>
-        <MatomoContainer />
+        <Provider store={store}>
+          <MatomoContainer />
+        </Provider>
       </Router>
     )
 
@@ -38,7 +49,9 @@ describe('src | components | matomo | Matomo', () => {
     // when
     mount(
       <Router history={history}>
-        <MatomoContainer />
+        <Provider store={store}>
+          <MatomoContainer />
+        </Provider>
       </Router>
     )
 
@@ -54,7 +67,9 @@ describe('src | components | matomo | Matomo', () => {
       // when
       mount(
         <Router history={history}>
-          <MatomoContainer />
+          <Provider store={store}>
+            <MatomoContainer />
+          </Provider>
         </Router>
       )
 
@@ -71,7 +86,9 @@ describe('src | components | matomo | Matomo', () => {
       // when
       mount(
         <Router history={history}>
-          <MatomoContainer />
+          <Provider store={store}>
+            <MatomoContainer />
+          </Provider>
         </Router>
       )
 
@@ -88,7 +105,9 @@ describe('src | components | matomo | Matomo', () => {
       // when
       mount(
         <Router history={history}>
-          <MatomoContainer />
+          <Provider store={store}>
+            <MatomoContainer />
+          </Provider>
         </Router>
       )
 
@@ -99,6 +118,45 @@ describe('src | components | matomo | Matomo', () => {
         'Applaudir',
         false,
       ])
+    })
+  })
+
+  describe('when user is not logged', () => {
+    it('should push Anonymous and unknown type as userId', () => {
+      // when
+      mount(
+        <Router history={history}>
+          <Provider store={store}>
+            <MatomoContainer />
+          </Provider>
+        </Router>
+      )
+
+      // then
+      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'Anonymous', 'Unknown type'])
+    })
+  })
+
+  describe('when user is logged', () => {
+    it('should push current user id and type of user as userId', () => {
+      // given
+      store = mockStore({
+        data: {
+          users: [{ currentUserUUID: getCurrentUserUUID(), id: 'TY', canBookFreeOffers: true }],
+        },
+      })
+
+      // when
+      mount(
+        <Router history={history}>
+          <Provider store={store}>
+            <MatomoContainer />
+          </Provider>
+        </Router>
+      )
+
+      // then
+      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'TY', 'Beneficiary'])
     })
   })
 })
