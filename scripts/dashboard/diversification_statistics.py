@@ -1,3 +1,5 @@
+from typing import List, Tuple
+
 import pandas
 
 from models import Offerer, UserOfferer, Venue, Offer, Stock, Booking, EventType, ThingType
@@ -151,7 +153,7 @@ def _get_offers_grouped_by_type_and_medium():
     return type_and_digital_dataframe
 
 
-def query_get_offer_counts_grouped_by_type_and_medium():
+def query_get_offer_counts_grouped_by_type_and_medium() -> List[Tuple[str, bool, int]]:
     return db.engine.execute(
         """
         SELECT type, url IS NOT NULL AS is_digital, count(offer.id) 
@@ -164,7 +166,22 @@ def query_get_offer_counts_grouped_by_type_and_medium():
         """)
 
 
-def query_get_booking_counts_grouped_by_type_and_medium():
+def query_get_offer_counts_grouped_by_type_and_medium_for_departement(departement_code: str) -> List[Tuple[str, bool, int]]:
+    return db.engine.execute(
+        f"""
+        SELECT type, url IS NOT NULL AS is_digital, count(offer.id) 
+        FROM offer 
+        JOIN stock ON stock."offerId" = offer.id
+        JOIN venue ON venue.id = offer."venueId"
+        JOIN offerer ON offerer.id = venue."managingOffererId"
+        JOIN user_offerer ON user_offerer."offererId" = offerer.id
+        WHERE venue."departementCode"='{departement_code}'
+         OR venue."isVirtual"
+        GROUP BY type, is_digital;
+        """)
+
+
+def query_get_booking_counts_grouped_by_type_and_medium() -> List[Tuple[str, bool, int]]:
     return db.engine.execute(
         """
         SELECT type, url IS NOT NULL AS is_digital, SUM(booking.quantity)
@@ -175,5 +192,24 @@ def query_get_booking_counts_grouped_by_type_and_medium():
         JOIN offerer ON offerer.id = venue."managingOffererId"
         JOIN user_offerer ON user_offerer."offererId" = offerer.id
         WHERE booking."isCancelled" IS FALSE
+        GROUP BY type, is_digital;
+        """)
+
+
+def query_get_booking_counts_grouped_by_type_and_medium_for_departement(departement_code: str) -> List[Tuple[str, bool, int]]:
+    return db.engine.execute(
+        f"""
+        SELECT type, url IS NOT NULL AS is_digital, SUM(booking.quantity)
+        FROM booking 
+        JOIN stock ON stock.id = booking."stockId"
+        JOIN offer ON offer.id = stock."offerId"
+        JOIN venue ON venue.id = offer."venueId"
+        JOIN offerer ON offerer.id = venue."managingOffererId"
+        JOIN user_offerer ON user_offerer."offererId" = offerer.id
+        WHERE booking."isCancelled" IS FALSE
+         AND (
+          venue."departementCode"='{departement_code}'
+          OR venue."isVirtual"
+          )
         GROUP BY type, is_digital;
         """)

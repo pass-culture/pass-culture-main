@@ -9,7 +9,9 @@ from scripts.dashboard.diversification_statistics import get_offerers_with_offer
     get_offers_available_on_discovery_count, get_offers_with_non_cancelled_bookings_count, \
     query_get_offer_counts_grouped_by_type_and_medium, _get_offers_grouped_by_type_and_medium, \
     get_offer_counts_grouped_by_type_and_medium, query_get_booking_counts_grouped_by_type_and_medium, \
-    get_offerer_count, get_offerer_with_stock_count, get_all_bookings_count, count_all_cancelled_bookings
+    get_offerer_count, get_offerer_with_stock_count, get_all_bookings_count, count_all_cancelled_bookings, \
+    query_get_offer_counts_grouped_by_type_and_medium_for_departement, \
+    query_get_booking_counts_grouped_by_type_and_medium_for_departement
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_stock, \
     create_offer_with_thing_product, create_venue, create_mediation, create_offer_with_event_product, create_booking
@@ -918,6 +920,92 @@ class QueryGetOfferCountsPerTypeAndMediumTest:
         assert offer_counts == []
 
 
+class QueryGetOfferCountsPerTypeAndMediumForDepartementTest:
+    @clean_database
+    def test_returns_2_cinema_physical_1_musique_physical_and_1_musique_digital_when_offers_with_stock_and_user_offerer(
+            self, app):
+        # Given
+        offerer = create_offerer()
+        user = create_user()
+        user_offerer = create_user_offerer(user, offerer)
+        virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
+        physical_venue = create_venue(offerer, postal_code='33000')
+        offer_cinema1 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
+        offer_cinema2 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
+        offer_musique_digital = create_offer_with_thing_product(virtual_venue, url='http://url.test',
+                                                                thing_type=ThingType.MUSIQUE)
+        offer_musique_physical = create_offer_with_thing_product(physical_venue, thing_type=ThingType.MUSIQUE)
+        stock_cinema1 = create_stock(offer=offer_cinema1)
+        stock_cinema2 = create_stock(offer=offer_cinema2)
+        stock_musique_digital = create_stock(offer=offer_musique_digital)
+        stock_musique_physical = create_stock(offer=offer_musique_physical)
+        PcObject.save(stock_cinema1, stock_cinema2, stock_musique_digital, stock_musique_physical, user_offerer)
+
+        # When
+        offer_counts = query_get_offer_counts_grouped_by_type_and_medium_for_departement('33').fetchall()
+
+        # Then
+        print(physical_venue.departementCode)
+        assert len(offer_counts) == 3
+        assert ('EventType.CINEMA', False, 2) in offer_counts
+        assert ('ThingType.MUSIQUE', False, 1) in offer_counts
+        assert ('ThingType.MUSIQUE', True, 1) in offer_counts
+
+    @clean_database
+    def test_returns_nothing_when_no_stock(self, app):
+        # Given
+        offerer = create_offerer()
+        user = create_user()
+        user_offerer = create_user_offerer(user, offerer)
+        virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
+        offer_musique_digital = create_offer_with_thing_product(virtual_venue, url='http://url.test',
+                                                                thing_type=ThingType.MUSIQUE)
+        PcObject.save(offer_musique_digital, user_offerer)
+
+        # When
+        offer_counts = query_get_offer_counts_grouped_by_type_and_medium_for_departement('33').fetchall()
+
+        # Then
+        assert offer_counts == []
+
+    @clean_database
+    def test_returns_nothing_if_no_user_offerer(self, app):
+        # Given
+        offerer = create_offerer()
+        virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
+        offer_musique_digital = create_offer_with_thing_product(virtual_venue, url='http://url.test',
+                                                                thing_type=ThingType.MUSIQUE)
+        stock_musique_digital = create_stock(offer=offer_musique_digital)
+        PcObject.save(stock_musique_digital)
+
+        # When
+        offer_counts = query_get_offer_counts_grouped_by_type_and_medium_for_departement('33').fetchall()
+
+        # Then
+        assert offer_counts == []
+
+    @clean_database
+    def test_returns_nothing_if_nothing_in_requested_departement(self, app):
+        # Given
+        offerer = create_offerer()
+        user = create_user()
+        user_offerer = create_user_offerer(user, offerer)
+        physical_venue = create_venue(offerer, postal_code='75001')
+        offer_cinema1 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
+        offer_cinema2 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
+        offer_musique_physical = create_offer_with_thing_product(physical_venue, thing_type=ThingType.MUSIQUE)
+        stock_cinema1 = create_stock(offer=offer_cinema1)
+        stock_cinema2 = create_stock(offer=offer_cinema2)
+        stock_musique_physical = create_stock(offer=offer_musique_physical)
+        PcObject.save(stock_cinema1, stock_cinema2, stock_musique_physical, user_offerer)
+
+        # When
+        offer_counts = query_get_offer_counts_grouped_by_type_and_medium_for_departement('33').fetchall()
+
+        # Then
+        assert offer_counts == []
+
+
 class GetOffersByTypeAndDigitalTableTest:
     @clean_database
     def test_returns_table_with_columns_type_and_digital_ordered_by_type_then_digital(self, app):
@@ -1077,6 +1165,111 @@ class QueryGetBookingCountsPerTypeAndDigitalTest:
         # Then
         assert booking_counts == []
 
+
+class QueryGetBookingCountsPerTypeAndMediumForDepartementTest:
+    @clean_database
+    def test_returns_3_musique_physical_1_musique_digital_when_bookings_with_user_offerer(
+            self, app):
+        # Given
+        offerer = create_offerer()
+        user = create_user()
+        user_booking = create_user(email='booking@test.com')
+        user_offerer = create_user_offerer(user, offerer)
+        virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
+        physical_venue = create_venue(offerer, postal_code='33000')
+        offer_cinema1 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
+        offer_cinema2 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
+        offer_musique_digital = create_offer_with_thing_product(virtual_venue, url='http://url.test',
+                                                                thing_type=ThingType.MUSIQUE)
+        offer_musique_physical = create_offer_with_thing_product(physical_venue, thing_type=ThingType.MUSIQUE)
+        stock_cinema1 = create_stock(offer=offer_cinema1, price=0)
+        stock_cinema2 = create_stock(offer=offer_cinema2, price=0)
+        stock_musique_digital = create_stock(offer=offer_musique_digital, price=0)
+        stock_musique_physical = create_stock(offer=offer_musique_physical, price=0)
+        booking_musique_physical1 = create_booking(user_booking, stock_musique_physical)
+        booking_musique_physical2 = create_booking(user_booking, stock_musique_physical, quantity=2)
+        booking_musique_digital = create_booking(user_booking, stock_musique_digital)
+        PcObject.save(stock_cinema1, stock_cinema2, booking_musique_physical1, booking_musique_physical2,
+                      booking_musique_digital, user_offerer)
+
+        # When
+        booking_counts = query_get_booking_counts_grouped_by_type_and_medium_for_departement('33').fetchall()
+
+        # Then
+        assert len(booking_counts) == 2
+        assert ('ThingType.MUSIQUE', False, 3) in booking_counts
+        assert ('ThingType.MUSIQUE', True, 1) in booking_counts
+
+    @clean_database
+    def test_returns_nothing_when_cancelled_booking(self, app):
+        # Given
+        offerer = create_offerer()
+        user = create_user()
+        user_booking = create_user(email='booking@test.com')
+        user_offerer = create_user_offerer(user, offerer)
+        physical_venue = create_venue(offerer, postal_code='33000')
+        offer = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
+        stock = create_stock(offer=offer, price=0)
+        cancelled_booking = create_booking(user_booking, stock, is_cancelled=True)
+        PcObject.save(offer, user_offerer, cancelled_booking)
+
+        # When
+        booking_counts = query_get_booking_counts_grouped_by_type_and_medium_for_departement('33').fetchall()
+
+        # Then
+        assert booking_counts == []
+
+    @clean_database
+    def test_returns_nothing_if_no_user_offerer(self, app):
+        # Given
+        offerer = create_offerer()
+        user_booking = create_user(email='booking@test.com')
+        virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
+        physical_venue = create_venue(offerer, postal_code='33000')
+        offer_cinema1 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
+        offer_cinema2 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
+        offer_musique_digital = create_offer_with_thing_product(virtual_venue, url='http://url.test',
+                                                                thing_type=ThingType.MUSIQUE)
+        offer_musique_physical = create_offer_with_thing_product(physical_venue, thing_type=ThingType.MUSIQUE)
+        stock_cinema1 = create_stock(offer=offer_cinema1, price=0)
+        stock_cinema2 = create_stock(offer=offer_cinema2, price=0)
+        stock_musique_digital = create_stock(offer=offer_musique_digital, price=0)
+        stock_musique_physical = create_stock(offer=offer_musique_physical, price=0)
+        booking_musique_physical1 = create_booking(user_booking, stock_musique_physical)
+        booking_musique_physical2 = create_booking(user_booking, stock_musique_physical, quantity=2)
+        booking_musique_digital = create_booking(user_booking, stock_musique_digital)
+        PcObject.save(stock_cinema1, stock_cinema2, booking_musique_physical1, booking_musique_physical2,
+                      booking_musique_digital)
+
+        # When
+        booking_counts = query_get_booking_counts_grouped_by_type_and_medium_for_departement('33').fetchall()
+
+        # Then
+        assert booking_counts == []
+    @clean_database
+    def test_returns_nothing_when_no_offer_in_requested_departement(self, app):
+        # Given
+        offerer = create_offerer()
+        user = create_user()
+        user_booking = create_user(email='booking@test.com')
+        user_offerer = create_user_offerer(user, offerer)
+        physical_venue = create_venue(offerer, postal_code='75000')
+        offer_cinema1 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
+        offer_cinema2 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
+        offer_musique_physical = create_offer_with_thing_product(physical_venue, thing_type=ThingType.MUSIQUE)
+        stock_cinema1 = create_stock(offer=offer_cinema1, price=0)
+        stock_cinema2 = create_stock(offer=offer_cinema2, price=0)
+        stock_musique_physical = create_stock(offer=offer_musique_physical, price=0)
+        booking_musique_physical1 = create_booking(user_booking, stock_musique_physical)
+        booking_musique_physical2 = create_booking(user_booking, stock_musique_physical, quantity=2)
+        PcObject.save(stock_cinema1, stock_cinema2, booking_musique_physical1, booking_musique_physical2,
+                      user_offerer)
+
+        # When
+        booking_counts = query_get_booking_counts_grouped_by_type_and_medium_for_departement('33').fetchall()
+
+        # Then
+        assert booking_counts == []
 
 class CountAllCancelledBookingsTest:
     @clean_database
