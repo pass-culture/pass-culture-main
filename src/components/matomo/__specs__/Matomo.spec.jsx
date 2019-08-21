@@ -2,7 +2,6 @@ import configureMockStore from 'redux-mock-store'
 import { createBrowserHistory } from 'history'
 import { mount } from 'enzyme'
 import { Provider } from 'react-redux'
-
 import React from 'react'
 import { Router } from 'react-router'
 
@@ -61,6 +60,7 @@ describe('src | components | matomo | Matomo', () => {
       'pass Culture page title',
     ])
   })
+
   it('should dispatch the user id when user is logged', () => {
     // given
     const fakeMatomoPageTracker = {
