@@ -4,14 +4,15 @@ import { requestData } from 'redux-saga-data'
 import { compose } from 'redux'
 
 import Favorite from './Favorite'
-import selectFavoritesByOfferId from '../../../../../selectors/selectFavoritesByOfferId'
+import selectFavoriteByOfferId from '../../../../../selectors/selectFavoritesByOfferId'
 import selectMediationByRouterMatch from '../../../../../selectors/selectMediationByRouterMatch'
 import selectOfferByRouterMatch from '../../../../../selectors/selectOfferByRouterMatch'
 import selectIsFeatureDisabled from '../../../../router/selectors/selectIsFeatureDisabled'
 import { favoriteNormalizer } from '../../../../../utils/normalizers'
 
+const API_PATH_TO_FAVORITES_ENDPOINT = '/favorites'
 export const apiPath = (isFavorite, offerId, mediationId) => {
-  const url = '/favorites'
+  const url = API_PATH_TO_FAVORITES_ENDPOINT
 
   if (isFavorite) {
     if (mediationId) {
@@ -31,8 +32,9 @@ export const mapStateToProps = (state, ownProps) => {
   const { id: mediationId = null } = mediation
   const offer = selectOfferByRouterMatch(state, match) || {}
   const { id: offerId } = offer
-  const favorites = selectFavoritesByOfferId(state, offerId) || {}
-  const isFavorite = favorites.length > 0
+
+  const favorite = selectFavoriteByOfferId(state, offerId)
+  const isFavorite = favorite !== undefined
 
   return {
     isFavorite,
@@ -53,6 +55,15 @@ export const mapDispatchToProps = dispatch => ({
         },
         handleFail: showFailModal,
         method: isFavorite ? 'DELETE' : 'POST',
+        normalizer: favoriteNormalizer,
+      })
+    )
+  },
+  loadFavorites: () => {
+    dispatch(
+      requestData({
+        apiPath: API_PATH_TO_FAVORITES_ENDPOINT,
+        method: 'GET',
         normalizer: favoriteNormalizer,
       })
     )

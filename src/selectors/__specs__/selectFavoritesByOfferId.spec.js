@@ -1,6 +1,6 @@
-import selectFavoritesByOfferId from '../selectFavoritesByOfferId'
+import selectFavoriteByOfferId from '../selectFavoritesByOfferId'
 
-describe('src | selectors | selectFavoritesByOfferId', () => {
+describe('src | selectors | selectFavoriteByOfferId', () => {
   let offer
   let offerId
   beforeEach(() => {
@@ -32,10 +32,10 @@ describe('src | selectors | selectFavoritesByOfferId', () => {
     }
 
     // when
-    const result = selectFavoritesByOfferId(state, offerId)
+    const result = selectFavoriteByOfferId(state, offerId)
 
     // then
-    expect(result).toStrictEqual([])
+    expect(result).toStrictEqual(undefined)
   })
 
   it('should return favorites that have offerId', () => {
@@ -48,21 +48,17 @@ describe('src | selectors | selectFavoritesByOfferId', () => {
       id: 'BF',
       offerId,
     }
-    const thirdFavorite = {
-      id: 'CG',
-      offerId,
-    }
     const state = {
       data: {
-        favorites: [firstFavorite, secondFavorite, thirdFavorite],
+        favorites: [firstFavorite, secondFavorite],
         offers: [offer],
       },
     }
 
     // when
-    const result = selectFavoritesByOfferId(state, offerId)
+    const result = selectFavoriteByOfferId(state, offerId)
 
     // then
-    expect(result).toStrictEqual([secondFavorite, thirdFavorite])
+    expect(result).toStrictEqual(secondFavorite)
   })
 })

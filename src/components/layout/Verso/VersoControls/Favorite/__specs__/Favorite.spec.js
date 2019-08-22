@@ -11,7 +11,8 @@ describe('src | components | verso | verso-controls | favorite | Favorite', () =
       handleFavorite: jest.fn(),
       isFavorite: true,
       isFeatureDisabled: false,
-      offerId: "AE"
+      loadFavorites: jest.fn(),
+      offerId: 'AE',
     }
   })
 
@@ -24,6 +25,14 @@ describe('src | components | verso | verso-controls | favorite | Favorite', () =
   })
 
   describe('render()', () => {
+    it('should load favorites', () => {
+      // when
+      shallow(<Favorite {...props} />)
+
+      // then
+      expect(props.loadFavorites).toHaveBeenCalledTimes(1)
+    })
+
     it('should display icon to remove to favorite', () => {
       // when
       const wrapper = shallow(<Favorite {...props} />)

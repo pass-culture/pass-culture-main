@@ -45,49 +45,89 @@ describe('src | components | layout | Verso | VersoControls | Favorite | Favorit
         offerId,
       })
     })
+
+    describe('isFavorite', () => {
+      it('should be false when no offer marked as favorite', () => {
+        // given
+        const state = {
+          data: {
+            bookings: [],
+            favorites: [],
+            features: [],
+            mediations: [
+              {
+                id: 'AE',
+              },
+            ],
+            offers: [
+              {
+                id: 'BF',
+              },
+            ],
+            recommendations: [],
+          },
+        }
+        const ownProps = {
+          match: {
+            params: {
+              mediationId: 'AE',
+              offerId: 'BF',
+            },
+          },
+        }
+
+        // when
+        const props = mapStateToProps(state, ownProps)
+
+        // then
+        expect(props).toHaveProperty('isFavorite', false)
+      })
+
+      it('should be true when offer is marked as favorite', () => {
+        // given
+        const state = {
+          data: {
+            bookings: [],
+            favorites: [
+              {
+                offerId: 'BF',
+              },
+            ],
+            features: [],
+            mediations: [
+              {
+                id: 'AE',
+              },
+            ],
+            offers: [
+              {
+                id: 'BF',
+              },
+            ],
+            recommendations: [],
+          },
+        }
+        const ownProps = {
+          match: {
+            params: {
+              mediationId: 'AE',
+              offerId: 'BF',
+            },
+          },
+        }
+
+        // when
+        const props = mapStateToProps(state, ownProps)
+
+        // then
+        expect(props).toHaveProperty('isFavorite', true)
+      })
+    })
   })
 
   describe('mapDispatchToProps()', () => {
-    it('should add to favorites', () => {
-      // given
-      const dispatch = jest.fn()
-      const mediationId = 'FA'
-      const offerId = 'ME'
-      const ownProps = {
-        history: {},
-        location: {
-          pathname: '',
-        },
-      }
-      const isFavorite = false
-      const showFailModal = jest.fn()
-
-      // when
-      mapDispatchToProps(dispatch, ownProps).handleFavorite(
-        offerId,
-        mediationId,
-        isFavorite,
-        showFailModal
-      )()
-
-      // then
-      expect(dispatch).toHaveBeenCalledWith({
-        config: {
-          apiPath: '/favorites',
-          body: {
-            mediationId,
-            offerId,
-          },
-          handleFail: showFailModal,
-          method: 'POST',
-          normalizer: favoriteNormalizer,
-        },
-        type: 'REQUEST_DATA_POST_/FAVORITES',
-      })
-    })
-
-    describe('when have offerId and mediationId', () => {
-      it('should delete favorite', () => {
+    describe('handleFavorite()', () => {
+      it('should add to favorites', () => {
         // given
         const dispatch = jest.fn()
         const mediationId = 'FA'
@@ -98,7 +138,7 @@ describe('src | components | layout | Verso | VersoControls | Favorite | Favorit
             pathname: '',
           },
         }
-        const isFavorite = true
+        const isFavorite = false
         const showFailModal = jest.fn()
 
         // when
@@ -112,56 +152,118 @@ describe('src | components | layout | Verso | VersoControls | Favorite | Favorit
         // then
         expect(dispatch).toHaveBeenCalledWith({
           config: {
-            apiPath: `/favorites/${offerId}/${mediationId}`,
+            apiPath: '/favorites',
             body: {
               mediationId,
               offerId,
             },
             handleFail: showFailModal,
-            method: 'DELETE',
+            method: 'POST',
             normalizer: favoriteNormalizer,
           },
-          type: `REQUEST_DATA_DELETE_/FAVORITES/${offerId.toUpperCase()}/${mediationId.toUpperCase()}`,
+          type: 'REQUEST_DATA_POST_/FAVORITES',
+        })
+      })
+
+      describe('when have offerId and mediationId', () => {
+        it('should delete favorite', () => {
+          // given
+          const dispatch = jest.fn()
+          const mediationId = 'FA'
+          const offerId = 'ME'
+          const ownProps = {
+            history: {},
+            location: {
+              pathname: '',
+            },
+          }
+          const isFavorite = true
+          const showFailModal = jest.fn()
+
+          // when
+          mapDispatchToProps(dispatch, ownProps).handleFavorite(
+            offerId,
+            mediationId,
+            isFavorite,
+            showFailModal
+          )()
+
+          // then
+          expect(dispatch).toHaveBeenCalledWith({
+            config: {
+              apiPath: `/favorites/${offerId}/${mediationId}`,
+              body: {
+                mediationId,
+                offerId,
+              },
+              handleFail: showFailModal,
+              method: 'DELETE',
+              normalizer: favoriteNormalizer,
+            },
+            type: `REQUEST_DATA_DELETE_/FAVORITES/${offerId.toUpperCase()}/${mediationId.toUpperCase()}`,
+          })
+        })
+      })
+
+      describe('when have offerId only', () => {
+        it('should delete favorite', () => {
+          // given
+          const dispatch = jest.fn()
+          const mediationId = null
+          const offerId = 'ME'
+          const ownProps = {
+            history: {},
+            location: {
+              pathname: '',
+            },
+          }
+          const isFavorite = true
+          const showFailModal = jest.fn()
+
+          // when
+          mapDispatchToProps(dispatch, ownProps).handleFavorite(
+            offerId,
+            mediationId,
+            isFavorite,
+            showFailModal
+          )()
+
+          // then
+          expect(dispatch).toHaveBeenCalledWith({
+            config: {
+              apiPath: `/favorites/${offerId}`,
+              body: {
+                mediationId,
+                offerId,
+              },
+              handleFail: showFailModal,
+              method: 'DELETE',
+              normalizer: favoriteNormalizer,
+            },
+            type: `REQUEST_DATA_DELETE_/FAVORITES/${offerId.toUpperCase()}`,
+          })
         })
       })
     })
 
-    describe('when have offerId only', () => {
-      it('should delete favorite', () => {
+    // TODO Supprimer les ownProps dans les tests
+
+    describe('loadFavorites()', () => {
+      it('should load all favorites', () => {
         // given
         const dispatch = jest.fn()
-        const mediationId = null
-        const offerId = 'ME'
-        const ownProps = {
-          history: {},
-          location: {
-            pathname: '',
-          },
-        }
-        const isFavorite = true
-        const showFailModal = jest.fn()
 
         // when
-        mapDispatchToProps(dispatch, ownProps).handleFavorite(
-          offerId,
-          mediationId,
-          isFavorite,
-          showFailModal
-        )()
+        mapDispatchToProps(dispatch).loadFavorites()
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
           config: {
-            apiPath: `/favorites/${offerId}`,
-            body: {
-              mediationId,
-              offerId,
-            },
-            handleFail: showFailModal,
-            method: 'DELETE',
+            apiPath: '/favorites',
+            method: 'GET',
             normalizer: favoriteNormalizer,
           },
-          type: `REQUEST_DATA_DELETE_/FAVORITES/${offerId.toUpperCase()}`,
+          type: 'REQUEST_DATA_GET_/FAVORITES',
         })
       })
     })

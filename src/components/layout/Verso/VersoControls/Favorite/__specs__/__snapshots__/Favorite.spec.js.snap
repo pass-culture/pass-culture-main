@@ -24,6 +24,19 @@ ShallowWrapper {
     }
     isFavorite={true}
     isFeatureDisabled={false}
+    loadFavorites={
+      [MockFunction] {
+        "calls": Array [
+          Array [],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+        ],
+      }
+    }
     mediationId={null}
     offerId="AE"
   />,
@@ -126,5 +139,6 @@ ShallowWrapper {
     Symbol(enzyme.__providerValues__): undefined,
   },
   Symbol(enzyme.__providerValues__): Map {},
+  Symbol(enzyme.__childContext__): null,
 }
 `;
