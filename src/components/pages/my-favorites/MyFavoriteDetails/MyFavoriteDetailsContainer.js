@@ -4,19 +4,12 @@ import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
 import DetailsContainer from '../../../layout/Details/DetailsContainer'
-import selectFavoriteByOfferIdAndMediationId from '../../../../selectors/selectFavoriteByOfferIdAndMediationId'
 import { favoriteNormalizer } from '../../../../utils/normalizers'
 
-export const mapStateToProps = (state, ownProps) => {
-  const { match } = ownProps
-  const { params } = match
-  const { offerId, mediationId } = params
+export const mapStateToProps = () => {
   const needsToRequestGetData = typeof favoriteId !== 'undefined'
-  const favorite = selectFavoriteByOfferIdAndMediationId(state, offerId, mediationId)
-  const hasReceivedData = typeof favorite !== 'undefined'
 
   return {
-    hasReceivedData,
     needsToRequestGetData,
   }
 }

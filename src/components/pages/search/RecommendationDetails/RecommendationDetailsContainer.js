@@ -4,16 +4,12 @@ import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
 import DetailsContainer from '../../../layout/Details/DetailsContainer'
-import selectRecommendationByOfferIdAndMediationId from '../../../../selectors/selectRecommendationByOfferIdAndMediationId'
 import { recommendationNormalizer } from '../../../../utils/normalizers'
 
 export const mapStateToProps = (state, ownProps) => {
-  const { mediationId, offerId } = ownProps.match.params
-  const recommendation = selectRecommendationByOfferIdAndMediationId(state, offerId, mediationId)
+  const { offerId } = ownProps.match.params
   const needsToRequestGetData = typeof offerId !== 'undefined'
-  const hasReceivedData = typeof recommendation !== 'undefined'
   return {
-    hasReceivedData,
     needsToRequestGetData,
   }
 }

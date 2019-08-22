@@ -28,7 +28,6 @@ describe('src | components | pages | my-favorite | MyFavoriteDetails | MyFavorit
 
       // then
       expect(props).toStrictEqual({
-        hasReceivedData: true,
         needsToRequestGetData: false,
       })
     })

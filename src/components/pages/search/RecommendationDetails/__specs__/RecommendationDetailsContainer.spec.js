@@ -33,7 +33,6 @@ describe('src | components | pages | search | RecommendationDetailsContainer', (
 
       // then
       const expected = {
-        hasReceivedData: true,
         needsToRequestGetData: true,
       }
       expect(result).toStrictEqual(expected)

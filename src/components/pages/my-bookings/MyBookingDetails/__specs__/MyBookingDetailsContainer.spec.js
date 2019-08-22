@@ -34,7 +34,6 @@ describe('src | components | pages | my-bookings | MyBookingsDetails | MyBooking
 
       // then
       expect(props).toStrictEqual({
-        hasReceivedData: true,
         needsToRequestGetData: true,
       })
     })
