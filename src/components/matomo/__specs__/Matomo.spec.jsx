@@ -133,16 +133,22 @@ describe('src | components | matomo | Matomo', () => {
       )
 
       // then
-      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'Anonymous', 'Unknown type'])
+      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'ANONYMOUS'])
     })
   })
 
   describe('when user is logged', () => {
-    it('should push current user id and type of user as userId', () => {
+    it('should dispatch the correct user id when user is a beneficiary', () => {
       // given
       store = mockStore({
         data: {
-          users: [{ currentUserUUID: getCurrentUserUUID(), id: 'TY', canBookFreeOffers: true }],
+          users: [
+            {
+              currentUserUUID: getCurrentUserUUID(),
+              email: 'fake@fake.com',
+              canBookFreeOffers: true,
+            },
+          ],
         },
       })
 
@@ -156,7 +162,61 @@ describe('src | components | matomo | Matomo', () => {
       )
 
       // then
-      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'TY', 'Beneficiary'])
+      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'BENEFICIARY'])
+    })
+
+    it('should dispatch the correct user id when user email contains team domain even if canBookFreeOffers is set to true', () => {
+      // given
+      store = mockStore({
+        data: {
+          users: [
+            {
+              currentUserUUID: getCurrentUserUUID(),
+              email: 'fake@octo.com',
+              canBookFreeOffers: true,
+            },
+          ],
+        },
+      })
+
+      // when
+      mount(
+        <Router history={history}>
+          <Provider store={store}>
+            <MatomoContainer />
+          </Provider>
+        </Router>
+      )
+
+      // then
+      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'TECH or BIZ USER'])
+    })
+
+    it('should dispatch the correct user id when user email contains sandbox domain even if canBookFreeOffers is set to true', () => {
+      // given
+      store = mockStore({
+        data: {
+          users: [
+            {
+              currentUserUUID: getCurrentUserUUID(),
+              email: 'fake@youpi.com',
+              canBookFreeOffers: true,
+            },
+          ],
+        },
+      })
+
+      // when
+      mount(
+        <Router history={history}>
+          <Provider store={store}>
+            <MatomoContainer />
+          </Provider>
+        </Router>
+      )
+
+      // then
+      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'SANDBOX USER'])
     })
   })
 })

@@ -6,17 +6,18 @@ import { withRouter } from 'react-router'
 import Matomo from './Matomo'
 
 export const mapStateToProps = state => {
-  let id
-  let canBookFreeOffers
   const user = selectCurrentUser(state)
+  let canBookFreeOffers
+  let email
+
   if (user) {
-    id = user.id
     canBookFreeOffers = user.canBookFreeOffers
+    email = user.email
   }
 
   return {
-    id,
     canBookFreeOffers,
+    email,
   }
 }
 

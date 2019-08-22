@@ -1,10 +1,22 @@
 import PropTypes from 'prop-types'
 import queryString from 'query-string'
 
-const Matomo = ({ location, id, canBookFreeOffers }) => {
+const TEAM_DOMAIN_REGEX = /^[a-zA-Z0-9_.+-]+@(octo.com|passculture.app|btmx.fr)/g
+const SANDBOX_DOMAIN_REGEX = /^[a-zA-Z0-9_.+-]+@(momarx.io|hlettre.com|youpi.com|violet.fr)/g
+
+const getUserType = email => {
+  if (email.match(SANDBOX_DOMAIN_REGEX)) {
+    return 'SANDBOX USER'
+  } else if (email.match(TEAM_DOMAIN_REGEX)) {
+    return 'TECH or BIZ USER'
+  } else {
+    return 'BENEFICIARY'
+  }
+}
+
+const Matomo = ({ location, canBookFreeOffers, email }) => {
   const Matomo = window._paq
-  let userId = 'Anonymous'
-  let userType = 'Unknown type'
+  let userId = 'ANONYMOUS'
 
   const { pathname, search } = location
   const searchParameters = queryString.parse(search)
@@ -20,14 +32,21 @@ const Matomo = ({ location, id, canBookFreeOffers }) => {
     Matomo.push(['trackSiteSearch', searchKeyword, categories, numberOfResults])
   }
 
-  if (id) {
-    userId = id
-  }
   if (canBookFreeOffers) {
-    userType = 'Beneficiary'
+    userId = 'BENEFICIARY'
   }
 
-  Matomo.push(['setUserId', userId, userType])
+  if (email) {
+    userId = getUserType(email)
+  }
+
+  Matomo.push(['setUserId', userId])
+
+  if (location.pathname == '/connexion') {
+    Matomo.push(['resetUserId'])
+  }
+
+  Matomo.push(['trackPageView'])
 
   return null
 }

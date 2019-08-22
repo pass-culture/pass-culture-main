@@ -11,7 +11,7 @@ describe('src | components | matomo | MatomoContainer', () => {
           users: [
             {
               canBookFreeOffers: true,
-              id: 'TY7',
+              email: 'fake@fake.com',
               currentUserUUID: getCurrentUserUUID(),
             },
           ],
@@ -22,7 +22,7 @@ describe('src | components | matomo | MatomoContainer', () => {
       const props = mapStateToProps(state)
 
       // then
-      expect(props).toStrictEqual({ id: 'TY7', canBookFreeOffers: true })
+      expect(props).toStrictEqual({ canBookFreeOffers: true, email: 'fake@fake.com' })
     })
     it('should return an object of props when user not logged in', () => {
       // given
@@ -32,7 +32,7 @@ describe('src | components | matomo | MatomoContainer', () => {
       const props = mapStateToProps(state)
 
       // then
-      expect(props).toStrictEqual({ id: undefined, canBookFreeOffers: undefined })
+      expect(props).toStrictEqual({ canBookFreeOffers: undefined, email: undefined })
     })
   })
 })
