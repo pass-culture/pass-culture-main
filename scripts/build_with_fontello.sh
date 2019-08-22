@@ -13,7 +13,11 @@ counter=0
 
 while [ "$counter" -lt 30 ]; do
   rm ./public/static/fontello/.fontello.session
-  set -a; source ./config/run_envs/"$environment" && yarn build && break
+  if [ $environment == "master" ]; then
+    set -a; source ./config/run_envs/"$environment" && yarn build && break
+  else
+    set -a; source ../config/run_envs/"$environment" && yarn build && break
+  fi
   echo "Waiting for Fontello to be nice with us :("
   counter=$[$counter+1]
   sleep 2
