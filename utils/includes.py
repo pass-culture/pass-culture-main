@@ -141,7 +141,6 @@ RECOMMENDATION_INCLUDES = [
         "key": "offer",
         "includes": [
             "dateRange",
-            'favorites',
             "isEvent",
             'isFinished',
             'isFullyBooked',
