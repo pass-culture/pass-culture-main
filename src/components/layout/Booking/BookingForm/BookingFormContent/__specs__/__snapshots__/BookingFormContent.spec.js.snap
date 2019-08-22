@@ -10,7 +10,7 @@ ShallowWrapper {
     invalid={false}
     isEvent={false}
     isReadOnly={false}
-    onSetCanSubmitForm={[MockFunction]}
+    onChange={[MockFunction]}
     values={
       Object {
         "bookables": Array [],
@@ -31,13 +31,10 @@ ShallowWrapper {
   Symbol(enzyme.__node__): Object {
     "instance": null,
     "key": undefined,
-    "nodeType": "function",
+    "nodeType": "host",
     "props": Object {
-      "children": <form
-        className="fake className"
-        id="fake formId"
-        onSubmit={[MockFunction]}
-      >
+      "children": Array [
+        false,
         <p
           className="text-center fs22"
         >
@@ -51,11 +48,68 @@ ShallowWrapper {
           >
             cette offre pour 12 €.
           </span>
-        </p>
-      </form>,
+        </p>,
+      ],
+      "className": "fake className",
+      "id": "fake formId",
+      "onSubmit": [MockFunction],
     },
     "ref": null,
-    "rendered": Object {
+    "rendered": Array [
+      false,
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <span
+              className="is-block"
+            >
+              Vous êtes sur le point de réserver
+            </span>,
+            <span
+              className="is-block"
+            >
+              cette offre pour 12 €.
+            </span>,
+          ],
+          "className": "text-center fs22",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Vous êtes sur le point de réserver",
+              "className": "is-block",
+            },
+            "ref": null,
+            "rendered": "Vous êtes sur le point de réserver",
+            "type": "span",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "cette offre pour 12 €.",
+              "className": "is-block",
+            },
+            "ref": null,
+            "rendered": "cette offre pour 12 €.",
+            "type": "span",
+          },
+        ],
+        "type": "p",
+      },
+    ],
+    "type": "form",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
       "instance": null,
       "key": undefined,
       "nodeType": "host",
@@ -134,118 +188,6 @@ ShallowWrapper {
         },
       ],
       "type": "form",
-    },
-    "type": Symbol(react.fragment),
-  },
-  Symbol(enzyme.__nodes__): Array [
-    Object {
-      "instance": null,
-      "key": undefined,
-      "nodeType": "function",
-      "props": Object {
-        "children": <form
-          className="fake className"
-          id="fake formId"
-          onSubmit={[MockFunction]}
-        >
-          <p
-            className="text-center fs22"
-          >
-            <span
-              className="is-block"
-            >
-              Vous êtes sur le point de réserver
-            </span>
-            <span
-              className="is-block"
-            >
-              cette offre pour 12 €.
-            </span>
-          </p>
-        </form>,
-      },
-      "ref": null,
-      "rendered": Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": Array [
-            false,
-            <p
-              className="text-center fs22"
-            >
-              <span
-                className="is-block"
-              >
-                Vous êtes sur le point de réserver
-              </span>
-              <span
-                className="is-block"
-              >
-                cette offre pour 12 €.
-              </span>
-            </p>,
-          ],
-          "className": "fake className",
-          "id": "fake formId",
-          "onSubmit": [MockFunction],
-        },
-        "ref": null,
-        "rendered": Array [
-          false,
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": Array [
-                <span
-                  className="is-block"
-                >
-                  Vous êtes sur le point de réserver
-                </span>,
-                <span
-                  className="is-block"
-                >
-                  cette offre pour 12 €.
-                </span>,
-              ],
-              "className": "text-center fs22",
-            },
-            "ref": null,
-            "rendered": Array [
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "Vous êtes sur le point de réserver",
-                  "className": "is-block",
-                },
-                "ref": null,
-                "rendered": "Vous êtes sur le point de réserver",
-                "type": "span",
-              },
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "cette offre pour 12 €.",
-                  "className": "is-block",
-                },
-                "ref": null,
-                "rendered": "cette offre pour 12 €.",
-                "type": "span",
-              },
-            ],
-            "type": "p",
-          },
-        ],
-        "type": "form",
-      },
-      "type": Symbol(react.fragment),
     },
   ],
   Symbol(enzyme.__options__): Object {

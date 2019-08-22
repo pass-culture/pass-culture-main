@@ -4,7 +4,7 @@ exports[`src | components | layout | Booking | BookingCancel should match the sn
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <BookingCancel
-    data={
+    booking={
       Object {
         "amount": 12,
       }

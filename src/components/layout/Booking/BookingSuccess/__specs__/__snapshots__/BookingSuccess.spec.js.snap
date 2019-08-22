@@ -4,7 +4,7 @@ exports[`src | components | layout | Booking | BookingSuccess should match snaps
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <BookingSuccess
-    data={
+    booking={
       Object {
         "stock": Object {
           "price": 12.5,
@@ -76,7 +76,7 @@ ShallowWrapper {
             data-token="g8g8g8"
             id="booking-booked-token"
           >
-            g8g8g8
+            G8G8G8
           </b>
         </p>,
         <p>
@@ -264,7 +264,7 @@ ShallowWrapper {
               data-token="g8g8g8"
               id="booking-booked-token"
             >
-              g8g8g8
+              G8G8G8
             </b>,
             undefined,
           ],
@@ -277,13 +277,13 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": "g8g8g8",
+              "children": "G8G8G8",
               "className": "is-block is-size-1",
               "data-token": "g8g8g8",
               "id": "booking-booked-token",
             },
             "ref": null,
-            "rendered": "g8g8g8",
+            "rendered": "G8G8G8",
             "type": "b",
           },
           undefined,
@@ -487,7 +487,7 @@ ShallowWrapper {
               data-token="g8g8g8"
               id="booking-booked-token"
             >
-              g8g8g8
+              G8G8G8
             </b>
           </p>,
           <p>
@@ -675,7 +675,7 @@ ShallowWrapper {
                 data-token="g8g8g8"
                 id="booking-booked-token"
               >
-                g8g8g8
+                G8G8G8
               </b>,
               undefined,
             ],
@@ -688,13 +688,13 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": "g8g8g8",
+                "children": "G8G8G8",
                 "className": "is-block is-size-1",
                 "data-token": "g8g8g8",
                 "id": "booking-booked-token",
               },
               "ref": null,
-              "rendered": "g8g8g8",
+              "rendered": "G8G8G8",
               "type": "b",
             },
             undefined,
