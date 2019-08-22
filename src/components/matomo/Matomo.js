@@ -1,9 +1,12 @@
 import PropTypes from 'prop-types'
 
-const REGEX = /^[a-zA-Z0-9_.+-]+@(octo.com|passculture.app)/g
+const TEAM_DOMAIN_REGEX = /^[a-zA-Z0-9_.+-]+@(octo.com|passculture.app|btmx.fr)/g
+const SANDBOX_DOMAIN_REGEX = /^[a-zA-Z0-9_.+-]+@(momarx.io|hlettre.com|youpi.com|violet.fr)/g
 
 const getUserType = email => {
-  if (email.match(REGEX)) {
+  if (email.match(SANDBOX_DOMAIN_REGEX)) {
+    return 'SANDBOX USER'
+  } else if (email.match(TEAM_DOMAIN_REGEX)) {
     return 'TECH or BIZ USER'
   } else {
     return 'PRO USER'

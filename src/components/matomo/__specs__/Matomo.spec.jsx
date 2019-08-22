@@ -61,67 +61,72 @@ describe('src | components | matomo | Matomo', () => {
     ])
   })
 
-  it('should dispatch the correct user id when user is logged and part of the team', () => {
-    // given
-    const fakeMatomoPageTracker = {
-      push: jest.fn(),
-    }
-    window._paq = fakeMatomoPageTracker
+  describe('when user is not logged', () => {
+    it('should push Anonymous as userId', () => {
+      // when
+      mount(
+        <Router history={history}>
+          <Provider store={store}>
+            <MatomoContainer />
+          </Provider>
+        </Router>
+      )
 
-    store = mockStore({ user: { id: 'TY', email: 'fake@octo.com' } })
-
-    // when
-    mount(
-      <Router history={history}>
-        <Provider store={store}>
-          <MatomoContainer />
-        </Provider>
-      </Router>
-    )
-
-    // then
-    expect(fakeMatomoPageTracker.push).toHaveBeenNthCalledWith(3, ['setUserId', 'TECH or BIZ USER'])
+      // then
+      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'ANONYMOUS'])
+    })
   })
 
-  it('should dispatch the correct user id when user is a pro user and logged', () => {
-    // given
-    const fakeMatomoPageTracker = {
-      push: jest.fn(),
-    }
-    window._paq = fakeMatomoPageTracker
+  describe('when user is logged', () => {
+    it('should dispatch tech or biz user id when user email contains teams domain', () => {
+      // given
+      store = mockStore({ user: { id: 'TY', email: 'fake@octo.com' } })
 
-    store = mockStore({ user: { id: 'TY', email: 'fake@fake.com' } })
+      // when
+      mount(
+        <Router history={history}>
+          <Provider store={store}>
+            <MatomoContainer />
+          </Provider>
+        </Router>
+      )
 
-    // when
-    mount(
-      <Router history={history}>
-        <Provider store={store}>
-          <MatomoContainer />
-        </Provider>
-      </Router>
-    )
+      // then
+      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'TECH or BIZ USER'])
+    })
 
-    // then
-    expect(fakeMatomoPageTracker.push).toHaveBeenNthCalledWith(3, ['setUserId', 'PRO USER'])
-  })
+    it('should dispatch pro user id when user when email is not one reserved', () => {
+      // given
+      store = mockStore({ user: { id: 'TY', email: 'fake@fake.com' } })
 
-  it('should dispatch Anonymous when user is not logged', () => {
-    // given
-    const fakeMatomoPageTracker = {
-      push: jest.fn(),
-    }
-    window._paq = fakeMatomoPageTracker
+      // when
+      mount(
+        <Router history={history}>
+          <Provider store={store}>
+            <MatomoContainer />
+          </Provider>
+        </Router>
+      )
 
-    // when
-    mount(
-      <Router history={history}>
-        <Provider store={store}>
-          <MatomoContainer user={null} />
-        </Provider>
-      </Router>
-    )
+      // then
+      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'PRO USER'])
+    })
 
-    // then
-    expect(fakeMatomoPageTracker.push).toHaveBeenNthCalledWith(3, ['setUserId', 'ANONYMOUS'])
+    it('should dispatch sandbox user id when user email contains sandbox domain', () => {
+      // given
+      store = mockStore({ user: { id: 'TY', email: 'fake@youpi.com' } })
+
+      // when
+      mount(
+        <Router history={history}>
+          <Provider store={store}>
+            <MatomoContainer user={null} />
+          </Provider>
+        </Router>
+      )
+
+      // then
+      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'SANDBOX USER'])
+    })
   })
 })
