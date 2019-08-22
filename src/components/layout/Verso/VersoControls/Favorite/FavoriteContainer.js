@@ -64,7 +64,6 @@ export const mapDispatchToProps = dispatch => ({
       requestData({
         apiPath: API_PATH_TO_FAVORITES_ENDPOINT,
         method: 'GET',
-        normalizer: favoriteNormalizer,
       })
     )
   },

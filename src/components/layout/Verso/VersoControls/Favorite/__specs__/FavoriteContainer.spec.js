@@ -246,8 +246,6 @@ describe('src | components | layout | Verso | VersoControls | Favorite | Favorit
       })
     })
 
-    // TODO Supprimer les ownProps dans les tests
-
     describe('loadFavorites()', () => {
       it('should load all favorites', () => {
         // given
@@ -261,7 +259,6 @@ describe('src | components | layout | Verso | VersoControls | Favorite | Favorit
           config: {
             apiPath: '/favorites',
             method: 'GET',
-            normalizer: favoriteNormalizer,
           },
           type: 'REQUEST_DATA_GET_/FAVORITES',
         })
