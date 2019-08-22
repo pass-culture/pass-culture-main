@@ -11,11 +11,11 @@ from models.db import db
 from models.user import WalletBalance
 
 
-def count_all_activated_users():
+def count_all_activated_users() -> int:
     return User.query.filter_by(canBookFreeOffers=True).count()
 
 
-def count_all_activated_users_by_departement(department_code):
+def count_all_activated_users_by_departement(department_code) -> int:
     return User.query.filter_by(canBookFreeOffers=True).filter_by(departementCode=department_code).count()
 
 
@@ -29,11 +29,11 @@ def _query_user_having_booked():
         .distinct(User.id)
 
 
-def count_users_having_booked():
+def count_users_having_booked() -> int:
     return _query_user_having_booked().count()
 
 
-def count_users_having_booked_by_departement_code(departement_code: str):
+def count_users_having_booked_by_departement_code(departement_code: str) -> int:
     return _query_user_having_booked() \
         .filter(User.departementCode == departement_code) \
         .count()

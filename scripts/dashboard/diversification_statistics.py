@@ -92,12 +92,13 @@ def get_all_used_or_finished_bookings(departement_code: str = None) -> int:
     return count_all_used_or_finished_bookings_by_departement(departement_code)
 
 
-def count_all_cancelled_bookings(departement_code: str = None):
+def count_all_cancelled_bookings(departement_code: str = None) -> int:
     return count_all_cancelled_bookings_by_departement(
         departement_code) if departement_code else query_count_all_cancelled_bookings()
 
 
-def get_offer_counts_grouped_by_type_and_medium(query_get_counts_per_type_and_digital, counts_column_name):
+def get_offer_counts_grouped_by_type_and_medium(query_get_counts_per_type_and_digital,
+                                                counts_column_name) -> pandas.DataFrame:
     offers_by_type_and_digital_table = _get_offers_grouped_by_type_and_medium()
     offer_counts_per_type_and_digital = query_get_counts_per_type_and_digital()
 
@@ -119,7 +120,7 @@ def get_offer_counts_grouped_by_type_and_medium(query_get_counts_per_type_and_di
     return offers_by_type_and_digital_table.reset_index(drop=True)
 
 
-def _get_offers_grouped_by_type_and_medium():
+def _get_offers_grouped_by_type_and_medium() -> pandas.DataFrame:
     human_types = []
     types = []
     digital_or_physical = []
@@ -166,7 +167,8 @@ def query_get_offer_counts_grouped_by_type_and_medium() -> List[Tuple[str, bool,
         """)
 
 
-def query_get_offer_counts_grouped_by_type_and_medium_for_departement(departement_code: str) -> List[Tuple[str, bool, int]]:
+def query_get_offer_counts_grouped_by_type_and_medium_for_departement(departement_code: str) -> List[
+    Tuple[str, bool, int]]:
     return db.engine.execute(
         f"""
         SELECT type, url IS NOT NULL AS is_digital, count(offer.id) 
@@ -196,7 +198,8 @@ def query_get_booking_counts_grouped_by_type_and_medium() -> List[Tuple[str, boo
         """)
 
 
-def query_get_booking_counts_grouped_by_type_and_medium_for_departement(departement_code: str) -> List[Tuple[str, bool, int]]:
+def query_get_booking_counts_grouped_by_type_and_medium_for_departement(departement_code: str) -> List[
+    Tuple[str, bool, int]]:
     return db.engine.execute(
         f"""
         SELECT type, url IS NOT NULL AS is_digital, SUM(booking.quantity)

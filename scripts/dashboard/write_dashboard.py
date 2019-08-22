@@ -1,4 +1,8 @@
-from connectors.google_spreadsheet import get_dashboard_worksheet
+from functools import partial
+
+from pygsheets import Worksheet
+
+from connectors.google_spreadsheet import get_dashboard_spreadsheet
 from scripts.dashboard import count_activated_users, count_users_having_booked, \
     get_mean_number_of_bookings_per_user_having_booked, get_mean_amount_spent_by_user, \
     get_non_cancelled_bookings_by_user_departement, get_offerer_count, get_offers_with_user_offerer_and_stock_count, \
@@ -12,8 +16,10 @@ from scripts.dashboard.diversification_statistics import get_offer_counts_groupe
     count_all_cancelled_bookings, query_get_offer_counts_grouped_by_type_and_medium_for_departement, \
     query_get_booking_counts_grouped_by_type_and_medium_for_departement
 
+spreadsheet = get_dashboard_spreadsheet()
 
-def write_dashboard(tab_name: str):
+
+def write_dashboard_worksheet(spreadsheet, tab_name: str):
     current_row = 1
     space_between_lines = 1
     space_between_tables = 2
@@ -22,18 +28,17 @@ def write_dashboard(tab_name: str):
     max_rows_for_category_and_digital_table = 50
     top_20_table_size = 21
 
-    spreadsheet = get_dashboard_worksheet()
     all_worksheets = [ws.title for ws in spreadsheet.worksheets()]
-    if tab_name not in all_worksheets:
-        spreadsheet.add_worksheet(tab_name)
+    if tab_name in all_worksheets:
+        worksheet = spreadsheet.worksheet_by_title(tab_name)
+        worksheet.clear()
+    else:
+        spreadsheet.add_worksheet(tab_name, rows=300)
+        worksheet = spreadsheet.worksheet_by_title(tab_name)
 
     departement_code = None
     if tab_name != 'Global':
         departement_code = tab_name
-
-    worksheet = spreadsheet.worksheet_by_title(tab_name)
-
-    worksheet.clear()
 
     worksheet.update_value(f'A{current_row}', 'TABLEAU DE BORD PASS CULTURE')
 
@@ -71,21 +76,23 @@ def write_dashboard(tab_name: str):
     worksheet.set_dataframe(get_top_20_offerers_by_amount_table(departement_code), f'A{current_row}')
 
 
-def _write_bookings_by_type_and_digital_counts(departement_code, worksheet, current_row):
+def _write_bookings_by_type_and_digital_counts(departement_code: str, worksheet: Worksheet, current_row: int):
     if departement_code:
         bookings_by_type_and_digital_counts = get_offer_counts_grouped_by_type_and_medium(
-            query_get_booking_counts_grouped_by_type_and_medium, 'Nombre de réservations')
+            partial(query_get_booking_counts_grouped_by_type_and_medium_for_departement,
+                    departement_code=departement_code), 'Nombre de réservations')
         worksheet.set_dataframe(bookings_by_type_and_digital_counts, f'E{current_row}')
     else:
         bookings_by_type_and_digital_counts = get_offer_counts_grouped_by_type_and_medium(
-            query_get_booking_counts_grouped_by_type_and_medium_for_departement, 'Nombre de réservations')
+            query_get_booking_counts_grouped_by_type_and_medium, 'Nombre de réservations')
         worksheet.set_dataframe(bookings_by_type_and_digital_counts, f'E{current_row}')
 
 
-def _write_offer_counts_grouped_by_type_and_medium(departement_code, worksheet, current_row):
+def _write_offer_counts_grouped_by_type_and_medium(departement_code: str, worksheet: Worksheet, current_row: int):
     if departement_code:
         offer_counts_grouped_by_type_and_medium = get_offer_counts_grouped_by_type_and_medium(
-            query_get_offer_counts_grouped_by_type_and_medium_for_departement,
+            partial(query_get_offer_counts_grouped_by_type_and_medium_for_departement,
+                    departement_code=departement_code),
             'Nombre d\'offres')
     else:
         offer_counts_grouped_by_type_and_medium = get_offer_counts_grouped_by_type_and_medium(
@@ -94,7 +101,8 @@ def _write_offer_counts_grouped_by_type_and_medium(departement_code, worksheet, 
     worksheet.set_dataframe(offer_counts_grouped_by_type_and_medium, f'A{current_row}')
 
 
-def _write_finance_table(departement_code, worksheet, current_row, space_between_lines):
+def _write_finance_table(departement_code: str, worksheet: Worksheet, current_row: int,
+                         space_between_lines: int) -> int:
     worksheet.update_value(f'A{current_row}', 'Indicateur')
     worksheet.update_value(f'B{current_row}', 'Valeur')
     current_row += space_between_lines
@@ -109,7 +117,8 @@ def _write_finance_table(departement_code, worksheet, current_row, space_between
     return current_row
 
 
-def _write_diversification_table(departement_code, worksheet, current_row, space_between_lines):
+def _write_diversification_table(departement_code: str, worksheet: Worksheet, current_row: int,
+                                 space_between_lines: int) -> int:
     worksheet.update_value(f'A{current_row}', 'Indicateur')
     worksheet.update_value(f'B{current_row}', 'Valeur')
     worksheet.update_value(f'E{current_row}', 'Indicateur')
@@ -143,7 +152,7 @@ def _write_diversification_table(departement_code, worksheet, current_row, space
     return current_row
 
 
-def _write_usage_table(departement_code, worksheet, current_row, space_between_lines):
+def _write_usage_table(departement_code: str, worksheet: Worksheet, current_row: int, space_between_lines: int) -> int:
     worksheet.update_value(f'A{current_row}', '# Comptes activés')
     worksheet.update_value(f'B{current_row}', count_activated_users(departement_code))
     current_row += space_between_lines

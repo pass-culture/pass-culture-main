@@ -8,10 +8,13 @@ from flask import Flask
 from mailjet_rest import Client
 from sqlalchemy import orm
 
+from connectors.google_spreadsheet import get_dashboard_spreadsheet
+from domain.departments import DEPARTEMENT_CODE_VISIBILITY
+
 from models.db import db
 from repository.feature_queries import feature_cron_send_final_booking_recaps_enabled, \
     feature_cron_generate_and_send_payments, \
-    feature_cron_retrieve_offerers_bank_information, feature_cron_send_remedial_emails
+    feature_cron_retrieve_offerers_bank_information, feature_cron_send_remedial_emails, feature_write_dashboard_enabled
 from repository.feature_queries import feature_cron_send_wallet_balances
 from repository.feature_queries import feature_import_beneficiaries_enabled, \
     feature_cron_synchronize_titelive_things, feature_cron_synchronize_titelive_descriptions, \
@@ -19,6 +22,7 @@ from repository.feature_queries import feature_import_beneficiaries_enabled, \
     feature_cron_retrieve_bank_information_for_venue_without_siret
 from repository.user_queries import find_most_recent_beneficiary_creation_date
 from scripts.beneficiary import remote_import
+from scripts.dashboard.write_dashboard import write_dashboard_worksheet
 from utils.config import API_ROOT_PATH
 from utils.logger import logger
 from utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET
@@ -146,6 +150,17 @@ def pc_remote_import_beneficiaries():
     logger.info("[BATCH][REMOTE IMPORT BENEFICIARIES] Cron remote_import_beneficiaries: END")
 
 
+def pc_write_dashboard():
+    logger.info("[BATCH][WRITE DASHBOARD] Cron write_dashboard: START")
+    departements = DEPARTEMENT_CODE_VISIBILITY.keys()
+    spreadsheet = get_dashboard_spreadsheet()
+    with app.app_context():
+        write_dashboard_worksheet(spreadsheet, 'Global')
+        for departement in departements:
+            write_dashboard_worksheet(spreadsheet, departement)
+    logger.info("[BATCH][WRITE DASHBOARD] Cron write_dashboard: END")
+
+
 if __name__ == '__main__':
     orm.configure_mappers()
     scheduler = BlockingScheduler()
@@ -186,4 +201,6 @@ if __name__ == '__main__':
     if feature_import_beneficiaries_enabled():
         scheduler.add_job(pc_remote_import_beneficiaries, 'cron', id='remote_import_beneficiaries', day='*')
 
+    if feature_write_dashboard_enabled():
+        scheduler.add_job(pc_write_dashboard, 'cron', id='pc_write_dashboard', day_of_week='mon', hour='4')
     scheduler.start()

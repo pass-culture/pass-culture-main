@@ -1,3 +1,5 @@
+from typing import List, Tuple
+
 import pandas
 from sqlalchemy import func, text
 
@@ -65,7 +67,7 @@ def get_not_cancelled_bookings_by_departement() -> pandas.DataFrame:
                             data=non_cancelled_booking_by_department)
 
 
-def _query_get_top_20_offers_by_number_of_bookings(departement_code: str = None):
+def _query_get_top_20_offers_by_number_of_bookings(departement_code: str = None) -> List[Tuple[str, int, float]]:
     if departement_code:
         query = text("""
             SELECT offer.name, SUM(booking.quantity) AS quantity, SUM(booking.quantity * booking.amount)
@@ -94,7 +96,7 @@ def _query_get_top_20_offers_by_number_of_bookings(departement_code: str = None)
     return db.engine.execute(query).fetchall()
 
 
-def _query_non_cancelled_bookings_by_departement():
+def _query_non_cancelled_bookings_by_departement() -> List[Tuple[str, int]]:
     return db.engine.execute(
         """
         SELECT "departementCode", COUNT(*) as "nb_bookings" 
@@ -106,7 +108,7 @@ def _query_non_cancelled_bookings_by_departement():
         """).fetchall()
 
 
-def _query_get_top_20_offerers_by_number_of_bookings(departement_code: str = None):
+def _query_get_top_20_offerers_by_number_of_bookings(departement_code: str = None) -> List[Tuple[str, int, float]]:
     if departement_code:
         query = text("""
             SELECT offerer.name, SUM(booking.quantity) AS quantity, SUM(booking.quantity * booking.amount)
@@ -138,7 +140,7 @@ def _query_get_top_20_offerers_by_number_of_bookings(departement_code: str = Non
     return db.engine.execute(query).fetchall()
 
 
-def _query_get_top_20_offerers_by_booking_amounts(departement_code: str = None):
+def _query_get_top_20_offerers_by_booking_amounts(departement_code: str = None) -> List[Tuple[str, int, float]]:
     if departement_code:
         query = text("""
             SELECT offerer.name, SUM(booking.quantity) AS quantity, SUM(booking.quantity * booking.amount) AS booking_amount

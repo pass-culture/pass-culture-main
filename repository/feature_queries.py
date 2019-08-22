@@ -69,3 +69,7 @@ def feature_request_profiling_enabled() -> bool:
 
 def feature_import_beneficiaries_enabled():
     return os.environ.get('CRON_BENEFICIARIES_ENROLLMENT', False)
+
+
+def feature_write_dashboard_enabled():
+    return os.environ.get('WRITE_DASHBOARD', False)

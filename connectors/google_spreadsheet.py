@@ -56,7 +56,7 @@ def get_authorized_emails_and_dept_codes():
            list(map(lambda v: v[departement_index],
                     values))
 
-def get_dashboard_worksheet() -> Spreadsheet:
+def get_dashboard_spreadsheet() -> Spreadsheet:
     sheet_name = 'Tableau de bord automatique'
     gc = pygsheets.authorize(
         service_account_env_var='PC_GOOGLE_KEY')
