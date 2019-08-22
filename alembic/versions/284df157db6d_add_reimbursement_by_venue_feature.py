@@ -47,7 +47,7 @@ def downgrade():
                ' USING name::text::tmp_featuretoggle')
     new_enum.drop(op.get_bind(), checkfirst=False)
     previous_enum.create(op.get_bind(), checkfirst=False)
-    op.execute("DELETE FROM feature WHERE name = DDEGRESSIVE_REIMBURSEMENT_RATET_RATE")
+    op.execute("DELETE FROM feature WHERE name = 'DEGRESSIVE_REIMBURSEMENT_RATE'")
     op.execute('ALTER TABLE feature ALTER COLUMN name TYPE featuretoggle'
                ' USING name::text::featuretoggle')
     temporary_enum.drop(op.get_bind(), checkfirst=False)
