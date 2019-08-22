@@ -61,14 +61,14 @@ describe('src | components | matomo | Matomo', () => {
     ])
   })
 
-  it('should dispatch the user id when user is logged', () => {
+  it('should dispatch the correct user id when user is logged and part of the team', () => {
     // given
     const fakeMatomoPageTracker = {
       push: jest.fn(),
     }
     window._paq = fakeMatomoPageTracker
 
-    store = mockStore({ user: { id: 'TY' } })
+    store = mockStore({ user: { id: 'TY', email: 'fake@octo.com' } })
 
     // when
     mount(
@@ -80,7 +80,29 @@ describe('src | components | matomo | Matomo', () => {
     )
 
     // then
-    expect(fakeMatomoPageTracker.push).toHaveBeenNthCalledWith(3, ['setUserId', 'TY'])
+    expect(fakeMatomoPageTracker.push).toHaveBeenNthCalledWith(3, ['setUserId', 'TECH or BIZ USER'])
+  })
+
+  it('should dispatch the correct user id when user is a pro user and logged', () => {
+    // given
+    const fakeMatomoPageTracker = {
+      push: jest.fn(),
+    }
+    window._paq = fakeMatomoPageTracker
+
+    store = mockStore({ user: { id: 'TY', email: 'fake@fake.com' } })
+
+    // when
+    mount(
+      <Router history={history}>
+        <Provider store={store}>
+          <MatomoContainer />
+        </Provider>
+      </Router>
+    )
+
+    // then
+    expect(fakeMatomoPageTracker.push).toHaveBeenNthCalledWith(3, ['setUserId', 'PRO USER'])
   })
 
   it('should dispatch Anonymous when user is not logged', () => {
@@ -100,6 +122,6 @@ describe('src | components | matomo | Matomo', () => {
     )
 
     // then
-    expect(fakeMatomoPageTracker.push).toHaveBeenNthCalledWith(3, ['setUserId', 'Anonymous'])
+    expect(fakeMatomoPageTracker.push).toHaveBeenNthCalledWith(3, ['setUserId', 'ANONYMOUS'])
   })
 })
