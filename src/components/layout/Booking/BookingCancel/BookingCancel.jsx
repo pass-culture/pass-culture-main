@@ -1,13 +1,12 @@
 import React from 'react'
-import get from 'lodash.get'
 import PropTypes from 'prop-types'
 
 import Icon from '../../Icon'
 import { getDisplayPrice } from '../../../../helpers'
 
-const BookingCancel = ({ isEvent, data }) => {
-  const price = get(data, 'amount')
-  const formattedPrice = getDisplayPrice(price)
+const BookingCancel = ({ isEvent, booking }) => {
+  const { amount } = booking || {}
+  const price = getDisplayPrice(amount)
   const cssClass = isEvent ? 'event' : 'thing'
 
   return (
@@ -23,7 +22,7 @@ const BookingCancel = ({ isEvent, data }) => {
       </div>
 
       <p className="mt40">
-        <span className="is-block">{`${formattedPrice} vont être recrédités sur votre pass.`}</span>
+        <span className="is-block">{`${price} vont être recrédités sur votre pass.`}</span>
         <span className="is-block">{'Vous allez recevoir un e-mail de confirmation.'}</span>
       </p>
     </div>
@@ -31,7 +30,7 @@ const BookingCancel = ({ isEvent, data }) => {
 }
 
 BookingCancel.propTypes = {
-  data: PropTypes.shape().isRequired,
+  booking: PropTypes.shape().isRequired,
   isEvent: PropTypes.bool.isRequired,
 }
 

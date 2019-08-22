@@ -18,7 +18,7 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
       isEvent: false,
       isReadOnly: false,
       handleSubmit,
-      onSetCanSubmitForm: jest.fn(),
+      onChange: jest.fn(),
       values: {
         bookables: [],
         date: '2019-01-01',

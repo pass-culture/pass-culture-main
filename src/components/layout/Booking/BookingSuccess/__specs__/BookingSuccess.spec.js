@@ -8,7 +8,7 @@ describe('src | components | layout | Booking | BookingSuccess', () => {
 
   beforeEach(() => {
     props = {
-      data: {
+      booking: {
         token: 'G8G8G8',
         stock: {
           price: 12.5,

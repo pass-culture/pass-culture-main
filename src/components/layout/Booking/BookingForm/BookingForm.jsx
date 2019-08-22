@@ -3,28 +3,31 @@ import React, { Component } from 'react'
 import { Form } from 'react-final-form'
 
 import BookingFormContent from './BookingFormContent/BookingFormContent'
-import decorators from './decorators/decorators'
+import eventDecorators from './decorators/eventDecorators'
 
 class BookingForm extends Component {
   renderBookingFormContent = formParams => {
     const { className, formId, isEvent, isReadOnly, onSetCanSubmitForm } = this.props
+    const { handleSubmit, invalid, values } = formParams
     return (
       <BookingFormContent
         className={className}
         formId={formId}
+        handleSubmit={handleSubmit}
+        invalid={invalid}
         isEvent={isEvent}
         isReadOnly={isReadOnly}
-        onSetCanSubmitForm={onSetCanSubmitForm}
-        {...formParams}
+        onChange={onSetCanSubmitForm}
+        values={values}
       />
     )
   }
 
   render() {
-    const { initialValues, onFormSubmit } = this.props
+    const { initialValues, isEvent, onFormSubmit } = this.props
     return (
       <Form
-        decorators={decorators}
+        decorators={isEvent && eventDecorators}
         initialValues={initialValues}
         onSubmit={onFormSubmit}
         render={this.renderBookingFormContent}

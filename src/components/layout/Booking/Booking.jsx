@@ -184,15 +184,16 @@ class Booking extends PureComponent {
     const { id: recommendationId } = recommendation || {}
     const { isEvent } = offer || {}
     const isConfirmingCancelling = getIsConfirmingCancelling(match)
-    const showForm = !isSubmitting && !bookedPayload && !isErrored && !isConfirmingCancelling
     const defaultBookable = bookables && bookables[0]
+    const showForm =
+      defaultBookable && !isSubmitting && !bookedPayload && !isErrored && !isConfirmingCancelling
 
     let date
     let price
     let stockId
     const isReadOnly = bookables.length === 1
     if (defaultBookable) {
-      date = moment(defaultBookable.beginningDatetime)
+      date = defaultBookable.beginningDatetime && moment(defaultBookable.beginningDatetime)
       price = priceIsDefined(defaultBookable.price) ? defaultBookable.price : null
       stockId = defaultBookable.id
     }
@@ -228,12 +229,12 @@ class Booking extends PureComponent {
                   {isSubmitting && <BookingLoader />}
 
                   {bookedPayload && <BookingSuccess
-                    data={bookedPayload}
+                    booking={bookedPayload}
                     isEvent={isEvent}
                                     />}
 
                   {isConfirmingCancelling && <BookingCancel
-                    data={booking}
+                    booking={booking}
                     isEvent={isEvent}
                                              />}
 

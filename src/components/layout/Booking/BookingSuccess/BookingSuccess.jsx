@@ -1,16 +1,13 @@
-import React, { Fragment } from 'react'
-import get from 'lodash.get'
 import PropTypes from 'prop-types'
+import React, { Fragment } from 'react'
 import { Link } from 'react-router-dom'
 
 import Icon from '../../Icon'
 import { getDisplayPrice } from '../../../../helpers'
 
-const BookingSuccess = ({ isEvent, data }) => {
-  const token = get(data, 'token').toLowerCase()
-  let price = get(data, 'stock.price')
-  price = getDisplayPrice(price)
-  const onlineOfferUrl = get(data, 'completedUrl')
+const BookingSuccess = ({ booking, isEvent }) => {
+  const { completedUrl, stock, token } = booking || {}
+  const { price } = stock || {}
   const cssclass = (isEvent && 'event') || 'thing'
   return (
     <div className={`booked text-center ${cssclass}`}>
@@ -33,27 +30,27 @@ const BookingSuccess = ({ isEvent, data }) => {
       </h3>
       <p>
         <span className="is-block">
-          {price} {'ont été déduits de votre pass.'}
+          {getDisplayPrice(price)} {'ont été déduits de votre pass.'}
         </span>
-        {!onlineOfferUrl && (
+        {!completedUrl && (
           <span className="is-block">{'Présentez le code suivant sur place :'}</span>
         )}
       </p>
       <p className="my28">
-        {!onlineOfferUrl && (
+        {!completedUrl && (
           <b
             className="is-block is-size-1"
-            data-token={token}
+            data-token={token.toLowerCase()}
             id="booking-booked-token"
           >
             {token}
           </b>
         )}
-        {onlineOfferUrl && (
+        {completedUrl && (
           <a
             className="is-primary-text is-primary-border px12 py8"
             data-token={token}
-            href={onlineOfferUrl}
+            href={completedUrl}
             id="booking-online-booked-button"
             rel="noopener noreferrer"
             target="_blank"
@@ -63,7 +60,7 @@ const BookingSuccess = ({ isEvent, data }) => {
         )}
       </p>
       <p>
-        {!onlineOfferUrl && (
+        {!completedUrl && (
           <Fragment>
             <span className="is-block">{'Retrouvez ce code et les détails de l’offre dans'}</span>
             <span className="is-block">
@@ -75,7 +72,7 @@ const BookingSuccess = ({ isEvent, data }) => {
             </span>
           </Fragment>
         )}
-        {onlineOfferUrl && (
+        {completedUrl && (
           <Fragment>
             <span className="is-block">{'Retrouvez l’adresse Internet et les détails de'}</span>
             <span className="is-block">
@@ -93,7 +90,7 @@ const BookingSuccess = ({ isEvent, data }) => {
 }
 
 BookingSuccess.propTypes = {
-  data: PropTypes.shape().isRequired,
+  booking: PropTypes.shape().isRequired,
   isEvent: PropTypes.bool.isRequired,
 }
 
