@@ -7,7 +7,9 @@ import MediationItem from './MediationItem/MediationItem'
 import PropTypes from 'prop-types'
 
 export const NO_MEDIATION_TOOLTIP =
-  '<div><p>Pour que votre offre soit mise en avant dans l’application du Pass Culture, vous devez&nbsp;:</p><p>- ajouter une ou plusieurs accroches</p><p>- sélectionner au moins une accroche</p></div>'
+  '<div><p>Pour que votre offre soit mise en avant dans l’application du pass Culture, vous devez&nbsp;:</p>' +
+  '<p>- ajouter une ou plusieurs accroches</p>' +
+  '<p>- sélectionner au moins une accroche</p></div>'
 
 class MediationsManager extends Component {
   componentDidMount() {
@@ -17,7 +19,7 @@ class MediationsManager extends Component {
       showNotification({
         tag: 'mediations-manager',
         text:
-          'Cette offre ne sera pas mise en avant dans l’application Pass Culture mais sera accessible via la recherche par mots-clés.',
+          'Cette offre ne sera pas mise en avant dans l’application pass Culture mais sera accessible via la recherche par mots-clés.',
         tooltip: {
           children: <span>
             {'Pourquoi ?'}

@@ -46,7 +46,7 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
       expect(props.showNotification).toHaveBeenCalledWith({
         tag: 'mediations-manager',
         text:
-          'Cette offre ne sera pas mise en avant dans l’application Pass Culture mais sera accessible via la recherche par mots-clés.',
+          'Cette offre ne sera pas mise en avant dans l’application pass Culture mais sera accessible via la recherche par mots-clés.',
         tooltip: {
           children: <span>
             {'Pourquoi ?'}
@@ -72,7 +72,7 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
       expect(props.showNotification).toHaveBeenCalledWith({
         tag: 'mediations-manager',
         text:
-          'Cette offre ne sera pas mise en avant dans l’application Pass Culture mais sera accessible via la recherche par mots-clés.',
+          'Cette offre ne sera pas mise en avant dans l’application pass Culture mais sera accessible via la recherche par mots-clés.',
         tooltip: {
           children: <span>
             {'Pourquoi ?'}

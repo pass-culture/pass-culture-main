@@ -19,7 +19,7 @@ export const mapStateToProps = (state, ownProps) => {
   return {
     mediations: mediations,
     hasMediations: mediations.length > 0,
-    atLeastOneActiveMediation: mediations.some(m => m.isActive),
+    atLeastOneActiveMediation: mediations.some(mediation => mediation.isActive),
     notification: state.notification,
     offer: selectOfferById(state, offerId),
   }
