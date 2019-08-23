@@ -7,7 +7,7 @@ import Discovery from './Discovery'
 import {
   checkIfShouldReloadRecommendationsBecauseOfLongTime,
   isDiscoveryStartupUrl,
-} from './helpers'
+} from './utils/utils'
 import selectCurrentRecommendation from './selectors/selectCurrentRecommendation'
 import { withRequiredLogin } from '../../hocs'
 import { getOfferIdAndMediationIdApiPathQueryString } from '../../../helpers'

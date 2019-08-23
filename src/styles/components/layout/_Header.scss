@@ -41,8 +41,8 @@ $button-size: $header-height - 0.75rem;
   border-radius: $button-size;
   display: block;
   height: $button-size;
-  padding-left: 5px;
-  padding-top: 4px;
+  padding: 5px;
+  text-align: center;
   width: $button-size;
 
   .discovery-page & {

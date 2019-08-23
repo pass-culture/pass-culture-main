@@ -6,7 +6,7 @@ import { Link, Router } from 'react-router-dom'
 import { Transition } from 'react-transition-group'
 import configureStore from 'redux-mock-store'
 
-import CloseLink from '../../Header/CloseLink'
+import CloseLink from '../../Header/CloseLink/CloseLink'
 import Header from '../Header/Header'
 import Menu from '../Menu'
 import MenuItem from '../MenuItem/MenuItem'

@@ -65,7 +65,7 @@ const routes = [
     component: DiscoveryContainer,
     icon: 'offres-w',
     path:
-      '/decouverte/:offerId?/:mediationId?/:details(details)?/:booking(reservation)?/:bookingId?/:cancellation(annulation)?/:confirmation(confirmation)?',
+      '/decouverte/:offerId?/:mediationId?/:details(details|transition)?/:booking(reservation)?/:bookingId?/:cancellation(annulation)?/:confirmation(confirmation)?',
     title: 'Les offres',
   },
   {

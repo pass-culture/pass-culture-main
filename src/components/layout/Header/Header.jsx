@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 import BackLink from './BackLink'
-import CloseLink from './CloseLink'
+import CloseLink from './CloseLink/CloseLink'
 import SubmitButton from './SubmitButton'
 import getIsTransitionDetailsUrl from '../../../helpers/getIsTransitionDetailsUrl'
 

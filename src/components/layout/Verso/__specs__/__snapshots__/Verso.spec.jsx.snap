@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | verso | Verso should match the snapshot 1`] = `
+exports[`src | components | layout | Verso should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Verso
@@ -14,7 +14,6 @@ ShallowWrapper {
     }
     extraClassName="extra-classname"
     isTuto={false}
-    mediationId="AAA"
     offerName="Offer title"
     offerVenueNameOrPublicName="Offer subtitle"
   />,
@@ -34,7 +33,7 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <div
-          className="verso-wrapper is-black-text scroll-y flex-rows is-relative text-left"
+          className="verso-wrapper"
         >
           <withRouter(withSizes(VersoHeader))
             backgroundColor="#ACE539"
@@ -61,7 +60,7 @@ ShallowWrapper {
           id="verso-footer"
         />,
       ],
-      "className": "verso is-overlay extra-classname flipped",
+      "className": "verso extra-classname flipped",
     },
     "ref": null,
     "rendered": Array [
@@ -89,9 +88,11 @@ ShallowWrapper {
               <withRouter(Connect(VersoContentOffer)) />
             </div>,
           ],
-          "className": "verso-wrapper is-black-text scroll-y flex-rows is-relative text-left",
+          "className": "verso-wrapper",
         },
-        "ref": null,
+        "ref": Object {
+          "current": null,
+        },
         "rendered": Array [
           Object {
             "instance": null,
@@ -167,7 +168,7 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <div
-            className="verso-wrapper is-black-text scroll-y flex-rows is-relative text-left"
+            className="verso-wrapper"
           >
             <withRouter(withSizes(VersoHeader))
               backgroundColor="#ACE539"
@@ -194,7 +195,7 @@ ShallowWrapper {
             id="verso-footer"
           />,
         ],
-        "className": "verso is-overlay extra-classname flipped",
+        "className": "verso extra-classname flipped",
       },
       "ref": null,
       "rendered": Array [
@@ -222,9 +223,11 @@ ShallowWrapper {
                 <withRouter(Connect(VersoContentOffer)) />
               </div>,
             ],
-            "className": "verso-wrapper is-black-text scroll-y flex-rows is-relative text-left",
+            "className": "verso-wrapper",
           },
-          "ref": null,
+          "ref": Object {
+            "current": null,
+          },
           "rendered": Array [
             Object {
               "instance": null,
@@ -319,5 +322,6 @@ ShallowWrapper {
     Symbol(enzyme.__providerValues__): undefined,
   },
   Symbol(enzyme.__providerValues__): Map {},
+  Symbol(enzyme.__childContext__): null,
 }
 `;

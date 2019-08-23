@@ -5,15 +5,18 @@ import Draggable from 'react-draggable'
 
 import CardContainer from './Card/CardContainer'
 import NavigationContainer from './Navigation/NavigationContainer'
-import CloseLink from '../../../layout/Header/CloseLink'
+import CloseLink from '../../../layout/Header/CloseLink/CloseLink'
 import getAreDetailsVisible from '../../../../helpers/getAreDetailsVisible'
 import getUrlWithoutDetailsPart from '../../../../helpers/getUrlWithoutDetailsPart'
+import getIsTransitionDetailsUrl from '../../../../helpers/getIsTransitionDetailsUrl'
 
 class Deck extends Component {
   constructor(props) {
     super(props)
     this.currentReadRecommendationId = null
-    this.state = { refreshKey: 0 }
+    this.state = {
+      refreshKey: 0,
+    }
   }
 
   componentDidMount() {
@@ -23,6 +26,16 @@ class Deck extends Component {
 
     if (!isStateWithoutRecommendationsOrCurrentRecommendation) return
     this.handleRefreshedDraggableKey()
+  }
+
+  componentDidUpdate() {
+    const { history, location, match } = this.props
+    const isTransitionDetailsUrl = getIsTransitionDetailsUrl(match)
+
+    if (isTransitionDetailsUrl) {
+      const { pathname, search } = location
+      history.replace(`${pathname.split('/transition')[0]}${search}`)
+    }
   }
 
   componentWillUnmount() {
@@ -44,7 +57,7 @@ class Deck extends Component {
     const index = get(currentRecommendation, 'index', 0)
     const offset = (data.x + width * index) / width
     if (data.y > height * verticalSlideRatio) {
-      this.onHandleCloseCardDetails(event)
+      this.onHandleCloseCardDetails()
     } else if (data.y < -height * verticalSlideRatio) {
       this.handleShowCardDetails()
     } else if (offset > horizontalSlideRatio) {
@@ -95,10 +108,10 @@ class Deck extends Component {
     history.push(detailsUrl)
   }
 
-  onHandleCloseCardDetails = event => {
-    event.preventDefault()
+  onHandleCloseCardDetails = () => {
     const { history, location, match } = this.props
     const removedDetailsUrl = getUrlWithoutDetailsPart(location, match)
+
     if (removedDetailsUrl) {
       history.push(removedDetailsUrl)
     }
@@ -137,7 +150,7 @@ class Deck extends Component {
         speed={{ x: 5 }}
       >
         <div className="is-overlay">
-          <div className="inner is-relative">
+          <div className="inner is-relative transition-appear">
             {previousRecommendation && <CardContainer position="previous" />}
             <CardContainer position="current" />
             {nextRecommendation && <CardContainer position="next" />}
@@ -145,6 +158,11 @@ class Deck extends Component {
         </div>
       </Draggable>
     )
+  }
+
+  buildCloseToUrl = () => {
+    const { location, match } = this.props
+    return getUrlWithoutDetailsPart(location, match) + '/transition'
   }
 
   render() {
@@ -159,18 +177,17 @@ class Deck extends Component {
     } = this.props
     const areDetailsVisible = getAreDetailsVisible(match)
     const showNavigation = !areDetailsVisible || isFlipDisabled
+
     return (
       <div
         className="is-clipped is-relative"
         data-nb-recos={recommendations.length}
         id="deck"
       >
-        {areDetailsVisible && (
-          <CloseLink
-            actionOnClick={this.onHandleCloseCardDetails}
-            closeTitle="Fermer"
-          />
-        )}
+        {areDetailsVisible && <CloseLink
+          closeTitle="Fermer"
+          closeTo={this.buildCloseToUrl()}
+                              />}
         {this.renderDraggableCards()}
         {showNavigation && currentRecommendation && (
           <NavigationContainer
@@ -201,6 +218,7 @@ Deck.propTypes = {
   height: PropTypes.number.isRequired,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
+    replace: PropTypes.func.isRequired,
   }).isRequired,
   horizontalSlideRatio: PropTypes.number,
   isFlipDisabled: PropTypes.bool.isRequired,

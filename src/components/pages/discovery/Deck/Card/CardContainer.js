@@ -6,7 +6,7 @@ import { compose } from 'redux'
 import { mergeData, requestData } from 'redux-saga-data'
 
 import Card from './Card'
-import { getRecommendationSelectorByCardPosition } from '../../helpers'
+import { getRecommendationSelectorByCardPosition } from '../../utils/utils'
 import { recommendationNormalizer } from '../../../../../utils/normalizers'
 
 export const mapStateToProps = (state, ownProps) => {

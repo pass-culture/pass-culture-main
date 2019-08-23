@@ -6,7 +6,7 @@ import Header from './Header/Header'
 import getMenuItems from './utils/getMenuItems'
 import MenuItemContainer from './MenuItem/MenuItemContainer'
 import SignoutButtonContainer from './SignoutButton/SignoutButtonContainer'
-import CloseLink from '../Header/CloseLink'
+import CloseLink from '../Header/CloseLink/CloseLink'
 
 class Menu extends PureComponent {
   componentDidMount() {

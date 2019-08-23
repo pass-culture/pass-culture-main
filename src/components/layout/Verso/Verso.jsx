@@ -8,44 +8,60 @@ import VersoControlsContainer from './VersoControls/VersoControlsContainer'
 import VersoHeaderContainer from './verso-content/VersoHeaderContainer'
 import AbsoluteFooterContainer from '../AbsoluteFooter/AbsoluteFooterContainer'
 
-const Verso = ({
-  areDetailsVisible,
-  backgroundColor,
-  contentInlineStyle,
-  extraClassName,
-  isTuto,
-  offerName,
-  offerVenueNameOrPublicName
-}) => (
-  <div
-    className={classnames('verso is-overlay', extraClassName, {
-      flipped: areDetailsVisible,
-    })}
-  >
-    <div className="verso-wrapper is-black-text scroll-y flex-rows is-relative text-left">
-      <VersoHeaderContainer
-        backgroundColor={backgroundColor}
-        subtitle={offerVenueNameOrPublicName}
-        title={offerName}
-      />
-      {!isTuto && <VersoControlsContainer />}
+class Verso extends React.PureComponent {
+  constructor(props) {
+    super(props)
+    this.versoWrapper = React.createRef()
+  }
+
+  componentDidUpdate() {
+    this.versoWrapper.current.scrollTo(0, 0)
+  }
+
+  render() {
+    const {
+      areDetailsVisible,
+      backgroundColor,
+      contentInlineStyle,
+      extraClassName,
+      isTuto,
+      offerName,
+      offerVenueNameOrPublicName,
+    } = this.props
+
+    return (
       <div
-        className="verso-content"
-        style={contentInlineStyle}
+        className={classnames('verso', extraClassName, {
+          flipped: areDetailsVisible,
+        })}
       >
-        {isTuto
-          ? <VersoContentTutoContainer />
-          : <VersoContentOfferContainer />}
+        <div
+          className="verso-wrapper"
+          ref={this.versoWrapper}
+        >
+          <VersoHeaderContainer
+            backgroundColor={backgroundColor}
+            subtitle={offerVenueNameOrPublicName}
+            title={offerName}
+          />
+          {!isTuto && <VersoControlsContainer />}
+          <div
+            className="verso-content"
+            style={contentInlineStyle}
+          >
+            {isTuto ? <VersoContentTutoContainer /> : <VersoContentOfferContainer />}
+          </div>
+        </div>
+        <AbsoluteFooterContainer
+          areDetailsVisible={areDetailsVisible}
+          borderTop
+          colored={!isTuto}
+          id="verso-footer"
+        />
       </div>
-    </div>
-    <AbsoluteFooterContainer
-      areDetailsVisible={areDetailsVisible}
-      borderTop
-      colored={!isTuto}
-      id="verso-footer"
-    />
-  </div>
-)
+    )
+  }
+}
 
 Verso.defaultProps = {
   backgroundColor: null,
@@ -53,7 +69,7 @@ Verso.defaultProps = {
   extraClassName: null,
   isTuto: null,
   offerName: null,
-  offerVenueNameOrPublicName: null
+  offerVenueNameOrPublicName: null,
 }
 
 Verso.propTypes = {

@@ -15,7 +15,8 @@ describe('src | components | pages | discovery | Deck | Deck', () => {
     handleRequestPutRecommendations: handleRequestPutRecommendationsMock,
     height: 947,
     history: {
-      push: jest.fn()
+      push: jest.fn(),
+      replace: jest.fn(),
     },
     isFlipDisabled: false,
     location: {
@@ -23,7 +24,7 @@ describe('src | components | pages | discovery | Deck | Deck', () => {
       search: '',
     },
     match: {
-      params: {}
+      params: {},
     },
     nextLimit: 50,
     previousLimit: 40,
@@ -68,7 +69,7 @@ describe('src | components | pages | discovery | Deck | Deck', () => {
             handleRequestPutRecommendations: handleRequestPutRecommendationsMock,
             height: 947,
             history: {
-              push: jest.fn()
+              push: jest.fn(),
             },
             isFlipDisabled: false,
             location: {
@@ -105,7 +106,7 @@ describe('src | components | pages | discovery | Deck | Deck', () => {
             handleRequestPutRecommendations: handleRequestPutRecommendationsMock,
             height: 947,
             history: {
-              push: jest.fn()
+              push: jest.fn(),
             },
             isFlipDisabled: false,
             location: {

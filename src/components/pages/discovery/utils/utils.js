@@ -1,6 +1,6 @@
-import selectCurrentRecommendation from './selectors/selectCurrentRecommendation'
-import selectNextRecommendation from './selectors/selectNextRecommendation'
-import selectPreviousRecommendation from './selectors/selectPreviousRecommendation'
+import selectCurrentRecommendation from '../selectors/selectCurrentRecommendation'
+import selectNextRecommendation from '../selectors/selectNextRecommendation'
+import selectPreviousRecommendation from '../selectors/selectPreviousRecommendation'
 
 export const MINIMUM_DELAY_BEFORE_RELOAD_RECOMMENDATION_3_HOURS = 3 * 60 * 60 * 1000
 

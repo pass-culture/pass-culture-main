@@ -2,7 +2,7 @@ import { shallow } from 'enzyme'
 import React from 'react'
 
 import BackLink from '../BackLink'
-import CloseLink from '../CloseLink'
+import CloseLink from '../CloseLink/CloseLink'
 import Header from '../Header'
 import SubmitButton from '../SubmitButton'
 
@@ -13,14 +13,14 @@ describe('src | components | layout | Header | Header', () => {
     props = {
       history: {
         push: () => {},
-        replace: () => {}
+        replace: () => {},
       },
       location: {
         pathname: '',
-        search: ''
+        search: '',
       },
       match: {
-        params: {}
+        params: {},
       },
       title: 'Fake header title',
     }
