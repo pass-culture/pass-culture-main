@@ -2,7 +2,7 @@ const FAVORITES_TOGGLE_EDIT_MODE = 'FAVORITES_TOGGLE_EDIT_MODE'
 const FAVORITES_TOGGLE_UPDATE = 'FAVORITES_TOGGLE_UPDATE'
 const initialState = {
   edit: false,
-  data: [],
+  offerIds: [],
 }
 
 const favorites = (state = initialState, action) => {
@@ -14,12 +14,12 @@ const favorites = (state = initialState, action) => {
         ...state,
         ...{
           edit: !state.edit,
-          data: [],
+          offerIds: [],
         },
       }
 
     case FAVORITES_TOGGLE_UPDATE:
-      state.data = state.data.reduce((favoritesToDelete, currentFavorite) => {
+      state.offerIds = state.offerIds.reduce((favoritesToDelete, currentFavorite) => {
         if (currentFavorite === action.offerId) {
           isUpdated = false
         } else {
@@ -30,14 +30,14 @@ const favorites = (state = initialState, action) => {
       }, [])
 
       if (isUpdated) {
-        state.data.push(action.offerId)
+        state.offerIds.push(action.offerId)
       }
 
       return {
         ...state,
         ...{
           edit: state.edit,
-          data: state.data,
+          offerIds: state.offerIds,
         },
       }
 

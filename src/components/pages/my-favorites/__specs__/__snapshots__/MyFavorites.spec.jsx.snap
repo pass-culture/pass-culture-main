@@ -5,8 +5,25 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <MyFavorites
     areFavoritesSelected={true}
+    deleteFavorites={[MockFunction]}
     handleEditMode={[MockFunction]}
     isEditMode={false}
+    loadMyFavorites={
+      [MockFunction] {
+        "calls": Array [
+          Array [
+            [Function],
+            [Function],
+          ],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+        ],
+      }
+    }
     myFavorites={
       Array [
         Object {
@@ -36,22 +53,6 @@ ShallowWrapper {
           "offerId": "ME",
         },
       ]
-    }
-    requestGetMyFavorites={
-      [MockFunction] {
-        "calls": Array [
-          Array [
-            [Function],
-            [Function],
-          ],
-        ],
-        "results": Array [
-          Object {
-            "type": "return",
-            "value": undefined,
-          },
-        ],
-      }
     }
     resetPageData={[MockFunction]}
   />,

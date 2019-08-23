@@ -165,51 +165,11 @@ describe('src | components | layout | Verso | VersoControls | Favorite | Favorit
         })
       })
 
-      describe('when have offerId and mediationId', () => {
+      describe('when have offerId', () => {
         it('should delete favorite', () => {
           // given
           const dispatch = jest.fn()
           const mediationId = 'FA'
-          const offerId = 'ME'
-          const ownProps = {
-            history: {},
-            location: {
-              pathname: '',
-            },
-          }
-          const isFavorite = true
-          const showFailModal = jest.fn()
-
-          // when
-          mapDispatchToProps(dispatch, ownProps).handleFavorite(
-            offerId,
-            mediationId,
-            isFavorite,
-            showFailModal
-          )()
-
-          // then
-          expect(dispatch).toHaveBeenCalledWith({
-            config: {
-              apiPath: `/favorites/${offerId}/${mediationId}`,
-              body: {
-                mediationId,
-                offerId,
-              },
-              handleFail: showFailModal,
-              method: 'DELETE',
-              normalizer: favoriteNormalizer,
-            },
-            type: `REQUEST_DATA_DELETE_/FAVORITES/${offerId.toUpperCase()}/${mediationId.toUpperCase()}`,
-          })
-        })
-      })
-
-      describe('when have offerId only', () => {
-        it('should delete favorite', () => {
-          // given
-          const dispatch = jest.fn()
-          const mediationId = null
           const offerId = 'ME'
           const ownProps = {
             history: {},

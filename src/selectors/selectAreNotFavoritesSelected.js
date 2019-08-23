@@ -1,3 +1,3 @@
-const selectAreNotFavoritesSelected = state => state.favorites.data.length === 0
+const selectAreNotFavoritesSelected = state => state.favorites.offerIds.length === 0
 
 export default selectAreNotFavoritesSelected

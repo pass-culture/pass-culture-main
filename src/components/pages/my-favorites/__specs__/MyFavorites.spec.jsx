@@ -13,8 +13,10 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
 
   beforeEach(() => {
     props = {
+      deleteFavorites: jest.fn(),
       handleEditMode: jest.fn(),
       isEditMode: false,
+      loadMyFavorites: jest.fn(),
       myFavorites: [
         {
           id: 1,
@@ -43,7 +45,6 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
           },
         },
       ],
-      requestGetMyFavorites: jest.fn(),
       resetPageData: jest.fn(),
     }
   })
@@ -154,9 +155,7 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
 
         // when
         const wrapper = shallow(<MyFavorites {...props} />)
-        wrapper.setState({
-          isLoading: false,
-        })
+        wrapper.setState({ isLoading: false })
 
         // then
         const noItems = wrapper.find(NoItems)
@@ -166,30 +165,29 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
       })
     })
 
-    describe('when click on "Modifier', () => {
-      it('should call handleEditMode', () => {
+    describe('when click on "Modifier" button', () => {
+      it('should pass to edit mode', () => {
         // given
         const wrapper = shallow(<MyFavorites {...props} />)
-        wrapper.setState({
-          isLoading: false,
-        })
+        wrapper.setState({ isLoading: false })
 
         // when
-        wrapper.find('.mf-done-btn').simulate('click')
+        wrapper
+          .find('.mf-done-btn')
+          .simulate('click')
+          .render()
 
         // then
         expect(props.handleEditMode).toHaveBeenCalledTimes(1)
       })
     })
 
-    describe('when click on done button', () => {
-      it('should call handleEditMode', () => {
+    describe('when click on "Terminer" button', () => {
+      it('should pass to list mode', () => {
         // given
         props.isEditMode = true
         const wrapper = shallow(<MyFavorites {...props} />)
-        wrapper.setState({
-          isLoading: false,
-        })
+        wrapper.setState({ isLoading: false })
 
         // when
         wrapper.find('.mf-edit-btn').simulate('click')

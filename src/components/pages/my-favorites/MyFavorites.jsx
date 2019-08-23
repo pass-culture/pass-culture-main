@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
+import { toast } from 'react-toastify'
 
 import MyFavoriteDetailsContainer from './MyFavoriteDetails/MyFavoriteDetailsContainer'
 import MyFavoriteContainer from './MyFavorite/MyFavoriteContainer'
@@ -7,6 +8,10 @@ import HeaderContainer from '../../layout/Header/HeaderContainer'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import NoItems from '../../layout/NoItems/NoItems'
 import RelativeFooterContainer from '../../layout/RelativeFooter/RelativeFooterContainer'
+
+const showFailModal = () => {
+  toast('La suppression d’un favoris s’est mal passé, veuillez ré-essayer plus tard.')
+}
 
 class MyFavorites extends Component {
   constructor(props) {
@@ -19,8 +24,8 @@ class MyFavorites extends Component {
   }
 
   componentDidMount = () => {
-    const { requestGetMyFavorites } = this.props
-    requestGetMyFavorites(this.handleFail, this.handleSuccess)
+    const { loadMyFavorites } = this.props
+    loadMyFavorites(this.handleFail, this.handleSuccess)
   }
 
   componentWillUnmount() {
@@ -41,60 +46,71 @@ class MyFavorites extends Component {
     })
   }
 
-  renderFavoritesList = (areFavoritesSelected, handleEditMode, isEditMode, myFavorites) => {
-    const isEmpty = myFavorites.length === 0
-
-    return (
-      <main className={isEmpty ? 'teaser-main teaser-no-teasers' : 'teaser-main'}>
-        {isEmpty ? (
-          <NoItems sentence="Dès que vous aurez ajouté une offre en favori," />
-        ) : (
-          <section>
-            {isEditMode ? (
-              <div className="mf-edit">
-                <button
-                  className="mf-delete-btn"
-                  disabled={areFavoritesSelected}
-                  type="button"
-                >
-                  {'Supprimer la sélection'}
-                </button>
-                <button
-                  className="mf-edit-btn"
-                  onClick={handleEditMode}
-                  type="button"
-                >
-                  {'Terminer'}
-                </button>
-              </div>
-            ) : (
-              <div className="mf-done">
-                <button
-                  className="mf-done-btn"
-                  onClick={handleEditMode}
-                  type="button"
-                >
-                  {'Modifier'}
-                </button>
-              </div>
-            )}
-            <ul>
-              {myFavorites.map(myFavorite => (
-                <MyFavoriteContainer
-                  favorite={myFavorite}
-                  key={myFavorite.id}
-                />
-              ))}
-            </ul>
-          </section>
-        )}
-      </main>
-    )
-  }
+  renderMyFavorites = (
+    areFavoritesSelected,
+    deleteFavorites,
+    handleEditMode,
+    isEditMode,
+    isEmpty,
+    myFavorites
+  ) => (
+    <main className={isEmpty ? 'teaser-main teaser-no-teasers' : 'teaser-main'}>
+      {isEmpty ? (
+        <NoItems sentence="Dès que vous aurez ajouté une offre en favori," />
+      ) : (
+        <section>
+          {isEditMode ? (
+            <div className="mf-edit">
+              <button
+                className="mf-delete-btn"
+                disabled={areFavoritesSelected}
+                onClick={deleteFavorites(showFailModal)}
+                type="button"
+              >
+                {'Supprimer la sélection'}
+              </button>
+              <button
+                className="mf-edit-btn"
+                onClick={handleEditMode}
+                type="button"
+              >
+                {'Terminer'}
+              </button>
+            </div>
+          ) : (
+            <div className="mf-done">
+              <button
+                className="mf-done-btn"
+                onClick={handleEditMode}
+                type="button"
+              >
+                {'Modifier'}
+              </button>
+            </div>
+          )}
+          <ul>
+            {myFavorites.map(myFavorite => (
+              <MyFavoriteContainer
+                favorite={myFavorite}
+                key={myFavorite.id}
+              />
+            ))}
+          </ul>
+        </section>
+      )}
+    </main>
+  )
 
   render() {
-    const { areFavoritesSelected, handleEditMode, isEditMode, myFavorites } = this.props
+    const {
+      areFavoritesSelected,
+      deleteFavorites,
+      handleEditMode,
+      isEditMode,
+      myFavorites,
+    } = this.props
     const { hasError, isLoading } = this.state
+    const isEmpty = myFavorites.length === 0
 
     if (isLoading) {
       return (<LoaderContainer
@@ -109,7 +125,14 @@ class MyFavorites extends Component {
           shouldBackFromDetails
           title="Mes favoris"
         />
-        {this.renderFavoritesList(areFavoritesSelected, handleEditMode, isEditMode, myFavorites)}
+        {this.renderMyFavorites(
+          areFavoritesSelected,
+          deleteFavorites,
+          handleEditMode,
+          isEditMode,
+          isEmpty,
+          myFavorites
+        )}
         <MyFavoriteDetailsContainer bookingPath="/favoris/:details(details|transition)/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:booking(reservation)?/:bookingId?/:cancellation(annulation)?/:confirmation(confirmation)?" />
         <RelativeFooterContainer
           className="dotted-top-red"
@@ -128,10 +151,11 @@ MyFavorites.defaultProps = {
 
 MyFavorites.propTypes = {
   areFavoritesSelected: PropTypes.bool,
+  deleteFavorites: PropTypes.func.isRequired,
   handleEditMode: PropTypes.func.isRequired,
   isEditMode: PropTypes.bool,
+  loadMyFavorites: PropTypes.func.isRequired,
   myFavorites: PropTypes.arrayOf(PropTypes.shape()),
-  requestGetMyFavorites: PropTypes.func.isRequired,
   resetPageData: PropTypes.func.isRequired,
 }
 

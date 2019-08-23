@@ -1,4 +1,4 @@
-import selectFavoriteByOfferId from '../selectFavoritesByOfferId'
+import selectFavoriteByOfferId from '../selectFavoriteByOfferId'
 
 describe('src | selectors | selectFavoriteByOfferId', () => {
   let offer

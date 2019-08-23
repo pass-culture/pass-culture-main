@@ -5,7 +5,7 @@ describe('src | reducers | favorites', () => {
     // given
     const state = {
       edit: false,
-      data: [],
+      offerIds: [],
     }
     const action = {}
 
@@ -15,7 +15,7 @@ describe('src | reducers | favorites', () => {
     // then
     expect(updatedFavorites).toStrictEqual({
       edit: false,
-      data: [],
+      offerIds: [],
     })
   })
 
@@ -25,7 +25,7 @@ describe('src | reducers | favorites', () => {
         // given
         const state = {
           edit: false,
-          data: [],
+          offerIds: [],
         }
         const action = {
           type: 'FAVORITES_TOGGLE_EDIT_MODE',
@@ -37,7 +37,7 @@ describe('src | reducers | favorites', () => {
         // then
         expect(updatedFavorites).toStrictEqual({
           edit: true,
-          data: [],
+          offerIds: [],
         })
       })
     })
@@ -47,7 +47,7 @@ describe('src | reducers | favorites', () => {
         // given
         const state = {
           edit: true,
-          data: [],
+          offerIds: [],
         }
         const action = {
           type: 'FAVORITES_TOGGLE_EDIT_MODE',
@@ -59,7 +59,7 @@ describe('src | reducers | favorites', () => {
         // then
         expect(updatedFavorites).toStrictEqual({
           edit: false,
-          data: [],
+          offerIds: [],
         })
       })
     })
@@ -81,7 +81,7 @@ describe('src | reducers | favorites', () => {
         // given
         const state = {
           edit: true,
-          data: [],
+          offerIds: [],
         }
         const action = {
           offerId: 'MEFA',
@@ -94,7 +94,7 @@ describe('src | reducers | favorites', () => {
         // then
         expect(updatedFavorites).toStrictEqual({
           edit: true,
-          data: ['MEFA'],
+          offerIds: ['MEFA'],
         })
       })
     })
@@ -104,7 +104,7 @@ describe('src | reducers | favorites', () => {
         // given
         const state = {
           edit: true,
-          data: ['o1', 'MEFA'],
+          offerIds: ['o1', 'MEFA'],
         }
         const action = {
           offerId: 'MEFA',
@@ -117,7 +117,7 @@ describe('src | reducers | favorites', () => {
         // then
         expect(updatedFavorites).toStrictEqual({
           edit: true,
-          data: ['o1'],
+          offerIds: ['o1'],
         })
       })
     })

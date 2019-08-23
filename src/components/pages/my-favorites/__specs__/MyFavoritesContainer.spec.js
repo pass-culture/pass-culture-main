@@ -9,7 +9,7 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
       const state = {
         favorites: {
           edit: false,
-          data: [],
+          offerIds: [],
         },
         data: {
           favorites: [],
@@ -24,11 +24,12 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
         areFavoritesSelected: true,
         isEditMode: false,
         myFavorites: [],
+        offerIds: [],
       })
     })
   })
 
-  describe('requestGetMyFavorites()', () => {
+  describe('loadMyFavorites()', () => {
     it('should dispatch my favorites', () => {
       // given
       const dispatch = jest.fn()
@@ -36,7 +37,7 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
       const handleSuccess = jest.fn()
 
       // when
-      mapDispatchToProps(dispatch).requestGetMyFavorites(handleFail, handleSuccess)
+      mapDispatchToProps(dispatch).loadMyFavorites(handleFail, handleSuccess)
 
       // then
       expect(dispatch).toHaveBeenCalledWith({

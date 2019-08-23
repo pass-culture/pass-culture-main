@@ -1,13 +1,11 @@
 import createCachedSelector from 're-reselect'
 
-function mapArgsToCacheKey(state, offerId) {
-  return offerId || ''
-}
+const mapArgsToCacheKey = (state, offerId) => offerId || ''
 
-export const selectFavoritesByOfferId = createCachedSelector(
+export const selectFavoriteByOfferId = createCachedSelector(
   state => state.data.favorites,
   (state, offerId) => offerId,
   (favorites, offerId) => favorites.find(favorite => favorite.offerId === offerId)
 )(mapArgsToCacheKey)
 
-export default selectFavoritesByOfferId
+export default selectFavoriteByOfferId
