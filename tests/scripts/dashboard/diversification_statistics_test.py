@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from pprint import pprint
 
 import pandas
 
@@ -945,7 +944,6 @@ class QueryGetOfferCountsPerTypeAndMediumForDepartementTest:
         offer_counts = query_get_offer_counts_grouped_by_type_and_medium_for_departement('33').fetchall()
 
         # Then
-        print(physical_venue.departementCode)
         assert len(offer_counts) == 3
         assert ('EventType.CINEMA', False, 2) in offer_counts
         assert ('ThingType.MUSIQUE', False, 1) in offer_counts
@@ -1016,7 +1014,6 @@ class GetOffersByTypeAndDigitalTableTest:
         type_and_digital_dataframe = _get_offers_grouped_by_type_and_medium()
 
         # Then
-        pprint(expected_dataframe)
         assert type_and_digital_dataframe.equals(expected_dataframe)
 
 

@@ -8,27 +8,27 @@ from models.db import db
 from models.payment_status import TransactionStatus
 
 
-def get_total_deposits(departement_code: str = None) -> int:
+def get_total_deposits(departement_code: str = None) -> float:
     query = db.session.query(func.coalesce(func.sum(Deposit.amount), 0))
 
     if departement_code:
         query = query.join(User).filter(User.departementCode == departement_code)
 
-    return int(query.scalar())
+    return float(query.scalar())
 
 
-def get_total_amount_spent(departement_code: str = None) -> int:
+def get_total_amount_spent(departement_code: str = None) -> float:
     query = db.session.query(func.coalesce(func.sum(Booking.amount * Booking.quantity), 0))
 
     if departement_code:
         query = query.join(User).filter(User.departementCode == departement_code)
 
-    return int(query \
+    return float(query \
         .filter(Booking.isCancelled == False) \
         .scalar())
 
 
-def get_total_amount_to_pay(departement_code: str = None) -> int:
+def get_total_amount_to_pay(departement_code: str = None) -> float:
     query = db.session.query(func.coalesce(func.sum(Payment.amount), 0)) \
         .filter(Payment.currentStatus != TransactionStatus.BANNED)
 
@@ -39,7 +39,7 @@ def get_total_amount_to_pay(departement_code: str = None) -> int:
             .join(Venue) \
             .filter(Venue.departementCode == departement_code)
 
-    return int(query \
+    return float(query \
         .scalar())
 
 

@@ -57,7 +57,7 @@ def get_authorized_emails_and_dept_codes():
                     values))
 
 def get_dashboard_spreadsheet() -> Spreadsheet:
-    sheet_name = 'Tableau de bord automatique'
+    sheet_name = os.environ.get('DASHBOARD_GSHEET_NAME')
     gc = pygsheets.authorize(
         service_account_env_var='PC_GOOGLE_KEY')
     return gc.open(sheet_name)
