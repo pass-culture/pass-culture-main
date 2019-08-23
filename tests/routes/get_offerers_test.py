@@ -160,7 +160,7 @@ class Get:
                 'address', 'bic', 'city', 'dateCreated', 'dateModifiedAtLastProvider',
                 'firstThumbDominantColor', 'iban', 'id', 'idAtProviders', 'isActive',
                 'isValidated', 'lastProviderId', 'managedVenues', 'modelName', 'nOffers',
-                'name', 'postalCode', 'siren', 'thumbCount'
+                'name', 'postalCode', 'siren', 'thumbCount', 'userHasAccess'
             }
 
         @clean_database
@@ -205,7 +205,7 @@ class Get:
             # then
             assert response.status_code == 200
             assert len(response.json) == 1
-            assert response.json[0] == {'modelName': 'Offerer', 'name': 'offreur A', 'siren': '123456782'}
+            assert {'modelName': 'Offerer', 'name': 'offreur A', 'siren': '123456782'}.items() <= response.json[0].items()
 
         @clean_database
         def when_param_validated_is_true_and_returns_only_validated_offerers_if(self, app):
@@ -258,7 +258,7 @@ class Get:
                 'address', 'bic', 'city', 'dateCreated', 'dateModifiedAtLastProvider',
                 'firstThumbDominantColor', 'iban', 'id', 'idAtProviders', 'isActive',
                 'isValidated', 'lastProviderId', 'managedVenues', 'modelName', 'nOffers',
-                'name', 'postalCode', 'siren', 'thumbCount'
+                'name', 'postalCode', 'siren', 'thumbCount', 'userHasAccess'
             ]
 
         @clean_database

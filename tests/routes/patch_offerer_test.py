@@ -14,6 +14,7 @@ from tests.test_utils import create_offer_with_event_product, \
 from utils.human_ids import humanize
 
 
+
 class Patch:
     class Returns403:
         @clean_database

@@ -22,6 +22,12 @@ from utils.rest import ensure_current_user_has_rights, \
 from validation.offerers import check_valid_edition, parse_boolean_param_validated
 
 
+def get_dict_offerer(offerer):
+    offerer.append_user_has_access_attribute(current_user)
+
+    return as_dict(offerer, includes=OFFERER_INCLUDES)
+
+
 @app.route('/offerers', methods=['GET'])
 @login_required
 def list_offerers():
@@ -47,8 +53,7 @@ def list_offerers():
     offerers = query.all()
 
     for offerer in offerers:
-        user_has_access_as_editor = [user_offer.isValidated for user_offer in offerer.UserOfferers if user_offer.userId == current_user.id][0]
-        offerer.userHasAccess = user_has_access_as_editor
+        offerer.append_user_has_access_attribute(current_user)
 
 
     return handle_rest_get_list(Offerer,
@@ -64,7 +69,8 @@ def list_offerers():
 def get_offerer(id):
     ensure_current_user_has_rights(RightsType.editor, dehumanize(id))
     offerer = load_or_404(Offerer, id)
-    return jsonify(as_dict(offerer, includes=OFFERER_INCLUDES)), 200
+
+    return jsonify(get_dict_offerer(offerer)), 200
 
 
 @app.route('/offerers', methods=['POST'])
@@ -91,7 +97,7 @@ def create_offerer():
         maybe_send_offerer_validation_email(offerer, user_offerer, send_raw_email)
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
-    return jsonify(as_dict(offerer, includes=OFFERER_INCLUDES)), 201
+    return jsonify(get_dict_offerer(offerer)), 201
 
 
 @app.route('/offerers/<offererId>', methods=['PATCH'])
@@ -106,7 +112,7 @@ def patch_offerer(offererId):
     recommendations = find_all_recommendations_for_offerer(offerer)
     invalidate_recommendations_if_deactivating_object(data, recommendations)
     PcObject.save(offerer)
-    return jsonify(as_dict(offerer, includes=OFFERER_INCLUDES)), 200
+    return jsonify(get_dict_offerer(offerer)), 200
 
 
 def _generate_orderby_criterium(order, order_by_key):

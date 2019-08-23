@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from models import PcObject, ApiErrors
 from tests.conftest import clean_database
 from tests.test_utils import create_offerer, create_venue, create_offer_with_thing_product, \
@@ -108,11 +110,11 @@ class IsValidatedTest:
         assert isValidated is True
 
     @clean_database
-    def test_is_validated_property_when_still_has_validation_token(self, app):
+    def test_is_validated_property_when_still_offerer_has_validation_token(self, app):
         # Given
-        offerer = create_offerer(siren='123456789')
+        offerer = create_offerer(siren='123456789', validation_token='AAZRER')
         user = create_user(postal_code=None)
-        user_offerer = create_user_offerer(user, offerer, validation_token='AZR123')
+        user_offerer = create_user_offerer(user, offerer)
         PcObject.save(user_offerer)
 
         # When
@@ -120,3 +122,70 @@ class IsValidatedTest:
 
         # Then
         assert isValidated is False
+
+
+class AppendUserHasAccessAttributeTest:
+    def test_adds_a_new_propery(self):
+        # Given
+        current_user = create_user()
+        offerer = create_offerer()
+
+        # When
+        offerer.append_user_has_access_attribute(current_user)
+
+        # Then
+        assert hasattr(offerer, 'userHasAccess')
+
+    def test_should_return_false_when_current_user_has_no_rights_on_offerer(self, app):
+        # Given
+        current_user = create_user()
+        offerer = create_offerer()
+
+        # When
+        offerer.append_user_has_access_attribute(current_user)
+
+        # Then
+        assert offerer.userHasAccess is False
+
+    @clean_database
+    def test_should_return_true_when_current_user_access_to_offerer_is_validated(self, app):
+        # Given
+        current_user = create_user(postal_code=None)
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(current_user, offerer, validation_token=None)
+        PcObject.save(user_offerer)
+
+        # When
+        offerer.append_user_has_access_attribute(current_user)
+
+        # Then
+        assert offerer.userHasAccess is True
+
+    @clean_database
+    def test_should_return_false_when_current_user_access_to_offerer_is_not_validated(self, app):
+        # Given
+        current_user = create_user(postal_code=None)
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(current_user, offerer, validation_token='TOKEN')
+        PcObject.save(user_offerer)
+
+        # When
+        offerer.append_user_has_access_attribute(current_user)
+
+        # Then
+        assert offerer.userHasAccess is False
+
+    @clean_database
+    def test_should_return_false_when_current_user_has_no_access(self, app):
+        # Given
+        current_user = create_user(postal_code=None, email='current@example.net')
+        user = create_user(postal_code=None)
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer, validation_token=None)
+        PcObject.save(user_offerer)
+
+        # When
+        offerer.append_user_has_access_attribute(current_user)
+
+        # Then
+        assert offerer.userHasAccess is False

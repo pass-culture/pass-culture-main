@@ -3,7 +3,6 @@ from unittest.mock import patch
 from models import PcObject, Offerer, RightsType, UserOfferer
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_user, create_user_offerer, create_offerer
-import json
 
 
 class Post:

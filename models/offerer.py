@@ -1,5 +1,6 @@
 """ offerer """
 from datetime import datetime
+from pprint import pprint
 
 from sqlalchemy import BigInteger, \
     Column, \
@@ -73,6 +74,18 @@ class Offerer(PcObject,
         for venue in self.managedVenues:
             n_offers += venue.nOffers
         return n_offers
+
+    def append_user_has_access_attribute(self, current_user):
+
+        authorizations = [user_offer.isValidated for user_offer in self.UserOfferers if
+                          user_offer.userId == current_user.id]
+
+        if len(authorizations):
+            user_has_access_as_editor = authorizations[0]
+        else:
+            user_has_access_as_editor = False
+
+        self.userHasAccess = user_has_access_as_editor
 
 
 ts_indexes = [('idx_offerer_fts_name', Offerer.name),

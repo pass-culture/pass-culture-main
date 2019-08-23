@@ -42,3 +42,4 @@ class Get:
             response_json = response.json
             assert 'bic' in response_json['managedVenues'][0]
             assert 'iban' in response_json['managedVenues'][0]
+            assert response_json['userHasAccess'] is True
