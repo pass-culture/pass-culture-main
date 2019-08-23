@@ -17,6 +17,7 @@ from utils.rest import delete, expect_json_data, \
     ensure_current_user_has_rights, \
     load_or_404, \
     login_or_api_key_required
+from validation.venue_providers import validate_new_venue_provider_information
 
 
 @app.route('/venueProviders', methods=['GET'])
@@ -28,8 +29,8 @@ def list_venue_providers():
         e.add_error('venueId', 'Vous devez obligatoirement fournir le paramètre venueId')
         return jsonify(e.errors), 400
 
-    vp_query = VenueProvider.query\
-                            .filter_by(venueId=dehumanize(venueId))
+    vp_query = VenueProvider.query \
+        .filter_by(venueId=dehumanize(venueId))
     return jsonify([
         as_dict(venue_provider, includes=VENUE_PROVIDER_INCLUDES)
         for venue_provider in vp_query.all()
@@ -47,25 +48,10 @@ def get_venue_provider(id):
 @login_or_api_key_required
 @expect_json_data
 def create_venue_provider():
-    new_venue_provider = VenueProvider(from_dict=request.json)
+    venue_provider_payload = request.json
+    validate_new_venue_provider_information(venue_provider_payload)
 
-    provider = load_or_404(Provider, request.json['providerId'])
-    is_provider_available_for_pro_usage = provider.isActive and provider.enabledForPro
-    if not is_provider_available_for_pro_usage:
-        errors = ApiErrors()
-        errors.status_code = 401
-        errors.add_error('localClass', "Ce fournisseur n'est pas activé")
-        errors.maybe_raise()
-
-    is_existing_venue_provider = find_venue_provider(provider.id,
-                                                  dehumanize(request.json['venueId']),
-                                                  request.json['venueIdAtOfferProvider'])
-    if is_existing_venue_provider:
-        errors = ApiErrors()
-        errors.status_code = 401
-        errors.add_error('venueIdAtOfferProvider', "Il y a déjà un fournisseur pour votre identifiant")
-        errors.maybe_raise()
-
+    new_venue_provider = VenueProvider(from_dict=venue_provider_payload)
     PcObject.save(new_venue_provider)
 
     subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
