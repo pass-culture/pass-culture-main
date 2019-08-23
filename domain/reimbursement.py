@@ -126,7 +126,7 @@ class ReimbursementRateByVenueAbove100000(ReimbursementRule):
 
 class ReimbursementRateForBookAbove20000(ReimbursementRule):
     rate = Decimal(0.95)
-    description = 'Remboursement à 95% au dessus de 20 000 € pour les livres par lieu'
+    description = 'Remboursement à 95% au dessus de 20 000 € pour les livres'
     valid_from = None
     valid_until = None
 
@@ -285,7 +285,7 @@ def find_all_booking_reimbursements(bookings: List[Booking],
 
 
 def determine_elected_rule(booking, potential_rules):
-    if any(rule for rule in potential_rules if rule['rule'] == ReimbursementRules.BOOK_REIMBURSEMENT):
+    if any(map(lambda r: r['rule'] == ReimbursementRules.BOOK_REIMBURSEMENT, potential_rules)):
         elected_rule = build_rule_for_reimbursement(ReimbursementRules.BOOK_REIMBURSEMENT,
                                                     ReimbursementRules.BOOK_REIMBURSEMENT.value.apply(booking))
     else:
