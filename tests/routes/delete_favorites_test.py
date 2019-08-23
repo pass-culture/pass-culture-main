@@ -8,30 +8,7 @@ from utils.human_ids import humanize
 class Delete:
     class Returns204:
         @clean_database
-        def when_favorite_exists_with_offerId_and_mediationId(self, app):
-            # Given
-            user = create_user(email='test@email.com')
-            offerer = create_offerer()
-            venue = create_venue(offerer, postal_code='29100', siret='12345678912341')
-            offer = create_offer_with_thing_product(venue, thumb_count=0)
-            mediation = create_mediation(offer, is_active=True)
-            recommendation = create_recommendation(offer=offer, user=user, mediation=mediation, is_clicked=False)
-            favorite = create_favorite(mediation, offer, user)
-            PcObject.save(recommendation, user, favorite)
-
-            # When
-            response = TestClient(app.test_client()).with_auth(user.email).delete(
-                f'{API_URL}/favorites/{humanize(offer.id)}/{humanize(mediation.id)}')
-
-            # Then
-            assert response.status_code == 200
-            assert 'id' in response.json
-            deleted_favorite = Favorite.query.first()
-            assert deleted_favorite is None
-
-
-        @clean_database
-        def when_favorite_exists_with_offerId_only(self, app):
+        def when_favorite_exists_with_offerId(self, app):
             # Given
             user = create_user(email='test@email.com')
             offerer = create_offerer()

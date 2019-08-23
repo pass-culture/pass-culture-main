@@ -7,7 +7,7 @@ from domain.favorites import create_favorite
 from domain.favorites import find_first_matching_booking_from_favorite
 from models import Mediation, Offer, PcObject, Favorite
 from models.feature import FeatureToggle
-from repository.favorite_queries import find_favorite_for_offer_mediation_and_user, find_all_favorites_by_user_id
+from repository.favorite_queries import find_favorite_for_offer_and_user, find_all_favorites_by_user_id
 from routes.serialization import as_dict
 from utils.feature import feature_required
 from utils.human_ids import dehumanize
@@ -37,16 +37,13 @@ def add_to_favorite():
 
 
 @app.route('/favorites/<offer_id>', methods=['DELETE'])
-@app.route('/favorites/<offer_id>/<mediation_id>', methods=['DELETE'])
 @feature_required(FeatureToggle.FAVORITE_OFFER)
 @login_required
-def delete_favorite(offer_id, mediation_id=None):
+def delete_favorite(offer_id):
     dehumanized_offer_id = dehumanize(offer_id)
-    dehumanized_mediation_id = dehumanize(mediation_id)
 
-    favorite = find_favorite_for_offer_mediation_and_user(dehumanized_mediation_id,
-                                                          dehumanized_offer_id,
-                                                          current_user.id) \
+    favorite = find_favorite_for_offer_and_user(dehumanized_offer_id,
+                                                current_user.id) \
         .first_or_404()
 
     PcObject.delete(favorite)
@@ -80,7 +77,7 @@ def _serialize_favorite(favorite: Favorite) -> dict:
 
     booking = find_first_matching_booking_from_favorite(favorite, current_user)
     if booking:
-        dict_favorite['firstMatchingBooking'] = as_dict(booking, includes=WEBAPP_GET_BOOKING_INCLUDES)
+        dict_favorite['firstMatchingBooking'] = as_dict(
+            booking, includes=WEBAPP_GET_BOOKING_INCLUDES)
 
     return dict_favorite
-
