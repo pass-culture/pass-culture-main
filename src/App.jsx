@@ -6,7 +6,9 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 const App = ({ modalOpen, children }) => {
-  return <div className={classnames('app', { 'modal-open': modalOpen })}>{children}</div>
+  return (<div className={classnames('app', { 'modal-open': modalOpen })}>
+    {children}
+  </div>)
 }
 
 function mapStateToProps(state) {

@@ -52,7 +52,9 @@ class Notification extends Component {
         >
           <div className="notification-description">
             <Icon svg={svg} />
-            <span className="ml8 mb6">{text}</span>
+            <span className="ml8 mb6">
+              {text}
+            </span>
           </div>
           <div className="notification-action-links">
             {url && (

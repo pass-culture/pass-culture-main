@@ -123,7 +123,9 @@ class StocksManager extends Component {
         <tr>
           {isEvent && (
             <Fragment>
-              <td>{'Date'}</td>
+              <td>
+                {'Date'}
+              </td>
               <td>
                 {'Heure de'}
                 <br />
@@ -136,12 +138,24 @@ class StocksManager extends Component {
               </td>
             </Fragment>
           )}
-          <td>{'Prix'}</td>
-          <td>{'Date Limite de Réservation'}</td>
-          <td>{isEvent ? 'Places affectées' : 'Stock affecté'}</td>
-          <td>{isEvent ? 'Places restantes' : 'Stock restant'}</td>
-          <td>{'Modifier'}</td>
-          <td>{'Supprimer'}</td>
+          <td>
+            {'Prix'}
+          </td>
+          <td>
+            {'Date Limite de Réservation'}
+          </td>
+          <td>
+            {isEvent ? 'Places affectées' : 'Stock affecté'}
+          </td>
+          <td>
+            {isEvent ? 'Places restantes' : 'Stock restant'}
+          </td>
+          <td>
+            {'Modifier'}
+          </td>
+          <td>
+            {'Supprimer'}
+          </td>
         </tr>
       </thead>
     )
@@ -169,12 +183,12 @@ class StocksManager extends Component {
     const { isCreatedEntity, readOnly } = query.context({ key: 'stock' })
 
     return (
-      <div
-        className="stocks-manager"
-      >
+      <div className="stocks-manager">
         <div className={classnames('info', { 'is-invisible': !info })}>
           <div className="content">
-            <div>{info}</div>
+            <div>
+              {info}
+            </div>
           </div>
         </div>
 
@@ -204,7 +218,8 @@ class StocksManager extends Component {
                   <td colSpan="10">
                     <i>
                       {'Il n’est pas possible d’ajouter ni de supprimer d’horaires'}
-                      {'pour cet événement'} {provider.name}
+                      {'pour cet événement '}
+                      {provider.name}
                     </i>
                   </td>
                 </tr>

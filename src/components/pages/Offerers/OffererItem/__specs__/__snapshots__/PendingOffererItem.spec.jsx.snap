@@ -27,8 +27,7 @@ ShallowWrapper {
           <span
             className="name"
           />
-           
-          (SIREN: 
+           (SIREN: 
           
           )
         </p>
@@ -52,8 +51,7 @@ ShallowWrapper {
             <span
               className="name"
             />
-             
-            (SIREN: 
+             (SIREN: 
             
             )
           </p>,
@@ -77,8 +75,7 @@ ShallowWrapper {
               <span
                 className="name"
               />,
-              " ",
-              "(SIREN: ",
+              " (SIREN: ",
               "",
               ")",
             ],
@@ -97,8 +94,7 @@ ShallowWrapper {
               "rendered": null,
               "type": "span",
             },
-            " ",
-            "(SIREN: ",
+            " (SIREN: ",
             "",
             ")",
           ],
@@ -135,8 +131,7 @@ ShallowWrapper {
             <span
               className="name"
             />
-             
-            (SIREN: 
+             (SIREN: 
             
             )
           </p>
@@ -160,8 +155,7 @@ ShallowWrapper {
               <span
                 className="name"
               />
-               
-              (SIREN: 
+               (SIREN: 
               
               )
             </p>,
@@ -185,8 +179,7 @@ ShallowWrapper {
                 <span
                   className="name"
                 />,
-                " ",
-                "(SIREN: ",
+                " (SIREN: ",
                 "",
                 ")",
               ],
@@ -205,8 +198,7 @@ ShallowWrapper {
                 "rendered": null,
                 "type": "span",
               },
-              " ",
-              "(SIREN: ",
+              " (SIREN: ",
               "",
               ")",
             ],

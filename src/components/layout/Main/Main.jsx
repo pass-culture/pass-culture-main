@@ -136,7 +136,9 @@ class Main extends Component {
                       {` ${backTo.label}`}
                     </NavLink>
                   )}
-                  <div className="main-content">{$content}</div>
+                  <div className="main-content">
+                    {$content}
+                  </div>
                   {withLoading && loading && <Spinner />}
                 </div>
               </div>

@@ -14,7 +14,9 @@ const Block = ({ cancelText, confirmText, text, onConfirmation, onCancel }) => {
             title="picto-warning-orange"
           />
         </li>
-        <li>{text}</li>
+        <li>
+          {text}
+        </li>
       </ul>
       <div className="level">
         <button
@@ -41,7 +43,8 @@ Block.defaultProps = {
   confirmText: 'Oui',
   text: (
     <div className="m12">
-      {'Êtes-vous sûr de vouloir quitter cette page ?'} <br />
+      {'Êtes-vous sûr de vouloir quitter cette page ? '}
+      <br />
       {'Les modifications ne seront pas enregistrées.'}
     </div>
   ),

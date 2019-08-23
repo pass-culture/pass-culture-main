@@ -8,9 +8,13 @@ const HeroSection = ({ children, subtitle, title }) => {
         <div className="section-icon" />
       </div>
 
-      <h1>{title}</h1>
+      <h1>
+        {title}
+      </h1>
 
-      {subtitle && <h2 className="has-text-weight-bold is-paddingless">{subtitle}</h2>}
+      {subtitle && <h2 className="has-text-weight-bold is-paddingless">
+        {subtitle}
+                   </h2>}
 
       {children}
     </div>

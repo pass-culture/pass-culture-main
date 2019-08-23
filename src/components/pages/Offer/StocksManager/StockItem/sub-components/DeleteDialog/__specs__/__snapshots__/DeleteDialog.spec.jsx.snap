@@ -25,10 +25,8 @@ ShallowWrapper {
           className="is-size-7"
           colSpan="6"
         >
-          En confirmant l’annulation de
-           
+          En confirmant l’annulation de 
           ce stock
-           
           , 
           vous supprimerez aussi toutes les réservations associées. 
           Êtes-vous sûr de vouloir continuer ?
@@ -59,10 +57,8 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            "En confirmant l’annulation de",
-            " ",
+            "En confirmant l’annulation de ",
             "ce stock",
-            " ",
             ", ",
             "vous supprimerez aussi toutes les réservations associées. ",
             false,
@@ -73,10 +69,8 @@ ShallowWrapper {
         },
         "ref": null,
         "rendered": Array [
-          "En confirmant l’annulation de",
-          " ",
+          "En confirmant l’annulation de ",
           "ce stock",
-          " ",
           ", ",
           "vous supprimerez aussi toutes les réservations associées. ",
           false,
@@ -156,10 +150,8 @@ ShallowWrapper {
             className="is-size-7"
             colSpan="6"
           >
-            En confirmant l’annulation de
-             
+            En confirmant l’annulation de 
             ce stock
-             
             , 
             vous supprimerez aussi toutes les réservations associées. 
             Êtes-vous sûr de vouloir continuer ?
@@ -190,10 +182,8 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              "En confirmant l’annulation de",
-              " ",
+              "En confirmant l’annulation de ",
               "ce stock",
-              " ",
               ", ",
               "vous supprimerez aussi toutes les réservations associées. ",
               false,
@@ -204,10 +194,8 @@ ShallowWrapper {
           },
           "ref": null,
           "rendered": Array [
-            "En confirmant l’annulation de",
-            " ",
+            "En confirmant l’annulation de ",
             "ce stock",
-            " ",
             ", ",
             "vous supprimerez aussi toutes les réservations associées. ",
             false,
@@ -331,10 +319,8 @@ ShallowWrapper {
           className="is-size-7"
           colSpan="6"
         >
-          En confirmant l’annulation de
-           
+          En confirmant l’annulation de 
           cette date
-           
           , 
           vous supprimerez aussi toutes les réservations associées. 
           <br />
@@ -366,10 +352,8 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            "En confirmant l’annulation de",
-            " ",
+            "En confirmant l’annulation de ",
             "cette date",
-            " ",
             ", ",
             "vous supprimerez aussi toutes les réservations associées. ",
             <br />,
@@ -380,10 +364,8 @@ ShallowWrapper {
         },
         "ref": null,
         "rendered": Array [
-          "En confirmant l’annulation de",
-          " ",
+          "En confirmant l’annulation de ",
           "cette date",
-          " ",
           ", ",
           "vous supprimerez aussi toutes les réservations associées. ",
           Object {
@@ -471,10 +453,8 @@ ShallowWrapper {
             className="is-size-7"
             colSpan="6"
           >
-            En confirmant l’annulation de
-             
+            En confirmant l’annulation de 
             cette date
-             
             , 
             vous supprimerez aussi toutes les réservations associées. 
             <br />
@@ -506,10 +486,8 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              "En confirmant l’annulation de",
-              " ",
+              "En confirmant l’annulation de ",
               "cette date",
-              " ",
               ", ",
               "vous supprimerez aussi toutes les réservations associées. ",
               <br />,
@@ -520,10 +498,8 @@ ShallowWrapper {
           },
           "ref": null,
           "rendered": Array [
-            "En confirmant l’annulation de",
-            " ",
+            "En confirmant l’annulation de ",
             "cette date",
-            " ",
             ", ",
             "vous supprimerez aussi toutes les réservations associées. ",
             Object {

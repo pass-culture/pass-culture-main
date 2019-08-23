@@ -9,7 +9,9 @@ import CsvTableButtonContainer from '../../layout/CsvTableButton/CsvTableButtonC
 const Reimbursements = () => (
   <Main name="reimbursements">
     <HeroSection title="Suivi des remboursements">
-      <p className="subtitle">{'Téléchargez le récapitulatif des remboursements de vos offres.'}</p>
+      <p className="subtitle">
+        {'Téléchargez le récapitulatif des remboursements de vos offres.'}
+      </p>
       <p className="subtitle">
         {'Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.'}
       </p>

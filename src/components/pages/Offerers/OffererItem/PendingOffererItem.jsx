@@ -5,7 +5,10 @@ const PendingOffererItem = ({ offerer }) => (
   <li className="offerer-item pending">
     <div className="list-content">
       <p>
-        <span className="name">{offerer.name}</span> {'(SIREN: '}
+        <span className="name">
+          {offerer.name}
+        </span>
+        {' (SIREN: '}
         {formatSirenOrSiret(offerer.siren)}
         {')'}
       </p>
