@@ -113,6 +113,7 @@ class UploadThumb extends Component {
   handleOnCancelModificationClick = () => this.setState({ isEdited: false, dragging: false })
 
   changeZoom(direction) {
+    console.log('this.zoomInput', this.zoomInput)
     const { zoom } = this.state
     const factor = 10 // Slider step is too low for button usage
     const step = parseFloat(this.zoomInput.getAttribute('step'))
@@ -120,6 +121,10 @@ class UploadThumb extends Component {
     const max = parseFloat(this.zoomInput.getAttribute('max'))
 
     const newZoom = computeNewZoom(zoom, min, max, step, factor, direction)
+
+    console.log('newZoom', newZoom)
+    console.log(' ********* ********* ********* ********* ********* ')
+    console.log(' ********* ********* ********* ********* ********* ')
 
     this.setState({ zoom: newZoom })
   }
@@ -134,7 +139,7 @@ class UploadThumb extends Component {
     this.setState({
       image: null,
       dragging: false,
-      isUploadDisabled: false,
+      isUploadDisabled: false
     })
 
   render() {
@@ -184,7 +189,6 @@ class UploadThumb extends Component {
               scale={zoom}
               width={width}
             />
-            <div className="barbapapa" />
             {!readOnly && image && (
               <div id="zoomControl">
                 <button
@@ -254,6 +258,7 @@ class UploadThumb extends Component {
                 <div className="control">
                   <button
                     className="button is-primary is-outlined"
+                    name="removeImage"
                     onClick={this.handleOnRemoveImageClick}
                     type="button"
                   >

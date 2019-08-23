@@ -6,7 +6,7 @@ import React, { Fragment, PureComponent } from 'react'
 
 import HeroSection from '../../layout/HeroSection/HeroSection'
 import Main from '../../layout/Main'
-import UploadThumbContainer from '../../layout/UploadThumbContainer'
+import UploadThumbContainer from '../../layout/UploadThumb/UploadThumbContainer'
 import CanvasTools from '../../../utils/canvas'
 
 const IMAGE_UPLOAD_SIZE = 400
