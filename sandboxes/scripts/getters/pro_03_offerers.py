@@ -1,5 +1,3 @@
-from models.offerer import Offerer
-from models.user_offerer import UserOfferer
 from models.user import User
 from repository.user_queries import filter_users_with_at_least_one_validated_offerer_validated_user_offerer, \
                                     filter_users_with_at_least_one_validated_offerer_not_validated_user_offerer, \

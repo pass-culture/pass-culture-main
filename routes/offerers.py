@@ -7,12 +7,12 @@ from models import Offerer, PcObject, RightsType, Venue
 from models.venue import create_digital_venue
 from repository.offerer_queries import find_all_recommendations_for_offerer, \
     filter_offerers_with_keywords_string, \
-    find_by_siren
-from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_not_validated, \
-    filter_query_where_user_is_user_offerer_and_is_validated
+    find_by_siren, query_filter_offerer_by_user
+from repository.user_offerer_queries import query_filter_user_offerer_is_validated, \
+    query_filter_user_offerer_is_not_validated
 from routes.serialization import as_dict
 from utils.human_ids import dehumanize
-from utils.includes import OFFERER_INCLUDES, NOT_VALIDATED_OFFERER_INCLUDES
+from utils.includes import OFFERER_INCLUDES
 from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, \
     expect_json_data, \
@@ -25,34 +25,36 @@ from validation.offerers import check_valid_edition, parse_boolean_param_validat
 @app.route('/offerers', methods=['GET'])
 @login_required
 def list_offerers():
+
+    is_filtered_by_offerer_status = (request.args.get('validated') is not None)
     only_validated_offerers = parse_boolean_param_validated(request)
+
     query = Offerer.query
 
     if not current_user.isAdmin:
-        if only_validated_offerers:
-            query = filter_query_where_user_is_user_offerer_and_is_validated(
-                query,
-                current_user
-            )
-        else:
-            query = filter_query_where_user_is_user_offerer_and_is_not_validated(
-                query,
-                current_user
-            )
+        query = query_filter_offerer_by_user(query)
+
+        if is_filtered_by_offerer_status:
+            if only_validated_offerers:
+                query = query_filter_user_offerer_is_validated(query)
+            else:
+                query = query_filter_user_offerer_is_not_validated(query)
 
     keywords = request.args.get('keywords')
     if keywords is not None:
         query = filter_offerers_with_keywords_string(query.join(Venue), keywords)
 
-    if only_validated_offerers or current_user.isAdmin:
-        maybe_include = OFFERER_INCLUDES
-    else:
-        maybe_include = NOT_VALIDATED_OFFERER_INCLUDES
+    offerers = query.all()
+
+    for offerer in offerers:
+        user_has_access_as_editor = [user_offer.isValidated for user_offer in offerer.UserOfferers if user_offer.userId == current_user.id][0]
+        offerer.userHasAccess = user_has_access_as_editor
+
 
     return handle_rest_get_list(Offerer,
                                 query=query,
                                 order_by=Offerer.name,
-                                includes=maybe_include,
+                                includes=OFFERER_INCLUDES,
                                 paginate=10,
                                 page=request.args.get('page'))
 

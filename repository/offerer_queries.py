@@ -1,4 +1,6 @@
 from datetime import datetime
+
+from flask_login import current_user
 from sqlalchemy import or_
 
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
@@ -412,3 +414,7 @@ def _query_offerers_with_stock():
         .join(Venue, Venue.managingOffererId == Offerer.id) \
         .join(Offer) \
         .join(Stock)
+
+
+def query_filter_offerer_by_user(query):
+    return query.join(UserOfferer, (UserOfferer.userId == current_user.id) & (UserOfferer.offererId == Offerer.id)).filter_by(user=current_user)

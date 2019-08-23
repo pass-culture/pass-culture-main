@@ -10,26 +10,36 @@ OFFERER_INCLUDES = [
     },
     "nOffers",
     "isValidated",
+    "userHasAccess",
     "bic",
     "iban",
     "-validationToken"
 ]
 
-NOT_VALIDATED_OFFERER_INCLUDES = [
-    "name",
-    "siren",
-    "-address",
-    "-city",
-    "-dateCreated",
-    "-dateModifiedAtLastProvider",
-    "-firstThumbDominantColor",
-    "-id",
-    "-idAtProviders",
-    "-isActive",
-    "-lastProviderId",
-    "-postalCode",
-    "-thumbCount",
-    "-validationToken"
+EVENT_INCLUDES = [
+    {
+        "key": "occurrences",
+        "includes": [
+            {
+                "key": "stock",
+                "includes": [
+                    {
+                        "key": "offerer",
+                        "includes": OFFERER_INCLUDES
+                    }
+                ]
+            },
+            'venue'
+        ]
+    },
+    {
+        "key": "mediations",
+        "includes": ["thumbUrl"]
+    },
+    "offers",
+    "-type",
+    "offerType",
+    "thumbUrl"
 ]
 
 OFFER_INCLUDES = [

@@ -1,5 +1,3 @@
-import secrets
-
 from models import PcObject
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_offerer, \
@@ -64,6 +62,34 @@ class Get:
             assert len(offerers) == 3
             names = [offerer['name'] for offerer in offerers]
             assert names == ['offreur A', 'offreur B', 'offreur C']
+
+        @clean_database
+        def when_logged_in_and_return_a_list_of_offerers_including_non_validated_structures(self, app):
+            # given
+            user = create_user()
+            offerer1 = create_offerer(siren='123456781', name='offreur A')
+            offerer2 = create_offerer(siren='123456782', name='offreur B')
+            offerer3 = create_offerer(siren='123456783', name='offreur C')
+            user_offerer1 = create_user_offerer(user, offerer1, validation_token=None)
+            user_offerer2 = create_user_offerer(user, offerer2, validation_token='AZE123')
+            user_offerer3 = create_user_offerer(user, offerer3, validation_token=None)
+            PcObject.save(user_offerer1, user_offerer2, user_offerer3)
+
+            # when
+            response = TestClient(app.test_client()) \
+                .with_auth(user.email) \
+                .get('/offerers')
+
+            # then
+            assert response.status_code == 200
+            offerers = response.json
+            assert len(offerers) == 3
+            names = [offerer['name'] for offerer in offerers]
+            assert names == ['offreur A', 'offreur B', 'offreur C']
+
+            assert offerers[0]['userHasAccess'] is True
+            assert offerers[1]['userHasAccess'] is False
+            assert offerers[2]['userHasAccess'] is True
 
         @clean_database
         def when_current_user_is_not_admin_and_returns_only_offers_managed_by_him(self, app):
@@ -257,22 +283,6 @@ class Get:
             assert len(response.json) == 2
             assert response.json[0]['bic'] is None
             assert response.json[0]['iban'] is None
-
-        @clean_database
-        def when_user_offerer_is_not_validated_but_returns_no_offerer(self, app):
-            # Given
-            offerer = create_offerer()
-            user = create_user()
-            user_offerer = create_user_offerer(user, offerer, validation_token=secrets.token_urlsafe(20))
-            PcObject.save(user_offerer)
-            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
-
-            # When
-            response = auth_request.get('/offerers')
-
-            # then
-            assert response.status_code == 200
-            assert response.json == []
 
     class Returns400:
         @clean_database

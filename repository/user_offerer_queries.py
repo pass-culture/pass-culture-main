@@ -31,3 +31,18 @@ def count_user_offerers_by_offerer(offerer):
 
 def find_one_or_none_by_user_id(user_id):
     return UserOfferer.query.filter_by(userId=user_id).one_or_none()
+
+
+def query_filter_user_offerer_is_not_validated(query):
+    return _query_filter_user_offerer_by_validation_status(query, False)
+
+
+def query_filter_user_offerer_is_validated(query):
+    return _query_filter_user_offerer_by_validation_status(query, True)
+
+
+def _query_filter_user_offerer_by_validation_status(query, is_validated: bool):
+    if is_validated is True:
+        return query.filter(UserOfferer.validationToken == None)
+    else:
+        return query.filter(UserOfferer.validationToken != None)

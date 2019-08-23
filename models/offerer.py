@@ -4,12 +4,8 @@ from datetime import datetime
 from sqlalchemy import BigInteger, \
     Column, \
     DateTime, \
-    Index, \
-    String, \
-    TEXT
+    String
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql.expression import cast
-from sqlalchemy.sql.functions import coalesce
 
 from domain.keywords import create_ts_vector_and_table_args
 from models.db import Model

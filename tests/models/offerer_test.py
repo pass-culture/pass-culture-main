@@ -2,7 +2,7 @@ from models import PcObject, ApiErrors
 from tests.conftest import clean_database
 from tests.test_utils import create_offerer, create_venue, create_offer_with_thing_product, \
     create_offer_with_event_product, \
-    create_bank_information
+    create_bank_information, create_user, create_user_offerer
 
 
 @clean_database
@@ -90,3 +90,33 @@ class OffererBankInformationTest:
 
         # Then
         assert iban is None
+
+
+class IsValidatedTest:
+    @clean_database
+    def test_is_validated_property(self, app):
+        # Given
+        offerer = create_offerer(siren='123456789')
+        user = create_user(postal_code=None)
+        user_offerer = create_user_offerer(user, offerer, validation_token=None)
+        PcObject.save(user_offerer)
+
+        # When
+        isValidated = offerer.isValidated
+
+        # Then
+        assert isValidated is True
+
+    @clean_database
+    def test_is_validated_property_when_still_has_validation_token(self, app):
+        # Given
+        offerer = create_offerer(siren='123456789')
+        user = create_user(postal_code=None)
+        user_offerer = create_user_offerer(user, offerer, validation_token='AZR123')
+        PcObject.save(user_offerer)
+
+        # When
+        isValidated = offerer.isValidated
+
+        # Then
+        assert isValidated is False
