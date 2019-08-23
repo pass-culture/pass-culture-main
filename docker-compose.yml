@@ -10,6 +10,8 @@ services:
       - env_file
     networks:
       - db_nw
+    ports:
+      - 5434:5432
     command: postgres -c logging_collector=on -c log_destination=stderr -c log_min_duration_statement=0 -c log_statement=all -c log_duration=on
   
   postgres-test:
@@ -70,6 +72,8 @@ services:
       - ADMINISTRATION_EMAIL_ADDRESS=$ADMINISTRATION_EMAIL_ADDRESS
       - DEV_EMAIL_ADDRESS=$DEV_EMAIL_ADDRESS
       - CRON_BENEFICIARIES_ENROLLMENT=$CRON_BENEFICIARIES_ENROLLMENT
+      - PC_GOOGLE_KEY=$PC_GOOGLE_KEY
+      - DASHBOARD_GSHEET_NAME=$DASHBOARD_GSHEET_NAME
     networks:
       - db_nw
       - web_nw
