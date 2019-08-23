@@ -693,7 +693,7 @@ fi
 
 if [[ $PWD == "/home/deploy/pass-culture-main" ]]; then
 	echo $RUN
-  eval $RUN
+  eval $RUNe
 else
 	if [[ "$ENV" == "production" ]]; then
 	  echo "$RUN" | ssh deploy@api.passculture.beta.gouv.fr bash
