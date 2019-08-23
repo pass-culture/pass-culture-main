@@ -163,6 +163,7 @@ ProductFields.defaultProps = {
 }
 
 ProductFields.propTypes = {
+  assignModalConfig: PropTypes.func.isRequired,
   beginningDatetime: PropTypes.string,
   closeInfo: PropTypes.func.isRequired,
   hasIban: PropTypes.bool.isRequired,

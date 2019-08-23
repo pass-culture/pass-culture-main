@@ -4,11 +4,11 @@ exports[`src | components | pages | Offer | StocksManager | StockItem | sub-comp
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <ProductFields
+    assignModalConfig={[MockFunction]}
     beginningDatetime="2019-01-01"
     closeInfo={[MockFunction]}
     hasIban={false}
     isEvent={false}
-    parseFormChild={[MockFunction]}
     readOnly={false}
     showInfo={[MockFunction]}
     stock={

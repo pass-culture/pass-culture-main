@@ -11,12 +11,12 @@ describe('src | components | pages | Offer | StocksManager | StockItem | sub-com
 
   beforeEach(() => {
     props = {
+      assignModalConfig: jest.fn(),
       beginningDatetime: '2019-01-01',
       closeInfo: jest.fn(),
       hasIban: false,
       isEvent: false,
       readOnly: false,
-      parseFormChild: jest.fn(),
       showInfo: jest.fn(),
       stock: {
         available: 2,
@@ -102,6 +102,100 @@ describe('src | components | pages | Offer | StocksManager | StockItem | sub-com
       const remainingStockElement = wrapper.find('#remaining-stock')
       expect(remainingStockElement).toHaveLength(1)
       expect(remainingStockElement.text()).toBe('1')
+    })
+  })
+
+  describe('when componentWillUnmount', () => {
+    it('should close popup info', () => {
+      // given
+      const wrapper = shallow(<ProductFields {...props} />)
+
+      // when
+      wrapper.unmount()
+
+      // then
+      expect(props.closeInfo).toHaveBeenCalledWith()
+    })
+  })
+
+  describe('functions', () => {
+    describe('handleOnClick', () => {
+      it('should reset modal config and close popup info', () => {
+        // given
+        const wrapper = shallow(<ProductFields {...props} />)
+
+        // when
+        wrapper.instance().handleOnClick()
+
+        // then
+        expect(props.assignModalConfig).toHaveBeenCalledWith(null)
+        expect(props.closeInfo).toHaveBeenCalledWith()
+      })
+    })
+
+    describe('handleOnPriceBlur', () => {
+      let event
+
+      beforeEach(() => {
+        event = {
+          target: {
+            focus: jest.fn(),
+            value: 12,
+          },
+        }
+      })
+
+      it('should focus on element when price has been provided', () => {
+        // given
+        const wrapper = shallow(<ProductFields {...props} />)
+
+        // when
+        wrapper.instance().handleOnPriceBlur(event)
+
+        // then
+        expect(event.target.focus).toHaveBeenCalledWith()
+      })
+
+      it('should assign config to modal when price has been provided', () => {
+        // given
+        const wrapper = shallow(<ProductFields {...props} />)
+
+        // when
+        wrapper.instance().handleOnPriceBlur(event)
+
+        // then
+        expect(props.assignModalConfig).toHaveBeenCalledWith('modal-in-modal')
+      })
+
+      it('should display info in a modal when price has been provided', () => {
+        // given
+        const expected = (
+          <React.Fragment>
+            <div className="mb24 has-text-left">
+              {'Vous avez saisi une offre payante. Pensez à demander à '}
+              {'l’administrateur financier nommé pour votre structure de renseigner '}
+              {'son IBAN. Sans IBAN, les réservations de vos offres éligibles ne vous '}
+              {'seront pas remboursées.'}
+            </div>
+            <div className="has-text-right">
+              <button
+                className="button is-primary"
+                onClick={expect.any(Function)}
+                type="button"
+              >
+                {'J’ai compris'}
+              </button>
+            </div>
+          </React.Fragment>
+        )
+        const wrapper = shallow(<ProductFields {...props} />)
+
+        // when
+        wrapper.instance().handleOnPriceBlur(event)
+
+        // then
+        expect(props.showInfo).toHaveBeenCalledWith(expected)
+      })
     })
   })
 })
