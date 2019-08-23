@@ -14,26 +14,9 @@ ShallowWrapper {
             Object {
               "patch": Object {
                 "offerers": Array [],
-                "pendingOfferers": Array [],
               },
               "type": "ASSIGN_DATA",
             },
-          ],
-        ],
-        "results": Array [
-          Object {
-            "type": "return",
-            "value": undefined,
-          },
-        ],
-      }
-    }
-    loadNotValidatedUserOfferers={
-      [MockFunction] {
-        "calls": Array [
-          Array [
-            "/offerers?keywords&validated=false",
-            [Function],
           ],
         ],
         "results": Array [
@@ -48,9 +31,11 @@ ShallowWrapper {
       [MockFunction] {
         "calls": Array [
           Array [
-            "/offerers?keywords",
             [Function],
             [Function],
+            Object {
+              "keywords": "keywords",
+            },
           ],
         ],
         "results": Array [
@@ -70,6 +55,7 @@ ShallowWrapper {
       Array [
         Object {
           "id": "AE",
+          "siren": "1234567",
         },
       ]
     }
@@ -80,7 +66,6 @@ ShallowWrapper {
         },
       }
     }
-    pendingOfferers={Array []}
     query={
       Object {
         "change": [MockFunction],
@@ -129,20 +114,15 @@ ShallowWrapper {
             <a
               href="/structures/AE/lieux/creation"
             >
-               
               créer un nouveau lieu 
-               
             </a>
-             
              lié à une structure.
             <br />
             Sans lieu, vous pouvez uniquement 
             <a
               href="/offres/creation"
             >
-               
               ajouter des offres numériques.
-               
             </a>
           </p>
           <div
@@ -178,7 +158,6 @@ ShallowWrapper {
           render={[Function]}
         />,
         <br />,
-        false,
         <withRouter(_withQueryRouter)
           className="main-list offerers-list"
           element="ul"
@@ -195,10 +174,11 @@ ShallowWrapper {
           }
           useWindow={true}
         >
-          <Connect(OffererItem)
+          <PendingOffererItem
             offerer={
               Object {
                 "id": "AE",
+                "siren": "1234567",
               }
             }
           />
@@ -221,20 +201,15 @@ ShallowWrapper {
               <a
                 href="/structures/AE/lieux/creation"
               >
-                 
                 créer un nouveau lieu 
-                 
               </a>
-               
                lié à une structure.
               <br />
               Sans lieu, vous pouvez uniquement 
               <a
                 href="/offres/creation"
               >
-                 
                 ajouter des offres numériques.
-                 
               </a>
             </p>,
             <div
@@ -275,20 +250,15 @@ ShallowWrapper {
                 <a
                   href="/structures/AE/lieux/creation"
                 >
-                   
                   créer un nouveau lieu 
-                   
                 </a>,
-                " ",
                 " lié à une structure.",
                 <br />,
                 "Sans lieu, vous pouvez uniquement ",
                 <a
                   href="/offres/creation"
                 >
-                   
                   ajouter des offres numériques.
-                   
                 </a>,
               ],
               "className": "subtitle",
@@ -301,22 +271,13 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": Array [
-                    " ",
-                    "créer un nouveau lieu ",
-                    " ",
-                  ],
+                  "children": "créer un nouveau lieu ",
                   "href": "/structures/AE/lieux/creation",
                 },
                 "ref": null,
-                "rendered": Array [
-                  " ",
-                  "créer un nouveau lieu ",
-                  " ",
-                ],
+                "rendered": "créer un nouveau lieu ",
                 "type": "a",
               },
-              " ",
               " lié à une structure.",
               Object {
                 "instance": null,
@@ -333,19 +294,11 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": Array [
-                    " ",
-                    "ajouter des offres numériques.",
-                    " ",
-                  ],
+                  "children": "ajouter des offres numériques.",
                   "href": "/offres/creation",
                 },
                 "ref": null,
-                "rendered": Array [
-                  " ",
-                  "ajouter des offres numériques.",
-                  " ",
-                ],
+                "rendered": "ajouter des offres numériques.",
                 "type": "a",
               },
             ],
@@ -462,17 +415,17 @@ ShallowWrapper {
         "rendered": null,
         "type": "br",
       },
-      false,
       Object {
         "instance": null,
         "key": undefined,
         "nodeType": "function",
         "props": Object {
           "children": Array [
-            <Connect(OffererItem)
+            <PendingOffererItem
               offerer={
                 Object {
                   "id": "AE",
+                  "siren": "1234567",
                 }
               }
             />,
@@ -494,11 +447,12 @@ ShallowWrapper {
         "rendered": Array [
           Object {
             "instance": null,
-            "key": "AE",
-            "nodeType": "class",
+            "key": "1234567",
+            "nodeType": "function",
             "props": Object {
               "offerer": Object {
                 "id": "AE",
+                "siren": "1234567",
               },
             },
             "ref": null,
@@ -529,20 +483,15 @@ ShallowWrapper {
               <a
                 href="/structures/AE/lieux/creation"
               >
-                 
                 créer un nouveau lieu 
-                 
               </a>
-               
                lié à une structure.
               <br />
               Sans lieu, vous pouvez uniquement 
               <a
                 href="/offres/creation"
               >
-                 
                 ajouter des offres numériques.
-                 
               </a>
             </p>
             <div
@@ -578,7 +527,6 @@ ShallowWrapper {
             render={[Function]}
           />,
           <br />,
-          false,
           <withRouter(_withQueryRouter)
             className="main-list offerers-list"
             element="ul"
@@ -595,10 +543,11 @@ ShallowWrapper {
             }
             useWindow={true}
           >
-            <Connect(OffererItem)
+            <PendingOffererItem
               offerer={
                 Object {
                   "id": "AE",
+                  "siren": "1234567",
                 }
               }
             />
@@ -621,20 +570,15 @@ ShallowWrapper {
                 <a
                   href="/structures/AE/lieux/creation"
                 >
-                   
                   créer un nouveau lieu 
-                   
                 </a>
-                 
                  lié à une structure.
                 <br />
                 Sans lieu, vous pouvez uniquement 
                 <a
                   href="/offres/creation"
                 >
-                   
                   ajouter des offres numériques.
-                   
                 </a>
               </p>,
               <div
@@ -675,20 +619,15 @@ ShallowWrapper {
                   <a
                     href="/structures/AE/lieux/creation"
                   >
-                     
                     créer un nouveau lieu 
-                     
                   </a>,
-                  " ",
                   " lié à une structure.",
                   <br />,
                   "Sans lieu, vous pouvez uniquement ",
                   <a
                     href="/offres/creation"
                   >
-                     
                     ajouter des offres numériques.
-                     
                   </a>,
                 ],
                 "className": "subtitle",
@@ -701,22 +640,13 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": Array [
-                      " ",
-                      "créer un nouveau lieu ",
-                      " ",
-                    ],
+                    "children": "créer un nouveau lieu ",
                     "href": "/structures/AE/lieux/creation",
                   },
                   "ref": null,
-                  "rendered": Array [
-                    " ",
-                    "créer un nouveau lieu ",
-                    " ",
-                  ],
+                  "rendered": "créer un nouveau lieu ",
                   "type": "a",
                 },
-                " ",
                 " lié à une structure.",
                 Object {
                   "instance": null,
@@ -733,19 +663,11 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": Array [
-                      " ",
-                      "ajouter des offres numériques.",
-                      " ",
-                    ],
+                    "children": "ajouter des offres numériques.",
                     "href": "/offres/creation",
                   },
                   "ref": null,
-                  "rendered": Array [
-                    " ",
-                    "ajouter des offres numériques.",
-                    " ",
-                  ],
+                  "rendered": "ajouter des offres numériques.",
                   "type": "a",
                 },
               ],
@@ -862,17 +784,17 @@ ShallowWrapper {
           "rendered": null,
           "type": "br",
         },
-        false,
         Object {
           "instance": null,
           "key": undefined,
           "nodeType": "function",
           "props": Object {
             "children": Array [
-              <Connect(OffererItem)
+              <PendingOffererItem
                 offerer={
                   Object {
                     "id": "AE",
+                    "siren": "1234567",
                   }
                 }
               />,
@@ -894,11 +816,12 @@ ShallowWrapper {
           "rendered": Array [
             Object {
               "instance": null,
-              "key": "AE",
-              "nodeType": "class",
+              "key": "1234567",
+              "nodeType": "function",
               "props": Object {
                 "offerer": Object {
                   "id": "AE",
+                  "siren": "1234567",
                 },
               },
               "ref": null,

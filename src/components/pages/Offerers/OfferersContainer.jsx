@@ -4,41 +4,34 @@ import { compose } from 'redux'
 import { withRequiredLogin } from '../../hocs'
 import { requestData } from 'redux-saga-data'
 import Offerers from './Offerers'
-import {closeNotification, showNotification} from 'pass-culture-shared'
+import { closeNotification, showNotification } from 'pass-culture-shared'
 import { assignData } from 'fetch-normalize-data'
 import { offererNormalizer } from '../../../utils/normalizers'
+import selectOfferers from '../../../selectors/selectOfferers'
 
 export const mapStateToProps = state => {
   return {
-    pendingOfferers: state.data.pendingOfferers,
-    offerers: state.data.offerers,
+    offerers: selectOfferers(state),
     notification: state.notification,
   }
 }
 
-export const mapDispatchToProps = (dispatch) => ({
-  assignData:() => dispatch(assignData({ offerers: [], pendingOfferers: [] })),
+export const mapDispatchToProps = dispatch => ({
+  assignData: () => dispatch(assignData({ offerers: [] })),
 
-  closeNotification:() => dispatch(closeNotification()),
+  closeNotification: () => dispatch(closeNotification()),
 
-  loadOfferers: (apiPath, handleFail, handleSuccess) => {
+  loadOfferers: (handleFail, handleSuccess, { isValidated } = {}) => {
+    let apiPath = '/offerers'
+
+    if (isValidated !== undefined) apiPath += `?validated=${isValidated}`
+
     dispatch(
       requestData({
         apiPath,
         handleFail,
         handleSuccess,
         normalizer: offererNormalizer,
-      })
-    )
-  },
-
-  loadNotValidatedUserOfferers: (apiPath, handleFail) => {
-    dispatch(
-      requestData({
-        apiPath,
-        handleFail,
-        normalizer: offererNormalizer,
-        stateKey: 'pendingOfferers',
       })
     )
   },

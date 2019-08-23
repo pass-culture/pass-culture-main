@@ -295,7 +295,6 @@ const state = {
         validationToken: 'w3hDQgjYRIyYTxOYY08nwgH3BzI',
       },
     ],
-    pendingOfferers: [],
     providers: [],
     stocks: [
       {

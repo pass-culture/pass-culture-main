@@ -13,10 +13,7 @@ import Icon from '../../layout/Icon'
 import Main from '../../layout/Main'
 import Spinner from '../../layout/Spinner'
 import TextField from '../../layout/form/fields/TextField'
-import {
-  mapApiToBrowser,
-  translateQueryParamsToApiParams,
-} from '../../../utils/translate'
+import { mapApiToBrowser, translateQueryParamsToApiParams } from '../../../utils/translate'
 import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
 
 class Offerers extends Component {
@@ -29,7 +26,7 @@ class Offerers extends Component {
       isLoading: false,
     }
 
-    dispatch(assignData({ offerers: [], pendingOfferers: [] }))
+    dispatch(assignData({ offerers: [] }))
   }
 
   componentDidMount() {
@@ -44,7 +41,7 @@ class Offerers extends Component {
   }
 
   componentWillUnmount() {
-    const { closeNotification, notification}  = this.props
+    const { closeNotification, notification } = this.props
     if (notification && notification.tag === 'offerers') {
       closeNotification()
     }
@@ -68,25 +65,14 @@ class Offerers extends Component {
   }
 
   handleRequestData = () => {
-    const {
-      currentUser,
-      loadNotValidatedUserOfferers,
-      loadOfferers,
-      offerers,
-      query,
-      showNotification,
-    } = this.props
-    const { isAdmin } = currentUser || {}
+    const { currentUser, loadOfferers, offerers, query, showNotification } = this.props
     const queryParams = query.parse()
     const apiParams = translateQueryParamsToApiParams(queryParams)
     const apiParamsString = stringify(apiParams)
-    const apiPath = `/offerers?${apiParamsString}`
-    this.setState({ isLoading: true }, loadOfferers(apiPath, this.handleSuccess, this.handleFail))
-
     const url = createVenueForOffererUrl(offerers)
+
     const offerersHaveNotOffers = !currentUser.hasOffers && !currentUser.hasPhysicalVenues
     const offerersHaveOnlyDigitalOffers = currentUser.hasOffers && !currentUser.hasPhysicalVenues
-
     const userHasNoOffersInAPhysicalVenueYet =
       offerersHaveNotOffers || offerersHaveOnlyDigitalOffers
 
@@ -94,17 +80,16 @@ class Offerers extends Component {
       showNotification(url)
     }
 
-    if (!isAdmin) {
-      const notValidatedUserOfferersParams = Object.assign(
-        {
-          validated: false,
-        },
-        apiParams
-      )
-      const notValidatedUserOfferersSearch = stringify(notValidatedUserOfferersParams)
-      const notValidatedUserOfferersPath = `/offerers?${notValidatedUserOfferersSearch}`
-      loadNotValidatedUserOfferers(notValidatedUserOfferersPath, this.handleFail)
+    let loadOfferParameters = {
+      keywords: apiParamsString,
     }
+
+    if (currentUser.isAdmin) loadOfferParameters.isValidated = true
+
+    this.setState(
+      { isLoading: true },
+      loadOfferers(this.handleSuccess, this.handleFail, loadOfferParameters)
+    )
   }
 
   handleOnKeywordsSubmit = values => {
@@ -125,10 +110,17 @@ class Offerers extends Component {
 
   renderTextField = () => (
     <Fragment>
-      <button className="button is-primary is-outlined search-ok ml12" type="submit">
+      <button
+        className="button is-primary is-outlined search-ok ml12"
+        type="submit"
+      >
         {'OK'}
       </button>
-      <button className="button is-secondary" disabled type="button">
+      <button
+        className="button is-secondary"
+        disabled
+        type="button"
+      >
         &nbsp;
         <Icon svg="ico-filter" />
         &nbsp;
@@ -149,7 +141,7 @@ class Offerers extends Component {
   )
 
   render() {
-    const { pendingOfferers, offerers, query } = this.props
+    const { offerers, query } = this.props
     const queryParams = query.parse()
     const { hasMore, isLoading } = this.state
 
@@ -167,13 +159,21 @@ class Offerers extends Component {
         <HeroSection title={sectionTitle}>
           <p className="subtitle">
             {'Pour présenter vos offres, vous devez d’abord '}
-            <a href={url}> {'créer un nouveau lieu '} </a> {' lié à une structure.'}
+            <a href={url}>
+              {'créer un nouveau lieu '}
+            </a>
+            {' lié à une structure.'}
             <br />
             {'Sans lieu, vous pouvez uniquement '}
-            <a href="/offres/creation"> {'ajouter des offres numériques.'} </a>
+            <a href="/offres/creation">
+              {'ajouter des offres numériques.'}
+            </a>
           </p>
           <div className="title-action-links">
-            <NavLink className="cta button is-primary is-outlined" to="/structures/creation">
+            <NavLink
+              className="cta button is-primary is-outlined"
+              to="/structures/creation"
+            >
               {'+ Ajouter une structure'}
               <span
                 className="tip-icon"
@@ -195,14 +195,6 @@ class Offerers extends Component {
 
         <br />
 
-        {pendingOfferers.length > 0 && (
-          <ul className="main-list offerers-list" id="pending-offerer-list">
-            {pendingOfferers.map(o => (
-              <PendingOffererItem key={o.siren} offerer={o} />
-            ))}
-          </ul>
-        )}
-
         <LoadingInfiniteScroll
           className="main-list offerers-list"
           element="ul"
@@ -211,9 +203,17 @@ class Offerers extends Component {
           loader={<Spinner key="spinner" />}
           useWindow
         >
-          {offerers.map(offerer => (
-            <OffererItemContainer key={offerer.id} offerer={offerer} />
-          ))}
+          {offerers.map(offerer => {
+            if (offerer.isValidated && offerer.userHasAccess)
+              return (<OffererItemContainer
+                key={offerer.id}
+                offerer={offerer}
+                      />)
+            else return (<PendingOffererItem
+              key={offerer.siren}
+              offerer={offerer}
+                         />)
+          })}
         </LoadingInfiniteScroll>
       </Main>
     )
@@ -225,10 +225,8 @@ Offerers.propTypes = {
   closeNotification: PropTypes.func.isRequired,
   currentUser: PropTypes.shape().isRequired,
   dispatch: PropTypes.func.isRequired,
-  loadNotValidatedUserOfferers: PropTypes.func.isRequired,
   loadOfferers: PropTypes.func.isRequired,
-  offerers: PropTypes.arrayOf.isRequired,
-  pendingOfferers: PropTypes.arrayOf.isRequired,
+  offerers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   query: PropTypes.shape().isRequired,
   showNotification: PropTypes.func.isRequired,
 }

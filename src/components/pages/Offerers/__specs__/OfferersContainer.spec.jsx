@@ -55,7 +55,6 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
             validationToken: 'w3hDQgjYRIyYTxOYY08nwgH3BzI',
           },
         ],
-        pendingOfferers: [],
       }
       expect(result).toStrictEqual(expected)
     })
@@ -76,7 +75,6 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
       expect(dispatch).toHaveBeenCalledWith({
         patch: {
           offerers: [],
-          pendingOfferers: [],
         },
         type: 'ASSIGN_DATA',
       })
@@ -92,54 +90,83 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
       })
     })
 
-    it('enable to load offerers', () => {
-      // when
-      const apiPath = '/offerers'
-      const handleFail = jest.fn()
-      const handleSuccess = jest.fn()
-      mapDispatchToProps(dispatch).loadOfferers(apiPath, handleFail, handleSuccess)
+    describe('loadOfferers', () => {
+      it('load all offerers by default', () => {
+        // when
+        const handleFail = jest.fn()
+        const handleSuccess = jest.fn()
+        mapDispatchToProps(dispatch).loadOfferers(handleFail, handleSuccess)
 
-      // then
-      expect(dispatch).toHaveBeenCalledWith({
-        config: {
-          apiPath: '/offerers',
-          handleFail: expect.any(Function),
-          handleSuccess: expect.any(Function),
-          method: 'GET',
-          normalizer: {
-            managedVenues: {
-              normalizer: {
-                offers: 'offers',
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          config: {
+            apiPath: '/offerers',
+            handleFail: expect.any(Function),
+            handleSuccess: expect.any(Function),
+            method: 'GET',
+            normalizer: {
+              managedVenues: {
+                normalizer: {
+                  offers: 'offers',
+                },
+                stateKey: 'venues',
               },
-              stateKey: 'venues',
             },
           },
-        },
-        type: 'REQUEST_DATA_GET_/OFFERERS',
+          type: 'REQUEST_DATA_GET_/OFFERERS',
+        })
       })
-    })
 
-    it('enable to load not validated offerers', () => {
-      // when
-      const apiPath = '/offerers'
-      mapDispatchToProps(dispatch).loadNotValidatedUserOfferers(apiPath)
+      it('can load only validated offerers', () => {
+        // when
+        const handleFail = jest.fn()
+        const handleSuccess = jest.fn()
+        mapDispatchToProps(dispatch).loadOfferers(handleFail, handleSuccess, { isValidated: true })
 
-      // then
-      expect(dispatch).toHaveBeenCalledWith({
-        config: {
-          apiPath: '/offerers',
-          method: 'GET',
-          normalizer: {
-            managedVenues: {
-              normalizer: {
-                offers: 'offers',
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          config: {
+            apiPath: '/offerers?validated=true',
+            handleFail: expect.any(Function),
+            handleSuccess: expect.any(Function),
+            method: 'GET',
+            normalizer: {
+              managedVenues: {
+                normalizer: {
+                  offers: 'offers',
+                },
+                stateKey: 'venues',
               },
-              stateKey: 'venues',
             },
           },
-          stateKey: 'pendingOfferers',
-        },
-        type: 'REQUEST_DATA_GET_PENDINGOFFERERS',
+          type: 'REQUEST_DATA_GET_/OFFERERS?VALIDATED=TRUE',
+        })
+      })
+
+      it('can load only offerers that are not validated yet', () => {
+        // when
+        const handleFail = jest.fn()
+        const handleSuccess = jest.fn()
+        mapDispatchToProps(dispatch).loadOfferers(handleFail, handleSuccess, { isValidated: false })
+
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          config: {
+            apiPath: '/offerers?validated=false',
+            handleFail: expect.any(Function),
+            handleSuccess: expect.any(Function),
+            method: 'GET',
+            normalizer: {
+              managedVenues: {
+                normalizer: {
+                  offers: 'offers',
+                },
+                stateKey: 'venues',
+              },
+            },
+          },
+          type: 'REQUEST_DATA_GET_/OFFERERS?VALIDATED=FALSE',
+        })
       })
     })
 
@@ -149,18 +176,17 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
       mapDispatchToProps(dispatch).showNotification(url)
 
       // then
-      expect(dispatch).toHaveBeenCalledWith(
-        {
-          "patch": {
-            "tag": "offerers",
-            "text": "Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)",
-            "type": "info",
-            "url": "/offerers",
-            "urlLabel": "Nouveau lieu",
-          },
-          "type": "SHOW_NOTIFICATION",
-        }
-      )
+      expect(dispatch).toHaveBeenCalledWith({
+        patch: {
+          tag: 'offerers',
+          text:
+            'Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)',
+          type: 'info',
+          url: '/offerers',
+          urlLabel: 'Nouveau lieu',
+        },
+        type: 'SHOW_NOTIFICATION',
+      })
     })
   })
 })

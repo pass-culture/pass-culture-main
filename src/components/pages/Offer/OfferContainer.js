@@ -16,6 +16,7 @@ import selectTypesByIsVenueVirtual from '../../../selectors/selectTypesByIsVenue
 import selectTypeByIsVenueVirtualAndOfferTypeValue from '../../../selectors/selectTypeByIsVenueVirtualAndOfferTypeValue'
 import selectVenueById from '../../../selectors/selectVenueById'
 import selectVenuesByOffererIdAndOfferType from '../../../selectors/selectVenuesByOffererIdAndOfferType'
+import selectOfferers from '../../../selectors/selectOfferers'
 
 export const mapStateToProps = (state, ownProps) => {
   const {
@@ -48,7 +49,7 @@ export const mapStateToProps = (state, ownProps) => {
 
   const venues = selectVenuesByOffererIdAndOfferType(state, offererId, selectedOfferType)
 
-  const offerers = state.data.offerers
+  const offerers = selectOfferers(state)
   const offerer = selectOffererById(state, offererId)
   const stocks = selectStocksByOfferId(state, offerId)
   const url = get(state, 'form.offer.url') || get(product, 'url')

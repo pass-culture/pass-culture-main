@@ -6,7 +6,6 @@ const data = createDataReducer({
   mediations: [],
   offers: [],
   offerers: [],
-  pendingOfferers: [],
   providers: [],
   stocks: [],
   things: [],
