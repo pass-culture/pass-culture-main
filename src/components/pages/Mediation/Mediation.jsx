@@ -6,7 +6,7 @@ import React, { Fragment, PureComponent } from 'react'
 
 import HeroSection from '../../layout/HeroSection/HeroSection'
 import Main from '../../layout/Main'
-import UploadThumb from '../../layout/UploadThumb'
+import UploadThumbContainer from '../../layout/UploadThumbContainer'
 import CanvasTools from '../../../utils/canvas'
 
 const IMAGE_UPLOAD_SIZE = 400
@@ -69,8 +69,7 @@ class Mediation extends PureComponent {
       let error
       if (errors && errors.thumb && errors.thumb[0]) {
         error = errors.thumb[0]
-      }
-      else if (errors && errors.thumbUrl && errors.thumbUrl[0]) {
+      } else if (errors && errors.thumbUrl && errors.thumbUrl[0]) {
         error = errors.thumbUrl[0]
       }
       showFailDataNotification(error)
@@ -196,13 +195,7 @@ class Mediation extends PureComponent {
     body.append('croppingRect[height]', croppingRect.height)
 
     this.setState({ isLoading: true })
-    createOrUpdateMediation(
-      isNew,
-      mediation,
-      body,
-      this.handleFailData,
-      this.handleSuccessData
-    )
+    createOrUpdateMediation(isNew, mediation, body, this.handleFailData, this.handleSuccessData)
   }
 
   handleOnUrlChange = event => {
@@ -236,19 +229,29 @@ class Mediation extends PureComponent {
             </h2>
             <ul>
               <li className="mb12">
-                <span className="li-number">{'1'}</span>
+                <span className="li-number">
+                  {'1'}
+                </span>
                 <span>
                   {'Le visuel doit '}
-                  <b>{'remplir le cadre 1 violet'}</b>
+                  <b>
+                    {'remplir le cadre 1 violet'}
+                  </b>
                   {'.'}
                 </span>
               </li>
               <li className="mb12">
-                <span className="li-number">{'2'}</span>
+                <span className="li-number">
+                  {'2'}
+                </span>
                 <span>
-                  <b>{'Les éléments importants '}</b>
+                  <b>
+                    {'Les éléments importants '}
+                  </b>
                   {' (p. ex. un visage, une zone d’intérêt…) doivent se situer '}
-                  <b>{'dans le cadre 2 vert.'}</b>
+                  <b>
+                    {'dans le cadre 2 vert.'}
+                  </b>
                   <br />
                   {' C’est la première vision de l’offre qu’aura l’utilisateur.'}
                 </span>
@@ -261,7 +264,9 @@ class Mediation extends PureComponent {
           <div className="section">
             <div className="row">
               <div className="section">
-                <h6>{'Exemples :'}</h6>
+                <h6>
+                  {'Exemples :'}
+                </h6>
                 <div className="columns crop-explain">
                   <div className="column">
                     <img
@@ -272,7 +277,9 @@ class Mediation extends PureComponent {
                   </div>
                   <div className="column explain-text explain-bad">
                     <p>
-                      <b>{'Mauvais cadrage'}</b>
+                      <b>
+                        {'Mauvais cadrage'}
+                      </b>
                       {'Les éléments importants sont hors-cadre.'}
                     </p>
                   </div>
@@ -285,7 +292,9 @@ class Mediation extends PureComponent {
                   </div>
                   <div className="column explain-text explain-good">
                     <p>
-                      <b>{'Cadrage idéal'}</b>
+                      <b>
+                        {'Cadrage idéal'}
+                      </b>
                       {'Les éléments importants sont visibles dans tous les cadres.'}
                     </p>
                   </div>
@@ -295,7 +304,7 @@ class Mediation extends PureComponent {
 
             <hr className="dotted" />
             <div className="row">
-              <UploadThumb
+              <UploadThumbContainer
                 border={IMAGE_UPLOAD_BORDER}
                 borderRadius={0}
                 collectionName="mediations"
@@ -317,7 +326,9 @@ class Mediation extends PureComponent {
         <div className="section">
           <div className="field-group">
             <div className="field">
-              <label className="label">{'Crédit photo'}</label>
+              <label className="label">
+                {'Crédit photo'}
+              </label>
               <input
                 className="input is-rounded"
                 id="mediation-credit"
@@ -368,7 +379,9 @@ class Mediation extends PureComponent {
             {'Ajoutez un visuel marquant pour mettre en avant cette offre.'}
           </p>
           <p>
-            <b>{'L’accroche permet d’afficher votre offre "à la une" de l’app, '}</b>
+            <b>
+              {'L’accroche permet d’afficher votre offre "à la une" de l’app, '}
+            </b>
             {
               'et la rend visuellement plus attrayante. C’est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante...'
             }
@@ -382,7 +395,9 @@ class Mediation extends PureComponent {
           </p>
           <p>
             {'Le fichier doit peser '}
-            <b>{'100 Ko minimum. '}</b>
+            <b>
+              {'100 Ko minimum. '}
+            </b>
             <br />
             {'Utilisateurs avancés : vous pouvez '}
             <a href="https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip">
@@ -392,7 +407,9 @@ class Mediation extends PureComponent {
         </HeroSection>
 
         <div className="section">
-          <label className="label">{'Depuis une adresse Internet :'}</label>
+          <label className="label">
+            {'Depuis une adresse Internet :'}
+          </label>
           <div className="field is-grouped">
             <p className="control is-expanded">
               <input
@@ -416,7 +433,9 @@ class Mediation extends PureComponent {
         </div>
 
         <div className="section">
-          <label className="label">{'...ou depuis votre poste : '}</label>
+          <label className="label">
+            {'...ou depuis votre poste : '}
+          </label>
           <label className="button is-primary is-outlined">
             {'Choisir un fichier '}
             <input

@@ -11,6 +11,7 @@ export const NO_MEDIATION_TOOLTIP =
   '<p>- ajouter une ou plusieurs accroches</p>' +
   '<p>- sélectionner au moins une accroche</p></div>'
 
+
 class MediationsManager extends Component {
   componentDidMount() {
     const { showNotification, hasMediations, atLeastOneActiveMediation, notification } = this.props
@@ -21,9 +22,10 @@ class MediationsManager extends Component {
         text:
           'Cette offre ne sera pas mise en avant dans l’application pass Culture mais sera accessible via la recherche par mots-clés.',
         tooltip: {
-          children: <span>
-            {'Pourquoi ?'}
-                    </span>,
+          children:
+  <span>
+    {'Pourquoi ?'}
+  </span>,
           place: 'bottom',
           tip: NO_MEDIATION_TOOLTIP,
           type: 'info',
