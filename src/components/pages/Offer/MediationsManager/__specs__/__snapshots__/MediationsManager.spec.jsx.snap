@@ -16,13 +16,13 @@ ShallowWrapper {
           Array [
             Object {
               "tag": "mediations-manager",
-              "text": "Cette offre n’apparaîtra pas dans l’app pass Culture.",
+              "text": "Cette offre ne sera pas mise en avant dans l’application Pass Culture mais sera accessible via la recherche par mots-clés.",
               "tooltip": Object {
                 "children": <span>
-                   Pourquoi ? 
+                  Pourquoi ?
                 </span>,
                 "place": "bottom",
-                "tip": "<div><p>Pour que votre offre s'affiche dans l'application du Pass Culture, vous devez&nbsp;:</p><p>- ajouter une ou plusieurs accroches</p><p>- sélectionner au moins une accroche</p></div>",
+                "tip": "<div><p>Pour que votre offre soit mise en avant dans l’application du Pass Culture, vous devez&nbsp;:</p><p>- ajouter une ou plusieurs accroches</p><p>- sélectionner au moins une accroche</p></div>",
                 "type": "info",
               },
               "type": "warning",

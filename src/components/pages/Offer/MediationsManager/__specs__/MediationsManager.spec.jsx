@@ -1,9 +1,9 @@
 import React from 'react'
-import {shallow} from 'enzyme'
+import { shallow } from 'enzyme'
 
-import MediationsManager, {NO_MEDIATION_TOOLTIP} from '../MediationsManager'
-import {NavLink} from 'react-router-dom'
-import {Icon} from 'pass-culture-shared'
+import MediationsManager, { NO_MEDIATION_TOOLTIP } from '../MediationsManager'
+import { NavLink } from 'react-router-dom'
+import { Icon } from 'pass-culture-shared'
 
 describe('src | components | pages | Offer | MediationsManager | MediationsManager', () => {
   let showNotification
@@ -45,14 +45,17 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
       // then
       expect(props.showNotification).toHaveBeenCalledWith({
         tag: 'mediations-manager',
-        text: 'Cette offre n’apparaîtra pas dans l’app pass Culture.',
+        text:
+          'Cette offre ne sera pas mise en avant dans l’application Pass Culture mais sera accessible via la recherche par mots-clés.',
         tooltip: {
-          children: <span> Pourquoi ? </span>,
+          children: <span>
+            {'Pourquoi ?'}
+                    </span>,
           place: 'bottom',
           tip: NO_MEDIATION_TOOLTIP,
-          type: 'info'
+          type: 'info',
         },
-        type: 'warning'
+        type: 'warning',
       })
     })
 
@@ -68,22 +71,25 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
       // then
       expect(props.showNotification).toHaveBeenCalledWith({
         tag: 'mediations-manager',
-        text: 'Cette offre n’apparaîtra pas dans l’app pass Culture.',
+        text:
+          'Cette offre ne sera pas mise en avant dans l’application Pass Culture mais sera accessible via la recherche par mots-clés.',
         tooltip: {
-          children: <span> Pourquoi ? </span>,
+          children: <span>
+            {'Pourquoi ?'}
+                    </span>,
           place: 'bottom',
           tip: NO_MEDIATION_TOOLTIP,
-          type: 'info'
+          type: 'info',
         },
-        type: 'warning'
+        type: 'warning',
       })
     })
 
-    it('shouldn\'t display a notification if a notification is already present', () => {
+    it("shouldn't display a notification if a notification is already present", () => {
       // given
       props.hasMediations = true
       props.atLeastOneActiveMediation = false
-      props.notification = {text: 'bla bla bla'}
+      props.notification = { text: 'bla bla bla' }
 
       // when
       shallow(<MediationsManager {...props} />)
@@ -103,7 +109,7 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
       wrapper.unmount()
 
       // then
-      expect(props.closeNotification).toHaveBeenCalled()
+      expect(props.closeNotification).toHaveBeenCalledWith()
     })
 
     it('should render a NavLink component when there is an offer', () => {
