@@ -164,6 +164,12 @@ CURRENT_RULES = [
 ]
 
 
+class AppliedReimbursement:
+    def __init__(self, reimbursement_rule: ReimbursementRules, reimbursed_amount: Decimal):
+        self.rule = reimbursement_rule
+        self.amount = reimbursed_amount
+
+
 class BookingReimbursement:
     def __init__(self, booking: Booking, reimbursement: ReimbursementRules, reimbursed_amount: Decimal):
         self.booking = booking
@@ -279,17 +285,17 @@ def find_all_booking_reimbursements(bookings: List[Booking],
 
         potential_rules = _find_potential_rules(booking, active_rules, cumulative_bookings_value)
         elected_rule = determine_elected_rule(booking, potential_rules)
-        reimbursements.append(BookingReimbursement(booking, elected_rule['rule'], elected_rule['amount']))
+        reimbursements.append(BookingReimbursement(booking, elected_rule.rule, elected_rule.amount))
 
     return reimbursements
 
 
-def determine_elected_rule(booking, potential_rules):
-    if any(map(lambda r: r['rule'] == ReimbursementRules.BOOK_REIMBURSEMENT, potential_rules)):
-        elected_rule = build_rule_for_reimbursement(ReimbursementRules.BOOK_REIMBURSEMENT,
-                                                    ReimbursementRules.BOOK_REIMBURSEMENT.value.apply(booking))
+def determine_elected_rule(booking: Booking, potential_rules: List[AppliedReimbursement]) -> AppliedReimbursement:
+    if any(map(lambda r: r.rule == ReimbursementRules.BOOK_REIMBURSEMENT, potential_rules)):
+        elected_rule = AppliedReimbursement(ReimbursementRules.BOOK_REIMBURSEMENT,
+                                            ReimbursementRules.BOOK_REIMBURSEMENT.value.apply(booking))
     else:
-        elected_rule = min(potential_rules, key=lambda x: x['amount'])
+        elected_rule = min(potential_rules, key=lambda x: x.amount)
     return elected_rule
 
 
@@ -300,12 +306,8 @@ def _find_potential_rules(booking: Booking,
     for rule in rules:
         if rule.value.is_active and rule.value.is_relevant(booking, cumulative_value=cumulative_bookings_value):
             reimbursed_amount = rule.value.apply(booking)
-            relevant_rules.append(build_rule_for_reimbursement(rule, reimbursed_amount))
+            relevant_rules.append(AppliedReimbursement(rule, reimbursed_amount))
     return relevant_rules
-
-
-def build_rule_for_reimbursement(rule: ReimbursementRules, reimbursed_amount: Decimal) -> dict:
-    return {'rule': rule, 'amount': reimbursed_amount}
 
 
 def generate_reimbursement_details_csv(reimbursement_details: List[ReimbursementDetails]):
