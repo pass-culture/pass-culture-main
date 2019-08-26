@@ -13,7 +13,6 @@ import getIsTransitionDetailsUrl from '../../../../helpers/getIsTransitionDetail
 class Deck extends Component {
   constructor(props) {
     super(props)
-    this.currentReadRecommendationId = null
     this.state = {
       refreshKey: 0,
     }
@@ -34,7 +33,8 @@ class Deck extends Component {
 
     if (isTransitionDetailsUrl) {
       const { pathname, search } = location
-      history.replace(`${pathname.split('/transition')[0]}${search}`)
+      const nextUrl = `${pathname.split('/transition')[0]}${search}`
+      history.replace(nextUrl)
     }
   }
 
@@ -117,6 +117,11 @@ class Deck extends Component {
     }
   }
 
+  buildCloseToUrl = () => {
+    const { location, match } = this.props
+    return getUrlWithoutDetailsPart(location, match) + '/transition'
+  }
+
   renderDraggableCards() {
     const {
       currentRecommendation,
@@ -150,7 +155,7 @@ class Deck extends Component {
         speed={{ x: 5 }}
       >
         <div className="is-overlay">
-          <div className="inner is-relative transition-appear">
+          <div className="inner is-relative">
             {previousRecommendation && <CardContainer position="previous" />}
             <CardContainer position="current" />
             {nextRecommendation && <CardContainer position="next" />}
@@ -158,11 +163,6 @@ class Deck extends Component {
         </div>
       </Draggable>
     )
-  }
-
-  buildCloseToUrl = () => {
-    const { location, match } = this.props
-    return getUrlWithoutDetailsPart(location, match) + '/transition'
   }
 
   render() {

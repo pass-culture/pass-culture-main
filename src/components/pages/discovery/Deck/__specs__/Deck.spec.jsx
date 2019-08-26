@@ -2,149 +2,135 @@ import React from 'react'
 import { shallow } from 'enzyme'
 
 import Deck from '../Deck'
-
-const dispatchMock = jest.fn()
-const handleRequestPutRecommendationsMock = jest.fn()
+import CloseLink from '../../../../layout/Header/CloseLink/CloseLink'
 
 describe('src | components | pages | discovery | Deck | Deck', () => {
-  const initialProps = {
-    backButton: true,
-    currentRecommendation: {},
-    dispatch: dispatchMock,
-    draggable: true,
-    handleRequestPutRecommendations: handleRequestPutRecommendationsMock,
-    height: 947,
-    history: {
-      push: jest.fn(),
-      replace: jest.fn(),
-    },
-    isFlipDisabled: false,
-    location: {
-      pathname: '',
-      search: '',
-    },
-    match: {
-      params: {},
-    },
-    nextLimit: 50,
-    previousLimit: 40,
-    recommendations: [{}],
-    width: 500,
-  }
+  let props
+
+  beforeEach(() => {
+    props = {
+      backButton: true,
+      currentRecommendation: {
+        bookingsIds: [],
+      },
+      dispatch: jest.fn(),
+      draggable: true,
+      handleRequestPutRecommendations: jest.fn(),
+      height: 947,
+      history: {
+        push: jest.fn(),
+        replace: jest.fn(),
+      },
+      isFlipDisabled: false,
+      location: {
+        pathname: '',
+        search: '',
+      },
+      match: {
+        params: {},
+      },
+      nextLimit: 50,
+      previousLimit: 40,
+      recommendations: [{}],
+      width: 500,
+    }
+  })
 
   it('should match the snapshot', () => {
     // when
-    const wrapper = shallow(<Deck {...initialProps} />)
+    const wrapper = shallow(<Deck {...props} />)
 
     // then
     expect(wrapper).toMatchSnapshot()
   })
 
-  describe('react functions', () => {
-    describe('constructor', () => {
-      it('should initialize state correctly', () => {
-        // when
-        const wrapper = shallow(<Deck {...initialProps} />)
-        const expected = {
-          refreshKey: 0,
-        }
+  describe('render', () => {
+    it('should render a Deck component with a default state', () => {
+      // when
+      const wrapper = shallow(<Deck {...props} />)
 
-        // then
-        expect(wrapper.state()).toStrictEqual(expected)
-        expect(wrapper.instance().currentReadRecommendationId).toStrictEqual(null)
+      // then
+      expect(wrapper.state()).toStrictEqual({
+        refreshKey: 0,
       })
     })
 
-    describe('componentDidMount', () => {
-      describe('when there is recommendations', () => {
-        it('should not refresh the key of draggable component', () => {
-          // given
-          const props = {
-            backButton: true,
-            currentRecommendation: {
-              bookingsIds: [],
-            },
-            dispatch: dispatchMock,
-            draggable: true,
-            handleRequestPutRecommendations: handleRequestPutRecommendationsMock,
-            height: 947,
-            history: {
-              push: jest.fn(),
-            },
-            isFlipDisabled: false,
-            location: {
-              pathname: '',
-              search: '',
-            },
-            match: {
-              params: {
-                mediationId: 'HM',
-                offerId: 'KQ',
-              },
-            },
-            nextLimit: 50,
-            previousLimit: 40,
-            recommendations: [{}],
-            width: 500,
-          }
+    it('should render a CloseLink component with the right props when card detail is visible', () => {
+      // given
+      props.location = {
+        pathname: '/fake-url',
+        search: '',
+      }
+      props.match = {
+        params: {
+          details: 'details',
+        },
+      }
 
-          // when
-          const wrapper = shallow(<Deck {...props} />)
+      // when
+      const wrapper = shallow(<Deck {...props} />)
 
-          // then
-          expect(wrapper.state()).toStrictEqual({ refreshKey: 0 })
-        })
-      })
-
-      describe('when there is no recommendations or currentRecommendation available', () => {
-        it('should call handleRefreshedDraggableKey', () => {
-          // given
-          const props = {
-            backButton: true,
-            dispatch: dispatchMock,
-            draggable: true,
-            handleRequestPutRecommendations: handleRequestPutRecommendationsMock,
-            height: 947,
-            history: {
-              push: jest.fn(),
-            },
-            isFlipDisabled: false,
-            location: {
-              pathname: '',
-              search: '',
-            },
-            match: {
-              params: {
-                mediationId: 'HM',
-                offerId: 'KQ',
-              },
-            },
-            nextLimit: 50,
-            previousLimit: 40,
-            recommendations: [],
-            width: 500,
-          }
-
-          // when
-          const wrapper = shallow(<Deck {...props} />)
-          wrapper.setProps(props)
-
-          // then
-          expect(wrapper.state()).toStrictEqual({ refreshKey: 1 })
-        })
-      })
+      // then
+      const closeLink = wrapper.find(CloseLink)
+      expect(closeLink).toHaveLength(1)
+      expect(closeLink.prop('closeTitle')).toBe('Fermer')
+      expect(closeLink.prop('closeTo')).toBe('/fake-url/transition')
     })
 
-    describe('componentWillUnmount', () => {
-      it('should clearTimeout', () => {
-        jest.useFakeTimers()
-        // when
-        const wrapper = shallow(<Deck {...initialProps} />)
-        wrapper.unmount()
+    it('should replace url when Deck component is updated and current url contains "transition" as query param', () => {
+      // given
+      props.location = {
+        pathname: '/fake-url',
+        search: '',
+      }
+      props.match = {
+        params: {
+          details: 'transition',
+        },
+      }
+      const wrapper = shallow(<Deck {...props} />)
+      props.areDetailsVisible = false
 
-        // then
-        expect(clearTimeout).toHaveBeenCalledWith(2000)
-      })
+      // when
+      wrapper.setProps({ ...props })
+
+      // then
+      expect(props.history.replace).toHaveBeenCalledWith('/fake-url')
+    })
+
+    it('should not replace url when Deck component is updated and current url does not contains "transition" as query param', () => {
+      // given
+      props.location = {
+        pathname: '/fake-url',
+        search: '',
+      }
+      props.match = {
+        params: {
+          details: '',
+        },
+      }
+      const wrapper = shallow(<Deck {...props} />)
+      props.areDetailsVisible = false
+
+      // when
+      wrapper.setProps({ ...props })
+
+      // then
+      expect(props.history.replace).not.toHaveBeenCalledWith()
+    })
+  })
+
+  describe('componentWillUnmount', () => {
+    it('should clearTimeout', () => {
+      // given
+      jest.useFakeTimers()
+      const wrapper = shallow(<Deck {...props} />)
+
+      // when
+      wrapper.unmount()
+
+      // then
+      expect(clearTimeout).toHaveBeenCalledWith(2000)
     })
   })
 })

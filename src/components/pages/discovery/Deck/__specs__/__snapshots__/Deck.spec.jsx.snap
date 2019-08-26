@@ -5,7 +5,11 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Deck
     backButton={true}
-    currentRecommendation={Object {}}
+    currentRecommendation={
+      Object {
+        "bookingsIds": Array [],
+      }
+    }
     dispatch={[MockFunction]}
     draggable={true}
     handleRequestPutRecommendations={[MockFunction]}
@@ -106,7 +110,7 @@ ShallowWrapper {
             className="is-overlay"
           >
             <div
-              className="inner is-relative transition-appear"
+              className="inner is-relative"
             >
               <withSizes(withRouter(Connect(Card)))
                 position="current"
@@ -146,7 +150,7 @@ ShallowWrapper {
             className="is-overlay"
           >
             <div
-              className="inner is-relative transition-appear"
+              className="inner is-relative"
             >
               <withSizes(withRouter(Connect(Card)))
                 position="current"
@@ -185,7 +189,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": <div
-              className="inner is-relative transition-appear"
+              className="inner is-relative"
             >
               <withSizes(withRouter(Connect(Card)))
                 position="current"
@@ -206,7 +210,7 @@ ShallowWrapper {
                 />,
                 null,
               ],
-              "className": "inner is-relative transition-appear",
+              "className": "inner is-relative",
             },
             "ref": null,
             "rendered": Array [
@@ -302,7 +306,7 @@ ShallowWrapper {
               className="is-overlay"
             >
               <div
-                className="inner is-relative transition-appear"
+                className="inner is-relative"
               >
                 <withSizes(withRouter(Connect(Card)))
                   position="current"
@@ -342,7 +346,7 @@ ShallowWrapper {
               className="is-overlay"
             >
               <div
-                className="inner is-relative transition-appear"
+                className="inner is-relative"
               >
                 <withSizes(withRouter(Connect(Card)))
                   position="current"
@@ -381,7 +385,7 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": <div
-                className="inner is-relative transition-appear"
+                className="inner is-relative"
               >
                 <withSizes(withRouter(Connect(Card)))
                   position="current"
@@ -402,7 +406,7 @@ ShallowWrapper {
                   />,
                   null,
                 ],
-                "className": "inner is-relative transition-appear",
+                "className": "inner is-relative",
               },
               "ref": null,
               "rendered": Array [
