@@ -8,7 +8,7 @@ import ErrorCatcherContainer from './components/layout/ErrorCatcher/ErrorCatcher
 import browserRoutes from './components/router/browserRoutes'
 import MenuContainer from './components/layout/Menu/MenuContainer'
 import Notifications from './components/layout/notifications'
-import Overlay from './components/layout/Overlay'
+import OverlayContainer from './components/layout/Overlay/OverlayContainer'
 import SharePopinContainer from './components/layout/Share/SharePopinContainer'
 import Splash from './components/layout/Splash'
 import { ROOT_PATH, IS_DEV, PROJECT_NAME } from './utils/config'
@@ -37,7 +37,7 @@ const App = ({ children, history, location }) => {
         <ErrorCatcherContainer>
           {/* TODO: mettre ici le composant from password */}
           {children}
-          <Overlay />
+          <OverlayContainer />
           <Route
             component={MenuContainer}
             history={history}

@@ -1,6 +1,5 @@
-import React from 'react'
 import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
+import React from 'react'
 import { Transition } from 'react-transition-group'
 
 const duration = 500
@@ -35,8 +34,5 @@ Overlay.propTypes = {
   isVisible: PropTypes.bool.isRequired,
 }
 
-const mapStateToProps = ({ overlay, share }) => ({
-  isVisible: overlay || share.visible,
-})
 
-export default connect(mapStateToProps)(Overlay)
+export default Overlay
