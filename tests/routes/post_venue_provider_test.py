@@ -1,9 +1,11 @@
+from unittest.mock import patch
+
 import pytest
 
-from models import PcObject, Provider
+from models import PcObject, ApiErrors
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_offerer, create_venue, create_user, activate_provider, \
-    check_titelive_stocks_api_is_down, create_user_offerer, create_venue_provider, create_product_with_thing_type
+from tests.test_utils import create_offerer, create_venue, create_user, activate_provider, \
+    check_titelive_stocks_api_is_down, create_product_with_thing_type
 from utils.human_ids import humanize
 
 
@@ -39,3 +41,31 @@ class Post:
             assert 'id' in json_response
             venue_provider_id = json_response['id']
             assert json_response['lastSyncDate'] is None
+
+    class Returns400:
+        @clean_database
+        @patch('routes.venue_providers.validate_new_venue_provider_information')
+        def when_api_error_raise_from_payload_validation(self, validate_new_venue_provider_information, app):
+            # given
+            api_errors = ApiErrors()
+            api_errors.status_code = 400
+            api_errors.add_error('errors', 'error received')
+
+            validate_new_venue_provider_information.side_effect = api_errors
+
+            user = create_user(is_admin=True, can_book_free_offers=False)
+            PcObject.save(user)
+            auth_request = TestClient(app.test_client()) \
+                .with_auth(email=user.email)
+            venue_provider_data = {
+                'providerId': 'B9',
+                'venueId': 'B9',
+                'venueIdAtOfferProvider': '77567146400110'
+            }
+
+            # when
+            response = auth_request.post('/venueProviders', json=venue_provider_data)
+
+            # then
+            assert response.status_code == 400
+            assert ['error received'] == response.json['errors']

@@ -12,7 +12,7 @@ def _validate_existing_provider(provider_id: str):
     if not is_provider_available_for_pro_usage:
         errors = ApiErrors()
         errors.status_code = 400
-        errors.add_error('provider', "Ce fournisseur n'est pas présent ou pas activé")
+        errors.add_error('provider', "Cette source n'est pas disponible")
         raise errors
 
 
@@ -23,7 +23,7 @@ def _validate_existing_venue_provider(provider_id: int, venue_id: int, venue_id_
     if is_existing_venue_provider:
         errors = ApiErrors()
         errors.status_code = 400
-        errors.add_error('venueProvider', "Il y a déjà un fournisseur pour votre identifiant")
+        errors.add_error('venueProvider', "Votre lieu est déjà lié à cette source")
         raise errors
 
 

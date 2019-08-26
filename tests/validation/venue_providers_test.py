@@ -105,7 +105,7 @@ class ValidateNewVenueProviderInformationTest:
 
         # then
         assert errors.value.status_code == 400
-        assert errors.value.errors['provider'] == ["Ce fournisseur n'est pas présent ou pas activé"]
+        assert errors.value.errors['provider'] == ["Cette source n'est pas disponible"]
 
     @clean_database
     def test_raise_errors_if_provider_is_not_active(self, app):
@@ -129,7 +129,7 @@ class ValidateNewVenueProviderInformationTest:
 
         # then
         assert errors.value.status_code == 400
-        assert errors.value.errors['provider'] == ["Ce fournisseur n'est pas présent ou pas activé"]
+        assert errors.value.errors['provider'] == ["Cette source n'est pas disponible"]
 
     @clean_database
     def test_raise_errors_if_provider_is_not_enable_for_pro(self, app):
@@ -153,7 +153,7 @@ class ValidateNewVenueProviderInformationTest:
 
         # then
         assert errors.value.status_code == 400
-        assert errors.value.errors['provider'] == ["Ce fournisseur n'est pas présent ou pas activé"]
+        assert errors.value.errors['provider'] == ["Cette source n'est pas disponible"]
 
     @clean_database
     def test_raise_errors_if_venue_provider_already_exists(self, app):
@@ -182,4 +182,4 @@ class ValidateNewVenueProviderInformationTest:
 
         # then
         assert errors.value.status_code == 400
-        assert errors.value.errors['venueProvider'] == ["Il y a déjà un fournisseur pour votre identifiant"]
+        assert errors.value.errors['venueProvider'] == ["Votre lieu est déjà lié à cette source"]
