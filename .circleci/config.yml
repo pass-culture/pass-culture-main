@@ -43,6 +43,19 @@ jobs: # a collection of steps
             coveralls
       - store_artifacts:
           path: htmlcov
+  build-container:
+    machine:
+      image: circleci/classic:latest
+    working_directory: ~/pass-culture-main/api
+    steps:
+      - checkout:
+          path: ~/pass-culture-main/api
+      - run:
+          name: Build docker image
+          command: |
+            docker build -t passcultureapp/api-flask:latest .
+            docker login -u passcultureapp -p $DOCKERHUB_PASSWORD
+            docker push passcultureapp/api-flask:latest
 
   check-dependencies:
     working_directory: ~/pass-culture-api-ci # directory where steps will run
@@ -218,16 +231,13 @@ workflows:
             branches:
               ignore:
                 - production
-      - functional-tests-webapp:
+      - build-container:
           filters:
             branches:
               only:
-                - staging
-      - functional-tests-pro:
-          filters:
-            branches:
-              only:
-                - staging
+                - master
+                - PC-2168-image-docker-custom-flask
+
   nightly:
     triggers:
       - schedule:
