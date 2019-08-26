@@ -162,7 +162,7 @@ describe('src | components | matomo | Matomo', () => {
       )
 
       // then
-      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'BENEFICIARY'])
+      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'BENEFICIARY on WEBAPP'])
     })
 
     it('should dispatch the correct user id when user email contains team domain even if canBookFreeOffers is set to true', () => {
@@ -189,7 +189,7 @@ describe('src | components | matomo | Matomo', () => {
       )
 
       // then
-      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'TECH or BIZ USER'])
+      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'TECH or BIZ on WEBAPP'])
     })
 
     it('should dispatch the correct user id when user email contains sandbox domain even if canBookFreeOffers is set to true', () => {
@@ -216,7 +216,7 @@ describe('src | components | matomo | Matomo', () => {
       )
 
       // then
-      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'SANDBOX USER'])
+      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'SANDBOX USER on WEBAPP'])
     })
   })
 })
