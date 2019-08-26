@@ -1,10 +1,11 @@
 from models.offer_type import EventType
 from models.pc_object import PcObject
 from sandboxes.scripts.utils.select import remove_every
-from utils.logger import logger
 from tests.test_utils import create_stock_from_event_occurrence, get_price_by_short_name, get_occurrence_short_name
+from utils.logger import logger
 
 EVENT_OCCURRENCES_WITH_STOCKS_REMOVE_MODULO = 4
+
 
 def create_industrial_event_stocks(event_occurrences_by_name):
     logger.info('create_industrial_event_stocks')
@@ -27,12 +28,12 @@ def create_industrial_event_stocks(event_occurrences_by_name):
         available = 10
 
         short_name = get_occurrence_short_name(
-          event_occurrence_with_stocks_name
+            event_occurrence_with_stocks_name
         )
         price = get_price_by_short_name(short_name)
         fcount = short_names_to_increase_price.count(short_name)
         if (fcount > 2):
-          price = price + fcount
+            price = price + fcount
         short_names_to_increase_price.append(short_name)
 
         if event_occurrence_with_stocks['offer'].product.offerType['value'] == str(EventType.ACTIVATION):

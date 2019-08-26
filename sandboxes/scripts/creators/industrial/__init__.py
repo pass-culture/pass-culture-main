@@ -1,5 +1,7 @@
 from sandboxes.scripts.creators.industrial.create_industrial_admin_users import *
 from sandboxes.scripts.creators.industrial.create_industrial_bookings import *
+from sandboxes.scripts.creators.industrial.create_industrial_criterion import create_industrial_criteria, \
+    associate_criterion_to_one_offer_with_mediation
 from sandboxes.scripts.creators.industrial.create_industrial_deposits import *
 from sandboxes.scripts.creators.industrial.create_industrial_event_products import *
 from sandboxes.scripts.creators.industrial.create_industrial_event_occurrences import *
@@ -16,8 +18,8 @@ from sandboxes.scripts.creators.industrial.create_industrial_thing_products impo
 from sandboxes.scripts.creators.industrial.create_industrial_venues import *
 from sandboxes.scripts.creators.industrial.create_industrial_webapp_users import *
 
-def save_industrial_sandbox():
 
+def save_industrial_sandbox():
     (
         offerers_by_name,
         pro_users_by_name,
@@ -72,6 +74,10 @@ def save_industrial_sandbox():
         offers_by_name,
         users_by_name
     )
+
+    criteria_by_name = create_industrial_criteria()
+
+    associate_criterion_to_one_offer_with_mediation(offers_by_name, criteria_by_name)
 
     create_industrial_bookings(recommendations_by_name, stocks_by_name)
 

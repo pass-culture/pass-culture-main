@@ -5,6 +5,7 @@ from tests.test_utils import create_offer_with_event_product
 DEACTIVATED_OFFERS_PICK_MODULO = 3
 EVENTS_PER_OFFERER_WITH_PHYSICAL_VENUE = 5
 
+
 def create_industrial_event_offers(
         events_by_name,
         offerers_by_name
@@ -32,12 +33,12 @@ def create_industrial_event_offers(
 
         for venue_event_index in range(0, EVENTS_PER_OFFERER_WITH_PHYSICAL_VENUE):
 
-            rest_event_index = (venue_event_index + event_index)%len(event_items)
+            rest_event_index = (venue_event_index + event_index) % len(event_items)
 
             (event_name, event) = event_items[rest_event_index]
 
             name = "{} / {}".format(event_name, event_venue.name)
-            if offer_index%DEACTIVATED_OFFERS_PICK_MODULO == 0:
+            if offer_index % DEACTIVATED_OFFERS_PICK_MODULO == 0:
                 is_active = False
             else:
                 is_active = True
