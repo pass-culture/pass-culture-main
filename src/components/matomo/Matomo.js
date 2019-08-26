@@ -5,11 +5,11 @@ const SANDBOX_DOMAIN_REGEX = /^[a-zA-Z0-9_.+-]+@(momarx.io|hlettre.com|youpi.com
 
 const getUserType = email => {
   if (email.match(SANDBOX_DOMAIN_REGEX)) {
-    return 'SANDBOX USER'
+    return 'SANDBOX USER on PRO'
   } else if (email.match(TEAM_DOMAIN_REGEX)) {
-    return 'TECH or BIZ USER'
+    return 'TECH or BIZ USER on PRO'
   } else {
-    return 'PRO USER'
+    return 'PRO USER on PRO'
   }
 }
 
@@ -19,7 +19,7 @@ const Matomo = ({ location, user }) => {
   Matomo.push(['setCustomUrl', location.pathname])
   Matomo.push(['setDocumentTitle', document.title])
 
-  let userId = 'ANONYMOUS'
+  let userId = 'ANONYMOUS on PRO'
 
   if (user) {
     userId = getUserType(user.email)

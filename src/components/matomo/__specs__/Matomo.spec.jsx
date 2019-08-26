@@ -73,7 +73,7 @@ describe('src | components | matomo | Matomo', () => {
       )
 
       // then
-      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'ANONYMOUS'])
+      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'ANONYMOUS on PRO'])
     })
   })
 
@@ -92,7 +92,7 @@ describe('src | components | matomo | Matomo', () => {
       )
 
       // then
-      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'TECH or BIZ USER'])
+      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'TECH or BIZ USER on PRO'])
     })
 
     it('should dispatch pro user id when user when email is not one reserved', () => {
@@ -109,7 +109,7 @@ describe('src | components | matomo | Matomo', () => {
       )
 
       // then
-      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'PRO USER'])
+      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'PRO USER on PRO'])
     })
 
     it('should dispatch sandbox user id when user email contains sandbox domain', () => {
@@ -126,7 +126,7 @@ describe('src | components | matomo | Matomo', () => {
       )
 
       // then
-      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'SANDBOX USER'])
+      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'SANDBOX USER on PRO'])
     })
   })
 })
