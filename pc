@@ -263,19 +263,8 @@ elif [[ "$CMD" == "restore-db" ]]; then
 
 # Restore a postgresql database from file (non anonymized)
 elif [[ "$CMD" == "restore-db-intact" ]]; then
-  confirm "Warning: your database will be wiped. Is this OK ?"
-  if [[ $# == 0 ]]; then
-    echo "Usage : pc restore-db-intact <backup_file> [arguments]"
-    exit
-  fi
-  backup_file="$1"
-  RUN='source "$ROOT_PATH"/env_file;
-  PGPASSWORD="$POSTGRES_PASSWORD" psql --host 127.0.0.1
-                               --port 5434
-                               --username "$POSTGRES_USER"
-                               --dbname "$POSTGRES_DB"
-                               -a -f "$ROOT_PATH"/infra/scalingo/clean_database.sql;
-  cat "'$backup_file'" | docker exec -i pc-postgres pg_restore -d pass_culture -U pass_culture -c'
+  source "$INFRA_SCRIPTS_PATH"/restore_db.sh
+  restore_db_intact $1
 
 
 # Prepare backend for local use
@@ -698,7 +687,7 @@ fi
 
 if [[ $PWD == "/home/deploy/pass-culture-main" ]]; then
 	echo $RUN
-  eval $RUNe
+  eval $RUN
 else
 	if [[ "$ENV" == "production" ]]; then
 	  echo "$RUN" | ssh deploy@api.passculture.beta.gouv.fr bash
