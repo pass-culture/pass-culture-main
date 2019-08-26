@@ -26,7 +26,6 @@ app = Flask(__name__, static_url_path='/static')
 login_manager = LoginManager()
 admin = Admin(name='pc Back Office', url='/pc/back-office', template_mode='bootstrap3')
 
-
 if feature_request_profiling_enabled():
     profiling_restrictions = [os.environ.get('PROFILE_REQUESTS_LINES_LIMIT', 100)]
     app.config['PROFILE'] = True
@@ -42,10 +41,9 @@ app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SECURE'] = False if IS_DEV else True
 app.config['REMEMBER_COOKIE_DURATION'] = 90 * 24 * 3600
 app.config['PERMANENT_SESSION_LIFETIME'] = 90 * 24 * 3600
-app.config['REMEMBER_COOKIE_HTTPONLY'] = True
-app.config['REMEMBER_COOKIE_SECURE'] = True
 app.config['FLASK_ADMIN_SWATCH'] = 'flatly'
 app.config['FLASK_ADMIN_FLUID_LAYOUT'] = True
+
 
 @app.teardown_request
 def remove_db_session(exc):
@@ -59,9 +57,9 @@ admin.init_app(app)
 db.init_app(app)
 login_manager.init_app(app)
 cors = CORS(app,
-    resources={r"/*": {"origins": "*"}},
-    supports_credentials=True
-)
+            resources={r"/*": {"origins": "*"}},
+            supports_credentials=True
+            )
 
 # make Werkzeug match routing rules with or without a trailing slash
 app.url_map.strict_slashes = False
@@ -74,6 +72,7 @@ with app.app_context():
         install_local_providers()
         install_features()
     import utils.login_manager
+
     install_routes()
     install_admin_views(admin, db.session)
 
@@ -81,7 +80,6 @@ with app.app_context():
 
     app.get_contact = get_contact
     app.subscribe_newsletter = subscribe_newsletter
-
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
