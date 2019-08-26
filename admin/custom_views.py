@@ -7,6 +7,26 @@ from domain.user_activation import is_import_status_change_allowed, IMPORT_STATU
 from models import ImportStatus, PcObject, BeneficiaryImport
 
 
+class OfferAdminView(BaseAdminView):
+    can_edit = True
+    column_list = ['id', 'name', 'type', 'baseScore', 'criteria']
+    column_labels = dict(name='Nom', type='Type', baseScore='Score', criteria='Tag')
+    column_searchable_list = ['name']
+    column_filters = ['type']
+    form_columns = ['criteria']
+
+
+class CriteriaAdminView(BaseAdminView):
+    can_create = True
+    can_edit = True
+    can_delete = True
+    column_list = ['id', 'name', 'description', 'scoreDelta']
+    column_labels = dict(name='Nom', description='Description', scoreDelta='Score')
+    column_searchable_list = ['name', 'description']
+    column_filters = []
+    form_columns = ['name', 'description', 'scoreDelta']
+
+
 class OffererAdminView(BaseAdminView):
     can_edit = True
     column_list = ['id', 'name', 'siren', 'city', 'postalCode', 'address']
@@ -22,7 +42,8 @@ class UserAdminView(BaseAdminView):
                    'departementCode', 'phoneNumber', 'postalCode', 'resetPasswordToken', 'validationToken']
     column_labels = dict(
         email='Email', canBookFreeOffers='Peut réserver', firstName='Prénom', lastName='Nom',
-        publicName="Nom d'utilisateur", dateOfBirth='Date de naissance', departementCode='Département', phoneNumber='Numéro de téléphone', postalCode='Code postal',
+        publicName="Nom d'utilisateur", dateOfBirth='Date de naissance', departementCode='Département',
+        phoneNumber='Numéro de téléphone', postalCode='Code postal',
         resetPasswordToken='Jeton d\'activation et réinitialisation de mot de passe',
         validationToken='Jeton de validation d\'adresse email'
     )
@@ -50,7 +71,8 @@ class FeatureAdminView(BaseAdminView):
 
 class BeneficiaryImportView(BaseAdminView):
     can_edit = True
-    column_list = ['beneficiary.email', 'demarcheSimplifieeApplicationId', 'currentStatus', 'updatedAt', 'detail', 'authorEmail']
+    column_list = ['beneficiary.email', 'demarcheSimplifieeApplicationId', 'currentStatus', 'updatedAt', 'detail',
+                   'authorEmail']
     column_labels = {
         'demarcheSimplifieeApplicationId': 'Dossier DMS',
         'beneficiary.email': 'Bénéficiaire',
@@ -65,11 +87,13 @@ class BeneficiaryImportView(BaseAdminView):
 
     def edit_form(self, obj=None):
         class _NewStatusForm(Form):
-            beneficiary = StringField('Bénéficiaire', default=obj.beneficiary.email if obj.beneficiary else 'N/A', render_kw={'readonly': True})
+            beneficiary = StringField('Bénéficiaire', default=obj.beneficiary.email if obj.beneficiary else 'N/A',
+                                      render_kw={'readonly': True})
             demarche_simplifiee_application_id = StringField(
                 'Dossier DMS', default=obj.demarcheSimplifieeApplicationId, render_kw={'readonly': True}
             )
-            statuses = TextAreaField('Status précédents', default=obj.history, render_kw={'readonly': True, 'rows': len(obj.statuses)})
+            statuses = TextAreaField('Status précédents', default=obj.history,
+                                     render_kw={'readonly': True, 'rows': len(obj.statuses)})
             detail = StringField('Raison du changement de statut')
             status = SelectField('Nouveau statut', choices=[(s.name, s.value) for s in ImportStatus])
 
