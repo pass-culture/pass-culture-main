@@ -43,7 +43,7 @@ describe('src | components | layout | Verso', () => {
 
     // then
     const firstDiv = wrapper.find('div').first()
-    expect(firstDiv.prop('className')).toBe('verso extra-classname flipped')
+    expect(firstDiv.prop('className')).toBe('verso is-overlay extra-classname flipped')
   })
 
   it('should render a div with the proper css classes when details are not visible', () => {
@@ -55,7 +55,7 @@ describe('src | components | layout | Verso', () => {
 
     // then
     const firstDiv = wrapper.find('div').first()
-    expect(firstDiv.prop('className')).toBe('verso extra-classname')
+    expect(firstDiv.prop('className')).toBe('verso is-overlay extra-classname')
   })
 
   it('should show offer view when is not tuto', () => {

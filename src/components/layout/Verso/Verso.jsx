@@ -31,12 +31,12 @@ class Verso extends React.PureComponent {
 
     return (
       <div
-        className={classnames('verso', extraClassName, {
+        className={classnames('verso is-overlay', extraClassName, {
           flipped: areDetailsVisible,
         })}
       >
         <div
-          className="verso-wrapper"
+          className="verso-wrapper is-black-text scroll-y flex-rows is-relative text-left"
           ref={this.versoWrapper}
         >
           <VersoHeaderContainer

@@ -33,7 +33,7 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <div
-          className="verso-wrapper"
+          className="verso-wrapper is-black-text scroll-y flex-rows is-relative text-left"
         >
           <withRouter(withSizes(VersoHeader))
             backgroundColor="#ACE539"
@@ -60,7 +60,7 @@ ShallowWrapper {
           id="verso-footer"
         />,
       ],
-      "className": "verso extra-classname flipped",
+      "className": "verso is-overlay extra-classname flipped",
     },
     "ref": null,
     "rendered": Array [
@@ -88,7 +88,7 @@ ShallowWrapper {
               <withRouter(Connect(VersoContentOffer)) />
             </div>,
           ],
-          "className": "verso-wrapper",
+          "className": "verso-wrapper is-black-text scroll-y flex-rows is-relative text-left",
         },
         "ref": Object {
           "current": null,
@@ -168,7 +168,7 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <div
-            className="verso-wrapper"
+            className="verso-wrapper is-black-text scroll-y flex-rows is-relative text-left"
           >
             <withRouter(withSizes(VersoHeader))
               backgroundColor="#ACE539"
@@ -195,7 +195,7 @@ ShallowWrapper {
             id="verso-footer"
           />,
         ],
-        "className": "verso extra-classname flipped",
+        "className": "verso is-overlay extra-classname flipped",
       },
       "ref": null,
       "rendered": Array [
@@ -223,7 +223,7 @@ ShallowWrapper {
                 <withRouter(Connect(VersoContentOffer)) />
               </div>,
             ],
-            "className": "verso-wrapper",
+            "className": "verso-wrapper is-black-text scroll-y flex-rows is-relative text-left",
           },
           "ref": Object {
             "current": null,

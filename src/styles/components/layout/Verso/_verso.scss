@@ -4,7 +4,6 @@
   transform: translate(0, 100%);
   will-change: transform;
   height: 100%;
-  position: relative;
 
   &.flipped {
     // A remplacer par react-transition-group
