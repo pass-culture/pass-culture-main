@@ -1,33 +1,13 @@
 import PropTypes from 'prop-types'
 
-const TEAM_DOMAIN_REGEX = /^[a-zA-Z0-9_.+-]+@(octo.com|passculture.app|btmx.fr)/g
-const SANDBOX_DOMAIN_REGEX = /^[a-zA-Z0-9_.+-]+@(momarx.io|hlettre.com|youpi.com|violet.fr)/g
-
-const getUserType = email => {
-  if (email.match(SANDBOX_DOMAIN_REGEX)) {
-    return 'SANDBOX USER on PRO'
-  } else if (email.match(TEAM_DOMAIN_REGEX)) {
-    return 'TECH or BIZ USER on PRO'
-  } else {
-    return 'PRO USER on PRO'
-  }
-}
-
-const Matomo = ({ location, user }) => {
+const Matomo = ({ location, userId }) => {
   const Matomo = window._paq || []
-
   Matomo.push(['setCustomUrl', location.pathname])
   Matomo.push(['setDocumentTitle', document.title])
 
-  let userId = 'ANONYMOUS on PRO'
+  Matomo.push(['setUserId', userId + ' on PRO'])
 
-  if (user) {
-    userId = getUserType(user.email)
-  }
-
-  Matomo.push(['setUserId', userId])
-
-  if (!user) {
+  if (!userId) {
     Matomo.push(['resetUserId'])
   }
 

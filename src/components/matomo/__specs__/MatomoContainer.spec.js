@@ -10,7 +10,7 @@ describe('src | components | matomo | MatomoContainer', () => {
       const props = mapStateToProps(state)
 
       // then
-      expect(props).toStrictEqual({ user: { id: 'TY7' } })
+      expect(props).toStrictEqual({ userId: 'TY7' })
     })
   })
 })

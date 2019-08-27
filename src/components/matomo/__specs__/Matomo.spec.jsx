@@ -80,7 +80,7 @@ describe('src | components | matomo | Matomo', () => {
   describe('when user is logged', () => {
     it('should dispatch tech or biz user id when user email contains teams domain', () => {
       // given
-      store = mockStore({ user: { id: 'TY', email: 'fake@octo.com' } })
+      store = mockStore({ user: { id: 'TY' } })
 
       // when
       mount(
@@ -92,41 +92,7 @@ describe('src | components | matomo | Matomo', () => {
       )
 
       // then
-      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'TECH or BIZ USER on PRO'])
-    })
-
-    it('should dispatch pro user id when user when email is not one reserved', () => {
-      // given
-      store = mockStore({ user: { id: 'TY', email: 'fake@fake.com' } })
-
-      // when
-      mount(
-        <Router history={history}>
-          <Provider store={store}>
-            <MatomoContainer />
-          </Provider>
-        </Router>
-      )
-
-      // then
-      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'PRO USER on PRO'])
-    })
-
-    it('should dispatch sandbox user id when user email contains sandbox domain', () => {
-      // given
-      store = mockStore({ user: { id: 'TY', email: 'fake@youpi.com' } })
-
-      // when
-      mount(
-        <Router history={history}>
-          <Provider store={store}>
-            <MatomoContainer user={null} />
-          </Provider>
-        </Router>
-      )
-
-      // then
-      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'SANDBOX USER on PRO'])
+      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'TY on PRO'])
     })
   })
 })
