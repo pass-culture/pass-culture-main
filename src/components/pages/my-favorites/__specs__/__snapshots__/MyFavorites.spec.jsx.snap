@@ -4,10 +4,7 @@ exports[`src | components | pages | my-favorites | MyFavorites should match the 
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <MyFavorites
-    areFavoritesSelected={true}
     deleteFavorites={[MockFunction]}
-    handleEditMode={[MockFunction]}
-    isEditMode={false}
     loadMyFavorites={
       [MockFunction] {
         "calls": Array [
@@ -42,15 +39,15 @@ ShallowWrapper {
         Object {
           "id": 2,
           "mediation": Object {
-            "id": "FA",
+            "id": "FA2",
             "thumbUrl": "thumbUrl",
           },
-          "mediationId": "FA",
+          "mediationId": "FA2",
           "offer": Object {
-            "id": "ME",
+            "id": "ME2",
             "name": "name",
           },
-          "offerId": "ME",
+          "offerId": "ME2",
         },
       ]
     }

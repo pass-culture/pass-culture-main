@@ -18,8 +18,10 @@ class MyFavorites extends Component {
     super(props)
 
     this.state = {
+      isEditMode: false,
       isLoading: true,
       hasError: false,
+      offerIds: [],
     }
   }
 
@@ -46,14 +48,52 @@ class MyFavorites extends Component {
     })
   }
 
-  renderMyFavorites = (
-    areFavoritesSelected,
-    deleteFavorites,
-    handleEditMode,
-    isEditMode,
-    isEmpty,
-    myFavorites
-  ) => (
+  handleEditMode = () => {
+    this.setState(previousState => ({
+      isEditMode: !previousState.isEditMode,
+      offerIds: [],
+    }))
+  }
+
+  onToggleFavorite = offerId => () => {
+    let { offerIds } = this.state
+    let isUpdated = true
+
+    offerIds = offerIds.reduce((favoritesToDelete, currentFavorite) => {
+      if (currentFavorite === offerId) {
+        isUpdated = false
+      } else {
+        favoritesToDelete.push(currentFavorite)
+      }
+
+      return favoritesToDelete
+    }, [])
+
+    if (isUpdated) {
+      offerIds.push(offerId)
+    }
+
+    // Ceci n'est pas la bonne façon de faire d'après :
+    // https://reactjs.org/docs/react-component.html#setstate
+    // Il faudrait plutôt utiliser une fonction mais comme elle tourne deux fois
+    // d'affilé, je n'ai pas eu le choix.
+    this.setState({
+      offerIds,
+    })
+  }
+
+  deleteFavorites = (showFailModal, offerIds) => () => {
+    const { deleteFavorites } = this.props
+
+    this.setState(
+      {
+        offerIds: [],
+      },
+      deleteFavorites(showFailModal, offerIds)
+    )
+  }
+
+  renderMyFavorites = (areFavoritesNotSelected, isEditMode, isEmpty, myFavorites, offerIds) => (
     <main className={isEmpty ? 'teaser-main teaser-no-teasers' : 'teaser-main'}>
       {isEmpty ? (
         <NoItems sentence="Dès que vous aurez ajouté une offre en favori," />
@@ -63,15 +103,15 @@ class MyFavorites extends Component {
             <div className="mf-edit">
               <button
                 className="mf-delete-btn"
-                disabled={areFavoritesSelected}
-                onClick={deleteFavorites(showFailModal)}
+                disabled={areFavoritesNotSelected}
+                onClick={this.deleteFavorites(showFailModal, offerIds)}
                 type="button"
               >
                 {'Supprimer la sélection'}
               </button>
               <button
-                className="mf-edit-btn"
-                onClick={handleEditMode}
+                className="mf-done-btn"
+                onClick={this.handleEditMode}
                 type="button"
               >
                 {'Terminer'}
@@ -80,8 +120,8 @@ class MyFavorites extends Component {
           ) : (
             <div className="mf-done">
               <button
-                className="mf-done-btn"
-                onClick={handleEditMode}
+                className="mf-edit-btn"
+                onClick={this.handleEditMode}
                 type="button"
               >
                 {'Modifier'}
@@ -92,6 +132,8 @@ class MyFavorites extends Component {
             {myFavorites.map(myFavorite => (
               <MyFavoriteContainer
                 favorite={myFavorite}
+                handleToggleFavorite={this.onToggleFavorite}
+                isEditMode={isEditMode}
                 key={myFavorite.id}
               />
             ))}
@@ -102,15 +144,10 @@ class MyFavorites extends Component {
   )
 
   render() {
-    const {
-      areFavoritesSelected,
-      deleteFavorites,
-      handleEditMode,
-      isEditMode,
-      myFavorites,
-    } = this.props
-    const { hasError, isLoading } = this.state
+    const { myFavorites } = this.props
+    const { isEditMode, isLoading, hasError, offerIds } = this.state
     const isEmpty = myFavorites.length === 0
+    const areFavoritesNotSelected = offerIds.length === 0
 
     if (isLoading) {
       return (<LoaderContainer
@@ -126,12 +163,11 @@ class MyFavorites extends Component {
           title="Mes favoris"
         />
         {this.renderMyFavorites(
-          areFavoritesSelected,
-          deleteFavorites,
-          handleEditMode,
+          areFavoritesNotSelected,
           isEditMode,
           isEmpty,
-          myFavorites
+          myFavorites,
+          offerIds
         )}
         <MyFavoriteDetailsContainer bookingPath="/favoris/:details(details|transition)/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:booking(reservation)?/:bookingId?/:cancellation(annulation)?/:confirmation(confirmation)?" />
         <RelativeFooterContainer
@@ -144,16 +180,11 @@ class MyFavorites extends Component {
 }
 
 MyFavorites.defaultProps = {
-  areFavoritesSelected: true,
-  isEditMode: false,
   myFavorites: [],
 }
 
 MyFavorites.propTypes = {
-  areFavoritesSelected: PropTypes.bool,
   deleteFavorites: PropTypes.func.isRequired,
-  handleEditMode: PropTypes.func.isRequired,
-  isEditMode: PropTypes.bool,
   loadMyFavorites: PropTypes.func.isRequired,
   myFavorites: PropTypes.arrayOf(PropTypes.shape()),
   resetPageData: PropTypes.func.isRequired,

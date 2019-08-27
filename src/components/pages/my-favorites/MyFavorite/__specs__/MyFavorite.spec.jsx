@@ -60,7 +60,7 @@ describe('src | components | pages | my-favorites | MyFavorite | MyFavorite', ()
     })
 
     describe('when I am in an edit mode', () => {
-      it('should render a label', () => {
+      it('should render a checkbox', () => {
         // given
         props.isEditMode = true
 
@@ -68,7 +68,7 @@ describe('src | components | pages | my-favorites | MyFavorite | MyFavorite', ()
         const wrapper = shallow(<MyFavorite {...props} />)
 
         // then
-        const label = wrapper.find('label')
+        const checkbox = wrapper.find('.teaser-checkbox')
         const input = wrapper.find('input')
         const img = wrapper.find('img')
         const title = wrapper.find('.teaser-title').text()
@@ -76,7 +76,7 @@ describe('src | components | pages | my-favorites | MyFavorite | MyFavorite', ()
         const date = wrapper.find('.mf-wrapper > .teaser-date').text()
         const booked = wrapper.find('.mf-booked').text()
         const distance = wrapper.find('.mf-infos .teaser-distance').text()
-        expect(label).toHaveLength(1)
+        expect(checkbox).toHaveLength(1)
         expect(input).toHaveLength(1)
         expect(img).toHaveLength(0)
         expect(title).toBe('Fake offer name')
@@ -87,14 +87,14 @@ describe('src | components | pages | my-favorites | MyFavorite | MyFavorite', ()
       })
     })
 
-    describe('when click on label', () => {
+    describe('when click on checkbox', () => {
       it('should call handleToggleFavorite', () => {
         // given
         props.isEditMode = true
         const wrapper = shallow(<MyFavorite {...props} />)
 
         // when
-        wrapper.find('label').simulate('click')
+        wrapper.find('.teaser-checkbox').simulate('click')
 
         // then
         expect(props.handleToggleFavorite).toHaveBeenCalledWith(props.offerId)

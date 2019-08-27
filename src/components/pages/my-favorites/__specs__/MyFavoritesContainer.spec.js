@@ -7,10 +7,6 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
     it('should return my favorites', () => {
       // given
       const state = {
-        favorites: {
-          edit: false,
-          offerIds: [],
-        },
         data: {
           favorites: [],
         },
@@ -21,10 +17,7 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
 
       // then
       expect(myFavorites).toStrictEqual({
-        areFavoritesSelected: true,
-        isEditMode: false,
         myFavorites: [],
-        offerIds: [],
       })
     })
   })

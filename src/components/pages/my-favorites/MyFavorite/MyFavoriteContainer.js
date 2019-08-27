@@ -6,10 +6,8 @@ import MyFavorite from './MyFavorite'
 import { formatRecommendationDates } from '../../../../utils/date/date'
 import { getHumanizeRelativeDistance } from '../../../../utils/geolocation'
 import selectFirstMatchingBookingByOfferId from '../../../../selectors/selectFirstMatchingBookingByOfferId'
-import selectIsFavoritesEditMode from '../../../../selectors/selectIsFavoritesEditMode'
 import selectOfferById from '../../../../selectors/selectOfferById'
 import getHumanizeRelativeDate from '../../../../utils/date/getHumanizeRelativeDate'
-import { handleToggleFavorite } from '../../../../reducers/favorites'
 
 export const isReserved = status =>
   !(status.length > 0 && status[0].class.match('cancelled|finished|fully-booked'))
@@ -76,7 +74,7 @@ export const reservationStatus = (
 }
 
 export const mapStateToProps = (state, ownProps) => {
-  const { favorite } = ownProps
+  const { favorite, handleToggleFavorite, isEditMode } = ownProps
   const { offerId, mediationId } = favorite
   const offer = selectOfferById(state, offerId)
   const { dateRange = [], isActive, isFinished, isFullyBooked, venue } = offer || {}
@@ -111,8 +109,9 @@ export const mapStateToProps = (state, ownProps) => {
   return {
     date,
     detailsUrl,
+    handleToggleFavorite,
     humanizeRelativeDistance,
-    isEditMode: selectIsFavoritesEditMode(state),
+    isEditMode,
     name: offer.name,
     offerId,
     offerTypeLabel: offer.product.offerType.appLabel,
@@ -121,16 +120,7 @@ export const mapStateToProps = (state, ownProps) => {
   }
 }
 
-export const mapDispatchToProps = dispatch => ({
-  handleToggleFavorite: offerId => () => {
-    dispatch(handleToggleFavorite(offerId))
-  },
-})
-
 export default compose(
   withRouter,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
+  connect(mapStateToProps)
 )(MyFavorite)

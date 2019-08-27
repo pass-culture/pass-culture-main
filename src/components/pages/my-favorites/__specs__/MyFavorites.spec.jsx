@@ -14,8 +14,6 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
   beforeEach(() => {
     props = {
       deleteFavorites: jest.fn(),
-      handleEditMode: jest.fn(),
-      isEditMode: false,
       loadMyFavorites: jest.fn(),
       myFavorites: [
         {
@@ -33,14 +31,14 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
         },
         {
           id: 2,
-          offerId: 'ME',
+          offerId: 'ME2',
           offer: {
-            id: 'ME',
+            id: 'ME2',
             name: 'name',
           },
-          mediationId: 'FA',
+          mediationId: 'FA2',
           mediation: {
-            id: 'FA',
+            id: 'FA2',
             thumbUrl: 'thumbUrl',
           },
         },
@@ -57,99 +55,9 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
     expect(wrapper).toMatchSnapshot()
   })
 
-  describe('componentWillUnmount()', () => {
-    it('should reset page data', () => {
-      // given
-      const wrapper = shallow(<MyFavorites {...props} />)
-
-      // when
-      wrapper.instance().componentWillUnmount()
-
-      // then
-      expect(props.resetPageData).toHaveBeenCalledTimes(1)
-    })
-  })
-
-  describe('handleFail()', () => {
-    it('should set hasError and isLoading to true in component state', () => {
-      // given
-      const wrapper = shallow(<MyFavorites {...props} />)
-
-      // when
-      wrapper.instance().handleFail()
-
-      // then
-      expect(wrapper.state('hasError')).toBe(true)
-      expect(wrapper.state('isLoading')).toBe(true)
-    })
-  })
-
-  describe('handleSuccess()', () => {
-    it('should set isLoading to false in component state', () => {
-      // given
-      const wrapper = shallow(<MyFavorites {...props} />)
-
-      // when
-      wrapper.instance().handleSuccess({}, { payload: { data: [] } })
-
-      // then
-      expect(wrapper.state('isLoading')).toBe(false)
-    })
-  })
-
   describe('render()', () => {
-    describe('when I am in a list mode', () => {
-      it('should render a list of Link', () => {
-        // when
-        const wrapper = shallow(<MyFavorites {...props} />)
-        wrapper.setState({ isLoading: false })
-
-        // then
-        const header = wrapper.find(HeaderContainer)
-        const doneMode = wrapper.find('.mf-done')
-        const ul = wrapper.find('ul')
-        const footer = wrapper.find(RelativeFooterContainer)
-        expect(header).toHaveLength(1)
-        expect(doneMode).toHaveLength(1)
-        expect(ul).toHaveLength(1)
-        expect(footer).toHaveLength(1)
-      })
-    })
-
-    describe('when I am in an edit mode', () => {
-      it('should render a list of label', () => {
-        // given
-        props.isEditMode = true
-
-        // when
-        const wrapper = shallow(<MyFavorites {...props} />)
-        wrapper.setState({ isLoading: false })
-
-        // then
-        const header = wrapper.find(HeaderContainer)
-        const editMode = wrapper.find('.mf-edit')
-        const ul = wrapper.find('ul')
-        const footer = wrapper.find(RelativeFooterContainer)
-        expect(header).toHaveLength(1)
-        expect(editMode).toHaveLength(1)
-        expect(ul).toHaveLength(1)
-        expect(footer).toHaveLength(1)
-      })
-    })
-
-    describe('when there is something wrong with API', () => {
-      it('should render the Loader', () => {
-        // when
-        const wrapper = shallow(<MyFavorites {...props} />)
-
-        // then
-        const loaderContainer = wrapper.find(LoaderContainer)
-        expect(loaderContainer).toHaveLength(1)
-      })
-    })
-
     describe('when there are no favorites', () => {
-      it('should not render my favorites', () => {
+      it('should not render favorites', () => {
         // given
         props.myFavorites = []
 
@@ -166,26 +74,8 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
     })
 
     describe('when click on "Modifier" button', () => {
-      it('should pass to edit mode', () => {
+      it('should render a list of simple div', () => {
         // given
-        const wrapper = shallow(<MyFavorites {...props} />)
-        wrapper.setState({ isLoading: false })
-
-        // when
-        wrapper
-          .find('.mf-done-btn')
-          .simulate('click')
-          .render()
-
-        // then
-        expect(props.handleEditMode).toHaveBeenCalledTimes(1)
-      })
-    })
-
-    describe('when click on "Terminer" button', () => {
-      it('should pass to list mode', () => {
-        // given
-        props.isEditMode = true
         const wrapper = shallow(<MyFavorites {...props} />)
         wrapper.setState({ isLoading: false })
 
@@ -193,7 +83,75 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
         wrapper.find('.mf-edit-btn').simulate('click')
 
         // then
-        expect(props.handleEditMode).toHaveBeenCalledTimes(1)
+        const header = wrapper.find(HeaderContainer)
+        const deleteButton = wrapper.find('.mf-delete-btn')
+        const editMode = wrapper.find('.mf-edit')
+        const ul = wrapper.find('ul')
+        const footer = wrapper.find(RelativeFooterContainer)
+        expect(header).toHaveLength(1)
+        expect(deleteButton).toHaveLength(1)
+        expect(editMode).toHaveLength(1)
+        expect(ul).toHaveLength(1)
+        expect(footer).toHaveLength(1)
+      })
+    })
+
+    describe('when click on "Terminer" button', () => {
+      it('should render a list of Link', () => {
+        // when
+        const wrapper = shallow(<MyFavorites {...props} />)
+        wrapper.setState({ isLoading: false })
+
+        // then
+        const header = wrapper.find(HeaderContainer)
+        const deleteButton = wrapper.find('.mf-delete-btn')
+        const doneMode = wrapper.find('.mf-done')
+        const ul = wrapper.find('ul')
+        const footer = wrapper.find(RelativeFooterContainer)
+        expect(header).toHaveLength(1)
+        expect(deleteButton).toHaveLength(0)
+        expect(doneMode).toHaveLength(1)
+        expect(ul).toHaveLength(1)
+        expect(footer).toHaveLength(1)
+      })
+    })
+
+    describe('when click on "Supprimer" button', () => {
+      it('should remove two offer ids', () => {
+        // given
+        const wrapper = shallow(<MyFavorites {...props} />)
+        wrapper.setState({ isEditMode: true, isLoading: false, offerIds: ['ME'] })
+
+        // when
+        wrapper.find('.mf-delete-btn').simulate('click')
+
+        // then
+        expect(props.deleteFavorites).toHaveBeenCalledWith(expect.any(Function), ['ME'])
+      })
+    })
+
+    describe('when there is something wrong with API', () => {
+      it('should render the Loader', () => {
+        // when
+        const wrapper = shallow(<MyFavorites {...props} />)
+
+        // then
+        const loaderContainer = wrapper.find(LoaderContainer)
+        expect(loaderContainer).toHaveLength(1)
+      })
+    })
+
+    describe('when unmount my component', () => {
+      it('should reset the store', () => {
+        // given
+        const wrapper = shallow(<MyFavorites {...props} />)
+        wrapper.setState({ isLoading: false })
+
+        // when
+        wrapper.unmount()
+
+        // then
+        expect(props.resetPageData).toHaveBeenCalledTimes(1)
       })
     })
   })

@@ -23,13 +23,13 @@
   justify-content: flex-end;
 }
 
-.mf-edit-btn {
+.mf-done-btn {
   @include btn();
 
   background: transparent url(/icons/checkbox-check-w.svg) no-repeat left center;
 }
 
-.mf-done-btn {
+.mf-edit-btn {
   @include btn();
 
   background: transparent url(/icons/ico-edit.svg) no-repeat left center;

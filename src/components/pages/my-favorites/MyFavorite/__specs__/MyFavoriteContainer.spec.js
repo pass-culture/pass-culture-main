@@ -361,6 +361,8 @@ describe('src | components | pages | my-favorite | MyFavorite | MyFavoriteContai
           offerId: 'o1',
           thumbUrl: 'fake/thumb/url',
         },
+        handleToggleFavorite: jest.fn(),
+        isEditMode: false,
       }
       const offer = {
         dateRange: ['2030-07-21T20:00:00Z', '2030-08-21T20:00:00Z'],
@@ -397,9 +399,6 @@ describe('src | components | pages | my-favorite | MyFavorite | MyFavoriteContai
             },
           ],
         },
-        favorites: {
-          edit: false,
-        },
         geolocation: {
           latitude: 48.8636537,
           longitude: 2.3371206000000004,
@@ -413,6 +412,7 @@ describe('src | components | pages | my-favorite | MyFavorite | MyFavoriteContai
       expect(props).toStrictEqual({
         date: 'du Sun 2030-7-21 au Wed 2030-8-21',
         detailsUrl: '//details/o1',
+        handleToggleFavorite: expect.any(Function),
         humanizeRelativeDistance: '10 km',
         isEditMode: false,
         name: 'Fake offer name',
