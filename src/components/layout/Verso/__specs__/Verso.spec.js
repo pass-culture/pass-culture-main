@@ -58,7 +58,7 @@ describe('src | components | layout | Verso', () => {
     expect(firstDiv.prop('className')).toBe('verso is-overlay extra-classname')
   })
 
-  it('should show offer view when is not tuto', () => {
+  it('should show offer view when is tuto is false', () => {
     // given
     props.isTuto = false
 
@@ -74,7 +74,7 @@ describe('src | components | layout | Verso', () => {
     expect(controls).toHaveLength(1)
   })
 
-  it('should show tuto view when is tuto', () => {
+  it('should show tuto view when is tuto is true', () => {
     // given
     props.isTuto = true
 
