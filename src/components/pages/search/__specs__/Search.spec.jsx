@@ -87,7 +87,6 @@ describe('src | components | pages | Search', () => {
           parse: () => ({ page: '1' }),
         },
         recommendations: [],
-        resetPageData: jest.fn(),
         search: {},
         typeSublabels: [],
         typeSublabelsAndDescription: [],
@@ -127,7 +126,7 @@ describe('src | components | pages | Search', () => {
             parse: () => ({ page: '1' }),
           },
           recommendations: [],
-          resetPageData: jest.fn(),
+
           search: {},
           typeSublabels: [],
           typeSublabelsAndDescription: [],
@@ -215,7 +214,7 @@ describe('src | components | pages | Search', () => {
               parse: () => ({ page: '1' }),
             },
             recommendations: [],
-            resetPageData: jest.fn(),
+
             search: {},
             typeSublabels: [],
             typeSublabelsAndDescription: [],
@@ -269,7 +268,7 @@ describe('src | components | pages | Search', () => {
               }),
             },
             recommendations: [],
-            resetPageData: jest.fn(),
+
             search: {},
             typeSublabels: [],
             typeSublabelsAndDescription: [
@@ -343,7 +342,7 @@ describe('src | components | pages | Search', () => {
             parse: () => ({ page: '1' }),
           },
           recommendations: [],
-          resetPageData: jest.fn(),
+
           search: {},
           typeSublabels: [],
           typeSublabelsAndDescription: [],
@@ -393,7 +392,7 @@ describe('src | components | pages | Search', () => {
               parse: () => ({ page: '1' }),
             },
             recommendations: [],
-            resetPageData: jest.fn(),
+
             search: {},
             typeSublabels: [],
             typeSublabelsAndDescription: [],
@@ -443,7 +442,7 @@ describe('src | components | pages | Search', () => {
                 parse: () => ({ page: '1' }),
               },
               recommendations: [],
-              resetPageData: jest.fn(),
+
               search: {},
               typeSublabels: [],
               typeSublabelsAndDescription: [],
@@ -485,7 +484,7 @@ describe('src | components | pages | Search', () => {
                 parse: () => ({ page: '1' }),
               },
               recommendations: [],
-              resetPageData: jest.fn(),
+
               search: {},
               typeSublabels: [],
               typeSublabelsAndDescription: [],
@@ -534,7 +533,7 @@ describe('src | components | pages | Search', () => {
               parse: () => ({ page: '1' }),
             },
             recommendations: [],
-            resetPageData: jest.fn(),
+
             search: {},
             typeSublabels: [],
             typeSublabelsAndDescription: [],
@@ -573,7 +572,6 @@ describe('src | components | pages | Search', () => {
           parse: () => ({ page: '1' }),
         },
         recommendations: [],
-        resetPageData: jest.fn(),
         search: {},
         typeSublabels: [],
         typeSublabelsAndDescription: [],
@@ -683,7 +681,7 @@ describe('src | components | pages | Search', () => {
             parse: () => ({ page: '1' }),
           },
           recommendations: [],
-          resetPageData: jest.fn(),
+
           search: {},
           typeSublabels: [],
           typeSublabelsAndDescription: [],
@@ -761,7 +759,6 @@ describe('src | components | pages | Search', () => {
           parse: () => ({ page: '1' }),
         },
         recommendations: [],
-        resetPageData: jest.fn(),
         search: {},
         typeSublabels: [],
         typeSublabelsAndDescription: [],
@@ -818,7 +815,7 @@ describe('src | components | pages | Search', () => {
             parse: () => ({ page: '1' }),
           },
           recommendations: [],
-          resetPageData: jest.fn(),
+
           search: {},
           typeSublabels: [],
           typeSublabelsAndDescription: [],
@@ -869,7 +866,7 @@ describe('src | components | pages | Search', () => {
             parse: () => ({ page: '1' }),
           },
           recommendations: [],
-          resetPageData: jest.fn(),
+
           search: {},
           typeSublabels: [],
           typeSublabelsAndDescription: [],
@@ -931,7 +928,7 @@ describe('src | components | pages | Search', () => {
               }),
             },
             recommendations: [],
-            resetPageData: jest.fn(),
+
             search: {},
             typeSublabels: [],
             typeSublabelsAndDescription: [],

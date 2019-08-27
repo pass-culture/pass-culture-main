@@ -44,11 +44,6 @@ class Discovery extends PureComponent {
     }
   }
 
-  componentWillUnmount() {
-    const { resetPageData } = this.props
-    resetPageData()
-  }
-
   handleRequestFail = () => {
     const { onRequestFailRedirectToHome } = this.props
     const nextState = { hasError: true, isLoading: true }
@@ -178,7 +173,6 @@ Discovery.propTypes = {
   readRecommendations: PropTypes.arrayOf(PropTypes.shape()),
   recommendations: PropTypes.arrayOf(PropTypes.shape()),
   redirectToFirstRecommendationIfNeeded: PropTypes.func.isRequired,
-  resetPageData: PropTypes.func.isRequired,
   resetReadRecommendations: PropTypes.func.isRequired,
   saveLoadRecommendationsTimestamp: PropTypes.func.isRequired,
   shouldReloadRecommendations: PropTypes.bool.isRequired,

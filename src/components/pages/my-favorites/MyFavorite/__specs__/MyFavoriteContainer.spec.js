@@ -371,10 +371,8 @@ describe('src | components | pages | my-favorite | MyFavorite | MyFavoriteContai
         isFinished: false,
         isFullyBooked: false,
         name: 'Fake offer name',
-        product: {
-          offerType: {
-            appLabel: 'Fake offer type',
-          },
+        offerType: {
+          appLabel: 'Fake offer type',
         },
         venue: {
           latitude: 48.91683,

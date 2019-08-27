@@ -19,7 +19,6 @@ describe('src | components | pages | my-bookings | MyBookings', () => {
         params: {},
       },
       requestGetBookings: jest.fn(),
-      resetPageData: jest.fn(),
       validBookings: [
         {
           id: 2,

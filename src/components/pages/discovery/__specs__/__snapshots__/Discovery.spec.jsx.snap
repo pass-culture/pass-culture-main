@@ -35,7 +35,6 @@ ShallowWrapper {
         ],
       }
     }
-    resetPageData={[MockFunction]}
     resetReadRecommendations={[MockFunction]}
     resetRecommendations={[MockFunction]}
     resetRecommendationsAndBookings={[MockFunction]}

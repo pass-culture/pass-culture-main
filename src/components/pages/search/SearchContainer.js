@@ -3,7 +3,6 @@ import { compose } from 'redux'
 
 import Search from './Search'
 import { withRequiredLogin } from '../../hocs'
-import { resetPageData } from '../../../reducers/data'
 import selectTypeSublabels, { selectTypes } from './selectors/selectTypes'
 
 const mapStateToProps = state => {
@@ -20,15 +19,7 @@ const mapStateToProps = state => {
   }
 }
 
-const mapDispatchToProps = dispatch => ({
-  dispatch,
-  resetPageData: () => dispatch(resetPageData()),
-})
-
 export default compose(
   withRequiredLogin,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
+  connect(mapStateToProps)
 )(Search)

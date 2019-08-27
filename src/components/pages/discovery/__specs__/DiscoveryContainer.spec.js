@@ -174,26 +174,6 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
       })
     })
 
-    describe('when mapping resetPageData', () => {
-      it('should reset recommendations and bookings with the right configuration', () => {
-        // when
-        mapDispatchToProps(dispatch, props).resetPageData()
-
-        // then
-        expect(dispatch).toHaveBeenCalledWith({
-          patch: {
-            bookings: [],
-            favorites: [],
-            mediations: [],
-            offers: [],
-            recommendations: [],
-            stocks: [],
-          },
-          type: 'ASSIGN_DATA',
-        })
-      })
-    })
-
     describe('when mapping resetReadRecommendations', () => {
       it('should reset recommendations with the right configuration', () => {
         // when

@@ -15,15 +15,16 @@ export const selectValidBookings = createSelector(
   state => state.data.offers,
   state => state.data.stocks,
   (bookings, offers, stocks) =>
-    offers.filter(getIsNotAnActivationOffer).map(offer =>
-      bookings.find(booking => {
-        const stock = stocks.find(stock => stock.id === booking.stockId)
+    offers
+      .filter(getIsNotAnActivationOffer)
+      .map(offer =>
+        bookings.find(booking => {
+          const stock = stocks.find(stock => stock.id === booking.stockId)
 
-        if (!stock) return false
-
-        return stock.offerId === offer.id
-      })
-    )
+          return stock.offerId === offer.id
+        })
+      )
+      .filter(booking => booking !== undefined)
 )
 
 export default selectValidBookings

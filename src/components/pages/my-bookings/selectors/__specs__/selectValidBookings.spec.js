@@ -99,7 +99,7 @@ describe('src | components | pages | my-bookings | selectors | selectValidBookin
       const results = selectValidBookings(state)
 
       // then
-      expect(results).toStrictEqual([{ id: 'b1', stockId: 's1' }, undefined])
+      expect(results).toStrictEqual([{ id: 'b1', stockId: 's1' }])
     })
   })
 })

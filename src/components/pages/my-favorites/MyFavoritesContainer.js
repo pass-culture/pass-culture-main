@@ -4,7 +4,6 @@ import { requestData } from 'redux-saga-data'
 
 import MyFavorites from './MyFavorites'
 import { withRequiredLogin } from '../../hocs'
-import { resetPageData } from '../../../reducers/data'
 import selectFavorites from '../../../selectors/selectFavorites'
 import { favoriteNormalizer } from '../../../utils/normalizers'
 
@@ -34,9 +33,6 @@ export const mapDispatchToProps = dispatch => ({
         })
       )
     })
-  },
-  resetPageData: () => {
-    dispatch(resetPageData())
   },
 })
 

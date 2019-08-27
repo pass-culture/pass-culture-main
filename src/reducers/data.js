@@ -1,6 +1,6 @@
 import { persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
-import { assignData, createDataReducer } from 'redux-saga-data'
+import { createDataReducer } from 'redux-saga-data'
 
 export const SAVE_RECOMMENDATIONS_REQUEST_TIMESTAMP = 'SAVE_RECOMMENDATIONS_REQUEST_TIMESTAMP'
 
@@ -32,16 +32,6 @@ const dataReducer = createDataReducer({
   types: [],
   users: [],
 })
-
-export const resetPageData = () =>
-  assignData({
-    bookings: [],
-    favorites: [],
-    mediations: [],
-    offers: [],
-    recommendations: [],
-    stocks: [],
-  })
 
 const persistDataReducer = persistReducer(dataPersistConfig, dataReducer)
 

@@ -31,7 +31,6 @@ ShallowWrapper {
         ],
       }
     }
-    resetPageData={[MockFunction]}
     validBookings={
       Array [
         Object {

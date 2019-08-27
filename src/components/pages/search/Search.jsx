@@ -63,17 +63,6 @@ class Search extends PureComponent {
     }
   }
 
-  componentWillUnmount() {
-    const { resetPageData } = this.props
-    resetPageData()
-  }
-
-  clearSearchResults = value => {
-    const { resetPageData } = this.props
-    if (value === '') return
-    resetPageData()
-  }
-
   getBackToUrl = () => {
     const { match } = this.props
     const { params } = match
@@ -163,8 +152,6 @@ class Search extends PureComponent {
     event.preventDefault()
 
     this.setState({ isFilterVisible: false })
-
-    this.clearSearchResults(value)
 
     query.change(
       {
@@ -424,7 +411,6 @@ Search.propTypes = {
   }).isRequired,
   query: PropTypes.shape().isRequired,
   recommendations: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  resetPageData: PropTypes.func.isRequired,
   typeSublabels: PropTypes.arrayOf(PropTypes.string).isRequired,
   typeSublabelsAndDescription: PropTypes.arrayOf(
     PropTypes.shape({

@@ -20,7 +20,6 @@ describe('src | components | pages | discovery | Discovery', () => {
       readRecommendations: [],
       recommendations: [],
       redirectToFirstRecommendationIfNeeded: jest.fn(),
-      resetPageData: jest.fn(),
       resetReadRecommendations: jest.fn(),
       resetRecommendations: jest.fn(),
       resetRecommendationsAndBookings: jest.fn(),

@@ -43,7 +43,6 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
           },
         },
       ],
-      resetPageData: jest.fn(),
     }
   })
 

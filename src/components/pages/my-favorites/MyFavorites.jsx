@@ -30,11 +30,6 @@ class MyFavorites extends Component {
     loadMyFavorites(this.handleFail, this.handleSuccess)
   }
 
-  componentWillUnmount() {
-    const { resetPageData } = this.props
-    resetPageData()
-  }
-
   handleFail = () => {
     this.setState({
       hasError: true,
@@ -181,8 +176,7 @@ MyFavorites.defaultProps = {
 MyFavorites.propTypes = {
   deleteFavorites: PropTypes.func.isRequired,
   loadMyFavorites: PropTypes.func.isRequired,
-  myFavorites: PropTypes.arrayOf(PropTypes.shape()),
-  resetPageData: PropTypes.func.isRequired,
+  myFavorites: PropTypes.arrayOf(PropTypes.shape())
 }
 
 export default MyFavorites

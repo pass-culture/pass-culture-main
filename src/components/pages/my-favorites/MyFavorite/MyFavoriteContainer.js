@@ -114,7 +114,7 @@ export const mapStateToProps = (state, ownProps) => {
     isEditMode,
     name: offer.name,
     offerId,
-    offerTypeLabel: offer.product.offerType.appLabel,
+    offerTypeLabel: offer.offerType.appLabel,
     status,
     thumbUrl: favorite.thumbUrl,
   }

@@ -155,7 +155,6 @@ ShallowWrapper {
       }
     }
     recommendations={Array []}
-    resetPageData={[MockFunction]}
     search={Object {}}
     typeSublabels={Array []}
     typeSublabelsAndDescription={Array []}
