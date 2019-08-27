@@ -5,7 +5,6 @@ import { requestData } from 'redux-saga-data'
 import MyBookings from './MyBookings'
 import selectValidBookings from './selectors/selectValidBookings'
 import { withRequiredLogin } from '../../hocs'
-import { resetPageData } from '../../../reducers/data'
 import { bookingNormalizer } from '../../../utils/normalizers'
 
 export const mapStateToProps = state => ({
@@ -23,7 +22,6 @@ export const mapDispatchToProps = dispatch => ({
       })
     )
   },
-  resetPageData: () => dispatch(resetPageData()),
 })
 
 export default compose(

@@ -9,7 +9,6 @@ describe('src | selectors | selectMediationByRouterMatch', () => {
         favorites: [],
         mediations: [{ id: 'AE' }],
         offers: [],
-        recommendations: [],
       },
     }
     const match = {
@@ -25,15 +24,14 @@ describe('src | selectors | selectMediationByRouterMatch', () => {
     expect(result).toStrictEqual({ id: 'AE' })
   })
 
-  it('should return mediation when bookingId in match resolves mediation via recommendation', () => {
+  it('should return mediation when bookingId in match resolves mediation', () => {
     // given
     const state = {
       data: {
-        bookings: [{ id: 'BF', recommendationId: 'BF' }],
+        bookings: [{ id: 'BF', mediationId: 'AE' }],
         favorites: [],
         mediations: [{ id: 'AE' }],
         offers: [{ id: 'AE' }],
-        recommendations: [{ id: 'BF', mediationId: 'AE', offerId: 'AE' }],
       },
     }
     const match = {
@@ -57,7 +55,6 @@ describe('src | selectors | selectMediationByRouterMatch', () => {
         favorites: [{ id: 'BF', mediationId: 'AE' }],
         mediations: [{ id: 'AE' }],
         offers: [],
-        recommendations: [],
       },
     }
     const match = {

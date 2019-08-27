@@ -21,11 +21,6 @@ class MyBookings extends Component {
     requestGetBookings(this.handleFail, this.handleSuccess)
   }
 
-  componentWillUnmount() {
-    const { resetPageData } = this.props
-    resetPageData()
-  }
-
   handleFail = () => {
     this.setState({
       hasError: true,
@@ -75,7 +70,6 @@ MyBookings.propTypes = {
     }).isRequired,
   }).isRequired,
   requestGetBookings: PropTypes.func.isRequired,
-  resetPageData: PropTypes.func.isRequired,
   validBookings: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
 

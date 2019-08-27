@@ -1,14 +1,32 @@
 import selectThumbUrlByRouterMatch from '../selectThumbUrlByRouterMatch'
 
 describe('src | selectors | selectThumbUrlByRouterMatch', () => {
+  let booking
+  let bookingId
   let mediation
   let mediationId
   let offer
   let offerId
+  let stock
+  let stockId
+  const bookingThumbUrl = 'http://foo/mediations/AE'
   const productThumbUrl = 'http://foo/products/AE'
   const mediationThumbUrl = 'http://foo/mediations/AE'
   beforeEach(() => {
+    bookingId = 'AB'
+    mediationId = 'AE'
     offerId = 'AE'
+    stockId = 'BV'
+    mediation = {
+      id: mediationId,
+      thumbUrl: mediationThumbUrl,
+    }
+    booking = {
+      id: bookingId,
+      mediationId,
+      stockId,
+      thumbUrl: bookingThumbUrl,
+    }
     offer = {
       id: offerId,
       product: {
@@ -20,14 +38,13 @@ describe('src | selectors | selectThumbUrlByRouterMatch', () => {
         longitude: 1.6,
       },
     }
-    mediationId = 'AE'
-    mediation = {
-      id: mediationId,
-      thumbUrl: mediationThumbUrl,
+    stock = {
+      id: stockId,
+      offerId,
     }
   })
 
-  it('should return product thumbUrl when offerId in match and offer is without mediation', () => {
+  it('should return product thumbUrl when offerId in match and offer is without mediation and without booking', () => {
     // given
     const state = {
       data: {
@@ -35,12 +52,11 @@ describe('src | selectors | selectThumbUrlByRouterMatch', () => {
         favorites: [],
         mediations: [],
         offers: [offer],
-        recommendations: [],
+        stocks: [],
       },
     }
     const match = {
       params: {
-        mediationId,
         offerId,
       },
     }
@@ -49,10 +65,34 @@ describe('src | selectors | selectThumbUrlByRouterMatch', () => {
     const result = selectThumbUrlByRouterMatch(state, match)
 
     // then
-    expect(result).toStrictEqual(productThumbUrl)
+    expect(result).toBe(productThumbUrl)
   })
 
-  it('should return mediation thumbUrl when offerId in match and offer is with mediation', () => {
+  it('should return mediation thumbUrl when bookingId in match and has mediation associated with', () => {
+    // given
+    const state = {
+      data: {
+        bookings: [booking],
+        favorites: [],
+        mediations: [mediation],
+        offers: [offer],
+        stocks: [stock],
+      },
+    }
+    const match = {
+      params: {
+        bookingId,
+      },
+    }
+
+    // when
+    const result = selectThumbUrlByRouterMatch(state, match)
+
+    // then
+    expect(result).toBe(bookingThumbUrl)
+  })
+
+  it('should return mediation thumbUrl when offerId in match and offer', () => {
     // given
     const state = {
       data: {
@@ -60,13 +100,12 @@ describe('src | selectors | selectThumbUrlByRouterMatch', () => {
         favorites: [],
         mediations: [mediation],
         offers: [offer],
-        recommendations: [],
+        stocks: [],
       },
     }
     const match = {
       params: {
         mediationId,
-        offerId,
       },
     }
 
@@ -74,6 +113,6 @@ describe('src | selectors | selectThumbUrlByRouterMatch', () => {
     const result = selectThumbUrlByRouterMatch(state, match)
 
     // then
-    expect(result).toStrictEqual(mediationThumbUrl)
+    expect(result).toBe(mediationThumbUrl)
   })
 })
