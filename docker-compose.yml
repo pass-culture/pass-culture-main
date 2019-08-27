@@ -30,9 +30,7 @@ services:
       - db_nw
 
   flask:
-    build:
-      context: ./api
-      dockerfile: ../dockerfiles/flask/Dockerfile
+    image: passcultureapp/api-flask:latest
     container_name: pc-flask
     command: >
       bash -c "set -x;
@@ -82,13 +80,13 @@ services:
       - postgres-test
 
   nginx:
-    build: dockerfiles/nginx
+    build: nginx
     container_name: pc-nginx
     ports:
       - 80:80
       - 443:443
     volumes:
-      - ./dockerfiles/nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/conf.d:/etc/nginx/conf.d
       - ./certs:/etc/letsencrypt
       - ./certs-data:/data/letsencrypt
     networks:
