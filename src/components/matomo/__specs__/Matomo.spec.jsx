@@ -133,7 +133,7 @@ describe('src | components | matomo | Matomo', () => {
       )
 
       // then
-      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'ANONYMOUS'])
+      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'ANONYMOUS on WEBAPP'])
     })
   })
 
@@ -145,8 +145,7 @@ describe('src | components | matomo | Matomo', () => {
           users: [
             {
               currentUserUUID: getCurrentUserUUID(),
-              email: 'fake@fake.com',
-              canBookFreeOffers: true,
+              id: '5FYTbfk4TR',
             },
           ],
         },
@@ -162,61 +161,7 @@ describe('src | components | matomo | Matomo', () => {
       )
 
       // then
-      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'BENEFICIARY on WEBAPP'])
-    })
-
-    it('should dispatch the correct user id when user email contains team domain even if canBookFreeOffers is set to true', () => {
-      // given
-      store = mockStore({
-        data: {
-          users: [
-            {
-              currentUserUUID: getCurrentUserUUID(),
-              email: 'fake@octo.com',
-              canBookFreeOffers: true,
-            },
-          ],
-        },
-      })
-
-      // when
-      mount(
-        <Router history={history}>
-          <Provider store={store}>
-            <MatomoContainer />
-          </Provider>
-        </Router>
-      )
-
-      // then
-      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'TECH or BIZ on WEBAPP'])
-    })
-
-    it('should dispatch the correct user id when user email contains sandbox domain even if canBookFreeOffers is set to true', () => {
-      // given
-      store = mockStore({
-        data: {
-          users: [
-            {
-              currentUserUUID: getCurrentUserUUID(),
-              email: 'fake@youpi.com',
-              canBookFreeOffers: true,
-            },
-          ],
-        },
-      })
-
-      // when
-      mount(
-        <Router history={history}>
-          <Provider store={store}>
-            <MatomoContainer />
-          </Provider>
-        </Router>
-      )
-
-      // then
-      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'SANDBOX USER on WEBAPP'])
+      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', '5FYTbfk4TR on WEBAPP'])
     })
   })
 })

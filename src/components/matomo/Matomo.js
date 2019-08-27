@@ -1,22 +1,8 @@
 import PropTypes from 'prop-types'
 import queryString from 'query-string'
 
-const TEAM_DOMAIN_REGEX = /^[a-zA-Z0-9_.+-]+@(octo.com|passculture.app|btmx.fr)/g
-const SANDBOX_DOMAIN_REGEX = /^[a-zA-Z0-9_.+-]+@(momarx.io|hlettre.com|youpi.com|violet.fr)/g
-
-const getUserType = email => {
-  if (email.match(SANDBOX_DOMAIN_REGEX)) {
-    return 'SANDBOX USER on WEBAPP'
-  } else if (email.match(TEAM_DOMAIN_REGEX)) {
-    return 'TECH or BIZ on WEBAPP'
-  } else {
-    return 'BENEFICIARY on WEBAPP'
-  }
-}
-
-const Matomo = ({ location, canBookFreeOffers, email }) => {
+const Matomo = ({ location, userId }) => {
   const Matomo = window._paq
-  let userId = 'ANONYMOUS'
 
   const { pathname, search } = location
   const searchParameters = queryString.parse(search)
@@ -32,15 +18,7 @@ const Matomo = ({ location, canBookFreeOffers, email }) => {
     Matomo.push(['trackSiteSearch', searchKeyword, categories, numberOfResults])
   }
 
-  if (canBookFreeOffers) {
-    userId = 'BENEFICIARY on WEBAPP'
-  }
-
-  if (email) {
-    userId = getUserType(email)
-  }
-
-  Matomo.push(['setUserId', userId])
+  Matomo.push(['setUserId', userId + ' on WEBAPP'])
 
   if (location.pathname == '/connexion') {
     Matomo.push(['resetUserId'])

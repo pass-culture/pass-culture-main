@@ -7,17 +7,15 @@ import Matomo from './Matomo'
 
 export const mapStateToProps = state => {
   const user = selectCurrentUser(state)
-  let canBookFreeOffers
-  let email
-
+  let userId
   if (user) {
-    canBookFreeOffers = user.canBookFreeOffers
-    email = user.email
+    userId = user.id
+  } else {
+    userId = 'ANONYMOUS'
   }
 
   return {
-    canBookFreeOffers,
-    email,
+    userId,
   }
 }
 
