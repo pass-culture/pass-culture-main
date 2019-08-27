@@ -11,7 +11,6 @@ const App = ({ modalOpen, children }) => (
   </div>
 )
 
-
 function mapStateToProps(state) {
   return {
     modalOpen: state.modal.isActive,

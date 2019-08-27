@@ -78,7 +78,7 @@ describe('src | components | matomo | Matomo', () => {
   })
 
   describe('when user is logged', () => {
-    it('should dispatch tech or biz user id when user email contains teams domain', () => {
+    it('should dispatch setUserId with current user id', () => {
       // given
       store = mockStore({ user: { id: 'TY' } })
 
