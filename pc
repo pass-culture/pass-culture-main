@@ -277,7 +277,7 @@ elif [[ "$CMD" == "set-backend" ]]; then
 			'
 # Start API server with database and nginx server
 elif [[ "$CMD" == "start-backend" ]]; then
-  RUN='cd $ROOT_PATH && docker-compose up'
+  RUN='cd $ROOT_PATH && docker-compose pull flask && docker-compose up'
 
 # Start webapp or pro application
 elif [[ "$CMD" == "start-webapp" ]] || [[ "$CMD" == "start-pro" ]]; then
