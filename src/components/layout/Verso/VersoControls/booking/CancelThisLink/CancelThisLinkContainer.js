@@ -26,6 +26,13 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
   const { history, location } = ownProps
   const { pathname, search } = location
 
+  const handleClosePopin = () => {
+    dispatch(closeSharePopin())
+    const nextPathname = pathname.split(/\/reservation(\/|$|\/$)/)[0]
+    const nextUrl = `${nextPathname}${search}`
+    history.push(nextUrl)
+  }
+
   const handleOpenFailurePopin = (state, request) => {
     const { payload } = request
     const { errors } = payload
@@ -37,7 +44,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
         PopinButton({
           id: 'popin-cancel-booking-fail-ok',
           label: 'OK',
-          onClick: () => dispatch(closeSharePopin()),
+          onClick: handleClosePopin,
         }),
       ],
       text: message.join('\n'),
@@ -63,13 +70,6 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
         normalizer: bookingNormalizer,
       })
     )
-  }
-
-  const handleClosePopin = () => {
-    dispatch(closeSharePopin())
-    const nextPathname = pathname.split(/\/reservation(\/|$|\/$)/)[0]
-    const nextUrl = `${nextPathname}${search}`
-    history.push(nextUrl)
   }
 
   return {
