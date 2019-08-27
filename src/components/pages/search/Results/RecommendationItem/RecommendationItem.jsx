@@ -24,29 +24,24 @@ const RecommendationItem = ({
         tabIndex={0}
       >
         <hr className="dotted-top-primary" />
-        <div className="flex-columns">
-          <div className="image flex-0 dotted-right-primary flex-rows flex-center">
+        <div className="search-result-item-container">
+          <div className="image">
             <img
               alt=""
               src={thumbUrl || DEFAULT_THUMB_URL}
             />
           </div>
-          <div className="m18 flex-1">
-            <h5
-              className="fs18 is-bold"
-              title={offerName}
-            >
-              {offerName}
-            </h5>
-            <div className="fs13">{offerType.appLabel}</div>
+          <div className="search-result-item-detail">
+            <h5 title={offerName}>{offerName}</h5>
+            <div className="search-result-item-type">{offerType.appLabel}</div>
             <div
-              className="fs13"
+              className="search-result-item-date"
               id="recommendation-date"
             >
               {offer && formatRecommendationDates(venue.departementCode, dateRange)}
             </div>
           </div>
-          <div className="flex-center items-center is-primary-text">
+          <div className="arrow-container">
             <span
               aria-hidden
               className="icon-legacy-next"

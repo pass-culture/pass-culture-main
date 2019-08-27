@@ -1,0 +1,65 @@
+.recommendation-list-item {
+  padding: 0;
+
+  .to-details {
+    cursor: pointer;
+    outline: none;
+  }
+
+  .search-result-item-container {
+    display: flex;
+    margin-left: -12px;
+
+    .image {
+      height: rem(96px);
+      max-width: rem(96px);
+      max-height: rem(96px);
+      min-width: rem(96px);
+      min-height: rem(96px);
+      overflow: hidden;
+      width: rem(96px);
+
+      img {
+        height: auto;
+        max-width: 100%;
+        width: 100%;
+      }
+    }
+
+    .search-result-item-detail {
+      @extend .m12;
+      @include multiLineEllipsis();
+
+      display: flex;
+      flex-direction: column;
+
+      h5 {
+        @extend .fs18;
+        @extend .is-bold;
+        @include multiLineEllipsis();
+      }
+
+      .search-result-item-type {
+        @extend .fs13;
+        color: $grey;
+      }
+
+      .search-result-item-date {
+        @extend .fs13;
+        white-space: initial;
+      }
+    }
+
+    .arrow-container {
+      @extend .is-primary-text;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin: auto;
+    }
+  }
+}
+
+.nav-result-title {
+  margin-top: rem(18px);
+}

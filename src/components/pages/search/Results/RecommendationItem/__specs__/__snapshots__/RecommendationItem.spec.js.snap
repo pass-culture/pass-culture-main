@@ -51,10 +51,10 @@ ShallowWrapper {
           className="dotted-top-primary"
         />
         <div
-          className="flex-columns"
+          className="search-result-item-container"
         >
           <div
-            className="image flex-0 dotted-right-primary flex-rows flex-center"
+            className="image"
           >
             <img
               alt=""
@@ -62,28 +62,27 @@ ShallowWrapper {
             />
           </div>
           <div
-            className="m18 flex-1"
+            className="search-result-item-detail"
           >
             <h5
-              className="fs18 is-bold"
               title="sur la route des migrants ; rencontres à Calais"
             >
               sur la route des migrants ; rencontres à Calais
             </h5>
             <div
-              className="fs13"
+              className="search-result-item-type"
             >
               Livres, cartes bibliothèque ou médiathèque
             </div>
             <div
-              className="fs13"
+              className="search-result-item-date"
               id="recommendation-date"
             >
               permanent
             </div>
           </div>
           <div
-            className="flex-center items-center is-primary-text"
+            className="arrow-container"
           >
             <span
               aria-hidden={true}
@@ -106,10 +105,10 @@ ShallowWrapper {
             className="dotted-top-primary"
           />,
           <div
-            className="flex-columns"
+            className="search-result-item-container"
           >
             <div
-              className="image flex-0 dotted-right-primary flex-rows flex-center"
+              className="image"
             >
               <img
                 alt=""
@@ -117,28 +116,27 @@ ShallowWrapper {
               />
             </div>
             <div
-              className="m18 flex-1"
+              className="search-result-item-detail"
             >
               <h5
-                className="fs18 is-bold"
                 title="sur la route des migrants ; rencontres à Calais"
               >
                 sur la route des migrants ; rencontres à Calais
               </h5>
               <div
-                className="fs13"
+                className="search-result-item-type"
               >
                 Livres, cartes bibliothèque ou médiathèque
               </div>
               <div
-                className="fs13"
+                className="search-result-item-date"
                 id="recommendation-date"
               >
                 permanent
               </div>
             </div>
             <div
-              className="flex-center items-center is-primary-text"
+              className="arrow-container"
             >
               <span
                 aria-hidden={true}
@@ -174,7 +172,7 @@ ShallowWrapper {
           "props": Object {
             "children": Array [
               <div
-                className="image flex-0 dotted-right-primary flex-rows flex-center"
+                className="image"
               >
                 <img
                   alt=""
@@ -182,28 +180,27 @@ ShallowWrapper {
                 />
               </div>,
               <div
-                className="m18 flex-1"
+                className="search-result-item-detail"
               >
                 <h5
-                  className="fs18 is-bold"
                   title="sur la route des migrants ; rencontres à Calais"
                 >
                   sur la route des migrants ; rencontres à Calais
                 </h5>
                 <div
-                  className="fs13"
+                  className="search-result-item-type"
                 >
                   Livres, cartes bibliothèque ou médiathèque
                 </div>
                 <div
-                  className="fs13"
+                  className="search-result-item-date"
                   id="recommendation-date"
                 >
                   permanent
                 </div>
               </div>,
               <div
-                className="flex-center items-center is-primary-text"
+                className="arrow-container"
               >
                 <span
                   aria-hidden={true}
@@ -212,7 +209,7 @@ ShallowWrapper {
                 />
               </div>,
             ],
-            "className": "flex-columns",
+            "className": "search-result-item-container",
           },
           "ref": null,
           "rendered": Array [
@@ -225,7 +222,7 @@ ShallowWrapper {
                   alt=""
                   src="http://localhost/storage/thumbs/products/QE"
                 />,
-                "className": "image flex-0 dotted-right-primary flex-rows flex-center",
+                "className": "image",
               },
               "ref": null,
               "rendered": Object {
@@ -249,24 +246,23 @@ ShallowWrapper {
               "props": Object {
                 "children": Array [
                   <h5
-                    className="fs18 is-bold"
                     title="sur la route des migrants ; rencontres à Calais"
                   >
                     sur la route des migrants ; rencontres à Calais
                   </h5>,
                   <div
-                    className="fs13"
+                    className="search-result-item-type"
                   >
                     Livres, cartes bibliothèque ou médiathèque
                   </div>,
                   <div
-                    className="fs13"
+                    className="search-result-item-date"
                     id="recommendation-date"
                   >
                     permanent
                   </div>,
                 ],
-                "className": "m18 flex-1",
+                "className": "search-result-item-detail",
               },
               "ref": null,
               "rendered": Array [
@@ -276,7 +272,6 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": "sur la route des migrants ; rencontres à Calais",
-                    "className": "fs18 is-bold",
                     "title": "sur la route des migrants ; rencontres à Calais",
                   },
                   "ref": null,
@@ -289,7 +284,7 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": "Livres, cartes bibliothèque ou médiathèque",
-                    "className": "fs13",
+                    "className": "search-result-item-type",
                   },
                   "ref": null,
                   "rendered": "Livres, cartes bibliothèque ou médiathèque",
@@ -301,7 +296,7 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": "permanent",
-                    "className": "fs13",
+                    "className": "search-result-item-date",
                     "id": "recommendation-date",
                   },
                   "ref": null,
@@ -321,7 +316,7 @@ ShallowWrapper {
                   className="icon-legacy-next"
                   title=""
                 />,
-                "className": "flex-center items-center is-primary-text",
+                "className": "arrow-container",
               },
               "ref": null,
               "rendered": Object {
@@ -364,10 +359,10 @@ ShallowWrapper {
             className="dotted-top-primary"
           />
           <div
-            className="flex-columns"
+            className="search-result-item-container"
           >
             <div
-              className="image flex-0 dotted-right-primary flex-rows flex-center"
+              className="image"
             >
               <img
                 alt=""
@@ -375,28 +370,27 @@ ShallowWrapper {
               />
             </div>
             <div
-              className="m18 flex-1"
+              className="search-result-item-detail"
             >
               <h5
-                className="fs18 is-bold"
                 title="sur la route des migrants ; rencontres à Calais"
               >
                 sur la route des migrants ; rencontres à Calais
               </h5>
               <div
-                className="fs13"
+                className="search-result-item-type"
               >
                 Livres, cartes bibliothèque ou médiathèque
               </div>
               <div
-                className="fs13"
+                className="search-result-item-date"
                 id="recommendation-date"
               >
                 permanent
               </div>
             </div>
             <div
-              className="flex-center items-center is-primary-text"
+              className="arrow-container"
             >
               <span
                 aria-hidden={true}
@@ -419,10 +413,10 @@ ShallowWrapper {
               className="dotted-top-primary"
             />,
             <div
-              className="flex-columns"
+              className="search-result-item-container"
             >
               <div
-                className="image flex-0 dotted-right-primary flex-rows flex-center"
+                className="image"
               >
                 <img
                   alt=""
@@ -430,28 +424,27 @@ ShallowWrapper {
                 />
               </div>
               <div
-                className="m18 flex-1"
+                className="search-result-item-detail"
               >
                 <h5
-                  className="fs18 is-bold"
                   title="sur la route des migrants ; rencontres à Calais"
                 >
                   sur la route des migrants ; rencontres à Calais
                 </h5>
                 <div
-                  className="fs13"
+                  className="search-result-item-type"
                 >
                   Livres, cartes bibliothèque ou médiathèque
                 </div>
                 <div
-                  className="fs13"
+                  className="search-result-item-date"
                   id="recommendation-date"
                 >
                   permanent
                 </div>
               </div>
               <div
-                className="flex-center items-center is-primary-text"
+                className="arrow-container"
               >
                 <span
                   aria-hidden={true}
@@ -487,7 +480,7 @@ ShallowWrapper {
             "props": Object {
               "children": Array [
                 <div
-                  className="image flex-0 dotted-right-primary flex-rows flex-center"
+                  className="image"
                 >
                   <img
                     alt=""
@@ -495,28 +488,27 @@ ShallowWrapper {
                   />
                 </div>,
                 <div
-                  className="m18 flex-1"
+                  className="search-result-item-detail"
                 >
                   <h5
-                    className="fs18 is-bold"
                     title="sur la route des migrants ; rencontres à Calais"
                   >
                     sur la route des migrants ; rencontres à Calais
                   </h5>
                   <div
-                    className="fs13"
+                    className="search-result-item-type"
                   >
                     Livres, cartes bibliothèque ou médiathèque
                   </div>
                   <div
-                    className="fs13"
+                    className="search-result-item-date"
                     id="recommendation-date"
                   >
                     permanent
                   </div>
                 </div>,
                 <div
-                  className="flex-center items-center is-primary-text"
+                  className="arrow-container"
                 >
                   <span
                     aria-hidden={true}
@@ -525,7 +517,7 @@ ShallowWrapper {
                   />
                 </div>,
               ],
-              "className": "flex-columns",
+              "className": "search-result-item-container",
             },
             "ref": null,
             "rendered": Array [
@@ -538,7 +530,7 @@ ShallowWrapper {
                     alt=""
                     src="http://localhost/storage/thumbs/products/QE"
                   />,
-                  "className": "image flex-0 dotted-right-primary flex-rows flex-center",
+                  "className": "image",
                 },
                 "ref": null,
                 "rendered": Object {
@@ -562,24 +554,23 @@ ShallowWrapper {
                 "props": Object {
                   "children": Array [
                     <h5
-                      className="fs18 is-bold"
                       title="sur la route des migrants ; rencontres à Calais"
                     >
                       sur la route des migrants ; rencontres à Calais
                     </h5>,
                     <div
-                      className="fs13"
+                      className="search-result-item-type"
                     >
                       Livres, cartes bibliothèque ou médiathèque
                     </div>,
                     <div
-                      className="fs13"
+                      className="search-result-item-date"
                       id="recommendation-date"
                     >
                       permanent
                     </div>,
                   ],
-                  "className": "m18 flex-1",
+                  "className": "search-result-item-detail",
                 },
                 "ref": null,
                 "rendered": Array [
@@ -589,7 +580,6 @@ ShallowWrapper {
                     "nodeType": "host",
                     "props": Object {
                       "children": "sur la route des migrants ; rencontres à Calais",
-                      "className": "fs18 is-bold",
                       "title": "sur la route des migrants ; rencontres à Calais",
                     },
                     "ref": null,
@@ -602,7 +592,7 @@ ShallowWrapper {
                     "nodeType": "host",
                     "props": Object {
                       "children": "Livres, cartes bibliothèque ou médiathèque",
-                      "className": "fs13",
+                      "className": "search-result-item-type",
                     },
                     "ref": null,
                     "rendered": "Livres, cartes bibliothèque ou médiathèque",
@@ -614,7 +604,7 @@ ShallowWrapper {
                     "nodeType": "host",
                     "props": Object {
                       "children": "permanent",
-                      "className": "fs13",
+                      "className": "search-result-item-date",
                       "id": "recommendation-date",
                     },
                     "ref": null,
@@ -634,7 +624,7 @@ ShallowWrapper {
                     className="icon-legacy-next"
                     title=""
                   />,
-                  "className": "flex-center items-center is-primary-text",
+                  "className": "arrow-container",
                 },
                 "ref": null,
                 "rendered": Object {
