@@ -2,8 +2,10 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
 
+import Icon from '../../../../layout/Icon'
+
 const DatePickerCustomField = props => {
-  const { ref, value } = props
+  const { readOnly, ref, value } = props
 
   return (
     <div
@@ -17,16 +19,26 @@ const DatePickerCustomField = props => {
         readOnly
         ref={ref}
       />
+      {!readOnly && (
+        <div className="calendar-icon">
+          <Icon
+            alt="Dates"
+            svg="ico-calendar"
+          />
+        </div>
+      )}
     </div>
   )
 }
 
 DatePickerCustomField.defaultProps = {
+  readOnly: false,
   ref: null,
   value: null,
 }
 
 DatePickerCustomField.propTypes = {
+  readOnly: PropTypes.bool,
   ref: PropTypes.shape(),
   value: PropTypes.string,
 }

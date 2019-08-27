@@ -1,8 +1,10 @@
+import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Field } from 'react-final-form'
 
 import InputLabel from '../InputLabel'
+import Icon from '../../layout/Icon'
 
 class SelectField extends PureComponent {
   constructor(props) {
@@ -21,7 +23,7 @@ class SelectField extends PureComponent {
   renderSelect = ({ input }) => {
     const { disabled, id, options, placeholder, readOnly, ...rest } = this.props
     const hasNoOption = !options.length
-    const isDisabled = disabled || hasNoOption
+    const isDisabled = disabled || hasNoOption || readOnly
 
     const moreProps = { ...rest }
     if (id) moreProps.id = id
@@ -29,7 +31,7 @@ class SelectField extends PureComponent {
     const { onChange, value } = input
 
     return (
-      <div className="select-field pc-final-form-inner">
+      <div className={classnames('select-field pc-final-form-inner', { 'is-read-only': readOnly })}>
         <select
           {...moreProps}
           className="content"
@@ -51,6 +53,10 @@ class SelectField extends PureComponent {
               </option>
             ))}
         </select>
+        {!readOnly && <Icon
+          alt="Horaires"
+          svg="ico-hour-list"
+                      />}
       </div>
     )
   }

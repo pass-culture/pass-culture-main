@@ -180,16 +180,25 @@
 
 ------------------------------------------------ */
 
-.react-datepicker__input-container_wrapper::after {
-  @extend .inherits-from-fontello-icon;
-  $size: rem(30px);
+.react-datepicker__input-container_wrapper {
+  @extend .flex-columns;
 
-  content: '\6b';
-  top: 3px;
-  right: 6px;
-  color: $primary;
-  position: absolute;
-  font-size: rem(30px);
+  &::after {
+    @extend .inherits-from-fontello-icon;
+    $size: rem(30px);
+
+    content: '\6b';
+    top: 3px;
+    right: 6px;
+    color: $primary;
+    position: absolute;
+    font-size: rem(30px);
+  }
+
+  .calendar-icon {
+    padding: 0.25rem;
+    padding-right: 1rem;
+  }
 }
 
 .react-datepicker__input-container_wrapper.read-only .pc-final-form-datepicker-input {

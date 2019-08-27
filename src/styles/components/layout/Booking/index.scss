@@ -73,6 +73,7 @@
     @extend .text-center;
 
     color: $black !important;
+    cursor: pointer;
   }
 
   .react-datepicker-popper {
@@ -90,6 +91,7 @@
     border: 0 !important;
     border-radius: 0 !important;
     background-color: transparent !important;
+    cursor: default;
   }
 }
 
@@ -98,15 +100,23 @@
 
   width: 264px;
 
+  &.is-read-only {
+    border: 0;
+  }
+
   .content {
     background-color: white;
     border: 0;
+    cursor: pointer;
     height: 37px;
     font-size: 20px;
     padding: 0 24px;
     font-weight: bold;
     text-align: center;
     width: 100%;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -o-appearance: none;
 
     &,
     &:hover,
@@ -114,5 +124,19 @@
       border-color: $grey-light;
       outline: none;
     }
+
+    &[disabled] {
+      color: inherit;
+      cursor: default;
+      margin: auto;
+      opacity: 1;
+      text-indent: 10px;
+      width: 80%;
+    }
+  }
+
+  select + img {
+    float: right;
+    pointer-events: none;
   }
 }
