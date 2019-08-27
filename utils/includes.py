@@ -124,7 +124,10 @@ FAVORITE_INCLUDES = [
                 "key": "product",
                 "includes": ["thumbUrl", "offerType"]
             },
-            "stocks",
+            {
+                "key": "stocks",
+                "includes": ["isBookable"]
+            },
             "venue",
         ]
     },
@@ -194,7 +197,10 @@ WEBAPP_GET_BOOKING_INCLUDES = [
                         "key": "product",
                         "includes": ["thumbUrl"]
                     },
-                    "stocks",
+                    {
+                        "key": "stocks",
+                        "includes": ["isBookable"]
+                    },
                     "venue",
                 ]
             },
@@ -230,7 +236,10 @@ WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
                         "key": "product",
                         "includes": ["thumbUrl"]
                     },
-                    "stocks",
+                    {
+                        "key": "stocks",
+                        "includes": ["isBookable"]
+                    },
                     "venue",
                 ]
             },
