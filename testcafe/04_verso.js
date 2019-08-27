@@ -23,12 +23,12 @@ const checkReversedIcon = Selector('#verso-cancel-booking-button-reserved')
 const closeMenu = Selector('#main-menu-fixed-container .close-link')
 const openMenuFromVerso = Selector('#verso-footer .profile-button')
 const bookingErrorReasons = Selector('#booking-error-reasons p')
-const timeSelectBox = Selector('#booking-form-time-picker-field')
 const dateSelectBox = Selector('#booking-form-date-picker-field')
 const myBookingsMenuButton = Selector('#main-menu-navigation a').nth(2)
 
-const selectableDates = Selector('.react-datepicker__day:not(.react-datepicker__day--disabled)')
-const selectedTime = timeSelectBox.find('.ant-select-selection-selected-value')
+const selectableDates = Selector(
+  '.react-datepicker__day--selected, .react-datepicker__day:not(.react-datepicker__day--disabled)'
+)
 
 let offerPage = null
 let offerPageDetails = null
@@ -37,7 +37,6 @@ let discoveryCardUrl = null
 let discoverDetailsUrl = null
 let previousWalletValue = null
 let currentBookedToken = null
-let currentSelectedTime = null
 
 fixture("Etant sur le verso d'une offre,")
 
@@ -88,6 +87,8 @@ test("Parcours complet de réservation d'une offre thing", async t => {
     .wait(500)
     .click(openVersoButton)
     .wait(500)
+
+  await t
     .expect(checkReversedIcon.exists)
     .notOk()
     .expect(bookOfferButton.exists)
@@ -156,9 +157,6 @@ test("Parcours complet de réservation d'une offre event à date unique", async 
     .click(bookOfferButton)
     .click(dateSelectBox)
     .click(selectableDates.nth(0))
-
-  currentSelectedTime = await selectedTime.textContent
-  currentSelectedTime = currentSelectedTime.slice(0, 5)
 
   await t
     .click(sendBookingButton)
