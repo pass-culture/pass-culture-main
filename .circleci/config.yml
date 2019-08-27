@@ -52,8 +52,10 @@ jobs: # a collection of steps
           path: ~/pass-culture-main/api
       - run:
           name: Build docker image
+          command: docker build -t passcultureapp/api-flask:latest .
+      - run:
+          name: Push docker image
           command: |
-            docker build -t passcultureapp/api-flask:latest .
             docker login -u passcultureapp -p $DOCKERHUB_PASSWORD
             docker push passcultureapp/api-flask:latest
 
@@ -236,7 +238,6 @@ workflows:
             branches:
               only:
                 - master
-                - PC-2168-image-docker-custom-flask
 
   nightly:
     triggers:
