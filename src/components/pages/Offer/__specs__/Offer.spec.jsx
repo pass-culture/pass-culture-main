@@ -6,34 +6,43 @@ import Offer from '../Offer'
 import MediationsManager from '../MediationsManager/MediationsManagerContainer'
 
 describe('src | components | pages | Offer | Offer ', () => {
-  const dispatch = jest.fn()
+  let dispatch
+  let props
 
-  it('should match the snapshot', () => {
-    // given
-    const initialProps = {
+  beforeEach(() => {
+    dispatch = jest.fn()
+
+    props = {
       location: {
         search: '?lieu=AQ',
       },
       match: {
         params: {
-          offerId: 'N9',
+          offerId: 'creation',
         },
       },
+      isEditableOffer: true,
       currentUser: {
         isAdmin: false,
       },
-      isEditableOffer: true,
       query: {
+        change: () => ({}),
+        changeToReadOnly: () => ({}),
         context: () => ({}),
         parse: () => ({ lieu: 'AQ' }),
         translate: () => ({ venue: 'AQ ' }),
       },
+      selectedOfferType: {},
       dispatch: dispatch,
       venues: [],
+      product: {},
+      history: {},
     }
+  })
 
+  it('should match the snapshot', () => {
     // when
-    const wrapper = shallow(<Offer {...initialProps} />)
+    const wrapper = shallow(<Offer {...props} />)
 
     // then
     expect(wrapper).toMatchSnapshot()
@@ -44,28 +53,11 @@ describe('src | components | pages | Offer | Offer ', () => {
       it('should redirect to offer page', () => {
         // given
         const queryChangeToReadOnly = jest.fn()
-        const initialProps = {
-          location: {
-            search: '?lieu=AQ',
-          },
-          match: {
-            params: {},
-          },
-          currentUser: {
-            isAdmin: false,
-          },
-          isEditableOffer: true,
-          query: {
-            changeToReadOnly: queryChangeToReadOnly,
-            context: () => ({}),
-            parse: () => ({ lieu: 'AQ' }),
-            translate: () => ({ venue: 'AQ ' }),
-          },
-          dispatch: dispatch,
-          history: {},
-        }
 
-        const wrapper = shallow(<Offer {...initialProps} />)
+        props.match.params = {}
+        props.query.changeToReadOnly = queryChangeToReadOnly
+
+        const wrapper = shallow(<Offer {...props} />)
 
         // when
         const queryParams = { gestion: '' }
@@ -122,36 +114,22 @@ describe('src | components | pages | Offer | Offer ', () => {
     })
   })
 
-  describe('hasConditionalField', () => {
-    let dispatch
-    let props
+  describe('isNational', () => {
+    it('should display isNational if admin user', () => {
+      // given
+      props.currentUser.isAdmin = true
+      const wrapper = shallow(<Offer {...props} />)
 
-    beforeEach(() => {
-      dispatch = jest.fn()
+      // when
+      const result = wrapper.find(Field).find('[name="isNational"]')
 
-      props = {
-        location: {
-          search: '?lieu=AQ',
-        },
-        match: {
-          params: {
-            offerId: 'creation',
-          },
-        },
-        currentUser: {
-          isAdmin: false,
-        },
-        query: {
-          context: () => ({}),
-          parse: () => ({ lieu: 'AQ' }),
-          translate: () => ({ venue: 'AQ ' }),
-        },
-        dispatch: dispatch,
-        venues: [],
-      }
+      // then
+      expect(result.prop('label')).toBe('Rayonnement national')
     })
+  })
 
-    it('should return false whithout selected offer type', () => {
+  describe('hasConditionalField', () => {
+    it('should return false without selected offer type', () => {
       // given
       props.selectedOfferType = null
       const wrapper = shallow(<Offer {...props} />)
@@ -167,7 +145,7 @@ describe('src | components | pages | Offer | Offer ', () => {
       it('should show event type', () => {
         // given
         props.selectedOfferType = {
-          value: 'ThingType.SPECTACLE_VIVANT_ABO'
+          value: 'ThingType.SPECTACLE_VIVANT_ABO',
         }
         const wrapper = shallow(<Offer {...props} />)
 
@@ -184,44 +162,24 @@ describe('src | components | pages | Offer | Offer ', () => {
     describe('mediationsManager', () => {
       it("should be displayed when it's not a new offer", () => {
         // given
-        const initialProps = {
-          location: {
-            search: '?lieu=AQ',
-          },
-          match: {
-            params: {
-              offerId: 'N9',
-            },
-          },
-          currentUser: {
-            isAdmin: false,
-          },
-          isEditableOffer: true,
-          query: {
-            change: () => {},
-            context: () => ({}),
-            parse: () => ({ lieu: 'AQ' }),
-            translate: () => ({ venue: 'AQ' }),
-          },
-          dispatch: dispatch,
-          offer: {
-            bookingEmail: 'fake@email.com',
-            dateCreated: '2019-03-29T15:38:23.806900Z',
-            dateModifiedAtLastProvider: '2019-03-29T15:38:23.806874Z',
-            id: 'N9',
-            idAtProviders: null,
-            isActive: true,
-            isEvent: true,
-            isThing: false,
-            lastProviderId: null,
-            modelName: 'Offer',
-            productId: '94',
-            venueId: 'AQ',
-          },
+        props.match.params.offerId = 'N9'
+        props.offer = {
+          bookingEmail: 'fake@email.com',
+          dateCreated: '2019-03-29T15:38:23.806900Z',
+          dateModifiedAtLastProvider: '2019-03-29T15:38:23.806874Z',
+          id: 'N9',
+          idAtProviders: null,
+          isActive: true,
+          isEvent: true,
+          isThing: false,
+          lastProviderId: null,
+          modelName: 'Offer',
+          productId: '94',
+          venueId: 'AQ',
         }
 
         // when
-        const wrapper = shallow(<Offer {...initialProps} />)
+        const wrapper = shallow(<Offer {...props} />)
         const mediationsManagerComponent = wrapper.find(MediationsManager)
 
         // then
@@ -232,35 +190,13 @@ describe('src | components | pages | Offer | Offer ', () => {
     describe('when creating a new offer', () => {
       it('should create a new Product when no offer type', () => {
         // given
-        const initialProps = {
-          location: {
-            search: '?lieu=AQ',
-          },
-          match: {
-            params: {
-              offerId: 'creation',
-            },
-          },
-          currentUser: {
-            isAdmin: false,
-          },
-          isEditableOffer: true,
-          query: {
-            change: () => {},
-            context: () => ({
-              isCreatedEntity: true,
-              isModifiedEntity: false,
-              readOnly: false,
-            }),
-            parse: () => ({ lieu: 'AQ' }),
-            translate: () => ({ venue: 'AQ' }),
-          },
-          dispatch: dispatch,
-          venues: [],
-        }
-
+        props.query.context = () => ({
+          isCreatedEntity: true,
+          isModifiedEntity: false,
+          readOnly: false,
+        })
         // when
-        const wrapper = shallow(<Offer {...initialProps} />)
+        const wrapper = shallow(<Offer {...props} />)
 
         // then
         expect(wrapper.find(Form).prop('action')).toStrictEqual('/offers')
@@ -268,38 +204,17 @@ describe('src | components | pages | Offer | Offer ', () => {
 
       it('should create a new Event when event type given', () => {
         // given
-        const initialProps = {
-          location: {
-            search: '?lieu=AQ',
-          },
-          match: {
-            params: {
-              offerId: 'creation',
-            },
-          },
-          currentUser: {
-            isAdmin: false,
-          },
-          isEditableOffer: true,
-          query: {
-            context: () => ({
-              isCreatedEntity: true,
-              isModifiedEntity: false,
-              readOnly: false,
-            }),
-            parse: () => ({ lieu: 'AQ' }),
-            translate: () => ({ venue: 'AQ' }),
-          },
-          dispatch: dispatch,
-          venues: [],
-
-          selectedOfferType: {
-            type: 'Event',
-          },
+        props.query.context = () => ({
+          isCreatedEntity: true,
+          isModifiedEntity: false,
+          readOnly: false,
+        })
+        props.selectedOfferType = {
+          type: 'Event',
         }
 
         // when
-        const wrapper = shallow(<Offer {...initialProps} />)
+        const wrapper = shallow(<Offer {...props} />)
 
         // then
         expect(wrapper.find(Form).prop('action')).toStrictEqual('/offers')
@@ -309,38 +224,21 @@ describe('src | components | pages | Offer | Offer ', () => {
     describe('when updating the offer', () => {
       it('should update a product when no offer type', () => {
         // given
-        const initialProps = {
-          location: {
-            search: '?lieu=AQ',
-          },
-          match: {
-            params: {
-              offerId: 'VAG',
-            },
-          },
-          currentUser: {
-            isAdmin: false,
-          },
-          isEditableOffer: true,
-          query: {
-            context: () => ({
-              isCreatedEntity: false,
-              isModifiedEntity: false,
-              readOnly: true,
-            }),
-            parse: () => ({ lieu: 'AQ' }),
-            translate: () => ({ venue: 'AQ' }),
-          },
-          dispatch: dispatch,
-          venues: [],
-          offer: {
-            id: 'VAG',
-            productId: 'V24',
-          },
+        props.match.params = {
+          offerId: 'VAG',
+        }
+        props.query.context = () => ({
+          isCreatedEntity: false,
+          isModifiedEntity: false,
+          readOnly: true,
+        })
+        props.offer = {
+          id: 'VAG',
+          productId: 'V24',
         }
 
         // when
-        const wrapper = shallow(<Offer {...initialProps} />)
+        const wrapper = shallow(<Offer {...props} />)
 
         // then
         expect(wrapper.find(Form).prop('action')).toStrictEqual('/offers/VAG')
@@ -348,43 +246,21 @@ describe('src | components | pages | Offer | Offer ', () => {
 
       it('should create a new Event when event type given', () => {
         // given
-        const initialProps = {
-          location: {
-            search: '?lieu=AQ',
-          },
-          match: {
-            params: {
-              offerId: 'VAG',
-            },
-          },
-          currentUser: {
-            isAdmin: false,
-          },
-          isEditableOffer: true,
-          query: {
-            context: () => ({
-              isCreatedEntity: false,
-              isModifiedEntity: false,
-              readOnly: true,
-            }),
-            parse: () => ({ lieu: 'AQ' }),
-            translate: () => ({ venue: 'AQ' }),
-          },
-          dispatch: dispatch,
-          venues: [],
-          selectedOfferType: {
-            type: 'Event',
-          },
-          offer: {
-            id: 'VAG',
-            productId: '6GD',
-            isEvent: true,
-            isThing: false,
-          },
+        props.match.params = {
+          offerId: 'VAG',
+        }
+        props.selectedOfferType = {
+          type: 'Event',
+        }
+        props.offer = {
+          id: 'VAG',
+          productId: '6GD',
+          isEvent: true,
+          isThing: false,
         }
 
         // when
-        const wrapper = shallow(<Offer {...initialProps} />)
+        const wrapper = shallow(<Offer {...props} />)
 
         // then
         expect(wrapper.find(Form).prop('action')).toStrictEqual('/offers/VAG')
@@ -392,35 +268,13 @@ describe('src | components | pages | Offer | Offer ', () => {
     })
 
     describe('display venue informations', () => {
-      const props = {
-        location: {
-          search: '?lieu=AQ',
-        },
-        match: {
-          params: {
-            offerId: 'creation',
-          },
-        },
-        currentUser: {
-          isAdmin: false,
-        },
-        isEditableOffer: true,
-        query: {
-          change: () => {},
-          context: () => ({
-            isCreatedEntity: true,
-            isModifiedEntity: false,
-            readOnly: false,
-          }),
-          parse: () => ({ lieu: 'AQ' }),
-          translate: () => ({ venue: 'AQ' }),
-        },
-        dispatch: dispatch,
-        selectedOfferType: {},
-      }
-
       it('should display venue name when venue publicName is not provided', () => {
         // given
+        props.query.context = () => ({
+          isCreatedEntity: true,
+          isModifiedEntity: false,
+          readOnly: false,
+        })
         props.venues = [{ name: 'quel beau théâtre' }, { name: 'quel beau musée' }]
         const expectedOptions = [{ name: 'quel beau théâtre' }, { name: 'quel beau musée' }]
 
@@ -509,26 +363,6 @@ describe('src | components | pages | Offer | Offer ', () => {
     })
 
     describe('when offer is not editable', () => {
-      const props = {
-        currentUser: {
-          isAdmin: false,
-        },
-        dispatch: dispatch,
-        location: {
-          search: '?lieu=AQ',
-        },
-        isEditableOffer: false,
-        query: {
-          context: () => ({
-            isCreatedEntity: false,
-            isModifiedEntity: false,
-            readOnly: true,
-          }),
-          parse: () => ({ lieu: 'AQ' }),
-          translate: () => ({ venue: 'AQ' }),
-        },
-        product: {},
-      }
       it('should not be possible to manage stocks', () => {
         // given
         props.isEditableOffer = false
@@ -543,6 +377,11 @@ describe('src | components | pages | Offer | Offer ', () => {
 
       it('should not be possible to modify offer', () => {
         // given
+        props.query.context = () => ({
+          isCreatedEntity: false,
+          isModifiedEntity: false,
+          readOnly: true,
+        })
         props.isEditableOffer = false
 
         // when
@@ -555,30 +394,16 @@ describe('src | components | pages | Offer | Offer ', () => {
     })
 
     describe('when offer is editable', () => {
-      const props = {
-        currentUser: {
-          isAdmin: false,
-        },
-        dispatch: dispatch,
-        location: {
-          search: '?lieu=AQ',
-        },
-        isEditableOffer: true,
-        query: {
-          context: () => ({
-            isCreatedEntity: false,
-            isModifiedEntity: false,
-            readOnly: true,
-          }),
-          parse: () => ({ lieu: 'AQ' }),
-          translate: () => ({ venue: 'AQ' }),
-        },
-        product: {},
-      }
-      it('should be possible to manage stocks', () => {
-        // given
+      beforeEach(() => {
+        props.query.context = () => ({
+          isCreatedEntity: false,
+          isModifiedEntity: false,
+          readOnly: true,
+        })
         props.isEditableOffer = true
+      })
 
+      it('should be possible to manage stocks', () => {
         // when
         const wrapper = shallow(<Offer {...props} />)
 
@@ -588,9 +413,6 @@ describe('src | components | pages | Offer | Offer ', () => {
       })
 
       it('should not be possible to modify offer', () => {
-        // given
-        props.isEditableOffer = true
-
         // when
         const wrapper = shallow(<Offer {...props} />)
 
