@@ -298,7 +298,12 @@ workflows:
   version: 2
   commit:
     jobs:
-      - tests-script-pc
+      - tests-script-pc:
+          filters:
+            branches:
+              only:
+                - master
+                - /hotfix-v.*/
       - tests-api:
           filters:
             branches:
