@@ -211,7 +211,10 @@ WEBAPP_GET_BOOKING_INCLUDES = [
             "thumbUrl"
         ]
     },
-    "stock",
+    {
+        "key": "stock",
+        "includes": ["isBookable"]
+    },
     "thumbUrl"
 ]
 
@@ -250,7 +253,10 @@ WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
             "thumbUrl"
         ]
     },
-    "stock",
+    {
+        "key": "stock",
+        "includes": ["isBookable"]
+    },
     "thumbUrl",
     {
         "key": "user",
