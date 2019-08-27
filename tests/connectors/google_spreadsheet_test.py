@@ -1,8 +1,8 @@
-from os import path
-from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
-from connectors.google_spreadsheet import get_credentials
+import pytest
+
+from connectors.google_spreadsheet import get_credentials, MissingGoogleKeyException
 
 
 class GetCredentialsTest:
@@ -32,35 +32,19 @@ class GetCredentialsTest:
                                                                              'https://www.googleapis.com/auth/drive'])
 
     @patch('connectors.google_spreadsheet.os.environ.get')
-    @patch('connectors.google_spreadsheet.ServiceAccountCredentials')
-    def test_calls_service_account_credentials_from_private_file_when_no_environ_variable(self,
-                                                                             ServiceAccountCredentials,
-                                                                             get_environment):
+    def test_raises_exception_when_no_environ_variable(self, get_environment):
         # Given
         get_environment.return_value = None
-        expected_google_key_path = Path('/opt/services/flaskapp/src/connectors/../private/google_key.json')
 
-        # When
-        get_credentials()
-
-        # Then
-        ServiceAccountCredentials.from_json_keyfile_name.assert_called_with(expected_google_key_path,
-                                                                            ['https://spreadsheets.google.com/feeds',
-                                                                             'https://www.googleapis.com/auth/drive'])
+        # When / Then
+        with pytest.raises(MissingGoogleKeyException):
+            get_credentials()
 
     @patch('connectors.google_spreadsheet.os.environ.get')
-    @patch('connectors.google_spreadsheet.ServiceAccountCredentials')
-    def test_calls_service_account_credentials_from_private_file_when_empty_environ_variable(self,
-                                                                             ServiceAccountCredentials,
-                                                                             get_environment):
+    def test_raises_exception_when_empty_environ_variable(self, get_environment):
         # Given
         get_environment.return_value = {}
-        expected_google_key_path = Path('/opt/services/flaskapp/src/connectors/../private/google_key.json')
 
-        # When
-        get_credentials()
-
-        # Then
-        ServiceAccountCredentials.from_json_keyfile_name.assert_called_with(expected_google_key_path,
-                                                                            ['https://spreadsheets.google.com/feeds',
-                                                                             'https://www.googleapis.com/auth/drive'])
+        # When / Then
+        with pytest.raises(MissingGoogleKeyException):
+            get_credentials()

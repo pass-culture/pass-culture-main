@@ -13,6 +13,10 @@ user_spreadsheet_store = {}
 memo = Memoizer(user_spreadsheet_store)
 
 
+class MissingGoogleKeyException(Exception):
+    pass
+
+
 def get_credentials():
     scope = ['https://spreadsheets.google.com/feeds',
              'https://www.googleapis.com/auth/drive']
@@ -24,11 +28,8 @@ def get_credentials():
             json.dump(google_key_json_payload, outfile)
         credentials = ServiceAccountCredentials.from_json_keyfile_name(key_path, scope)
         os.remove(key_path)
-    else:
-        key_path = Path(path.dirname(path.realpath(__file__))) / '..' \
-                   / 'private' / 'google_key.json'
-        credentials = ServiceAccountCredentials.from_json_keyfile_name(key_path, scope)
-    return credentials
+        return credentials
+    raise MissingGoogleKeyException
 
 
 @memo(max_age=60)
@@ -56,6 +57,7 @@ def get_authorized_emails_and_dept_codes():
                     values)), \
            list(map(lambda v: v[departement_index],
                     values))
+
 
 def get_dashboard_spreadsheet() -> Spreadsheet:
     sheet_name = os.environ.get('DASHBOARD_GSHEET_NAME')
