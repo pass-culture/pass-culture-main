@@ -9,7 +9,6 @@ ShallowWrapper {
     className={null}
     collectionName="fake"
     dispatch={[MockFunction]}
-    entityId={null}
     hasExistingImage={false}
     height={250}
     image={
@@ -19,7 +18,6 @@ ShallowWrapper {
         "type": "image/jpeg",
       }
     }
-    index={0}
     maxSize={10}
     onImageChange={[MockFunction]}
     storeKey="image"
@@ -57,6 +55,18 @@ ShallowWrapper {
           onDrop={[Function]}
           preventDropOnDocument={true}
         >
+          <div
+            className="drag-n-drop "
+            style={
+              Object {
+                "borderRadius": 250,
+                "height": 250,
+                "width": 250,
+              }
+            }
+          >
+            Cliquez ou glissez-déposez pour charger une image
+          </div>
           <d
             border={25}
             borderRadius={250}
@@ -124,27 +134,7 @@ ShallowWrapper {
         </t>
         <nav
           className="field content"
-        >
-          <div
-            className="field is-grouped is-grouped-centered"
-          >
-            <div
-              className="control"
-            />
-            <div
-              className="control"
-            >
-              <button
-                className="button is-primary is-outlined"
-                name="removeImage"
-                onClick={[Function]}
-                type="button"
-              >
-                Retirer l'image
-              </button>
-            </div>
-          </div>
-        </nav>
+        />
       </div>,
       "className": "field",
     },
@@ -170,6 +160,18 @@ ShallowWrapper {
             onDrop={[Function]}
             preventDropOnDocument={true}
           >
+            <div
+              className="drag-n-drop "
+              style={
+                Object {
+                  "borderRadius": 250,
+                  "height": 250,
+                  "width": 250,
+                }
+              }
+            >
+              Cliquez ou glissez-déposez pour charger une image
+            </div>
             <d
               border={25}
               borderRadius={250}
@@ -237,27 +239,7 @@ ShallowWrapper {
           </t>,
           <nav
             className="field content"
-          >
-            <div
-              className="field is-grouped is-grouped-centered"
-            >
-              <div
-                className="control"
-              />
-              <div
-                className="control"
-              >
-                <button
-                  className="button is-primary is-outlined"
-                  name="removeImage"
-                  onClick={[Function]}
-                  type="button"
-                >
-                  Retirer l'image
-                </button>
-              </div>
-            </div>
-          </nav>,
+          />,
         ],
         "className": "upload-thumb",
       },
@@ -269,7 +251,18 @@ ShallowWrapper {
           "nodeType": "class",
           "props": Object {
             "children": Array [
-              false,
+              <div
+                className="drag-n-drop "
+                style={
+                  Object {
+                    "borderRadius": 250,
+                    "height": 250,
+                    "width": 250,
+                  }
+                }
+              >
+                Cliquez ou glissez-déposez pour charger une image
+              </div>,
               <d
                 border={25}
                 borderRadius={250}
@@ -351,7 +344,23 @@ ShallowWrapper {
           },
           "ref": null,
           "rendered": Array [
-            false,
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Cliquez ou glissez-déposez pour charger une image",
+                "className": "drag-n-drop ",
+                "style": Object {
+                  "borderRadius": 250,
+                  "height": 250,
+                  "width": 250,
+                },
+              },
+              "ref": null,
+              "rendered": "Cliquez ou glissez-déposez pour charger une image",
+              "type": "div",
+            },
             Object {
               "instance": null,
               "key": undefined,
@@ -469,7 +478,9 @@ ShallowWrapper {
                     "type": "range",
                     "value": 1,
                   },
-                  "ref": [Function],
+                  "ref": Object {
+                    "current": null,
+                  },
                   "rendered": null,
                   "type": "input",
                 },
@@ -510,116 +521,11 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": Array [
-              false,
-              <div
-                className="field is-grouped is-grouped-centered"
-              >
-                <div
-                  className="control"
-                />
-                <div
-                  className="control"
-                >
-                  <button
-                    className="button is-primary is-outlined"
-                    name="removeImage"
-                    onClick={[Function]}
-                    type="button"
-                  >
-                    Retirer l'image
-                  </button>
-                </div>
-              </div>,
-            ],
+            "children": false,
             "className": "field content",
           },
           "ref": null,
-          "rendered": Array [
-            false,
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": Array [
-                  <div
-                    className="control"
-                  />,
-                  <div
-                    className="control"
-                  >
-                    <button
-                      className="button is-primary is-outlined"
-                      name="removeImage"
-                      onClick={[Function]}
-                      type="button"
-                    >
-                      Retirer l'image
-                    </button>
-                  </div>,
-                  false,
-                ],
-                "className": "field is-grouped is-grouped-centered",
-              },
-              "ref": null,
-              "rendered": Array [
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": Array [
-                      false,
-                      false,
-                    ],
-                    "className": "control",
-                  },
-                  "ref": null,
-                  "rendered": Array [
-                    false,
-                    false,
-                  ],
-                  "type": "div",
-                },
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": <button
-                      className="button is-primary is-outlined"
-                      name="removeImage"
-                      onClick={[Function]}
-                      type="button"
-                    >
-                      Retirer l'image
-                    </button>,
-                    "className": "control",
-                  },
-                  "ref": null,
-                  "rendered": Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "host",
-                    "props": Object {
-                      "children": "Retirer l'image",
-                      "className": "button is-primary is-outlined",
-                      "name": "removeImage",
-                      "onClick": [Function],
-                      "type": "button",
-                    },
-                    "ref": null,
-                    "rendered": "Retirer l'image",
-                    "type": "button",
-                  },
-                  "type": "div",
-                },
-                false,
-              ],
-              "type": "div",
-            },
-          ],
+          "rendered": false,
           "type": "nav",
         },
       ],
@@ -651,6 +557,18 @@ ShallowWrapper {
             onDrop={[Function]}
             preventDropOnDocument={true}
           >
+            <div
+              className="drag-n-drop "
+              style={
+                Object {
+                  "borderRadius": 250,
+                  "height": 250,
+                  "width": 250,
+                }
+              }
+            >
+              Cliquez ou glissez-déposez pour charger une image
+            </div>
             <d
               border={25}
               borderRadius={250}
@@ -718,27 +636,7 @@ ShallowWrapper {
           </t>
           <nav
             className="field content"
-          >
-            <div
-              className="field is-grouped is-grouped-centered"
-            >
-              <div
-                className="control"
-              />
-              <div
-                className="control"
-              >
-                <button
-                  className="button is-primary is-outlined"
-                  name="removeImage"
-                  onClick={[Function]}
-                  type="button"
-                >
-                  Retirer l'image
-                </button>
-              </div>
-            </div>
-          </nav>
+          />
         </div>,
         "className": "field",
       },
@@ -764,6 +662,18 @@ ShallowWrapper {
               onDrop={[Function]}
               preventDropOnDocument={true}
             >
+              <div
+                className="drag-n-drop "
+                style={
+                  Object {
+                    "borderRadius": 250,
+                    "height": 250,
+                    "width": 250,
+                  }
+                }
+              >
+                Cliquez ou glissez-déposez pour charger une image
+              </div>
               <d
                 border={25}
                 borderRadius={250}
@@ -831,27 +741,7 @@ ShallowWrapper {
             </t>,
             <nav
               className="field content"
-            >
-              <div
-                className="field is-grouped is-grouped-centered"
-              >
-                <div
-                  className="control"
-                />
-                <div
-                  className="control"
-                >
-                  <button
-                    className="button is-primary is-outlined"
-                    name="removeImage"
-                    onClick={[Function]}
-                    type="button"
-                  >
-                    Retirer l'image
-                  </button>
-                </div>
-              </div>
-            </nav>,
+            />,
           ],
           "className": "upload-thumb",
         },
@@ -863,7 +753,18 @@ ShallowWrapper {
             "nodeType": "class",
             "props": Object {
               "children": Array [
-                false,
+                <div
+                  className="drag-n-drop "
+                  style={
+                    Object {
+                      "borderRadius": 250,
+                      "height": 250,
+                      "width": 250,
+                    }
+                  }
+                >
+                  Cliquez ou glissez-déposez pour charger une image
+                </div>,
                 <d
                   border={25}
                   borderRadius={250}
@@ -945,7 +846,23 @@ ShallowWrapper {
             },
             "ref": null,
             "rendered": Array [
-              false,
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Cliquez ou glissez-déposez pour charger une image",
+                  "className": "drag-n-drop ",
+                  "style": Object {
+                    "borderRadius": 250,
+                    "height": 250,
+                    "width": 250,
+                  },
+                },
+                "ref": null,
+                "rendered": "Cliquez ou glissez-déposez pour charger une image",
+                "type": "div",
+              },
               Object {
                 "instance": null,
                 "key": undefined,
@@ -1063,7 +980,9 @@ ShallowWrapper {
                       "type": "range",
                       "value": 1,
                     },
-                    "ref": [Function],
+                    "ref": Object {
+                      "current": null,
+                    },
                     "rendered": null,
                     "type": "input",
                   },
@@ -1104,116 +1023,11 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": Array [
-                false,
-                <div
-                  className="field is-grouped is-grouped-centered"
-                >
-                  <div
-                    className="control"
-                  />
-                  <div
-                    className="control"
-                  >
-                    <button
-                      className="button is-primary is-outlined"
-                      name="removeImage"
-                      onClick={[Function]}
-                      type="button"
-                    >
-                      Retirer l'image
-                    </button>
-                  </div>
-                </div>,
-              ],
+              "children": false,
               "className": "field content",
             },
             "ref": null,
-            "rendered": Array [
-              false,
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": Array [
-                    <div
-                      className="control"
-                    />,
-                    <div
-                      className="control"
-                    >
-                      <button
-                        className="button is-primary is-outlined"
-                        name="removeImage"
-                        onClick={[Function]}
-                        type="button"
-                      >
-                        Retirer l'image
-                      </button>
-                    </div>,
-                    false,
-                  ],
-                  "className": "field is-grouped is-grouped-centered",
-                },
-                "ref": null,
-                "rendered": Array [
-                  Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "host",
-                    "props": Object {
-                      "children": Array [
-                        false,
-                        false,
-                      ],
-                      "className": "control",
-                    },
-                    "ref": null,
-                    "rendered": Array [
-                      false,
-                      false,
-                    ],
-                    "type": "div",
-                  },
-                  Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "host",
-                    "props": Object {
-                      "children": <button
-                        className="button is-primary is-outlined"
-                        name="removeImage"
-                        onClick={[Function]}
-                        type="button"
-                      >
-                        Retirer l'image
-                      </button>,
-                      "className": "control",
-                    },
-                    "ref": null,
-                    "rendered": Object {
-                      "instance": null,
-                      "key": undefined,
-                      "nodeType": "host",
-                      "props": Object {
-                        "children": "Retirer l'image",
-                        "className": "button is-primary is-outlined",
-                        "name": "removeImage",
-                        "onClick": [Function],
-                        "type": "button",
-                      },
-                      "ref": null,
-                      "rendered": "Retirer l'image",
-                      "type": "button",
-                    },
-                    "type": "div",
-                  },
-                  false,
-                ],
-                "type": "div",
-              },
-            ],
+            "rendered": false,
             "type": "nav",
           },
         ],

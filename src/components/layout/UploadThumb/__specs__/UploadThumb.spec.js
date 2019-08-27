@@ -1,4 +1,5 @@
 import React from 'react'
+import renderer from 'react-test-renderer'
 
 import { shallow } from 'enzyme'
 
@@ -12,6 +13,7 @@ const defaultParams = {
   factor: 10,
   direction: 1,
 }
+
 describe('src | components | layout | UploadThumb |', () => {
   let props
   let image = {
@@ -28,7 +30,7 @@ describe('src | components | layout | UploadThumb |', () => {
       collectionName: 'fake',
       dispatch: jest.fn(),
       hasExistingImage: false,
-      image: null,
+      image,
       onImageChange: jest.fn(),
       storeKey: 'image',
     }
@@ -52,6 +54,7 @@ describe('src | components | layout | UploadThumb |', () => {
   describe('render', () => {
     it('should render Mediation component with default state', () => {
       // when
+      props.image = null
       const wrapper = shallow(<UploadThumb {...props} />)
 
       // then
@@ -61,6 +64,115 @@ describe('src | components | layout | UploadThumb |', () => {
       expect(wrapper.state('isUploadDisabled')).toBe(false)
       expect(wrapper.state('isDragging')).toBe(false)
       expect(wrapper.state('zoom')).toBe(1)
+    })
+
+    describe('dropzone component', () => {
+      it('should render component properly', () => {
+        // given
+        props.image = {
+          name: 'dropzoneExample.jpg',
+          size: 1503804,
+          type: 'image/jpeg',
+        }
+
+        // when
+        const wrapper = shallow(<UploadThumb {...props} />)
+        const dropZoneComponent = wrapper.find('.dropzone')
+
+        // then
+        expect(dropZoneComponent).toHaveLength(1)
+      })
+
+      it('should render correct props when readOnly is true', () => {
+        // given
+        props.hasExistingImage = true
+
+        // when
+        const wrapper = shallow(<UploadThumb {...props} />)
+        const dropZoneComponent = wrapper.find('.dropzone')
+
+        // then
+        expect(wrapper.state('readOnly')).toBe(true)
+        expect(dropZoneComponent.props().disableClick).toStrictEqual(true)
+        expect(dropZoneComponent.props().className).toStrictEqual('dropzone has-image no-drag')
+      })
+      it('should render correct props when readOnly is false', () => {
+        // given
+        props.hasExistingImage = false
+        props.image = null
+
+        // when
+        const wrapper = shallow(<UploadThumb {...props} />)
+        const dropZoneComponent = wrapper.find('.dropzone')
+
+        // then
+        expect(wrapper.state('readOnly')).toBe(false)
+        expect(dropZoneComponent.props().disableClick).toStrictEqual(false)
+        expect(dropZoneComponent.props().className).toStrictEqual('dropzone')
+      })
+    })
+  })
+
+  describe('handleDecrement', () => {
+    it('should decrement zoom on click', () => {
+      // given
+      props.image = {
+        name: 'IMG_4366.jpg',
+        size: 1503804,
+        type: 'image/jpeg',
+      }
+      const mockedRefInput = renderer.create(<input
+        max="4"
+        min="1"
+        step="0.01"
+                                             />).toJSON()
+
+      const wrapper = shallow(<UploadThumb {...props} />)
+      wrapper.setState({ zoom: 3.08 })
+
+      wrapper.instance()['handleSetZoomInput'] = {
+        current: mockedRefInput.props,
+      }
+      wrapper.find('.decrement').simulate('click')
+      // const input = document.querySelector('input[name="zoomLeft"]')
+      console.log('********* iput', document)
+
+      // then
+      expect(wrapper.state('zoom')).toBe(3.08)
+      // scale={zoom}
+    })
+
+    it('should increment zoom on click', () => {
+      // given
+      props.image = {
+        name: 'IMG_4366.jpg',
+        size: 1503804,
+        type: 'image/jpeg',
+      }
+      const mockedRefInput = renderer.create(<input
+        max="4"
+        min="1"
+        step="0.01"
+                                             />).toJSON()
+      // const mockedRefInput = (
+      //   <input
+      //     max='4'
+      //     min='1'
+      //     step="0.01"
+      //   />
+      // )
+
+      console.log('mockedRefInput', mockedRefInput.props)
+      const wrapper = shallow(<UploadThumb {...props} />)
+      wrapper.setState({ zoom: 2.5 })
+
+      wrapper.instance()['handleSetZoomInput'] = {
+        current: mockedRefInput.props,
+      }
+      wrapper.find('.increment').simulate('click')
+
+      // then
+      expect(wrapper.state('zoom')).toBe(2.5)
     })
   })
 
@@ -129,9 +241,11 @@ describe('src | components | layout | UploadThumb |', () => {
     const ctx = { fillStyle: '#000000' }
 
     it('should not be called when no image', () => {
+      // given
+      props.image = null
+
       // when
       const wrapper = shallow(<UploadThumb {...props} />)
-
       wrapper.instance().handleOnImageChange(ctx)
 
       // then
@@ -154,28 +268,6 @@ describe('src | components | layout | UploadThumb |', () => {
 
       // then
       expect(props.onImageChange).toHaveBeenCalledWith(ctx)
-    })
-  })
-
-  describe('handleDecrement', () => {
-    it('should decrement zoom on click', () => {
-      // given
-      props.image = {
-        name: 'IMG_4366.jpg',
-        size: 1503804,
-        type: 'image/jpeg',
-      }
-
-      // comment mocker this.zoomInput ??
-      // when
-      const wrapper = shallow(<UploadThumb {...props} />)
-      // wrapper.find('.decrement').simulate('click')
-      wrapper.instance().changeZoom(1)
-
-      // then
-      // expect(changeZoomFunc).toHaveBeenCalledWith()
-      expect(wrapper.state('zoom')).toBe(1)
-
     })
   })
 

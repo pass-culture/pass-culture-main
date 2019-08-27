@@ -3,7 +3,8 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import AvatarEditor from 'react-avatar-editor'
 import Dropzone from 'react-dropzone'
-import { requestData } from 'redux-saga-data'
+
+const IMAGE_MAX_SIZE = 10 // in MB
 
 export function computeNewZoom(current, min, max, step, factor, direction) {
   const zoom = current + step * factor * direction
@@ -19,6 +20,7 @@ class UploadThumb extends Component {
   constructor() {
     super()
     this.avatarEditor = React.createRef()
+    this.handleSetZoomInput = React.createRef()
     this.state = {
       isEdited: false,
       readOnly: false,
@@ -63,33 +65,6 @@ class UploadThumb extends Component {
     })
   }
 
-  //  Utilisé ? Bouton Enregistrez invisible
-  handleOnUploadClick = e => () => {
-    const { collectionName, dispatch, entityId, index, storeKey } = this.props
-    const { image, isUploadDisabled } = this.state
-    this.setState({
-      isEdited: false,
-    })
-
-    if (typeof image === 'string') return
-
-    if (isUploadDisabled) return
-
-    e.preventDefault()
-    const formData = new FormData()
-    formData.append('file', image)
-    dispatch(
-      requestData({
-        apiPath: `/storage/thumb/${collectionName}/${entityId}/${index}`,
-        body: formData,
-        encode: 'multipart/form-data',
-        method: 'POST',
-        stateKey: storeKey,
-      })
-    )
-    window && window.URL.revokeObjectURL(image.preview)
-  }
-
   handleOnZoomChange = event => {
     this.setState({ zoom: parseFloat(event.target.value) })
   }
@@ -105,26 +80,15 @@ class UploadThumb extends Component {
     }
   }
 
-  handleSetZoomInput = element => {
-    this.zoomInput = element
-  }
-
-  // utilisé ???
-  handleOnCancelModificationClick = () => this.setState({ isEdited: false, dragging: false })
-
   changeZoom(direction) {
-    console.log('this.zoomInput', this.zoomInput)
     const { zoom } = this.state
+
     const factor = 10 // Slider step is too low for button usage
-    const step = parseFloat(this.zoomInput.getAttribute('step'))
-    const min = parseFloat(this.zoomInput.getAttribute('min'))
-    const max = parseFloat(this.zoomInput.getAttribute('max'))
+    const step = parseFloat(this.handleSetZoomInput.current.getAttribute('step'))
+    const min = parseFloat(this.handleSetZoomInput.current.getAttribute('min'))
+    const max = parseFloat(this.handleSetZoomInput.current.getAttribute('max'))
 
     const newZoom = computeNewZoom(zoom, min, max, step, factor, direction)
-
-    console.log('newZoom', newZoom)
-    console.log(' ********* ********* ********* ********* ********* ')
-    console.log(' ********* ********* ********* ********* ********* ')
 
     this.setState({ zoom: newZoom })
   }
@@ -135,27 +99,9 @@ class UploadThumb extends Component {
 
   handleDecrement = () => this.changeZoom(-1)
 
-  handleOnRemoveImageClick = () =>
-    this.setState({
-      image: null,
-      dragging: false,
-      isUploadDisabled: false
-    })
-
   render() {
-    const {
-      border,
-      borderRadius,
-      className,
-      height,
-      image,
-      maxSize,
-      width,
-      onImageChange,
-      hasExistingImage,
-    } = this.props
-    const { dragging, isUploadDisabled, readOnly, size, zoom } = this.state
-
+    const { border, borderRadius, className, height, maxSize, width } = this.props
+    const { dragging, image, isUploadDisabled, readOnly, size, zoom } = this.state
     return (
       <div className="field">
         <div className={classnames('upload-thumb', className)}>
@@ -169,7 +115,7 @@ class UploadThumb extends Component {
             onDragLeave={this.handleDragStop}
             onDrop={this.handleDrop}
           >
-            {!image && (
+            {image && (
               <div
                 className={`drag-n-drop ${dragging ? 'dragged' : ''}`}
                 style={{ borderRadius, width, height }}
@@ -200,7 +146,6 @@ class UploadThumb extends Component {
                     {'-'}
                   </span>
                 </button>
-
                 <input
                   className="zoom level-left"
                   max="4"
@@ -230,54 +175,6 @@ class UploadThumb extends Component {
                 {`Votre image trop volumineuse : ${size.toFixed(2)} > ${maxSize}Mo`}
               </p>
             )}
-            <div className="field is-grouped is-grouped-centered">
-              <div className="control">
-                {readOnly && (
-                  <button
-                    className="button is-primary"
-                    onClick={this.handleOnChangeImageClick}
-                    type="button"
-                  >
-                    {"Modifier l'image"}
-                  </button>
-                )}
-                {!onImageChange && // upload is managed by child component
-                  !readOnly &&
-                  image && (
-                    <button
-                      className="button is-primary is-blabla"
-                      disabled={isUploadDisabled}
-                      onClick={this.handleOnUploadClick}
-                      type="button"
-                    >
-                      {'Enregistrer'}
-                    </button>
-                  )}
-              </div>
-              {!readOnly && image && (
-                <div className="control">
-                  <button
-                    className="button is-primary is-outlined"
-                    name="removeImage"
-                    onClick={this.handleOnRemoveImageClick}
-                    type="button"
-                  >
-                    {"Retirer l'image"}
-                  </button>
-                </div>
-              )}
-              {!readOnly && hasExistingImage && (
-                <div className="control">
-                  <button
-                    className="button is-primary is-outlined"
-                    onClick={this.handleOnCancelModificationClick}
-                    type="button"
-                  >
-                    {'Annuler la modification'}
-                  </button>
-                </div>
-              )}
-            </div>
           </nav>
         </div>
       </div>
@@ -289,10 +186,8 @@ UploadThumb.defaultProps = {
   border: 25,
   borderRadius: 250,
   className: null,
-  entityId: null,
   height: 250,
-  index: 0,
-  maxSize: 10, // in MB
+  maxSize: IMAGE_MAX_SIZE,
   width: 250,
 }
 
@@ -300,16 +195,11 @@ UploadThumb.propTypes = {
   border: PropTypes.number,
   borderRadius: PropTypes.number,
   className: PropTypes.string,
-  collectionName: PropTypes.string.isRequired,
-  dispatch: PropTypes.func.isRequired,
-  entityId: PropTypes.string,
   hasExistingImage: PropTypes.bool.isRequired,
   height: PropTypes.number,
   image: PropTypes.oneOfType([PropTypes.string, PropTypes.shape()]).isRequired,
-  index: PropTypes.number,
   maxSize: PropTypes.number,
   onImageChange: PropTypes.func.isRequired,
-  storeKey: PropTypes.string.isRequired,
   width: PropTypes.number,
 }
 
