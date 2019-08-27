@@ -16,7 +16,7 @@ def create_industrial_criteria() -> dict:
 
     criterion2 = Criterion()
     criterion2.name = 'Mauvaise accroche'
-    criterion2.description = 'Offre ne possèdant pas une accroche de qualité suffisante'
+    criterion2.description = 'Offre ne possédant pas une accroche de qualité suffisante'
     criterion2.scoreDelta = -1
     criteria_by_name[criterion2.name] = criterion2
 

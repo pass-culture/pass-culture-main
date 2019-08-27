@@ -8,7 +8,9 @@ from models import ImportStatus, PcObject, BeneficiaryImport
 
 
 class OfferAdminView(BaseAdminView):
+    can_create = False
     can_edit = True
+    can_delete = False
     column_list = ['id', 'name', 'type', 'baseScore', 'criteria']
     column_labels = dict(name='Nom', type='Type', baseScore='Score', criteria='Tag')
     column_searchable_list = ['name']
