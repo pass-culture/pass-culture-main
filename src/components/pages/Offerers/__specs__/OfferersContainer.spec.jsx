@@ -91,7 +91,7 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
     })
 
     describe('loadOfferers', () => {
-      it('load all offerers by default', () => {
+      it('should load all offerers by default', () => {
         // when
         const handleFail = jest.fn()
         const handleSuccess = jest.fn()

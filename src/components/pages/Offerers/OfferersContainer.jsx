@@ -9,6 +9,8 @@ import { assignData } from 'fetch-normalize-data'
 import { offererNormalizer } from '../../../utils/normalizers'
 import selectOfferers from '../../../selectors/selectOfferers'
 
+import { OFFERERS_API_PATH } from '../../../config/apiPaths'
+
 export const mapStateToProps = state => {
   return {
     offerers: selectOfferers(state),
@@ -22,7 +24,7 @@ export const mapDispatchToProps = dispatch => ({
   closeNotification: () => dispatch(closeNotification()),
 
   loadOfferers: (handleFail, handleSuccess, { isValidated } = {}) => {
-    let apiPath = '/offerers'
+    let apiPath = OFFERERS_API_PATH
 
     if (isValidated !== undefined) apiPath += `?validated=${isValidated}`
 

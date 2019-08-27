@@ -24,6 +24,8 @@ import { musicOptions, showOptions } from '../../../utils/edd'
 import { offerNormalizer } from '../../../utils/normalizers'
 import { getDurationInHours, getDurationInMinutes } from './utils/duration'
 
+import { OFFERERS_API_PATH } from '../../../config/apiPaths'
+
 const DURATION_LIMIT_TIME = 100
 
 const CONDITIONAL_FIELDS = {
@@ -141,9 +143,9 @@ class Offer extends Component {
         },
       })
     } else {
-      let offerersPath = '/offerers'
+      let offerersPath = OFFERERS_API_PATH
       if (offererId) {
-        offerersPath = `${offerersPath}/${offererId}`
+        offerersPath = `${OFFERERS_API_PATH}/${offererId}`
       }
       dispatch(
         requestData({
@@ -176,7 +178,7 @@ class Offer extends Component {
     if (offerers.length === 0 || venues.length === 0) {
       dispatch(
         requestData({
-          apiPath: '/offerers',
+          apiPath: OFFERERS_API_PATH,
           normalizer: { managedVenues: 'venues' },
         })
       )
@@ -434,7 +436,9 @@ class Offer extends Component {
                       className="label"
                       htmlFor="input_offers_name"
                     >
-                      <div className="subtitle">{isEventType ? 'Dates :' : 'Stocks :'}</div>
+                      <div className="subtitle">
+                        {isEventType ? 'Dates :' : 'Stocks :'}
+                      </div>
                     </label>
                   </div>
                   <div className="field-body">
@@ -470,7 +474,9 @@ class Offer extends Component {
             {!isCreatedEntity && offer && <MediationsManager />}
             {showAllForm && (
               <div>
-                <h2 className="main-list-title">{'Infos pratiques'}</h2>
+                <h2 className="main-list-title">
+                  {'Infos pratiques'}
+                </h2>
                 <div className="field-group">
                   <Field
                     debug
@@ -546,7 +552,9 @@ class Offer extends Component {
                     type="email"
                   />
                 </div>
-                <h2 className="main-list-title">{'Infos artistiques'}</h2>
+                <h2 className="main-list-title">
+                  {'Infos artistiques'}
+                </h2>
                 <div className="field-group">
                   <Field
                     displayMaxLength
@@ -629,7 +637,7 @@ class Offer extends Component {
                   <button
                     className="button is-secondary is-medium"
                     disabled={isEditableOffer ? '' : 'disabled'}
-                    id='modify-offer-button'
+                    id="modify-offer-button"
                     onClick={this.handleChangeOnClick(query)}
                     type="button"
                   >

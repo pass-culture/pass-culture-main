@@ -66,6 +66,7 @@ class Offerers extends Component {
 
   handleRequestData = () => {
     const { currentUser, loadOfferers, offerers, query, showNotification } = this.props
+
     const queryParams = query.parse()
     const apiParams = translateQueryParamsToApiParams(queryParams)
     const apiParamsString = stringify(apiParams)
@@ -84,7 +85,9 @@ class Offerers extends Component {
       keywords: apiParamsString,
     }
 
-    if (currentUser.isAdmin) loadOfferParameters.isValidated = true
+    if (currentUser.isAdmin === true) {
+      loadOfferParameters.isValidated = true
+    }
 
     this.setState(
       { isLoading: true },
@@ -204,15 +207,17 @@ class Offerers extends Component {
           useWindow
         >
           {offerers.map(offerer => {
-            if (offerer.isValidated && offerer.userHasAccess)
-              return (<OffererItemContainer
+            return offerer.isValidated && offerer.userHasAccess ? (
+              <OffererItemContainer
                 key={offerer.id}
                 offerer={offerer}
-                      />)
-            else return (<PendingOffererItem
-              key={offerer.siren}
-              offerer={offerer}
-                         />)
+              />
+            ) : (
+              <PendingOffererItem
+                key={offerer.siren}
+                offerer={offerer}
+              />
+            )
           })}
         </LoadingInfiniteScroll>
       </Main>

@@ -44,14 +44,11 @@ describe('src | components | pages | Offerers | Offerers', () => {
     describe('when loading the offerer list', () => {
       it('should transmit keywords', () => {
         // given
-        jest
-          .spyOn(props.query, 'parse')
-          .mockImplementation()
-          .mockReturnValue({
-            de: 'Balzac',
-            lieu: 'B3',
-            'mots-cles': ['Honoré', 'Justice'],
-          })
+        jest.spyOn(props.query, 'parse').mockReturnValue({
+          de: 'Balzac',
+          lieu: 'B3',
+          'mots-cles': ['Honoré', 'Justice'],
+        })
 
         // when
         shallow(<Offerers {...props} />)
@@ -79,7 +76,7 @@ describe('src | components | pages | Offerers | Offerers', () => {
       })
 
       describe('when the current user is pro user but not admin', () => {
-        it('should load all the offerers', () => {
+        it('should load all the offerers without validated filter', () => {
           // given
           props.currentUser = { isAdmin: false }
 
