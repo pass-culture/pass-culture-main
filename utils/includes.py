@@ -180,9 +180,8 @@ WEBAPP_GET_BOOKING_INCLUDES = [
     "completedUrl",
     "isUserCancellable",
     {
-        "key": "recommendation",
+        "key": "stock",
         "includes": [
-            "discoveryIdentifier",
             {
                 "key": "offer",
                 "includes": [
@@ -204,17 +203,10 @@ WEBAPP_GET_BOOKING_INCLUDES = [
                     }
                 ]
             },
-            {
-                "key": "mediation",
-                "includes": ["thumbUrl"]
-            },
-            "thumbUrl"
         ]
     },
-    {
-        "key": "stock",
-        "includes": ["isBookable"]
-    },
+    "mediation",
+    "mediationId",
     "thumbUrl"
 ]
 

@@ -163,6 +163,16 @@ class Booking(PcObject, Model, VersionedMixin):
         if self.stock.offer.product.thumbCount:
             return self.stock.offer.product.thumbUrl
 
+    @property
+    def mediation(self):
+        if self.recommendation:
+            return self.recommendation.mediation
+
+    @property
+    def mediationId(self):
+        if self.recommendation:
+            return self.recommendation.mediationId
+
 class ActivationUser:
     CSV_HEADER = [
         'Prénom',
