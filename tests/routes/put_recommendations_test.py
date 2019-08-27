@@ -912,6 +912,6 @@ class Put:
             assert len(recommendations) == 1
             recommendation = recommendations[0]
             assert recommendation['offer']['name'] == 'Guitar for dummies'
-            assert len(recommendation['offer']['stocks']) == 2
-            assert recommendation['offer']['stocks'][0]['isBookable'] is True
-            assert recommendation['offer']['stocks'][1]['isBookable'] is False
+            stocks_response = recommendation['offer']['stocks']
+            assert len(stocks_response) == 2
+            assert all('isBookable' in stocks_response[i] for i in range(0, len(stocks_response)))

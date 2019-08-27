@@ -229,6 +229,7 @@ class StockRemainingQuantityTest:
         # Then
         assert Stock.query.get(stock.id).remainingQuantity == 1
 
+
 class IsBookableTest:
     @freeze_time('2019-07-10')
     def test_is_False_when_booking_limit_datetime_is_in_the_past(self):
