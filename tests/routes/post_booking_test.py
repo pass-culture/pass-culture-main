@@ -524,6 +524,33 @@ class Post:
 
     class Returns201:
         @clean_database
+        def expect_the_booking_to_have_good_includes(self, app):
+            offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
+            venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
+                                 '93')
+            ok_stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0)
+            ok_stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
+            ok_stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
+            PcObject.save(ok_stock)
+
+            user = create_user(email='test@mail.com')
+            PcObject.save(user)
+
+            recommendation = create_recommendation(offer=ok_stock.offer, user=user)
+            PcObject.save(recommendation)
+
+            booking_json = {
+                'stockId': humanize(ok_stock.id),
+                'recommendationId': humanize(recommendation.id),
+                'quantity': 1
+            }
+
+            r_create = TestClient(app.test_client()).with_auth(email='test@mail.com').post('/bookings',
+                                                                                           json=booking_json)
+            assert r_create.status_code == 201
+            assert r_create.json['stock']['isBookable']
+
+        @clean_database
         def when_limit_date_is_in_the_future_and_offer_is_free(self, app):
             offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
             venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',

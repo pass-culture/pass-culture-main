@@ -11,6 +11,32 @@ from utils.human_ids import humanize
 class Patch:
     class Returns200:
         @clean_database
+        def expect_the_booking_to_have_good_includes(self, app):
+            # Given
+            in_four_days = datetime.utcnow() + timedelta(days=4)
+            in_five_days = datetime.utcnow() + timedelta(days=5)
+            user = create_user(email='test@email.com')
+            deposit_date = datetime.utcnow() - timedelta(minutes=2)
+            deposit = create_deposit(user, amount=500)
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_offer_with_event_product(venue)
+            event_occurrence = create_event_occurrence(offer, beginning_datetime=in_four_days,
+                                                       end_datetime=in_five_days)
+            stock = create_stock_from_event_occurrence(event_occurrence)
+            booking = create_booking(user, stock, venue)
+            PcObject.save(user, deposit, booking)
+            booking_id = booking.id
+
+            # When
+            response = TestClient(app.test_client()).with_auth(user.email) \
+                .patch('/bookings/' + humanize(booking.id), json={"isCancelled": True})
+
+            # Then
+            assert response.status_code == 200
+            assert response.json['stock']['isBookable']
+
+        @clean_database
         def expect_the_booking_to_be_cancelled_by_current_user(self, app):
             # Given
             in_four_days = datetime.utcnow() + timedelta(days=4)
