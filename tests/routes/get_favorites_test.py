@@ -44,6 +44,10 @@ class Get:
             # Then
             assert response.status_code == 200
             assert len(response.json) == 2
+            first_favorite = response.json[0]
+            assert 'offer' in first_favorite
+            assert 'venue' in first_favorite['offer']
+            assert 'validationToken' not in first_favorite['offer']['venue']
 
     class Returns403:
         @clean_database

@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from models import PcObject
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_venue, create_offerer, create_user, create_user_offerer, \
@@ -28,6 +30,7 @@ class Get:
             assert response_json['bic'] == 'QSDFGH8Z555'
             assert response_json['iban'] == 'FR7630006000011234567890189'
             assert 'validationToken' not in response_json
+            assert 'validationToken' not in response_json['managingOfferer']
 
     class Returns403:
         @clean_database

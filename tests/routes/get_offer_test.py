@@ -32,6 +32,7 @@ class Get:
             assert 'bic' in response_json['venue']
             assert 'iban' in response_json['venue']['managingOfferer']
             assert 'bic' in response_json['venue']['managingOfferer']
+            assert 'validationToken' not in response_json['venue']['managingOfferer']
 
         @clean_database
         def when_returns_an_active_mediation(self, app):

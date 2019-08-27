@@ -583,11 +583,10 @@ class Post:
                 assert created_booking_json[key] == booking_json[key]
 
         @clean_database
-        def when_booking_limit_datetime_is_None(self, app):
+        def when_booking_limit_datetime_is_none(self, app):
             # Given
             user = create_user(email='test@email.com')
             offerer = create_offerer()
-            deposit_date = datetime.utcnow() - timedelta(minutes=2)
             deposit = create_deposit(user, amount=200)
             venue = create_venue(offerer)
             thing_offer = create_offer_with_thing_product(venue)
@@ -605,7 +604,6 @@ class Post:
             response = TestClient(app.test_client()).with_auth('test@email.com').post('/bookings',
                                                                                       json=booking_json)
             # Then
-            error_message = response.json
             assert response.status_code == 201
 
         @clean_database
@@ -641,6 +639,10 @@ class Post:
 
             # then
             assert response.status_code == 201
+            assert 'recommendation' in response.json
+            assert 'offer' in response.json['recommendation']
+            assert 'venue' in response.json['recommendation']['offer']
+            assert 'validationToken' not in response.json['recommendation']['offer']['venue']
 
         @clean_database
         def when_user_respects_expenses_limits(self, app):

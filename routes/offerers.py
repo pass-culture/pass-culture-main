@@ -5,11 +5,11 @@ from domain.admin_emails import maybe_send_offerer_validation_email
 from domain.discard_pc_objects import invalidate_recommendations_if_deactivating_object
 from models import Offerer, PcObject, RightsType, Venue
 from models.venue import create_digital_venue
-from repository.offerer_queries import find_all_recommendations_for_offerer,\
-                                       filter_offerers_with_keywords_string,\
-                                       find_by_siren
+from repository.offerer_queries import find_all_recommendations_for_offerer, \
+    filter_offerers_with_keywords_string, \
+    find_by_siren
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_not_validated, \
-                                            filter_query_where_user_is_user_offerer_and_is_validated
+    filter_query_where_user_is_user_offerer_and_is_validated
 from routes.serialization import as_dict
 from utils.human_ids import dehumanize
 from utils.includes import OFFERER_INCLUDES, NOT_VALIDATED_OFFERER_INCLUDES
@@ -20,10 +20,6 @@ from utils.rest import ensure_current_user_has_rights, \
     load_or_404, \
     login_or_api_key_required
 from validation.offerers import check_valid_edition, parse_boolean_param_validated
-
-
-def get_dict_offerer(offerer):
-    return as_dict(offerer, includes=OFFERER_INCLUDES)
 
 
 @app.route('/offerers', methods=['GET'])
@@ -53,7 +49,11 @@ def list_offerers():
     else:
         maybe_include = NOT_VALIDATED_OFFERER_INCLUDES
 
-    return handle_rest_get_list(Offerer, query=query, order_by=Offerer.name, includes=maybe_include, paginate=10,
+    return handle_rest_get_list(Offerer,
+                                query=query,
+                                order_by=Offerer.name,
+                                includes=maybe_include,
+                                paginate=10,
                                 page=request.args.get('page'))
 
 
@@ -62,7 +62,7 @@ def list_offerers():
 def get_offerer(id):
     ensure_current_user_has_rights(RightsType.editor, dehumanize(id))
     offerer = load_or_404(Offerer, id)
-    return jsonify(get_dict_offerer(offerer)), 200
+    return jsonify(as_dict(offerer, includes=OFFERER_INCLUDES)), 200
 
 
 @app.route('/offerers', methods=['POST'])
@@ -89,7 +89,7 @@ def create_offerer():
         maybe_send_offerer_validation_email(offerer, user_offerer, send_raw_email)
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
-    return jsonify(get_dict_offerer(offerer)), 201
+    return jsonify(as_dict(offerer, includes=OFFERER_INCLUDES)), 201
 
 
 @app.route('/offerers/<offererId>', methods=['PATCH'])
@@ -104,7 +104,7 @@ def patch_offerer(offererId):
     recommendations = find_all_recommendations_for_offerer(offerer)
     invalidate_recommendations_if_deactivating_object(data, recommendations)
     PcObject.save(offerer)
-    return jsonify(get_dict_offerer(offerer)), 200
+    return jsonify(as_dict(offerer, includes=OFFERER_INCLUDES)), 200
 
 
 def _generate_orderby_criterium(order, order_by_key):

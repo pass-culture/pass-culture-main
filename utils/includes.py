@@ -2,6 +2,7 @@ OFFERER_INCLUDES = [
     {
         "key": "managedVenues",
         "includes": [
+            '-validationToken',
             "nOffers",
             "iban",
             "bic"
@@ -91,6 +92,7 @@ OFFER_INCLUDES = [
             {
                 "key": "managingOfferer",
                 "includes": [
+                    "-validationToken",
                     "nOffers",
                     "isValidated",
                     "bic",
@@ -128,7 +130,10 @@ FAVORITE_INCLUDES = [
                 "key": "stocks",
                 "includes": ["isBookable"]
             },
-            "venue",
+            {
+                "key": "venue",
+                "includes": ['-validationToken']
+            }
         ]
     },
     "thumbUrl"
@@ -159,7 +164,13 @@ RECOMMENDATION_INCLUDES = [
             },
             {
                 "key": "venue",
-                "includes": ["managingOfferer"]
+                "includes": [
+                    "-validationToken",
+                    {
+                        "key": "managingOfferer",
+                        "includes": ["-validationToken"]
+                    }
+                ]
             },
         ]
     },
@@ -243,7 +254,10 @@ WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
                         "key": "stocks",
                         "includes": ["isBookable"]
                     },
-                    "venue",
+                    {
+                        "key": "venue",
+                        "includes": ['-validationToken']
+                    }
                 ]
             },
             {
@@ -312,7 +326,8 @@ VENUE_INCLUDES = [
     'iban',
     "-validationToken",
     {
-        "key": "managingOfferer"
+        "key": "managingOfferer",
+        "includes": ['-validationToken']
     },
     {
         "key": 'venueProviders',
@@ -335,6 +350,7 @@ OFFERER_FOR_PENDING_VALIDATION_INCLUDES = [
         "includes": [{
             "key": "user",
             "includes": [
+                'validationToken',
                 '-resetPasswordTokenValidityLimit',
                 '-resetPasswordToken',
                 '-clearTextPassword',
@@ -347,6 +363,7 @@ OFFERER_FOR_PENDING_VALIDATION_INCLUDES = [
     {
         "key": "managedVenues",
         "includes": [
+            'validationToken',
             '-publicName',
             '-thumbCount',
             '-idAtProviders',

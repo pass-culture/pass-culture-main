@@ -5,7 +5,7 @@ from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_offerer, \
     create_user, \
     create_user_offerer, \
-    create_bank_information
+    create_bank_information, create_venue
 
 
 class Get:
@@ -19,6 +19,28 @@ class Get:
             assert response.status_code == 401
 
     class Returns200:
+        @clean_database
+        def when_logged_in_and_return_an_offerer_with_one_managed_venue(self, app):
+            # given
+            offerer1 = create_offerer(siren='123456781', name='offreur C')
+            venue = create_venue(offerer1)
+            PcObject.save(offerer1, venue)
+
+            user = create_user()
+            user.offerers = [offerer1]
+            PcObject.save(user)
+
+            # when
+            response = TestClient(app.test_client()) \
+                .with_auth(user.email) \
+                .get('/offerers')
+
+            # then
+            assert response.status_code == 200
+            offerer_response = response.json[0]
+            managed_venues_response = offerer_response['managedVenues'][0]
+            assert 'validationToken' not in managed_venues_response
+
         @clean_database
         def when_logged_in_and_return_a_list_of_offerers_sorted_alphabetically(self, app):
             # given
@@ -107,7 +129,8 @@ class Get:
 
             # then
             assert response.status_code == 200
-            assert set(response.json[0].keys()) == {
+            offerer_response = response.json[0]
+            assert set(offerer_response.keys()) == {
                 'address', 'bic', 'city', 'dateCreated', 'dateModifiedAtLastProvider',
                 'firstThumbDominantColor', 'iban', 'id', 'idAtProviders', 'isActive',
                 'isValidated', 'lastProviderId', 'managedVenues', 'modelName', 'nOffers',

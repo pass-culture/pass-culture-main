@@ -271,6 +271,12 @@ class Put:
             # then
             assert response.status_code == 200
             assert len(response.json) == 1
+            recommendation_response = response.json[0]
+            assert 'offer' in recommendation_response
+            assert 'venue' in recommendation_response['offer']
+            assert 'validationToken' not in recommendation_response['offer']['venue']
+            assert 'managingOfferer' in recommendation_response['offer']['venue']
+            assert 'validationToken' not in recommendation_response['offer']['venue']['managingOfferer']
 
         @clean_database
         def when_offers_have_soft_deleted_stocks(self, app):

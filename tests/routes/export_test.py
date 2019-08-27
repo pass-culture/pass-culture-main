@@ -180,7 +180,7 @@ def test_pending_validation_return_only_requested_data(app):
                    'validationToken': None,
                    'modelName': 'User',
                    'culturalSurveyId': None,
-                   'needsToFillCulturalSurvey' : False
+                   'needsToFillCulturalSurvey': False
                    }}],
         'managedVenues':
             [{'address': '123 rue de Paris',
@@ -230,7 +230,8 @@ def test_pending_validation_returns_offerers_venues_user_and_user_offerer_with_r
     venue3 = create_venue(offerer3, siret="12345678312345")
     venue4 = create_venue(offerer4, siret="12345678412345")
 
-    PcObject.save(connexion_user, user_offerer1, user_offerer2, user_offerer3, user_offerer4)
+    PcObject.save(connexion_user, user_offerer1, user_offerer2, user_offerer3, user_offerer4, venue1, venue2, venue3,
+                  venue4)
 
     auth_request = TestClient(app.test_client()).with_auth(email=connexion_user.email)
     # when
@@ -245,8 +246,8 @@ def test_pending_validation_returns_offerers_venues_user_and_user_offerer_with_r
     assert response_json[0]['managedVenues'][0]['validationToken'] == venue1.validationToken
     assert response_json[0]['managedVenues'][0]['comment'] == venue1.comment
     assert response_json[1]['validationToken'] == offerer2.validationToken
-    assert response_json[1]['UserOfferers'][0]['validationToken'] == None
-    assert response_json[2]['validationToken'] == None
+    assert response_json[1]['UserOfferers'][0]['validationToken'] is None
+    assert response_json[2]['validationToken'] is None
     user_offerers_validation_token = [user_offerer_dict['validationToken'] for user_offerer_dict in
                                       response_json[2]['UserOfferers']]
     assert user_offerer3.validationToken in user_offerers_validation_token
