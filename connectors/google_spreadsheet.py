@@ -16,8 +16,9 @@ memo = Memoizer(user_spreadsheet_store)
 def get_credentials():
     scope = ['https://spreadsheets.google.com/feeds',
              'https://www.googleapis.com/auth/drive']
-    if "PC_GOOGLE_KEY" in os.environ:
-        google_key_json_payload = json.loads(os.environ.get("PC_GOOGLE_KEY"))
+    google_key = os.environ.get("PC_GOOGLE_KEY")
+    if google_key:
+        google_key_json_payload = json.loads(google_key)
         key_path = '/tmp/data.json'
         with open(key_path, 'w') as outfile:
             json.dump(google_key_json_payload, outfile)
