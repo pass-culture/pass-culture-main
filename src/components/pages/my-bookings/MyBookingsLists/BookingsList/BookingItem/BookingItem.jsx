@@ -34,7 +34,7 @@ const BookingItem = ({ booking, location, offer, ribbon, stock }) => {
   return (
     <li
       className="mb-my-booking"
-      data-token={token.toUpperCase()}
+      data-token={token.toLowerCase()}
     >
       <Link
         className="teaser-link"

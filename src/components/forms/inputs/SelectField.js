@@ -12,9 +12,7 @@ class SelectField extends PureComponent {
     this.popupContainer = null
   }
 
-  getPopupContainer = () => {
-    return () => this.popupContainer
-  }
+  getPopupContainer = () => () => this.popupContainer
 
   setContainerRef = ref => {
     this.popupContainer = ref
