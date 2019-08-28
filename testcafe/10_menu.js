@@ -55,7 +55,8 @@ test('Je peux naviguer vers mes réservations', async t => {
 test('Je peux naviguer vers les favoris', async t => {
   const menuFavoris = Selector('.navlink').withText('Mes favoris')
   await t
-    .expect(menuFavoris.exists).ok()
+    .expect(menuFavoris.exists)
+    .ok()
     .click(menuFavoris)
     .wait(2100)
   const location = await t.eval(() => window.location)
@@ -63,7 +64,7 @@ test('Je peux naviguer vers les favoris', async t => {
 })
 
 test("Je peux naviguer vers l'aide", async t => {
-  const expected = `https://docs.passculture.app/experimentateurs`
+  const expected = `https://aide.passculture.app/fr/category/18-ans-1dnil5r/`
   const menuContact = Selector('.navlink').withText('Aide')
   await t.expect(menuContact.exists).ok()
   await t.expect(menuContact.getAttribute('href')).contains(expected)

@@ -64,7 +64,7 @@ describe('getMenuItemsFromRoutes', () => {
         title: 'Mon compte',
       },
       {
-        href: 'https://docs.passculture.app/experimentateurs',
+        href: 'https://aide.passculture.app/fr/category/18-ans-1dnil5r/',
         icon: 'help-w',
         target: '_blank',
         title: 'Aide',

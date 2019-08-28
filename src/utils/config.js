@@ -16,7 +16,8 @@ export const PROJECT_NAME = 'pass Culture'
 export const IS_DEV = NODE_ENV === 'development'
 export const IS_PROD = !IS_DEV
 export const MOBILE_OS = getMobileOperatingSystem()
-export const WEBAPP_CONTACT_EXTERNAL_PAGE = 'https://docs.passculture.app/experimentateurs'
+export const WEBAPP_CONTACT_EXTERNAL_PAGE =
+  'https://aide.passculture.app/fr/category/18-ans-1dnil5r/'
 
 // NOTE: valeur également présente en dur dans:
 // - ./webapp/README.md
