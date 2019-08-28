@@ -7,7 +7,8 @@ else
     deployed_version=v$(curl -s "$APP_URL/version.txt")
 fi
 
-version_to_deploy=$(git describe --contains)
+#version_to_deploy=$(git describe --contains)
+version_to_deploy=45.0.3
 
 echo $version_to_deploy
 echo $deployed_version
