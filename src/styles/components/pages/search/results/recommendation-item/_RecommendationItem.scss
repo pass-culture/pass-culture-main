@@ -11,6 +11,8 @@
     margin-left: -12px;
 
     .image {
+      display: flex;
+      flex: 1;
       height: rem(96px);
       max-width: rem(96px);
       max-height: rem(96px);
@@ -29,9 +31,7 @@
     .search-result-item-detail {
       @extend .m12;
       @include multiLineEllipsis();
-
-      display: flex;
-      flex-direction: column;
+      flex: 2;
 
       h5 {
         @extend .fs18;
@@ -41,6 +41,8 @@
 
       .search-result-item-type {
         @extend .fs13;
+        @include multiLineEllipsis();
+
         color: $grey;
       }
 
@@ -52,10 +54,15 @@
 
     .arrow-container {
       @extend .is-primary-text;
+
       display: flex;
+      flex: 0.2;
       flex-direction: column;
       justify-content: center;
-      margin: auto;
+
+      span {
+        justify-content: flex-end;
+      }
     }
   }
 }
