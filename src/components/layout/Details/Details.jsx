@@ -3,17 +3,35 @@ import React, { Fragment, PureComponent } from 'react'
 import { Route } from 'react-router-dom'
 
 import BookingContainer from '../Booking/BookingContainer'
+import isDetailsView from '../../../helpers/isDetailsView'
 import RectoContainer from '../Recto/RectoContainer'
 import VersoContainer from '../Verso/VersoContainer'
 
 class Details extends PureComponent {
+  constructor() {
+    super()
+
+    this.state = {
+      isDetailsView: false,
+    }
+  }
+
+  componentDidUpdate() {
+    const { match } = this.props
+
+    this.setState({
+      isDetailsView: isDetailsView(match),
+    })
+  }
+
   renderBooking = route => (<BookingContainer
     extraClassName="with-header"
     {...route}
                             />)
 
   render() {
-    const { areDetails, bookingPath } = this.props
+    const { bookingPath } = this.props
+    const { isDetailsView } = this.state
 
     return (
       <Fragment>
@@ -22,25 +40,25 @@ class Details extends PureComponent {
           render={this.renderBooking}
         />
         <VersoContainer
-          areDetailsVisible={areDetails}
+          areDetailsVisible={isDetailsView}
           extraClassName="with-header"
         />
-        {areDetails && <RectoContainer
+        {isDetailsView && <RectoContainer
           areDetailsVisible
           extraClassName="with-header"
-                       />}
+                          />}
       </Fragment>
     )
   }
 }
 
-Details.defaultProps = {
-  areDetails: false,
-}
-
 Details.propTypes = {
-  areDetails: PropTypes.bool,
   bookingPath: PropTypes.string.isRequired,
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      details: PropTypes.string,
+    }),
+  }).isRequired,
 }
 
 export default Details

@@ -100,8 +100,8 @@ export const mapStateToProps = (state, ownProps) => {
     venue.longitude
   )
   const { pathname, search } = location
-  const stringifyMediationId = mediationId ? `/${mediationId}` : ''
-  const detailsUrl = `${pathname}/details/${offer.id}${stringifyMediationId}${search}`
+  const stringifiedMediationId = mediationId ? `/${mediationId}` : ''
+  const detailsUrl = `${pathname}/details/${offer.id}${stringifiedMediationId}${search}`
   const date = isReserved(status)
     ? formatRecommendationDates(venue.departementCode, dateRange)
     : null

@@ -10,7 +10,7 @@ import NoItems from '../../layout/NoItems/NoItems'
 import RelativeFooterContainer from '../../layout/RelativeFooter/RelativeFooterContainer'
 
 const showFailModal = () => {
-  toast('La suppression d’un favoris s’est mal passé, veuillez ré-essayer plus tard.')
+  toast('La suppression d’un favori a échoué, veuillez ré-essayer plus tard.')
 }
 
 class MyFavorites extends Component {
@@ -85,17 +85,12 @@ class MyFavorites extends Component {
   deleteFavorites = (showFailModal, offerIds) => () => {
     const { deleteFavorites } = this.props
 
-    this.setState(
-      {
-        offerIds: [],
-      },
-      deleteFavorites(showFailModal, offerIds)
-    )
+    this.setState({ offerIds: [] }, deleteFavorites(showFailModal, offerIds))
   }
 
-  renderMyFavorites = (areFavoritesNotSelected, isEditMode, isEmpty, myFavorites, offerIds) => (
-    <main className={isEmpty ? 'teaser-main teaser-no-teasers' : 'teaser-main'}>
-      {isEmpty ? (
+  renderMyFavorites = (hasNoFavoriteSelected, isEditMode, hasNoFavorite, myFavorites, offerIds) => (
+    <main className={hasNoFavorite ? 'teaser-main teaser-no-teasers' : 'teaser-main'}>
+      {hasNoFavorite ? (
         <NoItems sentence="Dès que vous aurez ajouté une offre en favori," />
       ) : (
         <section>
@@ -103,7 +98,7 @@ class MyFavorites extends Component {
             <div className="mf-edit">
               <button
                 className="mf-delete-btn"
-                disabled={areFavoritesNotSelected}
+                disabled={hasNoFavoriteSelected}
                 onClick={this.deleteFavorites(showFailModal, offerIds)}
                 type="button"
               >
@@ -146,8 +141,8 @@ class MyFavorites extends Component {
   render() {
     const { myFavorites } = this.props
     const { isEditMode, isLoading, hasError, offerIds } = this.state
-    const isEmpty = myFavorites.length === 0
-    const areFavoritesNotSelected = offerIds.length === 0
+    const hasNoFavorite = myFavorites.length === 0
+    const hasNoFavoriteSelected = offerIds.length === 0
 
     if (isLoading) {
       return (<LoaderContainer
@@ -163,9 +158,9 @@ class MyFavorites extends Component {
           title="Mes favoris"
         />
         {this.renderMyFavorites(
-          areFavoritesNotSelected,
+          hasNoFavoriteSelected,
           isEditMode,
-          isEmpty,
+          hasNoFavorite,
           myFavorites,
           offerIds
         )}

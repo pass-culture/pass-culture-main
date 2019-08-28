@@ -1,29 +1,10 @@
-import { mapStateToProps, mapDispatchToProps } from '../MyFavoritesContainer'
+import { mapDispatchToProps } from '../MyFavoritesContainer'
 
 import { favoriteNormalizer } from '../../../../utils/normalizers'
 
 describe('src | components | pages | my-favorites | MyFavorites', () => {
-  describe('mapStateToProps()', () => {
-    it('should return my favorites', () => {
-      // given
-      const state = {
-        data: {
-          favorites: [],
-        },
-      }
-
-      // when
-      const myFavorites = mapStateToProps(state)
-
-      // then
-      expect(myFavorites).toStrictEqual({
-        myFavorites: [],
-      })
-    })
-  })
-
   describe('loadMyFavorites()', () => {
-    it('should dispatch my favorites', () => {
+    it('should get my favorites from API', () => {
       // given
       const dispatch = jest.fn()
       const handleFail = jest.fn()
@@ -42,6 +23,38 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
           normalizer: favoriteNormalizer,
         },
         type: 'REQUEST_DATA_GET_/FAVORITES',
+      })
+    })
+  })
+
+  describe('deleteFavorites()', () => {
+    it('should delete my favorites from API', () => {
+      // given
+      const dispatch = jest.fn()
+      const showFailModal = jest.fn()
+      const offerIds = ['ME', 'FA']
+
+      // when
+      mapDispatchToProps(dispatch).deleteFavorites(showFailModal, offerIds)()
+
+      // then
+      expect(dispatch).toHaveBeenCalledWith({
+        config: {
+          apiPath: `/favorites/${offerIds[0]}`,
+          handleFail: expect.any(Function),
+          method: 'DELETE',
+          normalizer: favoriteNormalizer,
+        },
+        type: 'REQUEST_DATA_DELETE_/FAVORITES/ME',
+      })
+      expect(dispatch).toHaveBeenCalledWith({
+        config: {
+          apiPath: `/favorites/${offerIds[1]}`,
+          handleFail: expect.any(Function),
+          method: 'DELETE',
+          normalizer: favoriteNormalizer,
+        },
+        type: 'REQUEST_DATA_DELETE_/FAVORITES/FA',
       })
     })
   })

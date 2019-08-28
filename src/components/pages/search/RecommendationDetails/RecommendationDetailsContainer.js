@@ -6,18 +6,11 @@ import { requestData } from 'redux-saga-data'
 import DetailsContainer from '../../../layout/Details/DetailsContainer'
 import { recommendationNormalizer } from '../../../../utils/normalizers'
 
-export const mapStateToProps = (state, ownProps) => {
-  const { offerId } = ownProps.match.params
-  const needsToRequestGetData = typeof offerId !== 'undefined'
-  return {
-    needsToRequestGetData,
-  }
-}
-
 export const mapDispatchToProps = (dispatch, ownProps) => {
   const { match } = ownProps
   const { params } = match
   const { mediationId, offerId } = params
+
   return {
     requestGetData: handleForceDetailsVisible => {
       let apiPath = `/recommendations/offers/${offerId}`
@@ -39,7 +32,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
 export default compose(
   withRouter,
   connect(
-    mapStateToProps,
+    null,
     mapDispatchToProps
   )
 )(DetailsContainer)

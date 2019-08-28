@@ -1,38 +1,7 @@
-import { mapStateToProps, mapDispatchToProps } from '../MyFavoriteDetailsContainer'
-
+import { mapDispatchToProps } from '../MyFavoriteDetailsContainer'
 import { favoriteNormalizer } from '../../../../../utils/normalizers'
 
 describe('src | components | pages | my-favorite | MyFavoriteDetails | MyFavoriteDetailsContainer', () => {
-  describe('mapStateToProps()', () => {
-    it('should return an object', () => {
-      // given
-      const state = {
-        data: {
-          favorites: [
-            {
-              id: 'GA',
-            },
-          ],
-        },
-      }
-      const ownProps = {
-        match: {
-          params: {
-            favoriteId: 'GA',
-          },
-        },
-      }
-
-      // when
-      const props = mapStateToProps(state, ownProps)
-
-      // then
-      expect(props).toStrictEqual({
-        needsToRequestGetData: false,
-      })
-    })
-  })
-
   describe('requestGetData()', () => {
     it('should dispatch my favorite', () => {
       // given

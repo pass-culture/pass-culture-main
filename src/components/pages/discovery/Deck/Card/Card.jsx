@@ -3,7 +3,7 @@ import React, { PureComponent } from 'react'
 
 import RectoContainer from '../../../../layout/Recto/RectoContainer'
 import VersoContainer from '../../../../layout/Verso/VersoContainer'
-import areDetailsVisible from '../../../../../helpers/areDetailsVisible'
+import isDetailsView from '../../../../../helpers/isDetailsView'
 import { getHeaderColor } from '../../../../../utils/colors'
 
 export class Card extends PureComponent {
@@ -24,7 +24,7 @@ export class Card extends PureComponent {
       recommendation,
       position,
     } = this.props
-    const areDetailsNowVisible = areDetailsVisible(match) && !areDetailsVisible(prevProps.match)
+    const areDetailsNowVisible = isDetailsView(match) && !isDetailsView(prevProps.match)
 
     const isCurrent = recommendation && position === 'current'
 
@@ -47,7 +47,7 @@ export class Card extends PureComponent {
   render() {
     const { match, position, recommendation, width } = this.props
     const { firstThumbDominantColor, index } = recommendation || {}
-    const areDetails = areDetailsVisible(match)
+    const areDetails = isDetailsView(match)
     const headerColor = getHeaderColor(firstThumbDominantColor)
     const isCurrent = position === 'current'
     const translateTo = index * width
@@ -80,7 +80,7 @@ Card.propTypes = {
   handleReadRecommendation: PropTypes.func.isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
-      detais: PropTypes.string,
+      details: PropTypes.string,
     }).isRequired,
   }).isRequired,
   position: PropTypes.string.isRequired,

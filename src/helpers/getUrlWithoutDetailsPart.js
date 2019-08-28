@@ -1,7 +1,7 @@
-import areDetailsVisible from './areDetailsVisible'
+import isDetailsView from './isDetailsView'
 
 const getUrlWithoutDetailsPart = (location, match) => {
-  const areDetails = areDetailsVisible(match)
+  const areDetails = isDetailsView(match)
   const { pathname, search } = location
 
   if (areDetails) {

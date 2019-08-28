@@ -36,8 +36,8 @@ describe('src | components | pages | my-favorites | MyFavorite | MyFavorite', ()
   })
 
   describe('render()', () => {
-    describe('when I am in a list mode', () => {
-      it('should render a Link', () => {
+    describe('when in a list mode', () => {
+      it('should render a Link component and details of the favorite element', () => {
         // when
         const wrapper = shallow(<MyFavorite {...props} />)
 
@@ -59,7 +59,7 @@ describe('src | components | pages | my-favorites | MyFavorite | MyFavorite', ()
       })
     })
 
-    describe('when I am in an edit mode', () => {
+    describe('when in edit mode', () => {
       it('should render a checkbox', () => {
         // given
         props.isEditMode = true
@@ -69,21 +69,7 @@ describe('src | components | pages | my-favorites | MyFavorite | MyFavorite', ()
 
         // then
         const checkbox = wrapper.find('.teaser-checkbox')
-        const input = wrapper.find('input')
-        const img = wrapper.find('img')
-        const title = wrapper.find('.teaser-title').text()
-        const type = wrapper.find('.mf-wrapper > .teaser-sub-title').text()
-        const date = wrapper.find('.mf-wrapper > .teaser-date').text()
-        const booked = wrapper.find('.mf-booked').text()
-        const distance = wrapper.find('.mf-infos .teaser-distance').text()
         expect(checkbox).toHaveLength(1)
-        expect(input).toHaveLength(1)
-        expect(img).toHaveLength(0)
-        expect(title).toBe('Fake offer name')
-        expect(type).toBe('Fake offer type label')
-        expect(date).toBe('permanent')
-        expect(booked).toBe('Réservé')
-        expect(distance).toBe('10 km')
       })
     })
 

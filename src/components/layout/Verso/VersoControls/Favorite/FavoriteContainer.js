@@ -13,11 +13,7 @@ import { favoriteNormalizer } from '../../../../../utils/normalizers'
 const API_PATH_TO_FAVORITES_ENDPOINT = '/favorites'
 
 export const apiPath = (isFavorite, offerId) => {
-  let chunk = ''
-
-  if (isFavorite) {
-    chunk = `/${offerId}`
-  }
+  const chunk = isFavorite ? `/${offerId}` : ''
 
   return `${API_PATH_TO_FAVORITES_ENDPOINT}${chunk}`
 }

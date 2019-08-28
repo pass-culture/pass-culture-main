@@ -6,17 +6,6 @@ import { requestData } from 'redux-saga-data'
 import DetailsContainer from '../../../layout/Details/DetailsContainer'
 import { favoriteNormalizer } from '../../../../utils/normalizers'
 
-export const mapStateToProps = (state, ownProps) => {
-  const { match } = ownProps
-  const { params } = match
-  const { offerId } = params
-  const needsToRequestGetData = typeof offerId !== 'undefined'
-
-  return {
-    needsToRequestGetData,
-  }
-}
-
 export const mapDispatchToProps = (dispatch, ownProps) => ({
   requestGetData: handleSuccess => {
     const { match } = ownProps
@@ -36,7 +25,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => ({
 export default compose(
   withRouter,
   connect(
-    mapStateToProps,
+    null,
     mapDispatchToProps
   )
 )(DetailsContainer)

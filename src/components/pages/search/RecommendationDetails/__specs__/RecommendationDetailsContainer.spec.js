@@ -1,44 +1,7 @@
-import { mapDispatchToProps, mapStateToProps } from '../RecommendationDetailsContainer'
-
+import { mapDispatchToProps } from '../RecommendationDetailsContainer'
 import { recommendationNormalizer } from '../../../../../utils/normalizers'
 
 describe('src | components | pages | search | RecommendationDetailsContainer', () => {
-  describe('mapStateToProps', () => {
-    it('should return props from state', () => {
-      // given
-      const mediationId = 'AE'
-      const offerId = 'BF'
-      const recommendationId = 'CG'
-      const recommendation = {
-        id: recommendationId,
-        mediationId,
-        offerId,
-      }
-      const ownProps = {
-        match: {
-          params: {
-            mediationId,
-            offerId,
-          },
-        },
-      }
-      const state = {
-        data: {
-          recommendations: [recommendation],
-        },
-      }
-
-      // when
-      const result = mapStateToProps(state, ownProps)
-
-      // then
-      const expected = {
-        needsToRequestGetData: true,
-      }
-      expect(result).toStrictEqual(expected)
-    })
-  })
-
   describe('mapDispatchToProps', () => {
     it('should dispatch request get recommendation with good config', () => {
       // given

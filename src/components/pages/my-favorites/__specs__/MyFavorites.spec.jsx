@@ -74,7 +74,7 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
     })
 
     describe('when click on "Modifier" button', () => {
-      it('should render a list of simple div', () => {
+      it('should render a list of deletable favorites', () => {
         // given
         const wrapper = shallow(<MyFavorites {...props} />)
         wrapper.setState({ isLoading: false })
@@ -117,7 +117,7 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
     })
 
     describe('when click on "Supprimer" button', () => {
-      it('should remove two offer ids', () => {
+      it('should remove one offer id', () => {
         // given
         const wrapper = shallow(<MyFavorites {...props} />)
         wrapper.setState({ isEditMode: true, isLoading: false, offerIds: ['ME'] })

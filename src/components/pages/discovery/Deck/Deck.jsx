@@ -6,7 +6,7 @@ import Draggable from 'react-draggable'
 import CardContainer from './Card/CardContainer'
 import NavigationContainer from './Navigation/NavigationContainer'
 import CloseLink from '../../../layout/Header/CloseLink/CloseLink'
-import getAreDetailsVisible from '../../../../helpers/areDetailsVisible'
+import isDetailsView from '../../../../helpers/isDetailsView'
 import getUrlWithoutDetailsPart from '../../../../helpers/getUrlWithoutDetailsPart'
 import getIsTransitionDetailsUrl from '../../../../helpers/getIsTransitionDetailsUrl'
 
@@ -69,8 +69,7 @@ class Deck extends Component {
 
   handleGoNext = () => {
     const { history, match, nextRecommendation } = this.props
-    const areDetails = getAreDetailsVisible(match)
-    if (!nextRecommendation || areDetails) return
+    if (!nextRecommendation || isDetailsView(match)) return
     const { offerId, mediationId } = nextRecommendation
     const nextUrl = `/decouverte/${offerId || 'tuto'}${`/${mediationId || 'vide'}`}`
     history.push(nextUrl)
@@ -79,8 +78,7 @@ class Deck extends Component {
 
   handleGoPrevious = () => {
     const { history, match, previousRecommendation } = this.props
-    const areDetails = getAreDetailsVisible(match)
-    if (!previousRecommendation || areDetails) return
+    if (!previousRecommendation || isDetailsView(match)) return
     const { offerId, mediationId } = previousRecommendation
     const previousUrl = `/decouverte/${offerId || 'tuto'}${`/${mediationId || 'vide'}`}`
     history.push(previousUrl)
@@ -102,8 +100,7 @@ class Deck extends Component {
   handleShowCardDetails = () => {
     const { isFlipDisabled, history, location, match } = this.props
     const { pathname, search } = location
-    const areDetails = getAreDetailsVisible(match)
-    if (areDetails || isFlipDisabled) return
+    if (isDetailsView(match) || isFlipDisabled) return
     const detailsUrl = `${pathname}/details${search}`
     history.push(detailsUrl)
   }
@@ -132,21 +129,20 @@ class Deck extends Component {
     } = this.props
     const { index } = currentRecommendation || {}
     const { refreshKey } = this.state
-    const areDetails = getAreDetailsVisible(match)
-
     const position = {
       x: -1 * width * index,
       y: 0,
     }
-    const draggableBounds = (areDetails && {}) || {
+    const draggableBounds = (isDetailsView(match) && {}) || {
       bottom: 0,
       left: position.x - width,
       right: position.x + width,
       top: -100,
     }
+
     return (
       <Draggable
-        axis={areDetails ? 'none' : 'exclude'}
+        axis={isDetailsView(match) ? 'none' : 'exclude'}
         bounds={draggableBounds}
         enableUserSelectHack={false}
         key={refreshKey}
@@ -175,8 +171,7 @@ class Deck extends Component {
       previousRecommendation,
       recommendations,
     } = this.props
-    const areDetailsVisible = getAreDetailsVisible(match)
-    const showNavigation = !areDetailsVisible || isFlipDisabled
+    const showNavigation = !isDetailsView(match) || isFlipDisabled
 
     return (
       <div
@@ -184,10 +179,10 @@ class Deck extends Component {
         data-nb-recos={recommendations.length}
         id="deck"
       >
-        {areDetailsVisible && <CloseLink
+        {isDetailsView(match) && <CloseLink
           closeTitle="Fermer"
           closeTo={this.buildCloseToUrl()}
-                              />}
+                                 />}
         {this.renderDraggableCards()}
         {showNavigation && currentRecommendation && (
           <NavigationContainer
