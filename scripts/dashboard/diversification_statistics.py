@@ -41,6 +41,8 @@ def get_offerers_with_non_cancelled_bookings_count(departement_code: str = None)
 
     return query \
         .join(Offer) \
+        .filter(Offer.type != str(ThingType.ACTIVATION))\
+        .filter(Offer.type != str(EventType.ACTIVATION))\
         .join(Stock) \
         .join(Booking) \
         .filter_by(isCancelled=False) \
@@ -58,6 +60,8 @@ def get_offers_with_user_offerer_and_stock_count(departement_code: str = None) -
         .join(Offerer) \
         .join(UserOfferer) \
         .join(Stock, Stock.offerId == Offer.id) \
+        .filter(Offer.type != str(EventType.ACTIVATION)) \
+        .filter(Offer.type != str(ThingType.ACTIVATION)) \
         .distinct(Offer.id) \
         .count()
 
@@ -73,13 +77,17 @@ def get_offers_available_on_discovery_count(departement_code: str = None) -> int
 
 
 def get_offers_with_non_cancelled_bookings_count(departement_code: str = None) -> int:
-    query = Offer.query.join(Stock).join(Booking)
+    query = Offer.query\
+        .join(Stock)\
+        .join(Booking)
 
     if departement_code:
         query = query.join(Venue).filter(Venue.departementCode == departement_code)
 
     return query \
         .filter(Booking.isCancelled == False) \
+        .filter(Offer.type != str(ThingType.ACTIVATION))\
+        .filter(Offer.type != str(EventType.ACTIVATION))\
         .distinct(Offer.id) \
         .count()
 

@@ -5,7 +5,7 @@ from sqlalchemy import or_
 
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
     create_get_filter_matching_ts_query_in_any_model
-from models import Offerer, Venue, Offer, UserOfferer, User, Stock, Recommendation
+from models import Offerer, Venue, Offer, UserOfferer, User, Stock, Recommendation, ThingType, EventType
 from models import RightsType
 from models.db import db
 
@@ -413,7 +413,9 @@ def _query_offerers_with_stock():
     return _query_offerers_with_user_offerer() \
         .join(Venue, Venue.managingOffererId == Offerer.id) \
         .join(Offer) \
-        .join(Stock)
+        .join(Stock)\
+        .filter(Offer.type != str(ThingType.ACTIVATION))\
+        .filter(Offer.type != str(EventType.ACTIVATION))
 
 
 def query_filter_offerer_by_user(query):

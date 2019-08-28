@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from models import PcObject, ThingType, Booking
+from models import PcObject, ThingType, Booking, EventType
 from models.api_errors import ResourceNotFound, ApiErrors
 from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     find_offerer_bookings_paginated, \
@@ -18,14 +18,9 @@ from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     count_all_cancelled_bookings, \
     find_all_offerer_bookings, \
     find_eligible_bookings_for_venue, \
-    count_non_cancelled_bookings_by_departement, \
-    count_non_cancelled_bookings, \
-    count_all_cancelled_bookings_by_departement, \
-    count_bookings_by_departement, \
     count_non_cancelled_bookings_by_departement, count_non_cancelled_bookings, count_bookings_by_departement, \
     count_all_cancelled_bookings_by_departement, count_all_used_or_finished_bookings_by_departement, \
     count_all_used_or_non_cancelled_bookings
-from scripts.dashboard import get_all_used_or_finished_bookings
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, \
     create_deposit, \
@@ -281,7 +276,6 @@ class FindAllDigitalBookingsForOffererTest:
         # then
         assert len(bookings) == 1
         assert bookings[0] == booking_for_offerer2
-
 
     @clean_database
     def test_returns_only_bookings_for_specified_offerer_and_thing_offer_and_booking_date(self, app):
@@ -870,6 +864,27 @@ class CountNonCancelledBookingsTest:
         # Then
         assert count == 0
 
+    @clean_database
+    def test_returns_zero_if_two_users_have_activation_booking(self, app):
+        # Given
+        user1 = create_user()
+        user2 = create_user(email='e@mail.com')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
+        stock1 = create_stock(offer=offer1, price=0)
+        stock2 = create_stock(offer=offer2, price=0)
+        booking1 = create_booking(user1, stock1)
+        booking2 = create_booking(user2, stock2)
+        PcObject.save(booking1, booking2)
+
+        # When
+        count = count_non_cancelled_bookings()
+
+        # Then
+        assert count == 0
+
 
 class CountNonCancelledBookingsByDepartementTest:
     @clean_database
@@ -923,6 +938,27 @@ class CountNonCancelledBookingsByDepartementTest:
         # Then
         assert count == 0
 
+    @clean_database
+    def test_returns_zero_if_users_only_have_activation_bookings(self, app):
+        # Given
+        user1 = create_user(departement_code='76')
+        user2 = create_user(email='e@mail.com', departement_code='76')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
+        stock1 = create_stock(offer=offer1, price=0)
+        stock2 = create_stock(offer=offer2, price=0)
+        booking1 = create_booking(user1, stock1)
+        booking2 = create_booking(user2, stock2)
+        PcObject.save(booking1, booking2)
+
+        # When
+        count = count_non_cancelled_bookings_by_departement('76')
+
+        # Then
+        assert count == 0
+
 
 class GetAllCancelledBookingsCountTest:
     @clean_database
@@ -972,6 +1008,33 @@ class GetAllCancelledBookingsCountTest:
 
         # Then
         assert number_of_bookings == 1
+
+    @clean_database
+    def test_returns_zero_if_only_activation_offers(self, app):
+        # Given
+        less_than_48_hours_ago = datetime.utcnow() - timedelta(hours=47)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
+        offer2 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        stock1 = create_stock(
+            offer=offer1,
+            price=0,
+            beginning_datetime=less_than_48_hours_ago,
+            end_datetime=less_than_48_hours_ago + timedelta(hours=1),
+            booking_limit_datetime=less_than_48_hours_ago - timedelta(hours=1)
+        )
+        stock2 = create_stock(offer=offer2, price=0)
+        user = create_user()
+        booking1 = create_booking(user, stock1, is_cancelled=True)
+        booking2 = create_booking(user, stock2, is_cancelled=True)
+        PcObject.save(booking1, booking2)
+
+        # When
+        number_of_bookings = count_all_cancelled_bookings()
+
+        # Then
+        assert number_of_bookings == 0
 
 
 class GetAllCancelledBookingsByDepartementCountTest:
@@ -1045,6 +1108,28 @@ class GetAllCancelledBookingsByDepartementCountTest:
         # Then
         assert number_of_bookings == 1
 
+    @clean_database
+    def test_returns_zero_if_only_activation_bookings(self, app):
+        # Given
+        user = create_user(departement_code='41', email='user-41@example.net')
+
+        offerer = create_offerer()
+        venue = create_venue(offerer, postal_code='78000')
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
+        stock1 = create_stock(offer=offer1, price=0)
+        stock2 = create_stock(offer=offer2, price=0)
+
+        booking1 = create_booking(user, stock1, is_cancelled=True)
+        booking2 = create_booking(user, stock2, is_cancelled=True)
+        PcObject.save(booking1, booking2)
+
+        # When
+        number_of_bookings = count_all_cancelled_bookings_by_departement('41')
+
+        # Then
+        assert number_of_bookings == 0
+
 
 class CountAllBookingsTest:
     @clean_database
@@ -1100,6 +1185,44 @@ class CountAllBookingsTest:
         # Then
         assert number_of_bookings == 2
 
+    @clean_database
+    def test_returns_2_when_bookings_cancelled_or_not(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+        user = create_user()
+        booking1 = create_booking(user, stock)
+        booking2 = create_booking(user, stock, is_cancelled=True)
+        PcObject.save(booking1, booking2)
+
+        # When
+        number_of_bookings = count_all_bookings()
+
+        # Then
+        assert number_of_bookings == 2
+
+    @clean_database
+    def test_returns_zero_when_bookings_are_on_activation_offer(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
+        stock1 = create_stock(offer=offer1, price=0)
+        stock2 = create_stock(offer=offer2, price=0)
+        user = create_user()
+        booking1 = create_booking(user, stock1)
+        booking2 = create_booking(user, stock2)
+        PcObject.save(booking1, booking2)
+
+        # When
+        number_of_bookings = count_all_bookings()
+
+        # Then
+        assert number_of_bookings == 0
+
 
 class CountBookingsByDepartementTest:
     @clean_database
@@ -1147,7 +1270,28 @@ class CountBookingsByDepartementTest:
         number_of_bookings = count_bookings_by_departement('76')
 
         # Then
-        assert number_of_bookings == 1
+
+    @clean_database
+    def test_returns_0_when_bookings_are_on_activation_offers(self, app):
+        # Given
+        user = create_user(departement_code='76')
+
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
+        stock1 = create_stock(offer=offer1, price=0)
+        stock2 = create_stock(offer=offer2, price=0)
+
+        booking1 = create_booking(user, stock1)
+        booking2 = create_booking(user, stock1)
+        PcObject.save(booking1, booking2)
+
+        # When
+        number_of_bookings = count_bookings_by_departement('76')
+
+        # Then
+        assert number_of_bookings == 0
 
 
 class CountAllUsedOrNonCancelledBookingsTest:
@@ -1328,7 +1472,6 @@ class CountAllUsedOrNonCancelledBookingsByDepartementTest:
         # Then
         assert number_of_bookings == 0
 
-
     @clean_database
     def test_counts_2_out_of_3_when_filtered_by_user_departement(self, app):
         # Given
@@ -1353,3 +1496,28 @@ class CountAllUsedOrNonCancelledBookingsByDepartementTest:
 
         # Then
         assert number_of_bookings == 2
+
+    @clean_database
+    def test_counts_0_if_bookings_are_on_activation_offer(self, app):
+        # Given
+        more_than_48_hours_ago = datetime.utcnow() - timedelta(hours=49)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
+        offer2 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        stock1 = create_stock(offer=offer1, price=0, beginning_datetime=more_than_48_hours_ago,
+                                   end_datetime=two_days_ago,
+                                   booking_limit_datetime=more_than_48_hours_ago - timedelta(hours=1))
+        stock2 = create_stock(offer=offer2, price=0)
+
+        user = create_user(departement_code='41', email='user-41@example.net')
+
+        booking1 = create_booking(user, stock1)
+        booking2 = create_booking(user, stock2, is_used=True)
+        PcObject.save(booking1, booking2)
+
+        # When
+        number_of_bookings = count_all_used_or_finished_bookings_by_departement('41')
+
+        # Then
+        assert number_of_bookings == 0

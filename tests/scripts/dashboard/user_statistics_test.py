@@ -1,13 +1,13 @@
 import pandas
 
-from models import PcObject
+from models import PcObject, ThingType, EventType
 from scripts.dashboard.finance_statistics import get_not_cancelled_bookings_by_departement
 from scripts.dashboard.users_statistics import count_activated_users, count_users_having_booked, \
     get_mean_number_of_bookings_per_user_having_booked, get_mean_amount_spent_by_user, \
     _query_get_non_cancelled_bookings_by_user_departement, get_non_cancelled_bookings_by_user_departement
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_booking, create_stock, create_offer_with_thing_product, create_venue, \
-    create_offerer, create_deposit
+    create_offerer, create_deposit, create_offer_with_event_product
 
 
 class CountActivatedUsersTest:
@@ -58,6 +58,27 @@ class CountUsersHavingBookedTest:
 
         # Then
         assert count == 2
+        
+    @clean_database
+    def test_does_not_count_users_having_booked_activation_offer(self, app):
+        # Given
+        user1 = create_user(can_book_free_offers=True, departement_code='74')
+        user2 = create_user(can_book_free_offers=True, departement_code='75', email='email2@test.com')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
+        stock1 = create_stock(offer=offer1, price=0)
+        stock2 = create_stock(offer=offer2, price=0)
+        booking1 = create_booking(user1, stock1)
+        booking2 = create_booking(user2, stock2)
+        PcObject.save(booking1, booking2)
+
+        # When
+        count = count_users_having_booked()
+
+        # Then
+        assert count == 0
 
     @clean_database
     def test_count_users_by_departement_when_departement_code_given(self, app):
@@ -78,6 +99,27 @@ class CountUsersHavingBookedTest:
 
         # Then
         assert count == 1
+
+    @clean_database
+    def test_does_not_count_users_having_booked_activation_offer_when_departement_code_given(self, app):
+        # Given
+        user1 = create_user(can_book_free_offers=True, departement_code='74')
+        user2 = create_user(can_book_free_offers=True, departement_code='74', email='email2@test.com')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
+        stock1 = create_stock(offer=offer1, price=0)
+        stock2 = create_stock(offer=offer2, price=0)
+        booking1 = create_booking(user1, stock1)
+        booking2 = create_booking(user2, stock2)
+        PcObject.save(booking1, booking2)
+
+        # When
+        count = count_users_having_booked('74')
+
+        # Then
+        assert count == 0
 
 
 class GetMeanNumberOfBookingsPerUserHavingBookedTest:
@@ -143,7 +185,7 @@ class GetMeanNumberOfBookingsPerUserHavingBookedTest:
         assert mean_bookings == 0.5
 
     @clean_database
-    def test_returns_1_if_only_one_user_is_from_the_good_departement(self, app):
+    def test_returns_one_if_only_one_user_is_from_the_good_departement(self, app):
         # Given
         user_having_booked1 = create_user(departement_code='45')
         user_having_booked2 = create_user(departement_code='91', email='test1@email.com')
@@ -157,6 +199,48 @@ class GetMeanNumberOfBookingsPerUserHavingBookedTest:
 
         # When
         mean_bookings = get_mean_number_of_bookings_per_user_having_booked('45')
+
+        # Then
+        assert mean_bookings == 1.0
+
+    @clean_database
+    def test_returns_zero_if_users_have_only_activation_bookings(self, app):
+        # Given
+        user1 = create_user()
+        user2 = create_user(email='e@mail.com')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
+        stock1 = create_stock(offer=offer1, price=0)
+        stock2 = create_stock(offer=offer2, price=0)
+        booking1 = create_booking(user1, stock1, is_cancelled=False)
+        booking2 = create_booking(user2, stock2, is_cancelled=False)
+        PcObject.save(booking1, booking2)
+
+        # When
+        mean_bookings = get_mean_number_of_bookings_per_user_having_booked()
+
+        # Then
+        assert mean_bookings == 0.0
+
+    @clean_database
+    def test_returns_one_if_one_user_has_only_activation_booking_and_one_user_has_one_cinema_booking(self, app):
+        # Given
+        user1 = create_user()
+        user2 = create_user(email='e@mail.com')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue, event_type=EventType.CINEMA)
+        stock1 = create_stock(offer=offer1, price=0)
+        stock2 = create_stock(offer=offer2, price=0)
+        booking1 = create_booking(user1, stock1, is_cancelled=False)
+        booking2 = create_booking(user2, stock2, is_cancelled=False)
+        PcObject.save(booking1, booking2)
+
+        # When
+        mean_bookings = get_mean_number_of_bookings_per_user_having_booked()
 
         # Then
         assert mean_bookings == 1.0
@@ -246,6 +330,31 @@ class GetMeanAmountSpentByUserTest:
 
         # Then
         assert mean_amount_spent == 5
+
+    @clean_database
+    def test_returns_30_if_one_user_has_only_one_non_activation_booking_with_price_30(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        activation_offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        activation_offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
+        offer = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
+        activation_stock1 = create_stock(offer=activation_offer1, price=6)
+        activation_stock2 = create_stock(offer=activation_offer2, price=10)
+        stock = create_stock(offer=offer, price=30)
+        activation_booking1 = create_booking(user, activation_stock1)
+        activation_booking2 = create_booking(user, activation_stock2)
+        booking = create_booking(user, stock)
+        deposit = create_deposit(user=user)
+
+        PcObject.save(activation_booking1, activation_booking2, booking)
+
+        # When
+        mean_amount_spent = get_mean_amount_spent_by_user()
+
+        # Then
+        assert mean_amount_spent == 30.0
 
     @clean_database
     def test_returns_average_amount_based_on_user_location(self, app):
@@ -385,6 +494,29 @@ class QueryGetNonCancelledBookingsByDepartementTest:
         # Then
         assert len(bookings_by_departement) == 2
         assert bookings_by_departement == [('93', 2), ('95', 5)]
+
+    @clean_database
+    def test_should_return_zero_bookings_if_they_are_on_activation_offers(self, app):
+        # Given
+        offerer = create_offerer(name='Offerer dans le 93')
+        venue = create_venue(offerer, departement_code='93')
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        offer2 = create_offer_with_thing_product(venue, thing_type=EventType.ACTIVATION)
+        stock1 = create_stock(offer=offer1, price=10)
+        stock2 = create_stock(offer=offer2, price=10)
+
+        user_in_93 = create_user(departement_code='93')
+        create_deposit(user_in_93, amount=500)
+        booking1 = create_booking(user_in_93, stock1, quantity=1)
+        booking2 = create_booking(user_in_93, stock2, quantity=1)
+        PcObject.save(booking1, booking2)
+
+        # When
+        bookings_by_departement = _query_get_non_cancelled_bookings_by_user_departement()
+
+        # Then
+        print(bookings_by_departement)
+        assert len(bookings_by_departement) == 0
 
 
 class GetNonCancelledBookingsFilteredByUserDepartementTest:

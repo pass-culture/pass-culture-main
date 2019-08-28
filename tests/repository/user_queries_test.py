@@ -1,13 +1,13 @@
 from datetime import datetime, timedelta, MINYEAR
 
-from models import ImportStatus, ThingType
+from models import ImportStatus, ThingType, EventType
 from models import PcObject
 from repository.user_queries import get_all_users_wallet_balances, find_by_civility, \
     find_most_recent_beneficiary_creation_date, count_all_activated_users, count_users_having_booked, \
     count_all_activated_users_by_departement, count_users_having_booked_by_departement_code
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_venue, create_offer_with_thing_product, create_deposit, \
-    create_stock, create_booking, create_beneficiary_import
+    create_stock, create_booking, create_beneficiary_import, create_offer_with_event_product
 
 
 class GetAllUsersWalletBalancesTest:
@@ -373,6 +373,30 @@ class CountUsersHavingBookedTest:
         # Then
         assert number_of_users_having_booked == 0
 
+    @clean_database
+    def test_returns_zero_when_users_have_only_activation_bookings(self, app):
+        # Given
+        tomorrow = datetime.utcnow() + timedelta(days=1)
+        user1 = create_user()
+        user2 = create_user(email='e@mail.com')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
+        stock1 = create_stock(offer=offer1, price=0)
+        stock2 = create_stock(offer=offer2, price=0, booking_limit_datetime=tomorrow,
+                              beginning_datetime=tomorrow + timedelta(hours=1),
+                              end_datetime=tomorrow + timedelta(hours=3))
+        booking1 = create_booking(user1, stock1)
+        booking2 = create_booking(user2, stock2)
+        PcObject.save(booking1, booking2)
+
+        # When
+        number_of_users_having_booked = count_users_having_booked()
+
+        # Then
+        assert number_of_users_having_booked == 0
+
 
 class CountUsersHavingBookedByDepartementTest:
     @clean_database
@@ -458,6 +482,27 @@ class CountUsersHavingBookedByDepartementTest:
 
         # When
         number_of_users_having_booked = count_users_having_booked_by_departement_code('73')
+
+        # Then
+        assert number_of_users_having_booked == 0
+
+    @clean_database
+    def test_returns_zero_when_two_users_with_activation_bookings(self, app):
+        # Given
+        user_having_booked1 = create_user(departement_code='87')
+        user_having_booked2 = create_user(email='test1@email.com', departement_code='87')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
+        stock1 = create_stock(offer=offer1, price=0)
+        stock2 = create_stock(offer=offer2, price=0)
+        booking1 = create_booking(user_having_booked1, stock1)
+        booking2 = create_booking(user_having_booked2, stock2)
+        PcObject.save(booking1, booking2)
+
+        # When
+        number_of_users_having_booked = count_users_having_booked_by_departement_code('87')
 
         # Then
         assert number_of_users_having_booked == 0

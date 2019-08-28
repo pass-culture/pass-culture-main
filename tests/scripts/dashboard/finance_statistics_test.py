@@ -2,7 +2,7 @@ from typing import List
 
 import pandas
 
-from models import PcObject
+from models import PcObject, ThingType, EventType
 from models.payment_status import TransactionStatus
 from scripts.dashboard.finance_statistics import get_total_deposits, get_total_amount_spent, get_total_amount_to_pay, \
     _query_get_top_20_offers_by_number_of_bookings, get_top_20_offers_table, \
@@ -10,7 +10,7 @@ from scripts.dashboard.finance_statistics import get_total_deposits, get_total_a
     _query_get_top_20_offerers_by_booking_amounts, get_top_20_offerers_by_amount_table
 from tests.conftest import clean_database
 from tests.test_utils import create_deposit, create_user, create_booking, create_stock, create_offer_with_thing_product, \
-    create_venue, create_offerer, create_payment
+    create_venue, create_offerer, create_payment, create_offer_with_event_product
 
 
 class GetTotalDepositsTest:
@@ -306,6 +306,27 @@ class QueryGetTop20OffersByNumberOfBookingsTest:
         assert bookings_counts == [('Offer Name', 3, 50)]
 
     @clean_database
+    def test_does_not_return_activation_offers(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
+        stock1 = create_stock(offer=offer1, price=10)
+        stock2 = create_stock(offer=offer2, price=20)
+        user = create_user()
+        create_deposit(user, amount=500)
+        booking1 = create_booking(user, stock1, quantity=1, is_cancelled=False)
+        booking2 = create_booking(user, stock2, quantity=1, is_cancelled=False)
+        PcObject.save(booking1, booking2)
+
+        # When
+        bookings_counts = _query_get_top_20_offers_by_number_of_bookings()
+
+        # Then
+        assert bookings_counts == []
+
+    @clean_database
     def test_returns_offers_filterd_by_departement(self, app):
         # Given
         offerer = create_offerer(siren='111111111')
@@ -327,6 +348,27 @@ class QueryGetTop20OffersByNumberOfBookingsTest:
 
         # Then
         assert bookings_counts == [('Second offer', 3, 60)]
+
+    @clean_database
+    def test_returns_does_not_return_activation_offers_filterd_by_departement(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer, postal_code='35000')
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
+        stock1 = create_stock(offer=offer1, price=10)
+        stock2 = create_stock(offer=offer2, price=20)
+        user = create_user()
+        create_deposit(user, amount=500)
+        booking1 = create_booking(user, stock1, quantity=1, is_cancelled=False)
+        booking2 = create_booking(user, stock2, quantity=1, is_cancelled=False)
+        PcObject.save(booking1, booking2)
+
+        # When
+        bookings_counts = _query_get_top_20_offers_by_number_of_bookings('35')
+
+        # Then
+        assert bookings_counts == []
 
 
 class GetTop20OffersByNumberOfBookingsTest:
@@ -456,6 +498,48 @@ class QueryGetTop20OfferersByNumberOfBookingsTest:
         # Then
         assert bookings_counts == [('Offerer in 30', 3, 93)]
 
+    @clean_database
+    def test_does_not_return_offerers_with_only_activation_offers(self, app):
+        # Given
+        offerer = create_offerer(name='Offerer Name')
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
+        stock1 = create_stock(offer=offer1, price=10)
+        stock2 = create_stock(offer=offer2, price=20)
+        user = create_user()
+        create_deposit(user, amount=500)
+        booking1 = create_booking(user, stock1, quantity=1, is_cancelled=False)
+        booking2 = create_booking(user, stock2, quantity=2, is_cancelled=False)
+        PcObject.save(booking1, booking2)
+
+        # When
+        bookings_counts = _query_get_top_20_offerers_by_number_of_bookings()
+
+        # Then
+        assert bookings_counts == []
+
+    @clean_database
+    def test_does_not_return_offerers_with_only_activation_offers_filtered_by_departement(self, app):
+        # Given
+        offerer = create_offerer(name='Offerer Name')
+        venue = create_venue(offerer, postal_code='76290')
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
+        stock1 = create_stock(offer=offer1, price=10)
+        stock2 = create_stock(offer=offer2, price=20)
+        user = create_user()
+        create_deposit(user, amount=500)
+        booking1 = create_booking(user, stock1, quantity=1, is_cancelled=False)
+        booking2 = create_booking(user, stock2, quantity=2, is_cancelled=False)
+        PcObject.save(booking1, booking2)
+
+        # When
+        bookings_counts = _query_get_top_20_offerers_by_number_of_bookings('76')
+
+        # Then
+        assert bookings_counts == []
+
 
 class GetTop20OfferersByNumberOfBookingsTest:
     @clean_database
@@ -570,6 +654,48 @@ class QueryGetTop20OfferersByAmountTest:
 
         # Then
         assert bookings_counts == [('Small library', 2, 60), ('National book store', 2, 20)]
+
+    @clean_database
+    def test_does_not_return_offerers_with_only_activation_offer(self, app):
+        # Given
+        offerer = create_offerer(name='Offerer Name')
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
+        stock1 = create_stock(offer=offer1, price=10)
+        stock2 = create_stock(offer=offer2, price=20)
+        user = create_user()
+        create_deposit(user, amount=500)
+        booking1 = create_booking(user, stock1, quantity=1, is_cancelled=False)
+        booking2 = create_booking(user, stock2, quantity=2, is_cancelled=False)
+        PcObject.save(booking1, booking2)
+
+        # When
+        bookings_counts = _query_get_top_20_offerers_by_booking_amounts()
+
+        # Then
+        assert bookings_counts == []
+
+    @clean_database
+    def test_does_not_return_offerers_with_only_activation_offer_filtered_by_departement(self, app):
+        # Given
+        offerer = create_offerer(name='Offerer Name')
+        venue = create_venue(offerer, postal_code='34790')
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
+        stock1 = create_stock(offer=offer1, price=10)
+        stock2 = create_stock(offer=offer2, price=20)
+        user = create_user()
+        create_deposit(user, amount=500)
+        booking1 = create_booking(user, stock1, quantity=1, is_cancelled=False)
+        booking2 = create_booking(user, stock2, quantity=2, is_cancelled=False)
+        PcObject.save(booking1, booking2)
+
+        # When
+        bookings_counts = _query_get_top_20_offerers_by_booking_amounts('34')
+
+        # Then
+        assert bookings_counts == []
 
 
 class GetTop20OfferersByAmountTable:

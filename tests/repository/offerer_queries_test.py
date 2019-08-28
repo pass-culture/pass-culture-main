@@ -1,7 +1,7 @@
 import secrets
 from datetime import datetime, timedelta
 
-from models import PcObject, Offerer, Venue
+from models import PcObject, Offerer, Venue, ThingType
 from repository.offerer_queries import find_all_offerers_with_managing_user_information, \
     find_all_offerers_with_managing_user_information_and_venue, \
     find_all_offerers_with_managing_user_information_and_not_virtual_venue, \
@@ -217,6 +217,26 @@ class CountOffererWithStockTest:
         # Then
         assert number_of_offerers == 1
 
+    @clean_database
+    def test_returns_0_when_only_offerers_with_activation_offers(self, app):
+        # Given
+        user = create_user(email='first@example.net')
+        offerer = create_offerer(siren='111111111')
+        user_offerer = create_user_offerer(user, offerer)
+        venue = create_venue(offerer, siret='1111111110001', postal_code='75018')
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue, event_type=ThingType.ACTIVATION)
+        stock1 = create_stock(offer=offer1)
+        stock2 = create_stock(offer=offer2)
+
+        PcObject.save(stock1, stock2)
+
+        # When
+        number_of_offerers = count_offerer_with_stock()
+
+        # Then
+        assert number_of_offerers == 0
+
 
 class CountOffererWithStockByDepartementTest:
     def test_return_zero_if_no_offerer(self, app):
@@ -341,6 +361,26 @@ class CountOffererWithStockByDepartementTest:
 
         # When
         number_of_offerers = count_offerer_with_stock_by_departement('42')
+
+        # Then
+        assert number_of_offerers == 0
+
+    @clean_database
+    def test_returns_0_when_only_offerers_with_activation_offers(self, app):
+        # Given
+        user = create_user(email='first@example.net')
+        offerer = create_offerer(siren='111111111')
+        user_offerer = create_user_offerer(user, offerer)
+        venue = create_venue(offerer, siret='1111111110001', postal_code='76018')
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue, event_type=ThingType.ACTIVATION)
+        stock1 = create_stock(offer=offer1)
+        stock2 = create_stock(offer=offer2)
+
+        PcObject.save(stock1, stock2)
+
+        # When
+        number_of_offerers = count_offerer_with_stock_by_departement('76')
 
         # Then
         assert number_of_offerers == 0

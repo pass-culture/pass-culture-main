@@ -76,7 +76,9 @@ def _query_get_top_20_offers_by_number_of_bookings(departement_code: str = None)
             JOIN booking ON booking."stockId" = stock.id
             JOIN venue ON offer."venueId" = venue.id
             WHERE booking."isCancelled" IS FALSE
-            AND venue."departementCode" = :departementCode
+             AND venue."departementCode" = :departementCode
+             AND offer.type != 'ThingType.ACTIVATION'
+             AND offer.type != 'EventType.ACTIVATION'
             GROUP BY offer.id, offer.name
             ORDER BY quantity DESC, offer.name ASC
             LIMIT 20;
@@ -88,6 +90,8 @@ def _query_get_top_20_offers_by_number_of_bookings(departement_code: str = None)
             JOIN stock ON stock."offerId" = offer.id
             JOIN booking ON booking."stockId" = stock.id
             WHERE booking."isCancelled" IS FALSE
+             AND offer.type != 'ThingType.ACTIVATION'
+             AND offer.type != 'EventType.ACTIVATION'
             GROUP BY offer.id, offer.name
             ORDER BY quantity DESC, offer.name ASC
             LIMIT 20;
@@ -118,7 +122,9 @@ def _query_get_top_20_offerers_by_number_of_bookings(departement_code: str = Non
             JOIN stock ON stock."offerId" = offer.id
             JOIN booking ON booking."stockId" = stock.id
             WHERE booking."isCancelled" IS FALSE
-            AND venue."departementCode" = :departementCode
+             AND venue."departementCode" = :departementCode
+             AND offer.type != 'ThingType.ACTIVATION'
+             AND offer.type != 'EventType.ACTIVATION'
             GROUP BY offerer.id, offerer.name
             ORDER BY quantity DESC, offerer.name ASC
             LIMIT 20;
@@ -132,6 +138,8 @@ def _query_get_top_20_offerers_by_number_of_bookings(departement_code: str = Non
             JOIN stock ON stock."offerId" = offer.id
             JOIN booking ON booking."stockId" = stock.id
             WHERE booking."isCancelled" IS FALSE
+             AND offer.type != 'ThingType.ACTIVATION'
+             AND offer.type != 'EventType.ACTIVATION'
             GROUP BY offerer.id, offerer.name
             ORDER BY quantity DESC, offerer.name ASC
             LIMIT 20;
@@ -150,7 +158,9 @@ def _query_get_top_20_offerers_by_booking_amounts(departement_code: str = None) 
             JOIN stock ON stock."offerId" = offer.id
             JOIN booking ON booking."stockId" = stock.id
             WHERE booking."isCancelled" IS FALSE
-            AND venue."departementCode" = :departementCode
+             AND venue."departementCode" = :departementCode
+             AND offer.type != 'ThingType.ACTIVATION'
+             AND offer.type != 'EventType.ACTIVATION'
             GROUP BY offerer.id, offerer.name
             ORDER BY booking_amount DESC, offerer.name ASC
             LIMIT 20;
@@ -164,6 +174,8 @@ def _query_get_top_20_offerers_by_booking_amounts(departement_code: str = None) 
         JOIN stock ON stock."offerId" = offer.id
         JOIN booking ON booking."stockId" = stock.id
         WHERE booking."isCancelled" IS FALSE
+         AND offer.type != 'ThingType.ACTIVATION'
+         AND offer.type != 'EventType.ACTIVATION'
         GROUP BY offerer.id, offerer.name
         ORDER BY booking_amount DESC, offerer.name ASC
         LIMIT 20;

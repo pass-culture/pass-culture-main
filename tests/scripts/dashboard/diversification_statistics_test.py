@@ -387,6 +387,28 @@ class GetOfferersWithNonCancelledBookingsCountTest:
         # Then
         assert number_of_offerers == 0
 
+    @clean_database
+    def test_returns_zero_if_only_offerer_with_activation_booking(self, app):
+        # Given
+        offerer1 = create_offerer()
+        venue1 = create_venue(offerer1)
+        offerer2 = create_offerer(siren='987654321')
+        venue2 = create_venue(offerer2, siret='98765432112345')
+        offer1 = create_offer_with_thing_product(venue1, thing_type=ThingType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue2, event_type=EventType.ACTIVATION)
+        stock1 = create_stock(offer=offer1, price=0)
+        stock2 = create_stock(offer=offer2, price=0)
+        user = create_user()
+        booking1 = create_booking(user, stock1)
+        booking2 = create_booking(user, stock2)
+        PcObject.save(booking1, booking2)
+
+        # When
+        number_of_offerers = get_offerers_with_non_cancelled_bookings_count()
+
+        # Then
+        assert number_of_offerers == 0
+
 
 class GetOffersWithUserOffererAndStockCountTest:
     @clean_database
@@ -498,6 +520,26 @@ class GetOffersWithUserOffererAndStockCountTest:
 
         # Then
         assert number_of_offers == 1
+
+    @clean_database
+    def test_returns_zero_if_only_activation_offers(self, app):
+        # Given
+        tomorrow = datetime.utcnow()
+        offerer = create_offerer()
+        user = create_user()
+        user_offerer = create_user_offerer(user, offerer)
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
+        stock1 = create_stock(offer=offer1)
+        stock2 = create_stock(offer=offer2, booking_limit_datetime=tomorrow, beginning_datetime=tomorrow + timedelta(hours=1), end_datetime= tomorrow + timedelta(hours=3))
+        PcObject.save(stock1, stock2, user_offerer)
+
+        # When
+        number_of_offers = get_offers_with_user_offerer_and_stock_count()
+
+        # Then
+        assert number_of_offers == 0
 
 
 class GetOffersAvailableOnDiscoveryCountTest:
@@ -799,6 +841,26 @@ class GetOffersWithNonCancelledBookingsCountTest:
         # Then
         assert number_of_offerers == 0
 
+    @clean_database
+    def test_returns_0_if_only_activation_offers(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
+        stock1 = create_stock(offer=offer1, price=0)
+        stock2 = create_stock(offer=offer2, price=0)
+        user = create_user()
+        booking1 = create_booking(user, stock1)
+        booking2 = create_booking(user, stock2)
+        PcObject.save(booking1, booking2)
+
+        # When
+        number_of_offers = get_offers_with_non_cancelled_bookings_count()
+
+        # Then
+        assert number_of_offers == 0
+
 
 class GetAllBookingsCount:
     @clean_database
@@ -844,7 +906,7 @@ class GetAllBookingsCount:
         assert number_of_bookings == 1
 
 
-class QueryGetOfferCountsPerTypeAndMediumTest:
+class QueryGetOfferCountsByTypeAndMediumTest:
     @clean_database
     def test_returns_2_cinema_physical_1_musique_physical_and_1_musique_digital_when_offers_with_stock_and_user_offerer(
             self, app):
