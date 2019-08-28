@@ -189,3 +189,18 @@ class AppendUserHasAccessAttributeTest:
 
         # Then
         assert offerer.userHasAccess is False
+
+    @clean_database
+    def test_should_return_true_when_current_user_is_admin(self, app):
+        # Given
+        current_user = create_user(postal_code=None, email='current@example.net', is_admin=True)
+        user = create_user(postal_code=None)
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer, validation_token=None)
+        PcObject.save(user_offerer)
+
+        # When
+        offerer.append_user_has_access_attribute(current_user)
+
+        # Then
+        assert offerer.userHasAccess is True

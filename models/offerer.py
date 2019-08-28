@@ -77,6 +77,11 @@ class Offerer(PcObject,
 
     def append_user_has_access_attribute(self, current_user):
 
+        if current_user.isAdmin:
+            self.userHasAccess = True
+            return
+
+
         authorizations = [user_offer.isValidated for user_offer in self.UserOfferers if
                           user_offer.userId == current_user.id]
 
