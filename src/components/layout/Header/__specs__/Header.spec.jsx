@@ -89,7 +89,7 @@ describe('src | components | Layout | Header', () => {
           .find('.navbar-end')
           .find('.navbar-item')
           .at(2)
-        expect(helpLink.prop('href')).toBe('https://docs.passculture.app/structures-culturelles')
+        expect(helpLink.prop('href')).toBe('https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/')
         expect(helpLink.prop('target')).toBe('_blank')
       })
 

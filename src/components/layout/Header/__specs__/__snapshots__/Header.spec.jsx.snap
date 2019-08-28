@@ -42,6 +42,7 @@ ShallowWrapper {
           <span
             className="navbar-burger"
             onClick={[Function]}
+            role="navigation"
           >
             <span />
             <span />
@@ -90,7 +91,7 @@ ShallowWrapper {
             </NavLink>
             <a
               className="navbar-item"
-              href="https://docs.passculture.app/structures-culturelles"
+              href="https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/"
               rel="noopener noreferrer"
               target="_blank"
             >
@@ -238,6 +239,7 @@ ShallowWrapper {
             <span
               className="navbar-burger"
               onClick={[Function]}
+              role="navigation"
             >
               <span />
               <span />
@@ -286,7 +288,7 @@ ShallowWrapper {
               </NavLink>
               <a
                 className="navbar-item"
-                href="https://docs.passculture.app/structures-culturelles"
+                href="https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/"
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -432,6 +434,7 @@ ShallowWrapper {
               <span
                 className="navbar-burger"
                 onClick={[Function]}
+                role="navigation"
               >
                 <span />
                 <span />
@@ -468,6 +471,7 @@ ShallowWrapper {
                 ],
                 "className": "navbar-burger",
                 "onClick": [Function],
+                "role": "navigation",
               },
               "ref": null,
               "rendered": Array [
@@ -548,7 +552,7 @@ ShallowWrapper {
               </NavLink>
               <a
                 className="navbar-item"
-                href="https://docs.passculture.app/structures-culturelles"
+                href="https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/"
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -718,7 +722,7 @@ ShallowWrapper {
                 </NavLink>,
                 <a
                   className="navbar-item"
-                  href="https://docs.passculture.app/structures-culturelles"
+                  href="https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/"
                   rel="noopener noreferrer"
                   target="_blank"
                 >
@@ -989,7 +993,7 @@ ShallowWrapper {
                     </span>,
                   ],
                   "className": "navbar-item",
-                  "href": "https://docs.passculture.app/structures-culturelles",
+                  "href": "https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/",
                   "rel": "noopener noreferrer",
                   "target": "_blank",
                 },
@@ -1656,6 +1660,7 @@ ShallowWrapper {
             <span
               className="navbar-burger"
               onClick={[Function]}
+              role="navigation"
             >
               <span />
               <span />
@@ -1704,7 +1709,7 @@ ShallowWrapper {
               </NavLink>
               <a
                 className="navbar-item"
-                href="https://docs.passculture.app/structures-culturelles"
+                href="https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/"
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -1852,6 +1857,7 @@ ShallowWrapper {
               <span
                 className="navbar-burger"
                 onClick={[Function]}
+                role="navigation"
               >
                 <span />
                 <span />
@@ -1900,7 +1906,7 @@ ShallowWrapper {
                 </NavLink>
                 <a
                   className="navbar-item"
-                  href="https://docs.passculture.app/structures-culturelles"
+                  href="https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/"
                   rel="noopener noreferrer"
                   target="_blank"
                 >
@@ -2046,6 +2052,7 @@ ShallowWrapper {
                 <span
                   className="navbar-burger"
                   onClick={[Function]}
+                  role="navigation"
                 >
                   <span />
                   <span />
@@ -2082,6 +2089,7 @@ ShallowWrapper {
                   ],
                   "className": "navbar-burger",
                   "onClick": [Function],
+                  "role": "navigation",
                 },
                 "ref": null,
                 "rendered": Array [
@@ -2162,7 +2170,7 @@ ShallowWrapper {
                 </NavLink>
                 <a
                   className="navbar-item"
-                  href="https://docs.passculture.app/structures-culturelles"
+                  href="https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/"
                   rel="noopener noreferrer"
                   target="_blank"
                 >
@@ -2332,7 +2340,7 @@ ShallowWrapper {
                   </NavLink>,
                   <a
                     className="navbar-item"
-                    href="https://docs.passculture.app/structures-culturelles"
+                    href="https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/"
                     rel="noopener noreferrer"
                     target="_blank"
                   >
@@ -2603,7 +2611,7 @@ ShallowWrapper {
                       </span>,
                     ],
                     "className": "navbar-item",
-                    "href": "https://docs.passculture.app/structures-culturelles",
+                    "href": "https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/",
                     "rel": "noopener noreferrer",
                     "target": "_blank",
                   },

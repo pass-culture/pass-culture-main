@@ -21,6 +21,8 @@ export const NEW = '_new_'
 export const SEARCH = '_search_'
 export const SPACE = ' '
 
+export const HELP_PAGE_URL = "https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/"
+
 export const API_URL = process.env.API_URL || 'http://localhost'
 
 export function apiUrl(path) {

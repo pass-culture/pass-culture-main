@@ -6,6 +6,7 @@ import { NavLink } from 'react-router-dom'
 
 import Icon from '../Icon'
 import Logo from '../Logo'
+import { HELP_PAGE_URL } from '../../../utils/config'
 
 class Header extends Component {
   constructor() {
@@ -43,6 +44,7 @@ class Header extends Component {
             <span
               className="navbar-burger"
               onClick={this.handleOnClick(showMobileMenu)}
+              role="navigation"
             >
               <span />
               <span />
@@ -62,7 +64,9 @@ class Header extends Component {
                 <span className="icon">
                   <Icon svg="ico-guichet-w" />
                 </span>
-                <span>{'Guichet'}</span>
+                <span>
+                  {'Guichet'}
+                </span>
               </NavLink>
               {!whiteHeader && (
                 <NavLink
@@ -72,19 +76,23 @@ class Header extends Component {
                   <span className="icon">
                     <Icon svg="ico-offres-w" />
                   </span>
-                  <span>{'Vos offres'}</span>
+                  <span>
+                    {'Vos offres'}
+                  </span>
                 </NavLink>
               )}
               <a
                 className="navbar-item"
-                href="https://docs.passculture.app/structures-culturelles"
+                href={HELP_PAGE_URL}
                 rel="noopener noreferrer"
                 target="_blank"
               >
                 <span className="icon">
                   <Icon svg="ico-help-w" />
                 </span>
-                <span>{'Aide'}</span>
+                <span>
+                  {'Aide'}
+                </span>
               </a>
               <div className="navbar-item has-dropdown is-hoverable">
                 <NavLink
@@ -94,7 +102,9 @@ class Header extends Component {
                   <span className="icon">
                     <Icon svg={`ico-user-circled${whiteHeader ? '' : '-w'}`} />
                   </span>
-                  <span>{name}</span>
+                  <span>
+                    {name}
+                  </span>
                 </NavLink>
                 <div className="navbar-dropdown is-right">
                   <NavLink
@@ -104,7 +114,9 @@ class Header extends Component {
                     <span className="icon">
                       <Icon svg="ico-user" />
                     </span>
-                    <span>{'Profil'}</span>
+                    <span>
+                      {'Profil'}
+                    </span>
                   </NavLink>
                   <NavLink
                     className="navbar-item"
@@ -127,7 +139,9 @@ class Header extends Component {
                       <span className="icon">
                         <Icon svg="ico-delegation-r" />
                       </span>
-                      <span>{'Délégations'}</span>
+                      <span>
+                        {'Délégations'}
+                      </span>
                     </NavLink>
                   )}
                   <NavLink
@@ -137,7 +151,9 @@ class Header extends Component {
                     <span className="icon">
                       <Icon svg="ico-bookings" />
                     </span>
-                    <span>{'Suivi des réservations'}</span>
+                    <span>
+                      {'Suivi des réservations'}
+                    </span>
                   </NavLink>
                   <NavLink
                     className="navbar-item"
@@ -146,7 +162,9 @@ class Header extends Component {
                     <span className="icon">
                       <Icon svg="ico-compta" />
                     </span>
-                    <span>{'Suivi des remboursements'}</span>
+                    <span>
+                      {'Suivi des remboursements'}
+                    </span>
                   </NavLink>
                   {false && (
                     <NavLink
@@ -156,7 +174,9 @@ class Header extends Component {
                       <span className="icon">
                         <Icon svg="ico-compta" />
                       </span>
-                      <span>{'Comptabilité'}</span>
+                      <span>
+                        {'Comptabilité'}
+                      </span>
                     </NavLink>
                   )}
                   <SignoutButton
@@ -167,7 +187,9 @@ class Header extends Component {
                     <span className="icon">
                       <Icon svg="ico-deconnect" />
                     </span>
-                    <span>{'Déconnexion'}</span>
+                    <span>
+                      {'Déconnexion'}
+                    </span>
                   </SignoutButton>
                 </div>
               </div>
