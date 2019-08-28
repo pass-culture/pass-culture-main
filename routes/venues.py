@@ -29,7 +29,7 @@ def get_venue(venueId):
 @login_required
 def get_venues():
     venues = find_by_managing_user(current_user)
-    return jsonify([as_dict(venue) for venue in venues]), 200
+    return jsonify([as_dict(venue, includes=VENUE_INCLUDES) for venue in venues]), 200
 
 
 @app.route('/venues', methods=['POST'])

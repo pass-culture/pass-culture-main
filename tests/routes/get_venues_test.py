@@ -1,11 +1,8 @@
-
-import pytest
-
 from models import PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_venue,\
-    create_offerer,\
-    create_user,\
+from tests.test_utils import create_venue, \
+    create_offerer, \
+    create_user, \
     create_user_offerer
 from utils.human_ids import humanize
 
@@ -32,6 +29,7 @@ class Get:
             assert len(response.json) == 1
             first_returned_venue = response.json[0]
             assert first_returned_venue['name'] == venue_name
+            assert 'validationToken' not in first_returned_venue
 
         @clean_database
         def when_connected_does_not_return_unrelated_venues(self, app):
@@ -60,7 +58,6 @@ class Get:
 
     class Returns403:
         @clean_database
-        @pytest.mark.skip
         def when_current_user_doesnt_have_rights(self, app):
             # given
             offerer = create_offerer()
@@ -74,4 +71,5 @@ class Get:
 
             # then
             assert response.status_code == 403
-            assert response.json['global'] == ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
+            assert response.json['global'] == [
+                "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
