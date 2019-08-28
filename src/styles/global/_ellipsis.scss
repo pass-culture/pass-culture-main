@@ -1,5 +1,11 @@
 @mixin multiLineEllipsis() {
+  display: -webkit-box;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  -webkit-line-clamp: 2;
+
+  /* autoprefixer: off */
+  -webkit-box-orient: vertical;
+
+  /* autoprefixer: on */
 }

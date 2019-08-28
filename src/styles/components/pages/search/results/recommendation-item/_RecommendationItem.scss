@@ -30,19 +30,16 @@
 
     .search-result-item-detail {
       @extend .m12;
-      @include multiLineEllipsis();
       flex: 2;
+      overflow: hidden;
 
       h5 {
         @extend .fs18;
         @extend .is-bold;
-        @include multiLineEllipsis();
       }
 
       .search-result-item-type {
         @extend .fs13;
-        @include multiLineEllipsis();
-
         color: $grey;
       }
 
@@ -50,19 +47,20 @@
         @extend .fs13;
         white-space: initial;
       }
+
+      h5, .search-result-item-type {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
     }
 
     .arrow-container {
       @extend .is-primary-text;
 
       display: flex;
-      flex: 0.2;
       flex-direction: column;
       justify-content: center;
-
-      span {
-        justify-content: flex-end;
-      }
     }
   }
 }

@@ -36,6 +36,15 @@
   font-weight: 600;
 }
 
+.teaser-title-booking {
+  color: $black;
+  font-size: 1.1rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .teaser-sub-title {
   color: $grey;
   font-size: 0.8rem;
