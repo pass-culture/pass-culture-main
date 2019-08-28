@@ -24,3 +24,6 @@ __pycache__/
 *$py.class
 
 pc_env/
+
+pro-packed-staging/
+webapp-packed-staging/

@@ -10,12 +10,6 @@
 [submodule "pro"]
 	path = pro
 	url = git@github.com:betagouv/pass-culture-pro.git
-[submodule "pro-packed-staging"]
-	path = pro-packed-staging
-	url = git@github.com:betagouv/pass-culture-pro-staging.git
 [submodule "webapp"]
 	path = webapp
 	url = git@github.com:betagouv/pass-culture-browser.git
-[submodule "webapp-packed-staging"]
-	path = webapp-packed-staging
-	url = git@github.com:betagouv/pass-culture-app-staging.git
