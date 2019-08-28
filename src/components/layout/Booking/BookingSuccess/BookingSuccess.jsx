@@ -5,8 +5,8 @@ import { Link } from 'react-router-dom'
 import Icon from '../../Icon'
 import { getDisplayPrice } from '../../../../helpers'
 
-const BookingSuccess = ({ booking, isEvent, stock }) => {
-  const { completedUrl, token } = booking || {}
+const BookingSuccess = ({ bookedPayload, isEvent }) => {
+  const { completedUrl, stock, token } = bookedPayload || {}
   const { price } = stock || {}
   const cssClass = (isEvent && 'event') || 'thing'
   return (
@@ -90,14 +90,14 @@ const BookingSuccess = ({ booking, isEvent, stock }) => {
 }
 
 BookingSuccess.propTypes = {
-  booking: PropTypes.shape({
+  bookedPayload: PropTypes.shape({
     completedUrl: PropTypes.string.isRequired,
+    stock: PropTypes.shape({
+      price: PropTypes.string.isRequired,
+    }).isRequired,
     token: PropTypes.string.isRequired,
   }).isRequired,
   isEvent: PropTypes.bool.isRequired,
-  stock: PropTypes.shape({
-    price: PropTypes.number.isRequired,
-  }).isRequired,
 }
 
 export default BookingSuccess
