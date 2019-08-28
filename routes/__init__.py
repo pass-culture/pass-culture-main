@@ -1,10 +1,10 @@
 from utils.config import IS_DEV
 
+
 def install_routes():
     import routes.bookings
     import routes.client_errors
     import routes.error_handlers
-    import routes.events
     import routes.export
     import routes.favorites
     import routes.features
@@ -20,7 +20,6 @@ def install_routes():
     import routes.recommendations
     import routes.reimbursements
     import routes.storage
-    import routes.things
     import routes.types
     import routes.user_offerers
     import routes.users

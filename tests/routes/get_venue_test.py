@@ -1,5 +1,3 @@
-from pprint import pprint
-
 from models import PcObject
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_venue, create_offerer, create_user, create_user_offerer, \
@@ -47,4 +45,5 @@ class Get:
 
             # then
             assert response.status_code == 403
-            assert response.json['global'] == ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
+            assert response.json['global'] == [
+                "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]

@@ -31,3 +31,7 @@ class Get:
             assert response_json[
                        'completedUrl'] == 'https://host/path/ABCDEF?offerId=%s&email=user+plus@email.fr' % humanize(
                 offer.id)
+            assert 'recommendation' in response_json
+            assert 'offer' in response_json['recommendation']
+            assert 'venue' in response_json['recommendation']['offer']
+            assert 'validationToken' not in response_json['recommendation']['offer']

@@ -32,32 +32,6 @@ NOT_VALIDATED_OFFERER_INCLUDES = [
     "-validationToken"
 ]
 
-EVENT_INCLUDES = [
-    {
-        "key": "occurrences",
-        "includes": [
-            {
-                "key": "stock",
-                "includes": [
-                    {
-                        "key": "offerer",
-                        "includes": OFFERER_INCLUDES
-                    }
-                ]
-            },
-            'venue'
-        ]
-    },
-    {
-        "key": "mediations",
-        "includes": ["thumbUrl"]
-    },
-    "offers",
-    "-type",
-    "offerType",
-    "thumbUrl"
-]
-
 OFFER_INCLUDES = [
     'isFinished',
     'isFullyBooked',
@@ -99,6 +73,7 @@ OFFER_INCLUDES = [
                     "iban"
                 ]
             },
+            '-validationToken',
             "isValidated",
             "bic",
             "iban"
@@ -212,7 +187,10 @@ WEBAPP_GET_BOOKING_INCLUDES = [
                         "key": "stocks",
                         "includes": ["isBookable"]
                     },
-                    "venue",
+                    {
+                        "key": "venue",
+                        "includes": ['-validationToken']
+                    }
                 ]
             },
             {

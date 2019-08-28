@@ -1,4 +1,3 @@
-""" routes offers tests """
 import secrets
 from datetime import datetime, timedelta
 
@@ -47,6 +46,7 @@ class Get:
             result = response.json
             assert response.status_code == 200
             assert dehumanize(result[0]['id']) == first_id
+            assert 'validationToken' not in result[0]['venue']
 
         @clean_database
         def test_returns_offers_sorted_by_id_desc(self, app):

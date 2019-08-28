@@ -6,7 +6,7 @@ from tests.test_utils import create_stock_with_thing_offer, \
     create_deposit, create_venue, create_offerer, \
     create_user, create_booking, create_user_offerer, create_offer_with_thing_product, create_stock_from_offer, \
     create_offer_with_event_product
-from utils.human_ids import humanize, dehumanize
+from utils.human_ids import humanize
 
 
 class Get:
