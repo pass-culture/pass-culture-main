@@ -102,7 +102,8 @@ test("Parcours complet de réservation d'une offre thing", async t => {
     .expect(bookingToken.exists)
     .ok()
 
-  currentBookedToken = await bookingToken.textContent.toLowerCase()
+  currentBookedToken = await bookingToken.textContent
+  currentBookedToken = currentBookedToken.toLowerCase()
   await t
     .click(bookingSuccessButton)
     .expect(getPageUrl())
