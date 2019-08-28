@@ -179,13 +179,23 @@ jobs:
     working_directory: ~/pass-culture
     steps:
       - checkout
-      - run: exit 1
+      - run: pyenv global 3.5.2
+      - run: pip install requests
+      - run: python scripts/check_ci_status.py $CIRCLE_SHA1 $(git describe --contains)
+      - run: git submodule sync
+      - run: git submodule update --init
+      - run:
+          name: Deploy API
+          command: |
+            export SCALINGO_APP_NAME=$(./scripts/compute_app_name.sh ${CIRCLE_BRANCH})
+            cd api
+            git remote add scalingo git@scalingo.com:${SCALINGO_APP_NAME}.git
+            git push -f scalingo HEAD:master
       - run:
           name: Check deployed version
           command: |
             COMPONENT_URL="https://backend.$(./scripts/compute_component_partial_url.sh ${CIRCLE_BRANCH})"
             ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
-          when: on_fail
       - run:
           name: Send failure notification
           command: |
@@ -200,7 +210,26 @@ jobs:
     working_directory: ~/pass-culture
     steps:
       - checkout
-      - run: exit 0
+      - run: git submodule sync
+      - run: git submodule update --init
+      - run: ./install_lib_ci.sh
+      - run:
+          name: Install netlify CLI
+          command: npm install -g netlify-cli@1.2.3
+      - run:
+          name: Install libraries
+          command: |
+            export NVM_DIR="/opt/circleci/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm use "$NODE_VERSION"
+            cd pro
+            yarn install
+            set -a; source ~/pass-culture/config/run_envs/"${CIRCLE_BRANCH}" && yarn build
+      - run:
+          name: Deploy Pro
+          command: |
+            cd pro
+            netlify deploy -e "${CIRCLE_BRANCH}" -t ${NETLIFY_TOKEN}
       - run:
           name: Check deployed version
           command: |
@@ -220,7 +249,26 @@ jobs:
     working_directory: ~/pass-culture
     steps:
       - checkout
-      - run: exit 0
+      - run: git submodule sync
+      - run: git submodule update --init
+      - run: ./install_lib_ci.sh
+      - run:
+          name: Install netlify CLI
+          command: npm install -g netlify-cli@1.2.3
+      - run:
+          name: Build WEBAPP
+          command: |
+            export NVM_DIR="/opt/circleci/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm use "$NODE_VERSION"
+            cd webapp
+            yarn install
+            ./scripts/build_with_fontello.sh "${CIRCLE_BRANCH}"
+      - run:
+          name: Deploy WEBAPP
+          command: |
+            cd webapp
+            netlify deploy -e "${CIRCLE_BRANCH}" -t ${NETLIFY_TOKEN}
       - run:
           name: Check deployed version
           command: |
@@ -250,7 +298,7 @@ workflows:
   version: 2
   commit:
     jobs:
-#      - tests-script-pc
+      - tests-script-pc
       - tests-api:
           filters:
             branches:
@@ -282,7 +330,6 @@ workflows:
               - staging
               - integration
               - demo
-              - PC-2206-envoyer-synthese-de-deploiement
       - deploy-pro:
           requires:
             - deploy-api
