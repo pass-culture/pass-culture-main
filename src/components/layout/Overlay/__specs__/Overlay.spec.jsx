@@ -7,7 +7,7 @@ describe('src | components | layout | Overlay | Overlay', () => {
   let props = {}
 
   it('should match the snapshot', () => {
-    // given
+    // when
     const wrapper = shallow(<Overlay {...props} />)
 
     // then

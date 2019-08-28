@@ -9,6 +9,7 @@ class BookingForm extends Component {
   renderBookingFormContent = formParams => {
     const { className, formId, isEvent, isReadOnly, onSetCanSubmitForm } = this.props
     const { handleSubmit, invalid, values } = formParams
+
     return (
       <BookingFormContent
         className={className}
@@ -25,6 +26,7 @@ class BookingForm extends Component {
 
   render() {
     const { initialValues, isEvent, onFormSubmit } = this.props
+
     return (
       <Form
         decorators={isEvent && eventDecorators}

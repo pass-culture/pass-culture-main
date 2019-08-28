@@ -1,22 +1,26 @@
-#booking-card header {
-  color: $white;
-  background: #261801;
-  padding: 1.5rem 1rem;
-
-  .content {
-    min-height: 450px;
-  }
-
-  .title {
-    font-size: 40px;
-  }
-
-  .subtitle {
-    font-size: 22px;
-  }
-}
-
 #booking-card {
+  background: $white;
+  color: $black;
+  z-index: $zindex-booking-card;
+
+  header {
+    background: #261801;
+    color: $white;
+    padding: 1.5rem 1rem;
+
+    .content {
+      min-height: 450px;
+    }
+
+    .title {
+      font-size: 40px;
+    }
+
+    .subtitle {
+      font-size: 22px;
+    }
+  }
+
   &.with-header {
     margin-top: $header-height;
 
@@ -25,37 +29,6 @@
       position: inherit;
     }
   }
-}
-
-#booking-card .form-footer {
-  height: 3.5rem;
-  max-height: 3.5rem;
-  min-height: 3.5rem;
-  background-color: $primary;
-
-  button {
-    border: 0;
-    width: 35%;
-    color: $white;
-    font-size: 20px;
-    background: transparent;
-  }
-
-  button + button {
-    border-left: 1px dotted $white;
-  }
-}
-
-/* ------------------------------------------------
-
- Avant retro-compatibilité avec le search
-
------------------------------------------------- */
-
-#booking-card {
-  z-index: $zindex-booking-card;
-  color: $black;
-  background: $white;
 
   .pc-final-form-label {
     @extend .fs22;
@@ -83,6 +56,71 @@
   .react-datepicker__triangle {
     left: 50%;
   }
+
+  .form-footer {
+    height: 3.5rem;
+    max-height: 3.5rem;
+    min-height: 3.5rem;
+    background-color: $primary;
+
+    button {
+      border: 0;
+      width: 35%;
+      color: $white;
+      font-size: 20px;
+      background: transparent;
+    }
+
+    button + button {
+      border-left: 1px dotted $white;
+    }
+  }
+
+  .select-field {
+    @extend .px12;
+
+    width: 264px;
+
+    &.is-read-only {
+      border: 0;
+    }
+
+    .content {
+      background-color: white;
+      border: 0;
+      cursor: pointer;
+      font-size: 20px;
+      font-weight: bold;
+      height: 37px;
+      padding: 0 24px;
+      text-align: center;
+      width: 100%;
+      -moz-appearance: none;
+      -o-appearance: none;
+      -webkit-appearance: none;
+
+      &,
+      &:hover,
+      &:focus {
+        border-color: $grey-light;
+        outline: none;
+      }
+
+      &[disabled] {
+        color: inherit;
+        cursor: default;
+        margin: auto;
+        opacity: 1;
+        text-indent: 10px;
+        width: 80%;
+      }
+    }
+
+    select + img {
+      float: right;
+      pointer-events: none;
+    }
+  }
 }
 
 #form-create-booking.is-read-only {
@@ -92,51 +130,5 @@
     border-radius: 0 !important;
     background-color: transparent !important;
     cursor: default;
-  }
-}
-
-#booking-card .select-field {
-  @extend .px12;
-
-  width: 264px;
-
-  &.is-read-only {
-    border: 0;
-  }
-
-  .content {
-    background-color: white;
-    border: 0;
-    cursor: pointer;
-    height: 37px;
-    font-size: 20px;
-    padding: 0 24px;
-    font-weight: bold;
-    text-align: center;
-    width: 100%;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    -o-appearance: none;
-
-    &,
-    &:hover,
-    &:focus {
-      border-color: $grey-light;
-      outline: none;
-    }
-
-    &[disabled] {
-      color: inherit;
-      cursor: default;
-      margin: auto;
-      opacity: 1;
-      text-indent: 10px;
-      width: 80%;
-    }
-  }
-
-  select + img {
-    float: right;
-    pointer-events: none;
   }
 }

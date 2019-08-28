@@ -7,6 +7,8 @@ describe('src | components | layout | Overlay | OverlayContainer', () => {
       overlay: true,
       share: { visible: false },
     }
+
+    // when
     const result = mapStateToProps(state)
 
     // then

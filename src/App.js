@@ -35,7 +35,6 @@ const App = ({ children, history, location }) => {
       </Helmet>
       <DebugContainer className="app is-relative">
         <ErrorCatcherContainer>
-          {/* TODO: mettre ici le composant from password */}
           {children}
           <OverlayContainer />
           <Route

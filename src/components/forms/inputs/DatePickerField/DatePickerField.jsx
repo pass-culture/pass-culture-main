@@ -61,7 +61,7 @@ const DatePickerField = ({
             onChange={onChange}
             placeholderText={placeholder}
             readOnly={readOnly}
-            selected={selected || null}
+            selected={selected}
             shouldCloseOnSelect
           />
         </div>

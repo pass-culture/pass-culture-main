@@ -1,35 +1,25 @@
 import { mapStateToProps } from '../BookingContainer'
 
-describe('src | components | layout | Booking', () => {
+describe('src | components | layout | Booking | BookingContainer', () => {
   let state
   let match
-  let offer
+
   let offerId = 'AAA'
+  let stockId = 'AE'
+
+  let booking
+  let recommendation
+  let offer
+  let stock
 
   beforeEach(() => {
-    const booking = {
+    booking = {
       id: 'AAA',
       isCancelled: false,
       isUsed: false,
-      stock: {
-        available: 10,
-        bookingLimitDatetime: '2018-11-27T23:59:56.790000Z',
-        bookingRecapSent: null,
-        dateModified: '2018-10-29T09:44:38.649450Z',
-        dateModifiedAtLastProvider: '2018-10-29T09:44:38.649416Z',
-        endDatetime: '2018-11-30T22:42:56.790000Z',
-        groupSize: 1,
-        id: 'AE',
-        idAtProviders: null,
-        isSoftDeleted: false,
-        lastProviderId: null,
-        modelName: 'Stock',
-        offerId,
-        price: 10,
-      },
-      stockId: 'AE',
+      stockId,
     }
-    const recommendation = {
+    recommendation = {
       id: 'AAA',
       offerId,
     }
@@ -89,6 +79,22 @@ describe('src | components | layout | Booking', () => {
       },
       venueId: 'AE',
     }
+    stock = {
+      available: 10,
+      bookingLimitDatetime: '2018-11-27T23:59:56.790000Z',
+      bookingRecapSent: null,
+      dateModified: '2018-10-29T09:44:38.649450Z',
+      dateModifiedAtLastProvider: '2018-10-29T09:44:38.649416Z',
+      endDatetime: '2018-11-30T22:42:56.790000Z',
+      groupSize: 1,
+      id: stockId,
+      idAtProviders: null,
+      isSoftDeleted: false,
+      lastProviderId: null,
+      modelName: 'Stock',
+      offerId,
+      price: 10,
+    }
     state = {
       data: {
         bookings: [booking],
@@ -96,7 +102,7 @@ describe('src | components | layout | Booking', () => {
         mediations: [],
         offers: [offer],
         recommendations: [recommendation],
-        stocks: [],
+        stocks: [stock],
       },
       geolocation: {
         latitude: 48.8637404,
@@ -130,6 +136,7 @@ describe('src | components | layout | Booking', () => {
           booking: state.data.bookings[0],
           offer: state.data.offers[0],
           recommendation: state.data.recommendations[0],
+          stock: state.data.stocks[0],
         })
       })
     })

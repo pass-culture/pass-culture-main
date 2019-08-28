@@ -38,9 +38,9 @@ class Booking extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-      bookedPayload: false,
       canSubmitForm: false,
       errors: null,
+      hasJustBooked: false,
       isErrored: false,
       isSubmitting: false,
       mounted: false,
@@ -84,11 +84,9 @@ class Booking extends PureComponent {
     this.setState({ isSubmitting: true }, onSubmittingStateChanged)
   }
 
-  handleRequestSuccess = (state, action) => {
-    const { payload } = action
-    const { datum } = payload
+  handleRequestSuccess = () => {
     const nextState = {
-      bookedPayload: datum,
+      hasJustBooked: true,
       isErrored: false,
       isSubmitting: false,
     }
@@ -118,9 +116,9 @@ class Booking extends PureComponent {
 
   renderFormControls = () => {
     const { match } = this.props
-    const { bookedPayload, canSubmitForm, isSubmitting } = this.state
+    const { canSubmitForm, hasJustBooked, isSubmitting } = this.state
     const isConfirmingCancelling = getIsConfirmingCancelling(match)
-    const showCancelButton = !isSubmitting && !bookedPayload && !isConfirmingCancelling
+    const showCancelButton = !isSubmitting && !hasJustBooked && !isConfirmingCancelling
     const showSubmitButton = showCancelButton && canSubmitForm
     return (
       <Fragment>
@@ -146,7 +144,7 @@ class Booking extends PureComponent {
           </button>
         )}
 
-        {bookedPayload && (
+        {hasJustBooked && (
           <button
             className="text-center my5"
             id="booking-success-ok-button"
@@ -172,7 +170,7 @@ class Booking extends PureComponent {
   }
 
   render() {
-    const { bookables, booking, extraClassName, match, offer, recommendation } = this.props
+    const { bookables, booking, extraClassName, match, offer, recommendation, stock } = this.props
 
     const isBooking = getIsBooking(match)
 
@@ -180,13 +178,13 @@ class Booking extends PureComponent {
       return null
     }
 
-    const { bookedPayload, canSubmitForm, errors, isErrored, isSubmitting, mounted } = this.state
+    const { canSubmitForm, errors, hasJustBooked, isErrored, isSubmitting, mounted } = this.state
     const { id: recommendationId } = recommendation || {}
     const { isEvent } = offer || {}
     const isConfirmingCancelling = getIsConfirmingCancelling(match)
     const defaultBookable = bookables && bookables[0]
     const showForm =
-      defaultBookable && !isSubmitting && !bookedPayload && !isErrored && !isConfirmingCancelling
+      defaultBookable && !hasJustBooked && !isConfirmingCancelling && !isErrored && !isSubmitting
 
     let date
     let price
@@ -228,10 +226,13 @@ class Booking extends PureComponent {
                 <div className={`${isConfirmingCancelling ? '' : 'py36 px12'} flex-rows`}>
                   {isSubmitting && <BookingLoader />}
 
-                  {bookedPayload && <BookingSuccess
-                    booking={bookedPayload}
-                    isEvent={isEvent}
-                                    />}
+                  {hasJustBooked && (
+                    <BookingSuccess
+                      booking={booking}
+                      isEvent={isEvent}
+                      stock={stock}
+                    />
+                  )}
 
                   {isConfirmingCancelling && <BookingCancel
                     booking={booking}
@@ -271,6 +272,7 @@ Booking.defaultProps = {
   extraClassName: null,
   offer: null,
   recommendation: null,
+  stock: null,
 }
 
 Booking.propTypes = {
@@ -293,6 +295,7 @@ Booking.propTypes = {
   recommendation: PropTypes.shape({
     id: PropTypes.string,
   }),
+  stock: PropTypes.shape(),
 }
 
 export default Booking

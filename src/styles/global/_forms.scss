@@ -187,12 +187,12 @@
     @extend .inherits-from-fontello-icon;
     $size: rem(30px);
 
-    content: '\6b';
-    top: 3px;
-    right: 6px;
     color: $primary;
-    position: absolute;
+    content: '\6b';
     font-size: rem(30px);
+    position: absolute;
+    right: 6px;
+    top: 3px;
   }
 
   .calendar-icon {

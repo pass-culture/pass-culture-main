@@ -41,7 +41,7 @@ class SelectField extends PureComponent {
           onChange={onChange}
           placeholder={placeholder}
           readOnly={readOnly}
-          value={value || undefined}
+          value={value}
         >
           {options &&
             options.map(option => (
@@ -64,6 +64,7 @@ class SelectField extends PureComponent {
   render() {
     const { className, id, label, name, required } = this.props
     const inputName = id || name
+
     return (
       <div className={className}>
         <label

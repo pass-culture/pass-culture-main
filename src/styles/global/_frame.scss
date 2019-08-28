@@ -54,7 +54,10 @@ button {
 body,
 button,
 textarea {
+  color: inherit;
   font-family: $family-sans-serif;
+  font-size: inherit;
+  line-height: inherit;
   -webkit-font-smoothing: antialiased;
 }
 

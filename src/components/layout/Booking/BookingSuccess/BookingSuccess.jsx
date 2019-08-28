@@ -5,12 +5,12 @@ import { Link } from 'react-router-dom'
 import Icon from '../../Icon'
 import { getDisplayPrice } from '../../../../helpers'
 
-const BookingSuccess = ({ booking, isEvent }) => {
-  const { completedUrl, stock, token } = booking || {}
+const BookingSuccess = ({ booking, isEvent, stock }) => {
+  const { completedUrl, token } = booking || {}
   const { price } = stock || {}
-  const cssclass = (isEvent && 'event') || 'thing'
+  const cssClass = (isEvent && 'event') || 'thing'
   return (
-    <div className={`booked text-center ${cssclass}`}>
+    <div className={`booked text-center ${cssClass}`}>
       <h3 className="fs22">
         <span
           className="is-block mb12"
@@ -90,8 +90,14 @@ const BookingSuccess = ({ booking, isEvent }) => {
 }
 
 BookingSuccess.propTypes = {
-  booking: PropTypes.shape().isRequired,
+  booking: PropTypes.shape({
+    completedUrl: PropTypes.string.isRequired,
+    token: PropTypes.string.isRequired,
+  }).isRequired,
   isEvent: PropTypes.bool.isRequired,
+  stock: PropTypes.shape({
+    price: PropTypes.number.isRequired,
+  }).isRequired,
 }
 
 export default BookingSuccess

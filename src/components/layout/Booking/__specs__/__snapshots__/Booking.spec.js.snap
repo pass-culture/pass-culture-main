@@ -46,6 +46,7 @@ ShallowWrapper {
         "id": "AE",
       }
     }
+    stock={null}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
