@@ -179,12 +179,19 @@ jobs:
     working_directory: ~/pass-culture
     steps:
       - checkout
-      - run: exit 0
+      - run: exit 1
       - run:
           name: Check deployed version
           command: |
             COMPONENT_URL="https://backend.$(./scripts/compute_component_partial_url.sh ${CIRCLE_BRANCH})"
             ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
+          when: on_fail
+      - run:
+          name: Send failure notification
+          command: |
+            #VERSION_TO_DEPLOY=$(git describe --contains)
+            BOT_MESSAGE="*TEST* : *"$CIRCLE_BRANCH"* : *API* deployment *"$version_to_deploy"* seems to have *FAILED* "$'\U00026C5'""
+            curl -d text="$BOT_MESSAGE" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown"
           when: on_fail
 
   deploy-pro:
@@ -199,6 +206,12 @@ jobs:
           command: |
             COMPONENT_URL="https://backend.$(./scripts/compute_component_partial_url.sh ${CIRCLE_BRANCH})"
             ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
+      - run:
+          name: Send failure notification
+          command: |
+            #VERSION_TO_DEPLOY=$(git describe --contains)
+            BOT_MESSAGE="*TEST* : *"$CIRCLE_BRANCH"* : *Pro* deployment *"$version_to_deploy"* seems to have *FAILED*"$'\U00026C5'""
+            curl -d text="$BOT_MESSAGE" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown"
           when: on_fail
 
   deploy-webapp:
@@ -213,6 +226,12 @@ jobs:
           command: |
             COMPONENT_URL="https://backend.$(./scripts/compute_component_partial_url.sh ${CIRCLE_BRANCH})"
             ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
+      - run:
+          name: Send failure notification
+          command: |
+            #VERSION_TO_DEPLOY=$(git describe --contains)
+            BOT_MESSAGE="*TEST* : *"$CIRCLE_BRANCH"* : *Webapp* deployment *"$version_to_deploy"* seems to have *FAILED* "$'\U00026C5'""
+            curl -d text="$BOT_MESSAGE" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown"
           when: on_fail
 
   release-synthesis:
@@ -225,7 +244,7 @@ jobs:
           name: Check deployed version
           command: |
             DEPLOYED_VERSION="test_version"
-            BOT_MESSAGE="*TEST* : Version *"DEPLOYED_VERSION"* has been successfully deployed to *"$CIRCLE_BRANCH"*"
+            BOT_MESSAGE="*TEST* : Version *"$DEPLOYED_VERSION"* has been successfully deployed to *"$CIRCLE_BRANCH"* "$'\U0001F44C'""
             curl -d text="$BOT_MESSAGE" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown"
 workflows:
   version: 2
