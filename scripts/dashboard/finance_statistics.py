@@ -24,8 +24,8 @@ def get_total_amount_spent(departement_code: str = None) -> float:
         query = query.join(User).filter(User.departementCode == departement_code)
 
     return float(query \
-        .filter(Booking.isCancelled == False) \
-        .scalar())
+                 .filter(Booking.isCancelled == False) \
+                 .scalar())
 
 
 def get_total_amount_to_pay(departement_code: str = None) -> float:
@@ -37,10 +37,11 @@ def get_total_amount_to_pay(departement_code: str = None) -> float:
             .join(Stock) \
             .join(Offer) \
             .join(Venue) \
-            .filter(Venue.departementCode == departement_code)
+            .join(User, User.id == Booking.userId) \
+            .filter(User.departementCode == departement_code)
 
     return float(query \
-        .scalar())
+                 .scalar())
 
 
 def get_top_20_offers_table(departement_code: str = None) -> pandas.DataFrame:
@@ -74,9 +75,9 @@ def _query_get_top_20_offers_by_number_of_bookings(departement_code: str = None)
             FROM offer
             JOIN stock ON stock."offerId" = offer.id
             JOIN booking ON booking."stockId" = stock.id
-            JOIN venue ON offer."venueId" = venue.id
+            JOIN "user" ON "user".id = booking."userId"
             WHERE booking."isCancelled" IS FALSE
-             AND venue."departementCode" = :departementCode
+             AND "user"."departementCode" = :departementCode
              AND offer.type != 'ThingType.ACTIVATION'
              AND offer.type != 'EventType.ACTIVATION'
             GROUP BY offer.id, offer.name
@@ -117,12 +118,13 @@ def _query_get_top_20_offerers_by_number_of_bookings(departement_code: str = Non
         query = text("""
             SELECT offerer.name, SUM(booking.quantity) AS quantity, SUM(booking.quantity * booking.amount)
             FROM offerer
-            JOIN venue ON venue."managingOffererId" = offerer.id
+            JOIN venue ON offerer.id = venue."managingOffererId"
             JOIN offer ON offer."venueId" = venue.id
             JOIN stock ON stock."offerId" = offer.id
             JOIN booking ON booking."stockId" = stock.id
+            JOIN "user" ON "user".id = booking."userId"
             WHERE booking."isCancelled" IS FALSE
-             AND venue."departementCode" = :departementCode
+             AND "user"."departementCode" = :departementCode
              AND offer.type != 'ThingType.ACTIVATION'
              AND offer.type != 'EventType.ACTIVATION'
             GROUP BY offerer.id, offerer.name
@@ -157,8 +159,9 @@ def _query_get_top_20_offerers_by_booking_amounts(departement_code: str = None) 
             JOIN offer ON offer."venueId" = venue.id
             JOIN stock ON stock."offerId" = offer.id
             JOIN booking ON booking."stockId" = stock.id
+            JOIN "user" ON booking."userId" = "user".id
             WHERE booking."isCancelled" IS FALSE
-             AND venue."departementCode" = :departementCode
+             AND "user"."departementCode" = :departementCode
              AND offer.type != 'ThingType.ACTIVATION'
              AND offer.type != 'EventType.ACTIVATION'
             GROUP BY offerer.id, offerer.name

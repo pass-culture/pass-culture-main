@@ -222,23 +222,22 @@ class GetTotalAmountToPayTest:
     def test_returns_only_payment_total_by_department(self, app):
         # Given
         offerer = create_offerer(siren='111111111')
-        venue_in_35 = create_venue(offerer, postal_code='35238', siret='11111111100001')
-        venue_in_78 = create_venue(offerer, postal_code='78490', siret='11111111100002')
-        offer_in_35 = create_offer_with_thing_product(venue_in_35)
-        offer_in_78 = create_offer_with_thing_product(venue_in_78)
-        stock_in_35 = create_stock(price=20, offer=offer_in_35)
-        stock_in_78 = create_stock(price=10, offer=offer_in_78)
+        venue = create_venue(offerer, postal_code='78490', siret='11111111100002')
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(price=10, offer=offer)
 
-        user = create_user(email='email@example.net')
-        create_deposit(user, amount=500)
+        user_in_35 = create_user(email='email35@example.net', departement_code='35')
+        user_in_78 = create_user(email='email78@example.net', departement_code='78')
+        create_deposit(user_in_35, amount=500)
+        create_deposit(user_in_78, amount=500)
 
-        booking_in_35 = create_booking(user, stock=stock_in_35, venue=venue_in_35)
-        booking_in_78 = create_booking(user, stock=stock_in_78, venue=venue_in_78)
+        booking_in_35 = create_booking(user_in_35, stock=stock, venue=venue)
+        booking_in_78 = create_booking(user_in_78, stock=stock, venue=venue)
 
         payment1 = create_payment(booking_in_35, offerer, amount=20)
         payment2 = create_payment(booking_in_78, offerer, amount=10)
 
-        PcObject.save(user, venue_in_78, venue_in_35, payment1, payment2)
+        PcObject.save(user_in_35, venue, payment1, payment2)
 
         # When
         total_amount_to_pay = get_total_amount_to_pay('35')
@@ -330,24 +329,22 @@ class QueryGetTop20OffersByNumberOfBookingsTest:
     def test_returns_offers_filterd_by_departement(self, app):
         # Given
         offerer = create_offerer(siren='111111111')
-        venue_in_78 = create_venue(offerer, postal_code='78490', siret='11111111100002')
-        venue_in_35 = create_venue(offerer, postal_code='35238', siret='11111111100001')
-        offer_in_78 = create_offer_with_thing_product(venue_in_78, thing_name='First offer')
-        offer_in_35 = create_offer_with_thing_product(venue_in_35, thing_name='Second offer')
-        stock1 = create_stock(offer=offer_in_78, price=10)
-        stock2 = create_stock(offer=offer_in_35, price=20)
-        user = create_user()
-        create_deposit(user, amount=500)
-        booking1 = create_booking(user, stock1, quantity=1)
-        booking2 = create_booking(user, stock2, quantity=2)
-        booking3 = create_booking(user, stock2, quantity=1)
-        PcObject.save(booking1, booking2, booking3, venue_in_35, venue_in_78)
+        venue = create_venue(offerer, postal_code='78490', siret='11111111100002')
+        offer = create_offer_with_thing_product(venue, thing_name='Offer')
+        stock = create_stock(offer=offer, price=10)
+        user_in_78 = create_user(email='user78@email.com', departement_code='78')
+        user_in_35 = create_user(email='user35@email.com', departement_code='35')
+        create_deposit(user_in_78, amount=500)
+        create_deposit(user_in_35, amount=500)
+        booking1 = create_booking(user_in_78, stock, quantity=1)
+        booking2 = create_booking(user_in_35, stock, quantity=2)
+        PcObject.save(booking1, booking2)
 
         # When
         bookings_counts = _query_get_top_20_offers_by_number_of_bookings('35')
 
         # Then
-        assert bookings_counts == [('Second offer', 3, 60)]
+        assert bookings_counts == [('Offer', 2, 20)]
 
     @clean_database
     def test_returns_does_not_return_activation_offers_filterd_by_departement(self, app):
@@ -477,26 +474,23 @@ class QueryGetTop20OfferersByNumberOfBookingsTest:
     @clean_database
     def test_returns_offerers_filtered_by_departement(self, app):
         # Given
-        offerer_in_30 = create_offerer(name='Offerer in 30', siren='111111111')
-        offerer_in_57 = create_offerer(name='Offerer in 57', siren='222222222')
-        venue_in_30 = create_venue(offerer_in_30, postal_code='30413', siret='11111111100001')
-        offer_in_30 = create_offer_with_thing_product(venue=venue_in_30, thing_name='First offer')
-        venue_in_57 = create_venue(offerer_in_57, postal_code='57000', siret='22222222200002')
-        offer_in_57 = create_offer_with_thing_product(venue=venue_in_57, thing_name='Second offer')
-        stock1 = create_stock(offer=offer_in_30, price=31)
-        stock2 = create_stock(offer=offer_in_57, price=20)
-        user = create_user()
-        create_deposit(user, amount=500)
-        booking1 = create_booking(user, stock1, quantity=3)
-        booking2 = create_booking(user, stock2, quantity=2)
-        booking3 = create_booking(user, stock2, quantity=1)
-        PcObject.save(offer_in_30, offer_in_57)
+        offerer = create_offerer(name='Offerer', siren='111111111')
+        venue = create_venue(offerer, postal_code='76413', siret='11111111100001')
+        offer = create_offer_with_thing_product(venue=venue, thing_name='Offer')
+        stock = create_stock(offer=offer, price=31)
+        user_30 = create_user(departement_code=30)
+        user_57 = create_user(email='t@est.com', departement_code='57')
+        create_deposit(user_30, amount=500)
+        create_deposit(user_57, amount=500)
+        booking1 = create_booking(user_30, stock, quantity=3)
+        booking2 = create_booking(user_57, stock, quantity=2)
+        PcObject.save(booking1, booking2)
 
         # When
         bookings_counts = _query_get_top_20_offerers_by_number_of_bookings('30')
 
         # Then
-        assert bookings_counts == [('Offerer in 30', 3, 93)]
+        assert bookings_counts == [('Offerer', 3, 93)]
 
     @clean_database
     def test_does_not_return_offerers_with_only_activation_offers(self, app):
@@ -523,12 +517,12 @@ class QueryGetTop20OfferersByNumberOfBookingsTest:
     def test_does_not_return_offerers_with_only_activation_offers_filtered_by_departement(self, app):
         # Given
         offerer = create_offerer(name='Offerer Name')
-        venue = create_venue(offerer, postal_code='76290')
+        venue = create_venue(offerer, postal_code='75290')
         offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
         offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
         stock1 = create_stock(offer=offer1, price=10)
         stock2 = create_stock(offer=offer2, price=20)
-        user = create_user()
+        user = create_user(departement_code='76')
         create_deposit(user, amount=500)
         booking1 = create_booking(user, stock1, quantity=1, is_cancelled=False)
         booking2 = create_booking(user, stock2, quantity=2, is_cancelled=False)
@@ -628,26 +622,25 @@ class QueryGetTop20OfferersByAmountTest:
     @clean_database
     def test_returns_offerers_filtered_by_departement_based_on_venue(self, app):
         # Given
-        smallshop_only_in_76 = create_offerer(name='Small library', siren='111111111')
-        smallshop_venue = create_venue(smallshop_only_in_76, postal_code='76130', siret='11111111100001')
-        smallshop_offer = create_offer_with_thing_product(smallshop_venue)
-        smallshop_stock_in_76 = create_stock(offer=smallshop_offer, price=30)
+        offerer1 = create_offerer(name='Small library', siren='111111111')
+        venue1 = create_venue(offerer1, postal_code='33130', siret='11111111100001')
+        offer1 = create_offer_with_thing_product(venue1)
+        stock1 = create_stock(offer=offer1, price=30)
 
-        bigstore = create_offerer(name='National book store', siren='222222222')
-        bigstore_venue_in_76 = create_venue(bigstore, postal_code='76130', siret='22222222200001')
-        bigstore_venue_in_77 = create_venue(bigstore, postal_code='77000', siret='22222222200002')
-        bigstore_offer_in_76 = create_offer_with_thing_product(venue=bigstore_venue_in_76)
-        bigstore_offer_in_77 = create_offer_with_thing_product(venue=bigstore_venue_in_77)
-        bigstore_stock_in_76 = create_stock(offer=bigstore_offer_in_76, price=10)
-        bigstore_stock_in_77 = create_stock(offer=bigstore_offer_in_77, price=10)
+        offerer2 = create_offerer(name='National book store', siren='222222222')
+        venue2 = create_venue(offerer2, postal_code='33130', siret='22222222200001')
+        offer2 = create_offer_with_thing_product(venue=venue2)
+        stock2 = create_stock(offer=offer2, price=10)
 
-        user = create_user()
-        create_deposit(user, amount=500)
-        create_booking(user, smallshop_stock_in_76, quantity=2)
-        create_booking(user, bigstore_stock_in_76, quantity=2)
-        create_booking(user, bigstore_stock_in_77, quantity=1)
+        user_76 = create_user(departement_code='76')
+        user_77 = create_user(email='e@mail.com', departement_code='77')
+        create_deposit(user_76, amount=500)
+        create_deposit(user_77, amount=500)
+        booking1 = create_booking(user_76, stock1, quantity=2)
+        booking2 = create_booking(user_76, stock2, quantity=2)
+        booking3 = create_booking(user_77, stock2, quantity=2)
 
-        PcObject.save(smallshop_stock_in_76, bigstore_stock_in_77, bigstore_stock_in_76)
+        PcObject.save(booking1, booking2, booking3)
 
         # When
         bookings_counts = _query_get_top_20_offerers_by_booking_amounts('76')
@@ -685,7 +678,7 @@ class QueryGetTop20OfferersByAmountTest:
         offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
         stock1 = create_stock(offer=offer1, price=10)
         stock2 = create_stock(offer=offer2, price=20)
-        user = create_user()
+        user = create_user(departement_code='34')
         create_deposit(user, amount=500)
         booking1 = create_booking(user, stock1, quantity=1, is_cancelled=False)
         booking2 = create_booking(user, stock2, quantity=2, is_cancelled=False)

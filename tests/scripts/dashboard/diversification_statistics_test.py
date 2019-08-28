@@ -1232,10 +1232,10 @@ class QueryGetBookingCountsPerTypeAndMediumForDepartementTest:
         # Given
         offerer = create_offerer()
         user = create_user()
-        user_booking = create_user(email='booking@test.com')
+        user_booking = create_user(email='booking@test.com', departement_code='33')
         user_offerer = create_user_offerer(user, offerer)
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
-        physical_venue = create_venue(offerer, postal_code='33000')
+        physical_venue = create_venue(offerer, postal_code='32000')
         offer_cinema1 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
         offer_cinema2 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
         offer_musique_digital = create_offer_with_thing_product(virtual_venue, url='http://url.test',
@@ -1264,9 +1264,9 @@ class QueryGetBookingCountsPerTypeAndMediumForDepartementTest:
         # Given
         offerer = create_offerer()
         user = create_user()
-        user_booking = create_user(email='booking@test.com')
+        user_booking = create_user(email='booking@test.com', departement_code='33')
         user_offerer = create_user_offerer(user, offerer)
-        physical_venue = create_venue(offerer, postal_code='33000')
+        physical_venue = create_venue(offerer, postal_code='32000')
         offer = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
         stock = create_stock(offer=offer, price=0)
         cancelled_booking = create_booking(user_booking, stock, is_cancelled=True)
@@ -1282,9 +1282,9 @@ class QueryGetBookingCountsPerTypeAndMediumForDepartementTest:
     def test_returns_nothing_if_no_user_offerer(self, app):
         # Given
         offerer = create_offerer()
-        user_booking = create_user(email='booking@test.com')
+        user_booking = create_user(email='booking@test.com', departement_code='33')
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
-        physical_venue = create_venue(offerer, postal_code='33000')
+        physical_venue = create_venue(offerer, postal_code='32000')
         offer_cinema1 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
         offer_cinema2 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
         offer_musique_digital = create_offer_with_thing_product(virtual_venue, url='http://url.test',
@@ -1305,14 +1305,15 @@ class QueryGetBookingCountsPerTypeAndMediumForDepartementTest:
 
         # Then
         assert booking_counts == []
+        
     @clean_database
-    def test_returns_nothing_when_no_offer_in_requested_departement(self, app):
+    def test_returns_nothing_when_no_booking_user_in_requested_departement(self, app):
         # Given
         offerer = create_offerer()
         user = create_user()
-        user_booking = create_user(email='booking@test.com')
+        user_booking = create_user(email='booking@test.com', departement_code='75')
         user_offerer = create_user_offerer(user, offerer)
-        physical_venue = create_venue(offerer, postal_code='75000')
+        physical_venue = create_venue(offerer, postal_code='33000')
         offer_cinema1 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
         offer_cinema2 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
         offer_musique_physical = create_offer_with_thing_product(physical_venue, thing_type=ThingType.MUSIQUE)

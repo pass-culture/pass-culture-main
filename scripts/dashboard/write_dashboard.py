@@ -111,11 +111,10 @@ def _write_bookings_by_type_and_digital_counts(departement_code: str, worksheet:
         bookings_by_type_and_digital_counts = get_offer_counts_grouped_by_type_and_medium(
             partial(query_get_booking_counts_grouped_by_type_and_medium_for_departement,
                     departement_code=departement_code), 'Nombre de réservations')
-        worksheet.set_dataframe(bookings_by_type_and_digital_counts, f'E{current_row}')
     else:
         bookings_by_type_and_digital_counts = get_offer_counts_grouped_by_type_and_medium(
             query_get_booking_counts_grouped_by_type_and_medium, 'Nombre de réservations')
-        worksheet.set_dataframe(bookings_by_type_and_digital_counts, f'E{current_row}')
+    worksheet.set_dataframe(bookings_by_type_and_digital_counts, f'E{current_row}')
 
 
 def _write_offer_counts_grouped_by_type_and_medium(departement_code: str, worksheet: Worksheet, current_row: int):

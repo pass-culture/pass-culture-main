@@ -1,6 +1,7 @@
 from typing import List, Tuple
 
 import pandas
+from sqlalchemy import text
 
 from models import Offerer, UserOfferer, Venue, Offer, Stock, Booking, EventType, ThingType
 from models.db import db
@@ -209,7 +210,7 @@ def query_get_booking_counts_grouped_by_type_and_medium() -> List[Tuple[str, boo
 def query_get_booking_counts_grouped_by_type_and_medium_for_departement(departement_code: str) -> List[
     Tuple[str, bool, int]]:
     return db.engine.execute(
-        f"""
+        text("""
         SELECT type, url IS NOT NULL AS is_digital, SUM(booking.quantity)
         FROM booking 
         JOIN stock ON stock.id = booking."stockId"
@@ -217,10 +218,10 @@ def query_get_booking_counts_grouped_by_type_and_medium_for_departement(departem
         JOIN venue ON venue.id = offer."venueId"
         JOIN offerer ON offerer.id = venue."managingOffererId"
         JOIN user_offerer ON user_offerer."offererId" = offerer.id
+        JOIN "user" ON "user".id = booking."userId"
         WHERE booking."isCancelled" IS FALSE
          AND (
-          venue."departementCode"='{departement_code}'
-          OR venue."isVirtual"
+          "user"."departementCode"= :departementCode
           )
         GROUP BY type, is_digital;
-        """)
+        """).bindparams(departementCode=departement_code))
