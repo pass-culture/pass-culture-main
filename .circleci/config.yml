@@ -185,7 +185,7 @@ jobs:
           command: |
             COMPONENT_URL="https://backend.$(./scripts/compute_component_partial_url.sh ${CIRCLE_BRANCH})"
             ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
-          when: always
+          when: on_fail
 
   deploy-pro:
     machine:
@@ -193,13 +193,13 @@ jobs:
     working_directory: ~/pass-culture
     steps:
       - checkout
-      - run: exit 1
+      - run: exit 0
       - run:
           name: Check deployed version
           command: |
             COMPONENT_URL="https://backend.$(./scripts/compute_component_partial_url.sh ${CIRCLE_BRANCH})"
             ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
-          when: always
+          when: on_fail
 
   deploy-webapp:
     machine:
@@ -207,14 +207,26 @@ jobs:
     working_directory: ~/pass-culture
     steps:
       - checkout
-      - run: exit 1
+      - run: exit 0
       - run:
           name: Check deployed version
           command: |
             COMPONENT_URL="https://backend.$(./scripts/compute_component_partial_url.sh ${CIRCLE_BRANCH})"
             ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
-          when: always
+          when: on_fail
 
+  release-synthesis:
+    machine:
+      image: circleci/classic:latest
+    working_directory: ~/pass-culture
+    steps:
+      - checkout
+      - run:
+          name: Check deployed version
+          command: |
+            DEPLOYED_VERSION="test_version"
+            BOT_MESSAGE="*TEST* : Version *"DEPLOYED_VERSION"* has been successfully deployed to *"$CIRCLE_BRANCH"*"
+            curl -d text="$BOT_MESSAGE" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown"
 workflows:
   version: 2
   commit:
@@ -258,3 +270,7 @@ workflows:
       - deploy-webapp:
           requires:
             - deploy-api
+      - release-synthesis:
+          requires:
+            - deploy-pro
+            - deploy-webapp
