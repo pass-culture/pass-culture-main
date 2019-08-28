@@ -178,9 +178,14 @@ jobs:
       image: circleci/classic:latest
     working_directory: ~/pass-culture
     steps:
-#      - checkout
+      - checkout
       - run: exit 0
-
+      - run:
+          name: Check deployed version
+          command: |
+            COMPONENT_URL="https://backend.$(./scripts/compute_component_partial_url.sh ${CIRCLE_BRANCH})"
+            ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
+          when: always
 
   deploy-pro:
     machine:
