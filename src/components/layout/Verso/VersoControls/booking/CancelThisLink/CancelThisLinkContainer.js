@@ -49,7 +49,6 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
       ],
       text: message.join('\n'),
       title: 'Annulation impossible',
-      withCloseButton: false,
     }
     dispatch(openSharePopin(options))
   }
@@ -90,7 +89,6 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
         ],
         text: 'Souhaitez-vous réellement annuler cette réservation ?',
         offerName,
-        withCloseButton: false,
       }
       dispatch(openSharePopin(options))
     },
