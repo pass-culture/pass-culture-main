@@ -11,6 +11,7 @@ from sqlalchemy import BigInteger, \
     exists
 from sqlalchemy.orm import relationship, column_property
 from sqlalchemy.sql import expression, select
+from utils.human_ids import humanize
 
 from models import Favorite
 from models.db import Model
@@ -97,8 +98,8 @@ class Recommendation(PcObject, Model):
             return self.offer.product.thumbUrl
 
     @property
-    def discoveryIdentifier(self):
+    def productOrTutoIdentifier(self):
         if self.offer and self.offer.productId:
-            return 'product_{}'.format(self.offer.productId)
+            return 'product_{}'.format(humanize(self.offer.productId))
         if self.mediation and self.mediation.tutoIndex != None:
             return 'tuto_{}'.format(self.mediation.tutoIndex)

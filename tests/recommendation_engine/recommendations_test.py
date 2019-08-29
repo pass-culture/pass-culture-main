@@ -30,11 +30,13 @@ class GiveRequestedRecommendationToUserTest:
         offer_ok = create_offer_with_thing_product(venue, thumb_count=0)
         stock = create_stock_from_offer(offer_ok, price=0)
         mediation = create_mediation(offer_ok, is_active=False)
-        reco_ok = create_recommendation(offer=offer_ok, user=user, mediation=mediation)
+        reco_ok = create_recommendation(
+            offer=offer_ok, user=user, mediation=mediation)
         PcObject.save(reco_ok, stock)
 
         # When
-        result_reco = give_requested_recommendation_to_user(user, offer_ok.id, mediation.id)
+        result_reco = give_requested_recommendation_to_user(
+            user, offer_ok.id, mediation.id)
 
         # Then
         assert result_reco.id == reco_ok.id
@@ -49,11 +51,13 @@ class GiveRequestedRecommendationToUserTest:
         offer_ok = create_offer_with_thing_product(venue, thumb_count=0)
         stock = create_stock_from_offer(offer_ok, price=0)
         mediation = create_mediation(offer_ok, is_active=False)
-        reco_ko = create_recommendation(offer=offer_ok, user=user, mediation=mediation)
+        reco_ko = create_recommendation(
+            offer=offer_ok, user=user, mediation=mediation)
         PcObject.save(reco_ko, stock, user2)
 
         # When
-        result_reco = give_requested_recommendation_to_user(user2, offer_ok.id, mediation.id)
+        result_reco = give_requested_recommendation_to_user(
+            user2, offer_ok.id, mediation.id)
 
         # Then
         assert result_reco.id != reco_ko.id
@@ -142,7 +146,8 @@ def test_create_recommendations_for_discovery_should_include_recommendations_on_
     stock2 = create_stock_from_offer(offer2, price=0)
     mediation2 = create_mediation(offer2, is_active=True)
 
-    recommendation = create_recommendation(offer=offer2, user=user, mediation=mediation2, search="bla")
+    recommendation = create_recommendation(
+        offer=offer2, user=user, mediation=mediation2, search="bla")
 
     PcObject.save(user, stock1, mediation1, stock2, mediation2, recommendation)
     db.session.refresh(offer2)

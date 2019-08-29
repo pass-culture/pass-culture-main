@@ -125,7 +125,7 @@ FAVORITE_INCLUDES = [
 ]
 
 RECOMMENDATION_INCLUDES = [
-    "discoveryIdentifier",
+    "productOrTutoIdentifier",
     {
         "key": "mediation",
         "includes": ["thumbUrl"]
@@ -216,7 +216,7 @@ WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
     {
         "key": "recommendation",
         "includes": [
-            "discoveryIdentifier",
+            "productOrTutoIdentifier",
             {
                 "key": "offer",
                 "includes": [
