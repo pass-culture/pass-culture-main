@@ -43,7 +43,7 @@ class SharePopin extends React.PureComponent {
 
   render() {
     const { visible, options } = this.props
-    const { buttons, text, title } = options
+    const { buttons, text, title, withCloseButton } = options
     return (
       <Transition
         in={visible}
@@ -57,7 +57,7 @@ class SharePopin extends React.PureComponent {
           >
             {options && (
               <div className="pc-theme-gradient inner is-relative is-clipped">
-                {this.renderCloseButton()}
+                {withCloseButton && this.renderCloseButton()}
                 <div
                   className="fs16 text-left"
                   id="share-popin-fixed-container"
@@ -81,10 +81,15 @@ class SharePopin extends React.PureComponent {
   }
 }
 
+SharePopin.defaultProps = {
+  withCloseButton: true,
+}
+
 SharePopin.propTypes = {
   dispatch: PropTypes.func.isRequired,
   options: PropTypes.oneOfType([PropTypes.bool, PropTypes.shape()]).isRequired,
   visible: PropTypes.bool.isRequired,
+  withCloseButton: PropTypes.bool,
 }
 
 export default SharePopin
