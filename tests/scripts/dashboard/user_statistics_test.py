@@ -1,7 +1,6 @@
 import pandas
 
 from models import PcObject, ThingType, EventType
-from scripts.dashboard.finance_statistics import get_not_cancelled_bookings_by_departement
 from scripts.dashboard.users_statistics import count_activated_users, count_users_having_booked, \
     get_mean_number_of_bookings_per_user_having_booked, get_mean_amount_spent_by_user, \
     _query_get_non_cancelled_bookings_by_user_departement, get_non_cancelled_bookings_by_user_departement
@@ -58,7 +57,7 @@ class CountUsersHavingBookedTest:
 
         # Then
         assert count == 2
-        
+
     @clean_database
     def test_does_not_count_users_having_booked_activation_offer(self, app):
         # Given
@@ -379,26 +378,6 @@ class GetMeanAmountSpentByUserTest:
         assert mean_amount_spent == 10
 
 
-class GetNotCancelledBookingsByDepartementTest:
-    @clean_database
-    def test_return_number_of_booking_by_departement(self, app):
-        # Given
-        _create_departement_booking_for_users(departement_code='08', user_email='test1@email.com', booking_count=2,
-                                              siren='111111111')
-        _create_departement_booking_for_users(departement_code='34', user_email='test2@email.com', booking_count=10,
-                                              siren='222222222')
-
-        expected_counts = [('08', 2), ('34', 10)]
-        expected_table = pandas.DataFrame(columns=['Departement', 'Nombre de réservations'],
-                                          data=expected_counts)
-
-        # When
-        bookings_counts = get_not_cancelled_bookings_by_departement()
-
-        # Then
-        assert bookings_counts.eq(expected_table).all().all()
-
-
 class QueryGetNonCancelledBookingsByDepartementTest:
     @clean_database
     def test_should_ignore_cancelled_bookings(self, app):
@@ -466,7 +445,7 @@ class QueryGetNonCancelledBookingsByDepartementTest:
         assert bookings_by_departement == [('76', 7)]
 
     @clean_database
-    def test_should_return_multiple_departements_and_order_by_departementCode(self, app):
+    def test_should_return_multiple_departements_and_order_by_desc_booking_counts(self, app):
         # Given
         offerer93 = create_offerer(name='Offerer dans le 93', siren=111111111)
         venue93 = create_venue(offerer93, departement_code='93', siret=11111111100001)
@@ -493,7 +472,7 @@ class QueryGetNonCancelledBookingsByDepartementTest:
 
         # Then
         assert len(bookings_by_departement) == 2
-        assert bookings_by_departement == [('93', 2), ('95', 5)]
+        assert bookings_by_departement == [('95', 5), ('93', 2)]
 
     @clean_database
     def test_should_return_zero_bookings_if_they_are_on_activation_offers(self, app):
@@ -521,13 +500,14 @@ class QueryGetNonCancelledBookingsByDepartementTest:
 
 class GetNonCancelledBookingsFilteredByUserDepartementTest:
     @clean_database
-    def test_returns_bookings_filtered_by_user_departement(self, app):
+    def test_returns_bookings_filtered_by_user_departement_and_ordered_by_descending_order_on_number_of_bookings(self,
+                                                                                                                 app):
         # Given
         bookings = [('93', 2), ('95', 1), ('973', 15)]
         bookings_to_save = _create_bookings_for_departement(bookings)
         PcObject.save(*bookings_to_save)
         expected_counts = [
-            ('93', 2), ('95', 1), ('973', 15)
+            ('973', 15), ('93', 2), ('95', 1)
         ]
         expected_table = pandas.DataFrame(columns=['Département de l\'utilisateur', 'Nombre de réservations'],
                                           data=expected_counts)

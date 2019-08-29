@@ -1,5 +1,6 @@
 from datetime import datetime
 
+
 from flask_login import current_user
 from sqlalchemy import or_
 
@@ -31,8 +32,8 @@ def count_offerer_with_stock() -> int:
 
 
 def count_offerer_with_stock_by_departement(departement_code: str) -> int:
-    return _query_offerers_with_stock()\
-        .filter(Venue.departementCode == departement_code)\
+    return _query_offerers_with_stock() \
+        .filter(Venue.departementCode == departement_code) \
         .count()
 
 
@@ -413,8 +414,8 @@ def _query_offerers_with_stock():
     return _query_offerers_with_user_offerer() \
         .join(Venue, Venue.managingOffererId == Offerer.id) \
         .join(Offer) \
-        .join(Stock)\
-        .filter(Offer.type != str(ThingType.ACTIVATION))\
+        .join(Stock) \
+        .filter(Offer.type != str(ThingType.ACTIVATION)) \
         .filter(Offer.type != str(EventType.ACTIVATION))
 
 

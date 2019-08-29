@@ -17,6 +17,8 @@ from scripts.dashboard.diversification_statistics import get_offer_counts_groupe
     count_all_cancelled_bookings, query_get_offer_counts_grouped_by_type_and_medium_for_departement, \
     query_get_booking_counts_grouped_by_type_and_medium_for_departement
 
+EXPERIMENTATION_DEPARTEMENTS = list(DEPARTEMENT_CODE_VISIBILITY.keys()) + ['22', '56', '973']
+
 
 class DashboardConfig:
     space_between_lines = 1
@@ -28,7 +30,7 @@ class DashboardConfig:
 
 
 def write_dashboard():
-    worksheet_names = list(DEPARTEMENT_CODE_VISIBILITY.keys()) + ['22', '56', '973']
+    worksheet_names = EXPERIMENTATION_DEPARTEMENTS
     worksheet_names.append('Global')
     spreadsheet = get_dashboard_spreadsheet()
     for worksheet in worksheet_names:
@@ -86,7 +88,7 @@ def _write_diversification_section(departement_code, worksheet, current_row):
 def _write_usage_section(departement_code, worksheet, current_row):
     worksheet.update_value(f'A{current_row}', '1/ UTILISATION')
     current_row += DashboardConfig.space_between_tables
-    current_row = _write_usage_table(departement_code, worksheet, current_row,)
+    current_row = _write_usage_table(departement_code, worksheet, current_row, )
     current_row += DashboardConfig.space_between_tables
     if not departement_code:
         worksheet.set_dataframe(get_non_cancelled_bookings_by_user_departement(), f'A{current_row}')

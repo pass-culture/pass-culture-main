@@ -29,10 +29,10 @@ def count_all_bookings() -> int:
 
 
 def _query_get_all_bookings_on_non_activation_offers():
-    return Booking.query\
-        .join(Stock)\
-        .join(Offer)\
-        .filter(Offer.type != str(ThingType.ACTIVATION))\
+    return Booking.query \
+        .join(Stock) \
+        .join(Offer) \
+        .filter(Offer.type != str(ThingType.ACTIVATION)) \
         .filter(Offer.type != str(EventType.ACTIVATION))
 
 
@@ -40,10 +40,10 @@ def count_bookings_by_departement(departement_code: str) -> int:
     return Booking.query \
         .join(User) \
         .filter(User.departementCode == departement_code) \
-        .join(Stock, Booking.stockId == Stock.id)\
-        .join(Offer, Offer.id == Stock.offerId)\
-        .filter(Offer.type != str(ThingType.ACTIVATION))\
-        .filter(Offer.type != str(EventType.ACTIVATION))\
+        .join(Stock, Booking.stockId == Stock.id) \
+        .join(Offer, Offer.id == Stock.offerId) \
+        .filter(Offer.type != str(ThingType.ACTIVATION)) \
+        .filter(Offer.type != str(EventType.ACTIVATION)) \
         .count()
 
 
@@ -71,11 +71,11 @@ def count_all_cancelled_bookings_by_departement(departement_code: str) -> int:
 
 
 def _query_non_cancelled_bookings_on_non_activation_offers():
-    query = Booking.query\
-        .filter_by(isCancelled=True)\
-        .join(Stock, Stock.id == Booking.stockId)\
-        .join(Offer)\
-        .filter(Offer.type != str(ThingType.ACTIVATION))\
+    query = Booking.query \
+        .filter_by(isCancelled=True) \
+        .join(Stock, Stock.id == Booking.stockId) \
+        .join(Offer) \
+        .filter(Offer.type != str(ThingType.ACTIVATION)) \
         .filter(Offer.type != str(EventType.ACTIVATION))
     return query
 
@@ -214,7 +214,7 @@ def count_all_used_or_non_cancelled_bookings() -> int:
 
 def count_all_used_or_finished_bookings_by_departement(departement_code: str) -> int:
     query = _query_get_used_or_finished_bookings_on_non_activation_offers() \
-        .join(User)\
+        .join(User) \
         .filter(User.departementCode == departement_code)
 
     return query \
@@ -314,6 +314,6 @@ def _query_get_used_or_finished_bookings_on_non_activation_offers():
         .join(Venue) \
         .join(Offerer) \
         .filter(Booking.isCancelled == False) \
-        .filter((Booking.isUsed == True) | booking_on_event_finished_more_than_two_days_ago)\
-        .filter(Offer.type != str(ThingType.ACTIVATION))\
+        .filter((Booking.isUsed == True) | booking_on_event_finished_more_than_two_days_ago) \
+        .filter(Offer.type != str(ThingType.ACTIVATION)) \
         .filter(Offer.type != str(EventType.ACTIVATION))

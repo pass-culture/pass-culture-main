@@ -58,8 +58,8 @@ def _query_amount_spent_by_departement(departement_code: str) -> Query:
         query = query.join(User) \
             .filter(User.departementCode == departement_code)
 
-    query = query.join(Stock, Stock.id == Booking.stockId)\
-        .join(Offer)\
+    query = query.join(Stock, Stock.id == Booking.stockId) \
+        .join(Offer) \
         .filter(Offer.type != str(ThingType.ACTIVATION)) \
         .filter(Offer.type != str(EventType.ACTIVATION))
 
@@ -69,7 +69,7 @@ def _query_amount_spent_by_departement(departement_code: str) -> Query:
 def _query_get_non_cancelled_bookings_by_user_departement() -> List[Tuple[str, int]]:
     return db.engine.execute(
         """
-        SELECT "user"."departementCode" as "departementCode", SUM("booking"."quantity")
+        SELECT "user"."departementCode" as "departementCode", SUM("booking"."quantity") as booking_quantity
         FROM booking
         JOIN "user" ON "user".id = booking."userId"
         JOIN stock ON stock.id = booking."stockId"
@@ -78,5 +78,5 @@ def _query_get_non_cancelled_bookings_by_user_departement() -> List[Tuple[str, i
          AND offer.type != 'ThingType.ACTIVATION'
          AND offer.type != 'EventType.ACTIVATION'
         GROUP BY "user"."departementCode"
-        ORDER BY "user"."departementCode";
+        ORDER BY booking_quantity DESC ;
         """).fetchall()

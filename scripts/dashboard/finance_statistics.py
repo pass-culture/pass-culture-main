@@ -62,12 +62,6 @@ def get_top_20_offerers_by_amount_table(departement_code: str = None) -> pandas.
                             data=top_20_offers_by_number_of_bookings)
 
 
-def get_not_cancelled_bookings_by_departement() -> pandas.DataFrame:
-    non_cancelled_booking_by_department = _query_non_cancelled_bookings_by_departement()
-    return pandas.DataFrame(columns=['Departement', 'Nombre de réservations'],
-                            data=non_cancelled_booking_by_department)
-
-
 def _query_get_top_20_offers_by_number_of_bookings(departement_code: str = None) -> List[Tuple[str, int, float]]:
     if departement_code:
         query = text("""

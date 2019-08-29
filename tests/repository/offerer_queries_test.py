@@ -420,7 +420,6 @@ class CountOffererWithStockByDepartementTest:
         assert number_of_offerers == 0
 
 
-
 @clean_database
 def test_find_all_emails_of_user_offerers_admins_returns_list_of_user_emails_having_user_offerer_with_admin_rights_on_offerer(
         app):
