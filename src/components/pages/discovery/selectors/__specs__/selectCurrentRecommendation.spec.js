@@ -10,14 +10,14 @@ describe('src | components | pages | discovery | selectors | selectCurrentRecomm
       mediationId = 'FF'
       offerId = 'ARBA'
       const recommendation = {
-        discoveryIdentifier: "foo",
+        productOrTutoIdentifier: 'foo',
         mediationId,
-        offerId
+        offerId,
       }
       const state = {
         data: {
-          recommendations: [recommendation]
-        }
+          recommendations: [recommendation],
+        },
       }
 
       // when
@@ -26,7 +26,7 @@ describe('src | components | pages | discovery | selectors | selectCurrentRecomm
       // then
       const expected = {
         index: 0,
-        ...recommendation
+        ...recommendation,
       }
       expect(result).toStrictEqual(expected)
     })

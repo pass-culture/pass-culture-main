@@ -4,7 +4,7 @@ import { createSelector } from 'reselect'
 import { ROOT_PATH } from '../../../../utils/config'
 
 export const fakeLastRecommendation = {
-  discoveryIdentifier: 'tuto_-1',
+  productOrTutoIdentifier: 'tuto_-1',
   mediation: {
     firstThumbDominantColor: [205, 54, 70],
     frontText:
@@ -14,7 +14,7 @@ export const fakeLastRecommendation = {
     tutoIndex: -1,
   },
   mediationId: 'fin',
-  thumbUrl: `${ROOT_PATH}/splash-finReco@2x.png`
+  thumbUrl: `${ROOT_PATH}/splash-finReco@2x.png`,
 }
 
 const selectUniqAndIndexifiedRecommendations = createSelector(
@@ -23,20 +23,17 @@ const selectUniqAndIndexifiedRecommendations = createSelector(
     // RECOMMENDATION MUST HAVE MEDIATION AND/OR OFFER CHILDREN
     // AND THAT IS A CRITERION TO MAKE THEM UNIQ
     let filteredRecommendations = recommendations.filter(
-      recommendation => recommendation.discoveryIdentifier
+      recommendation => recommendation.productOrTutoIdentifier
     )
     filteredRecommendations = uniqBy(
       filteredRecommendations,
-      recommendation => recommendation.discoveryIdentifier
+      recommendation => recommendation.productOrTutoIdentifier
     )
 
     // NOW WE CAN GIVE OTHER PROPERTIES TO THE GOOD SHAPED RECO
-    filteredRecommendations = filteredRecommendations.map(
-      (recommendation, index) =>
-        Object.assign(
-          { index },
-          recommendation
-        ))
+    filteredRecommendations = filteredRecommendations.map((recommendation, index) =>
+      Object.assign({ index }, recommendation)
+    )
 
     filteredRecommendations.push(fakeLastRecommendation)
 

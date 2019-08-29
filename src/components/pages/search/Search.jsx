@@ -3,6 +3,7 @@ import { stringify } from 'query-string'
 import React, { Fragment, PureComponent } from 'react'
 import { Switch, Route } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
+// import uuid from 'uuid'
 
 import NavByOfferTypeContainer from './NavByOfferType/NavByOfferTypeContainer'
 import NavResultsHeader from './NavResultsHeader'
@@ -126,6 +127,10 @@ class Search extends PureComponent {
           this.setState({ hasMore, isLoading: false })
         },
         normalizer: recommendationNormalizer,
+        // resolve: recommendation => ({
+        //   ...recommendation,
+        //   searchId,
+        // }),
       })
     )
   }
@@ -152,6 +157,9 @@ class Search extends PureComponent {
     event.preventDefault()
 
     this.setState({ isFilterVisible: false })
+
+    // const searchId = uuid()
+    // history.push(`${location.pathname}${location.search}&search-id=${searchId}`)
 
     query.change(
       {

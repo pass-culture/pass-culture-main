@@ -4,9 +4,10 @@ import { compose } from 'redux'
 import Search from './Search'
 import { withRequiredLogin } from '../../hocs'
 import selectTypeSublabels, { selectTypes } from './selectors/selectTypes'
+import selectRecommendationsBySearchQuery from '../../../selectors/selectRecommendationsBySearchQuery'
 
-const mapStateToProps = state => {
-  const { recommendations } = state.data
+const mapStateToProps = (state, ownProps) => {
+  const recommendations = selectRecommendationsBySearchQuery(state, ownProps.location)
   const typeSublabels = selectTypeSublabels(state)
   const typeSublabelsAndDescription = selectTypes(state)
   const { user } = state

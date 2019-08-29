@@ -29,10 +29,10 @@ describe('src | components | pages | discovery | deck | DeckContainer', () => {
       },
     }
     recommendation = {
-      discoveryIdentifier: 'product_0',
       id: 'AE',
       mediationId,
       offerId,
+      productOrTutoIdentifier: 'product_0',
       uniqId: 3,
     }
     initialState = {
@@ -62,7 +62,7 @@ describe('src | components | pages | discovery | deck | DeckContainer', () => {
           id: 'GHEZ',
         }
         recommendation = {
-          discoveryIdentifier: 'product_0',
+          productOrTutoIdentifier: 'product_0',
           id: 'AE',
           mediationId: 'RT',
           offerId: 'GHEZ',
@@ -104,7 +104,7 @@ describe('src | components | pages | discovery | deck | DeckContainer', () => {
           id: 'tuto',
         }
         recommendation = {
-          discoveryIdentifier: 'product_0',
+          productOrTutoIdentifier: 'product_0',
           id: 'AE',
           mediationId: 'RT',
           offerId: 'tuto',
@@ -173,7 +173,7 @@ describe('src | components | pages | discovery | deck | DeckContainer', () => {
           id: 'tuto',
         }
         recommendation = {
-          discoveryIdentifier: 'product_0',
+          productOrTutoIdentifier: 'product_0',
           id: 'AE',
           mediationId: 'RT',
           offerId: 'tuto',

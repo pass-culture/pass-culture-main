@@ -3,20 +3,20 @@ import selectNextRecommendation from '../selectNextRecommendation'
 describe('src | components | pages | discovery | selectors | selectNextRecommendation', () => {
   it('should select the next indexified recommendation', () => {
     // given
-    const offerId = "AE"
+    const offerId = 'AE'
     const currentRecommendation = {
-      discoveryIdentifier: "foo",
-      id: "BF",
-      offerId
+      productOrTutoIdentifier: 'foo',
+      id: 'BF',
+      offerId,
     }
     const nextRecommendation = {
-      discoveryIdentifier: "bar",
-      offerId: "BF"
+      productOrTutoIdentifier: 'bar',
+      offerId: 'BF',
     }
     const state = {
       data: {
-        recommendations: [currentRecommendation, nextRecommendation]
-      }
+        recommendations: [currentRecommendation, nextRecommendation],
+      },
     }
 
     // when
@@ -26,7 +26,7 @@ describe('src | components | pages | discovery | selectors | selectNextRecommend
     const expected = {
       index: 1,
       path: `/decouverte/${nextRecommendation.offerId}/`,
-      ...nextRecommendation
+      ...nextRecommendation,
     }
     expect(result).toStrictEqual(expected)
   })

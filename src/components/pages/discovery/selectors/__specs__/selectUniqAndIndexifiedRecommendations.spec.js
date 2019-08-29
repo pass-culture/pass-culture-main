@@ -1,4 +1,6 @@
-import selectUniqAndIndexifiedRecommendations, { fakeLastRecommendation } from '../selectUniqAndIndexifiedRecommendations'
+import selectUniqAndIndexifiedRecommendations, {
+  fakeLastRecommendation,
+} from '../selectUniqAndIndexifiedRecommendations'
 
 describe('src | components | pages | discovery | selectors | selectUniqAndIndexifiedRecommendations', () => {
   it('should return an array of object having an `uniqId` property', () => {
@@ -7,14 +9,14 @@ describe('src | components | pages | discovery | selectors | selectUniqAndIndexi
       data: {
         recommendations: [
           {
-            discoveryIdentifier: "product_0",
-            id: "AE"
+            productOrTutoIdentifier: 'product_0',
+            id: 'AE',
           },
           {
-            id: "BF"
-          }
-        ]
-      }
+            id: 'BF',
+          },
+        ],
+      },
     }
 
     // when
@@ -23,7 +25,7 @@ describe('src | components | pages | discovery | selectors | selectUniqAndIndexi
     // then
     expect(results).not.toHaveLength(0)
     results.forEach(result => {
-      expect(result.discoveryIdentifier).toBeDefined()
+      expect(result.productOrTutoIdentifier).toBeDefined()
     })
   })
 
@@ -54,7 +56,7 @@ describe('src | components | pages | discovery | selectors | selectUniqAndIndexi
       dateCreated: '2018-10-10T14:19:27.410551Z',
       dateRead: null,
       dateUpdated: '2018-10-10T14:19:27.410609Z',
-      discoveryIdentifier: "product_0",
+      productOrTutoIdentifier: 'product_0',
       distance: '5444 km',
       firstThumbDominantColor: [237, 235, 231],
       id: 'AEWPS',
@@ -74,8 +76,8 @@ describe('src | components | pages | discovery | selectors | selectUniqAndIndexi
     }
     const state = {
       data: {
-        recommendations: [recommendation]
-      }
+        recommendations: [recommendation],
+      },
     }
 
     // when

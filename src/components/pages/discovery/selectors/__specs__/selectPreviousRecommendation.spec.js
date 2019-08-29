@@ -3,20 +3,20 @@ import selectPreviousRecommendation from '../selectPreviousRecommendation'
 describe('src | components | pages | discovery | selectors | selectPreviousRecommendation', () => {
   it('should select the previous indexified recommendation', () => {
     // given
-    const offerId = "AE"
+    const offerId = 'AE'
     const currentRecommendation = {
-      discoveryIdentifier: "foo",
-      id: "BF",
-      offerId
+      productOrTutoIdentifier: 'foo',
+      id: 'BF',
+      offerId,
     }
     const previousRecommendation = {
-      discoveryIdentifier: "bar",
-      offerId: "BF"
+      productOrTutoIdentifier: 'bar',
+      offerId: 'BF',
     }
     const state = {
       data: {
-        recommendations: [previousRecommendation, currentRecommendation]
-      }
+        recommendations: [previousRecommendation, currentRecommendation],
+      },
     }
 
     // when
@@ -26,7 +26,7 @@ describe('src | components | pages | discovery | selectors | selectPreviousRecom
     const expected = {
       index: 0,
       path: `/decouverte/${previousRecommendation.offerId}/`,
-      ...previousRecommendation
+      ...previousRecommendation,
     }
     expect(result).toStrictEqual(expected)
   })
