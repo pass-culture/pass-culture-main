@@ -1,7 +1,7 @@
 #!/bin/sh
 
 echo "Fetching misnamed files"
-FILES_TO_RENAME=$(grep --exclude-dir={node_modules,scripts} --exclude=\*.{jsx,spec.js} --exclude={index.js,routes.js} -Rl 'import React' ./)
+FILES_TO_RENAME=$(grep --exclude-dir={node_modules,scripts} --exclude=\*.jsx -Rl 'import React' ./)
 
 echo "Rename fetched results"
 for FILE in $FILES_TO_RENAME
