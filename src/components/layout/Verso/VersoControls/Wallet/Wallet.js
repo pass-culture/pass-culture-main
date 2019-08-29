@@ -10,7 +10,7 @@ const Wallet = ({ value }) => (
       {'Mon pass'}
     </small>
     <span
-      className="fs24 is-block"
+      className="fs20 is-block"
       id="verso-wallet-value"
     >
       {value}&nbsp;{'€'}
