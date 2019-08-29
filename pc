@@ -229,7 +229,7 @@ elif [[ "$CMD" == "psql-file" ]]; then
 elif [[ "$CMD" == "restart-backend" ]]; then
   RUN='sudo rm -rf $ROOT_PATH/api/static/object_store_data;
        docker-compose down --volumes;
-       cd $ROOT_PATH && docker-compose up --force-recreate'
+       cd $ROOT_PATH && docker-compose pull && docker-compose up --force-recreate'
 
 # Clear all data in postgresql database
 elif [[ "$CMD" == "reset-all-db" ]]; then
