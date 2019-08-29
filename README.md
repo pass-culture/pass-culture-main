@@ -233,7 +233,7 @@ En premier lieu:
  - bien vérifier qu'on a, en local, **main** et tous les submodules **(api, pro, webapp)** à jour par rapport à **master**
  - de là on peut poser un tag `pc -t I.P.S. tag`,
  - se rendre sur CircleCI pour vérifier qu'il y a un job lancé par submodule **(api, pro, webapp)**, ainsi que **main** qui a également lancé autant de jobs qu'il y a de submodules,
- - quand les tests sont verts on peut déployer, vraiment.
+ - réaliser le déploiement lorsque les tests de chaque submodule sont bien **verts**
 
 Pour déployer une nouvelle version, par exemple en staging:
 **(Attention de ne pas déployer sur la production sans concertation !)**
