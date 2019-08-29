@@ -1,3 +1,9 @@
+@import 'Wallet/index.scss';
+
+.font-icon {
+  font-size: 2.7rem;
+}
+
 .verso {
   .verso-control {
     @extend .is-clipped;
@@ -47,10 +53,6 @@
     border: 2px solid white;
     border-left-style: dotted;
   }
-}
-
-.font-icon {
-  font-size: 2.7rem;
 }
 
 .fav-button {
