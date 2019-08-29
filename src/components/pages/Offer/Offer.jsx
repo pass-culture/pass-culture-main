@@ -143,10 +143,8 @@ class Offer extends Component {
         },
       })
     } else {
-      let offerersPath = OFFERERS_API_PATH
-      if (offererId) {
-        offerersPath = `${OFFERERS_API_PATH}/${offererId}`
-      }
+      const offerersPath = offererId ? `${OFFERERS_API_PATH}/${offererId}` : OFFERERS_API_PATH
+
       dispatch(
         requestData({
           apiPath: offerersPath,
