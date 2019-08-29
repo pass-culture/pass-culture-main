@@ -122,7 +122,7 @@ describe('src | components | matomo | Matomo', () => {
   })
 
   describe('when user is not logged', () => {
-    it('should push Anonymous and unknown type as userId', () => {
+    it('should push Anonymous as userId', () => {
       // when
       mount(
         <Router history={history}>
@@ -138,7 +138,7 @@ describe('src | components | matomo | Matomo', () => {
   })
 
   describe('when user is logged', () => {
-    it('should dispatch the correct user id when user is a beneficiary', () => {
+    it('should dispatch the user id when current user is logged', () => {
       // given
       store = mockStore({
         data: {

@@ -7,12 +7,7 @@ import Matomo from './Matomo'
 
 export const mapStateToProps = state => {
   const user = selectCurrentUser(state)
-  let userId
-  if (user) {
-    userId = user.id
-  } else {
-    userId = 'ANONYMOUS'
-  }
+  let userId = user ? user.id : 'ANONYMOUS'
 
   return {
     userId,
