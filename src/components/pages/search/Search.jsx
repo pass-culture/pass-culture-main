@@ -158,6 +158,9 @@ class Search extends PureComponent {
 
     this.setState({ isFilterVisible: false })
 
+    // const searchId = uuid()
+    // history.push(`${location.pathname}${location.search}&search-id=${searchId}`)
+
     query.change(
       {
         'mots-cles': value === '' ? null : value,
