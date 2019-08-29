@@ -24,7 +24,6 @@
     "no-var": "error",
     "react/forbid-component-props": "off",
     "react/jsx-curly-brace-presence": [true, { "props": "never", "children": "always" }],
-    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
     "react/jsx-fragments": "off",
     "react/jsx-indent": [2, 2],
     "react/jsx-indent-props": [2, 2],
