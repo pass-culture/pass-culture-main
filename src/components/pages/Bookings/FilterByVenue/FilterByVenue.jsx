@@ -3,8 +3,18 @@ import PropTypes from 'prop-types'
 
 class FilterByVenue extends PureComponent {
   componentDidMount() {
-    const { loadVenues } = this.props
+    const { loadVenues, isUserAdmin, notification, showNotification } = this.props
+    if (!notification && isUserAdmin) {
+      showNotification()
+    }
     loadVenues()
+  }
+
+  componentWillUnmount() {
+    const { closeNotification, notification } = this.props
+    if (notification && notification.tag === 'admin-bookings-access') {
+      closeNotification()
+    }
   }
 
   handleOnClick = () => {
@@ -49,7 +59,9 @@ class FilterByVenue extends PureComponent {
           </select>
         </div>
         <div className="select-digital-offer mt16 mb12">
-          <div>{'ou :'}</div>
+          <div>
+            {'ou :'}
+          </div>
           <input
             className="pc-checkbox input"
             defaultChecked={isDigital}
@@ -57,7 +69,9 @@ class FilterByVenue extends PureComponent {
             onClick={this.handleOnClick}
             type="checkbox"
           />
-          <label htmlFor="isDigital">{'Cochez cette case pour voir les offres numériques'}</label>
+          <label htmlFor="isDigital">
+            {'Cochez cette case pour voir les offres numériques'}
+          </label>
         </div>
       </Fragment>
     )
@@ -65,12 +79,17 @@ class FilterByVenue extends PureComponent {
 }
 
 FilterByVenue.defaultProps = {
+  notification: null,
   venueId: '',
 }
 
 FilterByVenue.propTypes = {
+  closeNotification: PropTypes.func.isRequired,
   isDigital: PropTypes.bool.isRequired,
+  isUserAdmin: PropTypes.bool.isRequired,
   loadVenues: PropTypes.func.isRequired,
+  notification: PropTypes.shape(),
+  showNotification: PropTypes.func.isRequired,
   updateIsFilteredByDigitalVenues: PropTypes.func.isRequired,
   updateVenueId: PropTypes.func.isRequired,
   venueId: PropTypes.string,

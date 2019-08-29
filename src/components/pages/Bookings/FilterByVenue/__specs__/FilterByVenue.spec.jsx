@@ -1,31 +1,33 @@
 import { shallow } from 'enzyme'
 import FilterByVenue from '../FilterByVenue'
 import React from 'react'
-import FilterByDate from "../../FilterByDate/FilterByDate";
 
 describe('src | components | pages | Bookings | FilterByVenue', () => {
   let props
 
   beforeEach(() => {
     props = {
+      closeNotification: jest.fn(),
       isDigital: false,
+      isUserAdmin: false,
       loadVenues: jest.fn(),
-      updateVenueId: jest.fn(),
+      showNotification: jest.fn(),
       updateIsFilteredByDigitalVenues: jest.fn(),
-      venuesOptions:
-        [
-          {
-            id: 'all',
-            name: 'Toutes les offres',
-          },
-          {
-            id: 1,
-            name: 'Babar',
-          },
-          {
-            id: 2,
-            name: 'Céleste',
-          }],
+      updateVenueId: jest.fn(),
+      venuesOptions: [
+        {
+          id: 'all',
+          name: 'Toutes les offres',
+        },
+        {
+          id: 1,
+          name: 'Babar',
+        },
+        {
+          id: 2,
+          name: 'Céleste',
+        },
+      ],
     }
   })
 

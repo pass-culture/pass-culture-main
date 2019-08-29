@@ -4,7 +4,9 @@ exports[`src | components | pages | Bookings | FilterByVenue should match snapsh
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <FilterByVenue
+    closeNotification={[MockFunction]}
     isDigital={false}
+    isUserAdmin={false}
     loadVenues={
       [MockFunction] {
         "calls": Array [
@@ -18,6 +20,8 @@ ShallowWrapper {
         ],
       }
     }
+    notification={null}
+    showNotification={[MockFunction]}
     updateIsFilteredByDigitalVenues={[MockFunction]}
     updateVenueId={[MockFunction]}
     venueId=""

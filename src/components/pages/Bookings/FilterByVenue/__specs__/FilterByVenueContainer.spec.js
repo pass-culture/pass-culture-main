@@ -12,6 +12,7 @@ describe('src | components | pages | Bookings | FilterByVenueContainer', () => {
         data: {
           offers: [],
           venues: [],
+          users: [],
         },
       }
 
@@ -21,6 +22,8 @@ describe('src | components | pages | Bookings | FilterByVenueContainer', () => {
       // then
       expect(props).toStrictEqual({
         isDigital: false,
+        isUserAdmin: false,
+        notification: undefined,
         venueId: 'AYJA',
         venuesOptions: [
           {
@@ -28,6 +31,38 @@ describe('src | components | pages | Bookings | FilterByVenueContainer', () => {
             name: 'Tous les lieux',
           },
         ],
+      })
+    })
+
+    it('should return an empty list of venues options when user is admin', () => {
+      // given
+      const state = {
+        bookingSummary: {
+          isFilteredByDigitalVenues: false,
+          venueId: 'AYJA',
+        },
+        data: {
+          offers: [],
+          venues: [],
+          users: [
+            {
+              id: 'EY',
+              isAdmin: 'True',
+            },
+          ],
+        },
+      }
+
+      // when
+      const props = mapStateToProps(state)
+
+      // then
+      expect(props).toStrictEqual({
+        isDigital: false,
+        isUserAdmin: 'True',
+        notification: undefined,
+        venueId: 'AYJA',
+        venuesOptions: [],
       })
     })
   })
@@ -82,6 +117,32 @@ describe('src | components | pages | Bookings | FilterByVenueContainer', () => {
       expect(dispatch).toHaveBeenCalledWith({
         payload: 'AVJA',
         type: 'BOOKING_SUMMARY_UPDATE_VENUE_ID',
+      })
+    })
+
+    it('enable to show notification', () => {
+      //when
+      mapDispatchToProps(dispatch).showNotification()
+
+      // then
+      expect(dispatch).toHaveBeenCalledWith({
+        patch: {
+          tag: 'admin-bookings-access',
+          text:
+            'Votre statut d’administrateur ne permet pas de télécharger le suivi des réservations',
+          type: 'info',
+        },
+        type: 'SHOW_NOTIFICATION',
+      })
+    })
+
+    it('enable to close notification', () => {
+      // when
+      mapDispatchToProps(dispatch).closeNotification()
+
+      // then
+      expect(dispatch).toHaveBeenCalledWith({
+        type: 'CLOSE_NOTIFICATION',
       })
     })
   })

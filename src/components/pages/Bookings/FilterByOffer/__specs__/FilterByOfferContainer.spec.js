@@ -13,6 +13,7 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
         data: {
           offers: [],
           venues: [],
+          users: [],
         },
       }
 
@@ -34,6 +35,38 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
       })
     })
 
+    it('should return an empty list of offers options when user is admin', () => {
+      // given
+      const state = {
+        bookingSummary: {
+          isFilteredByDigitalVenues: false,
+          offerId: '',
+          venueId: '',
+        },
+        data: {
+          offers: [],
+          users: [
+            {
+              id: 'EY',
+              isAdmin: 'True',
+            },
+          ],
+        },
+      }
+
+      // when
+      const props = mapStateToProps(state)
+
+      // then
+      expect(props).toStrictEqual({
+        isFilteredByDigitalVenues: false,
+        offerId: '',
+        offersOptions: [],
+        showDateSection: false,
+        venueId: '',
+      })
+    })
+
     describe('showDateSection', () => {
       it('should be false by default', () => {
         // given
@@ -45,6 +78,7 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
           },
           data: {
             offers: [],
+            users: [],
           },
         }
 
@@ -65,6 +99,7 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
           },
           data: {
             offers: [],
+            users: [],
           },
         }
 
@@ -85,6 +120,7 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
           },
           data: {
             offers: [],
+            users: [],
           },
         }
 
@@ -105,6 +141,7 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
           },
           data: {
             offers: [],
+            users: [],
           },
         }
 
@@ -139,6 +176,7 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
               },
             ],
             venues: [],
+            users: [],
           },
         }
 
@@ -192,6 +230,7 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
               },
             ],
             venues: [],
+            users: [],
           },
         }
 
@@ -230,6 +269,7 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
               },
             ],
             venues: [],
+            users: [],
           },
         }
 

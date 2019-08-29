@@ -4,6 +4,7 @@ import { requestData } from 'redux-saga-data'
 import FilterByOffer from './FilterByOffer'
 import selectDigitalOffers from '../selectors/selectDigitalOffers'
 import selectOffersByVenueId from '../selectors/selectOffersByVenueId'
+import selectIsUserAdmin from '../selectors/selectIsUserAdmin'
 
 export const mapDispatchToProps = dispatch => ({
   loadOffers: () => {
@@ -24,6 +25,8 @@ export const mapDispatchToProps = dispatch => ({
 })
 
 export const mapStateToProps = state => {
+  const isUserAdmin = selectIsUserAdmin(state)
+
   const { bookingSummary = {} } = state
   const { isFilteredByDigitalVenues, offerId, venueId } = bookingSummary
 
@@ -32,17 +35,19 @@ export const mapStateToProps = state => {
     name: 'Toutes les offres',
   }
 
-  let offersOptions
+  let offersOptions = []
 
-  if (isFilteredByDigitalVenues) {
-    const digitalOffers = selectDigitalOffers(state)
-    offersOptions = [allOffersOption, ...digitalOffers]
-  } else {
-    if (venueId === 'all') {
-      offersOptions = []
+  if (!isUserAdmin) {
+    if (isFilteredByDigitalVenues) {
+      const digitalOffers = selectDigitalOffers(state)
+      offersOptions = [allOffersOption, ...digitalOffers]
     } else {
-      const offersFromSpecificVenue = selectOffersByVenueId(state, venueId)
-      offersOptions = [allOffersOption, ...offersFromSpecificVenue]
+      if (venueId === 'all') {
+        offersOptions = []
+      } else {
+        const offersFromSpecificVenue = selectOffersByVenueId(state, venueId)
+        offersOptions = [allOffersOption, ...offersFromSpecificVenue]
+      }
     }
   }
 
