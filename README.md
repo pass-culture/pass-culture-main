@@ -232,7 +232,7 @@ Pré-requis : installer [jq](https://stedolan.github.io/jq/download/)
 En premier lieu: 
  - bien vérifier qu'on a, en local, **main** et tous les submodules **(api, pro, webapp)** à jour par rapport à **master**
  - de là on peut poser un tag `pc -t I.P.S. tag`,
- - on va sur la ci pour vérifier qu'il y a un job lancé par submodule, plus main qui a lancé lui aussi autant de jobs qu'il y a de submodules,
+ - se rendre sur CircleCI pour vérifier qu'il y a un job lancé par submodule **(api, pro, webapp)**, ainsi que **main** qui a également lancé autant de jobs qu'il y a de submodules,
  - quand les tests sont verts on peut déployer, vraiment.
 
 Pour déployer une nouvelle version, par exemple en staging:
