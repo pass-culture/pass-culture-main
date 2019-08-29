@@ -28,7 +28,7 @@ ShallowWrapper {
           Mon pass
         </small>,
         <span
-          className="fs24 is-block"
+          className="fs20 is-block"
           id="verso-wallet-value"
         >
           10
@@ -63,7 +63,7 @@ ShallowWrapper {
             " ",
             "€",
           ],
-          "className": "fs24 is-block",
+          "className": "fs20 is-block",
           "id": "verso-wallet-value",
         },
         "ref": null,
@@ -91,7 +91,7 @@ ShallowWrapper {
             Mon pass
           </small>,
           <span
-            className="fs24 is-block"
+            className="fs20 is-block"
             id="verso-wallet-value"
           >
             10
@@ -126,7 +126,7 @@ ShallowWrapper {
               " ",
               "€",
             ],
-            "className": "fs24 is-block",
+            "className": "fs20 is-block",
             "id": "verso-wallet-value",
           },
           "ref": null,
