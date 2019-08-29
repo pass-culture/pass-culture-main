@@ -66,6 +66,22 @@ class CountOffererTest:
         # Then
         assert number_of_offerers == 0
 
+    @clean_database
+    def test_return_1_if_offerer_with_2_user_offerer(self, app):
+        # Given
+        user1 = create_user()
+        user2 = create_user(email='em@ail.com')
+        offerer = create_offerer()
+        user_offerer1 = create_user_offerer(user1, offerer)
+        user_offerer2 = create_user_offerer(user2, offerer)
+        PcObject.save(user_offerer1, user_offerer2)
+
+        # When
+        number_of_offerers = count_offerer()
+
+        # Then
+        assert number_of_offerers == 1
+
 
 class CountOffererByDepartementTest:
     @clean_database
@@ -122,6 +138,24 @@ class CountOffererByDepartementTest:
 
         # Then
         assert number_of_offerers == 0
+
+    @clean_database
+    def test_return_1_if_offerer_with_2_user_offerers_and_2_venues(self, app):
+        # Given
+        user1 = create_user()
+        user2 = create_user(email='em@ail.com')
+        offerer = create_offerer()
+        venue1 = create_venue(offerer, postal_code='37160')
+        venue2 = create_venue(offerer, postal_code='37160', siret=offerer.siren + '63732')
+        user_offerer1 = create_user_offerer(user1, offerer)
+        user_offerer2 = create_user_offerer(user2, offerer)
+        PcObject.save(user_offerer1, user_offerer2, venue1, venue2)
+
+        # When
+        number_of_offerers = count_offerer_by_departement('37')
+
+        # Then
+        assert number_of_offerers == 1
 
 
 class CountOffererWithStockTest:

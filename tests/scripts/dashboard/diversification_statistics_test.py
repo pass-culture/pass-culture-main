@@ -15,6 +15,7 @@ from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_stock, \
     create_offer_with_thing_product, create_venue, create_mediation, create_offer_with_event_product, create_booking
 
+
 class GetOffererCountTest:
     @clean_database
     def test_counts_every_offerer_when_not_filtered(self, app):
@@ -532,7 +533,9 @@ class GetOffersWithUserOffererAndStockCountTest:
         offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
         offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
         stock1 = create_stock(offer=offer1)
-        stock2 = create_stock(offer=offer2, booking_limit_datetime=tomorrow, beginning_datetime=tomorrow + timedelta(hours=1), end_datetime= tomorrow + timedelta(hours=3))
+        stock2 = create_stock(offer=offer2, booking_limit_datetime=tomorrow,
+                              beginning_datetime=tomorrow + timedelta(hours=1),
+                              end_datetime=tomorrow + timedelta(hours=3))
         PcObject.save(stock1, stock2, user_offerer)
 
         # When
@@ -908,12 +911,14 @@ class GetAllBookingsCount:
 
 class QueryGetOfferCountsByTypeAndMediumTest:
     @clean_database
-    def test_returns_2_cinema_physical_1_musique_physical_and_1_musique_digital_when_offers_with_stock_and_user_offerer(
+    def test_returns_2_cinema_physical_1_musique_physical_and_1_musique_digital_when_offers_with_stock_and_two_user_offerers(
             self, app):
         # Given
         offerer = create_offerer()
-        user = create_user()
-        user_offerer = create_user_offerer(user, offerer)
+        user1 = create_user()
+        user2 = create_user(email='e@mail.com')
+        user_offerer1 = create_user_offerer(user1, offerer)
+        user_offerer2 = create_user_offerer(user2, offerer)
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
         physical_venue = create_venue(offerer, is_virtual=False)
         offer_cinema1 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
@@ -925,7 +930,8 @@ class QueryGetOfferCountsByTypeAndMediumTest:
         stock_cinema2 = create_stock(offer=offer_cinema2)
         stock_musique_digital = create_stock(offer=offer_musique_digital)
         stock_musique_physical = create_stock(offer=offer_musique_physical)
-        PcObject.save(stock_cinema1, stock_cinema2, stock_musique_digital, stock_musique_physical, user_offerer)
+        PcObject.save(stock_cinema1, stock_cinema2, stock_musique_digital, stock_musique_physical, user_offerer1,
+                      user_offerer2)
 
         # When
         offer_counts = query_get_offer_counts_grouped_by_type_and_medium().fetchall()
@@ -987,8 +993,10 @@ class QueryGetOfferCountsPerTypeAndMediumForDepartementTest:
             self, app):
         # Given
         offerer = create_offerer()
-        user = create_user()
-        user_offerer = create_user_offerer(user, offerer)
+        user1 = create_user()
+        user2 = create_user(email='em1@ail.com')
+        user_offerer1 = create_user_offerer(user1, offerer)
+        user_offerer2 = create_user_offerer(user2, offerer)
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
         physical_venue = create_venue(offerer, postal_code='33000')
         offer_cinema1 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
@@ -1000,7 +1008,8 @@ class QueryGetOfferCountsPerTypeAndMediumForDepartementTest:
         stock_cinema2 = create_stock(offer=offer_cinema2)
         stock_musique_digital = create_stock(offer=offer_musique_digital)
         stock_musique_physical = create_stock(offer=offer_musique_physical)
-        PcObject.save(stock_cinema1, stock_cinema2, stock_musique_digital, stock_musique_physical, user_offerer)
+        PcObject.save(stock_cinema1, stock_cinema2, stock_musique_digital, stock_musique_physical, user_offerer1,
+                      user_offerer2)
 
         # When
         offer_counts = query_get_offer_counts_grouped_by_type_and_medium_for_departement('33').fetchall()
@@ -1149,9 +1158,11 @@ class QueryGetBookingCountsPerTypeAndDigitalTest:
             self, app):
         # Given
         offerer = create_offerer()
-        user = create_user()
+        user1 = create_user()
+        user2 = create_user(email='em@il.com')
         user_booking = create_user(email='booking@test.com')
-        user_offerer = create_user_offerer(user, offerer)
+        user_offerer1 = create_user_offerer(user1, offerer)
+        user_offerer2 = create_user_offerer(user2, offerer)
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
         physical_venue = create_venue(offerer, is_virtual=False)
         offer_cinema1 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
@@ -1167,7 +1178,7 @@ class QueryGetBookingCountsPerTypeAndDigitalTest:
         booking_musique_physical2 = create_booking(user_booking, stock_musique_physical, quantity=2)
         booking_musique_digital = create_booking(user_booking, stock_musique_digital)
         PcObject.save(stock_cinema1, stock_cinema2, booking_musique_physical1, booking_musique_physical2,
-                      booking_musique_digital, user_offerer)
+                      booking_musique_digital, user_offerer1, user_offerer2)
 
         # When
         booking_counts = query_get_booking_counts_grouped_by_type_and_medium().fetchall()
@@ -1231,9 +1242,11 @@ class QueryGetBookingCountsPerTypeAndMediumForDepartementTest:
             self, app):
         # Given
         offerer = create_offerer()
-        user = create_user()
+        user1 = create_user()
+        user2 = create_user(email='em@il.com')
         user_booking = create_user(email='booking@test.com', departement_code='33')
-        user_offerer = create_user_offerer(user, offerer)
+        user_offerer1 = create_user_offerer(user1, offerer)
+        user_offerer2 = create_user_offerer(user2, offerer)
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
         physical_venue = create_venue(offerer, postal_code='32000')
         offer_cinema1 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
@@ -1249,7 +1262,7 @@ class QueryGetBookingCountsPerTypeAndMediumForDepartementTest:
         booking_musique_physical2 = create_booking(user_booking, stock_musique_physical, quantity=2)
         booking_musique_digital = create_booking(user_booking, stock_musique_digital)
         PcObject.save(stock_cinema1, stock_cinema2, booking_musique_physical1, booking_musique_physical2,
-                      booking_musique_digital, user_offerer)
+                      booking_musique_digital, user_offerer1, user_offerer2)
 
         # When
         booking_counts = query_get_booking_counts_grouped_by_type_and_medium_for_departement('33').fetchall()
@@ -1305,7 +1318,7 @@ class QueryGetBookingCountsPerTypeAndMediumForDepartementTest:
 
         # Then
         assert booking_counts == []
-        
+
     @clean_database
     def test_returns_nothing_when_no_booking_user_in_requested_departement(self, app):
         # Given
@@ -1330,6 +1343,7 @@ class QueryGetBookingCountsPerTypeAndMediumForDepartementTest:
 
         # Then
         assert booking_counts == []
+
 
 class CountAllCancelledBookingsTest:
     @clean_database

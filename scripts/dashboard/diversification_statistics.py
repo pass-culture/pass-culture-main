@@ -42,8 +42,8 @@ def get_offerers_with_non_cancelled_bookings_count(departement_code: str = None)
 
     return query \
         .join(Offer) \
-        .filter(Offer.type != str(ThingType.ACTIVATION))\
-        .filter(Offer.type != str(EventType.ACTIVATION))\
+        .filter(Offer.type != str(ThingType.ACTIVATION)) \
+        .filter(Offer.type != str(EventType.ACTIVATION)) \
         .join(Stock) \
         .join(Booking) \
         .filter_by(isCancelled=False) \
@@ -78,8 +78,8 @@ def get_offers_available_on_discovery_count(departement_code: str = None) -> int
 
 
 def get_offers_with_non_cancelled_bookings_count(departement_code: str = None) -> int:
-    query = Offer.query\
-        .join(Stock)\
+    query = Offer.query \
+        .join(Stock) \
         .join(Booking)
 
     if departement_code:
@@ -87,8 +87,8 @@ def get_offers_with_non_cancelled_bookings_count(departement_code: str = None) -
 
     return query \
         .filter(Booking.isCancelled == False) \
-        .filter(Offer.type != str(ThingType.ACTIVATION))\
-        .filter(Offer.type != str(EventType.ACTIVATION))\
+        .filter(Offer.type != str(ThingType.ACTIVATION)) \
+        .filter(Offer.type != str(EventType.ACTIVATION)) \
         .distinct(Offer.id) \
         .count()
 
@@ -166,7 +166,7 @@ def _get_offers_grouped_by_type_and_medium() -> pandas.DataFrame:
 def query_get_offer_counts_grouped_by_type_and_medium() -> List[Tuple[str, bool, int]]:
     return db.engine.execute(
         """
-        SELECT type, url IS NOT NULL AS is_digital, count(offer.id) 
+        SELECT type, url IS NOT NULL AS is_digital, count(DISTINCT offer.id) 
         FROM offer 
         JOIN stock ON stock."offerId" = offer.id
         JOIN venue ON venue.id = offer."venueId"
@@ -179,23 +179,23 @@ def query_get_offer_counts_grouped_by_type_and_medium() -> List[Tuple[str, bool,
 def query_get_offer_counts_grouped_by_type_and_medium_for_departement(departement_code: str) -> List[
     Tuple[str, bool, int]]:
     return db.engine.execute(
-        f"""
-        SELECT type, url IS NOT NULL AS is_digital, count(offer.id) 
+        text("""
+        SELECT type, url IS NOT NULL AS is_digital, count(DISTINCT offer.id) 
         FROM offer 
         JOIN stock ON stock."offerId" = offer.id
         JOIN venue ON venue.id = offer."venueId"
         JOIN offerer ON offerer.id = venue."managingOffererId"
         JOIN user_offerer ON user_offerer."offererId" = offerer.id
-        WHERE venue."departementCode"='{departement_code}'
+        WHERE venue."departementCode"= :departementCode
          OR venue."isVirtual"
         GROUP BY type, is_digital;
-        """)
+        """).bindparams(departementCode=departement_code))
 
 
 def query_get_booking_counts_grouped_by_type_and_medium() -> List[Tuple[str, bool, int]]:
     return db.engine.execute(
         """
-        SELECT type, url IS NOT NULL AS is_digital, SUM(booking.quantity)
+        SELECT type, url IS NOT NULL AS is_digital, SUM(DISTINCT booking.quantity)
         FROM booking 
         JOIN stock ON stock.id = booking."stockId"
         JOIN offer ON offer.id = stock."offerId"
@@ -211,7 +211,7 @@ def query_get_booking_counts_grouped_by_type_and_medium_for_departement(departem
     Tuple[str, bool, int]]:
     return db.engine.execute(
         text("""
-        SELECT type, url IS NOT NULL AS is_digital, SUM(booking.quantity)
+        SELECT type, url IS NOT NULL AS is_digital, SUM(DISTINCT booking.quantity)
         FROM booking 
         JOIN stock ON stock.id = booking."stockId"
         JOIN offer ON offer.id = stock."offerId"

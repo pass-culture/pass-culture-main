@@ -28,7 +28,7 @@ class DashboardConfig:
 
 
 def write_dashboard():
-    worksheet_names = list(DEPARTEMENT_CODE_VISIBILITY.keys())
+    worksheet_names = list(DEPARTEMENT_CODE_VISIBILITY.keys()) + ['22', '56', '973']
     worksheet_names.append('Global')
     spreadsheet = get_dashboard_spreadsheet()
     for worksheet in worksheet_names:
