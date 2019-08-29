@@ -101,6 +101,7 @@ describe('src | components | layout | Verso | VersoControls | booking | CancelTh
           ],
           offerName,
           text: 'Souhaitez-vous réellement annuler cette réservation ?',
+          withCloseButton: false,
         },
         type: 'TOGGLE_SHARE_POPIN',
       }

@@ -43,7 +43,8 @@ class SharePopin extends React.PureComponent {
 
   render() {
     const { visible, options } = this.props
-    const { buttons, text, title } = options
+    const { buttons, text, title, withCloseButton = true } = options
+
     return (
       <Transition
         in={visible}
@@ -83,7 +84,15 @@ class SharePopin extends React.PureComponent {
 
 SharePopin.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  options: PropTypes.oneOfType([PropTypes.bool, PropTypes.shape()]).isRequired,
+  options: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.shape({
+      buttons: PropTypes.arrayOf(),
+      text: PropTypes.string,
+      title: PropTypes.string,
+      withCloseButton: PropTypes.bool,
+    }),
+  ]).isRequired,
   visible: PropTypes.bool.isRequired,
 }
 
