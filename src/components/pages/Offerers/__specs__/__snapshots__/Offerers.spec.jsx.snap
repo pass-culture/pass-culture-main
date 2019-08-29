@@ -7,26 +7,6 @@ ShallowWrapper {
     assignData={[MockFunction]}
     closeNotification={[MockFunction]}
     currentUser={Object {}}
-    dispatch={
-      [MockFunction] {
-        "calls": Array [
-          Array [
-            Object {
-              "patch": Object {
-                "offerers": Array [],
-              },
-              "type": "ASSIGN_DATA",
-            },
-          ],
-        ],
-        "results": Array [
-          Object {
-            "type": "return",
-            "value": undefined,
-          },
-        ],
-      }
-    }
     loadOfferers={
       [MockFunction] {
         "calls": Array [
@@ -70,6 +50,19 @@ ShallowWrapper {
       Object {
         "change": [MockFunction],
         "parse": [Function],
+      }
+    }
+    resetLoadedOfferers={
+      [MockFunction] {
+        "calls": Array [
+          Array [],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+        ],
       }
     }
     showNotification={

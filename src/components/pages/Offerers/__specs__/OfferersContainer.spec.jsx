@@ -188,5 +188,23 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
         type: 'SHOW_NOTIFICATION',
       })
     })
+
+    describe('resetOfferers', () => {
+      it('should clean the offerers already loaded with an ASSIGN_DATA event', () => {
+        // given
+        const functions = mapDispatchToProps(dispatch)
+
+        // then
+        functions.resetLoadedOfferers()
+
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          patch: {
+            offerers: [],
+          },
+          type: 'ASSIGN_DATA',
+        })
+      })
+    })
   })
 })

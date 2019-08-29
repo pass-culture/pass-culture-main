@@ -50,6 +50,10 @@ export const mapDispatchToProps = dispatch => ({
       })
     )
   },
+
+  resetLoadedOfferers: () => {
+    dispatch(assignData({ offerers: [] }))
+  },
 })
 
 export default compose(

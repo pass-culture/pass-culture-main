@@ -4,7 +4,6 @@ import React, { Component, Fragment } from 'react'
 import { Form } from 'react-final-form'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
 import { NavLink } from 'react-router-dom'
-import { assignData } from 'fetch-normalize-data'
 
 import OffererItemContainer from './OffererItem/OffererItemContainer'
 import PendingOffererItem from './OffererItem/PendingOffererItem'
@@ -19,14 +18,14 @@ import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
 class Offerers extends Component {
   constructor(props) {
     super(props)
-    const { dispatch } = props
+    const { resetLoadedOfferers } = props
 
     this.state = {
       hasMore: false,
       isLoading: false,
     }
 
-    dispatch(assignData({ offerers: [] }))
+    resetLoadedOfferers()
   }
 
   componentDidMount() {
@@ -229,10 +228,10 @@ Offerers.propTypes = {
   assignData: PropTypes.func.isRequired,
   closeNotification: PropTypes.func.isRequired,
   currentUser: PropTypes.shape().isRequired,
-  dispatch: PropTypes.func.isRequired,
   loadOfferers: PropTypes.func.isRequired,
   offerers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   query: PropTypes.shape().isRequired,
+  resetLoadedOfferers: PropTypes.func.isRequired,
   showNotification: PropTypes.func.isRequired,
 }
 

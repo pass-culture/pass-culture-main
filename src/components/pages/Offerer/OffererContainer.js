@@ -32,7 +32,7 @@ export const mapStateToProps = (state, ownProps) => {
   }
 }
 
-export const mapDispatchToProps = (dispatch) => {
+export const mapDispatchToProps = dispatch => {
   return {
     getOfferer: (offererId, handleFail, handleSuccess) => {
       dispatch(
@@ -44,10 +44,10 @@ export const mapDispatchToProps = (dispatch) => {
         })
       )
     },
-    getUserOfferers: (offererId) => {
+    getUserOfferers: offererId => {
       dispatch(
         requestData({
-          apiPath: `/userOfferers/${offererId}`
+          apiPath: `/userOfferers/${offererId}`,
         })
       )
     },
@@ -58,7 +58,7 @@ export const mapDispatchToProps = (dispatch) => {
           type: type,
         })
       )
-    }
+    },
   }
 }
 

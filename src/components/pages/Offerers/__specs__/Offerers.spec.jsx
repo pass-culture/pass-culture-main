@@ -13,8 +13,8 @@ describe('src | components | pages | Offerers | Offerers', () => {
       assignData: jest.fn(),
       closeNotification: jest.fn(),
       currentUser: {},
-      dispatch: jest.fn(),
       loadOfferers: jest.fn(),
+      resetLoadedOfferers: jest.fn(),
       offerers: [{ id: 'AE', siren: '1234567' }],
       pagination: {
         apiQuery: {

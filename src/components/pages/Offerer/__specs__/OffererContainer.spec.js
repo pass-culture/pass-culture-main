@@ -16,7 +16,7 @@ describe('src | components | pages | Offerer | OffererContainer', () => {
       expect(functions).toStrictEqual({
         getOfferer: expect.any(Function),
         getUserOfferers: expect.any(Function),
-        showNotification: expect.any(Function)
+        showNotification: expect.any(Function),
       })
     })
 
@@ -42,11 +42,11 @@ describe('src | components | pages | Offerer | OffererContainer', () => {
             normalizer: {
               managedVenues: {
                 normalizer: { offers: 'offers' },
-                stateKey: 'venues'
-              }
-            }
+                stateKey: 'venues',
+              },
+            },
           },
-          type: 'REQUEST_DATA_GET_/OFFERERS/AB'
+          type: 'REQUEST_DATA_GET_/OFFERERS/AB',
         })
       })
     })
@@ -65,9 +65,9 @@ describe('src | components | pages | Offerer | OffererContainer', () => {
         expect(dispatch).toHaveBeenCalledWith({
           config: {
             apiPath: '/userOfferers/AB',
-            method: 'GET'
+            method: 'GET',
           },
-          type: 'REQUEST_DATA_GET_/USEROFFERERS/AB'
+          type: 'REQUEST_DATA_GET_/USEROFFERERS/AB',
         })
       })
     })
@@ -87,9 +87,9 @@ describe('src | components | pages | Offerer | OffererContainer', () => {
         expect(dispatch).toHaveBeenCalledWith({
           patch: {
             text: 'my message',
-            type: 'success'
+            type: 'success',
           },
-          type: 'SHOW_NOTIFICATION'
+          type: 'SHOW_NOTIFICATION',
         })
       })
     })
