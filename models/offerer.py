@@ -1,6 +1,5 @@
 """ offerer """
 from datetime import datetime
-from pprint import pprint
 
 from sqlalchemy import BigInteger, \
     Column, \

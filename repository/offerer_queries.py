@@ -418,3 +418,18 @@ def _query_offerers_with_stock():
 
 def query_filter_offerer_by_user(query):
     return query.join(UserOfferer, (UserOfferer.userId == current_user.id) & (UserOfferer.offererId == Offerer.id)).filter_by(user=current_user)
+
+
+def query_filter_offerer_is_not_validated(query):
+    return _query_filter_user_offerer_by_validation_status(query, False)
+
+
+def query_filter_offerer_is_validated(query):
+    return _query_filter_user_offerer_by_validation_status(query, True)
+
+
+def _query_filter_user_offerer_by_validation_status(query, is_validated: bool):
+    if is_validated is True:
+        return query.filter(Offerer.validationToken == None)
+    else:
+        return query.filter(Offerer.validationToken != None)

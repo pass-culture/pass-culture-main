@@ -372,3 +372,5 @@ def find_offers_by_venue_id(venue_id: int) -> List[Offer]:
     return Offer.query\
         .filter_by(venueId=venue_id)\
         .all()
+
+

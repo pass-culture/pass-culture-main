@@ -7,9 +7,8 @@ from models import Offerer, PcObject, RightsType, Venue
 from models.venue import create_digital_venue
 from repository.offerer_queries import find_all_recommendations_for_offerer, \
     filter_offerers_with_keywords_string, \
-    find_by_siren, query_filter_offerer_by_user
-from repository.user_offerer_queries import query_filter_user_offerer_is_validated, \
-    query_filter_user_offerer_is_not_validated
+    find_by_siren, query_filter_offerer_by_user, query_filter_offerer_is_validated, \
+    query_filter_offerer_is_not_validated
 from routes.serialization import as_dict
 from utils.human_ids import dehumanize
 from utils.includes import OFFERER_INCLUDES
@@ -40,11 +39,11 @@ def list_offerers():
     if not current_user.isAdmin:
         query = query_filter_offerer_by_user(query)
 
-        if is_filtered_by_offerer_status:
-            if only_validated_offerers:
-                query = query_filter_user_offerer_is_validated(query)
-            else:
-                query = query_filter_user_offerer_is_not_validated(query)
+    if is_filtered_by_offerer_status:
+        if only_validated_offerers:
+            query = query_filter_offerer_is_validated(query)
+        else:
+            query = query_filter_offerer_is_not_validated(query)
 
     keywords = request.args.get('keywords')
     if keywords is not None:

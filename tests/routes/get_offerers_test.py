@@ -137,16 +137,14 @@ class Get:
         def when_user_is_admin_and_param_validated_is_false_and_returns_all_info_of_all_offerers(
                 self, app):
             # given
-            offerer1 = create_offerer(siren='123456781', name='offreur C')
-            offerer2 = create_offerer(siren='123456782', name='offreur A')
-            offerer3 = create_offerer(siren='123456783', name='offreur B')
+            offerer1 = create_offerer(siren='123456781', name='offreur A', validation_token='F1TVYSGV')
+            offerer2 = create_offerer(siren='123456782', name='offreur B')
             bank_information1 = create_bank_information(id_at_providers='123456781', offerer=offerer1)
             bank_information2 = create_bank_information(id_at_providers='123456782', offerer=offerer2)
-            bank_information3 = create_bank_information(id_at_providers='123456783', offerer=offerer3)
 
             user = create_user(can_book_free_offers=False, is_admin=True)
             user.offerers = [offerer1, offerer2]
-            PcObject.save(user, bank_information1, bank_information2, bank_information3)
+            PcObject.save(user, bank_information1, bank_information2)
 
             # when
             response = TestClient(app.test_client()) \
@@ -155,7 +153,9 @@ class Get:
 
             # then
             assert response.status_code == 200
+            assert len(response.json) == 1
             offerer_response = response.json[0]
+            assert offerer_response['name'] == 'offreur A'
             assert set(offerer_response.keys()) == {
                 'address', 'bic', 'city', 'dateCreated', 'dateModifiedAtLastProvider',
                 'firstThumbDominantColor', 'iban', 'id', 'idAtProviders', 'isActive',
@@ -164,15 +164,39 @@ class Get:
             }
 
         @clean_database
+        def when_user_is_admin_and_param_validated_is_true_and_returns_only_validated_offerer(
+                self, app):
+            # given
+            offerer1 = create_offerer(siren='123456781', name='offreur C', validation_token=None)
+            offerer2 = create_offerer(siren='123456782', name='offreur A', validation_token='AFYDAA')
+            bank_information1 = create_bank_information(id_at_providers='123456781', offerer=offerer1)
+            bank_information2 = create_bank_information(id_at_providers='123456782', offerer=offerer2)
+
+            user = create_user(can_book_free_offers=False, is_admin=True)
+            user.offerers = [offerer1, offerer2]
+            PcObject.save(user, bank_information1, bank_information2)
+
+            # when
+            response = TestClient(app.test_client()) \
+                .with_auth(user.email) \
+                .get('/offerers?validated=true')
+
+            # then
+            assert response.status_code == 200
+            assert len(response.json) == 1
+            offerer_response = response.json[0]
+            assert offerer_response['name'] == 'offreur C'
+
+        @clean_database
         def when_param_validated_is_false_and_returns_only_not_validated_offerers(self, app):
             # given
             user = create_user()
-            offerer1 = create_offerer(siren='123456781', name='offreur C')
-            offerer2 = create_offerer(siren='123456782', name='offreur A')
-            offerer3 = create_offerer(siren='123456783', name='offreur B')
-            user_offerer1 = create_user_offerer(user, offerer1, validation_token=None)
-            user_offerer2 = create_user_offerer(user, offerer2, validation_token='AZE123')
-            user_offerer3 = create_user_offerer(user, offerer3, validation_token=None)
+            offerer1 = create_offerer(siren='123456781', name='offreur C', validation_token=None)
+            offerer2 = create_offerer(siren='123456782', name='offreur A', validation_token='AZE123')
+            offerer3 = create_offerer(siren='123456783', name='offreur B', validation_token=None)
+            user_offerer1 = create_user_offerer(user, offerer1)
+            user_offerer2 = create_user_offerer(user, offerer2)
+            user_offerer3 = create_user_offerer(user, offerer3)
             PcObject.save(user_offerer1, user_offerer2, user_offerer3)
 
             # when
@@ -185,38 +209,15 @@ class Get:
             assert len(response.json) == 1
 
         @clean_database
-        def when_param_validated_is_false_and_returns_only_name_and_siren_of_not_validated_offerers(
-                self, app):
+        def when_param_validated_is_true_and_returns_only_validated_offerers(self, app):
             # given
             user = create_user()
-            offerer1 = create_offerer(siren='123456781', name='offreur C')
-            offerer2 = create_offerer(siren='123456782', name='offreur A')
-            offerer3 = create_offerer(siren='123456783', name='offreur B')
-            user_offerer1 = create_user_offerer(user, offerer1, validation_token=None)
-            user_offerer2 = create_user_offerer(user, offerer2, validation_token='AZE123')
-            user_offerer3 = create_user_offerer(user, offerer3, validation_token=None)
-            PcObject.save(user_offerer1, user_offerer2, user_offerer3)
-
-            # when
-            response = TestClient(app.test_client()) \
-                .with_auth(user.email) \
-                .get('/offerers?validated=false')
-
-            # then
-            assert response.status_code == 200
-            assert len(response.json) == 1
-            assert {'modelName': 'Offerer', 'name': 'offreur A', 'siren': '123456782'}.items() <= response.json[0].items()
-
-        @clean_database
-        def when_param_validated_is_true_and_returns_only_validated_offerers_if(self, app):
-            # given
-            user = create_user()
-            offerer1 = create_offerer(siren='123456781', name='offreur C')
-            offerer2 = create_offerer(siren='123456782', name='offreur A')
-            offerer3 = create_offerer(siren='123456783', name='offreur B')
-            user_offerer1 = create_user_offerer(user, offerer1, validation_token=None)
-            user_offerer2 = create_user_offerer(user, offerer2, validation_token='AZE123')
-            user_offerer3 = create_user_offerer(user, offerer3, validation_token=None)
+            offerer1 = create_offerer(siren='123456781', name='offreur C', validation_token=None)
+            offerer2 = create_offerer(siren='123456782', name='offreur A', validation_token='AZE123')
+            offerer3 = create_offerer(siren='123456783', name='offreur B', validation_token=None)
+            user_offerer1 = create_user_offerer(user, offerer1)
+            user_offerer2 = create_user_offerer(user, offerer2)
+            user_offerer3 = create_user_offerer(user, offerer3)
             PcObject.save(user_offerer1, user_offerer2, user_offerer3)
 
             # when
@@ -234,12 +235,12 @@ class Get:
         def when_param_validated_is_true_returns_all_info_of_validated_offerers(self, app):
             # given
             user = create_user()
-            offerer1 = create_offerer(siren='123456781', name='offreur C')
-            offerer2 = create_offerer(siren='123456782', name='offreur A')
-            offerer3 = create_offerer(siren='123456783', name='offreur B')
-            user_offerer1 = create_user_offerer(user, offerer1, validation_token=None)
-            user_offerer2 = create_user_offerer(user, offerer2, validation_token='AZE123')
-            user_offerer3 = create_user_offerer(user, offerer3, validation_token=None)
+            offerer1 = create_offerer(siren='123456781', name='offreur C', validation_token=None)
+            offerer2 = create_offerer(siren='123456782', name='offreur A', validation_token='AZE123')
+            offerer3 = create_offerer(siren='123456783', name='offreur B', validation_token=None)
+            user_offerer1 = create_user_offerer(user, offerer1)
+            user_offerer2 = create_user_offerer(user, offerer2)
+            user_offerer3 = create_user_offerer(user, offerer3)
             bank_information1 = create_bank_information(id_at_providers='123456781', offerer=offerer1)
             bank_information2 = create_bank_information(id_at_providers='123456782', offerer=offerer2)
             bank_information3 = create_bank_information(id_at_providers='123456783', offerer=offerer3)
@@ -262,16 +263,12 @@ class Get:
             ]
 
         @clean_database
-        def when_param_validated_is_true_and_no_bank_information_for_offerer(self, app):
+        def when_no_bank_information_for_offerer(self, app):
             # given
             user = create_user()
             offerer1 = create_offerer(siren='123456781', name='offreur C')
-            offerer2 = create_offerer(siren='123456782', name='offreur A')
-            offerer3 = create_offerer(siren='123456783', name='offreur B')
-            user_offerer1 = create_user_offerer(user, offerer1, validation_token=None)
-            user_offerer2 = create_user_offerer(user, offerer2, validation_token='AZE123')
-            user_offerer3 = create_user_offerer(user, offerer3, validation_token=None)
-            PcObject.save(user_offerer1, user_offerer2, user_offerer3)
+            user_offerer1 = create_user_offerer(user, offerer1)
+            PcObject.save(user_offerer1)
 
             # when
             response = TestClient(app.test_client()) \
@@ -280,7 +277,7 @@ class Get:
 
             # then
             assert response.status_code == 200
-            assert len(response.json) == 2
+            assert len(response.json) == 1
             assert response.json[0]['bic'] is None
             assert response.json[0]['iban'] is None
 
