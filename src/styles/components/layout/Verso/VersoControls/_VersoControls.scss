@@ -1,0 +1,74 @@
+
+.font-icon {
+  font-size: 2.7rem;
+}
+
+.verso {
+  .verso-controls {
+    @extend .is-clipped;
+
+    height: 62px;
+    min-height: 62px;
+
+    .font-icon {
+      width: 0.5rem;
+
+      &::before {
+        margin-left: 0;
+        margin-right: 0;
+      }
+    }
+  }
+
+  .verso-controls ul {
+    @extend .no-list-style;
+
+    height: 62px;
+    min-height: 62px;
+  }
+
+  .verso-controls span[class^='icon-']::before {
+    margin: 0;
+  }
+
+  .verso-controls li {
+    @extend .text-center;
+    @extend .is-inline-block;
+  }
+
+  .verso-controls .finishable {
+    // -> voir fichier finishable.scss
+  }
+
+  .verso-controls .cancel-button {
+    background: transparent;
+    color: white;
+    border: 2px solid white;
+    border-left-style: dotted;
+  }
+}
+
+.fav-button {
+  background-color: transparent;
+  border: 0;
+}
+
+#verso-cancel-booking-button:disabled {
+  opacity: 1;
+}
+
+@media screen and (max-width: 370px) {
+  .verso-controls .pc-ticket-button-price,
+  .verso-controls .pc-ticket-button-label {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+}
+
+@media screen and (min-width: 371px) {
+  .verso-controls .pc-ticket-button-price,
+  .verso-controls .pc-ticket-button-label {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}

@@ -10,7 +10,7 @@ import ShareButtonContainer from '../../Share/ShareButton/ShareButtonContainer'
 
 const VersoControls = ({ showCancelView }) => {
   return (
-    <div className="verso-control is-relative">
+    <div className="verso-controls is-relative">
       <ul className="py8 px12 is-medium is-flex flex-0 flex-between items-center pc-theme-red">
         <li>
           <WalletContainer />
