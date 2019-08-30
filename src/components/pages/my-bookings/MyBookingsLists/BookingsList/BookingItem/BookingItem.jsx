@@ -34,7 +34,7 @@ const BookingItem = ({ booking, location, offer, ribbon, stock }) => {
   return (
     <li
       className="mb-my-booking"
-      data-token={token.toUpperCase()}
+      data-token={token.toLowerCase()}
     >
       <Link
         className="teaser-link"
@@ -50,7 +50,7 @@ const BookingItem = ({ booking, location, offer, ribbon, stock }) => {
             <div className="teaser-title-booking">{productName}</div>
             <div className="teaser-sub-title">{stringifyDate || 'Permanent'}</div>
           </div>
-          <div className="mb-token">{token}</div>
+          <div className="mb-token">{token.toLowerCase()}</div>
         </div>
         <div className="teaser-arrow">
           {ribbon && <Ribbon

@@ -43,13 +43,13 @@ const BookingSuccess = ({ bookedPayload, isEvent }) => {
             data-token={token.toLowerCase()}
             id="booking-booked-token"
           >
-            {token}
+            {token.toLowerCase()}
           </b>
         )}
         {completedUrl && (
           <a
             className="is-primary-text is-primary-border px12 py8"
-            data-token={token}
+            data-token={token.toLowerCase()}
             href={completedUrl}
             id="booking-online-booked-button"
             rel="noopener noreferrer"
