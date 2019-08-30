@@ -212,15 +212,6 @@ def count_all_used_or_non_cancelled_bookings() -> int:
         .count()
 
 
-def count_all_used_or_finished_bookings_by_departement(departement_code: str) -> int:
-    query = _query_get_used_or_finished_bookings_on_non_activation_offers() \
-        .join(User) \
-        .filter(User.departementCode == departement_code)
-
-    return query \
-        .count()
-
-
 def find_final_offerer_bookings(offerer_id) -> List[Booking]:
     return _query_get_used_or_finished_bookings_on_non_activation_offers() \
         .filter(Offerer.id == offerer_id) \

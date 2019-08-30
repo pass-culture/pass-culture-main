@@ -3,11 +3,11 @@ from typing import List, Tuple
 import pandas
 from sqlalchemy import text
 
-from models import Offerer, UserOfferer, Venue, Offer, Stock, Booking, EventType, ThingType
+from models import Offerer, UserOfferer, Venue, Offer, Stock, Booking, EventType, ThingType, User
 from models.db import db
-from repository.booking_queries import count_all_used_or_finished_bookings_by_departement, count_all_bookings, \
+from repository.booking_queries import count_all_bookings, \
     count_all_cancelled_bookings as query_count_all_cancelled_bookings, count_bookings_by_departement, \
-    count_all_cancelled_bookings_by_departement
+    count_all_cancelled_bookings_by_departement, _query_get_used_or_finished_bookings_on_non_activation_offers
 from repository.offer_queries import get_active_offers_ids_query
 from repository.offerer_queries import count_offerer, count_offerer_with_stock, count_offerer_by_departement, \
     count_offerer_with_stock_by_departement
@@ -97,8 +97,14 @@ def get_all_bookings_count(departement_code: str = None) -> int:
     return count_bookings_by_departement(departement_code) if departement_code else count_all_bookings()
 
 
-def get_all_used_or_finished_bookings(departement_code: str = None) -> int:
-    return count_all_used_or_finished_bookings_by_departement(departement_code)
+def get_all_used_or_finished_bookings(departement_code: str) -> int:
+    query = _query_get_used_or_finished_bookings_on_non_activation_offers() \
+        .join(User)
+    if departement_code:
+        query = query.filter(User.departementCode == departement_code)
+
+    return query \
+        .count()
 
 
 def count_all_cancelled_bookings(departement_code: str = None) -> int:

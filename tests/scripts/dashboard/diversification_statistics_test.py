@@ -10,11 +10,12 @@ from scripts.dashboard.diversification_statistics import get_offerers_with_offer
     get_offer_counts_grouped_by_type_and_medium, query_get_booking_counts_grouped_by_type_and_medium, \
     get_offerer_count, get_offerer_with_stock_count, get_all_bookings_count, count_all_cancelled_bookings, \
     query_get_offer_counts_grouped_by_type_and_medium_for_departement, \
-    query_get_booking_counts_grouped_by_type_and_medium_for_departement
+    query_get_booking_counts_grouped_by_type_and_medium_for_departement, get_all_used_or_finished_bookings
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_stock, \
     create_offer_with_thing_product, create_venue, create_mediation, create_offer_with_event_product, create_booking
 
+two_days_ago = datetime.utcnow() - timedelta(days=2)
 
 class GetOffererCountTest:
     @clean_database
@@ -1389,3 +1390,175 @@ class CountAllCancelledBookingsTest:
 
         # Then
         assert number_of_bookings == 1
+
+class GetAllUsedOrFinishedBookingsTest:
+    @clean_database
+    def test_return_1_if_booking_used_in_filtered_departement(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+        user = create_user(departement_code='76')
+        booking = create_booking(user, stock, is_used=True)
+        PcObject.save(booking)
+
+        # When
+        number_of_bookings = get_all_used_or_finished_bookings('76')
+
+        # Then
+        assert number_of_bookings == 1
+
+    @clean_database
+    def test_return_0_if_booking_used_in_other_departement(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+        user = create_user(departement_code='54')
+        booking = create_booking(user, stock, is_used=True)
+        PcObject.save(booking)
+
+        # When
+        number_of_bookings = get_all_used_or_finished_bookings('76')
+
+        # Then
+        assert number_of_bookings == 0
+
+    @clean_database
+    def test_return_0_if_thing_booking_not_used_in_departement(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        thing_offer = create_offer_with_thing_product(venue)
+        thing_stock = create_stock(offer=thing_offer, price=0)
+        user = create_user(departement_code='76')
+        thing_booking = create_booking(user, thing_stock, is_used=False)
+        PcObject.save(thing_booking)
+
+        # When
+        number_of_bookings = get_all_used_or_finished_bookings('76')
+
+        # Then
+        assert number_of_bookings == 0
+
+    @clean_database
+    def test_return_1_if_event_booking_started_more_than_48_hours_ago_in_departement(self, app):
+        # Given
+        more_than_48_hours_ago = datetime.utcnow() - timedelta(hours=49)
+        two_days_ago = datetime.utcnow() - timedelta(hours=48)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        event_offer = create_offer_with_event_product(venue)
+        event_stock = create_stock(offer=event_offer, price=0, beginning_datetime=more_than_48_hours_ago,
+                                   end_datetime=two_days_ago,
+                                   booking_limit_datetime=more_than_48_hours_ago - timedelta(hours=1))
+        user = create_user(departement_code='76')
+        event_booking = create_booking(user, event_stock, is_used=False)
+        PcObject.save(event_booking)
+
+        # When
+        number_of_bookings = get_all_used_or_finished_bookings('76')
+
+        # Then
+        assert number_of_bookings == 1
+
+    @clean_database
+    def test_return_0_if_event_booking_started_47_hours_ago_in_departement(self, app):
+        # Given
+        less_than_48_hours_ago = datetime.utcnow() - timedelta(hours=47)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        event_offer = create_offer_with_event_product(venue)
+        event_stock = create_stock(
+            offer=event_offer,
+            price=0,
+            beginning_datetime=less_than_48_hours_ago,
+            end_datetime=less_than_48_hours_ago + timedelta(hours=1),
+            booking_limit_datetime=less_than_48_hours_ago - timedelta(hours=1)
+        )
+        user = create_user(departement_code='76')
+        event_booking = create_booking(user, event_stock, is_used=False)
+        PcObject.save(event_booking)
+
+        # When
+        number_of_bookings = get_all_used_or_finished_bookings('76')
+
+        # Then
+        assert number_of_bookings == 0
+
+    @clean_database
+    def test_counts_2_out_of_3_when_filtered_by_user_departement(self, app):
+        # Given
+        more_than_48_hours_ago = datetime.utcnow() - timedelta(hours=49)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        event_offer = create_offer_with_event_product(venue)
+        event_stock = create_stock(offer=event_offer, price=0, beginning_datetime=more_than_48_hours_ago,
+                                   end_datetime=two_days_ago,
+                                   booking_limit_datetime=more_than_48_hours_ago - timedelta(hours=1))
+
+        user_in_76 = create_user(departement_code='76', email='user-76@example.net')
+        user_in_41 = create_user(departement_code='41', email='user-41@example.net')
+
+        booking1 = create_booking(user_in_76, event_stock)
+        booking2 = create_booking(user_in_41, event_stock)
+        booking3 = create_booking(user_in_41, event_stock)
+        PcObject.save(booking1, booking2, booking3)
+
+        # When
+        number_of_bookings = get_all_used_or_finished_bookings('41')
+
+        # Then
+        assert number_of_bookings == 2
+
+    @clean_database
+    def test_counts_0_if_bookings_are_on_activation_offer(self, app):
+        # Given
+        more_than_48_hours_ago = datetime.utcnow() - timedelta(hours=49)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
+        offer2 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        stock1 = create_stock(offer=offer1, price=0, beginning_datetime=more_than_48_hours_ago,
+                                   end_datetime=two_days_ago,
+                                   booking_limit_datetime=more_than_48_hours_ago - timedelta(hours=1))
+        stock2 = create_stock(offer=offer2, price=0)
+
+        user = create_user(departement_code='41', email='user-41@example.net')
+
+        booking1 = create_booking(user, stock1)
+        booking2 = create_booking(user, stock2, is_used=True)
+        PcObject.save(booking1, booking2)
+
+        # When
+        number_of_bookings = get_all_used_or_finished_bookings('41')
+
+        # Then
+        assert number_of_bookings == 0
+
+    @clean_database
+    def test_counts_all_bookings_when_all_departements(self, app):
+        # Given
+        more_than_48_hours_ago = datetime.utcnow() - timedelta(hours=49)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        event_offer = create_offer_with_event_product(venue)
+        event_stock = create_stock(offer=event_offer, price=0, beginning_datetime=more_than_48_hours_ago,
+                                   end_datetime=two_days_ago,
+                                   booking_limit_datetime=more_than_48_hours_ago - timedelta(hours=1))
+
+        user_in_76 = create_user(departement_code='76', email='user-76@example.net')
+        user_in_41 = create_user(departement_code='41', email='user-41@example.net')
+
+        booking1 = create_booking(user_in_76, event_stock)
+        booking2 = create_booking(user_in_41, event_stock)
+        booking3 = create_booking(user_in_41, event_stock)
+        PcObject.save(booking1, booking2, booking3)
+
+        # When
+        number_of_bookings = get_all_used_or_finished_bookings(None)
+
+        # Then
+        assert number_of_bookings == 3
