@@ -171,3 +171,20 @@ class Get:
             assert len(content_lines) == 1
             assert 'virtual venue' in content_lines[0]
             assert 'thing' in content_lines[0]
+
+    class Returns400:
+        @clean_database
+        def when_user_is_admin(self, app):
+            # Given
+            user_admin = create_user(email='user+plus@email.fr', is_admin=True, can_book_free_offers=False)
+
+            PcObject.save(user_admin)
+
+            # When
+            response = TestClient(app.test_client()).with_auth(user_admin.email).get('/bookings/csv')
+
+            # Then
+            assert response.status_code == 400
+            error_message = response.json
+            assert error_message['global'] == [
+                "Le statut d'administrateur ne permet pas d'accéder au suivi des réseravtions"]

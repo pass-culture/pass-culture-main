@@ -78,6 +78,7 @@ def get_bookings_csv():
         )
         errors.status_code = 400
         raise errors
+
     check_rights_to_get_bookings_csv(current_user, venue_id, offer_id)
 
     query = filter_query_where_user_is_user_offerer_and_is_validated(Offerer.query,

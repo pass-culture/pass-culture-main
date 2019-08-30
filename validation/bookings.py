@@ -171,6 +171,14 @@ def check_rights_for_activation_offer(user):
 
 
 def check_rights_to_get_bookings_csv(user, venue_id=None, offer_id=None):
+    if user.isAdmin:
+        api_errors = ApiErrors()
+        api_errors.add_error(
+            'global',
+            "Le statut d'administrateur ne permet pas d'accéder au suivi des réseravtions"
+        )
+        raise api_errors
+
     if venue_id:
         venue = find_by_id(venue_id)
         if venue is None:

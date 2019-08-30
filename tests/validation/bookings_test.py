@@ -212,6 +212,19 @@ class CheckBookingIsUsableTest:
 
 class CheckRightsToGetBookingsCsvTest:
     @clean_database
+    def test_raises_an_error_when_user_is_admin(self, app):
+        # given
+        user_admin = create_user(can_book_free_offers=False, is_admin=True)
+
+        PcObject.save(user_admin)
+
+        # when
+        with pytest.raises(ApiErrors) as e:
+            check_rights_to_get_bookings_csv(user_admin)
+        assert e.value.errors['global'] == [
+            "Le statut d'administrateur ne permet pas d'accéder au suivi des réseravtions"]
+
+    @clean_database
     def test_raises_an_error_when_user_has_no_right_on_venue_id(self, app):
         # given
         offerer1 = create_offerer(siren='123456789')
