@@ -1,9 +1,57 @@
 import React from 'react'
 import renderer from 'react-test-renderer'
+import AvatarEditor from 'react-avatar-editor'
 
-import { shallow } from 'enzyme'
+
+import { mount, shallow } from 'enzyme'
+
+// import jsdom from 'jsdom'
 
 import UploadThumb, { computeNewZoom } from '../UploadThumb'
+
+//
+// Mock Canvas / Context2D calls
+//
+// function mockCanvas (window) {
+//     window.HTMLCanvasElement.prototype.getContext = function () {
+//         return {
+//             fillRect: jest.fn(),
+//             clearRect: jest.fn(),
+//             getImageData: function(x, y, w, h) {
+//                 return  {
+//                     data: new Array(w*h*4)
+//                 };
+//             },
+//             putImageData: function() {},
+//             createImageData: function(){ return []},
+//             setTransform: jest.fn(),
+//             drawImage: jest.fn(),
+//             save: jest.fn(),
+//             fillText: jest.fn(),
+//             restore: jest.fn(),
+//             beginPath: jest.fn(),
+//             moveTo: jest.fn(),
+//             lineTo: jest.fn(),
+//             closePath: jest.fn(),
+//             stroke: jest.fn(),
+//             translate: jest.fn(),
+//             scale: jest.fn(),
+//             rotate: jest.fn(),
+//             arc: jest.fn(),
+//             fill: jest.fn(),
+//             measureText: function(){
+//                 return { width: 0 };
+//             },
+//             transform: jest.fn(),
+//             rect: jest.fn(),
+//             clip: jest.fn(),
+//         };
+//     }
+//
+//     window.HTMLCanvasElement.prototype.toDataURL = function () {
+//         return "";
+//     }
+// }
 
 const defaultParams = {
   current: 0.3,
@@ -113,26 +161,46 @@ describe('src | components | layout | UploadThumb |', () => {
     })
   })
 
-  describe('handleDecrement', () => {
+  describe.only('handleDecrement', () => {
+
     it('should decrement zoom on click', () => {
       // given
+      // HTMLCanvasElement.prototype.getContext = () => {
+  // return whatever getContext has to return
+// }
+// https://github.com/jsdom/jsdom/issues/1782
+ // cf CanvasTools > Mediation
       props.image = {
         name: 'IMG_4366.jpg',
         size: 1503804,
         type: 'image/jpeg',
       }
-      const mockedRefInput = renderer.create(<input
-        max="4"
-        min="1"
-        step="0.01"
-                                             />).toJSON()
+      // const mockedRefInput = renderer.create(
+      //   <input
+      //     max="4"
+      //     min="1"
+      //     step="0.01"
+      //     />).toJSON()
+      const getAttribute = jest.fn()
+      //Mock canvas (used by qtip)
+      // HTMLCanvasElement.prototype.getContext = jest.fn()
 
-      const wrapper = shallow(<UploadThumb {...props} />)
-      wrapper.setState({ zoom: 3.08 })
+
+      // const {JSDOM} = jsdom
+      // const {document} = (new JSDOM('<!doctype html><html><body></body></html>')).window
+      //
+      // const window = document.defaultView
+      //
+      // mockCanvas(window)
+
+
+      const wrapper = mount(<UploadThumb {...props} />)
+      // wrapper.setState({ zoom: 3.08 })
 
       wrapper.instance()['handleSetZoomInput'] = {
-        current: mockedRefInput.props,
+        current: getAttribute,
       }
+
       wrapper.find('.decrement').simulate('click')
       // const input = document.querySelector('input[name="zoomLeft"]')
       console.log('********* iput', document)
@@ -142,7 +210,7 @@ describe('src | components | layout | UploadThumb |', () => {
       // scale={zoom}
     })
 
-    it('should increment zoom on click', () => {
+    it.skip('should increment zoom on click', () => {
       // given
       props.image = {
         name: 'IMG_4366.jpg',
@@ -163,7 +231,7 @@ describe('src | components | layout | UploadThumb |', () => {
       // )
 
       console.log('mockedRefInput', mockedRefInput.props)
-      const wrapper = shallow(<UploadThumb {...props} />)
+      const wrapper = mount(<UploadThumb {...props} />)
       wrapper.setState({ zoom: 2.5 })
 
       wrapper.instance()['handleSetZoomInput'] = {

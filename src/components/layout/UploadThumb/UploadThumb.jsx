@@ -70,6 +70,7 @@ class UploadThumb extends Component {
   }
 
   handleOnImageChange = ctx => {
+    console.log('CTX', ctx)
     const { image, isUploadDisabled } = this.state
     if (!image) return
     const { onImageChange } = this.props
