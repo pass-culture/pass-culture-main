@@ -5,11 +5,11 @@ import { getDisplayPrice } from '../../helpers'
 
 const Price = ({ free, value, className, ...rest }) => {
   const price = getDisplayPrice(value, free)
-  const classes = `price ${className}`
+
   return (
     <span
       {...rest}
-      className={classes}
+      className={className}
     >
       {price}
     </span>

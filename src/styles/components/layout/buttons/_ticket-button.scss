@@ -1,13 +1,10 @@
 .pc-ticket-button-price,
 .pc-ticket-button-label {
-  @extend .py8;
-  @extend .px6;
-  @extend .fs18;
-  @extend .is-bold;
-  @extend .is-white-text;
-  @extend .no-background;
-
-  border: 2px solid white;
+  border: 2px solid $white;
+  color: $white;
+  font-size: 1.125rem;
+  font-weight: 700;
+  padding: 8px 12px;
 }
 
 .pc-ticket-button-price {
@@ -20,4 +17,11 @@
 
 .pc-ticket-button-label {
   border-left-style: dotted;
+}
+
+@media screen and (max-width: 376px) {
+  .pc-ticket-button-price,
+  .pc-ticket-button-label {
+    padding: 6px;
+  }
 }

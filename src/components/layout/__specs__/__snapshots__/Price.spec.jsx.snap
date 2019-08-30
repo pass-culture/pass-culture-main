@@ -23,7 +23,7 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": "0 €",
-      "className": "price ",
+      "className": "",
     },
     "ref": null,
     "rendered": "0 €",
@@ -36,7 +36,7 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": "0 €",
-        "className": "price ",
+        "className": "",
       },
       "ref": null,
       "rendered": "0 €",
@@ -95,7 +95,7 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": "5 €",
-      "className": "price ",
+      "className": "",
     },
     "ref": null,
     "rendered": "5 €",
@@ -108,7 +108,7 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": "5 €",
-        "className": "price ",
+        "className": "",
       },
       "ref": null,
       "rendered": "5 €",
@@ -172,7 +172,7 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": "5 → 10 €",
-      "className": "price ",
+      "className": "",
     },
     "ref": null,
     "rendered": "5 → 10 €",
@@ -185,7 +185,7 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": "5 → 10 €",
-        "className": "price ",
+        "className": "",
       },
       "ref": null,
       "rendered": "5 → 10 €",
@@ -249,7 +249,7 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": "5,99 → 10 €",
-      "className": "price ",
+      "className": "",
     },
     "ref": null,
     "rendered": "5,99 → 10 €",
@@ -262,7 +262,7 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": "5,99 → 10 €",
-        "className": "price ",
+        "className": "",
       },
       "ref": null,
       "rendered": "5,99 → 10 €",
@@ -321,7 +321,7 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": " €",
-      "className": "price ",
+      "className": "",
     },
     "ref": null,
     "rendered": " €",
@@ -334,7 +334,7 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": " €",
-        "className": "price ",
+        "className": "",
       },
       "ref": null,
       "rendered": " €",

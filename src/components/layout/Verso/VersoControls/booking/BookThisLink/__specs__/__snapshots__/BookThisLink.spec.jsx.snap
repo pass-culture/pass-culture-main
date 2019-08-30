@@ -56,7 +56,7 @@ ShallowWrapper {
           J’y vais !
         </span>,
       ],
-      "className": "flex-columns is-bold is-white-text fs18",
+      "className": "flex-columns",
       "disabled": false,
       "id": "verso-booking-button",
       "replace": false,
@@ -120,7 +120,7 @@ ShallowWrapper {
             J’y vais !
           </span>,
         ],
-        "className": "flex-columns is-bold is-white-text fs18",
+        "className": "flex-columns",
         "disabled": false,
         "id": "verso-booking-button",
         "replace": false,

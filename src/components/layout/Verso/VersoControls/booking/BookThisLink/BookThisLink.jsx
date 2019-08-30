@@ -16,9 +16,10 @@ class BookThisLink extends Component {
 
   render() {
     const { isFinished, priceRange, destinationLink } = this.props
+
     return (
       <Link
-        className="flex-columns is-bold is-white-text fs18"
+        className="flex-columns"
         disabled={isFinished}
         id="verso-booking-button"
         to={destinationLink}

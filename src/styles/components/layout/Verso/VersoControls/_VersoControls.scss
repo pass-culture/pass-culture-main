@@ -1,4 +1,3 @@
-
 .font-icon {
   font-size: 2.7rem;
 }
@@ -36,10 +35,6 @@
     @extend .is-inline-block;
   }
 
-  .verso-controls .finishable {
-    // -> voir fichier finishable.scss
-  }
-
   .verso-controls .cancel-button {
     background: transparent;
     color: white;
@@ -55,20 +50,4 @@
 
 #verso-cancel-booking-button:disabled {
   opacity: 1;
-}
-
-@media screen and (max-width: 370px) {
-  .verso-controls .pc-ticket-button-price,
-  .verso-controls .pc-ticket-button-label {
-    padding-left: 6px;
-    padding-right: 6px;
-  }
-}
-
-@media screen and (min-width: 371px) {
-  .verso-controls .pc-ticket-button-price,
-  .verso-controls .pc-ticket-button-label {
-    padding-left: 12px;
-    padding-right: 12px;
-  }
 }

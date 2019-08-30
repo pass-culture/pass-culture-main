@@ -34,7 +34,7 @@ describe('src | components | verso | verso-controls | booking | BookThisLink', (
     expect(buttonLabel.text()).toBe('J’y vais !')
   })
 
-  it('should render Gratuit label when price value is 0', () => {
+  it('should render "Gratuit" label when price value is 0', () => {
     // given
     props.priceRange = [0]
 
@@ -46,14 +46,8 @@ describe('src | components | verso | verso-controls | booking | BookThisLink', (
     )
 
     // then
-    const priceComponent = wrapper.find(Price)
-    expect(priceComponent).toHaveLength(1)
-    expect(priceComponent.hasClass('pc-ticket-button-price')).toBe(true)
-    const price = wrapper.find('.price')
-
-    // then
-    expect(price).toHaveLength(1)
-    expect(price.text()).toStrictEqual('Gratuit')
+    const priceComponent = wrapper.find(Price).text()
+    expect(priceComponent).toBe('Gratuit')
   })
 
   it('should render a price range when multiples prices are given', () => {
