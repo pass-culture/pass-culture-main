@@ -45,11 +45,34 @@
     width: rem(36px);
     height: rem(36px);
     line-height: rem(36px);
+
+    &:hover {
+      background-color: $grey-light;
+    }
   }
 
-  .react-datepicker__day--selected,
+  .react-datepicker__day--disabled {
+    &:hover {
+      background-color: $white;
+    }
+  }
+
   .react-datepicker__day--keyboard-selected {
+    background-color: $white;
+    color: $dark;
+
+    &:hover {
+      background-color: $grey-light;
+    }
+  }
+
+  .react-datepicker__day--selected {
     background-color: $primary;
+
+    &.react-datepicker__day--keyboard-selected {
+      background-color: $primary;
+      color: $white;
+    }
   }
 }
 

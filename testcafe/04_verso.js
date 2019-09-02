@@ -151,6 +151,7 @@ test("Parcours complet de réservation d'une offre event à date unique", async 
   // when
   await t.click(openMenuFromVerso).wait(500)
   previousWalletValue = await getMenuWalletValue()
+
   await t
     .expect(previousWalletValue)
     .gt(0)
@@ -158,8 +159,6 @@ test("Parcours complet de réservation d'une offre event à date unique", async 
     .click(bookOfferButton)
     .click(dateSelectBox)
     .click(selectableDates.nth(0))
-
-  await t
     .click(sendBookingButton)
     .expect(bookingErrorReasons.count)
     .eql(0)

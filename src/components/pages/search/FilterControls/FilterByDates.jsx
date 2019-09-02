@@ -99,6 +99,7 @@ class FilterByDates extends PureComponent {
               minDate={new Date()}
               name="pick-by-date-filter"
               onChange={this.handleOnChangePickedDate}
+              placeholder="Par date"
               popperRefContainer={this.datepickerPopper}
               selected={pickedDate}
             />

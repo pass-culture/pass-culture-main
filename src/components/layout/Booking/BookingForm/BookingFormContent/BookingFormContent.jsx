@@ -37,7 +37,6 @@ class BookingFormContent extends Component {
     const calendarDates = getCalendarProvider(values)
     const calendarLabel = calendarDates.length === 1 ? '' : 'Choisissez une date'
     const dateFormat = 'DD MMMM YYYY'
-
     return (
       <DatePickerField
         {...input}
@@ -50,7 +49,6 @@ class BookingFormContent extends Component {
         label={calendarLabel}
         name="date"
         onChange={this.handleChangeAndRemoveCalendar(input)}
-        popperPlacement="bottom"
         readOnly={calendarDates.length === 1}
         selected={value}
       />
@@ -62,6 +60,7 @@ class BookingFormContent extends Component {
     const { price } = values
     const bookableTimes = parseHoursByStockId(values)
     const hasOneBookableTime = bookableTimes.length === 1
+    const hasBookableTimes = bookableTimes.length > 0
     const hourLabel = hasOneBookableTime ? '' : 'Choisissez une heure'
 
     return (
@@ -78,7 +77,7 @@ class BookingFormContent extends Component {
               name="date"
               render={this.renderBookingDatePickerField}
             />
-            {bookableTimes && (
+            {bookableTimes && hasBookableTimes && (
               <SelectField
                 className="text-center"
                 id="booking-form-time-picker-field"

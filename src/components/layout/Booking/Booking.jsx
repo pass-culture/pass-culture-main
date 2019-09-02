@@ -192,7 +192,7 @@ class Booking extends PureComponent {
     let price
     let stockId
     const isReadOnly = bookables.length === 1
-    if (defaultBookable) {
+    if (defaultBookable && isReadOnly) {
       date = defaultBookable.beginningDatetime && moment(defaultBookable.beginningDatetime)
       price = priceIsDefined(defaultBookable.price) ? defaultBookable.price : null
       stockId = defaultBookable.id

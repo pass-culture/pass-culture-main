@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import DatePicker from 'react-datepicker'
 import ReactDOM from 'react-dom'
-import { withSizes } from 'react-sizes'
 
 import DatePickerCustomField from './DatePickerCustomField/DatePickerCustomField'
 import InputLabel from '../../InputLabel'
@@ -27,6 +26,7 @@ const DatePickerField = ({
   readOnly,
   required,
   selected,
+  withPortal,
   // NOTE -> Autres props du react-datepicker passées en option
   // github.com/Hacker0x01/react-datepicker/blob/master/docs/datepicker.md
   ...rest
@@ -38,6 +38,7 @@ const DatePickerField = ({
   if (!hideToday) {
     moreProps.todayButton = `Aujourd'hui`
   }
+
   const isClearable = !readOnly && clearable
   const inputName = id || name
   return (
@@ -63,6 +64,7 @@ const DatePickerField = ({
             readOnly={readOnly}
             selected={selected}
             shouldCloseOnSelect
+            withPortal={withPortal}
           />
         </div>
       </label>
@@ -79,12 +81,12 @@ DatePickerField.defaultProps = {
   id: null,
   label: null,
   locale: 'fr',
-  placeholder: '-',
+  placeholder: '',
   popperRefContainer: null,
   readOnly: false,
   required: false,
   selected: null,
-  withPortal: false,
+  withPortal: true,
 }
 
 DatePickerField.propTypes = {
@@ -106,8 +108,4 @@ DatePickerField.propTypes = {
   withPortal: PropTypes.bool,
 }
 
-const mapSizesToProps = ({ height }) => ({
-  withPortal: height <= 650,
-})
-
-export default withSizes(mapSizesToProps)(DatePickerField)
+export default DatePickerField

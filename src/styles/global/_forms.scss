@@ -188,7 +188,6 @@
     $size: rem(30px);
 
     color: $primary;
-    content: '\6b';
     font-size: rem(30px);
     position: absolute;
     right: 6px;
@@ -198,6 +197,35 @@
   .calendar-icon {
     padding: 0.25rem;
     padding-right: 1rem;
+  }
+
+  input {
+    padding-top: 0.25rem;
+    text-align: center;
+
+    &::-webkit-input-placeholder {
+      color: inherit;
+      font-size: 19px;
+      font-weight: 300;
+    }
+
+    &::-moz-placeholder {
+      color: inherit;
+      font-size: 19px;
+      font-weight: 300;
+    }
+
+    &:-ms-input-placeholder {
+      color: inherit;
+      font-size: 19px;
+      font-weight: 300;
+    }
+
+    &:-moz-placeholder {
+      color: inherit;
+      font-size: 19px;
+      font-weight: 300;
+    }
   }
 }
 
