@@ -1,57 +1,8 @@
 import React from 'react'
-import renderer from 'react-test-renderer'
-import AvatarEditor from 'react-avatar-editor'
 
-
-import { mount, shallow } from 'enzyme'
-
-// import jsdom from 'jsdom'
+import { shallow } from 'enzyme'
 
 import UploadThumb, { computeNewZoom } from '../UploadThumb'
-
-//
-// Mock Canvas / Context2D calls
-//
-// function mockCanvas (window) {
-//     window.HTMLCanvasElement.prototype.getContext = function () {
-//         return {
-//             fillRect: jest.fn(),
-//             clearRect: jest.fn(),
-//             getImageData: function(x, y, w, h) {
-//                 return  {
-//                     data: new Array(w*h*4)
-//                 };
-//             },
-//             putImageData: function() {},
-//             createImageData: function(){ return []},
-//             setTransform: jest.fn(),
-//             drawImage: jest.fn(),
-//             save: jest.fn(),
-//             fillText: jest.fn(),
-//             restore: jest.fn(),
-//             beginPath: jest.fn(),
-//             moveTo: jest.fn(),
-//             lineTo: jest.fn(),
-//             closePath: jest.fn(),
-//             stroke: jest.fn(),
-//             translate: jest.fn(),
-//             scale: jest.fn(),
-//             rotate: jest.fn(),
-//             arc: jest.fn(),
-//             fill: jest.fn(),
-//             measureText: function(){
-//                 return { width: 0 };
-//             },
-//             transform: jest.fn(),
-//             rect: jest.fn(),
-//             clip: jest.fn(),
-//         };
-//     }
-//
-//     window.HTMLCanvasElement.prototype.toDataURL = function () {
-//         return "";
-//     }
-// }
 
 const defaultParams = {
   current: 0.3,
@@ -100,22 +51,19 @@ describe('src | components | layout | UploadThumb |', () => {
   })
 
   describe('render', () => {
-    it('should render Mediation component with default state', () => {
+    it('should render main component with default state', () => {
       // when
-      props.image = null
       const wrapper = shallow(<UploadThumb {...props} />)
 
       // then
-      expect(wrapper.state('isEdited')).toBe(false)
       expect(wrapper.state('readOnly')).toBe(false)
-      expect(wrapper.state('image')).toBeNull()
+      expect(wrapper.state('image')).toStrictEqual(image)
       expect(wrapper.state('isUploadDisabled')).toBe(false)
-      expect(wrapper.state('isDragging')).toBe(false)
       expect(wrapper.state('zoom')).toBe(1)
     })
 
     describe('dropzone component', () => {
-      it('should render component properly', () => {
+      it('should render main component properly', () => {
         // given
         props.image = {
           name: 'dropzoneExample.jpg',
@@ -130,160 +78,127 @@ describe('src | components | layout | UploadThumb |', () => {
         // then
         expect(dropZoneComponent).toHaveLength(1)
       })
+    })
 
-      it('should render correct props when readOnly is true', () => {
+    describe('zoomcontrol', () => {
+      it('should not be displayed when image is uploaded', () => {
         // given
         props.hasExistingImage = true
 
         // when
         const wrapper = shallow(<UploadThumb {...props} />)
-        const dropZoneComponent = wrapper.find('.dropzone')
+
+        const zoomControlComponent = wrapper.find('#zoomControl')
 
         // then
-        expect(wrapper.state('readOnly')).toBe(true)
-        expect(dropZoneComponent.props().disableClick).toStrictEqual(true)
-        expect(dropZoneComponent.props().className).toStrictEqual('dropzone has-image no-drag')
+        expect(zoomControlComponent).toHaveLength(0)
       })
-      it('should render correct props when readOnly is false', () => {
+
+      it('should be displayed when image is uploaded', () => {
         // given
         props.hasExistingImage = false
-        props.image = null
 
         // when
         const wrapper = shallow(<UploadThumb {...props} />)
-        const dropZoneComponent = wrapper.find('.dropzone')
+
+        const zoomControlComponent = wrapper.find('#zoomControl')
 
         // then
-        expect(wrapper.state('readOnly')).toBe(false)
-        expect(dropZoneComponent.props().disableClick).toStrictEqual(false)
-        expect(dropZoneComponent.props().className).toStrictEqual('dropzone')
+        expect(zoomControlComponent).toHaveLength(1)
+      })
+
+      it('should contain one button to zoom out', () => {
+        // given
+        props.hasExistingImage = false
+
+        // when
+        const wrapper = shallow(<UploadThumb {...props} />)
+
+        const zoomControlComponent = wrapper
+          .find('#zoomControl')
+          .find('button')
+          .at(0)
+
+        // then
+        expect(zoomControlComponent).toHaveLength(1)
+        expect(zoomControlComponent.props().className).toStrictEqual('change-zoom decrement')
+      })
+
+      it('should contain one button to zoom in', () => {
+        // given
+        props.hasExistingImage = false
+
+        // when
+        const wrapper = shallow(<UploadThumb {...props} />)
+
+        const zoomControlComponent = wrapper
+          .find('#zoomControl')
+          .find('button')
+          .at(1)
+
+        // then
+        expect(zoomControlComponent).toHaveLength(1)
+        expect(zoomControlComponent.props().className).toStrictEqual('change-zoom increment')
       })
     })
   })
 
-  describe.only('handleDecrement', () => {
-
-    it('should decrement zoom on click', () => {
+  describe('handleDecrement', () => {
+    it('should decrement zoom on click on minus button', () => {
       // given
-      // HTMLCanvasElement.prototype.getContext = () => {
-  // return whatever getContext has to return
-// }
-// https://github.com/jsdom/jsdom/issues/1782
- // cf CanvasTools > Mediation
-      props.image = {
-        name: 'IMG_4366.jpg',
-        size: 1503804,
-        type: 'image/jpeg',
-      }
-      // const mockedRefInput = renderer.create(
-      //   <input
-      //     max="4"
-      //     min="1"
-      //     step="0.01"
-      //     />).toJSON()
-      const getAttribute = jest.fn()
-      //Mock canvas (used by qtip)
-      // HTMLCanvasElement.prototype.getContext = jest.fn()
+      const getAttribute = jest.fn().mockImplementation(attribute => {
+        if (attribute === 'step') {
+          return 0.01
+        }
+        if (attribute === 'min') {
+          return 1
+        }
+        if (attribute === 'max') {
+          return 4
+        }
+      })
 
-
-      // const {JSDOM} = jsdom
-      // const {document} = (new JSDOM('<!doctype html><html><body></body></html>')).window
-      //
-      // const window = document.defaultView
-      //
-      // mockCanvas(window)
-
-
-      const wrapper = mount(<UploadThumb {...props} />)
-      // wrapper.setState({ zoom: 3.08 })
-
+      // when
+      const wrapper = shallow(<UploadThumb {...props} />)
       wrapper.instance()['handleSetZoomInput'] = {
-        current: getAttribute,
+        current: {
+          getAttribute,
+        },
       }
+      wrapper.setState({ zoom: 1.1 })
 
       wrapper.find('.decrement').simulate('click')
-      // const input = document.querySelector('input[name="zoomLeft"]')
-      console.log('********* iput', document)
 
       // then
-      expect(wrapper.state('zoom')).toBe(3.08)
-      // scale={zoom}
+      expect(wrapper.state('zoom')).toBe(1)
     })
 
-    it.skip('should increment zoom on click', () => {
+    it('should increment zoom on click on plus button', () => {
       // given
-      props.image = {
-        name: 'IMG_4366.jpg',
-        size: 1503804,
-        type: 'image/jpeg',
-      }
-      const mockedRefInput = renderer.create(<input
-        max="4"
-        min="1"
-        step="0.01"
-                                             />).toJSON()
-      // const mockedRefInput = (
-      //   <input
-      //     max='4'
-      //     min='1'
-      //     step="0.01"
-      //   />
-      // )
+      const getAttribute = jest.fn().mockImplementation(attribute => {
+        if (attribute === 'step') {
+          return 0.01
+        }
+        if (attribute === 'min') {
+          return 1
+        }
+        if (attribute === 'max') {
+          return 4
+        }
+      })
 
-      console.log('mockedRefInput', mockedRefInput.props)
-      const wrapper = mount(<UploadThumb {...props} />)
-      wrapper.setState({ zoom: 2.5 })
-
+      // when
+      const wrapper = shallow(<UploadThumb {...props} />)
       wrapper.instance()['handleSetZoomInput'] = {
-        current: mockedRefInput.props,
+        current: {
+          getAttribute,
+        },
       }
+
       wrapper.find('.increment').simulate('click')
 
       // then
-      expect(wrapper.state('zoom')).toBe(2.5)
-    })
-  })
-
-  describe('handleDragStart', () => {
-    it('should update dragging value to true', () => {
-      // given
-      const wrapper = shallow(<UploadThumb {...props} />)
-
-      // when
-      wrapper.instance().handleDragStart()
-
-      // then
-      expect(wrapper.state('dragging')).toBe(true)
-    })
-  })
-
-  describe('handleDragStop', () => {
-    it('should update dragging value to false', () => {
-      // given
-      const wrapper = shallow(<UploadThumb {...props} />)
-
-      // when
-      wrapper.instance().handleDragStop()
-
-      // then
-      expect(wrapper.state('dragging')).toBe(false)
-    })
-  })
-
-  describe('handleDrop', () => {
-    it('should update dragging value to false', () => {
-      // given
-      const droppedValues = [image]
-      const wrapper = shallow(<UploadThumb {...props} />)
-
-      // when
-      wrapper.instance().handleDrop(droppedValues)
-
-      // then
-      expect(wrapper.state('isDragging')).toBe(false)
-      expect(wrapper.state('isUploadDisabled')).toBe(false)
-      expect(wrapper.state('image')).toBe(image)
-      expect(wrapper.state('size')).toBe(1.4341392517089844)
+      expect(wrapper.state('zoom')).toBe(1.1)
     })
   })
 
@@ -307,6 +222,13 @@ describe('src | components | layout | UploadThumb |', () => {
 
   describe('handleOnImageChange', () => {
     const ctx = { fillStyle: '#000000' }
+    const croppedRec = {
+      height: 0.76,
+      width: 0.45,
+      x: 0.27,
+      y: 0.11,
+    }
+    const getCroppingRect = jest.fn().mockImplementation(() => croppedRec)
 
     it('should not be called when no image', () => {
       // given
@@ -314,6 +236,7 @@ describe('src | components | layout | UploadThumb |', () => {
 
       // when
       const wrapper = shallow(<UploadThumb {...props} />)
+
       wrapper.instance().handleOnImageChange(ctx)
 
       // then
@@ -331,11 +254,33 @@ describe('src | components | layout | UploadThumb |', () => {
       // when
       const wrapper = shallow(<UploadThumb {...props} />)
       wrapper.setState({ image, isUploadDisabled: true, size: 15038040 })
-
+      wrapper.instance()['avatarEditor'] = {
+        current: {
+          getCroppingRect,
+        },
+      }
       wrapper.instance().handleOnImageChange(ctx)
 
       // then
       expect(props.onImageChange).toHaveBeenCalledWith(ctx)
+    })
+
+    it('should be called with image, ctx and new coordonnates', () => {
+      // given
+      const wrapper = shallow(<UploadThumb {...props} />)
+
+      // when
+      wrapper.setState({ image, isUploadDisabled: false, size: 15038040 })
+      wrapper.instance()['avatarEditor'] = {
+        current: {
+          getCroppingRect,
+        },
+      }
+      const currentImage = wrapper.state('image')
+      wrapper.instance().handleOnImageChange(ctx)
+
+      // then
+      expect(props.onImageChange).toHaveBeenCalledWith(ctx, currentImage, croppedRec)
     })
   })
 

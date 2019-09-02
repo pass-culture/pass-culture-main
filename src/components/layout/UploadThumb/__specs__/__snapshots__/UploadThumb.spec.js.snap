@@ -40,33 +40,9 @@ ShallowWrapper {
       "children": <div
         className="upload-thumb"
       >
-        <t
+        <div
           className="dropzone has-image"
-          disableClick={true}
-          disablePreview={false}
-          disabled={false}
-          getDataTransferItems={[Function]}
-          inputProps={Object {}}
-          maxSize={Infinity}
-          minSize={0}
-          multiple={true}
-          onDragEnter={[Function]}
-          onDragLeave={[Function]}
-          onDrop={[Function]}
-          preventDropOnDocument={true}
         >
-          <div
-            className="drag-n-drop "
-            style={
-              Object {
-                "borderRadius": 250,
-                "height": 250,
-                "width": 250,
-              }
-            }
-          >
-            Cliquez ou glissez-déposez pour charger une image
-          </div>
           <d
             border={25}
             borderRadius={250}
@@ -131,7 +107,7 @@ ShallowWrapper {
               </span>
             </button>
           </div>
-        </t>
+        </div>
         <nav
           className="field content"
         />
@@ -145,33 +121,9 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": Array [
-          <t
+          <div
             className="dropzone has-image"
-            disableClick={true}
-            disablePreview={false}
-            disabled={false}
-            getDataTransferItems={[Function]}
-            inputProps={Object {}}
-            maxSize={Infinity}
-            minSize={0}
-            multiple={true}
-            onDragEnter={[Function]}
-            onDragLeave={[Function]}
-            onDrop={[Function]}
-            preventDropOnDocument={true}
           >
-            <div
-              className="drag-n-drop "
-              style={
-                Object {
-                  "borderRadius": 250,
-                  "height": 250,
-                  "width": 250,
-                }
-              }
-            >
-              Cliquez ou glissez-déposez pour charger une image
-            </div>
             <d
               border={25}
               borderRadius={250}
@@ -236,7 +188,7 @@ ShallowWrapper {
                 </span>
               </button>
             </div>
-          </t>,
+          </div>,
           <nav
             className="field content"
           />,
@@ -248,21 +200,9 @@ ShallowWrapper {
         Object {
           "instance": null,
           "key": undefined,
-          "nodeType": "class",
+          "nodeType": "host",
           "props": Object {
             "children": Array [
-              <div
-                className="drag-n-drop "
-                style={
-                  Object {
-                    "borderRadius": 250,
-                    "height": 250,
-                    "width": 250,
-                  }
-                }
-              >
-                Cliquez ou glissez-déposez pour charger une image
-              </div>,
               <d
                 border={25}
                 borderRadius={250}
@@ -329,38 +269,9 @@ ShallowWrapper {
               </div>,
             ],
             "className": "dropzone has-image",
-            "disableClick": true,
-            "disablePreview": false,
-            "disabled": false,
-            "getDataTransferItems": [Function],
-            "inputProps": Object {},
-            "maxSize": Infinity,
-            "minSize": 0,
-            "multiple": true,
-            "onDragEnter": [Function],
-            "onDragLeave": [Function],
-            "onDrop": [Function],
-            "preventDropOnDocument": true,
           },
           "ref": null,
           "rendered": Array [
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": "Cliquez ou glissez-déposez pour charger une image",
-                "className": "drag-n-drop ",
-                "style": Object {
-                  "borderRadius": 250,
-                  "height": 250,
-                  "width": 250,
-                },
-              },
-              "ref": null,
-              "rendered": "Cliquez ou glissez-déposez pour charger une image",
-              "type": "div",
-            },
             Object {
               "instance": null,
               "key": undefined,
@@ -514,7 +425,7 @@ ShallowWrapper {
               "type": "div",
             },
           ],
-          "type": [Function],
+          "type": "div",
         },
         Object {
           "instance": null,
@@ -542,33 +453,9 @@ ShallowWrapper {
         "children": <div
           className="upload-thumb"
         >
-          <t
+          <div
             className="dropzone has-image"
-            disableClick={true}
-            disablePreview={false}
-            disabled={false}
-            getDataTransferItems={[Function]}
-            inputProps={Object {}}
-            maxSize={Infinity}
-            minSize={0}
-            multiple={true}
-            onDragEnter={[Function]}
-            onDragLeave={[Function]}
-            onDrop={[Function]}
-            preventDropOnDocument={true}
           >
-            <div
-              className="drag-n-drop "
-              style={
-                Object {
-                  "borderRadius": 250,
-                  "height": 250,
-                  "width": 250,
-                }
-              }
-            >
-              Cliquez ou glissez-déposez pour charger une image
-            </div>
             <d
               border={25}
               borderRadius={250}
@@ -633,7 +520,7 @@ ShallowWrapper {
                 </span>
               </button>
             </div>
-          </t>
+          </div>
           <nav
             className="field content"
           />
@@ -647,33 +534,9 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            <t
+            <div
               className="dropzone has-image"
-              disableClick={true}
-              disablePreview={false}
-              disabled={false}
-              getDataTransferItems={[Function]}
-              inputProps={Object {}}
-              maxSize={Infinity}
-              minSize={0}
-              multiple={true}
-              onDragEnter={[Function]}
-              onDragLeave={[Function]}
-              onDrop={[Function]}
-              preventDropOnDocument={true}
             >
-              <div
-                className="drag-n-drop "
-                style={
-                  Object {
-                    "borderRadius": 250,
-                    "height": 250,
-                    "width": 250,
-                  }
-                }
-              >
-                Cliquez ou glissez-déposez pour charger une image
-              </div>
               <d
                 border={25}
                 borderRadius={250}
@@ -738,7 +601,7 @@ ShallowWrapper {
                   </span>
                 </button>
               </div>
-            </t>,
+            </div>,
             <nav
               className="field content"
             />,
@@ -750,21 +613,9 @@ ShallowWrapper {
           Object {
             "instance": null,
             "key": undefined,
-            "nodeType": "class",
+            "nodeType": "host",
             "props": Object {
               "children": Array [
-                <div
-                  className="drag-n-drop "
-                  style={
-                    Object {
-                      "borderRadius": 250,
-                      "height": 250,
-                      "width": 250,
-                    }
-                  }
-                >
-                  Cliquez ou glissez-déposez pour charger une image
-                </div>,
                 <d
                   border={25}
                   borderRadius={250}
@@ -831,38 +682,9 @@ ShallowWrapper {
                 </div>,
               ],
               "className": "dropzone has-image",
-              "disableClick": true,
-              "disablePreview": false,
-              "disabled": false,
-              "getDataTransferItems": [Function],
-              "inputProps": Object {},
-              "maxSize": Infinity,
-              "minSize": 0,
-              "multiple": true,
-              "onDragEnter": [Function],
-              "onDragLeave": [Function],
-              "onDrop": [Function],
-              "preventDropOnDocument": true,
             },
             "ref": null,
             "rendered": Array [
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "Cliquez ou glissez-déposez pour charger une image",
-                  "className": "drag-n-drop ",
-                  "style": Object {
-                    "borderRadius": 250,
-                    "height": 250,
-                    "width": 250,
-                  },
-                },
-                "ref": null,
-                "rendered": "Cliquez ou glissez-déposez pour charger une image",
-                "type": "div",
-              },
               Object {
                 "instance": null,
                 "key": undefined,
@@ -1016,7 +838,7 @@ ShallowWrapper {
                 "type": "div",
               },
             ],
-            "type": [Function],
+            "type": "div",
           },
           Object {
             "instance": null,

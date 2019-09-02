@@ -2,11 +2,14 @@ import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import AvatarEditor from 'react-avatar-editor'
-import Dropzone from 'react-dropzone'
 
 const IMAGE_MAX_SIZE = 10 // in MB
 
-export function computeNewZoom(current, min, max, step, factor, direction) {
+export const isImageTooLarge = sizeInMo => {
+  return sizeInMo > IMAGE_MAX_SIZE
+}
+
+export const computeNewZoom = (current, min, max, step, factor, direction) => {
   const zoom = current + step * factor * direction
 
   if (zoom >= min && zoom <= max) {
@@ -22,47 +25,19 @@ class UploadThumb extends Component {
     this.avatarEditor = React.createRef()
     this.handleSetZoomInput = React.createRef()
     this.state = {
-      isEdited: false,
       readOnly: false,
       image: null,
       isUploadDisabled: false,
-      isDragging: false,
       zoom: 1,
     }
   }
 
   static getDerivedStateFromProps(props, prevState) {
-    const readOnly = props.hasExistingImage && !prevState.isEdited
+    const readOnly = props.hasExistingImage
     return {
       readOnly,
-      isDragging: prevState.isDragging,
       image: props.image || prevState.image,
     }
-  }
-
-  handleDragStart = () => {
-    this.setState({
-      dragging: true,
-    })
-  }
-
-  handleDragStop = () => {
-    this.setState({
-      dragging: false,
-    })
-  }
-
-  handleDrop = dropped => {
-    const { maxSize } = this.props
-    const image = dropped[0]
-    // convert into MB
-    const size = image.size / 1048576
-    this.setState({
-      isDragging: false,
-      isUploadDisabled: size > maxSize,
-      image,
-      size,
-    })
   }
 
   handleOnZoomChange = event => {
@@ -70,20 +45,19 @@ class UploadThumb extends Component {
   }
 
   handleOnImageChange = ctx => {
-    console.log('CTX', ctx)
     const { image, isUploadDisabled } = this.state
     if (!image) return
     const { onImageChange } = this.props
+    const getCroppingRect = this.avatarEditor.current.getCroppingRect()
     if (onImageChange) {
       if (isUploadDisabled) return onImageChange(ctx)
 
-      onImageChange(ctx, image, this.avatarEditor.current.getCroppingRect())
+      onImageChange(ctx, image, getCroppingRect)
     }
   }
 
   changeZoom(direction) {
     const { zoom } = this.state
-
     const factor = 10 // Slider step is too low for button usage
     const step = parseFloat(this.handleSetZoomInput.current.getAttribute('step'))
     const min = parseFloat(this.handleSetZoomInput.current.getAttribute('min'))
@@ -94,36 +68,30 @@ class UploadThumb extends Component {
     this.setState({ zoom: newZoom })
   }
 
-  handleOnChangeImageClick = () => this.setState({ isEdited: true })
-
   handleIncrement = () => this.changeZoom(1)
 
   handleDecrement = () => this.changeZoom(-1)
 
   render() {
     const { border, borderRadius, className, height, maxSize, width } = this.props
-    const { dragging, image, isUploadDisabled, readOnly, size, zoom } = this.state
+    const { image, readOnly, zoom } = this.state
+    let sizeInMo
+
+    if (image) {
+      sizeInMo = image.size / 1000000
+    }
+
+    const showAlert = isImageTooLarge(sizeInMo)
+
     return (
       <div className="field">
         <div className={classnames('upload-thumb', className)}>
-          <Dropzone
+          <div
             className={classnames('dropzone', {
               'has-image': Boolean(image),
               'no-drag': readOnly,
             })}
-            disableClick={Boolean(image || readOnly)}
-            onDragEnter={this.handleDragStart}
-            onDragLeave={this.handleDragStop}
-            onDrop={this.handleDrop}
           >
-            {image && (
-              <div
-                className={`drag-n-drop ${dragging ? 'dragged' : ''}`}
-                style={{ borderRadius, width, height }}
-              >
-                {'Cliquez ou glissez-déposez pour charger une image'}
-              </div>
-            )}
             <AvatarEditor
               border={border}
               borderRadius={borderRadius}
@@ -136,7 +104,7 @@ class UploadThumb extends Component {
               scale={zoom}
               width={width}
             />
-            {!readOnly && image && (
+            {!readOnly && (
               <div id="zoomControl">
                 <button
                   className="change-zoom decrement"
@@ -169,11 +137,11 @@ class UploadThumb extends Component {
                 </button>
               </div>
             )}
-          </Dropzone>
+          </div>
           <nav className="field content">
-            {isUploadDisabled && (
+            {showAlert && (
               <p className="has-text-danger">
-                {`Votre image trop volumineuse : ${size.toFixed(2)} > ${maxSize}Mo`}
+                {`Votre image trop volumineuse : ${sizeInMo} > ${maxSize}Mo`}
               </p>
             )}
           </nav>
