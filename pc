@@ -69,6 +69,8 @@ if [[ "$ENV" == "production" ]]; then
 	SCALINGO_APP=pass-culture-api
 elif [[ "$ENV" == "testing" ]]; then
 	SCALINGO_APP=pass-culture-api-dev
+elif [[ "$ENV" == "datalake" ]]; then
+	SCALINGO_APP=pass-culture-datalake
 elif [[  ! -z "$ENV" ]]; then
 	SCALINGO_APP=pass-culture-api-"$ENV"
 fi
@@ -581,7 +583,6 @@ elif [[ "$CMD" == "api-licenses" ]]; then
 		exit
 	fi
 
-
 # Display logs from API
 elif [[ "$CMD" == "logs" ]]; then
   if [[ "$ENV" == "development" ]]; then
@@ -595,6 +596,11 @@ elif [[ "$CMD" == "logs" ]]; then
 	fi
 	exit
   fi
+
+# Display logs from Database
+elif [[ "$CMD" == "access-db-logs" ]]; then
+  source "$INFRA_SCRIPTS_PATH"/access_db_logs.sh
+  access_db_logs $SCALINGO_APP
 
 # Connect to Postgresql database in command line using psql
 elif [[ "$CMD" == "psql" ]]; then
@@ -689,10 +695,8 @@ if [[ $PWD == "/home/deploy/pass-culture-main" ]]; then
 	echo $RUN
   eval $RUN
 else
-	if [[ "$ENV" == "production" ]]; then
+	if [[ "$ENV" == "production" ]] || [[ "$ENV" == "staging" ]]; then
 	  echo "$RUN" | ssh deploy@api.passculture.beta.gouv.fr bash
-	elif [[ "$ENV" == "staging" ]]; then
-	  echo "$RUN" | ssh deploy@api.passculture-staging.beta.gouv.fr bash
 	elif [[ "$ENV" == "wordpress" ]]; then
 	  ssh debian@passculture.beta.gouv.fr
 	else
