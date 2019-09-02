@@ -318,6 +318,19 @@ pc -e <testing|staging|production> -f myfile.extension bash
 ```
 
 
+### Acceder au logs des bases de données
+
+En local :
+```bash
+pc access-db-logs
+```
+
+Sur les autres environnements :
+```bash
+pc -e <testing|staging|production> access-db-logs
+```
+
+
 ### Gestion des objects storage OVH
 
 Pour toutes les commandes suivantes, vous devez disposer des secrets de connexion.
