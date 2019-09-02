@@ -60,17 +60,17 @@ def count_non_cancelled_bookings_by_departement(departement_code: str) -> int:
 
 
 def count_all_cancelled_bookings() -> int:
-    return _query_non_cancelled_bookings_on_non_activation_offers().count()
+    return _query_cancelled_bookings_on_non_activation_offers().count()
 
 
 def count_all_cancelled_bookings_by_departement(departement_code: str) -> int:
-    return _query_non_cancelled_bookings_on_non_activation_offers() \
+    return _query_cancelled_bookings_on_non_activation_offers() \
         .join(User) \
         .filter(User.departementCode == departement_code) \
         .count()
 
 
-def _query_non_cancelled_bookings_on_non_activation_offers():
+def _query_cancelled_bookings_on_non_activation_offers():
     query = Booking.query \
         .filter_by(isCancelled=True) \
         .join(Stock, Stock.id == Booking.stockId) \

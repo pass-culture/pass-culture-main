@@ -1,7 +1,7 @@
 from typing import List, Tuple
 
 import pandas
-from sqlalchemy import text
+from sqlalchemy import text, func
 
 from models import Offerer, UserOfferer, Venue, Offer, Stock, Booking, EventType, ThingType, User
 from models.db import db
@@ -186,7 +186,7 @@ def query_get_offer_counts_grouped_by_type_and_medium_for_departement(departemen
     Tuple[str, bool, int]]:
     return db.engine.execute(
         text("""
-        SELECT type, url IS NOT NULL AS is_digital, count(DISTINCT offer.id) 
+        SELECT offer.type, offer.url IS NOT NULL AS is_digital, count(DISTINCT offer.id) 
         FROM offer 
         JOIN stock ON stock."offerId" = offer.id
         JOIN venue ON venue.id = offer."venueId"
@@ -201,13 +201,10 @@ def query_get_offer_counts_grouped_by_type_and_medium_for_departement(departemen
 def query_get_booking_counts_grouped_by_type_and_medium() -> List[Tuple[str, bool, int]]:
     return db.engine.execute(
         """
-        SELECT type, url IS NOT NULL AS is_digital, SUM(DISTINCT booking.quantity)
+        SELECT offer.type, offer.url IS NOT NULL AS is_digital, SUM(booking.quantity)
         FROM booking 
         JOIN stock ON stock.id = booking."stockId"
         JOIN offer ON offer.id = stock."offerId"
-        JOIN venue ON venue.id = offer."venueId"
-        JOIN offerer ON offerer.id = venue."managingOffererId"
-        JOIN user_offerer ON user_offerer."offererId" = offerer.id
         WHERE booking."isCancelled" IS FALSE
         GROUP BY type, is_digital;
         """)
@@ -217,13 +214,10 @@ def query_get_booking_counts_grouped_by_type_and_medium_for_departement(departem
     Tuple[str, bool, int]]:
     return db.engine.execute(
         text("""
-        SELECT type, url IS NOT NULL AS is_digital, SUM(DISTINCT booking.quantity)
+        SELECT offer.type, offer.url IS NOT NULL AS is_digital, SUM(booking.quantity)
         FROM booking 
         JOIN stock ON stock.id = booking."stockId"
         JOIN offer ON offer.id = stock."offerId"
-        JOIN venue ON venue.id = offer."venueId"
-        JOIN offerer ON offerer.id = venue."managingOffererId"
-        JOIN user_offerer ON user_offerer."offererId" = offerer.id
         JOIN "user" ON "user".id = booking."userId"
         WHERE booking."isCancelled" IS FALSE
          AND (
