@@ -3,6 +3,7 @@ from typing import Set, List
 
 from postgresql_audit.flask import versioning_manager
 from sqlalchemy import and_, text, func
+from sqlalchemy.orm import Query
 
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
     create_get_filter_matching_ts_query_in_any_model
@@ -41,7 +42,7 @@ def count_bookings_by_departement(departement_code: str) -> int:
         .join(User) \
         .filter(User.departementCode == departement_code) \
         .join(Stock, Booking.stockId == Stock.id) \
-        .join(Offer, Offer.id == Stock.offerId) \
+        .join(Offer) \
         .filter(Offer.type != str(ThingType.ACTIVATION)) \
         .filter(Offer.type != str(EventType.ACTIVATION)) \
         .count()
@@ -73,7 +74,7 @@ def count_all_cancelled_bookings_by_departement(departement_code: str) -> int:
 def _query_cancelled_bookings_on_non_activation_offers():
     query = Booking.query \
         .filter_by(isCancelled=True) \
-        .join(Stock, Stock.id == Booking.stockId) \
+        .join(Stock) \
         .join(Offer) \
         .filter(Offer.type != str(ThingType.ACTIVATION)) \
         .filter(Offer.type != str(EventType.ACTIVATION))
@@ -263,7 +264,7 @@ def get_existing_tokens() -> Set[str]:
     return set(map(lambda t: t[0], db.session.query(Booking.token).all()))
 
 
-def _filter_bookings_with_keywords_string(query, keywords_string):
+def _filter_bookings_with_keywords_string(query : Query, keywords_string: str) -> Query:
     keywords_filter = create_filter_matching_all_keywords_in_any_model(
         get_filter_matching_ts_query_for_booking,
         keywords_string
