@@ -120,17 +120,28 @@ ShallowWrapper {
                 Plus de 5 jours
               </span>
             </label>
-            <withSizes(DatePickerField)
+            <DatePickerField
               className="item fs19 py5 px7"
+              clearable={true}
+              dateFormat="DD/MM/YYYY"
+              hideToday={false}
+              icon={null}
+              id={null}
+              label={null}
+              locale="fr"
               minDate={2019-06-02T12:41:33.680Z}
               name="pick-by-date-filter"
               onChange={[Function]}
+              placeholder="Par date"
               popperRefContainer={
                 Object {
                   "current": null,
                 }
               }
+              readOnly={false}
+              required={false}
               selected={null}
+              withPortal={true}
             />
           </div>
         </div>,
@@ -232,17 +243,28 @@ ShallowWrapper {
                 Plus de 5 jours
               </span>
             </label>
-            <withSizes(DatePickerField)
+            <DatePickerField
               className="item fs19 py5 px7"
+              clearable={true}
+              dateFormat="DD/MM/YYYY"
+              hideToday={false}
+              icon={null}
+              id={null}
+              label={null}
+              locale="fr"
               minDate={2019-06-02T12:41:33.680Z}
               name="pick-by-date-filter"
               onChange={[Function]}
+              placeholder="Par date"
               popperRefContainer={
                 Object {
                   "current": null,
                 }
               }
+              readOnly={false}
+              required={false}
               selected={null}
+              withPortal={true}
             />
           </div>,
           "className": "pc-scroll-horizontal is-relative pb18",
@@ -322,17 +344,28 @@ ShallowWrapper {
                   </span>
                 </label>,
               ],
-              <withSizes(DatePickerField)
+              <DatePickerField
                 className="item fs19 py5 px7"
+                clearable={true}
+                dateFormat="DD/MM/YYYY"
+                hideToday={false}
+                icon={null}
+                id={null}
+                label={null}
+                locale="fr"
                 minDate={2019-06-02T12:41:33.680Z}
                 name="pick-by-date-filter"
                 onChange={[Function]}
+                placeholder="Par date"
                 popperRefContainer={
                   Object {
                     "current": null,
                   }
                 }
+                readOnly={false}
+                required={false}
                 selected={null}
+                withPortal={true}
               />,
             ],
             "className": "pc-list flex-columns",
@@ -576,16 +609,27 @@ ShallowWrapper {
             Object {
               "instance": null,
               "key": undefined,
-              "nodeType": "class",
+              "nodeType": "function",
               "props": Object {
                 "className": "item fs19 py5 px7",
+                "clearable": true,
+                "dateFormat": "DD/MM/YYYY",
+                "hideToday": false,
+                "icon": null,
+                "id": null,
+                "label": null,
+                "locale": "fr",
                 "minDate": 2019-06-02T12:41:33.680Z,
                 "name": "pick-by-date-filter",
                 "onChange": [Function],
+                "placeholder": "Par date",
                 "popperRefContainer": Object {
                   "current": null,
                 },
+                "readOnly": false,
+                "required": false,
                 "selected": null,
+                "withPortal": true,
               },
               "ref": null,
               "rendered": null,
@@ -707,17 +751,28 @@ ShallowWrapper {
                   Plus de 5 jours
                 </span>
               </label>
-              <withSizes(DatePickerField)
+              <DatePickerField
                 className="item fs19 py5 px7"
+                clearable={true}
+                dateFormat="DD/MM/YYYY"
+                hideToday={false}
+                icon={null}
+                id={null}
+                label={null}
+                locale="fr"
                 minDate={2019-06-02T12:41:33.680Z}
                 name="pick-by-date-filter"
                 onChange={[Function]}
+                placeholder="Par date"
                 popperRefContainer={
                   Object {
                     "current": null,
                   }
                 }
+                readOnly={false}
+                required={false}
                 selected={null}
+                withPortal={true}
               />
             </div>
           </div>,
@@ -819,17 +874,28 @@ ShallowWrapper {
                   Plus de 5 jours
                 </span>
               </label>
-              <withSizes(DatePickerField)
+              <DatePickerField
                 className="item fs19 py5 px7"
+                clearable={true}
+                dateFormat="DD/MM/YYYY"
+                hideToday={false}
+                icon={null}
+                id={null}
+                label={null}
+                locale="fr"
                 minDate={2019-06-02T12:41:33.680Z}
                 name="pick-by-date-filter"
                 onChange={[Function]}
+                placeholder="Par date"
                 popperRefContainer={
                   Object {
                     "current": null,
                   }
                 }
+                readOnly={false}
+                required={false}
                 selected={null}
+                withPortal={true}
               />
             </div>,
             "className": "pc-scroll-horizontal is-relative pb18",
@@ -909,17 +975,28 @@ ShallowWrapper {
                     </span>
                   </label>,
                 ],
-                <withSizes(DatePickerField)
+                <DatePickerField
                   className="item fs19 py5 px7"
+                  clearable={true}
+                  dateFormat="DD/MM/YYYY"
+                  hideToday={false}
+                  icon={null}
+                  id={null}
+                  label={null}
+                  locale="fr"
                   minDate={2019-06-02T12:41:33.680Z}
                   name="pick-by-date-filter"
                   onChange={[Function]}
+                  placeholder="Par date"
                   popperRefContainer={
                     Object {
                       "current": null,
                     }
                   }
+                  readOnly={false}
+                  required={false}
                   selected={null}
+                  withPortal={true}
                 />,
               ],
               "className": "pc-list flex-columns",
@@ -1163,16 +1240,27 @@ ShallowWrapper {
               Object {
                 "instance": null,
                 "key": undefined,
-                "nodeType": "class",
+                "nodeType": "function",
                 "props": Object {
                   "className": "item fs19 py5 px7",
+                  "clearable": true,
+                  "dateFormat": "DD/MM/YYYY",
+                  "hideToday": false,
+                  "icon": null,
+                  "id": null,
+                  "label": null,
+                  "locale": "fr",
                   "minDate": 2019-06-02T12:41:33.680Z,
                   "name": "pick-by-date-filter",
                   "onChange": [Function],
+                  "placeholder": "Par date",
                   "popperRefContainer": Object {
                     "current": null,
                   },
+                  "readOnly": false,
+                  "required": false,
                   "selected": null,
+                  "withPortal": true,
                 },
                 "ref": null,
                 "rendered": null,

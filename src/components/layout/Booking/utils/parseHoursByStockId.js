@@ -9,6 +9,7 @@ const parseHoursByStockId = (allFormValues, format = 'HH:mm') => {
     allFormValues.bookables.length > 0 &&
     allFormValues.date &&
     moment.isMoment(allFormValues.date)
+
   if (!hasBookableDates) return []
   const { date, bookables } = allFormValues
 

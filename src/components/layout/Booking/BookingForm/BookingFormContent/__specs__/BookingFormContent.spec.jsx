@@ -1,4 +1,5 @@
 import { shallow } from 'enzyme'
+import moment from 'moment'
 import React from 'react'
 import { Field } from 'react-final-form'
 
@@ -21,8 +22,8 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
       onChange: jest.fn(),
       values: {
         bookables: [],
-        date: '2019-01-01',
-        price: 12,
+        date: null,
+        price: null,
       },
     }
   })
@@ -79,7 +80,34 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
         expect(field.prop('render')).toStrictEqual(expect.any(Function))
       })
 
-      it('should render a SelectField component with the right props when no date has been selected', () => {
+      it('should not render a SelectField component when no date has been selected', () => {
+        // when
+        const wrapper = shallow(<BookingFormContent {...props} />)
+
+        // then
+        const selectField = wrapper.find(SelectField)
+        expect(selectField).toHaveLength(0)
+      })
+
+      it('should render a SelectField component with the right props when date has been selected', () => {
+        // given
+        const date = moment().add(3, 'days')
+        props.values = {
+          bookables: [
+            {
+              beginningDatetime: date,
+              id: 'AE',
+              price: 12,
+            },
+            {
+              beginningDatetime: date,
+              id: 'AF',
+              price: 13,
+            },
+          ],
+          date,
+        }
+
         // when
         const wrapper = shallow(<BookingFormContent {...props} />)
 
@@ -93,7 +121,16 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
           label: 'Choisissez une heure',
           name: 'time',
           placeholder: 'Heure et prix',
-          options: [],
+          options: [
+            {
+              id: 'AE',
+              label: `${date.format('HH:mm')} - 12\u00A0€`,
+            },
+            {
+              id: 'AF',
+              label: `${date.format('HH:mm')} - 13\u00A0€`,
+            },
+          ],
           readOnly: false,
           required: false,
         })
@@ -103,6 +140,11 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
     describe('when not isEvent', () => {
       it('should render two blocks with the proper information', () => {
         // given
+        props.values = {
+          bookables: [],
+          date: '2019-01-01',
+          price: 12,
+        }
         props.isEvent = false
 
         // when

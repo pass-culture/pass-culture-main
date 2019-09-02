@@ -14,8 +14,8 @@ ShallowWrapper {
     values={
       Object {
         "bookables": Array [],
-        "date": "2019-01-01",
-        "price": 12,
+        "date": null,
+        "price": null,
       }
     }
   />,
@@ -46,7 +46,7 @@ ShallowWrapper {
           <span
             className="is-block"
           >
-            cette offre pour 12 €.
+            cette offre pour null €.
           </span>
         </p>,
       ],
@@ -71,7 +71,7 @@ ShallowWrapper {
             <span
               className="is-block"
             >
-              cette offre pour 12 €.
+              cette offre pour null €.
             </span>,
           ],
           "className": "text-center fs22",
@@ -95,11 +95,11 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": "cette offre pour 12 €.",
+              "children": "cette offre pour null €.",
               "className": "is-block",
             },
             "ref": null,
-            "rendered": "cette offre pour 12 €.",
+            "rendered": "cette offre pour null €.",
             "type": "span",
           },
         ],
@@ -127,7 +127,7 @@ ShallowWrapper {
             <span
               className="is-block"
             >
-              cette offre pour 12 €.
+              cette offre pour null €.
             </span>
           </p>,
         ],
@@ -152,7 +152,7 @@ ShallowWrapper {
               <span
                 className="is-block"
               >
-                cette offre pour 12 €.
+                cette offre pour null €.
               </span>,
             ],
             "className": "text-center fs22",
@@ -176,11 +176,11 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": "cette offre pour 12 €.",
+                "children": "cette offre pour null €.",
                 "className": "is-block",
               },
               "ref": null,
-              "rendered": "cette offre pour 12 €.",
+              "rendered": "cette offre pour null €.",
               "type": "span",
             },
           ],
