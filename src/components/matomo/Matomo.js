@@ -7,7 +7,7 @@ const Matomo = ({ location, userId }) => {
 
   Matomo.push(['setUserId', userId + ' on PRO'])
 
-  if (!userId) {
+  if (location.pathname == '/connexion') {
     Matomo.push(['resetUserId'])
   }
 
