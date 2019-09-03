@@ -1,6 +1,7 @@
 import uuid
 from datetime import datetime
 from decimal import Decimal
+from pprint import pprint
 from unittest.mock import Mock
 
 import pytest
@@ -11,11 +12,13 @@ from domain.payments import create_payment_for_booking, filter_out_already_paid_
     filter_out_bookings_without_cost, keep_only_pending_payments, keep_only_not_processable_payments, apply_banishment, \
     UnmatchedPayments
 from domain.reimbursement import BookingReimbursement, ReimbursementRules
-from models import Offer, Venue, Booking, Offerer
+from models import Offer, Venue, Booking, Offerer, PcObject
 from models.payment import Payment
 from models.payment_status import TransactionStatus
+from tests.conftest import clean_database
 from tests.test_utils import create_booking, create_stock, create_user, create_offerer, create_venue, create_payment, \
-    create_offer_with_thing_product, create_bank_information
+    create_offer_with_thing_product, create_bank_information, create_deposit, create_booking_activity, \
+    save_all_activities
 
 
 @freeze_time('2018-10-15 09:21:34')
@@ -453,6 +456,36 @@ class CreateAllPaymentsDetailsTest:
 
         # then
         assert len(details) == 3
+
+    @clean_database
+    def test_returns_booking_used_date_if_payment_status_is_error(self, app):
+        # given
+        offerer1 = create_offerer()
+        user = create_user()
+        deposit = create_deposit(user, amount=500)
+        booking = create_booking(user)
+        payments = [
+            create_payment(booking, offerer1, 10, status=TransactionStatus.ERROR),
+        ]
+
+        PcObject.save(user, deposit, booking, *payments)
+
+        activity_insert = create_booking_activity(
+            booking, 'booking', 'insert', issued_at=datetime(2018, 1, 28)
+        )
+        activity_update = create_booking_activity(
+            booking, 'booking', 'update', issued_at=datetime(2018, 2, 12),
+            data={'isUsed': True}
+        )
+        save_all_activities(activity_insert, activity_update)
+
+        # when
+        details = create_all_payments_details(payments)
+
+        # then
+        assert len(details) == 1
+        pprint(details[0].__dict__)
+        assert details[0].booking_used_date is None
 
 
 class PaymentTransactionLabelTest:

@@ -1,4 +1,3 @@
-""" repository booking queries test """
 from datetime import datetime, timedelta
 
 import pytest
@@ -503,6 +502,20 @@ class FindFinalVenueBookingsTest:
 
 class FindDateUsedTest:
     @clean_database
+    def test_returns_date_used_if_not_none(self, app):
+        # given
+        user = create_user()
+        deposit = create_deposit(user, amount=500)
+        booking = create_booking(user, is_used=True, date_used=datetime(2018, 2, 12))
+        PcObject.save(user, deposit, booking)
+
+        # when
+        date_used = find_date_used(booking)
+
+        # then
+        assert date_used == datetime(2018, 2, 12)
+
+    @clean_database
     def test_returns_issued_date_of_matching_activity(self, app):
         # given
         user = create_user()
@@ -525,26 +538,25 @@ class FindDateUsedTest:
         # then
         assert date_used == datetime(2018, 2, 12)
 
+    @clean_database
+    def test_find_date_used_on_booking_returns_none_if_no_activity_with_is_used_changed_is_found(self, app):
+        # given
+        user = create_user()
+        deposit = create_deposit(user, amount=500)
+        booking = create_booking(user)
+        PcObject.save(user, deposit, booking)
 
-@clean_database
-def test_find_date_used_on_booking_returns_none_if_no_activity_with_is_used_changed_is_found(app):
-    # given
-    user = create_user()
-    deposit = create_deposit(user, amount=500)
-    booking = create_booking(user)
-    PcObject.save(user, deposit, booking)
+        activity_insert = create_booking_activity(
+            booking, 'booking', 'insert', issued_at=datetime(2018, 1, 28)
+        )
 
-    activity_insert = create_booking_activity(
-        booking, 'booking', 'insert', issued_at=datetime(2018, 1, 28)
-    )
+        save_all_activities(activity_insert)
 
-    save_all_activities(activity_insert)
+        # when
+        date_used = find_date_used(booking)
 
-    # when
-    date_used = find_date_used(booking)
-
-    # then
-    assert date_used is None
+        # then
+        assert date_used is None
 
 
 class FindUserActivationBookingTest:
@@ -1372,3 +1384,126 @@ class CountAllUsedOrNonCancelledBookingsTest:
 
         # Then
         assert number_of_bookings == 0
+
+
+class CountAllUsedOrNonCancelledBookingsByDepartementTest:
+    @clean_database
+    def test_return_1_if_booking_used_in_filtered_departement(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+        user = create_user(departement_code='76')
+        booking = create_booking(user, stock, is_used=True)
+        PcObject.save(booking)
+
+        # When
+        number_of_bookings = count_all_used_or_finished_bookings_by_departement('76')
+
+        # Then
+        assert number_of_bookings == 1
+
+    @clean_database
+    def test_return_0_if_booking_used_in_other_departement(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+        user = create_user(departement_code='54')
+        booking = create_booking(user, stock, is_used=True)
+        PcObject.save(booking)
+
+        # When
+        number_of_bookings = count_all_used_or_finished_bookings_by_departement('76')
+
+        # Then
+        assert number_of_bookings == 0
+
+    @clean_database
+    def test_return_0_if_thing_booking_not_used_in_departement(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        thing_offer = create_offer_with_thing_product(venue)
+        thing_stock = create_stock(offer=thing_offer, price=0)
+        user = create_user(departement_code='76')
+        thing_booking = create_booking(user, thing_stock, is_used=False)
+        PcObject.save(thing_booking)
+
+        # When
+        number_of_bookings = count_all_used_or_finished_bookings_by_departement('76')
+
+        # Then
+        assert number_of_bookings == 0
+
+    @clean_database
+    def test_return_1_if_event_booking_started_more_than_48_hours_ago_in_departement(self, app):
+        # Given
+        more_than_48_hours_ago = datetime.utcnow() - timedelta(hours=49)
+        two_days_ago = datetime.utcnow() - timedelta(hours=48)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        event_offer = create_offer_with_event_product(venue)
+        event_stock = create_stock(offer=event_offer, price=0, beginning_datetime=more_than_48_hours_ago,
+                                   end_datetime=two_days_ago,
+                                   booking_limit_datetime=more_than_48_hours_ago - timedelta(hours=1))
+        user = create_user(departement_code='76')
+        event_booking = create_booking(user, event_stock, is_used=False)
+        PcObject.save(event_booking)
+
+        # When
+        number_of_bookings = count_all_used_or_finished_bookings_by_departement('76')
+
+        # Then
+        assert number_of_bookings == 1
+
+    @clean_database
+    def test_return_0_if_event_booking_started_47_hours_ago_in_departement(self, app):
+        # Given
+        less_than_48_hours_ago = datetime.utcnow() - timedelta(hours=47)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        event_offer = create_offer_with_event_product(venue)
+        event_stock = create_stock(
+            offer=event_offer,
+            price=0,
+            beginning_datetime=less_than_48_hours_ago,
+            end_datetime=less_than_48_hours_ago + timedelta(hours=1),
+            booking_limit_datetime=less_than_48_hours_ago - timedelta(hours=1)
+        )
+        user = create_user(departement_code='76')
+        event_booking = create_booking(user, event_stock, is_used=False)
+        PcObject.save(event_booking)
+
+        # When
+        number_of_bookings = count_all_used_or_finished_bookings_by_departement('76')
+
+        # Then
+        assert number_of_bookings == 0
+
+    @clean_database
+    def test_counts_2_out_of_3_when_filtered_by_user_departement(self, app):
+        # Given
+        more_than_48_hours_ago = datetime.utcnow() - timedelta(hours=49)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        event_offer = create_offer_with_event_product(venue)
+        event_stock = create_stock(offer=event_offer, price=0, beginning_datetime=more_than_48_hours_ago,
+                                   end_datetime=two_days_ago,
+                                   booking_limit_datetime=more_than_48_hours_ago - timedelta(hours=1))
+
+        user_in_76 = create_user(departement_code='76', email='user-76@example.net')
+        user_in_41 = create_user(departement_code='41', email='user-41@example.net')
+
+        booking1 = create_booking(user_in_76, event_stock)
+        booking2 = create_booking(user_in_41, event_stock)
+        booking3 = create_booking(user_in_41, event_stock)
+        PcObject.save(booking1, booking2, booking3)
+
+        # When
+        number_of_bookings = count_all_used_or_finished_bookings_by_departement('41')
+
+        # Then
+        assert number_of_bookings == 2

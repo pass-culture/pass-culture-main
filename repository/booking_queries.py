@@ -239,6 +239,8 @@ def find_eligible_bookings_for_venue(venue_id: int) -> List[Booking]:
 
 
 def find_date_used(booking: Booking) -> datetime:
+    if booking.dateUsed:
+        return booking.dateUsed
     Activity = versioning_manager.activity_cls
     find_by_id_and_is_used = "table_name='booking' " \
                              "AND verb='update' " \
