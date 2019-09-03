@@ -2,7 +2,7 @@ import { mapStateToProps } from '../MatomoContainer'
 
 describe('src | components | matomo | MatomoContainer', () => {
   describe('mapStateToProps', () => {
-    it('should return an object of props', () => {
+    it('should return an object of props when user is logged in', () => {
       // given
       const state = { user: { id: 'TY7' } }
 
@@ -11,6 +11,17 @@ describe('src | components | matomo | MatomoContainer', () => {
 
       // then
       expect(props).toStrictEqual({ userId: 'TY7' })
+    })
+
+    it('should return an object of props when user is logged out', () => {
+      // given
+      const state = { user: null }
+
+      // when
+      const props = mapStateToProps(state)
+
+      // then
+      expect(props).toStrictEqual({ userId: 'ANONYMOUS' })
     })
   })
 })

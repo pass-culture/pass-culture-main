@@ -1,7 +1,7 @@
 import { selectCurrentUser } from '../selectCurrentUser'
 
 describe('src | selectors | selectCurrentUser', () => {
-  it('should return an empty array when there is no stock related to the offer id', () => {
+  it('should return current user id', () => {
     // given
     const state = {
       user: {
