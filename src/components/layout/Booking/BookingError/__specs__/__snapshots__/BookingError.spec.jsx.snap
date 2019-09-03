@@ -42,7 +42,7 @@ ShallowWrapper {
           <p
             className="mb36"
           >
-            Une erreur est survenue lors de la réservation
+            Aïe, il y a un petit problème...
           </p>
         </div>,
       ],
@@ -109,7 +109,7 @@ ShallowWrapper {
             <p
               className="mb36"
             >
-              Une erreur est survenue lors de la réservation
+              Aïe, il y a un petit problème...
             </p>,
             Array [],
           ],
@@ -123,11 +123,11 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": "Une erreur est survenue lors de la réservation",
+              "children": "Aïe, il y a un petit problème...",
               "className": "mb36",
             },
             "ref": null,
-            "rendered": "Une erreur est survenue lors de la réservation",
+            "rendered": "Aïe, il y a un petit problème...",
             "type": "p",
           },
         ],
@@ -164,7 +164,7 @@ ShallowWrapper {
             <p
               className="mb36"
             >
-              Une erreur est survenue lors de la réservation
+              Aïe, il y a un petit problème...
             </p>
           </div>,
         ],
@@ -231,7 +231,7 @@ ShallowWrapper {
               <p
                 className="mb36"
               >
-                Une erreur est survenue lors de la réservation
+                Aïe, il y a un petit problème...
               </p>,
               Array [],
             ],
@@ -245,11 +245,11 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": "Une erreur est survenue lors de la réservation",
+                "children": "Aïe, il y a un petit problème...",
                 "className": "mb36",
               },
               "ref": null,
-              "rendered": "Une erreur est survenue lors de la réservation",
+              "rendered": "Aïe, il y a un petit problème...",
               "type": "p",
             },
           ],

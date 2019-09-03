@@ -41,7 +41,7 @@ class BookingError extends Component {
           className="fs20"
           id="booking-error-reasons"
         >
-          <p className="mb36">{'Une erreur est survenue lors de la réservation'}</p>
+          <p className="mb36">{'Aïe, il y a un petit problème...'}</p>
           {entries && entries.map(this.renderErrorReason)}
         </div>
       </div>

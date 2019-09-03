@@ -118,10 +118,12 @@ class Booking extends PureComponent {
 
   renderFormControls = () => {
     const { match } = this.props
-    const { canSubmitForm, bookedPayload, isSubmitting } = this.state
+    const { canSubmitForm, bookedPayload, isSubmitting, isErrored } = this.state
+
     const isConfirmingCancelling = getIsConfirmingCancelling(match)
     const showCancelButton = !isSubmitting && !bookedPayload && !isConfirmingCancelling
-    const showSubmitButton = showCancelButton && canSubmitForm
+    const showSubmitButton = showCancelButton && canSubmitForm && !isErrored
+
     return (
       <Fragment>
         {showCancelButton && (

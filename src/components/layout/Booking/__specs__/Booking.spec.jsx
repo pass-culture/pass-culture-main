@@ -135,4 +135,27 @@ describe('src | components | layout |Booking', () => {
       expect(mainWrapper.find('.py36.px12.flex-rows')).toHaveLength(1)
     })
   })
+
+  describe('when an error occurs', () => {
+    it('should not display submit button', () => {
+      // given
+      props.match.params.booking = 'reservation'
+      props.match.params.confirmation = undefined
+
+      // when
+      const wrapper = mount(<Booking {...props} />)
+      const wrapperInstance = wrapper.instance()
+      const state = {
+        canSubmitForm: true,
+        isSubmitting: false,
+        bookedPayload: null,
+        isErrored: true,
+      }
+      wrapperInstance.setState(state)
+      wrapper.update()
+
+      // then
+      expect(wrapper.find('#booking-validation-button')).toHaveLength(0)
+    })
+  })
 })
