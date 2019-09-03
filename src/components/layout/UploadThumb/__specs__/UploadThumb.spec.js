@@ -2,7 +2,7 @@ import React from 'react'
 
 import { shallow } from 'enzyme'
 
-import UploadThumb, { computeNewZoom } from '../UploadThumb'
+import UploadThumb, { computeNewZoom, isImageTooLarge } from '../UploadThumb'
 
 const defaultParams = {
   current: 0.3,
@@ -62,21 +62,63 @@ describe('src | components | layout | UploadThumb |', () => {
       expect(wrapper.state('zoom')).toBe(1)
     })
 
-    describe('dropzone component', () => {
+    describe('editor-zone div', () => {
       it('should render main component properly', () => {
         // given
+        const wrapper = shallow(<UploadThumb {...props} />)
+
+        // when
+        const editorZoneComponent = wrapper.find('.editor-zone')
+
+        // then
+        expect(editorZoneComponent).toHaveLength(1)
+      })
+
+      it('should not have no-drag class when is readOnly', () => {
+        // given
         props.image = {
-          name: 'dropzoneExample.jpg',
+          name: 'editor-zoneExample.jpg',
           size: 1503804,
           type: 'image/jpeg',
         }
+        props.hasExistingImage = true
 
         // when
         const wrapper = shallow(<UploadThumb {...props} />)
-        const dropZoneComponent = wrapper.find('.dropzone')
+        const editorZoneComponent = wrapper.find('.editor-zone')
 
         // then
-        expect(dropZoneComponent).toHaveLength(1)
+        expect(editorZoneComponent.props().className).toStrictEqual('editor-zone has-image no-drag')
+      })
+    })
+
+    describe('image too large alert message', () => {
+      it('should not be displayed when image is smaller', () => {
+        // when
+        const wrapper = shallow(<UploadThumb {...props} />)
+        const showAlertComponent = wrapper.find('.has-text-danger')
+
+        // then
+        expect(showAlertComponent).toHaveLength(0)
+      })
+
+      it('should not be displayed when image is larger', () => {
+        // given
+        props.image = {
+          name: 'editor-zoneExample.jpg',
+          size: 150380467,
+          type: 'image/jpeg',
+        }
+        props.hasExistingImage = true
+
+        // when
+        const wrapper = shallow(<UploadThumb {...props} />)
+        const showAlertComponent = wrapper.find('.has-text-danger')
+
+        // then
+        expect(showAlertComponent.text()).toStrictEqual(
+          'Votre image trop volumineuse : 150.380467 > 10 Mo'
+        )
       })
     })
 
@@ -331,6 +373,24 @@ describe('src | components | layout | UploadThumb |', () => {
 
       // then
       expect(newZoom).toStrictEqual(current)
+    })
+  })
+
+  describe('isImageTooLarge', () => {
+    it('should be false is image not larger than allowed', () => {
+      // when
+      const result = isImageTooLarge(2.5)
+
+      // then
+      expect(result).toStrictEqual(false)
+    })
+
+    it('should be true is image is larger than allowed', () => {
+      // when
+      const result = isImageTooLarge(12.5)
+
+      // then
+      expect(result).toStrictEqual(true)
     })
   })
 })

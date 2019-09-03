@@ -41,7 +41,7 @@ ShallowWrapper {
         className="upload-thumb"
       >
         <div
-          className="dropzone has-image"
+          className="editor-zone has-image"
         >
           <d
             border={25}
@@ -122,7 +122,7 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <div
-            className="dropzone has-image"
+            className="editor-zone has-image"
           >
             <d
               border={25}
@@ -268,7 +268,7 @@ ShallowWrapper {
                 </button>
               </div>,
             ],
-            "className": "dropzone has-image",
+            "className": "editor-zone has-image",
           },
           "ref": null,
           "rendered": Array [
@@ -454,7 +454,7 @@ ShallowWrapper {
           className="upload-thumb"
         >
           <div
-            className="dropzone has-image"
+            className="editor-zone has-image"
           >
             <d
               border={25}
@@ -535,7 +535,7 @@ ShallowWrapper {
         "props": Object {
           "children": Array [
             <div
-              className="dropzone has-image"
+              className="editor-zone has-image"
             >
               <d
                 border={25}
@@ -681,7 +681,7 @@ ShallowWrapper {
                   </button>
                 </div>,
               ],
-              "className": "dropzone has-image",
+              "className": "editor-zone has-image",
             },
             "ref": null,
             "rendered": Array [

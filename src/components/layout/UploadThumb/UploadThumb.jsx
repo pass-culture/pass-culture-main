@@ -87,7 +87,7 @@ class UploadThumb extends Component {
       <div className="field">
         <div className={classnames('upload-thumb', className)}>
           <div
-            className={classnames('dropzone', {
+            className={classnames('editor-zone', {
               'has-image': Boolean(image),
               'no-drag': readOnly,
             })}
@@ -141,7 +141,7 @@ class UploadThumb extends Component {
           <nav className="field content">
             {showAlert && (
               <p className="has-text-danger">
-                {`Votre image trop volumineuse : ${sizeInMo} > ${maxSize}Mo`}
+                {`Votre image trop volumineuse : ${sizeInMo} > ${maxSize} Mo`}
               </p>
             )}
           </nav>
