@@ -5,11 +5,13 @@ import { compose } from 'redux'
 import VersoContentTuto from './VersoContentTuto'
 import selectThumbUrlByRouterMatch from '../../../../../selectors/selectThumbUrlByRouterMatch'
 
-const mapStateToProps = (state, ownProps) => {
+const VERSO_OVH_THUMB_SUFFIX = '_1'
+
+export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
   const thumbUrl = selectThumbUrlByRouterMatch(state, match)
   return {
-    imageURL: thumbUrl,
+    imageURL: `${thumbUrl}${VERSO_OVH_THUMB_SUFFIX}`,
   }
 }
 
