@@ -19,7 +19,7 @@ describe('src | components | pages | discovery | deck | DeckContainer', () => {
       tutoIndex: 'number',
     }
     offerId = 2
-    offer =  {
+    offer = {
       id: offerId,
       isFinished: false,
       stocks: [{}],
@@ -30,7 +30,7 @@ describe('src | components | pages | discovery | deck | DeckContainer', () => {
     }
     recommendation = {
       discoveryIdentifier: 'product_0',
-      id: "AE",
+      id: 'AE',
       mediationId,
       offerId,
       uniqId: 3,
@@ -51,13 +51,36 @@ describe('src | components | pages | discovery | deck | DeckContainer', () => {
 
   describe('mapStateToProps', () => {
     describe('isFlipDisabled', () => {
-      it('should be false when currentRecommendation and no mediation', () => {
+      it('should be false when currentRecommendation is not a tuto', () => {
         // given
+        mediation = {
+          id: 'RT',
+          offerId: 'GHEZ',
+          tutoIndex: null,
+        }
+        offer = {
+          id: 'GHEZ',
+        }
+        recommendation = {
+          discoveryIdentifier: 'product_0',
+          id: 'AE',
+          mediationId: 'RT',
+          offerId: 'GHEZ',
+        }
+        initialState = {
+          data: {
+            bookings: [],
+            mediations: [mediation],
+            offers: [offer],
+            recommendations: [recommendation],
+          },
+        }
+
         const props = {
           match: {
             params: {
-              mediationId,
-              offerId,
+              mediationId: 'RT',
+              offerId: 'GHEZ',
             },
           },
         }
@@ -69,18 +92,67 @@ describe('src | components | pages | discovery | deck | DeckContainer', () => {
         expect(result.isFlipDisabled).toBe(false)
       })
 
-      it('should be true when no currentRecommendation and tutoIndex is a number and thumbCount <= 1', () => {
+      it('should be false when currentRecommendation is tuto with thumb count 2', () => {
         // given
+        mediation = {
+          id: 'RT',
+          offerId: 'tuto',
+          thumbCount: 2,
+          tutoIndex: 6,
+        }
+        offer = {
+          id: 'tuto',
+        }
+        recommendation = {
+          discoveryIdentifier: 'product_0',
+          id: 'AE',
+          mediationId: 'RT',
+          offerId: 'tuto',
+        }
+        initialState = {
+          data: {
+            bookings: [],
+            mediations: [mediation],
+            offers: [offer],
+            recommendations: [recommendation],
+          },
+        }
+
         const props = {
           match: {
             params: {
-              mediationId,
-              offerId,
+              mediationId: 'RT',
+              offerId: 'tuto',
             },
           },
         }
-        initialState.data.mediations[0].thumbCount = 0
-        initialState.data.mediations[0].tutoIndex = 1
+
+        // when
+        const result = mapStateToProps(initialState, props)
+
+        // then
+        expect(result.isFlipDisabled).toBe(false)
+      })
+
+      it('should be true when no currentRecommendation', () => {
+        // given
+        initialState = {
+          data: {
+            bookings: [],
+            mediations: [],
+            offers: [],
+            recommendations: [],
+          },
+        }
+
+        const props = {
+          match: {
+            params: {
+              mediationId: 'RT',
+              offerId: 'GHEZ',
+            },
+          },
+        }
 
         // when
         const result = mapStateToProps(initialState, props)
@@ -89,44 +161,46 @@ describe('src | components | pages | discovery | deck | DeckContainer', () => {
         expect(result.isFlipDisabled).toBe(true)
       })
 
-      it('should be false when no currentRecommendation and tutoIndex not a number', () => {
+      it('should be true when currentRecommendation is a tuto with thumb count 1', () => {
         // given
+        mediation = {
+          id: 'RT',
+          offerId: 'tuto',
+          thumbCount: 1,
+          tutoIndex: 2,
+        }
+        offer = {
+          id: 'tuto',
+        }
+        recommendation = {
+          discoveryIdentifier: 'product_0',
+          id: 'AE',
+          mediationId: 'RT',
+          offerId: 'tuto',
+        }
+        initialState = {
+          data: {
+            bookings: [],
+            mediations: [mediation],
+            offers: [offer],
+            recommendations: [recommendation],
+          },
+        }
+
         const props = {
           match: {
             params: {
-              mediationId,
-              offerId,
+              mediationId: 'RT',
+              offerId: 'tuto',
             },
           },
         }
-        initialState.data.mediations[0].thumbCount = 0
-        initialState.data.mediations[0].tutoIndex = null
 
         // when
         const result = mapStateToProps(initialState, props)
 
         // then
-        expect(result.isFlipDisabled).toBe(false)
-      })
-
-      it('should be false when no currentRecommendation and thumbCount > 1', () => {
-        // given
-        const props = {
-          match: {
-            params: {
-              mediationId,
-              offerId,
-            },
-          },
-        }
-        initialState.data.mediations[0].thumbCount = 2
-        initialState.data.mediations[0].tutoIndex = 1
-
-        // when
-        const result = mapStateToProps(initialState, props)
-
-        // then
-        expect(result.isFlipDisabled).toBe(false)
+        expect(result.isFlipDisabled).toBe(true)
       })
     })
 

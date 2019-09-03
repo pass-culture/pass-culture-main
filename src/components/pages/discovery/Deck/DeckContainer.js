@@ -26,8 +26,8 @@ export const mapStateToProps = (state, ownProps) => {
   const recommendations = selectUniqAndIndexifiedRecommendations(state)
   const nbRecos = recommendations ? recommendations.length : 0
 
-  const isFlipDisabled =
-    !currentRecommendation || (typeof tutoIndex === 'number' && thumbCount <= 1)
+  const isTutoWithOnlyOneThumb = typeof tutoIndex === 'number' && thumbCount <= 1
+  const hasNoVerso = !currentRecommendation || isTutoWithOnlyOneThumb
 
   const nextLimit =
     nbRecos > 0 &&
@@ -44,7 +44,7 @@ export const mapStateToProps = (state, ownProps) => {
   return {
     currentRecommendation,
     isEmpty: get(state, 'loading.config.isEmpty'),
-    isFlipDisabled,
+    isFlipDisabled: hasNoVerso,
     nextLimit,
     nextRecommendation: selectNextRecommendation(state, offerId, mediationId),
     previousLimit,
