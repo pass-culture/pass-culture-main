@@ -73,3 +73,7 @@ def feature_import_beneficiaries_enabled():
 
 def feature_write_dashboard_enabled():
     return os.environ.get('WRITE_DASHBOARD', False)
+
+
+def feature_update_booking_used():
+    return os.environ.get('UPDATE_BOOKING_USED', False)

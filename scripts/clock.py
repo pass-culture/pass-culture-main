@@ -1,4 +1,3 @@
-""" clock """
 import os
 import subprocess
 from io import StringIO
@@ -11,7 +10,8 @@ from sqlalchemy import orm
 from models.db import db
 from repository.feature_queries import feature_cron_send_final_booking_recaps_enabled, \
     feature_cron_generate_and_send_payments, \
-    feature_cron_retrieve_offerers_bank_information, feature_cron_send_remedial_emails, feature_write_dashboard_enabled
+    feature_cron_retrieve_offerers_bank_information, feature_cron_send_remedial_emails, feature_write_dashboard_enabled, \
+    feature_update_booking_used
 from repository.feature_queries import feature_cron_send_wallet_balances
 from repository.feature_queries import feature_import_beneficiaries_enabled, \
     feature_cron_synchronize_titelive_things, feature_cron_synchronize_titelive_descriptions, \
@@ -51,6 +51,16 @@ def pc_generate_and_send_payments(payment_message_id: str = None):
         generate_and_send_payments(payment_message_id)
 
     logger.info("[BATCH][PAYMENTS] Cron generate_and_send_payments: END")
+
+
+def pc_update_booking_used():
+    logger.info("[BATCH][BOOKINGS] Cron update_booking_used: START")
+
+    with app.app_context():
+        from scripts.update_booking_used import update_booking_used
+        update_booking_used()
+
+    logger.info("[BATCH][BOOKINGS] Cron update_booking_used: END")
 
 
 def pc_send_wallet_balances():
@@ -196,4 +206,8 @@ if __name__ == '__main__':
 
     if feature_write_dashboard_enabled():
         scheduler.add_job(pc_write_dashboard, 'cron', id='pc_write_dashboard', day_of_week='mon', hour='4')
+
+    if feature_update_booking_used():
+        scheduler.add_job(pc_update_booking_used, 'cron', id='pc_update_booking_used', day='*', hour='0')
+
     scheduler.start()
