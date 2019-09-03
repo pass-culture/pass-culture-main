@@ -1,6 +1,7 @@
 from datetime import datetime
+from unittest.mock import patch
 
-from models import PcObject
+from models import PcObject, ApiErrors
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_stock_with_thing_offer, \
     create_deposit, create_venue, create_offerer, \
@@ -174,17 +175,23 @@ class Get:
 
     class Returns400:
         @clean_database
-        def when_user_is_admin(self, app):
+        @patch('routes.bookings.check_rights_to_get_bookings_csv')
+        def when_user_is_admin(self, check_rights_to_get_bookings_csv, app):
             # Given
             user_admin = create_user(email='user+plus@email.fr', is_admin=True, can_book_free_offers=False)
-
             PcObject.save(user_admin)
+
+            api_errors = ApiErrors()
+            api_errors.status_code = 400
+            api_errors.add_error(
+                'global',
+                "Le statut d'administrateur ne permet pas d'accéder au suivi des réseravtions"
+            )
+
+            check_rights_to_get_bookings_csv.side_effect = api_errors
 
             # When
             response = TestClient(app.test_client()).with_auth(user_admin.email).get('/bookings/csv')
 
             # Then
             assert response.status_code == 400
-            error_message = response.json
-            assert error_message['global'] == [
-                "Le statut d'administrateur ne permet pas d'accéder au suivi des réseravtions"]
