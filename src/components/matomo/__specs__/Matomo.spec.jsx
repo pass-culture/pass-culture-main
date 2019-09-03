@@ -135,6 +135,23 @@ describe('src | components | matomo | Matomo', () => {
       // then
       expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'ANONYMOUS on WEBAPP'])
     })
+
+    it('should reset userId', () => {
+      // given
+      history.push(`/connexion`)
+
+      // when
+      mount(
+        <Router history={history}>
+          <Provider store={store}>
+            <MatomoContainer />
+          </Provider>
+        </Router>
+      )
+
+      // then
+      expect(fakeMatomo.push).toHaveBeenNthCalledWith(4, ['resetUserId'])
+    })
   })
 
   describe('when user is logged', () => {
