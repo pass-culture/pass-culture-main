@@ -36,14 +36,12 @@
 
   .pc-final-form-datepicker-input {
     @extend .py7;
-    @extend .px18;
     @extend .fs20;
     @extend .flex-1;
     @extend .is-bold;
     @extend .is-block;
     @extend .no-border;
     @extend .no-outline;
-    @extend .text-center;
 
     color: $black !important;
     cursor: pointer;

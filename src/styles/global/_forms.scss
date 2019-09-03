@@ -197,9 +197,11 @@
   .calendar-icon {
     padding: 0.25rem;
     padding-right: 1rem;
+    vertical-align: middle;
   }
 
   input {
+    padding-left: 1.125rem;
     padding-top: 0.25rem;
     text-align: center;
 
@@ -226,14 +228,22 @@
       font-size: 19px;
       font-weight: 300;
     }
+
+    &.read-only {
+      .pc-final-form-datepicker-input {
+        background-color: #F5F5F5;
+      }
+    }
+
+    &.selected {
+      &::after {
+        display: none;
+        visibility: hidden;
+      }
+
+      input {
+        text-align: right;
+      }
+    }
   }
-}
-
-.react-datepicker__input-container_wrapper.read-only .pc-final-form-datepicker-input {
-  background-color: #F5F5F5;
-}
-
-.react-datepicker__input-container_wrapper.selected::after {
-  display: none;
-  visibility: hidden;
 }

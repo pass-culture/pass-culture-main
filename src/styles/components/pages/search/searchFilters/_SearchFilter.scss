@@ -97,7 +97,7 @@
 
   /* ----- Clear Button du filtre par date ----- */
   .react-datepicker__close-icon {
-    top: 0;
+    top: 5px;
     right: 0;
     width: $size;
     height: $size;
@@ -109,9 +109,26 @@
     }
   }
 
-  .react-datepicker__input-container_wrapper::after {
-    top: 0;
-    font-size: $fontSize;
+  .react-datepicker__input-container_wrapper {
+    padding-left: 1rem;
+
+    &::after {
+      font-size: $fontSize;
+      top: 0;
+    }
+
+    input {
+      color: inherit;
+      font-size: inherit;
+      font-weight: 300;
+      padding-left: 0;
+      padding-top: 0;
+      width: 125px;
+    }
+
+    &.selected {
+      padding-left: 0;
+    }
   }
 }
 

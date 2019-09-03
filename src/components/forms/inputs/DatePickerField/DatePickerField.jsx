@@ -81,7 +81,7 @@ DatePickerField.defaultProps = {
   id: null,
   label: null,
   locale: 'fr',
-  placeholder: '',
+  placeholder: '-',
   popperRefContainer: null,
   readOnly: false,
   required: false,
