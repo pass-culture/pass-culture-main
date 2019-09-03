@@ -327,7 +327,7 @@ pc access-db-logs
 
 Sur les autres environnements :
 ```bash
-pc -e <testing|staging|production> access-db-logs
+pc -e <datalake|testing|staging|production> access-db-logs
 ```
 
 
