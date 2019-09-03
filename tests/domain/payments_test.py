@@ -1,7 +1,6 @@
 import uuid
 from datetime import datetime
 from decimal import Decimal
-from pprint import pprint
 from unittest.mock import Mock
 
 import pytest
@@ -484,8 +483,7 @@ class CreateAllPaymentsDetailsTest:
 
         # then
         assert len(details) == 1
-        pprint(details[0].__dict__)
-        assert details[0].booking_used_date is None
+        assert details[0].booking_used_date == datetime(2018, 2, 12)
 
 
 class PaymentTransactionLabelTest:

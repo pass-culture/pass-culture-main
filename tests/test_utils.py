@@ -10,6 +10,7 @@ from unittest.mock import Mock
 
 import requests
 from postgresql_audit.flask import versioning_manager
+from simplejson import JSONDecodeError
 
 import models
 from models import Booking, \
@@ -808,7 +809,11 @@ def save_all_activities(*objects):
 
 def check_open_agenda_api_is_down():
     response = requests.get('https://openagenda.com/agendas/86585975/events.json?limit=1')
-    response_json = response.json()
+    try:
+        response_json = response.json()
+    except JSONDecodeError:
+        print("Error contacting openagenda API")
+        return True
     unsuccessful_request = ('success' in response_json) and not response_json['success']
     status_code_not_200 = (response.status_code != 200)
     return unsuccessful_request or status_code_not_200
