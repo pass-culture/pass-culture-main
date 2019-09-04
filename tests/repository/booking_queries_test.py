@@ -26,7 +26,7 @@ from tests.test_utils import create_booking, \
     create_stock_with_event_offer, \
     create_stock_with_thing_offer, \
     create_user, \
-    create_venue, create_stock_from_event_occurrence, create_event_occurrence, create_offer_with_thing_product, \
+    create_venue, create_offer_with_thing_product, \
     create_offer_with_event_product, \
     create_booking_activity, save_all_activities, create_stock_from_offer, create_payment, create_stock
 
@@ -423,40 +423,6 @@ class FindFinalOffererBookingsTest:
         stock = create_stock_with_thing_offer(offerer1, venue, offer)
         booking1 = create_booking(user, stock=stock, venue=venue, is_used=True)
         booking2 = create_booking(user, stock=stock, venue=venue, is_used=False)
-
-        PcObject.save(deposit, booking1, booking2)
-
-        # When
-        bookings = find_eligible_bookings_for_offerer(offerer1.id)
-
-        # Then
-        assert len(bookings) == 1
-        assert booking1 in bookings
-
-    @clean_database
-    def test_returns_only_bookings_on_events_finished_more_than_two_days_ago(self, app):
-        # Given
-        user = create_user()
-        now = datetime.utcnow()
-        deposit = create_deposit(user, amount=500)
-
-        offerer1 = create_offerer(siren='123456789')
-        venue = create_venue(offerer1)
-        offer = create_offer_with_event_product(venue)
-        old_event_occurrence = create_event_occurrence(
-            offer,
-            beginning_datetime=now - timedelta(hours=60),
-            end_datetime=now - timedelta(hours=50)
-        )
-        recent_event_occurrence = create_event_occurrence(
-            offer,
-            beginning_datetime=now - timedelta(hours=50),
-            end_datetime=now - timedelta(hours=40)
-        )
-        stock1 = create_stock_from_event_occurrence(old_event_occurrence)
-        stock2 = create_stock_from_event_occurrence(recent_event_occurrence)
-        booking1 = create_booking(user, stock=stock1, venue=venue, is_used=False)
-        booking2 = create_booking(user, stock=stock2, venue=venue, is_used=False)
 
         PcObject.save(deposit, booking1, booking2)
 
@@ -1339,27 +1305,6 @@ class CountAllUsedOrNonCancelledBookingsTest:
 
         # Then
         assert number_of_bookings == 0
-
-    @clean_database
-    def test_return_1_if_event_booking_started_more_than_48_hours_ago(self, app):
-        # Given
-        more_than_48_hours_ago = datetime.utcnow() - timedelta(hours=49)
-        two_days_ago = datetime.utcnow() - timedelta(hours=48)
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        event_offer = create_offer_with_event_product(venue)
-        event_stock = create_stock(offer=event_offer, price=0, beginning_datetime=more_than_48_hours_ago,
-                                   end_datetime=two_days_ago,
-                                   booking_limit_datetime=more_than_48_hours_ago - timedelta(hours=1))
-        user = create_user()
-        event_booking = create_booking(user, event_stock, is_used=False)
-        PcObject.save(event_booking)
-
-        # When
-        number_of_bookings = count_all_used_or_non_cancelled_bookings()
-
-        # Then
-        assert number_of_bookings == 1
 
     @clean_database
     def test_return_0_if_event_booking_started_47_hours_ago(self, app):

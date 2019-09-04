@@ -7,7 +7,6 @@ from sqlalchemy.orm import Query
 
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
     create_get_filter_matching_ts_query_in_any_model
-from domain.stocks import STOCK_DELETION_DELAY
 from models import Booking, \
     Offer, \
     Stock, \
@@ -266,7 +265,7 @@ def get_existing_tokens() -> Set[str]:
     return set(map(lambda t: t[0], db.session.query(Booking.token).all()))
 
 
-def _filter_bookings_with_keywords_string(query : Query, keywords_string: str) -> Query:
+def _filter_bookings_with_keywords_string(query: Query, keywords_string: str) -> Query:
     keywords_filter = create_filter_matching_all_keywords_in_any_model(
         get_filter_matching_ts_query_for_booking,
         keywords_string
@@ -300,14 +299,12 @@ def _query_non_cancelled_non_activation_bookings():
 
 
 def _query_get_used_or_finished_bookings_on_non_activation_offers():
-    booking_on_event_finished_more_than_two_days_ago = (datetime.utcnow() > Stock.endDatetime + STOCK_DELETION_DELAY)
-
     return Booking.query \
         .join(Stock) \
         .join(Offer) \
         .join(Venue) \
         .join(Offerer) \
         .filter(Booking.isCancelled == False) \
-        .filter((Booking.isUsed == True) | booking_on_event_finished_more_than_two_days_ago) \
+        .filter(Booking.isUsed == True) \
         .filter(Offer.type != str(ThingType.ACTIVATION)) \
         .filter(Offer.type != str(EventType.ACTIVATION))
