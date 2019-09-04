@@ -20,6 +20,7 @@ const transitionStyles = {
   exited: { marginTop: `-${filtersPanelHeight}px` },
   exiting: { marginTop: `-${filtersPanelHeight}px` },
 }
+const hiddenFilterParams = ['date', 'latitude', 'longitude', 'mots-cles']
 
 class FilterControls extends Component {
   constructor(props) {
@@ -28,6 +29,7 @@ class FilterControls extends Component {
     const { query } = props
 
     this.state = {
+      filterParamsAreEmpty: true,
       filterParamsMatchingQueryParams: false,
       initialDateParams: true,
       params: query.parse() || {},
@@ -74,6 +76,7 @@ class FilterControls extends Component {
     resetSearchStore()
 
     this.setState({
+      filterParamsAreEmpty: true,
       filterParamsMatchingQueryParams: false,
       initialDateParams: true,
       params: {},
@@ -90,8 +93,19 @@ class FilterControls extends Component {
     const nextFilterParams = { ...params, ...newValue }
     const filterParamsMatchingQueryParams = getFirstChangingKey(query.parse(), newValue)
 
+    const firstNotEmptyValue = Object.keys(nextFilterParams)
+      .filter(key => !hiddenFilterParams.includes(key))
+      .find(key => {
+        if (key === 'distance') {
+          return nextFilterParams[key] !== null && nextFilterParams[key] !== '20000'
+        }
+        return nextFilterParams[key] !== null
+      })
+    const filterParamsAreEmpty = typeof firstNotEmptyValue === 'undefined'
+
     this.setState(
       {
+        filterParamsAreEmpty,
         filterParamsMatchingQueryParams,
         params: nextFilterParams,
       },
@@ -132,7 +146,7 @@ class FilterControls extends Component {
 
   render() {
     const { isVisible } = this.props
-    const { initialDateParams } = this.state
+    const { filterParamsAreEmpty, initialDateParams } = this.state
     const filterActions = {
       add: this.handleQueryAdd,
       change: this.handleQueryChange,
@@ -178,6 +192,7 @@ class FilterControls extends Component {
                 </button>
                 <button
                   className="no-background no-outline col-1of2 fs20 py12"
+                  disabled={filterParamsAreEmpty}
                   id="filter-button"
                   onClick={this.handleOnClickFilterButton}
                   type="submit"

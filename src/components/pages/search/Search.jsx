@@ -123,14 +123,10 @@ class Search extends PureComponent {
         apiPath,
         handleSuccess: (state, action) => {
           const { data } = action.payload
-          const hasMore = data.length > 0
+          const hasMore = data.length > 10
           this.setState({ hasMore, isLoading: false })
         },
         normalizer: recommendationNormalizer,
-        // resolve: recommendation => ({
-        //   ...recommendation,
-        //   searchId,
-        // }),
       })
     )
   }
@@ -157,9 +153,6 @@ class Search extends PureComponent {
     event.preventDefault()
 
     this.setState({ isFilterVisible: false })
-
-    // const searchId = uuid()
-    // history.push(`${location.pathname}${location.search}&search-id=${searchId}`)
 
     query.change(
       {

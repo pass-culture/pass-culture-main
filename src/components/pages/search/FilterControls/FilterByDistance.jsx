@@ -40,6 +40,7 @@ class FilterByDistance extends PureComponent {
             disabled={!geolocationActive}
             name="distance"
             onBlur={this.handleOnChangeDistance}
+            onChange={this.handleOnChangeDistance}
           >
             {distanceOptions.map(({ label, value }) => (
               <option

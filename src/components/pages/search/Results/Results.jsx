@@ -19,9 +19,16 @@ class Results extends PureComponent {
   componentDidUpdate(prevProps) {
     const { items } = this.props
 
+    if (items.length > prevProps.items.length) {
+      this.handleShouldCancelLoading()
+      if (prevProps.items.length === 0) {
+        this.handleSetHasReceivedFirstSuccessData()
+      }
+      return
+    }
+
     if (items !== prevProps.items) {
       this.handleSetHasReceivedFirstSuccessData()
-      this.handleShouldCancelLoading()
     }
   }
 
@@ -55,7 +62,7 @@ class Results extends PureComponent {
   getScrollParent = () => document.querySelector('.page-content')
 
   render() {
-    const { cameFromOfferTypesPage, items, hasMore, keywords, query } = this.props
+    const { cameFromOfferTypesPage, hasMore, items, keywords, query } = this.props
     const { hasReceivedFirstSuccessData, isLoading } = this.state
     const queryParams = query.parse()
     const resultTitle = searchResultsTitle(
@@ -64,6 +71,7 @@ class Results extends PureComponent {
       cameFromOfferTypesPage,
       hasReceivedFirstSuccessData
     )
+
     const reachableThresholdThatTriggersLoadMore = -10
     const unreachableThreshold = -1000
     const threshold = isLoading ? unreachableThreshold : reachableThresholdThatTriggersLoadMore
