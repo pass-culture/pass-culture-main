@@ -5,7 +5,7 @@ import { navigateToNewMediationAs } from './helpers/navigations'
 import { createUserRole } from './helpers/roles'
 
 const creditInput = Selector('#mediation-credit')
-const dropZoneDiv = Selector('div.dropzone').filterVisible()
+const editorZoneDiv = Selector('div.editor-zone').filterVisible()
 const submitButton = Selector('button.button.is-primary').withText('Valider')
 const imageUrlInput = Selector("input[placeholder='URL du fichier']")
 const imageUrlButton = Selector('button.is-primary').withText('OK')
@@ -64,7 +64,7 @@ test('Je peux charger une image same origin', async t => {
   await t.typeText(imageUrlInput, '/images/mediation-test.jpg').click(imageUrlButton)
 
   // then
-  await t.expect(dropZoneDiv.exists).ok()
+  await t.expect(editorZoneDiv.exists).ok()
 })
 
 test('Je peux charger une CORS image', async t => {
@@ -81,7 +81,7 @@ test('Je peux charger une CORS image', async t => {
     .click(imageUrlButton)
 
   // then
-  await t.expect(dropZoneDiv.exists).ok()
+  await t.expect(editorZoneDiv.exists).ok()
 })
 
 test("Je peux changer d'image chargée", async t => {
@@ -100,5 +100,5 @@ test("Je peux changer d'image chargée", async t => {
     .click(urlButton)
 
   // then
-  await t.expect(dropZoneDiv.exists).ok()
+  await t.expect(editorZoneDiv.exists).ok()
 })
