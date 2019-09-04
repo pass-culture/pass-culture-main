@@ -32,10 +32,14 @@
       @extend .m12;
       flex: 2;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
 
       h5 {
         @extend .fs18;
         @extend .is-bold;
+        @include multiLineEllipsis();
       }
 
       .search-result-item-type {

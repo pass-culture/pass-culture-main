@@ -410,7 +410,7 @@ describe('src | components | pages | my-favorite | MyFavorite | MyFavoriteContai
 
       // then
       expect(props).toStrictEqual({
-        date: 'du Sun 2030-7-21 au Wed 2030-8-21',
+        date: 'du 2030-7-21 au 2030-8-21',
         detailsUrl: '//details/o1',
         handleToggleFavorite: expect.any(Function),
         humanizeRelativeDistance: '10 km',

@@ -1,0 +1,18 @@
+.mf-my-favorite {
+  .teaser-title {
+    font-weight: 700;
+  }
+
+  .teaser-sub-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mf-wrapper {
+    padding-right: 0px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}

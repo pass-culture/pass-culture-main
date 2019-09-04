@@ -30,10 +30,9 @@ export const humanizeRelativeDate = offerDate => {
 const formatDate = (date, timeZone) => {
   const options = {
     timeZone,
-    weekday: 'long',
   }
 
-  return `${date.toLocaleDateString('fr-FR', options)} ${date.toLocaleDateString()}`
+  return `${date.toLocaleDateString('fr-FR', options)}`
 }
 
 export const formatRecommendationDates = (departementCode, dateRange = []) => {

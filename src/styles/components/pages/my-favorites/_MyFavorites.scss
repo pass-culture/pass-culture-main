@@ -26,19 +26,19 @@
 .mf-done-btn {
   @include btn();
 
-  background: transparent url(/icons/checkbox-check-w.svg) no-repeat left center;
+  background: transparent url(/icons/ico-check-w.svg) no-repeat left center;
 }
 
 .mf-edit-btn {
   @include btn();
 
-  background: transparent url(/icons/ico-edit.svg) no-repeat left center;
+  background: transparent url(/icons/ico-edit-w.svg) no-repeat left center;
 }
 
 .mf-delete-btn {
   @include btn();
 
-  background: transparent no-repeat left center;
+  background: transparent url(/icons/ico-bin-w.svg) no-repeat left center;
 }
 
 .mf-wrapper {

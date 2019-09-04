@@ -98,7 +98,7 @@ describe('src | utils | date | date', () => {
 
         // then
         // https://github.com/nodejs/node-v0.x-archive/issues/4689
-        expect(result).toBe('du Thu 2018-10-25 au Fri 2018-10-26')
+        expect(result).toBe('du 2018-10-25 au 2018-10-26')
       })
     })
 
@@ -113,7 +113,7 @@ describe('src | utils | date | date', () => {
 
         // then
         // https://github.com/nodejs/node-v0.x-archive/issues/4689
-        expect(result).toBe('du Thu 2018-10-25 au Fri 2018-10-26')
+        expect(result).toBe('du 2018-10-25 au 2018-10-26')
       })
     })
   })
