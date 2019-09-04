@@ -49,11 +49,9 @@ class UploadThumb extends Component {
     if (!image) return
     const { onImageChange } = this.props
     const getCroppingRect = this.avatarEditor.current.getCroppingRect()
-    if (onImageChange) {
-      if (isUploadDisabled) return onImageChange(ctx)
+    if (isUploadDisabled) return onImageChange(ctx)
 
-      onImageChange(ctx, image, getCroppingRect)
-    }
+    onImageChange(ctx, image, getCroppingRect)
   }
 
   changeZoom(direction) {
@@ -141,7 +139,7 @@ class UploadThumb extends Component {
           <nav className="field content">
             {showAlert && (
               <p className="has-text-danger">
-                {`Votre image trop volumineuse : ${sizeInMo} > ${maxSize} Mo`}
+                {`Votre image trop volumineuse, elle doit faire moins de ${maxSize} Mo.`}
               </p>
             )}
           </nav>

@@ -62,7 +62,7 @@ describe('src | components | layout | UploadThumb |', () => {
       expect(wrapper.state('zoom')).toBe(1)
     })
 
-    describe('editor-zone div', () => {
+    describe('editor zone', () => {
       it('should render main component properly', () => {
         // given
         const wrapper = shallow(<UploadThumb {...props} />)
@@ -74,7 +74,7 @@ describe('src | components | layout | UploadThumb |', () => {
         expect(editorZoneComponent).toHaveLength(1)
       })
 
-      it('should not have no-drag class when is readOnly', () => {
+      it('should use editor-zone, has-image and no-drag class when hasExistingImage is true', () => {
         // given
         props.image = {
           name: 'editor-zoneExample.jpg',
@@ -85,15 +85,15 @@ describe('src | components | layout | UploadThumb |', () => {
 
         // when
         const wrapper = shallow(<UploadThumb {...props} />)
-        const editorZoneComponent = wrapper.find('.editor-zone')
 
         // then
+        const editorZoneComponent = wrapper.find('.editor-zone')
         expect(editorZoneComponent.props().className).toStrictEqual('editor-zone has-image no-drag')
       })
     })
 
     describe('image too large alert message', () => {
-      it('should not be displayed when image is smaller', () => {
+      it('should not be displayed when image is smaller than maximum size', () => {
         // when
         const wrapper = shallow(<UploadThumb {...props} />)
         const showAlertComponent = wrapper.find('.has-text-danger')
@@ -102,22 +102,22 @@ describe('src | components | layout | UploadThumb |', () => {
         expect(showAlertComponent).toHaveLength(0)
       })
 
-      it('should not be displayed when image is larger', () => {
+      it('should be displayed when image is larger than maximum size', () => {
         // given
         props.image = {
           name: 'editor-zoneExample.jpg',
-          size: 150380467,
+          size: 150000000,
           type: 'image/jpeg',
         }
         props.hasExistingImage = true
 
         // when
         const wrapper = shallow(<UploadThumb {...props} />)
-        const showAlertComponent = wrapper.find('.has-text-danger')
 
         // then
+        const showAlertComponent = wrapper.find('.has-text-danger')
         expect(showAlertComponent.text()).toStrictEqual(
-          'Votre image trop volumineuse : 150.380467 > 10 Mo'
+          'Votre image trop volumineuse, elle doit faire moins de 10 Mo.'
         )
       })
     })
@@ -136,16 +136,15 @@ describe('src | components | layout | UploadThumb |', () => {
         expect(zoomControlComponent).toHaveLength(0)
       })
 
-      it('should be displayed when image is uploaded', () => {
+      it('should be displayed when image is not uploaded', () => {
         // given
         props.hasExistingImage = false
 
         // when
         const wrapper = shallow(<UploadThumb {...props} />)
 
-        const zoomControlComponent = wrapper.find('#zoomControl')
-
         // then
+        const zoomControlComponent = wrapper.find('#zoomControl')
         expect(zoomControlComponent).toHaveLength(1)
       })
 
@@ -156,12 +155,11 @@ describe('src | components | layout | UploadThumb |', () => {
         // when
         const wrapper = shallow(<UploadThumb {...props} />)
 
+        // then
         const zoomControlComponent = wrapper
           .find('#zoomControl')
           .find('button')
           .at(0)
-
-        // then
         expect(zoomControlComponent).toHaveLength(1)
         expect(zoomControlComponent.props().className).toStrictEqual('change-zoom decrement')
       })
@@ -173,12 +171,11 @@ describe('src | components | layout | UploadThumb |', () => {
         // when
         const wrapper = shallow(<UploadThumb {...props} />)
 
+        // then
         const zoomControlComponent = wrapper
           .find('#zoomControl')
           .find('button')
           .at(1)
-
-        // then
         expect(zoomControlComponent).toHaveLength(1)
         expect(zoomControlComponent.props().className).toStrictEqual('change-zoom increment')
       })
@@ -200,7 +197,6 @@ describe('src | components | layout | UploadThumb |', () => {
         }
       })
 
-      // when
       const wrapper = shallow(<UploadThumb {...props} />)
       wrapper.instance()['handleSetZoomInput'] = {
         current: {
@@ -209,6 +205,7 @@ describe('src | components | layout | UploadThumb |', () => {
       }
       wrapper.setState({ zoom: 1.1 })
 
+      // when
       wrapper.find('.decrement').simulate('click')
 
       // then
@@ -229,7 +226,6 @@ describe('src | components | layout | UploadThumb |', () => {
         }
       })
 
-      // when
       const wrapper = shallow(<UploadThumb {...props} />)
       wrapper.instance()['handleSetZoomInput'] = {
         current: {
@@ -237,6 +233,7 @@ describe('src | components | layout | UploadThumb |', () => {
         },
       }
 
+      // when
       wrapper.find('.increment').simulate('click')
 
       // then
@@ -252,9 +249,9 @@ describe('src | components | layout | UploadThumb |', () => {
         size: 1503804,
         type: 'image/jpeg',
       }
+      const wrapper = shallow(<UploadThumb {...props} />)
 
       // when
-      const wrapper = shallow(<UploadThumb {...props} />)
       wrapper.find('input[name="zoomLeft"]').simulate('change', { target: { value: 1.95 } })
 
       // then
@@ -275,25 +272,22 @@ describe('src | components | layout | UploadThumb |', () => {
     it('should not be called when no image', () => {
       // given
       props.image = null
-
-      // when
       const wrapper = shallow(<UploadThumb {...props} />)
 
+      // when
       wrapper.instance().handleOnImageChange(ctx)
 
       // then
       expect(props.onImageChange).not.toHaveBeenCalledWith()
     })
 
-    it('should be called with ctx when onImageChange func given and upload is disabled', () => {
+    it('should be called with ctx when onImageChange func is given and upload is disabled', () => {
       // given
       props.image = {
         name: 'IMG_4366.jpg',
         size: 1503804,
         type: 'image/jpeg',
       }
-
-      // when
       const wrapper = shallow(<UploadThumb {...props} />)
       wrapper.setState({ image, isUploadDisabled: true, size: 15038040 })
       wrapper.instance()['avatarEditor'] = {
@@ -301,6 +295,8 @@ describe('src | components | layout | UploadThumb |', () => {
           getCroppingRect,
         },
       }
+
+      // when
       wrapper.instance().handleOnImageChange(ctx)
 
       // then
@@ -310,8 +306,6 @@ describe('src | components | layout | UploadThumb |', () => {
     it('should be called with image, ctx and new coordonnates', () => {
       // given
       const wrapper = shallow(<UploadThumb {...props} />)
-
-      // when
       wrapper.setState({ image, isUploadDisabled: false, size: 15038040 })
       wrapper.instance()['avatarEditor'] = {
         current: {
@@ -319,6 +313,8 @@ describe('src | components | layout | UploadThumb |', () => {
         },
       }
       const currentImage = wrapper.state('image')
+
+      // when
       wrapper.instance().handleOnImageChange(ctx)
 
       // then
@@ -377,7 +373,7 @@ describe('src | components | layout | UploadThumb |', () => {
   })
 
   describe('isImageTooLarge', () => {
-    it('should be false is image not larger than allowed', () => {
+    it('should be false when image is not larger than allowed', () => {
       // when
       const result = isImageTooLarge(2.5)
 
@@ -385,7 +381,7 @@ describe('src | components | layout | UploadThumb |', () => {
       expect(result).toStrictEqual(false)
     })
 
-    it('should be true is image is larger than allowed', () => {
+    it('should be true when image is larger than allowed', () => {
       // when
       const result = isImageTooLarge(12.5)
 
