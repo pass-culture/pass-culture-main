@@ -1,4 +1,3 @@
-""" recommendations """
 from datetime import datetime, timedelta
 import random
 
@@ -165,17 +164,6 @@ def get_recommendation_search_params(request_args: dict) -> dict:
     search_params = {}
     api_errors = ApiErrors()
 
-    if 'page' in request_args and request_args['page']:
-        search_params['page'] = int(request_args['page'])
-
-    if 'keywords' in request_args and request_args['keywords']:
-        search_params['keywords_string'] = request_args['keywords']
-
-    if 'categories' in request_args and request_args['categories']:
-        type_sublabels = request_args['categories']
-        search_params['type_values'] = get_event_or_thing_type_values_from_sublabels(
-            type_sublabels)
-
     if 'date' in request_args and request_args['date']:
         date = dateutil.parser.parse(request_args['date'])
         search_params['days_intervals'] = [
@@ -189,6 +177,9 @@ def get_recommendation_search_params(request_args: dict) -> dict:
             for days in days_intervals
         ]
 
+    if 'keywords' in request_args and request_args['keywords']:
+        search_params['keywords_string'] = request_args['keywords']
+
     if 'latitude' in request_args and request_args['latitude']:
         search_params['latitude'] = float(request_args['latitude'])
 
@@ -200,5 +191,13 @@ def get_recommendation_search_params(request_args: dict) -> dict:
             api_errors.add_error('distance', 'cela doit etre un nombre')
             raise api_errors
         search_params['max_distance'] = float(request_args['distance'])
+
+    if 'page' in request_args and request_args['page']:
+        search_params['page'] = int(request_args['page'])
+
+    if 'categories' in request_args and request_args['categories']:
+        type_sublabels = request_args['categories']
+        search_params['type_values'] = get_event_or_thing_type_values_from_sublabels(
+            type_sublabels)
 
     return search_params

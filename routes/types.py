@@ -1,4 +1,3 @@
-"""types"""
 from flask import current_app as app, jsonify
 from flask_login import current_user, login_required
 
