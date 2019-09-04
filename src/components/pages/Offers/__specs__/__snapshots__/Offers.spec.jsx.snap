@@ -234,7 +234,6 @@ ShallowWrapper {
                 style={null}
               />
             }
-            useWindow={true}
           />
         </div>,
       ],
@@ -669,7 +668,6 @@ ShallowWrapper {
                   style={null}
                 />
               }
-              useWindow={true}
             />,
           ],
           "className": "section",
@@ -750,7 +748,6 @@ ShallowWrapper {
                 label="Chargement"
                 style={null}
               />,
-              "useWindow": true,
             },
             "ref": null,
             "rendered": Array [],
@@ -888,7 +885,6 @@ ShallowWrapper {
                   style={null}
                 />
               }
-              useWindow={true}
             />
           </div>,
         ],
@@ -1323,7 +1319,6 @@ ShallowWrapper {
                     style={null}
                   />
                 }
-                useWindow={true}
               />,
             ],
             "className": "section",
@@ -1404,7 +1399,6 @@ ShallowWrapper {
                   label="Chargement"
                   style={null}
                 />,
-                "useWindow": true,
               },
               "ref": null,
               "rendered": Array [],

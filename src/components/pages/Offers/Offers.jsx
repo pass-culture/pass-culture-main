@@ -14,7 +14,6 @@ import { offerNormalizer } from '../../../utils/normalizers'
 import { mapApiToBrowser, translateQueryParamsToApiParams } from '../../../utils/translate'
 import OfferItemContainer from './OfferItem/OfferItemContainer'
 
-
 class Offers extends Component {
   constructor(props) {
     super(props)
@@ -40,10 +39,19 @@ class Offers extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { location } = this.props
+    const { location, offers } = this.props
+
+    if (offers.length > prevProps.offers.length) {
+      this.scrollerIsNotLoading()
+    }
+
     if (location.search !== prevProps.location.search) {
       this.onHandleRequestData()
     }
+  }
+
+  scrollerIsNotLoading = () => {
+    this.setState({ isLoading: false })
   }
 
   onHandleRequestData = () => {
@@ -71,8 +79,7 @@ class Offers extends Component {
               payload: { data },
             } = action
             this.setState({
-              hasMore: data.length > 0,
-              isLoading: false,
+              hasMore: !(data.length < 10),
             })
           },
           normalizer: offerNormalizer,
@@ -86,19 +93,16 @@ class Offers extends Component {
     event.preventDefault()
     const { dispatch, query } = this.props
     const value = event.target.elements.search.value
-    const isEmptySearch = typeof value === 'undefined' || value === ''
 
     query.change({
       [mapApiToBrowser.keywords]: value === '' ? null : value,
       page: null,
     })
 
-    if (!isEmptySearch) {
-      dispatch(assignData({ offers: [] }))
-    }
+    dispatch(assignData({ offers: [] }))
   }
 
-  handleSubmitRequestSuccess = (notificationMessage) => {
+  handleSubmitRequestSuccess = notificationMessage => {
     const { dispatch } = this.props
     dispatch(
       showNotification({
@@ -157,7 +161,6 @@ class Offers extends Component {
   }
 
   render() {
-
     const { currentUser, offers, offerer, query, venue } = this.props
 
     const { isAdmin } = currentUser || {}
@@ -177,8 +180,8 @@ class Offers extends Component {
     return (
       <Main
         handleRequestData={this.onHandleRequestData}
-        name="offers"
         id="offers"
+        name="offers"
       >
         <HeroSection title="Vos offres">
           {!isAdmin && (
@@ -189,7 +192,9 @@ class Offers extends Component {
               <span className="icon">
                 <Icon svg="ico-offres-w" />
               </span>
-              <span>{'Créer une offre'}</span>
+              <span>
+                {'Créer une offre'}
+              </span>
             </NavLink>
           )}
         </HeroSection>
@@ -197,7 +202,9 @@ class Offers extends Component {
           className="section"
           onSubmit={this.handleOnSubmit}
         >
-          <label className="label">{'Rechercher une offre :'}</label>
+          <label className="label">
+            {'Rechercher une offre :'}
+          </label>
           <div className="field is-grouped">
             <p className="control is-expanded">
               <input
@@ -230,31 +237,33 @@ class Offers extends Component {
         </form>
 
         <ul className="section">
-
           { offerer &&
-              <button
-                className="offerer-filter tag is-rounded is-medium"
-                onClick={this.handleOnOffererClick(query)}
-                type="button"
-              >
-                {'Structure :'}
-                <span className="name">&nbsp;{offerer.name}</span>
-                <Icon svg="ico-close-r" />
-                </button>
+            <button
+              className="offerer-filter tag is-rounded is-medium"
+              onClick={this.handleOnOffererClick(query)}
+              type="button"
+            >
+              {'Structure :'}
+              <span className="name">
+                &nbsp;
+                {offerer.name}
+              </span>
+              <Icon svg="ico-close-r" />
+            </button>
           }
-
           { venue &&
             <button
               className="venue-filter tag is-rounded is-medium"
               onClick={this.handleOnVenueClick(query)}
               type="button"
             >
-                {'Lieu : '}
-                <span className="name">{venue.name}</span>
-                <Icon svg="ico-close-r" />
-              </button>
+              {'Lieu : '}
+              <span className="name">
+                {venue.name}
+              </span>
+              <Icon svg="ico-close-r" />
+            </button>
           }
-
         </ul>
         <div className="section">
           {false && (
@@ -270,8 +279,12 @@ class Offers extends Component {
                     onBlur={this.handleOnChange}
                     value={orderName}
                   >
-                    <option value="sold">{'Offres écoulées'}</option>
-                    <option value="createdAt">{'Date de création'}</option>
+                    <option value="sold">
+                      {'Offres écoulées'}
+                    </option>
+                    <option value="createdAt">
+                      {'Date de création'}
+                    </option>
                   </select>
                 </span>
               </div>
@@ -297,7 +310,7 @@ class Offers extends Component {
                   onClick={this.handleOnDeactivateAllVenueOffersClick}
                   type="button"
                 >
-                Désactiver toutes les offres
+                  {'Désactiver toutes les offres'}
                 </button>
 
                 <button
@@ -305,7 +318,7 @@ class Offers extends Component {
                   onClick={this.handleOnActivateAllVenueOffersClick}
                   type="button"
                 >
-                Activer toutes les offres
+                  {'Activer toutes les offres'}
                 </button>
               </div>
             )
@@ -317,7 +330,6 @@ class Offers extends Component {
             hasMore={hasMore}
             isLoading={isLoading}
             loader={<Spinner key="spinner" />}
-            useWindow
           >
             {offers.map(offer => (
               <OfferItemContainer
