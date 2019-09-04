@@ -17,7 +17,9 @@ def upsert_tuto_mediations():
 def _upsert_tuto_mediation(index, has_back=False):
     existing_mediation = Mediation.query.filter_by(tutoIndex=index) \
         .first()
-    mediation = existing_mediation or Mediation()
+    if existing_mediation:
+        return
+    mediation = Mediation()
     mediation.tutoIndex = index
     PcObject.save(mediation)
 
