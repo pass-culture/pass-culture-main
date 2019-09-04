@@ -136,8 +136,8 @@ describe('src | components | layout |Booking', () => {
     })
   })
 
-  describe('when an error occurs', () => {
-    it('should not display submit button', () => {
+  describe('renderFormControls', () => {
+    it('should not display submit button when an error occurs', () => {
       // given
       props.match.params.booking = 'reservation'
       props.match.params.confirmation = undefined
@@ -155,7 +155,49 @@ describe('src | components | layout |Booking', () => {
       wrapper.update()
 
       // then
+      expect(wrapper.find('#booking-close-button')).toHaveLength(1)
       expect(wrapper.find('#booking-validation-button')).toHaveLength(0)
     })
+  })
+
+  it('should display submit button when no error occurs', () => {
+    // given
+    props.match.params.booking = 'reservation'
+    props.match.params.confirmation = undefined
+
+    // when
+    const wrapper = mount(<Booking {...props} />)
+    const wrapperInstance = wrapper.instance()
+    const state = {
+      canSubmitForm: true,
+      isSubmitting: false,
+      bookedPayload: null,
+      isErrored: false,
+    }
+    wrapperInstance.setState(state)
+    wrapper.update()
+
+    // then
+    expect(wrapper.find('#booking-close-button')).toHaveLength(1)
+    expect(wrapper.find('#booking-validation-button')).toHaveLength(1)
+  })
+
+  it('should let people confirm cancellation', () => {
+    // given
+    const wrapper = mount(<Booking {...props} />)
+
+    // when
+    const wrapperInstance = wrapper.instance()
+    const state = {
+      canSubmitForm: true,
+      isSubmitting: false,
+      bookedPayload: null,
+      isErrored: false,
+    }
+    wrapperInstance.setState(state)
+    wrapper.update()
+
+    // then
+    expect(wrapper.find('#booking-cancellation-confirmation-button')).toHaveLength(1)
   })
 })
