@@ -110,7 +110,7 @@ class Booking(PcObject, Model, VersionedMixin):
             return ['global', 'la quantité disponible pour cette offre est atteinte']
         elif 'insufficientFunds' in str(ie.orig):
             return ['insufficientFunds',
-                                "Le solde de votre pass n'est pas suffisant pour effectuer cette réservation."]
+                                "Le solde de votre pass est insuffisant pour réserver cette offre."]
         return PcObject.restize_integrity_error(ie)
 
     @property

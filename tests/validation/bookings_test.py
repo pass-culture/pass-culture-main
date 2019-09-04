@@ -30,8 +30,8 @@ class CheckExpenseLimitsTest:
             check_expenses_limits(expenses, booking, find_stock=mocked_query)
 
         # then
-        assert api_errors.value.errors['global'] == ['La limite de %s € pour les biens culturels ne vous permet pas ' \
-                                                     'de réserver' % SUBVENTION_PHYSICAL_THINGS]
+        assert api_errors.value.errors['global'] == ['Le plafond de %s € pour les biens culturels ne vous permet pas ' \
+                                                     'de réserver cette offre.' % SUBVENTION_PHYSICAL_THINGS]
 
     def test_check_expenses_limits_raises_an_error_when_digital_limit_is_reached(self):
         # given
@@ -48,8 +48,8 @@ class CheckExpenseLimitsTest:
             check_expenses_limits(expenses, booking, find_stock=mocked_query)
 
         # then
-        assert api_errors.value.errors['global'] == ['La limite de %s € pour les offres numériques ne vous permet pas ' \
-                                                     'de réserver' % SUBVENTION_DIGITAL_THINGS]
+        assert api_errors.value.errors['global'] == ['Le plafond de %s € pour les offres numériques ne vous permet pas ' \
+                                                     'de réserver cette offre.' % SUBVENTION_DIGITAL_THINGS]
 
     def test_does_not_raise_an_error_when_actual_expenses_are_lower_than_max(self):
         # given

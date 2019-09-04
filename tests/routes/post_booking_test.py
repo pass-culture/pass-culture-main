@@ -188,7 +188,7 @@ class Post:
             assert r_create.status_code == 400
             assert 'insufficientFunds' in r_create.json
             assert r_create.json['insufficientFunds'] == [
-                "Le solde de votre pass n'est pas suffisant pour effectuer cette réservation."]
+                "Le solde de votre pass est insuffisant pour réserver cette offre."]
 
         @clean_database
         def when_only_public_credit_and_limit_of_physical_thing_reached(self, app):
@@ -237,8 +237,8 @@ class Post:
             # Then
             error_message = response.json
             assert response.status_code == 400
-            assert error_message['global'] == ['La limite de 200 € pour les biens culturels ' \
-                                               'ne vous permet pas de réserver']
+            assert error_message['global'] == ['Le plafond de 200 € pour les biens culturels ' \
+                                               'ne vous permet pas de réserver cette offre.']
 
         @clean_database
         def when_missing_stock_id(self, app):

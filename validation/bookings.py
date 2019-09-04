@@ -103,15 +103,15 @@ def check_expenses_limits(expenses: dict, booking: Booking, find_stock=find_stoc
     if is_eligible_to_physical_products_capping(product):
         if (expenses['physical']['actual'] + booking.value) > expenses['physical']['max']:
             raise ApiErrors(
-                {'global': ['La limite de %s € pour les biens culturels ne vous permet pas ' \
-                            'de réserver' % expenses['physical']['max']]}
+                {'global': ['Le plafond de %s € pour les biens culturels ne vous permet pas ' \
+                            'de réserver cette offre.' % expenses['physical']['max']]}
             )
 
     if is_eligible_to_digital_products_capping(product):
         if (expenses['digital']['actual'] + booking.value) > expenses['digital']['max']:
             raise ApiErrors(
-                {'global': ['La limite de %s € pour les offres numériques ne vous permet pas ' \
-                            'de réserver' % expenses['digital']['max']]}
+                {'global': ['Le plafond de %s € pour les offres numériques ne vous permet pas ' \
+                            'de réserver cette offre.' % expenses['digital']['max']]}
             )
 
 
