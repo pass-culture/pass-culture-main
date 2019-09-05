@@ -119,7 +119,7 @@ class MoveRequestedRecommendationFirstTest:
 
         requested_recommendation = create_recommendation(None, user=user, mediation=tuto_mediation1)
 
-        PcObject.save(mediation1, mediation2, mediation3, *recommendations, requested_recommendation)
+        PcObject.save(mediation1, mediation2, mediation3, *recommendations)
 
         # When
         ordered_recommendations = move_requested_recommendation_first(recommendations, requested_recommendation)
@@ -127,3 +127,35 @@ class MoveRequestedRecommendationFirstTest:
         # Then
         assert ordered_recommendations[0] == requested_recommendation
         assert len(ordered_recommendations) == len(recommendations)
+
+    @clean_database
+    def test_move_requested_matching_offer_first_when_other_recommendation_is_requested_with_different_mediation(self,
+                                                                                                                 app):
+        # Given
+        user = create_user()
+
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue)
+        offer2 = create_offer_with_thing_product(venue)
+        offer3 = create_offer_with_thing_product(venue)
+        mediation1 = create_mediation(offer1)
+        mediation2 = create_mediation(offer2)
+        mediation3 = create_mediation(offer3)
+        recommendations = [
+            create_recommendation(offer1, user=user, mediation=mediation1),
+            create_recommendation(offer2, user=user, mediation=mediation2),
+            create_recommendation(offer3, user=user, mediation=mediation3),
+        ]
+
+        requested_recommendation = create_recommendation(offer2, user=user, mediation=create_mediation(offer2))
+
+        PcObject.save(mediation1, mediation2, mediation3, *recommendations)
+
+        # When
+        ordered_recommendations = move_requested_recommendation_first(recommendations, requested_recommendation)
+
+        # Then
+        assert ordered_recommendations[0] == requested_recommendation
+        assert len(ordered_recommendations) == len(recommendations)
+        assert recommendations[1] not in ordered_recommendations
