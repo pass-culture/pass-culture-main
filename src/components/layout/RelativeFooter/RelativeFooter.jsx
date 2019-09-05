@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Link, withRouter } from 'react-router-dom'
 
-const NavigationFooter = ({ className, disabled, location, theme }) => {
+const RelativeFooter = ({ className, disabled, location, theme }) => {
   const cssClassName = `pc-theme-${theme} pc-footer flex-center flex-none ${className}`
   const cleanPath = location.pathname.replace(/\/$/, '')
   const menuUrl = `${cleanPath}/menu${location.search}`
@@ -24,16 +24,16 @@ const NavigationFooter = ({ className, disabled, location, theme }) => {
   )
 }
 
-NavigationFooter.defaultProps = {
+RelativeFooter.defaultProps = {
   className: '',
   disabled: false,
 }
 
-NavigationFooter.propTypes = {
+RelativeFooter.propTypes = {
   className: PropTypes.string,
   disabled: PropTypes.bool,
   location: PropTypes.shape().isRequired,
   theme: PropTypes.string.isRequired,
 }
 
-export default withRouter(NavigationFooter)
+export default withRouter(RelativeFooter)

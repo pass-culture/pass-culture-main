@@ -3,7 +3,7 @@
 exports[`src | components | pages | RelativeFooter should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <withRouter(NavigationFooter)
+  Symbol(enzyme.__unrendered__): <withRouter(RelativeFooter)
     theme="fakeTheme"
   />,
   Symbol(enzyme.__renderer__): Object {
