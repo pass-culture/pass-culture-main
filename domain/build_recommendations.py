@@ -1,6 +1,7 @@
-from repository.feature_queries import feature_paid_offers_enabled
+from typing import List
+
+from models import Recommendation
 from repository.recommendation_queries import find_unseen_tutorials_for_user
-from utils.config import BLOB_SIZE, BLOB_UNREAD_NUMBER
 from utils.logger import logger
 
 
@@ -21,11 +22,12 @@ def move_tutorial_recommendations_first(recos, seen_recommendation_ids, user):
     return recos
 
 
-def move_requested_recommendation_first(recos, requested_recommendation):
-    for i, reco in enumerate(recos):
-        if reco.id == requested_recommendation.id\
-           or reco.offer.id == requested_recommendation.offer.id:
-            recos = recos[:i] + recos[i + 1:]
+def move_requested_recommendation_first(recommendations: List[Recommendation],
+                                        requested_recommendation: Recommendation) -> List[Recommendation]:
+    for index, recommendation in enumerate(recommendations):
+        if recommendation == requested_recommendation \
+                or recommendation.offer == requested_recommendation.offer:
+            recommendations = recommendations[:index] + recommendations[index + 1:]
             break
-    recos = [requested_recommendation] + recos
-    return recos
+    recommendations = [requested_recommendation] + recommendations
+    return recommendations
