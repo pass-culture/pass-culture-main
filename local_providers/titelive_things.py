@@ -62,6 +62,10 @@ class TiteLiveThings(LocalProvider):
             return None
 
         self.infos = get_infos_from_data_line(elements)
+
+        if self.infos['is_scolaire'] == '1':
+            return None
+
         self.extraData = {}
 
         self.thing_type, self.extraData['bookFormat'] = get_thing_type_and_extra_data_from_titelive_type(
@@ -82,7 +86,7 @@ class TiteLiveThings(LocalProvider):
         thing.name = trim_with_elipsis(self.infos['titre'], 140)
         thing.datePublished = read_things_date(self.infos['date_parution'])
         thing.type = self.thing_type
-        thing.extraData = get_extraData_from_infos(self.extraData, self.infos)
+        thing.extraData = get_extra_data_from_infos(self.extraData, self.infos)
 
         if self.infos['url_extrait_pdf'] != '':
             if thing.mediaUrls is None:
@@ -216,25 +220,25 @@ def get_infos_from_data_line(elts: []):
     return infos
 
 
-def get_extraData_from_infos(extra_data: [], infos: []) -> []:
-    extraData = extra_data
-    extraData['author'] = infos['auteurs']
+def get_extra_data_from_infos(extra_data: [], infos: []) -> []:
+    filled_extra_data = extra_data
+    filled_extra_data['author'] = infos['auteurs']
     if infos['indice_dewey'] != '':
-        extraData['dewey'] = infos['indice_dewey']
-    extraData['titelive_regroup'] = infos['code_regroupement']
-    extraData['prix_livre'] = infos['prix'].replace(',', '.')
-    extraData['rayon'] = infos['libelle_csr']
+        filled_extra_data['dewey'] = infos['indice_dewey']
+    filled_extra_data['titelive_regroup'] = infos['code_regroupement']
+    filled_extra_data['prix_livre'] = infos['prix'].replace(',', '.')
+    filled_extra_data['rayon'] = infos['libelle_csr']
     if infos['is_scolaire'] == '1':
-        extraData['schoolbook'] = True
+        filled_extra_data['schoolbook'] = True
     if infos['classement_top'] != '':
-        extraData['top'] = infos['classement_top']
+        filled_extra_data['top'] = infos['classement_top']
     if infos['collection'] != '':
-        extraData['collection'] = infos['collection']
+        filled_extra_data['collection'] = infos['collection']
     if infos['num_in_collection'] != '':
-        extraData['num_in_collection'] = infos['num_in_collection']
+        filled_extra_data['num_in_collection'] = infos['num_in_collection']
     if infos['libelle_serie_bd'] != '':
-        extraData['comic_series'] = infos['libelle_serie_bd']
+        filled_extra_data['comic_series'] = infos['libelle_serie_bd']
     if infos['commentaire'] != '':
-        extraData['comment'] = trim_with_elipsis(infos['commentaire'], 92)
+        filled_extra_data['comment'] = trim_with_elipsis(infos['commentaire'], 92)
 
-    return extraData
+    return filled_extra_data

@@ -102,6 +102,86 @@ class TiteliveThingsTest:
     @clean_database
     @patch('local_providers.titelive_things.get_files_to_process_from_titelive_ftp')
     @patch('local_providers.titelive_things.get_lines_from_thing_file')
+    def test_does_not_create_product_if_product_is_a_school_book(self,
+                                                                 get_lines_from_thing_file,
+                                                                 get_files_to_process_from_titelive_ftp,
+                                                                 app):
+        # mock
+        files_list = list()
+        files_list.append('Quotidien30.tit')
+
+        get_files_to_process_from_titelive_ftp.return_value = files_list
+
+        data_line = "9782895026310" \
+                    "~2895026319" \
+                    "~livre scolaire" \
+                    "~" \
+                    "~0203" \
+                    "~1" \
+                    "~" \
+                    "~" \
+                    "~" \
+                    "~18,99" \
+                    "~LES EDITIONS DE L'INSTANT MEME" \
+                    "~EPAGINE" \
+                    "~11/05/2011" \
+                    "~BL" \
+                    "~2" \
+                    "~0" \
+                    "~0,0" \
+                    "~0,0" \
+                    "~0,0" \
+                    "~0" \
+                    "~0" \
+                    "~0" \
+                    "~0" \
+                    "~Collectif" \
+                    "~15/01/2013" \
+                    "~02/03/2018" \
+                    "~5,50" \
+                    "~Littérature scolaire" \
+                    "~" \
+                    "~" \
+                    "~" \
+                    "~" \
+                    "~" \
+                    "~1" \
+                    "~3012420280013" \
+                    "~" \
+                    "~" \
+                    "~" \
+                    "~" \
+                    "~1" \
+                    "~" \
+                    "~" \
+                    "~369" \
+                    "~860" \
+                    "~3694440" \
+                    "~"
+        get_lines_from_thing_file.return_value = iter([data_line])
+
+        # given
+        offerer = create_offerer(siren='775671464')
+        venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
+        PcObject.save(venue)
+
+        provider_test(app,
+                      TiteLiveThings,
+                      None,
+                      checkedObjects=1,
+                      createdObjects=0,
+                      updatedObjects=0,
+                      erroredObjects=0,
+                      checkedThumbs=0,
+                      createdThumbs=0,
+                      updatedThumbs=0,
+                      erroredThumbs=0,
+                      Product=0
+                      )
+
+    @clean_database
+    @patch('local_providers.titelive_things.get_files_to_process_from_titelive_ftp')
+    @patch('local_providers.titelive_things.get_lines_from_thing_file')
     def test_update_1_thing_from_one_data_line_in_one_file(self,
                                                            get_lines_from_thing_file,
                                                            get_files_to_process_from_titelive_ftp,

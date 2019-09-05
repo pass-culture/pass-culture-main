@@ -6,7 +6,7 @@ import os
 
 from domain.titelive import read_things_date
 from local_providers.titelive_things import get_thing_type_and_extra_data_from_titelive_type, get_infos_from_data_line, \
-    get_extraData_from_infos
+    get_extra_data_from_infos
 from local_providers.local_provider import LocalProvider, ProvidableInfo
 from models import Product
 from models.local_provider_event import LocalProviderEventType
@@ -92,7 +92,7 @@ class InitTiteLiveThings(LocalProvider):
         thing.name = trim_with_elipsis(self.infos['titre'], 140)
         thing.datePublished = read_things_date(self.infos['date_parution'])
         thing.type = self.thing_type
-        thing.extraData = get_extraData_from_infos(self.extraData, self.infos)
+        thing.extraData = get_extra_data_from_infos(self.extraData, self.infos)
 
         if self.infos['url_extrait_pdf'] != '':
             if thing.mediaUrls is None:
