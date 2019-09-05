@@ -16,9 +16,16 @@ class Details extends PureComponent {
     }
   }
 
-  componentDidUpdate() {
-    const { match } = this.props
+  componentDidMount() {
+    this.handleSetIsDetailsView()
+  }
 
+  componentDidUpdate() {
+    this.handleSetIsDetailsView()
+  }
+
+  handleSetIsDetailsView = () => {
+    const { match } = this.props
     this.setState({
       isDetailsView: isDetailsView(match),
     })

@@ -7,9 +7,7 @@ ShallowWrapper {
     bookingPath="fake/path"
     match={
       Object {
-        "params": Object {
-          "details": "details",
-        },
+        "params": Object {},
       }
     }
   />,

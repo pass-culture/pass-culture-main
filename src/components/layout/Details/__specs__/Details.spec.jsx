@@ -12,9 +12,7 @@ describe('src | components | layout | Details | Details', () => {
     props = {
       bookingPath: 'fake/path',
       match: {
-        params: {
-          details: 'details',
-        },
+        params: {},
       },
     }
   })
@@ -28,7 +26,7 @@ describe('src | components | layout | Details | Details', () => {
   })
 
   describe('render()', () => {
-    describe('when I have not details', () => {
+    describe('when I have no details', () => {
       it('should render VersoContainer and not RectoContainer', () => {
         // when
         const wrapper = shallow(<Details {...props} />)
@@ -43,6 +41,9 @@ describe('src | components | layout | Details | Details', () => {
 
     describe('when I have details', () => {
       it('should render VersoContainer and RectoContainer', () => {
+        // given
+        props.match.params.details = 'details'
+
         // when
         const wrapper = shallow(<Details {...props} />)
         wrapper.setState({ isDetailsView: true })
