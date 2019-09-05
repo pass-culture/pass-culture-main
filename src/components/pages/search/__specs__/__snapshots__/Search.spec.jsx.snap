@@ -276,7 +276,7 @@ ShallowWrapper {
               </Switch>
             </Switch>
           </div>
-          <withRouter(withRouter(NavigationFooter))
+          <withRouter(withRouter(RelativeFooter))
             className="dotted-top-red"
             theme="white"
           />
@@ -405,7 +405,7 @@ ShallowWrapper {
                 </Switch>
               </Switch>
             </div>,
-            <withRouter(withRouter(NavigationFooter))
+            <withRouter(withRouter(RelativeFooter))
               className="dotted-top-red"
               theme="white"
             />,
@@ -1093,7 +1093,7 @@ ShallowWrapper {
                 </Switch>
               </Switch>
             </div>
-            <withRouter(withRouter(NavigationFooter))
+            <withRouter(withRouter(RelativeFooter))
               className="dotted-top-red"
               theme="white"
             />
@@ -1222,7 +1222,7 @@ ShallowWrapper {
                   </Switch>
                 </Switch>
               </div>,
-              <withRouter(withRouter(NavigationFooter))
+              <withRouter(withRouter(RelativeFooter))
                 className="dotted-top-red"
                 theme="white"
               />,
