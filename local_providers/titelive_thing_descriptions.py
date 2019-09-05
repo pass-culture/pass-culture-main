@@ -3,7 +3,8 @@ from pathlib import PurePath
 
 from connectors.ftp_titelive import get_files_to_process_from_titelive_ftp, get_zip_file_from_ftp
 from domain.titelive import get_date_from_filename, read_description_date
-from local_providers.local_provider import LocalProvider, ProvidableInfo
+from local_providers.local_provider import LocalProvider
+from local_providers.providable_info import ProvidableInfo
 from models import Product
 from models.local_provider_event import LocalProviderEventType
 

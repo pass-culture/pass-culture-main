@@ -1,13 +1,14 @@
-import requests
 from datetime import datetime
 
-from domain.titelive import read_stock_datetime
+import requests
+from sqlalchemy import Sequence
+
+from local_providers.local_provider import LocalProvider
+from local_providers.providable_info import ProvidableInfo
 from models import Offer, VenueProvider, PcObject
 from models.db import db
-from local_providers.local_provider import LocalProvider, ProvidableInfo
 from models.stock import Stock
 from repository import thing_queries, local_provider_event_queries, venue_queries
-from sqlalchemy import Sequence
 
 PRICE_DIVIDER_TO_EURO = 100
 URL_TITELIVE_WEBSERVICE_STOCKS = "https://stock.epagine.fr/stocks/"

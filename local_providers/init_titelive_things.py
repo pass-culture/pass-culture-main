@@ -5,9 +5,10 @@ from pathlib import Path
 import os
 
 from domain.titelive import read_things_date
+from local_providers.providable_info import ProvidableInfo
 from local_providers.titelive_things import get_thing_type_and_extra_data_from_titelive_type, get_infos_from_data_line, \
     get_extra_data_from_infos
-from local_providers.local_provider import LocalProvider, ProvidableInfo
+from local_providers.local_provider import LocalProvider
 from models import Product
 from models.local_provider_event import LocalProviderEventType
 from repository.local_provider_event_queries import find_lastest_sync_end_or_sync_part_end_for_provider

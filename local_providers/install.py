@@ -1,4 +1,3 @@
-""" local providers install """
 import local_providers
 from models.db import db
 from models.provider import Provider
@@ -18,4 +17,3 @@ def install_local_providers():
             db.session.add(provider)
 
     db.session.commit()
-

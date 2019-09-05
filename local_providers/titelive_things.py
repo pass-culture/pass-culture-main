@@ -2,7 +2,8 @@ import re
 
 from connectors.ftp_titelive import get_files_to_process_from_titelive_ftp, connect_to_titelive_ftp
 from domain.titelive import get_date_from_filename, read_things_date
-from local_providers.local_provider import LocalProvider, ProvidableInfo
+from local_providers.local_provider import LocalProvider
+from local_providers.providable_info import ProvidableInfo
 from models.local_provider_event import LocalProviderEventType
 from models import Product, ThingType, BookFormat
 from repository import local_provider_event_queries

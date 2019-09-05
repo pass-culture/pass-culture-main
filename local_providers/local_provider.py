@@ -12,6 +12,7 @@ from sqlalchemy.sql import select
 
 import models
 from connectors.thumb_storage import save_thumb
+from local_providers.providable_info import ProvidableInfo
 from models.db import db
 from models.has_thumb_mixin import HasThumbMixin
 from models.local_provider_event import LocalProviderEvent, LocalProviderEventType
@@ -24,17 +25,6 @@ from utils.inflect_engine import inflect_engine
 from utils.logger import logger
 
 CHUNK_MAX_SIZE = 1000
-
-
-class ProvidableInfo(object):
-    def type(self):
-        pass
-
-    def idAtProviders(self):
-        pass
-
-    def dateModifiedAtProvider(self):
-        pass
 
 
 class LocalProvider(Iterator):
@@ -158,17 +148,6 @@ class LocalProvider(Iterator):
             save_thumb(obj, thumb, counter, need_save=False)
             counter += 1
 
-    def existingObjectOrNone(self, providable_info):
-        conn = db.engine.connect()
-        model_to_query = providable_info.type
-        query = select([model_to_query]). \
-            where(model_to_query.idAtProviders == providable_info.idAtProviders)
-        db_object_dict = conn.execute(query).fetchone()
-
-        if db_object_dict is not None:
-            return dict_to_object(db_object_dict, model_to_query)
-        return None
-
     def createObject(self, providable_info):
         logger.debug('  Creating ' + providable_info.type.__name__
                      + '# ' + providable_info.idAtProviders)
@@ -251,7 +230,7 @@ class LocalProvider(Iterator):
                     if providable_info is not None:
                         chunk_key = providable_info.idAtProviders + '|' + str(providable_info.type.__name__)
 
-                        pc_obj = self.get_existing_pc_obj(providable_info, chunk_to_insert, chunk_to_update)
+                        pc_obj = get_existing_pc_obj(providable_info, chunk_to_insert, chunk_to_update)
 
                         date_modified_at_provider = None
                         is_new_obj = False
@@ -341,15 +320,6 @@ class LocalProvider(Iterator):
             self.venueProvider.lastSyncDate = datetime.utcnow()
             PcObject.save(self.venueProvider)
 
-    def get_existing_pc_obj(self, providable_info, chunk_to_insert, chunk_to_update):
-        object_in_current_chunk = self.get_object_from_current_chunks(providable_info,
-                                                                      chunk_to_insert,
-                                                                      chunk_to_update)
-        if object_in_current_chunk is None:
-            return self.existingObjectOrNone(providable_info)
-        else:
-            return object_in_current_chunk
-
     def save_chunks(self, chunk_to_insert: Dict[str, ProvidableMixin], chunk_to_update: Dict[str, ProvidableMixin],
                     providable_info: ProvidableInfo):
         if len(chunk_to_insert) > 0:
@@ -380,19 +350,42 @@ class LocalProvider(Iterator):
                 logger.error('ERROR during object update: '
                              + e.__class__.__name__ + ' ' + str(e))
 
-    def get_object_from_current_chunks(self, providable_info: ProvidableInfo,
-                                       chunk_to_insert: dict,
-                                       chunk_to_update: dict) -> Optional[PcObject]:
-        chunk_key = providable_info.idAtProviders + '|' + str(providable_info.type.__name__)
-        if chunk_key in chunk_to_insert:
-            pc_object = chunk_to_insert[chunk_key]
-            if type(pc_object) == providable_info.type:
-                return pc_object
-        if chunk_key in chunk_to_update:
-            pc_object = chunk_to_update[chunk_key]
-            if type(pc_object) == providable_info.type:
-                return pc_object
-        return None
+
+def get_existing_pc_obj(providable_info, chunk_to_insert, chunk_to_update):
+    object_in_current_chunk = get_object_from_current_chunks(providable_info,
+                                                             chunk_to_insert,
+                                                             chunk_to_update)
+    if object_in_current_chunk is None:
+        return get_existing_object_or_none(providable_info)
+    else:
+        return object_in_current_chunk
+
+
+def get_object_from_current_chunks(providable_info: ProvidableInfo,
+                                   chunk_to_insert: dict,
+                                   chunk_to_update: dict) -> Optional[PcObject]:
+    chunk_key = providable_info.idAtProviders + '|' + str(providable_info.type.__name__)
+    if chunk_key in chunk_to_insert:
+        pc_object = chunk_to_insert[chunk_key]
+        if type(pc_object) == providable_info.type:
+            return pc_object
+    if chunk_key in chunk_to_update:
+        pc_object = chunk_to_update[chunk_key]
+        if type(pc_object) == providable_info.type:
+            return pc_object
+    return None
+
+
+def get_existing_object_or_none(providable_info: ProvidableInfo):
+    conn = db.engine.connect()
+    model_to_query = providable_info.type
+    query = select([model_to_query]). \
+        where(model_to_query.idAtProviders == providable_info.idAtProviders)
+    db_object_dict = conn.execute(query).fetchone()
+
+    if db_object_dict is not None:
+        return dict_to_object(db_object_dict, model_to_query)
+    return None
 
 
 def dict_to_object(object_dict: dict, model_object: PcObject) -> PcObject:

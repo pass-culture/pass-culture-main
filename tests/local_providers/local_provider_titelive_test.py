@@ -1,4 +1,3 @@
-""" local providers titelive test """
 import os
 from pathlib import Path
 from unittest.mock import patch
@@ -57,14 +56,14 @@ class TiteliveTest:
                       TiteLiveThings,
                       None,
                       checkedObjects=422,
-                      createdObjects=340,
+                      createdObjects=339,
                       updatedObjects=16,
                       erroredObjects=0,
                       checkedThumbs=0,
                       createdThumbs=0,
                       updatedThumbs=0,
                       erroredThumbs=0,
-                      Product=340
+                      Product=339
                       )
 
         # mock TiteliveThingThumb

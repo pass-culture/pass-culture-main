@@ -1,20 +1,15 @@
-""" local providers test """
 from datetime import datetime
 from unittest.mock import patch
 
 from local_providers import TiteLiveThings
-from models import Product, BookFormat, ThingType
+from models import Product, BookFormat
 from models.pc_object import PcObject
-from models.provider import Provider
 from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
-from tests.local_providers.local_provider_titelive_test import get_ordered_thing_files_from_sandbox_files, \
-    get_lines_from_thing_file_sandboxes
 from tests.test_utils import create_offerer, create_venue, provider_test, create_product_with_thing_type
 
 
 class TiteliveThingsTest:
-
     @clean_database
     @patch('local_providers.titelive_things.get_files_to_process_from_titelive_ftp')
     @patch('local_providers.titelive_things.get_lines_from_thing_file')
@@ -267,43 +262,6 @@ class TiteliveThingsTest:
         updated_product = Product.query.first()
         assert updated_product.name == 'nouvelles du Chili'
         assert updated_product.extraData.get('bookFormat') == BookFormat.BEAUX_LIVRES.value
-
-    @clean_database
-    @patch('local_providers.titelive_things.get_files_to_process_from_titelive_ftp')
-    @patch('local_providers.titelive_things.get_lines_from_thing_file')
-    def test_create_multiple_things_with_sandboxes_data(self,
-                                                        get_lines_from_thing_file,
-                                                        get_files_to_process_from_titelive_ftp,
-                                                        app):
-        # mock
-        files = get_ordered_thing_files_from_sandbox_files()
-        get_files_to_process_from_titelive_ftp.return_value = files
-
-        files_content = []
-        for file in files:
-            content = get_lines_from_thing_file_sandboxes(file)
-            files_content.append(content)
-
-        get_lines_from_thing_file.side_effect = files_content
-
-        # given
-        offerer = create_offerer(siren='775671464')
-        venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-        PcObject.save(venue)
-
-        provider_test(app,
-                      TiteLiveThings,
-                      None,
-                      checkedObjects=422,
-                      createdObjects=340,
-                      updatedObjects=16,
-                      erroredObjects=0,
-                      checkedThumbs=0,
-                      createdThumbs=0,
-                      updatedThumbs=0,
-                      erroredThumbs=0,
-                      Product=340
-                      )
 
     @clean_database
     @patch('local_providers.titelive_things.get_files_to_process_from_titelive_ftp')
