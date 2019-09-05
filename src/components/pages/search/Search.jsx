@@ -174,19 +174,15 @@ class Search extends PureComponent {
 
   handleOnKeywordsEraseClick = () => {
     const { keywordsKey } = this.state
-    const { history } = this.props
 
-    this.setState(
-      {
-        // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
-        // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
-        // DEPENDING ON THE KEYWORDS VALUE IN ORDER TO RERENDER
-        // THE INPUT WITH A SYNCED DEFAULT VALUE
-        keywordsKey: keywordsKey + 1,
-        keywordsValue: '',
-      },
-      () => history.push('/recherche/resultats')
-    )
+    this.setState({
+      // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
+      // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
+      // DEPENDING ON THE KEYWORDS VALUE IN ORDER TO RERENDER
+      // THE INPUT WITH A SYNCED DEFAULT VALUE
+      keywordsKey: keywordsKey + 1,
+      keywordsValue: '',
+    })
   }
 
   isFirstPageRequest = queryParams => {
@@ -397,7 +393,6 @@ class Search extends PureComponent {
 
 Search.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  history: PropTypes.shape().isRequired,
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired,
     search: PropTypes.string.isRequired,

@@ -20,7 +20,7 @@ class Results extends PureComponent {
     const { history, query } = this.props
     const queryParams = query.parse()
     const filterParamsAreEmpty = getFilterParamsAreEmpty(queryParams)
-    if (filterParamsAreEmpty) {
+    if (filterParamsAreEmpty && !queryParams['mots-cles']) {
       history.replace('/recherche')
     }
   }
