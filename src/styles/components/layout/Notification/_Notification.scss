@@ -4,7 +4,6 @@
   padding: 6px;
   position: relative;
 
-
   .small-padding {
     padding: 0.2rem;
   }
@@ -31,6 +30,25 @@
   &.is-warning {
     background-color: $notification-background-is-warning;
     color: $notification-text;
+  }
+
+  .is-static {
+      margin: 18px 18px 18px 0;
+      display: flex;
+      font-weight: normal;
+      line-height: 19px;
+      text-align: justify;
+      justify-content: flex-start;
+      align-items: center;
+      flex-grow: 1;
+
+      img {
+        padding-left: 18px;
+      }
+
+      span {
+        padding-left: 12px;
+      }
   }
 
   a.close,

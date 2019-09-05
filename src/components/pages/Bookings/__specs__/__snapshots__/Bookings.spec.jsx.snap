@@ -36,6 +36,27 @@ ShallowWrapper {
             Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
           </p>
         </HeroSection>,
+        <div
+          className="notification is-info"
+        >
+          <div
+            className="is-static fs16"
+          >
+            <Icon
+              svg="picto-info-grey"
+            />
+            <span>
+              Les
+              <b>
+                 réservations d’événements 
+              </b>
+              sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.
+              <br />
+              <br />
+              La contremarque ne peut être validée qu'après ce délai.
+            </span>
+          </div>
+        </div>,
         <hr
           className="blackline"
         />,
@@ -109,6 +130,124 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
+          "children": <div
+            className="is-static fs16"
+          >
+            <Icon
+              svg="picto-info-grey"
+            />
+            <span>
+              Les
+              <b>
+                 réservations d’événements 
+              </b>
+              sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.
+              <br />
+              <br />
+              La contremarque ne peut être validée qu'après ce délai.
+            </span>
+          </div>,
+          "className": "notification is-info",
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <Icon
+                svg="picto-info-grey"
+              />,
+              <span>
+                Les
+                <b>
+                   réservations d’événements 
+                </b>
+                sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.
+                <br />
+                <br />
+                La contremarque ne peut être validée qu'après ce délai.
+              </span>,
+            ],
+            "className": "is-static fs16",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "svg": "picto-info-grey",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  "Les",
+                  <b>
+                     réservations d’événements 
+                  </b>,
+                  "sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.",
+                  <br />,
+                  <br />,
+                  "La contremarque ne peut être validée qu'après ce délai.",
+                ],
+              },
+              "ref": null,
+              "rendered": Array [
+                "Les",
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": " réservations d’événements ",
+                  },
+                  "ref": null,
+                  "rendered": " réservations d’événements ",
+                  "type": "b",
+                },
+                "sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.",
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {},
+                  "ref": null,
+                  "rendered": null,
+                  "type": "br",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {},
+                  "ref": null,
+                  "rendered": null,
+                  "type": "br",
+                },
+                "La contremarque ne peut être validée qu'après ce délai.",
+              ],
+              "type": "span",
+            },
+          ],
+          "type": "div",
+        },
+        "type": "div",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
           "className": "blackline",
         },
         "ref": null,
@@ -149,6 +288,27 @@ ShallowWrapper {
               Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
             </p>
           </HeroSection>,
+          <div
+            className="notification is-info"
+          >
+            <div
+              className="is-static fs16"
+            >
+              <Icon
+                svg="picto-info-grey"
+              />
+              <span>
+                Les
+                <b>
+                   réservations d’événements 
+                </b>
+                sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.
+                <br />
+                <br />
+                La contremarque ne peut être validée qu'après ce délai.
+              </span>
+            </div>
+          </div>,
           <hr
             className="blackline"
           />,
@@ -216,6 +376,124 @@ ShallowWrapper {
             "type": "p",
           },
           "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <div
+              className="is-static fs16"
+            >
+              <Icon
+                svg="picto-info-grey"
+              />
+              <span>
+                Les
+                <b>
+                   réservations d’événements 
+                </b>
+                sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.
+                <br />
+                <br />
+                La contremarque ne peut être validée qu'après ce délai.
+              </span>
+            </div>,
+            "className": "notification is-info",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <Icon
+                  svg="picto-info-grey"
+                />,
+                <span>
+                  Les
+                  <b>
+                     réservations d’événements 
+                  </b>
+                  sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.
+                  <br />
+                  <br />
+                  La contremarque ne peut être validée qu'après ce délai.
+                </span>,
+              ],
+              "className": "is-static fs16",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {
+                  "svg": "picto-info-grey",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    "Les",
+                    <b>
+                       réservations d’événements 
+                    </b>,
+                    "sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.",
+                    <br />,
+                    <br />,
+                    "La contremarque ne peut être validée qu'après ce délai.",
+                  ],
+                },
+                "ref": null,
+                "rendered": Array [
+                  "Les",
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": " réservations d’événements ",
+                    },
+                    "ref": null,
+                    "rendered": " réservations d’événements ",
+                    "type": "b",
+                  },
+                  "sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.",
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {},
+                    "ref": null,
+                    "rendered": null,
+                    "type": "br",
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {},
+                    "ref": null,
+                    "rendered": null,
+                    "type": "br",
+                  },
+                  "La contremarque ne peut être validée qu'après ce délai.",
+                ],
+                "type": "span",
+              },
+            ],
+            "type": "div",
+          },
+          "type": "div",
         },
         Object {
           "instance": null,

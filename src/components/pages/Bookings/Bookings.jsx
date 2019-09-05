@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import DownloadButtonContainer from '../../layout/DownloadButton/DownloadButtonContainer'
 import Main from '../../layout/Main'
 import HeroSection from '../../layout/HeroSection/HeroSection'
+import Icon from '../../layout/Icon'
 import FilterByVenueContainer from './FilterByVenue/FilterByVenueContainer'
 
 import CsvTableButtonContainer from '../../layout/CsvTableButton/CsvTableButtonContainer'
@@ -19,11 +20,26 @@ const Bookings = ({ pathToCsvFile, showButtons, showOfferSection }) => (
         {'Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.'}
       </p>
     </HeroSection>
+    <div className="notification is-info">
+      <div className="is-static fs16">
+        <Icon svg="picto-info-grey" />
+        <span>
+          {'Les'}
+          <b>
+            {' réservations d’événements '}
+          </b>
+          {
+            'sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.'
+          }
+          <br />
+          <br />
+          {"La contremarque ne peut être validée qu'après ce délai."}
+        </span>
+      </div>
+    </div>
     <hr className="blackline" />
     <FilterByVenueContainer />
-    {showOfferSection && (
-    <FilterByOfferContainer />
-    )}
+    {showOfferSection && <FilterByOfferContainer />}
     {showButtons && (
       <div id="buttons-container">
         <hr />
