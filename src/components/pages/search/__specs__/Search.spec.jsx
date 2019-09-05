@@ -793,8 +793,7 @@ describe('src | components | pages | Search', () => {
 
     describe('onClickOpenCloseFilterDiv', () => {
       describe('when user does not click on the icon button', () => {
-        // when
-        // when
+        // given
         const props = {
           dispatch: dispatchMock,
           history: historyMock,
@@ -822,9 +821,11 @@ describe('src | components | pages | Search', () => {
         }
         const wrapper = shallow(<Search {...props} />)
 
+        // when
         const filterToggleIcon = getFilterToggle(wrapper).props.children
 
         it('should show ico-filter', () => {
+          // then
           expect(filterToggleIcon.props.svg).toBe('ico-filter')
         })
 

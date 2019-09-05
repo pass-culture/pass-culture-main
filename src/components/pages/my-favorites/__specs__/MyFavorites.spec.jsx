@@ -139,19 +139,5 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
         expect(loaderContainer).toHaveLength(1)
       })
     })
-
-    describe('when unmount my component', () => {
-      it('should reset the store', () => {
-        // given
-        const wrapper = shallow(<MyFavorites {...props} />)
-        wrapper.setState({ isLoading: false })
-
-        // when
-        wrapper.unmount()
-
-        // then
-        expect(props.resetPageData).toHaveBeenCalledTimes(1)
-      })
-    })
   })
 })

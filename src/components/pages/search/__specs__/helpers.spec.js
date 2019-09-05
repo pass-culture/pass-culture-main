@@ -1,6 +1,5 @@
 import {
   getDescriptionFromCategory,
-  getFirstChangingKey,
   INITIAL_FILTER_PARAMS,
   isInitialQueryWithoutFilters,
   searchResultsTitle,
@@ -39,13 +38,6 @@ describe('src | components | pages | search | utils', () => {
         orderBy: 'offer.id+desc',
       }
       expect(isInitialQueryWithoutFilters(INITIAL_FILTER_PARAMS, queryParams)).toBe(true)
-    })
-  })
-
-  describe('getFirstChangingKey', () => {
-    it('should return the name of the key wich value has changed', () => {
-      const nextObject = { jours: '0-1,1-5' }
-      expect(getFirstChangingKey(INITIAL_FILTER_PARAMS, nextObject)).toBe('jours')
     })
   })
 

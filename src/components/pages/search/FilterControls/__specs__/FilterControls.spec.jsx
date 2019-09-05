@@ -26,7 +26,6 @@ describe('src | components | pages | search | FilterControls', () => {
         change: jest.fn(),
         parse: jest.fn(),
       },
-      resetSearchStore: jest.fn(),
     }
   })
 
@@ -78,7 +77,6 @@ describe('src | components | pages | search | FilterControls', () => {
 
       // then
       const searchFilter = wrapper.find('FilterControls')
-      expect(searchFilter.state('filterParamsMatchingQueryParams')).toBe(false)
       expect(searchFilter.state('initialDateParams')).toBe(true)
       expect(searchFilter.state('params')).toStrictEqual(expect.any(Object))
     })
@@ -95,18 +93,6 @@ describe('src | components | pages | search | FilterControls', () => {
       // then
       expect(props.onClickFilterButton).toHaveBeenCalledWith(props.isVisible)
     })
-
-    it('should reset the store when filter params match the query params', () => {
-      // given
-      const wrapper = shallow(<FilterControls {...props} />)
-      wrapper.setState({ filterParamsMatchingQueryParams: true })
-
-      // when
-      wrapper.instance().handleOnClickFilterButton()
-
-      // then
-      expect(props.resetSearchStore).toHaveBeenCalledWith()
-    })
   })
 
   describe('handleOnClickReset()', () => {
@@ -119,16 +105,16 @@ describe('src | components | pages | search | FilterControls', () => {
 
       // then
       const expected = {
-        filterParamsAreEmpty: false,
-        filterParamsMatchingQueryParams: false,
         initialDateParams: true,
         params: {},
       }
-      expect(props.resetSearchStore).toHaveBeenCalledWith()
       expect(wrapper.state()).toStrictEqual(expected)
-      expect(props.query.change).toHaveBeenCalledWith(INITIAL_FILTER_PARAMS, {
-        pathname: '/recherche/resultats/tout',
-      })
+      expect(props.query.change).toHaveBeenCalledWith(
+        { ...INITIAL_FILTER_PARAMS, page: null },
+        {
+          pathname: '/recherche',
+        }
+      )
     })
   })
 
@@ -143,8 +129,6 @@ describe('src | components | pages | search | FilterControls', () => {
 
       // then
       expect(wrapper.state()).toStrictEqual({
-        filterParamsAreEmpty: false,
-        filterParamsMatchingQueryParams: 'jours',
         initialDateParams: true,
         params: {
           jours: '0-1',
@@ -164,8 +148,6 @@ describe('src | components | pages | search | FilterControls', () => {
 
       // then
       expect(wrapper.state()).toStrictEqual({
-        filterParamsAreEmpty: false,
-        filterParamsMatchingQueryParams: 'categories',
         initialDateParams: true,
         params: {
           categories: 'Jouer,Lire',
@@ -187,8 +169,6 @@ describe('src | components | pages | search | FilterControls', () => {
 
       // then
       expect(wrapper.state()).toStrictEqual({
-        filterParamsAreEmpty: false,
-        filterParamsMatchingQueryParams: 'categories',
         initialDateParams: true,
         params: {
           categories: 'Applaudir',

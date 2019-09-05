@@ -11,6 +11,9 @@ describe('src | components | pages | search | Results', () => {
     props = {
       cameFromOfferTypesPage: true,
       hasMore: false,
+      history: {
+        replace: jest.fn(),
+      },
       items: [],
       keywords: 'fakeKeywords',
       query: {

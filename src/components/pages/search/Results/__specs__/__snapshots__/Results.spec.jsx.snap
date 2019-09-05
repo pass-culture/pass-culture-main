@@ -6,6 +6,23 @@ ShallowWrapper {
   Symbol(enzyme.__unrendered__): <Results
     cameFromOfferTypesPage={false}
     hasMore={false}
+    history={
+      Object {
+        "replace": [MockFunction] {
+          "calls": Array [
+            Array [
+              "/recherche",
+            ],
+          ],
+          "results": Array [
+            Object {
+              "type": "return",
+              "value": undefined,
+            },
+          ],
+        },
+      }
+    }
     items={Array []}
     keywords="fakeKeywords"
     query={

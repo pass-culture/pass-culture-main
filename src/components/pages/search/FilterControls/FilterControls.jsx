@@ -70,9 +70,12 @@ class FilterControls extends Component {
       params: {},
     })
 
-    query.change(INITIAL_FILTER_PARAMS, {
-      pathname: '/recherche',
-    })
+    query.change(
+      { ...INITIAL_FILTER_PARAMS, page: null },
+      {
+        pathname: '/recherche',
+      }
+    )
   }
 
   handleQueryChange = (newValue, callback) => {
