@@ -5,7 +5,7 @@ import { createSelector } from 'reselect'
 
 const PAGE_REGEXP = new RegExp(/&?page=\d+&?/)
 
-const getRecommendationSearch = (search, types) => {
+export const getRecommendationSearch = (search, types) => {
   const searchParams = parse(search)
   const recommendationSearch = {}
 
