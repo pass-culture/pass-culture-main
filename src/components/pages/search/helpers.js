@@ -10,6 +10,7 @@ export const INITIAL_FILTER_PARAMS = {
   jours: null,
   latitude: null,
   longitude: null,
+  page: null,
 }
 
 export const DAYS_CHECKBOXES = [

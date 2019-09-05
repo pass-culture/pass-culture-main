@@ -71,7 +71,7 @@ class FilterControls extends Component {
     })
 
     query.change(INITIAL_FILTER_PARAMS, {
-      pathname: '/recherche/resultats/tout',
+      pathname: '/recherche',
     })
   }
 
@@ -158,6 +158,7 @@ class FilterControls extends Component {
               >
                 <button
                   className="no-background no-outline col-1of2 fs20 py12"
+                  disabled={filterParamsAreEmpty}
                   id="search-filter-reset-button"
                   onClick={this.handleOnClickReset}
                   type="reset"
