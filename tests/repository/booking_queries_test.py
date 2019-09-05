@@ -505,7 +505,7 @@ class FindDateUsedTest:
         assert date_used == datetime(2018, 2, 12)
 
     @clean_database
-    def test_find_date_used_on_booking_returns_none_if_no_activity_with_is_used_changed_is_found(self, app):
+    def test_find_date_used_on_booking_returns_none_if_no_update_recorded_in_activity_table(self, app):
         # given
         user = create_user()
         deposit = create_deposit(user, amount=500)

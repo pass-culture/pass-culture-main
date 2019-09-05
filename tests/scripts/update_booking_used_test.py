@@ -3,7 +3,7 @@ from datetime import datetime
 from freezegun import freeze_time
 
 from models import Booking, PcObject
-from scripts.update_booking_used import update_booking_used
+from scripts.update_booking_used import update_booking_used_after_stock_occurrence
 from tests.conftest import clean_database
 from tests.test_utils import create_deposit, create_booking, create_user, create_offerer, create_venue, \
     create_offer_with_event_product, create_stock
@@ -27,7 +27,7 @@ class UpdateBookingUsedTest:
         PcObject.save(user, deposit, booking, stock)
 
         # When
-        update_booking_used()
+        update_booking_used_after_stock_occurrence()
 
         # Then
         updated_booking = Booking.query.first()
@@ -50,7 +50,7 @@ class UpdateBookingUsedTest:
         PcObject.save(user, deposit, booking, stock)
 
         # When
-        update_booking_used()
+        update_booking_used_after_stock_occurrence()
 
         # Then
         updated_booking = Booking.query.first()
@@ -74,7 +74,7 @@ class UpdateBookingUsedTest:
         PcObject.save(user, deposit, booking, stock)
 
         # When
-        update_booking_used()
+        update_booking_used_after_stock_occurrence()
 
         # Then
         updated_booking = Booking.query.first()

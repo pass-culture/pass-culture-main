@@ -4,7 +4,7 @@ from domain.stocks import STOCK_DELETION_DELAY
 from models import Booking, PcObject
 
 
-def update_booking_used():
+def update_booking_used_after_stock_occurrence():
     bookings_to_process = Booking.query \
         .filter(Booking.isUsed == False) \
         .filter(Booking.isCancelled == False) \

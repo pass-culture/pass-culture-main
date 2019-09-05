@@ -57,8 +57,8 @@ def pc_update_booking_used():
     logger.info("[BATCH][BOOKINGS] Cron update_booking_used: START")
 
     with app.app_context():
-        from scripts.update_booking_used import update_booking_used
-        update_booking_used()
+        from scripts.update_booking_used import update_booking_used_after_stock_occurrence
+        update_booking_used_after_stock_occurrence()
 
     logger.info("[BATCH][BOOKINGS] Cron update_booking_used: END")
 
