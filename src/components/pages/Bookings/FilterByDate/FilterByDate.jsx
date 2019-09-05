@@ -45,9 +45,13 @@ class FilterByDate extends PureComponent {
   }
 
   updateBookingsDates = (month, year) => {
-    const {updateBookingsFrom, updateBookingsTo} = this.props
+    const { updateBookingsFrom, updateBookingsTo } = this.props
     const firstDayOfTheMonth = 1
-    const date = moment().date(firstDayOfTheMonth).month(month).year(year).utc()
+    const date = moment()
+      .date(firstDayOfTheMonth)
+      .month(month)
+      .year(year)
+      .utc()
     const startDate = date.startOf('day').format()
     const endDate = date.endOf('month').format()
 
@@ -61,10 +65,10 @@ class FilterByDate extends PureComponent {
     if (showThingDateSection) {
       return (
         <Fragment>
-          <div
-            id="filter-thing-by-date"
-          >
-            <div>{'Effectuées en :'}</div>
+          <div id="filter-thing-by-date">
+            <div>
+              {'Effectuées en :'}
+            </div>
             <label
               className="is-invisible"
               htmlFor="month"
@@ -126,10 +130,10 @@ class FilterByDate extends PureComponent {
     if (showEventDateSection) {
       return (
         <Fragment>
-          <div
-            id="filter-event-by-date"
-          >
-            <label htmlFor="event-date">{'Pour la date du :'}</label>
+          <div id="filter-event-by-date">
+            <label htmlFor="event-date">
+              {'Pour la date du :'}
+            </label>
             <select
               className="pc-selectbox"
               id="event-date"
@@ -146,7 +150,9 @@ class FilterByDate extends PureComponent {
                   key={beginningDatetime}
                   value={beginningDatetime}
                 >
-                  {moment(beginningDatetime).utc().format(FRENCH_DATE_FORMAT)}
+                  {moment(beginningDatetime)
+                    .utc()
+                    .format(FRENCH_DATE_FORMAT)}
                 </option>
               ))}
             </select>

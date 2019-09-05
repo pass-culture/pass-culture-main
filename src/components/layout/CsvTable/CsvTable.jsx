@@ -16,7 +16,7 @@ class CsvTable extends Component {
     await this.getCsvData()
   }
 
-  async getCsvData(){
+  async getCsvData() {
     const { downloadFileOrNotifyAnError } = this.props
     const dataFromCsv = await downloadFileOrNotifyAnError()
     this.setState({
@@ -56,7 +56,9 @@ class CsvTable extends Component {
                 <thead>
                   <tr>
                     {headers.map((header, index) => (
-                      <th key={this.buildUniqueKey(index, header)}>{header}</th>
+                      <th key={this.buildUniqueKey(index, header)}>
+                        {header}
+                      </th>
                     ))}
                   </tr>
                 </thead>
@@ -65,7 +67,9 @@ class CsvTable extends Component {
                     data.map((line, index) => (
                       <tr key={this.buildUniqueKey(index, line)}>
                         {line.map((content, index) => (
-                          <td key={this.buildUniqueKey(index, content)}>{content}</td>
+                          <td key={this.buildUniqueKey(index, content)}>
+                            {content}
+                          </td>
                         ))}
                       </tr>
                     ))}
@@ -88,7 +92,9 @@ class CsvTable extends Component {
 
         {!hasAtLeastData && !isLoading && (
           <div id="no-data-container">
-            <p className="section">{`Il n'y a pas de données à afficher.`}</p>
+            <p className="section">
+              {`Il n'y a pas de données à afficher.`}
+            </p>
           </div>
         )}
       </React.Fragment>
