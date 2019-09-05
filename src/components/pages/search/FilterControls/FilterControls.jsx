@@ -5,7 +5,7 @@ import { Transition } from 'react-transition-group'
 import FilterByDates from './FilterByDates'
 import FilterByDistanceContainer from './FilterByDistanceContainer'
 import FilterByOfferTypesContainer from './FilterByOfferTypesContainer'
-import { getFirstChangingKey, INITIAL_FILTER_PARAMS } from '../helpers'
+import { INITIAL_FILTER_PARAMS, getFilterParamsAreEmpty } from '../helpers'
 
 const filtersPanelHeight = 500
 const transitionDelay = 0
@@ -20,7 +20,6 @@ const transitionStyles = {
   exited: { marginTop: `-${filtersPanelHeight}px` },
   exiting: { marginTop: `-${filtersPanelHeight}px` },
 }
-const hiddenFilterParams = ['date', 'latitude', 'longitude', 'mots-cles']
 
 class FilterControls extends Component {
   constructor(props) {
@@ -29,8 +28,6 @@ class FilterControls extends Component {
     const { query } = props
 
     this.state = {
-      filterParamsAreEmpty: true,
-      filterParamsMatchingQueryParams: false,
       initialDateParams: true,
       params: query.parse() || {},
     }
@@ -48,19 +45,14 @@ class FilterControls extends Component {
     const { query } = this.props
 
     this.setState({
-      filterParamsMatchingQueryParams: false,
       initialDateParams: true,
       params: query.parse(),
     })
   }
 
   handleOnClickFilterButton = () => {
-    const { resetSearchStore, query, onClickFilterButton, isVisible } = this.props
-    const { filterParamsMatchingQueryParams, params } = this.state
-
-    if (filterParamsMatchingQueryParams) {
-      resetSearchStore()
-    }
+    const { isVisible, onClickFilterButton, query } = this.props
+    const { params } = this.state
 
     params.page = null
     query.change(params, { pathname: '/recherche/resultats' })
@@ -71,13 +63,9 @@ class FilterControls extends Component {
   }
 
   handleOnClickReset = () => {
-    const { query, resetSearchStore } = this.props
-
-    resetSearchStore()
+    const { query } = this.props
 
     this.setState({
-      filterParamsAreEmpty: true,
-      filterParamsMatchingQueryParams: false,
       initialDateParams: true,
       params: {},
     })
@@ -88,25 +76,10 @@ class FilterControls extends Component {
   }
 
   handleQueryChange = (newValue, callback) => {
-    const { query } = this.props
     const { params } = this.state
     const nextFilterParams = { ...params, ...newValue }
-    const filterParamsMatchingQueryParams = getFirstChangingKey(query.parse(), newValue)
-
-    const firstNotEmptyValue = Object.keys(nextFilterParams)
-      .filter(key => !hiddenFilterParams.includes(key))
-      .find(key => {
-        if (key === 'distance') {
-          return nextFilterParams[key] !== null && nextFilterParams[key] !== '20000'
-        }
-        return nextFilterParams[key] !== null
-      })
-    const filterParamsAreEmpty = typeof firstNotEmptyValue === 'undefined'
-
     this.setState(
       {
-        filterParamsAreEmpty,
-        filterParamsMatchingQueryParams,
         params: nextFilterParams,
       },
       callback
@@ -146,7 +119,8 @@ class FilterControls extends Component {
 
   render() {
     const { isVisible } = this.props
-    const { filterParamsAreEmpty, initialDateParams } = this.state
+    const { initialDateParams, params } = this.state
+    const filterParamsAreEmpty = getFilterParamsAreEmpty(params)
     const filterActions = {
       add: this.handleQueryAdd,
       change: this.handleQueryChange,
@@ -213,7 +187,6 @@ FilterControls.propTypes = {
   location: PropTypes.shape().isRequired,
   onClickFilterButton: PropTypes.func.isRequired,
   query: PropTypes.shape().isRequired,
-  resetSearchStore: PropTypes.func.isRequired,
 }
 
 export default FilterControls

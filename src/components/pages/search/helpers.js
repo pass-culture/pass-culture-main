@@ -29,6 +29,20 @@ export const DAYS_CHECKBOXES = [
   },
 ]
 
+const hiddenFilterParams = ['date', 'latitude', 'longitude', 'mots-cles', 'page']
+export const getFilterParamsAreEmpty = queryParams => {
+  const firstNotEmptyValue = Object.keys(queryParams)
+    .filter(key => !hiddenFilterParams.includes(key))
+    .find(key => {
+      if (key === 'distance') {
+        return queryParams[key] !== null && queryParams[key] !== '20000'
+      }
+      return queryParams[key] !== null
+    })
+  const filterParamsAreEmpty = typeof firstNotEmptyValue === 'undefined'
+  return filterParamsAreEmpty
+}
+
 export const isInitialQueryWithoutFilters = (initialParams, filterParams) =>
   Object.keys(initialParams).every(
     key =>
@@ -36,19 +50,6 @@ export const isInitialQueryWithoutFilters = (initialParams, filterParams) =>
       filterParams[key] === null ||
       filterParams[key] === ''
   )
-
-export const getFirstChangingKey = (previousObject, nextObject) =>
-  Object.keys(nextObject).find(key => {
-    const isNewFalsy = nextObject[key] === null || nextObject[key] === ''
-    const isPreviousFalsy =
-      typeof previousObject[key] === 'undefined' ||
-      previousObject[key] === null ||
-      previousObject === ''
-    if (isNewFalsy && isPreviousFalsy) {
-      return false
-    }
-    return previousObject[key] !== nextObject[key]
-  })
 
 export const searchResultsTitle = (
   keywords,

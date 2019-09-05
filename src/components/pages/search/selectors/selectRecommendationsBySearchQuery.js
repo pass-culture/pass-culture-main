@@ -79,10 +79,15 @@ const selectRecommendationsBySearchQuery = createSelector(
   (state, location) => location.search.replace(PAGE_REGEXP, ''),
   (recommendations, types, searchWithoutPage) => {
     const searchQuery = getRecommendationSearch(searchWithoutPage, types)
+
     let filteredRecommendations = recommendations.filter(recommendation => {
+      if (!recommendation.search) {
+        return false
+      }
       const searchRecommendationWithoutPage = recommendation.search.replace(PAGE_REGEXP, '')
       return searchRecommendationWithoutPage === searchQuery
     })
+
     filteredRecommendations = uniqBy(
       filteredRecommendations,
       recommendation => recommendation.productOrTutoIdentifier

@@ -119,6 +119,7 @@ describe('src | components | pages | search | FilterControls', () => {
 
       // then
       const expected = {
+        filterParamsAreEmpty: false,
         filterParamsMatchingQueryParams: false,
         initialDateParams: true,
         params: {},
@@ -142,6 +143,7 @@ describe('src | components | pages | search | FilterControls', () => {
 
       // then
       expect(wrapper.state()).toStrictEqual({
+        filterParamsAreEmpty: false,
         filterParamsMatchingQueryParams: 'jours',
         initialDateParams: true,
         params: {
@@ -162,6 +164,7 @@ describe('src | components | pages | search | FilterControls', () => {
 
       // then
       expect(wrapper.state()).toStrictEqual({
+        filterParamsAreEmpty: false,
         filterParamsMatchingQueryParams: 'categories',
         initialDateParams: true,
         params: {
@@ -184,6 +187,7 @@ describe('src | components | pages | search | FilterControls', () => {
 
       // then
       expect(wrapper.state()).toStrictEqual({
+        filterParamsAreEmpty: false,
         filterParamsMatchingQueryParams: 'categories',
         initialDateParams: true,
         params: {

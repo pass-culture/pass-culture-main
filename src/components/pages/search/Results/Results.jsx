@@ -4,7 +4,7 @@ import React, { PureComponent } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
 
 import RecommendationItemContainer from './RecommendationItem/RecommendationItemContainer'
-import { searchResultsTitle } from '../helpers'
+import { getFilterParamsAreEmpty, searchResultsTitle } from '../helpers'
 import Spinner from '../../../layout/Spinner'
 
 class Results extends PureComponent {
@@ -13,6 +13,15 @@ class Results extends PureComponent {
     this.state = {
       hasReceivedFirstSuccessData: false,
       isLoading: false,
+    }
+  }
+
+  componentDidMount() {
+    const { history, query } = this.props
+    const queryParams = query.parse()
+    const filterParamsAreEmpty = getFilterParamsAreEmpty(queryParams)
+    if (filterParamsAreEmpty) {
+      history.replace('/recherche')
     }
   }
 
@@ -121,6 +130,9 @@ Results.defaultProps = {
 Results.propTypes = {
   cameFromOfferTypesPage: PropTypes.bool.isRequired,
   hasMore: PropTypes.bool,
+  history: PropTypes.shape({
+    replace: PropTypes.func.isRequired,
+  }).isRequired,
   items: PropTypes.arrayOf(PropTypes.shape()),
   keywords: PropTypes.string,
   query: PropTypes.shape().isRequired,

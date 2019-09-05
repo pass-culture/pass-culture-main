@@ -69,6 +69,7 @@ ShallowWrapper {
             disabled={true}
             name="distance"
             onBlur={[Function]}
+            onChange={[Function]}
           >
             <option
               value={20000}
@@ -121,6 +122,7 @@ ShallowWrapper {
               disabled={true}
               name="distance"
               onBlur={[Function]}
+              onChange={[Function]}
             >
               <option
                 value={20000}
@@ -205,6 +207,7 @@ ShallowWrapper {
               "disabled": true,
               "name": "distance",
               "onBlur": [Function],
+              "onChange": [Function],
             },
             "ref": null,
             "rendered": Array [
@@ -303,6 +306,7 @@ ShallowWrapper {
               disabled={true}
               name="distance"
               onBlur={[Function]}
+              onChange={[Function]}
             >
               <option
                 value={20000}
@@ -355,6 +359,7 @@ ShallowWrapper {
                 disabled={true}
                 name="distance"
                 onBlur={[Function]}
+                onChange={[Function]}
               >
                 <option
                   value={20000}
@@ -439,6 +444,7 @@ ShallowWrapper {
                 "disabled": true,
                 "name": "distance",
                 "onBlur": [Function],
+                "onChange": [Function],
               },
               "ref": null,
               "rendered": Array [

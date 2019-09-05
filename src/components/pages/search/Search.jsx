@@ -3,7 +3,6 @@ import { stringify } from 'query-string'
 import React, { Fragment, PureComponent } from 'react'
 import { Switch, Route } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
-// import uuid from 'uuid'
 
 import NavByOfferTypeContainer from './NavByOfferType/NavByOfferTypeContainer'
 import NavResultsHeader from './NavResultsHeader'
