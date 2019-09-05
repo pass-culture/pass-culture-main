@@ -2,6 +2,10 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+
+  .absolute-footer {
+    height: calc(#{$footer-height} + #{$header-height});
+  }
 }
 
 .teaser-main {
