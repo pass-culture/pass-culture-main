@@ -194,7 +194,8 @@ def create_digital_venue(offerer):
 ts_indexes = [('idx_venue_fts_name', Venue.name),
               ('idx_venue_fts_publicName', Venue.publicName,),
               ('idx_venue_fts_address', Venue.address),
-              ('idx_venue_fts_siret', Venue.siret)]
+              ('idx_venue_fts_siret', Venue.siret),
+              ('idx_venue_fts_city', Venue.city)]
 
 
 (Venue.__ts_vectors__, Venue.__table_args__) = create_ts_vector_and_table_args(ts_indexes)
