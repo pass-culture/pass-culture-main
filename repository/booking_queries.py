@@ -308,3 +308,10 @@ def _query_get_used_or_finished_bookings_on_non_activation_offers():
         .filter(Booking.isUsed == True) \
         .filter(Offer.type != str(ThingType.ACTIVATION)) \
         .filter(Offer.type != str(EventType.ACTIVATION))
+
+
+def find_all_not_used_and_not_cancelled():
+    return Booking.query \
+        .filter(Booking.isUsed == False) \
+        .filter(Booking.isCancelled == False) \
+        .all()

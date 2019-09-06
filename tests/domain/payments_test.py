@@ -456,35 +456,6 @@ class CreateAllPaymentsDetailsTest:
         # then
         assert len(details) == 3
 
-    @clean_database
-    def test_returns_booking_used_date_if_payment_status_is_error(self, app):
-        # given
-        offerer1 = create_offerer()
-        user = create_user()
-        deposit = create_deposit(user, amount=500)
-        booking = create_booking(user)
-        payments = [
-            create_payment(booking, offerer1, 10, status=TransactionStatus.ERROR),
-        ]
-
-        PcObject.save(user, deposit, booking, *payments)
-
-        activity_insert = create_booking_activity(
-            booking, 'booking', 'insert', issued_at=datetime(2018, 1, 28)
-        )
-        activity_update = create_booking_activity(
-            booking, 'booking', 'update', issued_at=datetime(2018, 2, 12),
-            data={'isUsed': True}
-        )
-        save_all_activities(activity_insert, activity_update)
-
-        # when
-        details = create_all_payments_details(payments)
-
-        # then
-        assert len(details) == 1
-        assert details[0].booking_used_date == datetime(2018, 2, 12)
-
 
 class PaymentTransactionLabelTest:
     @pytest.mark.parametrize('date', [datetime(2018, 7, d) for d in range(1, 15)])

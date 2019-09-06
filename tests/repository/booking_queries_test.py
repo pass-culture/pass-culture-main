@@ -18,7 +18,8 @@ from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     find_all_offerer_bookings, \
     find_eligible_bookings_for_venue, \
     count_non_cancelled_bookings_by_departement, count_non_cancelled_bookings, count_bookings_by_departement, \
-    count_all_cancelled_bookings_by_departement, count_all_used_or_non_cancelled_bookings
+    count_all_cancelled_bookings_by_departement, count_all_used_or_non_cancelled_bookings, \
+    find_all_not_used_and_not_cancelled
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, \
     create_deposit, \
@@ -1329,3 +1330,79 @@ class CountAllUsedOrNonCancelledBookingsTest:
 
         # Then
         assert number_of_bookings == 0
+
+
+class FindAllNotUsedAndNotCancelledTest:
+    @clean_database
+    def test_return_no_booking_if_only_used(self, app):
+        # Given
+        user = create_user()
+        deposit = create_deposit(user)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue)
+        stock = create_stock(offer=offer)
+        booking = create_booking(user, stock=stock, is_used=True, date_used=datetime(2019, 10, 12))
+        PcObject.save(user, deposit, booking)
+
+        # When
+        bookings = find_all_not_used_and_not_cancelled()
+
+        # Then
+        assert len(bookings) == 0
+
+    @clean_database
+    def test_return_no_booking_if_only_cancelled(self, app):
+        # Given
+        user = create_user()
+        deposit = create_deposit(user)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue)
+        stock = create_stock(offer=offer)
+        booking = create_booking(user, stock=stock, is_cancelled=True)
+        PcObject.save(user, deposit, booking)
+
+        # When
+        bookings = find_all_not_used_and_not_cancelled()
+
+        # Then
+        assert len(bookings) == 0
+
+    @clean_database
+    def test_return_no_booking_if_used_but_cancelled(self, app):
+        # Given
+        user = create_user()
+        deposit = create_deposit(user)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue)
+        stock = create_stock(offer=offer)
+        booking = create_booking(user, stock=stock, is_used=True, is_cancelled=True)
+        PcObject.save(user, deposit, booking)
+
+        # When
+        bookings = find_all_not_used_and_not_cancelled()
+
+        # Then
+        assert len(bookings) == 0
+
+    @clean_database
+    def test_return_1_booking_if_not_used_and_not_cancelled(self, app):
+        # Given
+        user = create_user()
+        deposit = create_deposit(user)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue)
+        stock = create_stock(offer=offer)
+        booking1 = create_booking(user, stock=stock, is_used=False, is_cancelled=False)
+        booking2 = create_booking(user, stock=stock, is_used=True)
+        booking3 = create_booking(user, stock=stock, is_cancelled=True)
+        PcObject.save(user, deposit, booking1, booking2, booking3)
+
+        # When
+        bookings = find_all_not_used_and_not_cancelled()
+
+        # Then
+        assert bookings == [booking1]
