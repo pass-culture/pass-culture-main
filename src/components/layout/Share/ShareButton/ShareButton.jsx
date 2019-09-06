@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
 import CopyToClipboardButton from '../CopyToClipboardButton'
-import MailToLink from '../../MailToLink/MailToLink'
+import MailToLink from '../../MailToLink'
 
 class ShareButton extends PureComponent {
   constructor(props) {
@@ -19,12 +19,13 @@ class ShareButton extends PureComponent {
     />
   )
 
-  getMailToLinkButton = (email, headers) => (
+  getMailToLinkButton = (email, headers, trackShareOffer) => (
     <MailToLink
       className="no-underline is-white-text py12 is-bold fs14"
       email={email}
       headers={headers}
       key="MailToLink"
+      onClick={trackShareOffer}
     >
       {'Envoyer par e-mail'}
     </MailToLink>
@@ -54,7 +55,7 @@ class ShareButton extends PureComponent {
   }
 
   handleOnClickShare = () => {
-    const { email, offerName, openPopin, text, url } = this.props
+    const { email, offerName, openPopin, text, url, trackShareOffer } = this.props
 
     try {
       const nativeOptions = { text: `${text}\n`, title: text, url }
@@ -69,7 +70,7 @@ class ShareButton extends PureComponent {
       const popinOptions = {
         buttons: [
           this.getCopyToClipboardButton(url, this.onCopyHandler),
-          this.getMailToLinkButton(email, headers),
+          this.getMailToLinkButton(email, headers, trackShareOffer),
         ],
         text: 'Comment souhaitez-vous partager cette offre ?',
         title: offerName,
@@ -80,7 +81,7 @@ class ShareButton extends PureComponent {
         popinOptions.buttons = [this.getCloseButton(this.onCloseHandler)]
       }
 
-      openPopin(popinOptions)
+      return openPopin(popinOptions)
     }
   }
 
@@ -114,6 +115,7 @@ ShareButton.propTypes = {
   offerName: PropTypes.string,
   openPopin: PropTypes.func.isRequired,
   text: PropTypes.string,
+  trackShareOffer: PropTypes.func.isRequired,
   url: PropTypes.string,
 }
 

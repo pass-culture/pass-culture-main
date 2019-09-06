@@ -1,13 +1,16 @@
 import { connect } from 'react-redux'
+
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 import { selectCurrentUser } from 'with-react-redux-login'
+import track from 'react-tracking'
 
 import ShareButton from './ShareButton'
+import { getShareURL } from '../../../../helpers'
+import { trackMatomoEventWrapper } from '../../../../helpers/matomoHelper'
 import selectMediationByRouterMatch from '../../../../selectors/selectMediationByRouterMatch'
 import selectOfferByRouterMatch from '../../../../selectors/selectOfferByRouterMatch'
 import { openSharePopin, closeSharePopin } from '../../../../reducers/share'
-import { getShareURL } from '../../../../helpers'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
@@ -28,19 +31,31 @@ export const mapStateToProps = (state, ownProps) => {
   }
 }
 
-export const mapDispatchToProps = dispatch => ({
-  openPopin: popinOptions => {
-    dispatch(openSharePopin(popinOptions))
-  },
-  closePopin: () => {
-    dispatch(closeSharePopin())
+export const mapDispatchToProps = (dispatch, ownProps) => ({
+  openPopin: popinOptions => dispatch(openSharePopin(popinOptions)),
+  closePopin: () => dispatch(closeSharePopin()),
+  trackShareOffer: offerId => {
+    ownProps.tracking.trackEvent({ action: 'shareMail', name: offerId })
   },
 })
 
+export const mergeProps = (stateProps, dispatchProps) => {
+  const { trackShareOffer } = dispatchProps
+  const { offerId } = stateProps
+
+  return {
+    ...stateProps,
+    ...dispatchProps,
+    trackShareOffer: () => trackShareOffer(offerId),
+  }
+}
+
 export default compose(
   withRouter,
+  track({ page: 'Offer' }, { dispatch: trackMatomoEventWrapper }),
   connect(
     mapStateToProps,
-    mapDispatchToProps
+    mapDispatchToProps,
+    mergeProps
   )
 )(ShareButton)

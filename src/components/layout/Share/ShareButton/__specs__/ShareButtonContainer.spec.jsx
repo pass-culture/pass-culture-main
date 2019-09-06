@@ -4,6 +4,8 @@ import { mapStateToProps } from '../ShareButtonContainer'
 import { getShareURL } from '../../../../../helpers'
 import { mapDispatchToProps } from '../ShareButtonContainer'
 
+import { mapDispatchToProps, mergeProps } from '../ShareButtonContainer'
+
 jest.mock('with-react-redux-login')
 jest.mock('../../../../../helpers')
 
@@ -246,10 +248,68 @@ describe('src | components | share | ShareButtonContainer', () => {
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
-          options: false,
+          options: undefined,
           type: 'TOGGLE_SHARE_POPIN',
         })
       })
+    })
+
+    describe('when mapping trackShareOffer', () => {
+      it('should dispatch a track Matomo Event with correct arguments', () => {
+        // given
+        const ownProps = {
+          tracking: {
+            trackEvent: jest.fn(),
+          },
+        }
+        // when
+        mapDispatchToProps(undefined, ownProps).trackShareOffer('myId')
+
+        // then
+        expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
+          action: 'shareMail',
+          name: 'myId',
+        })
+      })
+    })
+  })
+
+  describe('mergeProps', () => {
+    it('should spread all stateProps and dispatch props into mergedProps', () => {
+      // given
+      const stateProps = {
+        offerId: 'B4',
+      }
+      const dispatchProps = {
+        openPopin: () => {},
+        trackShareOffer: () => {},
+      }
+
+      // when
+      const mergedProps = mergeProps(stateProps, dispatchProps)
+
+      // then
+      expect(mergedProps).toStrictEqual({
+        offerId: 'B4',
+        openPopin: expect.any(Function),
+        trackShareOffer: expect.any(Function),
+      })
+    })
+
+    it('should wrap trackShareOffer with offerId from stateProps', () => {
+      // given
+      const stateProps = {
+        offerId: 'B4',
+      }
+      const dispatchProps = {
+        trackShareOffer: jest.fn(),
+      }
+
+      // when
+      mergeProps(stateProps, dispatchProps).trackShareOffer()
+
+      // then
+      expect(dispatchProps.trackShareOffer).toHaveBeenCalledWith('B4')
     })
   })
 })
