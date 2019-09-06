@@ -49,10 +49,10 @@ class InitTiteLiveThingDescriptions(LocalProvider):
 
         providable_info = ProvidableInfo()
         providable_info.type = Product
-        providable_info.dateModifiedAtProvider = self.date_modified
+        providable_info.date_modified_at_provider = self.date_modified
         path = PurePath(self.description_zipinfo.filename)
-        providable_info.idAtProviders = path.name.split('_', 1)[0]
-        self.productId = providable_info.idAtProviders
+        providable_info.id_at_providers = path.name.split('_', 1)[0]
+        self.productId = providable_info.id_at_providers
 
         return providable_info
 

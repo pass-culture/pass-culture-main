@@ -67,10 +67,10 @@ class BankInformationProvider(LocalProvider):
 
     def retrieve_providable_info(self):
         providable_info = ProvidableInfo()
-        providable_info.idAtProviders = self.bank_information_dict['idAtProviders']
+        providable_info.id_at_providers = self.bank_information_dict['idAtProviders']
         providable_info.type = BankInformation
-        providable_info.dateModifiedAtProvider = datetime.strptime(self.application_details['dossier']['updated_at'],
-                                                                   DATE_ISO_FORMAT)
+        providable_info.date_modified_at_provider = datetime.strptime(self.application_details['dossier']['updated_at'],
+                                                                      DATE_ISO_FORMAT)
         return providable_info
 
     def retrieve_bank_information(self, application_details: dict) -> dict:

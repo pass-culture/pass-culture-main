@@ -83,8 +83,8 @@ class InitTiteLiveThings(LocalProvider):
 
         providable_info = ProvidableInfo()
         providable_info.type = Product
-        providable_info.idAtProviders = self.infos['ean13']
-        providable_info.dateModifiedAtProvider = read_things_date(self.infos['date_updated'])
+        providable_info.id_at_providers = self.infos['ean13']
+        providable_info.date_modified_at_provider = read_things_date(self.infos['date_updated'])
         return providable_info
 
     def updateObject(self, thing):
@@ -93,7 +93,7 @@ class InitTiteLiveThings(LocalProvider):
         thing.name = trim_with_elipsis(self.infos['titre'], 140)
         thing.datePublished = read_things_date(self.infos['date_parution'])
         thing.type = self.thing_type
-        thing.extraData = get_extra_data_from_infos(self.extraData, self.infos)
+        thing.extraData = dict(self.extraData.items() + get_extra_data_from_infos(self.infos).items())
 
         if self.infos['url_extrait_pdf'] != '':
             if thing.mediaUrls is None:

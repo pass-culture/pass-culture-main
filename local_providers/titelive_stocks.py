@@ -5,8 +5,8 @@ from sqlalchemy import Sequence
 
 from local_providers.local_provider import LocalProvider
 from local_providers.providable_info import ProvidableInfo
-from models import Offer, VenueProvider, PcObject
-from models.db import db
+from models import Offer, VenueProvider
+from models.db import db, Model
 from models.stock import Stock
 from repository import thing_queries, local_provider_event_queries, venue_queries
 
@@ -126,9 +126,9 @@ class TiteLiveStocks(LocalProvider):
         sequence = Sequence('offer_id_seq')
         return db.session.execute(sequence)
 
-    def create_providable_info(self, model_object: PcObject) -> ProvidableInfo:
+    def create_providable_info(self, model_object: Model) -> ProvidableInfo:
         providable_info = ProvidableInfo()
         providable_info.type = model_object
-        providable_info.idAtProviders = "%s@%s" % (self.titelive_stock['ref'], self.venue_siret)
-        providable_info.dateModifiedAtProvider = datetime.utcnow()
+        providable_info.id_at_providers = "%s@%s" % (self.titelive_stock['ref'], self.venue_siret)
+        providable_info.date_modified_at_provider = datetime.utcnow()
         return providable_info

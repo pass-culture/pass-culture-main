@@ -1,0 +1,89 @@
+import datetime
+from typing import Dict, Optional
+
+from sqlalchemy import select
+
+import models
+from local_providers.providable_info import ProvidableInfo
+from models.db import db, Model
+from utils.date import read_json_date
+from utils.human_ids import humanize
+from utils.logger import logger
+
+
+def save_chunk_to_insert(chunk_to_insert: Dict):
+    db.session.bulk_save_objects(chunk_to_insert.values())
+    db.session.commit()
+
+
+def save_chunk_to_update(chunk_to_update: Dict, providable_info: ProvidableInfo):
+    for chunk_key, chunk_object in chunk_to_update.items():
+        statement = _build_statement_for_update(chunk_key,
+                                                chunk_object,
+                                                providable_info.type)
+        try:
+            connection = db.engine.connect()
+            connection.execute(statement)
+        except ValueError as e:
+            logger.error('ERROR during object update: '
+                         + e.__class__.__name__ + ' ' + str(e))
+
+
+def get_existing_object_or_none(model_type: Model, id_at_providers: str) -> Optional[Dict]:
+    conn = db.engine.connect()
+    model_to_query = model_type
+    query = select([model_to_query]). \
+        where(model_to_query.idAtProviders == id_at_providers)
+    db_object_dict = conn.execute(query).fetchone()
+
+    if db_object_dict is not None:
+        return _dict_to_object(db_object_dict, model_to_query)
+    return None
+
+
+def get_last_modification_date_for_provider(provider_id: int, obj) -> datetime:
+    if obj.lastProviderId == provider_id:
+        return obj.dateModifiedAtLastProvider
+    for change in obj.activity():
+        if change.changed_data['lastProviderId'] == provider_id:
+            return read_json_date(change.changed_data['dateModifiedAtLastProvider'])
+
+
+def _dict_to_object(object_dict: Dict, model_object: Model) -> Model:
+    pc_object = {}
+    for key, value in object_dict.items():
+        if key.endswith('Id'):
+            pc_object[key] = humanize(value)
+        else:
+            pc_object[key] = value
+    pc_obj = model_object(from_dict=pc_object)
+    pc_obj.id = pc_object['id']
+    return pc_obj
+
+
+def _build_statement_for_update(chunk_key: str, chunk_object: Model, model_to_update: Model):
+    try:
+        model_name = chunk_key.split('|')[1]
+        model_object = getattr(models, model_name)
+    except AttributeError:
+        model_object = model_to_update
+    dict_to_update = _build_dict_to_update(chunk_object)
+    statement = model_object.__table__.update(). \
+        where(model_object.id == dict_to_update['id']). \
+        values(dict_to_update)
+    return statement
+
+
+def _build_dict_to_update(object_to_update: Model) -> Dict:
+    dict_to_update = object_to_update.__dict__
+    if '_sa_instance_state' in dict_to_update:
+        del dict_to_update['_sa_instance_state']
+    if 'datePublished' in dict_to_update:
+        del dict_to_update['datePublished']
+    if 'venue' in dict_to_update:
+        del dict_to_update['venue']
+    if 'offer' in dict_to_update:
+        del dict_to_update['offer']
+    if 'stocks' in dict_to_update:
+        del dict_to_update['stocks']
+    return dict_to_update

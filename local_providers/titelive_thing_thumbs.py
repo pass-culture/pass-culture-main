@@ -63,10 +63,10 @@ class TiteLiveThingThumbs(LocalProvider):
 
         providable_info = ProvidableInfo()
         providable_info.type = Product
-        providable_info.dateModifiedAtProvider = None
+        providable_info.date_modified_at_provider = None
         path = PurePath(self.thumb_zipinfo.filename)
-        providable_info.idAtProviders = path.name.split('_', 1)[0]
-        self.thingId = providable_info.idAtProviders
+        providable_info.id_at_providers = path.name.split('_', 1)[0]
+        self.thingId = providable_info.id_at_providers
 
         return providable_info
 

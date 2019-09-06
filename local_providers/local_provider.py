@@ -2,20 +2,18 @@ import traceback
 from abc import abstractmethod
 from collections import Iterator
 from datetime import datetime
+from io import BytesIO
 from pprint import pprint
 
-from postgresql_audit.flask import versioning_manager
-from sqlalchemy import text
-
+from connectors.thumb_storage import save_thumb
+from local_providers.chunk_manager import get_existing_pc_obj, save_chunks
 from local_providers.providable_info import ProvidableInfo
-from local_providers.utils.retreive_provider_object import get_existing_pc_obj, get_last_modification_date_for_provider
-from local_providers.utils.save_provider_objects import save_chunks, save_thumb_from_thumb_count_to_index
-from models.db import db
+from models.db import db, Model
 from models.has_thumb_mixin import HasThumbMixin
 from models.local_provider_event import LocalProviderEvent, LocalProviderEventType
 from models.pc_object import PcObject
+from repository.providable_queries import get_last_modification_date_for_provider
 from repository.provider_queries import get_provider_by_local_class
-from utils.date import read_json_date
 from utils.human_ids import humanize
 from utils.inflect_engine import inflect_engine
 from utils.logger import logger
@@ -85,6 +83,12 @@ class LocalProvider(Iterator):
     def objectType(self):
         pass
 
+    def save_thumb_from_thumb_count_to_index(self, index: int, obj: Model, thumb: BytesIO):
+        counter = obj.thumbCount
+        while obj.thumbCount <= index:
+            save_thumb(obj, thumb, counter, need_save=False)
+            counter += 1
+
     def handle_thumb(self, obj):
         if not hasattr(obj, 'thumbCount'):
             return
@@ -104,7 +108,7 @@ class LocalProvider(Iterator):
                 if new_thumb is None:
                     return
 
-                save_thumb_from_thumb_count_to_index(new_thumb_index, obj, new_thumb)
+                self.save_thumb_from_thumb_count_to_index(new_thumb_index, obj, new_thumb)
 
                 if existing_thumb_date:
                     logger.info("    Updating thumb #" + str(new_thumb_index) + " for " + str(obj))
@@ -123,21 +127,21 @@ class LocalProvider(Iterator):
 
     def create_object(self, providable_info):
         logger.debug('  Creating ' + providable_info.type.__name__
-                     + '# ' + providable_info.idAtProviders)
+                     + '# ' + providable_info.id_at_providers)
         obj = providable_info.type()
-        obj.idAtProviders = providable_info.idAtProviders
+        obj.idAtProviders = providable_info.id_at_providers
         self.createdObjects += 1
         return obj
 
     def handle_update(self, obj, providable_info, is_new_obj):
         if not is_new_obj:
             logger.debug('  Updating ' + providable_info.type.__name__
-                         + '# ' + providable_info.idAtProviders)
+                         + '# ' + providable_info.id_at_providers)
             self.updatedObjects += 1
         try:
             self.updateObject(obj)
             obj.lastProviderId = self.dbObject.id
-            obj.dateModifiedAtLastProvider = providable_info.dateModifiedAtProvider
+            obj.dateModifiedAtLastProvider = providable_info.date_modified_at_provider
         except Exception as e:
             logger.info('ERROR during updateObject: '
                         + e.__class__.__name__ + ' ' + str(e))
@@ -194,7 +198,7 @@ class LocalProvider(Iterator):
 
                 for providable_info in providable_infos:
                     if providable_info is not None:
-                        chunk_key = providable_info.idAtProviders + '|' + str(providable_info.type.__name__)
+                        chunk_key = providable_info.id_at_providers + '|' + str(providable_info.type.__name__)
 
                         pc_obj = get_existing_pc_obj(providable_info, chunk_to_insert, chunk_to_update)
 
@@ -203,10 +207,10 @@ class LocalProvider(Iterator):
 
                         if pc_obj is None:
                             is_new_obj = True
-                            if providable_info.dateModifiedAtProvider is None \
+                            if providable_info.date_modified_at_provider is None \
                                     or not self.canCreate:
                                 logger.debug('  Not creating or updating ' + providable_info.type.__name__ +
-                                             '# ' + providable_info.idAtProviders)
+                                             '# ' + providable_info.id_at_providers)
                                 continue
                             pc_obj = self.create_object(providable_info)
                         else:
@@ -216,9 +220,9 @@ class LocalProvider(Iterator):
                         self.providables.append(pc_obj)
 
                         object_need_update = date_modified_at_provider is None \
-                                             or date_modified_at_provider < providable_info.dateModifiedAtProvider
+                                             or date_modified_at_provider < providable_info.date_modified_at_provider
 
-                        if providable_info.dateModifiedAtProvider is not None \
+                        if providable_info.date_modified_at_provider is not None \
                                 and object_need_update:
                             self.handle_update(pc_obj, providable_info, is_new_obj)
 
@@ -238,7 +242,7 @@ class LocalProvider(Iterator):
                         else:
                             logger.debug('  Not creating or updating '
                                          + providable_info.type.__name__
-                                         + '# ' + providable_info.idAtProviders)
+                                         + '# ' + providable_info.id_at_providers)
 
                         if pc_obj is not None:
                             if isinstance(pc_obj, HasThumbMixin):

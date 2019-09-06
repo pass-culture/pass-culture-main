@@ -66,11 +66,11 @@ class VenueWithoutSIRETBankInformationProvider(LocalProvider):
 
     def retrieve_providable_info(self) -> ProvidableInfo:
         providable_info = ProvidableInfo()
-        providable_info.idAtProviders = \
+        providable_info.id_at_providers = \
             f"{self.application_details['structureId']}|{self.application_details['venueId']}"
 
         providable_info.type = BankInformation
-        providable_info.dateModifiedAtProvider = self.application_details['updated_at']
+        providable_info.date_modified_at_provider = self.application_details['updated_at']
         return providable_info
 
     def updateObject(self, bank_information):

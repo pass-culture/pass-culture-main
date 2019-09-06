@@ -1,16 +1,16 @@
 import re
+from io import TextIOWrapper, BytesIO
+from typing import Dict
 
 from connectors.ftp_titelive import get_files_to_process_from_titelive_ftp, connect_to_titelive_ftp
 from domain.titelive import get_date_from_filename, read_things_date
 from local_providers.local_provider import LocalProvider
 from local_providers.providable_info import ProvidableInfo
-from models.local_provider_event import LocalProviderEventType
 from models import Product, ThingType, BookFormat
+from models.local_provider_event import LocalProviderEventType
 from repository import local_provider_event_queries
 from utils.logger import logger
 from utils.string_processing import trim_with_elipsis
-
-from io import TextIOWrapper, BytesIO
 
 DATE_REGEXP = re.compile('([a-zA-Z]+)(\d+).tit')
 THINGS_FOLDER_NAME_TITELIVE = 'livre3_11'
@@ -59,7 +59,7 @@ class TiteLiveThings(LocalProvider):
 
         if len(elements) != NUMBER_OF_ELEMENTS_PER_LINE:
             logger.debug("Did not find 45 elements as expected in titelive"
-                        + " line. Skipping line")
+                         + " line. Skipping line")
             return None
 
         self.infos = get_infos_from_data_line(elements)
@@ -77,8 +77,8 @@ class TiteLiveThings(LocalProvider):
 
         providable_info = ProvidableInfo()
         providable_info.type = Product
-        providable_info.idAtProviders = self.infos['ean13']
-        providable_info.dateModifiedAtProvider = read_things_date(self.infos['date_updated'])
+        providable_info.id_at_providers = self.infos['ean13']
+        providable_info.date_modified_at_provider = read_things_date(self.infos['date_updated'])
         return providable_info
 
     def updateObject(self, thing):
@@ -87,7 +87,8 @@ class TiteLiveThings(LocalProvider):
         thing.name = trim_with_elipsis(self.infos['titre'], 140)
         thing.datePublished = read_things_date(self.infos['date_parution'])
         thing.type = self.thing_type
-        thing.extraData = get_extra_data_from_infos(self.extraData, self.infos)
+        thing.extraData = self.extraData.copy()
+        thing.extraData.update(get_extra_data_from_infos(self.infos))
 
         if self.infos['url_extrait_pdf'] != '':
             if thing.mediaUrls is None:
@@ -95,7 +96,7 @@ class TiteLiveThings(LocalProvider):
 
             thing.mediaUrls.append(self.infos['url_extrait_pdf'])
 
-    def get_remaining_files_to_check(self, ordered_thing_files : list):
+    def get_remaining_files_to_check(self, ordered_thing_files: list):
         latest_sync_part_end_event = local_provider_event_queries.find_latest_sync_part_end_event(self.dbObject)
         if latest_sync_part_end_event is None:
             return iter(ordered_thing_files)
@@ -221,25 +222,25 @@ def get_infos_from_data_line(elts: []):
     return infos
 
 
-def get_extra_data_from_infos(extra_data: [], infos: []) -> []:
-    filled_extra_data = extra_data
-    filled_extra_data['author'] = infos['auteurs']
+def get_extra_data_from_infos(infos: Dict) -> Dict:
+    extra_data = dict()
+    extra_data['author'] = infos['auteurs']
     if infos['indice_dewey'] != '':
-        filled_extra_data['dewey'] = infos['indice_dewey']
-    filled_extra_data['titelive_regroup'] = infos['code_regroupement']
-    filled_extra_data['prix_livre'] = infos['prix'].replace(',', '.')
-    filled_extra_data['rayon'] = infos['libelle_csr']
+        extra_data['dewey'] = infos['indice_dewey']
+    extra_data['titelive_regroup'] = infos['code_regroupement']
+    extra_data['prix_livre'] = infos['prix'].replace(',', '.')
+    extra_data['rayon'] = infos['libelle_csr']
     if infos['is_scolaire'] == '1':
-        filled_extra_data['schoolbook'] = True
+        extra_data['schoolbook'] = True
     if infos['classement_top'] != '':
-        filled_extra_data['top'] = infos['classement_top']
+        extra_data['top'] = infos['classement_top']
     if infos['collection'] != '':
-        filled_extra_data['collection'] = infos['collection']
+        extra_data['collection'] = infos['collection']
     if infos['num_in_collection'] != '':
-        filled_extra_data['num_in_collection'] = infos['num_in_collection']
+        extra_data['num_in_collection'] = infos['num_in_collection']
     if infos['libelle_serie_bd'] != '':
-        filled_extra_data['comic_series'] = infos['libelle_serie_bd']
+        extra_data['comic_series'] = infos['libelle_serie_bd']
     if infos['commentaire'] != '':
-        filled_extra_data['comment'] = trim_with_elipsis(infos['commentaire'], 92)
+        extra_data['comment'] = trim_with_elipsis(infos['commentaire'], 92)
 
-    return filled_extra_data
+    return extra_data
