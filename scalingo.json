@@ -2,7 +2,14 @@
   "name": "Pass Culture API",
   "description": "Serveur API du Pass Culture",
   "repository": "https://github.com/betagouv/pass-culture-api",
-  "addons": ["postgresql:free"],
+  "addons": [
+    "postgresql:postgresql-sandbox"
+  ],
+  "env": {
+    "SCALINGO_POSTGRESQL_URL": {
+      "value": "to be overriden"
+    }
+  },
   "formation": {
     "web": {
       "amount": 1,
