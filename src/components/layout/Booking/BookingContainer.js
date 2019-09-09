@@ -7,6 +7,8 @@ import selectBookables from '../../../selectors/selectBookables'
 import selectBookingByRouterMatch from '../../../selectors/selectBookingByRouterMatch'
 import selectOfferByRouterMatch from '../../../selectors/selectOfferByRouterMatch'
 import selectRecommendationByRouterMatch from '../../../selectors/selectRecommendationByRouterMatch'
+import { requestData } from 'redux-saga-data'
+import { bookingNormalizer } from '../../../utils/normalizers'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
@@ -24,7 +26,23 @@ export const mapStateToProps = (state, ownProps) => {
   }
 }
 
+export const mapDispatchToProps = (dispatch) => ({
+  handleSubmit: (formValues, handleRequestFail, handleRequestSuccess) => {
+    dispatch(
+      requestData({
+        apiPath: '/bookings',
+        body: { ...formValues, quantity: 1 },
+        handleFail: handleRequestFail,
+        handleSuccess: handleRequestSuccess,
+        method: 'POST',
+        name: 'booking',
+        normalizer: bookingNormalizer,
+      })
+    )
+  }
+})
+
 export default compose(
   withRouter,
-  connect(mapStateToProps)
+  connect(mapStateToProps, mapDispatchToProps)
 )(Booking)

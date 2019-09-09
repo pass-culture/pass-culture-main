@@ -6,12 +6,10 @@ import Booking from '../Booking'
 
 describe('src | components | layout |Booking', () => {
   let props
-  let dispatch
   let push
   let replace
 
   beforeEach(() => {
-    dispatch = jest.fn()
     push = jest.fn()
     replace = jest.fn()
     props = {
@@ -21,7 +19,6 @@ describe('src | components | layout |Booking', () => {
           price: 10,
         },
       },
-      dispatch,
       history: {
         push,
         replace,

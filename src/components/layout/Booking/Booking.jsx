@@ -3,7 +3,6 @@ import moment from 'moment'
 import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { Transition } from 'react-transition-group'
-import { requestData } from 'redux-saga-data'
 
 import BookingCancel from './BookingCancel/BookingCancel'
 import BookingForm from './BookingForm/BookingForm'
@@ -16,7 +15,6 @@ import { priceIsDefined } from '../../../helpers/getDisplayPrice'
 import getIsBooking from '../../../helpers/getIsBooking'
 import getIsConfirmingCancelling from '../../../helpers/getIsConfirmingCancelling'
 import { ROOT_PATH } from '../../../utils/config'
-import { bookingNormalizer } from '../../../utils/normalizers'
 
 const BOOKING_FORM_ID = 'form-create-booking'
 
@@ -64,24 +62,11 @@ class Booking extends PureComponent {
   }
 
   handleFormSubmit = formValues => {
-    const { dispatch } = this.props
-    const onSubmittingStateChanged = () => {
-      dispatch(
-        requestData({
-          apiPath: '/bookings',
-          // NOTE -> pas de gestion de stock
-          // valeur des quantites a 1 par defaut pour les besoins API
-          body: { ...formValues, quantity: 1 },
-          handleFail: this.handleRequestFail,
-          handleSuccess: this.handleRequestSuccess,
-          method: 'POST',
-          name: 'booking',
-          normalizer: bookingNormalizer,
-        })
-      )
-    }
-    // appel au service apres le changement du state
-    this.setState({ isSubmitting: true }, onSubmittingStateChanged)
+    const { handleSubmit } = this.props
+    this.setState(
+      { isSubmitting: true },
+      handleSubmit(formValues, this.handleRequestFail, this.handleRequestSuccess())
+    )
   }
 
   handleRequestSuccess = (state, action) => {
@@ -280,8 +265,8 @@ Booking.defaultProps = {
 Booking.propTypes = {
   bookables: PropTypes.arrayOf(PropTypes.shape()),
   booking: PropTypes.shape(),
-  dispatch: PropTypes.func.isRequired,
   extraClassName: PropTypes.string,
+  handleSubmit: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
