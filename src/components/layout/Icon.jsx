@@ -22,11 +22,12 @@ const Icon = ({ png, svg, ...imgProps }) => {
 
 Icon.defaultProps = {
   png: null,
+  svg: null,
 }
 
 Icon.propTypes = {
   png: PropTypes.string,
-  svg: PropTypes.string.isRequired,
+  svg: PropTypes.string,
 }
 
 export default Icon

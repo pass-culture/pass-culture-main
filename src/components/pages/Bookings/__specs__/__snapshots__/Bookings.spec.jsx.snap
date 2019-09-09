@@ -44,6 +44,7 @@ ShallowWrapper {
           >
             <Icon
               png="picto-info-solid"
+              svg={null}
             />
             <span>
               Les
@@ -135,6 +136,7 @@ ShallowWrapper {
           >
             <Icon
               png="picto-info-solid"
+              svg={null}
             />
             <span>
               Les
@@ -158,6 +160,7 @@ ShallowWrapper {
             "children": Array [
               <Icon
                 png="picto-info-solid"
+                svg={null}
               />,
               <span>
                 Les
@@ -180,6 +183,7 @@ ShallowWrapper {
               "nodeType": "function",
               "props": Object {
                 "png": "picto-info-solid",
+                "svg": null,
               },
               "ref": null,
               "rendered": null,
@@ -296,6 +300,7 @@ ShallowWrapper {
             >
               <Icon
                 png="picto-info-solid"
+                svg={null}
               />
               <span>
                 Les
@@ -387,6 +392,7 @@ ShallowWrapper {
             >
               <Icon
                 png="picto-info-solid"
+                svg={null}
               />
               <span>
                 Les
@@ -410,6 +416,7 @@ ShallowWrapper {
               "children": Array [
                 <Icon
                   png="picto-info-solid"
+                  svg={null}
                 />,
                 <span>
                   Les
@@ -432,6 +439,7 @@ ShallowWrapper {
                 "nodeType": "function",
                 "props": Object {
                   "png": "picto-info-solid",
+                  "svg": null,
                 },
                 "ref": null,
                 "rendered": null,
