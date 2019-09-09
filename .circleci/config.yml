@@ -202,6 +202,7 @@ jobs:
             VERSION_TO_DEPLOY=$(git describe --contains)
             BOT_MESSAGE="*"$CIRCLE_BRANCH"* : *API* deployment *"$VERSION_TO_DEPLOY"* seems to have *FAILED* "$'\U00026C5'""
             curl -d text="$BOT_MESSAGE" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown"
+            curl --request POST "http://$LOGSTASH_USER:$LOGSTASH_PASSWORD@pc-logstash.scalingo.io?Application=Api&Environment=$CIRCLE_BRANCH&deployed=false&version=$VERSION_TO_DEPLOY"
           when: on_fail
 
   deploy-pro:
@@ -241,6 +242,7 @@ jobs:
             VERSION_TO_DEPLOY=$(git describe --contains)
             BOT_MESSAGE="*"$CIRCLE_BRANCH"* : *Pro* deployment *"$VERSION_TO_DEPLOY"* seems to have *FAILED*"$'\U00026C5'""
             curl -d text="$BOT_MESSAGE" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown"
+            curl --request POST "http://$LOGSTASH_USER:$LOGSTASH_PASSWORD@pc-logstash.scalingo.io?Application=Pro&Environment=$CIRCLE_BRANCH&deployed=false&version=$VERSION_TO_DEPLOY"
           when: on_fail
 
   deploy-webapp:
@@ -280,6 +282,7 @@ jobs:
             VERSION_TO_DEPLOY=$(git describe --contains)
             BOT_MESSAGE="*"$CIRCLE_BRANCH"* : *Webapp* deployment *"$VERSION_TO_DEPLOY"* seems to have *FAILED* "$'\U00026C5'""
             curl -d text="$BOT_MESSAGE" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown"
+            curl --request POST "http://$LOGSTASH_USER:$LOGSTASH_PASSWORD@pc-logstash.scalingo.io?Application=Webapp&Environment=$CIRCLE_BRANCH&deployed=false&version=$VERSION_TO_DEPLOY"
           when: on_fail
 
   release-synthesis:
@@ -294,6 +297,8 @@ jobs:
             VERSION_TO_DEPLOY=$(git describe --contains)
             BOT_MESSAGE="Version *"$VERSION_TO_DEPLOY"* has been successfully deployed to *"$CIRCLE_BRANCH"* "$'\U0001F44C'""
             curl -d text="$BOT_MESSAGE" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown"
+            curl --request POST "http://$LOGSTASH_USER:$LOGSTASH_PASSWORD@pc-logstash.scalingo.io?Application=All&Environment=$CIRCLE_BRANCH&deployed=true&version=$VERSION_TO_DEPLOY"
+
 workflows:
   version: 2
   commit:
