@@ -105,12 +105,12 @@ def test_find_filtered_venues_with_date_params_return_filtered_venues(app):
     venue_20180830 = create_venue(offerer, siret='12345678912347')
     PcObject.save(venue_20180630, venue_20180730, venue_20180830)
 
-    activity1 = create_venue_activity(venue_20180630, 'venue', 'insert', issued_at=datetime(2018,
-                                                                                            6, 30))
-    activity2 = create_venue_activity(venue_20180730, 'venue', 'insert', issued_at=datetime(2018,
-                                                                                            7, 30))
-    activity3 = create_venue_activity(venue_20180830, 'venue', 'insert', issued_at=datetime(2018,
-                                                                                            8, 30))
+    activity1 = create_venue_activity(venue_20180630, 'insert', issued_at=datetime(2018,
+                                                                                   6, 30))
+    activity2 = create_venue_activity(venue_20180730, 'insert', issued_at=datetime(2018,
+                                                                                   7, 30))
+    activity3 = create_venue_activity(venue_20180830, 'insert', issued_at=datetime(2018,
+                                                                                   8, 30))
     save_all_activities(activity1, activity2, activity3)
 
     # When

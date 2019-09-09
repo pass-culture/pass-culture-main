@@ -368,25 +368,25 @@ def test_get_venues_return_200_and_filtered_venues(app):
     venue67_with_offer_in_date_range_id = venue67_with_offer_in_date_range.id
     venue93_with_offer_in_date_range_id = venue93_with_offer_in_date_range.id
 
-    activity_in_date_range1 = create_venue_activity(venue93_with_offer_in_date_range, 'venue', 'insert',
+    activity_in_date_range1 = create_venue_activity(venue93_with_offer_in_date_range, 'insert',
                                                     issued_at=datetime(2018, 11, 30))
-    activity_in_date_range2 = create_venue_activity(venue67_with_offer_in_date_range, 'venue', 'insert',
+    activity_in_date_range2 = create_venue_activity(venue67_with_offer_in_date_range, 'insert',
                                                     issued_at=datetime(2018, 11, 30))
-    activity_in_date_range3 = create_venue_activity(venue67_without_offer_in_date_range, 'venue', 'insert',
+    activity_in_date_range3 = create_venue_activity(venue67_without_offer_in_date_range, 'insert',
                                                     issued_at=datetime(2018, 11, 30))
-    activity_in_date_range4 = create_venue_activity(venue34_with_offer_in_date_range, 'venue', 'insert',
+    activity_in_date_range4 = create_venue_activity(venue34_with_offer_in_date_range, 'insert',
                                                     issued_at=datetime(2018, 11, 30))
-    activity_in_date_range5 = create_venue_activity(venue_virtual_with_offer_in_date_range, 'venue', 'insert',
+    activity_in_date_range5 = create_venue_activity(venue_virtual_with_offer_in_date_range, 'insert',
                                                     issued_at=datetime(2018, 11, 30))
-    activity_in_date_range6 = create_venue_activity(venue_not_validated_with_offer_in_date_range, 'venue', 'insert',
+    activity_in_date_range6 = create_venue_activity(venue_not_validated_with_offer_in_date_range, 'insert',
                                                     issued_at=datetime(2018, 11, 30))
-    activity_in_date_range7 = create_venue_activity(venue_with_not_validated_offerer_in_date_range, 'venue', 'insert',
+    activity_in_date_range7 = create_venue_activity(venue_with_not_validated_offerer_in_date_range, 'insert',
                                                     issued_at=datetime(2018, 11, 30))
-    activity_before_date_range1 = create_venue_activity(venue93_with_offer_before_date_range, 'venue', 'insert',
+    activity_before_date_range1 = create_venue_activity(venue93_with_offer_before_date_range, 'insert',
                                                         issued_at=datetime(2018, 6, 30))
-    activity_before_date_range2 = create_venue_activity(venue67_with_offer_before_date_range, 'venue', 'insert',
+    activity_before_date_range2 = create_venue_activity(venue67_with_offer_before_date_range, 'insert',
                                                         issued_at=datetime(2018, 6, 30))
-    activity_after_date_range = create_venue_activity(venue93_with_offer_after_date_range, 'venue', 'insert',
+    activity_after_date_range = create_venue_activity(venue93_with_offer_after_date_range, 'insert',
                                                       issued_at=datetime(2019, 8, 30))
 
     save_all_activities(activity_in_date_range1, activity_in_date_range2, activity_in_date_range3,

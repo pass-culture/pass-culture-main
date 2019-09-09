@@ -257,7 +257,7 @@ def create_stock_from_offer(offer, price=10, available=10, soft_deleted=False, b
 
 def create_stock(price=10, available=10, booking_limit_datetime=None, offer=None,
                  beginning_datetime=None, end_datetime=None,
-                 is_soft_deleted=False, id_at_providers=None, last_provider_id=None):
+                 is_soft_deleted=False, id_at_providers=None, last_provider_id=None, date_modified=datetime.utcnow()):
     stock = Stock()
     stock.price = price
     stock.available = available
@@ -268,6 +268,7 @@ def create_stock(price=10, available=10, booking_limit_datetime=None, offer=None
     stock.isSoftDeleted = is_soft_deleted
     stock.idAtProviders = id_at_providers
     stock.lastProviderId = last_provider_id
+    stock.dateModified = date_modified
     return stock
 
 
@@ -584,6 +585,31 @@ def create_booking_activity(booking, table_name, verb, issued_at=datetime.utcnow
     return activity
 
 
+def create_stock_activity(stock, verb, issued_at=datetime.utcnow, data=None):
+    Activity = versioning_manager.activity_cls
+    activity = Activity()
+    activity.issued_at = issued_at
+    activity.table_name = 'stock'
+    activity.verb = verb
+
+    base_data = {
+        "id": stock.id,
+        "available": stock.available
+    }
+
+    if verb.lower() == 'insert':
+        activity.old_data = {}
+        activity.changed_data = base_data
+    elif verb.lower() == 'update':
+        activity.old_data = base_data
+        activity.changed_data = data
+    elif verb.lower() == 'delete':
+        activity.old_data = base_data
+        activity.changed_data = data
+
+    return activity
+
+
 def create_user_activity(user, table_name, verb, issued_at=datetime.utcnow):
     Activity = versioning_manager.activity_cls
     activity = Activity()
@@ -600,11 +626,11 @@ def create_user_activity(user, table_name, verb, issued_at=datetime.utcnow):
     return activity
 
 
-def create_venue_activity(venue, table_name, verb, issued_at=datetime.utcnow):
+def create_venue_activity(venue, verb, issued_at=datetime.utcnow):
     Activity = versioning_manager.activity_cls
     activity = Activity()
     activity.issued_at = issued_at
-    activity.table_name = table_name
+    activity.table_name = 'venue'
     activity.verb = verb
     variables = {'id': venue.id,
                  'name': venue.name,
