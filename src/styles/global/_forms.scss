@@ -95,6 +95,17 @@
   }
 }
 
+.pc-final-form-password {
+  .pc-final-form-inner {
+    justify-content: space-between;
+  }
+
+  .pc-final-form-input {
+    flex: unset;
+    width: 80%;
+  }
+}
+
 /* ------------------------------------------------
 
  SELECTBOX
