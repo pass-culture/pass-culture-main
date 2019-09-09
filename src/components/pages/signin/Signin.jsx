@@ -15,6 +15,15 @@ const submitButtonOptions = {
   label: 'Connexion',
 }
 
+const signUpLinkOption = {
+  className: 'is-white-text',
+  disabled: false,
+  id: 'sign-up-link',
+  label: 'Créer un compte',
+  target: '_blank',
+  url: 'https://www.demarches-simplifiees.fr/commencer/inscription-pass-culture',
+}
+
 class Signin extends React.PureComponent {
   constructor(props) {
     super(props)
@@ -68,7 +77,7 @@ class Signin extends React.PureComponent {
           <FormInputs />
         </div>
         <FormFooter
-          cancel={false}
+          externalLink={signUpLinkOption}
           submit={{ ...submitButtonOptions, disabled: !canSubmit }}
         />
       </form>

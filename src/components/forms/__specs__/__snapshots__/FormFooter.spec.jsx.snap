@@ -6,6 +6,7 @@ ShallowWrapper {
   Symbol(enzyme.__unrendered__): <FormFooter
     cancel={false}
     className="fake className"
+    externalLink={false}
     submit={false}
   />,
   Symbol(enzyme.__renderer__): Object {
@@ -27,11 +28,13 @@ ShallowWrapper {
         false,
         false,
         false,
+        false,
       ],
       "className": "pc-final-form-footer dotted-top-2x-white py7 flex-0 flex-columns text-center items-center fs20 fake className",
     },
     "ref": null,
     "rendered": Array [
+      false,
       false,
       false,
       false,
@@ -50,11 +53,13 @@ ShallowWrapper {
           false,
           false,
           false,
+          false,
         ],
         "className": "pc-final-form-footer dotted-top-2x-white py7 flex-0 flex-columns text-center items-center fs20 fake className",
       },
       "ref": null,
       "rendered": Array [
+        false,
         false,
         false,
         false,
@@ -99,6 +104,7 @@ ShallowWrapper {
   Symbol(enzyme.__unrendered__): <FormFooter
     cancel={false}
     className="fake className"
+    externalLink={false}
     submit={
       Object {
         "className": "fake submit className",
@@ -126,6 +132,7 @@ ShallowWrapper {
       "children": Array [
         false,
         false,
+        false,
         <Link
           className="flex-1 fake submit className"
           disabled={false}
@@ -145,6 +152,7 @@ ShallowWrapper {
     },
     "ref": null,
     "rendered": Array [
+      false,
       false,
       false,
       Object {
@@ -191,6 +199,7 @@ ShallowWrapper {
         "children": Array [
           false,
           false,
+          false,
           <Link
             className="flex-1 fake submit className"
             disabled={false}
@@ -210,6 +219,7 @@ ShallowWrapper {
       },
       "ref": null,
       "rendered": Array [
+        false,
         false,
         false,
         Object {
@@ -292,6 +302,7 @@ ShallowWrapper {
       }
     }
     className="fake className"
+    externalLink={false}
     submit={
       Object {
         "className": "fake submit className",
@@ -330,6 +341,7 @@ ShallowWrapper {
             fake cancel label
           </span>
         </Link>,
+        false,
         <hr
           className="dotted-left-2x-white flex-0"
         />,
@@ -383,6 +395,7 @@ ShallowWrapper {
         },
         "type": [Function],
       },
+      false,
       Object {
         "instance": null,
         "key": undefined,
@@ -449,6 +462,7 @@ ShallowWrapper {
               fake cancel label
             </span>
           </Link>,
+          false,
           <hr
             className="dotted-left-2x-white flex-0"
           />,
@@ -502,6 +516,7 @@ ShallowWrapper {
           },
           "type": [Function],
         },
+        false,
         Object {
           "instance": null,
           "key": undefined,
@@ -593,6 +608,7 @@ ShallowWrapper {
       }
     }
     className="fake className"
+    externalLink={false}
     submit={
       Object {
         "className": "fake submit className",
@@ -630,6 +646,7 @@ ShallowWrapper {
             fake cancel label
           </span>
         </Link>,
+        false,
         <hr
           className="dotted-left-2x-white flex-0"
         />,
@@ -682,6 +699,7 @@ ShallowWrapper {
         },
         "type": [Function],
       },
+      false,
       Object {
         "instance": null,
         "key": undefined,
@@ -747,6 +765,7 @@ ShallowWrapper {
               fake cancel label
             </span>
           </Link>,
+          false,
           <hr
             className="dotted-left-2x-white flex-0"
           />,
@@ -799,6 +818,7 @@ ShallowWrapper {
           },
           "type": [Function],
         },
+        false,
         Object {
           "instance": null,
           "key": undefined,

@@ -35,18 +35,35 @@ export class FormFooter extends Component {
     )
   }
 
+  renderExternalLinkButton = obj => {
+    const props = {
+      className: `flex-1 ${obj.className || ''}`,
+      disabled: obj.disabled,
+      href: obj.url,
+      target: obj.target,
+    }
+    if (obj.id) props.id = obj.id
+    return (
+      <a {...props}>
+        <span className="is-block">{obj.label}</span>
+      </a>
+    )
+  }
+
   render() {
-    const { cancel, className, submit } = this.props
+    const { cancel, className, externalLink, submit } = this.props
     const useCancel = Boolean(cancel && cancel.url)
+    const useExternalLink = Boolean(externalLink && externalLink.url)
     const useLink = Boolean(submit && submit.url)
     const useSubmit = Boolean(submit && !submit.url)
-    const hideSeparator = !useCancel || !submit
+    const hideSeparator = !(useCancel || useExternalLink) || !submit
 
     return (
       <footer
         className={`pc-final-form-footer dotted-top-2x-white py7 flex-0 flex-columns text-center items-center fs20 ${className}`}
       >
         {useCancel && this.renderLinkButton(cancel)}
+        {useExternalLink && this.renderExternalLinkButton(externalLink)}
         {!hideSeparator && <hr className="dotted-left-2x-white flex-0" />}
         {useLink && this.renderLinkButton(submit)}
         {useSubmit && this.renderSubmitButton(submit)}
@@ -58,12 +75,14 @@ export class FormFooter extends Component {
 FormFooter.defaultProps = {
   cancel: false,
   className: '',
+  externalLink: false,
   submit: false,
 }
 
 FormFooter.propTypes = {
   cancel: PropTypes.oneOfType([PropTypes.bool, FormFooterObject]),
   className: PropTypes.string,
+  externalLink: PropTypes.oneOfType([PropTypes.bool, FormFooterObject]),
   submit: PropTypes.oneOfType([PropTypes.bool, FormFooterObject]),
 }
 
