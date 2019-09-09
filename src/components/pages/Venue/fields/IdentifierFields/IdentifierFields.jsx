@@ -7,10 +7,15 @@ import HiddenField from '../../../../layout/form/fields/HiddenField'
 import TextareaField from '../../../../layout/form/fields/TextareaField'
 import TextField from '../../../../layout/form/fields/TextField'
 import { formatSirenOrSiret } from '../../../../../utils/siren'
+import ReactTooltip from 'react-tooltip'
 
 const getIsCommentRequired = formSiret => !formSiret || formSiret.length !== 14
 
 class IdentifierFields extends Component {
+  componentDidUpdate() {
+    ReactTooltip.rebuild()
+  }
+
   handleRenderValue = (fieldReadOnlyBecauseFrozenFormSiret, readOnly) => () => {
     if (readOnly) {
       return null
@@ -64,13 +69,17 @@ class IdentifierFields extends Component {
       isCreatedEntity,
       readOnly,
     } = this.props
+
     return (
       <div className="section">
         <h2 className="main-list-title is-relative">
           {'IDENTIFIANTS'}
           {!readOnly && (
             <span className="is-pulled-right is-size-7 has-text-grey">
-              {'Les champs marqués d’un'} <span className="required-legend">{' * '}</span>
+              {'Les champs marqués d’un'}
+              <span className="required-legend">
+                {' * '}
+              </span>
               {' sont obligatoires'}
             </span>
           )}
@@ -86,7 +95,9 @@ class IdentifierFields extends Component {
                 <Fragment>
                   {'SIRET'}
                   <span className="siret-label-details">
-                    <span className="siret-label-bold">{' du lieu qui accueille vos offres'}</span>
+                    <span className="siret-label-bold">
+                      {' du lieu qui accueille vos offres'}
+                    </span>
                     {' (si applicable) : '}
                   </span>
                 </Fragment>

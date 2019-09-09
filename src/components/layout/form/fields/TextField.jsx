@@ -77,8 +77,13 @@ class TextField extends Component {
         >
           {label && (
             <span>
-              <span>{label}</span>
-              {required && !readOnly && <span className="field-asterisk">{'*'}</span>}
+              <span>
+                {label}
+              </span>
+              {required && !readOnly &&
+              <span className="field-asterisk">
+                {'*'}
+              </span>}
             </span>
           )}
         </label>

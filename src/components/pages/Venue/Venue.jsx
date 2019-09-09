@@ -215,7 +215,9 @@ class Venue extends Component {
           title="Lieu"
         >
           {isCreatedEntity && (
-            <p className="subtitle">{'Ajoutez un lieu où accéder à vos offres.'}</p>
+            <p className="subtitle">
+              {'Ajoutez un lieu où accéder à vos offres.'}
+            </p>
           )}
 
           {this.checkIfVenueExists(initialId) && !isCreatedEntity && (
@@ -226,7 +228,9 @@ class Venue extends Component {
               <span className="icon">
                 <Icon svg="ico-offres-w" />
               </span>
-              <span>{'Créer une offre'}</span>
+              <span>
+                {'Créer une offre'}
+              </span>
             </NavLink>
           )}
         </HeroSection>
