@@ -28,7 +28,7 @@ const FormInputs = ({ formValues, formErrors, isLoading }) => {
         </div>
         <div>
           <div className="mt36">
-            <span className="is-block is-normal fs19">{'Adresse e-mail'}</span>
+            <span className="is-block is-normal fs19">{'Adresse e-mail :'}</span>
             <span
               className="is-block is-bold fs20"
               id="activation-email"
@@ -60,10 +60,9 @@ const FormInputs = ({ formValues, formErrors, isLoading }) => {
             name="cguCheckBox"
             required
           >
-            <span className="pc-final-form-label">
+            <span>
               {'J’ai lu et accepte les '}
               <a
-                className="fs16"
                 href="https://pass.culture.fr/assets/docs/cgu-j.html"
                 id="accept-cgu-link"
                 rel="noopener noreferrer"
@@ -71,7 +70,7 @@ const FormInputs = ({ formValues, formErrors, isLoading }) => {
               >
                 {'Conditions générales d’utilisation'}
               </a>
-              {' du pass Culture'}
+              {' du pass Culture.'}
             </span>
           </CheckBoxField>
           <HiddenField
