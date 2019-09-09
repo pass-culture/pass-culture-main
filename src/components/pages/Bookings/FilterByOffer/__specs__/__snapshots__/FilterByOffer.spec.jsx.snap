@@ -56,7 +56,7 @@ ShallowWrapper {
           <h2
             className="main-list-title"
           >
-            Offre
+            OFFRE
           </h2>
         </div>,
         <div
@@ -106,7 +106,7 @@ ShallowWrapper {
           "children": <h2
             className="main-list-title"
           >
-            Offre
+            OFFRE
           </h2>,
           "className": "section",
         },
@@ -116,11 +116,11 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": "Offre",
+            "children": "OFFRE",
             "className": "main-list-title",
           },
           "ref": null,
-          "rendered": "Offre",
+          "rendered": "OFFRE",
           "type": "h2",
         },
         "type": "div",
@@ -278,7 +278,7 @@ ShallowWrapper {
             <h2
               className="main-list-title"
             >
-              Offre
+              OFFRE
             </h2>
           </div>,
           <div
@@ -328,7 +328,7 @@ ShallowWrapper {
             "children": <h2
               className="main-list-title"
             >
-              Offre
+              OFFRE
             </h2>,
             "className": "section",
           },
@@ -338,11 +338,11 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": "Offre",
+              "children": "OFFRE",
               "className": "main-list-title",
             },
             "ref": null,
-            "rendered": "Offre",
+            "rendered": "OFFRE",
             "type": "h2",
           },
           "type": "div",
