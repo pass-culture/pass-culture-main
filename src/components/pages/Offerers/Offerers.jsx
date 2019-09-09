@@ -14,6 +14,7 @@ import Spinner from '../../layout/Spinner'
 import TextField from '../../layout/form/fields/TextField'
 import { mapApiToBrowser, translateQueryParamsToApiParams } from '../../../utils/translate'
 import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
+import userHasNoOffersInAPhysicalVenueYet from './utils/userHasNoOffersInAPhysicalVenueYet'
 
 class Offerers extends Component {
   constructor(props) {
@@ -29,11 +30,28 @@ class Offerers extends Component {
   }
 
   componentDidMount() {
+    const { currentUser, offerers, showNotification } = this.props
+
+    const url = createVenueForOffererUrl(offerers)
+
+    if (userHasNoOffersInAPhysicalVenueYet(currentUser)) {
+      showNotification(url)
+    }
+
     this.handleRequestData()
   }
 
   componentDidUpdate(prevProps) {
-    const { location } = this.props
+    const { location, offerers } = this.props
+
+    if (offerers.length !== prevProps.offerers.length) {
+      this.setState(
+        {
+          isLoading: false
+        }
+      )
+    }
+
     if (location.search !== prevProps.location.search) {
       this.handleRequestData()
     }
@@ -57,40 +75,30 @@ class Offerers extends Component {
     const {
       payload: { data },
     } = action
+
     this.setState({
-      hasMore: data.length > 0,
-      isLoading: false,
+      hasMore: !(data.length < 10),
     })
   }
 
   handleRequestData = () => {
-    const { currentUser, loadOfferers, offerers, query, showNotification } = this.props
+    const { currentUser, loadOfferers, query } = this.props
 
     const queryParams = query.parse()
     const apiParams = translateQueryParamsToApiParams(queryParams)
     const apiParamsString = stringify(apiParams)
-    const url = createVenueForOffererUrl(offerers)
 
-    const offerersHaveNotOffers = !currentUser.hasOffers && !currentUser.hasPhysicalVenues
-    const offerersHaveOnlyDigitalOffers = currentUser.hasOffers && !currentUser.hasPhysicalVenues
-    const userHasNoOffersInAPhysicalVenueYet =
-      offerersHaveNotOffers || offerersHaveOnlyDigitalOffers
-
-    if (userHasNoOffersInAPhysicalVenueYet) {
-      showNotification(url)
-    }
-
-    let loadOfferParameters = {
+    let loadOffererParameters = {
       keywords: apiParamsString,
     }
 
     if (currentUser.isAdmin === true) {
-      loadOfferParameters.isValidated = true
+      loadOffererParameters.isValidated = true
     }
 
     this.setState(
       { isLoading: true },
-      loadOfferers(this.handleSuccess, this.handleFail, loadOfferParameters)
+      loadOfferers(this.handleSuccess, this.handleFail, loadOffererParameters)
     )
   }
 
@@ -100,9 +108,7 @@ class Offerers extends Component {
 
     const isEmptyKeywords = typeof keywords === 'undefined' || keywords === ''
 
-    if (!isEmptyKeywords) {
-      assignData()
-    }
+    assignData()
 
     query.change({
       [mapApiToBrowser.keywords]: isEmptyKeywords ? null : keywords,
@@ -157,7 +163,10 @@ class Offerers extends Component {
     const url = createVenueForOffererUrl(offerers)
 
     return (
-      <Main name="offerers">
+      <Main
+        id="offerers"
+        name="offerers"
+      >
         <HeroSection title={sectionTitle}>
           <p className="subtitle">
             {'Pour présenter vos offres, vous devez d’abord '}
@@ -203,7 +212,6 @@ class Offerers extends Component {
           hasMore={hasMore}
           isLoading={isLoading}
           loader={<Spinner key="spinner" />}
-          useWindow
         >
           {offerers.map(offerer => {
             return offerer.isValidated && offerer.userHasAccess ? (

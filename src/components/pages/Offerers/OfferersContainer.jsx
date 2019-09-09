@@ -19,14 +19,28 @@ export const mapStateToProps = state => {
 }
 
 export const mapDispatchToProps = dispatch => ({
-  assignData: () => dispatch(assignData({ offerers: [] })),
+  assignData: () => dispatch(
+    assignData(
+      {
+        offerers: []
+      }
+    )
+  ),
 
   closeNotification: () => dispatch(closeNotification()),
 
-  loadOfferers: (handleFail, handleSuccess, { isValidated } = {}) => {
+  loadOfferers: (handleSuccess, handleFail, loadOffererParameters = {}) => {
     let apiPath = OFFERERS_API_PATH
+    let isValidated = loadOffererParameters.isValidated
+    let keywords = loadOffererParameters.keywords
 
-    if (isValidated !== undefined) apiPath += `?validated=${isValidated}`
+    if (isValidated !== undefined) {
+      apiPath += `?validated=${isValidated}`
+    }
+
+    if (keywords !== undefined && keywords !== ''){
+      apiPath += `&${keywords}`
+    }
 
     dispatch(
       requestData({
@@ -52,7 +66,7 @@ export const mapDispatchToProps = dispatch => ({
   },
 
   resetLoadedOfferers: () => {
-    dispatch(assignData({ offerers: [] }))
+    dispatch(assignData({offerers: []}))
   },
 })
 

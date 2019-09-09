@@ -165,7 +165,6 @@ ShallowWrapper {
               style={null}
             />
           }
-          useWindow={true}
         >
           <PendingOffererItem
             offerer={
@@ -177,6 +176,7 @@ ShallowWrapper {
           />
         </withRouter(_withQueryRouter)>,
       ],
+      "id": "offerers",
       "name": "offerers",
     },
     "ref": null,
@@ -434,7 +434,6 @@ ShallowWrapper {
             label="Chargement"
             style={null}
           />,
-          "useWindow": true,
         },
         "ref": null,
         "rendered": Array [
@@ -534,7 +533,6 @@ ShallowWrapper {
                 style={null}
               />
             }
-            useWindow={true}
           >
             <PendingOffererItem
               offerer={
@@ -546,6 +544,7 @@ ShallowWrapper {
             />
           </withRouter(_withQueryRouter)>,
         ],
+        "id": "offerers",
         "name": "offerers",
       },
       "ref": null,
@@ -803,7 +802,6 @@ ShallowWrapper {
               label="Chargement"
               style={null}
             />,
-            "useWindow": true,
           },
           "ref": null,
           "rendered": Array [

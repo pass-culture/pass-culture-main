@@ -143,6 +143,32 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
         })
       })
 
+      it('can load offerers by keywords', () => {
+        // when
+        const handleFail = jest.fn()
+        const handleSuccess = jest.fn()
+        mapDispatchToProps(dispatch).loadOfferers(handleFail, handleSuccess, { isValidated: true, keywords: 'keywords=nice%20words' })
+
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          config: {
+            apiPath: '/offerers?validated=true&keywords=nice%20words',
+            handleFail: expect.any(Function),
+            handleSuccess: expect.any(Function),
+            method: 'GET',
+            normalizer: {
+              managedVenues: {
+                normalizer: {
+                  offers: 'offers',
+                },
+                stateKey: 'venues',
+              },
+            },
+          },
+          type: 'REQUEST_DATA_GET_/OFFERERS?VALIDATED=TRUE&KEYWORDS=NICE%20WORDS',
+        })
+      })
+
       it('can load only offerers that are not validated yet', () => {
         // when
         const handleFail = jest.fn()
