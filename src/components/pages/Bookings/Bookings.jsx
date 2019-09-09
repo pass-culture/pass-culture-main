@@ -22,7 +22,7 @@ const Bookings = ({ pathToCsvFile, showButtons, showOfferSection }) => (
     </HeroSection>
     <div className="notification is-info">
       <div className="is-static fs16">
-        <Icon svg="picto-info-grey" />
+        <Icon png="picto-info-solid" />
         <span>
           {'Les'}
           <b>

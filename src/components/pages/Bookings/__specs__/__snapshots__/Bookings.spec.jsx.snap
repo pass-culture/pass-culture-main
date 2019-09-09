@@ -43,7 +43,7 @@ ShallowWrapper {
             className="is-static fs16"
           >
             <Icon
-              svg="picto-info-grey"
+              png="picto-info-solid"
             />
             <span>
               Les
@@ -134,7 +134,7 @@ ShallowWrapper {
             className="is-static fs16"
           >
             <Icon
-              svg="picto-info-grey"
+              png="picto-info-solid"
             />
             <span>
               Les
@@ -157,7 +157,7 @@ ShallowWrapper {
           "props": Object {
             "children": Array [
               <Icon
-                svg="picto-info-grey"
+                png="picto-info-solid"
               />,
               <span>
                 Les
@@ -179,7 +179,7 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "function",
               "props": Object {
-                "svg": "picto-info-grey",
+                "png": "picto-info-solid",
               },
               "ref": null,
               "rendered": null,
@@ -295,7 +295,7 @@ ShallowWrapper {
               className="is-static fs16"
             >
               <Icon
-                svg="picto-info-grey"
+                png="picto-info-solid"
               />
               <span>
                 Les
@@ -386,7 +386,7 @@ ShallowWrapper {
               className="is-static fs16"
             >
               <Icon
-                svg="picto-info-grey"
+                png="picto-info-solid"
               />
               <span>
                 Les
@@ -409,7 +409,7 @@ ShallowWrapper {
             "props": Object {
               "children": Array [
                 <Icon
-                  svg="picto-info-grey"
+                  png="picto-info-solid"
                 />,
                 <span>
                   Les
@@ -431,7 +431,7 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "function",
                 "props": Object {
-                  "svg": "picto-info-grey",
+                  "png": "picto-info-solid",
                 },
                 "ref": null,
                 "rendered": null,

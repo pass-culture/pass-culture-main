@@ -135,6 +135,7 @@ ShallowWrapper {
                 data-type="info"
               >
                 <Icon
+                  png={null}
                   svg="picto-tip"
                 />
               </span>
@@ -222,6 +223,7 @@ ShallowWrapper {
                   data-type="info"
                 >
                   <Icon
+                    png={null}
                     svg="picto-tip"
                   />
                 </span>
@@ -316,6 +318,7 @@ ShallowWrapper {
                   data-type="info"
                 >
                   <Icon
+                    png={null}
                     svg="picto-tip"
                   />
                 </span>
@@ -339,6 +342,7 @@ ShallowWrapper {
                     data-type="info"
                   >
                     <Icon
+                      png={null}
                       svg="picto-tip"
                     />
                   </span>,
@@ -355,6 +359,7 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": <Icon
+                      png={null}
                       svg="picto-tip"
                     />,
                     "className": "tip-icon",
@@ -368,6 +373,7 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "function",
                     "props": Object {
+                      "png": null,
                       "svg": "picto-tip",
                     },
                     "ref": null,
@@ -503,6 +509,7 @@ ShallowWrapper {
                   data-type="info"
                 >
                   <Icon
+                    png={null}
                     svg="picto-tip"
                   />
                 </span>
@@ -590,6 +597,7 @@ ShallowWrapper {
                     data-type="info"
                   >
                     <Icon
+                      png={null}
                       svg="picto-tip"
                     />
                   </span>
@@ -684,6 +692,7 @@ ShallowWrapper {
                     data-type="info"
                   >
                     <Icon
+                      png={null}
                       svg="picto-tip"
                     />
                   </span>
@@ -707,6 +716,7 @@ ShallowWrapper {
                       data-type="info"
                     >
                       <Icon
+                        png={null}
                         svg="picto-tip"
                       />
                     </span>,
@@ -723,6 +733,7 @@ ShallowWrapper {
                     "nodeType": "host",
                     "props": Object {
                       "children": <Icon
+                        png={null}
                         svg="picto-tip"
                       />,
                       "className": "tip-icon",
@@ -736,6 +747,7 @@ ShallowWrapper {
                       "key": undefined,
                       "nodeType": "function",
                       "props": Object {
+                        "png": null,
                         "svg": "picto-tip",
                       },
                       "ref": null,

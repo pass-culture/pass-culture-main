@@ -27,6 +27,7 @@ ShallowWrapper {
       "aria-current": "page",
       "children": Array [
         <Icon
+          png={null}
           svg="my.svg"
         />,
         <div
@@ -54,6 +55,7 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
+          "png": null,
           "svg": "my.svg",
         },
         "ref": null,
@@ -121,6 +123,7 @@ ShallowWrapper {
         "aria-current": "page",
         "children": Array [
           <Icon
+            png={null}
             svg="my.svg"
           />,
           <div
@@ -148,6 +151,7 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
+            "png": null,
             "svg": "my.svg",
           },
           "ref": null,
