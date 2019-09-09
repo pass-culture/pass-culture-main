@@ -5,6 +5,7 @@ import Item from './Item/Item'
 
 const MenuItem = ({ disabled, item }) => {
   const { icon, href, path, target, title } = item
+
   if (href) {
     return (
       <a
@@ -22,13 +23,14 @@ const MenuItem = ({ disabled, item }) => {
       </a>
     )
   }
+
   return (
     <Link
       className="flex-columns mx12 navlink"
       disabled={disabled}
       key={path}
       role="menuitem"
-      to={path}
+      to={disabled ? '#' : path}
     >
       <Item
         icon={icon}
