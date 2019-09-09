@@ -292,7 +292,7 @@ jobs:
           name: Check deployed version
           command: |
             VERSION_TO_DEPLOY=$(git describe --contains)
-            BOT_MESSAGE="Version *"$DEPLOYED_VERSION"* has been successfully deployed to *"$CIRCLE_BRANCH"* "$'\U0001F44C'""
+            BOT_MESSAGE="Version *"$VERSION_TO_DEPLOY"* has been successfully deployed to *"$CIRCLE_BRANCH"* "$'\U0001F44C'""
             curl -d text="$BOT_MESSAGE" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown"
 workflows:
   version: 2
