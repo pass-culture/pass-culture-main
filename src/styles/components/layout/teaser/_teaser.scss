@@ -33,7 +33,7 @@
 }
 
 .teaser-title {
-  @include multiLineEllipsis();
+  @include multiLineEllipsis(2);
 
   color: $black;
   font-size: 1.1rem;

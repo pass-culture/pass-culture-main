@@ -4,9 +4,7 @@
   }
 
   .teaser-sub-title {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    @include multiLineEllipsis(1);
   }
 
   .mf-wrapper {

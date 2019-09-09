@@ -1,8 +1,8 @@
-@mixin multiLineEllipsis() {
+@mixin multiLineEllipsis($line-clamp) {
   display: -webkit-box;
   overflow: hidden;
   text-overflow: ellipsis;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: $line-clamp;
 
   /* autoprefixer: off */
   -webkit-box-orient: vertical;

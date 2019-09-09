@@ -39,7 +39,7 @@
       h5 {
         @extend .fs18;
         @extend .is-bold;
-        @include multiLineEllipsis();
+        @include multiLineEllipsis(2);
       }
 
       .search-result-item-type {
@@ -52,10 +52,8 @@
         white-space: initial;
       }
 
-      h5, .search-result-item-type {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+      .search-result-item-type {
+        @include multiLineEllipsis(1);
       }
     }
 
