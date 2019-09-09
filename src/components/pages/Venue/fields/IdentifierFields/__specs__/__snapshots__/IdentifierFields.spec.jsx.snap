@@ -29,7 +29,7 @@ ShallowWrapper {
         <h2
           className="main-list-title is-relative"
         >
-          IDENTIFIANTS
+          INFORMATIONS DU LIEU
         </h2>,
         <div
           className="field-group"
@@ -83,7 +83,7 @@ ShallowWrapper {
             format={null}
             id={null}
             innerClassName={null}
-            label="Nom : "
+            label="Nom du lieu : "
             name="name"
             parse={null}
             placeholder=""
@@ -100,7 +100,7 @@ ShallowWrapper {
             format={null}
             id={null}
             innerClassName={null}
-            label="Nom d’usage : "
+            label="Nom d’usage du lieu : "
             name="publicName"
             parse={null}
             placeholder=""
@@ -154,14 +154,14 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            "IDENTIFIANTS",
+            "INFORMATIONS DU LIEU",
             false,
           ],
           "className": "main-list-title is-relative",
         },
         "ref": null,
         "rendered": Array [
-          "IDENTIFIANTS",
+          "INFORMATIONS DU LIEU",
           false,
         ],
         "type": "h2",
@@ -221,7 +221,7 @@ ShallowWrapper {
               format={null}
               id={null}
               innerClassName={null}
-              label="Nom : "
+              label="Nom du lieu : "
               name="name"
               parse={null}
               placeholder=""
@@ -238,7 +238,7 @@ ShallowWrapper {
               format={null}
               id={null}
               innerClassName={null}
-              label="Nom d’usage : "
+              label="Nom d’usage du lieu : "
               name="publicName"
               parse={null}
               placeholder=""
@@ -463,7 +463,7 @@ ShallowWrapper {
               "format": null,
               "id": null,
               "innerClassName": null,
-              "label": "Nom : ",
+              "label": "Nom du lieu : ",
               "name": "name",
               "parse": null,
               "placeholder": "",
@@ -488,7 +488,7 @@ ShallowWrapper {
               "format": null,
               "id": null,
               "innerClassName": null,
-              "label": "Nom d’usage : ",
+              "label": "Nom d’usage du lieu : ",
               "name": "publicName",
               "parse": null,
               "placeholder": "",
@@ -566,7 +566,7 @@ ShallowWrapper {
           <h2
             className="main-list-title is-relative"
           >
-            IDENTIFIANTS
+            INFORMATIONS DU LIEU
           </h2>,
           <div
             className="field-group"
@@ -620,7 +620,7 @@ ShallowWrapper {
               format={null}
               id={null}
               innerClassName={null}
-              label="Nom : "
+              label="Nom du lieu : "
               name="name"
               parse={null}
               placeholder=""
@@ -637,7 +637,7 @@ ShallowWrapper {
               format={null}
               id={null}
               innerClassName={null}
-              label="Nom d’usage : "
+              label="Nom d’usage du lieu : "
               name="publicName"
               parse={null}
               placeholder=""
@@ -691,14 +691,14 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              "IDENTIFIANTS",
+              "INFORMATIONS DU LIEU",
               false,
             ],
             "className": "main-list-title is-relative",
           },
           "ref": null,
           "rendered": Array [
-            "IDENTIFIANTS",
+            "INFORMATIONS DU LIEU",
             false,
           ],
           "type": "h2",
@@ -758,7 +758,7 @@ ShallowWrapper {
                 format={null}
                 id={null}
                 innerClassName={null}
-                label="Nom : "
+                label="Nom du lieu : "
                 name="name"
                 parse={null}
                 placeholder=""
@@ -775,7 +775,7 @@ ShallowWrapper {
                 format={null}
                 id={null}
                 innerClassName={null}
-                label="Nom d’usage : "
+                label="Nom d’usage du lieu : "
                 name="publicName"
                 parse={null}
                 placeholder=""
@@ -1000,7 +1000,7 @@ ShallowWrapper {
                 "format": null,
                 "id": null,
                 "innerClassName": null,
-                "label": "Nom : ",
+                "label": "Nom du lieu : ",
                 "name": "name",
                 "parse": null,
                 "placeholder": "",
@@ -1025,7 +1025,7 @@ ShallowWrapper {
                 "format": null,
                 "id": null,
                 "innerClassName": null,
-                "label": "Nom d’usage : ",
+                "label": "Nom d’usage du lieu : ",
                 "name": "publicName",
                 "parse": null,
                 "placeholder": "",

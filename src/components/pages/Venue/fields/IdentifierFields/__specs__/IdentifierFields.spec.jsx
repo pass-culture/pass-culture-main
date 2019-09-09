@@ -34,13 +34,17 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         initialSiret: null,
         isCreatedEntity: true,
         isModifiedEntity: true,
-        readOnly: false,
+        readOnly: true,
       }
 
       // when
       const wrapper = shallow(<IdentifierFields {...props} />)
 
       // then
+      const mainListTitle = wrapper.find('.main-list-title')
+      expect(mainListTitle).toHaveLength(1)
+      expect(mainListTitle.text()).toBe('INFORMATIONS DU LIEU')
+
       const textFields = wrapper.find(TextField)
       expect(textFields).toHaveLength(4)
 
@@ -50,11 +54,11 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
       expect(textFields.at(0).prop('name')).toBe('siret')
       expect(textFields.at(0).prop('required')).toBe(false)
 
-      expect(textFields.at(1).prop('label')).toBe('Nom : ')
+      expect(textFields.at(1).prop('label')).toBe('Nom du lieu : ')
       expect(textFields.at(1).prop('name')).toBe('name')
       expect(textFields.at(1).prop('required')).toBe(true)
 
-      expect(textFields.at(2).prop('label')).toBe('Nom d’usage : ')
+      expect(textFields.at(2).prop('label')).toBe('Nom d’usage du lieu : ')
       expect(textFields.at(2).prop('name')).toBe('publicName')
       expect(textFields.at(2).prop('required')).toBe(false)
 

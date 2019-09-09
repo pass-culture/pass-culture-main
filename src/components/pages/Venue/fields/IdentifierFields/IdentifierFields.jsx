@@ -73,7 +73,7 @@ class IdentifierFields extends Component {
     return (
       <div className="section">
         <h2 className="main-list-title is-relative">
-          {'IDENTIFIANTS'}
+          {'INFORMATIONS DU LIEU'}
           {!readOnly && (
             <span className="is-pulled-right is-size-7 has-text-grey">
               {'Les champs marqués d’un'}
@@ -115,13 +115,13 @@ class IdentifierFields extends Component {
             />
           </div>
           <TextField
-            label="Nom : "
+            label="Nom du lieu : "
             name="name"
             readOnly={readOnly || fieldReadOnlyBecauseFrozenFormSiret}
             required
           />
           <TextField
-            label="Nom d’usage : "
+            label="Nom d’usage du lieu : "
             name="publicName"
             readOnly={readOnly}
           />
