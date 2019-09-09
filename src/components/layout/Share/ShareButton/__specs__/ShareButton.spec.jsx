@@ -8,6 +8,7 @@ describe('src | components | layout | Share | ShareButton | ShareButton', () => 
     // given
     const props = {
       closePopin: () => {},
+      trackShareOffer: () => {},
       offerName: 'Fake offer name',
       openPopin: () => {},
       text: 'Fake text',
@@ -57,6 +58,7 @@ describe('src | components | layout | Share | ShareButton | ShareButton', () => 
           offerName: 'Fake offer name',
           openPopin: openPopinMock,
           text: 'Fake text',
+          trackShareOffer: () => {},
           url: 'http://www.fake-url.com',
         }
 

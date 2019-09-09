@@ -15,31 +15,31 @@ describe('src | reducers | share  ', () => {
     // then
     expect(updatedState).toStrictEqual(expected)
   })
-})
 
-describe('src | reducers | action | openSharePopin', () => {
-  it('should return correct action type', () => {
-    // when
-    const action = openSharePopin()
-    const expected = {
-      type: 'TOGGLE_SHARE_POPIN',
-    }
+  describe('openSharePopin', () => {
+    it('should return correct action type', () => {
+      // when
+      const action = openSharePopin()
+      const expected = {
+        type: 'TOGGLE_SHARE_POPIN',
+      }
 
-    // then
-    expect(action).toMatchObject(expected)
+      // then
+      expect(action).toMatchObject(expected)
+    })
   })
-})
 
-describe('src | reducers | action | closeSharePopin', () => {
-  it('should return correct action type', () => {
-    // when
-    const action = closeSharePopin()
-    const expected = {
-      options: false,
-      type: 'TOGGLE_SHARE_POPIN',
-    }
+  describe('closeSharePopin', () => {
+    it('should return correct action type', () => {
+      // when
+      const action = closeSharePopin()
+      const expected = {
+        options: undefined,
+        type: 'TOGGLE_SHARE_POPIN',
+      }
 
-    // then
-    expect(action).toMatchObject(expected)
+      // then
+      expect(action).toMatchObject(expected)
+    })
   })
 })

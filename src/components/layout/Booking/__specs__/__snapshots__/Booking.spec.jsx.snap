@@ -12,7 +12,6 @@ ShallowWrapper {
         },
       }
     }
-    dispatch={[MockFunction]}
     extraClassName={null}
     history={
       Object {

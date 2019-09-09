@@ -45,7 +45,7 @@ describe('src | components | share | SharePopin', () => {
           const wrapper = shallow(<SharePopin {...props} />).dive()
           wrapper.find('button').simulate('click')
           const expected = {
-            options: false,
+            options: undefined,
             type: 'TOGGLE_SHARE_POPIN',
           }
 

@@ -15,8 +15,8 @@ ShallowWrapper {
       }
     }
   >
-    <withRouter(App)
-      location={Object {}}
+    <withRouter(WithTracking(Connect(ShareButton)))
+      dispatch={[MockFunction]}
     />
   </Provider>,
   Symbol(enzyme.__renderer__): Object {
