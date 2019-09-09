@@ -17,7 +17,7 @@ from scripts.dashboard.diversification_statistics import get_offer_counts_groupe
     count_all_cancelled_bookings, query_get_offer_counts_grouped_by_type_and_medium_for_departement, \
     query_get_booking_counts_grouped_by_type_and_medium_for_departement
 
-EXPERIMENTATION_DEPARTEMENTS = list(DEPARTEMENT_CODE_VISIBILITY.keys()) + ['22', '56', '973']
+EXPERIMENTATION_DEPARTEMENTS = DEPARTEMENT_CODE_VISIBILITY.keys()
 
 
 class DashboardConfig:
