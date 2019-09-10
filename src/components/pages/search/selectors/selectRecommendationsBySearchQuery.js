@@ -5,6 +5,68 @@ import { createSelector } from 'reselect'
 
 const PAGE_REGEXP = new RegExp(/&?page=\d+&?/)
 
+const getMatchingEventTypes = (types, categories) => {
+  const eventTypes = types.filter(type => type.type === 'Event')
+  return eventTypes.filter(eventType => categories.includes(eventType.sublabel))
+}
+
+const getMatchingThingTypes = (types, categories) => {
+  const thingTypes = types.filter(type => type.type === 'Thing')
+  return thingTypes.filter(thingType => categories.includes(thingType.sublabel))
+}
+
+const getStringifiedTypeValues = types => `[${types.map(type => `'${type.value}'`).join(', ')}]`
+
+const getDateAndTime = (startDate, day) =>
+  moment(startDate)
+    .add(day, 'days')
+    .toISOString()
+    .split('T')
+
+const getStringifiedDate = date =>
+  date
+    .split('-')
+    .map(d => parseInt(d))
+    .join(', ')
+
+const getStringifiedTime = time => {
+  const hhmmssmilliChunks = time.split('.')
+  const hhmmss = hhmmssmilliChunks[0]
+    .split(':')
+    .map(d => parseInt(d))
+    .join(', ')
+  const milli =
+    hhmmssmilliChunks[1]
+      .split('.')
+      .slice(-1)[0]
+      .replace('Z', '') + '000'
+  return `${hhmmss}, ${milli}`
+}
+
+const getDatetimeString = (startDate, jour) => {
+  const [date, time] = getDateAndTime(startDate, jour)
+  const dateString = getStringifiedDate(date)
+  const timeString = getStringifiedTime(time)
+  return `datetime.datetime(${dateString}, ${timeString}, tzinfo=tzlocal())`
+}
+
+const getStringifiedDaysIntervals = (startDate, daysString) =>
+  `[${daysString
+    .split(',')
+    .map(joursInterval => {
+      const joursIntervalContent = joursInterval
+        .split('-')
+        .map(jour => getDatetimeString(startDate, jour))
+        .join(', ')
+      return `[${joursIntervalContent}]`
+    })
+    .join(', ')}]`
+
+const getStringifiedRecommendationSearch = recommendationSearch =>
+  decodeURI(stringify(recommendationSearch))
+    .replace(/%2C /g, ', ')
+    .replace(/%3D/g, '=')
+
 export const getRecommendationSearch = (search, types) => {
   const searchParams = parse(search)
   const recommendationSearch = {}
@@ -20,57 +82,20 @@ export const getRecommendationSearch = (search, types) => {
   }
 
   if (searchParams.categories) {
-    const eventTypes = types.filter(type => type.type === 'Event')
-    const thingTypes = types.filter(type => type.type === 'Thing')
-    const matchingEventTypes = eventTypes.filter(eventType =>
-      searchParams.categories.includes(eventType.sublabel)
-    )
-    const matchingThingTypes = thingTypes.filter(thingType =>
-      searchParams.categories.includes(thingType.sublabel)
-    )
+    const matchingEventTypes = getMatchingEventTypes(types, searchParams.categories)
+    const matchingThingTypes = getMatchingThingTypes(types, searchParams.categories)
     const matchingTypes = [...matchingEventTypes, ...matchingThingTypes]
-    recommendationSearch['type_values'] = `[${matchingTypes
-      .map(type => `'${type.value}'`)
-      .join(', ')}]`
+    recommendationSearch['type_values'] = getStringifiedTypeValues(matchingTypes)
   }
 
   if (searchParams.date) {
-    const dateContent = searchParams.jours
-      .split(',')
-      .map(joursInterval => {
-        const joursIntervalContent = joursInterval
-          .split('-')
-          .map(jour => {
-            const dateChunks = moment(searchParams.date)
-              .add(jour, 'days')
-              .toISOString()
-              .split('T')
-            const yymmdd = dateChunks[0]
-              .split('-')
-              .map(d => parseInt(d))
-              .join(', ')
-            const hhmmssmilliChunks = dateChunks[1].split('.')
-            const hhmmss = hhmmssmilliChunks[0]
-              .split(':')
-              .map(d => parseInt(d))
-              .join(', ')
-            const milli =
-              hhmmssmilliChunks[1]
-                .split('.')
-                .slice(-1)[0]
-                .replace('Z', '') + '000'
-            return `datetime.datetime(${yymmdd}, ${hhmmss}, ${milli}, tzinfo=tzlocal())`
-          })
-          .join(', ')
-        return `[${joursIntervalContent}]`
-      })
-      .join(', ')
-    recommendationSearch['days_intervals'] = `[${dateContent}]`
+    recommendationSearch['days_intervals'] = getStringifiedDaysIntervals(
+      searchParams.date,
+      searchParams.jours
+    )
   }
 
-  return decodeURI(stringify(recommendationSearch))
-    .replace(/%2C /g, ', ')
-    .replace(/%3D/g, '=')
+  return getStringifiedRecommendationSearch(recommendationSearch)
 }
 
 const selectRecommendationsBySearchQuery = createSelector(

@@ -5,7 +5,7 @@ import { Transition } from 'react-transition-group'
 import FilterByDates from './FilterByDates'
 import FilterByDistanceContainer from './FilterByDistanceContainer'
 import FilterByOfferTypesContainer from './FilterByOfferTypesContainer'
-import { INITIAL_FILTER_PARAMS, getFilterParamsAreEmpty } from '../helpers'
+import { getCanFilter, getVisibleParamsAreEmpty, INITIAL_FILTER_PARAMS } from '../helpers'
 
 const filtersPanelHeight = 500
 const transitionDelay = 0
@@ -28,7 +28,7 @@ class FilterControls extends Component {
     const { query } = props
 
     this.state = {
-      initialDateParams: true,
+      shouldResetDate: true,
       params: query.parse() || {},
     }
   }
@@ -45,7 +45,7 @@ class FilterControls extends Component {
     const { query } = this.props
 
     this.setState({
-      initialDateParams: true,
+      shouldResetDate: true,
       params: query.parse(),
     })
   }
@@ -57,7 +57,7 @@ class FilterControls extends Component {
     params.page = null
     query.change(params, { pathname: '/recherche/resultats' })
     this.setState({
-      initialDateParams: false,
+      shouldResetDate: false,
     })
     onClickFilterButton(isVisible)
   }
@@ -66,16 +66,12 @@ class FilterControls extends Component {
     const { query } = this.props
 
     this.setState({
-      initialDateParams: true,
+      shouldResetDate: true,
       params: {},
     })
 
-    query.change(
-      { ...INITIAL_FILTER_PARAMS, page: null },
-      {
-        pathname: '/recherche',
-      }
-    )
+    const nextQueryParams = { ...INITIAL_FILTER_PARAMS, page: null }
+    query.change(nextQueryParams)
   }
 
   handleQueryChange = (newValue, callback) => {
@@ -121,9 +117,11 @@ class FilterControls extends Component {
   }
 
   render() {
-    const { isVisible } = this.props
-    const { initialDateParams, params } = this.state
-    const filterParamsAreEmpty = getFilterParamsAreEmpty(params)
+    const { isVisible, query } = this.props
+    const { shouldResetDate, params } = this.state
+    const filterParamsAreEmpty = getVisibleParamsAreEmpty(params)
+    const canFilter = getCanFilter(params, query.parse())
+
     const filterActions = {
       add: this.handleQueryAdd,
       change: this.handleQueryChange,
@@ -145,7 +143,7 @@ class FilterControls extends Component {
               <FilterByDates
                 filterActions={filterActions}
                 filterState={this.state}
-                initialDateParams={initialDateParams}
+                shouldResetDate={shouldResetDate}
               />
               <FilterByDistanceContainer
                 filterActions={filterActions}
@@ -170,7 +168,7 @@ class FilterControls extends Component {
                 </button>
                 <button
                   className="no-background no-outline col-1of2 fs20 py12"
-                  disabled={filterParamsAreEmpty}
+                  disabled={!canFilter}
                   id="filter-button"
                   onClick={this.handleOnClickFilterButton}
                   type="submit"

@@ -36,11 +36,11 @@ class FilterByDistance extends PureComponent {
           )}
           <select
             className="pc-selectbox pl24 py5 fs19"
-            defaultValue={distanceValue}
             disabled={!geolocationActive}
             name="distance"
             onBlur={this.handleOnChangeDistance}
             onChange={this.handleOnChangeDistance}
+            value={distanceValue}
           >
             {distanceOptions.map(({ label, value }) => (
               <option

@@ -14,9 +14,9 @@ class FilterByDates extends PureComponent {
   }
 
   componentDidUpdate() {
-    const { initialDateParams, filterState } = this.props
+    const { filterState, shouldResetDate } = this.props
 
-    if (initialDateParams && filterState.params.date === undefined) {
+    if (shouldResetDate && filterState.params.date === undefined) {
       this.setPickedDate(null)
     }
   }
@@ -134,7 +134,7 @@ FilterByDates.propTypes = {
       orderBy: PropTypes.string,
     }),
   }).isRequired,
-  initialDateParams: PropTypes.bool.isRequired,
+  shouldResetDate: PropTypes.bool.isRequired,
 }
 
 export default FilterByDates

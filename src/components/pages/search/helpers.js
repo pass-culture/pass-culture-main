@@ -29,18 +29,21 @@ export const DAYS_CHECKBOXES = [
   },
 ]
 
+const DEFAULT_MAX_DISTANCE = '20000'
 const hiddenFilterParams = ['date', 'latitude', 'longitude', 'mots-cles', 'page']
-export const getFilterParamsAreEmpty = queryParams => {
-  const firstNotEmptyValue = Object.keys(queryParams)
-    .filter(key => !hiddenFilterParams.includes(key))
-    .find(key => {
-      if (key === 'distance') {
-        return queryParams[key] !== null && queryParams[key] !== '20000'
-      }
-      return queryParams[key] !== null
-    })
-  const filterParamsAreEmpty = typeof firstNotEmptyValue === 'undefined'
-  return filterParamsAreEmpty
+const isVisibleKey = key => !hiddenFilterParams.includes(key)
+const isEmptyParam = (key, value) => {
+  if (key === 'distance') {
+    return value !== null && value !== DEFAULT_MAX_DISTANCE
+  }
+  return value !== null
+}
+export const getVisibleParamsAreEmpty = params => {
+  const firstEmptyKeyParam = Object.keys(params)
+    .filter(isVisibleKey)
+    .find(key => isEmptyParam(key, params[key]))
+  const paramsAreEmpty = typeof firstEmptyKeyParam === 'undefined'
+  return paramsAreEmpty
 }
 
 export const isInitialQueryWithoutFilters = (initialParams, filterParams) =>
@@ -96,4 +99,37 @@ export const isDaysChecked = (pickedDate, pickedDaysInQuery = '0-1', inputValue 
   if (pickedDate !== null) return false
 
   return pickedDaysInQuery.includes(inputValue)
+}
+
+export const getFirstChangingKey = (previousObject, nextObject) =>
+  Object.keys(nextObject).find(key => {
+    const isNewFalsy = nextObject[key] === null || nextObject[key] === ''
+    const isPreviousFalsy =
+      typeof previousObject[key] === 'undefined' ||
+      previousObject[key] === null ||
+      previousObject === ''
+    if (isNewFalsy && isPreviousFalsy) {
+      return false
+    }
+    return previousObject[key] !== nextObject[key]
+  })
+
+export const getCanFilter = (filterParams, queryParams) => {
+  const firstChangingKey = getFirstChangingKey(queryParams, filterParams)
+
+  const filterHasChanged = typeof firstChangingKey !== 'undefined'
+  if (!filterHasChanged) {
+    return false
+  }
+
+  if (queryParams['mots-cles']) {
+    return true
+  }
+
+  const filterParamsAreEmpty = getVisibleParamsAreEmpty(filterParams)
+  if (filterParamsAreEmpty) {
+    return false
+  }
+
+  return true
 }

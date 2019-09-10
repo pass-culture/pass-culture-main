@@ -122,7 +122,7 @@ class Search extends PureComponent {
         apiPath,
         handleSuccess: (state, action) => {
           const { data } = action.payload
-          const hasMore = data.length > 10
+          const hasMore = data.length === 10
           this.setState({ hasMore, isLoading: false })
         },
         normalizer: recommendationNormalizer,

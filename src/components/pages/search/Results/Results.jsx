@@ -4,7 +4,7 @@ import React, { PureComponent } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
 
 import RecommendationItemContainer from './RecommendationItem/RecommendationItemContainer'
-import { getFilterParamsAreEmpty, searchResultsTitle } from '../helpers'
+import { getVisibleParamsAreEmpty, searchResultsTitle } from '../helpers'
 import Spinner from '../../../layout/Spinner'
 
 class Results extends PureComponent {
@@ -19,18 +19,21 @@ class Results extends PureComponent {
   componentDidMount() {
     const { history, query } = this.props
     const queryParams = query.parse()
-    const filterParamsAreEmpty = getFilterParamsAreEmpty(queryParams)
-    if (filterParamsAreEmpty && !queryParams['mots-cles']) {
-      history.replace('/recherche')
+    const queryParamsAreEmpty = getVisibleParamsAreEmpty(queryParams)
+    const queryParamsAndKeywordsAreEmpty = queryParamsAreEmpty && !queryParams['mots-cles']
+    if (queryParamsAndKeywordsAreEmpty) {
+      history.replace('/recherche/resultats')
     }
   }
 
   componentDidUpdate(prevProps) {
     const { items } = this.props
 
-    if (items.length > prevProps.items.length) {
+    const itemsHaveReceivedNextData = items.length > prevProps.items.length
+    if (itemsHaveReceivedNextData) {
       this.handleShouldCancelLoading()
-      if (prevProps.items.length === 0) {
+      const previousItemsWasEmpty = prevProps.items.length === 0
+      if (previousItemsWasEmpty) {
         this.handleSetHasReceivedFirstSuccessData()
       }
       return

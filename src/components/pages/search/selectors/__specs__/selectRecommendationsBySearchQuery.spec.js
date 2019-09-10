@@ -3,11 +3,11 @@ import selectRecommendationsBySearchQuery, {
 } from '../selectRecommendationsBySearchQuery'
 import state from '../../../../../mocks/stateWithTypes'
 
-const types = state.data.types
+const types = state.data.types.filter(type => type.value !== 'ThingType.JEUX')
 
 describe('src | components | pages | search | selectors | selectRecommendationsBySearchQuery', () => {
   describe('getRecommendationSearch', () => {
-    it('should catch keywords_string', () => {
+    it('should return keywords_string', () => {
       // given
       const search = 'mots-cles=mimi'
 
@@ -18,7 +18,7 @@ describe('src | components | pages | search | selectors | selectRecommendationsB
       expect(recommendationSearch).toBe('keywords_string=mimi')
     })
 
-    it('should catch max_distance', () => {
+    it('should return max_distance', () => {
       // given
       const search = 'distance=500&latitude=1.3&longitude=0.45'
 
@@ -29,7 +29,7 @@ describe('src | components | pages | search | selectors | selectRecommendationsB
       expect(recommendationSearch).toBe('latitude=1.3&longitude=0.45&max_distance=500.0')
     })
 
-    it('should catch categories', () => {
+    it('should return categories', () => {
       // given
       const search = 'categories=Applaudir,Jouer'
 
@@ -38,11 +38,11 @@ describe('src | components | pages | search | selectors | selectRecommendationsB
 
       // then
       expect(recommendationSearch).toBe(
-        "type_values=['EventType.JEUX', 'EventType.SPECTACLE_VIVANT', 'ThingType.JEUX_ABO', 'ThingType.JEUX', 'ThingType.JEUX_VIDEO']"
+        "type_values=['EventType.JEUX', 'EventType.SPECTACLE_VIVANT', 'ThingType.JEUX_ABO', 'ThingType.JEUX_VIDEO']"
       )
     })
 
-    it('should catch date', () => {
+    it('should return date', () => {
       // given
       const search = 'date=2019-09-05T15%3A12%3A57.008Z&jours=1-5%2C5-100000&page=1'
 
