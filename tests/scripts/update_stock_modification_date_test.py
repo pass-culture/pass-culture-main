@@ -84,7 +84,7 @@ class UpdateStockModificationDateTest:
         activity_for_second_stock = create_stock_activity(
             stock=second_stock,
             verb='update',
-            issued_at=datetime(2018, 11, 15),
+            issued_at=datetime(2018, 11, 16),
             data={"available": 32}
         )
         save_all_activities(activity_for_first_stock, activity_for_second_stock)
@@ -96,5 +96,5 @@ class UpdateStockModificationDateTest:
         first_updated_stock = Stock.query.get(first_stock.id)
         second_updated_stock = Stock.query.get(second_stock.id)
         assert first_updated_stock.dateModified == datetime(2019, 10, 21)
-        assert second_updated_stock.dateModified == datetime(2018, 11, 15)
+        assert second_updated_stock.dateModified == datetime(2018, 11, 16)
 
