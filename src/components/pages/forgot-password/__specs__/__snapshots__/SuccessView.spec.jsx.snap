@@ -40,7 +40,7 @@ ShallowWrapper {
         <FormFooter
           cancel={null}
           className=""
-          externalLink={false}
+          externalLink={null}
           submit={
             Object {
               "className": "is-bold is-white-text",
@@ -128,7 +128,7 @@ ShallowWrapper {
         "props": Object {
           "cancel": null,
           "className": "",
-          "externalLink": false,
+          "externalLink": null,
           "submit": Object {
             "className": "is-bold is-white-text",
             "disabled": false,
@@ -169,7 +169,7 @@ ShallowWrapper {
           <FormFooter
             cancel={null}
             className=""
-            externalLink={false}
+            externalLink={null}
             submit={
               Object {
                 "className": "is-bold is-white-text",
@@ -257,7 +257,7 @@ ShallowWrapper {
           "props": Object {
             "cancel": null,
             "className": "",
-            "externalLink": false,
+            "externalLink": null,
             "submit": Object {
               "className": "is-bold is-white-text",
               "disabled": false,
@@ -355,7 +355,7 @@ ShallowWrapper {
             }
           }
           className=""
-          externalLink={false}
+          externalLink={null}
           submit={
             Object {
               "className": "is-bold is-white-text",
@@ -479,7 +479,7 @@ ShallowWrapper {
             "url": "/mot-de-passe-perdu",
           },
           "className": "",
-          "externalLink": false,
+          "externalLink": null,
           "submit": Object {
             "className": "is-bold is-white-text",
             "disabled": false,
@@ -532,7 +532,7 @@ ShallowWrapper {
               }
             }
             className=""
-            externalLink={false}
+            externalLink={null}
             submit={
               Object {
                 "className": "is-bold is-white-text",
@@ -656,7 +656,7 @@ ShallowWrapper {
               "url": "/mot-de-passe-perdu",
             },
             "className": "",
-            "externalLink": false,
+            "externalLink": null,
             "submit": Object {
               "className": "is-bold is-white-text",
               "disabled": false,

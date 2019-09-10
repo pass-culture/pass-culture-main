@@ -23,6 +23,37 @@ describe('src | components | pages | signin | Signin', () => {
     expect(wrapper).toMatchSnapshot()
   })
 
+  it('should have sign in button and sign up link', () => {
+    // given
+    const history = {
+      createHref: jest.fn(),
+      goBack: jest.fn(),
+      listen: jest.fn(),
+      location: {
+        pathname: 'fake-url/',
+      },
+      push: jest.fn(),
+      replace: jest.fn(),
+    }
+
+    // when
+    const wrapper = mount(
+      <Router history={history}>
+        <Signin {...props} />
+      </Router>
+    )
+
+    // then
+    const signUpLink = wrapper.find('#sign-up-link')
+    const signInButton = wrapper.find('#signin-submit-button')
+    const targetUrl = signUpLink.at(0).props().href
+    expect(signInButton).toHaveLength(1)
+    expect(signUpLink).toHaveLength(1)
+    expect(targetUrl).toBe(
+      'https://www.demarches-simplifiees.fr/commencer/inscription-pass-culture'
+    )
+  })
+
   describe('handleOnFormSubmit', () => {
     it('should set isLoading state to true', () => {
       // given
@@ -57,37 +88,6 @@ describe('src | components | pages | signin | Signin', () => {
         formValues,
         wrapper.instance().handleRequestFail,
         wrapper.instance().handleRequestSuccess
-      )
-    })
-  })
-
-  describe('when FormFooter is created', () => {
-    it('should have sign in button and sign up link', () => {
-      // given
-      const history = {
-        createHref: jest.fn(),
-        goBack: jest.fn(),
-        listen: jest.fn(),
-        location: {
-          pathname: 'fake-url/',
-        },
-        push: jest.fn(),
-        replace: jest.fn(),
-      }
-
-      // when
-      const wrapper = mount(
-        <Router history={history}>
-          <Signin {...props} />
-        </Router>
-      )
-
-      // then
-      const signUpLink = wrapper.find('#sign-up-link').at(0)
-      expect(wrapper.find('#signin-submit-button')).toHaveLength(1)
-      expect(wrapper.find('#sign-up-link')).toHaveLength(1)
-      expect(signUpLink.props().href).toStrictEqual(
-        'https://www.demarches-simplifiees.fr/commencer/inscription-pass-culture'
       )
     })
   })

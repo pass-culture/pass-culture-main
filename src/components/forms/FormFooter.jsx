@@ -5,49 +5,40 @@ import { Link } from 'react-router-dom'
 import { FormFooterObject } from '../../types'
 
 export class FormFooter extends Component {
-  renderSubmitButton = obj => {
-    const props = {
-      className: `flex-1 ${obj.className || ''}`,
-      disabled: obj.disabled,
+  renderSubmitButton = buttonOptions => {
+    const attributes = {
+      className: `flex-1 ${buttonOptions.className || ''}`,
+      disabled: buttonOptions.disabled,
+      id: buttonOptions.id,
     }
-    if (obj.id) props.id = obj.id
     return (
       <button
         type="submit"
-        {...props}
+        {...attributes}
       >
-        <span className="is-block">{obj.label}</span>
+        {buttonOptions.label}
       </button>
     )
   }
 
-  renderLinkButton = obj => {
-    const props = {
-      className: `flex-1 ${obj.className || ''}`,
-      disabled: obj.disabled,
-      to: obj.url,
+  renderLink = linkOptions => {
+    const attributes = {
+      className: `flex-1 ${linkOptions.className || ''}`,
+      disabled: linkOptions.disabled,
+      id: linkOptions.id,
+      to: linkOptions.url,
     }
-    if (obj.id) props.id = obj.id
-    return (
-      <Link {...props}>
-        <span className="is-block">{obj.label}</span>
-      </Link>
-    )
+    return <Link {...attributes}>{linkOptions.label}</Link>
   }
 
-  renderExternalLinkButton = obj => {
-    const props = {
-      className: `flex-1 ${obj.className || ''}`,
-      disabled: obj.disabled,
-      href: obj.url,
-      target: obj.target,
+  renderExternalLink = linkOptions => {
+    const attributes = {
+      className: `flex-1 ${linkOptions.className || ''}`,
+      href: linkOptions.url,
+      id: linkOptions.id,
+      target: linkOptions.target,
     }
-    if (obj.id) props.id = obj.id
-    return (
-      <a {...props}>
-        <span className="is-block">{obj.label}</span>
-      </a>
-    )
+    return <a {...attributes}>{linkOptions.label}</a>
   }
 
   render() {
@@ -62,10 +53,10 @@ export class FormFooter extends Component {
       <footer
         className={`pc-final-form-footer dotted-top-2x-white py7 flex-0 flex-columns text-center items-center fs20 ${className}`}
       >
-        {useCancel && this.renderLinkButton(cancel)}
-        {useExternalLink && this.renderExternalLinkButton(externalLink)}
+        {useCancel && this.renderLink(cancel)}
+        {useExternalLink && this.renderExternalLink(externalLink)}
         {!hideSeparator && <hr className="dotted-left-2x-white flex-0" />}
-        {useLink && this.renderLinkButton(submit)}
+        {useLink && this.renderLink(submit)}
         {useSubmit && this.renderSubmitButton(submit)}
       </footer>
     )
@@ -73,17 +64,22 @@ export class FormFooter extends Component {
 }
 
 FormFooter.defaultProps = {
-  cancel: false,
+  cancel: null,
   className: '',
-  externalLink: false,
-  submit: false,
+  externalLink: null,
+  submit: null,
 }
 
 FormFooter.propTypes = {
-  cancel: PropTypes.oneOfType([PropTypes.bool, FormFooterObject]),
+  cancel: FormFooterObject,
   className: PropTypes.string,
-  externalLink: PropTypes.oneOfType([PropTypes.bool, FormFooterObject]),
-  submit: PropTypes.oneOfType([PropTypes.bool, FormFooterObject]),
+  externalLink: PropTypes.shape({
+    className: PropTypes.string,
+    id: PropTypes.string,
+    label: PropTypes.string.isRequired,
+    url: PropTypes.string,
+  }),
+  submit: FormFooterObject,
 }
 
 export default FormFooter

@@ -77,7 +77,7 @@ ShallowWrapper {
             }
           }
           className=""
-          externalLink={false}
+          externalLink={null}
           submit={
             Object {
               "className": "is-bold is-white-text",
@@ -361,7 +361,7 @@ ShallowWrapper {
             "url": "/connexion",
           },
           "className": "",
-          "externalLink": false,
+          "externalLink": null,
           "submit": Object {
             "className": "is-bold is-white-text",
             "disabled": false,
@@ -436,7 +436,7 @@ ShallowWrapper {
               }
             }
             className=""
-            externalLink={false}
+            externalLink={null}
             submit={
               Object {
                 "className": "is-bold is-white-text",
@@ -720,7 +720,7 @@ ShallowWrapper {
               "url": "/connexion",
             },
             "className": "",
-            "externalLink": false,
+            "externalLink": null,
             "submit": Object {
               "className": "is-bold is-white-text",
               "disabled": false,

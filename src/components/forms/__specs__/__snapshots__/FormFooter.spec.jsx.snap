@@ -6,7 +6,7 @@ ShallowWrapper {
   Symbol(enzyme.__unrendered__): <FormFooter
     cancel={false}
     className="fake className"
-    externalLink={false}
+    externalLink={null}
     submit={false}
   />,
   Symbol(enzyme.__renderer__): Object {
@@ -104,7 +104,7 @@ ShallowWrapper {
   Symbol(enzyme.__unrendered__): <FormFooter
     cancel={false}
     className="fake className"
-    externalLink={false}
+    externalLink={null}
     submit={
       Object {
         "className": "fake submit className",
@@ -140,11 +140,7 @@ ShallowWrapper {
           replace={false}
           to="fake submit url"
         >
-          <span
-            className="is-block"
-          >
-            fake submit label
-          </span>
+          fake submit label
         </Link>,
         false,
       ],
@@ -160,11 +156,7 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "class",
         "props": Object {
-          "children": <span
-            className="is-block"
-          >
-            fake submit label
-          </span>,
+          "children": "fake submit label",
           "className": "flex-1 fake submit className",
           "disabled": false,
           "id": "fake submit id",
@@ -172,18 +164,7 @@ ShallowWrapper {
           "to": "fake submit url",
         },
         "ref": null,
-        "rendered": Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": "fake submit label",
-            "className": "is-block",
-          },
-          "ref": null,
-          "rendered": "fake submit label",
-          "type": "span",
-        },
+        "rendered": "fake submit label",
         "type": [Function],
       },
       false,
@@ -207,11 +188,7 @@ ShallowWrapper {
             replace={false}
             to="fake submit url"
           >
-            <span
-              className="is-block"
-            >
-              fake submit label
-            </span>
+            fake submit label
           </Link>,
           false,
         ],
@@ -227,11 +204,7 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "class",
           "props": Object {
-            "children": <span
-              className="is-block"
-            >
-              fake submit label
-            </span>,
+            "children": "fake submit label",
             "className": "flex-1 fake submit className",
             "disabled": false,
             "id": "fake submit id",
@@ -239,18 +212,7 @@ ShallowWrapper {
             "to": "fake submit url",
           },
           "ref": null,
-          "rendered": Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": "fake submit label",
-              "className": "is-block",
-            },
-            "ref": null,
-            "rendered": "fake submit label",
-            "type": "span",
-          },
+          "rendered": "fake submit label",
           "type": [Function],
         },
         false,
@@ -302,7 +264,7 @@ ShallowWrapper {
       }
     }
     className="fake className"
-    externalLink={false}
+    externalLink={null}
     submit={
       Object {
         "className": "fake submit className",
@@ -335,11 +297,7 @@ ShallowWrapper {
           replace={false}
           to="fake cancel url"
         >
-          <span
-            className="is-block"
-          >
-            fake cancel label
-          </span>
+          fake cancel label
         </Link>,
         false,
         <hr
@@ -352,11 +310,7 @@ ShallowWrapper {
           replace={false}
           to="fake submit url"
         >
-          <span
-            className="is-block"
-          >
-            fake submit label
-          </span>
+          fake submit label
         </Link>,
         false,
       ],
@@ -369,11 +323,7 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "class",
         "props": Object {
-          "children": <span
-            className="is-block"
-          >
-            fake cancel label
-          </span>,
+          "children": "fake cancel label",
           "className": "flex-1 fake cancel className",
           "disabled": false,
           "id": "fake cancel id",
@@ -381,18 +331,7 @@ ShallowWrapper {
           "to": "fake cancel url",
         },
         "ref": null,
-        "rendered": Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": "fake cancel label",
-            "className": "is-block",
-          },
-          "ref": null,
-          "rendered": "fake cancel label",
-          "type": "span",
-        },
+        "rendered": "fake cancel label",
         "type": [Function],
       },
       false,
@@ -412,11 +351,7 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "class",
         "props": Object {
-          "children": <span
-            className="is-block"
-          >
-            fake submit label
-          </span>,
+          "children": "fake submit label",
           "className": "flex-1 fake submit className",
           "disabled": false,
           "id": "fake submit id",
@@ -424,18 +359,7 @@ ShallowWrapper {
           "to": "fake submit url",
         },
         "ref": null,
-        "rendered": Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": "fake submit label",
-            "className": "is-block",
-          },
-          "ref": null,
-          "rendered": "fake submit label",
-          "type": "span",
-        },
+        "rendered": "fake submit label",
         "type": [Function],
       },
       false,
@@ -456,11 +380,7 @@ ShallowWrapper {
             replace={false}
             to="fake cancel url"
           >
-            <span
-              className="is-block"
-            >
-              fake cancel label
-            </span>
+            fake cancel label
           </Link>,
           false,
           <hr
@@ -473,11 +393,7 @@ ShallowWrapper {
             replace={false}
             to="fake submit url"
           >
-            <span
-              className="is-block"
-            >
-              fake submit label
-            </span>
+            fake submit label
           </Link>,
           false,
         ],
@@ -490,11 +406,7 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "class",
           "props": Object {
-            "children": <span
-              className="is-block"
-            >
-              fake cancel label
-            </span>,
+            "children": "fake cancel label",
             "className": "flex-1 fake cancel className",
             "disabled": false,
             "id": "fake cancel id",
@@ -502,18 +414,7 @@ ShallowWrapper {
             "to": "fake cancel url",
           },
           "ref": null,
-          "rendered": Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": "fake cancel label",
-              "className": "is-block",
-            },
-            "ref": null,
-            "rendered": "fake cancel label",
-            "type": "span",
-          },
+          "rendered": "fake cancel label",
           "type": [Function],
         },
         false,
@@ -533,11 +434,7 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "class",
           "props": Object {
-            "children": <span
-              className="is-block"
-            >
-              fake submit label
-            </span>,
+            "children": "fake submit label",
             "className": "flex-1 fake submit className",
             "disabled": false,
             "id": "fake submit id",
@@ -545,18 +442,7 @@ ShallowWrapper {
             "to": "fake submit url",
           },
           "ref": null,
-          "rendered": Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": "fake submit label",
-              "className": "is-block",
-            },
-            "ref": null,
-            "rendered": "fake submit label",
-            "type": "span",
-          },
+          "rendered": "fake submit label",
           "type": [Function],
         },
         false,
@@ -608,7 +494,7 @@ ShallowWrapper {
       }
     }
     className="fake className"
-    externalLink={false}
+    externalLink={null}
     submit={
       Object {
         "className": "fake submit className",
@@ -640,11 +526,7 @@ ShallowWrapper {
           replace={false}
           to="fake cancel url"
         >
-          <span
-            className="is-block"
-          >
-            fake cancel label
-          </span>
+          fake cancel label
         </Link>,
         false,
         <hr
@@ -657,11 +539,7 @@ ShallowWrapper {
           id="fake submit id"
           type="submit"
         >
-          <span
-            className="is-block"
-          >
-            fake submit label
-          </span>
+          fake submit label
         </button>,
       ],
       "className": "pc-final-form-footer dotted-top-2x-white py7 flex-0 flex-columns text-center items-center fs20 fake className",
@@ -673,11 +551,7 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "class",
         "props": Object {
-          "children": <span
-            className="is-block"
-          >
-            fake cancel label
-          </span>,
+          "children": "fake cancel label",
           "className": "flex-1 fake cancel className",
           "disabled": false,
           "id": "fake cancel id",
@@ -685,18 +559,7 @@ ShallowWrapper {
           "to": "fake cancel url",
         },
         "ref": null,
-        "rendered": Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": "fake cancel label",
-            "className": "is-block",
-          },
-          "ref": null,
-          "rendered": "fake cancel label",
-          "type": "span",
-        },
+        "rendered": "fake cancel label",
         "type": [Function],
       },
       false,
@@ -717,29 +580,14 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": <span
-            className="is-block"
-          >
-            fake submit label
-          </span>,
+          "children": "fake submit label",
           "className": "flex-1 fake submit className",
           "disabled": false,
           "id": "fake submit id",
           "type": "submit",
         },
         "ref": null,
-        "rendered": Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": "fake submit label",
-            "className": "is-block",
-          },
-          "ref": null,
-          "rendered": "fake submit label",
-          "type": "span",
-        },
+        "rendered": "fake submit label",
         "type": "button",
       },
     ],
@@ -759,11 +607,7 @@ ShallowWrapper {
             replace={false}
             to="fake cancel url"
           >
-            <span
-              className="is-block"
-            >
-              fake cancel label
-            </span>
+            fake cancel label
           </Link>,
           false,
           <hr
@@ -776,11 +620,7 @@ ShallowWrapper {
             id="fake submit id"
             type="submit"
           >
-            <span
-              className="is-block"
-            >
-              fake submit label
-            </span>
+            fake submit label
           </button>,
         ],
         "className": "pc-final-form-footer dotted-top-2x-white py7 flex-0 flex-columns text-center items-center fs20 fake className",
@@ -792,11 +632,7 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "class",
           "props": Object {
-            "children": <span
-              className="is-block"
-            >
-              fake cancel label
-            </span>,
+            "children": "fake cancel label",
             "className": "flex-1 fake cancel className",
             "disabled": false,
             "id": "fake cancel id",
@@ -804,18 +640,7 @@ ShallowWrapper {
             "to": "fake cancel url",
           },
           "ref": null,
-          "rendered": Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": "fake cancel label",
-              "className": "is-block",
-            },
-            "ref": null,
-            "rendered": "fake cancel label",
-            "type": "span",
-          },
+          "rendered": "fake cancel label",
           "type": [Function],
         },
         false,
@@ -836,29 +661,14 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": <span
-              className="is-block"
-            >
-              fake submit label
-            </span>,
+            "children": "fake submit label",
             "className": "flex-1 fake submit className",
             "disabled": false,
             "id": "fake submit id",
             "type": "submit",
           },
           "ref": null,
-          "rendered": Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": "fake submit label",
-              "className": "is-block",
-            },
-            "ref": null,
-            "rendered": "fake submit label",
-            "type": "span",
-          },
+          "rendered": "fake submit label",
           "type": "button",
         },
       ],

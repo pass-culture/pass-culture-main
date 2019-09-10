@@ -17,7 +17,6 @@ const submitButtonOptions = {
 
 const signUpLinkOption = {
   className: 'is-white-text',
-  disabled: false,
   id: 'sign-up-link',
   label: 'Créer un compte',
   target: '_blank',
