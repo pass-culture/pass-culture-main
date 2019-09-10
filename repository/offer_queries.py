@@ -137,12 +137,11 @@ def _with_validated_venue(offer_query):
 
 
 def _build_occurs_soon_or_is_thing_predicate():
-    Stock2 = aliased(Stock)
-    return Stock.query.filter((Stock2.offerId == Offer.id)
-                              & ((Stock2.beginningDatetime == None)
-                                 | ((Stock2.beginningDatetime > datetime.utcnow())
-                              & (Stock2.beginningDatetime < (datetime.utcnow() + timedelta(days=10)))))) \
-                      .exists()
+    return Stock.query.filter((Stock.offerId == Offer.id)
+                              & ((Stock.beginningDatetime == None)
+                                 | ((Stock.beginningDatetime > datetime.utcnow())
+                              & (Stock.beginningDatetime < (datetime.utcnow() + timedelta(days=10)))))) \
+                       .exists()
 
 
 def _build_has_active_mediation_predicate():
