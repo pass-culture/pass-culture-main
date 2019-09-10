@@ -217,13 +217,17 @@ Les tests sont enfin joués et on déploie sur Testing.
 ## Hotfixes
 
 Pour tagguer les hotfixes, commencer par se placer sur la dernière version déployée en production ou en staging à
-l'aide d'un ```git checkout I.P.S```, commiter le fix du bug puis lancer la commande de création de branches de hotfixes
-et de tag pour chacun des projets :
+l'aide d'un ```git checkout vI.P.S``` sur chacun de projets. En effet nous voulons déployer uniquement ce qui est en Prod + nos commits de hotfix. 
 
-```pc -t I.P.S tag-hotfix```.
+Une fois le tag checked-out, commiter le fix du bug puis lancer la commande de création de branches de hotfixes et de tag pour chacun des projets :
 
-On peut alors déployer ce tag.
+```pc -t I.P(+1).S(+1) tag-hotfix```.
 
+Une fois les tests de la CI passés, on peut déployer ce tag.
+
+Le tag déployé, il faut reporter les commits des hotfixs sur les branches masters des différents projets
+pour qu'il soient présent lors des prochaines livraison, sinon il seront écrasés. 
+Il faut aussi penser à supprimer les branches de hotfixs.
 
 ## Deploy
 
