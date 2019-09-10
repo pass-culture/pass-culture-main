@@ -25,6 +25,7 @@ def give_requested_recommendation_to_user(user, offer_id, mediation_id):
         recommendation = _find_recommendation(offer_id, mediation_id, user.id)
         if recommendation is None:
             recommendation = _create_recommendation_from_ids(user, offer_id, mediation_id=mediation_id)
+            PcObject.save(recommendation)
             logger.debug(lambda: 'Creating Recommendation with offer_id=%s mediation_id=%s' % (offer_id, mediation_id))
 
     return recommendation
@@ -61,6 +62,7 @@ def create_recommendations_for_discovery(limit=3, user=None):
             )
             inserted_tuto_mediations += 1
         recommendations.append(_create_recommendation(user, offer))
+    PcObject.save(*recommendations)
     return recommendations
 
 
@@ -149,7 +151,6 @@ def _create_recommendation(user, offer, mediation=None):
             offer.lastStock.bookingLimitDatetime - timedelta(minutes=1)
         )
 
-    PcObject.save(recommendation)
     return recommendation
 
 
