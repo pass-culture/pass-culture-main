@@ -27,7 +27,7 @@ login_manager = LoginManager()
 admin = Admin(name='pc Back Office', url='/pc/back-office', template_mode='bootstrap3')
 
 if feature_request_profiling_enabled():
-    profiling_restrictions = [os.environ.get('PROFILE_REQUESTS_LINES_LIMIT', 100)]
+    profiling_restrictions = [int(os.environ.get('PROFILE_REQUESTS_LINES_LIMIT', 100))]
     app.config['PROFILE'] = True
     app.wsgi_app = ProfilerMiddleware(app.wsgi_app,
                                       restrictions=profiling_restrictions)
