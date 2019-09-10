@@ -92,10 +92,12 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
 
     describe('loadOfferers', () => {
       it('should load all offerers by default', () => {
-        // when
+        // given
         const handleFail = jest.fn()
         const handleSuccess = jest.fn()
-        mapDispatchToProps(dispatch).loadOfferers(handleFail, handleSuccess)
+
+        // when
+        mapDispatchToProps(dispatch).loadOfferers(handleSuccess, handleFail)
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
@@ -118,10 +120,12 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
       })
 
       it('can load only validated offerers', () => {
-        // when
+        // given
         const handleFail = jest.fn()
         const handleSuccess = jest.fn()
-        mapDispatchToProps(dispatch).loadOfferers(handleFail, handleSuccess, { isValidated: true })
+
+        // when
+        mapDispatchToProps(dispatch).loadOfferers(handleSuccess, handleFail, { isValidated: true })
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
@@ -144,10 +148,12 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
       })
 
       it('can load offerers by keywords', () => {
-        // when
+        // given
         const handleFail = jest.fn()
         const handleSuccess = jest.fn()
-        mapDispatchToProps(dispatch).loadOfferers(handleFail, handleSuccess, { isValidated: true, keywords: 'keywords=nice%20words' })
+
+        // when
+        mapDispatchToProps(dispatch).loadOfferers(handleSuccess, handleFail, { isValidated: true, keywords: 'keywords=nice%20words' })
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
@@ -170,10 +176,12 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
       })
 
       it('can load only offerers that are not validated yet', () => {
-        // when
+        // given
         const handleFail = jest.fn()
         const handleSuccess = jest.fn()
-        mapDispatchToProps(dispatch).loadOfferers(handleFail, handleSuccess, { isValidated: false })
+
+        // when
+        mapDispatchToProps(dispatch).loadOfferers(handleSuccess, handleFail, { isValidated: false })
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
@@ -197,8 +205,10 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
     })
 
     it('enable to show notification', () => {
-      //when
+      // given
       const url = '/offerers'
+
+      //when
       mapDispatchToProps(dispatch).showNotification(url)
 
       // then

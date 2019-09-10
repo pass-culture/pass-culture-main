@@ -43,8 +43,9 @@ class Offerers extends Component {
 
   componentDidUpdate(prevProps) {
     const { location, offerers } = this.props
+    const noMoreOfferersToLoad = offerers.length !== prevProps.offerers.length
 
-    if (offerers.length !== prevProps.offerers.length) {
+    if (noMoreOfferersToLoad) {
       this.setState(
         {
           isLoading: false

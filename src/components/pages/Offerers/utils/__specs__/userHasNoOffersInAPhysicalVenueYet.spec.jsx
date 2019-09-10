@@ -1,7 +1,7 @@
 import userHasNoOffersInAPhysicalVenueYet from '../userHasNoOffersInAPhysicalVenueYet'
 
 describe('src | components | pages | Offerers | utils | userHasNoOffersInAPhysicalVenueYet', () => {
-  it('should returns false if current user has offers and physical venues', () => {
+  it('should return false if current user has offers and physical venues', () => {
     // given
     const currentUser = {
       hasOffers: true,
@@ -15,7 +15,7 @@ describe('src | components | pages | Offerers | utils | userHasNoOffersInAPhysi
     expect(result).toBe(false)
   })
 
-  it('should returns true if current user has no offer but physical venues', () => {
+  it('should return true if current user has no offer but physical venues', () => {
     // given
     const currentUser = {
       hasOffers: false,
@@ -29,7 +29,7 @@ describe('src | components | pages | Offerers | utils | userHasNoOffersInAPhysi
     expect(result).toBe(true)
   })
 
-  it('should returns true if current user has offers but no physical venue', () => {
+  it('should return true if current user has offers but no physical venue', () => {
     // given
     const currentUser = {
       hasOffers: true,
@@ -43,7 +43,7 @@ describe('src | components | pages | Offerers | utils | userHasNoOffersInAPhysi
     expect(result).toBe(true)
   })
 
-  it('should returns true if current user has no offer and no physical venue', () => {
+  it('should return true if current user has no offer and no physical venue', () => {
     // given
     const currentUser = {
       hasOffers: false,
