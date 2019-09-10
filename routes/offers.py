@@ -84,21 +84,28 @@ def post_offer():
     return jsonify(as_dict(offer, includes=OFFER_INCLUDES)), 201
 
 
-@app.route('/offers/<id>', methods=['PATCH'])
+@app.route('/offers/<offer_id>', methods=['PATCH'])
 @login_or_api_key_required
 @expect_json_data
-def patch_offer(id):
-    thing_or_event_dict = request.json
-    check_valid_edition(request.json)
-    offer = offer_queries.find_offer_by_id(dehumanize(id))
+def patch_offer(offer_id: int):
+    request_data = request.json
+    check_valid_edition(request_data)
+    offer = offer_queries.find_offer_by_id(dehumanize(offer_id))
     if not offer:
         raise ResourceNotFound
+
     ensure_current_user_has_rights(RightsType.editor, offer.venue.managingOffererId)
-    check_offer_is_editable(offer)
-    offer.populate_from_dict(request.json)
-    offer.update_with_product_data(thing_or_event_dict)
+
+    request_data_contains_deactivation = 'isActive' in request_data and not request_data['isActive']
+    request_is_only_deactivation = len(request_data) == 1 and request_data_contains_deactivation
+
+    if not request_is_only_deactivation:
+        check_offer_is_editable(offer)
+    offer.populate_from_dict(request_data)
+    offer.update_with_product_data(request_data)
     PcObject.save(offer)
-    if 'isActive' in request.json and not request.json['isActive']:
+
+    if request_data_contains_deactivation:
         invalidate_recommendations(offer)
 
     return jsonify(as_dict(offer, includes=OFFER_INCLUDES)), 200

@@ -5,7 +5,7 @@ from routes.serialization import serialize
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_venue, \
     create_offer_with_thing_product, API_URL, create_product_with_event_type, create_offer_with_event_product, \
-    create_product_with_thing_type, create_recommendation
+    create_product_with_thing_type, create_recommendation, activate_provider
 from utils.human_ids import humanize
 
 
@@ -143,6 +143,31 @@ class Patch:
             assert Offer.query.get(offer_id).name == 'New Name'
             assert Product.query.get(product_id).name == 'Old Name'
 
+        @clean_database
+        def when_deactivate_offer_from_provider(self, app):
+            # Given
+            user = create_user()
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            provider = activate_provider('TiteLiveStocks')
+            offer = create_offer_with_thing_product(venue, id_at_providers='id_provider', last_provider_id=provider.id)
+            PcObject.save(offer, user_offerer)
+            offer_id = offer.id
+
+            json = {
+                'isActive': False
+            }
+
+            # When
+            response = TestClient(app.test_client()).with_auth(user.email).patch(
+                f'{API_URL}/offers/{humanize(offer.id)}',
+                json=json)
+
+            # Then
+            assert response.status_code == 200
+            assert not Offer.query.get(offer_id).isActive
+
     class Returns400:
         @clean_database
         def when_trying_to_patch_forbidden_attributes(self, app):
@@ -212,7 +237,6 @@ class Patch:
             assert Offer.query.get(offer.id).bookingEmail == 'old@email.com'
             assert response.json['global'] == ["Les offres importées ne sont pas modifiables"]
 
-
     class Returns403:
         @clean_database
         def when_user_is_not_attached_to_offerer(self, app):
@@ -237,7 +261,8 @@ class Patch:
 
             # Then
             assert response.status_code == 403
-            assert response.json['global'] == ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
+            assert response.json['global'] == [
+                "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
 
     class Returns404:
         @clean_database
