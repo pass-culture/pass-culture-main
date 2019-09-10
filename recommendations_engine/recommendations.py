@@ -1,5 +1,6 @@
 """ recommendations """
 from datetime import datetime, timedelta
+import random
 
 import dateutil.parser
 from sqlalchemy import func
@@ -124,32 +125,12 @@ def _create_recommendation(user, offer, mediation=None):
     recommendation = Recommendation()
     recommendation.user = user
 
-    if offer:
-        recommendation.offer = offer
-    else:
-        offer = offer_queries.find_offer_by_id(mediation.offerId)
-        recommendation.offer = offer
+    recommendation.offer = offer
 
     if mediation:
         recommendation.mediation = mediation
     else:
-        mediation = Mediation.query \
-            .filter(Mediation.offer == offer) \
-            .filter(Mediation.isActive) \
-            .order_by(func.random()) \
-            .first()
-        recommendation.mediation = mediation
-
-    if recommendation.mediation:
-        recommendation.validUntilDate = datetime.utcnow() + timedelta(days=3)
-    else:
-        recommendation.validUntilDate = datetime.utcnow() + timedelta(days=1)
-
-    if offer.lastStock and offer.lastStock.bookingLimitDatetime:
-        recommendation.validUntilDate = min(
-            recommendation.validUntilDate,
-            offer.lastStock.bookingLimitDatetime - timedelta(minutes=1)
-        )
+        recommendation.mediation = random.choice([m for m in offer.mediations if m.isActive])
 
     return recommendation
 
