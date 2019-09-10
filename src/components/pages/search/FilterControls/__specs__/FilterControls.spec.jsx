@@ -24,7 +24,7 @@ describe('src | components | pages | search | FilterControls', () => {
       onClickFilterButton: jest.fn(),
       query: {
         change: jest.fn(),
-        parse: jest.fn(),
+        parse: () => ({}),
       },
     }
   })
@@ -77,7 +77,7 @@ describe('src | components | pages | search | FilterControls', () => {
 
       // then
       const searchFilter = wrapper.find('FilterControls')
-      expect(searchFilter.state('initialDateParams')).toBe(true)
+      expect(searchFilter.state('shouldResetDate')).toBe(true)
       expect(searchFilter.state('params')).toStrictEqual(expect.any(Object))
     })
   })
@@ -105,16 +105,11 @@ describe('src | components | pages | search | FilterControls', () => {
 
       // then
       const expected = {
-        initialDateParams: true,
+        shouldResetDate: true,
         params: {},
       }
       expect(wrapper.state()).toStrictEqual(expected)
-      expect(props.query.change).toHaveBeenCalledWith(
-        { ...INITIAL_FILTER_PARAMS, page: null },
-        {
-          pathname: '/recherche',
-        }
-      )
+      expect(props.query.change).toHaveBeenCalledWith({ ...INITIAL_FILTER_PARAMS, page: null })
     })
   })
 
@@ -129,7 +124,7 @@ describe('src | components | pages | search | FilterControls', () => {
 
       // then
       expect(wrapper.state()).toStrictEqual({
-        initialDateParams: true,
+        shouldResetDate: true,
         params: {
           jours: '0-1',
         },
@@ -148,7 +143,7 @@ describe('src | components | pages | search | FilterControls', () => {
 
       // then
       expect(wrapper.state()).toStrictEqual({
-        initialDateParams: true,
+        shouldResetDate: true,
         params: {
           categories: 'Jouer,Lire',
         },
@@ -169,7 +164,7 @@ describe('src | components | pages | search | FilterControls', () => {
 
       // then
       expect(wrapper.state()).toStrictEqual({
-        initialDateParams: true,
+        shouldResetDate: true,
         params: {
           categories: 'Applaudir',
         },

@@ -10,17 +10,7 @@ ShallowWrapper {
     query={
       Object {
         "change": [MockFunction],
-        "parse": [MockFunction] {
-          "calls": Array [
-            Array [],
-          ],
-          "results": Array [
-            Object {
-              "type": "return",
-              "value": undefined,
-            },
-          ],
-        },
+        "parse": [Function],
       }
     }
   />,

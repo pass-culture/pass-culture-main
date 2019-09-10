@@ -123,14 +123,14 @@ describe('src | components | pages | search | FilterControls | FilterByDistance'
 
       // when
       const optionsMarkup = wrapper.find('option')
-      const { defaultValue } = wrapper.find('select').props()
+      const { value } = wrapper.find('select').props()
 
       // then
       expect(optionsMarkup).toHaveLength(4)
       optionsMarkup.forEach((option, index) => {
         expect(option.props().value).toBe(distanceOptions[index].value)
       })
-      expect(defaultValue).toBe(INFINITE_DISTANCE)
+      expect(value).toBe(INFINITE_DISTANCE)
     })
 
     it('should have 50 km selected when I have 50 in distance parameter', () => {
@@ -139,10 +139,10 @@ describe('src | components | pages | search | FilterControls | FilterByDistance'
       const wrapper = shallow(<FilterByDistance {...props} />)
 
       // when
-      const { defaultValue } = wrapper.find('select').props()
+      const { value } = wrapper.find('select').props()
 
       // then
-      expect(defaultValue).toBe(props.filterState.params.distance)
+      expect(value).toBe(props.filterState.params.distance)
     })
 
     it('should display geolocation warning if no geolocation', () => {

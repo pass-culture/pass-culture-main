@@ -11,7 +11,7 @@ ShallowWrapper {
         "replace": [MockFunction] {
           "calls": Array [
             Array [
-              "/recherche",
+              "/recherche/resultats",
             ],
           ],
           "results": Array [
