@@ -11,12 +11,12 @@ from utils.human_ids import humanize
 from utils.logger import logger
 
 
-def save_chunk_to_insert(chunk_to_insert: Dict):
+def insert_chunk(chunk_to_insert: Dict):
     db.session.bulk_save_objects(chunk_to_insert.values())
     db.session.commit()
 
 
-def save_chunk_to_update(chunk_to_update: Dict, providable_info: ProvidableInfo):
+def update_chunk(chunk_to_update: Dict, providable_info: ProvidableInfo):
     for chunk_key, chunk_object in chunk_to_update.items():
         statement = _build_statement_for_update(chunk_key,
                                                 chunk_object,
@@ -29,22 +29,19 @@ def save_chunk_to_update(chunk_to_update: Dict, providable_info: ProvidableInfo)
                          + e.__class__.__name__ + ' ' + str(e))
 
 
-def get_existing_object_or_none(model_type: Model, id_at_providers: str) -> Optional[Dict]:
+def get_existing_object(model_type: Model, id_at_providers: str) -> Optional[Dict]:
     conn = db.engine.connect()
-    model_to_query = model_type
-    query = select([model_to_query]). \
-        where(model_to_query.idAtProviders == id_at_providers)
+    query = select([model_type]). \
+        where(model_type.idAtProviders == id_at_providers)
     db_object_dict = conn.execute(query).fetchone()
 
-    if db_object_dict is not None:
-        return _dict_to_object(db_object_dict, model_to_query)
-    return None
+    return _dict_to_object(db_object_dict, model_type) if db_object_dict else None
 
 
-def get_last_modification_date_for_provider(provider_id: int, obj) -> datetime:
-    if obj.lastProviderId == provider_id:
-        return obj.dateModifiedAtLastProvider
-    for change in obj.activity():
+def get_last_modification_date_for_provider(provider_id: int, pc_obj: Model) -> datetime:
+    if pc_obj.lastProviderId == provider_id:
+        return pc_obj.dateModifiedAtLastProvider
+    for change in pc_obj.activity():
         if change.changed_data['lastProviderId'] == provider_id:
             return read_json_date(change.changed_data['dateModifiedAtLastProvider'])
 

@@ -17,7 +17,7 @@ depends_on = None
 def upgrade():
     op.execute("""
         DELETE FROM product
-        WHERE "idAtProviders" is not null
+        WHERE "idAtProviders" IS NOT NULL
           AND "extraData"::jsonb ->> 'schoolbook' = 'true'
     """)
 

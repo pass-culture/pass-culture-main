@@ -125,7 +125,7 @@ class LocalProvider(Iterator):
             traceback.print_tb(e.__traceback__)
             pprint(vars(e))
 
-    def create_object(self, providable_info):
+    def create_object(self, providable_info: ProvidableInfo) -> Model:
         logger.debug('  Creating ' + providable_info.type.__name__
                      + '# ' + providable_info.id_at_providers)
         obj = providable_info.type()
