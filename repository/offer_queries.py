@@ -41,15 +41,11 @@ def department_or_national_offers(query, departement_codes):
     return query
 
 
-def _bookable_offers(query):
-    beginning_date_is_in_the_future = (Stock.beginningDatetime > datetime.utcnow())
-    no_beginning_date = Stock.beginningDatetime == None
-    query = query.filter(beginning_date_is_in_the_future | no_beginning_date)
-    logger.debug(lambda: '(reco) offers in the future .count ' + str(query.count()))
-
-    query = _filter_bookable_offers_for_discovery(query)
-    logger.debug(lambda: '(reco) bookable .count ' + str(query.count()))
-    return query
+def _bookable_offers(offers_query):
+    stocks_query = Stock.query.filter(Stock.offerId == Offer.id)
+    stocks_query = _filter_bookable_stocks_for_discovery(stocks_query)
+    offers_query = offers_query.filter(stocks_query.exists())
+    return offers_query
 
 
 def _with_active_and_validated_offerer(query):
@@ -104,8 +100,6 @@ def get_active_offers_ids_query(departement_codes=['00'], offer_id=None):
     logger.debug(lambda: '(reco) all offers count {}'.format(active_offers_query.count()))
     active_offers_query = active_offers_query.filter_by(isActive=True)
     logger.debug(lambda: '(reco) active offers count {}'.format(active_offers_query.count()))
-    active_offers_query = _with_stock(active_offers_query)
-    logger.debug(lambda: '(reco) offers with stock count {}'.format(active_offers_query.count()))
     active_offers_query = _with_validated_venue(active_offers_query)
     logger.debug(lambda: '(reco) offers with venue count {}'.format(active_offers_query.count()))
     active_offers_query = _with_image(active_offers_query)
@@ -128,10 +122,6 @@ def _round_robin_by_type_onlineness_and_criteria(order_by: List):
     return func.row_number() \
         .over(partition_by=[Offer.type, Offer.url == None],
               order_by=order_by())
-
-
-def _with_stock(offer_query):
-    return offer_query.join(Stock, Offer.id == Stock.offerId)
 
 
 def _with_image(offer_query):
@@ -287,7 +277,7 @@ def find_offers_with_filter_parameters(
     return query
 
 
-def _has_remaining_stock_predicate():
+def _build_has_remaining_stock_predicate():
     return (Stock.available == None) \
            | (Stock.available > Booking.query.filter((Booking.stockId == Stock.id) & (Booking.isCancelled == False))
               .statement.with_only_columns([func.coalesce(func.sum(Booking.quantity), 0)]))
@@ -313,7 +303,7 @@ def _filter_recommendable_offers_for_search(offer_query):
         .filter(stock_can_still_be_booked) \
         .filter(event_has_not_began_yet | offer_is_on_a_thing) \
         .filter((Offerer.validationToken == None) & (Offerer.isActive == True)) \
-        .filter(_has_remaining_stock_predicate())
+        .filter(_build_has_remaining_stock_predicate())
 
     return offer_query
 
@@ -323,23 +313,30 @@ def find_activation_offers(departement_code: str) -> List[Offer]:
     match_department_or_is_national = or_(Venue.departementCode.in_(departement_codes), Offer.isNational == True)
 
     query = Offer.query \
-        .join(Product) \
         .join(Venue) \
-        .reset_joinpoint() \
-        .join(Stock) \
+        .join(Stock, Stock.offerId == Offer.id) \
         .filter(Offer.type == str(EventType.ACTIVATION)) \
         .filter(match_department_or_is_national)
 
-    query = _filter_bookable_offers_for_discovery(query)
+    query = _filter_bookable_stocks_for_discovery(query)
 
     return query
 
 
-def _filter_bookable_offers_for_discovery(query):
-    return query.filter((Stock.isSoftDeleted == False)
-                        & ((Stock.bookingLimitDatetime == None)
-                           | (Stock.bookingLimitDatetime > datetime.utcnow()))
-                        & _has_remaining_stock_predicate())
+def _filter_bookable_stocks_for_discovery(stocks_query):
+    beginning_date_is_in_the_future_predicate = (Stock.beginningDatetime > datetime.utcnow())
+    booking_limit_date_is_in_the_future_predicate = (Stock.bookingLimitDatetime > datetime.utcnow())
+    has_no_beginning_date_predicate = (Stock.beginningDatetime == None)
+    has_no_booking_limit_date_predicate = (Stock.bookingLimitDatetime == None)
+    is_not_soft_deleted_predicate = (Stock.isSoftDeleted == False)
+
+    stocks_query = stocks_query.filter(is_not_soft_deleted_predicate
+                                       & (beginning_date_is_in_the_future_predicate
+                                          | has_no_beginning_date_predicate)
+                                       & (booking_limit_date_is_in_the_future_predicate
+                                          | has_no_booking_limit_date_predicate)
+                                       & _build_has_remaining_stock_predicate())
+    return stocks_query
 
 
 def count_offers_for_things_only_by_venue_id(venue_id):

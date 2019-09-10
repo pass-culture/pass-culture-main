@@ -1,6 +1,6 @@
 from models import Offer, Stock, EventType, ThingType, Mediation, Product
 from models.user import User
-from repository.offer_queries import _filter_bookable_offers_for_discovery
+from repository.offer_queries import _filter_bookable_stocks_for_discovery
 from repository.user_queries import keep_only_webapp_users
 from repository.recommendation_queries import find_recommendations_for_user_matching_offers_and_search
 from sandboxes.scripts.utils.helpers import get_user_helper, get_offer_helper
@@ -25,7 +25,7 @@ def get_non_free_offers_query_by_type(type):
 
   query = Offer.query.outerjoin(type)
   query = get_query_join_on_thing(query)
-  query = _filter_bookable_offers_for_discovery(query)
+  query = _filter_bookable_stocks_for_discovery(query)
   query = query \
       .filter(filter_not_an_activation_offer) \
       .filter(filter_not_free_price)

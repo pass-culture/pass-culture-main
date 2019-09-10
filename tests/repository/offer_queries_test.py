@@ -10,7 +10,7 @@ from repository.offer_queries import department_or_national_offers, \
     find_offers_with_filter_parameters, \
     get_offers_for_recommendations_search, \
     get_active_offers, \
-    _has_remaining_stock_predicate,\
+    _build_has_remaining_stock_predicate,\
     find_offers_by_venue_id, \
     order_by_with_criteria
 from tests.conftest import clean_database
@@ -705,7 +705,9 @@ def test_find_activation_offers_returns_activation_offers_with_future_booking_li
     offers = find_activation_offers('93').all()
 
     # then
-    assert len(offers) == 2
+    assert offer1 not in offers
+    assert offer2 in offers
+    assert offer3 in offers
 
 
 @clean_database
@@ -767,7 +769,7 @@ def test_offer_remaining_stock_filter_does_not_filter_offer_with_cancelled_booki
     # When
     nb_offers_with_remaining_stock = Offer.query \
         .join(Stock) \
-        .filter(_has_remaining_stock_predicate()) \
+        .filter(_build_has_remaining_stock_predicate()) \
         .count()
 
     # Then
@@ -790,7 +792,7 @@ def test_offer_remaining_stock_filter_filters_offer_with_no_remaining_stock(app)
     # When
     nb_offers_with_remaining_stock = Offer.query \
         .join(Stock) \
-        .filter(_has_remaining_stock_predicate()) \
+        .filter(_build_has_remaining_stock_predicate()) \
         .count()
 
     # Then
@@ -813,7 +815,7 @@ def test_offer_remaining_stock_filter_filters_offer_with_one_full_stock_and_one_
     # When
     nb_offers_with_remaining_stock = Offer.query \
         .join(Stock) \
-        .filter(_has_remaining_stock_predicate()) \
+        .filter(_build_has_remaining_stock_predicate()) \
         .count()
 
     # Then
