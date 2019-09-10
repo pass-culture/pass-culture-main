@@ -43,6 +43,10 @@ class ShareButton extends PureComponent {
   )
 
   onCopyHandler = status => {
+    const {
+      trackShareOfferByLink,
+    } = this.props
+    trackShareOfferByLink()
     this.setState({ isCopied: status }, () => {
       this.handleOnClickShare()
     })
@@ -55,7 +59,7 @@ class ShareButton extends PureComponent {
   }
 
   handleOnClickShare = () => {
-    const { email, offerName, openPopin, text, url, trackShareOffer } = this.props
+    const { email, offerName, openPopin, text, url, trackShareOfferByMail } = this.props
 
     try {
       const nativeOptions = { text: `${text}\n`, title: text, url }
@@ -70,7 +74,7 @@ class ShareButton extends PureComponent {
       const popinOptions = {
         buttons: [
           this.getCopyToClipboardButton(url, this.onCopyHandler),
-          this.getMailToLinkButton(email, headers, trackShareOffer),
+          this.getMailToLinkButton(email, headers, trackShareOfferByMail),
         ],
         text: 'Comment souhaitez-vous partager cette offre ?',
         title: offerName,
@@ -115,7 +119,8 @@ ShareButton.propTypes = {
   offerName: PropTypes.string,
   openPopin: PropTypes.func.isRequired,
   text: PropTypes.string,
-  trackShareOffer: PropTypes.func.isRequired,
+  trackShareOfferByLink: PropTypes.func.isRequired,
+  trackShareOfferByMail: PropTypes.func.isRequired,
   url: PropTypes.string,
 }
 

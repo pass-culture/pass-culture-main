@@ -8,10 +8,14 @@ describe('src | components | layout |Booking', () => {
   let props
   let push
   let replace
+  let handleSubmit
+  let trackBookingSuccess
 
   beforeEach(() => {
     push = jest.fn()
     replace = jest.fn()
+    handleSubmit = jest.fn()
+    trackBookingSuccess = jest.fn()
     props = {
       bookables: [],
       booking: {
@@ -19,6 +23,7 @@ describe('src | components | layout |Booking', () => {
           price: 10,
         },
       },
+      handleSubmit,
       history: {
         push,
         replace,
@@ -43,6 +48,7 @@ describe('src | components | layout |Booking', () => {
       recommendation: {
         id: 'AE',
       },
+      trackBookingSuccess,
     }
   })
 

@@ -13,6 +13,7 @@ ShallowWrapper {
       }
     }
     extraClassName={null}
+    handleSubmit={[MockFunction]}
     history={
       Object {
         "push": [MockFunction],
@@ -45,6 +46,7 @@ ShallowWrapper {
         "id": "AE",
       }
     }
+    trackBookingSuccess={[MockFunction]}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],

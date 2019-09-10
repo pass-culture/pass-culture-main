@@ -21,7 +21,7 @@ export const openSharePopin = (options = null) => ({
 })
 
 export const closeSharePopin = () => ({
-  options: undefined,
+  options: false,
   type: TOGGLE_SHARE_POPIN,
 })
 

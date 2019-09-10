@@ -9,7 +9,8 @@ ShallowWrapper {
     offerName="Fake offer name"
     openPopin={[Function]}
     text="Fake text"
-    trackShareOffer={[Function]}
+    trackShareOfferByLink={[Function]}
+    trackShareOfferByMail={[Function]}
     url="http://www.fake-url.com"
   />,
   Symbol(enzyme.__renderer__): Object {

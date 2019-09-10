@@ -34,7 +34,7 @@ describe('src | reducers | share  ', () => {
       // when
       const action = closeSharePopin()
       const expected = {
-        options: undefined,
+        options: false,
         type: 'TOGGLE_SHARE_POPIN',
       }
 
