@@ -143,42 +143,63 @@ describe('src | components | layout | Booking | BookingContainer', () => {
   })
 
   describe('mapDispatchToProps', () => {
-    it('should call dispatch with request data', () => {
-      // given
-      const dispatch = jest.fn()
-      const formValues = {
-        bookables: [],
-        date: "2019-09-19T22:00:00.000Z",
-        price: 27,
-        recommendationId: "NQ",
-        stockId: "BM",
-        time: "BM"
-      }
-      const handleRequestFail = jest.fn()
-      const handleRequestSuccess = jest.fn()
-      jest.spyOn(reduxSagaData, 'requestData')
-
-      // when
-      mapDispatchToProps(dispatch).handleSubmit(formValues, handleRequestFail, handleRequestSuccess)
-
-      // then
-      expect(reduxSagaData.requestData).toHaveBeenCalledWith(
-        {
-          apiPath: '/bookings',
-          body: {
-            bookables: [],
-            date: "2019-09-19T22:00:00.000Z",
-            price: 27,
-            recommendationId: "NQ",
-            stockId: "BM",
-            time: "BM",
-            quantity: 1
+    describe('trackBookingSuccess', () => {
+      it('should dispatch a track Matomo Event with correct arguments', () => {
+        // given
+        const ownProps = {
+          tracking: {
+            trackEvent: jest.fn(),
           },
-          handleFail: handleRequestFail,
-          handleSuccess: handleRequestSuccess,
-          method: 'POST',
-          name: 'booking',
-          normalizer: bookingNormalizer,
+        }
+        // when
+        mapDispatchToProps(undefined, ownProps).trackBookingSuccess('B4')
+
+        // then
+        expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
+          action: 'bookingOffer',
+          name: 'B4',
+        })
+      })
+    })
+
+    describe('handleSubmit', () => {
+      it('should call dispatch with request data', () => {
+        // given
+        const dispatch = jest.fn()
+        const formValues = {
+          bookables: [],
+          date: "2019-09-19T22:00:00.000Z",
+          price: 27,
+          recommendationId: "NQ",
+          stockId: "BM",
+          time: "BM"
+        }
+        const handleRequestFail = jest.fn()
+        const handleRequestSuccess = jest.fn()
+        jest.spyOn(reduxSagaData, 'requestData')
+
+        // when
+        mapDispatchToProps(dispatch).handleSubmit(formValues, handleRequestFail, handleRequestSuccess)
+
+        // then
+        expect(reduxSagaData.requestData).toHaveBeenCalledWith(
+          {
+            apiPath: '/bookings',
+            body: {
+              bookables: [],
+              date: "2019-09-19T22:00:00.000Z",
+              price: 27,
+              recommendationId: "NQ",
+              stockId: "BM",
+              time: "BM",
+              quantity: 1
+            },
+            handleFail: handleRequestFail,
+            handleSuccess: handleRequestSuccess,
+            method: 'POST',
+            name: 'booking',
+            normalizer: bookingNormalizer,
+          })
       })
     })
   })

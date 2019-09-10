@@ -65,11 +65,15 @@ class Booking extends PureComponent {
     const { handleSubmit } = this.props
     this.setState(
       { isSubmitting: true },
-      handleSubmit(formValues, this.handleRequestFail, this.handleRequestSuccess())
+      handleSubmit(formValues, this.handleRequestFail, this.handleRequestSuccess)
     )
   }
 
   handleRequestSuccess = (state, action) => {
+    const {
+      offer,
+      trackBookingSuccess,
+    } = this.props
     const { payload } = action
     const { datum } = payload
     const nextState = {
@@ -77,6 +81,7 @@ class Booking extends PureComponent {
       isErrored: false,
       isSubmitting: false,
     }
+    trackBookingSuccess(offer.offerId)
     this.setState(nextState)
   }
 
@@ -278,10 +283,12 @@ Booking.propTypes = {
   }).isRequired,
   offer: PropTypes.shape({
     isEvent: PropTypes.bool,
+    offerId: PropTypes.string,
   }),
   recommendation: PropTypes.shape({
     id: PropTypes.string,
   }),
+  trackBookingSuccess: PropTypes.func.isRequired,
 }
 
 export default Booking
