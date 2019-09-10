@@ -7,8 +7,10 @@ from models import Mediation, \
                    Recommendation, \
                    Stock
 from models.db import db
+from models.offer import OfferNotFoundException
 from utils.config import BLOB_SIZE
 from utils.human_ids import dehumanize
+from utils.logger import logger
 
 
 def find_unseen_tutorials_for_user(seen_recommendation_ids, user):
@@ -84,9 +86,6 @@ def keep_only_bookable_stocks():
          stock_is_still_bookable))
 
 
-
-
-
 def filter_unseen_valid_recommendations_for_user(query, user, seen_recommendation_ids):
     recommendation_is_valid = (
             (Recommendation.validUntilDate == None) | (Recommendation.validUntilDate > datetime.utcnow()))
@@ -117,3 +116,35 @@ def invalidate_recommendations(offer: Offer):
                                 & (Recommendation.validUntilDate > datetime.utcnow())) \
         .update({'validUntilDate': datetime.utcnow()})
     db.session.commit()
+
+def _no_mediation_or_mediation_does_not_match_offer(mediation, offer_id):
+    return mediation is None or (offer_id and (mediation.offerId != offer_id))
+
+def find_recommendation_already_created_on_discovery(offer_id: int, mediation_id: int, user_id: int) -> Recommendation:
+    logger.debug(lambda: 'Requested Recommendation with offer_id=%s mediation_id=%s' % (
+        offer_id, mediation_id))
+    query = Recommendation.query.filter((Recommendation.validUntilDate > datetime.utcnow())
+                                        & (Recommendation.userId == user_id)
+                                        & (Recommendation.search == None))
+    if offer_id:
+        query = query.join(Offer)
+    mediation = Mediation.query.filter_by(id=mediation_id).first()
+    offer = Offer.query.filter_by(id=offer_id).first()
+
+    if mediation_id:
+        if _no_mediation_or_mediation_does_not_match_offer(mediation, offer_id):
+            logger.debug(lambda: 'Mediation not found or found but not matching offer for offer_id=%s mediation_id=%s'
+                         % (offer_id, mediation_id))
+            raise OfferNotFoundException()
+
+        query = query.filter(Recommendation.mediationId == mediation_id)
+
+    if offer_id:
+        if offer is None:
+            logger.debug(lambda: 'Offer not found for offer_id=%s' %
+                         (offer_id,))
+            raise OfferNotFoundException()
+
+        query = query.filter(Offer.id == offer_id)
+
+    return query.first()

@@ -4,6 +4,7 @@ from models import PcObject, \
     EventType
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_event_occurrence, \
+    create_mediation, \
     create_stock_from_event_occurrence, \
     create_offer_with_event_product, \
     create_offerer, \
@@ -78,6 +79,50 @@ class Get:
                 latitude="4.9780178",
                 siret="50763357600973"
             )
+
+        @clean_database
+        def when_get_recommendations_return_all_includes(self,app):
+            # given
+            user = create_user(email='test@email.com')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_offer_with_event_product(venue, event_name='Training in Modern Jazz')
+            mediation = create_mediation(offer)
+            recommendation = create_recommendation(offer, user)
+            stock = create_stock_from_offer(
+                offer, beginning_datetime=TEN_DAYS_FROM_NOW, end_datetime=TWENTY_DAYS_FROM_NOW
+            )
+            PcObject.save(stock, recommendation)
+
+            # when
+            response = TestClient(app.test_client())\
+                        .with_auth(user.email)\
+                        .get(RECOMMENDATION_URL)
+
+            # then
+            assert response.status_code == 200
+            recommendations = response.json
+            recommendation = recommendations[0]
+            assert 'productOrTutoIdentifier' in recommendation
+            assert 'mediation' in recommendation
+            assert 'thumbUrl' in recommendation['mediation']
+            assert 'offer' in recommendation
+            assert 'dateRange' in recommendation['offer']
+            assert 'isEvent' in recommendation['offer']
+            assert 'isFinished' in recommendation['offer']
+            assert 'isFullyBooked' in recommendation['offer']
+            assert 'isThing' in recommendation['offer']
+            assert 'offerType' in recommendation['offer']
+            assert 'product' in recommendation['offer']
+            assert 'thumbUrl' in recommendation['offer']['product']
+            assert 'offerType' in recommendation['offer']['product']
+            assert 'stocks' in recommendation['offer']
+            assert 'isBookable' in recommendation['offer']['stocks'][0]
+            assert 'venue' in recommendation['offer']
+            assert 'validationToken' not in recommendation['offer']['venue']
+            assert 'managingOfferer' in recommendation['offer']['venue']
+            assert 'validationToken' not in recommendation['offer']['venue']['managingOfferer']
+            assert 'thumbUrl' in recommendation
 
         @clean_database
         def when_searching_by_keywords_with_matching_case(self, app):

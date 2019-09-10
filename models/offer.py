@@ -19,6 +19,8 @@ from models.venue import Venue
 from utils.date import DateTimes
 from utils.inflect_engine import pluralize
 
+class OfferNotFoundException(Exception):
+    pass
 
 class Offer(PcObject,
             Model,

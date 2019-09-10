@@ -12,7 +12,8 @@ from recommendations_engine import get_offers_for_recommendations_discovery
 from repository import mediation_queries
 from repository.mediation_queries import get_all_tuto_mediations
 from repository.offer_queries import get_offers_for_recommendations_search, find_searchable_offer
-from repository.recommendation_queries import count_read_recommendations_for_user
+from repository.recommendation_queries import count_read_recommendations_for_user, \
+                                              find_recommendation_already_created_on_discovery
 from utils.logger import logger
 
 
@@ -20,7 +21,7 @@ def give_requested_recommendation_to_user(user, offer_id, mediation_id):
     recommendation = None
 
     if mediation_id or offer_id:
-        recommendation = _create_or_find_recommendation_already_created_on_discovery(
+        recommendation = find_recommendation_already_created_on_discovery(
             offer_id, mediation_id, user.id)
         if recommendation is None:
             with db.session.no_autoflush:
@@ -65,7 +66,7 @@ def create_recommendations_for_discovery(limit=3, user=None):
     return recommendations
 
 
-def _create_tuto_mediation_if_non_existent_for_user(user, tuto_mediation):
+def _create_tuto_mediation_if_non_existent_for_user(user: User, tuto_mediation: Mediation):
 
     already_existing_tuto_recommendation = Recommendation.query\
         .filter_by(mediation=tuto_mediation, user=user)\
@@ -141,7 +142,7 @@ def _create_recommendation(user, offer, mediation=None):
     return recommendation
 
 
-def _get_search(kwargs):
+def _get_search(kwargs: dict) -> str:
     return '&'.join([key + '=' + str(value) for (key, value) in kwargs.items()])
 
 
