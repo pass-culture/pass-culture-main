@@ -316,11 +316,7 @@ VENUE_INCLUDES = [
     {
         "key": "managingOfferer",
         "includes": ['-validationToken']
-    },
-    {
-        "key": 'venueProviders',
-        "includes": ["provider"]
-    },
+    }
 ]
 
 VENUE_PROVIDER_INCLUDES = [
