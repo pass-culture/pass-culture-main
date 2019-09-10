@@ -233,7 +233,11 @@ def find_eligible_bookings_for_offerer(offerer_id: int) -> List[Booking]:
 
 def find_eligible_bookings_for_venue(venue_id: int) -> List[Booking]:
     query = _query_get_used_or_finished_bookings_on_non_activation_offers()
-    query = query.filter(Venue.id == venue_id)
+    query = query \
+        .filter(Venue.id == venue_id) \
+        .reset_joinpoint() \
+        .outerjoin(Payment) \
+        .order_by(Payment.id, Booking.dateCreated.asc())
     return query.all()
 
 
@@ -307,7 +311,7 @@ def _query_get_used_or_finished_bookings_on_non_activation_offers():
         .filter(Booking.isCancelled == False) \
         .filter(Booking.isUsed == True) \
         .filter(Offer.type != str(ThingType.ACTIVATION)) \
-        .filter(Offer.type != str(EventType.ACTIVATION))
+        .filter(Offer.type != str(EventType.ACTIVATION)) \
 
 
 def find_all_not_used_and_not_cancelled():

@@ -437,7 +437,7 @@ class FindFinalOffererBookingsTest:
 
 class FindFinalVenueBookingsTest:
     @clean_database
-    def test_returns_bookings_for_given_venue(self, app):
+    def test_returns_bookings_for_given_venue_ordered_by_date_created(self, app):
         # Given
         user = create_user()
         deposit = create_deposit(user, amount=500)
@@ -446,8 +446,8 @@ class FindFinalVenueBookingsTest:
         venue1 = create_venue(offerer1, siret=offerer1.siren + '12345')
         offer = create_offer_with_thing_product(venue1)
         stock = create_stock_with_thing_offer(offerer1, venue1, offer)
-        booking1 = create_booking(user, stock=stock, venue=venue1, is_used=True)
-        booking2 = create_booking(user, stock=stock, venue=venue1, is_used=True)
+        booking1 = create_booking(user, stock=stock, venue=venue1, is_used=True, date_created=datetime(2019, 1, 1))
+        booking2 = create_booking(user, stock=stock, venue=venue1, is_used=True, date_created=datetime(2019, 1, 2))
 
         offerer2 = create_offerer(siren='987654321')
         venue2 = create_venue(offerer2, siret=offerer2.siren + '12345')
@@ -462,9 +462,11 @@ class FindFinalVenueBookingsTest:
 
         # Then
         assert len(bookings) == 2
-        assert booking1 in bookings
-        assert booking2 in bookings
+        assert bookings[0] == booking1
+        assert bookings[1] == booking2
         assert booking3 not in bookings
+
+
 
 
 class FindDateUsedTest:
