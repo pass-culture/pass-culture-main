@@ -187,7 +187,7 @@ jobs:
       - run:
           name: Deploy API
           command: |
-            export SCALINGO_APP_NAME=$(./scripts/compute_app_name.sh ${CIRCLE_BRANCH})
+            SCALINGO_APP_NAME=$(./scripts/compute_app_name.sh ${CIRCLE_BRANCH})
             cd api
             git remote add scalingo git@scalingo.com:${SCALINGO_APP_NAME}.git
             git push -f scalingo HEAD:master
@@ -335,12 +335,21 @@ workflows:
               - staging
               - integration
               - demo
+              - datalake
       - deploy-pro:
           requires:
             - deploy-api
+          filters:
+            branches:
+              ignore:
+                - datalake
       - deploy-webapp:
           requires:
             - deploy-api
+          filters:
+            branches:
+              ignore:
+                - datalake
       - release-synthesis:
           requires:
             - deploy-pro

@@ -21,7 +21,7 @@ if [[ $push_command =~ $protected_branch ]] && [ $current_branch = $protected_br
         exit 1
     fi
 # Case: git push, on branch production
-elif [[ $push_command =~ $push_only ]] && [ $current_branch = $protected_branch ]; then
+elif [[ $push_command =~ $push_only ]] && [[ $current_branch = $protected_branch ]]; then
     echo $warning
     read -r < /dev/tty
     if [[ $REPLY = 'Y' ]]; then
