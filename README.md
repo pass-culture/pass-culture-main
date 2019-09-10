@@ -244,17 +244,18 @@ Pour déployer une nouvelle version, par exemple en staging:
 
 
 ```bash
-pc -e staging -t I.P.S deploy
+pc -e <datalake|staging|production|demo|integration> -t I.P.S deploy
 ```
 
-
-Pour déployer en production ensuite :
+Par exemple pour déployer la version 3.0.1 en demo :
 ```bash
-pc -e production -t I.P.S deploy
+pc -e demo -t 3.0.1 deploy
 
 ```
 
 A la fin de l'opération, une fenêtre de votre navigateur s'ouvrira sur le workflow en cours.
+
+Après avoir livré en production, ne pas oublier de livrer ensuite sur les environements de demo et d'integration.  
 
 #### Publier pass-culture-shared sur npm
 

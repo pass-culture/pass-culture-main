@@ -421,8 +421,9 @@ elif [[ "$CMD" == "deploy" ]]; then
   if [[ ! "$ENV" == 'production' ]] \
         && [[ ! "$ENV" == 'staging' ]] \
         && [[ ! "$ENV" == 'demo' ]] \
+        && [[ ! "$ENV" == 'datalake' ]] \
         && [[ ! "$ENV" == 'integration' ]]; then
-     echo_error "Can only deploy in staging, demo, integration and production"
+     echo_error "Can only deploy in datalake, staging, demo, integration and production"
      exit 1
   fi
 
@@ -445,6 +446,7 @@ elif [[ "$CMD" == "deploy" ]]; then
 
   commit_to_deploy=$(git log -n 1 --pretty=format:%H)
   if [[ "$ENV" == "production" ]]; then
+    confirm "Warning: code will be deployed to PRODUCTION. Are you sure ?"
     staging_commit=$(git log -n 1 --pretty=format:%H staging)
     echo "$staging_commit"
     if [[ "$staging_commit" != "$commit_to_deploy" ]]; then
@@ -641,7 +643,7 @@ elif [[ "$CMD" == "python" ]]; then
 		RUN='docker exec -it pc-flask bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python -i scripts/interact.py '"$CMD $*"'"'
 	else
 	    if [ "$FILE_TO_UPLOAD" == 'none' ]; then
-		    scalingo -a "$SCALINGO_APP" run "python -i scripts/interact.py"
+        scalingo -a "$SCALINGO_APP" run "python -i scripts/interact.py"
 		else
 		    scalingo -a "$SCALINGO_APP" run --file "$FILE_TO_UPLOAD" "python -i scripts/interact.py"
 		fi
