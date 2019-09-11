@@ -154,7 +154,7 @@ ShallowWrapper {
         <withRouter(_withQueryRouter)
           className="main-list offerers-list"
           element="ul"
-          hasMore={false}
+          hasMore={true}
           isLoading={true}
           loader={
             <Spinner
@@ -425,7 +425,7 @@ ShallowWrapper {
           ],
           "className": "main-list offerers-list",
           "element": "ul",
-          "hasMore": false,
+          "hasMore": true,
           "isLoading": true,
           "loader": <Spinner
             Tag="div"
@@ -522,7 +522,7 @@ ShallowWrapper {
           <withRouter(_withQueryRouter)
             className="main-list offerers-list"
             element="ul"
-            hasMore={false}
+            hasMore={true}
             isLoading={true}
             loader={
               <Spinner
@@ -793,7 +793,7 @@ ShallowWrapper {
             ],
             "className": "main-list offerers-list",
             "element": "ul",
-            "hasMore": false,
+            "hasMore": true,
             "isLoading": true,
             "loader": <Spinner
               Tag="div"

@@ -59,17 +59,14 @@ describe('src | components | pages | Offers | Offers', () => {
   describe('render', () => {
     describe('when arriving on index page', () => {
       it('should list all offers', () => {
-        // given
-        const expected = {
-          hasMore: false,
-          isLoading: true,
-        }
-
         // when
         const wrapper = shallow(<Offers {...props} />)
 
         // then
-        expect(wrapper.state()).toStrictEqual(expected)
+        expect(wrapper.state()).toStrictEqual({
+          hasMore: true,
+          isLoading: true,
+        })
         dispatch.mockClear()
         change.mockClear()
       })
@@ -388,13 +385,12 @@ describe('src | components | pages | Offers | Offers', () => {
 
           // when
           wrapper.instance().handleOnSubmit(event)
-          const expected = {
-            hasMore: false,
-            isLoading: true,
-          }
 
           // then
-          expect(wrapper.state()).toStrictEqual(expected)
+          expect(wrapper.state()).toStrictEqual({
+            hasMore: true,
+            isLoading: true,
+          })
         })
 
         it('should dispatch assignData with good params on form submit', () => {
@@ -550,7 +546,7 @@ describe('src | components | pages | Offers | Offers', () => {
           wrapper.instance().componentDidUpdate(prevProps)
 
           const resolve = (datum) => resolveIsNew(datum, 'dateCreated', comparedTo)
-          const expected = { hasMore: false, isLoading: true }
+          const expected = { hasMore: true, isLoading: true }
           const expectedAssignData = {
               config: {
                 apiPath: "/offers?venueId=TY",

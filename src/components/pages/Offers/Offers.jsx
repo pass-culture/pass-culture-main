@@ -31,6 +31,7 @@ class Offers extends Component {
   componentDidMount() {
     const { query } = this.props
     const queryParams = query.parse()
+
     if (queryParams.page) {
       query.change({ page: null })
     } else {
@@ -40,9 +41,14 @@ class Offers extends Component {
 
   componentDidUpdate(prevProps) {
     const { location, offers } = this.props
+    const numberOfOffersPerLoad = 10
 
     if (offers.length > prevProps.offers.length) {
       this.scrollerIsNotLoading()
+
+      if (offers.length !== prevProps.offers.length + numberOfOffersPerLoad) {
+        this.hasNoMoreDataToLoad()
+      }
     }
 
     if (location.search !== prevProps.location.search) {
@@ -52,6 +58,10 @@ class Offers extends Component {
 
   scrollerIsNotLoading = () => {
     this.setState({ isLoading: false })
+  }
+
+  hasNoMoreDataToLoad = () => {
+    this.setState({ hasMore: false })
   }
 
   onHandleRequestData = () => {
@@ -64,7 +74,7 @@ class Offers extends Component {
     const apiParamsString = stringify(apiParams)
     const apiPath = `/offers?${apiParamsString}`
 
-    this.setState({ isLoading: true }, () => {
+    this.setState({ isLoading: true, hasMore: true }, () => {
       dispatch(
         requestData({
           apiPath,
@@ -74,14 +84,7 @@ class Offers extends Component {
               isLoading: false,
             })
           },
-          handleSuccess: (state, action) => {
-            const {
-              payload: { data },
-            } = action
-            this.setState({
-              hasMore: !(data.length < 10),
-            })
-          },
+          handleSuccess: () => {},
           normalizer: offerNormalizer,
           resolve: datum => resolveIsNew(datum, 'dateCreated', comparedTo),
         })
@@ -179,7 +182,6 @@ class Offers extends Component {
     const [orderName, orderDirection] = (orderBy || '').split('+')
     return (
       <Main
-        handleRequestData={this.onHandleRequestData}
         id="offers"
         name="offers"
       >
