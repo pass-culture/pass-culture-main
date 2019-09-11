@@ -126,8 +126,6 @@ class Patch:
             product = create_product_with_thing_type(thing_name='Old Name', owning_offerer=None)
             offer = create_offer_with_thing_product(venue, product)
             PcObject.save(offer, user_offerer)
-            offer_id = offer.id
-            product_id = product.id
 
             json = {
                 'name': 'New Name'
@@ -140,8 +138,8 @@ class Patch:
 
             # Then
             assert response.status_code == 200
-            assert Offer.query.get(offer_id).name == 'New Name'
-            assert Product.query.get(product_id).name == 'Old Name'
+            assert Offer.query.one().name == 'New Name'
+            assert Product.query.one().name == 'Old Name'
 
         @clean_database
         def when_deactivate_offer_from_provider(self, app):
