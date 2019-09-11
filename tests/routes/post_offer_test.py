@@ -165,7 +165,8 @@ class Post:
                 'onlineOnly': False,
                 'sublabel': 'Applaudir',
                 'type': 'Event',
-                'value': 'EventType.SPECTACLE_VIVANT'
+                'value': 'EventType.SPECTACLE_VIVANT',
+                'isActive': True
             }
             assert response.json['isEvent'] is True
             assert response.json['isThing'] is False
@@ -248,7 +249,8 @@ class Post:
                 'onlineOnly': True,
                 'sublabel': 'Jouer',
                 'type': 'Thing',
-                'value': 'ThingType.JEUX_VIDEO'
+                'value': 'ThingType.JEUX_VIDEO',
+                'isActive': True
             }
             offer_id = dehumanize(response.json['id'])
             offer = Offer.query.filter_by(id=offer_id).first()
