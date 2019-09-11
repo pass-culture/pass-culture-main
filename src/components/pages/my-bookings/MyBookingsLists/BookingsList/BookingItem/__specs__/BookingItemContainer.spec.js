@@ -1,4 +1,9 @@
-import { mapStateToProps, ribbonLabelAndType } from '../BookingItemContainer'
+import {
+  mapStateToProps,
+  mapDispatchToProps,
+  mergeProps,
+  ribbonLabelAndType,
+} from '../BookingItemContainer'
 
 describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList | BookingItem | BookingItemContainer', () => {
   describe('mapStateToProps()', () => {
@@ -181,6 +186,64 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
         // then
         expect(ribbon).toBeNull()
       })
+    })
+  })
+
+  describe('mapDescribeToProps', () => {
+    describe('when mapping trackConsultOffer', () => {
+      it('should dispatch a track Matomo Event with correct arguments', () => {
+        // given
+        const ownProps = {
+          tracking: {
+            trackEvent: jest.fn(),
+          },
+        }
+        // when
+        mapDispatchToProps(undefined, ownProps).trackConsultOffer('B4')
+
+        // then
+        expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
+          action: 'consultOffer',
+          name: 'B4',
+        })
+      })
+    })
+  })
+
+  describe('mergeProps', () => {
+    it('should spread all stateProps and dispatch props into mergedProps', () => {
+      // given
+      const stateProps = {
+        offer: { id: 'B4' },
+      }
+      const dispatchProps = {
+        trackConsultOffer: () => {},
+      }
+
+      // when
+      const mergedProps = mergeProps(stateProps, dispatchProps)
+
+      // then
+      expect(mergedProps).toStrictEqual({
+        offer: { id: 'B4' },
+        trackConsultOffer: expect.any(Function),
+      })
+    })
+
+    it('should wrap trackConsultOffer with offerId from stateProps', () => {
+      // given
+      const stateProps = {
+        offer: { id: 'B4' },
+      }
+      const dispatchProps = {
+        trackConsultOffer: jest.fn(),
+      }
+
+      // when
+      mergeProps(stateProps, dispatchProps).trackConsultOffer()
+
+      // then
+      expect(dispatchProps.trackConsultOffer).toHaveBeenCalledWith('B4')
     })
   })
 })

@@ -1,9 +1,11 @@
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
+import track from 'react-tracking'
 
 import BookingItem from './BookingItem'
 import getIsFinished from '../../../../../../helpers/getIsFinished'
+import { trackMatomoEventWrapper } from '../../../../../../helpers/matomoHelper'
 import selectMediationById from '../../../../../../selectors/selectMediationById'
 import selectStockById from '../../../../../../selectors/selectStockById'
 import selectOfferById from '../../../../../../selectors/selectOfferById'
@@ -69,7 +71,30 @@ export const mapStateToProps = (state, ownProps) => {
   }
 }
 
+export const mapDispatchToProps = (undefined, ownProps) => ({
+  trackConsultOffer: offerId => {
+    ownProps.tracking.trackEvent({ action: 'consultOffer', name: offerId })
+  },
+})
+
+export const mergeProps = (stateProps, dispatchProps, ownProps) => {
+  const { trackConsultOffer } = dispatchProps
+  const { offer: { id } = {} } = stateProps
+
+  return {
+    ...stateProps,
+    ...dispatchProps,
+    ...ownProps,
+    trackConsultOffer: () => trackConsultOffer(id),
+  }
+}
+
 export default compose(
   withRouter,
-  connect(mapStateToProps)
+  track({ page: 'Offer' }, { dispatch: trackMatomoEventWrapper }),
+  connect(
+    mapStateToProps,
+    mapDispatchToProps,
+    mergeProps
+  )
 )(BookingItem)

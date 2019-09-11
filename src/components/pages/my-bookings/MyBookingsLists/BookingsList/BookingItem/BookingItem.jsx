@@ -24,7 +24,7 @@ const getDetailsUrl = (bookingId, location) => {
   return `/reservations/details/${bookingId}${search}`
 }
 
-const BookingItem = ({ booking, location, offer, ribbon, stock }) => {
+const BookingItem = ({ booking, location, offer, ribbon, stock, trackConsultOffer }) => {
   const { id: bookingId, token, thumbUrl } = booking
   const { beginningDatetime } = stock
   const { label, type } = ribbon || {}
@@ -41,6 +41,7 @@ const BookingItem = ({ booking, location, offer, ribbon, stock }) => {
     >
       <Link
         className="teaser-link"
+        onClick={trackConsultOffer}
         to={detailsUrl}
       >
         <div className="teaser-thumb">
@@ -100,6 +101,7 @@ BookingItem.propTypes = {
   stock: PropTypes.shape({
     beginningDatetime: PropTypes.string,
   }).isRequired,
+  trackConsultOffer: PropTypes.func.isRequired,
 }
 
 export default BookingItem
