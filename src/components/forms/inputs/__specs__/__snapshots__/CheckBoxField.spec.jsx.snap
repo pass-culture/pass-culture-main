@@ -4,9 +4,9 @@ exports[`src | components | forms | inputs | CheckBoxField should match the snap
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <CheckBoxField
-    className={null}
+    className=""
     name="the-input-name"
-    required={false}
+    required={true}
   >
     <input
       type="checkbox"
@@ -31,7 +31,7 @@ ShallowWrapper {
       "parse": [Function],
       "render": [Function],
       "type": "checkbox",
-      "validate": undefined,
+      "validate": [Function],
     },
     "ref": null,
     "rendered": null,
@@ -48,7 +48,7 @@ ShallowWrapper {
         "parse": [Function],
         "render": [Function],
         "type": "checkbox",
-        "validate": undefined,
+        "validate": [Function],
       },
       "ref": null,
       "rendered": null,

@@ -153,16 +153,15 @@
 ------------------------------------------------ */
 
 .field-checkbox {
-  align-items: flex-start;
+  justify-content: space-between;
   display: flex;
 
   input[type="checkbox"] {
-    margin-right: 16px;
     background-image: url(/icons/checkbox.svg);
     border: none;
     background-repeat: no-repeat;
     background-size: 20px;
-    width: 20px;
+    width: 45px;
     height: 20px;
     padding: 0;
     border-radius: 0;

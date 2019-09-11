@@ -34,7 +34,6 @@ const FormFields = () => (
     <CheckBoxField
       className="field-checkbox"
       name="contact_ok"
-      required
     >
       <span className="pc-final-form-label">
         {'J’accepte d’être contacté par e-mail pour donner mon avis sur le '}

@@ -18,19 +18,17 @@ class CheckBoxField extends Component {
     return (
       <Fragment>
         <label
-          className="pc-final-form-contact"
+          className={`pc-final-form-contact ${className}`}
           htmlFor={name}
         >
-          <span className={className}>
-            <input
-              {...input}
-              className="input no-background"
-              id={name}
-              required={!!required}
-              type="checkbox"
-            />
-            {children}
-          </span>
+          <input
+            {...input}
+            className="input no-background"
+            id={name}
+            required={required}
+            type="checkbox"
+          />
+          {children}
         </label>
         <FormError meta={meta} />
       </Fragment>
@@ -56,15 +54,15 @@ class CheckBoxField extends Component {
 }
 
 CheckBoxField.defaultProps = {
-  className: null,
-  required: false,
+  className: '',
+  required: true,
 }
 
 CheckBoxField.propTypes = {
   children: PropTypes.node.isRequired,
   className: PropTypes.string,
   name: PropTypes.string.isRequired,
-  required: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
+  required: PropTypes.bool,
 }
 
 export default CheckBoxField
