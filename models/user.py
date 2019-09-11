@@ -20,6 +20,7 @@ from models.db import Model, db
 from models.needs_validation_mixin import NeedsValidationMixin
 from models.pc_object import PcObject
 from models.user_offerer import UserOfferer, RightsType
+from models.deposit import Deposit
 
 
 class User(PcObject,
@@ -164,6 +165,13 @@ class User(PcObject,
     @property
     def wallet_is_activated(self):
         return len(self.deposits) > 0
+
+    @property
+    def wallet_date_created(self):
+        result = Deposit.query.filter_by(userId=self.id).first()
+        if result is not None:
+            return result.dateCreated
+        return None
 
     @property
     def hasPhysicalVenues(self):

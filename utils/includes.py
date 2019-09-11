@@ -172,7 +172,8 @@ USER_INCLUDES = [
     'hasPhysicalVenues',
     'hasOffers',
     'wallet_balance',
-    'wallet_is_activated'
+    'wallet_is_activated',
+    'wallet_date_created'
 ]
 
 WEBAPP_GET_BOOKING_INCLUDES = [
