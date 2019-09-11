@@ -11,6 +11,7 @@ import ResultsContainer from './Results/ResultsContainer'
 import FilterControlsContainer from './FilterControls/FilterControlsContainer'
 import {
   getDescriptionFromCategory,
+  getVisibleParamsAreEmpty,
   INITIAL_FILTER_PARAMS,
   isInitialQueryWithoutFilters,
   translateBrowserUrlToApiUrl,
@@ -30,7 +31,6 @@ class Search extends PureComponent {
 
     this.state = {
       isLoading: false,
-      hasMore: false,
       isFilterVisible: false,
       keywordsKey: 0,
       keywordsValue: queryParams['mots-cles'],
@@ -49,6 +49,7 @@ class Search extends PureComponent {
       this.handleRecommendationsRequest()
     }
 
+    this.handleShouldRedirectToSearch()
     this.handleCategoryMissing()
   }
 
@@ -56,6 +57,7 @@ class Search extends PureComponent {
     const { location, typeSublabelsAndDescription } = this.props
     if (location.search !== prevProps.location.search) {
       this.handleRecommendationsRequest()
+      this.handleShouldRedirectToSearch()
     }
 
     if (typeSublabelsAndDescription !== prevProps.typeSublabelsAndDescription) {
@@ -120,14 +122,22 @@ class Search extends PureComponent {
     dispatch(
       requestData({
         apiPath,
-        handleSuccess: (state, action) => {
-          const { data } = action.payload
-          const hasMore = data.length === 10
-          this.setState({ hasMore, isLoading: false })
+        handleSuccess: () => {
+          this.setState({ isLoading: false })
         },
         normalizer: recommendationNormalizer,
       })
     )
+  }
+
+  handleShouldRedirectToSearch = () => {
+    const { history, query } = this.props
+    const queryParams = query.parse()
+    const queryParamsAreEmpty = getVisibleParamsAreEmpty(queryParams)
+    const queryParamsAndKeywordsAreEmpty = queryParamsAreEmpty && !queryParams['mots-cles']
+    if (queryParamsAndKeywordsAreEmpty) {
+      history.replace('/recherche')
+    }
   }
 
   reinitializeStates = () => {
@@ -135,7 +145,6 @@ class Search extends PureComponent {
 
     this.setState({
       isLoading: false,
-      hasMore: false,
       isFilterVisible: false,
       // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
       // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
@@ -207,7 +216,6 @@ class Search extends PureComponent {
       typeSublabelsAndDescription,
     } = this.props
     const { params } = match
-    const { hasMore } = this.state
 
     const queryParams = query.parse()
     const keywords = queryParams[`mots-cles`]
@@ -225,7 +233,6 @@ class Search extends PureComponent {
         />
         <ResultsContainer
           cameFromOfferTypesPage
-          hasMore={hasMore}
           items={recommendations}
           keywords={keywords}
           typeSublabels={typeSublabels}
@@ -236,14 +243,12 @@ class Search extends PureComponent {
 
   renderResults = () => {
     const { query, recommendations, typeSublabels } = this.props
-    const { hasMore } = this.state
     const queryParams = query.parse()
     const keywords = queryParams[`mots-cles`]
 
     return (
       <ResultsContainer
         cameFromOfferTypesPage={false}
-        hasMore={hasMore}
         items={recommendations}
         keywords={keywords}
         typeSublabels={typeSublabels}
@@ -289,7 +294,7 @@ class Search extends PureComponent {
                     defaultValue={keywordsValue}
                     id="keywords"
                     onChange={this.handleOnKeywordsChange}
-                    placeholder="Un mot-clé"
+                    placeholder="Saisir un mot-clé"
                     type="text"
                   />
 
@@ -393,6 +398,9 @@ class Search extends PureComponent {
 
 Search.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  history: PropTypes.shape({
+    replace: PropTypes.func.isRequired,
+  }).isRequired,
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired,
     search: PropTypes.string.isRequired,

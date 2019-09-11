@@ -5,7 +5,8 @@ import { Transition } from 'react-transition-group'
 import FilterByDates from './FilterByDates'
 import FilterByDistanceContainer from './FilterByDistanceContainer'
 import FilterByOfferTypesContainer from './FilterByOfferTypesContainer'
-import { getCanFilter, getVisibleParamsAreEmpty, INITIAL_FILTER_PARAMS } from '../helpers'
+import { getCanFilter } from './helpers'
+import { getVisibleParamsAreEmpty, INITIAL_FILTER_PARAMS } from '../helpers'
 
 const filtersPanelHeight = 500
 const transitionDelay = 0
@@ -42,12 +43,19 @@ class FilterControls extends Component {
   }
 
   handleReinitializeParams = () => {
-    const { query } = this.props
+    const { isVisible, onClickFilterButton, query } = this.props
+    const queryParams = query.parse()
 
     this.setState({
       shouldResetDate: true,
-      params: query.parse(),
+      params: queryParams,
     })
+
+    const shouldGetBackToSearchHomeBecauseNoMoreSearchParams =
+      isVisible && !queryParams['mots-cles']
+    if (shouldGetBackToSearchHomeBecauseNoMoreSearchParams) {
+      onClickFilterButton(isVisible)()
+    }
   }
 
   handleOnClickFilterButton = () => {
@@ -55,11 +63,10 @@ class FilterControls extends Component {
     const { params } = this.state
 
     params.page = null
-    query.change(params, { pathname: '/recherche/resultats' })
-    this.setState({
-      shouldResetDate: false,
-    })
-    onClickFilterButton(isVisible)
+    this.setState({ shouldResetDate: false }, () =>
+      query.change(params, { pathname: '/recherche/resultats' })
+    )
+    onClickFilterButton(isVisible)()
   }
 
   handleOnClickReset = () => {

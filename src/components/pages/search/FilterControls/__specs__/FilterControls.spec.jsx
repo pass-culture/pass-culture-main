@@ -21,7 +21,7 @@ describe('src | components | pages | search | FilterControls', () => {
     props = {
       isVisible: true,
       location: {},
-      onClickFilterButton: jest.fn(),
+      onClickFilterButton: jest.fn(() => () => null),
       query: {
         change: jest.fn(),
         parse: () => ({}),
@@ -55,7 +55,7 @@ describe('src | components | pages | search | FilterControls', () => {
   describe('onComponentDidUpdate', () => {
     it('should reinitialize the state if the URL has changed', () => {
       // given
-      const mockOnClickFilterButton = jest.fn()
+      const mockOnClickFilterButton = jest.fn(() => () => null)
       const store = configureStore([])(REDUX_STATE)
       const history = createBrowserHistory()
       history.push('/test?categories=Jouer')

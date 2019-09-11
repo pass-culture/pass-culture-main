@@ -87,6 +87,7 @@ describe('src | components | pages | search | selectors | selectRecommendationsB
         {
           id: 'HK',
           productOrTutoIdentifier: 'product_GZ',
+          search: null,
         },
       ]
       const state = {

@@ -80,6 +80,47 @@ ShallowWrapper {
     history={
       Object {
         "push": [MockFunction],
+        "replace": [MockFunction] {
+          "calls": Array [
+            Array [
+              "/recherche",
+            ],
+            Array [
+              "/recherche",
+            ],
+            Array [
+              "/recherche",
+            ],
+            Array [
+              "/recherche",
+            ],
+            Array [
+              "/recherche",
+            ],
+          ],
+          "results": Array [
+            Object {
+              "type": "return",
+              "value": undefined,
+            },
+            Object {
+              "type": "return",
+              "value": undefined,
+            },
+            Object {
+              "type": "return",
+              "value": undefined,
+            },
+            Object {
+              "type": "return",
+              "value": undefined,
+            },
+            Object {
+              "type": "return",
+              "value": undefined,
+            },
+          ],
+        },
       }
     }
     location={
@@ -206,7 +247,7 @@ ShallowWrapper {
                       className="input search-input"
                       id="keywords"
                       onChange={[Function]}
-                      placeholder="Un mot-clé"
+                      placeholder="Saisir un mot-clé"
                       type="text"
                     />
                   </p>
@@ -335,7 +376,7 @@ ShallowWrapper {
                         className="input search-input"
                         id="keywords"
                         onChange={[Function]}
-                        placeholder="Un mot-clé"
+                        placeholder="Saisir un mot-clé"
                         type="text"
                       />
                     </p>
@@ -441,7 +482,7 @@ ShallowWrapper {
                           className="input search-input"
                           id="keywords"
                           onChange={[Function]}
-                          placeholder="Un mot-clé"
+                          placeholder="Saisir un mot-clé"
                           type="text"
                         />
                       </p>
@@ -540,7 +581,7 @@ ShallowWrapper {
                             className="input search-input"
                             id="keywords"
                             onChange={[Function]}
-                            placeholder="Un mot-clé"
+                            placeholder="Saisir un mot-clé"
                             type="text"
                           />
                         </p>
@@ -607,7 +648,7 @@ ShallowWrapper {
                               className="input search-input"
                               id="keywords"
                               onChange={[Function]}
-                              placeholder="Un mot-clé"
+                              placeholder="Saisir un mot-clé"
                               type="text"
                             />
                           </p>
@@ -665,7 +706,7 @@ ShallowWrapper {
                                 className="input search-input"
                                 id="keywords"
                                 onChange={[Function]}
-                                placeholder="Un mot-clé"
+                                placeholder="Saisir un mot-clé"
                                 type="text"
                               />
                             </p>,
@@ -703,7 +744,7 @@ ShallowWrapper {
                                   className="input search-input"
                                   id="keywords"
                                   onChange={[Function]}
-                                  placeholder="Un mot-clé"
+                                  placeholder="Saisir un mot-clé"
                                   type="text"
                                 />,
                                 undefined,
@@ -734,7 +775,7 @@ ShallowWrapper {
                                   "defaultValue": undefined,
                                   "id": "keywords",
                                   "onChange": [Function],
-                                  "placeholder": "Un mot-clé",
+                                  "placeholder": "Saisir un mot-clé",
                                   "type": "text",
                                 },
                                 "ref": null,
@@ -1023,7 +1064,7 @@ ShallowWrapper {
                         className="input search-input"
                         id="keywords"
                         onChange={[Function]}
-                        placeholder="Un mot-clé"
+                        placeholder="Saisir un mot-clé"
                         type="text"
                       />
                     </p>
@@ -1152,7 +1193,7 @@ ShallowWrapper {
                           className="input search-input"
                           id="keywords"
                           onChange={[Function]}
-                          placeholder="Un mot-clé"
+                          placeholder="Saisir un mot-clé"
                           type="text"
                         />
                       </p>
@@ -1258,7 +1299,7 @@ ShallowWrapper {
                             className="input search-input"
                             id="keywords"
                             onChange={[Function]}
-                            placeholder="Un mot-clé"
+                            placeholder="Saisir un mot-clé"
                             type="text"
                           />
                         </p>
@@ -1357,7 +1398,7 @@ ShallowWrapper {
                               className="input search-input"
                               id="keywords"
                               onChange={[Function]}
-                              placeholder="Un mot-clé"
+                              placeholder="Saisir un mot-clé"
                               type="text"
                             />
                           </p>
@@ -1424,7 +1465,7 @@ ShallowWrapper {
                                 className="input search-input"
                                 id="keywords"
                                 onChange={[Function]}
-                                placeholder="Un mot-clé"
+                                placeholder="Saisir un mot-clé"
                                 type="text"
                               />
                             </p>
@@ -1482,7 +1523,7 @@ ShallowWrapper {
                                   className="input search-input"
                                   id="keywords"
                                   onChange={[Function]}
-                                  placeholder="Un mot-clé"
+                                  placeholder="Saisir un mot-clé"
                                   type="text"
                                 />
                               </p>,
@@ -1520,7 +1561,7 @@ ShallowWrapper {
                                     className="input search-input"
                                     id="keywords"
                                     onChange={[Function]}
-                                    placeholder="Un mot-clé"
+                                    placeholder="Saisir un mot-clé"
                                     type="text"
                                   />,
                                   undefined,
@@ -1551,7 +1592,7 @@ ShallowWrapper {
                                     "defaultValue": undefined,
                                     "id": "keywords",
                                     "onChange": [Function],
-                                    "placeholder": "Un mot-clé",
+                                    "placeholder": "Saisir un mot-clé",
                                     "type": "text",
                                   },
                                   "ref": null,

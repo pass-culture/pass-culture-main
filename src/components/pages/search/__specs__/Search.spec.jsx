@@ -62,7 +62,7 @@ describe('src | components | pages | Search', () => {
   // Initializing Mocks
   const dispatchMock = jest.fn()
   const queryChangeMock = jest.fn()
-  const historyMock = { push: jest.fn() }
+  const historyMock = { replace: jest.fn(), push: jest.fn() }
 
   describe('snapshot', () => {
     let props
@@ -357,7 +357,6 @@ describe('src | components | pages | Search', () => {
         const wrapper = shallow(<Search {...props} />)
         const expected = {
           isLoading: false,
-          hasMore: false,
           isFilterVisible: false,
           keywordsKey: 0,
           keywordsValue: 'Fake',
@@ -501,7 +500,6 @@ describe('src | components | pages | Search', () => {
             // then
             expect(wrapper.state()).toStrictEqual({
               isLoading: false,
-              hasMore: false,
               isFilterVisible: false,
               keywordsKey: 1,
               keywordsValue: '',
@@ -597,7 +595,6 @@ describe('src | components | pages | Search', () => {
 
           const expected = {
             isLoading: false,
-            hasMore: false,
             isFilterVisible: false,
             keywordsKey: 0,
             keywordsValue: undefined,
@@ -709,7 +706,6 @@ describe('src | components | pages | Search', () => {
 
         const expected = {
           isLoading: false,
-          hasMore: false,
           isFilterVisible: false,
           keywordsKey: 1,
           keywordsValue: '',
@@ -780,7 +776,6 @@ describe('src | components | pages | Search', () => {
         // then
         const expected = {
           isLoading: false,
-          hasMore: false,
           isFilterVisible: true,
           keywordsKey: 0,
           keywordsValue: 'Any',
@@ -832,7 +827,6 @@ describe('src | components | pages | Search', () => {
         it('isFilterVisible state is false', () => {
           const expected = {
             isLoading: false,
-            hasMore: false,
             isFilterVisible: false,
             keywordsKey: 0,
             keywordsValue: undefined,
@@ -880,7 +874,6 @@ describe('src | components | pages | Search', () => {
         it('should update isFilterVisible state to true', () => {
           const expected = {
             isLoading: false,
-            hasMore: false,
             isFilterVisible: true,
             keywordsKey: 0,
             keywordsValue: undefined,

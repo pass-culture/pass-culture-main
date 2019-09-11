@@ -4,25 +4,16 @@ import React, { PureComponent } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
 
 import RecommendationItemContainer from './RecommendationItem/RecommendationItemContainer'
-import { getVisibleParamsAreEmpty, searchResultsTitle } from '../helpers'
+import { searchResultsTitle } from '../helpers'
 import Spinner from '../../../layout/Spinner'
 
 class Results extends PureComponent {
   constructor() {
     super()
     this.state = {
+      hasMore: false,
       hasReceivedFirstSuccessData: false,
       isLoading: false,
-    }
-  }
-
-  componentDidMount() {
-    const { history, query } = this.props
-    const queryParams = query.parse()
-    const queryParamsAreEmpty = getVisibleParamsAreEmpty(queryParams)
-    const queryParamsAndKeywordsAreEmpty = queryParamsAreEmpty && !queryParams['mots-cles']
-    if (queryParamsAndKeywordsAreEmpty) {
-      history.replace('/recherche/resultats')
     }
   }
 
@@ -31,6 +22,8 @@ class Results extends PureComponent {
 
     const itemsHaveReceivedNextData = items.length > prevProps.items.length
     if (itemsHaveReceivedNextData) {
+      const newBatchOfItemsLength = items.length - prevProps.items.length
+      this.handleSetHasMore(newBatchOfItemsLength)
       this.handleShouldCancelLoading()
       const previousItemsWasEmpty = prevProps.items.length === 0
       if (previousItemsWasEmpty) {
@@ -42,6 +35,11 @@ class Results extends PureComponent {
     if (items !== prevProps.items) {
       this.handleSetHasReceivedFirstSuccessData()
     }
+  }
+
+  handleSetHasMore = newBatchOfItemsLength => {
+    const hasMore = newBatchOfItemsLength === 10
+    this.setState({ hasMore })
   }
 
   handleSetHasReceivedFirstSuccessData = () => {
@@ -74,8 +72,8 @@ class Results extends PureComponent {
   getScrollParent = () => document.querySelector('.page-content')
 
   render() {
-    const { cameFromOfferTypesPage, hasMore, items, keywords, query } = this.props
-    const { hasReceivedFirstSuccessData, isLoading } = this.state
+    const { cameFromOfferTypesPage, items, keywords, query } = this.props
+    const { hasMore, hasReceivedFirstSuccessData, isLoading } = this.state
     const queryParams = query.parse()
     const resultTitle = searchResultsTitle(
       keywords,
@@ -125,17 +123,12 @@ class Results extends PureComponent {
 }
 
 Results.defaultProps = {
-  hasMore: false,
   items: [],
   keywords: '',
 }
 
 Results.propTypes = {
   cameFromOfferTypesPage: PropTypes.bool.isRequired,
-  hasMore: PropTypes.bool,
-  history: PropTypes.shape({
-    replace: PropTypes.func.isRequired,
-  }).isRequired,
   items: PropTypes.arrayOf(PropTypes.shape()),
   keywords: PropTypes.string,
   query: PropTypes.shape().isRequired,

@@ -62,10 +62,14 @@ const getStringifiedDaysIntervals = (startDate, daysString) =>
     })
     .join(', ')}]`
 
-const getStringifiedRecommendationSearch = recommendationSearch =>
-  decodeURI(stringify(recommendationSearch))
+const getStringifiedRecommendationSearch = recommendationSearch => {
+  if (Object.keys(recommendationSearch).length === 0) {
+    return ''
+  }
+  return decodeURI(stringify(recommendationSearch))
     .replace(/%2C /g, ', ')
     .replace(/%3D/g, '=')
+}
 
 export const getRecommendationSearch = (search, types) => {
   const searchParams = parse(search)
@@ -106,7 +110,7 @@ const selectRecommendationsBySearchQuery = createSelector(
     const searchQuery = getRecommendationSearch(searchWithoutPage, types)
 
     let filteredRecommendations = recommendations.filter(recommendation => {
-      if (!recommendation.search) {
+      if (recommendation.search === null) {
         return false
       }
       const searchRecommendationWithoutPage = recommendation.search.replace(PAGE_REGEXP, '')

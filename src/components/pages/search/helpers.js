@@ -113,23 +113,3 @@ export const getFirstChangingKey = (previousObject, nextObject) =>
     }
     return previousObject[key] !== nextObject[key]
   })
-
-export const getCanFilter = (filterParams, queryParams) => {
-  const firstChangingKey = getFirstChangingKey(queryParams, filterParams)
-
-  const filterHasChanged = typeof firstChangingKey !== 'undefined'
-  if (!filterHasChanged) {
-    return false
-  }
-
-  if (queryParams['mots-cles']) {
-    return true
-  }
-
-  const filterParamsAreEmpty = getVisibleParamsAreEmpty(filterParams)
-  if (filterParamsAreEmpty) {
-    return false
-  }
-
-  return true
-}

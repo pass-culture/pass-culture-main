@@ -8,19 +8,7 @@ ShallowWrapper {
     hasMore={false}
     history={
       Object {
-        "replace": [MockFunction] {
-          "calls": Array [
-            Array [
-              "/recherche/resultats",
-            ],
-          ],
-          "results": Array [
-            Object {
-              "type": "return",
-              "value": undefined,
-            },
-          ],
-        },
+        "replace": [MockFunction],
       }
     }
     items={Array []}
