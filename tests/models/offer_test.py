@@ -665,7 +665,8 @@ def test_thing_offer_offerType_returns_dict_matching_ThingType_enum():
                        'Acheter une BD ou un manga ? '
                        'Ou tout simplement ce livre dont tout le monde parle ?',
         'value': 'ThingType.LIVRE_EDITION',
-        'type': 'Thing'
+        'type': 'Thing',
+        'isActive': True
     }
 
     # when
@@ -692,7 +693,8 @@ def test_event_offer_offerType_returns_dict_matching_EventType_enum():
                        " Rêver le temps d’un opéra ou d’un spectacle de danse ? "
                        "Assister à une pièce de théâtre, ou se laisser conter une histoire ?",
         'value': 'EventType.SPECTACLE_VIVANT',
-        'type': 'Event'
+        'type': 'Event',
+        'isActive': True
     }
 
     # when

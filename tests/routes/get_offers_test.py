@@ -209,7 +209,8 @@ class Get:
                 'sublabel': "Lire",
                 'description': "S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?",
                 'type': 'Thing',
-                'value': 'ThingType.LIVRE_EDITION'
+                'value': 'ThingType.LIVRE_EDITION',
+                'isActive': True
             }
             expected_event_type = {
                 'conditionalFields': ["author", "showType", "stageDirector", "performer"],
@@ -220,7 +221,8 @@ class Get:
                 'sublabel': "Applaudir",
                 'description': "Suivre un géant de 12 mètres dans la ville ? Rire aux éclats devant un stand up ? Rêver le temps d’un opéra ou d’un spectacle de danse ? Assister à une pièce de théâtre, ou se laisser conter une histoire ?",
                 'type': 'Event',
-                'value': 'EventType.SPECTACLE_VIVANT'
+                'value': 'EventType.SPECTACLE_VIVANT',
+                'isActive': True
             }
 
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)

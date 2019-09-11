@@ -58,7 +58,8 @@ def test_event_offerType_returns_dict_matching_EventType_enum():
                        " Rêver le temps d’un opéra ou d’un spectacle de danse ? "
                        "Assister à une pièce de théâtre, ou se laisser conter une histoire ?",
         'value': 'EventType.SPECTACLE_VIVANT',
-        'type': 'Event'
+        'type': 'Event',
+        'isActive': True
     }
 
     # when

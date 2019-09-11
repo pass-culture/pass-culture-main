@@ -1,10 +1,10 @@
-from domain.types import get_formatted_event_or_thing_types, get_event_or_thing_type_values_from_sublabels
+from domain.types import get_formatted_event_or_thing_active_types, get_event_or_thing_active_type_values_from_sublabels
 
 
 class GetFormattedEventOrThingTypesTest:
     def test_returns_all_types_except_activations_if_user_is_not_admin(self):
         # when
-        types = get_formatted_event_or_thing_types(with_activation_type=False)
+        types = get_formatted_event_or_thing_active_types(with_activation_type=False)
 
         # then
         assert types[0] == {
@@ -19,6 +19,7 @@ class GetFormattedEventOrThingTypesTest:
                            'c’était plutôt cette exposition qui allait faire son cinéma ?',
             'proLabel': 'Cinéma — projections, séances, évènements',
             'appLabel': 'Projections, Séances, Évènements',
+            'isActive': True
         }
         assert len(types) == 21
 
@@ -34,6 +35,7 @@ class GetFormattedEventOrThingTypesTest:
             'description': 'Activez votre pass Culture grâce à cette offre',
             'proLabel': 'Pass Culture : activation évènementielle',
             'appLabel': 'Pass Culture : activation évènementielle',
+            'isActive': True
         }
 
         activation_thing_product = {
@@ -45,11 +47,12 @@ class GetFormattedEventOrThingTypesTest:
             'offlineOnly': False,
             'onlineOnly': True,
             'sublabel': 'Activation',
-            'description': 'Activez votre pass Culture grâce à cette offre'
+            'description': 'Activez votre pass Culture grâce à cette offre',
+            'isActive': True
         }
 
         # when
-        types = get_formatted_event_or_thing_types(with_activation_type=True)
+        types = get_formatted_event_or_thing_active_types(with_activation_type=True)
 
         # then
         assert activation_event_product in types
@@ -66,20 +69,21 @@ class GetFormattedEventOrThingTypesTest:
             'offlineOnly': True,
             'onlineOnly': False,
             'sublabel': "Jouer",
-            'description': "Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?"
+            'description': "Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?",
+            'isActive': False
         }
 
         # when
-        types = get_formatted_event_or_thing_types(with_activation_type=False)
+        types = get_formatted_event_or_thing_active_types(with_activation_type=False)
 
         # then
         assert jeux not in types, 'Les offres avec le type "ThingType.JEUX" ne peuvent plus être créées pour être en ' \
                                   'phase avec les CGU'
 
 
-def test_get_event_or_thing_type_values_from_sublabels():
+def test_get_event_or_thing_active_type_values_from_sublabels():
     # given
-    type_values = get_event_or_thing_type_values_from_sublabels('Rencontrer')
+    type_values = get_event_or_thing_active_type_values_from_sublabels('Rencontrer')
 
     # then
     assert type_values[0] == 'EventType.CONFERENCE_DEBAT_DEDICACE'

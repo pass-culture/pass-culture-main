@@ -75,7 +75,8 @@ def test_thing_offerType_returns_dict_matching_ThingType_enum():
                        'Acheter une BD ou un manga ? '
                        'Ou tout simplement ce livre dont tout le monde parle ?',
         'value': 'ThingType.LIVRE_EDITION',
-        'type': 'Thing'
+        'type': 'Thing',
+        'isActive': True
     }
 
     # when

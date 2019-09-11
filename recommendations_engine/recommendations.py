@@ -4,8 +4,8 @@ import random
 import dateutil.parser
 from sqlalchemy import func
 
-from domain.types import get_event_or_thing_type_values_from_sublabels
-from models import ApiErrors, Recommendation, Offer, Mediation, PcObject
+from domain.types import get_event_or_thing_active_type_values_from_sublabels
+from models import ApiErrors, Recommendation, Offer, Mediation, PcObject, User
 from models.api_errors import ResourceNotFoundError
 from models.db import db
 from recommendations_engine import get_offers_for_recommendations_discovery
@@ -16,6 +16,7 @@ from repository.recommendation_queries import count_read_recommendations_for_use
                                               find_recommendation_already_created_on_discovery
 from utils.logger import logger
 
+MAX_OF_MAX_DISTANCE = "20000"
 
 def give_requested_recommendation_to_user(user, offer_id, mediation_id):
     recommendation = None
@@ -181,24 +182,21 @@ def get_recommendation_search_params(request_args: dict) -> dict:
     if 'keywords' in request_args and request_args['keywords']:
         search_params['keywords_string'] = request_args['keywords']
 
-    if 'latitude' in request_args and request_args['latitude']:
-        search_params['latitude'] = float(request_args['latitude'])
-
-    if 'longitude' in request_args and request_args['longitude']:
-        search_params['longitude'] = float(request_args['longitude'])
-
     if 'distance' in request_args and request_args['distance']:
         if not request_args['distance'].isdigit():
             api_errors.add_error('distance', 'cela doit etre un nombre')
             raise api_errors
-        search_params['max_distance'] = float(request_args['distance'])
+        if request_args['distance'] != MAX_OF_MAX_DISTANCE:
+            search_params['latitude'] = float(request_args['latitude'])
+            search_params['longitude'] = float(request_args['longitude'])
+            search_params['max_distance'] = float(request_args['distance'])
 
     if 'page' in request_args and request_args['page']:
         search_params['page'] = int(request_args['page'])
 
     if 'categories' in request_args and request_args['categories']:
         type_sublabels = request_args['categories']
-        search_params['type_values'] = get_event_or_thing_type_values_from_sublabels(
+        search_params['type_values'] = get_event_or_thing_active_type_values_from_sublabels(
             type_sublabels)
 
     return search_params
