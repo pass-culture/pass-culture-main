@@ -7,6 +7,8 @@ import RecommendationItemContainer from './RecommendationItem/RecommendationItem
 import { searchResultsTitle } from '../helpers'
 import Spinner from '../../../layout/Spinner'
 
+const ITEMS_PER_PAGE = 10
+
 class Results extends PureComponent {
   constructor() {
     super()
@@ -34,11 +36,18 @@ class Results extends PureComponent {
 
     if (items !== prevProps.items) {
       this.handleSetHasReceivedFirstSuccessData()
+      const newBatchOfItemsLength = items.length - prevProps.items.length
+      this.handleSetHasMore(newBatchOfItemsLength)
     }
   }
 
   handleSetHasMore = newBatchOfItemsLength => {
-    const hasMore = newBatchOfItemsLength === 10
+    // WAITING FOR A BETTER API
+    // BECAUSE PAGINATION DOES NOT SOMETIMES RETURN
+    // A BATCH OF 10 ITEMS EVEN IF
+    // THERE IS ACTUALLY MORE THAN THAT
+    // const hasMore = newBatchOfItemsLength === ITEMS_PER_PAGE
+    const hasMore = newBatchOfItemsLength > 0
     this.setState({ hasMore })
   }
 
@@ -105,7 +114,7 @@ class Results extends PureComponent {
             hasMore={hasMore}
             loadMore={this.loadMore}
             loader={<Spinner key="loader" />}
-            pageStart={parseInt(queryParams.page || 1, 10)}
+            pageStart={parseInt(queryParams.page || 1, ITEMS_PER_PAGE)}
             threshold={threshold}
             useWindow={false}
           >
