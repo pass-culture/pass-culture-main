@@ -82,7 +82,7 @@ ShallowWrapper {
           </div>
         </div>,
       ],
-      "className": "jauges padded  text-center",
+      "className": "jauges py12 text-center",
       "id": "profile-page-user-wallet",
     },
     "ref": null,
@@ -312,7 +312,7 @@ ShallowWrapper {
             </div>
           </div>,
         ],
-        "className": "jauges padded  text-center",
+        "className": "jauges py12 text-center",
         "id": "profile-page-user-wallet",
       },
       "ref": null,

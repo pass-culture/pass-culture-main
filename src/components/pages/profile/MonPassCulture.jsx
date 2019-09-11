@@ -19,7 +19,7 @@ const MonPassCulture = ({ currentUser }) => {
 
   return (
     <div
-      className="jauges padded  text-center"
+      className="jauges py12 text-center"
       id="profile-page-user-wallet"
     >
       <div className="text overall">
