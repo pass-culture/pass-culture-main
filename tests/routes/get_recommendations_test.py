@@ -34,6 +34,18 @@ class Get:
             # then
             assert response.status_code == 401
 
+        @clean_database
+        def when_searching_by_keywords_and_distance_without_latitude_or_longitude(self, app):
+            # Given
+            user = create_user(email='test@email.com')
+
+            # When
+            response = TestClient(app.test_client()).with_auth(user.email).get(
+                RECOMMENDATION_URL + '?distance=1&keywords=funky')
+
+            # Then
+            assert response.status_code == 401
+
     class Returns200:
         def setup_method(self, method):
             self.now = datetime.utcnow()
@@ -505,42 +517,6 @@ class Get:
             assert len(response.json) == 1
 
         @clean_database
-        def when_searching_by_keywords_and_distance(self, app):
-            # Given
-            user = create_user(email='test@email.com')
-
-            concert_offer13 = create_offer_with_event_product(self.venue13, event_name='Funky Concert de Gael Faye',
-                                                              event_type=EventType.MUSIQUE)
-            concert_offer75 = create_offer_with_event_product(self.venue75, event_name='Funky Concert de Gael Faye',
-                                                              event_type=EventType.MUSIQUE)
-            concert_offer973 = create_offer_with_event_product(self.venue973, event_name='Kiwi',
-                                                               event_type=EventType.MUSIQUE)
-
-            event_occurrence13 = create_event_occurrence(concert_offer13, beginning_datetime=self.in_one_hour,
-                                                         end_datetime=self.ten_days_from_now)
-            event_occurrence75 = create_event_occurrence(concert_offer75, beginning_datetime=self.in_one_hour,
-                                                         end_datetime=self.ten_days_from_now)
-            event_occurrence973 = create_event_occurrence(concert_offer973, beginning_datetime=self.in_one_hour,
-                                                          end_datetime=self.ten_days_from_now)
-
-            recommendation13 = create_recommendation(concert_offer13, user)
-            recommendation75 = create_recommendation(concert_offer75, user)
-            recommendation973 = create_recommendation(concert_offer973, user)
-
-            stock13 = create_stock_from_event_occurrence(event_occurrence13)
-            stock75 = create_stock_from_event_occurrence(event_occurrence75)
-            stock973 = create_stock_from_event_occurrence(event_occurrence973)
-
-            PcObject.save(stock13, recommendation13, stock75, recommendation75, stock973, recommendation973)
-
-            # When
-            response = TestClient(app.test_client()).with_auth(user.email).get(
-                RECOMMENDATION_URL + '?distance=1&keywords=funky')
-
-            # Then
-            assert len(response.json) == 2
-
-        @clean_database
         def when_searching_by_keywords_and_distance_and_latitude_longitude(self, app):
             # Given
             user = create_user(email='test@email.com')
@@ -571,7 +547,7 @@ class Get:
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).get(
-                RECOMMENDATION_URL + '?distance=20000&latitude=48.8363788&longitude=2.4002701&keywords=Macouria')
+                RECOMMENDATION_URL + '?distance=20000&keywords=Macouria&latitude=48.8363788&longitude=2.4002701')
 
             # Then
             assert response.status_code == 200

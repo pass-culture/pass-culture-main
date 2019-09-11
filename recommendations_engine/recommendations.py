@@ -187,7 +187,11 @@ def get_recommendation_search_params(request_args: dict) -> dict:
             api_errors.add_error('distance', 'cela doit etre un nombre')
             raise api_errors
         if request_args['distance'] != MAX_OF_MAX_DISTANCE:
+            if 'latitude' not in request_args:
+                api_errors.add_error('latitude', 'la latitude doit être précisée')
             search_params['latitude'] = float(request_args['latitude'])
+            if 'longitude' not in request_args:
+                api_errors.add_error('longitude', 'la longitude doit être précisée')
             search_params['longitude'] = float(request_args['longitude'])
             search_params['max_distance'] = float(request_args['distance'])
 
