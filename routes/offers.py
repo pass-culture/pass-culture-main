@@ -95,14 +95,15 @@ def patch_offer(id: int):
         raise ResourceNotFoundError
     ensure_current_user_has_rights(RightsType.editor, offer.venue.managingOffererId)
 
-    request_data_contains_deactivation = 'isActive' in request_data and not request_data['isActive']
-    request_is_only_deactivation = len(request_data) == 1 and request_data_contains_deactivation
+    request_only_contains_is_active = 'isActive' in request_data and len(request_data) == 1
 
-    if not request_is_only_deactivation:
+    if not request_only_contains_is_active:
         check_offer_is_editable(offer)
     offer.populate_from_dict(request_data)
     offer.update_with_product_data(request_data)
     PcObject.save(offer)
+
+    request_data_contains_deactivation = 'isActive' in request_data and not request_data['isActive']
 
     if request_data_contains_deactivation:
         invalidate_recommendations(offer)

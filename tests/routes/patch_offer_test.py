@@ -166,6 +166,34 @@ class Patch:
             assert response.status_code == 200
             assert not Offer.query.get(offer_id).isActive
 
+        @clean_database
+        def when_activate_offer_from_provider(self, app):
+            # Given
+            user = create_user()
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            provider = activate_provider('TiteLiveStocks')
+            offer = create_offer_with_thing_product(venue,
+                                                    is_active=False,
+                                                    id_at_providers='id_provider',
+                                                    last_provider_id=provider.id)
+            PcObject.save(offer, user_offerer)
+            offer_id = offer.id
+
+            json = {
+                'isActive': True
+            }
+
+            # When
+            response = TestClient(app.test_client()).with_auth(user.email).patch(
+                f'{API_URL}/offers/{humanize(offer.id)}',
+                json=json)
+
+            # Then
+            assert response.status_code == 200
+            assert Offer.query.get(offer_id).isActive
+
     class Returns400:
         @clean_database
         def when_trying_to_patch_forbidden_attributes(self, app):
