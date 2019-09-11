@@ -75,7 +75,7 @@ class IdentifierFields extends Component {
         <h2 className="main-list-title is-relative">
           {'INFORMATIONS DU LIEU'}
           {!readOnly && (
-            <span className="is-pulled-right is-size-7 has-text-grey">
+            <span className="is-pulled-right fs13 has-text-grey">
               {'Les champs marqués d’un'}
               <span className="required-legend">
                 {' * '}

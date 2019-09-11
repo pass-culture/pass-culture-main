@@ -10,14 +10,16 @@ const BankFields = ({ adminUserOfferer, areBankInformationProvided, readOnly }) 
     <div className="section">
       <h2 className="main-list-title">
         {'INFORMATIONS BANCAIRES'}
-        <span className="is-pulled-right is-size-7 has-text-grey">
+        <span className="is-pulled-right fs13 has-text-grey">
           {!adminUserOfferer &&
             "Vous avez besoin d'être administrateur de la structure pour éditer ces informations."}
         </span>
       </h2>
       {!areBankInformationProvided && (
-        <p className='bank-instructions-label'>
-          {'Le pass Culture vous contactera prochainement afin d’enregistrer vos coordonnées bancaires. Une fois votre BIC / IBAN renseigné, ces informations apparaitront ci-dessous.'}
+        <p className="bank-instructions-label fs13">
+          {
+            'Le pass Culture vous contactera prochainement afin d’enregistrer vos coordonnées bancaires. Une fois votre BIC / IBAN renseigné, ces informations apparaitront ci-dessous.'
+          }
         </p>
       )}
       <div className="field-group">

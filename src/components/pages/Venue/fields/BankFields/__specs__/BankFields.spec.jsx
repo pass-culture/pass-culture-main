@@ -74,8 +74,10 @@ describe('src | components | pages | Venue | fields | BankFields', () => {
 
       // then
       const labelElement = wrapper.find('p')
-      expect(labelElement.prop('className')).toBe('bank-instructions-label')
-      expect(labelElement.text()).toBe('Le pass Culture vous contactera prochainement afin d’enregistrer vos coordonnées bancaires. Une fois votre BIC / IBAN renseigné, ces informations apparaitront ci-dessous.')
+      expect(labelElement.prop('className')).toBe('bank-instructions-label fs13')
+      expect(labelElement.text()).toBe(
+        'Le pass Culture vous contactera prochainement afin d’enregistrer vos coordonnées bancaires. Une fois votre BIC / IBAN renseigné, ces informations apparaitront ci-dessous.'
+      )
     })
 
     it('should not render a label element with text containing instructions for offerer when bic/iban are provided', () => {
