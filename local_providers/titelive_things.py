@@ -225,6 +225,7 @@ def get_infos_from_data_line(elts: []):
 def get_extra_data_from_infos(infos: Dict) -> Dict:
     extra_data = dict()
     extra_data['author'] = infos['auteurs']
+    extra_data['isbn'] = infos['ean13']
     if infos['indice_dewey'] != '':
         extra_data['dewey'] = infos['indice_dewey']
     extra_data['titelive_regroup'] = infos['code_regroupement']
@@ -242,5 +243,4 @@ def get_extra_data_from_infos(infos: Dict) -> Dict:
         extra_data['comic_series'] = infos['libelle_serie_bd']
     if infos['commentaire'] != '':
         extra_data['comment'] = trim_with_elipsis(infos['commentaire'], 92)
-
     return extra_data

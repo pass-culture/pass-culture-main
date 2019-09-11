@@ -26,7 +26,7 @@ def check_titelive_epagine_is_down():
 
 @clean_database
 @patch('local_providers.titelive_stocks.get_data')
-def test_titelive_stock_provider_create_1_stock_and_1_offer(get_data, app):
+def test_titelive_stock_provider_create_1_stock_and_1_offer_with_wanted_attributes(get_data, app):
     # given
     get_data.return_value = {
         'total': 'null',
@@ -77,7 +77,7 @@ def test_titelive_stock_provider_create_1_stock_and_1_offer(get_data, app):
     assert offer.name == product.name
     assert offer.description == product.description
     assert offer.venue is not None
-    assert offer.bookingEmail is None
+    assert offer.bookingEmail == venue.bookingEmail
     assert offer.extraData == product.extraData
     stock = Stock.query.one()
     assert stock.bookingLimitDatetime is None

@@ -44,6 +44,7 @@ class TiteLiveStocks(LocalProvider):
         existing_venue = venue_queries.find_by_id(self.venueId)
         assert existing_venue is not None
         self.venue_siret = existing_venue.siret
+        self.venue_booking_email = existing_venue.bookingEmail
 
         latest_local_provider_event = local_provider_event_queries.find_latest_sync_start_event(self.dbObject)
         if latest_local_provider_event is None:
@@ -113,6 +114,7 @@ class TiteLiveStocks(LocalProvider):
         obj.description = self.product.description
         obj.type = self.product.type
         obj.extraData = self.product.extraData
+        obj.bookingEmail = self.venue_booking_email
         obj.venueId = self.venueId
         obj.productId = self.product.id
         if obj.id is None:
