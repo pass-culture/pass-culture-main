@@ -78,4 +78,3 @@ class Get:
 
             # Then
             assert response.status_code == 404
-            assert response.json['global'] == ["Offre ou médiation introuvable"]

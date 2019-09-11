@@ -1,7 +1,7 @@
 from flask import Request
 
 from models import RightsType, Offer
-from models.api_errors import ResourceNotFound, ApiErrors
+from models.api_errors import ResourceNotFoundError, ApiErrors
 from models.offer_type import ProductType
 from utils.rest import ensure_current_user_has_rights
 
@@ -24,7 +24,7 @@ def check_has_venue_id(venue_id):
 
 def check_venue_exists_when_requested(venue, venue_id):
     if venue_id and venue is None:
-        errors = ResourceNotFound()
+        errors = ResourceNotFoundError()
         errors.add_error(
             'global',
             "Ce lieu n'a pas été trouvé"

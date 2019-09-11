@@ -354,14 +354,8 @@ def find_offer_for_venue_id_and_specific_thing(venue_id, thing):
     return offer
 
 
-def find_offer_by_id(offer_id):
+def get_offer_by_id(offer_id):
     return Offer.query.get(offer_id)
-
-
-def find_offer_by_id_at_providers(id_at_providers):
-    return Offer.query \
-        .filter(Offer.idAtProviders == id_at_providers) \
-        .first()
 
 
 def find_offers_by_venue_id(venue_id: int) -> List[Offer]:

@@ -82,6 +82,21 @@ class Put:
             assert response.status_code == 404
 
         @clean_database
+        def when_mediation_is_unknown(self, app):
+            # given
+            user = create_user(email='user1@user.fr')
+            PcObject.save(user)
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
+
+            # when
+            response = auth_request.put(RECOMMENDATION_URL +
+                                        "?mediationId=ABCDE",
+                                        json={'seenRecommendationIds': []})
+
+            # then
+            assert response.status_code == 404
+
+        @clean_database
         def when_offer_is_known_and_mediation_is_unknown(self, app):
             # given
             user = create_user(email='user1@user.fr')

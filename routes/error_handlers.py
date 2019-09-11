@@ -7,7 +7,7 @@ from flask import current_app as app, jsonify, request
 
 from domain.stocks import TooLateToDeleteError
 from domain.user_activation import AlreadyActivatedException
-from models.api_errors import ApiErrors, ResourceGoneError, ResourceNotFound, ForbiddenError, DecimalCastError, \
+from models.api_errors import ApiErrors, ResourceGoneError, ResourceNotFoundError, ForbiddenError, DecimalCastError, \
     DateTimeCastError
 from routes.before_request import InvalidOriginHeader
 from utils.human_ids import NonDehumanizableId
@@ -36,7 +36,7 @@ def restize_resource_gone_error(e):
     return jsonify(e.errors), e.status_code or 410
 
 
-@app.errorhandler(ResourceNotFound)
+@app.errorhandler(ResourceNotFoundError)
 def restize_booking_not_found_error(e):
     app.logger.error(json.dumps(e.errors))
     return jsonify(e.errors), e.status_code or 404

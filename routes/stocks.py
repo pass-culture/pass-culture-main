@@ -11,7 +11,7 @@ from models.stock import Stock
 from models.user_offerer import RightsType
 from models.venue import Venue
 from repository import offerer_queries
-from repository.offer_queries import find_offer_by_id
+from repository.offer_queries import get_offer_by_id
 from repository.stock_queries import find_stocks_with_possible_filters
 from routes.serialization import as_dict
 from utils.human_ids import dehumanize
@@ -68,7 +68,7 @@ def create_stock():
     request_data = request.json
     check_request_has_offer_id(request_data)
     offer_id = dehumanize(request_data.get('offerId', None))
-    offer = find_offer_by_id(offer_id)
+    offer = get_offer_by_id(offer_id)
     check_offer_is_editable(offer)
     check_dates_are_allowed_on_new_stock(request_data, offer)
     offerer = offerer_queries.get_by_offer_id(offer_id)

@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import pytest
 
 from models import PcObject, ThingType, Booking, EventType
-from models.api_errors import ResourceNotFound, ApiErrors
+from models.api_errors import ResourceNotFoundError, ApiErrors
 from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     find_offerer_bookings_paginated, \
     find_eligible_bookings_for_offerer, \
@@ -642,7 +642,7 @@ class FindByTest:
             PcObject.save(booking)
 
             # when
-            with pytest.raises(ResourceNotFound) as e:
+            with pytest.raises(ResourceNotFoundError) as e:
                 find_by('UNKNOWN')
 
             # then
@@ -708,7 +708,7 @@ class FindByTest:
             PcObject.save(booking)
 
             # when
-            with pytest.raises(ResourceNotFound) as e:
+            with pytest.raises(ResourceNotFoundError) as e:
                 find_by(booking.token, email='other.user@example.com')
 
             # then
@@ -758,7 +758,7 @@ class FindByTest:
             PcObject.save(booking)
 
             # when
-            with pytest.raises(ResourceNotFound) as e:
+            with pytest.raises(ResourceNotFoundError) as e:
                 result = find_by(booking.token, email='user@example.com', offer_id=1234)
 
             # then

@@ -36,7 +36,7 @@ class ResourceGoneError(ApiErrors):
     pass
 
 
-class ResourceNotFound(ApiErrors):
+class ResourceNotFoundError(ApiErrors):
     pass
 
 

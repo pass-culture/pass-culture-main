@@ -1,7 +1,7 @@
 import pytest
 
 from models import PcObject
-from models.api_errors import ResourceNotFound
+from models.api_errors import ResourceNotFoundError
 from models.feature import FeatureToggle, Feature
 from repository.feature_queries import is_active
 from tests.conftest import clean_database
@@ -30,5 +30,5 @@ class FeatureToggleTest:
     @clean_database
     def test_is_active_returns_false_when_feature_unknown(self, app):
         # When / Then
-        with pytest.raises(ResourceNotFound):
+        with pytest.raises(ResourceNotFoundError):
             is_active('some_random_value')

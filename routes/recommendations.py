@@ -4,12 +4,11 @@ from flask_login import current_user, login_required
 from domain.build_recommendations import move_requested_recommendation_first, \
     move_tutorial_recommendations_first
 from models import PcObject, Recommendation
-from models.api_errors import ResourceNotFound
+from models.api_errors import ResourceNotFoundError
 from recommendations_engine import create_recommendations_for_discovery, \
     create_recommendations_for_search, \
     get_recommendation_search_params, \
-    give_requested_recommendation_to_user, \
-    OfferNotFoundException
+    give_requested_recommendation_to_user
 from repository.booking_queries import find_bookings_from_recommendation
 from repository.recommendation_queries import update_read_recommendations
 from routes.serialization import as_dict
@@ -35,16 +34,11 @@ def list_recommendations():
 @app.route('/recommendations/offers/<offer_id>', methods=['GET'])
 @login_required
 def get_recommendation(offer_id):
-    try:
-        recommendation = give_requested_recommendation_to_user(
-            current_user,
-            dehumanize(offer_id),
-            dehumanize(request.args.get('mediationId'))
-        )
-    except OfferNotFoundException:
-        errors = ResourceNotFound()
-        errors.add_error('global', "Offre ou médiation introuvable")
-        raise errors
+    recommendation = give_requested_recommendation_to_user(
+        current_user,
+        dehumanize(offer_id),
+        dehumanize(request.args.get('mediationId'))
+    )
 
     return jsonify(_serialize_recommendation(recommendation)), 200
 
@@ -92,14 +86,11 @@ def put_recommendations():
     offer_id = dehumanize(request.args.get('offerId'))
     mediation_id = dehumanize(request.args.get('mediationId'))
 
-    try:
-        requested_recommendation = give_requested_recommendation_to_user(
-            current_user,
-            offer_id,
-            mediation_id
-        )
-    except OfferNotFoundException:
-        return "Offer or mediation not found", 404
+    requested_recommendation = give_requested_recommendation_to_user(
+        current_user,
+        offer_id,
+        mediation_id
+    )
 
     logger.debug(lambda: '(special) requested_recommendation %s' % requested_recommendation)
 

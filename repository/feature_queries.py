@@ -1,7 +1,7 @@
 import os
 
 from models import Feature
-from models.api_errors import ResourceNotFound
+from models.api_errors import ResourceNotFoundError
 from models.feature import FeatureToggle
 from utils.config import IS_PROD, IS_INTEGRATION
 
@@ -16,7 +16,7 @@ def find_all():
 
 def is_active(feature_toggle: FeatureToggle) -> bool:
     if type(feature_toggle) != FeatureToggle:
-        raise ResourceNotFound
+        raise ResourceNotFoundError
     return Feature.query \
         .filter_by(name=feature_toggle) \
         .first() \

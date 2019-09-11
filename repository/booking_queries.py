@@ -13,7 +13,7 @@ from models import Booking, \
     User, \
     Product, \
     Venue, Offerer, ThingType, Payment, EventType
-from models.api_errors import ResourceNotFound
+from models.api_errors import ResourceNotFoundError
 from models.db import db
 from utils.rest import query_with_order_by, check_order_by
 
@@ -187,7 +187,7 @@ def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
     booking = query.first()
 
     if booking is None:
-        errors = ResourceNotFound()
+        errors = ResourceNotFoundError()
         errors.add_error(
             'global',
             "Cette contremarque n'a pas été trouvée"

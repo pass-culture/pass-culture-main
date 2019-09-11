@@ -11,7 +11,7 @@ from domain.payments import read_message_name_in_message_file, \
 from domain.user_emails import send_validation_confirmation_email, send_venue_validation_confirmation_email
 from models import ApiErrors, \
     PcObject, UserOfferer, Offerer, Venue
-from models.api_errors import ResourceNotFound, ForbiddenError
+from models.api_errors import ResourceNotFoundError, ForbiddenError
 from repository import user_offerer_queries, offerer_queries, user_queries
 from repository.payment_queries import find_message_checksum
 from utils.config import IS_INTEGRATION
@@ -114,7 +114,7 @@ def certify_message_file_authenticity():
     found_checksum = find_message_checksum(message_id)
 
     if not found_checksum:
-        raise ResourceNotFound({'xml': ["L'identifiant du document XML 'MsgId' est inconnu"]})
+        raise ResourceNotFoundError({'xml': ["L'identifiant du document XML 'MsgId' est inconnu"]})
 
     given_checksum = generate_file_checksum(xml_content)
 
