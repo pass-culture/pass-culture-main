@@ -9,16 +9,16 @@ class Get:
     class Returns200:
         @clean_database
         def when_user_is_logged_in_and_has_no_deposit(self, app):
-            # given
+            # Given
             user = create_user(public_name='Toto', departement_code='93', email='toto@btmx.fr')
             PcObject.save(user)
 
-            # when
+            # When
             response = TestClient(app.test_client()) \
                 .with_auth(email='toto@btmx.fr') \
                 .get('/users/current')
 
-            # then
+            # Then
             assert response.status_code == 200
             json = response.json
             assert json['email'] == 'toto@btmx.fr'
@@ -38,7 +38,7 @@ class Get:
             deposit.dateCreated = datetime(2000,1,1,2,2)
             PcObject.save(deposit)
 
-            # when
+            # When
             response = TestClient(app.test_client()).with_auth('wallet_test@email.com').get('/users/current')
 
             # Then
@@ -60,7 +60,7 @@ class Get:
 
             PcObject.save(user, venue, deposit_1, deposit_2, booking)
 
-            # when
+            # When
             response = TestClient(app.test_client()).with_auth('wallet_test@email.com').get('/users/current')
 
             # Then
@@ -73,7 +73,7 @@ class Get:
 
         @clean_database
         def test_returns_has_physical_venues_and_has_offers(self, app):
-            # given
+            # Given
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             offerer2 = create_offerer(siren='123456788')
@@ -87,7 +87,7 @@ class Get:
 
             PcObject.save(offer, offer2, offerer2_virtual_venue, user_offerer, user_offerer2)
 
-            # when
+            # When
             response = TestClient(app.test_client()).with_auth('test@email.com').get('/users/current')
 
             # Then
@@ -97,24 +97,24 @@ class Get:
     class Returns400:
         @clean_database
         def when_header_not_in_whitelist(self, app):
-            # given
+            # Given
             user = create_user(email='e@mail.com', can_book_free_offers=True, is_admin=False)
             PcObject.save(user)
 
-            # when
+            # When
             response = TestClient(app.test_client()) \
                 .with_auth(email='e@mail.com') \
                 .get('/users/current', headers={'origin': 'random.header.fr'})
 
-            # then
+            # Then
             assert response.status_code == 400
             assert response.json['global'] == ['Header non autorisé']
 
     class Returns401:
         @clean_database
         def when_user_is_not_logged_in(self, app):
-            # when
+            # When
             response = TestClient(app.test_client()).get('/users/current')
 
-            # then
+            # Then
             assert response.status_code == 401
