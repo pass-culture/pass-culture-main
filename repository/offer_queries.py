@@ -239,16 +239,14 @@ def get_offers_for_recommendations_search(
     if type_values is not None:
         query = query.filter(Offer.type.in_(type_values))
 
-    print("COUNT", query.count())
-
     if page is not None:
         query = query \
             .offset((page - 1) * page_size) \
             .limit(page_size)
 
-    print("COUNT APRES", query.count())    
+    offers = query.all()
 
-    return query.all()
+    return offers
 
 
 def find_offers_with_filter_parameters(

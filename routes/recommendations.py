@@ -22,15 +22,11 @@ from utils.rest import expect_json_data
 @app.route('/recommendations', methods=['GET'])
 @login_required
 def list_recommendations():
-    print("BONJOUR")
     search_params = get_recommendation_search_params(request.args)
-    print('search_params')
     recommendations = create_recommendations_for_search(
         current_user,
         **search_params
     )
-
-
     return jsonify(_serialize_recommendations(recommendations)), 200
 
 
@@ -122,7 +118,6 @@ def put_recommendations():
 
 
 def _serialize_recommendations(recos):
-    print("RECOS", recos)
     return list(map(_serialize_recommendation, recos))
 
 
