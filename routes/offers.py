@@ -84,7 +84,7 @@ def post_offer():
     return jsonify(as_dict(offer, includes=OFFER_INCLUDES)), 201
 
 
-@app.route('/offers/<offer_id>', methods=['PATCH'])
+@app.route('/offers/<id>', methods=['PATCH'])
 @login_or_api_key_required
 @expect_json_data
 def patch_offer(id):
