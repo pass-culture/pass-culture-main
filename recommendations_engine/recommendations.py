@@ -119,16 +119,7 @@ def _create_recommendation_from_ids(user, offer_id, mediation_id=None):
     if mediation_id:
         mediation = mediation_queries.find_by_id(mediation_id)
 
-    if mediation:
-        offer = mediation.offer
-    else:
-        offer = find_searchable_offer(offer_id)
-
-#    offer_not_found = offer_id and not offer
-#    offer_id_does_not_match_mediation_offer = offer_id and mediation and mediation.offerId != offer_id
-#
-#    if offer_not_found or offer_id_does_not_match_mediation_offer:
-#        raise ResourceNotFoundError()
+    offer = mediation.offer if mediation else find_searchable_offer(offer_id)
 
     return _create_recommendation(user, offer, mediation=mediation)
 

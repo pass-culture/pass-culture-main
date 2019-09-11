@@ -41,7 +41,7 @@ def department_or_national_offers(query, departement_codes):
     return query
 
 
-def _bookable_offers(offers_query):
+def _bookable_offers(offers_query: Query) -> Query:
     stocks_query = Stock.query.filter(Stock.offerId == Offer.id)
     stocks_query = _filter_bookable_stocks_for_discovery(stocks_query)
     offers_query = offers_query.filter(stocks_query.exists())
