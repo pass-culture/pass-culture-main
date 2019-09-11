@@ -17,6 +17,7 @@ ShallowWrapper {
           },
         },
         "wallet_balance": 500,
+        "wallet_date_created": "2019-09-10T08:05:45.778894Z",
       }
     }
   />,
@@ -36,7 +37,7 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <div
-          className="text overall flex-1"
+          className="text overall"
         >
           <b
             className="is-block"
@@ -51,10 +52,10 @@ ShallowWrapper {
           </span>
         </div>,
         <div
-          className="text-containers flex-0 mt12 py12 mr8"
+          className="text-containers mt12 py12 mr8"
         >
           <div
-            className="fs14"
+            className="fs15"
           >
             <span
               className="is-block"
@@ -62,15 +63,13 @@ ShallowWrapper {
             >
               Jusqu’à 
               <b>
-                200
-                 
-                €
+                200 €
               </b>
                pour les biens culturels
             </span>
           </div>
           <div
-            className="fs14 mt12"
+            className="fs15 mt12"
           >
             <span
               className="is-block"
@@ -78,16 +77,24 @@ ShallowWrapper {
             >
               Jusqu’à 
               <b>
-                200
-                 
-                €
+                200 €
               </b>
                pour les offres numériques
             </span>
           </div>
+          <div
+            className="fs15 mt12"
+          >
+            <span
+              className="is-block"
+              id="profile-end-validity-date"
+            >
+              Votre crédit est valable jusqu’au 2020 M09 10.
+            </span>
+          </div>
         </div>,
       ],
-      "className": "jauges padded",
+      "className": "jauges padded  text-center",
       "id": "profile-page-user-wallet",
     },
     "ref": null,
@@ -110,7 +117,7 @@ ShallowWrapper {
               sur votre pass Culture
             </span>,
           ],
-          "className": "text overall flex-1",
+          "className": "text overall",
         },
         "ref": null,
         "rendered": Array [
@@ -149,7 +156,7 @@ ShallowWrapper {
         "props": Object {
           "children": Array [
             <div
-              className="fs14"
+              className="fs15"
             >
               <span
                 className="is-block"
@@ -157,15 +164,13 @@ ShallowWrapper {
               >
                 Jusqu’à 
                 <b>
-                  200
-                   
-                  €
+                  200 €
                 </b>
                  pour les biens culturels
               </span>
             </div>,
             <div
-              className="fs14 mt12"
+              className="fs15 mt12"
             >
               <span
                 className="is-block"
@@ -173,15 +178,23 @@ ShallowWrapper {
               >
                 Jusqu’à 
                 <b>
-                  200
-                   
-                  €
+                  200 €
                 </b>
                  pour les offres numériques
               </span>
             </div>,
+            <div
+              className="fs15 mt12"
+            >
+              <span
+                className="is-block"
+                id="profile-end-validity-date"
+              >
+                Votre crédit est valable jusqu’au 2020 M09 10.
+              </span>
+            </div>,
           ],
-          "className": "text-containers flex-0 mt12 py12 mr8",
+          "className": "text-containers mt12 py12 mr8",
         },
         "ref": null,
         "rendered": Array [
@@ -196,13 +209,11 @@ ShallowWrapper {
               >
                 Jusqu’à 
                 <b>
-                  200
-                   
-                  €
+                  200 €
                 </b>
                  pour les biens culturels
               </span>,
-              "className": "fs14",
+              "className": "fs15",
             },
             "ref": null,
             "rendered": Object {
@@ -213,9 +224,7 @@ ShallowWrapper {
                 "children": Array [
                   "Jusqu’à ",
                   <b>
-                    200
-                     
-                    €
+                    200 €
                   </b>,
                   " pour les biens culturels",
                 ],
@@ -230,18 +239,10 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": Array [
-                      200,
-                      " ",
-                      "€",
-                    ],
+                    "children": "200 €",
                   },
                   "ref": null,
-                  "rendered": Array [
-                    200,
-                    " ",
-                    "€",
-                  ],
+                  "rendered": "200 €",
                   "type": "b",
                 },
                 " pour les biens culturels",
@@ -261,13 +262,11 @@ ShallowWrapper {
               >
                 Jusqu’à 
                 <b>
-                  200
-                   
-                  €
+                  200 €
                 </b>
                  pour les offres numériques
               </span>,
-              "className": "fs14 mt12",
+              "className": "fs15 mt12",
             },
             "ref": null,
             "rendered": Object {
@@ -278,9 +277,7 @@ ShallowWrapper {
                 "children": Array [
                   "Jusqu’à ",
                   <b>
-                    200
-                     
-                    €
+                    200 €
                   </b>,
                   " pour les offres numériques",
                 ],
@@ -295,22 +292,43 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": Array [
-                      200,
-                      " ",
-                      "€",
-                    ],
+                    "children": "200 €",
                   },
                   "ref": null,
-                  "rendered": Array [
-                    200,
-                    " ",
-                    "€",
-                  ],
+                  "rendered": "200 €",
                   "type": "b",
                 },
                 " pour les offres numériques",
               ],
+              "type": "span",
+            },
+            "type": "div",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <span
+                className="is-block"
+                id="profile-end-validity-date"
+              >
+                Votre crédit est valable jusqu’au 2020 M09 10.
+              </span>,
+              "className": "fs15 mt12",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Votre crédit est valable jusqu’au 2020 M09 10.",
+                "className": "is-block",
+                "id": "profile-end-validity-date",
+              },
+              "ref": null,
+              "rendered": "Votre crédit est valable jusqu’au 2020 M09 10.",
               "type": "span",
             },
             "type": "div",
@@ -329,7 +347,7 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <div
-            className="text overall flex-1"
+            className="text overall"
           >
             <b
               className="is-block"
@@ -344,10 +362,10 @@ ShallowWrapper {
             </span>
           </div>,
           <div
-            className="text-containers flex-0 mt12 py12 mr8"
+            className="text-containers mt12 py12 mr8"
           >
             <div
-              className="fs14"
+              className="fs15"
             >
               <span
                 className="is-block"
@@ -355,15 +373,13 @@ ShallowWrapper {
               >
                 Jusqu’à 
                 <b>
-                  200
-                   
-                  €
+                  200 €
                 </b>
                  pour les biens culturels
               </span>
             </div>
             <div
-              className="fs14 mt12"
+              className="fs15 mt12"
             >
               <span
                 className="is-block"
@@ -371,16 +387,24 @@ ShallowWrapper {
               >
                 Jusqu’à 
                 <b>
-                  200
-                   
-                  €
+                  200 €
                 </b>
                  pour les offres numériques
               </span>
             </div>
+            <div
+              className="fs15 mt12"
+            >
+              <span
+                className="is-block"
+                id="profile-end-validity-date"
+              >
+                Votre crédit est valable jusqu’au 2020 M09 10.
+              </span>
+            </div>
           </div>,
         ],
-        "className": "jauges padded",
+        "className": "jauges padded  text-center",
         "id": "profile-page-user-wallet",
       },
       "ref": null,
@@ -403,7 +427,7 @@ ShallowWrapper {
                 sur votre pass Culture
               </span>,
             ],
-            "className": "text overall flex-1",
+            "className": "text overall",
           },
           "ref": null,
           "rendered": Array [
@@ -442,7 +466,7 @@ ShallowWrapper {
           "props": Object {
             "children": Array [
               <div
-                className="fs14"
+                className="fs15"
               >
                 <span
                   className="is-block"
@@ -450,15 +474,13 @@ ShallowWrapper {
                 >
                   Jusqu’à 
                   <b>
-                    200
-                     
-                    €
+                    200 €
                   </b>
                    pour les biens culturels
                 </span>
               </div>,
               <div
-                className="fs14 mt12"
+                className="fs15 mt12"
               >
                 <span
                   className="is-block"
@@ -466,15 +488,23 @@ ShallowWrapper {
                 >
                   Jusqu’à 
                   <b>
-                    200
-                     
-                    €
+                    200 €
                   </b>
                    pour les offres numériques
                 </span>
               </div>,
+              <div
+                className="fs15 mt12"
+              >
+                <span
+                  className="is-block"
+                  id="profile-end-validity-date"
+                >
+                  Votre crédit est valable jusqu’au 2020 M09 10.
+                </span>
+              </div>,
             ],
-            "className": "text-containers flex-0 mt12 py12 mr8",
+            "className": "text-containers mt12 py12 mr8",
           },
           "ref": null,
           "rendered": Array [
@@ -489,13 +519,11 @@ ShallowWrapper {
                 >
                   Jusqu’à 
                   <b>
-                    200
-                     
-                    €
+                    200 €
                   </b>
                    pour les biens culturels
                 </span>,
-                "className": "fs14",
+                "className": "fs15",
               },
               "ref": null,
               "rendered": Object {
@@ -506,9 +534,7 @@ ShallowWrapper {
                   "children": Array [
                     "Jusqu’à ",
                     <b>
-                      200
-                       
-                      €
+                      200 €
                     </b>,
                     " pour les biens culturels",
                   ],
@@ -523,18 +549,10 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "host",
                     "props": Object {
-                      "children": Array [
-                        200,
-                        " ",
-                        "€",
-                      ],
+                      "children": "200 €",
                     },
                     "ref": null,
-                    "rendered": Array [
-                      200,
-                      " ",
-                      "€",
-                    ],
+                    "rendered": "200 €",
                     "type": "b",
                   },
                   " pour les biens culturels",
@@ -554,13 +572,11 @@ ShallowWrapper {
                 >
                   Jusqu’à 
                   <b>
-                    200
-                     
-                    €
+                    200 €
                   </b>
                    pour les offres numériques
                 </span>,
-                "className": "fs14 mt12",
+                "className": "fs15 mt12",
               },
               "ref": null,
               "rendered": Object {
@@ -571,9 +587,7 @@ ShallowWrapper {
                   "children": Array [
                     "Jusqu’à ",
                     <b>
-                      200
-                       
-                      €
+                      200 €
                     </b>,
                     " pour les offres numériques",
                   ],
@@ -588,22 +602,43 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "host",
                     "props": Object {
-                      "children": Array [
-                        200,
-                        " ",
-                        "€",
-                      ],
+                      "children": "200 €",
                     },
                     "ref": null,
-                    "rendered": Array [
-                      200,
-                      " ",
-                      "€",
-                    ],
+                    "rendered": "200 €",
                     "type": "b",
                   },
                   " pour les offres numériques",
                 ],
+                "type": "span",
+              },
+              "type": "div",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": <span
+                  className="is-block"
+                  id="profile-end-validity-date"
+                >
+                  Votre crédit est valable jusqu’au 2020 M09 10.
+                </span>,
+                "className": "fs15 mt12",
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Votre crédit est valable jusqu’au 2020 M09 10.",
+                  "className": "is-block",
+                  "id": "profile-end-validity-date",
+                },
+                "ref": null,
+                "rendered": "Votre crédit est valable jusqu’au 2020 M09 10.",
                 "type": "span",
               },
               "type": "div",

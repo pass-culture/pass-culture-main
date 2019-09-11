@@ -1,32 +1,5 @@
 import { getTimezone } from '../timezone'
 
-const rawDate = (date, delta = 0) => new Date(date).setDate(date.getDate() + delta)
-
-export const humanizeRelativeDate = offerDate => {
-  if (offerDate === null) return null
-
-  const todayWithoutHour = new Date().toISOString().substring(0, 10)
-  const offerDateWithoutHour = offerDate.substring(0, 10)
-  const today = new Date(todayWithoutHour)
-  const dateObject = new Date(offerDateWithoutHour)
-
-  if (!(dateObject instanceof Date && !isNaN(dateObject))) throw new Error('Date invalide')
-
-  const rawOfferDate = rawDate(dateObject)
-  const rawToday = rawDate(today)
-  const rawTomorrow = rawDate(today, 1)
-
-  if (rawOfferDate === rawToday) {
-    return 'Aujourd’hui'
-  }
-
-  if (rawOfferDate === rawTomorrow) {
-    return 'Demain'
-  }
-
-  return null
-}
-
 const formatDate = (date, timeZone) => {
   const options = {
     timeZone,
@@ -45,4 +18,15 @@ export const formatRecommendationDates = (departementCode, dateRange = []) => {
   const toFormated = formatDate(toDate, timeZone)
 
   return `du ${fromFormated} au ${toFormated}`
+}
+
+export const formatEndValidityDate = date => {
+  const options = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }
+  date.setFullYear(date.getFullYear() + 1)
+
+  return `${date.toLocaleDateString('fr-FR', options)}`
 }

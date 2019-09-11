@@ -6,6 +6,7 @@ import MonPassCulture from '../MonPassCulture'
 const walletId = '#profile-wallet-balance-value'
 const digitalId = '#profile-digital-wallet-value'
 const physicalId = '#profile-physical-wallet-value'
+const endValidityDateId = '#profile-end-validity-date'
 
 describe('src | components | MonPassCulture', () => {
   it('should match the snapshot with required props', () => {
@@ -17,6 +18,7 @@ describe('src | components | MonPassCulture', () => {
           physical: { actual: 0, max: 200 },
         },
         wallet_balance: 500,
+        wallet_date_created: '2019-09-10T08:05:45.778894Z',
       },
     }
 
@@ -154,6 +156,48 @@ describe('src | components | MonPassCulture', () => {
       expected = `Jusqu’à -- € pour les biens culturels`
       text = physicalElement.text()
       expect(text).toBe(expected)
+    })
+
+    it('should render end validity date', () => {
+      // given
+      const props = {
+        currentUser: {
+          expenses: {
+            digital: { actual: 120, max: 200 },
+            physical: { actual: 140, max: 200 },
+          },
+          wallet_balance: 90,
+          wallet_date_created: '2019-09-10T08:05:45.778894Z',
+        },
+      }
+
+      // when
+      const wrapper = shallow(<MonPassCulture {...props} />)
+      const textWithEndValidityDate = wrapper.find(endValidityDateId).text()
+
+      // then
+      expect(textWithEndValidityDate).toBe('Votre crédit est valable jusqu’au 2020 M09 10.')
+    })
+
+    it('should not render end validity date when user has no deposit', () => {
+      // given
+      const props = {
+        currentUser: {
+          expenses: {
+            digital: { actual: 0, max: 200 },
+            physical: { actual: 0, max: 200 },
+          },
+          wallet_balance: 0,
+          wallet_date_created: null,
+        },
+      }
+
+      // when
+      const wrapper = shallow(<MonPassCulture {...props} />)
+      const wrapperWithEndValidityDate = wrapper.find(endValidityDateId)
+
+      // then
+      expect(wrapperWithEndValidityDate).toHaveLength(0)
     })
   })
 })
