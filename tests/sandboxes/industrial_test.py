@@ -28,6 +28,7 @@ def test_save_industrial_sandbox(app):
         Stock=101,
         User=53,
         UserOfferer=125,
+        Venue=21,
     )
 
     # teardown
