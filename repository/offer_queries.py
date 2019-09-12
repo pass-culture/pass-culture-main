@@ -47,11 +47,12 @@ def _bookable_offers(offers_query: Query) -> Query:
     offers_query = offers_query.filter(stocks_query.exists())
     return offers_query
 
+def _has_active_and_validated_offerer():
+    return (Offerer.isActive == True) & (Offerer.validationToken == None)
 
 def _with_active_and_validated_offerer(query):
     query = query.join(Offerer, Offerer.id == Venue.managingOffererId) \
-        .filter((Offerer.isActive == True)
-                & (Offerer.validationToken == None))
+        .filter(_has_active_and_validated_offerer())
     logger.debug(lambda: '(reco) from active and validated offerer .count' + str(query.count()))
     return query
 
@@ -196,6 +197,16 @@ def get_is_offer_selected_by_keywords_string_at_column(offer, keywords_string, c
         column
     ) is not None
 
+def _offer_has_stocks_compatible_with_days_intervals(days_intervals):
+    event_beginningdate_in_interval_filter = or_(*map(
+        _date_interval_to_filter, days_intervals))
+    stock_has_no_beginning_date_time = Stock.beginningDatetime == None
+    return Stock.query \
+               .filter(Stock.offerId == Offer.id) \
+               .filter(
+                    event_beginningdate_in_interval_filter | \
+                    stock_has_no_beginning_date_time
+                ).exists()
 
 def get_offers_for_recommendations_search(
         date=None,
@@ -207,9 +218,6 @@ def get_offers_for_recommendations_search(
         longitude=None,
         max_distance=None,
         days_intervals=None):
-    # NOTE: filter_out_offers_on_soft_deleted_stocks filter then
-    # the offer with event that has NO event occurrence
-    # Do we exactly want this ?
 
     query = _filter_recommendable_offers_for_search(build_offer_search_base_query())
 
@@ -220,18 +228,12 @@ def get_offers_for_recommendations_search(
             latitude,
             longitude
         )
-
         query = query.filter(distance_instrument < max_distance) \
-            .reset_joinpoint()
+                     .reset_joinpoint()
 
     if days_intervals is not None:
-        event_beginningdate_in_interval_filter = or_(*map(
-            _date_interval_to_filter, days_intervals))
-        stock_has_no_beginning_date_time = Stock.beginningDatetime == None
-        query = query.filter(
-            event_beginningdate_in_interval_filter | \
-            stock_has_no_beginning_date_time) \
-            .reset_joinpoint()
+        query = query.filter(_offer_has_stocks_compatible_with_days_intervals(days_intervals)) \
+                     .reset_joinpoint()
 
     if keywords_string is not None:
         query = filter_offers_with_keywords_string(query, keywords_string)
@@ -243,7 +245,6 @@ def get_offers_for_recommendations_search(
         query = query \
             .offset((page - 1) * page_size) \
             .limit(page_size)
-
     offers = query.all()
 
     return offers
@@ -279,9 +280,13 @@ def find_offers_with_filter_parameters(
 
 
 def _build_has_remaining_stock_predicate():
-    return (Stock.available == None) \
-           | (Stock.available > Booking.query.filter((Booking.stockId == Stock.id) & (Booking.isCancelled == False))
-              .statement.with_only_columns([func.coalesce(func.sum(Booking.quantity), 0)]))
+    stock_has_undefined_available = Stock.available == None
+    booked_stock_quantity = Booking.query.filter(
+        (Booking.stockId == Stock.id) &\
+        (Booking.isCancelled == False)
+     ).statement.with_only_columns([func.coalesce(func.sum(Booking.quantity), 0)])
+    still_more_available_than_booked_stock = Stock.available > booked_stock_quantity
+    return stock_has_undefined_available | still_more_available_than_booked_stock
 
 
 def find_searchable_offer(offer_id):
@@ -291,21 +296,24 @@ def find_searchable_offer(offer_id):
         .first()
 
 
-def _filter_recommendable_offers_for_search(offer_query):
+def _offer_has_bookable_stocks():
     now = datetime.utcnow()
     stock_can_still_be_booked = (Stock.bookingLimitDatetime > now) | (Stock.bookingLimitDatetime == None)
     event_has_not_began_yet = (Stock.beginningDatetime != None) & (Stock.beginningDatetime > now)
     offer_is_on_a_thing = Stock.beginningDatetime == None
-
-    offer_query = offer_query.reset_joinpoint() \
-        .filter(Offer.isActive == True) \
-        .join(Stock) \
+    return Stock.query \
+        .filter(Stock.offerId == Offer.id) \
         .filter(Stock.isSoftDeleted == False) \
         .filter(stock_can_still_be_booked) \
         .filter(event_has_not_began_yet | offer_is_on_a_thing) \
-        .filter((Offerer.validationToken == None) & (Offerer.isActive == True)) \
-        .filter(_build_has_remaining_stock_predicate())
+        .filter(_build_has_remaining_stock_predicate()) \
+        .exists()
 
+def _filter_recommendable_offers_for_search(offer_query):
+    offer_query = offer_query.reset_joinpoint() \
+                             .filter(Offer.isActive == True) \
+                             .filter(_has_active_and_validated_offerer()) \
+                             .filter(_offer_has_bookable_stocks())
     return offer_query
 
 
