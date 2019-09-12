@@ -42,12 +42,7 @@ class Results extends PureComponent {
   }
 
   handleSetHasMore = newBatchOfItemsLength => {
-    // WAITING FOR A BETTER API
-    // BECAUSE PAGINATION DOES NOT SOMETIMES RETURN
-    // A BATCH OF 10 ITEMS EVEN IF
-    // THERE IS ACTUALLY MORE THAN THAT
-    // const hasMore = newBatchOfItemsLength === ITEMS_PER_PAGE
-    const hasMore = newBatchOfItemsLength > 0
+    const hasMore = newBatchOfItemsLength === ITEMS_PER_PAGE
     this.setState({ hasMore })
   }
 
