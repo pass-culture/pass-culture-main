@@ -207,13 +207,14 @@ def find_all_ongoing_bookings_by_stock(stock) -> List[Booking]:
 
 def count_all_used_or_non_cancelled_bookings() -> int:
     query = _query_get_used_or_finished_bookings_on_non_activation_offers()
-
+    query = query.join(Offerer)
     return query \
         .count()
 
 
 def find_final_offerer_bookings(offerer_id) -> List[Booking]:
     return _query_get_used_or_finished_bookings_on_non_activation_offers() \
+        .join(Offerer) \
         .filter(Offerer.id == offerer_id) \
         .reset_joinpoint() \
         .outerjoin(Payment) \
@@ -223,6 +224,7 @@ def find_final_offerer_bookings(offerer_id) -> List[Booking]:
 def find_eligible_bookings_for_offerer(offerer_id: int) -> List[Booking]:
     query = _query_get_used_or_finished_bookings_on_non_activation_offers()
     query = query \
+        .join(Offerer) \
         .filter(Offerer.id == offerer_id) \
         .reset_joinpoint() \
         .outerjoin(Payment) \
@@ -307,11 +309,10 @@ def _query_get_used_or_finished_bookings_on_non_activation_offers():
         .join(Stock) \
         .join(Offer) \
         .join(Venue) \
-        .join(Offerer) \
         .filter(Booking.isCancelled == False) \
         .filter(Booking.isUsed == True) \
         .filter(Offer.type != str(ThingType.ACTIVATION)) \
-        .filter(Offer.type != str(EventType.ACTIVATION)) \
+        .filter(Offer.type != str(EventType.ACTIVATION))
 
 
 def find_all_not_used_and_not_cancelled():
