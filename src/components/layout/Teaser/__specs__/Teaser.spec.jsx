@@ -2,16 +2,16 @@ import { shallow } from 'enzyme'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import MyFavorite from '../MyFavorite'
+import Teaser from '../Teaser'
 
-describe('src | components | pages | my-favorites | MyFavorite | MyFavorite', () => {
+describe('src | components | layout | Teaser | Teaser', () => {
   let props
 
   beforeEach(() => {
     props = {
       date: 'permanent',
       detailsUrl: 'fake/url',
-      handleToggleFavorite: jest.fn(),
+      handleToggleItem: jest.fn(),
       humanizeRelativeDistance: '10 km',
       isEditMode: false,
       name: 'Fake offer name',
@@ -29,7 +29,7 @@ describe('src | components | pages | my-favorites | MyFavorite | MyFavorite', ()
 
   it('should match the snapshot', () => {
     // when
-    const wrapper = shallow(<MyFavorite {...props} />)
+    const wrapper = shallow(<Teaser {...props} />)
 
     // then
     expect(wrapper).toMatchSnapshot()
@@ -39,7 +39,7 @@ describe('src | components | pages | my-favorites | MyFavorite | MyFavorite', ()
     describe('when in a list mode', () => {
       it('should render a Link component and details of the favorite element', () => {
         // when
-        const wrapper = shallow(<MyFavorite {...props} />)
+        const wrapper = shallow(<Teaser {...props} />)
 
         // then
         const link = wrapper.find(Link)
@@ -65,7 +65,7 @@ describe('src | components | pages | my-favorites | MyFavorite | MyFavorite', ()
         props.isEditMode = true
 
         // when
-        const wrapper = shallow(<MyFavorite {...props} />)
+        const wrapper = shallow(<Teaser {...props} />)
 
         // then
         const checkbox = wrapper.find('.teaser-checkbox')
@@ -74,16 +74,16 @@ describe('src | components | pages | my-favorites | MyFavorite | MyFavorite', ()
     })
 
     describe('when click on checkbox', () => {
-      it('should call handleToggleFavorite', () => {
+      it('should call handleToggleItem', () => {
         // given
         props.isEditMode = true
-        const wrapper = shallow(<MyFavorite {...props} />)
+        const wrapper = shallow(<Teaser {...props} />)
 
         // when
         wrapper.find('.teaser-checkbox').simulate('click')
 
         // then
-        expect(props.handleToggleFavorite).toHaveBeenCalledWith(props.offerId)
+        expect(props.handleToggleItem).toHaveBeenCalledWith(props.offerId)
       })
     })
   })

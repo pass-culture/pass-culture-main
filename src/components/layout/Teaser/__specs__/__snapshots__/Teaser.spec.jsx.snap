@@ -1,12 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | my-favorites | MyFavorite | MyFavorite should match the snapshot 1`] = `
+exports[`src | components | layout | Teaser | Teaser should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <MyFavorite
+  Symbol(enzyme.__unrendered__): <Teaser
+    className=""
     date="permanent"
     detailsUrl="fake/url"
-    handleToggleFavorite={[MockFunction]}
+    handleToggleItem={[MockFunction]}
     humanizeRelativeDistance="10 km"
     isEditMode={false}
     name="Fake offer name"
@@ -95,7 +96,7 @@ ShallowWrapper {
           </div>
         </React.Fragment>
       </Link>,
-      "className": "mf-my-favorite",
+      "className": "",
     },
     "ref": null,
     "rendered": Object {
@@ -479,7 +480,7 @@ ShallowWrapper {
             </div>
           </React.Fragment>
         </Link>,
-        "className": "mf-my-favorite",
+        "className": "",
       },
       "ref": null,
       "rendered": Object {

@@ -2,15 +2,15 @@ import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 
-import { ICONS_URL } from '../../../../utils/config'
+import { ICONS_URL } from '../../../utils/config'
 const DEFAULT_THUMB_URL = `${ICONS_URL}/picto-placeholder-visueloffre.png`
-import Icon from '../../../layout/Icon/Icon'
+import Icon from '../Icon/Icon'
 
-class MyFavorite extends Component {
-  renderFavorite = () => {
+class Teaser extends Component {
+  renderItem = () => {
     const {
       date,
-      handleToggleFavorite,
+      handleToggleItem,
       humanizeRelativeDistance,
       isEditMode,
       name,
@@ -50,7 +50,7 @@ class MyFavorite extends Component {
             <label className="field-checkbox">
               <input
                 className="input teaser-checkbox"
-                onClick={handleToggleFavorite(offerId)}
+                onClick={handleToggleItem(offerId)}
                 type="checkbox"
               />
             </label>
@@ -66,18 +66,18 @@ class MyFavorite extends Component {
   }
 
   render() {
-    const { detailsUrl, isEditMode } = this.props
+    const { className, detailsUrl, isEditMode } = this.props
 
     return (
-      <li className="mf-my-favorite">
+      <li className={`${className}`}>
         {isEditMode ? (
-          <div className="teaser-link">{this.renderFavorite()}</div>
+          <div className="teaser-link">{this.renderItem()}</div>
         ) : (
           <Link
             className="teaser-link"
             to={detailsUrl}
           >
-            {this.renderFavorite()}
+            {this.renderItem()}
           </Link>
         )}
       </li>
@@ -85,17 +85,19 @@ class MyFavorite extends Component {
   }
 }
 
-MyFavorite.defaultProps = {
+Teaser.defaultProps = {
+  className: '',
   date: null,
   isEditMode: false,
   status: [],
   thumbUrl: null,
 }
 
-MyFavorite.propTypes = {
+Teaser.propTypes = {
+  className: PropTypes.string,
   date: PropTypes.string,
   detailsUrl: PropTypes.string.isRequired,
-  handleToggleFavorite: PropTypes.func.isRequired,
+  handleToggleItem: PropTypes.func.isRequired,
   humanizeRelativeDistance: PropTypes.string.isRequired,
   isEditMode: PropTypes.bool,
   name: PropTypes.string.isRequired,
@@ -110,4 +112,4 @@ MyFavorite.propTypes = {
   thumbUrl: PropTypes.string,
 }
 
-export default MyFavorite
+export default Teaser

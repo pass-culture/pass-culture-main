@@ -2,79 +2,16 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import MyFavorite from './MyFavorite'
+import Teaser from '../../../layout/Teaser/TeaserContainer'
 import { formatRecommendationDates } from '../../../../utils/date/date'
 import { getHumanizeRelativeDistance } from '../../../../utils/geolocation'
+import { isReserved, reservationStatus } from '../../../layout/Teaser/status'
 import selectFirstMatchingBookingByOfferId from '../../../../selectors/selectFirstMatchingBookingByOfferId'
 import selectOfferById from '../../../../selectors/selectOfferById'
 import getHumanizeRelativeDate from '../../../../utils/date/getHumanizeRelativeDate'
 
-export const isReserved = status =>
-  !(status.length > 0 && status[0].class.match('cancelled|finished|fully-booked'))
-
-export const reservationStatus = (
-  isActive,
-  isFinished,
-  isFullyBooked,
-  hasBookings,
-  isBooked,
-  humanizeRelativeDate
-) => {
-  const status = []
-
-  if (isFinished) {
-    return [
-      {
-        label: 'Terminé',
-        class: 'finished',
-      },
-    ]
-  }
-
-  if (!isActive || (hasBookings && !isBooked)) {
-    return [
-      {
-        label: 'Annulé',
-        class: 'cancelled',
-      },
-    ]
-  }
-
-  if (isFullyBooked) {
-    return [
-      {
-        label: 'Épuisé',
-        class: 'fully-booked',
-      },
-    ]
-  }
-
-  if (hasBookings && isBooked) {
-    status.push({
-      label: 'Réservé',
-      class: 'booked',
-    })
-  }
-
-  if (humanizeRelativeDate) {
-    if (humanizeRelativeDate === 'Demain') {
-      status.push({
-        label: humanizeRelativeDate,
-        class: 'tomorrow',
-      })
-    } else {
-      status.push({
-        label: humanizeRelativeDate,
-        class: 'today',
-      })
-    }
-  }
-
-  return status
-}
-
 export const mapStateToProps = (state, ownProps) => {
-  const { favorite, handleToggleFavorite, isEditMode } = ownProps
+  const { favorite, handleToggleItem, isEditMode } = ownProps
   const { offerId, mediationId } = favorite
   const offer = selectOfferById(state, offerId)
   const { dateRange = [], isActive, isFinished, isFullyBooked, venue } = offer || {}
@@ -110,7 +47,7 @@ export const mapStateToProps = (state, ownProps) => {
   return {
     date,
     detailsUrl,
-    handleToggleFavorite,
+    handleToggleItem,
     humanizeRelativeDistance,
     isEditMode,
     name: offer.name,
@@ -124,4 +61,4 @@ export const mapStateToProps = (state, ownProps) => {
 export default compose(
   withRouter,
   connect(mapStateToProps)
-)(MyFavorite)
+)(Teaser)
