@@ -24,6 +24,7 @@ describe('src | components | layout | Teaser', () => {
         },
       ],
       thumbUrl: null,
+      trackConsultOffer: jest.fn(),
     }
   })
 

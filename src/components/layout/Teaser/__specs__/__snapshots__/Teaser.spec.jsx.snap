@@ -21,6 +21,7 @@ ShallowWrapper {
       ]
     }
     thumbUrl={null}
+    trackConsultOffer={[MockFunction]}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -38,6 +39,7 @@ ShallowWrapper {
     "props": Object {
       "children": <Link
         className="teaser-link"
+        onClick={[MockFunction]}
         replace={false}
         to="fake/url"
       >
@@ -157,6 +159,7 @@ ShallowWrapper {
           </div>
         </React.Fragment>,
         "className": "teaser-link",
+        "onClick": [MockFunction],
         "replace": false,
         "to": "fake/url",
       },
@@ -422,6 +425,7 @@ ShallowWrapper {
       "props": Object {
         "children": <Link
           className="teaser-link"
+          onClick={[MockFunction]}
           replace={false}
           to="fake/url"
         >
@@ -541,6 +545,7 @@ ShallowWrapper {
             </div>
           </React.Fragment>,
           "className": "teaser-link",
+          "onClick": [MockFunction],
           "replace": false,
           "to": "fake/url",
         },

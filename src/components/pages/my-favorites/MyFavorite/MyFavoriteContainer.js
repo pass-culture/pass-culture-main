@@ -1,14 +1,17 @@
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
+import track from 'react-tracking'
 
 import Teaser from '../../../layout/Teaser/TeaserContainer'
+import { isReserved, reservationStatus } from '../../../layout/Teaser/status'
 import { formatRecommendationDates } from '../../../../utils/date/date'
 import { getHumanizeRelativeDistance } from '../../../../utils/geolocation'
-import { isReserved, reservationStatus } from '../../../layout/Teaser/status'
+import getHumanizeRelativeDate from '../../../../utils/date/getHumanizeRelativeDate'
+import { trackMatomoEventWrapper } from '../../../../helpers/matomoHelper'
+
 import selectFirstMatchingBookingByOfferId from '../../../../selectors/selectFirstMatchingBookingByOfferId'
 import selectOfferById from '../../../../selectors/selectOfferById'
-import getHumanizeRelativeDate from '../../../../utils/date/getHumanizeRelativeDate'
 
 export const mapStateToProps = (state, ownProps) => {
   const { favorite, handleToggleItem, isEditMode } = ownProps
@@ -58,7 +61,30 @@ export const mapStateToProps = (state, ownProps) => {
   }
 }
 
+export const mapDispatchToProps = (undefined, ownProps) => ({
+  trackConsultOffer: offerId => {
+    ownProps.tracking.trackEvent({ action: 'consultOffer', name: offerId })
+  },
+})
+
+export const mergeProps = (stateProps, dispatchProps, ownProps) => {
+  const { trackConsultOffer } = dispatchProps
+  const { favorite: { offerId } = {} } = stateProps
+
+  return {
+    ...stateProps,
+    ...dispatchProps,
+    ...ownProps,
+    trackConsultOffer: () => trackConsultOffer(offerId),
+  }
+}
+
 export default compose(
   withRouter,
-  connect(mapStateToProps)
+  track({ page: 'Offer' }, { dispatch: trackMatomoEventWrapper }),
+  connect(
+    mapStateToProps,
+    mapDispatchToProps,
+    mergeProps
+  )
 )(Teaser)

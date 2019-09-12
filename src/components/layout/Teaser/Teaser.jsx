@@ -66,7 +66,7 @@ class Teaser extends Component {
   }
 
   render() {
-    const { detailsUrl, isEditMode } = this.props
+    const { detailsUrl, isEditMode, trackConsultOffer } = this.props
 
     return (
       <li className="teaser-item">
@@ -75,6 +75,7 @@ class Teaser extends Component {
         ) : (
           <Link
             className="teaser-link"
+            onClick={trackConsultOffer}
             to={detailsUrl}
           >
             {this.renderTeaser()}
@@ -109,6 +110,7 @@ Teaser.propTypes = {
     }).isRequired
   ),
   thumbUrl: PropTypes.string,
+  trackConsultOffer: PropTypes.func.isRequired,
 }
 
 export default Teaser

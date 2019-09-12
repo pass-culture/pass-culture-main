@@ -189,7 +189,7 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
     })
   })
 
-  describe('mapDescribeToProps', () => {
+  describe('mapDispatchToProps', () => {
     describe('when mapping trackConsultOffer', () => {
       it('should dispatch a track Matomo Event with correct arguments', () => {
         // given
