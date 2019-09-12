@@ -460,15 +460,28 @@ class DateRangeTest:
         # given
         offer = create_offer_with_event_product()
         offer.stocks = [
-            create_stock(offer, beginning_datetime=two_days_ago, end_datetime=five_days_from_now),
             create_stock(offer, beginning_datetime=four_days_ago, end_datetime=five_days_from_now),
             create_stock(offer, beginning_datetime=four_days_ago, end_datetime=ten_days_from_now),
+            create_stock(offer, beginning_datetime=two_days_ago, end_datetime=five_days_from_now),
             create_stock(offer, beginning_datetime=two_days_ago, end_datetime=ten_days_from_now)
         ]
 
         # then
         assert offer.dateRange == DateTimes(four_days_ago, ten_days_from_now)
         assert offer.dateRange.datetimes == [four_days_ago, ten_days_from_now]
+
+    def test_ignores_soft_deleted_occurences(self):
+        # given
+        offer = create_offer_with_event_product()
+        offer.stocks = [
+            create_stock(offer, beginning_datetime=four_days_ago, end_datetime=five_days_from_now, is_soft_deleted=True),
+            create_stock(offer, beginning_datetime=two_days_ago, end_datetime=five_days_from_now),
+            create_stock(offer, beginning_datetime=two_days_ago, end_datetime=ten_days_from_now)
+        ]
+
+        # then
+        assert offer.dateRange == DateTimes(two_days_ago, ten_days_from_now)
+        assert offer.dateRange.datetimes == [two_days_ago, ten_days_from_now]
 
     def test_is_empty_if_event_has_no_event_occurrences(self):
         # given
@@ -478,6 +491,16 @@ class DateRangeTest:
         # then
         assert offer.dateRange == DateTimes()
 
+
+    def test_is_empty_if_event_only_has_a_soft_deleted_occurence(self):
+        # given
+        offer = create_offer_with_event_product()
+        offer.stocks = [
+            create_stock(offer, beginning_datetime=two_days_ago, end_datetime=five_days_from_now, is_soft_deleted=True),
+        ]
+
+        # then
+        assert offer.dateRange == DateTimes()
 
 class CreateOfferTest:
     @clean_database

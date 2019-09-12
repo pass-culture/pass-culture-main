@@ -117,32 +117,24 @@ class Offer(PcObject,
             self.product.populate_from_dict(product_dict)
 
     @property
-    def dateRange(self):
-        if ProductType.is_thing(self.type) or not self.stocks:
-            return DateTimes()
-
-        start = min([stock.beginningDatetime for stock in self.stocks])
-        end = max([stock.endDatetime for stock in self.stocks])
-        return DateTimes(start, end)
+    def activeMediation(self):
+        sorted_by_date_asc = sorted(self.mediations, key=lambda m: m.dateCreated)
+        sorted_by_date_desc = reversed(sorted_by_date_asc)
+        only_active = list(filter(lambda m: m.isActive, sorted_by_date_desc))
+        return only_active[0] if only_active else None
 
     @property
-    def lastStock(self):
-        query = Stock.queryNotSoftDeleted()
-        return query.join(Offer) \
-            .filter(Offer.id == self.id) \
-            .order_by(desc(Stock.bookingLimitDatetime)) \
-            .first()
+    def dateRange(self):
+        if ProductType.is_thing(self.type) or not self.notDeletedStocks:
+            return DateTimes()
+
+        start = min([stock.beginningDatetime for stock in self.notDeletedStocks])
+        end = max([stock.endDatetime for stock in self.notDeletedStocks])
+        return DateTimes(start, end)
 
     @property
     def hasActiveMediation(self):
         return any(map(lambda m: m.isActive, self.mediations))
-
-    @property
-    def offerType(self):
-        all_types = list(ThingType) + list(EventType)
-        for possible_type in all_types:
-            if str(possible_type) == self.type:
-                return possible_type.as_dict()
 
     @property
     def isEvent(self):
@@ -180,11 +172,23 @@ class Offer(PcObject,
         return total_quantity >= available_stocks
 
     @property
-    def activeMediation(self):
-        sorted_by_date_asc = sorted(self.mediations, key=lambda m: m.dateCreated)
-        sorted_by_date_desc = reversed(sorted_by_date_asc)
-        only_active = list(filter(lambda m: m.isActive, sorted_by_date_desc))
-        return only_active[0] if only_active else None
+    def lastStock(self):
+        query = Stock.queryNotSoftDeleted()
+        return query.join(Offer) \
+            .filter(Offer.id == self.id) \
+            .order_by(desc(Stock.bookingLimitDatetime)) \
+            .first()
+
+    @property
+    def notDeletedStocks(self):
+        return [stock for stock in self.stocks if not stock.isSoftDeleted]
+
+    @property
+    def offerType(self):
+        all_types = list(ThingType) + list(EventType)
+        for possible_type in all_types:
+            if str(possible_type) == self.type:
+                return possible_type.as_dict()
 
     @property
     def stockAlertMessage(self) -> str:
