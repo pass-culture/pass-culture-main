@@ -6,8 +6,10 @@ from models import Mediation, \
                    Offer, \
                    Recommendation, \
                    Stock
+from models.api_errors import ResourceNotFoundError
 from models.db import db
-from models.offer import OfferNotFoundException
+from repository import mediation_queries
+from repository.offer_queries import find_searchable_offer
 from utils.config import BLOB_SIZE
 from utils.human_ids import dehumanize
 from utils.logger import logger
@@ -128,22 +130,21 @@ def find_recommendation_already_created_on_discovery(offer_id: int, mediation_id
                                         & (Recommendation.search == None))
     if offer_id:
         query = query.join(Offer)
-    mediation = Mediation.query.filter_by(id=mediation_id).first()
-    offer = Offer.query.filter_by(id=offer_id).first()
+    mediation = mediation_queries.find_by_id(mediation_id)
+    offer = find_searchable_offer(offer_id)
 
     if mediation_id:
         if _no_mediation_or_mediation_does_not_match_offer(mediation, offer_id):
             logger.debug(lambda: 'Mediation not found or found but not matching offer for offer_id=%s mediation_id=%s'
-                         % (offer_id, mediation_id))
-            raise OfferNotFoundException()
+                        % (offer_id, mediation_id))
+            raise ResourceNotFoundError()
 
         query = query.filter(Recommendation.mediationId == mediation_id)
 
     if offer_id:
         if offer is None:
-            logger.debug(lambda: 'Offer not found for offer_id=%s' %
-                         (offer_id,))
-            raise OfferNotFoundException()
+            logger.debug(lambda: 'Offer not found for offer_id=%s' % (offer_id,))
+            raise ResourceNotFoundError()
 
         query = query.filter(Offer.id == offer_id)
 

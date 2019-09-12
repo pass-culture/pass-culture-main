@@ -6,7 +6,6 @@ from sqlalchemy import func
 
 from domain.types import get_event_or_thing_active_type_values_from_sublabels
 from models import ApiErrors, Recommendation, Offer, Mediation, PcObject, User
-from models.api_errors import ResourceNotFoundError
 from models.db import db
 from recommendations_engine import get_offers_for_recommendations_discovery
 from repository import mediation_queries
@@ -80,40 +79,6 @@ def _create_tuto_mediation_if_non_existent_for_user(user: User, tuto_mediation: 
     recommendation.mediation = tuto_mediation
     recommendation.validUntilDate = datetime.utcnow() + timedelta(weeks=2)
     PcObject.save(recommendation)
-
-
-def _no_mediation_or_mediation_does_not_match_offer(mediation, offer_id):
-    return mediation is None or (offer_id and (mediation.offerId != offer_id))
-
-
-def _create_or_find_recommendation_already_created_on_discovery(offer_id, mediation_id, user_id):
-    logger.debug(lambda: 'Requested Recommendation with offer_id=%s mediation_id=%s' % (
-        offer_id, mediation_id))
-    query = Recommendation.query.filter((Recommendation.validUntilDate > datetime.utcnow())
-                                        & (Recommendation.userId == user_id)
-                                        & (Recommendation.search == None))
-    if offer_id:
-        query = query.join(Offer)
-    mediation = mediation_queries.find_by_id(mediation_id)
-    offer = find_searchable_offer(offer_id)
-
-    if mediation_id:
-        if _no_mediation_or_mediation_does_not_match_offer(mediation, offer_id):
-            logger.debug(lambda: 'Mediation not found or found but not matching offer for offer_id=%s mediation_id=%s'
-                        % (offer_id, mediation_id))
-            raise ResourceNotFoundError()
-
-        query = query.filter(Recommendation.mediationId == mediation_id)
-
-    if offer_id:
-        if offer is None:
-            logger.debug(lambda: 'Offer not found for offer_id=%s' % (offer_id,))
-            raise ResourceNotFoundError()
-
-        query = query.filter(Offer.id == offer_id)
-
-    return query.first()
-
 
 def _create_recommendation_from_ids(user, offer_id, mediation_id=None):
     mediation = None
