@@ -68,6 +68,12 @@ export class Navigation extends React.PureComponent {
     )
   }
 
+  flipCardAndTrackOfferConsultation = () => {
+    const { flipHandler, trackConsultOffer } = this.props
+    trackConsultOffer()
+    flipHandler()
+  }
+
   render() {
     const {
       backgroundGradient,
@@ -98,8 +104,8 @@ export class Navigation extends React.PureComponent {
                   <button
                     className="button to-recto"
                     id="deck-open-verso-button"
-                    onClick={flipHandler}
-                    onDragLeave={flipHandler}
+                    onClick={this.flipCardAndTrackOfferConsultation}
+                    onDragLeave={this.flipCardAndTrackOfferConsultation}
                     type="button"
                   >
                     <Icon
@@ -153,6 +159,7 @@ Navigation.propTypes = {
   height: PropTypes.number.isRequired,
   priceRange: PropTypes.arrayOf(PropTypes.number),
   separator: PropTypes.string.isRequired,
+  trackConsultOffer: PropTypes.func.isRequired,
   transitionTimeout: PropTypes.number,
   verticalSlideRatio: PropTypes.number,
 }

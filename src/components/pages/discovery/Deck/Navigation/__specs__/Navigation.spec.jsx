@@ -14,24 +14,7 @@ describe('src | components | pages | discovery | Deck | Navigation', () => {
         height: 500,
         priceRange: [],
         separator: '-',
-      }
-
-      // when
-      const wrapper = shallow(<Navigation {...props} />)
-
-      // then
-      expect(wrapper).toMatchSnapshot()
-    })
-
-    it('should match the snapshot with flipHandler', () => {
-      // given
-      const props = {
-        backgroundGradient: 'black',
-        distanceClue: '',
-        flipHandler: jest.fn(),
-        height: 500,
-        priceRange: [],
-        separator: '-',
+        trackConsultOffer: jest.fn(),
       }
 
       // when
@@ -54,7 +37,8 @@ describe('src | components | pages | discovery | Deck | Navigation', () => {
             height: 500,
             isFinished: false,
             priceRange: [],
-            separator: '-'
+            separator: '-',
+            trackConsultOffer: jest.fn(),
           }
 
           // when

@@ -118,7 +118,7 @@ ShallowWrapper {
             </div>
           </div>
         </Draggable>,
-        <withRouter(Connect(Navigation))
+        <withRouter(WithTracking(Connect(Navigation)))
           flipHandler={[Function]}
           handleGoNext={null}
           handleGoPrevious={null}
@@ -314,7 +314,7 @@ ShallowWrapper {
               </div>
             </div>
           </Draggable>,
-          <withRouter(Connect(Navigation))
+          <withRouter(WithTracking(Connect(Navigation)))
             flipHandler={[Function]}
             handleGoNext={null}
             handleGoPrevious={null}
