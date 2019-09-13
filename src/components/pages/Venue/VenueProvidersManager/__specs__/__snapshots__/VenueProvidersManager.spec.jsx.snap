@@ -79,7 +79,7 @@ ShallowWrapper {
         <h2
           className="main-list-title"
         >
-          IMPORTATIONS D’OFFRES
+          Importation d’offres
           <span
             className="is-pulled-right is-size-7 has-text-grey"
           >
@@ -128,7 +128,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            "IMPORTATIONS D’OFFRES",
+            "Importation d’offres",
             <span
               className="is-pulled-right is-size-7 has-text-grey"
             >
@@ -139,7 +139,7 @@ ShallowWrapper {
         },
         "ref": null,
         "rendered": Array [
-          "IMPORTATIONS D’OFFRES",
+          "Importation d’offres",
           Object {
             "instance": null,
             "key": undefined,
@@ -261,7 +261,7 @@ ShallowWrapper {
           <h2
             className="main-list-title"
           >
-            IMPORTATIONS D’OFFRES
+            Importation d’offres
             <span
               className="is-pulled-right is-size-7 has-text-grey"
             >
@@ -310,7 +310,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              "IMPORTATIONS D’OFFRES",
+              "Importation d’offres",
               <span
                 className="is-pulled-right is-size-7 has-text-grey"
               >
@@ -321,7 +321,7 @@ ShallowWrapper {
           },
           "ref": null,
           "rendered": Array [
-            "IMPORTATIONS D’OFFRES",
+            "Importation d’offres",
             Object {
               "instance": null,
               "key": undefined,

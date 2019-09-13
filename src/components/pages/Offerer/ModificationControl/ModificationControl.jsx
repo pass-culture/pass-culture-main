@@ -35,14 +35,18 @@ const ModificationControl = ({ adminUserOfferer, parseFormChild, offerer, query,
               </CancelButton>
             </div>
             <div className="control">
-              <SubmitButton className="button is-primary is-medium">{'Valider'}</SubmitButton>
+              <SubmitButton className="button is-primary is-medium">
+                {'Valider'}
+              </SubmitButton>
             </div>
           </div>
         )}
       </div>
       <br />
       <div className="section">
-        <h2 className="main-list-title">{'LIEUX'}</h2>
+        <h2 className="main-list-title">
+          {'Lieux'}
+        </h2>
         <ul className="main-list venues-list">
           {venues.map(v => (
             <VenueItem

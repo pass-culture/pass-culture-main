@@ -19,7 +19,7 @@ const LocationFields = ({
   return (
     <div className="section">
       <h2 className="main-list-title">
-        {'ADRESSE'}
+        {'Adresse'}
       </h2>
       <div className="field-group">
         <HiddenField name="isLocationFrozen" />

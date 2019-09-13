@@ -29,7 +29,7 @@ ShallowWrapper {
         <h2
           className="main-list-title"
         >
-          ADRESSE
+          Adresse
         </h2>,
         <div
           className="field-group"
@@ -116,11 +116,11 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": "ADRESSE",
+          "children": "Adresse",
           "className": "main-list-title",
         },
         "ref": null,
-        "rendered": "ADRESSE",
+        "rendered": "Adresse",
         "type": "h2",
       },
       Object {
@@ -340,7 +340,7 @@ ShallowWrapper {
           <h2
             className="main-list-title"
           >
-            ADRESSE
+            Adresse
           </h2>,
           <div
             className="field-group"
@@ -427,11 +427,11 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": "ADRESSE",
+            "children": "Adresse",
             "className": "main-list-title",
           },
           "ref": null,
-          "rendered": "ADRESSE",
+          "rendered": "Adresse",
           "type": "h2",
         },
         Object {

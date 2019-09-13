@@ -124,7 +124,7 @@ class Offerer extends Component {
           </div>
           <div className="section">
             <h2 className="main-list-title">
-              {'INFORMATIONS BANCAIRES'}
+              {'Informations bancaires'}
               <span className="is-pulled-right is-size-7 has-text-grey">
                 {readOnly &&
                   !adminUserOfferer &&
@@ -132,8 +132,10 @@ class Offerer extends Component {
               </span>
             </h2>
             {offererName && !areBankInformationProvided && (
-              <p className='bank-instructions-label'>
-                {'Le pass Culture vous contactera prochainement afin d’enregistrer vos coordonnées bancaires. Une fois votre BIC / IBAN renseigné, ces informations apparaitront ci-dessous.'}
+              <p className="bank-instructions-label">
+                {
+                  'Le pass Culture vous contactera prochainement afin d’enregistrer vos coordonnées bancaires. Une fois votre BIC / IBAN renseigné, ces informations apparaitront ci-dessous.'
+                }
               </p>
             )}
             <div className="field-group">

@@ -156,7 +156,7 @@ ShallowWrapper {
             <h2
               className="main-list-title"
             >
-              INFORMATIONS BANCAIRES
+              Informations bancaires
               <span
                 className="is-pulled-right is-size-7 has-text-grey"
               />
@@ -288,7 +288,7 @@ ShallowWrapper {
               <h2
                 className="main-list-title"
               >
-                INFORMATIONS BANCAIRES
+                Informations bancaires
                 <span
                   className="is-pulled-right is-size-7 has-text-grey"
                 />
@@ -524,7 +524,7 @@ ShallowWrapper {
                 <h2
                   className="main-list-title"
                 >
-                  INFORMATIONS BANCAIRES
+                  Informations bancaires
                   <span
                     className="is-pulled-right is-size-7 has-text-grey"
                   />
@@ -572,7 +572,7 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "children": Array [
-                    "INFORMATIONS BANCAIRES",
+                    "Informations bancaires",
                     <span
                       className="is-pulled-right is-size-7 has-text-grey"
                     />,
@@ -581,7 +581,7 @@ ShallowWrapper {
                 },
                 "ref": null,
                 "rendered": Array [
-                  "INFORMATIONS BANCAIRES",
+                  "Informations bancaires",
                   Object {
                     "instance": null,
                     "key": undefined,
@@ -799,7 +799,7 @@ ShallowWrapper {
               <h2
                 className="main-list-title"
               >
-                INFORMATIONS BANCAIRES
+                Informations bancaires
                 <span
                   className="is-pulled-right is-size-7 has-text-grey"
                 />
@@ -931,7 +931,7 @@ ShallowWrapper {
                 <h2
                   className="main-list-title"
                 >
-                  INFORMATIONS BANCAIRES
+                  Informations bancaires
                   <span
                     className="is-pulled-right is-size-7 has-text-grey"
                   />
@@ -1167,7 +1167,7 @@ ShallowWrapper {
                   <h2
                     className="main-list-title"
                   >
-                    INFORMATIONS BANCAIRES
+                    Informations bancaires
                     <span
                       className="is-pulled-right is-size-7 has-text-grey"
                     />
@@ -1215,7 +1215,7 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": Array [
-                      "INFORMATIONS BANCAIRES",
+                      "Informations bancaires",
                       <span
                         className="is-pulled-right is-size-7 has-text-grey"
                       />,
@@ -1224,7 +1224,7 @@ ShallowWrapper {
                   },
                   "ref": null,
                   "rendered": Array [
-                    "INFORMATIONS BANCAIRES",
+                    "Informations bancaires",
                     Object {
                       "instance": null,
                       "key": undefined,

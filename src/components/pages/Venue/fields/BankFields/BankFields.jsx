@@ -9,7 +9,7 @@ const BankFields = ({ adminUserOfferer, areBankInformationProvided, readOnly }) 
   return (
     <div className="section">
       <h2 className="main-list-title">
-        {'INFORMATIONS BANCAIRES'}
+        {'Informations bancaires'}
         <span className="is-pulled-right fs13 has-text-grey">
           {!adminUserOfferer &&
             "Vous avez besoin d'être administrateur de la structure pour éditer ces informations."}
