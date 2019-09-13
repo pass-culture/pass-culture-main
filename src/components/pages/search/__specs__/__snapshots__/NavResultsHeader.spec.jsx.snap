@@ -22,7 +22,7 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": <div
-        className="text-left is-white-text is-absolute"
+        className="text-left is-white-text is-absolute mx12"
         id="category-description"
       >
         <h2
@@ -61,7 +61,7 @@ ShallowWrapper {
             Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?
           </span>,
         ],
-        "className": "text-left is-white-text is-absolute",
+        "className": "text-left is-white-text is-absolute mx12",
         "id": "category-description",
       },
       "ref": null,
@@ -102,7 +102,7 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": <div
-          className="text-left is-white-text is-absolute"
+          className="text-left is-white-text is-absolute mx12"
           id="category-description"
         >
           <h2
@@ -141,7 +141,7 @@ ShallowWrapper {
               Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?
             </span>,
           ],
-          "className": "text-left is-white-text is-absolute",
+          "className": "text-left is-white-text is-absolute mx12",
           "id": "category-description",
         },
         "ref": null,

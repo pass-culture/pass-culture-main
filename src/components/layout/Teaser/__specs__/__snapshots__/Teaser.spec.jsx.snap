@@ -4,7 +4,6 @@ exports[`src | components | layout | Teaser | Teaser should match the snapshot 1
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Teaser
-    className=""
     date="permanent"
     detailsUrl="fake/url"
     handleToggleItem={[MockFunction]}
@@ -52,7 +51,7 @@ ShallowWrapper {
             />
           </div>
           <div
-            className="teaser-wrapper mf-wrapper"
+            className="teaser-wrapper"
           >
             <div
               className="teaser-title"
@@ -70,10 +69,10 @@ ShallowWrapper {
               permanent
             </div>
             <div
-              className="mf-infos"
+              className="teaser-infos"
             >
               <span
-                className="mf-status mf-booked"
+                className="teaser-status teaser-booked"
               >
                 Réservé
               </span>
@@ -96,7 +95,7 @@ ShallowWrapper {
           </div>
         </React.Fragment>
       </Link>,
-      "className": "",
+      "className": "teaser-item",
     },
     "ref": null,
     "rendered": Object {
@@ -114,7 +113,7 @@ ShallowWrapper {
             />
           </div>
           <div
-            className="teaser-wrapper mf-wrapper"
+            className="teaser-wrapper"
           >
             <div
               className="teaser-title"
@@ -132,10 +131,10 @@ ShallowWrapper {
               permanent
             </div>
             <div
-              className="mf-infos"
+              className="teaser-infos"
             >
               <span
-                className="mf-status mf-booked"
+                className="teaser-status teaser-booked"
               >
                 Réservé
               </span>
@@ -177,7 +176,7 @@ ShallowWrapper {
               />
             </div>,
             <div
-              className="teaser-wrapper mf-wrapper"
+              className="teaser-wrapper"
             >
               <div
                 className="teaser-title"
@@ -195,10 +194,10 @@ ShallowWrapper {
                 permanent
               </div>
               <div
-                className="mf-infos"
+                className="teaser-infos"
               >
                 <span
-                  className="mf-status mf-booked"
+                  className="teaser-status teaser-booked"
                 >
                   Réservé
                 </span>
@@ -271,10 +270,10 @@ ShallowWrapper {
                   permanent
                 </div>,
                 <div
-                  className="mf-infos"
+                  className="teaser-infos"
                 >
                   <span
-                    className="mf-status mf-booked"
+                    className="teaser-status teaser-booked"
                   >
                     Réservé
                   </span>
@@ -285,7 +284,7 @@ ShallowWrapper {
                   </span>
                 </div>,
               ],
-              "className": "teaser-wrapper mf-wrapper",
+              "className": "teaser-wrapper",
             },
             "ref": null,
             "rendered": Array [
@@ -333,7 +332,7 @@ ShallowWrapper {
                   "children": Array [
                     Array [
                       <span
-                        className="mf-status mf-booked"
+                        className="teaser-status teaser-booked"
                       >
                         Réservé
                       </span>,
@@ -344,7 +343,7 @@ ShallowWrapper {
                       10 km
                     </span>,
                   ],
-                  "className": "mf-infos",
+                  "className": "teaser-infos",
                 },
                 "ref": null,
                 "rendered": Array [
@@ -354,7 +353,7 @@ ShallowWrapper {
                     "nodeType": "host",
                     "props": Object {
                       "children": "Réservé",
-                      "className": "mf-status mf-booked",
+                      "className": "teaser-status teaser-booked",
                     },
                     "ref": null,
                     "rendered": "Réservé",
@@ -436,7 +435,7 @@ ShallowWrapper {
               />
             </div>
             <div
-              className="teaser-wrapper mf-wrapper"
+              className="teaser-wrapper"
             >
               <div
                 className="teaser-title"
@@ -454,10 +453,10 @@ ShallowWrapper {
                 permanent
               </div>
               <div
-                className="mf-infos"
+                className="teaser-infos"
               >
                 <span
-                  className="mf-status mf-booked"
+                  className="teaser-status teaser-booked"
                 >
                   Réservé
                 </span>
@@ -480,7 +479,7 @@ ShallowWrapper {
             </div>
           </React.Fragment>
         </Link>,
-        "className": "",
+        "className": "teaser-item",
       },
       "ref": null,
       "rendered": Object {
@@ -498,7 +497,7 @@ ShallowWrapper {
               />
             </div>
             <div
-              className="teaser-wrapper mf-wrapper"
+              className="teaser-wrapper"
             >
               <div
                 className="teaser-title"
@@ -516,10 +515,10 @@ ShallowWrapper {
                 permanent
               </div>
               <div
-                className="mf-infos"
+                className="teaser-infos"
               >
                 <span
-                  className="mf-status mf-booked"
+                  className="teaser-status teaser-booked"
                 >
                   Réservé
                 </span>
@@ -561,7 +560,7 @@ ShallowWrapper {
                 />
               </div>,
               <div
-                className="teaser-wrapper mf-wrapper"
+                className="teaser-wrapper"
               >
                 <div
                   className="teaser-title"
@@ -579,10 +578,10 @@ ShallowWrapper {
                   permanent
                 </div>
                 <div
-                  className="mf-infos"
+                  className="teaser-infos"
                 >
                   <span
-                    className="mf-status mf-booked"
+                    className="teaser-status teaser-booked"
                   >
                     Réservé
                   </span>
@@ -655,10 +654,10 @@ ShallowWrapper {
                     permanent
                   </div>,
                   <div
-                    className="mf-infos"
+                    className="teaser-infos"
                   >
                     <span
-                      className="mf-status mf-booked"
+                      className="teaser-status teaser-booked"
                     >
                       Réservé
                     </span>
@@ -669,7 +668,7 @@ ShallowWrapper {
                     </span>
                   </div>,
                 ],
-                "className": "teaser-wrapper mf-wrapper",
+                "className": "teaser-wrapper",
               },
               "ref": null,
               "rendered": Array [
@@ -717,7 +716,7 @@ ShallowWrapper {
                     "children": Array [
                       Array [
                         <span
-                          className="mf-status mf-booked"
+                          className="teaser-status teaser-booked"
                         >
                           Réservé
                         </span>,
@@ -728,7 +727,7 @@ ShallowWrapper {
                         10 km
                       </span>,
                     ],
-                    "className": "mf-infos",
+                    "className": "teaser-infos",
                   },
                   "ref": null,
                   "rendered": Array [
@@ -738,7 +737,7 @@ ShallowWrapper {
                       "nodeType": "host",
                       "props": Object {
                         "children": "Réservé",
-                        "className": "mf-status mf-booked",
+                        "className": "teaser-status teaser-booked",
                       },
                       "ref": null,
                       "rendered": "Réservé",

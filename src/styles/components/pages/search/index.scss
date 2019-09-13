@@ -2,15 +2,18 @@
 @import 'NavResultsHeader.scss';
 @import 'searchFilters/index.scss';
 @import 'searchByType/index.scss';
-@import 'results/index.scss';
 
 .search-page {
   form {
     margin-bottom: 40px;
+    padding-left: 12px;
+    padding-right: 12px;
   }
 
   .page-content {
     display: block;
+    padding-left: 0;
+    padding-right: 0;
   }
 }
 
@@ -48,8 +51,6 @@
   background-position: center center;
   background-repeat: no-repeat;
   background-size: cover;
-  margin-left: -12px;
-  margin-right: -12px;
   height: rem(250px);
 }
 

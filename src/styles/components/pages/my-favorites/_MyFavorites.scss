@@ -5,12 +5,6 @@
   padding: 1rem 1rem 1rem 2rem;
 }
 
-.mf-my-favorite {
-  @include dotted($primary, bottom);
-
-  background-color: $white;
-}
-
 .mf-edit {
   display: flex;
   flex-direction: row;
@@ -39,51 +33,4 @@
   @include btn();
 
   background: transparent url(/icons/ico-bin-w.svg) no-repeat left center;
-}
-
-.mf-wrapper {
-  padding: 0.5rem;
-}
-
-.mf-infos {
-  padding-top: 0.3rem;
-}
-
-.mf-status {
-  border-radius: 2px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  margin-right: 0.2rem;
-  padding: 0.2rem;
-  text-transform: uppercase;
-}
-
-.mf-tomorrow {
-  background-color: $ribbon-yellow;
-  color: $black;
-}
-
-.mf-today {
-  background-color: $ribbon-blue;
-  color: $white;
-}
-
-.mf-finished {
-  background-color: $grey-finished;
-  color: $white;
-}
-
-.mf-booked {
-  background-color: $ribbon-green;
-  color: $black;
-}
-
-.mf-cancelled {
-  background-color: $ribbon-red;
-  color: $white;
-}
-
-.mf-fully-booked {
-  background-color: $grey;
-  color: $white;
 }

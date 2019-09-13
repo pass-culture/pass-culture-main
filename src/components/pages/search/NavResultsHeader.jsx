@@ -17,7 +17,7 @@ const NavResultsHeader = ({ category, description }) => {
       title={imgDescription}
     >
       <div
-        className="text-left is-white-text is-absolute"
+        className="text-left is-white-text is-absolute mx12"
         id="category-description"
       >
         <h2 className="is-bold mb3">{category}</h2>

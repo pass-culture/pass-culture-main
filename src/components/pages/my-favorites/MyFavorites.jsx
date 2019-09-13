@@ -121,7 +121,6 @@ class MyFavorites extends Component {
           <ul>
             {myFavorites.map(myFavorite => (
               <MyFavoriteContainer
-                className="mf-my-favorite"
                 favorite={myFavorite}
                 handleToggleItem={this.onToggleFavorite}
                 isEditMode={isEditMode}

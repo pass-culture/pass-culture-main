@@ -94,7 +94,7 @@ class Results extends PureComponent {
       <div className="search-results">
         {resultTitle && (
           <h2
-            className={classnames('fs15 is-uppercase is-italic is-semi-bold mb12', {
+            className={classnames('fs15 is-uppercase is-italic is-semi-bold mb12 pl12', {
               [`nav-result-title`]: cameFromOfferTypesPage,
             })}
             id="results-title"

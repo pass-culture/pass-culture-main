@@ -28,15 +28,15 @@ class Teaser extends Component {
             src={thumbUrl || DEFAULT_THUMB_URL}
           />
         </div>
-        <div className="teaser-wrapper mf-wrapper">
+        <div className="teaser-wrapper">
           <div className="teaser-title">{name}</div>
           <div className="teaser-sub-title">{offerTypeLabel}</div>
           {date && <div className="teaser-date">{date}</div>}
-          <div className="mf-infos">
+          <div className="teaser-infos">
             {status.length > 0 &&
               status.map(status => (
                 <span
-                  className={`mf-status mf-${status.class}`}
+                  className={`teaser-status teaser-${status.class}`}
                   key={status.class}
                 >
                   {status.label}
@@ -66,10 +66,10 @@ class Teaser extends Component {
   }
 
   render() {
-    const { className, detailsUrl, isEditMode } = this.props
+    const { detailsUrl, isEditMode } = this.props
 
     return (
-      <li className={`${className}`}>
+      <li className="teaser-item">
         {isEditMode ? (
           <div className="teaser-link">{this.renderItem()}</div>
         ) : (
@@ -86,7 +86,6 @@ class Teaser extends Component {
 }
 
 Teaser.defaultProps = {
-  className: '',
   date: null,
   handleToggleItem: () => {},
   isEditMode: false,
@@ -95,7 +94,6 @@ Teaser.defaultProps = {
 }
 
 Teaser.propTypes = {
-  className: PropTypes.string,
   date: PropTypes.string,
   detailsUrl: PropTypes.string.isRequired,
   handleToggleItem: PropTypes.func,

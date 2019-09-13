@@ -9,8 +9,8 @@ const keywordsSearchButton = Selector('#keywords-search-button')
 const resultsTitle = Selector('#results-title')
 const baseUrl = `${ROOT_PATH}recherche`
 
-const searchItem = Selector('.recommendation-list-item')
-const itemDetailsArrow = searchItem.find('.icon-legacy-next')
+const searchItem = Selector('.teaser-item')
+const itemDetailsArrow = searchItem.find('.teaser-arrow-img')
 const versoOfferName = Selector('#verso-offer-name')
 
 const backLink = Selector('.back-link')

@@ -33,6 +33,11 @@
 .teaser-wrapper {
   @include dotted($primary, left);
 
+  padding: 0.5rem;
+  padding-right: 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   width: 55%;
 }
 
@@ -41,7 +46,7 @@
 
   color: $black;
   font-size: 1.1rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .teaser-title-booking {
@@ -58,6 +63,7 @@
   font-size: 0.8rem;
   font-weight: 600;
   padding-top: 0.3rem;
+  @include multiLineEllipsis(1);
 }
 
 .teaser-date,
@@ -105,4 +111,53 @@
 .teaser-text {
   color: $white;
   text-align: center;
+}
+
+.teaser-item{
+  @include dotted($primary, bottom);
+
+  background-color: $white;
+}
+
+.teaser-infos {
+  padding-top: 0.3rem;
+}
+
+.teaser-status {
+  border-radius: 2px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-right: 0.2rem;
+  padding: 0.2rem;
+  text-transform: uppercase;
+}
+
+.teaser-tomorrow {
+  background-color: $ribbon-yellow;
+  color: $black;
+}
+
+.teaser-today {
+  background-color: $ribbon-blue;
+  color: $white;
+}
+
+.teaser-finished {
+  background-color: $grey-finished;
+  color: $white;
+}
+
+.teaser-booked {
+  background-color: $ribbon-green;
+  color: $black;
+}
+
+.teaser-cancelled {
+  background-color: $ribbon-red;
+  color: $white;
+}
+
+.teaser-fully-booked {
+  background-color: $grey;
+  color: $white;
 }
