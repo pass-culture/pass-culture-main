@@ -1,48 +1,13 @@
-import { shallow } from 'enzyme'
-import configureStore from 'redux-mock-store'
-import React from 'react'
-import { Provider } from 'react-redux'
 import { selectCurrentUser } from 'with-react-redux-login'
 
-import ShareButtonContainer, { mapStateToProps } from '../ShareButtonContainer'
+import { mapStateToProps } from '../ShareButtonContainer'
 import { getShareURL } from '../../../../../helpers'
+import { mapDispatchToProps } from '../ShareButtonContainer'
 
 jest.mock('with-react-redux-login')
 jest.mock('../../../../../helpers')
 
-const middlewares = []
-const mockStore = configureStore(middlewares)
-
-const dispatchMock = jest.fn()
-
 describe('src | components | share | ShareButtonContainer', () => {
-  describe('snapshot', () => {
-    it('should match the snapshot', () => {
-      // given
-      const initialState = {
-        options: {},
-        user: {
-          email: 'fake@email.fr',
-        },
-        visible: true,
-      }
-      const store = mockStore(initialState)
-      const props = {
-        dispatch: dispatchMock,
-      }
-
-      // when
-      const wrapper = shallow(
-        <Provider store={store}>
-          <ShareButtonContainer {...props} />
-        </Provider>
-      )
-
-      // then
-      expect(wrapper).toMatchSnapshot()
-    })
-  })
-
   describe('mapStateToProps', () => {
     describe('when mapping offerName', () => {
       it('should get offerName from current offer', () => {
@@ -63,7 +28,7 @@ describe('src | components | share | ShareButtonContainer', () => {
               mediationId: 'CA',
               offerId,
             },
-          }
+          },
         }
         const state = {
           data: {
@@ -71,8 +36,8 @@ describe('src | components | share | ShareButtonContainer', () => {
             favorites: [],
             mediations: [],
             offers: [offer],
-            recommendations: [recommendation]
-          }
+            recommendations: [recommendation],
+          },
         }
 
         // when
@@ -103,7 +68,7 @@ describe('src | components | share | ShareButtonContainer', () => {
               mediationId: 'CA',
               offerId,
             },
-          }
+          },
         }
         const state = {
           data: {
@@ -111,8 +76,8 @@ describe('src | components | share | ShareButtonContainer', () => {
             favorites: [],
             mediations: [],
             offers: [offer],
-            recommendations: [recommendation]
-          }
+            recommendations: [recommendation],
+          },
         }
 
         // when
@@ -120,9 +85,7 @@ describe('src | components | share | ShareButtonContainer', () => {
         const result = mapStateToProps(state, ownProps)
 
         // then
-        expect(result.text).toBe(
-          "Retrouvez Marx et Compagnie sur le pass Culture"
-        )
+        expect(result.text).toBe('Retrouvez Marx et Compagnie sur le pass Culture')
       })
     })
 
@@ -146,7 +109,7 @@ describe('src | components | share | ShareButtonContainer', () => {
                 mediationId: 'CA',
                 offerId,
               },
-            }
+            },
           }
           const state = {
             data: {
@@ -154,8 +117,8 @@ describe('src | components | share | ShareButtonContainer', () => {
               favorites: [],
               mediations: [],
               offers: [offer],
-              recommendations: [recommendation]
-            }
+              recommendations: [recommendation],
+            },
           }
 
           // when
@@ -165,6 +128,47 @@ describe('src | components | share | ShareButtonContainer', () => {
           // then
           expect(mapStateToProps(state, ownProps).url).toBe('http://fake_shared_url')
         })
+      })
+    })
+
+    describe('when mapping offerId', () => {
+      it('should get offerId from current offer', () => {
+        // given
+        const ownProps = {
+          match: {
+            params: {
+              mediationId: 'CA',
+              offerId: 'B4',
+            },
+          },
+        }
+        const state = {
+          data: {
+            bookings: [],
+            favorites: [],
+            mediations: [],
+            offers: [
+              {
+                id: 'B4',
+                name: 'Marx et Compagnie',
+              },
+            ],
+            recommendations: [
+              {
+                id: 'PA',
+                mediationId: 'CA',
+                offerId: 'B4',
+              },
+            ],
+          },
+        }
+
+        // when
+        selectCurrentUser.mockReturnValue({ id: 'myId' })
+        const result = mapStateToProps(state, ownProps)
+
+        // then
+        expect(result.offerId).toBe('B4')
       })
     })
 
@@ -187,7 +191,7 @@ describe('src | components | share | ShareButtonContainer', () => {
               mediationId: 'CA',
               offerId: 'B4',
             },
-          }
+          },
         }
 
         const state = {
@@ -196,7 +200,7 @@ describe('src | components | share | ShareButtonContainer', () => {
             favorites: [],
             mediations: [],
             offers: [offer],
-            recommendations: [recommendation]
+            recommendations: [recommendation],
           },
           share: {
             options: false,
@@ -211,6 +215,40 @@ describe('src | components | share | ShareButtonContainer', () => {
         // then
         expect(result.options).toBe(false)
         expect(result.visible).toBe(true)
+      })
+    })
+  })
+
+  describe('mapDispatchToProps', () => {
+    describe('when mapping openPopin', () => {
+      it('should dispatch openSharePopin with correct arguments', () => {
+        // given
+        const dispatch = jest.fn()
+
+        // when
+        mapDispatchToProps(dispatch).openPopin({ isOpened: true })
+
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          options: { isOpened: true },
+          type: 'TOGGLE_SHARE_POPIN',
+        })
+      })
+    })
+
+    describe('when mapping closePopin', () => {
+      it('should dispatch closeSharePopin with correct arguments', () => {
+        // given
+        const dispatch = jest.fn()
+
+        // when
+        mapDispatchToProps(dispatch).closePopin()
+
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          options: false,
+          type: 'TOGGLE_SHARE_POPIN',
+        })
       })
     })
   })

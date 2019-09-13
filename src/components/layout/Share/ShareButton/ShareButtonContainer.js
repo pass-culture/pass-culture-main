@@ -4,9 +4,10 @@ import { compose } from 'redux'
 import { selectCurrentUser } from 'with-react-redux-login'
 
 import ShareButton from './ShareButton'
-import { getShareURL } from '../../../../helpers'
 import selectMediationByRouterMatch from '../../../../selectors/selectMediationByRouterMatch'
 import selectOfferByRouterMatch from '../../../../selectors/selectOfferByRouterMatch'
+import { openSharePopin, closeSharePopin } from '../../../../reducers/share'
+import { getShareURL } from '../../../../helpers'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
@@ -22,11 +23,24 @@ export const mapStateToProps = (state, ownProps) => {
     offerName,
     text,
     url,
+    offerId,
     ...state.share,
   }
 }
 
+export const mapDispatchToProps = dispatch => ({
+  openPopin: popinOptions => {
+    dispatch(openSharePopin(popinOptions))
+  },
+  closePopin: () => {
+    dispatch(closeSharePopin())
+  },
+})
+
 export default compose(
   withRouter,
-  connect(mapStateToProps)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
 )(ShareButton)

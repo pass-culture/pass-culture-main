@@ -1,16 +1,15 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 
 import ShareButton from '../ShareButton'
 
-const dispatchMock = jest.fn()
-
-describe('src | components | share | ShareButton', () => {
+describe('src | components | layout | Share | ShareButton | ShareButton', () => {
   it('should match the snapshot', () => {
     // given
     const props = {
-      dispatch: dispatchMock,
+      closePopin: () => {},
       offerName: 'Fake offer name',
+      openPopin: () => {},
       text: 'Fake text',
       url: 'http://www.fake-url.com',
     }
@@ -22,14 +21,41 @@ describe('src | components | share | ShareButton', () => {
     expect(wrapper).toMatchSnapshot()
   })
 
-  describe('handleOnClickShare', () => {
-    describe('when there is not native sharing', () => {
-      it('should call dispatch with good action parameters', () => {
+  describe('onCloseHandler', () => {
+    describe('when close the modal', () => {
+      it('should call closePopin with good action parameters', () => {
         // given
+        const openPopinMock = jest.fn()
         const props = {
-          dispatch: dispatchMock,
+          closePopin: jest.fn(),
           email: 'foo@bar.com',
           offerName: 'Fake offer name',
+          openPopin: openPopinMock,
+          text: 'Fake text',
+          url: 'http://www.fake-url.com',
+        }
+
+        // when
+        const wrapper = shallow(<ShareButton {...props} />)
+        wrapper.instance().onCloseHandler()
+
+        // then
+        expect(props.closePopin).toHaveBeenCalledWith()
+        expect(wrapper.state('isCopied')).toBe(false)
+      })
+    })
+  })
+
+  describe('handleOnClickShare', () => {
+    describe('when there is not native sharing', () => {
+      it('should call openPopin with good options', () => {
+        // given
+        const openPopinMock = jest.fn()
+        const props = {
+          closePopin: () => {},
+          email: 'foo@bar.com',
+          offerName: 'Fake offer name',
+          openPopin: openPopinMock,
           text: 'Fake text',
           url: 'http://www.fake-url.com',
         }
@@ -37,17 +63,13 @@ describe('src | components | share | ShareButton', () => {
         // when
         const wrapper = shallow(<ShareButton {...props} />)
         wrapper.find('button').simulate('click')
-        const expected = {
-          options: {
-            buttons: expect.any(Array),
-            text: 'Comment souhaitez-vous partager cette offre ?',
-            title: 'Fake offer name',
-          },
-          type: 'TOGGLE_SHARE_POPIN',
-        }
 
         // then
-        expect(dispatchMock).toHaveBeenCalledWith(expected)
+        expect(openPopinMock).toHaveBeenCalledWith({
+          buttons: expect.any(Array),
+          text: 'Comment souhaitez-vous partager cette offre ?',
+          title: 'Fake offer name',
+        })
       })
     })
   })

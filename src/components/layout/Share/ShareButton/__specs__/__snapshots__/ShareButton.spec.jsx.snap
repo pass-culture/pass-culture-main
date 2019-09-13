@@ -1,13 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | share | ShareButton should match the snapshot 1`] = `
+exports[`src | components | layout | Share | ShareButton | ShareButton should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <ShareButton
-    dispatch={[MockFunction]}
+    closePopin={[Function]}
     email={null}
-    id="verso-share-button"
     offerName="Fake offer name"
+    openPopin={[Function]}
     text="Fake text"
     url="http://www.fake-url.com"
   />,
@@ -31,8 +31,6 @@ ShallowWrapper {
         title="Partager cette offre"
       />,
       "className": "no-border no-background",
-      "disabled": false,
-      "id": "verso-share-button",
       "onClick": [Function],
       "type": "button",
     },
@@ -64,8 +62,6 @@ ShallowWrapper {
           title="Partager cette offre"
         />,
         "className": "no-border no-background",
-        "disabled": false,
-        "id": "verso-share-button",
         "onClick": [Function],
         "type": "button",
       },

@@ -3,12 +3,11 @@ import React, { PureComponent } from 'react'
 
 import CopyToClipboardButton from '../CopyToClipboardButton'
 import MailToLink from '../../MailToLink/MailToLink'
-import { openSharePopin, closeSharePopin } from '../../../../reducers/share'
 
 class ShareButton extends PureComponent {
   constructor(props) {
     super(props)
-    this.state = { iscopied: false }
+    this.state = { isCopied: false }
   }
 
   getCopyToClipboardButton = (url, onClick) => (
@@ -22,12 +21,12 @@ class ShareButton extends PureComponent {
 
   getMailToLinkButton = (email, headers) => (
     <MailToLink
-      className="no-underline is-block is-white-text py12 is-bold fs14"
+      className="no-underline is-white-text py12 is-bold fs14"
       email={email}
       headers={headers}
       key="MailToLink"
     >
-      <span>{'Envoyer par e-mail'}</span>
+      {'Envoyer par e-mail'}
     </MailToLink>
   )
 
@@ -38,32 +37,31 @@ class ShareButton extends PureComponent {
       onClick={onClose}
       type="button"
     >
-      <span>{'Fermer'}</span>
+      {'Fermer'}
     </button>
   )
 
   onCopyHandler = status => {
-    this.setState({ iscopied: status }, () => {
+    this.setState({ isCopied: status }, () => {
       this.handleOnClickShare()
     })
   }
 
   onCloseHandler = () => {
-    const { dispatch } = this.props
-    dispatch(closeSharePopin())
-    this.setState({ iscopied: false })
+    const { closePopin } = this.props
+    closePopin()
+    this.setState({ isCopied: false })
   }
 
   handleOnClickShare = () => {
-    const { dispatch, email, offerName, text, url } = this.props
+    const { email, offerName, openPopin, text, url } = this.props
 
     try {
       const nativeOptions = { text: `${text}\n`, title: text, url }
-      return navigator
-        .share(nativeOptions)
-        .then(() => {})
-        .catch(() => {})
+
+      return navigator.share(nativeOptions)
     } catch (err) {
+      const { isCopied } = this.state
       const headers = {
         body: `${text}\n\n${url}`,
         subject: text,
@@ -77,25 +75,19 @@ class ShareButton extends PureComponent {
         title: offerName,
       }
 
-      const { iscopied } = this.state
-
-      if (iscopied) {
+      if (isCopied) {
         popinOptions.text = 'Le lien a bien été copié.'
         popinOptions.buttons = [this.getCloseButton(this.onCloseHandler)]
       }
 
-      return dispatch(openSharePopin(popinOptions))
+      openPopin(popinOptions)
     }
   }
 
   render() {
-    const { id, offerName, url } = this.props
-    const isDisabled = !offerName || !url
     return (
       <button
         className="no-border no-background"
-        disabled={isDisabled}
-        id={id}
         onClick={this.handleOnClickShare}
         type="button"
       >
@@ -111,17 +103,16 @@ class ShareButton extends PureComponent {
 
 ShareButton.defaultProps = {
   email: null,
-  id: 'verso-share-button',
   offerName: null,
   text: null,
   url: null,
 }
 
 ShareButton.propTypes = {
-  dispatch: PropTypes.func.isRequired,
+  closePopin: PropTypes.func.isRequired,
   email: PropTypes.string,
-  id: PropTypes.string,
   offerName: PropTypes.string,
+  openPopin: PropTypes.func.isRequired,
   text: PropTypes.string,
   url: PropTypes.string,
 }
