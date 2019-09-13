@@ -6,10 +6,33 @@ from models import Booking, PcObject
 from scripts.update_booking_used import update_booking_used_after_stock_occurrence
 from tests.conftest import clean_database
 from tests.test_utils import create_deposit, create_booking, create_user, create_offerer, create_venue, \
-    create_offer_with_event_product, create_stock
+    create_offer_with_event_product, create_stock, create_offer_with_thing_product
 
 
 class UpdateBookingUsedTest:
+    @clean_database
+    def test_update_booking_used_when_booking_is_on_thing_product(self, app):
+        # Given
+        user = create_user()
+        deposit = create_deposit(user)
+
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer,
+                             beginning_datetime=None,
+                             end_datetime=None)
+        booking = create_booking(user, stock=stock, is_used=False)
+        PcObject.save(user, deposit, booking, stock)
+
+        # When
+        update_booking_used_after_stock_occurrence()
+
+        # Then
+        updated_booking = Booking.query.first()
+        assert not updated_booking.isUsed
+        assert not updated_booking.dateUsed
+
     @freeze_time('2019-10-13')
     @clean_database
     def test_update_booking_used_when_event_date_is_3_days_before(self, app):
