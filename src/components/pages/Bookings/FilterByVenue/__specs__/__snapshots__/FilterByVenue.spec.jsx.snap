@@ -97,7 +97,7 @@ ShallowWrapper {
           </select>
         </div>,
         <div
-          className="select-digital-offer mt16 mb12"
+          className="select-digital-offer"
         >
           <div>
             ou :
@@ -293,7 +293,7 @@ ShallowWrapper {
               Cochez cette case pour voir les offres numériques
             </label>,
           ],
-          "className": "select-digital-offer mt16 mb12",
+          "className": "select-digital-offer",
         },
         "ref": null,
         "rendered": Array [
@@ -388,7 +388,7 @@ ShallowWrapper {
             </select>
           </div>,
           <div
-            className="select-digital-offer mt16 mb12"
+            className="select-digital-offer"
           >
             <div>
               ou :
@@ -584,7 +584,7 @@ ShallowWrapper {
                 Cochez cette case pour voir les offres numériques
               </label>,
             ],
-            "className": "select-digital-offer mt16 mb12",
+            "className": "select-digital-offer",
           },
           "ref": null,
           "rendered": Array [

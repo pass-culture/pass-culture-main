@@ -1,5 +1,7 @@
 .select-digital-offer {
   @extend .no-background;
+  @extend .mb12;
+  @extend .mt16;
 
   label {
     white-space: pre;

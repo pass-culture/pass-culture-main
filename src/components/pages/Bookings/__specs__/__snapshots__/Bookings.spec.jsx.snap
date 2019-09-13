@@ -40,7 +40,7 @@ ShallowWrapper {
           className="notification is-info"
         >
           <div
-            className="is-static fs16"
+            className="is-static"
           >
             <Icon
               png="picto-info-solid"
@@ -54,7 +54,7 @@ ShallowWrapper {
               sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.
               <br />
               <br />
-              La contremarque ne peut être validée qu'après ce délai.
+              La contremarque ne peut être validée qu’après ce délai.
             </span>
           </div>
         </div>,
@@ -132,7 +132,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": <div
-            className="is-static fs16"
+            className="is-static"
           >
             <Icon
               png="picto-info-solid"
@@ -146,7 +146,7 @@ ShallowWrapper {
               sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.
               <br />
               <br />
-              La contremarque ne peut être validée qu'après ce délai.
+              La contremarque ne peut être validée qu’après ce délai.
             </span>
           </div>,
           "className": "notification is-info",
@@ -170,10 +170,10 @@ ShallowWrapper {
                 sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.
                 <br />
                 <br />
-                La contremarque ne peut être validée qu'après ce délai.
+                La contremarque ne peut être validée qu’après ce délai.
               </span>,
             ],
-            "className": "is-static fs16",
+            "className": "is-static",
           },
           "ref": null,
           "rendered": Array [
@@ -202,7 +202,7 @@ ShallowWrapper {
                   "sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.",
                   <br />,
                   <br />,
-                  "La contremarque ne peut être validée qu'après ce délai.",
+                  "La contremarque ne peut être validée qu’après ce délai.",
                 ],
               },
               "ref": null,
@@ -238,7 +238,7 @@ ShallowWrapper {
                   "rendered": null,
                   "type": "br",
                 },
-                "La contremarque ne peut être validée qu'après ce délai.",
+                "La contremarque ne peut être validée qu’après ce délai.",
               ],
               "type": "span",
             },
@@ -296,7 +296,7 @@ ShallowWrapper {
             className="notification is-info"
           >
             <div
-              className="is-static fs16"
+              className="is-static"
             >
               <Icon
                 png="picto-info-solid"
@@ -310,7 +310,7 @@ ShallowWrapper {
                 sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.
                 <br />
                 <br />
-                La contremarque ne peut être validée qu'après ce délai.
+                La contremarque ne peut être validée qu’après ce délai.
               </span>
             </div>
           </div>,
@@ -388,7 +388,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": <div
-              className="is-static fs16"
+              className="is-static"
             >
               <Icon
                 png="picto-info-solid"
@@ -402,7 +402,7 @@ ShallowWrapper {
                 sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.
                 <br />
                 <br />
-                La contremarque ne peut être validée qu'après ce délai.
+                La contremarque ne peut être validée qu’après ce délai.
               </span>
             </div>,
             "className": "notification is-info",
@@ -426,10 +426,10 @@ ShallowWrapper {
                   sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.
                   <br />
                   <br />
-                  La contremarque ne peut être validée qu'après ce délai.
+                  La contremarque ne peut être validée qu’après ce délai.
                 </span>,
               ],
-              "className": "is-static fs16",
+              "className": "is-static",
             },
             "ref": null,
             "rendered": Array [
@@ -458,7 +458,7 @@ ShallowWrapper {
                     "sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.",
                     <br />,
                     <br />,
-                    "La contremarque ne peut être validée qu'après ce délai.",
+                    "La contremarque ne peut être validée qu’après ce délai.",
                   ],
                 },
                 "ref": null,
@@ -494,7 +494,7 @@ ShallowWrapper {
                     "rendered": null,
                     "type": "br",
                   },
-                  "La contremarque ne peut être validée qu'après ce délai.",
+                  "La contremarque ne peut être validée qu’après ce délai.",
                 ],
                 "type": "span",
               },

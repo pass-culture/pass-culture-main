@@ -22,7 +22,7 @@ class FilterByOffer extends PureComponent {
       <Fragment>
         <div className="section">
           <h2 className="main-list-title">
-            {isFilteredByDigitalVenues ? 'OFFRE NUMÉRIQUE' : 'OFFRE'}
+            {isFilteredByDigitalVenues ? 'Offre Numérique' : 'Offre'}
           </h2>
         </div>
         <div id="filter-by-offer">

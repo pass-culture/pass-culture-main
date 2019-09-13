@@ -58,7 +58,7 @@ class FilterByVenue extends PureComponent {
             ))}
           </select>
         </div>
-        <div className="select-digital-offer mt16 mb12">
+        <div className="select-digital-offer">
           <div>
             {'ou :'}
           </div>

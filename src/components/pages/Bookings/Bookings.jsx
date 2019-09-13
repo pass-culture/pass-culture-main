@@ -21,7 +21,7 @@ const Bookings = ({ pathToCsvFile, showButtons, showOfferSection }) => (
       </p>
     </HeroSection>
     <div className="notification is-info">
-      <div className="is-static fs16">
+      <div className="is-static">
         <Icon png="picto-info-solid" />
         <span>
           {'Les'}
@@ -33,7 +33,7 @@ const Bookings = ({ pathToCsvFile, showButtons, showOfferSection }) => (
           }
           <br />
           <br />
-          {"La contremarque ne peut être validée qu'après ce délai."}
+          {'La contremarque ne peut être validée qu’après ce délai.'}
         </span>
       </div>
     </div>

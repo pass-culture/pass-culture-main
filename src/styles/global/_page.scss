@@ -10,6 +10,7 @@
     padding-top: 0;
 
     .main-list-title {
+      @extend .is-uppercase;
       border-bottom: thin solid;
       display: block;
       font-weight: $weight-bold;

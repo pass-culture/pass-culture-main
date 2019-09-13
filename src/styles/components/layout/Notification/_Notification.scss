@@ -33,14 +33,10 @@
   }
 
   .is-static {
+      @extend .fs16;
       margin: 18px 18px 18px 0;
       display: flex;
-      font-weight: normal;
-      line-height: 19px;
       text-align: justify;
-      justify-content: flex-start;
-      align-items: center;
-      flex-grow: 1;
 
       img {
         padding-left: 18px;

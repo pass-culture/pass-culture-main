@@ -35,16 +35,17 @@ describe('src | components | pages | Bookings', () => {
       expect(wrapper.prop('showButtons')).toBe()
       expect(wrapper.prop('showOfferSection')).toBe()
     })
+
     it('should render a static information message', () => {
       // given
       const wrapper = shallow(<Bookings />)
 
       // when
-      const informationComponent = wrapper.find('.is-static').find('span')
+      const informationComponent = wrapper.find('.is-static span')
 
       // then
       expect(informationComponent.text()).toStrictEqual(
-        "Les réservations d’événements sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.La contremarque ne peut être validée qu'après ce délai."
+        'Les réservations d’événements sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.La contremarque ne peut être validée qu’après ce délai.'
       )
     })
     describe('the download and display section', () => {
