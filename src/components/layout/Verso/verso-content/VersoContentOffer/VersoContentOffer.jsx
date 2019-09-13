@@ -21,7 +21,7 @@ class VersoContentOffer extends PureComponent {
     if (!description) return null
 
     return (
-      <div>
+      <Fragment>
         <h3>{'Et en détails ?'}</h3>
         <pre
           className="is-raw-description"
@@ -29,7 +29,7 @@ class VersoContentOffer extends PureComponent {
         >
           {description}
         </pre>
-      </div>
+      </Fragment>
     )
   }
 
@@ -44,7 +44,7 @@ class VersoContentOffer extends PureComponent {
     const subType = get(musicSubType, 'label') || get(showSubType, 'label')
 
     return (
-      <div>
+      <Fragment>
         <h3>{'Quoi ?'}</h3>
         <div>
           <span
@@ -53,44 +53,14 @@ class VersoContentOffer extends PureComponent {
           >
             {appLabel}
           </span>
-          {durationMinutes && (
-            <span>
-              {' - Durée'} {duration}
-            </span>
-          )}
+          {durationMinutes && <span>{` - Durée ${duration}`}</span>}
         </div>
-        {type && (
-          <div>
-            {'Genre : '}
-            {type}
-            {subType && `/ ${subType}`}
-          </div>
-        )}
-        {author && (
-          <div>
-            {'Auteur : '}
-            {author}
-          </div>
-        )}
-        {performer && (
-          <div>
-            {'Interprète : '}
-            {performer}
-          </div>
-        )}
-        {speaker && (
-          <div>
-            {'Intervenant : '}
-            {speaker}
-          </div>
-        )}
-        {stageDirector && (
-          <div>
-            {'Metteur en scène : '}
-            {stageDirector}
-          </div>
-        )}
-      </div>
+        {type && <div>{`Genre : ${type} ${subType && `/ ${subType}`}`}</div>}
+        {author && <div>{`Auteur : ${author}`}</div>}
+        {performer && <div>{`Interprète : ${performer}`}</div>}
+        {speaker && <div>{`Intervenant : ${speaker}`}</div>}
+        {stageDirector && <div>{`Metteur en scène : ${stageDirector}`}</div>}
+      </Fragment>
     )
   }
 
@@ -118,10 +88,7 @@ class VersoContentOffer extends PureComponent {
 
     return (
       <Fragment>
-        <li>
-          {'Dès maintenant'}
-          {limitDatetime && ` et jusqu’au ${limitDatetime}`}
-        </li>
+        <li>{`Dès maintenant${limitDatetime && ` et jusqu’au ${limitDatetime}`}`}</li>
       </Fragment>
     )
   }
@@ -135,12 +102,12 @@ class VersoContentOffer extends PureComponent {
       : this.renderEventOfferDateInfos()
 
     return (
-      <div>
+      <Fragment>
         <h3>{'Quand ?'}</h3>
         <ul className="dates-info">
           {isFinished ? <li>{'L’offre n’est plus disponible.'}</li> : offerDateInfos}
         </ul>
-      </div>
+      </Fragment>
     )
   }
 
@@ -150,15 +117,19 @@ class VersoContentOffer extends PureComponent {
     const { address, city, latitude, longitude, name, postalCode, publicName } = venue || {}
 
     return (
-      <div>
+      <Fragment>
         <h3>{'Où ?'}</h3>
         <div className="flex-columns flex-between">
-          <p className="address-info">
-            <span className="is-block">{publicName || name}</span>
-            {address && <span className="is-block">{address}</span>}
-            {postalCode && <span className="is-block">{postalCode}</span>}
-            {city && <span className="is-block">{city}</span>}
-          </p>
+          <address>
+            {publicName || name}
+            <br />
+            {address && address}
+            <br />
+            {postalCode && postalCode}
+            <br />
+            {city && city}
+            <br />
+          </address>
           {latitude && longitude && (
             <a
               className="distance"
@@ -174,16 +145,17 @@ class VersoContentOffer extends PureComponent {
             </a>
           )}
         </div>
-      </div>
+      </Fragment>
     )
   }
 
   render() {
-    const { booking } = this.props
+    const { booking, isCancelled } = this.props
     const { completedUrl } = booking || {}
+
     return (
       <div className="verso-info">
-        {completedUrl && <VersoActionsBar url={completedUrl} />}
+        {isCancelled === false && completedUrl && <VersoActionsBar url={completedUrl} />}
         {this.renderOfferWhat()}
         {this.renderOfferDetails()}
         {this.renderOfferWhen()}
@@ -194,8 +166,8 @@ class VersoContentOffer extends PureComponent {
 }
 
 VersoContentOffer.defaultProps = {
-  bookables: null,
   booking: null,
+  isCancelled: true,
   isFinished: false,
   maxShownDates: 7,
   musicSubType: null,
@@ -206,10 +178,11 @@ VersoContentOffer.defaultProps = {
 }
 
 VersoContentOffer.propTypes = {
-  bookables: PropTypes.arrayOf(PropTypes.shape()),
+  bookables: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   booking: PropTypes.shape(),
   distance: PropTypes.string.isRequired,
   handleRequestMusicAndShowTypes: PropTypes.func.isRequired,
+  isCancelled: PropTypes.bool,
   isFinished: PropTypes.bool,
   maxShownDates: PropTypes.number,
   musicSubType: PropTypes.shape(),

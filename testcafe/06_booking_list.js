@@ -9,7 +9,7 @@ const datetimeSpan = section.find('.teaser-sub-title')
 const linkToVerso = section.find('.teaser-link')
 
 const versoContent = Selector('.verso-content')
-const addressInfo = versoContent.find('.address-info')
+const addressInfo = versoContent.find('address')
 
 const dateTimeRegexMatcher = /^(?:Dimanche|Lundi|Mardi|Mercredi|Jeudi|Vendredi|Samedi)\s(\d{1,2})([/-])(\d{1,2})\2(\d{4})\s([à])\s(\d{1,2})([:])(\d{1,2})/
 
@@ -34,8 +34,10 @@ test("Je vois la date et l'heure", async t => {
   await t.useRole(userRole).navigateTo(`${ROOT_PATH}reservations`)
 
   await t
-    .expect(datetimeSpan.exists).ok()
-    .expect(datetimeSpan.innerText).match(dateTimeRegexMatcher)
+    .expect(datetimeSpan.exists)
+    .ok()
+    .expect(datetimeSpan.innerText)
+    .match(dateTimeRegexMatcher)
 })
 
 test('Je vois le lieu sur le verso', async t => {
@@ -46,8 +48,10 @@ test('Je vois le lieu sur le verso', async t => {
   await t.useRole(userRole).navigateTo(`${ROOT_PATH}reservations`)
 
   await t
-    .expect(linkToVerso.exists).ok()
+    .expect(linkToVerso.exists)
+    .ok()
     .click(linkToVerso)
     .wait(500)
-    .expect(addressInfo.exists).ok()
+    .expect(addressInfo.exists)
+    .ok()
 })

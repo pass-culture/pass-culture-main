@@ -20,6 +20,7 @@ ShallowWrapper {
         ],
       }
     }
+    isCancelled={true}
     isFinished={false}
     maxShownDates={7}
     musicSubType={null}
@@ -67,8 +68,8 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": Array [
-        undefined,
-        <div>
+        false,
+        <React.Fragment>
           <h3>
             Quoi ?
           </h3>
@@ -80,8 +81,8 @@ ShallowWrapper {
               Presse — Abonnements
             </span>
           </div>
-        </div>,
-        <div>
+        </React.Fragment>,
+        <React.Fragment>
           <h3>
             Et en détails ?
           </h3>
@@ -91,8 +92,8 @@ ShallowWrapper {
           >
             fake description
           </pre>
-        </div>,
-        <div>
+        </React.Fragment>,
+        <React.Fragment>
           <h3>
             Quand ?
           </h3>
@@ -101,38 +102,24 @@ ShallowWrapper {
           >
             <React.Fragment />
           </ul>
-        </div>,
-        <div>
+        </React.Fragment>,
+        <React.Fragment>
           <h3>
             Où ?
           </h3>
           <div
             className="flex-columns flex-between"
           >
-            <p
-              className="address-info"
-            >
-              <span
-                className="is-block"
-              >
-                fake publicName
-              </span>
-              <span
-                className="is-block"
-              >
-                72 rue Carnot
-              </span>
-              <span
-                className="is-block"
-              >
-                93230
-              </span>
-              <span
-                className="is-block"
-              >
-                ROMAINVILLE
-              </span>
-            </p>
+            <address>
+              fake publicName
+              <br />
+              72 rue Carnot
+              <br />
+              93230
+              <br />
+              ROMAINVILLE
+              <br />
+            </address>
             <a
               className="distance"
               rel="noopener noreferrer"
@@ -150,17 +137,17 @@ ShallowWrapper {
               />
             </a>
           </div>
-        </div>,
+        </React.Fragment>,
       ],
       "className": "verso-info",
     },
     "ref": null,
     "rendered": Array [
-      undefined,
+      false,
       Object {
         "instance": null,
         "key": undefined,
-        "nodeType": "host",
+        "nodeType": "function",
         "props": Object {
           "children": Array [
             <h3>
@@ -234,12 +221,12 @@ ShallowWrapper {
           undefined,
           undefined,
         ],
-        "type": "div",
+        "type": Symbol(react.fragment),
       },
       Object {
         "instance": null,
         "key": undefined,
-        "nodeType": "host",
+        "nodeType": "function",
         "props": Object {
           "children": Array [
             <h3>
@@ -280,12 +267,12 @@ ShallowWrapper {
             "type": "pre",
           },
         ],
-        "type": "div",
+        "type": Symbol(react.fragment),
       },
       Object {
         "instance": null,
         "key": undefined,
-        "nodeType": "host",
+        "nodeType": "function",
         "props": Object {
           "children": Array [
             <h3>
@@ -339,12 +326,12 @@ ShallowWrapper {
             "type": "ul",
           },
         ],
-        "type": "div",
+        "type": Symbol(react.fragment),
       },
       Object {
         "instance": null,
         "key": undefined,
-        "nodeType": "host",
+        "nodeType": "function",
         "props": Object {
           "children": Array [
             <h3>
@@ -353,30 +340,16 @@ ShallowWrapper {
             <div
               className="flex-columns flex-between"
             >
-              <p
-                className="address-info"
-              >
-                <span
-                  className="is-block"
-                >
-                  fake publicName
-                </span>
-                <span
-                  className="is-block"
-                >
-                  72 rue Carnot
-                </span>
-                <span
-                  className="is-block"
-                >
-                  93230
-                </span>
-                <span
-                  className="is-block"
-                >
-                  ROMAINVILLE
-                </span>
-              </p>
+              <address>
+                fake publicName
+                <br />
+                72 rue Carnot
+                <br />
+                93230
+                <br />
+                ROMAINVILLE
+                <br />
+              </address>
               <a
                 className="distance"
                 rel="noopener noreferrer"
@@ -415,30 +388,16 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": Array [
-                <p
-                  className="address-info"
-                >
-                  <span
-                    className="is-block"
-                  >
-                    fake publicName
-                  </span>
-                  <span
-                    className="is-block"
-                  >
-                    72 rue Carnot
-                  </span>
-                  <span
-                    className="is-block"
-                  >
-                    93230
-                  </span>
-                  <span
-                    className="is-block"
-                  >
-                    ROMAINVILLE
-                  </span>
-                </p>,
+                <address>
+                  fake publicName
+                  <br />
+                  72 rue Carnot
+                  <br />
+                  93230
+                  <br />
+                  ROMAINVILLE
+                  <br />
+                </address>,
                 <a
                   className="distance"
                   rel="noopener noreferrer"
@@ -466,81 +425,60 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "children": Array [
-                    <span
-                      className="is-block"
-                    >
-                      fake publicName
-                    </span>,
-                    <span
-                      className="is-block"
-                    >
-                      72 rue Carnot
-                    </span>,
-                    <span
-                      className="is-block"
-                    >
-                      93230
-                    </span>,
-                    <span
-                      className="is-block"
-                    >
-                      ROMAINVILLE
-                    </span>,
+                    "fake publicName",
+                    <br />,
+                    "72 rue Carnot",
+                    <br />,
+                    "93230",
+                    <br />,
+                    "ROMAINVILLE",
+                    <br />,
                   ],
-                  "className": "address-info",
                 },
                 "ref": null,
                 "rendered": Array [
+                  "fake publicName",
                   Object {
                     "instance": null,
                     "key": undefined,
                     "nodeType": "host",
-                    "props": Object {
-                      "children": "fake publicName",
-                      "className": "is-block",
-                    },
+                    "props": Object {},
                     "ref": null,
-                    "rendered": "fake publicName",
-                    "type": "span",
+                    "rendered": null,
+                    "type": "br",
                   },
+                  "72 rue Carnot",
                   Object {
                     "instance": null,
                     "key": undefined,
                     "nodeType": "host",
-                    "props": Object {
-                      "children": "72 rue Carnot",
-                      "className": "is-block",
-                    },
+                    "props": Object {},
                     "ref": null,
-                    "rendered": "72 rue Carnot",
-                    "type": "span",
+                    "rendered": null,
+                    "type": "br",
                   },
+                  "93230",
                   Object {
                     "instance": null,
                     "key": undefined,
                     "nodeType": "host",
-                    "props": Object {
-                      "children": "93230",
-                      "className": "is-block",
-                    },
+                    "props": Object {},
                     "ref": null,
-                    "rendered": "93230",
-                    "type": "span",
+                    "rendered": null,
+                    "type": "br",
                   },
+                  "ROMAINVILLE",
                   Object {
                     "instance": null,
                     "key": undefined,
                     "nodeType": "host",
-                    "props": Object {
-                      "children": "ROMAINVILLE",
-                      "className": "is-block",
-                    },
+                    "props": Object {},
                     "ref": null,
-                    "rendered": "ROMAINVILLE",
-                    "type": "span",
+                    "rendered": null,
+                    "type": "br",
                   },
                 ],
-                "type": "p",
+                "type": "address",
               },
               Object {
                 "instance": null,
@@ -604,7 +542,7 @@ ShallowWrapper {
             "type": "div",
           },
         ],
-        "type": "div",
+        "type": Symbol(react.fragment),
       },
     ],
     "type": "div",
@@ -616,8 +554,8 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": Array [
-          undefined,
-          <div>
+          false,
+          <React.Fragment>
             <h3>
               Quoi ?
             </h3>
@@ -629,8 +567,8 @@ ShallowWrapper {
                 Presse — Abonnements
               </span>
             </div>
-          </div>,
-          <div>
+          </React.Fragment>,
+          <React.Fragment>
             <h3>
               Et en détails ?
             </h3>
@@ -640,8 +578,8 @@ ShallowWrapper {
             >
               fake description
             </pre>
-          </div>,
-          <div>
+          </React.Fragment>,
+          <React.Fragment>
             <h3>
               Quand ?
             </h3>
@@ -650,38 +588,24 @@ ShallowWrapper {
             >
               <React.Fragment />
             </ul>
-          </div>,
-          <div>
+          </React.Fragment>,
+          <React.Fragment>
             <h3>
               Où ?
             </h3>
             <div
               className="flex-columns flex-between"
             >
-              <p
-                className="address-info"
-              >
-                <span
-                  className="is-block"
-                >
-                  fake publicName
-                </span>
-                <span
-                  className="is-block"
-                >
-                  72 rue Carnot
-                </span>
-                <span
-                  className="is-block"
-                >
-                  93230
-                </span>
-                <span
-                  className="is-block"
-                >
-                  ROMAINVILLE
-                </span>
-              </p>
+              <address>
+                fake publicName
+                <br />
+                72 rue Carnot
+                <br />
+                93230
+                <br />
+                ROMAINVILLE
+                <br />
+              </address>
               <a
                 className="distance"
                 rel="noopener noreferrer"
@@ -699,17 +623,17 @@ ShallowWrapper {
                 />
               </a>
             </div>
-          </div>,
+          </React.Fragment>,
         ],
         "className": "verso-info",
       },
       "ref": null,
       "rendered": Array [
-        undefined,
+        false,
         Object {
           "instance": null,
           "key": undefined,
-          "nodeType": "host",
+          "nodeType": "function",
           "props": Object {
             "children": Array [
               <h3>
@@ -783,12 +707,12 @@ ShallowWrapper {
             undefined,
             undefined,
           ],
-          "type": "div",
+          "type": Symbol(react.fragment),
         },
         Object {
           "instance": null,
           "key": undefined,
-          "nodeType": "host",
+          "nodeType": "function",
           "props": Object {
             "children": Array [
               <h3>
@@ -829,12 +753,12 @@ ShallowWrapper {
               "type": "pre",
             },
           ],
-          "type": "div",
+          "type": Symbol(react.fragment),
         },
         Object {
           "instance": null,
           "key": undefined,
-          "nodeType": "host",
+          "nodeType": "function",
           "props": Object {
             "children": Array [
               <h3>
@@ -888,12 +812,12 @@ ShallowWrapper {
               "type": "ul",
             },
           ],
-          "type": "div",
+          "type": Symbol(react.fragment),
         },
         Object {
           "instance": null,
           "key": undefined,
-          "nodeType": "host",
+          "nodeType": "function",
           "props": Object {
             "children": Array [
               <h3>
@@ -902,30 +826,16 @@ ShallowWrapper {
               <div
                 className="flex-columns flex-between"
               >
-                <p
-                  className="address-info"
-                >
-                  <span
-                    className="is-block"
-                  >
-                    fake publicName
-                  </span>
-                  <span
-                    className="is-block"
-                  >
-                    72 rue Carnot
-                  </span>
-                  <span
-                    className="is-block"
-                  >
-                    93230
-                  </span>
-                  <span
-                    className="is-block"
-                  >
-                    ROMAINVILLE
-                  </span>
-                </p>
+                <address>
+                  fake publicName
+                  <br />
+                  72 rue Carnot
+                  <br />
+                  93230
+                  <br />
+                  ROMAINVILLE
+                  <br />
+                </address>
                 <a
                   className="distance"
                   rel="noopener noreferrer"
@@ -964,30 +874,16 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  <p
-                    className="address-info"
-                  >
-                    <span
-                      className="is-block"
-                    >
-                      fake publicName
-                    </span>
-                    <span
-                      className="is-block"
-                    >
-                      72 rue Carnot
-                    </span>
-                    <span
-                      className="is-block"
-                    >
-                      93230
-                    </span>
-                    <span
-                      className="is-block"
-                    >
-                      ROMAINVILLE
-                    </span>
-                  </p>,
+                  <address>
+                    fake publicName
+                    <br />
+                    72 rue Carnot
+                    <br />
+                    93230
+                    <br />
+                    ROMAINVILLE
+                    <br />
+                  </address>,
                   <a
                     className="distance"
                     rel="noopener noreferrer"
@@ -1015,81 +911,60 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": Array [
-                      <span
-                        className="is-block"
-                      >
-                        fake publicName
-                      </span>,
-                      <span
-                        className="is-block"
-                      >
-                        72 rue Carnot
-                      </span>,
-                      <span
-                        className="is-block"
-                      >
-                        93230
-                      </span>,
-                      <span
-                        className="is-block"
-                      >
-                        ROMAINVILLE
-                      </span>,
+                      "fake publicName",
+                      <br />,
+                      "72 rue Carnot",
+                      <br />,
+                      "93230",
+                      <br />,
+                      "ROMAINVILLE",
+                      <br />,
                     ],
-                    "className": "address-info",
                   },
                   "ref": null,
                   "rendered": Array [
+                    "fake publicName",
                     Object {
                       "instance": null,
                       "key": undefined,
                       "nodeType": "host",
-                      "props": Object {
-                        "children": "fake publicName",
-                        "className": "is-block",
-                      },
+                      "props": Object {},
                       "ref": null,
-                      "rendered": "fake publicName",
-                      "type": "span",
+                      "rendered": null,
+                      "type": "br",
                     },
+                    "72 rue Carnot",
                     Object {
                       "instance": null,
                       "key": undefined,
                       "nodeType": "host",
-                      "props": Object {
-                        "children": "72 rue Carnot",
-                        "className": "is-block",
-                      },
+                      "props": Object {},
                       "ref": null,
-                      "rendered": "72 rue Carnot",
-                      "type": "span",
+                      "rendered": null,
+                      "type": "br",
                     },
+                    "93230",
                     Object {
                       "instance": null,
                       "key": undefined,
                       "nodeType": "host",
-                      "props": Object {
-                        "children": "93230",
-                        "className": "is-block",
-                      },
+                      "props": Object {},
                       "ref": null,
-                      "rendered": "93230",
-                      "type": "span",
+                      "rendered": null,
+                      "type": "br",
                     },
+                    "ROMAINVILLE",
                     Object {
                       "instance": null,
                       "key": undefined,
                       "nodeType": "host",
-                      "props": Object {
-                        "children": "ROMAINVILLE",
-                        "className": "is-block",
-                      },
+                      "props": Object {},
                       "ref": null,
-                      "rendered": "ROMAINVILLE",
-                      "type": "span",
+                      "rendered": null,
+                      "type": "br",
                     },
                   ],
-                  "type": "p",
+                  "type": "address",
                 },
                 Object {
                   "instance": null,
@@ -1153,7 +1028,7 @@ ShallowWrapper {
               "type": "div",
             },
           ],
-          "type": "div",
+          "type": Symbol(react.fragment),
         },
       ],
       "type": "div",

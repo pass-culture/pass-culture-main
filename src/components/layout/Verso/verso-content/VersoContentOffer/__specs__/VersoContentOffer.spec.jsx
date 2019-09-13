@@ -4,10 +4,12 @@ import { shallow } from 'enzyme'
 import VersoContentOffer from '../VersoContentOffer'
 import Icon from '../../../../Icon'
 import { navigationLink } from '../../../../../../utils/geolocation'
+import VersoActionsBar from '../VersoActionsBar'
 
 jest.mock('../../../../../../utils/geolocation', () => ({
   navigationLink: jest.fn(),
 }))
+
 describe('src | components | layout | Verso | verso-content | VersoContentOffer | VersoContentOffer', () => {
   let offer
 
@@ -37,22 +39,6 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
     }
   })
 
-  it('should open link in new navigator tab', () => {
-    // given
-    const props = {
-      distance: '1',
-      handleRequestMusicAndShowTypes: jest.fn(),
-      offer,
-    }
-
-    // when
-    const wrapper = shallow(<VersoContentOffer {...props} />)
-
-    // then
-    const distanceElement = wrapper.find('.distance')
-    expect(distanceElement.props()).toHaveProperty('target', '_blank')
-  })
-
   it('should match the snapshot', () => {
     // given
     offer.isThing = false
@@ -72,6 +58,23 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
 
     // then
     expect(wrapper).toMatchSnapshot()
+  })
+
+  it('should open link in new navigator tab', () => {
+    // given
+    const props = {
+      bookables: [],
+      distance: '1',
+      handleRequestMusicAndShowTypes: jest.fn(),
+      offer,
+    }
+
+    // when
+    const wrapper = shallow(<VersoContentOffer {...props} />)
+
+    // then
+    const distanceElement = wrapper.find('.distance')
+    expect(distanceElement.props()).toHaveProperty('target', '_blank')
   })
 
   it('should render offer "what" when description is given', () => {
@@ -188,11 +191,11 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
     const wrapper = shallow(<VersoContentOffer {...props} />)
 
     // then
-    const venueInfos = wrapper.find('.address-info').find('span')
-    expect(venueInfos.at(0).text()).toBe('fake publicName')
-    expect(venueInfos.at(1).text()).toBe('72 rue Carnot')
-    expect(venueInfos.at(2).text()).toBe('93230')
-    expect(venueInfos.at(3).text()).toBe('ROMAINVILLE')
+    const address = wrapper
+      .find('address')
+      .at(0)
+      .text()
+    expect(address).toBe('fake publicName72 rue Carnot93230ROMAINVILLE')
   })
 
   it('should render informations of the venue and venue name when venue public name is not given', () => {
@@ -211,11 +214,11 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
     const wrapper = shallow(<VersoContentOffer {...props} />)
 
     // then
-    const venueInfos = wrapper.find('.address-info').find('span')
-    expect(venueInfos.at(0).text()).toBe('fake name')
-    expect(venueInfos.at(1).text()).toBe('72 rue Carnot')
-    expect(venueInfos.at(2).text()).toBe('93230')
-    expect(venueInfos.at(3).text()).toBe('ROMAINVILLE')
+    const address = wrapper
+      .find('address')
+      .at(0)
+      .text()
+    expect(address).toBe('fake name72 rue Carnot93230ROMAINVILLE')
   })
 
   it('should render distance to the venue when latitude & longitude are given', () => {
@@ -241,5 +244,65 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
     expect(venueDistance.find('span').text()).toBe(`1${nbsp}`)
     expect(iconComponent.prop('svg')).toBe('ico-geoloc-solid2')
     expect(iconComponent.prop('alt')).toBe('Géolocalisation dans Open Street Map')
+  })
+
+  describe('when the offer is booked and have a link offer', () => {
+    it('should render the offer link', () => {
+      // given
+      const props = {
+        booking: {
+          completedUrl: 'http://fake-url.com',
+        },
+        bookables: [],
+        isCancelled: false,
+        distance: '1',
+        handleRequestMusicAndShowTypes: jest.fn(),
+      }
+
+      // when
+      const wrapper = shallow(<VersoContentOffer {...props} />)
+
+      // then
+      const linkOffer = wrapper.find(VersoActionsBar)
+      expect(linkOffer).toHaveLength(1)
+    })
+  })
+
+  describe('when the offer is not booked', () => {
+    it('should not render the offer link', () => {
+      // given
+      const props = {
+        bookables: [],
+        isCancelled: null,
+        distance: '1',
+        handleRequestMusicAndShowTypes: jest.fn(),
+      }
+
+      // when
+      const wrapper = shallow(<VersoContentOffer {...props} />)
+
+      // then
+      const linkOffer = wrapper.find(VersoActionsBar)
+      expect(linkOffer).toHaveLength(0)
+    })
+  })
+
+  describe('when the offer is cancelled', () => {
+    it('should not render the offer link', () => {
+      // given
+      const props = {
+        bookables: [],
+        isCancelled: true,
+        distance: '1',
+        handleRequestMusicAndShowTypes: jest.fn(),
+      }
+
+      // when
+      const wrapper = shallow(<VersoContentOffer {...props} />)
+
+      // then
+      const linkOffer = wrapper.find(VersoActionsBar)
+      expect(linkOffer).toHaveLength(0)
+    })
   })
 })

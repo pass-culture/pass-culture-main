@@ -19,7 +19,6 @@ export const mapStateToProps = (state, ownProps) => {
   const offer = selectOfferByRouterMatch(state, match) || {}
   const bookables = selectBookables(state, offer)
   const isFinished = selectIsFinishedByRouterMatch(state, match)
-
   const { product } = offer || {}
   const { extraData } = product || {}
   const {
@@ -32,19 +31,18 @@ export const mapStateToProps = (state, ownProps) => {
   const showType = selectShowTypeByCode(state, showCode)
   const musicSubType = selectMusicSubTypeByCodeAndSubCode(state, musicCode, musicSubCode)
   const showSubType = selectShowSubTypeByCodeAndSubCode(state, showCode, showSubCode)
-
   const {
     data: { musicTypes, showTypes },
   } = state
-
   const booking = selectBookingByRouterMatch(state, match)
-
   const distance = selectDistanceByRouterMatch(state, match)
+  const isCancelled = booking && booking.isCancelled
 
   return {
     bookables,
     booking,
     distance,
+    isCancelled,
     isFinished,
     musicSubType,
     musicType,
@@ -56,27 +54,27 @@ export const mapStateToProps = (state, ownProps) => {
   }
 }
 
-const mapDispatchToProps = (dispatch, ownProps) => {
-  const { musicTypes, showTypes } = ownProps
-  return {
-    handleRequestMusicAndShowTypes: () => {
-      if (!musicTypes) {
-        dispatch(
-          requestData({
-            apiPath: '/musicTypes',
-          })
-        )
-      }
-      if (!showTypes) {
-        dispatch(
-          requestData({
-            apiPath: '/showTypes',
-          })
-        )
-      }
-    },
-  }
-}
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  handleRequestMusicAndShowTypes: () => {
+    const { musicTypes, showTypes } = ownProps
+
+    if (!musicTypes) {
+      dispatch(
+        requestData({
+          apiPath: '/musicTypes',
+        })
+      )
+    }
+
+    if (!showTypes) {
+      dispatch(
+        requestData({
+          apiPath: '/showTypes',
+        })
+      )
+    }
+  },
+})
 
 export default compose(
   withRouter,
