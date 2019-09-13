@@ -1,7 +1,7 @@
 import re
 
 from models.pc_object import PcObject
-from models import Offerer
+from models import Offerer, Venue
 from sandboxes.scripts.mocks.venue_mocks import MOCK_NAMES
 from utils.logger import logger
 from tests.test_utils import create_venue, create_bank_information
@@ -10,8 +10,9 @@ OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO = 3
 OFFERERS_WITH_PHYSICAL_VENUE_WITH_SIRET_REMOVE_MODULO = OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO * 2
 
 
-def make_venue_virtual(offerer: Offerer, venue_by_name: dict, venue_name: str) -> dict:
-    venue_by_name["{} (Offre en ligne)".format(venue_name)] = create_venue(
+def create_virtual_venue(offerer: Offerer, venue_by_name: dict, venue_name: str) -> None:
+    name= "{} (Offre en ligne)".format(venue_name)
+    venue_by_name[name] = create_venue(
         offerer,
         address=None,
         city=None,
@@ -19,7 +20,7 @@ def make_venue_virtual(offerer: Offerer, venue_by_name: dict, venue_name: str) -
         latitude=None,
         longitude=None,
         postal_code=None,
-        name="{} (Offre en ligne)".format(venue_name),
+        name=name,
         siret=None
     )
 
@@ -90,7 +91,7 @@ def create_industrial_venues(offerers_by_name: dict) -> dict:
         bic_suffix += 1
         mock_index += 1
 
-        make_venue_virtual(offerer, venue_by_name, venue_name)
+        create_virtual_venue(offerer, venue_by_name, venue_name)
 
     PcObject.save(*venue_by_name.values())
 
