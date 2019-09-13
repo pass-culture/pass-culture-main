@@ -1,10 +1,9 @@
 from datetime import datetime
 
-from models import PcObject, Booking, Stock
-from scripts.fill_date_used_for_bookings import fill_date_used_for_bookings
-from scripts.update_stock_modification_date import update_stock_modification_date
+from models import PcObject, Stock
+from scripts.update_stock_modification_date import update_stock_modification_date_sql_version
 from tests.conftest import clean_database
-from tests.test_utils import create_booking, create_user, create_deposit, create_booking_activity, save_all_activities, \
+from tests.test_utils import save_all_activities, \
     create_stock, create_offer_with_thing_product, create_stock_activity, create_venue, create_offerer
 
 
@@ -27,7 +26,7 @@ class UpdateStockModificationDateTest:
         save_all_activities(activity)
 
         # When
-        update_stock_modification_date()
+        update_stock_modification_date_sql_version()
 
         # Then
         updated_stock = Stock.query.first()
@@ -58,7 +57,7 @@ class UpdateStockModificationDateTest:
         save_all_activities(first_activity, second_activity)
 
         # When
-        update_stock_modification_date()
+        update_stock_modification_date_sql_version()
 
         # Then
         updated_stock = Stock.query.first()
@@ -90,7 +89,7 @@ class UpdateStockModificationDateTest:
         save_all_activities(activity_for_first_stock, activity_for_second_stock)
 
         # When
-        update_stock_modification_date()
+        update_stock_modification_date_sql_version()
 
         # Then
         first_updated_stock = Stock.query.get(first_stock.id)
