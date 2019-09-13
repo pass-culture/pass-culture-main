@@ -31,14 +31,12 @@ ShallowWrapper {
             className="section-icon"
           />
         </div>,
+        <h2>
+          Fake subtitle
+        </h2>,
         <h1>
           Fake title
         </h1>,
-        <h2
-          className="has-text-weight-bold is-paddingless"
-        >
-          Fake subtitle
-        </h2>,
         " ",
       ],
       "className": "section hero-section",
@@ -74,23 +72,22 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": "Fake title",
+          "children": "Fake subtitle",
         },
         "ref": null,
-        "rendered": "Fake title",
-        "type": "h1",
+        "rendered": "Fake subtitle",
+        "type": "h2",
       },
       Object {
         "instance": null,
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": "Fake subtitle",
-          "className": "has-text-weight-bold is-paddingless",
+          "children": "Fake title",
         },
         "ref": null,
-        "rendered": "Fake subtitle",
-        "type": "h2",
+        "rendered": "Fake title",
+        "type": "h1",
       },
       " ",
     ],
@@ -110,14 +107,12 @@ ShallowWrapper {
               className="section-icon"
             />
           </div>,
+          <h2>
+            Fake subtitle
+          </h2>,
           <h1>
             Fake title
           </h1>,
-          <h2
-            className="has-text-weight-bold is-paddingless"
-          >
-            Fake subtitle
-          </h2>,
           " ",
         ],
         "className": "section hero-section",
@@ -153,23 +148,22 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": "Fake title",
+            "children": "Fake subtitle",
           },
           "ref": null,
-          "rendered": "Fake title",
-          "type": "h1",
+          "rendered": "Fake subtitle",
+          "type": "h2",
         },
         Object {
           "instance": null,
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": "Fake subtitle",
-            "className": "has-text-weight-bold is-paddingless",
+            "children": "Fake title",
           },
           "ref": null,
-          "rendered": "Fake subtitle",
-          "type": "h2",
+          "rendered": "Fake title",
+          "type": "h1",
         },
         " ",
       ],

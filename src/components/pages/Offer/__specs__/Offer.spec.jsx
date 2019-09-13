@@ -4,6 +4,7 @@ import { Field, Form } from 'pass-culture-shared'
 
 import Offer from '../Offer'
 import MediationsManager from '../MediationsManager/MediationsManagerContainer'
+import HeroSection from '../../../layout/HeroSection/HeroSection'
 
 describe('src | components | pages | Offer | Offer ', () => {
   let dispatch
@@ -219,6 +220,26 @@ describe('src | components | pages | Offer | Offer ', () => {
         // then
         expect(wrapper.find(Form).prop('action')).toStrictEqual('/offers')
       })
+
+      it('should not display preview link', () => {
+        // given
+        props.query.context = () => ({
+          isCreatedEntity: true,
+          isModifiedEntity: false,
+          readOnly: false,
+        })
+        props.selectedOfferType = {
+          type: 'Event',
+        }
+
+        // when
+        const wrapper = shallow(<Offer {...props} />)
+
+        // then
+        const preview_section = wrapper.find(HeroSection)
+        const preview_link = preview_section.find('.cta')
+        expect(preview_link.exists()).toBeFalsy()
+      })
     })
 
     describe('when updating the offer', () => {
@@ -264,6 +285,33 @@ describe('src | components | pages | Offer | Offer ', () => {
 
         // then
         expect(wrapper.find(Form).prop('action')).toStrictEqual('/offers/VAG')
+      })
+
+      it('should display preview link', () => {
+        // given
+        props.match.params = {
+          offerId: 'VAG',
+        }
+        props.selectedOfferType = {
+          type: 'Event',
+        }
+        props.offer = {
+          id: 'VAG',
+          productId: '6GD',
+          isEvent: true,
+          isThing: false,
+          activeMediation: {
+            id: 'MED'
+          }
+        }
+
+        // when
+        const wrapper = shallow(<Offer {...props} />)
+
+        // then
+        const preview_section = wrapper.find(HeroSection)
+        const preview_link = preview_section.find('.cta')
+        expect(preview_link.text()).toStrictEqual('<Icon />Prévisualiser')
       })
     })
 

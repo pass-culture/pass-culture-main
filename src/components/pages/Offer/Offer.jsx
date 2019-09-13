@@ -25,6 +25,7 @@ import { offerNormalizer } from '../../../utils/normalizers'
 import { getDurationInHours, getDurationInMinutes } from './utils/duration'
 
 import { OFFERERS_API_PATH } from '../../../config/apiPaths'
+import { buildWebappDiscoveryUrl } from './utils/buildWebappDiscoveryUrl'
 
 const DURATION_LIMIT_TIME = 100
 
@@ -268,6 +269,17 @@ class Offer extends Component {
     })
   }
 
+  handleHrefClick = (event) => {
+    event.preventDefault()
+    const { offer } = this.props
+    const offerId = get(offer, 'id')
+    const mediationId = get(get(offer, 'activeMediation'), 'id')
+
+    const offerWebappUrl = buildWebappDiscoveryUrl(offerId, mediationId)
+    window.open(offerWebappUrl,'targetWindow',
+      'toolbar=no,width=375,height=667')
+  }
+
   render() {
     const {
       currentUser,
@@ -288,13 +300,15 @@ class Offer extends Component {
       venues,
     } = this.props
 
-    const { eventId } = offer || {}
+    const { isEvent } = offer || {}
     const { isCreatedEntity, isModifiedEntity, method, readOnly } = query.context()
 
-    // FIXME Ne plus utiliser cette selection là, mais plutôt isEvent
-    const isEventType = get(selectedOfferType, 'type') === 'Event' || eventId
+    const isEventType = get(selectedOfferType, 'type') === 'Event' || isEvent
 
     const offerId = get(offer, 'id')
+    const mediationId = get(get(offer, 'activeMediation'), 'id')
+
+    const offerWebappUrl = buildWebappDiscoveryUrl(offerId, mediationId)
     const offererId = get(offerer, 'id')
     const productName = get(product, 'name')
     const showAllForm = selectedOfferType || !isCreatedEntity
@@ -326,12 +340,35 @@ class Offer extends Component {
       <Main
         backTo={{ path: '/offres', label: 'Vos offres' }}
         handleDataRequest={this.onHandleDataRequest}
+        id="offer"
         name="offer"
       >
         <HeroSection
           subtitle={productName && productName.toUpperCase()}
           title={title}
         >
+          {offer && mediationId && (
+            <div className="title-action-links">
+              <a
+                className="cta button is-primary is-outlined"
+                href={offerWebappUrl}
+                onClick={(event) => this.handleHrefClick(event)}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <span
+                  className="tip-icon"
+                  data-place="bottom"
+                  data-tip="<p>Ouvrir un nouvel onglet avec la prévisualisation de l'offre</p>"
+                  data-type="info"
+                >
+                  <Icon svg="ico-eye" />
+                </span>
+                {'Prévisualiser'}
+              </a>
+            </div>
+          )}
+
           <p className="subtitle">
             {
               'Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.'
@@ -343,336 +380,335 @@ class Offer extends Component {
               'Les offres payantes seront visibles dans l’application, toutefois les utilisateurs ne pourront les réserver que s’ils ont activé leur portefeuille numérique de 500 € sur Internet ou lors d’un des événements d’activation.'
             }
           </p>
+        </HeroSection>
+        <Form
+          Tag={null}
+          action={formApiPath}
+          handleSuccess={this.onHandleFormSuccess}
+          method={method}
+          name="offer"
+          patch={formInitialValues}
+          readOnly={readOnly}
+        >
+          <div className="field-group">
+            <Field
+              isExpanded
+              label="Titre de l’offre"
+              name="name"
+              required
+            />
+            <Field
+              label="Type"
+              name="type"
+              optionLabel="proLabel"
+              optionValue="value"
+              options={types}
+              placeholder={
+                get(formInitialValues, 'type') && !selectedOfferType
+                  ? get(formInitialValues, 'offerTypeValue')
+                  : 'Sélectionnez un type d’offre'
+              }
+              readOnly={offerId && selectedOfferType}
+              required
+              sublabel="Le type d’offre ne peut pas être modifié une fois l’offre enregistrée."
+              type="select"
+            />
+            {this.hasConditionalField('musicType') && (
+              <Fragment>
+                <Field
+                  label="Genre musical"
+                  name="musicType"
+                  optionLabel="label"
+                  optionValue="code"
+                  options={musicOptions}
+                  setKey="extraData"
+                  type="select"
+                />
 
-          <Form
-            Tag={null}
-            action={formApiPath}
-            handleSuccess={this.onHandleFormSuccess}
-            method={method}
-            name="offer"
-            patch={formInitialValues}
-            readOnly={readOnly}
-          >
-            <div className="field-group">
-              <Field
-                isExpanded
-                label="Titre de l’offre"
-                name="name"
-                required
-              />
-              <Field
-                label="Type"
-                name="type"
-                optionLabel="proLabel"
-                optionValue="value"
-                options={types}
-                placeholder={
-                  get(formInitialValues, 'type') && !selectedOfferType
-                    ? get(formInitialValues, 'offerTypeValue')
-                    : 'Sélectionnez un type d’offre'
-                }
-                readOnly={offerId && selectedOfferType}
-                required
-                sublabel="Le type d’offre ne peut pas être modifié une fois l’offre enregistrée."
-                type="select"
-              />
-              {this.hasConditionalField('musicType') && (
-                <Fragment>
+                {get(musicSubOptions, 'length') > 0 && (
                   <Field
-                    label="Genre musical"
-                    name="musicType"
+                    label="Sous genre"
+                    name="musicSubType"
                     optionLabel="label"
                     optionValue="code"
-                    options={musicOptions}
+                    options={musicSubOptions}
                     setKey="extraData"
                     type="select"
                   />
+                )}
+              </Fragment>
+            )}
 
-                  {get(musicSubOptions, 'length') > 0 && (
-                    <Field
-                      label="Sous genre"
-                      name="musicSubType"
-                      optionLabel="label"
-                      optionValue="code"
-                      options={musicSubOptions}
-                      setKey="extraData"
-                      type="select"
-                    />
-                  )}
-                </Fragment>
-              )}
+            {this.hasConditionalField('showType') && (
+              <Fragment>
+                <Field
+                  label="Type de spectacle"
+                  name="showType"
+                  optionLabel="label"
+                  optionValue="code"
+                  options={showOptions}
+                  setKey="extraData"
+                  type="select"
+                />
 
-              {this.hasConditionalField('showType') && (
-                <Fragment>
+                {get(showSubOptions, 'length') > 0 && (
                   <Field
-                    label="Type de spectacle"
-                    name="showType"
+                    label="Sous type"
+                    name="showSubType"
                     optionLabel="label"
                     optionValue="code"
-                    options={showOptions}
+                    options={showSubOptions}
                     setKey="extraData"
                     type="select"
                   />
-
-                  {get(showSubOptions, 'length') > 0 && (
-                    <Field
-                      label="Sous type"
-                      name="showSubType"
-                      optionLabel="label"
-                      optionValue="code"
-                      options={showSubOptions}
-                      setKey="extraData"
-                      type="select"
-                    />
-                  )}
-                </Fragment>
-              )}
-              {!isCreatedEntity && product && (
-                <div className="field is-horizontal field-text">
-                  <div className="field-label">
-                    <label
-                      className="label"
-                      htmlFor="input_offers_name"
-                    >
-                      <div className="subtitle">
-                        {isEventType ? 'Dates :' : 'Stocks :'}
-                      </div>
-                    </label>
-                  </div>
-                  <div className="field-body">
-                    <div
-                      className="control"
+                )}
+              </Fragment>
+            )}
+            {!isCreatedEntity && product && (
+              <div className="field is-horizontal field-text">
+                <div className="field-label">
+                  <label
+                    className="label"
+                    htmlFor="input_offers_name"
+                  >
+                    <div className="subtitle">
+                      {isEventType ? 'Dates :' : 'Stocks :'}
+                    </div>
+                  </label>
+                </div>
+                <div className="field-body">
+                  <div
+                    className="control"
+                    style={{ paddingTop: '0.25rem' }}
+                  >
+                    <span
+                      className="nb-dates"
                       style={{ paddingTop: '0.25rem' }}
                     >
-                      <span
-                        className="nb-dates"
-                        style={{ paddingTop: '0.25rem' }}
-                      >
-                        {pluralize(get(stocks, 'length'), isEventType ? 'date' : 'stock')}
+                      {pluralize(get(stocks, 'length'), isEventType ? 'date' : 'stock')}
+                    </span>
+                    <button
+                      className="button is-primary is-outlined is-small manage-stock"
+                      disabled={isEditableOffer ? '' : 'disabled'}
+                      id="manage-stocks"
+                      onClick={this.handleOnClick(query)}
+                      type="button"
+                    >
+                      <span className="icon">
+                        <Icon svg="ico-calendar" />
                       </span>
-                      <button
-                        className="button is-primary is-outlined is-small manage-stock"
-                        disabled={isEditableOffer ? '' : 'disabled'}
-                        id="manage-stocks"
-                        onClick={this.handleOnClick(query)}
-                        type="button"
-                      >
-                        <span className="icon">
-                          <Icon svg="ico-calendar" />
-                        </span>
-                        <span>
-                          {isEventType ? 'Gérer les dates et les stocks' : 'Gérer les stocks'}
-                        </span>
-                      </button>
-                    </div>
+                      <span>
+                        {isEventType ? 'Gérer les dates et les stocks' : 'Gérer les stocks'}
+                      </span>
+                    </button>
                   </div>
-                </div>
-              )}
-            </div>
-            {!isCreatedEntity && offer && <MediationsManager />}
-            {showAllForm && (
-              <div>
-                <h2 className="main-list-title">
-                  {'Infos pratiques'}
-                </h2>
-                <div className="field-group">
-                  <Field
-                    debug
-                    label="Structure"
-                    name="offererId"
-                    options={offerers}
-                    placeholder="Sélectionnez une structure"
-                    readOnly={isOffererSelectReadOnly}
-                    required
-                    type="select"
-                  />
-                  {offerer && get(venues, 'length') === 0 && (
-                    <div className="field is-horizontal">
-                      <div className="field-label" />
-                      <div className="field-body">
-                        <p className="help is-danger">
-                          {venue
-                            ? 'Erreur dans les données : Le lieu rattaché à cette offre n’est pas compatible avec le type de l’offre'
-                            : 'Il faut obligatoirement une structure avec un lieu.'}
-                          <Field
-                            name="__BLOCK_FORM__"
-                            required
-                            type="hidden"
-                          />
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                  <Field
-                    label="Lieu"
-                    name="venueId"
-                    options={this.replaceVenueNameByPublicName(venues)}
-                    placeholder="Sélectionnez un lieu"
-                    readOnly={isVenueSelectReadOnly}
-                    required
-                    type="select"
-                  />
-                  {(get(venue, 'isVirtual') || url) && (
-                    <Field
-                      isExpanded
-                      label="URL"
-                      name="url"
-                      required
-                      sublabel={
-                        !readOnly &&
-                        'Vous pouvez inclure {token} {email} et {offerId} dans l’URL, qui seront remplacés respectivement par le code de la contremarque, l’e-mail de la personne ayant reservé et l’identifiant de l’offre'
-                      }
-                      type="text"
-                    />
-                  )}
-                  {currentUser.isAdmin && (
-                    <Field
-                      label="Rayonnement national"
-                      name="isNational"
-                      type="checkbox"
-                    />
-                  )}
-                  {isEventType && (
-                    <Field
-                      getDurationInHours={getDurationInHours}
-                      getDurationInMinutes={getDurationInMinutes}
-                      label="Durée"
-                      limitTimeInHours={DURATION_LIMIT_TIME}
-                      name="durationMinutes"
-                      placeholder="HH:MM"
-                      type="duration"
-                    />
-                  )}
-                  <Field
-                    label="Email auquel envoyer les réservations"
-                    name="bookingEmail"
-                    sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations"
-                    type="email"
-                  />
-                </div>
-                <h2 className="main-list-title">
-                  {'Infos artistiques'}
-                </h2>
-                <div className="field-group">
-                  <Field
-                    displayMaxLength
-                    isExpanded
-                    label="Description"
-                    maxLength={1000}
-                    name="description"
-                    rows={readOnly ? 1 : 5}
-                    type="textarea"
-                  />
-
-                  {this.hasConditionalField('speaker') && (
-                    <Field
-                      label="Intervenant"
-                      name="speaker"
-                      setKey="extraData"
-                      type="text"
-                    />
-                  )}
-
-                  {this.hasConditionalField('author') && (
-                    <Field
-                      label="Auteur"
-                      name="author"
-                      setKey="extraData"
-                      type="text"
-                    />
-                  )}
-
-                  {this.hasConditionalField('visa') && (
-                    <Field
-                      isExpanded
-                      label="Visa d’exploitation"
-                      name="visa"
-                      setKey="extraData"
-                      sublabel="(obligatoire si applicable)"
-                      type="text"
-                    />
-                  )}
-
-                  {this.hasConditionalField('isbn') && (
-                    <Field
-                      isExpanded
-                      label="ISBN"
-                      name="isbn"
-                      setKey="extraData"
-                      sublabel="(obligatoire si applicable)"
-                      type="text"
-                    />
-                  )}
-
-                  {this.hasConditionalField('stageDirector') && (
-                    <Field
-                      isExpanded
-                      label="Metteur en scène"
-                      name="stageDirector"
-                      setKey="extraData"
-                    />
-                  )}
-
-                  {this.hasConditionalField('performer') && (
-                    <Field
-                      isExpanded
-                      label="Interprète"
-                      name="performer"
-                      setKey="extraData"
-                    />
-                  )}
                 </div>
               </div>
             )}
-
-            <hr />
-            <div
-              className="field is-grouped is-grouped-centered"
-              style={{ justifyContent: 'space-between' }}
-            >
-              <div className="control">
-                {readOnly ? (
-                  <button
-                    className="button is-secondary is-medium"
-                    disabled={isEditableOffer ? '' : 'disabled'}
-                    id="modify-offer-button"
-                    onClick={this.handleChangeOnClick(query)}
-                    type="button"
-                  >
-                    {'Modifier l’offre'}
-                  </button>
-                ) : (
-                  <button
-                    className="button is-secondary is-medium"
-                    id="cancel-button"
-                    onClick={this.handleCancelOnClick(offerId, query)}
-                    type="button"
-                  >
-                    {'Annuler'}
-                  </button>
+          </div>
+          {!isCreatedEntity && offer && <MediationsManager />}
+          {showAllForm && (
+            <div>
+              <h2 className="main-list-title">
+                {'Infos pratiques'}
+              </h2>
+              <div className="field-group">
+                <Field
+                  debug
+                  label="Structure"
+                  name="offererId"
+                  options={offerers}
+                  placeholder="Sélectionnez une structure"
+                  readOnly={isOffererSelectReadOnly}
+                  required
+                  type="select"
+                />
+                {offerer && get(venues, 'length') === 0 && (
+                  <div className="field is-horizontal">
+                    <div className="field-label" />
+                    <div className="field-body">
+                      <p className="help is-danger">
+                        {venue
+                          ? 'Erreur dans les données : Le lieu rattaché à cette offre n’est pas compatible avec le type de l’offre'
+                          : 'Il faut obligatoirement une structure avec un lieu.'}
+                        <Field
+                          name="__BLOCK_FORM__"
+                          required
+                          type="hidden"
+                        />
+                      </p>
+                    </div>
+                  </div>
                 )}
+                <Field
+                  label="Lieu"
+                  name="venueId"
+                  options={this.replaceVenueNameByPublicName(venues)}
+                  placeholder="Sélectionnez un lieu"
+                  readOnly={isVenueSelectReadOnly}
+                  required
+                  type="select"
+                />
+                {(get(venue, 'isVirtual') || url) && (
+                  <Field
+                    isExpanded
+                    label="URL"
+                    name="url"
+                    required
+                    sublabel={
+                      !readOnly &&
+                      'Vous pouvez inclure {token} {email} et {offerId} dans l’URL, qui seront remplacés respectivement par le code de la contremarque, l’e-mail de la personne ayant reservé et l’identifiant de l’offre'
+                    }
+                    type="text"
+                  />
+                )}
+                {currentUser.isAdmin && (
+                  <Field
+                    label="Rayonnement national"
+                    name="isNational"
+                    type="checkbox"
+                  />
+                )}
+                {isEventType && (
+                  <Field
+                    getDurationInHours={getDurationInHours}
+                    getDurationInMinutes={getDurationInMinutes}
+                    label="Durée"
+                    limitTimeInHours={DURATION_LIMIT_TIME}
+                    name="durationMinutes"
+                    placeholder="HH:MM"
+                    type="duration"
+                  />
+                )}
+                <Field
+                  label="Email auquel envoyer les réservations"
+                  name="bookingEmail"
+                  sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations"
+                  type="email"
+                />
               </div>
-              <div className="control">
-                {readOnly ? (
-                  <NavLink
-                    className="button is-primary is-medium"
-                    to="/offres"
-                  >
-                    {'Terminer '}
-                    {isModifiedEntity && !isOfferActive && 'et activer'}
-                  </NavLink>
-                ) : (
-                  showAllForm && (
-                    <SubmitButton className="button is-primary is-medium">
-                      {'Enregistrer '}
-                      {isCreatedEntity && 'et passer ' + (isEventType ? 'aux dates' : 'aux stocks')}
-                    </SubmitButton>
-                  )
+              <h2 className="main-list-title">
+                {'Infos artistiques'}
+              </h2>
+              <div className="field-group">
+                <Field
+                  displayMaxLength
+                  isExpanded
+                  label="Description"
+                  maxLength={1000}
+                  name="description"
+                  rows={readOnly ? 1 : 5}
+                  type="textarea"
+                />
+
+                {this.hasConditionalField('speaker') && (
+                  <Field
+                    label="Intervenant"
+                    name="speaker"
+                    setKey="extraData"
+                    type="text"
+                  />
+                )}
+
+                {this.hasConditionalField('author') && (
+                  <Field
+                    label="Auteur"
+                    name="author"
+                    setKey="extraData"
+                    type="text"
+                  />
+                )}
+
+                {this.hasConditionalField('visa') && (
+                  <Field
+                    isExpanded
+                    label="Visa d’exploitation"
+                    name="visa"
+                    setKey="extraData"
+                    sublabel="(obligatoire si applicable)"
+                    type="text"
+                  />
+                )}
+
+                {this.hasConditionalField('isbn') && (
+                  <Field
+                    isExpanded
+                    label="ISBN"
+                    name="isbn"
+                    setKey="extraData"
+                    sublabel="(obligatoire si applicable)"
+                    type="text"
+                  />
+                )}
+
+                {this.hasConditionalField('stageDirector') && (
+                  <Field
+                    isExpanded
+                    label="Metteur en scène"
+                    name="stageDirector"
+                    setKey="extraData"
+                  />
+                )}
+
+                {this.hasConditionalField('performer') && (
+                  <Field
+                    isExpanded
+                    label="Interprète"
+                    name="performer"
+                    setKey="extraData"
+                  />
                 )}
               </div>
             </div>
-          </Form>
-        </HeroSection>
+          )}
+
+          <hr />
+          <div
+            className="field is-grouped is-grouped-centered"
+            style={{ justifyContent: 'space-between' }}
+          >
+            <div className="control">
+              {readOnly ? (
+                <button
+                  className="button is-secondary is-medium"
+                  disabled={isEditableOffer ? '' : 'disabled'}
+                  id="modify-offer-button"
+                  onClick={this.handleChangeOnClick(query)}
+                  type="button"
+                >
+                  {'Modifier l’offre'}
+                </button>
+              ) : (
+                <button
+                  className="button is-secondary is-medium"
+                  id="cancel-button"
+                  onClick={this.handleCancelOnClick(offerId, query)}
+                  type="button"
+                >
+                  {'Annuler'}
+                </button>
+              )}
+            </div>
+            <div className="control">
+              {readOnly ? (
+                <NavLink
+                  className="button is-primary is-medium"
+                  to="/offres"
+                >
+                  {'Terminer '}
+                  {isModifiedEntity && !isOfferActive && 'et activer'}
+                </NavLink>
+              ) : (
+                showAllForm && (
+                  <SubmitButton className="button is-primary is-medium">
+                    {'Enregistrer '}
+                    {isCreatedEntity && 'et passer ' + (isEventType ? 'aux dates' : 'aux stocks')}
+                  </SubmitButton>
+                )
+              )}
+            </div>
+          </div>
+        </Form>
       </Main>
     )
   }
