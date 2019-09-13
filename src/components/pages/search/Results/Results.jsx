@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
 
-import RecommendationItemContainer from './RecommendationItem/RecommendationItemContainer'
+import ResultContainer from './Result/ResultContainer'
 import { searchResultsTitle } from '../helpers'
 import Spinner from '../../../layout/Spinner/Spinner'
 
@@ -114,9 +114,9 @@ class Results extends PureComponent {
             useWindow={false}
           >
             {items.map(item => (
-              <RecommendationItemContainer
-                key={queryParams.page + item.id}
-                recommendation={item}
+              <ResultContainer
+                item={item}
+                key={item.id}
               />
             ))}
           </InfiniteScroll>

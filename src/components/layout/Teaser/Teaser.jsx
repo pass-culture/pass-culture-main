@@ -88,6 +88,7 @@ class Teaser extends Component {
 Teaser.defaultProps = {
   className: '',
   date: null,
+  handleToggleItem: () => {},
   isEditMode: false,
   status: [],
   thumbUrl: null,
@@ -97,7 +98,7 @@ Teaser.propTypes = {
   className: PropTypes.string,
   date: PropTypes.string,
   detailsUrl: PropTypes.string.isRequired,
-  handleToggleItem: PropTypes.func.isRequired,
+  handleToggleItem: PropTypes.func,
   humanizeRelativeDistance: PropTypes.string.isRequired,
   isEditMode: PropTypes.bool,
   name: PropTypes.string.isRequired,
