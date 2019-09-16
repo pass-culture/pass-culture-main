@@ -1,9 +1,11 @@
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import get from 'lodash.get'
-import { closeNotification, Icon } from 'pass-culture-shared'
+import { closeNotification } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import ReactTooltip from 'react-tooltip'
+
+import Icon from '../../layout/Icon'
 
 class Notification extends Component {
   componentDidUpdate() {
@@ -22,17 +24,18 @@ class Notification extends Component {
     const { isFullscreen, notification } = this.props
     const { text, tooltip, type, url, urlLabel } = notification || {}
 
+    let png
     let svg
     if (type === 'success') {
-      svg = 'picto-validation'
+      png = 'picto-check-solid-green-S'
     } else if (type === 'warning') {
-      svg = 'picto-warning-orange'
+      png = 'picto-warning-solid-orange-S'
     } else if (type === 'info') {
-      svg = 'picto-info-purple'
+      png = 'picto-info-solid-blue-S'
     } else if (type === 'tip') {
       svg = 'picto-tip'
     } else {
-      svg = 'picto-echec'
+      png = 'picto-error-solid-red-S'
     }
 
     if (!notification) {
@@ -51,7 +54,10 @@ class Notification extends Component {
           })}
         >
           <div className="notification-description">
-            <Icon svg={svg} />
+            <Icon
+              png={png}
+              svg={svg}
+            />
             <span className="ml8 mb6">
               {text}
             </span>

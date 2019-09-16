@@ -1,6 +1,7 @@
-import { Icon } from 'pass-culture-shared'
 import React from 'react'
 import { shallow } from 'enzyme'
+
+import Icon from '../../../layout/Icon'
 
 import Notification from '../Notification'
 
@@ -45,7 +46,7 @@ describe('src | components | layout | Notification', () => {
         expect(icon).toHaveLength(1)
         expect(link).toHaveLength(0)
         expect(firstDiv.prop('className')).toBe('notification is-warning')
-        expect(icon.prop('svg')).toBe('picto-warning-orange')
+        expect(icon.prop('png')).toBe('picto-warning-solid-orange-S')
         expect(button.text()).toStrictEqual('OK')
       })
     })
@@ -72,7 +73,7 @@ describe('src | components | layout | Notification', () => {
         // then
         expect(icon).toHaveLength(1)
         expect(firstDiv.prop('className')).toBe('notification is-info')
-        expect(icon.prop('svg')).toBe('picto-info-purple')
+        expect(icon.prop('png')).toBe('picto-info-solid-blue-S')
         expect(link.props().href).toStrictEqual(props.notification.url)
         expect(link.text()).toStrictEqual(props.notification.urlLabel)
         expect(button.text()).toStrictEqual('Fermer')
