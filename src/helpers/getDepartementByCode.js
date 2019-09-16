@@ -141,7 +141,7 @@ export const getDepartementByCode = code => {
     case '68':
       return 'Haut-Rhin'
     case '69':
-      return 'RhôneNote 7'
+      return 'Rhône'
     case '70':
       return 'Haute-Saône'
     case '71':
