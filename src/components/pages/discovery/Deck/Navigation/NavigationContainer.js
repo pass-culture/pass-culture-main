@@ -14,14 +14,7 @@ import selectOfferById from '../../../../../selectors/selectOfferById'
 import selectStocksByOfferId from '../../../../../selectors/selectStocksByOfferId'
 
 export const mapStateToProps = (state, ownProps) => {
-  const {
-    match: {
-      params: {
-        mediationId,
-        offerId,
-      } = {},
-    } = {},
-  } = ownProps
+  const { match: { params: { mediationId, offerId } = {} } = {} } = ownProps
   const { firstThumbDominantColor } = selectCurrentRecommendation(state, offerId, mediationId) || {}
   const offer = selectOfferById(state, offerId)
   const { venue } = offer || {}
@@ -50,23 +43,22 @@ export const mapDispatchToProps = (dispatch, ownProps) => ({
 
 export const mergeProps = (stateProps, dispatchProps, ownProps) => {
   const { trackConsultOffer } = dispatchProps
-  const {
-    match: {
-      params: {
-        offerId,
-      } = {},
-    } = {},
-  } = ownProps
+  const { match: { params: { offerId } = {} } = {} } = ownProps
 
   return {
     ...stateProps,
     ...dispatchProps,
     trackConsultOffer: () => trackConsultOffer(offerId),
+    ...ownProps,
   }
 }
 
 export default compose(
   withRouter,
   track({ page: 'Offer' }, { dispatch: trackMatomoEventWrapper }),
-  connect(mapStateToProps, mapDispatchToProps, mergeProps)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps,
+    mergeProps
+  )
 )(Navigation)
