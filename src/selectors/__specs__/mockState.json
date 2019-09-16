@@ -486,7 +486,7 @@
         "description": "Jamais osé monter sur les planches ? Tenter d’apprendre la guitare, le piano ou la photographie ? Partir cinq jours découvrir un autre monde ? Bricoler dans un fablab, ou pourquoi pas, enregistrer votre premier titre ?",
         "offlineOnly": false,
         "onlineOnly": false,
-        "proLabel": "Vente d’instruments de musique",
+        "proLabel": "Vente et location d'instruments de musique",
         "sublabel": "Pratiquer",
         "type": "Thing",
         "value": "ThingType.INSTRUMENT"
