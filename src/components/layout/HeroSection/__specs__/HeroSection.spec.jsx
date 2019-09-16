@@ -33,7 +33,7 @@ describe('src | components | layout | HeroSection', () => {
 
         // then
         expect(subtitle).toHaveLength(1)
-        expect(subtitle.text()).toBe('Fake subtitle')
+        expect(subtitle.text()).toBe('FAKE SUBTITLE')
       })
     })
   })

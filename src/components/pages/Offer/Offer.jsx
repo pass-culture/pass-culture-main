@@ -269,15 +269,14 @@ class Offer extends Component {
     })
   }
 
-  handleHrefClick = (event) => {
+  handleHrefClick = () => event => {
     event.preventDefault()
     const { offer } = this.props
     const offerId = get(offer, 'id')
     const mediationId = get(get(offer, 'activeMediation'), 'id')
 
     const offerWebappUrl = buildWebappDiscoveryUrl(offerId, mediationId)
-    window.open(offerWebappUrl,'targetWindow',
-      'toolbar=no,width=375,height=667')
+    window.open(offerWebappUrl, 'targetWindow', 'toolbar=no,width=375,height=667')
   }
 
   render() {
@@ -344,7 +343,7 @@ class Offer extends Component {
         name="offer"
       >
         <HeroSection
-          subtitle={productName && productName.toUpperCase()}
+          subtitle={productName && productName}
           title={title}
         >
           {offer && mediationId && (
@@ -352,7 +351,7 @@ class Offer extends Component {
               <a
                 className="cta button is-primary is-outlined"
                 href={offerWebappUrl}
-                onClick={(event) => this.handleHrefClick(event)}
+                onClick={this.handleHrefClick()}
                 rel="noopener noreferrer"
                 target="_blank"
               >

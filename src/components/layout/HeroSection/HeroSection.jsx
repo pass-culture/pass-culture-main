@@ -8,10 +8,9 @@ const HeroSection = ({ children, subtitle, title }) => {
         <div className="section-icon" />
       </div>
 
-      {subtitle &&
-      <h2>
-        {subtitle}
-      </h2>}
+      {subtitle && <h2>
+        {subtitle.toUpperCase()}
+                   </h2>}
       <h1>
         {title}
       </h1>

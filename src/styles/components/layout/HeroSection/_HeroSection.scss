@@ -38,18 +38,19 @@
     @extend .is-paddingless;
 
     line-height: 22px;
+    font-size: 1.125rem;
   }
 
   .cta {
     right: 0;
     position: absolute;
     line-height: 22px;
-    top: -6px;
+    top: -3px;
     border: 0;
 
     img {
-      height: 24px;
-      width: 24px;
+      height: 20px;
+      width: 20px;
       margin-right: 0.5rem;
     }
   }

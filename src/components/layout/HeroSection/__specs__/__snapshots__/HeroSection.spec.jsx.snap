@@ -32,7 +32,7 @@ ShallowWrapper {
           />
         </div>,
         <h2>
-          Fake subtitle
+          FAKE SUBTITLE
         </h2>,
         <h1>
           Fake title
@@ -72,10 +72,10 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": "Fake subtitle",
+          "children": "FAKE SUBTITLE",
         },
         "ref": null,
-        "rendered": "Fake subtitle",
+        "rendered": "FAKE SUBTITLE",
         "type": "h2",
       },
       Object {
@@ -108,7 +108,7 @@ ShallowWrapper {
             />
           </div>,
           <h2>
-            Fake subtitle
+            FAKE SUBTITLE
           </h2>,
           <h1>
             Fake title
@@ -148,10 +148,10 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": "Fake subtitle",
+            "children": "FAKE SUBTITLE",
           },
           "ref": null,
-          "rendered": "Fake subtitle",
+          "rendered": "FAKE SUBTITLE",
           "type": "h2",
         },
         Object {
