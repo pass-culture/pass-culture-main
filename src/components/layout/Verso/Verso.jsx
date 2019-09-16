@@ -1,11 +1,12 @@
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
+import isEqual from 'lodash.isequal'
 
-import VersoContentOfferContainer from './verso-content/VersoContentOffer/VersoContentOfferContainer'
-import VersoContentTutoContainer from './verso-content/VersoContentTuto/VersoContentTutoContainer'
+import VersoContentOfferContainer from './VersoContent/VersoContentOffer/VersoContentOfferContainer'
+import VersoContentTutoContainer from './VersoContent/VersoContentTuto/VersoContentTutoContainer'
 import VersoControlsContainer from './VersoControls/VersoControlsContainer'
-import VersoHeaderContainer from './verso-content/VersoHeaderContainer'
+import VersoHeaderContainer from './VersoContent/VersoHeaderContainer'
 import AbsoluteFooterContainer from '../AbsoluteFooter/AbsoluteFooterContainer'
 
 class Verso extends React.PureComponent {
@@ -14,8 +15,10 @@ class Verso extends React.PureComponent {
     this.versoWrapper = React.createRef()
   }
 
-  componentDidUpdate() {
-    this.versoWrapper.current.scrollTo(0, 0)
+  componentDidUpdate(prevProps) {
+    if (!isEqual(prevProps, this.props)) {
+      this.versoWrapper.current.scrollTo(0, 0)
+    }
   }
 
   render() {

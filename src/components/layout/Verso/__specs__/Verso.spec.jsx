@@ -2,10 +2,10 @@ import React from 'react'
 import { shallow } from 'enzyme'
 
 import Verso from '../Verso'
-import VersoContentOfferContainer from '../verso-content/VersoContentOffer/VersoContentOfferContainer'
-import VersoContentTutoContainer from '../verso-content/VersoContentTuto/VersoContentTutoContainer'
+import VersoContentOfferContainer from '../VersoContent/VersoContentOffer/VersoContentOfferContainer'
+import VersoContentTutoContainer from '../VersoContent/VersoContentTuto/VersoContentTutoContainer'
 import VersoControlsContainer from '../VersoControls/VersoControlsContainer'
-import VersoHeaderContainer from '../verso-content/VersoHeaderContainer'
+import VersoHeaderContainer from '../VersoContent/VersoHeaderContainer'
 import AbsoluteFooterContainer from '../../AbsoluteFooter/AbsoluteFooterContainer'
 
 describe('src | components | layout | Verso', () => {
@@ -129,5 +129,22 @@ describe('src | components | layout | Verso', () => {
 
     // then
     expect(scrollTo).toHaveBeenCalledWith(0, 0)
+  })
+
+  it('should not scroll to initial position when Verso component props are not updated', () => {
+    // given
+    const scrollTo = jest.fn()
+    const wrapper = shallow(<Verso {...props} />)
+    wrapper.instance()['versoWrapper'] = {
+      current: {
+        scrollTo,
+      },
+    }
+
+    // when
+    wrapper.setProps({ ...props })
+
+    // then
+    expect(scrollTo).not.toHaveBeenCalled()
   })
 })
