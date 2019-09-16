@@ -8,6 +8,7 @@ from models import Mediation, \
                    Stock
 from models.api_errors import ResourceNotFoundError
 from models.db import db
+from models.mediation import Mediation
 from repository import mediation_queries
 from repository.offer_queries import find_searchable_offer
 from utils.config import BLOB_SIZE
@@ -119,7 +120,7 @@ def invalidate_recommendations(offer: Offer):
         .update({'validUntilDate': datetime.utcnow()})
     db.session.commit()
 
-def _no_mediation_or_mediation_does_not_match_offer(mediation, offer_id):
+def _has_no_mediation_or_mediation_does_not_match_offer(mediation: Mediation, offer_id: int) -> bool:
     return mediation is None or (offer_id and (mediation.offerId != offer_id))
 
 def find_recommendation_already_created_on_discovery(offer_id: int, mediation_id: int, user_id: int) -> Recommendation:
@@ -134,7 +135,7 @@ def find_recommendation_already_created_on_discovery(offer_id: int, mediation_id
     offer = find_searchable_offer(offer_id)
 
     if mediation_id:
-        if _no_mediation_or_mediation_does_not_match_offer(mediation, offer_id):
+        if _has_no_mediation_or_mediation_does_not_match_offer(mediation, offer_id):
             logger.debug(lambda: 'Mediation not found or found but not matching offer for offer_id=%s mediation_id=%s'
                         % (offer_id, mediation_id))
             raise ResourceNotFoundError()

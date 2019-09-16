@@ -4,6 +4,7 @@ from typing import List
 from sqlalchemy import desc, func, or_
 from sqlalchemy.orm import aliased, joinedload
 from sqlalchemy.orm.query import Query
+from sqlalchemy.sql.elements import BinaryExpression
 
 from domain.departments import ILE_DE_FRANCE_DEPT_CODES
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
@@ -47,7 +48,7 @@ def _bookable_offers(offers_query: Query) -> Query:
     offers_query = offers_query.filter(stocks_query.exists())
     return offers_query
 
-def _has_active_and_validated_offerer():
+def _has_active_and_validated_offerer() -> BinaryExpression:
     return (Offerer.isActive == True) & (Offerer.validationToken == None)
 
 def _with_active_and_validated_offerer(query):

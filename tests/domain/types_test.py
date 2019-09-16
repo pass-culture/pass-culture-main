@@ -1,10 +1,10 @@
-from domain.types import get_formatted_event_or_thing_active_types, get_event_or_thing_active_type_values_from_sublabels
+from domain.types import get_formatted_active_product_types, get_active_product_type_values_from_sublabels
 
 
 class GetFormattedEventOrThingTypesTest:
     def test_returns_all_types_except_activations_if_user_is_not_admin(self):
         # when
-        types = get_formatted_event_or_thing_active_types(with_activation_type=False)
+        types = get_formatted_active_product_types(with_activation_type=False)
 
         # then
         assert types[0] == {
@@ -52,14 +52,14 @@ class GetFormattedEventOrThingTypesTest:
         }
 
         # when
-        types = get_formatted_event_or_thing_active_types(with_activation_type=True)
+        types = get_formatted_active_product_types(with_activation_type=True)
 
         # then
         assert activation_event_product in types
         assert activation_thing_product in types
         assert len(types) == 23
 
-    def test_does_not_return_thing_type_jeux(self):
+    def test_does_not_return_inactive_product_types(self):
         # given
         jeux = {
             'conditionalFields': [],
@@ -74,16 +74,16 @@ class GetFormattedEventOrThingTypesTest:
         }
 
         # when
-        types = get_formatted_event_or_thing_active_types(with_activation_type=False)
+        types = get_formatted_active_product_types(with_activation_type=False)
 
         # then
         assert jeux not in types, 'Les offres avec le type "ThingType.JEUX" ne peuvent plus être créées pour être en ' \
                                   'phase avec les CGU'
 
 
-def test_get_event_or_thing_active_type_values_from_sublabels():
+def test_get_active_product_type_values_from_sublabels():
     # given
-    type_values = get_event_or_thing_active_type_values_from_sublabels('Rencontrer')
+    type_values = get_active_product_type_values_from_sublabels('Rencontrer')
 
     # then
     assert type_values[0] == 'EventType.CONFERENCE_DEBAT_DEDICACE'

@@ -35,13 +35,37 @@ class Get:
             assert response.status_code == 401
 
         @clean_database
-        def when_searching_by_keywords_and_distance_without_latitude_or_longitude(self, app):
+        def when_searching_by_keywords_and_distance_without_latitude_and_longitude(self, app):
             # Given
             user = create_user(email='test@email.com')
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).get(
                 RECOMMENDATION_URL + '?distance=1&keywords=funky')
+
+            # Then
+            assert response.status_code == 401
+
+        @clean_database
+        def when_searching_by_keywords_and_distance_without_latitude(self, app):
+            # Given
+            user = create_user(email='test@email.com')
+
+            # When
+            response = TestClient(app.test_client()).with_auth(user.email).get(
+                RECOMMENDATION_URL + '?distance=1&keywords=funky&latitude=1.9333')
+
+            # Then
+            assert response.status_code == 401
+
+        @clean_database
+        def when_searching_by_keywords_and_distance_without_longitude(self, app):
+            # Given
+            user = create_user(email='test@email.com')
+
+            # When
+            response = TestClient(app.test_client()).with_auth(user.email).get(
+                RECOMMENDATION_URL + '?distance=1&keywords=funky&longitude=45.9333')
 
             # Then
             assert response.status_code == 401
@@ -93,7 +117,7 @@ class Get:
             )
 
         @clean_database
-        def when_get_recommendations_return_all_includes(self,app):
+        def when_get_recommendations_and_returns_all_includes(self,app):
             # given
             user = create_user(email='test@email.com')
             offerer = create_offerer()

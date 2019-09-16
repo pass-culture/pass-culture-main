@@ -1,6 +1,6 @@
 from domain.music_types import music_types
 from domain.show_types import show_types
-from domain.types import get_formatted_event_or_thing_active_types
+from domain.types import get_formatted_active_product_types
 from models.offer_type import EventType
 from models.pc_object import PcObject
 from sandboxes.scripts.mocks.event_mocks import MOCK_ACTIVATION_DESCRIPTION, \
@@ -21,7 +21,7 @@ def create_industrial_event_products():
     event_products_by_name = {}
 
     event_type_dicts = [
-        t for t in get_formatted_event_or_thing_active_types(with_activation_type=True)
+        t for t in get_formatted_active_product_types(with_activation_type=True)
         if t['type'] == 'Event'
     ]
 
