@@ -1,4 +1,6 @@
 import { buildWebappDiscoveryUrl } from '../buildWebappDiscoveryUrl'
+import * as config from '../../../../../utils/config'
+
 
 describe('src | components | pages | Offer | utils | buildWebappDiscoveryUrl', () => {
   beforeAll(() => {
@@ -8,7 +10,7 @@ describe('src | components | pages | Offer | utils | buildWebappDiscoveryUrl', (
     })
   })
 
-  it('should return webapp URL in localhost on port 3000', () => {
+  it('should return webapp URL in localhost on port 3000 when app is on development env', () => {
     // given
     Object.defineProperty(window, 'location', {
       value: {
@@ -16,6 +18,7 @@ describe('src | components | pages | Offer | utils | buildWebappDiscoveryUrl', (
       },
       writable: true,
     })
+    config.IS_PROD = false
 
     const offerId = 'AN'
     const mediationId = 'AM'
@@ -27,7 +30,7 @@ describe('src | components | pages | Offer | utils | buildWebappDiscoveryUrl', (
     expect(discoveryUrl).toStrictEqual('http://localhost:3000/decouverte/AN/AM')
   })
 
-  it('should return webapp URL with same domain', () => {
+  it('should return webapp URL with same domain when app is on remote env', () => {
     // given
     Object.defineProperty(window, 'location', {
       value: {
@@ -35,6 +38,7 @@ describe('src | components | pages | Offer | utils | buildWebappDiscoveryUrl', (
       },
       writable: true,
     })
+    config.IS_PROD = true
 
     const offerId = 'AN'
     const mediationId = 'AM'

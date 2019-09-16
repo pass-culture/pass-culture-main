@@ -42,16 +42,16 @@
   }
 
   .cta {
-    right: 0;
-    position: absolute;
-    line-height: 22px;
-    top: -3px;
     border: 0;
+    line-height: 22px;
+    position: absolute;
+    right: 0;
+    top: -3px;
 
     img {
       height: 20px;
-      width: 20px;
       margin-right: 0.5rem;
+      width: 20px;
     }
   }
 
@@ -71,9 +71,9 @@
   }
 
   .title-action-links {
+    align-items: center;
     display: flex;
     justify-content: flex-start;
-    align-items: center;
     top: 0px;
 
     .button {

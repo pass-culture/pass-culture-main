@@ -15,20 +15,12 @@ export const IS_DEBUG = true
 export const IS_DEV = NODE_ENV === 'development'
 export const IS_PROD = !IS_DEV
 
-export const AND = '_and_'
 export const DELETE = '_delete_'
-export const NEW = '_new_'
-export const SEARCH = '_search_'
-export const SPACE = ' '
 
 export const HELP_PAGE_URL = "https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/"
 
 export const API_URL = process.env.API_URL || 'http://localhost'
 
-export function apiUrl(path) {
-  if (!path) return
-  return `${API_URL}${path}`
-}
 
 function getMobileOperatingSystem() {
   if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
