@@ -6,6 +6,8 @@ from enum import Enum
 from io import StringIO
 from typing import List
 
+from dateutil.relativedelta import relativedelta
+
 from models import Booking, Payment, ThingType
 from models.payment_status import TransactionStatus
 from utils.date import english_to_french_month
@@ -277,13 +279,19 @@ class ReimbursementDetails:
 def find_all_booking_reimbursements(bookings: List[Booking],
                                     active_rules: List[ReimbursementRules]) -> List[BookingReimbursement]:
     reimbursements = []
-    cumulative_bookings_value = 0
+    cumulative_bookings_value_by_year = {}
 
     for booking in bookings:
-        if ReimbursementRules.PHYSICAL_OFFERS.value.is_relevant(booking):
-            cumulative_bookings_value = cumulative_bookings_value + booking.value
+        booking_civil_year = booking.dateCreated.year
+        if booking_civil_year not in cumulative_bookings_value_by_year:
+            cumulative_bookings_value_by_year[booking_civil_year] = 0
 
-        potential_rules = _find_potential_rules(booking, active_rules, cumulative_bookings_value)
+        if ReimbursementRules.PHYSICAL_OFFERS.value.is_relevant(booking):
+            cumulative_bookings_value_by_year[booking_civil_year] = cumulative_bookings_value_by_year[
+                                                                booking_civil_year] + booking.value
+
+        potential_rules = _find_potential_rules(booking, active_rules,
+                                                cumulative_bookings_value_by_year[booking_civil_year])
         elected_rule = determine_elected_rule(booking, potential_rules)
         reimbursements.append(BookingReimbursement(booking, elected_rule.rule, elected_rule.amount))
 

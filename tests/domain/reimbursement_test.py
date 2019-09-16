@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 
+from freezegun import freeze_time
+
 from domain.reimbursement import ReimbursementRules, find_all_booking_reimbursements, ReimbursementRule, CURRENT_RULES, \
     NEW_RULES
 from models import Booking, ThingType
@@ -741,6 +743,38 @@ class FindAllBookingsReimbursementsTest:
             assert_total_reimbursement(booking_reimbursements[0], booking1)
             assert_degressive_reimbursement(booking_reimbursements[2], booking3, 430000)
             assert_no_reimbursement_for_digital(booking_reimbursements[1], booking2)
+
+        @freeze_time('2019-02-14')
+        def test_returns_full_reimbursement_for_all_bookings_for_new_civil_year(self):
+            # given
+            booking1 = create_booking_for_event(amount=10000, quantity=1, date_created=datetime(2018, 1, 1))
+            booking2 = create_booking_for_thing(amount=10000, quantity=1, date_created=datetime(2018, 1, 1))
+            booking3 = create_booking_for_event(amount=200, quantity=2, date_created=datetime(2019, 1, 1))
+            bookings = [booking1, booking2, booking3]
+
+            # when
+            booking_reimbursements = find_all_booking_reimbursements(bookings, NEW_RULES)
+
+            # then
+            assert_total_reimbursement(booking_reimbursements[0], booking1)
+            assert_total_reimbursement(booking_reimbursements[1], booking2)
+            assert_total_reimbursement(booking_reimbursements[2], booking3)
+
+        @freeze_time('2019-02-14')
+        def test_returns_85_reimbursement_rate_between_20000_and_40000_euros_for_this_civil_year(self):
+            # given
+            booking1 = create_booking_for_event(amount=20000, quantity=1, date_created=datetime(2018, 1, 1))
+            booking2 = create_booking_for_thing(amount=25000, quantity=1, date_created=datetime(2019, 1, 1))
+            booking3 = create_booking_for_thing(amount=2000, quantity=1, date_created=datetime(2019, 1, 1))
+            bookings = [booking1, booking2, booking3]
+
+            # when
+            booking_reimbursements = find_all_booking_reimbursements(bookings, NEW_RULES)
+
+            # then
+            assert_total_reimbursement(booking_reimbursements[0], booking1)
+            assert_degressive_reimbursement(booking_reimbursements[1], booking2, 25000)
+            assert_degressive_reimbursement(booking_reimbursements[2], booking3, 27000)
 
 
 def assert_total_reimbursement(booking_reimbursement, booking):
