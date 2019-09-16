@@ -51,6 +51,97 @@ Lancer un seul fichier en ligne de commande depuis un environnement local
 ./node_modules/.bin/testcafe chrome ./testcafe/02_signin.js
 ```
 
+## Tracking (avec Matomo)
+
+### Initialisation
+
+Pour être en mesure d'utiliser les fonctionnalités offertes par Matomo, nous devons injecter un script dans le code HTML de notre page index.
+Une fois exécuté, il permet d'installer des cookies sur le navigateur de l'usager.
+Par défaut, il ne remonte pas beaucoup d'informations. Pour plus de précisions, il faudra lui adjoindre des fonctions (voir ci-après).
+
+### CNIL
+
+> **ATTENTION**: Le code fourni par Matomo ne respecte pas totalement la règlementation française sur la vie privée
+
+Afin d'être en règle, ajouter ce snippet au début du script de Matomo : 
+```javascript
+<!-- CODE CNIL OBLIGATOIRE -->
+_paq.push([function() {
+    var self = this;
+    function getOriginalVisitorCookieTimeout() {
+        var now = new Date(),
+        nowTs = Math.round(now.getTime() / 1000),
+        visitorInfo = self.getVisitorInfo();
+        var createTs = parseInt(visitorInfo[2]);
+        var cookieTimeout = 33696000; // 13 mois en secondes
+        var originalTimeout = createTs + cookieTimeout - nowTs;
+        return originalTimeout;
+    }
+    this.setVisitorCookieTimeout( getOriginalVisitorCookieTimeout()
+    );
+}]);
+<!-- FIN DU CODE CNIL -->
+```
+
+### React-tracking
+On utilise la librairie react-tracking, développée par le New York Times :
+* Usage par HOC ou par React Hook
+* Découple la responsabilité Tracking hors des composants et évite les fuites dans l'app
+* Platform agnostic (peut-etre utilisé avec Matomo, GA, etc)
+
+
+### Events
+Les Tracking Events sont une des méthodes proposées par Matomo pour mesurer les interactions utilisateurs avec le contenu de notre plateforme qui ne seraient ni des page view, ni des téléchargements.
+Typiquement, un event sera utilisé pour mesurer des clicks sur les éléments de nos pages (menus, boutons, envoi de formulaires, appels AJAX, etc).
+
+Un évènement est constitué de 4 éléments : 
+* Catégorie
+* Action
+* Nom (optionel mais recommendé)
+* Valeur (optionel)
+
+Exemple de déclaration d'évènement lorsque l'usager consulte (action : `Consult`), une Offre (catégorie : `Offer`) dont l'id est 'B4' (name: `B4`)  : 
+```javascript
+_paq.push(['trackEvent', 'Offer', 'B4', 'Consult']);
+```
+
+#### Usage avec react-tracking
+Si l'on se réfère à la cible archi front, la responsabilité de déclencher un évènement en fonction d'une action utilisateur incombe au composant graphique, à l'aide d'une fonction fournie par son container.
+C'est la responsabilité du container de wrapper l'action du déclenchement de l'event dans cette fonction.
+
+Exemple de container : 
+
+```javascript
+export const mapStateToProps = (state, ownProps) => {
+  const somethingId = selectSomethingId(state)
+  return {
+    selectSomethingId,
+  }
+}
+
+export const mapDispatchToProps = (dispatch, ownProps) => ({
+  trackButtonClick: somethingId => {
+    ownProps.tracking.trackEvent({ action: 'buttonClick', name: somethingId })
+  },
+})
+
+export default compose(
+  track({ page: 'Offer' }, { dispatch: trackMatomoEventWrapper }),
+  connect(mapStateToProps, mapDispatchToProps)
+)(MyButton)
+```
+
+Le HOC `track` décore le container d'une `props` `tracking` qui contient les méthodes de tracking que l'on souhaite utiliser.
+Il peut accepter une fonction `dispatch` qui sera exécutée à chaque fois qu'un évènement est déclenché.
+
+Ci-dessous un exemple de fonction dispatch : 
+```javascript
+export const trackMatomoEventWrapper = data => {
+  const Matomo = window._paq || []
+  Matomo.push(['trackEvent', data.page, data.action, data.name])
+}
+```
+
 ## Upgrade de la version
 
 La commande `yarn version` va créée un nouveau commit de version, un nouveau tag et la version sera mise à jour sur la page Mentions Légales
