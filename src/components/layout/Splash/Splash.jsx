@@ -1,11 +1,10 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import { connect } from 'react-redux'
 import { Transition } from 'react-transition-group'
 import { bindActionCreators } from 'redux'
 
-import Icon from './Icon'
-import { closeSplash } from '../../reducers/splash'
+import Icon from '../Icon/Icon'
+import { closeSplash } from '../../../reducers/splash'
 
 const duration = 1000
 
@@ -63,9 +62,4 @@ Splash.propTypes = {
   isBetaPage: PropTypes.bool.isRequired,
 }
 
-const mapStateToProps = ({ splash: { closeTimeout, isActive } }) => ({
-  closeTimeout,
-  isBetaPage: isActive,
-})
-
-export default connect(mapStateToProps)(Splash)
+export default Splash

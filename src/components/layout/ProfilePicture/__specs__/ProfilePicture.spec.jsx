@@ -3,7 +3,7 @@ import { shallow } from 'enzyme'
 
 import ProfilePicture from '../ProfilePicture'
 
-import { ROOT_PATH } from '../../../utils/config'
+import { ROOT_PATH } from '../../../../utils/config'
 
 describe('src | components | pages | ProfilePicture', () => {
   it('should match the snapshot', () => {

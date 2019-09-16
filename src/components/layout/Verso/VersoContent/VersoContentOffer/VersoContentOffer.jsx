@@ -5,7 +5,7 @@ import { capitalize } from 'react-final-form-utils'
 
 import getDurationFromMinutes from './getDurationFromMinutes'
 import VersoActionsBar from './VersoActionsBar'
-import Icon from '../../../Icon'
+import Icon from '../../../Icon/Icon'
 import { navigationLink } from '../../../../../utils/geolocation'
 
 class VersoContentOffer extends PureComponent {

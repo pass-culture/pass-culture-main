@@ -2,10 +2,9 @@ import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 
-import Icon from '../../../layout/Icon'
 import { ICONS_URL } from '../../../../utils/config'
-
 const DEFAULT_THUMB_URL = `${ICONS_URL}/picto-placeholder-visueloffre.png`
+import Icon from '../../../layout/Icon/Icon'
 
 class MyFavorite extends Component {
   renderFavorite = () => {

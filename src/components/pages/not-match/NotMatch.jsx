@@ -47,7 +47,7 @@ class NoMatch extends React.PureComponent {
 }
 
 NoMatch.defaultProps = {
-  delay: 5, // delay en seconds
+  delay: 5,
   redirect: '/',
 }
 

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import Icon from '../Icon'
+import Icon from '../Icon/Icon'
 
 const Finishable = ({ isFinished, children }) => {
   if (!isFinished) return children

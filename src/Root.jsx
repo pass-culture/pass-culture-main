@@ -6,7 +6,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import App from './App'
 import FeaturedRouteContainer from './components/router/FeaturedRouteContainer'
 import MatomoContainer from './components/matomo/MatomoContainer'
-import NotMatch from './components/pages/NotMatch'
+import NotMatch from './components/pages/not-match/NotMatch'
 import browserRoutes from './components/router/browserRoutes'
 import { configureStore } from './utils/store'
 

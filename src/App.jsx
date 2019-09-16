@@ -10,7 +10,7 @@ import MenuContainer from './components/layout/Menu/MenuContainer'
 import Notifications from './components/layout/Notifications/Notifications'
 import OverlayContainer from './components/layout/Overlay/OverlayContainer'
 import SharePopinContainer from './components/layout/Share/SharePopinContainer'
-import Splash from './components/layout/Splash'
+import SplashContainer from './components/layout/Splash/SplashContainer'
 import { ROOT_PATH, IS_DEV, PROJECT_NAME } from './utils/config'
 
 const getPageTitle = obj => `${obj && obj.title ? `${obj.title} - ` : ''}`
@@ -42,7 +42,7 @@ const App = ({ children, history, location }) => {
             history={history}
             path="*/menu"
           />
-          <Splash />
+          <SplashContainer />
           <SharePopinContainer />
           <Notifications />
           <img

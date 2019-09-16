@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import ProfilePicture from '../ProfilePicture'
+import ProfilePicture from '../ProfilePicture/ProfilePicture'
 
 const AbsoluteFooter = ({ areDetailsVisible, borderTop, colored, id, location, onTop }) => {
   const maybeColored = {}

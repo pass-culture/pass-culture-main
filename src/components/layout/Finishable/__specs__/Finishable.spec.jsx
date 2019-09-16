@@ -2,7 +2,7 @@ import { shallow } from 'enzyme'
 import React from 'react'
 
 import Finishable from '../Finishable'
-import Icon from '../../Icon'
+import Icon from '../../Icon/Icon'
 
 describe('src | components | layout | Finishable', () => {
   const finishableClass = '.finishable'

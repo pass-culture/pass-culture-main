@@ -2,7 +2,7 @@ import React from 'react'
 import { shallow } from 'enzyme'
 
 import Error from '../Error'
-import MailToLink from '../../../layout/MailToLink'
+import MailToLink from '../../../layout/MailToLink/MailToLink'
 import { SUPPORT_EMAIL, SUPPORT_EMAIL_SUBJECT } from '../../../../utils/config'
 
 describe('src | components | pages | activation | Error', () => {

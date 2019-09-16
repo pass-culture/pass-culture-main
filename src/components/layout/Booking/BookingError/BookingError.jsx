@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
 import { flattenErrors } from '../utils'
-import Icon from '../../Icon'
+import Icon from '../../Icon/Icon'
 
 class BookingError extends Component {
   // NOTE: hack pour contourner le no-array-index-key

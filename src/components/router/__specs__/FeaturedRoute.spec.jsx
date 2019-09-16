@@ -3,7 +3,7 @@ import React from 'react'
 import { Route } from 'react-router-dom'
 
 import FeaturedRoute from '../FeaturedRoute'
-import NotMatch from '../../pages/NotMatch'
+import NotMatch from '../../pages/not-match/NotMatch'
 
 const Foo = () => <div />
 
@@ -14,7 +14,7 @@ describe('src | components | router | FeaturedRoute', () => {
       areFeaturesLoaded: true,
       component: Foo,
       isRouteDisabled: false,
-      requestGetFeatures: jest.fn()
+      requestGetFeatures: jest.fn(),
     }
 
     // when
@@ -24,7 +24,6 @@ describe('src | components | router | FeaturedRoute', () => {
     expect(wrapper).toMatchSnapshot()
   })
 
-
   describe('when features are not yet loaded', () => {
     it('should render null', () => {
       // given
@@ -32,7 +31,7 @@ describe('src | components | router | FeaturedRoute', () => {
         areFeaturesLoaded: false,
         component: Foo,
         isRouteDisabled: false,
-        requestGetFeatures: jest.fn()
+        requestGetFeatures: jest.fn(),
       }
 
       // when
@@ -49,7 +48,7 @@ describe('src | components | router | FeaturedRoute', () => {
         areFeaturesLoaded: false,
         component: Foo,
         isRouteDisabled: false,
-        requestGetFeatures: jest.fn()
+        requestGetFeatures: jest.fn(),
       }
 
       // when
@@ -67,7 +66,7 @@ describe('src | components | router | FeaturedRoute', () => {
         areFeaturesLoaded: true,
         component: Foo,
         isRouteDisabled: true,
-        requestGetFeatures: jest.fn()
+        requestGetFeatures: jest.fn(),
       }
 
       // when
@@ -86,7 +85,7 @@ describe('src | components | router | FeaturedRoute', () => {
         areFeaturesLoaded: true,
         component: Foo,
         isRouteDisabled: true,
-        requestGetFeatures: jest.fn()
+        requestGetFeatures: jest.fn(),
       }
 
       // when
@@ -104,7 +103,7 @@ describe('src | components | router | FeaturedRoute', () => {
         areFeaturesLoaded: true,
         component: Foo,
         isRouteDisabled: false,
-        requestGetFeatures: jest.fn()
+        requestGetFeatures: jest.fn(),
       }
 
       // when
@@ -123,7 +122,7 @@ describe('src | components | router | FeaturedRoute', () => {
         areFeaturesLoaded: true,
         component: Foo,
         isRouteDisabled: false,
-        requestGetFeatures: jest.fn()
+        requestGetFeatures: jest.fn(),
       }
 
       // when

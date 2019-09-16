@@ -3,10 +3,10 @@ import queryString from 'query-string'
 import React, { Component } from 'react'
 import { Switch, Route } from 'react-router-dom'
 
-import NotMatch from './NotMatch'
-import RequestEmailForm from './forgot-password/RequestEmailForm'
-import ResetThePasswordForm from './forgot-password/ResetThePasswordForm'
-import SuccessView from './forgot-password/SuccessView'
+import NotMatch from '../not-match/NotMatch'
+import RequestEmailForm from './RequestEmailForm'
+import ResetThePasswordForm from './ResetThePasswordForm'
+import SuccessView from './SuccessView'
 
 class ForgotPasswordPage extends Component {
   renderforgotPasswordSuccessViewRoute = token => routeProps => (

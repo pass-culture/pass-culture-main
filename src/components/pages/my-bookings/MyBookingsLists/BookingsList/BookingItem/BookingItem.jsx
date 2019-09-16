@@ -4,9 +4,9 @@ import React from 'react'
 import { capitalize } from 'react-final-form-utils'
 import { Link } from 'react-router-dom'
 
-import Icon from '../../../../../layout/Icon'
-import Ribbon from '../../../../../layout/Ribbon'
 import { ICONS_URL } from '../../../../../../utils/config'
+import Icon from '../../../../../layout/Icon/Icon'
+import Ribbon from '../../../../../layout/Ribbon/Ribbon'
 import { getTimezone } from '../../../../../../utils/timezone'
 
 const DEFAULT_THUMB_URL = `${ICONS_URL}/picto-placeholder-visueloffre.png`

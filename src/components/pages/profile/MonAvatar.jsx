@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import ProfilePicture from '../../layout/ProfilePicture'
+import ProfilePicture from '../../layout/ProfilePicture/ProfilePicture'
 
 const MonAvatar = ({ currentUser }) => (
   <div

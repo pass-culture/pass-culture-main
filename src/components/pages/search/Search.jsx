@@ -17,8 +17,8 @@ import {
   translateBrowserUrlToApiUrl,
 } from './helpers'
 import HeaderContainer from '../../layout/Header/HeaderContainer'
-import Icon from '../../layout/Icon'
-import Spinner from '../../layout/Spinner'
+import Icon from '../../layout/Icon/Icon'
+import Spinner from '../../layout/Spinner/Spinner'
 import RelativeFooterContainer from '../../layout/RelativeFooter/RelativeFooterContainer'
 import { recommendationNormalizer } from '../../../utils/normalizers'
 

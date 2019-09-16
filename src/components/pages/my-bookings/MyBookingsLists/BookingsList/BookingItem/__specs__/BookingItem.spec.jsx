@@ -3,8 +3,8 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import BookingItem, { stringify } from '../BookingItem'
-import Icon from '../../../../../../layout/Icon'
-import Ribbon from '../../../../../../layout/Ribbon'
+import Icon from '../../../../../../layout/Icon/Icon'
+import Ribbon from '../../../../../../layout/Ribbon/Ribbon'
 
 describe('src | components | pages | my-bookings | MyBookingsList | BookingList | BookingItem', () => {
   describe('stringify()', () => {

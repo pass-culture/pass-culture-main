@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 
-import Price from '../../../../Price'
+import Price from '../../../../Price/Price'
 import getIsCancelling from '../../../../../../helpers/getIsCancelling'
 
 class CancelThisLink extends PureComponent {

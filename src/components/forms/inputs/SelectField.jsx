@@ -4,7 +4,7 @@ import React, { PureComponent } from 'react'
 import { Field } from 'react-final-form'
 
 import InputLabel from '../InputLabel'
-import Icon from '../../layout/Icon'
+import Icon from '../../layout/Icon/Icon'
 
 class SelectField extends PureComponent {
   constructor(props) {

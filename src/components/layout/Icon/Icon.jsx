@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import { ICONS_URL } from '../../utils/config'
+import { ICONS_URL } from '../../../utils/config'
 
 const Icon = ({ alt, src, svg, ...imgProps }) => (
   <img

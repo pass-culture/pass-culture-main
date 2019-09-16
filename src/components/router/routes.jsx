@@ -2,11 +2,11 @@ import React from 'react'
 import { Redirect } from 'react-router-dom'
 
 import ActivationContainer from '../pages/activation/ActivationContainer'
-import BetaPage from '../pages/BetaPage'
+import BetaPageContainer from '../pages/beta-page/BetaPageContainer'
 import MyBookingsContainer from '../pages/my-bookings/MyBookingsContainer'
 import DiscoveryContainer from '../pages/discovery/DiscoveryContainer'
 import MyFavoritesContainer from '../pages/my-favorites/MyFavoritesContainer'
-import ForgotPasswordPage from '../pages/ForgotPasswordPage'
+import ForgotPasswordPage from '../pages/forgot-password/ForgotPasswordPage'
 import ProfileContainer from '../pages/profile/ProfileContainer'
 import TypeFormPage from '../pages/typeform/TypeFormContainer'
 import SearchContainer from '../pages/search/SearchContainer'
@@ -24,7 +24,7 @@ const routes = [
     render: redirectToBeta,
   },
   {
-    component: BetaPage,
+    component: BetaPageContainer,
     path: '/beta',
     title: 'Bienvenue dans l’avant-première du pass Culture',
   },

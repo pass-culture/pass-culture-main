@@ -2,8 +2,8 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import Draggable from 'react-draggable'
 
-import Icon from '../../../../layout/Icon'
-import Price from '../../../../layout/Price'
+import Icon from '../../../../layout/Icon/Icon'
+import Price from '../../../../layout/Price/Price'
 import FinishableContainer from '../../../../layout/Finishable/FinishableContainer'
 import { ROOT_PATH } from '../../../../../utils/config'
 import { getPageY } from '../../../../../utils/getPageY'
@@ -75,7 +75,7 @@ export class Navigation extends React.PureComponent {
       flipHandler,
       priceRange,
       separator,
-      transitionTimeout
+      transitionTimeout,
     } = this.props
     return (
       <div

@@ -2,7 +2,7 @@ import React from 'react'
 import { shallow } from 'enzyme'
 
 import CancelThisLink from '../CancelThisLink'
-import Price from '../../../../../Price'
+import Price from '../../../../../Price/Price'
 
 describe('src | components | layout | Verso | VersoControls | booking | CancelThisLink | CancelThisLink', () => {
   let props

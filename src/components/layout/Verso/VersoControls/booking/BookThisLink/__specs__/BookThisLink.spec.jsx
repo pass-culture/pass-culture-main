@@ -2,7 +2,7 @@ import React from 'react'
 import { mount, shallow } from 'enzyme'
 import { MemoryRouter } from 'react-router-dom'
 
-import Price from '../../../../../Price'
+import Price from '../../../../../Price/Price'
 import BookThisLink from '../BookThisLink'
 
 describe('src | components | verso | verso-controls | booking | BookThisLink', () => {

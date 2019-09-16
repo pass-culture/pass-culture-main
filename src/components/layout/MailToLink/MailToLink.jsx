@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import createMailToLink from '../../helpers/createMailToLink'
+import createMailToLink from '../../../helpers/createMailToLink'
 
 class MailToLink extends React.PureComponent {
   handleObfuscatedClick = event => {

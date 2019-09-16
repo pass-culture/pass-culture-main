@@ -2,7 +2,7 @@ import React from 'react'
 import { shallow } from 'enzyme'
 
 import VersoContentOffer from '../VersoContentOffer'
-import Icon from '../../../../Icon'
+import Icon from '../../../../Icon/Icon'
 import { navigationLink } from '../../../../../../utils/geolocation'
 import VersoActionsBar from '../VersoActionsBar'
 

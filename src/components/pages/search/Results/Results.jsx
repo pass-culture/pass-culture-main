@@ -5,7 +5,7 @@ import InfiniteScroll from 'react-infinite-scroller'
 
 import RecommendationItemContainer from './RecommendationItem/RecommendationItemContainer'
 import { searchResultsTitle } from '../helpers'
-import Spinner from '../../../layout/Spinner'
+import Spinner from '../../../layout/Spinner/Spinner'
 
 const ITEMS_PER_PAGE = 10
 

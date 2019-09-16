@@ -2,7 +2,7 @@ import { shallow } from 'enzyme'
 import React from 'react'
 
 import SignoutButton from '../SignoutButton'
-import Icon from '../../../Icon'
+import Icon from '../../../Icon/Icon'
 
 describe('src | components | menu | SignoutButton', () => {
   let props

@@ -5,7 +5,7 @@ import { Route, Switch } from 'react-router-dom'
 import { config } from './config'
 import ProfileMainView from './ProfileMainView'
 import ProfileUpdateSuccess from './ProfileUpdateSuccess'
-import NotMatch from '../NotMatch'
+import NotMatch from '../not-match/NotMatch'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
 
 class Profile extends Component {

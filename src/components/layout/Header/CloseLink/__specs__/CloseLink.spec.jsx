@@ -2,7 +2,7 @@ import { shallow } from 'enzyme'
 import React from 'react'
 import CloseLink from '../CloseLink'
 import { Link } from 'react-router-dom'
-import Icon from '../../../Icon'
+import Icon from '../../../Icon/Icon'
 
 describe('src | components | layout | Header | CloseLink', () => {
   let props

@@ -1,8 +1,6 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 
-import MailToLink from '../../layout/MailToLink'
+import MailToLink from '../../layout/MailToLink/MailToLink'
 import { SUPPORT_EMAIL, SUPPORT_EMAIL_SUBJECT } from '../../../utils/config'
 
 const Error = () => {

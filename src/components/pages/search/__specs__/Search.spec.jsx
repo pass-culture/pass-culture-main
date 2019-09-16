@@ -3,7 +3,7 @@ import React from 'react'
 import { Switch } from 'react-router-dom'
 
 import Search from '../Search'
-import Spinner from '../../../layout/Spinner'
+import Spinner from '../../../layout/Spinner/Spinner'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
 
 const getPageContentDiv = wrapper => wrapper.find('.page-content')

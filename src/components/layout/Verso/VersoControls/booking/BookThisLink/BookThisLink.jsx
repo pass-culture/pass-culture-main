@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
 import VersoPriceFormatter from '../VersoPriceFormatter/VersoPriceFormatter'
-import Price from '../../../../Price'
+import Price from '../../../../Price/Price'
 
 class BookThisLink extends Component {
   formatOutputPrice = ([startingPrice, endingPrice], devise) => (

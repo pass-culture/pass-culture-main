@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 import { Link } from 'react-router-dom'
 
-import Icon from '../../Icon'
+import Icon from '../../Icon/Icon'
 import { getDisplayPrice } from '../../../../helpers'
 
 const BookingSuccess = ({ bookedPayload, isEvent }) => {

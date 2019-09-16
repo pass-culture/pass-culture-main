@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
 import CopyToClipboardButton from '../CopyToClipboardButton'
-import MailToLink from '../../MailToLink'
+import MailToLink from '../../MailToLink/MailToLink'
 import { openSharePopin, closeSharePopin } from '../../../../reducers/share'
 
 class ShareButton extends PureComponent {

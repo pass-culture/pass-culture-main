@@ -1,9 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import { withNotRequiredLogin } from '../hocs'
-
-export const RawBetaPage = () => (
+export const BetaPage = () => (
   <div
     className="page pc-gradient flex-rows"
     id="beta-page"
@@ -43,4 +41,4 @@ export const RawBetaPage = () => (
   </div>
 )
 
-export default withNotRequiredLogin(RawBetaPage)
+export default BetaPage

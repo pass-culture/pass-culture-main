@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Transition } from 'react-transition-group'
 
-import Icon from '../Icon'
+import Icon from '../Icon/Icon'
 import RelativeFooterContainer from '../RelativeFooter/RelativeFooterContainer'
 
 const duration = 500

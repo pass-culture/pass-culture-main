@@ -1,25 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | layout | Splash should match the snapshot 1`] = `
+exports[`src | components | layout | Splash should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <Provider
+  Symbol(enzyme.__unrendered__): <Splash
     closeTimeout={1000}
     dispatch={[MockFunction]}
     isBetaPage={true}
-    store={
-      Object {
-        "clearActions": [Function],
-        "dispatch": [Function],
-        "getActions": [Function],
-        "getState": [Function],
-        "replaceReducer": [Function],
-        "subscribe": [Function],
-      }
-    }
-  >
-    <Connect(Splash) />
-  </Provider>,
+  />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -33,9 +21,24 @@ ShallowWrapper {
     "instance": null,
     "key": undefined,
     "nodeType": "class",
-    "props": Object {},
+    "props": Object {
+      "appear": false,
+      "children": [Function],
+      "enter": true,
+      "exit": true,
+      "in": true,
+      "mountOnEnter": false,
+      "onEnter": [Function],
+      "onEntered": [Function],
+      "onEntering": [Function],
+      "onExit": [Function],
+      "onExited": [Function],
+      "onExiting": [Function],
+      "timeout": 1000,
+      "unmountOnExit": true,
+    },
     "ref": null,
-    "rendered": null,
+    "rendered": [Function],
     "type": [Function],
   },
   Symbol(enzyme.__nodes__): Array [
@@ -43,9 +46,24 @@ ShallowWrapper {
       "instance": null,
       "key": undefined,
       "nodeType": "class",
-      "props": Object {},
+      "props": Object {
+        "appear": false,
+        "children": [Function],
+        "enter": true,
+        "exit": true,
+        "in": true,
+        "mountOnEnter": false,
+        "onEnter": [Function],
+        "onEntered": [Function],
+        "onEntering": [Function],
+        "onExit": [Function],
+        "onExited": [Function],
+        "onExiting": [Function],
+        "timeout": 1000,
+        "unmountOnExit": true,
+      },
       "ref": null,
-      "rendered": null,
+      "rendered": [Function],
       "type": [Function],
     },
   ],
@@ -75,16 +93,6 @@ ShallowWrapper {
     Symbol(enzyme.__providerValues__): undefined,
   },
   Symbol(enzyme.__providerValues__): Map {},
-  Symbol(enzyme.__childContext__): Object {
-    "store": Object {
-      "clearActions": [Function],
-      "dispatch": [Function],
-      "getActions": [Function],
-      "getState": [Function],
-      "replaceReducer": [Function],
-      "subscribe": [Function],
-    },
-    "storeSubscription": null,
-  },
+  Symbol(enzyme.__childContext__): null,
 }
 `;
