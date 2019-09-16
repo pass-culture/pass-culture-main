@@ -1,7 +1,5 @@
 from models.db import db
 
-CHUNK_SIZE = 500
-
 
 def update_stock_modification_date_sql_version():
 

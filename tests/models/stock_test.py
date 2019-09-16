@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 import pytest
 from freezegun import freeze_time
+from pytest import approx
 
 from models import ApiErrors, PcObject
 from models.pc_object import DeletedRecordException
@@ -29,6 +30,25 @@ def test_beginning_datetime_cannot_be_after_end_datetime(app):
     assert e.value.errors['endDatetime'] == [
         'La date de fin de l\'événement doit être postérieure à la date de début'
     ]
+
+
+@clean_database
+def test_date_modified_should_be_updated_on_save(app):
+    # given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_offer_with_thing_product(venue)
+    stock = create_stock(offer=offer, date_modified=datetime(2018, 2, 12), available=1)
+    PcObject.save(stock)
+
+    # when
+    stock = Stock.query.first()
+    stock.available = 10
+    PcObject.save(stock)
+
+    # then
+    stock = Stock.query.first()
+    assert stock.dateModified.timestamp() == approx(datetime.now().timestamp())
 
 
 @clean_database
@@ -259,4 +279,3 @@ class IsBookableTest:
 
         # Then
         assert stock.isBookable is True
-

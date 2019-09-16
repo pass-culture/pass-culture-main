@@ -162,6 +162,29 @@ Stock.trig_ddl = """
     ON stock
     FOR EACH ROW EXECUTE PROCEDURE check_stock()
     """
+
 event.listen(Stock.__table__,
              'after_create',
              DDL(Stock.trig_ddl))
+
+
+Stock.trig_update_date_ddl = """
+    CREATE OR REPLACE FUNCTION save_stock_modification_date()
+    RETURNS TRIGGER AS $$
+    BEGIN
+      NEW."dateModified" = NOW();
+      RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+
+    DROP TRIGGER IF EXISTS stock_update_modification_date ON stock;
+
+    CREATE TRIGGER stock_update_modification_date
+    BEFORE UPDATE ON stock
+    FOR EACH ROW
+    EXECUTE PROCEDURE save_stock_modification_date()
+    """
+
+event.listen(Stock.__table__,
+             'after_create',
+             DDL(Stock.trig_update_date_ddl))
