@@ -16,7 +16,7 @@ describe('src | selectors | selectVenuesByOffererIdAndOfferType', () => {
     expect(result).toStrictEqual([])
   })
 
-  it('should return array of object when state contains on venue that is virtual', () => {
+  it('should return an array of object when state contains virtual venue', () => {
     // given
     const state = {
       data: {
@@ -29,14 +29,14 @@ describe('src | selectors | selectVenuesByOffererIdAndOfferType', () => {
     }
 
     // when
+    const result = selectVenuesByOffererIdAndOfferType(state)
+
+    // then
     const expected = [
       {
         isVirtual: true,
       },
     ]
-    const result = selectVenuesByOffererIdAndOfferType(state)
-
-    // then
     expect(result).toStrictEqual(expected)
   })
 })
