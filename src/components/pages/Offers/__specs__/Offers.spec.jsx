@@ -3,7 +3,6 @@ import { shallow } from 'enzyme'
 import { NavLink } from 'react-router-dom'
 import { resolveIsNew } from 'pass-culture-shared'
 
-
 import Offers from '../Offers'
 import OfferItem from '../OfferItem/OfferItemContainer'
 import mockedOffers from './offersMock'
@@ -14,6 +13,7 @@ describe('src | components | pages | Offers | Offers', () => {
   let parse
   let props
   let currentUser
+  let prevProps
 
   beforeEach(() => {
     change = jest.fn()
@@ -22,6 +22,30 @@ describe('src | components | pages | Offers | Offers', () => {
     currentUser = { isAdmin: false }
 
     props = {
+      currentUser,
+      dispatch,
+      offers: [],
+      location: {
+        pathname: '/offres',
+        search: 'offres?lieu=AQ&structure=A4'
+      },
+      pagination: {
+        apiQuery: {
+          keywords: null,
+          offererId: null,
+          orderBy: 'offer.id+desc',
+          venueId: null,
+        },
+      },
+      query: {
+        change,
+        parse,
+      },
+      types: [],
+      venue: {}
+    }
+
+    prevProps = {
       currentUser,
       dispatch,
       offers: [],
@@ -582,6 +606,47 @@ describe('src | components | pages | Offers | Offers', () => {
           dispatch.mockClear()
         })
       })
+
+      it('should set isLoading to false when offers load is finished', () => {
+        // given
+        props.offers = [
+          {id: 'AE' },
+          {id: 'FA' },
+          {id: 'DF' },
+        ]
+
+        prevProps.offers = [
+          {id: 'AE' },
+        ]
+
+        const wrapper = shallow(<Offers {...props} />)
+
+        // when
+        wrapper.instance().componentDidUpdate(prevProps)
+
+        // then
+        expect(wrapper.state()).toHaveProperty('isLoading', false)
+      })
+
+      it('should set hasMore to false when less than 10 offers has been loaded', () => {
+        // given
+        props.offers = [
+          {id: 'AE' },
+          {id: 'FA' },
+          {id: 'DF' },
+        ]
+
+        prevProps.offers = [{id: 'AE' },]
+
+        const wrapper = shallow(<Offers {...props} />)
+
+        // when
+        wrapper.instance().componentDidUpdate(prevProps)
+
+        // then
+        expect(wrapper.state()).toHaveProperty('hasMore', false)
+      })
+
     })
     })
   })

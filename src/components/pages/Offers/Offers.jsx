@@ -35,24 +35,29 @@ class Offers extends Component {
     if (queryParams.page) {
       query.change({ page: null })
     } else {
-      this.onHandleRequestData()
+      this.handleRequestData()
     }
   }
 
   componentDidUpdate(prevProps) {
     const { location, offers } = this.props
     const numberOfOffersPerLoad = 10
+    const offersHasBeenLoaded = offers.length > prevProps.offers.length
 
-    if (offers.length > prevProps.offers.length) {
+
+    if (offersHasBeenLoaded) {
       this.scrollerIsNotLoading()
 
-      if (offers.length !== prevProps.offers.length + numberOfOffersPerLoad) {
-        this.hasNoMoreDataToLoad()
+      const allOffersLoaded = offers.length !== prevProps.offers.length + numberOfOffersPerLoad
+      if (allOffersLoaded) {
+        this.noMoreDataToLoad()
       }
     }
 
-    if (location.search !== prevProps.location.search) {
-      this.onHandleRequestData()
+    const { hasMore } = this.state
+
+    if (location.search !== prevProps.location.search && hasMore) {
+      this.handleRequestData()
     }
   }
 
@@ -60,11 +65,11 @@ class Offers extends Component {
     this.setState({ isLoading: false })
   }
 
-  hasNoMoreDataToLoad = () => {
+  noMoreDataToLoad = () => {
     this.setState({ hasMore: false })
   }
 
-  onHandleRequestData = () => {
+  handleRequestData = () => {
     const { comparedTo, dispatch, query, types } = this.props
 
     types.length === 0 && dispatch(requestData({ apiPath: '/types' }))

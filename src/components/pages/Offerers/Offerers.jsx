@@ -44,16 +44,20 @@ class Offerers extends Component {
   componentDidUpdate(prevProps) {
     const { location, offerers } = this.props
     const numberOfOfferersPerLoad = 10
+    const offerersHasBeenLoaded = offerers.length > prevProps.offerers.length
 
-    if (offerers.length > prevProps.offerers.length) {
+    if (offerersHasBeenLoaded) {
       this.scrollerIsNotLoading()
 
-      if (offerers.length !== prevProps.offerers.length + numberOfOfferersPerLoad) {
-        this.hasNoMoreDataToLoad()
+      const allOfferersLoaded = offerers.length !== prevProps.offerers.length + numberOfOfferersPerLoad
+      if (allOfferersLoaded) {
+        this.noMoreDataToLoad()
       }
     }
 
-    if (location.search !== prevProps.location.search) {
+    const { hasMore } = this.state
+
+    if (location.search !== prevProps.location.search && hasMore) {
       this.handleRequestData()
     }
   }
@@ -69,7 +73,7 @@ class Offerers extends Component {
     this.setState({ isLoading: false })
   }
 
-  hasNoMoreDataToLoad = () => {
+  noMoreDataToLoad = () => {
     this.setState({ hasMore: false })
   }
 
