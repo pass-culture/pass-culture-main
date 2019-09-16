@@ -8,21 +8,21 @@ class CancelThisLink extends PureComponent {
   componentDidMount() {
     const { booking, match, offer, openCancelPopin } = this.props
     const { id: bookingId } = booking || {}
-    const { name: offerName } = offer || {}
+    const { name: offerName, id: offerId } = offer || {}
     const isCancelling = getIsCancelling(match)
     if (isCancelling) {
-      openCancelPopin(bookingId, offerName)
+      openCancelPopin(bookingId, offerName, offerId)
     }
   }
 
   componentDidUpdate(prevProps) {
     const { booking, match, offer, openCancelPopin } = this.props
     const { id: bookingId } = booking || {}
-    const { name: offerName } = offer || {}
+    const { name: offerName, id: offerId } = offer || {}
     const isCancelling = getIsCancelling(match)
     const previousIsCancelling = getIsCancelling(prevProps.match)
     if (isCancelling && !previousIsCancelling) {
-      openCancelPopin(bookingId, offerName)
+      openCancelPopin(bookingId, offerName, offerId)
     }
   }
 

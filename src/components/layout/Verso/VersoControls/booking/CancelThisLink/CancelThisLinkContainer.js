@@ -2,15 +2,19 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
+import track from 'react-tracking'
 
 import CancelThisLink from './CancelThisLink'
 import PopinButton from './PopinButton'
+
+import { bookingNormalizer } from '../../../../../../utils/normalizers'
+import { trackMatomoEventWrapper } from '../../../../../../helpers/matomoHelper'
+
 import { closeSharePopin, openSharePopin } from '../../../../../../reducers/share'
 import selectBookingByRouterMatch from '../../../../../../selectors/selectBookingByRouterMatch'
 import selectOfferByRouterMatch from '../../../../../../selectors/selectOfferByRouterMatch'
 import selectStockById from '../../../../../../selectors/selectStockById'
 import selectIsFinishedByRouterMatch from '../../../../../../selectors/selectIsFinishedByRouterMatch'
-import { bookingNormalizer } from '../../../../../../utils/normalizers'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
@@ -53,19 +57,20 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
     dispatch(openSharePopin(options))
   }
 
-  const handleSuccessPopin = () => {
+  const handleSuccessPopin = offerId => {
     dispatch(closeSharePopin())
     const successUrl = `${pathname}/confirmation${search}`
+    ownProps.tracking.trackEvent({ action: 'cancelBooking', name: offerId })
     history.push(successUrl)
   }
 
-  const requestPatchBooking = bookingId => {
+  const requestPatchBooking = (bookingId, offerId) => {
     dispatch(
       requestData({
         apiPath: `/bookings/${bookingId}`,
         body: { isCancelled: true },
         handleFail: handleOpenFailurePopin,
-        handleSuccess: handleSuccessPopin,
+        handleSuccess: () => handleSuccessPopin(offerId),
         method: 'PATCH',
         normalizer: bookingNormalizer,
       })
@@ -73,13 +78,13 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
   }
 
   return {
-    openCancelPopin: (bookingId, offerName) => {
+    openCancelPopin: (bookingId, offerName, offerId) => {
       const options = {
         buttons: [
           PopinButton({
             id: 'popin-cancel-booking-yes',
             label: 'Oui',
-            onClick: () => requestPatchBooking(bookingId),
+            onClick: () => requestPatchBooking(bookingId, offerId),
           }),
           PopinButton({
             id: 'popin-cancel-booking-no',
@@ -97,6 +102,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
 
 export default compose(
   withRouter,
+  track({ page: 'Offer' }, { dispatch: trackMatomoEventWrapper }),
   connect(
     mapStateToProps,
     mapDispatchToProps

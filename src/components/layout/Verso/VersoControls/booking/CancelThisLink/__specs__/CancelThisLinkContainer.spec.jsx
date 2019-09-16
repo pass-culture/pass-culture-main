@@ -67,6 +67,7 @@ describe('src | components | layout | Verso | VersoControls | booking | CancelTh
       // given
       const bookingId = 'AE'
       const offerName = 'foo'
+      const offerId = 'FK'
       ownProps = {
         location: {
           pathname: '',
@@ -105,7 +106,7 @@ describe('src | components | layout | Verso | VersoControls | booking | CancelTh
       }
 
       // when
-      mapDispatchToProps(dispatch, ownProps).openCancelPopin(bookingId, offerName)
+      mapDispatchToProps(dispatch, ownProps).openCancelPopin(bookingId, offerName, offerId)
 
       // then
       expect(dispatch.mock.calls[0][0]).toStrictEqual(expectedOptions)
