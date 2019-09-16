@@ -3,7 +3,7 @@ import selectRecommendationsBySearchQuery, {
 } from '../selectRecommendationsBySearchQuery'
 import state from '../../../../../mocks/stateWithTypes'
 
-const types = state.data.types.filter(type => type.value !== 'ThingType.JEUX')
+const types = state.data.types
 
 describe('src | components | pages | search | selectors | selectRecommendationsBySearchQuery', () => {
   describe('getRecommendationSearch', () => {

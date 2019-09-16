@@ -8,6 +8,7 @@ const offerTypes = [
     sublabel: 'Regarder',
     type: 'Event',
     value: 'EventType.CINEMA',
+    isActive: true,
   },
   {
     description: 'Parfois une simple rencontre peut changer une vie...',
@@ -17,6 +18,7 @@ const offerTypes = [
     sublabel: 'Rencontrer',
     type: 'Event',
     value: 'EventType.CONFERENCE_DEBAT_DEDICACE',
+    isActive: true,
   },
   {
     description:
@@ -27,6 +29,7 @@ const offerTypes = [
     sublabel: 'Jouer',
     type: 'Event',
     value: 'EventType.JEUX',
+    isActive: true,
   },
   {
     description:
@@ -37,6 +40,7 @@ const offerTypes = [
     sublabel: '\u00c9couter',
     type: 'Event',
     value: 'EventType.MUSIQUE',
+    isActive: true,
   },
   {
     description:
@@ -48,6 +52,7 @@ const offerTypes = [
     sublabel: 'Regarder',
     type: 'Event',
     value: 'EventType.MUSEES_PATRIMOINE',
+    isActive: true,
   },
   {
     description:
@@ -58,6 +63,7 @@ const offerTypes = [
     sublabel: 'Pratiquer',
     type: 'Event',
     value: 'EventType.PRATIQUE_ARTISTIQUE',
+    isActive: true,
   },
   {
     description:
@@ -68,6 +74,7 @@ const offerTypes = [
     sublabel: 'Applaudir',
     type: 'Event',
     value: 'EventType.SPECTACLE_VIVANT',
+    isActive: true,
   },
   {
     description:
@@ -78,6 +85,7 @@ const offerTypes = [
     sublabel: 'Regarder',
     type: 'Thing',
     value: 'ThingType.AUDIOVISUEL',
+    isActive: true,
   },
   {
     description:
@@ -88,6 +96,7 @@ const offerTypes = [
     sublabel: 'Regarder',
     type: 'Thing',
     value: 'ThingType.CINEMA_ABO',
+    isActive: true,
   },
   {
     description:
@@ -98,16 +107,7 @@ const offerTypes = [
     sublabel: 'Jouer',
     type: 'Thing',
     value: 'ThingType.JEUX_ABO',
-  },
-  {
-    description:
-      'R\u00e9soudre l\u2019\u00e9nigme d\u2019un jeu de piste dans votre ville ? Jouer en ligne entre amis ? D\u00e9couvrir cet univers \u00e9trange avec une manette ?',
-    label: 'Jeux (Biens physiques)',
-    offlineOnly: true,
-    onlineOnly: false,
-    sublabel: 'Jouer',
-    type: 'Thing',
-    value: 'ThingType.JEUX',
+    isActive: true,
   },
   {
     description:
@@ -118,6 +118,7 @@ const offerTypes = [
     sublabel: 'Jouer',
     type: 'Thing',
     value: 'ThingType.JEUX_VIDEO',
+    isActive: true,
   },
   {
     description:
@@ -128,6 +129,7 @@ const offerTypes = [
     sublabel: 'Lire',
     type: 'Thing',
     value: 'ThingType.LIVRE_EDITION',
+    isActive: true,
   },
   {
     description:
@@ -138,6 +140,7 @@ const offerTypes = [
     sublabel: 'Regarder',
     type: 'Thing',
     value: 'ThingType.MUSEES_PATRIMOINE_ABO',
+    isActive: true,
   },
   {
     description:
@@ -148,6 +151,7 @@ const offerTypes = [
     sublabel: '\u00c9couter',
     type: 'Thing',
     value: 'ThingType.MUSIQUE_ABO',
+    isActive: true,
   },
   {
     description:
@@ -158,6 +162,7 @@ const offerTypes = [
     sublabel: '\u00c9couter',
     type: 'Thing',
     value: 'ThingType.MUSIQUE',
+    isActive: true,
   },
   {
     description:
@@ -168,6 +173,7 @@ const offerTypes = [
     sublabel: 'Pratiquer',
     type: 'Thing',
     value: 'ThingType.PRATIQUE_ARTISTIQUE_ABO',
+    isActive: true,
   },
   {
     description:
@@ -178,6 +184,7 @@ const offerTypes = [
     sublabel: 'Lire',
     type: 'Thing',
     value: 'ThingType.PRESSE_ABO',
+    isActive: true,
   },
 ]
 

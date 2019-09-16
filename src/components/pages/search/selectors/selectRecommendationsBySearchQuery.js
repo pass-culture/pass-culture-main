@@ -43,8 +43,8 @@ const getStringifiedTime = time => {
   return `${hhmmss}, ${milli}`
 }
 
-const getDatetimeString = (startDate, jour) => {
-  const [date, time] = getDateAndTime(startDate, jour)
+const getDatetimeString = (startDate, day) => {
+  const [date, time] = getDateAndTime(startDate, day)
   const dateString = getStringifiedDate(date)
   const timeString = getStringifiedTime(time)
   return `datetime.datetime(${dateString}, ${timeString}, tzinfo=tzlocal())`
@@ -53,12 +53,12 @@ const getDatetimeString = (startDate, jour) => {
 const getStringifiedDaysIntervals = (startDate, daysString) =>
   `[${daysString
     .split(',')
-    .map(joursInterval => {
-      const joursIntervalContent = joursInterval
+    .map(daysInterval => {
+      const daysIntervalContent = daysInterval
         .split('-')
-        .map(jour => getDatetimeString(startDate, jour))
+        .map(day => getDatetimeString(startDate, day))
         .join(', ')
-      return `[${joursIntervalContent}]`
+      return `[${daysIntervalContent}]`
     })
     .join(', ')}]`
 

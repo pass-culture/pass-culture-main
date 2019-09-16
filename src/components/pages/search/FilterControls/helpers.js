@@ -29,16 +29,5 @@ export const getCanFilter = (filterParams, queryParams) => {
     return false
   }
 
-  if (queryParams['mots-cles']) {
-    return true
-  }
-
-  /*
-  const filterParamsAreEmpty = getVisibleParamsAreEmpty(filterParams)
-  if (filterParamsAreEmpty) {
-    return false
-  }
-  */
-
   return true
 }
