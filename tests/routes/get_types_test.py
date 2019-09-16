@@ -80,7 +80,7 @@ class Get:
             assert "Musées, arts visuels & patrimoine" in labels_values
             assert "Pratique — séances d’essai et stages ponctuels" in labels_values
             assert "Livre audio numérique" in labels_values
-            assert "Vente d’instruments de musique" in labels_values
+            assert "Vente et location d'instruments de musique" in labels_values
             assert "Vente d'œuvres d'art" in labels_values
 
             assert "Achat d'œuvres d’art" in user_seen_labels_values
