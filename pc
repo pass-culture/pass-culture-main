@@ -7,15 +7,15 @@ set -o nounset
 # =============================================
 
 if [[ $# -eq 0 ]] || [[ "$1" == "-h" ]]; then
-    echo "$(basename "$0") [-h] [-e env -b backend -f file c] -- program to deal with Pass Culture ecosystem
+  echo "$(basename "$0") [-h] [-e env -b backend -f file c] -- program to deal with Pass Culture ecosystem
 where:
-    -h  show this help text
-    -e  specify environment to target (default: development)
-    -b  specify backend to connect with local app (default: localhost)
-    -f  file to upload to scalingo off-container
-    -t  specify version you want to deploy (create tag with this name)
-    -c  command that you want to run"
-    exit 0
+  -h  show this help text
+  -e  specify environment to target (default: development)
+  -b  specify backend to connect with local app (default: localhost)
+  -f  file to upload to scalingo off-container
+  -t  specify version you want to deploy (create tag with this name)
+  -c  command that you want to run"
+  exit 0
 fi
 
 
@@ -66,13 +66,13 @@ shift
 # =============================================
 
 if [[ "$ENV" == "production" ]]; then
-	SCALINGO_APP=pass-culture-api
+  SCALINGO_APP=pass-culture-api
 elif [[ "$ENV" == "testing" ]]; then
-	SCALINGO_APP=pass-culture-api-dev
+  SCALINGO_APP=pass-culture-api-dev
 elif [[ "$ENV" == "datalake" ]]; then
-	SCALINGO_APP=pass-culture-datalake
+  SCALINGO_APP=pass-culture-datalake
 elif [[  ! -z "$ENV" ]]; then
-	SCALINGO_APP=pass-culture-api-"$ENV"
+  SCALINGO_APP=pass-culture-api-"$ENV"
 fi
 
 # =============================================
@@ -86,13 +86,13 @@ NO_COLOR='\033[0m'
 PRG="$BASH_SOURCE"
 
 while [ -h "$PRG" ] ; do
-	ls=$(ls -ld "$PRG")
-	link=$(expr "$ls" : '.*-> \(.*\)$')
-	if expr "$link" : '/.*' > /dev/null; then
-		PRG="$link"
-	else
-		PRG=$(dirname "$PRG")"/$link"
-	fi
+  ls=$(ls -ld "$PRG")
+  link=$(expr "$ls" : '.*-> \(.*\)$')
+  if expr "$link" : '/.*' > /dev/null; then
+    PRG="$link"
+  else
+    PRG=$(dirname "$PRG")"/$link"
+  fi
 done
 
 UNAME_OUT="$(uname -s)"
@@ -108,12 +108,11 @@ ROOT_PATH=$(realpath "$(dirname "$PRG")")
 INFRA_SCRIPTS_PATH="$ROOT_PATH"/infra/pc_scripts/
 
 function confirm {
- read -p "$1 (y/n) : " -n 1 -r
- echo
- if [[ ! $REPLY =~ ^[Yy]$ ]]
- then
-   exit
- fi
+  read -p "$1 (y/n) : " -n 1 -r
+  echo
+  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    exit
+  fi
 }
 
 function ensure_remote {
@@ -131,44 +130,43 @@ function echo_warning {
   echo -e "${ORANGE}""$1""${NO_COLOR}"
 }
 
-
 current_branch=$(git symbolic-ref -q HEAD)
 current_branch=${current_branch##refs/heads/}
 
 function update_deploy_branches {
-    git fetch
-    git checkout master
-    git reset --hard origin/master || exit_error_restoring_branch
-    git submodule update || exit_error_restoring_branch
-    git checkout staging
-    git reset --hard origin/staging || exit_error_restoring_branch
-    git submodule update || exit_error_restoring_branch
-    git checkout demo
-    git reset --hard origin/demo || exit_error_restoring_branch
-    git submodule update || exit_error_restoring_branch
-    git checkout integration
-    git reset --hard origin/integration || exit_error_restoring_branch
-    git submodule update || exit_error_restoring_branch
-    git checkout production
-    git reset --hard origin/production || exit_error_restoring_branch
-    git submodule update || exit_error_restoring_branch
+  git fetch
+  git checkout master
+  git reset --hard origin/master || exit_error_restoring_branch
+  git submodule update || exit_error_restoring_branch
+  git checkout staging
+  git reset --hard origin/staging || exit_error_restoring_branch
+  git submodule update || exit_error_restoring_branch
+  git checkout demo
+  git reset --hard origin/demo || exit_error_restoring_branch
+  git submodule update || exit_error_restoring_branch
+  git checkout integration
+  git reset --hard origin/integration || exit_error_restoring_branch
+  git submodule update || exit_error_restoring_branch
+  git checkout production
+  git reset --hard origin/production || exit_error_restoring_branch
+  git submodule update || exit_error_restoring_branch
 }
 
 function tag_frontend_component {
-    component="$1"
-    tag_name="$2"
-    tag_version="v$tag_name"
-    cd "$ROOT_PATH"/"$component"
-    yarn version --new-version "$tag_name"
-    git push origin "$current_branch"
-    git push origin "$tag_version"
+  component="$1"
+  tag_name="$2"
+  tag_version="v$tag_name"
+  cd "$ROOT_PATH"/"$component"
+  yarn version --new-version "$tag_name"
+  git push origin "$current_branch"
+  git push origin "$tag_version"
 }
 
 function open_build_status_page {
-   cd "$ROOT_PATH"
-   env_to_deploy="$1"
-   commit_to_deploy="$2"
-   source scripts/open_build_status_page.sh "$env_to_deploy" "$commit_to_deploy"
+  cd "$ROOT_PATH"
+  env_to_deploy="$1"
+  commit_to_deploy="$2"
+  source scripts/open_build_status_page.sh "$env_to_deploy" "$commit_to_deploy"
 }
 
 function exit_error_restoring_branch {
@@ -194,14 +192,14 @@ if [[ "$CMD" == "alembic" ]]; then
 # Connect to API container
 elif [[ "$CMD" == "bash" ]]; then
   if [[ "$ENV" == "development" ]]; then
-      RUN='docker exec -it pc-flask bash'
+    RUN='docker exec -it pc-flask bash'
   else
-      if [ "$FILE_TO_UPLOAD" == 'none' ]; then
-        scalingo -a "$SCALINGO_APP" run bash
-      else
-        scalingo -a "$SCALINGO_APP" run --file "$FILE_TO_UPLOAD" bash
-      fi
-      exit
+    if [ "$FILE_TO_UPLOAD" == 'none' ]; then
+      scalingo -a "$SCALINGO_APP" run bash
+    else
+      scalingo -a "$SCALINGO_APP" run --file "$FILE_TO_UPLOAD" bash
+    fi
+    exit
   fi
 
 # Create diff output between schema in staging & local backend
@@ -214,13 +212,13 @@ elif [[ "$CMD" == "diff-schema" ]]; then
 # Dump pass_culture database into pgdump file
 elif [[ "$CMD" == "dump-db" ]]; then
   RUN='mkdir -p "$ROOT_PATH/db_dumps";
-       docker exec pc-postgres pg_dump -d pass_culture -U pass_culture -F c > "$ROOT_PATH"/db_dumps/`date +%Y%m%d_%H%M%S`.pgdump'
+    docker exec pc-postgres pg_dump -d pass_culture -U pass_culture -F c > "$ROOT_PATH"/db_dumps/`date +%Y%m%d_%H%M%S`.pgdump'
 
 # Force docker-compose to build the docker images
 elif [[ "$CMD" == "rebuild-backend" ]]; then
   RUN='docker-compose build --no-cache;
-			 sudo rm -rf $ROOT_PATH/api/static/object_store_data;
-       docker-compose down --volumes'
+    sudo rm -rf $ROOT_PATH/api/static/object_store_data;
+    docker-compose down --volumes'
 
 # Execute request from specified file
 elif [[ "$CMD" == "psql-file" ]]; then
@@ -230,13 +228,13 @@ elif [[ "$CMD" == "psql-file" ]]; then
 # Restart API after removing the database and files
 elif [[ "$CMD" == "restart-backend" ]]; then
   RUN='sudo rm -rf $ROOT_PATH/api/static/object_store_data;
-       docker-compose down --volumes;
-       cd $ROOT_PATH && docker-compose pull && docker-compose up --force-recreate'
+    docker-compose down --volumes;
+    cd $ROOT_PATH && docker-compose pull && docker-compose up --force-recreate'
 
 # Clear all data in postgresql database
 elif [[ "$CMD" == "reset-all-db" ]]; then
   RUN='docker exec -it pc-flask bash -c "rm -rf /opt/services/flaskapp/src/static/object_store_data/*";
-       docker exec pc-flask bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python scripts/pc.py clean"'
+    docker exec pc-flask bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python scripts/pc.py clean"'
 
 # Remove all booking & reco from database
 elif [[ "$CMD" == "reset-reco-db" ]]; then
@@ -260,23 +258,22 @@ elif [[ "$CMD" == "restore-db" ]]; then
   fi
   backup_file="$1"
   RUN='cat "'$backup_file'" | docker exec -i pc-postgres pg_restore -d pass_culture -U pass_culture -c;
-              ./api/scalingo/anonymize_database.sh -p Password_ ;
-              rm $backup_file'
+    ./api/scalingo/anonymize_database.sh -p Password_ ;
+    rm $backup_file'
 
 # Restore a postgresql database from file (non anonymized)
 elif [[ "$CMD" == "restore-db-intact" ]]; then
   source "$INFRA_SCRIPTS_PATH"/restore_db.sh
   restore_db_intact $1
 
-
 # Prepare backend for local use
 elif [[ "$CMD" == "set-backend" ]]; then
   RUN='cd "$ROOT_PATH";
-			 ./pc update-mocks;
-			 ./pc update_providables -m -p SpreadsheetExpVenues;
-			 ./pc update_providables -m -p SpreadsheetExpOffers;
-			 ./pc sandbox --name=light;
-			'
+    ./pc update-mocks;
+    ./pc update_providables -m -p SpreadsheetExpVenues;
+    ./pc update_providables -m -p SpreadsheetExpOffers;
+    ./pc sandbox --name=light;'
+
 # Start API server with database and nginx server
 elif [[ "$CMD" == "start-backend" ]]; then
   RUN='cd $ROOT_PATH && docker-compose pull flask && docker-compose up'
@@ -301,8 +298,8 @@ elif [[ "$CMD" == "start-webapp" ]] || [[ "$CMD" == "start-pro" ]]; then
 # Create symlink for shared folder in webapp & pro
 elif [[ "$CMD" == "shared" ]]; then
   RUN='cd $ROOT_PATH/shared && yarn run compile;
-			 cd $ROOT_PATH/webapp/node_modules && ln -sf ../../shared pass-culture-shared;
-			 cd $ROOT_PATH/pro/node_modules && ln -sf ../../shared pass-culture-shared;'
+    cd $ROOT_PATH/webapp/node_modules && ln -sf ../../shared pass-culture-shared;
+    cd $ROOT_PATH/pro/node_modules && ln -sf ../../shared pass-culture-shared;'
 
 # Run tests for API
 # Need start-backend to be successful and delete all data
@@ -313,34 +310,34 @@ elif [[ "$CMD" == "test-backend" ]]; then
     PYTEST_ARGS=$*
   fi
   RUN='docker stop pc-postgres-pytest;
-        docker rm pc-postgres-pytest;
-        docker-compose up -d postgres-test;
-        docker exec pc-flask bash -c "cd /opt/services/flaskapp/src/ && rm -rf static/object_store_data/thumbs/* && PYTHONPATH=. pytest --color=yes -rsx -v $PYTEST_ARGS"'
+    docker rm pc-postgres-pytest;
+    docker-compose up -d postgres-test;
+    docker exec pc-flask bash -c "cd /opt/services/flaskapp/src/ && rm -rf static/object_store_data/thumbs/* && PYTHONPATH=. pytest --color=yes -rsx -v $PYTEST_ARGS"'
 
 # Run only local providers tests for API
 elif [[ "$CMD" == "test-backend-provider" ]]; then
-	RUN='"$ROOT_PATH"/pc test-backend tests/10_local_providers.py::test_15_spreadsheet_exp_venue_provider tests/10_local_providers.py::test_15_spreadsheet_exp_stocks_provider tests/10_local_providers.py::test_16_openagenda_events_provider'
+  RUN='"$ROOT_PATH"/pc test-backend tests/10_local_providers.py::test_15_spreadsheet_exp_venue_provider tests/10_local_providers.py::test_15_spreadsheet_exp_stocks_provider tests/10_local_providers.py::test_16_openagenda_events_provider'
 
 # Run functional tests for webapp or pro application
 # Need to run start-backend & start-frontend
 elif [[ "$CMD" == "test-cafe-webapp" ]] || [[ "$CMD" == "test-cafe-pro" ]]; then
-	if [[ "$CMD" == "test-cafe-webapp"  ]]; then
-		APP_PATH="$ROOT_PATH"/webapp
-	else
-		APP_PATH="$ROOT_PATH"/pro
-	fi
-	if [[ $# == 0 ]]; then
+  if [[ "$CMD" == "test-cafe-webapp"  ]]; then
+    APP_PATH="$ROOT_PATH"/webapp
+  else
+    APP_PATH="$ROOT_PATH"/pro
+  fi
+  if [[ $# == 0 ]]; then
     if [[ "$MACHINE" == "Mac" ]]; then
       BROWSER="chrome"
     else
       BROWSER="chromium"
     fi
-		confirm "Warning: your database will be wiped. Is this OK ?"
-		"$ROOT_PATH"/pc -e "$ENV" sandbox --name=industrial
-		RUN='cd $APP_PATH && ./scripts/manager.js testcafe -b $BROWSER:headless'
-	else
-  	RUN='cd $APP_PATH && ./scripts/manager.js testcafe '"$*"
-	fi
+    confirm "Warning: your database will be wiped. Is this OK ?"
+    "$ROOT_PATH"/pc -e "$ENV" sandbox --name=industrial
+    RUN='cd $APP_PATH && ./scripts/manager.js testcafe -b $BROWSER:headless'
+  else
+    RUN='cd $APP_PATH && ./scripts/manager.js testcafe '"$*"
+  fi
 
 # =============================================
 # Deploy commands
@@ -348,8 +345,8 @@ elif [[ "$CMD" == "test-cafe-webapp" ]] || [[ "$CMD" == "test-cafe-pro" ]]; then
 
 # Tag commit on the current branch of API/Webapp/Pro
 elif [[ "$CMD" == "tag-version-backend" ]] \
-     || [[ "$CMD" == "tag-version-webapp" ]] \
-     || [[ "$CMD" == "tag-version-pro" ]]; then
+  || [[ "$CMD" == "tag-version-webapp" ]] \
+  || [[ "$CMD" == "tag-version-pro" ]]; then
 
   if [[ "$CMD" == "tag-version-webapp"  ]]; then
     APP_PATH="$ROOT_PATH"/webapp
@@ -358,6 +355,7 @@ elif [[ "$CMD" == "tag-version-backend" ]] \
   else
     APP_PATH="$ROOT_PATH"/api
   fi
+
   cd "$APP_PATH"
 
   if [[ "$TAG_NAME" ]]; then
@@ -382,7 +380,6 @@ elif [[ "$CMD" == "tag-hotfix" ]]; then
 
 # Tag new version using main repo
 elif [[ "$CMD" == "tag" ]]; then
-
   if [[ "$TAG_NAME" ]]; then
     TAG_VERSION="v$TAG_NAME"
 
@@ -419,10 +416,10 @@ elif [[ "$CMD" == "deploy" ]]; then
   ensure_remote "Deploy cannot be run on the local environment. Use (for example) \"pc -e staging -t X.Y.Z "$CMD"\"."
 
   if [[ ! "$ENV" == 'production' ]] \
-        && [[ ! "$ENV" == 'staging' ]] \
-        && [[ ! "$ENV" == 'demo' ]] \
-        && [[ ! "$ENV" == 'datalake' ]] \
-        && [[ ! "$ENV" == 'integration' ]]; then
+  && [[ ! "$ENV" == 'staging' ]] \
+  && [[ ! "$ENV" == 'demo' ]] \
+  && [[ ! "$ENV" == 'datalake' ]] \
+  && [[ ! "$ENV" == 'integration' ]]; then
      echo_error "Can only deploy in datalake, staging, demo, integration and production"
      exit 1
   fi
@@ -461,24 +458,24 @@ elif [[ "$CMD" == "deploy" ]]; then
   open_build_status_page "$ENV" "$commit_to_deploy"
 
   if [[ "$ENV" == 'production' ]]; then
-     echo -e "$WARNING_COLOR""/!\\ You just deployed to production. Was the version also delivered to integration and demo ?""${NO_COLOR}"
+    echo -e "$WARNING_COLOR""/!\\ You just deployed to production. Was the version also delivered to integration and demo ?""${NO_COLOR}"
   fi
 
   exit_success_restoring_branch
 
 # Deploy current version of API/Webapp/Pro to specified environment
 elif [[ "$CMD" == "deploy-backend" ]] \
-     || [[ "$CMD" == "deploy-frontend-webapp" ]] \
-     || [[ "$CMD" == "deploy-frontend-pro" ]]; then
+  || [[ "$CMD" == "deploy-frontend-webapp" ]] \
+  || [[ "$CMD" == "deploy-frontend-pro" ]]; then
 
   ensure_remote "Deploy backend cannot be run on the local environment. Use (for example) \"pc -e staging -t X.Y.Z "$CMD"\"."
 
   if [[ ! "$ENV" == 'production' ]] \
-        && [[ ! "$ENV" == 'staging' ]] \
-        && [[ ! "$ENV" == 'demo' ]] \
-        && [[ ! "$ENV" == 'integration' ]]; then
-     echo_error "Can only deploy-backend in staging, demo, integration and production"
-     exit 1
+  && [[ ! "$ENV" == 'staging' ]] \
+  && [[ ! "$ENV" == 'demo' ]] \
+  && [[ ! "$ENV" == 'integration' ]]; then
+    echo_error "Can only deploy-backend in staging, demo, integration and production"
+    exit 1
   fi
 
   if [[ "$TAG_NAME" == 'not-set' ]]; then
@@ -487,11 +484,11 @@ elif [[ "$CMD" == "deploy-backend" ]] \
   fi
 
   if [[ "$CMD" == "deploy-frontend-webapp"  ]]; then
-	APP_PATH="$ROOT_PATH"/webapp
+    APP_PATH="$ROOT_PATH"/webapp
   elif [[ "$CMD" == "deploy-frontend-pro"  ]]; then
     APP_PATH="$ROOT_PATH"/pro
   else
-	APP_PATH="$ROOT_PATH"/api
+    APP_PATH="$ROOT_PATH"/api
   fi
 
   cd "$APP_PATH"
@@ -519,8 +516,8 @@ elif [[ "$CMD" == "deploy-backend" ]] \
   git push -f origin HEAD:"$ENV"
 
   if [[ "$CMD" == "deploy-frontend-webapp" ]] \
-     || [[ "$CMD" == "deploy-frontend-pro" ]]; then
-     rm -rf "$APP_PATH"/node_modules "$APP_PATH"/build "$APP_PATH"/.public/static/fontello/.fontello.session && yarn install
+  || [[ "$CMD" == "deploy-frontend-pro" ]]; then
+     rm -rf "$APP_PATH"/node_modules "$APP_PATH"/build "$APP_PATH"/.public/static/fontello/.fontello.session && yarn
      (set -a; source "$ROOT_PATH/config/run_envs/$ENV" && yarn build) || exit
 
      url_is_set=$(cat build/static/js/*.js | grep -E backend.passculture*)
@@ -544,28 +541,28 @@ elif [[ "$CMD" == "deploy-backend" ]] \
 # Install new local environment
 elif [[ "$CMD" == "install" ]]; then
   RUN='cd $ROOT_PATH;
-			 yarn global add concurrently;
-       git submodule init;
-       git submodule update;
-       git submodule foreach git checkout master;
-			 cd $ROOT_PATH/shared && yarn install;
-       cd $ROOT_PATH/webapp && yarn;
-			 cd $ROOT_PATH/pro && yarn;
-	   cd $ROOT_PATH && ./pc install-private;
-	         ./pc install-hooks'
+    yarn global add concurrently;
+    git submodule init;
+    git submodule update;
+    git submodule foreach git checkout master;
+    cd $ROOT_PATH/shared && yarn;
+    cd $ROOT_PATH/webapp && yarn;
+    cd $ROOT_PATH/pro && yarn;
+    cd $ROOT_PATH && ./pc install-private;
+    ./pc install-hooks'
 
 # Decrypt data from gpg private file
 elif [[ "$CMD" == "install-private" ]]; then
   RUN='cd $ROOT_PATH/api;
-            rm -rf private;
-            gpg --passphrase $PC_GPG_PRIVATE --batch --output private.tar.gz -d private.tar.gz.gpg;
-            tar xf private.tar.gz;
-            rm private.tar.gz'
+    rm -rf private;
+    gpg --passphrase $PC_GPG_PRIVATE --batch --output private.tar.gz -d private.tar.gz.gpg;
+    tar xf private.tar.gz;
+    rm private.tar.gz'
 
 # Install local git hook for pre-push actions
 elif [[ "$CMD" == "install-hooks" ]]; then
-    RUN='cd $ROOT_PATH;
-            ln -s -f ../../../../hooks/pre-push .git/modules/api/hooks/pre-push'
+  RUN='cd $ROOT_PATH;
+    ln -s -f ../../../../hooks/pre-push .git/modules/api/hooks/pre-push'
 
 # Create symlink to use "pc" command (admin rights may be needed)
 elif [[ "$CMD" == "symlink" ]]; then
@@ -577,26 +574,26 @@ elif [[ "$CMD" == "symlink" ]]; then
 
 # Open a python prompt in the specified environment
 elif [[ "$CMD" == "api-licenses" ]]; then
-    COLUMNS=${COLUMNS:-''};
-	if [[ "$ENV" == "development" ]]; then
-		RUN='docker exec -it pc-flask bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. pip-licenses --format-html >> licenses.html"'
-	else
+  COLUMNS=${COLUMNS:-''};
+  if [[ "$ENV" == "development" ]]; then
+    RUN='docker exec -it pc-flask bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. pip-licenses --format-html >> licenses.html"'
+  else
     echo_error "These command is only available in DEV"
-		exit
-	fi
+    exit
+  fi
 
 # Display logs from API
 elif [[ "$CMD" == "logs" ]]; then
   if [[ "$ENV" == "development" ]]; then
-	docker-compose logs
-	exit
+    docker-compose logs
+    exit
   else
-	if [[ $# -gt 0 ]]; then
-		scalingo -a "$SCALINGO_APP" logs "$@"
-	else
-		scalingo -a "$SCALINGO_APP" logs -n 100
-	fi
-	exit
+    if [[ $# -gt 0 ]]; then
+      scalingo -a "$SCALINGO_APP" logs "$@"
+    else
+      scalingo -a "$SCALINGO_APP" logs -n 100
+    fi
+    exit
   fi
 
 # Display logs from Database
@@ -606,34 +603,34 @@ elif [[ "$CMD" == "access-db-logs" ]]; then
 
 # Connect to Postgresql database in command line using psql
 elif [[ "$CMD" == "psql" ]]; then
-	COLUMNS=${COLUMNS:-''};
-	if [[ "$ENV" == "development" ]]; then
-		RUN='docker exec -it pc-postgres bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pass_culture pass_culture $*"'
-	else
-		scalingo -a "$SCALINGO_APP" pgsql-console
-		exit
-	fi
+  COLUMNS=${COLUMNS:-''};
+  if [[ "$ENV" == "development" ]]; then
+    RUN='docker exec -it pc-postgres bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pass_culture pass_culture $*"'
+  else
+    scalingo -a "$SCALINGO_APP" pgsql-console
+    exit
+  fi
 
 # Connect to Postgresql test database in command line using psql
 elif [[ "$CMD" == "psql-test" ]]; then
-	COLUMNS=${COLUMNS:-''};
-	if [[ "$ENV" == "development" ]]; then
-		RUN='docker exec -it pc-postgres-pytest bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pytest pass_culture $*"'
-	else
-	    echo "Only available in development environment"
-		exit
-	fi
+  COLUMNS=${COLUMNS:-''};
+  if [[ "$ENV" == "development" ]]; then
+    RUN='docker exec -it pc-postgres-pytest bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pytest pass_culture $*"'
+  else
+      echo "Only available in development environment"
+    exit
+  fi
 
 # Connect to Postgresql database in command line using pgcli
 elif [[ "$CMD" == "pgcli" ]]; then
-	COLUMNS=${COLUMNS:-''};
-	if [[ "$ENV" == "development" ]]; then
-	    source "$ROOT_PATH"/env_file
-	    RUN='docker exec -it pc-flask bash -c "pgcli $DATABASE_URL"'
-	else
-		scalingo -a "$SCALINGO_APP" run 'pgcli $DATABASE_URL'
-		exit
-	fi
+  COLUMNS=${COLUMNS:-''};
+  if [[ "$ENV" == "development" ]]; then
+    source "$ROOT_PATH"/env_file
+    RUN='docker exec -it pc-flask bash -c "pgcli $DATABASE_URL"'
+  else
+    scalingo -a "$SCALINGO_APP" run 'pgcli $DATABASE_URL'
+    exit
+  fi
 
 
 # Open a python prompt in the specified environment
@@ -642,34 +639,21 @@ elif [[ "$CMD" == "python" ]]; then
 	if [[ "$ENV" == "development" ]]; then
 		RUN='docker exec -it pc-flask bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python -i scripts/interact.py '"$CMD $*"'"'
 	else
-	    if [ "$FILE_TO_UPLOAD" == 'none' ]; then
-        scalingo -a "$SCALINGO_APP" run "python -i scripts/interact.py"
+    if [ "$FILE_TO_UPLOAD" == 'none' ]; then
+      scalingo -a "$SCALINGO_APP" run "python -i scripts/interact.py"
 		else
-		    scalingo -a "$SCALINGO_APP" run --file "$FILE_TO_UPLOAD" "python -i scripts/interact.py"
+      scalingo -a "$SCALINGO_APP" run --file "$FILE_TO_UPLOAD" "python -i scripts/interact.py"
 		fi
 		exit
 	fi
 
 # Connect to administration instances
 elif [[ "$CMD" == "ssh" ]]; then
-	if [[ "$ENV" == "production" ]]; then
-		ssh deploy@api.passculture.beta.gouv.fr
-	elif [[ "$ENV" == "staging" ]]; then
-		ssh deploy@api.passculture-staging.beta.gouv.fr
-	fi
-
-# =============================================
-# Mobile Dev commands
-# =============================================
-
-elif [[ "$CMD" == "build-pg" ]]; then
-	if [[ "$ENV" == "production" ]]; then
-		RUN='cd $ROOT_PATH/webapp && source ./env_file && yarn pgbuild-prod'
-	else
-		RUN='cd $ROOT_PATH/webapp && source ./env_file && yarn pgbuild'
-	fi
-elif [[ "$CMD" == "start-ios" ]]; then
-	RUN='open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app'
+  if [[ "$ENV" == "production" ]]; then
+    ssh deploy@api.passculture.beta.gouv.fr
+  elif [[ "$ENV" == "staging" ]]; then
+    ssh deploy@api.passculture-staging.beta.gouv.fr
+  fi
 
 # =============================================
 # Python Scripts commands
@@ -681,9 +665,9 @@ else
     RUN='docker exec pc-flask bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python scripts/pc.py '"$CMD $*"'"'
   else
     if [ "$FILE_TO_UPLOAD" == 'none' ]; then
-        scalingo -a "$SCALINGO_APP" run 'python scripts/pc.py '"$CMD $*"''
+      scalingo -a "$SCALINGO_APP" run 'python scripts/pc.py '"$CMD $*"''
     else
-        scalingo -a "$SCALINGO_APP" run --file "$FILE_TO_UPLOAD" 'python scripts/pc.py '"$CMD $*"''
+      scalingo -a "$SCALINGO_APP" run --file "$FILE_TO_UPLOAD" 'python scripts/pc.py '"$CMD $*"''
     fi
     exit
   fi
@@ -694,15 +678,15 @@ fi
 # =============================================
 
 if [[ $PWD == "/home/deploy/pass-culture-main" ]]; then
-	echo $RUN
+  echo $RUN
   eval $RUN
 else
-	if [[ "$ENV" == "production" ]] || [[ "$ENV" == "staging" ]]; then
-	  echo "$RUN" | ssh deploy@api.passculture.beta.gouv.fr bash
-	elif [[ "$ENV" == "wordpress" ]]; then
-	  ssh debian@passculture.beta.gouv.fr
-	else
-	  echo $RUN
-	  eval $RUN
-	fi
+  if [[ "$ENV" == "production" ]] || [[ "$ENV" == "staging" ]]; then
+    echo "$RUN" | ssh deploy@api.passculture.beta.gouv.fr bash
+  elif [[ "$ENV" == "wordpress" ]]; then
+    ssh debian@passculture.beta.gouv.fr
+  else
+    echo $RUN
+    eval $RUN
+  fi
 fi
