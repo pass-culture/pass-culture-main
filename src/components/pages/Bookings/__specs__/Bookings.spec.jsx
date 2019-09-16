@@ -45,7 +45,7 @@ describe('src | components | pages | Bookings', () => {
 
       // then
       expect(informationComponent.text()).toStrictEqual(
-        'Les réservations d’événements sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.La contremarque ne peut être validée qu’après ce délai.'
+        'Les réservations d’événements sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement.La contremarque ne peut être validée qu’après ce délai.'
       )
     })
     describe('the download and display section', () => {

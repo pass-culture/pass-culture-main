@@ -33,18 +33,18 @@
   }
 
   .is-static {
-      @extend .fs16;
-      margin: 18px 18px 18px 0;
-      display: flex;
-      text-align: justify;
+    @extend .fs16;
+    margin: 18px 18px 18px 0;
+    display: flex;
+    text-align: justify;
 
-      img {
-        padding-left: 18px;
-      }
+    img {
+      padding-left: 18px;
+    }
 
-      span {
-        padding-left: 12px;
-      }
+    span {
+      padding-left: 12px;
+    }
   }
 
   a.close,

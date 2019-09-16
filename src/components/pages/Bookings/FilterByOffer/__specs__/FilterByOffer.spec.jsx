@@ -69,7 +69,7 @@ describe('src | components | pages | FilterByOffer | FilterByOffer', () => {
 
         // then
         const mainListTitle = wrapper.find('.main-list-title').text()
-        expect(mainListTitle).toBe('OFFRE')
+        expect(mainListTitle).toBe('Offre')
       })
 
       it('should display `Offre numérique` when isFilteredByDigitalVenues is true', () => {
@@ -81,7 +81,7 @@ describe('src | components | pages | FilterByOffer | FilterByOffer', () => {
 
         // then
         const mainListTitle = wrapper.find('.main-list-title').text()
-        expect(mainListTitle).toBe('OFFRE NUMÉRIQUE')
+        expect(mainListTitle).toBe('Offre Numérique')
       })
 
       it("should display `Télécharger les réservations pour l'offre :` when isFilteredByDigitalVenues is false", () => {

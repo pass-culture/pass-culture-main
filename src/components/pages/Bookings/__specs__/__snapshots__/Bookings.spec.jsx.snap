@@ -43,7 +43,7 @@ ShallowWrapper {
             className="is-static"
           >
             <Icon
-              png="picto-info-solid"
+              png="picto-info-solid-black"
               svg={null}
             />
             <span>
@@ -51,9 +51,9 @@ ShallowWrapper {
               <b>
                  réservations d’événements 
               </b>
-              sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.
-              <br />
-              <br />
+              sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement.
+              <p />
+              <p />
               La contremarque ne peut être validée qu’après ce délai.
             </span>
           </div>
@@ -135,7 +135,7 @@ ShallowWrapper {
             className="is-static"
           >
             <Icon
-              png="picto-info-solid"
+              png="picto-info-solid-black"
               svg={null}
             />
             <span>
@@ -143,9 +143,9 @@ ShallowWrapper {
               <b>
                  réservations d’événements 
               </b>
-              sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.
-              <br />
-              <br />
+              sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement.
+              <p />
+              <p />
               La contremarque ne peut être validée qu’après ce délai.
             </span>
           </div>,
@@ -159,7 +159,7 @@ ShallowWrapper {
           "props": Object {
             "children": Array [
               <Icon
-                png="picto-info-solid"
+                png="picto-info-solid-black"
                 svg={null}
               />,
               <span>
@@ -167,9 +167,9 @@ ShallowWrapper {
                 <b>
                    réservations d’événements 
                 </b>
-                sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.
-                <br />
-                <br />
+                sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement.
+                <p />
+                <p />
                 La contremarque ne peut être validée qu’après ce délai.
               </span>,
             ],
@@ -182,7 +182,7 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "function",
               "props": Object {
-                "png": "picto-info-solid",
+                "png": "picto-info-solid-black",
                 "svg": null,
               },
               "ref": null,
@@ -199,9 +199,9 @@ ShallowWrapper {
                   <b>
                      réservations d’événements 
                   </b>,
-                  "sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.",
-                  <br />,
-                  <br />,
+                  "sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement.",
+                  <p />,
+                  <p />,
                   "La contremarque ne peut être validée qu’après ce délai.",
                 ],
               },
@@ -219,7 +219,7 @@ ShallowWrapper {
                   "rendered": " réservations d’événements ",
                   "type": "b",
                 },
-                "sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.",
+                "sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement.",
                 Object {
                   "instance": null,
                   "key": undefined,
@@ -227,7 +227,7 @@ ShallowWrapper {
                   "props": Object {},
                   "ref": null,
                   "rendered": null,
-                  "type": "br",
+                  "type": "p",
                 },
                 Object {
                   "instance": null,
@@ -236,7 +236,7 @@ ShallowWrapper {
                   "props": Object {},
                   "ref": null,
                   "rendered": null,
-                  "type": "br",
+                  "type": "p",
                 },
                 "La contremarque ne peut être validée qu’après ce délai.",
               ],
@@ -299,7 +299,7 @@ ShallowWrapper {
               className="is-static"
             >
               <Icon
-                png="picto-info-solid"
+                png="picto-info-solid-black"
                 svg={null}
               />
               <span>
@@ -307,9 +307,9 @@ ShallowWrapper {
                 <b>
                    réservations d’événements 
                 </b>
-                sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.
-                <br />
-                <br />
+                sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement.
+                <p />
+                <p />
                 La contremarque ne peut être validée qu’après ce délai.
               </span>
             </div>
@@ -391,7 +391,7 @@ ShallowWrapper {
               className="is-static"
             >
               <Icon
-                png="picto-info-solid"
+                png="picto-info-solid-black"
                 svg={null}
               />
               <span>
@@ -399,9 +399,9 @@ ShallowWrapper {
                 <b>
                    réservations d’événements 
                 </b>
-                sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.
-                <br />
-                <br />
+                sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement.
+                <p />
+                <p />
                 La contremarque ne peut être validée qu’après ce délai.
               </span>
             </div>,
@@ -415,7 +415,7 @@ ShallowWrapper {
             "props": Object {
               "children": Array [
                 <Icon
-                  png="picto-info-solid"
+                  png="picto-info-solid-black"
                   svg={null}
                 />,
                 <span>
@@ -423,9 +423,9 @@ ShallowWrapper {
                   <b>
                      réservations d’événements 
                   </b>
-                  sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.
-                  <br />
-                  <br />
+                  sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement.
+                  <p />
+                  <p />
                   La contremarque ne peut être validée qu’après ce délai.
                 </span>,
               ],
@@ -438,7 +438,7 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "function",
                 "props": Object {
-                  "png": "picto-info-solid",
+                  "png": "picto-info-solid-black",
                   "svg": null,
                 },
                 "ref": null,
@@ -455,9 +455,9 @@ ShallowWrapper {
                     <b>
                        réservations d’événements 
                     </b>,
-                    "sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.",
-                    <br />,
-                    <br />,
+                    "sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement.",
+                    <p />,
+                    <p />,
                     "La contremarque ne peut être validée qu’après ce délai.",
                   ],
                 },
@@ -475,7 +475,7 @@ ShallowWrapper {
                     "rendered": " réservations d’événements ",
                     "type": "b",
                   },
-                  "sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.",
+                  "sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement.",
                   Object {
                     "instance": null,
                     "key": undefined,
@@ -483,7 +483,7 @@ ShallowWrapper {
                     "props": Object {},
                     "ref": null,
                     "rendered": null,
-                    "type": "br",
+                    "type": "p",
                   },
                   Object {
                     "instance": null,
@@ -492,7 +492,7 @@ ShallowWrapper {
                     "props": Object {},
                     "ref": null,
                     "rendered": null,
-                    "type": "br",
+                    "type": "p",
                   },
                   "La contremarque ne peut être validée qu’après ce délai.",
                 ],

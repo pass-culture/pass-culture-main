@@ -22,17 +22,15 @@ const Bookings = ({ pathToCsvFile, showButtons, showOfferSection }) => (
     </HeroSection>
     <div className="notification is-info">
       <div className="is-static">
-        <Icon png="picto-info-solid" />
+        <Icon png="picto-info-solid-black" />
         <span>
           {'Les'}
           <b>
             {' réservations d’événements '}
           </b>
-          {
-            'sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement, et fermes au-delà.'
-          }
-          <br />
-          <br />
+          {'sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement.'}
+          <p />
+          <p />
           {'La contremarque ne peut être validée qu’après ce délai.'}
         </span>
       </div>
