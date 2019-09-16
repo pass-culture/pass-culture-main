@@ -170,9 +170,7 @@
     &:checked {
       &::after {
         content: '';
-        background-repeat: no-repeat;
-        background-image: url(/icons/checkbox-check.svg);
-        background-position: center;
+        background: url(/icons/checkbox-check.svg) no-repeat 5px center;
         position: absolute;
         width: 100%;
         height: 100%;
