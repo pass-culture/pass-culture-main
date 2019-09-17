@@ -16,7 +16,9 @@ class Verso extends React.PureComponent {
   }
 
   componentDidUpdate(prevProps) {
-    if (!isEqual(prevProps, this.props)) {
+    const propsHaveBeenUpdated = !isEqual(prevProps, this.props)
+
+    if (propsHaveBeenUpdated) {
       this.versoWrapper.current.scrollTo(0, 0)
     }
   }
