@@ -186,7 +186,7 @@ class TooManyVirtualVenuesException(Exception):
 def create_digital_venue(offerer):
     digital_venue = Venue()
     digital_venue.isVirtual = True
-    digital_venue.name = "Offre en ligne"
+    digital_venue.name = "Offre numérique"
     digital_venue.managingOfferer = offerer
     return digital_venue
 

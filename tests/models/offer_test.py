@@ -528,7 +528,7 @@ class CreateOfferTest:
 
         # Then
         assert errors.value.errors['venue'] == [
-            'Une offre numérique doit obligatoirement être associée au lieu "Offre en ligne"']
+            'Une offre numérique doit obligatoirement être associée au lieu "Offre numérique"']
 
     @clean_database
     def test_fails_when_is_physical_but_venue_is_virtual(self, app):
@@ -545,7 +545,7 @@ class CreateOfferTest:
 
         # Then
         assert errors.value.errors['venue'] == [
-            'Une offre physique ne peut être associée au lieu "Offre en ligne"']
+            'Une offre physique ne peut être associée au lieu "Offre numérique"']
 
     @clean_database
     def test_success_when_is_event_but_durationMinute_is_empty(self, app):
@@ -635,7 +635,7 @@ class CreateOfferTest:
 
         # Then
         assert errors.value.errors['venue'] == [
-            'Une offre numérique doit obligatoirement être associée au lieu "Offre en ligne"']
+            'Une offre numérique doit obligatoirement être associée au lieu "Offre numérique"']
 
 
 def test_offer_is_digital_if_it_has_an_url():

@@ -75,7 +75,7 @@ def create_industrial_venues(offerers_by_name: dict) -> dict:
         bic_suffix += 1
         mock_index += 1
 
-        virtual_venue_name= "{} (Offre en ligne)".format(venue_name)
+        virtual_venue_name= "{} (Offre numérique)".format(venue_name)
         venue_by_name[virtual_venue_name] = create_venue(
             offerer,
             is_virtual=True,

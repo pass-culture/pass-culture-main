@@ -26,7 +26,7 @@ def create_industrial_thing_offers(
             if venue.isVirtual
         ][0]
 
-        physical_venue_name = virtual_venue.name.replace(" (Offre en ligne)", "")
+        physical_venue_name = virtual_venue.name.replace(" (Offre numérique)", "")
         physical_venue = venues_by_name.get(physical_venue_name)
 
         for venue_thing_index in range(0, THINGS_PER_OFFERER):
