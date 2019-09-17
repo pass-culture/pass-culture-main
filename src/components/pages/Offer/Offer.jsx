@@ -324,7 +324,7 @@ class Offer extends Component {
       title = 'Ajouter une offre'
       if (venueId) {
         if (isVenueVirtual) {
-          title = title + ' en ligne'
+          title = title + ' numérique'
         } else {
           title = title + ` pour ${get(venue, 'name')}`
         }

@@ -35,7 +35,7 @@ describe('src | components | pages | Offerers | OffererItem | OffererItemContain
             longitude: 2.40027,
             managingOffererId: 'BA',
             modelName: 'Venue',
-            name: 'Le Sous-sol (Offre en ligne)',
+            name: 'Le Sous-sol (Offre numérique)',
             postalCode: null,
             siret: null,
             thumbCount: 0,

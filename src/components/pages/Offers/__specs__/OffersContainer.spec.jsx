@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { mapStateToProps } from '../OffersContainer'
 
 import state from '../../../utils/mocks/state'
@@ -14,7 +12,7 @@ describe('src | components | pages | Offers | OffersContainer', () => {
   beforeEach(() => {
     change = jest.fn()
     dispatch = jest.fn()
-    parse = () => ({lieu: "DA", structure: "BA"})
+    parse = () => ({ lieu: 'DA', structure: 'BA' })
     currentUser = {}
 
     ownProps = {
@@ -38,7 +36,7 @@ describe('src | components | pages | Offers | OffersContainer', () => {
       },
       search: '',
       types: [],
-      venue: {}
+      venue: {},
     }
   })
   describe('mapStateToProps', () => {
@@ -48,27 +46,27 @@ describe('src | components | pages | Offers | OffersContainer', () => {
       const expected = -Infinity
 
       // then
-      expect(result.lastTrackerMoment).toStrictEqual(expected)  
+      expect(result.lastTrackerMoment).toStrictEqual(expected)
     })
 
     it('should return an object of prop offers', () => {
       // when
       const result = mapStateToProps(state, ownProps)
       const expected = {
-        "bookingEmail": "booking.email@test.com",
-        "dateCreated": "2019-03-07T10:39:23.560392Z",
-        "dateModifiedAtLastProvider": "2019-03-07T10:40:05.443621Z",
-        "id": "UU",
-        "idAtProviders": null,
-        "isActive": true,
-        "isEvent": false,
-        "isThing": true ,
-        "lastProviderId": null,
-        "mediationsIds": ["H4"],
-        "modelName": "Offer",
-        "productId": "LY",
-        "stocksIds": ["MU"],
-        "venueId": "DA"
+        bookingEmail: 'booking.email@test.com',
+        dateCreated: '2019-03-07T10:39:23.560392Z',
+        dateModifiedAtLastProvider: '2019-03-07T10:40:05.443621Z',
+        id: 'UU',
+        idAtProviders: null,
+        isActive: true,
+        isEvent: false,
+        isThing: true,
+        lastProviderId: null,
+        mediationsIds: ['H4'],
+        modelName: 'Offer',
+        productId: 'LY',
+        stocksIds: ['MU'],
+        venueId: 'DA',
       }
 
       // then
@@ -78,7 +76,27 @@ describe('src | components | pages | Offers | OffersContainer', () => {
     it('should return an object of prop offerer', () => {
       // when
       const result = mapStateToProps(state, ownProps)
-      const expected = {"address": "RUE DES SAPOTILLES", "bic": "QSDFGH8Z566", "city": "Cayenne", "dateCreated": "2019-03-07T10:39:23.560414Z", "dateModifiedAtLastProvider": "2019-03-07T10:39:57.823508Z", "firstThumbDominantColor": null, "iban": "FR7630001007941234567890185", "id": "BA", "idAtProviders": null, "isActive": true, "isValidated": true, "lastProviderId": null, "modelName": "Offerer", "nOffers": 5, "name": "Bar des amis", "postalCode": "97300", "siren": "222222233", "thumbCount": 0, "validationToken": null}
+      const expected = {
+        address: 'RUE DES SAPOTILLES',
+        bic: 'QSDFGH8Z566',
+        city: 'Cayenne',
+        dateCreated: '2019-03-07T10:39:23.560414Z',
+        dateModifiedAtLastProvider: '2019-03-07T10:39:57.823508Z',
+        firstThumbDominantColor: null,
+        iban: 'FR7630001007941234567890185',
+        id: 'BA',
+        idAtProviders: null,
+        isActive: true,
+        isValidated: true,
+        lastProviderId: null,
+        modelName: 'Offerer',
+        nOffers: 5,
+        name: 'Bar des amis',
+        postalCode: '97300',
+        siren: '222222233',
+        thumbCount: 0,
+        validationToken: null,
+      }
 
       // then
       expect(result.offerer).toStrictEqual(expected)
@@ -87,7 +105,17 @@ describe('src | components | pages | Offers | OffersContainer', () => {
     it('should return an object of prop types', () => {
       // when
       const result = mapStateToProps(state, ownProps)
-      const expected = {"appLabel": "pass Culture : activation évènementielle", "description": "Activez votre pass Culture grâce à cette offre", "id": 0, "offlineOnly": true, "onlineOnly": false, "proLabel": "pass Culture : activation évènementielle", "sublabel": "Activation", "type": "Event", "value": "EventType.ACTIVATION"}
+      const expected = {
+        appLabel: 'pass Culture : activation évènementielle',
+        description: 'Activez votre pass Culture grâce à cette offre',
+        id: 0,
+        offlineOnly: true,
+        onlineOnly: false,
+        proLabel: 'pass Culture : activation évènementielle',
+        sublabel: 'Activation',
+        type: 'Event',
+        value: 'EventType.ACTIVATION',
+      }
 
       // then
       expect(result.types[0]).toStrictEqual(expected)
@@ -97,32 +125,31 @@ describe('src | components | pages | Offers | OffersContainer', () => {
       // when
       const result = mapStateToProps(state, ownProps)
       const expected = {
-        "address": null,
-        "bookingEmail": "john.doe@test.com",
-        "city": null,
-        "comment": null,
-        "dateModifiedAtLastProvider": "2019-03-07T10:40:03.234016Z",
-        "departementCode": null,
-        "firstThumbDominantColor": null,
-        "id": "DA",
-        "idAtProviders": null,
-        "isValidated": true,
-        "isVirtual": true,
-        "lastProviderId": null,
-        "latitude": 48.83638,
-        "longitude": 2.40027,
-        "managingOffererId": "BA",
-        "modelName": "Venue",
-        "name": "Le Sous-sol (Offre en ligne)",
-        "postalCode": null,
-        "siret": null,
-        "thumbCount": 0,
-        "validationToken": null
+        address: null,
+        bookingEmail: 'john.doe@test.com',
+        city: null,
+        comment: null,
+        dateModifiedAtLastProvider: '2019-03-07T10:40:03.234016Z',
+        departementCode: null,
+        firstThumbDominantColor: null,
+        id: 'DA',
+        idAtProviders: null,
+        isValidated: true,
+        isVirtual: true,
+        lastProviderId: null,
+        latitude: 48.83638,
+        longitude: 2.40027,
+        managingOffererId: 'BA',
+        modelName: 'Venue',
+        name: 'Le Sous-sol (Offre numérique)',
+        postalCode: null,
+        siret: null,
+        thumbCount: 0,
+        validationToken: null,
       }
 
       // then
       expect(result.venue).toStrictEqual(expected)
-
     })
   })
 })
