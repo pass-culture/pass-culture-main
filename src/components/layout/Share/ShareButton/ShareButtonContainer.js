@@ -7,7 +7,7 @@ import track from 'react-tracking'
 
 import ShareButton from './ShareButton'
 import { getShareURL } from '../../../../helpers'
-import { trackMatomoEventWrapper } from '../../../../helpers/matomoHelper'
+import { trackEventWrapper } from '../../../../helpers/matomo/trackEventWrapper'
 import selectMediationByRouterMatch from '../../../../selectors/selectMediationByRouterMatch'
 import selectOfferByRouterMatch from '../../../../selectors/selectOfferByRouterMatch'
 import { openSharePopin, closeSharePopin } from '../../../../reducers/share'
@@ -56,7 +56,7 @@ export const mergeProps = (stateProps, dispatchProps) => {
 
 export default compose(
   withRouter,
-  track({ page: 'Offer' }, { dispatch: trackMatomoEventWrapper }),
+  track({ page: 'Offer' }, { dispatch: trackEventWrapper }),
   connect(
     mapStateToProps,
     mapDispatchToProps,

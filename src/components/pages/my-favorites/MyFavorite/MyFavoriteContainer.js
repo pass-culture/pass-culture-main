@@ -8,7 +8,7 @@ import { isReserved, reservationStatus } from '../../../layout/Teaser/status'
 import { formatRecommendationDates } from '../../../../utils/date/date'
 import { getHumanizeRelativeDistance } from '../../../../utils/geolocation'
 import getHumanizeRelativeDate from '../../../../utils/date/getHumanizeRelativeDate'
-import { trackMatomoEventWrapper } from '../../../../helpers/matomoHelper'
+import { trackEventWrapper } from '../../../../helpers/matomo/trackEventWrapper'
 
 import selectFirstMatchingBookingByOfferId from '../../../../selectors/selectFirstMatchingBookingByOfferId'
 import selectOfferById from '../../../../selectors/selectOfferById'
@@ -81,7 +81,7 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 
 export default compose(
   withRouter,
-  track({ page: 'Offer' }, { dispatch: trackMatomoEventWrapper }),
+  track({ page: 'Offer' }, { dispatch: trackEventWrapper }),
   connect(
     mapStateToProps,
     mapDispatchToProps,

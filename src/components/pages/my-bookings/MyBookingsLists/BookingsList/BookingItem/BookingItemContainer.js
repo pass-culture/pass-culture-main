@@ -5,7 +5,7 @@ import track from 'react-tracking'
 
 import BookingItem from './BookingItem'
 import getIsFinished from '../../../../../../helpers/getIsFinished'
-import { trackMatomoEventWrapper } from '../../../../../../helpers/matomoHelper'
+import { trackEventWrapper } from '../../../../../../helpers/matomo/trackEventWrapper'
 import selectMediationById from '../../../../../../selectors/selectMediationById'
 import selectStockById from '../../../../../../selectors/selectStockById'
 import selectOfferById from '../../../../../../selectors/selectOfferById'
@@ -91,7 +91,7 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 
 export default compose(
   withRouter,
-  track({ page: 'Offer' }, { dispatch: trackMatomoEventWrapper }),
+  track({ page: 'Offer' }, { dispatch: trackEventWrapper }),
   connect(
     mapStateToProps,
     mapDispatchToProps,

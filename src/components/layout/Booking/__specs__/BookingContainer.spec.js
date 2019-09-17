@@ -1,7 +1,7 @@
-import { mapDispatchToProps, mapStateToProps } from '../BookingContainer'
 import * as reduxSagaData from 'redux-saga-data'
-import {bookingNormalizer} from '../../../../utils/normalizers';
 
+import { mapDispatchToProps, mapStateToProps } from '../BookingContainer'
+import { bookingNormalizer } from '../../../../utils/normalizers'
 
 describe('src | components | layout | Booking | BookingContainer', () => {
   let state
@@ -151,6 +151,7 @@ describe('src | components | layout | Booking | BookingContainer', () => {
             trackEvent: jest.fn(),
           },
         }
+
         // when
         mapDispatchToProps(undefined, ownProps).trackBookingSuccess('B4')
 
@@ -168,40 +169,42 @@ describe('src | components | layout | Booking | BookingContainer', () => {
         const dispatch = jest.fn()
         const formValues = {
           bookables: [],
-          date: "2019-09-19T22:00:00.000Z",
+          date: '2019-09-19T22:00:00.000Z',
           price: 27,
-          recommendationId: "NQ",
-          stockId: "BM",
-          time: "BM"
+          recommendationId: 'NQ',
+          stockId: 'BM',
+          time: 'BM',
         }
         const handleRequestFail = jest.fn()
         const handleRequestSuccess = jest.fn()
         jest.spyOn(reduxSagaData, 'requestData')
 
         // when
-        mapDispatchToProps(dispatch).handleSubmit(formValues, handleRequestFail, handleRequestSuccess)
+        mapDispatchToProps(dispatch).handleSubmit(
+          formValues,
+          handleRequestFail,
+          handleRequestSuccess
+        )
 
         // then
-        expect(reduxSagaData.requestData).toHaveBeenCalledWith(
-          {
-            apiPath: '/bookings',
-            body: {
-              bookables: [],
-              date: "2019-09-19T22:00:00.000Z",
-              price: 27,
-              recommendationId: "NQ",
-              stockId: "BM",
-              time: "BM",
-              quantity: 1
-            },
-            handleFail: handleRequestFail,
-            handleSuccess: handleRequestSuccess,
-            method: 'POST',
-            name: 'booking',
-            normalizer: bookingNormalizer,
-          })
+        expect(reduxSagaData.requestData).toHaveBeenCalledWith({
+          apiPath: '/bookings',
+          body: {
+            bookables: [],
+            date: '2019-09-19T22:00:00.000Z',
+            price: 27,
+            recommendationId: 'NQ',
+            stockId: 'BM',
+            time: 'BM',
+            quantity: 1,
+          },
+          handleFail: handleRequestFail,
+          handleSuccess: handleRequestSuccess,
+          method: 'POST',
+          name: 'booking',
+          normalizer: bookingNormalizer,
+        })
       })
     })
   })
 })
-

@@ -8,7 +8,7 @@ import CancelThisLink from './CancelThisLink'
 import PopinButton from './PopinButton'
 
 import { bookingNormalizer } from '../../../../../../utils/normalizers'
-import { trackMatomoEventWrapper } from '../../../../../../helpers/matomoHelper'
+import { trackEventWrapper } from '../../../../../../helpers/matomo/trackEventWrapper'
 
 import { closeSharePopin, openSharePopin } from '../../../../../../reducers/share'
 import selectBookingByRouterMatch from '../../../../../../selectors/selectBookingByRouterMatch'
@@ -102,7 +102,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
 
 export default compose(
   withRouter,
-  track({ page: 'Offer' }, { dispatch: trackMatomoEventWrapper }),
+  track({ page: 'Offer' }, { dispatch: trackEventWrapper }),
   connect(
     mapStateToProps,
     mapDispatchToProps

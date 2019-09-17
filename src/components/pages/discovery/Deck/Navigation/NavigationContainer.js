@@ -6,7 +6,7 @@ import track from 'react-tracking'
 import Navigation from './Navigation'
 import { getHeaderColor } from '../../../../../utils/colors'
 import getPriceRangeFromStocks from '../../../../../helpers/getPriceRangeFromStocks'
-import { trackMatomoEventWrapper } from '../../../../../helpers/matomoHelper'
+import { trackEventWrapper } from '../../../../../helpers/matomo/trackEventWrapper'
 
 import selectCurrentRecommendation from '../../selectors/selectCurrentRecommendation'
 import selectDistanceByOfferId from '../../../../../selectors/selectDistanceByOfferId'
@@ -55,7 +55,7 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 
 export default compose(
   withRouter,
-  track({ page: 'Offer' }, { dispatch: trackMatomoEventWrapper }),
+  track({ page: 'Offer' }, { dispatch: trackEventWrapper }),
   connect(
     mapStateToProps,
     mapDispatchToProps,

@@ -10,7 +10,7 @@ import selectBookingByRouterMatch from '../../../selectors/selectBookingByRouter
 import selectOfferByRouterMatch from '../../../selectors/selectOfferByRouterMatch'
 import selectRecommendationByRouterMatch from '../../../selectors/selectRecommendationByRouterMatch'
 import { bookingNormalizer } from '../../../utils/normalizers'
-import { trackMatomoEventWrapper } from '../../../helpers/matomoHelper'
+import { trackEventWrapper } from '../../../helpers/matomo/trackEventWrapper'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
@@ -44,11 +44,14 @@ export const mapDispatchToProps = (dispatch, ownProps) => ({
         normalizer: bookingNormalizer,
       })
     )
-  }
+  },
 })
 
 export default compose(
   withRouter,
-  track({ page: 'Offer' }, { dispatch: trackMatomoEventWrapper }),
-  connect(mapStateToProps, mapDispatchToProps)
+  track({ page: 'Offer' }, { dispatch: trackEventWrapper }),
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
 )(Booking)
