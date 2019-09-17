@@ -6,7 +6,10 @@ import { Link } from 'react-router-dom'
 
 import Icon from '../../../../../layout/Icon'
 import Ribbon from '../../../../../layout/Ribbon'
+import { ICONS_URL } from '../../../../../../utils/config'
 import { getTimezone } from '../../../../../../utils/timezone'
+
+const DEFAULT_THUMB_URL = `${ICONS_URL}/picto-placeholder-visueloffre.png`
 
 export const stringify = date => timeZone =>
   capitalize(
@@ -40,10 +43,11 @@ const BookingItem = ({ booking, location, offer, ribbon, stock }) => {
         className="teaser-link"
         to={detailsUrl}
       >
-        <div className="teaser-thumb">{thumbUrl && <img
-          alt=""
-          src={thumbUrl}
-                                                   />}
+        <div className="teaser-thumb">
+          <img
+            alt=""
+            src={thumbUrl || DEFAULT_THUMB_URL}
+          />
         </div>
         <div className="teaser-wrapper">
           <div className="mb-heading">

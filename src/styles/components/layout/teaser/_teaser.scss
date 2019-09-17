@@ -24,6 +24,10 @@
 .teaser-thumb {
   display: flex;
   width: 30%;
+
+  img {
+    width: 100%;
+  }
 }
 
 .teaser-wrapper {

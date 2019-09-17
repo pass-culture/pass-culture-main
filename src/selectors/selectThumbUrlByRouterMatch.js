@@ -3,6 +3,9 @@ import createCachedSelector from 're-reselect'
 import selectBookingByRouterMatch from './selectBookingByRouterMatch'
 import selectMediationByRouterMatch from './selectMediationByRouterMatch'
 import selectOfferByRouterMatch from './selectOfferByRouterMatch'
+import { ICONS_URL } from '../utils/config'
+
+export const DEFAULT_THUMB_URL = `${ICONS_URL}/picto-placeholder-visueloffre.svg`
 
 function mapArgsToCacheKey(state, match) {
   const { params } = match
@@ -18,12 +21,13 @@ const selectThumbUrlByRouterMatch = createCachedSelector(
     if (mediation) {
       return mediation.thumbUrl
     }
-    if (booking) {
+    if (booking && booking.thumbCount) {
       return booking.thumbUrl
     }
-    if (offer) {
+    if (offer && offer.product.thumbCount) {
       return offer.product.thumbUrl
     }
+    return DEFAULT_THUMB_URL
   }
 )(mapArgsToCacheKey)
 

@@ -4,6 +4,7 @@
   overflow: hidden;
   position: absolute;
   top: 44px;
+  z-index: 4;
 
   .card & {
     top: 0;

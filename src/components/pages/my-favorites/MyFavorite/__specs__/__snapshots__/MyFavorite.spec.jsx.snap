@@ -44,7 +44,12 @@ ShallowWrapper {
         <React.Fragment>
           <div
             className="teaser-thumb"
-          />
+          >
+            <img
+              alt=""
+              src="http://localhost/icons/picto-placeholder-visueloffre.png"
+            />
+          </div>
           <div
             className="teaser-wrapper mf-wrapper"
           >
@@ -101,7 +106,12 @@ ShallowWrapper {
         "children": <React.Fragment>
           <div
             className="teaser-thumb"
-          />
+          >
+            <img
+              alt=""
+              src="http://localhost/icons/picto-placeholder-visueloffre.png"
+            />
+          </div>
           <div
             className="teaser-wrapper mf-wrapper"
           >
@@ -159,7 +169,12 @@ ShallowWrapper {
           "children": Array [
             <div
               className="teaser-thumb"
-            />,
+            >
+              <img
+                alt=""
+                src="http://localhost/icons/picto-placeholder-visueloffre.png"
+              />
+            </div>,
             <div
               className="teaser-wrapper mf-wrapper"
             >
@@ -212,11 +227,25 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": null,
+              "children": <img
+                alt=""
+                src="http://localhost/icons/picto-placeholder-visueloffre.png"
+              />,
               "className": "teaser-thumb",
             },
             "ref": null,
-            "rendered": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "alt": "",
+                "src": "http://localhost/icons/picto-placeholder-visueloffre.png",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": "img",
+            },
             "type": "div",
           },
           Object {
@@ -399,7 +428,12 @@ ShallowWrapper {
           <React.Fragment>
             <div
               className="teaser-thumb"
-            />
+            >
+              <img
+                alt=""
+                src="http://localhost/icons/picto-placeholder-visueloffre.png"
+              />
+            </div>
             <div
               className="teaser-wrapper mf-wrapper"
             >
@@ -456,7 +490,12 @@ ShallowWrapper {
           "children": <React.Fragment>
             <div
               className="teaser-thumb"
-            />
+            >
+              <img
+                alt=""
+                src="http://localhost/icons/picto-placeholder-visueloffre.png"
+              />
+            </div>
             <div
               className="teaser-wrapper mf-wrapper"
             >
@@ -514,7 +553,12 @@ ShallowWrapper {
             "children": Array [
               <div
                 className="teaser-thumb"
-              />,
+              >
+                <img
+                  alt=""
+                  src="http://localhost/icons/picto-placeholder-visueloffre.png"
+                />
+              </div>,
               <div
                 className="teaser-wrapper mf-wrapper"
               >
@@ -567,11 +611,25 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": null,
+                "children": <img
+                  alt=""
+                  src="http://localhost/icons/picto-placeholder-visueloffre.png"
+                />,
                 "className": "teaser-thumb",
               },
               "ref": null,
-              "rendered": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "alt": "",
+                  "src": "http://localhost/icons/picto-placeholder-visueloffre.png",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": "img",
+              },
               "type": "div",
             },
             Object {

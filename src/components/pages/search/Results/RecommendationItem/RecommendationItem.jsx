@@ -4,7 +4,7 @@ import React from 'react'
 import { formatRecommendationDates } from '../../../../../utils/date/date'
 import { ICONS_URL } from '../../../../../utils/config'
 
-const DEFAULT_THUMB_URL = `${ICONS_URL}/magnify.svg`
+const DEFAULT_THUMB_URL = `${ICONS_URL}/picto-placeholder-visueloffre.png`
 
 const RecommendationItem = ({
   handleMarkSearchRecommendationsAsClicked,

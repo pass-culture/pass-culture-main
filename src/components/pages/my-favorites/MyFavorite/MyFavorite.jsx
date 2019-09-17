@@ -3,6 +3,9 @@ import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 
 import Icon from '../../../layout/Icon'
+import { ICONS_URL } from '../../../../utils/config'
+
+const DEFAULT_THUMB_URL = `${ICONS_URL}/picto-placeholder-visueloffre.png`
 
 class MyFavorite extends Component {
   renderFavorite = () => {
@@ -20,10 +23,11 @@ class MyFavorite extends Component {
 
     return (
       <Fragment>
-        <div className="teaser-thumb">{thumbUrl && <img
-          alt=""
-          src={thumbUrl}
-                                                   />}
+        <div className="teaser-thumb">
+          <img
+            alt=""
+            src={thumbUrl || DEFAULT_THUMB_URL}
+          />
         </div>
         <div className="teaser-wrapper mf-wrapper">
           <div className="teaser-title">{name}</div>
