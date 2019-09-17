@@ -11,10 +11,10 @@ class CreateVenueTest:
 
         # When
         venue = create_venue(
-        offerer,
-        is_virtual=True,
-        siret=None,
-        name='Virtual Venue'
+            offerer,
+            is_virtual=True,
+            siret=None,
+            name='Virtual Venue'
         )
 
         # Then
