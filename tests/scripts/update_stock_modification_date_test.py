@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from models.db import db
 from models import PcObject, Stock
 from scripts.update_stock_modification_date import update_stock_modification_date_sql_version
 from tests.conftest import clean_database
@@ -11,6 +12,7 @@ class UpdateStockModificationDateTest:
     @clean_database
     def test_should_change_modified_date_using_the_update_activity(self, app):
         # Given
+        db.engine.execute("ALTER TABLE stock DISABLE TRIGGER stock_update_modification_date;")
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
@@ -31,10 +33,12 @@ class UpdateStockModificationDateTest:
         # Then
         updated_stock = Stock.query.first()
         assert updated_stock.dateModified == datetime(2019, 10, 21)
+        db.engine.execute("ALTER TABLE stock ENABLE TRIGGER stock_update_modification_date;")
 
     @clean_database
     def test_should_change_modified_date_using_the_very_last_update_activity(self, app):
         # Given
+        db.engine.execute("ALTER TABLE stock DISABLE TRIGGER stock_update_modification_date;")
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
@@ -62,10 +66,12 @@ class UpdateStockModificationDateTest:
         # Then
         updated_stock = Stock.query.first()
         assert updated_stock.dateModified == datetime(2019, 12, 25)
+        db.engine.execute("ALTER TABLE stock ENABLE TRIGGER stock_update_modification_date;")
 
     @clean_database
     def test_should_change_modified_date_for_every_stock(self, app):
         # Given
+        db.engine.execute("ALTER TABLE stock DISABLE TRIGGER stock_update_modification_date;")
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
@@ -96,4 +102,4 @@ class UpdateStockModificationDateTest:
         second_updated_stock = Stock.query.get(second_stock.id)
         assert first_updated_stock.dateModified == datetime(2019, 10, 21)
         assert second_updated_stock.dateModified == datetime(2018, 11, 16)
-
+        db.engine.execute("ALTER TABLE stock ENABLE TRIGGER stock_update_modification_date;")
