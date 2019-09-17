@@ -77,8 +77,7 @@ _paq.push([function() {
         var originalTimeout = createTs + cookieTimeout - nowTs;
         return originalTimeout;
     }
-    this.setVisitorCookieTimeout( getOriginalVisitorCookieTimeout()
-    );
+    this.setVisitorCookieTimeout(getOriginalVisitorCookieTimeout());
 }]);
 <!-- FIN DU CODE CNIL -->
 ```
@@ -100,47 +99,55 @@ Un évènement est constitué de 4 éléments :
 * Nom (optionel mais recommendé)
 * Valeur (optionel)
 
-Exemple de déclaration d'évènement lorsque l'usager consulte (action : `Consult`), une Offre (catégorie : `Offer`) dont l'id est 'B4' (name: `B4`)  : 
+Exemple de déclaration d'évènement (fonction `trackEvent`) lorsque l'usager consulte (action : `Consult`), une Offre (catégorie : `Offer`) dont le nom (id) est 'B4' (name: `B4`)  : 
 ```javascript
-_paq.push(['trackEvent', 'Offer', 'B4', 'Consult']);
+_paq.push(['trackEvent', 'Offer', 'Consult', 'B4']);
 ```
+Cet exemple ne comporte pas de valeur, mais si on le souhaitait, on pourrait l'ajouter à la suite du dernier élément du tableau.
 
-#### Usage avec react-tracking
+### Usage
 Si l'on se réfère à la cible archi front, la responsabilité de déclencher un évènement en fonction d'une action utilisateur incombe au composant graphique, à l'aide d'une fonction fournie par son container.
-C'est la responsabilité du container de wrapper l'action du déclenchement de l'event dans cette fonction.
+Il est de la responsabilité du container de wrapper l'action du déclenchement de l'event dans cette fonction.
 
 Exemple de container : 
 
 ```javascript
-export const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = state => {
   const somethingId = selectSomethingId(state)
   return {
-    selectSomethingId,
+    somethingId,
   }
 }
 
-export const mapDispatchToProps = (dispatch, ownProps) => ({
-  trackButtonClick: somethingId => {
-    ownProps.tracking.trackEvent({ action: 'buttonClick', name: somethingId })
-  },
+const mapDispatchToProps = dispatch => ({
+  someDispatch: () => dispatch(something()),
 })
 
+const mergeProps = (stateProps, dispatchProps, ownProps) => {
+  const {
+    somethingId,
+  } = stateProps
+  return {
+    ...stateProps,
+    ...dispatchProps,
+    ...ownProps,
+    trackButtonClick: () => {
+      ownProps.tracking.trackEvent({ action: 'buttonClick', name: somethingId })
+    }
+  }
+}
+
 export default compose(
-  track({ page: 'Offer' }, { dispatch: trackMatomoEventWrapper }),
-  connect(mapStateToProps, mapDispatchToProps)
+  track({ page: 'Offer' }, { dispatch: data => {
+    window._paq.push(['trackEvent', data.page, data.action, data.name])
+  }}),
+  connect(mapStateToProps, mapDispatchToProps, mergeProps)
 )(MyButton)
 ```
 
 Le HOC `track` décore le container d'une `props` `tracking` qui contient les méthodes de tracking que l'on souhaite utiliser.
 Il peut accepter une fonction `dispatch` qui sera exécutée à chaque fois qu'un évènement est déclenché.
-
-Ci-dessous un exemple de fonction dispatch : 
-```javascript
-export const trackMatomoEventWrapper = data => {
-  const Matomo = window._paq || []
-  Matomo.push(['trackEvent', data.page, data.action, data.name])
-}
-```
+On peut utiliser la fonction `mergeProps` pour combiner les props venant des différentes sources du container (state, dispatch, container).
 
 ## Upgrade de la version
 
