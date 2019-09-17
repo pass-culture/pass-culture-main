@@ -10,21 +10,6 @@ OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO = 3
 OFFERERS_WITH_PHYSICAL_VENUE_WITH_SIRET_REMOVE_MODULO = OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO * 2
 
 
-def create_virtual_venue(offerer: Offerer, venue_by_name: dict, venue_name: str) -> None:
-    name= "{} (Offre en ligne)".format(venue_name)
-    venue_by_name[name] = create_venue(
-        offerer,
-        address=None,
-        city=None,
-        is_virtual=True,
-        latitude=None,
-        longitude=None,
-        postal_code=None,
-        name=name,
-        siret=None
-    )
-
-
 def create_industrial_venues(offerers_by_name: dict) -> dict:
     logger.info('create_industrial_venues')
 
@@ -87,11 +72,16 @@ def create_industrial_venues(offerers_by_name: dict) -> dict:
                 bank_information = create_bank_information(bic=bic, iban=iban,
                                                            id_at_providers=venue_by_name[venue_name].siret,
                                                            venue=venue_by_name[venue_name])
-
         bic_suffix += 1
         mock_index += 1
 
-        create_virtual_venue(offerer, venue_by_name, venue_name)
+        virtual_venue_name= "{} (Offre en ligne)".format(venue_name)
+        venue_by_name[virtual_venue_name] = create_venue(
+            offerer,
+            is_virtual=True,
+            name=virtual_venue_name,
+            siret=None
+        )
 
     PcObject.save(*venue_by_name.values())
 

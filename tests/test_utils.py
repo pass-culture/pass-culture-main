@@ -479,11 +479,11 @@ def create_venue(
         venue.postalCode = postal_code
         venue.city = city
         venue.departementCode = departement_code
+        venue.longitude = longitude
+        venue.latitude = latitude
     venue.name = name
     venue.managingOfferer = offerer
     venue.isVirtual = is_virtual
-    venue.longitude = longitude
-    venue.latitude = latitude
     venue.siret = siret
     venue.validationToken = validation_token
     venue.comment = comment
