@@ -32,21 +32,6 @@
     color: $notification-text;
   }
 
-  .is-static {
-    @extend .fs16;
-    margin: 18px 18px 18px 0;
-    display: flex;
-    text-align: justify;
-
-    img {
-      padding-left: 18px;
-    }
-
-    span {
-      padding-left: 12px;
-    }
-  }
-
   a.close,
   button.close {
     color: $notification-text;

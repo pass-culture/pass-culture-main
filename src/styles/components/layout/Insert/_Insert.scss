@@ -1,0 +1,18 @@
+.insert {
+  @extend .fs16;
+  align-items: center;
+  background-color: $notification-background-is-info;
+  color: $notification-text;
+  display: flex;
+  justify-content: flex-start;
+  flex-grow: 1;
+  padding: 18px 18px 18px 18px;
+
+  span {
+    margin-left: 12px;
+  }
+  img {
+    align-self: baseline;
+    height: auto;
+  }
+}

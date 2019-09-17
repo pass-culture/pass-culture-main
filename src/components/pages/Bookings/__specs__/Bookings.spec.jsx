@@ -2,8 +2,8 @@ import React from 'react'
 import { shallow } from 'enzyme'
 
 import Bookings from '../Bookings'
-import DownloadButtonContainer from '../../../layout/DownloadButton/DownloadButtonContainer'
 import CsvTableButtonContainer from '../../../layout/CsvTableButton/CsvTableButtonContainer'
+import DownloadButtonContainer from '../../../layout/DownloadButton/DownloadButtonContainer'
 import FilterByOfferContainer from '../FilterByOffer/FilterByOfferContainer'
 
 describe('src | components | pages | Bookings', () => {
@@ -36,18 +36,17 @@ describe('src | components | pages | Bookings', () => {
       expect(wrapper.prop('showOfferSection')).toBe()
     })
 
-    it('should render a static information message', () => {
+    it('should render an insert with information message', () => {
       // given
       const wrapper = shallow(<Bookings />)
 
       // when
-      const informationComponent = wrapper.find('.is-static span')
+      const informationComponent = wrapper.find('Insert')
 
       // then
-      expect(informationComponent.text()).toStrictEqual(
-        'Les réservations d’événements sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement.La contremarque ne peut être validée qu’après ce délai.'
-      )
+      expect(informationComponent.props().children[0]).toBe('Les')
     })
+
     describe('the download and display section', () => {
       it('should not render a DownloadButtonContainer component when showButtons is false', () => {
         // when
