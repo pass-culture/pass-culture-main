@@ -1,0 +1,197 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | layout | Verso | VersoContentOffer | VersoActionsBar should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <VersoActionsBar
+    url={null}
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": <a
+        className="is-red-text is-bold flex-columns items-center flex-center"
+        href={null}
+        id="verso-online-booked-button"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        <i
+          className="icon icon-ico-linkexternal fs30"
+        />
+        <span
+          className="fs16"
+        >
+          Accéder
+        </span>
+      </a>,
+      "className": "verso-actions-bar items-center flex-center flex-columns fs16",
+    },
+    "ref": null,
+    "rendered": Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <i
+            className="icon icon-ico-linkexternal fs30"
+          />,
+          <span
+            className="fs16"
+          >
+            Accéder
+          </span>,
+        ],
+        "className": "is-red-text is-bold flex-columns items-center flex-center",
+        "href": null,
+        "id": "verso-online-booked-button",
+        "rel": "noopener noreferrer",
+        "target": "_blank",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "className": "icon icon-ico-linkexternal fs30",
+          },
+          "ref": null,
+          "rendered": null,
+          "type": "i",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Accéder",
+            "className": "fs16",
+          },
+          "ref": null,
+          "rendered": "Accéder",
+          "type": "span",
+        },
+      ],
+      "type": "a",
+    },
+    "type": "nav",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": <a
+          className="is-red-text is-bold flex-columns items-center flex-center"
+          href={null}
+          id="verso-online-booked-button"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <i
+            className="icon icon-ico-linkexternal fs30"
+          />
+          <span
+            className="fs16"
+          >
+            Accéder
+          </span>
+        </a>,
+        "className": "verso-actions-bar items-center flex-center flex-columns fs16",
+      },
+      "ref": null,
+      "rendered": Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <i
+              className="icon icon-ico-linkexternal fs30"
+            />,
+            <span
+              className="fs16"
+            >
+              Accéder
+            </span>,
+          ],
+          "className": "is-red-text is-bold flex-columns items-center flex-center",
+          "href": null,
+          "id": "verso-online-booked-button",
+          "rel": "noopener noreferrer",
+          "target": "_blank",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "className": "icon icon-ico-linkexternal fs30",
+            },
+            "ref": null,
+            "rendered": null,
+            "type": "i",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Accéder",
+              "className": "fs16",
+            },
+            "ref": null,
+            "rendered": "Accéder",
+            "type": "span",
+          },
+        ],
+        "type": "a",
+      },
+      "type": "nav",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+    Symbol(enzyme.__providerValues__): undefined,
+  },
+  Symbol(enzyme.__providerValues__): Map {},
+}
+`;

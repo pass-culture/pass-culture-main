@@ -4,7 +4,7 @@ import { shallow } from 'enzyme'
 import VersoContentOffer from '../VersoContentOffer'
 import Icon from '../../../../Icon/Icon'
 import { navigationLink } from '../../../../../../utils/geolocation'
-import VersoActionsBar from '../VersoActionsBar'
+import VersoActionsBar from '../VersoActionsBar/VersoActionsBar'
 
 jest.mock('../../../../../../utils/geolocation', () => ({
   navigationLink: jest.fn(),
@@ -155,6 +155,28 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
     // then
     const liElements = wrapper.find('.dates-info').find('li')
     expect(liElements.at(0).text()).toBe('Dès maintenant et jusqu’au 2019-04-01')
+  })
+
+  it('should render thing offer infos when offer is thing, not finished, booking is available and no bookinglimitDatetime', () => {
+    // given
+    const props = {
+      bookables: [
+        { bookinglimitDatetime: undefined, id: 1 },
+        { bookinglimitDatetime: undefined, id: 2 },
+      ],
+      distance: '1',
+      handleRequestMusicAndShowTypes: jest.fn(),
+      isFinished: false,
+      maxShownDates: 1,
+      offer,
+    }
+
+    // when
+    const wrapper = shallow(<VersoContentOffer {...props} />)
+
+    // then
+    const liElements = wrapper.find('.dates-info').find('li')
+    expect(liElements.at(0).text()).toBe('Dès maintenant')
   })
 
   it('should render offer is unavailable when offer is finished', () => {

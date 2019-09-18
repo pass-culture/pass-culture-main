@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { capitalize } from 'react-final-form-utils'
 
-import getDurationFromMinutes from './getDurationFromMinutes'
-import VersoActionsBar from './VersoActionsBar'
+import getDurationFromMinutes from './utils/getDurationFromMinutes'
+import VersoActionsBar from './VersoActionsBar/VersoActionsBar'
 import Icon from '../../../Icon/Icon'
 import { navigationLink } from '../../../../../utils/geolocation'
 
@@ -88,7 +88,7 @@ class VersoContentOffer extends PureComponent {
 
     return (
       <Fragment>
-        <li>{`Dès maintenant${limitDatetime && ` et jusqu’au ${limitDatetime}`}`}</li>
+        <li>{`Dès maintenant${limitDatetime ? ` et jusqu’au ${limitDatetime}` : ''}`}</li>
       </Fragment>
     )
   }
