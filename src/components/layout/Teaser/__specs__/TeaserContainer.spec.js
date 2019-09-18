@@ -1,4 +1,4 @@
-import { mapStateToProps } from '../TeaserContainer'
+import { mapStateToProps, mergeProps } from '../TeaserContainer'
 
 describe('src | components | layout | Teaser | TeaserContainer', () => {
   describe('mapStateToProps()', () => {
@@ -67,6 +67,32 @@ describe('src | components | layout | Teaser | TeaserContainer', () => {
         statuses: [{ class: 'booked', label: 'Réservé' }],
         thumbUrl: 'fake/thumb/url',
       })
+    })
+  })
+
+  describe('mergeProps', () => {
+    it('should map trackConsultOffer using trackEvent from props', () => {
+      const stateProps = {
+        offerId: 'B4',
+      }
+      const ownProps = {
+        tracking: {
+          trackEvent: jest.fn(),
+        },
+      }
+      mergeProps(stateProps, {}, ownProps).trackConsultOffer()
+      expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
+        action: 'consultOffer',
+        name: 'B4',
+      })
+    })
+
+    it('should spread props from stateProps', () => {
+      const stateProps = {
+        offerId: 'B4',
+      }
+      const result = mergeProps(stateProps, {}, {})
+      expect(result.offerId).toBe('B4')
     })
   })
 })
