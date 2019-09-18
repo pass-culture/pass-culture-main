@@ -118,8 +118,7 @@ class Offer(PcObject,
 
     @property
     def activeMediation(self):
-        sorted_by_date_asc = sorted(self.mediations, key=lambda m: m.dateCreated)
-        sorted_by_date_desc = reversed(sorted_by_date_asc)
+        sorted_by_date_desc = sorted(self.mediations, key=lambda m: m.dateCreated, reverse=True)
         only_active = list(filter(lambda m: m.isActive, sorted_by_date_desc))
         return only_active[0] if only_active else None
 
