@@ -22,7 +22,11 @@ const transitionStyles = {
 
 class SharePopin extends React.PureComponent {
   handleCloseHandler = () => {
-    const { dispatch } = this.props
+    const { dispatch, options } = this.props
+    const { handleClose } = options
+    if (handleClose) {
+      handleClose()
+    }
     dispatch(closeSharePopin())
   }
 
@@ -43,7 +47,7 @@ class SharePopin extends React.PureComponent {
 
   render() {
     const { visible, options } = this.props
-    const { buttons, text, title, withCloseButton } = options || {}
+    const { buttons, text, title } = options || {}
 
     return (
       <Transition
@@ -58,7 +62,7 @@ class SharePopin extends React.PureComponent {
           >
             {options && (
               <div className="pc-theme-gradient inner is-relative is-clipped">
-                {withCloseButton && this.renderCloseButton()}
+                {this.renderCloseButton()}
                 <div
                   className="fs16 text-left"
                   id="share-popin-fixed-container"
@@ -85,9 +89,9 @@ class SharePopin extends React.PureComponent {
 SharePopin.defaultProps = {
   options: {
     buttons: [],
+    handleClose: null,
     text: null,
     title: null,
-    withCloseButton: true
   },
 }
 
@@ -95,9 +99,9 @@ SharePopin.propTypes = {
   dispatch: PropTypes.func.isRequired,
   options: PropTypes.shape({
     buttons: PropTypes.arrayOf(PropTypes.object),
+    handleClose: PropTypes.func,
     text: PropTypes.string,
     title: PropTypes.string,
-    withCloseButton: PropTypes.bool,
   }),
   visible: PropTypes.bool.isRequired,
 }
