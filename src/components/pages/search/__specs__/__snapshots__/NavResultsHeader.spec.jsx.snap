@@ -22,21 +22,19 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": <div
-        className="text-left is-white-text is-absolute mx12"
         id="category-description"
       >
         <h2
-          className="is-bold mb3"
+          className="nav-result-title"
         >
           Applaudir
         </h2>
         <span
-          className="fs13 is-medium"
+          className="nav-result-description"
         >
           Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?
         </span>
       </div>,
-      "className": "p12 is-relative",
       "id": "nav-results-header",
       "style": Object {
         "backgroundImage": "url(http://localhost/icons/img-Applaudir-L.jpg)",
@@ -51,17 +49,16 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <h2
-            className="is-bold mb3"
+            className="nav-result-title"
           >
             Applaudir
           </h2>,
           <span
-            className="fs13 is-medium"
+            className="nav-result-description"
           >
             Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?
           </span>,
         ],
-        "className": "text-left is-white-text is-absolute mx12",
         "id": "category-description",
       },
       "ref": null,
@@ -72,7 +69,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": "Applaudir",
-            "className": "is-bold mb3",
+            "className": "nav-result-title",
           },
           "ref": null,
           "rendered": "Applaudir",
@@ -84,7 +81,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": "Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?",
-            "className": "fs13 is-medium",
+            "className": "nav-result-description",
           },
           "ref": null,
           "rendered": "Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?",
@@ -102,21 +99,19 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": <div
-          className="text-left is-white-text is-absolute mx12"
           id="category-description"
         >
           <h2
-            className="is-bold mb3"
+            className="nav-result-title"
           >
             Applaudir
           </h2>
           <span
-            className="fs13 is-medium"
+            className="nav-result-description"
           >
             Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?
           </span>
         </div>,
-        "className": "p12 is-relative",
         "id": "nav-results-header",
         "style": Object {
           "backgroundImage": "url(http://localhost/icons/img-Applaudir-L.jpg)",
@@ -131,17 +126,16 @@ ShallowWrapper {
         "props": Object {
           "children": Array [
             <h2
-              className="is-bold mb3"
+              className="nav-result-title"
             >
               Applaudir
             </h2>,
             <span
-              className="fs13 is-medium"
+              className="nav-result-description"
             >
               Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?
             </span>,
           ],
-          "className": "text-left is-white-text is-absolute mx12",
           "id": "category-description",
         },
         "ref": null,
@@ -152,7 +146,7 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": "Applaudir",
-              "className": "is-bold mb3",
+              "className": "nav-result-title",
             },
             "ref": null,
             "rendered": "Applaudir",
@@ -164,7 +158,7 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": "Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?",
-              "className": "fs13 is-medium",
+              "className": "nav-result-description",
             },
             "ref": null,
             "rendered": "Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?",

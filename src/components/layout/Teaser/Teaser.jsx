@@ -7,16 +7,16 @@ const DEFAULT_THUMB_URL = `${ICONS_URL}/picto-placeholder-visueloffre.png`
 import Icon from '../Icon/Icon'
 
 class Teaser extends Component {
-  renderItem = () => {
+  renderTeaser = () => {
     const {
       date,
-      handleToggleItem,
+      handleToggleTeaser,
       humanizeRelativeDistance,
       isEditMode,
       name,
       offerId,
       offerTypeLabel,
-      status,
+      statuses,
       thumbUrl,
     } = this.props
 
@@ -33,8 +33,8 @@ class Teaser extends Component {
           <div className="teaser-sub-title">{offerTypeLabel}</div>
           {date && <div className="teaser-date">{date}</div>}
           <div className="teaser-infos">
-            {status.length > 0 &&
-              status.map(status => (
+            {statuses.length > 0 &&
+              statuses.map(status => (
                 <span
                   className={`teaser-status teaser-${status.class}`}
                   key={status.class}
@@ -50,7 +50,7 @@ class Teaser extends Component {
             <label className="field-checkbox">
               <input
                 className="input teaser-checkbox"
-                onClick={handleToggleItem(offerId)}
+                onClick={handleToggleTeaser(offerId)}
                 type="checkbox"
               />
             </label>
@@ -71,13 +71,13 @@ class Teaser extends Component {
     return (
       <li className="teaser-item">
         {isEditMode ? (
-          <div className="teaser-link">{this.renderItem()}</div>
+          <div className="teaser-link">{this.renderTeaser()}</div>
         ) : (
           <Link
             className="teaser-link"
             to={detailsUrl}
           >
-            {this.renderItem()}
+            {this.renderTeaser()}
           </Link>
         )}
       </li>
@@ -87,22 +87,22 @@ class Teaser extends Component {
 
 Teaser.defaultProps = {
   date: null,
-  handleToggleItem: () => {},
+  handleToggleTeaser: () => {},
   isEditMode: false,
-  status: [],
+  statuses: [],
   thumbUrl: null,
 }
 
 Teaser.propTypes = {
   date: PropTypes.string,
   detailsUrl: PropTypes.string.isRequired,
-  handleToggleItem: PropTypes.func,
+  handleToggleTeaser: PropTypes.func,
   humanizeRelativeDistance: PropTypes.string.isRequired,
   isEditMode: PropTypes.bool,
   name: PropTypes.string.isRequired,
   offerId: PropTypes.string.isRequired,
   offerTypeLabel: PropTypes.string.isRequired,
-  status: PropTypes.arrayOf(
+  statuses: PropTypes.arrayOf(
     PropTypes.shape({
       class: PropTypes.string,
       label: PropTypes.string,

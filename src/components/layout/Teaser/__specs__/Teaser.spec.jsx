@@ -4,20 +4,20 @@ import { Link } from 'react-router-dom'
 
 import Teaser from '../Teaser'
 
-describe('src | components | layout | Teaser | Teaser', () => {
+describe('src | components | layout | Teaser', () => {
   let props
 
   beforeEach(() => {
     props = {
       date: 'permanent',
       detailsUrl: 'fake/url',
-      handleToggleItem: jest.fn(),
+      handleToggleTeaser: jest.fn(),
       humanizeRelativeDistance: '10 km',
       isEditMode: false,
       name: 'Fake offer name',
       offerId: 'MEFA',
       offerTypeLabel: 'Fake offer type label',
-      status: [
+      statuses: [
         {
           label: 'Réservé',
           class: 'booked',
@@ -74,7 +74,7 @@ describe('src | components | layout | Teaser | Teaser', () => {
     })
 
     describe('when click on checkbox', () => {
-      it('should call handleToggleItem', () => {
+      it('should call handleToggleTeaser', () => {
         // given
         props.isEditMode = true
         const wrapper = shallow(<Teaser {...props} />)
@@ -83,7 +83,7 @@ describe('src | components | layout | Teaser | Teaser', () => {
         wrapper.find('.teaser-checkbox').simulate('click')
 
         // then
-        expect(props.handleToggleItem).toHaveBeenCalledWith(props.offerId)
+        expect(props.handleToggleTeaser).toHaveBeenCalledWith(props.offerId)
       })
     })
   })

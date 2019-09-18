@@ -1,3 +1,7 @@
+#nav-by-offer-type {
+  @extend .px12;
+}
+
 #nav-by-offer-type .pc-list .item .search-picture span {
   @extend .py8;
   @extend .px12;
@@ -6,11 +10,15 @@
   background: rgba($primary, 0.75);
 }
 
-#nav-by-offer-type h2 {
-  font-weight: 500;
-}
-
 #nav-by-offer-type .col-1of2 {
   max-width: 48.25%;
   min-width: 48.25%;
+}
+
+
+.nav-by-offer-type-title {
+  @extend .is-italic;
+  @extend .fs15;
+
+  font-weight: 500;
 }

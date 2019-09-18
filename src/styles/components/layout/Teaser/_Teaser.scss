@@ -33,11 +33,11 @@
 .teaser-wrapper {
   @include dotted($primary, left);
 
-  padding: 0.5rem;
-  padding-right: 0px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  padding: 0.5rem;
+  padding-right: 0;
   width: 55%;
 }
 

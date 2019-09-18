@@ -9,11 +9,8 @@ const update = (category, resetSearchStore, updateSearchQuery) => () => {
 }
 
 const NavByOfferType = ({ title, categories, resetSearchStore, updateSearchQuery }) => (
-  <div
-    className="px12"
-    id="nav-by-offer-type"
-  >
-    <h2 className="is-italic fs15">{title}</h2>
+  <div id="nav-by-offer-type">
+    <h2 className="nav-by-offer-type-title">{title}</h2>
     <div className="pc-list flex-columns wrap-2">
       {categories.map(category => (
         <button

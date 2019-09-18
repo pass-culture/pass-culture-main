@@ -6,3 +6,25 @@
 #category-description h2 {
   margin-bottom: rem(12px);
 }
+
+#category-description {
+  @extend .is-absolute;
+  @extend .is-white-text;
+  @extend .mx12;
+  @extend .text-left;
+}
+
+ #nav-results-header {
+  @extend .p12;
+  @extend .is-relative;
+}
+
+.nav-result-title {
+  @extend .is-bold;
+  @extend .mb3;
+}
+
+.nav-result-description {
+  @extend .fs13;
+  @extend .is-medium;
+}

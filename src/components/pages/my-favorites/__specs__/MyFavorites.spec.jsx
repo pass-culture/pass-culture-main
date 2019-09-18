@@ -2,11 +2,11 @@ import { shallow } from 'enzyme'
 import React from 'react'
 
 import LoaderContainer from '../../../layout/Loader/LoaderContainer'
-import MyFavoriteContainer from '../MyFavorite/MyFavoriteContainer'
 import MyFavorites from '../MyFavorites'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import NoItems from '../../../layout/NoItems/NoItems'
 import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
+import TeaserContainer from '../../../layout/Teaser/TeaserContainer'
 
 describe('src | components | pages | my-favorites | MyFavorites', () => {
   let props
@@ -67,7 +67,7 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
         // then
         const noItems = wrapper.find(NoItems)
         expect(noItems).toHaveLength(1)
-        const myFavoriteContainer = wrapper.find(MyFavoriteContainer)
+        const myFavoriteContainer = wrapper.find(TeaserContainer)
         expect(myFavoriteContainer).toHaveLength(0)
       })
     })

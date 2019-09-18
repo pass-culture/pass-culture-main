@@ -1,7 +1,7 @@
-export const isReserved = status =>
-  !(status.length > 0 && status[0].class.match('cancelled|finished|fully-booked'))
+export const isReserved = statuses =>
+  !(statuses.length > 0 && statuses[0].class.match('cancelled|finished|fully-booked'))
 
-export const reservationStatus = (
+export const reservationStatuses = (
   isActive,
   isFinished,
   isFullyBooked,
@@ -9,7 +9,7 @@ export const reservationStatus = (
   isBooked,
   humanizeRelativeDate
 ) => {
-  const status = []
+  const statuses = []
 
   if (isFinished) {
     return [
@@ -39,7 +39,7 @@ export const reservationStatus = (
   }
 
   if (hasBookings && isBooked) {
-    status.push({
+    statuses.push({
       label: 'Réservé',
       class: 'booked',
     })
@@ -47,17 +47,17 @@ export const reservationStatus = (
 
   if (humanizeRelativeDate) {
     if (humanizeRelativeDate === 'Demain') {
-      status.push({
+      statuses.push({
         label: humanizeRelativeDate,
         class: 'tomorrow',
       })
     } else {
-      status.push({
+      statuses.push({
         label: humanizeRelativeDate,
         class: 'today',
       })
     }
   }
 
-  return status
+  return statuses
 }

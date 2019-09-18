@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
 
-import ResultContainer from './Result/ResultContainer'
+import Teaser from '../../../layout/Teaser/TeaserContainer'
 import { searchResultsTitle } from '../helpers'
 import Spinner from '../../../layout/Spinner/Spinner'
 
@@ -94,7 +94,7 @@ class Results extends PureComponent {
       <div className="search-results">
         {resultTitle && (
           <h2
-            className={classnames('fs15 is-uppercase is-italic is-semi-bold mb12 pl12', {
+            className={classnames('search-results-title', {
               [`nav-result-title`]: cameFromOfferTypesPage,
             })}
             id="results-title"
@@ -114,7 +114,7 @@ class Results extends PureComponent {
             useWindow={false}
           >
             {items.map(item => (
-              <ResultContainer
+              <Teaser
                 item={item}
                 key={item.id}
               />

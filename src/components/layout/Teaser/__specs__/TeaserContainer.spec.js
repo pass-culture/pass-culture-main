@@ -1,6 +1,6 @@
-import { mapStateToProps } from '../ResultContainer'
+import { mapStateToProps } from '../TeaserContainer'
 
-describe('src | components | pages | search | Result | ResultContainer', () => {
+describe('src | components | layout | Teaser | TeaserContainer', () => {
   describe('mapStateToProps()', () => {
     it('should return default props', () => {
       // given
@@ -9,6 +9,8 @@ describe('src | components | pages | search | Result | ResultContainer', () => {
           offerId: 'o1',
           thumbUrl: 'fake/thumb/url',
         },
+        handleToggleTeaser: jest.fn(),
+        isEditMode: false,
       }
       const offer = {
         dateRange: ['2030-07-21T20:00:00Z', '2030-08-21T20:00:00Z'],
@@ -17,10 +19,8 @@ describe('src | components | pages | search | Result | ResultContainer', () => {
         isFinished: false,
         isFullyBooked: false,
         name: 'Fake offer name',
-        product: {
-          offerType: {
-            appLabel: 'Fake offer type',
-          },
+        offerType: {
+          appLabel: 'Fake offer type',
         },
         venue: {
           latitude: 48.91683,
@@ -58,11 +58,13 @@ describe('src | components | pages | search | Result | ResultContainer', () => {
       expect(props).toStrictEqual({
         date: 'du 2030-7-21 au 2030-8-21',
         detailsUrl: '//details/o1',
+        handleToggleTeaser: expect.any(Function),
         humanizeRelativeDistance: '10 km',
+        isEditMode: false,
         name: 'Fake offer name',
         offerId: 'o1',
         offerTypeLabel: 'Fake offer type',
-        status: [{ class: 'booked', label: 'Réservé' }],
+        statuses: [{ class: 'booked', label: 'Réservé' }],
         thumbUrl: 'fake/thumb/url',
       })
     })

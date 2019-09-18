@@ -1,4 +1,4 @@
-import { isReserved, reservationStatus } from '../status'
+import { isReserved, reservationStatuses } from '../statuses'
 
 describe('isReserved()', () => {
   describe('when the offer is reserved', () => {
@@ -36,7 +36,7 @@ describe('isReserved()', () => {
   })
 })
 
-describe('reservationStatus()', () => {
+describe('reservationStatuses()', () => {
   describe('when the reservation is not booked, fully booked, finished and expired', () => {
     describe('when the reservation is tomorrow', () => {
       it('should return an object with "Demain" and "tomorrow"', () => {
@@ -49,7 +49,7 @@ describe('reservationStatus()', () => {
         const humanizeRelativeDate = 'Demain'
 
         // when
-        const result = reservationStatus(
+        const result = reservationStatuses(
           isActive,
           isFinished,
           isFullyBooked,
@@ -79,7 +79,7 @@ describe('reservationStatus()', () => {
         const humanizeRelativeDate = 'Aujourd’hui'
 
         // when
-        const result = reservationStatus(
+        const result = reservationStatuses(
           isActive,
           isFinished,
           isFullyBooked,
@@ -111,7 +111,7 @@ describe('reservationStatus()', () => {
         const humanizeRelativeDate = 'Demain'
 
         // when
-        const result = reservationStatus(
+        const result = reservationStatuses(
           isActive,
           isFinished,
           isFullyBooked,
@@ -145,7 +145,7 @@ describe('reservationStatus()', () => {
         const humanizeRelativeDate = 'Aujourd’hui'
 
         // when
-        const result = reservationStatus(
+        const result = reservationStatuses(
           isActive,
           isFinished,
           isFullyBooked,
@@ -180,7 +180,7 @@ describe('reservationStatus()', () => {
       const humanizeRelativeDate = ''
 
       // when
-      const result = reservationStatus(
+      const result = reservationStatuses(
         isActive,
         isFinished,
         isFullyBooked,
@@ -211,7 +211,7 @@ describe('reservationStatus()', () => {
         const humanizeRelativeDate = ''
 
         // when
-        const result = reservationStatus(
+        const result = reservationStatuses(
           isActive,
           isFinished,
           isFullyBooked,
@@ -241,7 +241,7 @@ describe('reservationStatus()', () => {
         const humanizeRelativeDate = ''
 
         // when
-        const result = reservationStatus(
+        const result = reservationStatuses(
           isActive,
           isFinished,
           isFullyBooked,
@@ -272,7 +272,7 @@ describe('reservationStatus()', () => {
       const humanizeRelativeDate = ''
 
       // when
-      const result = reservationStatus(
+      const result = reservationStatuses(
         isActive,
         isFinished,
         isFullyBooked,
@@ -302,7 +302,7 @@ describe('reservationStatus()', () => {
       const humanizeRelativeDate = 'Demain'
 
       // when
-      const result = reservationStatus(
+      const result = reservationStatuses(
         isActive,
         isFinished,
         isFullyBooked,
@@ -332,7 +332,7 @@ describe('reservationStatus()', () => {
       const humanizeRelativeDate = 'Demain'
 
       // when
-      const result = reservationStatus(
+      const result = reservationStatuses(
         isActive,
         isFinished,
         isFullyBooked,

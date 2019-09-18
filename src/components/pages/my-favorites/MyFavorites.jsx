@@ -3,11 +3,11 @@ import React, { Component } from 'react'
 import { toast } from 'react-toastify'
 
 import MyFavoriteDetailsContainer from './MyFavoriteDetails/MyFavoriteDetailsContainer'
-import MyFavoriteContainer from './MyFavorite/MyFavoriteContainer'
 import HeaderContainer from '../../layout/Header/HeaderContainer'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import NoItems from '../../layout/NoItems/NoItems'
 import RelativeFooterContainer from '../../layout/RelativeFooter/RelativeFooterContainer'
+import Teaser from '../../layout/Teaser/TeaserContainer'
 
 const showFailModal = () => {
   toast('La suppression d’un favori a échoué, veuillez ré-essayer plus tard.')
@@ -50,7 +50,7 @@ class MyFavorites extends Component {
     }))
   }
 
-  onToggleFavorite = offerId => () => {
+  onToggle = offerId => () => {
     let { offerIds } = this.state
     let isUpdated = true
 
@@ -120,10 +120,10 @@ class MyFavorites extends Component {
           )}
           <ul>
             {myFavorites.map(myFavorite => (
-              <MyFavoriteContainer
-                favorite={myFavorite}
-                handleToggleItem={this.onToggleFavorite}
+              <Teaser
+                handleToggleTeaser={this.onToggle}
                 isEditMode={isEditMode}
+                item={myFavorite}
                 key={myFavorite.id}
               />
             ))}

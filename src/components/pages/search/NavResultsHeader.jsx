@@ -9,19 +9,15 @@ const NavResultsHeader = ({ category, description }) => {
 
   return (
     <div
-      className="p12 is-relative"
       id="nav-results-header"
       style={{
         backgroundImage: `url(${src})`,
       }}
       title={imgDescription}
     >
-      <div
-        className="text-left is-white-text is-absolute mx12"
-        id="category-description"
-      >
-        <h2 className="is-bold mb3">{category}</h2>
-        <span className="fs13 is-medium">{description}</span>
+      <div id="category-description">
+        <h2 className="nav-result-title">{category}</h2>
+        <span className="nav-result-description">{description}</span>
       </div>
     </div>
   )

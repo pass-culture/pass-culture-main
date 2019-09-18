@@ -2,7 +2,7 @@ import { shallow } from 'enzyme'
 import React from 'react'
 
 import Results from '../Results'
-import ResultContainer from '../Result/ResultContainer'
+import TeaserContainer from '../../../../layout/Teaser/TeaserContainer'
 
 describe('src | components | pages | search | Results', () => {
   let props
@@ -127,46 +127,46 @@ describe('src | components | pages | search | Results', () => {
 
     describe('with navigation by offer types mode', () => {
       describe('when there is items', () => {
-        it('resultContainer should not render title', () => {
+        it('should not render title', () => {
           // given
           props.items = items
           const wrapper = shallow(<Results {...props} />)
 
           // when
           const resultsTitle = wrapper.is('h2')
-          const SearchResultContainer = wrapper.find(ResultContainer)
-          const item = {
+          const searchTeaserContainer = wrapper.find(TeaserContainer)
+          const searchResult = {
             item: items[0],
           }
 
           // then
           expect(resultsTitle).toBe(false)
-          expect(SearchResultContainer.props()).toStrictEqual(item)
+          expect(searchTeaserContainer.props()).toStrictEqual(searchResult)
         })
       })
 
       describe('when there is no result', () => {
-        it('resultContainer should render properly the result title with no item', () => {
+        it('should render properly the result title with no item', () => {
           // given
           const wrapper = shallow(<Results {...props} />)
 
           // when
           wrapper.setState({ hasReceivedFirstSuccessData: true })
           const resultsTitle = wrapper.find('h2').props()
-          const SearchResultContainer = wrapper.find(ResultContainer)
+          const searchTeaserContainer = wrapper.find(TeaserContainer)
 
           // then
           expect(resultsTitle.children).toBe(
             'Il n’y a pas d’offres dans cette catégorie pour le moment.'
           )
-          expect(SearchResultContainer).toHaveLength(0)
+          expect(searchTeaserContainer).toHaveLength(0)
         })
       })
     })
 
     describe('without navigation by offer types mode', () => {
       describe('when there is a result with only key words', () => {
-        it('resultContainer should render properly the result title and item', () => {
+        it('should render properly the result title and item', () => {
           // given
           props.cameFromOfferTypesPage = false
           props.items = items
@@ -175,19 +175,19 @@ describe('src | components | pages | search | Results', () => {
           // when
           wrapper.setState({ hasReceivedFirstSuccessData: true })
           const resultsTitle = wrapper.find('h2').props()
-          const SearchResultContainer = wrapper.find(ResultContainer)
-          const item = {
+          const searchTeaserContainer = wrapper.find(TeaserContainer)
+          const searchResult = {
             item: items[0],
           }
 
           // then
           expect(resultsTitle.children).toBe('"fakeKeywords" : 1 résultat')
-          expect(SearchResultContainer.props()).toStrictEqual(item)
+          expect(searchTeaserContainer.props()).toStrictEqual(searchResult)
         })
       })
 
       describe('when there is no result', () => {
-        it('resultContainer should render properly the result title with no item', () => {
+        it('should render properly the result title with no item', () => {
           // given
           props.cameFromOfferTypesPage = false
           const wrapper = shallow(<Results {...props} />)
@@ -195,11 +195,11 @@ describe('src | components | pages | search | Results', () => {
           // when
           wrapper.setState({ hasReceivedFirstSuccessData: true })
           const resultsTitle = wrapper.find('h2').props()
-          const SearchResultContainer = wrapper.find(ResultContainer)
+          const searchTeaserContainer = wrapper.find(TeaserContainer)
 
           // then
           expect(resultsTitle.children).toBe('"fakeKeywords" : 0 résultat')
-          expect(SearchResultContainer).toHaveLength(0)
+          expect(searchTeaserContainer).toHaveLength(0)
         })
       })
     })
