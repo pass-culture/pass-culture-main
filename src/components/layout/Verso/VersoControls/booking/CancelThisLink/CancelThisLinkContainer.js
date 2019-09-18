@@ -92,6 +92,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
         ],
         text: 'Souhaitez-vous réellement annuler cette réservation ?',
         offerName,
+        withCloseButton: false,
       }
       dispatch(openSharePopin(options))
     },

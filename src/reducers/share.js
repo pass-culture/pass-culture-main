@@ -1,6 +1,6 @@
 const TOGGLE_SHARE_POPIN = 'TOGGLE_SHARE_POPIN'
 
-const defaultValue = { options: false, visible: false }
+const defaultValue = { options: null, visible: false }
 // TODO -> Trouver un nom plus "debuggable" que le nom `shareReducer`
 // pour avoir une idée plus claire de ce que fait ce reducer
 
@@ -21,7 +21,7 @@ export const openSharePopin = (options = null) => ({
 })
 
 export const closeSharePopin = () => ({
-  options: false,
+  options: null,
   type: TOGGLE_SHARE_POPIN,
 })
 

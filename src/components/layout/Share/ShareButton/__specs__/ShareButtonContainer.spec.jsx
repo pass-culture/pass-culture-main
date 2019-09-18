@@ -203,7 +203,7 @@ describe('src | components | share | ShareButtonContainer', () => {
             recommendations: [recommendation],
           },
           share: {
-            options: false,
+            options: null,
             visible: true,
           },
         }
@@ -213,7 +213,7 @@ describe('src | components | share | ShareButtonContainer', () => {
         const result = mapStateToProps(state, ownProps)
 
         // then
-        expect(result.options).toBe(false)
+        expect(result.options).toBeNull()
         expect(result.visible).toBe(true)
       })
     })
@@ -246,7 +246,7 @@ describe('src | components | share | ShareButtonContainer', () => {
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
-          options: false,
+          options: null,
           type: 'TOGGLE_SHARE_POPIN',
         })
       })

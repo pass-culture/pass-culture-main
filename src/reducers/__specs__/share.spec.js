@@ -8,7 +8,7 @@ describe('src | reducers | share  ', () => {
     // when
     const updatedState = share(undefined, action)
     const expected = {
-      options: false,
+      options: null,
       visible: false,
     }
 
@@ -34,7 +34,7 @@ describe('src | reducers | share  ', () => {
       // when
       const action = closeSharePopin()
       const expected = {
-        options: false,
+        options: null,
         type: 'TOGGLE_SHARE_POPIN',
       }
 
