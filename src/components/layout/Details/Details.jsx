@@ -50,10 +50,7 @@ class Details extends PureComponent {
           areDetailsVisible={isDetailsView}
           extraClassName="with-header"
         />
-        {isDetailsView && <RectoContainer
-          areDetailsVisible
-          extraClassName="with-header"
-                          />}
+        {isDetailsView && <RectoContainer areDetailsVisible />}
       </Fragment>
     )
   }
