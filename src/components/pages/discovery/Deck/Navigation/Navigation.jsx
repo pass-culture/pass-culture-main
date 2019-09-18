@@ -68,7 +68,7 @@ export class Navigation extends React.PureComponent {
     )
   }
 
-  flipCardAndTrackOfferConsultation = () => {
+  handleFlipCardAndTrackOfferConsultation = () => {
     const { flipHandler, trackConsultOffer } = this.props
     trackConsultOffer()
     flipHandler()
@@ -104,8 +104,8 @@ export class Navigation extends React.PureComponent {
                   <button
                     className="button to-recto"
                     id="deck-open-verso-button"
-                    onClick={this.flipCardAndTrackOfferConsultation}
-                    onDragLeave={this.flipCardAndTrackOfferConsultation}
+                    onClick={this.handleFlipCardAndTrackOfferConsultation}
+                    onDragLeave={this.handleFlipCardAndTrackOfferConsultation}
                     type="button"
                   >
                     <Icon
