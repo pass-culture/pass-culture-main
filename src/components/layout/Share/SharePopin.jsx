@@ -43,7 +43,7 @@ class SharePopin extends React.PureComponent {
 
   render() {
     const { visible, options } = this.props
-    const { buttons, text, title, withCloseButton = true } = options || {}
+    const { buttons, text, title, withCloseButton } = options || {}
 
     return (
       <Transition
@@ -83,7 +83,12 @@ class SharePopin extends React.PureComponent {
 }
 
 SharePopin.defaultProps = {
-  options: null,
+  options: {
+    buttons: [],
+    text: null,
+    title: null,
+    withCloseButton: true
+  },
 }
 
 SharePopin.propTypes = {
