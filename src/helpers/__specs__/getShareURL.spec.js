@@ -50,11 +50,13 @@ describe('src | helpers | getShareURL', () => {
   describe('when user is valid', () => {
     describe('when offerId is defined', () => {
       describe('when mediationId is not defined', () => {
-        it('should return null', () => {
+        it('should return url with "vide" for mediationId', () => {
           const user = { id: 'myId' }
           const offerId = 'AB'
 
-          expect(getShareURL(user, offerId)).toBeNull()
+          expect(getShareURL(user, offerId)).toBe(
+            'http://localhost/decouverte/AB/vide?shared_by=myId'
+          )
         })
       })
 
