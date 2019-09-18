@@ -257,7 +257,7 @@ class ThingType(SearchableType):
     }
     INSTRUMENT = {
         'proLabel': "Vente et location d’instruments de musique",
-        'appLabel': "Achat d’instruments de musique",
+        'appLabel': "Achat et location d’instruments de musique",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Pratiquer",

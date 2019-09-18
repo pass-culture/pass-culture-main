@@ -84,5 +84,5 @@ class Get:
             assert "Vente d'œuvres d'art" in labels_values
 
             assert "Achat d'œuvres d’art" in user_seen_labels_values
-            assert "Achat d’instruments de musique" in user_seen_labels_values
+            assert "Achat et location d’instruments de musique" in user_seen_labels_values
             assert "Livres, cartes bibliothèque ou médiathèque" in user_seen_labels_values
