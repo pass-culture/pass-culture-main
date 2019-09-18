@@ -52,6 +52,17 @@ const selectFormInitialValuesByStockAndOfferIdAndOffererId = createCachedSelecto
         : getDatetimeOneHourAfter(beginningDatetime)
     }
 
+    if (offer.isEvent && !bookingLimitDatetime) {
+      bookingLimitDatetime = lastStock
+        ? getDatetimeOneDayAfter(lastStock.bookingLimitDatetime)
+        : getDatetimeAtSpecificHoursAndMinutes(
+            moment(),
+            DEFAULT_BEGINNING_DATE_TIME_HOURS,
+            DEFAULT_BEGINNING_DATE_TIME_MINUTES,
+            timezone
+          )
+    }
+
     if (typeof price === 'undefined') {
       price = lastStock ? lastStock.price : 0
     } else if (price === 0) {
