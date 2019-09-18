@@ -481,7 +481,7 @@
       },
       {
         "id": 19,
-        "appLabel": "Achat d’instruments de musique",
+        "appLabel": "Achat et location d’instruments de musique",
         "conditionalFields": [],
         "description": "Jamais osé monter sur les planches ? Tenter d’apprendre la guitare, le piano ou la photographie ? Partir cinq jours découvrir un autre monde ? Bricoler dans un fablab, ou pourquoi pas, enregistrer votre premier titre ?",
         "offlineOnly": false,
