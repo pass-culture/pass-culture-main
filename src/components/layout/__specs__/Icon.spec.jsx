@@ -1,7 +1,7 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import Icon, { getImageUrl } from '../Icon'
+import Icon from '../Icon'
 
 describe('src | components | layout | Icon ', () => {
   let props
@@ -21,7 +21,7 @@ describe('src | components | layout | Icon ', () => {
   })
 
   describe('render', () => {
-    it('should render an image with correct props', () => {
+    it('should render an image with correct props when svg given', () => {
       // when
       const wrapper = shallow(<Icon {...props} />)
 
@@ -31,30 +31,18 @@ describe('src | components | layout | Icon ', () => {
       expect(image.props().alt).toStrictEqual('picto-svg')
       expect(image.props().src).toMatch(/(icons\/picto-svg.svg)/)
     })
-  })
-})
 
-describe('src | components | layout | Icon | getImageUrl', () => {
-  it('url should contains right extension when svg given', () => {
-    // given
-    const svg = 'icon-profil'
+    it('should render an image with correct props when png given', () => {
+      // when
+      props.png = 'icon-png'
+      props.svg = null
+      const wrapper = shallow(<Icon {...props} />)
 
-    // when
-    const iconUrl = getImageUrl(svg)
-
-    // then
-    expect(iconUrl).toMatch(/(icons\/icon-profil.svg)/)
-  })
-
-  it('url should contains right extension when png given', () => {
-    // given
-    const png = 'icon-profil'
-    const svg = null
-
-    // when
-    const iconUrl = getImageUrl(svg, png)
-
-    // then
-    expect(iconUrl).toMatch(/(icons\/icon-profil.png)/)
+      // then
+      const image = wrapper.find('img')
+      expect(image).toHaveLength(1)
+      expect(image.props().alt).toStrictEqual('icon-png')
+      expect(image.props().src).toMatch(/(icons\/icon-png.png)/)
+    })
   })
 })

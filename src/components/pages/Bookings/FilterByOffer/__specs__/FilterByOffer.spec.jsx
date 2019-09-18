@@ -81,7 +81,7 @@ describe('src | components | pages | FilterByOffer | FilterByOffer', () => {
 
         // then
         const mainListTitle = wrapper.find('.main-list-title').text()
-        expect(mainListTitle).toBe('Offre Numérique')
+        expect(mainListTitle).toBe('Offre numérique')
       })
 
       it("should display `Télécharger les réservations pour l'offre :` when isFilteredByDigitalVenues is false", () => {

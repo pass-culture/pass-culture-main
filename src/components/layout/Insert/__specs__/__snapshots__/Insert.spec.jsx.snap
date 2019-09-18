@@ -3,7 +3,9 @@
 exports[`src | components | layout | Insert should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <Insert />,
+  Symbol(enzyme.__unrendered__): <Insert>
+    Some fake text
+  </Insert>,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -23,7 +25,9 @@ ShallowWrapper {
           png="picto-info-solid-black"
           svg={null}
         />,
-        <span />,
+        <span>
+          Some fake text
+        </span>,
       ],
       "className": "insert",
     },
@@ -46,10 +50,10 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": undefined,
+          "children": "Some fake text",
         },
         "ref": null,
-        "rendered": null,
+        "rendered": "Some fake text",
         "type": "span",
       },
     ],
@@ -66,7 +70,9 @@ ShallowWrapper {
             png="picto-info-solid-black"
             svg={null}
           />,
-          <span />,
+          <span>
+            Some fake text
+          </span>,
         ],
         "className": "insert",
       },
@@ -89,10 +95,10 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": undefined,
+            "children": "Some fake text",
           },
           "ref": null,
-          "rendered": null,
+          "rendered": "Some fake text",
           "type": "span",
         },
       ],
