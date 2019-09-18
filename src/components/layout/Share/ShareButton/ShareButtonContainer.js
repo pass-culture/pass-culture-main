@@ -1,13 +1,11 @@
 import { connect } from 'react-redux'
-
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 import { selectCurrentUser } from 'with-react-redux-login'
-import track from 'react-tracking'
 
+import withTracking from '../../../hocs/withTracking'
 import ShareButton from './ShareButton'
 import { getShareURL } from '../../../../helpers'
-import { trackEventWrapper } from '../../../../helpers/matomo/trackEventWrapper'
 import selectMediationByRouterMatch from '../../../../selectors/selectMediationByRouterMatch'
 import selectOfferByRouterMatch from '../../../../selectors/selectOfferByRouterMatch'
 import { openSharePopin, closeSharePopin } from '../../../../reducers/share'
@@ -56,7 +54,7 @@ export const mergeProps = (stateProps, dispatchProps) => {
 
 export default compose(
   withRouter,
-  track({ page: 'Offer' }, { dispatch: trackEventWrapper }),
+  withTracking('Offer'),
   connect(
     mapStateToProps,
     mapDispatchToProps,

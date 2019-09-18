@@ -1,11 +1,11 @@
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
-import track from 'react-tracking'
 
+import withTracking from '../../../../../hocs/withTracking'
 import BookingItem from './BookingItem'
+
 import getIsFinished from '../../../../../../helpers/getIsFinished'
-import { trackEventWrapper } from '../../../../../../helpers/matomo/trackEventWrapper'
 import selectMediationById from '../../../../../../selectors/selectMediationById'
 import selectStockById from '../../../../../../selectors/selectStockById'
 import selectOfferById from '../../../../../../selectors/selectOfferById'
@@ -91,7 +91,7 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 
 export default compose(
   withRouter,
-  track({ page: 'Offer' }, { dispatch: trackEventWrapper }),
+  withTracking('Offer'),
   connect(
     mapStateToProps,
     mapDispatchToProps,

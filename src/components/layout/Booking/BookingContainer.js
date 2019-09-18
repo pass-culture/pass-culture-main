@@ -1,16 +1,15 @@
 import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
-import track from 'react-tracking'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
+import withTracking from '../../hocs/withTracking'
 import Booking from './Booking'
 import selectBookables from '../../../selectors/selectBookables'
 import selectBookingByRouterMatch from '../../../selectors/selectBookingByRouterMatch'
 import selectOfferByRouterMatch from '../../../selectors/selectOfferByRouterMatch'
 import selectRecommendationByRouterMatch from '../../../selectors/selectRecommendationByRouterMatch'
 import { bookingNormalizer } from '../../../utils/normalizers'
-import { trackEventWrapper } from '../../../helpers/matomo/trackEventWrapper'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
@@ -49,7 +48,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => ({
 
 export default compose(
   withRouter,
-  track({ page: 'Offer' }, { dispatch: trackEventWrapper }),
+  withTracking('Offer'),
   connect(
     mapStateToProps,
     mapDispatchToProps

@@ -1,13 +1,12 @@
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
-import track from 'react-tracking'
 
+import withTracking from '../../../../hocs/withTracking'
 import Navigation from './Navigation'
+
 import { getHeaderColor } from '../../../../../utils/colors'
 import getPriceRangeFromStocks from '../../../../../helpers/getPriceRangeFromStocks'
-import { trackEventWrapper } from '../../../../../helpers/matomo/trackEventWrapper'
-
 import selectCurrentRecommendation from '../../selectors/selectCurrentRecommendation'
 import selectDistanceByOfferId from '../../../../../selectors/selectDistanceByOfferId'
 import selectOfferById from '../../../../../selectors/selectOfferById'
@@ -23,7 +22,8 @@ export const mapStateToProps = (state, ownProps) => {
 
   const headerColor = getHeaderColor(firstThumbDominantColor)
   const backgroundGradient = `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${headerColor} 30%,${headerColor} 100%)`
-  const distanceClue = (venue && isVirtual) ? 'offre numérique' : selectDistanceByOfferId(state, offerId)
+  const distanceClue =
+    venue && isVirtual ? 'offre numérique' : selectDistanceByOfferId(state, offerId)
   const priceRange = getPriceRangeFromStocks(stocks)
   const separator = offer ? '\u00B7' : ' '
   return {
@@ -55,7 +55,7 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 
 export default compose(
   withRouter,
-  track({ page: 'Offer' }, { dispatch: trackEventWrapper }),
+  withTracking('Offer'),
   connect(
     mapStateToProps,
     mapDispatchToProps,

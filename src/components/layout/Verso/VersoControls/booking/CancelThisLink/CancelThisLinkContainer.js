@@ -2,14 +2,12 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
-import track from 'react-tracking'
 
+import withTracking from '../../../../../hocs/withTracking'
 import CancelThisLink from './CancelThisLink'
 import PopinButton from './PopinButton'
 
 import { bookingNormalizer } from '../../../../../../utils/normalizers'
-import { trackEventWrapper } from '../../../../../../helpers/matomo/trackEventWrapper'
-
 import { closeSharePopin, openSharePopin } from '../../../../../../reducers/share'
 import selectBookingByRouterMatch from '../../../../../../selectors/selectBookingByRouterMatch'
 import selectOfferByRouterMatch from '../../../../../../selectors/selectOfferByRouterMatch'
@@ -102,7 +100,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
 
 export default compose(
   withRouter,
-  track({ page: 'Offer' }, { dispatch: trackEventWrapper }),
+  withTracking('Offer'),
   connect(
     mapStateToProps,
     mapDispatchToProps

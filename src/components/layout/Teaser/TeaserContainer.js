@@ -1,13 +1,13 @@
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
-import track from 'react-tracking'
 
+import withTracking from '../../hocs/withTracking'
 import Teaser from './Teaser'
+
 import { isReserved, reservationStatuses } from './utils/statuses'
 import { formatRecommendationDates } from '../../../utils/date/date'
 import { getHumanizeRelativeDistance } from '../../../utils/geolocation'
-import { trackEventWrapper } from '../../../helpers/matomo/trackEventWrapper'
 import selectFirstMatchingBookingByOfferId from '../../../selectors/selectFirstMatchingBookingByOfferId'
 import selectOfferById from '../../../selectors/selectOfferById'
 import getHumanizeRelativeDate from '../../../utils/date/getHumanizeRelativeDate'
@@ -71,7 +71,7 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 
 export default compose(
   withRouter,
-  track({ page: 'Offer' }, { dispatch: trackEventWrapper }),
+  withTracking('Offer'),
   connect(
     mapStateToProps,
     {},
