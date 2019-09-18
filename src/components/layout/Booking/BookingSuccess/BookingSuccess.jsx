@@ -55,7 +55,7 @@ const BookingSuccess = ({ bookedPayload, isEvent }) => {
             rel="noopener noreferrer"
             target="_blank"
           >
-            <b>{'Accéder à l’offre en ligne'}</b>
+            <b>{'Accéder à l’offre numérique'}</b>
           </a>
         )}
       </p>

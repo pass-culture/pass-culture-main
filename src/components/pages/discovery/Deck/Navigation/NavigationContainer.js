@@ -25,7 +25,7 @@ const mapStateToProps = (state, ownProps) => {
   const distance = selectDistanceByOfferId(state, offerId)
   let distanceClue = ' '
   if (venue) {
-    distanceClue = isVirtual ? 'offre en ligne' : distance
+    distanceClue = isVirtual ? 'offre numérique' : distance
   }
   const priceRange = getPriceRangeFromStocks(stocks)
 
