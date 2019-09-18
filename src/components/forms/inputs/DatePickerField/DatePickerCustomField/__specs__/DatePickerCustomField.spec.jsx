@@ -1,8 +1,9 @@
-import DatePickerCustomField from '../DatePickerCustomField'
 import React from 'react'
 import { shallow } from 'enzyme'
 
-describe('src | components | forms | inputs | DatePickerField | DatePickerCustomField', () => {
+import DatePickerCustomField from '../DatePickerCustomField'
+
+describe('src | components | forms | inputs | DatePickerField | DatePickerCustomField | DatePickerCustomField', () => {
   let props
 
   beforeEach(() => {
@@ -11,7 +12,7 @@ describe('src | components | forms | inputs | DatePickerField | DatePickerCustom
     }
   })
 
-  it('should match snapshot', () => {
+  it('should match the snapshot', () => {
     // when
     const wrapper = shallow(<DatePickerCustomField {...props} />)
 
@@ -47,7 +48,7 @@ describe('src | components | forms | inputs | DatePickerField | DatePickerCustom
       const input = wrapper.find('input')
       expect(input).toHaveLength(1)
       expect(input.props()).toStrictEqual({
-        className: 'pc-final-form-datepicker-input',
+        className: 'form-datepicker-input',
         readOnly: true,
         value: 'fake value',
       })

@@ -1,12 +1,6 @@
-.is-invisible {
-  // legacy to BulmaCSS
-  visibility: hidden !important;
-}
-
 .is-hidden {
   @extend .no-margin;
   @extend .no-padding;
-  @extend .is-invisible;
 
   font-size: 0 !important;
   display: none !important;
@@ -15,4 +9,5 @@
   height: 0 !important;
   max-height: 0 !important;
   line-height: 0 !important;
+  visibility: hidden !important;
 }

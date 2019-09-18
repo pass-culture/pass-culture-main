@@ -3,34 +3,34 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 
-const FormFooter = ({ canSubmit, isLoading }) => (
+const FormFooter = ({ isLoading, isSubmit }) => (
   <footer>
-    <button
-      className={classnames('button is-primary is-inverted', {
-        'is-loading': isLoading,
-      })}
-      disabled={!canSubmit}
-      type="submit"
-    >
-      {'Créer'}
-    </button>
     <NavLink
-      className="button is-secondary"
+      className="signup-footer-link"
       to="/connexion"
     >
       {'J’ai déjà un compte'}
     </NavLink>
+    <button
+      className={classnames('signup-footer-button', {
+        'is-loading': isLoading,
+      })}
+      disabled={!isSubmit}
+      type="submit"
+    >
+      {'Créer'}
+    </button>
   </footer>
 )
 
 FormFooter.defaultProps = {
-  canSubmit: false,
   isLoading: false,
+  isSubmit: false,
 }
 
 FormFooter.propTypes = {
-  canSubmit: PropTypes.bool,
   isLoading: PropTypes.bool,
+  isSubmit: PropTypes.bool,
 }
 
 export default FormFooter

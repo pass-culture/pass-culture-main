@@ -6,10 +6,7 @@ import InvalidLink from './InvalidLink'
 import PasswordFormContainer from './PasswordForm/PasswordFormContainer'
 
 const Activation = () => (
-  <div
-    className="is-full-layout is-relative pc-gradient is-white-text flex-rows"
-    id="activation-page"
-  >
+  <main className="logout-form-main">
     <Switch>
       <Route
         component={Error}
@@ -27,7 +24,7 @@ const Activation = () => (
       />
       <Redirect to="/activation/error" />
     </Switch>
-  </div>
+  </main>
 )
 
 export default Activation

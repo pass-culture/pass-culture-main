@@ -14,7 +14,7 @@
 
   a,
   button {
-    font-size: $size-medium;
+    font-size: 1.2rem;
   }
 
   .button-wrapper {
@@ -26,7 +26,6 @@
     right: 0;
 
     button {
-      border: 0;
       border-radius: 50%;
       height: 100%;
       width: $footer-height;

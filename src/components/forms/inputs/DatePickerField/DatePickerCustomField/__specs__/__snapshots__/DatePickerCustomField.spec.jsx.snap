@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | forms | inputs | DatePickerField | DatePickerCustomField should match snapshot 1`] = `
+exports[`src | components | forms | inputs | DatePickerField | DatePickerCustomField | DatePickerCustomField should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <DatePickerCustomField
@@ -24,7 +24,7 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <input
-          className="pc-final-form-datepicker-input"
+          className="form-datepicker-input"
           readOnly={true}
           value="fake value"
         />,
@@ -48,7 +48,7 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "className": "pc-final-form-datepicker-input",
+          "className": "form-datepicker-input",
           "readOnly": true,
           "value": "fake value",
         },
@@ -97,7 +97,7 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <input
-            className="pc-final-form-datepicker-input"
+            className="form-datepicker-input"
             readOnly={true}
             value="fake value"
           />,
@@ -121,7 +121,7 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "className": "pc-final-form-datepicker-input",
+            "className": "form-datepicker-input",
             "readOnly": true,
             "value": "fake value",
           },

@@ -10,16 +10,17 @@ class CopyToClipboardButton extends React.PureComponent {
 
   render() {
     const { className, value } = this.props
+
     return (
       <CopyToClipboard
         onCopy={this.handleToggleState}
         text={value}
       >
         <button
-          className={`no-border no-background no-outline is-block ${className}`}
+          className={`no-background ${className}`}
           type="button"
         >
-          <span>{'Copier le lien'}</span>
+          {'Copier le lien'}
         </button>
       </CopyToClipboard>
     )

@@ -7,7 +7,6 @@
 
 .react-datepicker__header {
   @extend .dotted-bottom-primary;
-  // @extend .no-margin;
   @extend .fs22;
   @extend .no-padding;
 
@@ -59,7 +58,7 @@
 
   .react-datepicker__day--keyboard-selected {
     background-color: $white;
-    color: $dark;
+    color: $grey-darker;
 
     &:hover {
       background-color: $grey-light;

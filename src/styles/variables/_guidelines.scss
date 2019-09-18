@@ -5,63 +5,10 @@ $desktop: 960px + (2 * $gap); // 1088px
 $widescreen: 1152px + (2 * $gap); // 1280px
 $fullhd: 1344px + (2 * $gap); // 1472px
 
-// Colors
-$text: $black;
-$link: $text;
-$title-color: inherit;
-$subtitle-color: inherit;
-$text-strong: inherit;
-$input-color: $text;
-
 // Typography
-$family-monospace: monospace !default;
-$family-sans-serif: 'Barlow', 'Helvetica Neue', Arial, sans-serif;
-
-$weight-normal: 400;
-$weight-semi-bold: 500;
-$weight-bold: 700;
-
-$font-size: 16px; // Single px-value. Use `rem` or `em` every elsewhere.
-
-$size-large: 2rem;
-$size-medium: 1.2rem;
-$size-normal: 1rem;
-$size-small: 0.75rem;
-
-// Sizes
-$size-1: 2rem;
-$size-2: 1.5rem;
-$size-3: 1.25rem;
-$size-4: 1.2rem;
-$size-5: 1.1rem;
-$size-6: 1rem;
-$size-7: 0.75rem;
-
-// Heights
-$body-line-height: initial;
-$subtitle-line-height: initial;
-
-// Forms
-$control-border-width: 2px;
-$input-border-color: $primary;
-$input-focus-border-color: $primary;
-$input-hover-border-color: $primary;
-$input-disabled-border-color: $primary;
-$input-focus-box-shadow-size: 0;
-$input-shadow: none;
-
-// Buttons
-$button-padding-vertical: 0.1em;
-$button-padding-horizontal: 0.75em;
-
-$radius: 2rem;
-$radius-small: 4px;
-$radius-medium: 1rem;
-
-$button-disabled-opacity: 0.3;
+$family-sans-serif: Barlow, 'Helvetica Neue', Arial, sans-serif;
 
 // Spacing
-$section-padding: 0 0 1rem 0;
 $page-padding: 0.75rem;
 $footer-height-padding: 1rem;
 
@@ -74,7 +21,7 @@ $box-shadow-hover: 0 0 10px rgba(0, 0, 0, 0.4);
 
 // Mixins
 $rem-baseline: 16px !default;
-$rem-fallback: true !default; // always force callback
+$rem-fallback: true !default;
 $rem-px-only: false !default;
 
 // Helpers

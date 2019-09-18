@@ -61,6 +61,7 @@ class PasswordForm extends PureComponent {
       this.handleActivationPasswordRequestFail,
       this.savePasswordRequestSuccess
     )
+
     return promise
   }
 
@@ -69,24 +70,20 @@ class PasswordForm extends PureComponent {
     const formValues = formProps.values || {}
     const canSubmit = !isLoading && canSubmitForm(formProps)
     const formErrors = !formProps.pristine && formProps.error
+
     return (
       <form
         autoComplete="off"
-        className="pc-final-form is-full-layout flex-rows"
+        className="logout-form-container"
         disabled={isLoading}
         noValidate
         onSubmit={formProps.handleSubmit}
       >
-        <main
-          className="pc-main padded-2x is-white-text"
-          role="main"
-        >
-          <FormInputs
-            formErrors={formErrors}
-            formValues={formValues}
-            isLoading={isLoading}
-          />
-        </main>
+        <FormInputs
+          formErrors={formErrors}
+          formValues={formValues}
+          isLoading={isLoading}
+        />
         <FormFooter
           submit={{
             className: 'is-bold is-white-text',
@@ -110,16 +107,11 @@ class PasswordForm extends PureComponent {
     }
 
     return (
-      <div
-        className="pc-scroll-container flex-rows"
-        id="activation-password-page"
-      >
-        <Form
-          initialValues={initialValues}
-          onSubmit={this.handleOnFormSubmit}
-          render={this.renderForm}
-        />
-      </div>
+      <Form
+        initialValues={initialValues}
+        onSubmit={this.handleOnFormSubmit}
+        render={this.renderForm}
+      />
     )
   }
 }

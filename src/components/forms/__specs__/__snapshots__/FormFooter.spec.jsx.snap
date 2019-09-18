@@ -30,7 +30,7 @@ ShallowWrapper {
         false,
         false,
       ],
-      "className": "pc-final-form-footer dotted-top-2x-white py7 flex-0 flex-columns text-center items-center fs20 fake className",
+      "className": "logout-form-footer fake className",
     },
     "ref": null,
     "rendered": Array [
@@ -55,7 +55,7 @@ ShallowWrapper {
           false,
           false,
         ],
-        "className": "pc-final-form-footer dotted-top-2x-white py7 flex-0 flex-columns text-center items-center fs20 fake className",
+        "className": "logout-form-footer fake className",
       },
       "ref": null,
       "rendered": Array [
@@ -144,7 +144,7 @@ ShallowWrapper {
         </Link>,
         false,
       ],
-      "className": "pc-final-form-footer dotted-top-2x-white py7 flex-0 flex-columns text-center items-center fs20 fake className",
+      "className": "logout-form-footer fake className",
     },
     "ref": null,
     "rendered": Array [
@@ -192,7 +192,7 @@ ShallowWrapper {
           </Link>,
           false,
         ],
-        "className": "pc-final-form-footer dotted-top-2x-white py7 flex-0 flex-columns text-center items-center fs20 fake className",
+        "className": "logout-form-footer fake className",
       },
       "ref": null,
       "rendered": Array [
@@ -314,7 +314,7 @@ ShallowWrapper {
         </Link>,
         false,
       ],
-      "className": "pc-final-form-footer dotted-top-2x-white py7 flex-0 flex-columns text-center items-center fs20 fake className",
+      "className": "logout-form-footer fake className",
     },
     "ref": null,
     "rendered": Array [
@@ -397,7 +397,7 @@ ShallowWrapper {
           </Link>,
           false,
         ],
-        "className": "pc-final-form-footer dotted-top-2x-white py7 flex-0 flex-columns text-center items-center fs20 fake className",
+        "className": "logout-form-footer fake className",
       },
       "ref": null,
       "rendered": Array [
@@ -542,7 +542,7 @@ ShallowWrapper {
           fake submit label
         </button>,
       ],
-      "className": "pc-final-form-footer dotted-top-2x-white py7 flex-0 flex-columns text-center items-center fs20 fake className",
+      "className": "logout-form-footer fake className",
     },
     "ref": null,
     "rendered": Array [
@@ -623,7 +623,7 @@ ShallowWrapper {
             fake submit label
           </button>,
         ],
-        "className": "pc-final-form-footer dotted-top-2x-white py7 flex-0 flex-columns text-center items-center fs20 fake className",
+        "className": "logout-form-footer fake className",
       },
       "ref": null,
       "rendered": Array [

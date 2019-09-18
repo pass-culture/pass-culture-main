@@ -7,7 +7,7 @@
 @import 'signin/index.scss';
 @import 'signup/index.scss';
 
-#beta-page {
+.beta-page {
   color: $white;
 
   .pc-main {
@@ -29,8 +29,12 @@
   }
 
   .pc-footer .pc-icon {
-    @include font-size-to-rem(38px);
+    @include rem(38px);
   }
+}
+
+.icon-legacy-next-long {
+  font-size: rem(38px);
 }
 
 #profile-page {
@@ -40,7 +44,6 @@
   }
 
   #mes-informations a[disabled] {
-    // reset default disabled rule
     opacity: 1;
   }
 
@@ -51,4 +54,8 @@
   #mes-informations .pc-list .item:last-child {
     @extend .no-dotted-border;
   }
+}
+
+.react-embed-typeform-container iframe {
+  @extend .is-full-layout;
 }

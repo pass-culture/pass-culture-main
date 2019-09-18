@@ -1,9 +1,4 @@
 .jauges {
-  .text-containers {
-    // width: 200px;
-    // min-width: 200px;
-  }
-
   .text.overall {
     font-size: 1.5rem;
     color: $primary;
@@ -20,7 +15,7 @@
   .jauges-container {
     @extend .is-relative;
 
-    background-color: #F4F4F6;
+    background-color: $white-bis;
   }
 
   .jauge {

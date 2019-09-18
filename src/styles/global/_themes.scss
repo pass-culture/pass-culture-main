@@ -44,7 +44,6 @@
 
 .pc-theme-white {
   color: $primary;
-  background-color: $white;
 
   [class*='border-'] {
     border-color: $primary;
@@ -68,15 +67,5 @@
 
   [class*='border-'] {
     border-color: $white;
-  }
-}
-
-.pc-gradient {
-  .pc-final-form-errors {
-    color: $white;
-  }
-
-  .pc-final-form-asterisk {
-    color: $white;
   }
 }

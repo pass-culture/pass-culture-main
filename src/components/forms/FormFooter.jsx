@@ -50,9 +50,7 @@ export class FormFooter extends Component {
     const hideSeparator = !(useCancel || useExternalLink) || !submit
 
     return (
-      <footer
-        className={`pc-final-form-footer dotted-top-2x-white py7 flex-0 flex-columns text-center items-center fs20 ${className}`}
-      >
+      <footer className={`logout-form-footer ${className}`}>
         {useCancel && this.renderLink(cancel)}
         {useExternalLink && this.renderExternalLink(externalLink)}
         {!hideSeparator && <hr className="dotted-left-2x-white flex-0" />}

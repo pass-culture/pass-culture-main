@@ -1,7 +1,9 @@
-// doivent etre remplaces par une regle simple s'appliquant a toutes les pages
-// Ex: .page main {} || .page footer {}
 .is-block {
   display: block;
+}
+
+.is-inline-block {
+  display: inline-block !important;
 }
 
 .is-absolute {

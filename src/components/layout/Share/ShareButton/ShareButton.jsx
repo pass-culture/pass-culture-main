@@ -32,7 +32,7 @@ class ShareButton extends PureComponent {
 
   getCloseButton = onClose => (
     <button
-      className="no-border no-background no-outline is-block py12 is-bold fs14"
+      className="no-background py12 is-bold fs14"
       key="closeButton"
       onClick={onClose}
       type="button"
@@ -87,7 +87,7 @@ class ShareButton extends PureComponent {
   render() {
     return (
       <button
-        className="no-border no-background"
+        className="no-background"
         onClick={this.handleOnClickShare}
         type="button"
       >

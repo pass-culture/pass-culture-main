@@ -23,12 +23,10 @@ ShallowWrapper {
     "nodeType": "class",
     "props": Object {
       "children": <button
-        className="no-border no-background no-outline is-block "
+        className="no-background "
         type="button"
       >
-        <span>
-          Copier le lien
-        </span>
+        Copier le lien
       </button>,
       "onCopy": [Function],
       "options": undefined,
@@ -40,24 +38,12 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "host",
       "props": Object {
-        "children": <span>
-          Copier le lien
-        </span>,
-        "className": "no-border no-background no-outline is-block ",
+        "children": "Copier le lien",
+        "className": "no-background ",
         "type": "button",
       },
       "ref": null,
-      "rendered": Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": "Copier le lien",
-        },
-        "ref": null,
-        "rendered": "Copier le lien",
-        "type": "span",
-      },
+      "rendered": "Copier le lien",
       "type": "button",
     },
     "type": [Function],
@@ -69,12 +55,10 @@ ShallowWrapper {
       "nodeType": "class",
       "props": Object {
         "children": <button
-          className="no-border no-background no-outline is-block "
+          className="no-background "
           type="button"
         >
-          <span>
-            Copier le lien
-          </span>
+          Copier le lien
         </button>,
         "onCopy": [Function],
         "options": undefined,
@@ -86,24 +70,12 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": <span>
-            Copier le lien
-          </span>,
-          "className": "no-border no-background no-outline is-block ",
+          "children": "Copier le lien",
+          "className": "no-background ",
           "type": "button",
         },
         "ref": null,
-        "rendered": Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": "Copier le lien",
-          },
-          "ref": null,
-          "rendered": "Copier le lien",
-          "type": "span",
-        },
+        "rendered": "Copier le lien",
         "type": "button",
       },
       "type": [Function],

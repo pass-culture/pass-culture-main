@@ -20,8 +20,7 @@ class MesInformations extends React.PureComponent {
       >
         <NavLink
           className="pc-text-button text-left no-decoration flex-columns items-center pt20 pb22"
-          disabled={disabled}
-          to={`/profil/${routeName}`}
+          to={disabled ? '#' : `/profil/${routeName}`}
         >
           <span className="is-block flex-1">
             <span className="pc-label pb3 is-block is-grey-text is-uppercase fs13 is-medium">
@@ -55,8 +54,8 @@ class MesInformations extends React.PureComponent {
         className="pb40 pt20"
         id="mes-informations"
       >
-        <h3 className="dotted-bottom-primary is-primary-text is-uppercase pb6 px12 fs15">
-          <span className="is-italic">{'Mes Informations'}</span>
+        <h3 className="dotted-bottom-primary is-primary-text is-uppercase pb6 px12 fs15 is-italic fs15 is-normal">
+          {'Mes Informations'}
         </h3>
         <div className="px12 pc-list">{fields.map(this.renderInformation)}</div>
       </div>

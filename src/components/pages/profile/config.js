@@ -1,6 +1,6 @@
 import { getDepartementByCode } from '../../../helpers'
 import IdentifiantForm from './forms/fields/UserIdentifierField'
-import PasswordForm from './forms/fields/UserPasswordField'
+import UserPasswordField from './forms/fields/UserPasswordField'
 
 export const config = [
   // TODO: passer par une lib type https://github.com/yahoo/react-intl
@@ -40,7 +40,7 @@ export const config = [
     title: 'Votre adresse e-mail',
   },
   {
-    component: PasswordForm,
+    component: UserPasswordField,
     key: 'password',
     label: 'Mot de passe',
     mainPlaceholder: 'Changer mon mot de passe',

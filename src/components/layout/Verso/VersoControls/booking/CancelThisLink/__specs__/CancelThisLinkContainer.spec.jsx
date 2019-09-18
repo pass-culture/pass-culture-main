@@ -80,22 +80,22 @@ describe('src | components | layout | Verso | VersoControls | booking | CancelTh
         options: {
           buttons: [
             <button
-              className="no-border no-background no-outline is-block py12 is-bold fs14"
+              className="no-background py12 is-bold fs14"
               id="popin-cancel-booking-yes"
               key="Oui"
               onClick={anyFunction}
               type="button"
             >
-              <span>{'Oui'}</span>
+              {'Oui'}
             </button>,
             <button
-              className="no-border no-background no-outline is-block py12 is-bold fs14"
+              className="no-background py12 is-bold fs14"
               id="popin-cancel-booking-no"
               key="Non"
               onClick={anyFunction}
               type="button"
             >
-              <span>{'Non'}</span>
+              {'Non'}
             </button>,
           ],
           offerName,

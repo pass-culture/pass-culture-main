@@ -1,9 +1,11 @@
-import React from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { Form } from 'react-final-form'
+import { Link } from 'react-router-dom'
 
-import FormInputs from './FormInputs'
-import FormHeader from './FormHeader'
+import { validateRequiredField } from '../../forms/validators'
+import EmailField from '../../forms/inputs/EmailField'
+import PasswordField from '../../forms/inputs/PasswordField'
 import canSubmitForm from './canSubmitForm'
 
 import { FormFooter } from '../../forms'
@@ -23,14 +25,13 @@ const signUpLinkOption = {
   url: 'https://www.demarches-simplifiees.fr/commencer/inscription-pass-culture',
 }
 
-class Signin extends React.PureComponent {
+class Signin extends PureComponent {
   constructor(props) {
     super(props)
     this.state = { isLoading: false }
   }
 
   handleRequestFail = formResolver => (state, action) => {
-    // on retourne les erreurs API au formulaire
     const nextstate = { isLoading: false }
     const {
       payload: { errors },
@@ -63,17 +64,42 @@ class Signin extends React.PureComponent {
     const { isLoading } = this.state
     const canSubmit = !isLoading && canSubmitForm(formProps)
     const { handleSubmit } = formProps
+
     return (
       <form
         autoComplete="off"
-        className="pc-final-form flex-rows is-full-layout"
+        className="logout-form-container"
         disabled={isLoading}
         noValidate
         onSubmit={handleSubmit}
       >
-        <div className="flex-1 flex-rows flex-center is-white-text padded-2x overflow-y">
-          <FormHeader />
-          <FormInputs />
+        <div>
+          <div className="logout-form-header">
+            <div className="logout-form-header-sup">{'Bonjour !'}</div>
+            <div className="logout-form-title">{'Identifiez-vous'}</div>
+            <div className="logout-form-title">{'pour accéder aux offres.'}</div>
+            <div className="logout-form-mandatory-label">{'* Champs obligatoires'}</div>
+          </div>
+          <EmailField
+            id="user-identifier"
+            label="Adresse e-mail"
+            name="identifier"
+            placeholder="Identifiant (e-mail)"
+            required
+          />
+          <PasswordField
+            id="user-password"
+            label="Mot de passe"
+            name="password"
+            placeholder="Mot de passe"
+            required={validateRequiredField}
+          />
+          <Link
+            className="logout-form-link"
+            to="/mot-de-passe-perdu"
+          >
+            {'Mot de passe oublié ?'}
+          </Link>
         </div>
         <FormFooter
           externalLink={signUpLinkOption}
@@ -85,15 +111,12 @@ class Signin extends React.PureComponent {
 
   render() {
     return (
-      <div
-        className="page pc-gradient is-relative"
-        id="sign-in-page"
-      >
+      <main className="logout-form-main">
         <Form
           onSubmit={this.handleOnFormSubmit}
           render={this.renderForm}
         />
-      </div>
+      </main>
     )
   }
 }

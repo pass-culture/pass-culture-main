@@ -4,8 +4,10 @@ import { Form } from 'react-final-form'
 import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
 import { requestData } from 'redux-saga-data'
 
-import FormHeader from './FormHeader'
-import FormFields from './FormFields'
+import CheckBoxField from '../../forms/inputs/CheckBoxField'
+import EmailField from '../../forms/inputs/EmailField'
+import InputField from '../../forms/inputs/InputField'
+import PasswordField from '../../forms/inputs/PasswordField'
 import FormFooter from './FormFooter'
 
 class Signup extends PureComponent {
@@ -53,30 +55,75 @@ class Signup extends PureComponent {
         })
       )
     })
+
     return formSubmitPromise
   }
 
-  SuccessRedirect = () => '/decouverte'
+  successRedirect = () => '/decouverte'
 
   renderForm = formProps => {
     const { isFormLoading } = this.state
     const { handleSubmit } = formProps
-    const canSubmit = getCanSubmit(formProps)
+
     return (
       <form
         autoComplete="off"
-        className="pc-final-form flex-rows is-full-layout"
+        className="logout-form-container"
         disabled={isFormLoading}
         noValidate
         onSubmit={handleSubmit}
       >
-        <div className="flex-1 flex-rows flex-center padded-2x overflow-y">
-          <FormHeader />
-          <FormFields />
+        <div>
+          <div className="logout-form-header">
+            <div className="logout-form-title">
+              {'Une minute pour créer un compte, et puis c’est tout !'}
+            </div>
+            <div className="logout-form-mandatory-label">
+              <span className="asterisk">{'*'}</span>
+              &nbsp;{'Champs obligatoires'}
+            </div>
+          </div>
+          <InputField
+            autoComplete="name"
+            label="Identifiant"
+            name="publicName"
+            placeholder="Mon nom ou pseudo"
+            required
+            sublabel="...que verront les autres utilisateurs : "
+          />
+          <EmailField
+            autoComplete="email"
+            label="Adresse e-mail"
+            name="email"
+            placeholder="nom@exemple.fr"
+            required
+            sublabel="...pour se connecter et récupérer son mot de passe en cas d’oubli : "
+          />
+          <PasswordField
+            autoComplete="new-password"
+            label="Mot de passe"
+            name="password"
+            placeholder="Mon mot de passe"
+            required
+            sublabel="...pour se connecter : "
+          />
+          <CheckBoxField name="contact_ok">
+            <span>
+              {'J’accepte d’être contacté par e-mail pour donner mon avis sur le '}
+              <a
+                href="http://passculture.beta.gouv.fr"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                {'pass Culture'}
+              </a>
+              <span className="asterisk">{'*'}</span>
+            </span>
+          </CheckBoxField>
         </div>
         <FormFooter
-          canSubmit={canSubmit}
           isLoading={isFormLoading}
+          isSubmit={getCanSubmit(formProps)}
         />
       </form>
     )
@@ -84,17 +131,12 @@ class Signup extends PureComponent {
 
   render() {
     return (
-      <main
-        className="signup-page page with-footer"
-        role="main"
-      >
-        <div className="section pc-final-form">
-          <Form
-            handleSuccessRedirect={this.SuccessRedirect}
-            onSubmit={this.handleOnFormSubmit}
-            render={this.renderForm}
-          />
-        </div>
+      <main className="logout-form-main">
+        <Form
+          handleSuccessRedirect={this.successRedirect}
+          onSubmit={this.handleOnFormSubmit}
+          render={this.renderForm}
+        />
       </main>
     )
   }

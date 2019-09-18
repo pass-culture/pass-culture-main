@@ -20,53 +20,37 @@ ShallowWrapper {
   Symbol(enzyme.__node__): Object {
     "instance": null,
     "key": undefined,
-    "nodeType": "host",
+    "nodeType": "function",
     "props": Object {
       "children": Array [
-        <main
-          className="pc-main is-white-text flex-1"
-          role="main"
-        >
+        <div>
           <div
-            className="pc-scroll-container"
+            className="logout-form-header"
           >
             <div
-              className="is-full-layout flex-rows flex-center padded-2x"
+              className="logout-form-title"
             >
-              <h2
-                className="mb36"
-              >
-                <span
-                  className="is-block is-italic is-medium fs22"
-                >
-                  Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
-                </span>
-                <span
-                  className="is-block is-regular fs13 mt18"
-                >
-                  <span>
-                    *
-                  </span>
-                   
-                  Champs obligatoires
-                </span>
-              </h2>
-              <div>
-                <InputField
-                  autoComplete={false}
-                  className=""
-                  disabled={false}
-                  label="Adresse e-mail"
-                  name="email"
-                  placeholder="Ex. : nom@domaine.fr"
-                  required={true}
-                  sublabel={null}
-                  theme="primary"
-                />
-              </div>
+              Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
+            </div>
+            <div
+              className="logout-form-mandatory-label"
+            >
+              * Champs obligatoires
             </div>
           </div>
-        </main>,
+          <div>
+            <InputField
+              autoComplete={false}
+              disabled={false}
+              label="Adresse e-mail"
+              name="email"
+              placeholder="Ex. : nom@domaine.fr"
+              required={true}
+              sublabel={null}
+              theme="white"
+            />
+          </div>
+        </div>,
         <FormFooter
           cancel={
             Object {
@@ -87,8 +71,6 @@ ShallowWrapper {
           }
         />,
       ],
-      "className": "is-full-layout flex-rows",
-      "id": "reset-password-page-request",
     },
     "ref": null,
     "rendered": Array [
@@ -97,131 +79,55 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": <div
-            className="pc-scroll-container"
-          >
+          "children": Array [
             <div
-              className="is-full-layout flex-rows flex-center padded-2x"
+              className="logout-form-header"
             >
-              <h2
-                className="mb36"
+              <div
+                className="logout-form-title"
               >
-                <span
-                  className="is-block is-italic is-medium fs22"
-                >
-                  Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
-                </span>
-                <span
-                  className="is-block is-regular fs13 mt18"
-                >
-                  <span>
-                    *
-                  </span>
-                   
-                  Champs obligatoires
-                </span>
-              </h2>
-              <div>
-                <InputField
-                  autoComplete={false}
-                  className=""
-                  disabled={false}
-                  label="Adresse e-mail"
-                  name="email"
-                  placeholder="Ex. : nom@domaine.fr"
-                  required={true}
-                  sublabel={null}
-                  theme="primary"
-                />
+                Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
               </div>
-            </div>
-          </div>,
-          "className": "pc-main is-white-text flex-1",
-          "role": "main",
-        },
-        "ref": null,
-        "rendered": Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": <div
-              className="is-full-layout flex-rows flex-center padded-2x"
-            >
-              <h2
-                className="mb36"
+              <div
+                className="logout-form-mandatory-label"
               >
-                <span
-                  className="is-block is-italic is-medium fs22"
-                >
-                  Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
-                </span>
-                <span
-                  className="is-block is-regular fs13 mt18"
-                >
-                  <span>
-                    *
-                  </span>
-                   
-                  Champs obligatoires
-                </span>
-              </h2>
-              <div>
-                <InputField
-                  autoComplete={false}
-                  className=""
-                  disabled={false}
-                  label="Adresse e-mail"
-                  name="email"
-                  placeholder="Ex. : nom@domaine.fr"
-                  required={true}
-                  sublabel={null}
-                  theme="primary"
-                />
+                * Champs obligatoires
               </div>
             </div>,
-            "className": "pc-scroll-container",
-          },
-          "ref": null,
-          "rendered": Object {
+            <div>
+              <InputField
+                autoComplete={false}
+                disabled={false}
+                label="Adresse e-mail"
+                name="email"
+                placeholder="Ex. : nom@domaine.fr"
+                required={true}
+                sublabel={null}
+                theme="white"
+              />
+            </div>,
+          ],
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
             "instance": null,
             "key": undefined,
             "nodeType": "host",
             "props": Object {
               "children": Array [
-                <h2
-                  className="mb36"
+                <div
+                  className="logout-form-title"
                 >
-                  <span
-                    className="is-block is-italic is-medium fs22"
-                  >
-                    Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
-                  </span>
-                  <span
-                    className="is-block is-regular fs13 mt18"
-                  >
-                    <span>
-                      *
-                    </span>
-                     
-                    Champs obligatoires
-                  </span>
-                </h2>,
-                <div>
-                  <InputField
-                    autoComplete={false}
-                    className=""
-                    disabled={false}
-                    label="Adresse e-mail"
-                    name="email"
-                    placeholder="Ex. : nom@domaine.fr"
-                    required={true}
-                    sublabel={null}
-                    theme="primary"
-                  />
+                  Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
+                </div>,
+                <div
+                  className="logout-form-mandatory-label"
+                >
+                  * Champs obligatoires
                 </div>,
               ],
-              "className": "is-full-layout flex-rows flex-center padded-2x",
+              "className": "logout-form-header",
             },
             "ref": null,
             "rendered": Array [
@@ -230,124 +136,73 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": Array [
-                    <span
-                      className="is-block is-italic is-medium fs22"
-                    >
-                      Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
-                    </span>,
-                    <span
-                      className="is-block is-regular fs13 mt18"
-                    >
-                      <span>
-                        *
-                      </span>
-                       
-                      Champs obligatoires
-                    </span>,
-                  ],
-                  "className": "mb36",
+                  "children": "Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.",
+                  "className": "logout-form-title",
                 },
                 "ref": null,
-                "rendered": Array [
-                  Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "host",
-                    "props": Object {
-                      "children": "Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.",
-                      "className": "is-block is-italic is-medium fs22",
-                    },
-                    "ref": null,
-                    "rendered": "Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.",
-                    "type": "span",
-                  },
-                  Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "host",
-                    "props": Object {
-                      "children": Array [
-                        <span>
-                          *
-                        </span>,
-                        " ",
-                        "Champs obligatoires",
-                      ],
-                      "className": "is-block is-regular fs13 mt18",
-                    },
-                    "ref": null,
-                    "rendered": Array [
-                      Object {
-                        "instance": null,
-                        "key": undefined,
-                        "nodeType": "host",
-                        "props": Object {
-                          "children": "*",
-                        },
-                        "ref": null,
-                        "rendered": "*",
-                        "type": "span",
-                      },
-                      " ",
-                      "Champs obligatoires",
-                    ],
-                    "type": "span",
-                  },
-                ],
-                "type": "h2",
+                "rendered": "Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.",
+                "type": "div",
               },
               Object {
                 "instance": null,
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": Array [
-                    <InputField
-                      autoComplete={false}
-                      className=""
-                      disabled={false}
-                      label="Adresse e-mail"
-                      name="email"
-                      placeholder="Ex. : nom@domaine.fr"
-                      required={true}
-                      sublabel={null}
-                      theme="primary"
-                    />,
-                    false,
-                  ],
+                  "children": "* Champs obligatoires",
+                  "className": "logout-form-mandatory-label",
                 },
                 "ref": null,
-                "rendered": Array [
-                  Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "class",
-                    "props": Object {
-                      "autoComplete": false,
-                      "className": "",
-                      "disabled": false,
-                      "label": "Adresse e-mail",
-                      "name": "email",
-                      "placeholder": "Ex. : nom@domaine.fr",
-                      "required": true,
-                      "sublabel": null,
-                      "theme": "primary",
-                    },
-                    "ref": null,
-                    "rendered": null,
-                    "type": [Function],
-                  },
-                  false,
-                ],
+                "rendered": "* Champs obligatoires",
                 "type": "div",
               },
             ],
             "type": "div",
           },
-          "type": "div",
-        },
-        "type": "main",
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <InputField
+                  autoComplete={false}
+                  disabled={false}
+                  label="Adresse e-mail"
+                  name="email"
+                  placeholder="Ex. : nom@domaine.fr"
+                  required={true}
+                  sublabel={null}
+                  theme="white"
+                />,
+                false,
+              ],
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "class",
+                "props": Object {
+                  "autoComplete": false,
+                  "disabled": false,
+                  "label": "Adresse e-mail",
+                  "name": "email",
+                  "placeholder": "Ex. : nom@domaine.fr",
+                  "required": true,
+                  "sublabel": null,
+                  "theme": "white",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+              false,
+            ],
+            "type": "div",
+          },
+        ],
+        "type": "div",
       },
       Object {
         "instance": null,
@@ -373,59 +228,43 @@ ShallowWrapper {
         "type": [Function],
       },
     ],
-    "type": "div",
+    "type": Symbol(react.fragment),
   },
   Symbol(enzyme.__nodes__): Array [
     Object {
       "instance": null,
       "key": undefined,
-      "nodeType": "host",
+      "nodeType": "function",
       "props": Object {
         "children": Array [
-          <main
-            className="pc-main is-white-text flex-1"
-            role="main"
-          >
+          <div>
             <div
-              className="pc-scroll-container"
+              className="logout-form-header"
             >
               <div
-                className="is-full-layout flex-rows flex-center padded-2x"
+                className="logout-form-title"
               >
-                <h2
-                  className="mb36"
-                >
-                  <span
-                    className="is-block is-italic is-medium fs22"
-                  >
-                    Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
-                  </span>
-                  <span
-                    className="is-block is-regular fs13 mt18"
-                  >
-                    <span>
-                      *
-                    </span>
-                     
-                    Champs obligatoires
-                  </span>
-                </h2>
-                <div>
-                  <InputField
-                    autoComplete={false}
-                    className=""
-                    disabled={false}
-                    label="Adresse e-mail"
-                    name="email"
-                    placeholder="Ex. : nom@domaine.fr"
-                    required={true}
-                    sublabel={null}
-                    theme="primary"
-                  />
-                </div>
+                Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
+              </div>
+              <div
+                className="logout-form-mandatory-label"
+              >
+                * Champs obligatoires
               </div>
             </div>
-          </main>,
+            <div>
+              <InputField
+                autoComplete={false}
+                disabled={false}
+                label="Adresse e-mail"
+                name="email"
+                placeholder="Ex. : nom@domaine.fr"
+                required={true}
+                sublabel={null}
+                theme="white"
+              />
+            </div>
+          </div>,
           <FormFooter
             cancel={
               Object {
@@ -446,8 +285,6 @@ ShallowWrapper {
             }
           />,
         ],
-        "className": "is-full-layout flex-rows",
-        "id": "reset-password-page-request",
       },
       "ref": null,
       "rendered": Array [
@@ -456,131 +293,55 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": <div
-              className="pc-scroll-container"
-            >
+            "children": Array [
               <div
-                className="is-full-layout flex-rows flex-center padded-2x"
+                className="logout-form-header"
               >
-                <h2
-                  className="mb36"
+                <div
+                  className="logout-form-title"
                 >
-                  <span
-                    className="is-block is-italic is-medium fs22"
-                  >
-                    Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
-                  </span>
-                  <span
-                    className="is-block is-regular fs13 mt18"
-                  >
-                    <span>
-                      *
-                    </span>
-                     
-                    Champs obligatoires
-                  </span>
-                </h2>
-                <div>
-                  <InputField
-                    autoComplete={false}
-                    className=""
-                    disabled={false}
-                    label="Adresse e-mail"
-                    name="email"
-                    placeholder="Ex. : nom@domaine.fr"
-                    required={true}
-                    sublabel={null}
-                    theme="primary"
-                  />
+                  Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
                 </div>
-              </div>
-            </div>,
-            "className": "pc-main is-white-text flex-1",
-            "role": "main",
-          },
-          "ref": null,
-          "rendered": Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": <div
-                className="is-full-layout flex-rows flex-center padded-2x"
-              >
-                <h2
-                  className="mb36"
+                <div
+                  className="logout-form-mandatory-label"
                 >
-                  <span
-                    className="is-block is-italic is-medium fs22"
-                  >
-                    Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
-                  </span>
-                  <span
-                    className="is-block is-regular fs13 mt18"
-                  >
-                    <span>
-                      *
-                    </span>
-                     
-                    Champs obligatoires
-                  </span>
-                </h2>
-                <div>
-                  <InputField
-                    autoComplete={false}
-                    className=""
-                    disabled={false}
-                    label="Adresse e-mail"
-                    name="email"
-                    placeholder="Ex. : nom@domaine.fr"
-                    required={true}
-                    sublabel={null}
-                    theme="primary"
-                  />
+                  * Champs obligatoires
                 </div>
               </div>,
-              "className": "pc-scroll-container",
-            },
-            "ref": null,
-            "rendered": Object {
+              <div>
+                <InputField
+                  autoComplete={false}
+                  disabled={false}
+                  label="Adresse e-mail"
+                  name="email"
+                  placeholder="Ex. : nom@domaine.fr"
+                  required={true}
+                  sublabel={null}
+                  theme="white"
+                />
+              </div>,
+            ],
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
               "instance": null,
               "key": undefined,
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  <h2
-                    className="mb36"
+                  <div
+                    className="logout-form-title"
                   >
-                    <span
-                      className="is-block is-italic is-medium fs22"
-                    >
-                      Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
-                    </span>
-                    <span
-                      className="is-block is-regular fs13 mt18"
-                    >
-                      <span>
-                        *
-                      </span>
-                       
-                      Champs obligatoires
-                    </span>
-                  </h2>,
-                  <div>
-                    <InputField
-                      autoComplete={false}
-                      className=""
-                      disabled={false}
-                      label="Adresse e-mail"
-                      name="email"
-                      placeholder="Ex. : nom@domaine.fr"
-                      required={true}
-                      sublabel={null}
-                      theme="primary"
-                    />
+                    Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
+                  </div>,
+                  <div
+                    className="logout-form-mandatory-label"
+                  >
+                    * Champs obligatoires
                   </div>,
                 ],
-                "className": "is-full-layout flex-rows flex-center padded-2x",
+                "className": "logout-form-header",
               },
               "ref": null,
               "rendered": Array [
@@ -589,124 +350,73 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": Array [
-                      <span
-                        className="is-block is-italic is-medium fs22"
-                      >
-                        Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
-                      </span>,
-                      <span
-                        className="is-block is-regular fs13 mt18"
-                      >
-                        <span>
-                          *
-                        </span>
-                         
-                        Champs obligatoires
-                      </span>,
-                    ],
-                    "className": "mb36",
+                    "children": "Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.",
+                    "className": "logout-form-title",
                   },
                   "ref": null,
-                  "rendered": Array [
-                    Object {
-                      "instance": null,
-                      "key": undefined,
-                      "nodeType": "host",
-                      "props": Object {
-                        "children": "Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.",
-                        "className": "is-block is-italic is-medium fs22",
-                      },
-                      "ref": null,
-                      "rendered": "Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.",
-                      "type": "span",
-                    },
-                    Object {
-                      "instance": null,
-                      "key": undefined,
-                      "nodeType": "host",
-                      "props": Object {
-                        "children": Array [
-                          <span>
-                            *
-                          </span>,
-                          " ",
-                          "Champs obligatoires",
-                        ],
-                        "className": "is-block is-regular fs13 mt18",
-                      },
-                      "ref": null,
-                      "rendered": Array [
-                        Object {
-                          "instance": null,
-                          "key": undefined,
-                          "nodeType": "host",
-                          "props": Object {
-                            "children": "*",
-                          },
-                          "ref": null,
-                          "rendered": "*",
-                          "type": "span",
-                        },
-                        " ",
-                        "Champs obligatoires",
-                      ],
-                      "type": "span",
-                    },
-                  ],
-                  "type": "h2",
+                  "rendered": "Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.",
+                  "type": "div",
                 },
                 Object {
                   "instance": null,
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": Array [
-                      <InputField
-                        autoComplete={false}
-                        className=""
-                        disabled={false}
-                        label="Adresse e-mail"
-                        name="email"
-                        placeholder="Ex. : nom@domaine.fr"
-                        required={true}
-                        sublabel={null}
-                        theme="primary"
-                      />,
-                      false,
-                    ],
+                    "children": "* Champs obligatoires",
+                    "className": "logout-form-mandatory-label",
                   },
                   "ref": null,
-                  "rendered": Array [
-                    Object {
-                      "instance": null,
-                      "key": undefined,
-                      "nodeType": "class",
-                      "props": Object {
-                        "autoComplete": false,
-                        "className": "",
-                        "disabled": false,
-                        "label": "Adresse e-mail",
-                        "name": "email",
-                        "placeholder": "Ex. : nom@domaine.fr",
-                        "required": true,
-                        "sublabel": null,
-                        "theme": "primary",
-                      },
-                      "ref": null,
-                      "rendered": null,
-                      "type": [Function],
-                    },
-                    false,
-                  ],
+                  "rendered": "* Champs obligatoires",
                   "type": "div",
                 },
               ],
               "type": "div",
             },
-            "type": "div",
-          },
-          "type": "main",
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <InputField
+                    autoComplete={false}
+                    disabled={false}
+                    label="Adresse e-mail"
+                    name="email"
+                    placeholder="Ex. : nom@domaine.fr"
+                    required={true}
+                    sublabel={null}
+                    theme="white"
+                  />,
+                  false,
+                ],
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "class",
+                  "props": Object {
+                    "autoComplete": false,
+                    "disabled": false,
+                    "label": "Adresse e-mail",
+                    "name": "email",
+                    "placeholder": "Ex. : nom@domaine.fr",
+                    "required": true,
+                    "sublabel": null,
+                    "theme": "white",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": [Function],
+                },
+                false,
+              ],
+              "type": "div",
+            },
+          ],
+          "type": "div",
         },
         Object {
           "instance": null,
@@ -732,7 +442,7 @@ ShallowWrapper {
           "type": [Function],
         },
       ],
-      "type": "div",
+      "type": Symbol(react.fragment),
     },
   ],
   Symbol(enzyme.__options__): Object {

@@ -4,7 +4,7 @@ import React from 'react'
 import { Field } from 'react-final-form'
 
 import BookingFormContent from '../BookingFormContent'
-import { SelectField } from '../../../../../forms/inputs'
+import SelectField from '../../../../../forms/inputs/SelectField'
 
 describe('src | components | layout | Booking | BookingForm | BookingFormContent', () => {
   let props

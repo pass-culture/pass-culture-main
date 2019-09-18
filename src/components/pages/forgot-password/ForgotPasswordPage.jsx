@@ -36,11 +36,9 @@ class ForgotPasswordPage extends Component {
   render() {
     const { location } = this.props
     const { token } = queryString.parse(location.search)
+
     return (
-      <div
-        className="page pc-gradient is-relative"
-        id="forgot-password-page"
-      >
+      <main className="logout-form-main">
         <Switch location={location}>
           <Route
             exact
@@ -56,7 +54,7 @@ class ForgotPasswordPage extends Component {
           />
           <Route component={this.renderDefaultRoute} />
         </Switch>
-      </div>
+      </main>
     )
   }
 }

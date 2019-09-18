@@ -5,46 +5,45 @@ import { Field } from 'react-final-form'
 import FormError from '../FormError'
 import InputLabel from '../InputLabel'
 import { validateRequiredField } from '../validators'
+import hasErrorMessage from '../utils/hasErrorMessage'
 
 class InputField extends Component {
   renderField = ({ input, meta }) => {
     const {
       autoComplete,
-      className,
       disabled,
       label,
       name,
       placeholder,
       required,
       sublabel,
+      theme,
     } = this.props
 
     return (
-      <p className={`${className}`}>
-        <label
-          className="pc-final-form-text"
-          htmlFor={name}
-        >
-          {label && <InputLabel
-            label={label}
-            required={required}
-            sublabel={sublabel}
-                    />}
-          <span className="pc-final-form-inner">
-            <input
-              {...input}
-              autoComplete={autoComplete ? 'on' : 'off'}
-              className="pc-final-form-input is-block"
-              disabled={disabled}
-              id={name} // cast to boolean
-              placeholder={placeholder}
-              required={!!required}
-              type="text"
-            />
-          </span>
-          <FormError meta={meta} />
-        </label>
-      </p>
+      <label className="label-text-inner">
+        <InputLabel
+          label={label}
+          required={required}
+          sublabel={sublabel}
+        />
+        <div className={`input-inner${hasErrorMessage(meta)}`}>
+          <input
+            {...input}
+            autoComplete={autoComplete ? 'on' : 'off'}
+            className="form-input"
+            disabled={disabled}
+            id={name}
+            placeholder={placeholder}
+            required={!!required}
+            type="text"
+          />
+        </div>
+        <FormError
+          meta={meta}
+          theme={theme}
+        />
+      </label>
     )
   }
 
@@ -54,6 +53,7 @@ class InputField extends Component {
       required && typeof required === 'function'
         ? required
         : (required && validateRequiredField) || undefined
+
     return (<Field
       name={name}
       render={this.renderField}
@@ -64,23 +64,22 @@ class InputField extends Component {
 
 InputField.defaultProps = {
   autoComplete: false,
-  className: '',
   disabled: false,
-  label: '',
   placeholder: 'Veuillez saisir une valeur',
   required: false,
   sublabel: null,
+  theme: 'white',
 }
 
 InputField.propTypes = {
   autoComplete: PropTypes.bool,
-  className: PropTypes.string,
   disabled: PropTypes.bool,
-  label: PropTypes.string,
+  label: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   placeholder: PropTypes.string,
   required: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
   sublabel: PropTypes.string,
+  theme: PropTypes.string,
 }
 
 export default InputField

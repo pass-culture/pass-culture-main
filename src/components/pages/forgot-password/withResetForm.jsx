@@ -70,10 +70,11 @@ const withPasswordForm = (WrappedComponent, validator, routePath, routeMethod) =
       const canSubmit =
         (!pristine && !hasSubmitErrors && !hasValidationErrors && !isloading) ||
         (!hasValidationErrors && hasSubmitErrors && dirtySinceLastSubmit)
+
       return (
         <form
           autoComplete="off"
-          className="pc-final-form is-full-layout"
+          className="logout-form-container"
           disabled={isloading}
           noValidate
           onSubmit={handleSubmit}

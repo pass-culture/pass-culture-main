@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
-import { DatePickerField } from '../../../forms/inputs'
+import DatePickerField from '../../../forms/inputs/DatePickerField/DatePickerField'
 import { DAYS_CHECKBOXES, isDaysChecked } from '../helpers'
 
 class FilterByDates extends PureComponent {
@@ -80,16 +80,14 @@ class FilterByDates extends PureComponent {
                   htmlFor={`filter-by-dates-days-${index}-checkbox`}
                   key={value}
                 >
-                  <span className="flex-0 field field-checkbox">
-                    <input
-                      checked={checked}
-                      className="input no-background"
-                      id={`filter-by-dates-days-${index}-checkbox`}
-                      onChange={this.onChangeDate(value)}
-                      type="checkbox"
-                      value={value}
-                    />
-                  </span>
+                  <input
+                    checked={checked}
+                    className="input form-checkbox field field-checkbox"
+                    id={`filter-by-dates-days-${index}-checkbox`}
+                    onChange={this.onChangeDate(value)}
+                    type="checkbox"
+                    value={value}
+                  />
                   <span className="fs19 flex-1">{label}</span>
                 </label>
               )

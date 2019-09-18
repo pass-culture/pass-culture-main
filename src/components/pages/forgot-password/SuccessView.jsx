@@ -32,11 +32,9 @@ class SuccessView extends Component {
   )
 
   renderResetSuccessMessage = () => (
-    <Fragment>
-      <p className="is-medium">
-        {'Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter'}
-      </p>
-    </Fragment>
+    <p className="is-medium">
+      {'Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter'}
+    </p>
   )
 
   render() {
@@ -44,17 +42,10 @@ class SuccessView extends Component {
     const renderSuccessMessage = token
       ? this.renderResetSuccessMessage
       : this.renderRequestSuccessMessage
+
     return (
-      <div
-        className="is-full-layout flex-rows"
-        id="reset-password-page-success"
-      >
-        <main
-          className="pc-main padded-2x flex-rows flex-center flex-1"
-          role="main"
-        >
-          <div className="is-italic fs22 is-white-text">{renderSuccessMessage()}</div>
-        </main>
+      <div className="logout-form-container">
+        <div className="is-italic fs22">{renderSuccessMessage()}</div>
         <FormFooter
           cancel={(!token && cancelOptions) || null}
           submit={submitOptions}

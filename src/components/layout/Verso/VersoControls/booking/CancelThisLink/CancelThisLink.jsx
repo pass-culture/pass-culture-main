@@ -57,7 +57,7 @@ class CancelThisLink extends PureComponent {
 
     return (
       <button
-        className="flex-columns no-border no-background"
+        className="flex-columns no-background"
         disabled={isBookingFinished}
         id="verso-cancel-booking-button"
         onClick={this.handleOnClick}

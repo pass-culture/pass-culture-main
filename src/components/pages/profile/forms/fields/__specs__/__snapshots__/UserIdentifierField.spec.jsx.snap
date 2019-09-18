@@ -18,127 +18,39 @@ ShallowWrapper {
   Symbol(enzyme.__node__): Object {
     "instance": null,
     "key": undefined,
-    "nodeType": "host",
+    "nodeType": "class",
     "props": Object {
-      "children": <div
-        className="py30 px12 flex-1"
-      >
-        <InputField
-          autoComplete={false}
-          className=""
-          disabled={false}
-          label="Votre identifiant"
-          name="publicName"
-          placeholder="Veuillez saisir une valeur"
-          required={true}
-          sublabel={null}
-        />
-      </div>,
-      "className": "pc-scroll-container",
+      "autoComplete": false,
+      "disabled": false,
+      "label": "Votre identifiant",
+      "name": "publicName",
+      "placeholder": "Veuillez saisir une valeur",
+      "required": true,
+      "sublabel": null,
+      "theme": "white",
     },
     "ref": null,
-    "rendered": Object {
-      "instance": null,
-      "key": undefined,
-      "nodeType": "host",
-      "props": Object {
-        "children": <InputField
-          autoComplete={false}
-          className=""
-          disabled={false}
-          label="Votre identifiant"
-          name="publicName"
-          placeholder="Veuillez saisir une valeur"
-          required={true}
-          sublabel={null}
-        />,
-        "className": "py30 px12 flex-1",
-      },
-      "ref": null,
-      "rendered": Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "class",
-        "props": Object {
-          "autoComplete": false,
-          "className": "",
-          "disabled": false,
-          "label": "Votre identifiant",
-          "name": "publicName",
-          "placeholder": "Veuillez saisir une valeur",
-          "required": true,
-          "sublabel": null,
-        },
-        "ref": null,
-        "rendered": null,
-        "type": [Function],
-      },
-      "type": "div",
-    },
-    "type": "div",
+    "rendered": null,
+    "type": [Function],
   },
   Symbol(enzyme.__nodes__): Array [
     Object {
       "instance": null,
       "key": undefined,
-      "nodeType": "host",
+      "nodeType": "class",
       "props": Object {
-        "children": <div
-          className="py30 px12 flex-1"
-        >
-          <InputField
-            autoComplete={false}
-            className=""
-            disabled={false}
-            label="Votre identifiant"
-            name="publicName"
-            placeholder="Veuillez saisir une valeur"
-            required={true}
-            sublabel={null}
-          />
-        </div>,
-        "className": "pc-scroll-container",
+        "autoComplete": false,
+        "disabled": false,
+        "label": "Votre identifiant",
+        "name": "publicName",
+        "placeholder": "Veuillez saisir une valeur",
+        "required": true,
+        "sublabel": null,
+        "theme": "white",
       },
       "ref": null,
-      "rendered": Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": <InputField
-            autoComplete={false}
-            className=""
-            disabled={false}
-            label="Votre identifiant"
-            name="publicName"
-            placeholder="Veuillez saisir une valeur"
-            required={true}
-            sublabel={null}
-          />,
-          "className": "py30 px12 flex-1",
-        },
-        "ref": null,
-        "rendered": Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "class",
-          "props": Object {
-            "autoComplete": false,
-            "className": "",
-            "disabled": false,
-            "label": "Votre identifiant",
-            "name": "publicName",
-            "placeholder": "Veuillez saisir une valeur",
-            "required": true,
-            "sublabel": null,
-          },
-          "ref": null,
-          "rendered": null,
-          "type": [Function],
-        },
-        "type": "div",
-      },
-      "type": "div",
+      "rendered": null,
+      "type": [Function],
     },
   ],
   Symbol(enzyme.__options__): Object {

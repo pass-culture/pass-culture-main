@@ -1,6 +1,3 @@
-/* eslint
-  global-require: 0
-  import/no-dynamic-require: 0 */
 const fs = require('fs')
 const url = require('url')
 const path = require('path')

@@ -301,7 +301,7 @@ class Search extends PureComponent {
                   {isOneCharInKeywords && (
                     <span className="icon flex-columns flex-center items-center is-right">
                       <button
-                        className="no-border no-background is-red-text"
+                        className="no-background is-red-text"
                         id="refresh-keywords-button"
                         onClick={this.handleOnKeywordsEraseClick}
                         type="button"
@@ -317,7 +317,6 @@ class Search extends PureComponent {
                 </p>
                 <div className="control flex-0">
                   <button
-                    className="button is-rounded is-medium"
                     disabled={!isOneCharInKeywords}
                     id="keywords-search-button"
                     type="submit"
@@ -331,7 +330,7 @@ class Search extends PureComponent {
                 id="search-filter-menu-toggle-button"
               >
                 <button
-                  className="no-border no-background no-outline"
+                  className="no-background"
                   onClick={this.handleOnClickToggleFilterButton(isFilterVisible)}
                   type="button"
                 >
@@ -379,10 +378,7 @@ class Search extends PureComponent {
 
   render() {
     return (
-      <main
-        className="search-page page with-footer with-header"
-        role="main"
-      >
+      <main className="search-page page with-footer with-header">
         <HeaderContainer
           backActionOnClick={this.reinitializeStates}
           backTo={this.getBackToUrl()}

@@ -5,7 +5,7 @@ import { noopnoop } from '../../../utils/functionnals'
 
 const NotificationCloseButton = ({ closeToast }) => (
   <button
-    className="react-toastify-custom-close-button no-background no-border is-red-text"
+    className="react-toastify-custom-close-button no-background is-red-text"
     onClick={closeToast}
     type="button"
   >

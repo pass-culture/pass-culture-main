@@ -118,10 +118,7 @@ class Discovery extends PureComponent {
 
     return (
       <Fragment>
-        <main
-          className="discovery-page no-padding page with-footer"
-          role="main"
-        >
+        <main className="discovery-page no-padding page with-footer">
           {!isEmpty && (
             <Fragment>
               <Route

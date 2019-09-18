@@ -1,16 +1,5 @@
-#sign-in-page .pc-final-form-inner {
-  border-color: $red;
-}
-
-#sign-in-page .pc-final-form-inner input {
-  @extend .fs20;
-  @extend .is-bold;
-}
-
-#sign-in-page .pc-final-form-inner input::placeholder {
-  @extend .is-regular;
-}
-
-#sign-in-page .pc-final-form-label {
-  @extend .fs19;
+.page-connexion {
+  .label-password-inner {
+    margin-bottom: 0;
+  }
 }

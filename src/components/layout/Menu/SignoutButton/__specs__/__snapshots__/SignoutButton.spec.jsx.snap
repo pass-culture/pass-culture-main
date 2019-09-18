@@ -51,7 +51,7 @@ ShallowWrapper {
           Déconnexion
         </span>,
       ],
-      "className": "pc-text-button flex-columns text-left px16 py8",
+      "className": "pc-text-button flex-columns text-left px16 py8 fs16",
       "id": "main-menu-logout-button",
       "onClick": undefined,
       "type": "button",
@@ -126,7 +126,7 @@ ShallowWrapper {
             Déconnexion
           </span>,
         ],
-        "className": "pc-text-button flex-columns text-left px16 py8",
+        "className": "pc-text-button flex-columns text-left px16 py8 fs16",
         "id": "main-menu-logout-button",
         "onClick": undefined,
         "type": "button",

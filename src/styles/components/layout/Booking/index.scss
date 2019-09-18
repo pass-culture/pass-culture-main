@@ -30,11 +30,11 @@
     }
   }
 
-  .pc-final-form-label {
+  .form-label-inner {
     @extend .fs22;
   }
 
-  .pc-final-form-datepicker-input {
+  .form-datepicker-input {
     @extend .py7;
     @extend .fs20;
     @extend .flex-1;
@@ -62,11 +62,15 @@
     background-color: $primary;
 
     button {
-      border: 0;
-      width: 35%;
-      color: $white;
-      font-size: 20px;
       background: transparent;
+      color: $white;
+      font-size: 22px;
+      font-weight: 700;
+      width: 35%;
+    }
+
+    #booking-close-button {
+      font-weight: 400;
     }
 
     button + button {
@@ -80,7 +84,8 @@
     width: 264px;
 
     &.is-read-only {
-      border: 0;
+      box-shadow: none;
+      font-family: $family-sans-serif;
     }
 
     .content {
@@ -122,8 +127,8 @@
 }
 
 #form-create-booking.is-read-only {
-  .pc-final-form-inner,
-  .pc-final-form-inner input {
+  .input-inner,
+  .input-inner input {
     border: 0 !important;
     border-radius: 0 !important;
     background-color: transparent !important;

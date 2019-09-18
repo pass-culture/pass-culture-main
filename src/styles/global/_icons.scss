@@ -1,9 +1,5 @@
-.big-fail-icon {
-  @extend .fs80;
-  @extend .is-red-text;
-}
-
 .big-success-icon {
   @extend .fs80;
-  @extend .is-green-text;
+
+  color: $green;
 }

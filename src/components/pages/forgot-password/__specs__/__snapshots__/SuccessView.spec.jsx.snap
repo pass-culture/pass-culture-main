@@ -21,22 +21,15 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": Array [
-        <main
-          className="pc-main padded-2x flex-rows flex-center flex-1"
-          role="main"
+        <div
+          className="is-italic fs22"
         >
-          <div
-            className="is-italic fs22 is-white-text"
+          <p
+            className="is-medium"
           >
-            <React.Fragment>
-              <p
-                className="is-medium"
-              >
-                Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter
-              </p>
-            </React.Fragment>
-          </div>
-        </main>,
+            Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter
+          </p>
+        </div>,
         <FormFooter
           cancel={null}
           className=""
@@ -51,8 +44,7 @@ ShallowWrapper {
           }
         />,
       ],
-      "className": "is-full-layout flex-rows",
-      "id": "reset-password-page-success",
+      "className": "logout-form-container",
     },
     "ref": null,
     "rendered": Array [
@@ -61,19 +53,12 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": <div
-            className="is-italic fs22 is-white-text"
+          "children": <p
+            className="is-medium"
           >
-            <React.Fragment>
-              <p
-                className="is-medium"
-              >
-                Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter
-              </p>
-            </React.Fragment>
-          </div>,
-          "className": "pc-main padded-2x flex-rows flex-center flex-1",
-          "role": "main",
+            Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter
+          </p>,
+          "className": "is-italic fs22",
         },
         "ref": null,
         "rendered": Object {
@@ -81,45 +66,14 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": <React.Fragment>
-              <p
-                className="is-medium"
-              >
-                Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter
-              </p>
-            </React.Fragment>,
-            "className": "is-italic fs22 is-white-text",
+            "children": "Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter",
+            "className": "is-medium",
           },
           "ref": null,
-          "rendered": Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "function",
-            "props": Object {
-              "children": <p
-                className="is-medium"
-              >
-                Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter
-              </p>,
-            },
-            "ref": null,
-            "rendered": Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": "Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter",
-                "className": "is-medium",
-              },
-              "ref": null,
-              "rendered": "Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter",
-              "type": "p",
-            },
-            "type": Symbol(react.fragment),
-          },
-          "type": "div",
+          "rendered": "Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter",
+          "type": "p",
         },
-        "type": "main",
+        "type": "div",
       },
       Object {
         "instance": null,
@@ -150,22 +104,15 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": Array [
-          <main
-            className="pc-main padded-2x flex-rows flex-center flex-1"
-            role="main"
+          <div
+            className="is-italic fs22"
           >
-            <div
-              className="is-italic fs22 is-white-text"
+            <p
+              className="is-medium"
             >
-              <React.Fragment>
-                <p
-                  className="is-medium"
-                >
-                  Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter
-                </p>
-              </React.Fragment>
-            </div>
-          </main>,
+              Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter
+            </p>
+          </div>,
           <FormFooter
             cancel={null}
             className=""
@@ -180,8 +127,7 @@ ShallowWrapper {
             }
           />,
         ],
-        "className": "is-full-layout flex-rows",
-        "id": "reset-password-page-success",
+        "className": "logout-form-container",
       },
       "ref": null,
       "rendered": Array [
@@ -190,19 +136,12 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": <div
-              className="is-italic fs22 is-white-text"
+            "children": <p
+              className="is-medium"
             >
-              <React.Fragment>
-                <p
-                  className="is-medium"
-                >
-                  Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter
-                </p>
-              </React.Fragment>
-            </div>,
-            "className": "pc-main padded-2x flex-rows flex-center flex-1",
-            "role": "main",
+              Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter
+            </p>,
+            "className": "is-italic fs22",
           },
           "ref": null,
           "rendered": Object {
@@ -210,45 +149,14 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": <React.Fragment>
-                <p
-                  className="is-medium"
-                >
-                  Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter
-                </p>
-              </React.Fragment>,
-              "className": "is-italic fs22 is-white-text",
+              "children": "Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter",
+              "className": "is-medium",
             },
             "ref": null,
-            "rendered": Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "function",
-              "props": Object {
-                "children": <p
-                  className="is-medium"
-                >
-                  Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter
-                </p>,
-              },
-              "ref": null,
-              "rendered": Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter",
-                  "className": "is-medium",
-                },
-                "ref": null,
-                "rendered": "Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter",
-                "type": "p",
-              },
-              "type": Symbol(react.fragment),
-            },
-            "type": "div",
+            "rendered": "Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter",
+            "type": "p",
           },
-          "type": "main",
+          "type": "div",
         },
         Object {
           "instance": null,
@@ -324,27 +232,22 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": Array [
-        <main
-          className="pc-main padded-2x flex-rows flex-center flex-1"
-          role="main"
+        <div
+          className="is-italic fs22"
         >
-          <div
-            className="is-italic fs22 is-white-text"
-          >
-            <React.Fragment>
-              <p
-                className="is-medium"
-              >
-                Vous allez recevoir un e-mail avec les instructions de réinitialisation.
-              </p>
-              <p
-                className="is-medium mt28"
-              >
-                Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
-              </p>
-            </React.Fragment>
-          </div>
-        </main>,
+          <React.Fragment>
+            <p
+              className="is-medium"
+            >
+              Vous allez recevoir un e-mail avec les instructions de réinitialisation.
+            </p>
+            <p
+              className="is-medium mt28"
+            >
+              Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
+            </p>
+          </React.Fragment>
+        </div>,
         <FormFooter
           cancel={
             Object {
@@ -366,8 +269,7 @@ ShallowWrapper {
           }
         />,
       ],
-      "className": "is-full-layout flex-rows",
-      "id": "reset-password-page-success",
+      "className": "logout-form-container",
     },
     "ref": null,
     "rendered": Array [
@@ -376,8 +278,106 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": <div
-            className="is-italic fs22 is-white-text"
+          "children": <React.Fragment>
+            <p
+              className="is-medium"
+            >
+              Vous allez recevoir un e-mail avec les instructions de réinitialisation.
+            </p>
+            <p
+              className="is-medium mt28"
+            >
+              Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
+            </p>
+          </React.Fragment>,
+          "className": "is-italic fs22",
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "children": Array [
+              <p
+                className="is-medium"
+              >
+                Vous allez recevoir un e-mail avec les instructions de réinitialisation.
+              </p>,
+              <p
+                className="is-medium mt28"
+              >
+                Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
+              </p>,
+            ],
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Vous allez recevoir un e-mail avec les instructions de réinitialisation.",
+                "className": "is-medium",
+              },
+              "ref": null,
+              "rendered": "Vous allez recevoir un e-mail avec les instructions de réinitialisation.",
+              "type": "p",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.",
+                "className": "is-medium mt28",
+              },
+              "ref": null,
+              "rendered": "Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.",
+              "type": "p",
+            },
+          ],
+          "type": Symbol(react.fragment),
+        },
+        "type": "div",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "class",
+        "props": Object {
+          "cancel": Object {
+            "className": "is-white-text",
+            "disabled": false,
+            "label": "Recommencer",
+            "url": "/mot-de-passe-perdu",
+          },
+          "className": "",
+          "externalLink": null,
+          "submit": Object {
+            "className": "is-bold is-white-text",
+            "disabled": false,
+            "label": "Connexion",
+            "url": "/connexion",
+          },
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+    ],
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <div
+            className="is-italic fs22"
           >
             <React.Fragment>
               <p
@@ -392,11 +392,32 @@ ShallowWrapper {
               </p>
             </React.Fragment>
           </div>,
-          "className": "pc-main padded-2x flex-rows flex-center flex-1",
-          "role": "main",
-        },
-        "ref": null,
-        "rendered": Object {
+          <FormFooter
+            cancel={
+              Object {
+                "className": "is-white-text",
+                "disabled": false,
+                "label": "Recommencer",
+                "url": "/mot-de-passe-perdu",
+              }
+            }
+            className=""
+            externalLink={null}
+            submit={
+              Object {
+                "className": "is-bold is-white-text",
+                "disabled": false,
+                "label": "Connexion",
+                "url": "/connexion",
+              }
+            }
+          />,
+        ],
+        "className": "logout-form-container",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
           "instance": null,
           "key": undefined,
           "nodeType": "host",
@@ -413,7 +434,7 @@ ShallowWrapper {
                 Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
               </p>
             </React.Fragment>,
-            "className": "is-italic fs22 is-white-text",
+            "className": "is-italic fs22",
           },
           "ref": null,
           "rendered": Object {
@@ -464,185 +485,6 @@ ShallowWrapper {
             "type": Symbol(react.fragment),
           },
           "type": "div",
-        },
-        "type": "main",
-      },
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "class",
-        "props": Object {
-          "cancel": Object {
-            "className": "is-white-text",
-            "disabled": false,
-            "label": "Recommencer",
-            "url": "/mot-de-passe-perdu",
-          },
-          "className": "",
-          "externalLink": null,
-          "submit": Object {
-            "className": "is-bold is-white-text",
-            "disabled": false,
-            "label": "Connexion",
-            "url": "/connexion",
-          },
-        },
-        "ref": null,
-        "rendered": null,
-        "type": [Function],
-      },
-    ],
-    "type": "div",
-  },
-  Symbol(enzyme.__nodes__): Array [
-    Object {
-      "instance": null,
-      "key": undefined,
-      "nodeType": "host",
-      "props": Object {
-        "children": Array [
-          <main
-            className="pc-main padded-2x flex-rows flex-center flex-1"
-            role="main"
-          >
-            <div
-              className="is-italic fs22 is-white-text"
-            >
-              <React.Fragment>
-                <p
-                  className="is-medium"
-                >
-                  Vous allez recevoir un e-mail avec les instructions de réinitialisation.
-                </p>
-                <p
-                  className="is-medium mt28"
-                >
-                  Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
-                </p>
-              </React.Fragment>
-            </div>
-          </main>,
-          <FormFooter
-            cancel={
-              Object {
-                "className": "is-white-text",
-                "disabled": false,
-                "label": "Recommencer",
-                "url": "/mot-de-passe-perdu",
-              }
-            }
-            className=""
-            externalLink={null}
-            submit={
-              Object {
-                "className": "is-bold is-white-text",
-                "disabled": false,
-                "label": "Connexion",
-                "url": "/connexion",
-              }
-            }
-          />,
-        ],
-        "className": "is-full-layout flex-rows",
-        "id": "reset-password-page-success",
-      },
-      "ref": null,
-      "rendered": Array [
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": <div
-              className="is-italic fs22 is-white-text"
-            >
-              <React.Fragment>
-                <p
-                  className="is-medium"
-                >
-                  Vous allez recevoir un e-mail avec les instructions de réinitialisation.
-                </p>
-                <p
-                  className="is-medium mt28"
-                >
-                  Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
-                </p>
-              </React.Fragment>
-            </div>,
-            "className": "pc-main padded-2x flex-rows flex-center flex-1",
-            "role": "main",
-          },
-          "ref": null,
-          "rendered": Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": <React.Fragment>
-                <p
-                  className="is-medium"
-                >
-                  Vous allez recevoir un e-mail avec les instructions de réinitialisation.
-                </p>
-                <p
-                  className="is-medium mt28"
-                >
-                  Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
-                </p>
-              </React.Fragment>,
-              "className": "is-italic fs22 is-white-text",
-            },
-            "ref": null,
-            "rendered": Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "function",
-              "props": Object {
-                "children": Array [
-                  <p
-                    className="is-medium"
-                  >
-                    Vous allez recevoir un e-mail avec les instructions de réinitialisation.
-                  </p>,
-                  <p
-                    className="is-medium mt28"
-                  >
-                    Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
-                  </p>,
-                ],
-              },
-              "ref": null,
-              "rendered": Array [
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "Vous allez recevoir un e-mail avec les instructions de réinitialisation.",
-                    "className": "is-medium",
-                  },
-                  "ref": null,
-                  "rendered": "Vous allez recevoir un e-mail avec les instructions de réinitialisation.",
-                  "type": "p",
-                },
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.",
-                    "className": "is-medium mt28",
-                  },
-                  "ref": null,
-                  "rendered": "Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.",
-                  "type": "p",
-                },
-              ],
-              "type": Symbol(react.fragment),
-            },
-            "type": "div",
-          },
-          "type": "main",
         },
         Object {
           "instance": null,

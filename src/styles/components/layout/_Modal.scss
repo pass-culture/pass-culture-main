@@ -50,14 +50,13 @@
     left: 0;
     right: 0;
     bottom: 0;
-    border-radius: $radius-medium;
+    border-radius: 1rem;
     box-shadow: $box-shadow;
     max-width: 100%;
     min-height: 4rem;
     max-height: 100%;
     overflow-y: auto;
     padding: 1rem;
-    position: relative;
     text-align: center;
     width: 100%;
     will-change: transform, opacity;
@@ -81,7 +80,6 @@
     }
 
     button.close {
-      background-color: transparent;
       top: 1rem;
       right: 1rem;
       border: none;

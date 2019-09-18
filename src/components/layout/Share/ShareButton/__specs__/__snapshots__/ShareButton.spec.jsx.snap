@@ -30,7 +30,7 @@ ShallowWrapper {
         className="font-icon icon-ico-share"
         title="Partager cette offre"
       />,
-      "className": "no-border no-background",
+      "className": "no-background",
       "onClick": [Function],
       "type": "button",
     },
@@ -61,7 +61,7 @@ ShallowWrapper {
           className="font-icon icon-ico-share"
           title="Partager cette offre"
         />,
-        "className": "no-border no-background",
+        "className": "no-background",
         "onClick": [Function],
         "type": "button",
       },

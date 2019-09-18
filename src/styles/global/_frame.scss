@@ -7,7 +7,6 @@
 
 html,
 body {
-  color: $black;
   height: 100%;
   min-height: 100%;
   overscroll-behavior: contain;
@@ -19,7 +18,9 @@ html {
 
 body {
   background-color: $white;
-  font-size: $font-size;
+  color: $black;
+  font-family: $family-sans-serif;
+  font-size: rem(16px);
   line-height: normal;
   margin: 0 auto;
   max-width: 500px;
@@ -31,35 +32,36 @@ body {
   -webkit-touch-callout: none;
 }
 
-a,
+ul {
+  list-style: none;
+}
+
 button {
+  background-color: transparent;
+  border: 0;
+  color: $white;
   cursor: pointer;
-}
-
-a:not(.is-underline),
-a:link:not(.is-underline),
-a:hover:not(.is-underline),
-a:active:not(.is-underline),
-a:visited:not(.is-underline) {
-  text-decoration: none;
-}
-
-button {
   user-select: none;
+
+  &[disabled] {
+    cursor: not-allowed;
+    opacity: 0.3;
+  }
 }
 
-/* --------------------------------
- Font
--------------------------------- */
-
-body,
 button,
+input,
+select,
 textarea {
-  color: inherit;
   font-family: $family-sans-serif;
-  font-size: inherit;
-  line-height: inherit;
-  -webkit-font-smoothing: antialiased;
+}
+
+a,
+a:link,
+a:hover,
+a:active,
+a:visited {
+  text-decoration: none;
 }
 
 /* --------------------------------
@@ -138,7 +140,6 @@ img {
   height: 100%;
   min-width: 100%;
   min-height: 100%;
-  box-shadow: 0 0 23px -1px rgba(0, 0, 0, 0.1);
 }
 
 .pc-label {
@@ -187,10 +188,6 @@ img {
   button + button {
     border-right: 0;
     border-left: 2px dotted #FFFFFF;
-
-    &:disabled {
-      border: 0;
-    }
   }
 }
 
@@ -207,17 +204,6 @@ img {
   overflow: hidden;
   min-height: 100%;
   max-height: 100%;
-}
-
-#android-statusbar-overlay {
-  display: none;
-  width: 100%;
-  height: 24px;
-  opacity: 0.5;
-  background-color: $black;
-  position: fixed;
-  top: 0;
-  z-index: 100000;
 }
 
 #error-catcher,

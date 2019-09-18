@@ -166,7 +166,7 @@ class Booking extends PureComponent {
             onClick={this.handleReturnToDetails}
             type="button"
           >
-            <b>{'OK'}</b>
+            {'OK'}
           </button>
         )}
       </Fragment>

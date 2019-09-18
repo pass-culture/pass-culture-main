@@ -38,8 +38,7 @@ ShallowWrapper {
           to="/activation/error"
         />
       </Switch>,
-      "className": "is-full-layout is-relative pc-gradient is-white-text flex-rows",
-      "id": "activation-page",
+      "className": "logout-form-main",
     },
     "ref": null,
     "rendered": Object {
@@ -123,7 +122,7 @@ ShallowWrapper {
       ],
       "type": [Function],
     },
-    "type": "div",
+    "type": "main",
   },
   Symbol(enzyme.__nodes__): Array [
     Object {
@@ -151,8 +150,7 @@ ShallowWrapper {
             to="/activation/error"
           />
         </Switch>,
-        "className": "is-full-layout is-relative pc-gradient is-white-text flex-rows",
-        "id": "activation-page",
+        "className": "logout-form-main",
       },
       "ref": null,
       "rendered": Object {
@@ -236,7 +234,7 @@ ShallowWrapper {
         ],
         "type": [Function],
       },
-      "type": "div",
+      "type": "main",
     },
   ],
   Symbol(enzyme.__options__): Object {

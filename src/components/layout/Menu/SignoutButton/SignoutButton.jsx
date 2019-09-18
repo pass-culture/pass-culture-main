@@ -5,7 +5,7 @@ import Icon from '../../Icon/Icon'
 
 const SignoutButton = ({ onSignoutClick, ...props }) => (
   <button
-    className="pc-text-button flex-columns text-left px16 py8"
+    className="pc-text-button flex-columns text-left px16 py8 fs16"
     id="main-menu-logout-button"
     onClick={onSignoutClick(props)}
     type="button"

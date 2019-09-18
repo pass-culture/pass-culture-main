@@ -1,7 +1,8 @@
 import React from 'react'
 import { shallow } from 'enzyme'
+
 import { UserIdentifierField } from '../UserIdentifierField'
-import { InputField } from '../../../../../forms/inputs'
+import InputField from '../../../../../forms/inputs/InputField'
 
 describe('src | components | pages | profile | forms | fields | UserIdentifierField', () => {
   let props

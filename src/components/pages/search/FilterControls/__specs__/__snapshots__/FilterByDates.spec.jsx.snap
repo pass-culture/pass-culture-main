@@ -58,18 +58,14 @@ ShallowWrapper {
               className="item flex-columns items-center py5 pl7 pr22"
               htmlFor="filter-by-dates-days-0-checkbox"
             >
-              <span
-                className="flex-0 field field-checkbox"
-              >
-                <input
-                  checked={false}
-                  className="input no-background"
-                  id="filter-by-dates-days-0-checkbox"
-                  onChange={[Function]}
-                  type="checkbox"
-                  value="0-1"
-                />
-              </span>
+              <input
+                checked={false}
+                className="input form-checkbox field field-checkbox"
+                id="filter-by-dates-days-0-checkbox"
+                onChange={[Function]}
+                type="checkbox"
+                value="0-1"
+              />
               <span
                 className="fs19 flex-1"
               >
@@ -80,18 +76,14 @@ ShallowWrapper {
               className="item flex-columns items-center py5 pl7 pr22"
               htmlFor="filter-by-dates-days-1-checkbox"
             >
-              <span
-                className="flex-0 field field-checkbox"
-              >
-                <input
-                  checked={false}
-                  className="input no-background"
-                  id="filter-by-dates-days-1-checkbox"
-                  onChange={[Function]}
-                  type="checkbox"
-                  value="1-5"
-                />
-              </span>
+              <input
+                checked={false}
+                className="input form-checkbox field field-checkbox"
+                id="filter-by-dates-days-1-checkbox"
+                onChange={[Function]}
+                type="checkbox"
+                value="1-5"
+              />
               <span
                 className="fs19 flex-1"
               >
@@ -102,18 +94,14 @@ ShallowWrapper {
               className="item flex-columns items-center py5 pl7 pr22"
               htmlFor="filter-by-dates-days-2-checkbox"
             >
-              <span
-                className="flex-0 field field-checkbox"
-              >
-                <input
-                  checked={false}
-                  className="input no-background"
-                  id="filter-by-dates-days-2-checkbox"
-                  onChange={[Function]}
-                  type="checkbox"
-                  value="5-100000"
-                />
-              </span>
+              <input
+                checked={false}
+                className="input form-checkbox field field-checkbox"
+                id="filter-by-dates-days-2-checkbox"
+                onChange={[Function]}
+                type="checkbox"
+                value="5-100000"
+              />
               <span
                 className="fs19 flex-1"
               >
@@ -181,18 +169,14 @@ ShallowWrapper {
               className="item flex-columns items-center py5 pl7 pr22"
               htmlFor="filter-by-dates-days-0-checkbox"
             >
-              <span
-                className="flex-0 field field-checkbox"
-              >
-                <input
-                  checked={false}
-                  className="input no-background"
-                  id="filter-by-dates-days-0-checkbox"
-                  onChange={[Function]}
-                  type="checkbox"
-                  value="0-1"
-                />
-              </span>
+              <input
+                checked={false}
+                className="input form-checkbox field field-checkbox"
+                id="filter-by-dates-days-0-checkbox"
+                onChange={[Function]}
+                type="checkbox"
+                value="0-1"
+              />
               <span
                 className="fs19 flex-1"
               >
@@ -203,18 +187,14 @@ ShallowWrapper {
               className="item flex-columns items-center py5 pl7 pr22"
               htmlFor="filter-by-dates-days-1-checkbox"
             >
-              <span
-                className="flex-0 field field-checkbox"
-              >
-                <input
-                  checked={false}
-                  className="input no-background"
-                  id="filter-by-dates-days-1-checkbox"
-                  onChange={[Function]}
-                  type="checkbox"
-                  value="1-5"
-                />
-              </span>
+              <input
+                checked={false}
+                className="input form-checkbox field field-checkbox"
+                id="filter-by-dates-days-1-checkbox"
+                onChange={[Function]}
+                type="checkbox"
+                value="1-5"
+              />
               <span
                 className="fs19 flex-1"
               >
@@ -225,18 +205,14 @@ ShallowWrapper {
               className="item flex-columns items-center py5 pl7 pr22"
               htmlFor="filter-by-dates-days-2-checkbox"
             >
-              <span
-                className="flex-0 field field-checkbox"
-              >
-                <input
-                  checked={false}
-                  className="input no-background"
-                  id="filter-by-dates-days-2-checkbox"
-                  onChange={[Function]}
-                  type="checkbox"
-                  value="5-100000"
-                />
-              </span>
+              <input
+                checked={false}
+                className="input form-checkbox field field-checkbox"
+                id="filter-by-dates-days-2-checkbox"
+                onChange={[Function]}
+                type="checkbox"
+                value="5-100000"
+              />
               <span
                 className="fs19 flex-1"
               >
@@ -281,18 +257,14 @@ ShallowWrapper {
                   className="item flex-columns items-center py5 pl7 pr22"
                   htmlFor="filter-by-dates-days-0-checkbox"
                 >
-                  <span
-                    className="flex-0 field field-checkbox"
-                  >
-                    <input
-                      checked={false}
-                      className="input no-background"
-                      id="filter-by-dates-days-0-checkbox"
-                      onChange={[Function]}
-                      type="checkbox"
-                      value="0-1"
-                    />
-                  </span>
+                  <input
+                    checked={false}
+                    className="input form-checkbox field field-checkbox"
+                    id="filter-by-dates-days-0-checkbox"
+                    onChange={[Function]}
+                    type="checkbox"
+                    value="0-1"
+                  />
                   <span
                     className="fs19 flex-1"
                   >
@@ -303,18 +275,14 @@ ShallowWrapper {
                   className="item flex-columns items-center py5 pl7 pr22"
                   htmlFor="filter-by-dates-days-1-checkbox"
                 >
-                  <span
-                    className="flex-0 field field-checkbox"
-                  >
-                    <input
-                      checked={false}
-                      className="input no-background"
-                      id="filter-by-dates-days-1-checkbox"
-                      onChange={[Function]}
-                      type="checkbox"
-                      value="1-5"
-                    />
-                  </span>
+                  <input
+                    checked={false}
+                    className="input form-checkbox field field-checkbox"
+                    id="filter-by-dates-days-1-checkbox"
+                    onChange={[Function]}
+                    type="checkbox"
+                    value="1-5"
+                  />
                   <span
                     className="fs19 flex-1"
                   >
@@ -325,18 +293,14 @@ ShallowWrapper {
                   className="item flex-columns items-center py5 pl7 pr22"
                   htmlFor="filter-by-dates-days-2-checkbox"
                 >
-                  <span
-                    className="flex-0 field field-checkbox"
-                  >
-                    <input
-                      checked={false}
-                      className="input no-background"
-                      id="filter-by-dates-days-2-checkbox"
-                      onChange={[Function]}
-                      type="checkbox"
-                      value="5-100000"
-                    />
-                  </span>
+                  <input
+                    checked={false}
+                    className="input form-checkbox field field-checkbox"
+                    id="filter-by-dates-days-2-checkbox"
+                    onChange={[Function]}
+                    type="checkbox"
+                    value="5-100000"
+                  />
                   <span
                     className="fs19 flex-1"
                   >
@@ -378,18 +342,14 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  <span
-                    className="flex-0 field field-checkbox"
-                  >
-                    <input
-                      checked={false}
-                      className="input no-background"
-                      id="filter-by-dates-days-0-checkbox"
-                      onChange={[Function]}
-                      type="checkbox"
-                      value="0-1"
-                    />
-                  </span>,
+                  <input
+                    checked={false}
+                    className="input form-checkbox field field-checkbox"
+                    id="filter-by-dates-days-0-checkbox"
+                    onChange={[Function]}
+                    type="checkbox"
+                    value="0-1"
+                  />,
                   <span
                     className="fs19 flex-1"
                   >
@@ -406,34 +366,16 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": <input
-                      checked={false}
-                      className="input no-background"
-                      id="filter-by-dates-days-0-checkbox"
-                      onChange={[Function]}
-                      type="checkbox"
-                      value="0-1"
-                    />,
-                    "className": "flex-0 field field-checkbox",
+                    "checked": false,
+                    "className": "input form-checkbox field field-checkbox",
+                    "id": "filter-by-dates-days-0-checkbox",
+                    "onChange": [Function],
+                    "type": "checkbox",
+                    "value": "0-1",
                   },
                   "ref": null,
-                  "rendered": Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "host",
-                    "props": Object {
-                      "checked": false,
-                      "className": "input no-background",
-                      "id": "filter-by-dates-days-0-checkbox",
-                      "onChange": [Function],
-                      "type": "checkbox",
-                      "value": "0-1",
-                    },
-                    "ref": null,
-                    "rendered": null,
-                    "type": "input",
-                  },
-                  "type": "span",
+                  "rendered": null,
+                  "type": "input",
                 },
                 Object {
                   "instance": null,
@@ -456,18 +398,14 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  <span
-                    className="flex-0 field field-checkbox"
-                  >
-                    <input
-                      checked={false}
-                      className="input no-background"
-                      id="filter-by-dates-days-1-checkbox"
-                      onChange={[Function]}
-                      type="checkbox"
-                      value="1-5"
-                    />
-                  </span>,
+                  <input
+                    checked={false}
+                    className="input form-checkbox field field-checkbox"
+                    id="filter-by-dates-days-1-checkbox"
+                    onChange={[Function]}
+                    type="checkbox"
+                    value="1-5"
+                  />,
                   <span
                     className="fs19 flex-1"
                   >
@@ -484,34 +422,16 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": <input
-                      checked={false}
-                      className="input no-background"
-                      id="filter-by-dates-days-1-checkbox"
-                      onChange={[Function]}
-                      type="checkbox"
-                      value="1-5"
-                    />,
-                    "className": "flex-0 field field-checkbox",
+                    "checked": false,
+                    "className": "input form-checkbox field field-checkbox",
+                    "id": "filter-by-dates-days-1-checkbox",
+                    "onChange": [Function],
+                    "type": "checkbox",
+                    "value": "1-5",
                   },
                   "ref": null,
-                  "rendered": Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "host",
-                    "props": Object {
-                      "checked": false,
-                      "className": "input no-background",
-                      "id": "filter-by-dates-days-1-checkbox",
-                      "onChange": [Function],
-                      "type": "checkbox",
-                      "value": "1-5",
-                    },
-                    "ref": null,
-                    "rendered": null,
-                    "type": "input",
-                  },
-                  "type": "span",
+                  "rendered": null,
+                  "type": "input",
                 },
                 Object {
                   "instance": null,
@@ -534,18 +454,14 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  <span
-                    className="flex-0 field field-checkbox"
-                  >
-                    <input
-                      checked={false}
-                      className="input no-background"
-                      id="filter-by-dates-days-2-checkbox"
-                      onChange={[Function]}
-                      type="checkbox"
-                      value="5-100000"
-                    />
-                  </span>,
+                  <input
+                    checked={false}
+                    className="input form-checkbox field field-checkbox"
+                    id="filter-by-dates-days-2-checkbox"
+                    onChange={[Function]}
+                    type="checkbox"
+                    value="5-100000"
+                  />,
                   <span
                     className="fs19 flex-1"
                   >
@@ -562,34 +478,16 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": <input
-                      checked={false}
-                      className="input no-background"
-                      id="filter-by-dates-days-2-checkbox"
-                      onChange={[Function]}
-                      type="checkbox"
-                      value="5-100000"
-                    />,
-                    "className": "flex-0 field field-checkbox",
+                    "checked": false,
+                    "className": "input form-checkbox field field-checkbox",
+                    "id": "filter-by-dates-days-2-checkbox",
+                    "onChange": [Function],
+                    "type": "checkbox",
+                    "value": "5-100000",
                   },
                   "ref": null,
-                  "rendered": Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "host",
-                    "props": Object {
-                      "checked": false,
-                      "className": "input no-background",
-                      "id": "filter-by-dates-days-2-checkbox",
-                      "onChange": [Function],
-                      "type": "checkbox",
-                      "value": "5-100000",
-                    },
-                    "ref": null,
-                    "rendered": null,
-                    "type": "input",
-                  },
-                  "type": "span",
+                  "rendered": null,
+                  "type": "input",
                 },
                 Object {
                   "instance": null,
@@ -689,18 +587,14 @@ ShallowWrapper {
                 className="item flex-columns items-center py5 pl7 pr22"
                 htmlFor="filter-by-dates-days-0-checkbox"
               >
-                <span
-                  className="flex-0 field field-checkbox"
-                >
-                  <input
-                    checked={false}
-                    className="input no-background"
-                    id="filter-by-dates-days-0-checkbox"
-                    onChange={[Function]}
-                    type="checkbox"
-                    value="0-1"
-                  />
-                </span>
+                <input
+                  checked={false}
+                  className="input form-checkbox field field-checkbox"
+                  id="filter-by-dates-days-0-checkbox"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="0-1"
+                />
                 <span
                   className="fs19 flex-1"
                 >
@@ -711,18 +605,14 @@ ShallowWrapper {
                 className="item flex-columns items-center py5 pl7 pr22"
                 htmlFor="filter-by-dates-days-1-checkbox"
               >
-                <span
-                  className="flex-0 field field-checkbox"
-                >
-                  <input
-                    checked={false}
-                    className="input no-background"
-                    id="filter-by-dates-days-1-checkbox"
-                    onChange={[Function]}
-                    type="checkbox"
-                    value="1-5"
-                  />
-                </span>
+                <input
+                  checked={false}
+                  className="input form-checkbox field field-checkbox"
+                  id="filter-by-dates-days-1-checkbox"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="1-5"
+                />
                 <span
                   className="fs19 flex-1"
                 >
@@ -733,18 +623,14 @@ ShallowWrapper {
                 className="item flex-columns items-center py5 pl7 pr22"
                 htmlFor="filter-by-dates-days-2-checkbox"
               >
-                <span
-                  className="flex-0 field field-checkbox"
-                >
-                  <input
-                    checked={false}
-                    className="input no-background"
-                    id="filter-by-dates-days-2-checkbox"
-                    onChange={[Function]}
-                    type="checkbox"
-                    value="5-100000"
-                  />
-                </span>
+                <input
+                  checked={false}
+                  className="input form-checkbox field field-checkbox"
+                  id="filter-by-dates-days-2-checkbox"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="5-100000"
+                />
                 <span
                   className="fs19 flex-1"
                 >
@@ -812,18 +698,14 @@ ShallowWrapper {
                 className="item flex-columns items-center py5 pl7 pr22"
                 htmlFor="filter-by-dates-days-0-checkbox"
               >
-                <span
-                  className="flex-0 field field-checkbox"
-                >
-                  <input
-                    checked={false}
-                    className="input no-background"
-                    id="filter-by-dates-days-0-checkbox"
-                    onChange={[Function]}
-                    type="checkbox"
-                    value="0-1"
-                  />
-                </span>
+                <input
+                  checked={false}
+                  className="input form-checkbox field field-checkbox"
+                  id="filter-by-dates-days-0-checkbox"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="0-1"
+                />
                 <span
                   className="fs19 flex-1"
                 >
@@ -834,18 +716,14 @@ ShallowWrapper {
                 className="item flex-columns items-center py5 pl7 pr22"
                 htmlFor="filter-by-dates-days-1-checkbox"
               >
-                <span
-                  className="flex-0 field field-checkbox"
-                >
-                  <input
-                    checked={false}
-                    className="input no-background"
-                    id="filter-by-dates-days-1-checkbox"
-                    onChange={[Function]}
-                    type="checkbox"
-                    value="1-5"
-                  />
-                </span>
+                <input
+                  checked={false}
+                  className="input form-checkbox field field-checkbox"
+                  id="filter-by-dates-days-1-checkbox"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="1-5"
+                />
                 <span
                   className="fs19 flex-1"
                 >
@@ -856,18 +734,14 @@ ShallowWrapper {
                 className="item flex-columns items-center py5 pl7 pr22"
                 htmlFor="filter-by-dates-days-2-checkbox"
               >
-                <span
-                  className="flex-0 field field-checkbox"
-                >
-                  <input
-                    checked={false}
-                    className="input no-background"
-                    id="filter-by-dates-days-2-checkbox"
-                    onChange={[Function]}
-                    type="checkbox"
-                    value="5-100000"
-                  />
-                </span>
+                <input
+                  checked={false}
+                  className="input form-checkbox field field-checkbox"
+                  id="filter-by-dates-days-2-checkbox"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="5-100000"
+                />
                 <span
                   className="fs19 flex-1"
                 >
@@ -912,18 +786,14 @@ ShallowWrapper {
                     className="item flex-columns items-center py5 pl7 pr22"
                     htmlFor="filter-by-dates-days-0-checkbox"
                   >
-                    <span
-                      className="flex-0 field field-checkbox"
-                    >
-                      <input
-                        checked={false}
-                        className="input no-background"
-                        id="filter-by-dates-days-0-checkbox"
-                        onChange={[Function]}
-                        type="checkbox"
-                        value="0-1"
-                      />
-                    </span>
+                    <input
+                      checked={false}
+                      className="input form-checkbox field field-checkbox"
+                      id="filter-by-dates-days-0-checkbox"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="0-1"
+                    />
                     <span
                       className="fs19 flex-1"
                     >
@@ -934,18 +804,14 @@ ShallowWrapper {
                     className="item flex-columns items-center py5 pl7 pr22"
                     htmlFor="filter-by-dates-days-1-checkbox"
                   >
-                    <span
-                      className="flex-0 field field-checkbox"
-                    >
-                      <input
-                        checked={false}
-                        className="input no-background"
-                        id="filter-by-dates-days-1-checkbox"
-                        onChange={[Function]}
-                        type="checkbox"
-                        value="1-5"
-                      />
-                    </span>
+                    <input
+                      checked={false}
+                      className="input form-checkbox field field-checkbox"
+                      id="filter-by-dates-days-1-checkbox"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="1-5"
+                    />
                     <span
                       className="fs19 flex-1"
                     >
@@ -956,18 +822,14 @@ ShallowWrapper {
                     className="item flex-columns items-center py5 pl7 pr22"
                     htmlFor="filter-by-dates-days-2-checkbox"
                   >
-                    <span
-                      className="flex-0 field field-checkbox"
-                    >
-                      <input
-                        checked={false}
-                        className="input no-background"
-                        id="filter-by-dates-days-2-checkbox"
-                        onChange={[Function]}
-                        type="checkbox"
-                        value="5-100000"
-                      />
-                    </span>
+                    <input
+                      checked={false}
+                      className="input form-checkbox field field-checkbox"
+                      id="filter-by-dates-days-2-checkbox"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="5-100000"
+                    />
                     <span
                       className="fs19 flex-1"
                     >
@@ -1009,18 +871,14 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "children": Array [
-                    <span
-                      className="flex-0 field field-checkbox"
-                    >
-                      <input
-                        checked={false}
-                        className="input no-background"
-                        id="filter-by-dates-days-0-checkbox"
-                        onChange={[Function]}
-                        type="checkbox"
-                        value="0-1"
-                      />
-                    </span>,
+                    <input
+                      checked={false}
+                      className="input form-checkbox field field-checkbox"
+                      id="filter-by-dates-days-0-checkbox"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="0-1"
+                    />,
                     <span
                       className="fs19 flex-1"
                     >
@@ -1037,34 +895,16 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "host",
                     "props": Object {
-                      "children": <input
-                        checked={false}
-                        className="input no-background"
-                        id="filter-by-dates-days-0-checkbox"
-                        onChange={[Function]}
-                        type="checkbox"
-                        value="0-1"
-                      />,
-                      "className": "flex-0 field field-checkbox",
+                      "checked": false,
+                      "className": "input form-checkbox field field-checkbox",
+                      "id": "filter-by-dates-days-0-checkbox",
+                      "onChange": [Function],
+                      "type": "checkbox",
+                      "value": "0-1",
                     },
                     "ref": null,
-                    "rendered": Object {
-                      "instance": null,
-                      "key": undefined,
-                      "nodeType": "host",
-                      "props": Object {
-                        "checked": false,
-                        "className": "input no-background",
-                        "id": "filter-by-dates-days-0-checkbox",
-                        "onChange": [Function],
-                        "type": "checkbox",
-                        "value": "0-1",
-                      },
-                      "ref": null,
-                      "rendered": null,
-                      "type": "input",
-                    },
-                    "type": "span",
+                    "rendered": null,
+                    "type": "input",
                   },
                   Object {
                     "instance": null,
@@ -1087,18 +927,14 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "children": Array [
-                    <span
-                      className="flex-0 field field-checkbox"
-                    >
-                      <input
-                        checked={false}
-                        className="input no-background"
-                        id="filter-by-dates-days-1-checkbox"
-                        onChange={[Function]}
-                        type="checkbox"
-                        value="1-5"
-                      />
-                    </span>,
+                    <input
+                      checked={false}
+                      className="input form-checkbox field field-checkbox"
+                      id="filter-by-dates-days-1-checkbox"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="1-5"
+                    />,
                     <span
                       className="fs19 flex-1"
                     >
@@ -1115,34 +951,16 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "host",
                     "props": Object {
-                      "children": <input
-                        checked={false}
-                        className="input no-background"
-                        id="filter-by-dates-days-1-checkbox"
-                        onChange={[Function]}
-                        type="checkbox"
-                        value="1-5"
-                      />,
-                      "className": "flex-0 field field-checkbox",
+                      "checked": false,
+                      "className": "input form-checkbox field field-checkbox",
+                      "id": "filter-by-dates-days-1-checkbox",
+                      "onChange": [Function],
+                      "type": "checkbox",
+                      "value": "1-5",
                     },
                     "ref": null,
-                    "rendered": Object {
-                      "instance": null,
-                      "key": undefined,
-                      "nodeType": "host",
-                      "props": Object {
-                        "checked": false,
-                        "className": "input no-background",
-                        "id": "filter-by-dates-days-1-checkbox",
-                        "onChange": [Function],
-                        "type": "checkbox",
-                        "value": "1-5",
-                      },
-                      "ref": null,
-                      "rendered": null,
-                      "type": "input",
-                    },
-                    "type": "span",
+                    "rendered": null,
+                    "type": "input",
                   },
                   Object {
                     "instance": null,
@@ -1165,18 +983,14 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "children": Array [
-                    <span
-                      className="flex-0 field field-checkbox"
-                    >
-                      <input
-                        checked={false}
-                        className="input no-background"
-                        id="filter-by-dates-days-2-checkbox"
-                        onChange={[Function]}
-                        type="checkbox"
-                        value="5-100000"
-                      />
-                    </span>,
+                    <input
+                      checked={false}
+                      className="input form-checkbox field field-checkbox"
+                      id="filter-by-dates-days-2-checkbox"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="5-100000"
+                    />,
                     <span
                       className="fs19 flex-1"
                     >
@@ -1193,34 +1007,16 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "host",
                     "props": Object {
-                      "children": <input
-                        checked={false}
-                        className="input no-background"
-                        id="filter-by-dates-days-2-checkbox"
-                        onChange={[Function]}
-                        type="checkbox"
-                        value="5-100000"
-                      />,
-                      "className": "flex-0 field field-checkbox",
+                      "checked": false,
+                      "className": "input form-checkbox field field-checkbox",
+                      "id": "filter-by-dates-days-2-checkbox",
+                      "onChange": [Function],
+                      "type": "checkbox",
+                      "value": "5-100000",
                     },
                     "ref": null,
-                    "rendered": Object {
-                      "instance": null,
-                      "key": undefined,
-                      "nodeType": "host",
-                      "props": Object {
-                        "checked": false,
-                        "className": "input no-background",
-                        "id": "filter-by-dates-days-2-checkbox",
-                        "onChange": [Function],
-                        "type": "checkbox",
-                        "value": "5-100000",
-                      },
-                      "ref": null,
-                      "rendered": null,
-                      "type": "input",
-                    },
-                    "type": "span",
+                    "rendered": null,
+                    "type": "input",
                   },
                   Object {
                     "instance": null,

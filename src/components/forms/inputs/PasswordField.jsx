@@ -3,9 +3,9 @@ import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
 
 import FormError from '../FormError'
-import InputHelp from '../InputHelp'
 import InputLabel from '../InputLabel'
 import { validatePasswordField } from '../validators'
+import hasErrorMessage from '../utils/hasErrorMessage'
 
 class PasswordField extends PureComponent {
   constructor(props) {
@@ -13,68 +13,48 @@ class PasswordField extends PureComponent {
     this.state = { hidden: true }
   }
 
-  handleOnToggleVivisbility = () => {
+  handleOnToggleVisibility = () => {
     this.setState(prev => ({ hidden: !prev.hidden }))
   }
 
   renderField = ({ input, meta }) => {
-    const {
-      autoComplete,
-      className,
-      disabled,
-      help,
-      id,
-      label,
-      name,
-      placeholder,
-      required,
-      sublabel,
-    } = this.props
+    const { autoComplete, disabled, id, label, name, placeholder, required, sublabel } = this.props
     const { hidden } = this.state
     const status = hidden ? '' : '-close'
     const inputType = hidden ? 'password' : 'text'
 
     return (
-      <p className={`${className}`}>
-        <label
-          className="pc-final-form-password"
-          htmlFor={id || name}
-        >
-          {label && <InputLabel
-            label={label}
-            required={required}
-            sublabel={sublabel}
-                    />}
-          {help && <InputHelp label={help} />}
-          <span className="pc-final-form-inner">
-            <input
-              {...input}
-              autoComplete={autoComplete ? 'on' : 'off'}
-              className="pc-final-form-input"
-              disabled={disabled}
-              id={id || name} // cast to boolean
-              placeholder={placeholder}
-              required={!!required}
-              type={inputType}
-            />
-            <button
-              className="no-border no-outline no-background mx12 flex-0 is-primary-text"
-              onClick={this.handleOnToggleVivisbility}
-              type="button"
-            >
-              <span
-                aria-hidden
-                className={`icon-legacy-eye${status} fs22`}
-                title="Afficher/Masquer le mot de passe"
-              />
-            </button>
-          </span>
-          <FormError
-            id={`${id || name}-error`}
-            meta={meta}
+      <label className="label-password-inner">
+        <InputLabel
+          label={label}
+          required={required}
+          sublabel={sublabel}
+        />
+        <div className={`input-inner${hasErrorMessage(meta)}`}>
+          <input
+            {...input}
+            autoComplete={autoComplete ? 'on' : 'off'}
+            className="form-input"
+            disabled={disabled}
+            id={id || name}
+            placeholder={placeholder}
+            required={!!required}
+            type={inputType}
           />
-        </label>
-      </p>
+          <button
+            className="no-background mx12 flex-0 is-primary-text"
+            onClick={this.handleOnToggleVisibility}
+            type="button"
+          >
+            <span
+              aria-hidden
+              className={`icon-legacy-eye${status}`}
+              title="Afficher/Masquer le mot de passe"
+            />
+          </button>
+        </div>
+        <FormError meta={meta} />
+      </label>
     )
   }
 
@@ -84,6 +64,7 @@ class PasswordField extends PureComponent {
       required && typeof required === 'function'
         ? required
         : (required && validatePasswordField) || undefined
+
     return (
       <Field
         name={name}
@@ -98,11 +79,8 @@ class PasswordField extends PureComponent {
 
 PasswordField.defaultProps = {
   autoComplete: false,
-  className: '',
   disabled: false,
-  help: null,
   id: null,
-  label: 'Saisissez Votre mot de passe',
   placeholder: '',
   required: false,
   sublabel: null,
@@ -110,11 +88,9 @@ PasswordField.defaultProps = {
 
 PasswordField.propTypes = {
   autoComplete: PropTypes.bool,
-  className: PropTypes.string,
   disabled: PropTypes.bool,
-  help: PropTypes.string,
   id: PropTypes.string,
-  label: PropTypes.string,
+  label: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   placeholder: PropTypes.string,
   required: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),

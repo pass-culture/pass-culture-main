@@ -14,7 +14,7 @@ const NavByOfferType = ({ title, categories, resetSearchStore, updateSearchQuery
     <div className="pc-list flex-columns wrap-2">
       {categories.map(category => (
         <button
-          className="item no-border no-background no-outline mt12 col-1of2"
+          className="item no-background mt12 col-1of2"
           key={category}
           onClick={update(category, resetSearchStore, updateSearchQuery)}
           type="button"

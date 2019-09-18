@@ -3,7 +3,7 @@
 $toaster-height: rem(44px);
 
 .Toastify__toast {
-  @extend .is-barlow-font;
+  font-family: $family-sans-serif;
 }
 
 .react-toastify-container {
@@ -26,8 +26,8 @@ $toaster-height: rem(44px);
 .react-toastify-body {
   @extend .fs16;
   @extend .is-black-text;
-  @extend .is-barlow-font;
 
+  font-family: $family-sans-serif;
   margin-left: 0 !important;
   margin-right: 0 !important;
   margin-top: rem(12px) !important;

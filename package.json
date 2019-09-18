@@ -8,7 +8,6 @@
   },
   "dependencies": {
     "@typeform/embed": "0.7.1",
-    "bulma": "^0.7.1",
     "classnames": "2.2.5",
     "colorsys": "1.0.20",
     "enzyme": "^3.6.0",

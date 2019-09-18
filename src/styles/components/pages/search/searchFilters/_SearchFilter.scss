@@ -1,3 +1,91 @@
+.search-input {
+  border: 0;
+  border-radius: 2rem;
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+  font-size: rem(20px);
+  font-weight: 700;
+  padding: 9px 40px 9px 9px;
+  width: 100%;
+
+  &::placeholder {
+    font-size: rem(15px);
+    font-weight: 500;
+  }
+}
+
+#keywords-search-button {
+  @extend .pc-theme-primary;
+
+  border-color: $primary;
+  border-radius: 2rem;
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+  box-shadow: inset 0 -2px 0 0 rgba(153, 0, 38, 0.6);
+  font-size: rem(20px);
+  font-weight: 500;
+  padding: 10px 16px;
+}
+
+.field {
+  &:last-child {
+    .button {
+      border-left: none;
+    }
+  }
+
+  &:focus-within .button {
+    border-color: $primary;
+  }
+
+  &.has-addons {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-pack: start;
+    justify-content: flex-start;
+
+    .control {
+      position: relative;
+
+      &.has-icons-right .icon {
+        color: $white-bis;
+        height: 44px;
+        pointer-events: none;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 44px;
+        z-index: 4;
+      }
+
+      .button {
+        border-width: 2px;
+        height: 100%;
+
+        &:focus {
+          &:not(:active) {
+            box-shadow: none;
+          }
+        }
+      }
+
+      &:not(:last-child) {
+        .input {
+          border-right: none;
+        }
+      }
+    }
+  }
+
+  .required:not(.readOnly) {
+    &::after {
+      content: ' *';
+      color: $violet;
+      display: inline;
+    }
+  }
+}
+
 #search-filter-menu {
   background-color: $grey-lighter;
   border-radius: 0.25em 0 0.25em 0.25em;
@@ -13,7 +101,6 @@
   border-top: 2px solid $white;
 
   button {
-    border: 0;
     background-color: $grey-lighter;
     border-color: $white;
     border-radius: 0;
@@ -37,7 +124,7 @@
   // pour que le bouton est la même hauteur que le search input
   // et que quand on ouvre le menu des filtres
   // on ait un background gris pour le bouton
-  height: 44px;
+  height: 50px;
   margin-left: 6px;
   min-width: 44px;
   width: 44px;
@@ -79,20 +166,18 @@
     margin-bottom: 0;
   }
 
-  .field .input {
-    margin-right: 7px;
-  }
-
   /* ----- datepicker ----- */
-  .pc-final-form-inner {
+  .input-inner {
+    background: transparent;
     border: 0;
     border-radius: 0;
-    background: transparent;
+    box-shadow: none;
   }
 
-  .pc-final-form-datepicker-input {
-    color: $black;
+  .form-datepicker-input {
     background: transparent;
+    border: none;
+    color: $black;
   }
 
   /* ----- Clear Button du filtre par date ----- */
@@ -198,7 +283,7 @@
 
       background-color: $white;
       border-radius: 50%;
-      color: $red;
+      color: $primary;
 
       &::before {
         margin: 0;

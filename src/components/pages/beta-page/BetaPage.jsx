@@ -2,29 +2,18 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 export const BetaPage = () => (
-  <div
-    className="page pc-gradient flex-rows"
-    id="beta-page"
-  >
-    <main
-      className="pc-main padded flex-rows flex-center"
-      role="main"
-    >
-      <h1 className="text-left fs32">
-        <span className="is-bold is-italic is-block">{'Bienvenue'}</span>
-        <span className="is-italic is-block is-semi-bold">{'dans l’avant-première'}</span>
-        <span className="is-italic is-block">{'du pass Culture'}</span>
+  <div className="beta-page page pc-gradient flex-rows">
+    <main className="pc-main padded flex-rows flex-center">
+      <h1>
+        <div className="is-italic is-bold">{'Bienvenue'}</div>
+        <div className="is-italic is-semi-bold">{'dans l’avant-première'}</div>
+        <div className="is-italic is-normal">{'du pass Culture'}</div>
       </h1>
-      <p className="text-left is-italic is-medium mt36 fs22">
-        <span className="is-block">
-          {'Et merci de votre participation pour nous aider à l’améliorer !'}
-        </span>
+      <p className="is-italic is-medium mt36 fs22">
+        {'Et merci de votre participation pour nous aider à l’améliorer !'}
       </p>
     </main>
-    <footer
-      className="pc-footer flex-columns flex-end"
-      role="navigation"
-    >
+    <footer className="pc-footer flex-columns flex-end">
       <Link
         className="flex-center items-center"
         id="beta-connexion-link"

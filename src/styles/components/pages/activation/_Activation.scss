@@ -1,95 +1,21 @@
-#activation-password-page {
-  .pc-final-form-label {
-    @extend .fs19;
+.page-activation {
+  .form-checkbox {
+    background-image: url(/icons/checkbox-w.svg);
 
-    display: block;
-  }
-
-  .pc-final-form-input {
-    @extend .fs20;
-    @extend .is-bold;
-  }
-
-  label[for='activation-newPassword'] .pc-final-form-label {
-    padding: 0;
-  }
-
-  .pc-final-form-contact {
-    margin-top: 40px;
-
-    input {
-      background-image: url(/icons/checkbox-w.svg);
-
-      &:active,
-      &:checked {
-        &::after {
-          content: '';
-          background-image: url(/icons/checkbox-check-w.svg);
-        }
+    &:active,
+    &:checked {
+      &::after {
+        background-image: url(/icons/checkbox-check-w.svg);
       }
     }
-
-    a {
-      text-decoration: underline;
-      color: $white;
-    }
   }
 }
 
-#activation-events-page {
-  .pc-final-form-selectbox {
-    .pc-final-form-inner {
-      @extend .no-border;
-      @extend .no-background;
-
-      border-radius: 0;
-      border-bottom-width: 1px;
-      border-bottom-style: solid;
-      border-color: $white !important;
-    }
-
-    .pc-final-form-inner::after {
-      color: $white;
-    }
-
-    .pc-final-form-input {
-      @extend .fs18;
-      @extend .is-bold;
-      @extend .no-background;
-
-      color: $white !important;
-      margin-left: 0 !important;
-    }
-  }
+.activation-email-label {
+  font-size: rem(19px);
 }
 
-#activation-events-page-submit-button {
-  color: $white;
-  background-color: transparent;
-}
-
-#activation-error-page,
-#activation-link-error-page {
-  p {
-    font-weight: 500;
-    font-style: italic;
-  }
-
-  > div {
-    margin-top: 16px;
-  }
-
-  a {
-    border-radius: 1px;
-    font-size: 18px;
-    font-weight: 700;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-}
-
-.react-embed-typeform-container iframe {
-  @extend .is-full-layout;
+.activation-email {
+  font-size: rem(20px);
+  font-weight: 700;
 }

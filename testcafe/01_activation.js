@@ -4,7 +4,7 @@ import getPageUrl from './helpers/getPageUrl'
 import { fetchSandbox } from './helpers/sandboxes'
 import { ROOT_PATH } from '../src/utils/config'
 
-const activationEmailSpan = Selector('#activation-email')
+const activationEmailSpan = Selector('.activation-email')
 const cguInput = Selector("input[name='cguCheckBox']")
 const newPasswordInput = Selector('#activation-newPassword')
 const newPasswordConfirm = Selector('#activation-newPasswordConfirm')
@@ -26,7 +26,8 @@ test('Lorsque je clique sur le lien reçu par mail et que je saisis mon premier 
   // when
   await t
     .navigateTo(url)
-    .expect(activationEmailSpan.innerText).eql(email)
+    .expect(activationEmailSpan.innerText)
+    .eql(email)
     .typeText(newPasswordInput, password)
     .typeText(newPasswordConfirm, password)
     .click(cguInput)

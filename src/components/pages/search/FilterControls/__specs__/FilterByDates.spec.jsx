@@ -3,7 +3,7 @@ import React from 'react'
 
 import FilterByDates from '../FilterByDates'
 import { DAYS_CHECKBOXES } from '../../helpers'
-import { DatePickerField } from '../../../../forms/inputs'
+import DatePickerField from '../../../../forms/inputs/DatePickerField/DatePickerField'
 
 describe('src | components | pages | search | FilterControls | FilterByDates', () => {
   let props

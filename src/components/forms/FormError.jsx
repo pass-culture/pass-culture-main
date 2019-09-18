@@ -8,65 +8,59 @@ import PropTypes from 'prop-types'
 // Documentation: https://reactjs.org/docs/lists-and-keys.html#keys
 const setDangerousArrayKeyIndex = index => `field_error_${index}`
 
-const FormError = ({ className, customMessage, id, meta, theme }) => {
+const FormError = ({ customMessage, meta }) => {
   const showError =
     customMessage ||
     (meta && meta.touched && (meta.error || (!meta.dirtySinceLastSubmit && meta.submitError)))
-  let errorMessage =
+  let errorMessages =
     (showError &&
       (customMessage || (meta.error || (!meta.dirtySinceLastSubmit && meta.submitError)))) ||
     null
   // FIXME -> transformation en array plus propre
   // on considére qu'une erreur est soit un string, soit un array
-  errorMessage = !errorMessage
+  errorMessages = !errorMessages
     ? null
-    : (Array.isArray(errorMessage) && errorMessage) || [].concat(errorMessage)
+    : (Array.isArray(errorMessages) && errorMessages) || [].concat(errorMessages)
+
   return (
-    <span
-      className={`pc-final-form-errors is-block mt7 pc-theme-${theme} no-no-background ${className}`}
-      id={id}
-    >
-      {(errorMessage && (
-        <span className="flex-columns">
-          <span className="flex-0 mr3">
+    (errorMessages && (
+      <div className="mt7">
+        <div className="flex-columns">
+          <div className="flex-0">
             <span
               aria-hidden
               className="icon-legacy-warning-circled fs18"
-              title=""
+              title="Information"
             />
-          </span>
-          <span className="flex-1 is-semi-bold fs15">
-            {errorMessage.map((err, index) => (
-              <span
-                className="pc-error-message is-block mt2"
+          </div>
+          <div className="flex-1">
+            {errorMessages.map((error, index) => (
+              <div
+                className="form-error-message"
                 key={setDangerousArrayKeyIndex(index)}
               >
-                {err}
-              </span>
+                {error}
+              </div>
             ))}
-          </span>
-        </span>
-      )) ||
-        null}
-    </span>
+          </div>
+        </div>
+      </div>
+    )) ||
+    null
   )
 }
 
 FormError.defaultProps = {
-  className: '',
   customMessage: '',
-  id: null,
   meta: null,
   theme: 'white',
 }
 
 FormError.propTypes = {
-  className: PropTypes.string,
   // NOTE: utile uniquement pour afficher un message custom
   // ne doit pas faire doublon avec les erreurs générées par le form
   // doit être utilisé par exemple pour passer une erreur générale de formulaire
   customMessage: PropTypes.string,
-  id: PropTypes.string,
   // NOTE: les erreurs des fields sont générées automatiquement
   // par le formulaire via la propriété `meta`
   // Exemple: https://codesandbox.io/s/9y9om95lyp

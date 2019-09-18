@@ -22,7 +22,6 @@ const ProfileUpdateSuccess = ({ config, match }) => {
       />
       <main
         className="pc-main padded is-relative flex-1 flex-rows text-center"
-        role="main"
         style={{ backgroundImage: BACKGROUND_IMAGE }}
       >
         <h2 className="is-block fs22">

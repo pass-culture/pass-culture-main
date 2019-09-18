@@ -29,7 +29,7 @@ class SelectField extends PureComponent {
     const { onChange, value } = input
 
     return (
-      <div className={classnames('select-field pc-final-form-inner', { 'is-read-only': readOnly })}>
+      <div className={classnames('select-field input-inner', { 'is-read-only': readOnly })}>
         <select
           {...moreProps}
           className="content"
@@ -66,7 +66,7 @@ class SelectField extends PureComponent {
     return (
       <div className={className}>
         <label
-          className="pc-final-form-datepicker"
+          className="label-datepicker-inner"
           htmlFor={inputName}
         >
           {label && <InputLabel

@@ -28,7 +28,7 @@ Au niveau des fichiers react avec des éléments portant des propriétés classN
     ```
       .foo {
         @extend mb1;
-        background-color:$red;
+        background-color: $primary;
       }
     ```
 

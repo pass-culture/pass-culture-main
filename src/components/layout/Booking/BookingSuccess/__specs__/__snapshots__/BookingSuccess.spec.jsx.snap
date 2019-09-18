@@ -72,7 +72,7 @@ ShallowWrapper {
           className="my28"
         >
           <b
-            className="is-block is-size-1"
+            className="is-block is-size-1 fs48"
             data-token="g8g8g8"
             id="booking-booked-token"
           >
@@ -260,7 +260,7 @@ ShallowWrapper {
         "props": Object {
           "children": Array [
             <b
-              className="is-block is-size-1"
+              className="is-block is-size-1 fs48"
               data-token="g8g8g8"
               id="booking-booked-token"
             >
@@ -278,7 +278,7 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": "g8g8g8",
-              "className": "is-block is-size-1",
+              "className": "is-block is-size-1 fs48",
               "data-token": "g8g8g8",
               "id": "booking-booked-token",
             },
@@ -483,7 +483,7 @@ ShallowWrapper {
             className="my28"
           >
             <b
-              className="is-block is-size-1"
+              className="is-block is-size-1 fs48"
               data-token="g8g8g8"
               id="booking-booked-token"
             >
@@ -671,7 +671,7 @@ ShallowWrapper {
           "props": Object {
             "children": Array [
               <b
-                className="is-block is-size-1"
+                className="is-block is-size-1 fs48"
                 data-token="g8g8g8"
                 id="booking-booked-token"
               >
@@ -689,7 +689,7 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": "g8g8g8",
-                "className": "is-block is-size-1",
+                "className": "is-block is-size-1 fs48",
                 "data-token": "g8g8g8",
                 "id": "booking-booked-token",
               },

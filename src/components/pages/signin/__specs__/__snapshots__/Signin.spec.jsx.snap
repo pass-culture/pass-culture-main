@@ -26,8 +26,7 @@ ShallowWrapper {
         onSubmit={[Function]}
         render={[Function]}
       />,
-      "className": "page pc-gradient is-relative",
-      "id": "sign-in-page",
+      "className": "logout-form-main",
     },
     "ref": null,
     "rendered": Object {
@@ -42,7 +41,7 @@ ShallowWrapper {
       "rendered": null,
       "type": [Function],
     },
-    "type": "div",
+    "type": "main",
   },
   Symbol(enzyme.__nodes__): Array [
     Object {
@@ -54,8 +53,7 @@ ShallowWrapper {
           onSubmit={[Function]}
           render={[Function]}
         />,
-        "className": "page pc-gradient is-relative",
-        "id": "sign-in-page",
+        "className": "logout-form-main",
       },
       "ref": null,
       "rendered": Object {
@@ -70,7 +68,7 @@ ShallowWrapper {
         "rendered": null,
         "type": [Function],
       },
-      "type": "div",
+      "type": "main",
     },
   ],
   Symbol(enzyme.__options__): Object {

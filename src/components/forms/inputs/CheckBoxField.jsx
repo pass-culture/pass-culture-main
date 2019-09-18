@@ -13,21 +13,20 @@ const validateRequiredField = value => {
 
 class CheckBoxField extends Component {
   renderField = ({ input, meta }) => {
-    const { children, className, name, required } = this.props
+    const { children, name, required } = this.props
 
     return (
       <Fragment>
-        <label
-          className={`pc-final-form-contact ${className}`}
-          htmlFor={name}
-        >
-          <input
-            {...input}
-            className="input no-background"
-            id={name}
-            required={required}
-            type="checkbox"
-          />
+        <label className="label-contact-inner">
+          <span>
+            <input
+              {...input}
+              className="input form-checkbox"
+              id={name}
+              required={required}
+              type="checkbox"
+            />
+          </span>
           {children}
         </label>
         <FormError meta={meta} />
@@ -54,13 +53,11 @@ class CheckBoxField extends Component {
 }
 
 CheckBoxField.defaultProps = {
-  className: '',
   required: true,
 }
 
 CheckBoxField.propTypes = {
   children: PropTypes.node.isRequired,
-  className: PropTypes.string,
   name: PropTypes.string.isRequired,
   required: PropTypes.bool,
 }

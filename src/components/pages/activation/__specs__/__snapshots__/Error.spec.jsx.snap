@@ -18,19 +18,41 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "host",
     "props": Object {
-      "children": Array [
-        <div
-          className="flex-center flex-row"
+      "children": <div>
+        <p
+          className="fs20 mb28"
         >
+          Il semblerait que le lien cliqué soit incorrect.
+        </p>
+        <MailToLink
+          className="no-background border-all rd4 py12 px18 is-inline-block is-white-text text-center fs16"
+          email="support@passculture.app"
+          headers={
+            Object {
+              "subject": "Votre question depuis l’application pass Culture",
+            }
+          }
+          obfuscate={true}
+        >
+          <span>
+            Contactez-nous
+          </span>
+        </MailToLink>
+      </div>,
+      "className": "logout-form-container error",
+    },
+    "ref": null,
+    "rendered": Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
           <p
-            className="fs20"
+            className="fs20 mb28"
           >
             Il semblerait que le lien cliqué soit incorrect.
-          </p>
-        </div>,
-        <div
-          className="flex-center flex-row padded"
-        >
+          </p>,
           <MailToLink
             className="no-background border-all rd4 py12 px18 is-inline-block is-white-text text-center fs16"
             email="support@passculture.app"
@@ -39,72 +61,29 @@ ShallowWrapper {
                 "subject": "Votre question depuis l’application pass Culture",
               }
             }
-            id="activation-error-contact-us"
-            obfuscate={true}
-          >
-            <span>
-              Contactez-nous
-            </span>
-          </MailToLink>
-        </div>,
-      ],
-      "className": "pc-main padded-2x flex-rows flex-center",
-      "id": "activation-error-page",
-      "role": "main",
-    },
-    "ref": null,
-    "rendered": Array [
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": <p
-            className="fs20"
-          >
-            Il semblerait que le lien cliqué soit incorrect.
-          </p>,
-          "className": "flex-center flex-row",
-        },
-        "ref": null,
-        "rendered": Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": "Il semblerait que le lien cliqué soit incorrect.",
-            "className": "fs20",
-          },
-          "ref": null,
-          "rendered": "Il semblerait que le lien cliqué soit incorrect.",
-          "type": "p",
-        },
-        "type": "div",
-      },
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": <MailToLink
-            className="no-background border-all rd4 py12 px18 is-inline-block is-white-text text-center fs16"
-            email="support@passculture.app"
-            headers={
-              Object {
-                "subject": "Votre question depuis l’application pass Culture",
-              }
-            }
-            id="activation-error-contact-us"
             obfuscate={true}
           >
             <span>
               Contactez-nous
             </span>
           </MailToLink>,
-          "className": "flex-center flex-row padded",
+        ],
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Il semblerait que le lien cliqué soit incorrect.",
+            "className": "fs20 mb28",
+          },
+          "ref": null,
+          "rendered": "Il semblerait que le lien cliqué soit incorrect.",
+          "type": "p",
         },
-        "ref": null,
-        "rendered": Object {
+        Object {
           "instance": null,
           "key": undefined,
           "nodeType": "class",
@@ -117,7 +96,6 @@ ShallowWrapper {
             "headers": Object {
               "subject": "Votre question depuis l’application pass Culture",
             },
-            "id": "activation-error-contact-us",
             "obfuscate": true,
           },
           "ref": null,
@@ -134,10 +112,10 @@ ShallowWrapper {
           },
           "type": [Function],
         },
-        "type": "div",
-      },
-    ],
-    "type": "main",
+      ],
+      "type": "div",
+    },
+    "type": "div",
   },
   Symbol(enzyme.__nodes__): Array [
     Object {
@@ -145,19 +123,41 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "host",
       "props": Object {
-        "children": Array [
-          <div
-            className="flex-center flex-row"
+        "children": <div>
+          <p
+            className="fs20 mb28"
           >
+            Il semblerait que le lien cliqué soit incorrect.
+          </p>
+          <MailToLink
+            className="no-background border-all rd4 py12 px18 is-inline-block is-white-text text-center fs16"
+            email="support@passculture.app"
+            headers={
+              Object {
+                "subject": "Votre question depuis l’application pass Culture",
+              }
+            }
+            obfuscate={true}
+          >
+            <span>
+              Contactez-nous
+            </span>
+          </MailToLink>
+        </div>,
+        "className": "logout-form-container error",
+      },
+      "ref": null,
+      "rendered": Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
             <p
-              className="fs20"
+              className="fs20 mb28"
             >
               Il semblerait que le lien cliqué soit incorrect.
-            </p>
-          </div>,
-          <div
-            className="flex-center flex-row padded"
-          >
+            </p>,
             <MailToLink
               className="no-background border-all rd4 py12 px18 is-inline-block is-white-text text-center fs16"
               email="support@passculture.app"
@@ -166,72 +166,29 @@ ShallowWrapper {
                   "subject": "Votre question depuis l’application pass Culture",
                 }
               }
-              id="activation-error-contact-us"
-              obfuscate={true}
-            >
-              <span>
-                Contactez-nous
-              </span>
-            </MailToLink>
-          </div>,
-        ],
-        "className": "pc-main padded-2x flex-rows flex-center",
-        "id": "activation-error-page",
-        "role": "main",
-      },
-      "ref": null,
-      "rendered": Array [
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": <p
-              className="fs20"
-            >
-              Il semblerait que le lien cliqué soit incorrect.
-            </p>,
-            "className": "flex-center flex-row",
-          },
-          "ref": null,
-          "rendered": Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": "Il semblerait que le lien cliqué soit incorrect.",
-              "className": "fs20",
-            },
-            "ref": null,
-            "rendered": "Il semblerait que le lien cliqué soit incorrect.",
-            "type": "p",
-          },
-          "type": "div",
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": <MailToLink
-              className="no-background border-all rd4 py12 px18 is-inline-block is-white-text text-center fs16"
-              email="support@passculture.app"
-              headers={
-                Object {
-                  "subject": "Votre question depuis l’application pass Culture",
-                }
-              }
-              id="activation-error-contact-us"
               obfuscate={true}
             >
               <span>
                 Contactez-nous
               </span>
             </MailToLink>,
-            "className": "flex-center flex-row padded",
+          ],
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Il semblerait que le lien cliqué soit incorrect.",
+              "className": "fs20 mb28",
+            },
+            "ref": null,
+            "rendered": "Il semblerait que le lien cliqué soit incorrect.",
+            "type": "p",
           },
-          "ref": null,
-          "rendered": Object {
+          Object {
             "instance": null,
             "key": undefined,
             "nodeType": "class",
@@ -244,7 +201,6 @@ ShallowWrapper {
               "headers": Object {
                 "subject": "Votre question depuis l’application pass Culture",
               },
-              "id": "activation-error-contact-us",
               "obfuscate": true,
             },
             "ref": null,
@@ -261,10 +217,10 @@ ShallowWrapper {
             },
             "type": [Function],
           },
-          "type": "div",
-        },
-      ],
-      "type": "main",
+        ],
+        "type": "div",
+      },
+      "type": "div",
     },
   ],
   Symbol(enzyme.__options__): Object {

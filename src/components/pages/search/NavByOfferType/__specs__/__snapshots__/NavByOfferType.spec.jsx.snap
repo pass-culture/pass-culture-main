@@ -40,7 +40,7 @@ ShallowWrapper {
           className="pc-list flex-columns wrap-2"
         >
           <button
-            className="item no-border no-background no-outline mt12 col-1of2"
+            className="item no-background mt12 col-1of2"
             onClick={[Function]}
             type="button"
           >
@@ -49,7 +49,7 @@ ShallowWrapper {
             />
           </button>
           <button
-            className="item no-border no-background no-outline mt12 col-1of2"
+            className="item no-background mt12 col-1of2"
             onClick={[Function]}
             type="button"
           >
@@ -58,7 +58,7 @@ ShallowWrapper {
             />
           </button>
           <button
-            className="item no-border no-background no-outline mt12 col-1of2"
+            className="item no-background mt12 col-1of2"
             onClick={[Function]}
             type="button"
           >
@@ -67,7 +67,7 @@ ShallowWrapper {
             />
           </button>
           <button
-            className="item no-border no-background no-outline mt12 col-1of2"
+            className="item no-background mt12 col-1of2"
             onClick={[Function]}
             type="button"
           >
@@ -100,7 +100,7 @@ ShallowWrapper {
         "props": Object {
           "children": Array [
             <button
-              className="item no-border no-background no-outline mt12 col-1of2"
+              className="item no-background mt12 col-1of2"
               onClick={[Function]}
               type="button"
             >
@@ -109,7 +109,7 @@ ShallowWrapper {
               />
             </button>,
             <button
-              className="item no-border no-background no-outline mt12 col-1of2"
+              className="item no-background mt12 col-1of2"
               onClick={[Function]}
               type="button"
             >
@@ -118,7 +118,7 @@ ShallowWrapper {
               />
             </button>,
             <button
-              className="item no-border no-background no-outline mt12 col-1of2"
+              className="item no-background mt12 col-1of2"
               onClick={[Function]}
               type="button"
             >
@@ -127,7 +127,7 @@ ShallowWrapper {
               />
             </button>,
             <button
-              className="item no-border no-background no-outline mt12 col-1of2"
+              className="item no-background mt12 col-1of2"
               onClick={[Function]}
               type="button"
             >
@@ -148,7 +148,7 @@ ShallowWrapper {
               "children": <SearchPicture
                 category="Category 1"
               />,
-              "className": "item no-border no-background no-outline mt12 col-1of2",
+              "className": "item no-background mt12 col-1of2",
               "onClick": [Function],
               "type": "button",
             },
@@ -174,7 +174,7 @@ ShallowWrapper {
               "children": <SearchPicture
                 category="Category 2"
               />,
-              "className": "item no-border no-background no-outline mt12 col-1of2",
+              "className": "item no-background mt12 col-1of2",
               "onClick": [Function],
               "type": "button",
             },
@@ -200,7 +200,7 @@ ShallowWrapper {
               "children": <SearchPicture
                 category="Category 3"
               />,
-              "className": "item no-border no-background no-outline mt12 col-1of2",
+              "className": "item no-background mt12 col-1of2",
               "onClick": [Function],
               "type": "button",
             },
@@ -226,7 +226,7 @@ ShallowWrapper {
               "children": <SearchPicture
                 category="Category 4"
               />,
-              "className": "item no-border no-background no-outline mt12 col-1of2",
+              "className": "item no-background mt12 col-1of2",
               "onClick": [Function],
               "type": "button",
             },
@@ -266,7 +266,7 @@ ShallowWrapper {
             className="pc-list flex-columns wrap-2"
           >
             <button
-              className="item no-border no-background no-outline mt12 col-1of2"
+              className="item no-background mt12 col-1of2"
               onClick={[Function]}
               type="button"
             >
@@ -275,7 +275,7 @@ ShallowWrapper {
               />
             </button>
             <button
-              className="item no-border no-background no-outline mt12 col-1of2"
+              className="item no-background mt12 col-1of2"
               onClick={[Function]}
               type="button"
             >
@@ -284,7 +284,7 @@ ShallowWrapper {
               />
             </button>
             <button
-              className="item no-border no-background no-outline mt12 col-1of2"
+              className="item no-background mt12 col-1of2"
               onClick={[Function]}
               type="button"
             >
@@ -293,7 +293,7 @@ ShallowWrapper {
               />
             </button>
             <button
-              className="item no-border no-background no-outline mt12 col-1of2"
+              className="item no-background mt12 col-1of2"
               onClick={[Function]}
               type="button"
             >
@@ -326,7 +326,7 @@ ShallowWrapper {
           "props": Object {
             "children": Array [
               <button
-                className="item no-border no-background no-outline mt12 col-1of2"
+                className="item no-background mt12 col-1of2"
                 onClick={[Function]}
                 type="button"
               >
@@ -335,7 +335,7 @@ ShallowWrapper {
                 />
               </button>,
               <button
-                className="item no-border no-background no-outline mt12 col-1of2"
+                className="item no-background mt12 col-1of2"
                 onClick={[Function]}
                 type="button"
               >
@@ -344,7 +344,7 @@ ShallowWrapper {
                 />
               </button>,
               <button
-                className="item no-border no-background no-outline mt12 col-1of2"
+                className="item no-background mt12 col-1of2"
                 onClick={[Function]}
                 type="button"
               >
@@ -353,7 +353,7 @@ ShallowWrapper {
                 />
               </button>,
               <button
-                className="item no-border no-background no-outline mt12 col-1of2"
+                className="item no-background mt12 col-1of2"
                 onClick={[Function]}
                 type="button"
               >
@@ -374,7 +374,7 @@ ShallowWrapper {
                 "children": <SearchPicture
                   category="Category 1"
                 />,
-                "className": "item no-border no-background no-outline mt12 col-1of2",
+                "className": "item no-background mt12 col-1of2",
                 "onClick": [Function],
                 "type": "button",
               },
@@ -400,7 +400,7 @@ ShallowWrapper {
                 "children": <SearchPicture
                   category="Category 2"
                 />,
-                "className": "item no-border no-background no-outline mt12 col-1of2",
+                "className": "item no-background mt12 col-1of2",
                 "onClick": [Function],
                 "type": "button",
               },
@@ -426,7 +426,7 @@ ShallowWrapper {
                 "children": <SearchPicture
                   category="Category 3"
                 />,
-                "className": "item no-border no-background no-outline mt12 col-1of2",
+                "className": "item no-background mt12 col-1of2",
                 "onClick": [Function],
                 "type": "button",
               },
@@ -452,7 +452,7 @@ ShallowWrapper {
                 "children": <SearchPicture
                   category="Category 4"
                 />,
-                "className": "item no-border no-background no-outline mt12 col-1of2",
+                "className": "item no-background mt12 col-1of2",
                 "onClick": [Function],
                 "type": "button",
               },

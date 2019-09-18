@@ -1,191 +1,175 @@
-[class^='pc-final-form-'] {
-  // reset des styles de tous les éléments
-  // dont la classe commence par `pc-final-form-`
-  border: 0;
-  border-radius: 0;
-  background: tansparent;
+.logout-form-main {
+  @extend .page;
+
+  background-image: linear-gradient(to bottom right, $primary, $purple-blue);
+  color: $white;
+  overflow: auto;
 }
 
-/* ------------------------------------
+.logout-form-container {
+  @extend .is-full-layout;
 
- Errors
+  display: flex;
+  flex-direction: column;
 
------------------------------------- */
-
-.pc-final-form-errors .pc-error-message + .pc-error-message {
-  // si on a plusieurs erreurs pour un seul champ
-  @extend .pt5;
+  > div {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    padding: rem(24px);
+  }
 }
 
-/* ------------------------------------
+.logout-form-header {
+  margin-bottom: rem(36px);
+}
 
- Footer
+.logout-form-header-sup {
+  font-size: rem(32px);
+  font-style: italic;
+  font-weight: 700;
+}
 
------------------------------------- */
+.logout-form-title {
+  font-size: rem(22px);
+  font-style: italic;
+  font-weight: 500;
+}
 
-.pc-final-form-footer {
+.logout-form-mandatory-label {
+  font-size: rem(13px);
+  margin-top: rem(18px);
+}
+
+.logout-form-link {
+  color: $white;
+  font-size: rem(16px);
+  text-decoration: underline !important;
+}
+
+.logout-form-footer {
+  @extend .dotted-top-2x-white;
+
+  align-items: center;
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  font-size: rem(20px);
   height: $footer-height;
   min-height: $footer-height;
   max-height: $footer-height;
+  padding: 7px 0;
+  text-align: center;
+
+  button {
+    font-size: rem(20px);
+  }
 }
 
-.pc-final-form-footer button {
-  @extend .no-border;
-  @extend .no-outline;
-  @extend .no-background;
+.form-error-message {
+  font-size: rem(15px);
+  font-weight: 500;
+  margin-top: rem(2px);
 }
 
-/* ------------------------------------
+.icon-legacy-eye,
+.icon-legacy-eye-close {
+  font-size: rem(28px);
+}
 
- Elements
+.form-label-inner {
+  font-size: rem(19px);
+  padding-bottom: rem(6px);
+}
 
------------------------------------- */
+.form-sublabel {
+  font-size: rem(13px);
+}
 
-.pc-final-form-text,
-.pc-final-form-password,
-.pc-final-form-selectbox,
-.pc-final-form-datepicker,
-.pc-final-form-contact,
-.pc-final-form-cguCheckBox {
-  // rangés par ordre d'architecture HTML
-  .pc-final-form-label {
-    @extend .pb7;
-    @extend .fs16;
+.label-text-inner,
+.label-email-inner,
+.label-password-inner,
+.label-datepicker-inner {
+  margin-bottom: rem(36px);
 
-    .sublabel {
-      @extend .fs12;
+  .input-inner {
+    background-color: $white;
+    border-radius: rem(22px);
+    box-shadow: inset 0 0 0 0 rgba(0, 0, 0, 0), 0 2px 6px 0 rgba(0, 0, 0, 0.25);
+    display: flex;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .form-input {
+    color: $black;
+    border: none;
+    flex: 1;
+    font-size: rem(19px);
+    font-family: $family-sans-serif;
+    font-weight: 700;
+    padding: rem(9px) rem(10px);
+    outline: none;
+
+    &::placeholder {
+      font-style: italic;
+      font-weight: 400;
     }
   }
 
-  .pc-final-form-help {
-    @extend .pb7;
-    @extend .fs13;
-    @extend .is-block;
-  }
+  .input-error {
+    padding: 2px;
 
-  .pc-final-form-asterisk {
-    @extend .ml3;
-
-    color: $primary;
-  }
-
-  .pc-final-form-inner {
-    @extend .is-clipped;
-    @extend .flex-columns;
-
-    width: 100%;
-    background-color: $white;
-    border-radius: rem(20px);
-    border: 2px solid $grey-light;
-  }
-
-  .pc-final-form-input {
-    @extend .py7;
-    @extend .px18;
-    @extend .fs16;
-    @extend .flex-1;
-    @extend .is-block;
-    @extend .no-border;
-    @extend .is-medium;
-    @extend .no-outline;
-
-    color: $black !important;
-    font-family: $family-sans-serif;
+    .form-input {
+      border: 2px solid $error;
+      border-radius: rem(22px);
+    }
   }
 }
 
-.pc-final-form-password {
-  .pc-final-form-inner {
+.label-password-inner {
+  .input-inner {
     justify-content: space-between;
   }
 
-  .pc-final-form-input {
+  .form-input {
+    border-radius: 0;
     flex: unset;
     width: 80%;
   }
-}
 
-/* ------------------------------------------------
-
- SELECTBOX
-
------------------------------------------------- */
-.pc-final-form-selectbox {
-  .pc-final-form-inner {
-    @extend .is-relative;
-  }
-
-  .pc-final-form-inner::after {
-    @extend .is-absolute;
-    @extend .icon-retina;
-    @extend .inherits-from-fontello-icon;
-
-    content: '\62';
-    top: 0;
-    right: 6px;
-    color: $primary;
-  }
-
-  .pc-final-form-input {
-    @extend .no-appearance;
-
-    margin-left: rem(18px);
-    padding-left: 0 !important;
+  .page-profil & {
+    display: block;
   }
 }
 
-/* ------------------------------------------------
-
- PASSWORD
-
------------------------------------------------- */
-
-.pc-final-form-password {
-  .pc-final-form-input {
-    border-radius: 0;
-  }
-}
-
-/* ------------------------------------------------
-
- CHECKBOX
-
------------------------------------------------- */
-
-.field-checkbox {
-  justify-content: space-between;
+.label-contact-inner {
   display: flex;
+  margin-bottom: rem(28px);
+}
 
-  input[type="checkbox"] {
-    background-image: url(/icons/checkbox.svg);
-    border: none;
-    background-repeat: no-repeat;
-    background-size: 20px;
-    width: 45px;
-    height: 20px;
-    padding: 0;
-    border-radius: 0;
+.form-checkbox {
+  -webkit-appearance: none;
+  background: url(/icons/checkbox.svg) no-repeat;
+  border: none;
+  border-radius: 0;
+  display: inline-flex;
+  height: 20px;
+  margin-right: 12px;
+  padding: 0;
+  width: 20px;
 
-    &:active,
-    &:checked {
-      &::after {
-        content: '';
-        background: url(/icons/checkbox-check.svg) no-repeat 5px center;
-        position: absolute;
-        width: 100%;
-        height: 100%;
-      }
+  &:active,
+  &:checked {
+    &::after {
+      content: '';
+      background: url(/icons/checkbox-check.svg) no-repeat 5px center;
+      height: 100%;
+      width: 100%;
     }
   }
 }
-
-/* ------------------------------------------------
-
- INPUT CALENDRIER
- div encadrant le champs input
- permettant d'afficher l'icone lorsqu'une date n'est pas selectionnee
-
------------------------------------------------- */
 
 .react-datepicker__input-container_wrapper {
   @extend .flex-columns;
@@ -214,31 +198,31 @@
 
     &::-webkit-input-placeholder {
       color: inherit;
-      font-size: 19px;
+      font-size: rem(19px);
       font-weight: 300;
     }
 
     &::-moz-placeholder {
       color: inherit;
-      font-size: 19px;
+      font-size: rem(19px);
       font-weight: 300;
     }
 
     &:-ms-input-placeholder {
       color: inherit;
-      font-size: 19px;
+      font-size: rem(19px);
       font-weight: 300;
     }
 
     &:-moz-placeholder {
       color: inherit;
-      font-size: 19px;
+      font-size: rem(19px);
       font-weight: 300;
     }
 
     &.read-only {
       .pc-final-form-datepicker-input {
-        background-color: #F5F5F5;
+        background-color: $white-ter;
       }
     }
 

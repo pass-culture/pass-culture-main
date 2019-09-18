@@ -67,7 +67,7 @@ ShallowWrapper {
           Annuler
         </span>,
       ],
-      "className": "flex-columns no-border no-background",
+      "className": "flex-columns no-background",
       "disabled": false,
       "id": "verso-cancel-booking-button",
       "onClick": [Function],
@@ -164,7 +164,7 @@ ShallowWrapper {
             Annuler
           </span>,
         ],
-        "className": "flex-columns no-border no-background",
+        "className": "flex-columns no-background",
         "disabled": false,
         "id": "verso-cancel-booking-button",
         "onClick": [Function],

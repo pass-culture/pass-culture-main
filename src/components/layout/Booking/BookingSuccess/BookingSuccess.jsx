@@ -39,7 +39,7 @@ const BookingSuccess = ({ bookedPayload, isEvent }) => {
       <p className="my28">
         {!completedUrl && (
           <b
-            className="is-block is-size-1"
+            className="is-block is-size-1 fs48"
             data-token={token.toLowerCase()}
             id="booking-booked-token"
           >

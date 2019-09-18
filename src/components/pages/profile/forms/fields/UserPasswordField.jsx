@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { Fragment } from 'react'
 
 import { FormError } from '../../../../forms'
 import { isEmpty } from '../../../../../utils/strings'
-import { PasswordField } from '../../../../forms/inputs'
+import PasswordField from '../../../../forms/inputs/PasswordField'
 import { validateMatchingFields } from '../../../../forms/validators'
 import withProfileForm from '../withProfileForm'
 
@@ -14,37 +14,35 @@ export class UserPasswordField extends React.PureComponent {
 
   validateNewPassword = () => (newPasswordConfirm, formvalues) => {
     const { newPassword } = formvalues
+
     return validateMatchingFields(newPasswordConfirm, newPassword)
   }
 
   render() {
     const { formErrors, isLoading } = this.props
+
     return (
-      <div className="pc-scroll-container">
-        <div className="py30 px12 flex-1">
-          <PasswordField
-            disabled={isLoading}
-            label="Saisissez votre mot de passe actuel"
-            name="oldPassword"
-            required={this.buildOldPasswordLabel()}
-          />
-          <PasswordField
-            className="mt36"
-            disabled={isLoading}
-            label="Saisissez votre nouveau mot de passe"
-            name="newPassword"
-            required
-          />
-          <PasswordField
-            className="mt36"
-            disabled={isLoading}
-            label="Confirmez votre nouveau mot de passe"
-            name="newPasswordConfirm"
-            required={this.validateNewPassword()}
-          />
-          {formErrors && <FormError customMessage={formErrors} />}
-        </div>
-      </div>
+      <Fragment>
+        <PasswordField
+          disabled={isLoading}
+          label="Saisissez votre mot de passe actuel"
+          name="oldPassword"
+          required={this.buildOldPasswordLabel()}
+        />
+        <PasswordField
+          disabled={isLoading}
+          label="Saisissez votre nouveau mot de passe"
+          name="newPassword"
+          required
+        />
+        <PasswordField
+          disabled={isLoading}
+          label="Confirmez votre nouveau mot de passe"
+          name="newPasswordConfirm"
+          required={this.validateNewPassword()}
+        />
+        {formErrors && <FormError customMessage={formErrors} />}
+      </Fragment>
     )
   }
 }

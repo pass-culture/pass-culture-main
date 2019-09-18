@@ -1,25 +1,17 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import { InputField } from '../../../../forms/inputs'
+import InputField from '../../../../forms/inputs/InputField'
 import withProfileForm from '../withProfileForm'
 
-export const UserIdentifierField = props => {
-  const { isLoading } = props
-
-  return (
-    <div className="pc-scroll-container">
-      <div className="py30 px12 flex-1">
-        <InputField
-          disabled={isLoading}
-          label="Votre identifiant"
-          name="publicName"
-          required
-        />
-      </div>
-    </div>
-  )
-}
+export const UserIdentifierField = ({ isLoading }) => (
+  <InputField
+    disabled={isLoading}
+    label="Votre identifiant"
+    name="publicName"
+    required
+  />
+)
 
 UserIdentifierField.propTypes = {
   isLoading: PropTypes.bool.isRequired,

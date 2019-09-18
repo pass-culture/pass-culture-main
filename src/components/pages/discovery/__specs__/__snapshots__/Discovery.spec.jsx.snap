@@ -72,7 +72,6 @@ ShallowWrapper {
       "children": Array [
         <main
           className="discovery-page no-padding page with-footer"
-          role="main"
         >
           <React.Fragment>
             <Route
@@ -122,7 +121,6 @@ ShallowWrapper {
             />,
           ],
           "className": "discovery-page no-padding page with-footer",
-          "role": "main",
         },
         "ref": null,
         "rendered": Array [
@@ -212,7 +210,6 @@ ShallowWrapper {
         "children": Array [
           <main
             className="discovery-page no-padding page with-footer"
-            role="main"
           >
             <React.Fragment>
               <Route
@@ -262,7 +259,6 @@ ShallowWrapper {
               />,
             ],
             "className": "discovery-page no-padding page with-footer",
-            "role": "main",
           },
           "ref": null,
           "rendered": Array [

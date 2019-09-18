@@ -4,7 +4,6 @@ exports[`src | components | forms | inputs | CheckBoxField should match the snap
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <CheckBoxField
-    className=""
     name="the-input-name"
     required={true}
   >

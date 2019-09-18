@@ -1,13 +1,15 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 import { UserPasswordField } from '../UserPasswordField'
+
 import { FormError } from '../../../../../forms'
 import { validateMatchingFields } from '../../../../../forms/validators'
-import { PasswordField } from '../../../../../forms/inputs'
+import PasswordField from '../../../../../forms/inputs/PasswordField'
 
 jest.mock('../../../../../forms/validators', () => ({
   validateMatchingFields: jest.fn(),
 }))
+
 describe('src | components | pages | profile | forms | fields | UserPasswordField', () => {
   let props
 
@@ -37,12 +39,10 @@ describe('src | components | pages | profile | forms | fields | UserPasswordFiel
     expect(passwordFields.at(0).prop('disabled')).toBe(false)
     expect(passwordFields.at(0).prop('label')).toBe('Saisissez votre mot de passe actuel')
     expect(passwordFields.at(1).prop('required')).toBe(true)
-    expect(passwordFields.at(1).prop('className')).toBe('mt36')
     expect(passwordFields.at(1).prop('name')).toBe('newPassword')
     expect(passwordFields.at(1).prop('disabled')).toBe(false)
     expect(passwordFields.at(1).prop('label')).toBe('Saisissez votre nouveau mot de passe')
     expect(passwordFields.at(2).prop('required')).toStrictEqual(expect.any(Function))
-    expect(passwordFields.at(2).prop('className')).toBe('mt36')
     expect(passwordFields.at(2).prop('name')).toBe('newPasswordConfirm')
     expect(passwordFields.at(2).prop('disabled')).toBe(false)
     expect(passwordFields.at(2).prop('label')).toBe('Confirmez votre nouveau mot de passe')

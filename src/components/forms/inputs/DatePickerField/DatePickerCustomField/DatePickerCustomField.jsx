@@ -15,7 +15,7 @@ const DatePickerCustomField = props => {
     >
       <input
         {...props}
-        className="pc-final-form-datepicker-input"
+        className="form-datepicker-input"
         readOnly
         ref={ref}
       />

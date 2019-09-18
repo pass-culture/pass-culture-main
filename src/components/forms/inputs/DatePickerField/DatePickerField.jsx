@@ -44,14 +44,14 @@ const DatePickerField = ({
   return (
     <div className={`${className}`}>
       <label
-        className="pc-final-form-datepicker"
+        className="label-datepicker-inner"
         htmlFor={inputName}
       >
         {label && <InputLabel
           label={label}
           required={required}
                   />}
-        <div className="pc-final-form-inner">
+        <div className="input-inner">
           <DatePicker
             {...moreProps}
             customInput={<DatePickerCustomField ref={popperRefContainer} />}

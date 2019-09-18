@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
 
@@ -11,14 +11,14 @@ class HiddenField extends Component {
     const { ...inputProps } = this.props
 
     return (
-      <div>
+      <Fragment>
         <input
           type="hidden"
           {...input}
           {...inputProps}
         />
         <FormError meta={meta} />
-      </div>
+      </Fragment>
     )
   }
 

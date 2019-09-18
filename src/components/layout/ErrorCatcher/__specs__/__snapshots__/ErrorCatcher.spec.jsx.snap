@@ -30,7 +30,7 @@ ShallowWrapper {
         className="flex-1 flex-rows flex-center"
       >
         <h2
-          className="fs20"
+          className="fs20 is-normal"
         >
           Une erreur est survenue.
         </h2>
@@ -58,7 +58,7 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <h2
-            className="fs20"
+            className="fs20 is-normal"
           >
             Une erreur est survenue.
           </h2>,
@@ -86,7 +86,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": "Une erreur est survenue.",
-            "className": "fs20",
+            "className": "fs20 is-normal",
           },
           "ref": null,
           "rendered": "Une erreur est survenue.",
@@ -152,7 +152,7 @@ ShallowWrapper {
           className="flex-1 flex-rows flex-center"
         >
           <h2
-            className="fs20"
+            className="fs20 is-normal"
           >
             Une erreur est survenue.
           </h2>
@@ -180,7 +180,7 @@ ShallowWrapper {
         "props": Object {
           "children": Array [
             <h2
-              className="fs20"
+              className="fs20 is-normal"
             >
               Une erreur est survenue.
             </h2>,
@@ -208,7 +208,7 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": "Une erreur est survenue.",
-              "className": "fs20",
+              "className": "fs20 is-normal",
             },
             "ref": null,
             "rendered": "Une erreur est survenue.",
@@ -392,7 +392,7 @@ ShallowWrapper {
         className="flex-1 flex-rows flex-center"
       >
         <h2
-          className="fs20"
+          className="fs20 is-normal"
         >
           Une erreur est survenue.
         </h2>
@@ -420,7 +420,7 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <h2
-            className="fs20"
+            className="fs20 is-normal"
           >
             Une erreur est survenue.
           </h2>,
@@ -448,7 +448,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": "Une erreur est survenue.",
-            "className": "fs20",
+            "className": "fs20 is-normal",
           },
           "ref": null,
           "rendered": "Une erreur est survenue.",
@@ -514,7 +514,7 @@ ShallowWrapper {
           className="flex-1 flex-rows flex-center"
         >
           <h2
-            className="fs20"
+            className="fs20 is-normal"
           >
             Une erreur est survenue.
           </h2>
@@ -542,7 +542,7 @@ ShallowWrapper {
         "props": Object {
           "children": Array [
             <h2
-              className="fs20"
+              className="fs20 is-normal"
             >
               Une erreur est survenue.
             </h2>,
@@ -570,7 +570,7 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": "Une erreur est survenue.",
-              "className": "fs20",
+              "className": "fs20 is-normal",
             },
             "ref": null,
             "rendered": "Une erreur est survenue.",

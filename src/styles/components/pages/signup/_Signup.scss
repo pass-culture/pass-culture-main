@@ -1,90 +1,46 @@
-.signup-page {
-  display: flex;
-  font-size: $size-medium;
-  flex-direction: column;
-
-  .form-container {
-    display: flex;
-    flex-direction: column;
-    min-height: 100%;
-    overflow-y: auto;
-    justify-content: center;
-    flex: 1;
+.page-inscription {
+  main {
+    background-image: none;
+    color: $black;
   }
 
-  .form-input {
-    margin-top: 1.5rem;
+  .asterisk {
+    color: $violet;
   }
 
-  label {
-    margin-bottom: 0.5rem;
-
-    p {
-      font-size: 13px;
-      font-weight: normal;
-    }
-
-    .inline {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-    }
+  .icon-legacy-warning-circled::before,
+  .form-error-message {
+    color: $error;
   }
 
-  label[for='user-contact_ok'] .subtitle {
-    font-size: 16px;
-  }
-
-  h4 {
-    font-size: $size-normal;
+  .logout-form-mandatory-label,
+  .form-sublabel {
+    color: $grey-dark;
   }
 
   footer {
+    align-items: center;
+    background-color: $primary;
     display: flex;
+    height: 3.5rem;
     justify-content: space-between;
-    background-color: $primary;
+    padding: 1rem 0.75rem;
   }
+}
 
-  .errors {
-    color: $primary;
-    font-size: 1rem;
-    font-weight: 500;
-    height: 2rem;
-    line-height: 2em;
-    list-style-type: none;
-    text-align: left;
-    transition: transform 0.2s ease-in-out;
-    transform: scale(0.96);
+.signup-footer-link {
+  color: $white;
+  font-weight: 700;
+}
 
-    &.pop {
-      transform: scale(1);
-      transform-origin: 0 50%;
-    }
-
-    img {
-      vertical-align: middle;
-      padding-right: 5px;
-    }
-
-    &:empty {
-      display: none;
-    }
-  }
-
-  &.red {
-    background-color: $primary;
-    color: white;
-
-    footer {
-      @include dotted($white, top);
-    }
-
-    label {
-      color: $white;
-    }
-
-    .errors {
-      color: $white;
-    }
-  }
+.signup-footer-button {
+  background-color: $white;
+  border-color: transparent;
+  border-radius: 2rem;
+  border-top-right-radius: 0;
+  box-shadow: none;
+  color: $primary;
+  font-size: rem(19px);
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
 }

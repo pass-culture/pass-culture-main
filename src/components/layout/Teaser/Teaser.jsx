@@ -49,7 +49,7 @@ class Teaser extends Component {
           {isEditMode ? (
             <label className="field-checkbox">
               <input
-                className="input teaser-checkbox"
+                className="input teaser-checkbox form-checkbox"
                 onClick={handleToggleTeaser(offerId)}
                 type="checkbox"
               />

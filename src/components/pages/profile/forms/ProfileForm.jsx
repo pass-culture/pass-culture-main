@@ -85,10 +85,11 @@ class ProfileForm extends React.PureComponent {
     return (
       <form
         autoComplete="off"
-        className="pc-final-form flex-rows"
+        className="form flex-rows"
         noValidate
         onReset={this.handleOnFormReset}
         onSubmit={handleSubmit}
+        style={{ backgroundImage: BACKGROUND_IMAGE }}
       >
         <Header
           backTo="/profil"
@@ -98,17 +99,13 @@ class ProfileForm extends React.PureComponent {
           title={title}
           useSubmit
         />
-        <main
-          className="pc-main is-clipped is-relative flex-1"
-          role="main"
-          style={{ backgroundImage: BACKGROUND_IMAGE }}
-        >
+        <div className="py30 px12">
           <WrappedComponent
             {...this.props}
             formErrors={!pristine && preSubmitError}
             isLoading={isLoading}
           />
-        </main>
+        </div>
       </form>
     )
   }
@@ -116,11 +113,9 @@ class ProfileForm extends React.PureComponent {
   render() {
     const { initialValues, validator } = this.props
     const { isLoading } = this.state
+
     return (
-      <div
-        className="pc-page-view pc-theme-default flex-rows with-header"
-        id="profile-page-form-view"
-      >
+      <div className="pc-page-view flex-rows with-header">
         <FinalForm
           initialValues={initialValues}
           onSubmit={this.handleOnFormSubmit}
