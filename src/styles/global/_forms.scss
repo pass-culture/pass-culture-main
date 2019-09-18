@@ -109,12 +109,13 @@
     font-size: rem(19px);
     font-family: $family-sans-serif;
     font-weight: 700;
-    padding: rem(9px) rem(10px);
+    padding: rem(9px) rem(18px);
     outline: none;
 
     &::placeholder {
       font-style: italic;
       font-weight: 400;
+      font-size: rem(19px);
     }
   }
 
