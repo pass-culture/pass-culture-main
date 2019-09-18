@@ -4,7 +4,14 @@ exports[`src | components | layout | Insert should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Insert>
-    Some fake text
+    {'Les'}
+        &lt;b&gt;
+          {' réservations d’événements '}
+        &lt;/b&gt;
+        {'sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement.'}
+        &lt;p /&gt;
+        &lt;p /&gt;
+        {'La contremarque ne peut être validée qu’après ce délai.'}
   </Insert>,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -26,7 +33,14 @@ ShallowWrapper {
           svg={null}
         />,
         <span>
-          Some fake text
+          {'Les'}
+        &lt;b&gt;
+          {' réservations d’événements '}
+        &lt;/b&gt;
+        {'sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement.'}
+        &lt;p /&gt;
+        &lt;p /&gt;
+        {'La contremarque ne peut être validée qu’après ce délai.'}
         </span>,
       ],
       "className": "insert",
@@ -50,10 +64,24 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": "Some fake text",
+          "children": "{'Les'}
+        <b>
+          {' réservations d’événements '}
+        </b>
+        {'sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement.'}
+        <p />
+        <p />
+        {'La contremarque ne peut être validée qu’après ce délai.'}",
         },
         "ref": null,
-        "rendered": "Some fake text",
+        "rendered": "{'Les'}
+        <b>
+          {' réservations d’événements '}
+        </b>
+        {'sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement.'}
+        <p />
+        <p />
+        {'La contremarque ne peut être validée qu’après ce délai.'}",
         "type": "span",
       },
     ],
@@ -71,7 +99,14 @@ ShallowWrapper {
             svg={null}
           />,
           <span>
-            Some fake text
+            {'Les'}
+        &lt;b&gt;
+          {' réservations d’événements '}
+        &lt;/b&gt;
+        {'sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement.'}
+        &lt;p /&gt;
+        &lt;p /&gt;
+        {'La contremarque ne peut être validée qu’après ce délai.'}
           </span>,
         ],
         "className": "insert",
@@ -95,10 +130,24 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": "Some fake text",
+            "children": "{'Les'}
+        <b>
+          {' réservations d’événements '}
+        </b>
+        {'sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement.'}
+        <p />
+        <p />
+        {'La contremarque ne peut être validée qu’après ce délai.'}",
           },
           "ref": null,
-          "rendered": "Some fake text",
+          "rendered": "{'Les'}
+        <b>
+          {' réservations d’événements '}
+        </b>
+        {'sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement.'}
+        <p />
+        <p />
+        {'La contremarque ne peut être validée qu’après ce délai.'}",
           "type": "span",
         },
       ],

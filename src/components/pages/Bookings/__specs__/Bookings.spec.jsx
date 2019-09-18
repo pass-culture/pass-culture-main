@@ -45,6 +45,19 @@ describe('src | components | pages | Bookings', () => {
 
       // then
       expect(informationComponent.props().children[0]).toBe('Les')
+      expect(informationComponent.props().children[1]).toStrictEqual(
+        <b>
+          {' réservations d’événements '}
+        </b>
+      )
+      expect(informationComponent.props().children[2]).toBe(
+        'sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement.'
+      )
+      expect(informationComponent.props().children[3]).toStrictEqual(<p />)
+      expect(informationComponent.props().children[4]).toStrictEqual(<p />)
+      expect(informationComponent.props().children[5]).toBe(
+        'La contremarque ne peut être validée qu’après ce délai.'
+      )
     })
 
     describe('the download and display section', () => {
