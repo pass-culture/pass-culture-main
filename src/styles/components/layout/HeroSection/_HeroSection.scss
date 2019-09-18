@@ -79,6 +79,8 @@
     .button {
       font-weight: $weight-semibold;
       font-size: 14px;
+      background-color: transparent;
+      color: $primary;
 
       &:hover {
         background-color: transparent;

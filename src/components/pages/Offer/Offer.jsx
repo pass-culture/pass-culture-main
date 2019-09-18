@@ -276,7 +276,7 @@ class Offer extends Component {
     const mediationId = get(get(offer, 'activeMediation'), 'id')
 
     const offerWebappUrl = buildWebappDiscoveryUrl(offerId, mediationId)
-    window.open(offerWebappUrl, 'targetWindow', 'toolbar=no,width=375,height=667')
+    window.open(offerWebappUrl, 'targetWindow', 'toolbar=no,width=375,height=667').focus()
   }
 
   render() {
@@ -349,7 +349,7 @@ class Offer extends Component {
           {offer && mediationId && (
             <div className="title-action-links">
               <a
-                className="cta button is-primary is-outlined"
+                className="cta button"
                 href={offerWebappUrl}
                 onClick={this.handleHrefClick()}
                 rel="noopener noreferrer"
