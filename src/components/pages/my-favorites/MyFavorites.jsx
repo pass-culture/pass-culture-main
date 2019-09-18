@@ -176,7 +176,7 @@ MyFavorites.defaultProps = {
 MyFavorites.propTypes = {
   deleteFavorites: PropTypes.func.isRequired,
   loadMyFavorites: PropTypes.func.isRequired,
-  myFavorites: PropTypes.arrayOf(PropTypes.shape())
+  myFavorites: PropTypes.arrayOf(PropTypes.shape()),
 }
 
 export default MyFavorites

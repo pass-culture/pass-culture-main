@@ -219,6 +219,7 @@ describe('src | components | layout | Verso | VersoControls | Favorite | Favorit
           config: {
             apiPath: '/favorites',
             method: 'GET',
+            normalizer: favoriteNormalizer,
           },
           type: 'REQUEST_DATA_GET_/FAVORITES',
         })

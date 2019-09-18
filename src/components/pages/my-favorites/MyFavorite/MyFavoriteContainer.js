@@ -93,6 +93,7 @@ export const mapStateToProps = (state, ownProps) => {
     isBooked,
     humanizeRelativeDate
   )
+
   const humanizeRelativeDistance = getHumanizeRelativeDistance(
     state.geolocation.latitude,
     state.geolocation.longitude,
