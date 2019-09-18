@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
 import CopyToClipboardButton from '../CopyToClipboardButton'
-import MailToLink from '../../MailToLink'
+import MailToLink from '../../MailToLink/MailToLink'
 
 class ShareButton extends PureComponent {
   constructor(props) {
@@ -43,9 +43,7 @@ class ShareButton extends PureComponent {
   )
 
   onCopyHandler = status => {
-    const {
-      trackShareOfferByLink,
-    } = this.props
+    const { trackShareOfferByLink } = this.props
     trackShareOfferByLink()
     this.setState({ isCopied: status }, () => {
       this.handleOnClickShare()

@@ -2,8 +2,6 @@ import { selectCurrentUser } from 'with-react-redux-login'
 
 import { mapStateToProps } from '../ShareButtonContainer'
 import { getShareURL } from '../../../../../helpers'
-import { mapDispatchToProps } from '../ShareButtonContainer'
-
 import { mapDispatchToProps, mergeProps } from '../ShareButtonContainer'
 
 jest.mock('with-react-redux-login')

@@ -68,7 +68,7 @@ describe('src | components | pages | discovery | Deck | Navigation | NavigationC
           const result = mapStateToProps(state, ownProps)
 
           // then
-          expect(result.distanceClue).toBe('offre en ligne')
+          expect(result.distanceClue).toBe('offre numérique')
         })
       })
 
