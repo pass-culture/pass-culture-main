@@ -1,4 +1,5 @@
 import { compose } from 'redux'
+import { requestData } from 'redux-thunk-data'
 import withLogin from 'with-react-redux-login'
 
 import { getRedirectToCurrentLocationOrDiscovery } from './helpers'
@@ -24,6 +25,7 @@ const withNotRequiredLogin = compose(
   withLogin({
     handleSuccess,
     isRequired: false,
+    requestData,
   })
 )
 

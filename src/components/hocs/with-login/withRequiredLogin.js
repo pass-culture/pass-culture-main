@@ -1,4 +1,5 @@
 import { compose } from 'redux'
+import { requestData } from 'redux-thunk-data'
 import withLogin from 'with-react-redux-login'
 
 import withFrenchQueryRouter from '../withFrenchQueryRouter'
@@ -30,6 +31,7 @@ const withRequiredLogin = compose(
     handleFail,
     handleSuccess,
     isRequired: true,
+    requestData,
   })
 )
 
