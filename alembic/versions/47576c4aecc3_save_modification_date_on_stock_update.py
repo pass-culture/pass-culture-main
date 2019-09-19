@@ -1,7 +1,7 @@
 """save_modification_date_on_stock_update
 
 Revision ID: 47576c4aecc3
-Revises: 16f46a506e91
+Revises: 6c67573ad14f
 Create Date: 2019-09-13 15:00:46.782915
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '47576c4aecc3'
-down_revision = '16f46a506e91'
+down_revision = '6c67573ad14f'
 branch_labels = None
 depends_on = None
 
