@@ -83,7 +83,7 @@ _paq.push([function() {
 ```
 
 ### React-tracking
-On utilise la librairie react-tracking, développée par le New York Times :
+On utilise la librairie [react-tracking](https://github.com/NYTimes/react-tracking), développée par le New York Times :
 * Usage par HOC ou par React Hook
 * Découple la responsabilité Tracking hors des composants et évite les fuites dans l'app
 * Platform agnostic (peut-etre utilisé avec Matomo, GA, etc)
