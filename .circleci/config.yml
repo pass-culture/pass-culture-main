@@ -303,12 +303,7 @@ workflows:
   version: 2
   commit:
     jobs:
-      - tests-script-pc:
-          filters:
-            branches:
-              only:
-                - master
-                - /hotfix-v.*/
+      - tests-script-pc
       - tests-api:
           filters:
             branches:
