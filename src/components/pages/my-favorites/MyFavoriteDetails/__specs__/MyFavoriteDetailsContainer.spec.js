@@ -1,6 +1,16 @@
 import { mapDispatchToProps } from '../MyFavoriteDetailsContainer'
 import { favoriteNormalizer } from '../../../../../utils/normalizers'
 
+jest.mock('redux-thunk-data', () => {
+  const actualModule = jest.requireActual('redux-thunk-data')
+  const { requestData } = jest.requireActual('fetch-normalize-data')
+  const mockRequestData = requestData
+  return {
+    ...actualModule,
+    requestData: mockRequestData,
+  }
+})
+
 describe('src | components | pages | my-favorite | MyFavoriteDetails | MyFavoriteDetailsContainer', () => {
   describe('requestGetData()', () => {
     it('should dispatch my favorite', () => {

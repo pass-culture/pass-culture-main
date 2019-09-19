@@ -1,6 +1,17 @@
 import { shallow } from 'enzyme'
 import React from 'react'
+
 import ProfileForm from '../ProfileForm'
+
+jest.mock('redux-thunk-data', () => {
+  const actualModule = jest.requireActual('redux-thunk-data')
+  const { requestData } = jest.requireActual('fetch-normalize-data')
+  const mockRequestData = requestData
+  return {
+    ...actualModule,
+    requestData: mockRequestData,
+  }
+})
 
 describe('src | components | pages | profile | forms | ProfileForm', () => {
   let dispatch
@@ -83,7 +94,7 @@ describe('src | components | pages | profile | forms | ProfileForm', () => {
       wrapper.instance().handleOnFormReset()
 
       // then
-      expect(goBack).toHaveBeenCalled()
+      expect(goBack).toHaveBeenCalledWith()
     })
   })
 
@@ -98,7 +109,7 @@ describe('src | components | pages | profile | forms | ProfileForm', () => {
 
       // then
       expect(wrapper.state('isLoading')).toBe(false)
-      expect(formResolver).toHaveBeenCalled()
+      expect(formResolver).toHaveBeenCalledWith()
       expect(replace).toHaveBeenCalledWith('fake location/success')
     })
   })
