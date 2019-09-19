@@ -1,4 +1,3 @@
-""" provider_event model """
 import enum
 from datetime import datetime
 
@@ -20,7 +19,6 @@ class LocalProviderEventType(enum.Enum):
 
 
 class LocalProviderEvent(PcObject, Model):
-
     id = Column(BigInteger,
                 primary_key=True,
                 autoincrement=True)

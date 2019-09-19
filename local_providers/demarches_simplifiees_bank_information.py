@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from typing import Dict, List
 
 from connectors.api_demarches_simplifiees import get_application_details
 from domain.bank_account import format_raw_iban_or_bic
@@ -22,7 +23,7 @@ class BankInformationProvider(LocalProvider):
     identifierDescription = "siren / siret"
     identifierRegexp = None
     name = "Demarches simplifiees / Bank Information"
-    objectType = BankInformation
+    object_type = BankInformation
     canCreate = True
 
     def __init__(self):
@@ -44,7 +45,7 @@ class BankInformationProvider(LocalProvider):
         self.bank_information_dict = self.retrieve_bank_information(self.application_details)
 
         if 'idAtProviders' not in self.bank_information_dict:
-            self.logEvent(LocalProviderEventType.SyncError,
+            self.log_provider_event(LocalProviderEventType.SyncError,
                           f'unknown siret or siren for application id {self.application_id}')
             return None
 
@@ -57,13 +58,20 @@ class BankInformationProvider(LocalProvider):
         bank_information.offererId = self.bank_information_dict.get('offererId', None)
         bank_information.venueId = self.bank_information_dict.get('venueId', None)
 
-    def retrieve_providable_info(self):
+
+    def save_chunks(self, chunk_to_insert: Dict[str, BankInformation], chunk_to_update: Dict[str, BankInformation],
+                    providable_info: ProvidableInfo):
+        super(BankInformationProvider, self).save_chunks(chunk_to_insert, chunk_to_update, providable_info)
+        bank_information_list = list(chunk_to_insert.values()) + list(chunk_to_update.values())
+        retry_linked_payments(bank_information_list)
+
+    def retrieve_providable_info(self) -> List[ProvidableInfo]:
         providable_info = ProvidableInfo()
         providable_info.id_at_providers = self.bank_information_dict['idAtProviders']
         providable_info.type = BankInformation
         providable_info.date_modified_at_provider = datetime.strptime(self.application_details['dossier']['updated_at'],
                                                                       DATE_ISO_FORMAT)
-        return providable_info
+        return [providable_info]
 
     def retrieve_bank_information(self, application_details: dict) -> dict:
         bank_information_dict = dict()
@@ -85,7 +93,7 @@ class BankInformationProvider(LocalProvider):
                 bank_information_dict['venueId'] = venue.id
                 bank_information_dict['idAtProviders'] = siret
         else:
-            self.logEvent(LocalProviderEventType.SyncError,
+            self.log_provider_event(LocalProviderEventType.SyncError,
                           f'unknown RIB affiliation for application id {self.application_id}')
             raise UnknownRibAffiliation
         return bank_information_dict

@@ -24,7 +24,7 @@ class TiteLiveThingThumbs(LocalProvider):
                             + "(on synchronise tout)"
     identifierRegexp = None
     name = "TiteLive (Epagine / Place des libraires.com) Thumbs"
-    objectType = Product
+    object_type = Product
     canCreate = False
 
     def __init__(self):
@@ -38,14 +38,14 @@ class TiteLiveThingThumbs(LocalProvider):
 
     def open_next_file(self):
         if self.zip:
-            self.logEvent(LocalProviderEventType.SyncPartEnd,
-                          get_date_from_filename(self.zip, DATE_REGEXP))
+            self.log_provider_event(LocalProviderEventType.SyncPartEnd,
+                                    get_date_from_filename(self.zip, DATE_REGEXP))
         next_zip_file_name = str(next(self.zips))
         self.zip = get_zip_file_from_ftp(next_zip_file_name, THUMB_FOLDER_NAME_TITELIVE)
 
         logger.info("  Importing thumbs from file " + str(self.zip))
-        self.logEvent(LocalProviderEventType.SyncPartStart,
-                      get_date_from_filename(self.zip, DATE_REGEXP))
+        self.log_provider_event(LocalProviderEventType.SyncPartStart,
+                                get_date_from_filename(self.zip, DATE_REGEXP))
 
         self.thumb_zipinfos = iter(filter(lambda f: f.filename.lower().endswith(SYNCHONISABLE_FILE_EXTENSION),
                                           sorted(self.zip.infolist(),
@@ -61,14 +61,15 @@ class TiteLiveThingThumbs(LocalProvider):
             self.open_next_file()
             self.thumb_zipinfo = next(self.thumb_zipinfos)
 
+        path = PurePath(self.thumb_zipinfo.filename)
+
         providable_info = ProvidableInfo()
         providable_info.type = Product
-        providable_info.date_modified_at_provider = None
-        path = PurePath(self.thumb_zipinfo.filename)
+        providable_info.date_modified_at_provider = datetime(*self.thumb_zipinfo.date_time)
         providable_info.id_at_providers = path.name.split('_', 1)[0]
         self.thingId = providable_info.id_at_providers
 
-        return providable_info
+        return [providable_info]
 
     def get_object_thumb_index(self) -> int:
         return extract_thumb_index(self.thumb_zipinfo.filename)
@@ -85,7 +86,7 @@ class TiteLiveThingThumbs(LocalProvider):
             return f.read()
 
     def get_remaining_files_to_check(self, all_zips):
-        latest_sync_part_end_event = local_provider_event_queries.find_latest_sync_part_end_event(self.dbObject)
+        latest_sync_part_end_event = local_provider_event_queries.find_latest_sync_part_end_event(self.provider)
 
         if latest_sync_part_end_event is None:
             return iter(all_zips)
@@ -93,6 +94,9 @@ class TiteLiveThingThumbs(LocalProvider):
             payload = int(latest_sync_part_end_event.payload)
             return iter(filter(lambda z: get_date_from_filename(z, DATE_REGEXP) > payload,
                                all_zips))
+
+    def updateObject(self, obj):
+        pass
 
 
 def extract_thumb_index(filename: str) -> int:

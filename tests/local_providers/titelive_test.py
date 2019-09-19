@@ -3,6 +3,7 @@ from pathlib import Path
 from unittest.mock import patch
 from zipfile import ZipFile
 
+import pytest
 from sqlalchemy import func
 
 from local_providers import TiteLiveThings, TiteLiveThingThumbs, TiteLiveThingDescriptions
@@ -27,6 +28,7 @@ class TiteliveTest:
     @patch('local_providers.titelive_thing_thumbs.get_zip_file_from_ftp')
     @patch('local_providers.titelive_thing_descriptions.get_files_to_process_from_titelive_ftp')
     @patch('local_providers.titelive_thing_descriptions.get_zip_file_from_ftp')
+    @pytest.mark.skip
     def test_titelive_complete_integration(self,
                                            get_description_zip_file_from_ftp,
                                            get_ordered_descriptions_zip_from_titelive_ftp,

@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from typing import List
 
 from connectors.api_demarches_simplifiees import get_application_details
 from domain.bank_account import format_raw_iban_or_bic
@@ -27,7 +28,7 @@ class VenueWithoutSIRETBankInformationProvider(LocalProvider):
     identifierDescription = ""
     identifierRegexp = None
     name = "Demarches simplifiees / IBAN for venue without SIRET"
-    objectType = BankInformation
+    object_type = BankInformation
     canCreate = True
 
     def __init__(self):
@@ -35,7 +36,7 @@ class VenueWithoutSIRETBankInformationProvider(LocalProvider):
         self.PROCEDURE_ID = os.environ['DEMARCHES_SIMPLIFIEES_VENUE_WITHOUT_SIRET_PROCEDURE_ID']
         self.TOKEN = os.environ['DEMARCHES_SIMPLIFIEES_TOKEN']
 
-        last_sync_event = find_latest_sync_end_event(self.dbObject)
+        last_sync_event = find_latest_sync_end_event(self.provider)
 
         if last_sync_event:
             last_sync_date = last_sync_event.date
@@ -64,14 +65,14 @@ class VenueWithoutSIRETBankInformationProvider(LocalProvider):
 
         return self.retrieve_providable_info()
 
-    def retrieve_providable_info(self) -> ProvidableInfo:
+    def retrieve_providable_info(self) -> List[ProvidableInfo]:
         providable_info = ProvidableInfo()
         providable_info.id_at_providers = \
             f"{self.application_details['structureId']}|{self.application_details['venueId']}"
 
         providable_info.type = BankInformation
         providable_info.date_modified_at_provider = self.application_details['updated_at']
-        return providable_info
+        return [providable_info]
 
     def updateObject(self, bank_information):
         bank_information.iban = format_raw_iban_or_bic(self.application_details['IBAN'])

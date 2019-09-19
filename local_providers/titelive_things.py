@@ -23,7 +23,7 @@ class TiteLiveThings(LocalProvider):
                             + "(on synchronise tout)"
     identifierRegexp = None
     name = "TiteLive (Epagine / Place des libraires.com)"
-    objectType = Product
+    object_type = Product
     canCreate = True
 
     def __init__(self):
@@ -37,12 +37,12 @@ class TiteLiveThings(LocalProvider):
 
     def open_next_file(self):
         if self.thing_file:
-            self.logEvent(LocalProviderEventType.SyncPartEnd,
-                          get_date_from_filename(self.thing_file, DATE_REGEXP))
+            self.log_provider_event(LocalProviderEventType.SyncPartEnd,
+                                    get_date_from_filename(self.thing_file, DATE_REGEXP))
         self.thing_file = next(self.thing_files)
         logger.info("  Importing things from file %s" % self.thing_file)
-        self.logEvent(LocalProviderEventType.SyncPartStart,
-                      get_date_from_filename(self.thing_file, DATE_REGEXP))
+        self.log_provider_event(LocalProviderEventType.SyncPartStart,
+                                get_date_from_filename(self.thing_file, DATE_REGEXP))
 
         self.data_lines = get_lines_from_thing_file(str(self.thing_file))
 
@@ -79,7 +79,7 @@ class TiteLiveThings(LocalProvider):
         providable_info.type = Product
         providable_info.id_at_providers = self.infos['ean13']
         providable_info.date_modified_at_provider = read_things_date(self.infos['date_updated'])
-        return providable_info
+        return [providable_info]
 
     def updateObject(self, thing):
         assert thing.idAtProviders == self.infos['ean13']
@@ -97,7 +97,7 @@ class TiteLiveThings(LocalProvider):
             thing.mediaUrls.append(self.infos['url_extrait_pdf'])
 
     def get_remaining_files_to_check(self, ordered_thing_files: list):
-        latest_sync_part_end_event = local_provider_event_queries.find_latest_sync_part_end_event(self.dbObject)
+        latest_sync_part_end_event = local_provider_event_queries.find_latest_sync_part_end_event(self.provider)
         if latest_sync_part_end_event is None:
             return iter(ordered_thing_files)
         else:

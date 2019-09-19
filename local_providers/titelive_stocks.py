@@ -35,18 +35,18 @@ class TiteLiveStocks(LocalProvider):
     identifierDescription = "Code Titelive de la librairie"
     identifierRegexp = "^\d+$"
     name = "TiteLive Stocks (Epagine / Place des libraires.com)"
-    objectType = Stock
+    object_type = Stock
     canCreate = True
 
     def __init__(self, venue_provider: VenueProvider, **options):
         super().__init__(venue_provider, **options)
-        self.venueId = self.venueProvider.venueId
+        self.venueId = self.venue_provider.venueId
         existing_venue = venue_queries.find_by_id(self.venueId)
         assert existing_venue is not None
         self.venue_siret = existing_venue.siret
         self.venue_booking_email = existing_venue.bookingEmail
 
-        latest_local_provider_event = local_provider_event_queries.find_latest_sync_start_event(self.dbObject)
+        latest_local_provider_event = local_provider_event_queries.find_latest_sync_start_event(self.provider)
         if latest_local_provider_event is None:
             self.last_ws_requests = datetime.utcfromtimestamp(0).timestamp() * 1000
         else:
@@ -70,7 +70,7 @@ class TiteLiveStocks(LocalProvider):
 
             self.data = get_data(self.last_seen_isbn,
                                  self.last_ws_requests,
-                                 self.venueProvider.venueIdAtOfferProvider)
+                                 self.venue_provider.venueIdAtOfferProvider)
 
             if 'status' in self.data \
                     and self.data['status'] == 404:
@@ -91,7 +91,7 @@ class TiteLiveStocks(LocalProvider):
         providable_info_stock = self.create_providable_info(Stock)
         providable_info_offer = self.create_providable_info(Offer)
 
-        return providable_info_offer, providable_info_stock
+        return [providable_info_offer, providable_info_stock]
 
     def updateObject(self, obj):
         assert obj.idAtProviders == "%s@%s" % (self.titelive_stock['ref'], self.venue_siret)

@@ -357,8 +357,8 @@ class BankInformationProviderProviderTest:
         PcObject.save(venue)
 
         bank_information_provider = BankInformationProvider()
-        bank_information_provider.dbObject.isActive = True
-        PcObject.save(bank_information_provider.dbObject)
+        bank_information_provider.provider.isActive = True
+        PcObject.save(bank_information_provider.provider)
 
         # when
         with pytest.raises(UnknownRibAffiliation):
@@ -829,8 +829,8 @@ class BankInformationProviderProviderTest:
         PcObject.save(venue_ko, venue_ok)
 
         bank_information_provider = BankInformationProvider()
-        bank_information_provider.dbObject.isActive = True
-        PcObject.save(bank_information_provider.dbObject)
+        bank_information_provider.provider.isActive = True
+        PcObject.save(bank_information_provider.provider)
 
         # when
         bank_information_provider.updateObjects()
@@ -907,8 +907,8 @@ class BankInformationProviderProviderTest:
         }
 
         bank_information_provider = BankInformationProvider()
-        bank_information_provider.dbObject.isActive = True
-        PcObject.save(bank_information_provider.dbObject)
+        bank_information_provider.provider.isActive = True
+        PcObject.save(bank_information_provider.provider)
 
         # when
         bank_information_provider.updateObjects()
@@ -989,8 +989,8 @@ class BankInformationProviderProviderTest:
         PcObject.save(bank_information)
 
         bank_information_provider = BankInformationProvider()
-        bank_information_provider.dbObject.isActive = True
-        PcObject.save(bank_information_provider.dbObject)
+        bank_information_provider.provider.isActive = True
+        PcObject.save(bank_information_provider.provider)
 
         # when
         bank_information_provider.updateObjects()

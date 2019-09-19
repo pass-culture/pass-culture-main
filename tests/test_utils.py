@@ -307,7 +307,7 @@ def create_product_with_thing_type(
         thumb_count=1,
         url=None,
         owning_offerer=None,
-        extra_data=None,
+        extra_data=None
 ) -> Product:
     product = Product()
     product.type = str(thing_type)
@@ -818,8 +818,8 @@ def provider_test(app, provider, venue_provider, **counts):
         provider_object = provider()
     else:
         provider_object = provider(venue_provider)
-    provider_object.dbObject.isActive = True
-    PcObject.save(provider_object.dbObject)
+    provider_object.provider.isActive = True
+    PcObject.save(provider_object.provider)
     saveCounts()
     provider_object.updateObjects()
 

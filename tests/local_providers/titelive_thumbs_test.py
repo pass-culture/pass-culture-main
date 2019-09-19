@@ -63,7 +63,7 @@ class TiteliveThingThumbsTest:
                       None,
                       checkedObjects=2,
                       createdObjects=0,
-                      updatedObjects=0,
+                      updatedObjects=2,
                       erroredObjects=0,
                       checkedThumbs=2,
                       createdThumbs=5,
