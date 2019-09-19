@@ -1,5 +1,4 @@
 import { combineReducers } from 'redux'
-import { modals } from 'redux-react-modals'
 
 import data, { lastRecommendationsRequestTimestamp } from './data'
 import geolocation from './geolocation'
@@ -14,7 +13,6 @@ const rootReducer = combineReducers({
   geolocation,
   lastRecommendationsRequestTimestamp,
   menu,
-  modals,
   overlay,
   share,
   splash,

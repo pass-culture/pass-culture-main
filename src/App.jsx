@@ -3,7 +3,6 @@ import React, { Fragment } from 'react'
 import Helmet from 'react-helmet'
 import { matchPath, Route, withRouter } from 'react-router-dom'
 
-import DebugContainer from './components/layout/Debug/DebugContainer'
 import ErrorCatcherContainer from './components/layout/ErrorCatcher/ErrorCatcherContainer'
 import browserRoutes from './components/router/browserRoutes'
 import MenuContainer from './components/layout/Menu/MenuContainer'
@@ -33,7 +32,7 @@ const App = ({ children, history, location }) => {
         <body className={`web ${bodyClass}`} />
         <title>{`${pageTitle}${PROJECT_NAME}${(IS_DEV && ' | DEV') || ''}`}</title>
       </Helmet>
-      <DebugContainer className="app is-relative">
+      <div className="app is-relative">
         <ErrorCatcherContainer>
           {children}
           <OverlayContainer />
@@ -52,7 +51,7 @@ const App = ({ children, history, location }) => {
             srcSet={`${ROOT_PATH}/beta@2x.png`}
           />
         </ErrorCatcherContainer>
-      </DebugContainer>
+      </div>
     </Fragment>
   )
 }

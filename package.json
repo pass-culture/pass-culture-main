@@ -55,7 +55,6 @@
     "react-transition-group": "^2.4.0",
     "redux": "^3.6.0",
     "redux-persist": "^5.10.0",
-    "redux-react-modals": "^0.0.11",
     "redux-saga": "^1.1.1",
     "redux-saga-data": "3.1.7",
     "reselect": "^3.0.1",
