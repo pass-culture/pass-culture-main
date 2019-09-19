@@ -98,7 +98,7 @@ teardown(){
 @test "Deploy on unknown environment is not allowed" {
     # Given
     environment='unexisting-env'
-    expected_output='Can only deploy in staging, demo, integration and production'
+    expected_output='Can only deploy in datalake, staging, demo, integration and production'
 
     # When
     run pc -e "$environment" deploy
