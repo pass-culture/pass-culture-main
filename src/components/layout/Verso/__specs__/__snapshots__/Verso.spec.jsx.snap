@@ -15,6 +15,7 @@ ShallowWrapper {
     extraClassName="extra-classname"
     isTuto={false}
     offerName="Offer title"
+    offerType="EventType.SPECTACLE_VIVANT"
     offerVenueNameOrPublicName="Offer subtitle"
   />,
   Symbol(enzyme.__renderer__): Object {
@@ -39,6 +40,7 @@ ShallowWrapper {
             backgroundColor="#ACE539"
             subtitle="Offer subtitle"
             title="Offer title"
+            type="EventType.SPECTACLE_VIVANT"
           />
           <withRouter(Connect(VersoControls)) />
           <div
@@ -74,6 +76,7 @@ ShallowWrapper {
               backgroundColor="#ACE539"
               subtitle="Offer subtitle"
               title="Offer title"
+              type="EventType.SPECTACLE_VIVANT"
             />,
             <withRouter(Connect(VersoControls)) />,
             <div
@@ -102,6 +105,7 @@ ShallowWrapper {
               "backgroundColor": "#ACE539",
               "subtitle": "Offer subtitle",
               "title": "Offer title",
+              "type": "EventType.SPECTACLE_VIVANT",
             },
             "ref": null,
             "rendered": null,
@@ -174,6 +178,7 @@ ShallowWrapper {
               backgroundColor="#ACE539"
               subtitle="Offer subtitle"
               title="Offer title"
+              type="EventType.SPECTACLE_VIVANT"
             />
             <withRouter(Connect(VersoControls)) />
             <div
@@ -209,6 +214,7 @@ ShallowWrapper {
                 backgroundColor="#ACE539"
                 subtitle="Offer subtitle"
                 title="Offer title"
+                type="EventType.SPECTACLE_VIVANT"
               />,
               <withRouter(Connect(VersoControls)) />,
               <div
@@ -237,6 +243,7 @@ ShallowWrapper {
                 "backgroundColor": "#ACE539",
                 "subtitle": "Offer subtitle",
                 "title": "Offer title",
+                "type": "EventType.SPECTACLE_VIVANT",
               },
               "ref": null,
               "rendered": null,

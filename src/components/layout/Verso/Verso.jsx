@@ -6,7 +6,7 @@ import isEqual from 'lodash.isequal'
 import VersoContentOfferContainer from './VersoContent/VersoContentOffer/VersoContentOfferContainer'
 import VersoContentTutoContainer from './VersoContent/VersoContentTuto/VersoContentTutoContainer'
 import VersoControlsContainer from './VersoControls/VersoControlsContainer'
-import VersoHeaderContainer from './VersoContent/VersoHeaderContainer'
+import VersoHeaderContainer from './VersoHeader/VersoHeaderContainer'
 import AbsoluteFooterContainer from '../AbsoluteFooter/AbsoluteFooterContainer'
 
 class Verso extends React.PureComponent {
@@ -31,6 +31,7 @@ class Verso extends React.PureComponent {
       extraClassName,
       isTuto,
       offerName,
+      offerType,
       offerVenueNameOrPublicName,
     } = this.props
 
@@ -48,6 +49,7 @@ class Verso extends React.PureComponent {
             backgroundColor={backgroundColor}
             subtitle={offerVenueNameOrPublicName}
             title={offerName}
+            type={offerType}
           />
           {!isTuto && <VersoControlsContainer />}
           <div
@@ -74,6 +76,7 @@ Verso.defaultProps = {
   extraClassName: null,
   isTuto: null,
   offerName: null,
+  offerType: null,
   offerVenueNameOrPublicName: null,
 }
 
@@ -84,6 +87,7 @@ Verso.propTypes = {
   extraClassName: PropTypes.string,
   isTuto: PropTypes.bool,
   offerName: PropTypes.string,
+  offerType: PropTypes.string,
   offerVenueNameOrPublicName: PropTypes.string,
 }
 

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | verso | VersoHeader should match the snapshot with all props 1`] = `
+exports[`src | components | layout | Verso | VersoHeader should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <VersoHeader
@@ -24,6 +24,7 @@ ShallowWrapper {
     }
     subtitle="Offer subtitle"
     title="Offer title"
+    type="EventType.SPECTACLE_VIVANT"
     verticalSlideRatio={0.2}
   />,
   Symbol(enzyme.__renderer__): Object {
@@ -41,6 +42,11 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": Array [
+        <img
+          alt="EventType.SPECTACLE_VIVANT"
+          id="verso-offer-picto-type"
+          src="http://localhost/icons/picto-spectacle.svg"
+        />,
         <h1
           className="fs40 is-medium is-hyphens"
           id="verso-offer-name"
@@ -109,6 +115,19 @@ ShallowWrapper {
     },
     "ref": null,
     "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "alt": "EventType.SPECTACLE_VIVANT",
+          "id": "verso-offer-picto-type",
+          "src": "http://localhost/icons/picto-spectacle.svg",
+        },
+        "ref": null,
+        "rendered": null,
+        "type": "img",
+      },
       Object {
         "instance": null,
         "key": undefined,
@@ -249,6 +268,11 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": Array [
+          <img
+            alt="EventType.SPECTACLE_VIVANT"
+            id="verso-offer-picto-type"
+            src="http://localhost/icons/picto-spectacle.svg"
+          />,
           <h1
             className="fs40 is-medium is-hyphens"
             id="verso-offer-name"
@@ -317,6 +341,19 @@ ShallowWrapper {
       },
       "ref": null,
       "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "alt": "EventType.SPECTACLE_VIVANT",
+            "id": "verso-offer-picto-type",
+            "src": "http://localhost/icons/picto-spectacle.svg",
+          },
+          "ref": null,
+          "rendered": null,
+          "type": "img",
+        },
         Object {
           "instance": null,
           "key": undefined,

@@ -12,8 +12,7 @@ const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`
 
 export const checkIsTuto = mediation => {
   const { tutoIndex } = mediation || {}
-  const result = Boolean(typeof tutoIndex === 'number')
-  return result
+  return Boolean(typeof tutoIndex === 'number')
 }
 
 export const getContentInlineStyle = (isTuto, backgroundColor) => {
@@ -22,16 +21,16 @@ export const getContentInlineStyle = (isTuto, backgroundColor) => {
   return result
 }
 
-const mapStateToProps = (state, ownProps) => {
+export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
   const offer = selectOfferByRouterMatch(state, match) || {}
   const mediation = selectMediationByRouterMatch(state, match) || {}
   const firstThumbDominantColor = offer.firstThumbDominantColor || mediation.firstThumbDominantColor
+
   const backgroundColor = getHeaderColor(firstThumbDominantColor)
   const isTuto = checkIsTuto(mediation)
   const contentInlineStyle = getContentInlineStyle(isTuto, backgroundColor)
-
-  const { name: offerName, venue } = offer
+  const { name: offerName, type: offerType, venue } = offer
   const { name: venueName, publicName: venuePublicName } = venue || {}
   const offerVenueNameOrPublicName = venuePublicName || venueName
 
@@ -40,6 +39,7 @@ const mapStateToProps = (state, ownProps) => {
     contentInlineStyle,
     isTuto,
     offerName,
+    offerType,
     offerVenueNameOrPublicName,
   }
 }

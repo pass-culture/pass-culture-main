@@ -5,7 +5,7 @@ import Verso from '../Verso'
 import VersoContentOfferContainer from '../VersoContent/VersoContentOffer/VersoContentOfferContainer'
 import VersoContentTutoContainer from '../VersoContent/VersoContentTuto/VersoContentTutoContainer'
 import VersoControlsContainer from '../VersoControls/VersoControlsContainer'
-import VersoHeaderContainer from '../VersoContent/VersoHeaderContainer'
+import VersoHeaderContainer from '../VersoHeader/VersoHeaderContainer'
 import AbsoluteFooterContainer from '../../AbsoluteFooter/AbsoluteFooterContainer'
 
 describe('src | components | layout | Verso', () => {
@@ -22,6 +22,7 @@ describe('src | components | layout | Verso', () => {
       extraClassName: 'extra-classname',
       isTuto: false,
       offerName: 'Offer title',
+      offerType: 'EventType.SPECTACLE_VIVANT',
       offerVenueNameOrPublicName: 'Offer subtitle',
     }
   })
@@ -99,6 +100,7 @@ describe('src | components | layout | Verso', () => {
     expect(versoHeaderContainer.prop('backgroundColor')).toBe('#ACE539')
     expect(versoHeaderContainer.prop('subtitle')).toBe('Offer subtitle')
     expect(versoHeaderContainer.prop('title')).toBe('Offer title')
+    expect(versoHeaderContainer.prop('type')).toBe('EventType.SPECTACLE_VIVANT')
   })
 
   it('should render a AbsoluteFooterContainer with the right props', () => {

@@ -4,6 +4,7 @@ import Draggable from 'react-draggable'
 
 import getUrlWithoutDetailsPart from '../../../../helpers/getUrlWithoutDetailsPart'
 import { getPageY } from '../../../../utils/getPageY'
+import findPictoByOfferType from './utils/findPictoByOfferType'
 
 const toRectoDraggableBounds = {
   bottom: 0,
@@ -26,12 +27,21 @@ class VersoHeader extends Component {
   }
 
   render() {
-    const { backgroundColor, subtitle, title } = this.props
+    const { backgroundColor, subtitle, title, type } = this.props
+    const offerPicto = findPictoByOfferType(type)
+
     return (
       <div
         className="verso-header with-triangle is-relative pc-theme-black py32 px12"
         style={{ backgroundColor }}
       >
+        {type && (
+          <img
+            alt={type}
+            id="verso-offer-picto-type"
+            src={offerPicto}
+          />
+        )}
         {title && (
           <h1
             className="fs40 is-medium is-hyphens"
@@ -65,6 +75,7 @@ VersoHeader.defaultProps = {
   height: 0,
   subtitle: null,
   title: null,
+  type: null,
   verticalSlideRatio: 0.2,
 }
 
@@ -85,6 +96,7 @@ VersoHeader.propTypes = {
   }).isRequired,
   subtitle: PropTypes.string,
   title: PropTypes.string,
+  type: PropTypes.string,
   verticalSlideRatio: PropTypes.number,
 }
 
