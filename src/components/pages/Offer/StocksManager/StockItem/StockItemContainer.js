@@ -7,8 +7,8 @@ import selectFormInitialValuesByStockAndOfferIdAndOffererIdAndTimezone from './s
 import { translateQueryParamsToApiParams } from '../../../../../utils/translate'
 import selectOfferById from '../../../../../selectors/selectOfferById'
 import selectProductById from '../../../../../selectors/selectProductById'
-import selectVenueById from '../../../../../selectors/selectVenueById'
-import selectOffererById from '../../../../../selectors/selectOffererById'
+import { selectVenueById } from '../../../../../selectors/data/venuesSelectors'
+import { selectOffererById } from '../../../../../selectors/data/offerersSelectors'
 import selectTimezoneByVenueIdAndOffererId from '../../../../../selectors/selectTimezoneByVenueIdAndOffererId'
 
 export const mapStateToProps = (state, ownProps) => {

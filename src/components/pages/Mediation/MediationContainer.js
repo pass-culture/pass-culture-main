@@ -8,8 +8,8 @@ import Mediation from './Mediation'
 import { withRequiredLogin } from '../../hocs'
 import selectMediationById from '../../../selectors/selectMediationById'
 import selectOfferById from '../../../selectors/selectOfferById'
-import selectOffererById from '../../../selectors/selectOffererById'
-import selectVenueById from '../../../selectors/selectVenueById'
+import { selectOffererById } from '../../../selectors/data/offerersSelectors'
+import { selectVenueById } from '../../../selectors/data/venuesSelectors'
 
 import { mediationNormalizer, offerNormalizer } from '../../../utils/normalizers'
 

@@ -4,7 +4,7 @@ import { selectCurrentUser } from 'with-react-redux-login'
 
 import BankFields from './BankFields'
 import { withFrenchQueryRouter } from '../../../../hocs'
-import selectUserOffererByOffererIdAndUserIdAndRightsType from '../../../../../selectors/selectUserOffererByOffererIdAndUserIdAndRightsType'
+import { selectUserOffererByOffererIdAndUserIdAndRightsType } from '../../../../../selectors/data/userOfferersSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps

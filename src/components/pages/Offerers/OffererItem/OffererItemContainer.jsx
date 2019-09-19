@@ -1,8 +1,10 @@
 import { connect } from 'react-redux'
 
 import OffererItem from './OffererItem'
-import selectPhysicalVenuesByOffererId from '../../../../selectors/selectPhysicalVenuesByOffererId'
-import selectVenuesByOffererIdAndOfferType from '../../../../selectors/selectVenuesByOffererIdAndOfferType'
+import {
+  selectPhysicalVenuesByOffererId,
+  selectVenuesByOffererId,
+} from '../../../../selectors/data/venuesSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const {
@@ -10,7 +12,7 @@ export const mapStateToProps = (state, ownProps) => {
   } = ownProps
   return {
     physicalVenues: selectPhysicalVenuesByOffererId(state, offererId),
-    venues: selectVenuesByOffererIdAndOfferType(state, offererId),
+    venues: selectVenuesByOffererId(state, offererId),
   }
 }
 

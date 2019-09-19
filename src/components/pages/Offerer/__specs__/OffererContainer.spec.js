@@ -12,11 +12,6 @@ describe('src | components | pages | Offerer | OffererContainer', () => {
       // given
       const state = {
         data: {
-          offerers: [
-            {
-              id: 'AGH',
-            },
-          ],
           userOfferers: [
             {
               id: 'AEKQ',
@@ -26,15 +21,22 @@ describe('src | components | pages | Offerer | OffererContainer', () => {
               userId: 'TY56er',
             },
           ],
-          venues: [{}],
+          offerers: [
+            {
+              id: 'AGH',
+              name: 'Gaumont cinéma',
+              bic: 'bic',
+              iban: 'iban',
+            },
+          ],
+          venues: [],
         },
         form: {
           offerer: {
-            name: 'Fake Name',
+            name: 'Gaumont cinéma',
           },
         },
       }
-
       const ownProps = {
         currentUser: {
           id: 'TY56er',
@@ -45,24 +47,24 @@ describe('src | components | pages | Offerer | OffererContainer', () => {
           },
         },
       }
-
       // when
-      const props = mapStateToProps(state, ownProps)
+      const result = mapStateToProps(state, ownProps)
 
       // then
-      expect(props).toStrictEqual({
-        adminUserOfferer: {
-          id: 'AEKQ',
-          modelName: 'UserOfferer',
-          offererId: 'AGH',
-          rights: 'admin',
-          userId: 'TY56er',
-        },
-        offerer: {
+      expect(result).toStrictEqual({
+        offerer: expect.objectContaining({
           id: 'AGH',
-        },
-        offererId: 'AGH',
-        offererName: 'Fake Name',
+          name: 'Gaumont cinéma',
+          bic: 'bic',
+          iban: 'iban',
+          adminUserOfferer: {
+            id: 'AEKQ',
+            modelName: 'UserOfferer',
+            offererId: 'AGH',
+            rights: 'admin',
+            userId: 'TY56er',
+          },
+        }),
         venues: [],
       })
     })

@@ -15,7 +15,7 @@ import TextField from '../../layout/form/fields/TextField'
 import { mapApiToBrowser, translateQueryParamsToApiParams } from '../../../utils/translate'
 import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
 import userHasNoOffersInAPhysicalVenueYet from './utils/userHasNoOffersInAPhysicalVenueYet'
-import selectOfferers from '../../../selectors/selectOfferers'
+import { selectOfferers } from '../../../selectors/data/offerersSelectors'
 
 class Offerers extends Component {
   constructor(props) {

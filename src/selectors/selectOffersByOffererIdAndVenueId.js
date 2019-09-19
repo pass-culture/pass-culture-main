@@ -1,6 +1,6 @@
 import createCachedSelector from 're-reselect'
 
-import selectVenuesByOffererIdAndOfferType from './selectVenuesByOffererIdAndOfferType'
+import { selectVenuesByOffererId } from './data/venuesSelectors'
 
 function mapArgsToCacheKey(state, offererId, venueId) {
   return `${offererId || ''}/${venueId || ''}`
@@ -8,7 +8,7 @@ function mapArgsToCacheKey(state, offererId, venueId) {
 
 const selectOffersByOffererIdAndVenueId = createCachedSelector(
   state => state.data.offers,
-  (state, offererId) => offererId && selectVenuesByOffererIdAndOfferType(state, offererId),
+  (state, offererId) => offererId && selectVenuesByOffererId(state, offererId),
   (state, offererId, venueId) => venueId,
   (offers, venues, venueId) => {
     const venueIds = [].concat(venueId || (venues || []).map(v => v.id))

@@ -6,15 +6,16 @@ import { NavLink } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
 
 import Venue from './Venue'
-import selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity from './selectors/selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity'
-import { VENUE_CREATION_PATCH_KEYS, VENUE_MODIFICATION_PATCH_KEYS } from './utils/utils'
+
 import { withRequiredLogin } from '../../hocs'
+import withTracking from '../../hocs/withTracking'
 import { CREATION } from '../../hocs/withFrenchQueryRouter'
-import selectUserOffererByOffererIdAndUserIdAndRightsType from '../../../selectors/selectUserOffererByOffererIdAndUserIdAndRightsType'
-import selectOffererById from '../../../selectors/selectOffererById'
+import { VENUE_CREATION_PATCH_KEYS, VENUE_MODIFICATION_PATCH_KEYS } from './utils/utils'
 import { offererNormalizer, venueNormalizer } from '../../../utils/normalizers'
 import { formatPatch } from '../../../utils/formatPatch'
-import withTracking from '../../hocs/withTracking'
+import selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity from './selectors/selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity'
+import { selectUserOffererByOffererIdAndUserIdAndRightsType } from '../../../selectors/data/userOfferersSelectors'
+import { selectOffererById } from '../../../selectors/data/offerersSelectors'
 
 const handleOnClick = dispatch => () => dispatch(closeNotification())
 

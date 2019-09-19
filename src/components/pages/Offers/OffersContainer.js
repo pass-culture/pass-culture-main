@@ -5,9 +5,9 @@ import { assignData, requestData } from 'redux-saga-data'
 
 import Offers from './Offers'
 import { withRequiredLogin } from '../../hocs'
-import selectOffererById from '../../../selectors/selectOffererById'
+import { selectOffererById } from '../../../selectors/data/offerersSelectors'
 import selectOffersByOffererIdAndVenueId from '../../../selectors/selectOffersByOffererIdAndVenueId'
-import selectVenueById from '../../../selectors/selectVenueById'
+import { selectVenueById } from '../../../selectors/data/venuesSelectors'
 import { offerNormalizer } from '../../../utils/normalizers'
 import { translateQueryParamsToApiParams } from '../../../utils/translate'
 

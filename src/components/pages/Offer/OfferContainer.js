@@ -5,8 +5,10 @@ import { compose } from 'redux'
 import Offer from './Offer'
 import selectFormInitialValuesByProductAndOfferAndOffererAndVenue from './utils/selectFormInitialValuesByProductAndOfferAndOffererAndVenue'
 import { withRequiredLogin } from '../../hocs'
+import withTracking from '../../hocs/withTracking'
+
 import selectOfferById from '../../../selectors/selectOfferById'
-import selectOffererById from '../../../selectors/selectOffererById'
+import { selectOffererById } from '../../../selectors/data/offerersSelectors'
 import selectProductById from '../../../selectors/selectProductById'
 import selectProviders from '../../../selectors/selectProviders'
 import selectMusicSubOptionsByMusicType from '../../../selectors/selectMusicSubOptionsByMusicType'
@@ -14,10 +16,11 @@ import selectShowSubOptionsByShowType from '../../../selectors/selectShowSubOpti
 import selectStocksByOfferId from '../../../selectors/selectStocksByOfferId'
 import selectTypesByIsVenueVirtual from '../../../selectors/selectTypesByIsVenueVirtual'
 import selectTypeByIsVenueVirtualAndOfferTypeValue from '../../../selectors/selectTypeByIsVenueVirtualAndOfferTypeValue'
-import selectVenueById from '../../../selectors/selectVenueById'
-import selectVenuesByOffererIdAndOfferType from '../../../selectors/selectVenuesByOffererIdAndOfferType'
-import selectOfferers from '../../../selectors/selectOfferers'
-import withTracking from '../../hocs/withTracking'
+import {
+  selectVenueById,
+  selectVenuesByOffererIdAndOfferType,
+} from '../../../selectors/data/venuesSelectors'
+import { selectOfferers } from '../../../selectors/data/offerersSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const {

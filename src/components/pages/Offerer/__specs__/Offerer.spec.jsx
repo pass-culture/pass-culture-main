@@ -1,31 +1,19 @@
 import Offerer from '../Offerer'
 import React from 'react'
 import { shallow } from 'enzyme'
+import { OffererClass } from '../OffererClass'
 
 describe('src | components | pages | Offerer', () => {
   let props
 
   beforeEach(() => {
     props = {
-      adminUserOfferer: false,
+      offerer: new OffererClass('AA', 'fake offerer name', 'ABC', 'DEF', false),
       getOfferer: jest.fn(),
       getUserOfferers: jest.fn(),
       history: {
         push: jest.fn(),
       },
-      match: {
-        params: {
-          offererId: 'AA',
-        },
-      },
-      offerer: {
-        id: 'AA',
-        bic: 'ABC',
-        iban: 'DEF',
-      },
-      parseFormChild: jest.fn(),
-      offererId: 'AA',
-      offererName: 'fake offerer name',
       query: {
         context: jest.fn().mockReturnValue({
           isCreatedEntity: true,
@@ -101,13 +89,13 @@ describe('src | components | pages | Offerer', () => {
         // when
         const wrapper = shallow(<Offerer {...props} />)
 
-        // then
-        const bankInstructions = wrapper.find('.bank-instructions-label')
-        expect(bankInstructions).toHaveLength(1)
-        expect(bankInstructions.text()).toBe(
-          'Le pass Culture vous contactera prochainement afin d’enregistrer vos coordonnées bancaires. Une fois votre BIC / IBAN renseigné, ces informations apparaitront ci-dessous.'
-        )
-      })
+      // then
+      const bankInstructions = wrapper.find('.bank-instructions-label')
+      expect(bankInstructions).toHaveLength(1)
+      expect(bankInstructions.text()).toBe(
+        'Le pass Culture vous contactera prochainement afin d’enregistrer vos coordonnées bancaires. Une fois votre BIC / IBAN renseigné, ces informations apparaitront ci-dessous.'
+      )
+    })
 
       it('should not render a bank instructions block when bank information are provided', () => {
         // when
@@ -118,9 +106,9 @@ describe('src | components | pages | Offerer', () => {
         expect(bankInstructions).toHaveLength(0)
       })
 
-      it('should not render a bank instructions block when offerer name is not provided', () => {
-        // given
-        props.offererName = ''
+    it('should not render a bank instructions block when offerer name is not provided', () => {
+      // given
+      props.offerer.name = ''
 
         // when
         const wrapper = shallow(<Offerer {...props} />)

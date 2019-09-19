@@ -1,17 +1,17 @@
+import { showNotification } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
+import { requestData } from 'redux-saga-data'
 
 import Offerer from './Offerer'
+import { makeOffererComponentValueObject } from './OffererFactory'
 
 import { withRequiredLogin } from '../../hocs'
-import selectUserOffererByOffererIdAndUserIdAndRightsType from '../../../selectors/selectUserOffererByOffererIdAndUserIdAndRightsType'
-import selectOffererById from '../../../selectors/selectOffererById'
-import selectPhysicalVenuesByOffererId from '../../../selectors/selectPhysicalVenuesByOffererId'
-import get from 'lodash.get'
-import { requestData } from 'redux-saga-data'
-import { offererNormalizer } from '../../../utils/normalizers'
-import { showNotification } from 'pass-culture-shared'
 import withTracking from '../../hocs/withTracking'
+import { offererNormalizer } from '../../../utils/normalizers'
+import { selectOffererById } from '../../../selectors/data/offerersSelectors'
+import { selectPhysicalVenuesByOffererId } from '../../../selectors/data/venuesSelectors'
+import { selectUserOffererByOffererIdAndUserIdAndRightsType } from '../../../selectors/data/userOfferersSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const { currentUser, match } = ownProps
@@ -21,15 +21,13 @@ export const mapStateToProps = (state, ownProps) => {
   const { id: currentUserId } = currentUser
 
   return {
-    adminUserOfferer: selectUserOffererByOffererIdAndUserIdAndRightsType(
-      state,
+    offerer: makeOffererComponentValueObject(
+      selectUserOffererByOffererIdAndUserIdAndRightsType,
+      selectOffererById,
       offererId,
       currentUserId,
-      'admin'
+      state
     ),
-    offerer: selectOffererById(state, offererId),
-    offererId,
-    offererName: get(state, 'form.offerer.name'),
     venues: selectPhysicalVenuesByOffererId(state, offererId),
   }
 }

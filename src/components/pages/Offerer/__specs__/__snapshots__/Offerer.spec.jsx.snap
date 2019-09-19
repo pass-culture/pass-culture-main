@@ -4,7 +4,6 @@ exports[`src | components | pages | Offerer should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Offerer
-    adminUserOfferer={false}
     getOfferer={[MockFunction]}
     getUserOfferers={[MockFunction]}
     history={
@@ -12,23 +11,17 @@ ShallowWrapper {
         "push": [MockFunction],
       }
     }
-    match={
-      Object {
-        "params": Object {
-          "offererId": "AA",
-        },
-      }
-    }
     offerer={
-      Object {
+      OffererClass {
+        "adminUserOfferer": false,
+        "areBankInformationProvided": [Function],
         "bic": "ABC",
         "iban": "DEF",
         "id": "AA",
+        "isIdOrNameDefined": [Function],
+        "name": "fake offerer name",
       }
     }
-    offererId="AA"
-    offererName="fake offerer name"
-    parseFormChild={[MockFunction]}
     query={
       Object {
         "context": [MockFunction] {
@@ -73,7 +66,7 @@ ShallowWrapper {
       },
       "children": Array [
         <HeroSection
-          subtitle={null}
+          subtitle="fake offerer name"
           title="Structure"
         >
           <p
@@ -103,10 +96,14 @@ ShallowWrapper {
           onEscapeKey={null}
           onSubmit={null}
           patch={
-            Object {
+            OffererClass {
+              "adminUserOfferer": false,
+              "areBankInformationProvided": [Function],
               "bic": "ABC",
               "iban": "DEF",
               "id": "AA",
+              "isIdOrNameDefined": [Function],
+              "name": "fake offerer name",
             }
           }
           readOnly={false}
@@ -219,7 +216,7 @@ ShallowWrapper {
           >
             Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.
           </p>,
-          "subtitle": null,
+          "subtitle": "fake offerer name",
           "title": "Structure",
         },
         "ref": null,
@@ -353,10 +350,14 @@ ShallowWrapper {
           "onEnterKey": null,
           "onEscapeKey": null,
           "onSubmit": null,
-          "patch": Object {
+          "patch": OffererClass {
+            "adminUserOfferer": false,
+            "areBankInformationProvided": [Function],
             "bic": "ABC",
             "iban": "DEF",
             "id": "AA",
+            "isIdOrNameDefined": [Function],
+            "name": "fake offerer name",
           },
           "readOnly": false,
           "successNotification": "Formulaire non validé",
@@ -736,7 +737,7 @@ ShallowWrapper {
         },
         "children": Array [
           <HeroSection
-            subtitle={null}
+            subtitle="fake offerer name"
             title="Structure"
           >
             <p
@@ -766,10 +767,14 @@ ShallowWrapper {
             onEscapeKey={null}
             onSubmit={null}
             patch={
-              Object {
+              OffererClass {
+                "adminUserOfferer": false,
+                "areBankInformationProvided": [Function],
                 "bic": "ABC",
                 "iban": "DEF",
                 "id": "AA",
+                "isIdOrNameDefined": [Function],
+                "name": "fake offerer name",
               }
             }
             readOnly={false}
@@ -882,7 +887,7 @@ ShallowWrapper {
             >
               Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.
             </p>,
-            "subtitle": null,
+            "subtitle": "fake offerer name",
             "title": "Structure",
           },
           "ref": null,
@@ -1016,10 +1021,14 @@ ShallowWrapper {
             "onEnterKey": null,
             "onEscapeKey": null,
             "onSubmit": null,
-            "patch": Object {
+            "patch": OffererClass {
+              "adminUserOfferer": false,
+              "areBankInformationProvided": [Function],
               "bic": "ABC",
               "iban": "DEF",
               "id": "AA",
+              "isIdOrNameDefined": [Function],
+              "name": "fake offerer name",
             },
             "readOnly": false,
             "successNotification": "Formulaire non validé",

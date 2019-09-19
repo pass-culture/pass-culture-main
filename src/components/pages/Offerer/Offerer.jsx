@@ -1,35 +1,27 @@
 import classnames from 'classnames'
-import get from 'lodash.get'
 import { Field, Form } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
+import { OffererClass } from './OffererClass'
 import CreationControl from './CreationControl/CreationControl'
 import ModificationControl from './ModificationControl/ModificationControl'
+import Venues from './Venues/Venues'
 import HeroSection from '../../layout/HeroSection/HeroSection'
 import Main from '../../layout/Main'
 import { formatPatch } from '../../../utils/formatPatch'
-import Venues from './Venues/Venues'
 
 const OFFERER_CREATION_PATCH_KEYS = ['address', 'city', 'name', 'siren', 'postalCode']
 const OFFERER_MODIFICATION_PATCH_KEYS = ['bic', 'iban', 'rib']
 
 class Offerer extends Component {
   onHandleDataRequest = (handleSuccess, handleFail) => {
-    const {
-      getOfferer,
-      getUserOfferers,
-      match: {
-        params: { offererId },
-      },
-      query,
-    } = this.props
-
+    const { getOfferer, getUserOfferers, offerer, query } = this.props
     const { isCreatedEntity } = query.context()
 
     if (!isCreatedEntity) {
-      getOfferer(offererId, handleFail, handleSuccess)
-      getUserOfferers(offererId)
+      getOfferer(offerer.id, handleFail, handleSuccess)
+      getUserOfferers(offerer.id)
       return
     }
     handleSuccess()
@@ -42,16 +34,14 @@ class Offerer extends Component {
 
   onHandleSuccess = (state, action) => {
     const { payload } = action
-    const { offererId } = this.props
-
-    const CreatedOffererId = payload.datum.id
-    const { history, query, showNotification, trackCreateOfferer, trackModifyOfferer } = this.props
+    const createdOffererId = payload.datum.id
+    const { offerer, history, query, showNotification, trackCreateOfferer, trackModifyOfferer } = this.props
     const { isCreatedEntity } = query.context()
 
     if (isCreatedEntity) {
-      trackCreateOfferer(CreatedOffererId)
+      trackCreateOfferer(createdOffererId)
     } else {
-      trackModifyOfferer(offererId)
+      trackModifyOfferer(offerer.id)
     }
 
     history.push('/structures')
@@ -69,12 +59,9 @@ class Offerer extends Component {
     formatPatch(patch, patchConfig, OFFERER_CREATION_PATCH_KEYS, OFFERER_MODIFICATION_PATCH_KEYS)
 
   render() {
-    const { adminUserOfferer, offerer, offererId, offererName, query, venues } = this.props
+    const { offerer, query, venues } = this.props
     const { isCreatedEntity, isModifiedEntity, readOnly } = query.context()
-    const areSirenFieldsVisible = get(offerer, 'id') || offererName
-    const areBankInfosReadOnly = readOnly || !adminUserOfferer
-
-    const areBankInformationProvided = offerer && (offerer.bic && offerer.iban)
+    const areBankInfosReadOnly = readOnly || !offerer.adminUserOfferer
 
     const patchConfig = { isCreatedEntity, isModifiedEntity }
 
@@ -85,7 +72,7 @@ class Offerer extends Component {
         name="offerer"
       >
         <HeroSection
-          subtitle={get(offerer, 'name')}
+          subtitle={offerer.name}
           title="Structure"
         >
           <p className="subtitle">
@@ -94,7 +81,7 @@ class Offerer extends Component {
         </HeroSection>
 
         <Form
-          action={`/offerers/${get(offerer, 'id') || ''}`}
+          action={`/offerers/${offerer.id || ''}`}
           className="section"
           formatPatch={this.formatPatch(patchConfig)}
           handleFail={this.onHandleFail}
@@ -106,16 +93,16 @@ class Offerer extends Component {
           <div className="section">
             <div className="field-group">
               <Field
-                disabling={this.handleDisabling(offererName)}
+                disabling={this.handleDisabling(offerer.name)}
                 label="SIREN"
                 name="siren"
-                readOnly={get(offerer, 'id')}
+                readOnly={offerer.id}
                 required
                 type="siren"
               />
               <Field
                 className={classnames({
-                  'is-invisible': !areSirenFieldsVisible,
+                  'is-invisible': !offerer.isIdOrNameDefined,
                 })}
                 isExpanded
                 label="Désignation"
@@ -125,7 +112,7 @@ class Offerer extends Component {
               />
               <Field
                 className={classnames({
-                  'is-invisible': !areSirenFieldsVisible,
+                  'is-invisible': !offerer.isIdOrNameDefined,
                 })}
                 isExpanded
                 label="Siège social"
@@ -139,11 +126,11 @@ class Offerer extends Component {
               {'Informations bancaires'}
               <span className="is-pulled-right is-size-7 has-text-grey">
                 {readOnly &&
-                  !adminUserOfferer &&
+                  !offerer.adminUserOfferer &&
                   "Vous avez besoin d'être administrateur de la structure pour modifier ces informations."}
               </span>
             </h2>
-            {offererName && !areBankInformationProvided && (
+            {offerer.name && !offerer.areBankInformationProvided() && (
               <p className="bank-instructions-label">
                 {
                   'Le pass Culture vous contactera prochainement afin d’enregistrer vos coordonnées bancaires. Une fois votre BIC / IBAN renseigné, ces informations apparaitront ci-dessous.'
@@ -153,7 +140,7 @@ class Offerer extends Component {
             <div className="field-group">
               <Field
                 className={classnames({
-                  'is-invisible': !areSirenFieldsVisible,
+                  'is-invisible': !offerer.isIdOrNameDefined,
                 })}
                 isExpanded
                 label="BIC"
@@ -163,7 +150,7 @@ class Offerer extends Component {
               />
               <Field
                 className={classnames({
-                  'is-invisible': !areSirenFieldsVisible,
+                  'is-invisible': !offerer.isIdOrNameDefined,
                 })}
                 isExpanded
                 label="IBAN"
@@ -175,7 +162,7 @@ class Offerer extends Component {
             {isCreatedEntity ? <CreationControl /> : <ModificationControl {...this.props} />}
             <div>
               {!isCreatedEntity && <Venues
-                offererId={offererId}
+                offererId={offerer.id}
                 venues={venues}
                                    />}
             </div>
@@ -187,14 +174,10 @@ class Offerer extends Component {
 }
 
 Offerer.propTypes = {
-  adminUserOfferer: PropTypes.bool.isRequired,
   getOfferer: PropTypes.func.isRequired,
   getUserOfferers: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
-  match: PropTypes.shape().isRequired,
-  offerer: PropTypes.shape().isRequired,
-  offererId: PropTypes.string.isRequired,
-  offererName: PropTypes.string.isRequired,
+  offerer: PropTypes.instanceOf(OffererClass).isRequired,
   query: PropTypes.shape().isRequired,
   showNotification: PropTypes.func.isRequired,
   trackCreateOfferer: PropTypes.func.isRequired,

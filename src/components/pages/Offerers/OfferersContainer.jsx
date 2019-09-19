@@ -1,12 +1,12 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-
-import { withRequiredLogin } from '../../hocs'
-import Offerers from './Offerers'
-import { closeNotification, showNotification } from 'pass-culture-shared'
 import { assignData, requestData } from 'redux-saga-data'
+import { closeNotification, showNotification } from 'pass-culture-shared'
+
+import Offerers from './Offerers'
+import { withRequiredLogin } from '../../hocs'
 import { offererNormalizer } from '../../../utils/normalizers'
-import selectOfferers from '../../../selectors/selectOfferers'
+import { selectOfferers } from '../../../selectors/data/offerersSelectors'
 
 import { OFFERERS_API_PATH } from '../../../config/apiPaths'
 
