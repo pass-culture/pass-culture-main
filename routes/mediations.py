@@ -2,7 +2,6 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
 from connectors.thumb_storage import read_thumb, save_thumb
-from domain.discard_pc_objects import invalidate_recommendations_if_deactivating_object
 from domain.mediations import create_new_mediation
 from models.mediation import Mediation
 from models.pc_object import PcObject
@@ -46,7 +45,6 @@ def update_mediation(mediation_id):
     mediation = Mediation.query.filter_by(id=dehumanize(mediation_id)).first()
     data = request.json
     mediation.populate_from_dict(data)
-    invalidate_recommendations_if_deactivating_object(data, mediation.recommendations)
     PcObject.save(mediation)
     return jsonify(as_dict(mediation, includes=MEDIATION_INCLUDES)), 200
 

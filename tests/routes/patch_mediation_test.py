@@ -1,13 +1,11 @@
-from datetime import datetime, timedelta
-
-from models import PcObject, Mediation, Recommendation
+from models import PcObject, Mediation
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_user, \
     create_offer_with_event_product, \
     create_mediation, \
     create_offerer, \
     create_user_offerer, \
-    create_venue, create_recommendation
+    create_venue
 from utils.human_ids import humanize
 
 
@@ -43,48 +41,6 @@ class Patch:
             assert mediation.frontText == data['frontText']
             assert mediation.backText == data['backText']
 
-        @clean_database
-        def when_mediation_is_deactivated(self, app):
-            # given
-            user_pro = create_user()
-            other_user = create_user(email='other@email.com')
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue)
-            user_offerer = create_user_offerer(user_pro, offerer)
-            mediation1 = create_mediation(offer)
-            mediation2 = create_mediation(offer)
-            original_validity_date = datetime.utcnow() + timedelta(days=7)
-            recommendation1 = create_recommendation(offer, user_pro, mediation1,
-                                                    valid_until_date=original_validity_date)
-            recommendation2 = create_recommendation(offer, other_user, mediation1,
-                                                    valid_until_date=original_validity_date)
-            other_recommendation = create_recommendation(offer, other_user, mediation2,
-                                                         valid_until_date=original_validity_date)
-            PcObject.save(other_user, user_offerer, recommendation1, recommendation2, other_recommendation)
-
-            mediation1_id = mediation1.id
-            recommendation1_id = recommendation1.id
-            recommendation2_id = recommendation2.id
-            other_recommendation_id = other_recommendation.id
-
-            auth_request = TestClient(app.test_client()).with_auth(email=user_pro.email)
-            data = {'isActive': False}
-
-            # when
-            response = auth_request.patch('/mediations/%s' % humanize(mediation1.id), json=data)
-
-            # then
-            mediation1 = Mediation.query.get(mediation1_id)
-            recommendation1 = Recommendation.query.get(recommendation1_id)
-            recommendation2 = Recommendation.query.get(recommendation2_id)
-            other_recommendation = Recommendation.query.get(other_recommendation_id)
-            assert response.status_code == 200
-            assert response.json['isActive'] == mediation1.isActive
-            assert mediation1.isActive == data['isActive']
-            assert recommendation1.validUntilDate < datetime.utcnow()
-            assert recommendation2.validUntilDate < datetime.utcnow()
-            assert other_recommendation.validUntilDate == original_validity_date
 
     class Returns403:
         @clean_database

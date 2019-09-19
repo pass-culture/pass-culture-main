@@ -1,7 +1,7 @@
 """ routes offerer """
 from datetime import timedelta, datetime
 
-from models import PcObject, Recommendation, Offerer
+from models import PcObject, Offerer
 from routes.serialization import serialize
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_offer_with_event_product, \
@@ -61,7 +61,7 @@ class Patch:
 
     class Returns200:
         @clean_database
-        def when_deactivating_offerer_and_expires_recos(self, app):
+        def when_deactivating_offerer(self, app):
             # given
             user = create_user()
             other_user = create_user(email='other@email.fr')
@@ -85,11 +85,6 @@ class Patch:
                           other_recommendation,
                           user_offerer)
             offerer_id = offerer.id
-            recommendation1_id = recommendation1.id
-            recommendation2_id = recommendation2.id
-            recommendation3_id = recommendation3.id
-            recommendation4_id = recommendation4.id
-            other_recommendation_id = other_recommendation.id
 
             data = {'isActive': False}
 
@@ -100,17 +95,7 @@ class Patch:
 
             # then
             offerer = Offerer.query.get(offerer_id)
-            recommendation1 = Recommendation.query.get(recommendation1_id)
-            recommendation2 = Recommendation.query.get(recommendation2_id)
-            recommendation3 = Recommendation.query.get(recommendation3_id)
-            recommendation4 = Recommendation.query.get(recommendation4_id)
-            other_recommendation = Recommendation.query.get(other_recommendation_id)
 
             assert response.status_code == 200
             assert response.json['isActive'] == offerer.isActive
             assert offerer.isActive == data['isActive']
-            assert recommendation1.validUntilDate < datetime.utcnow()
-            assert recommendation2.validUntilDate < datetime.utcnow()
-            assert recommendation3.validUntilDate < datetime.utcnow()
-            assert recommendation4.validUntilDate < datetime.utcnow()
-            assert other_recommendation.validUntilDate == original_validity_date

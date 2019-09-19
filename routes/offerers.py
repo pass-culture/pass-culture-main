@@ -2,11 +2,9 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
 from domain.admin_emails import maybe_send_offerer_validation_email
-from domain.discard_pc_objects import invalidate_recommendations_if_deactivating_object
 from models import Offerer, PcObject, RightsType, Venue
 from models.venue import create_digital_venue
-from repository.offerer_queries import find_all_recommendations_for_offerer, \
-    filter_offerers_with_keywords_string, \
+from repository.offerer_queries import filter_offerers_with_keywords_string, \
     find_by_siren, query_filter_offerer_by_user, query_filter_offerer_is_validated, \
     query_filter_offerer_is_not_validated
 from routes.serialization import as_dict
@@ -108,8 +106,6 @@ def patch_offerer(offererId):
     check_valid_edition(data)
     offerer = Offerer.query.filter_by(id=dehumanize(offererId)).first()
     offerer.populate_from_dict(data, skipped_keys=['validationToken'])
-    recommendations = find_all_recommendations_for_offerer(offerer)
-    invalidate_recommendations_if_deactivating_object(data, recommendations)
     PcObject.save(offerer)
     return jsonify(get_dict_offerer(offerer)), 200
 
