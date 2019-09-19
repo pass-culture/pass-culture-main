@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { assignData } from 'redux-saga-data'
+import { assignData } from 'redux-thunk-data'
 
 import NavByOfferType from './NavByOfferType'
 import withFrenchQueryRouter from '../../../hocs/withFrenchQueryRouter'

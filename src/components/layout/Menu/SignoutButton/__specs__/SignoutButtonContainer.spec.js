@@ -3,8 +3,8 @@ import { createBrowserHistory } from 'history'
 import { mapDispatchToProps } from '../SignoutButtonContainer'
 import { configureStore } from '../../../../../utils/store'
 
-jest.mock('redux-saga-data', () => ({
-  ...jest.requireActual('redux-saga-data'),
+jest.mock('redux-thunk-data', () => ({
+  ...jest.requireActual('redux-thunk-data'),
   requestData: config => {
     config.handleSuccess()
     return { type: 'REQUEST_DATA' }

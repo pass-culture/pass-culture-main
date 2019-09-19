@@ -1,6 +1,6 @@
 import { persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
-import { createDataReducer } from 'redux-saga-data'
+import { createDataReducer } from 'redux-thunk-data'
 
 export const SAVE_RECOMMENDATIONS_REQUEST_TIMESTAMP = 'SAVE_RECOMMENDATIONS_REQUEST_TIMESTAMP'
 

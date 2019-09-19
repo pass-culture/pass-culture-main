@@ -1,4 +1,4 @@
-import { requestData } from 'redux-saga-data'
+import { requestData } from 'redux-thunk-data'
 
 const TOKEN_ACTIONS = {
   CHANGE_TOKEN_STATUS: 'SET_TOKEN_STATUS',

@@ -1,9 +1,9 @@
-import { requestData } from 'redux-saga-data'
+import { requestData } from 'redux-thunk-data'
 
 import { mapDispatchToProps, mapStateToProps } from '../PasswordFormContainer'
 import { validateToken, setTokenStatus } from '../../../../../reducers/token'
 
-jest.mock('redux-saga-data', () => ({
+jest.mock('redux-thunk-data', () => ({
   requestData: jest.fn(),
 }))
 

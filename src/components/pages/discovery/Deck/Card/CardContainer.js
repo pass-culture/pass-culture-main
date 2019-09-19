@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import withSizes from 'react-sizes'
 import { compose } from 'redux'
-import { mergeData, requestData } from 'redux-saga-data'
+import { mergeData, requestData } from 'redux-thunk-data'
 
 import Card from './Card'
 import { getRecommendationSelectorByCardPosition } from '../../utils/utils'

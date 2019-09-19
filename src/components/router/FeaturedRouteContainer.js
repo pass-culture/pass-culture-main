@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { requestData } from 'redux-saga-data'
+import { requestData } from 'redux-thunk-data'
 
 import FeaturedRoute from './FeaturedRoute'
 import selectIsFeatureDisabled from './selectors/selectIsFeatureDisabled'

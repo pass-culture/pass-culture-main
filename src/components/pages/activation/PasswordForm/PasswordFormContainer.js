@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { requestData } from 'redux-saga-data'
+import { requestData } from 'redux-thunk-data'
 
 import PasswordForm from './PasswordForm'
 import withFrenchQueryRouter from '../../../hocs/withFrenchQueryRouter'
