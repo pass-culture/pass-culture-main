@@ -70,10 +70,7 @@ class Booking extends PureComponent {
   }
 
   handleRequestSuccess = (state, action) => {
-    const {
-      offer,
-      trackBookingSuccess,
-    } = this.props
+    const { trackBookingSuccess } = this.props
     const { payload } = action
     const { datum } = payload
     const nextState = {
@@ -81,7 +78,7 @@ class Booking extends PureComponent {
       isErrored: false,
       isSubmitting: false,
     }
-    trackBookingSuccess(offer.offerId)
+    trackBookingSuccess()
     this.setState(nextState)
   }
 

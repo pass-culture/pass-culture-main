@@ -1,9 +1,4 @@
-import {
-  mapStateToProps,
-  mapDispatchToProps,
-  mergeProps,
-  ribbonLabelAndType,
-} from '../BookingItemContainer'
+import { mapStateToProps, mergeProps, ribbonLabelAndType } from '../BookingItemContainer'
 
 describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList | BookingItem | BookingItemContainer', () => {
   describe('mapStateToProps()', () => {
@@ -189,61 +184,54 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
     })
   })
 
-  describe('mapDispatchToProps', () => {
-    describe('when mapping trackConsultOffer', () => {
-      it('should dispatch a track Matomo Event with correct arguments', () => {
-        // given
-        const ownProps = {
-          tracking: {
-            trackEvent: jest.fn(),
-          },
-        }
-        // when
-        mapDispatchToProps(undefined, ownProps).trackConsultOffer('B4')
-
-        // then
-        expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
-          action: 'consultOffer',
-          name: 'B4',
-        })
-      })
-    })
-  })
-
   describe('mergeProps', () => {
-    it('should spread all stateProps and dispatch props into mergedProps', () => {
+    it('should spread stateProps, dispatchProps and ownProps into mergedProps', () => {
       // given
       const stateProps = {
         offer: { id: 'B4' },
       }
       const dispatchProps = {
-        trackConsultOffer: () => {},
+        dispatchFunction: () => {},
+      }
+      const ownProps = {
+        location: {
+          href: '/src/here',
+        },
       }
 
       // when
-      const mergedProps = mergeProps(stateProps, dispatchProps)
+      const mergedProps = mergeProps(stateProps, dispatchProps, ownProps)
 
       // then
       expect(mergedProps).toStrictEqual({
         offer: { id: 'B4' },
+        dispatchFunction: expect.any(Function),
+        location: {
+          href: '/src/here',
+        },
         trackConsultOffer: expect.any(Function),
       })
     })
 
-    it('should wrap trackConsultOffer with offerId from stateProps', () => {
+    it('should map a tracking event for consulting an offer', () => {
       // given
       const stateProps = {
         offer: { id: 'B4' },
       }
-      const dispatchProps = {
-        trackConsultOffer: jest.fn(),
+      const ownProps = {
+        tracking: {
+          trackEvent: jest.fn(),
+        },
       }
 
       // when
-      mergeProps(stateProps, dispatchProps).trackConsultOffer()
+      mergeProps(stateProps, {}, ownProps).trackConsultOffer()
 
       // then
-      expect(dispatchProps.trackConsultOffer).toHaveBeenCalledWith('B4')
+      expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
+        action: 'consultOffer',
+        name: 'B4',
+      })
     })
   })
 })

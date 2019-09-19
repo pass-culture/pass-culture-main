@@ -27,10 +27,7 @@ export const mapStateToProps = (state, ownProps) => {
   }
 }
 
-export const mapDispatchToProps = (dispatch, ownProps) => ({
-  trackBookingSuccess: offerId => {
-    ownProps.tracking.trackEvent({ action: 'bookingOffer', name: offerId })
-  },
+export const mapDispatchToProps = dispatch => ({
   handleSubmit: (formValues, handleRequestFail, handleRequestSuccess) => {
     dispatch(
       requestData({
@@ -45,6 +42,18 @@ export const mapDispatchToProps = (dispatch, ownProps) => ({
     )
   },
 })
+
+export const mergeProps = (stateProps, dispatchProps, ownProps) => {
+  const { offer: { id: offerId } = {} } = stateProps
+
+  return {
+    ...stateProps,
+    ...dispatchProps,
+    trackBookingSuccess: () => {
+      ownProps.tracking.trackEvent({ action: 'bookingOffer', name: offerId })
+    },
+  }
+}
 
 export default compose(
   withRouter,

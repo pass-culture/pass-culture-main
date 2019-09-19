@@ -71,21 +71,16 @@ export const mapStateToProps = (state, ownProps) => {
   }
 }
 
-export const mapDispatchToProps = (undefined, ownProps) => ({
-  trackConsultOffer: offerId => {
-    ownProps.tracking.trackEvent({ action: 'consultOffer', name: offerId })
-  },
-})
-
 export const mergeProps = (stateProps, dispatchProps, ownProps) => {
-  const { trackConsultOffer } = dispatchProps
-  const { offer: { id } = {} } = stateProps
+  const { offer: { id: offerId } = {} } = stateProps
 
   return {
     ...stateProps,
     ...dispatchProps,
     ...ownProps,
-    trackConsultOffer: () => trackConsultOffer(id),
+    trackConsultOffer: () => {
+      ownProps.tracking.trackEvent({ action: 'consultOffer', name: offerId })
+    },
   }
 }
 
@@ -94,7 +89,7 @@ export default compose(
   withTracking('Offer'),
   connect(
     mapStateToProps,
-    mapDispatchToProps,
+    {},
     mergeProps
   )
 )(BookingItem)

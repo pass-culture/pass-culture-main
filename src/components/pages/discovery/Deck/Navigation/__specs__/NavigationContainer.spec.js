@@ -1,4 +1,4 @@
-import { mapDispatchToProps, mapStateToProps, mergeProps } from '../NavigationContainer'
+import { mapStateToProps, mergeProps } from '../NavigationContainer'
 
 describe('src | components | pages | discovery | Deck | Navigation | NavigationContainer', () => {
   describe('mapStateToProps', () => {
@@ -245,35 +245,14 @@ describe('src | components | pages | discovery | Deck | Navigation | NavigationC
     })
   })
 
-  describe('mapDispatchToProps', () => {
-    describe('when mapping trackConsultOffer', () => {
-      it('should dispatch a tracker Event with correct arguments', () => {
-        // given
-        const ownProps = {
-          tracking: {
-            trackEvent: jest.fn(),
-          },
-        }
-        // when
-        mapDispatchToProps(undefined, ownProps).trackConsultOffer('B4')
-
-        // then
-        expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
-          action: 'consultOffer',
-          name: 'B4',
-        })
-      })
-    })
-  })
-
   describe('mergeProps', () => {
-    it('should spread all stateProps, dispatchProps and ownProps into mergedProps', () => {
+    it('should spread all stateProps and dispatchProps into mergedProps', () => {
       // given
       const stateProps = {
         favorite: { offerId: 'B4' },
       }
       const dispatchProps = {
-        trackConsultOffer: () => {},
+        anyDispatchFunction: () => {},
       }
       const ownProps = {
         match: {
@@ -289,20 +268,15 @@ describe('src | components | pages | discovery | Deck | Navigation | NavigationC
       // then
       expect(mergedProps).toStrictEqual({
         favorite: { offerId: 'B4' },
+        anyDispatchFunction: expect.any(Function),
         trackConsultOffer: expect.any(Function),
-        match: {
-          params: {
-            offerId: 'B4',
-          },
-        },
       })
     })
 
-    it('should wrap trackConsultOffer with offerId from stateProps', () => {
+    it('should map a tracking event for consulting an offer', () => {
       // given
-      const stateProps = {}
-      const dispatchProps = {
-        trackConsultOffer: jest.fn(),
+      const stateProps = {
+        favorite: { offerId: 'B4' },
       }
       const ownProps = {
         match: {
@@ -310,13 +284,19 @@ describe('src | components | pages | discovery | Deck | Navigation | NavigationC
             offerId: 'B4',
           },
         },
+        tracking: {
+          trackEvent: jest.fn(),
+        },
       }
 
       // when
-      mergeProps(stateProps, dispatchProps, ownProps).trackConsultOffer()
+      mergeProps(stateProps, {}, ownProps).trackConsultOffer()
 
       // then
-      expect(dispatchProps.trackConsultOffer).toHaveBeenCalledWith('B4')
+      expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
+        action: 'consultOffer',
+        name: 'B4',
+      })
     })
   })
 })

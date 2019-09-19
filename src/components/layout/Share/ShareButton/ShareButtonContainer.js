@@ -29,26 +29,23 @@ export const mapStateToProps = (state, ownProps) => {
   }
 }
 
-export const mapDispatchToProps = (dispatch, ownProps) => ({
+export const mapDispatchToProps = dispatch => ({
   openPopin: popinOptions => dispatch(openSharePopin(popinOptions)),
   closePopin: () => dispatch(closeSharePopin()),
-  trackShareOfferByMail: offerId => {
-    ownProps.tracking.trackEvent({ action: 'shareMail', name: offerId })
-  },
-  trackShareOfferByLink: offerId => {
-    ownProps.tracking.trackEvent({ action: 'shareLink', name: offerId })
-  },
 })
 
-export const mergeProps = (stateProps, dispatchProps) => {
-  const { trackShareOfferByMail, trackShareOfferByLink } = dispatchProps
+export const mergeProps = (stateProps, dispatchProps, ownProps) => {
   const { offerId } = stateProps
 
   return {
     ...stateProps,
     ...dispatchProps,
-    trackShareOfferByMail: () => trackShareOfferByMail(offerId),
-    trackShareOfferByLink: () => trackShareOfferByLink(offerId),
+    trackShareOfferByMail: () => {
+      ownProps.tracking.trackEvent({ action: 'shareMail', name: offerId })
+    },
+    trackShareOfferByLink: () => {
+      ownProps.tracking.trackEvent({ action: 'shareLink', name: offerId })
+    },
   }
 }
 

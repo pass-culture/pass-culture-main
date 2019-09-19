@@ -4,7 +4,7 @@ import { mount, shallow } from 'enzyme'
 import BookingCancel from '../BookingCancel/BookingCancel'
 import Booking from '../Booking'
 
-describe('src | components | layout |Booking', () => {
+describe('src | components | layout | Booking', () => {
   let props
   let push
   let replace
@@ -153,6 +153,7 @@ describe('src | components | layout |Booking', () => {
         isSubmitting: false,
         bookedPayload: null,
         isErrored: true,
+        errors: [],
       }
       wrapperInstance.setState(state)
       wrapper.update()
@@ -185,7 +186,7 @@ describe('src | components | layout |Booking', () => {
     expect(wrapper.find('#booking-validation-button')).toHaveLength(1)
   })
 
-  it('should let people confirm cancellation', () => {
+  it('sho      isErrored: false,\nuld let people confirm cancellation', () => {
     // given
     const wrapper = mount(<Booking {...props} />)
 

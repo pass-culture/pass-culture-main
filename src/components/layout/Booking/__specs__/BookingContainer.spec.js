@@ -1,6 +1,6 @@
 import * as reduxSagaData from 'redux-saga-data'
 
-import { mapDispatchToProps, mapStateToProps } from '../BookingContainer'
+import { mapDispatchToProps, mapStateToProps, mergeProps } from '../BookingContainer'
 import { bookingNormalizer } from '../../../../utils/normalizers'
 
 describe('src | components | layout | Booking | BookingContainer', () => {
@@ -143,26 +143,6 @@ describe('src | components | layout | Booking | BookingContainer', () => {
   })
 
   describe('mapDispatchToProps', () => {
-    describe('trackBookingSuccess', () => {
-      it('should dispatch a track Matomo Event with correct arguments', () => {
-        // given
-        const ownProps = {
-          tracking: {
-            trackEvent: jest.fn(),
-          },
-        }
-
-        // when
-        mapDispatchToProps(undefined, ownProps).trackBookingSuccess('B4')
-
-        // then
-        expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
-          action: 'bookingOffer',
-          name: 'B4',
-        })
-      })
-    })
-
     describe('handleSubmit', () => {
       it('should call dispatch with request data', () => {
         // given
@@ -204,6 +184,52 @@ describe('src | components | layout | Booking | BookingContainer', () => {
           name: 'booking',
           normalizer: bookingNormalizer,
         })
+      })
+    })
+  })
+
+  describe('mergeProps', () => {
+    it('should spread stateProps and dispatch props into mergedProps', () => {
+      // given
+      const stateProps = {
+        offer: {
+          id: 'B4',
+        },
+      }
+      const dispatchProps = {
+        handleSubmit: () => {},
+      }
+
+      // when
+      const mergedProps = mergeProps(stateProps, dispatchProps)
+
+      // then
+      expect(mergedProps).toStrictEqual({
+        offer: { id: 'B4' },
+        handleSubmit: expect.any(Function),
+        trackBookingSuccess: expect.any(Function),
+      })
+    })
+
+    it('should map a tracking event for booking an offer', () => {
+      // given
+      const stateProps = {
+        offer: {
+          id: 'B4',
+        },
+      }
+      const ownProps = {
+        tracking: {
+          trackEvent: jest.fn(),
+        },
+      }
+      // when
+      mergeProps(stateProps, {}, ownProps).trackBookingSuccess()
+
+      // then
+      expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
+        action: 'bookingOffer',
+        name: 'B4',
       })
     })
   })

@@ -251,56 +251,17 @@ describe('src | components | share | ShareButtonContainer', () => {
         })
       })
     })
-
-    describe('when mapping trackShareOfferByMail', () => {
-      it('should dispatch a track Matomo Event with correct arguments', () => {
-        // given
-        const ownProps = {
-          tracking: {
-            trackEvent: jest.fn(),
-          },
-        }
-        // when
-        mapDispatchToProps(undefined, ownProps).trackShareOfferByMail('B4')
-
-        // then
-        expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
-          action: 'shareMail',
-          name: 'B4',
-        })
-      })
-    })
-
-    describe('when mapping trackShareOfferByLink', () => {
-      it('should dispatch a track Matomo Event with correct arguments', () => {
-        // given
-        const ownProps = {
-          tracking: {
-            trackEvent: jest.fn(),
-          },
-        }
-        // when
-        mapDispatchToProps(undefined, ownProps).trackShareOfferByLink('B4')
-
-        // then
-        expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
-          action: 'shareLink',
-          name: 'B4',
-        })
-      })
-    })
   })
 
   describe('mergeProps', () => {
-    it('should spread all stateProps and dispatch props into mergedProps', () => {
+    it('should spread stateProps and dispatch props into mergedProps', () => {
       // given
       const stateProps = {
         offerId: 'B4',
       }
       const dispatchProps = {
         openPopin: () => {},
-        trackShareOfferByMail: () => {},
-        trackShareOfferByLink: () => {},
+        closePopin: () => {},
       }
 
       // when
@@ -310,41 +271,44 @@ describe('src | components | share | ShareButtonContainer', () => {
       expect(mergedProps).toStrictEqual({
         offerId: 'B4',
         openPopin: expect.any(Function),
+        closePopin: expect.any(Function),
         trackShareOfferByMail: expect.any(Function),
         trackShareOfferByLink: expect.any(Function),
       })
     })
 
-    it('should wrap trackShareOfferByMail with offerId from stateProps', () => {
+    it('should map a tracking event for sharing an offer by mail', () => {
       // given
       const stateProps = {
         offerId: 'B4',
       }
-      const dispatchProps = {
-        trackShareOfferByMail: jest.fn(),
+      const ownProps = {
+        tracking: {
+          trackEvent: jest.fn(),
+        },
       }
-
       // when
-      mergeProps(stateProps, dispatchProps).trackShareOfferByMail()
+      mergeProps(stateProps, {}, ownProps).trackShareOfferByMail()
 
       // then
-      expect(dispatchProps.trackShareOfferByMail).toHaveBeenCalledWith('B4')
+      expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({ action: 'shareMail', name: 'B4' })
     })
 
-    it('should wrap trackShareOfferByLink with offerId from stateProps', () => {
+    it('should map a tracking event for sharing an offer by link', () => {
       // given
       const stateProps = {
         offerId: 'B4',
       }
-      const dispatchProps = {
-        trackShareOfferByLink: jest.fn(),
+      const ownProps = {
+        tracking: {
+          trackEvent: jest.fn(),
+        },
       }
-
       // when
-      mergeProps(stateProps, dispatchProps).trackShareOfferByLink()
+      mergeProps(stateProps, {}, ownProps).trackShareOfferByLink()
 
       // then
-      expect(dispatchProps.trackShareOfferByLink).toHaveBeenCalledWith('B4')
+      expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({ action: 'shareLink', name: 'B4' })
     })
   })
 })
