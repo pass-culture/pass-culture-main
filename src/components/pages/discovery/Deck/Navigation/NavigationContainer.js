@@ -41,6 +41,7 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
   return {
     ...stateProps,
     ...dispatchProps,
+    ...ownProps,
     trackConsultOffer: () => {
       ownProps.tracking.trackEvent({ action: 'consultOffer', name: offerId })
     },

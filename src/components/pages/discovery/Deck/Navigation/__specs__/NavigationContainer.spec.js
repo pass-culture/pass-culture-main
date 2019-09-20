@@ -246,7 +246,7 @@ describe('src | components | pages | discovery | Deck | Navigation | NavigationC
   })
 
   describe('mergeProps', () => {
-    it('should spread all stateProps and dispatchProps into mergedProps', () => {
+    it('should spread all stateProps, dispatchProps and ownProps into mergedProps', () => {
       // given
       const stateProps = {
         favorite: { offerId: 'B4' },
@@ -270,6 +270,11 @@ describe('src | components | pages | discovery | Deck | Navigation | NavigationC
         favorite: { offerId: 'B4' },
         anyDispatchFunction: expect.any(Function),
         trackConsultOffer: expect.any(Function),
+        match: {
+          params: {
+            offerId: 'B4',
+          },
+        },
       })
     })
 
