@@ -3,8 +3,9 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import Teaser from '../Teaser'
+import Icon from '../../Icon/Icon'
 
-describe('src | components | layout | Teaser', () => {
+describe('src | components | layout | Teaser | Teaser', () => {
   let props
 
   beforeEach(() => {
@@ -36,56 +37,44 @@ describe('src | components | layout | Teaser', () => {
     expect(wrapper).toMatchSnapshot()
   })
 
-  describe('render()', () => {
-    describe('when in a list mode', () => {
-      it('should render a Link component and details of the favorite element', () => {
-        // when
-        const wrapper = shallow(<Teaser {...props} />)
+  describe('when in a list mode', () => {
+    it('should render a Link and Icon', () => {
+      // when
+      const wrapper = shallow(<Teaser {...props} />)
 
-        // then
-        const link = wrapper.find(Link)
-        const img = wrapper.find('img')
-        const title = wrapper.find('.teaser-title').text()
-        const type = wrapper.find('.teaser-wrapper > .teaser-sub-title').text()
-        const date = wrapper.find('.teaser-wrapper > .teaser-date').text()
-        const booked = wrapper.find('.teaser-booked').text()
-        const distance = wrapper.find('.teaser-infos .teaser-distance').text()
-        expect(link).toHaveLength(1)
-        expect(img).toHaveLength(1)
-        expect(title).toBe('Fake offer name')
-        expect(type).toBe('Fake offer type label')
-        expect(date).toBe('permanent')
-        expect(booked).toBe('Réservé')
-        expect(distance).toBe('10 km')
-      })
+      // then
+      expect(wrapper.find(Link)).toHaveLength(1)
+      expect(wrapper.find(Icon)).toHaveLength(1)
+      expect(wrapper.find('[type="checkbox"]')).toHaveLength(0)
     })
+  })
 
-    describe('when in edit mode', () => {
-      it('should render a checkbox', () => {
-        // given
-        props.isEditMode = true
+  describe('when in edit mode', () => {
+    it('should render a checkbox', () => {
+      // given
+      props.isEditMode = true
 
-        // when
-        const wrapper = shallow(<Teaser {...props} />)
+      // when
+      const wrapper = shallow(<Teaser {...props} />)
 
-        // then
-        const checkbox = wrapper.find('.teaser-checkbox')
-        expect(checkbox).toHaveLength(1)
-      })
+      // then
+      expect(wrapper.find(Link)).toHaveLength(0)
+      expect(wrapper.find(Icon)).toHaveLength(0)
+      expect(wrapper.find('[type="checkbox"]')).toHaveLength(1)
     })
+  })
 
-    describe('when click on checkbox', () => {
-      it('should call handleToggleTeaser', () => {
-        // given
-        props.isEditMode = true
-        const wrapper = shallow(<Teaser {...props} />)
+  describe('when click on checkbox', () => {
+    it('should call handleToggleTeaser', () => {
+      // given
+      props.isEditMode = true
+      const wrapper = shallow(<Teaser {...props} />)
 
-        // when
-        wrapper.find('.teaser-checkbox').simulate('click')
+      // when
+      wrapper.find('[type="checkbox"]').simulate('click')
 
-        // then
-        expect(props.handleToggleTeaser).toHaveBeenCalledWith(props.offerId)
-      })
+      // then
+      expect(props.handleToggleTeaser).toHaveBeenCalledWith(props.offerId)
     })
   })
 })

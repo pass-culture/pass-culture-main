@@ -52,13 +52,10 @@ export const mapStateToProps = (state, ownProps) => {
   const { beginningDatetime } = stock
   const humanizeRelativeBeginningDate =
     beginningDatetime && getHumanizeRelativeDate(beginningDatetime)
-
   const recommendation = selectRecommendationById(state, recommendationId) || {}
   const mediation = selectMediationById(state, recommendation.mediationId)
   const offer = selectOfferById(state, stock.offerId)
-
   const isFinished = getIsFinished(offer, mediation, booking)
-
   const ribbon = ribbonLabelAndType(isUsed, isCancelled, isFinished, humanizeRelativeBeginningDate)
 
   return {

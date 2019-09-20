@@ -6,8 +6,8 @@ export const reservationStatuses = (
   isFinished,
   isFullyBooked,
   hasBookings,
-  isBooked,
-  humanizeRelativeDate
+  humanizeRelativeDate,
+  isBooked = false
 ) => {
   const statuses = []
 

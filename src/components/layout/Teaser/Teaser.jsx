@@ -3,8 +3,9 @@ import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 
 import { ICONS_URL } from '../../../utils/config'
-const DEFAULT_THUMB_URL = `${ICONS_URL}/picto-placeholder-visueloffre.png`
 import Icon from '../Icon/Icon'
+
+const DEFAULT_THUMB_URL = `${ICONS_URL}/picto-placeholder-visueloffre.png`
 
 class Teaser extends Component {
   renderTeaser = () => {

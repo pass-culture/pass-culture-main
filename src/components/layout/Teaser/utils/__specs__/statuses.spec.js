@@ -54,8 +54,8 @@ describe('reservationStatuses()', () => {
           isFinished,
           isFullyBooked,
           hasBookings,
-          isBooked,
-          humanizeRelativeDate
+          humanizeRelativeDate,
+          isBooked
         )
 
         // then
@@ -84,8 +84,8 @@ describe('reservationStatuses()', () => {
           isFinished,
           isFullyBooked,
           hasBookings,
-          isBooked,
-          humanizeRelativeDate
+          humanizeRelativeDate,
+          isBooked
         )
 
         // then
@@ -116,8 +116,8 @@ describe('reservationStatuses()', () => {
           isFinished,
           isFullyBooked,
           hasBookings,
-          isBooked,
-          humanizeRelativeDate
+          humanizeRelativeDate,
+          isBooked
         )
 
         // then
@@ -150,8 +150,8 @@ describe('reservationStatuses()', () => {
           isFinished,
           isFullyBooked,
           hasBookings,
-          isBooked,
-          humanizeRelativeDate
+          humanizeRelativeDate,
+          isBooked
         )
 
         // then
@@ -185,8 +185,8 @@ describe('reservationStatuses()', () => {
         isFinished,
         isFullyBooked,
         hasBookings,
-        isBooked,
-        humanizeRelativeDate
+        humanizeRelativeDate,
+        isBooked
       )
 
       // then
@@ -216,8 +216,8 @@ describe('reservationStatuses()', () => {
           isFinished,
           isFullyBooked,
           hasBookings,
-          isBooked,
-          humanizeRelativeDate
+          humanizeRelativeDate,
+          isBooked
         )
 
         // then
@@ -246,8 +246,8 @@ describe('reservationStatuses()', () => {
           isFinished,
           isFullyBooked,
           hasBookings,
-          isBooked,
-          humanizeRelativeDate
+          humanizeRelativeDate,
+          isBooked
         )
 
         // then
@@ -277,8 +277,8 @@ describe('reservationStatuses()', () => {
         isFinished,
         isFullyBooked,
         hasBookings,
-        isBooked,
-        humanizeRelativeDate
+        humanizeRelativeDate,
+        isBooked
       )
 
       // then
@@ -307,8 +307,8 @@ describe('reservationStatuses()', () => {
         isFinished,
         isFullyBooked,
         hasBookings,
-        isBooked,
-        humanizeRelativeDate
+        humanizeRelativeDate,
+        isBooked
       )
 
       // then
@@ -337,8 +337,8 @@ describe('reservationStatuses()', () => {
         isFinished,
         isFullyBooked,
         hasBookings,
-        isBooked,
-        humanizeRelativeDate
+        humanizeRelativeDate,
+        isBooked
       )
 
       // then
