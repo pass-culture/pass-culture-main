@@ -146,7 +146,12 @@ export default compose(
 ```
 
 Le HOC `track` décore le container d'une `props` `tracking` qui contient les méthodes de tracking que l'on souhaite utiliser.
-Il peut accepter une fonction `dispatch` qui sera exécutée à chaque fois qu'un évènement est déclenché.
+Il accepte deux arguments :
+- premier argument : un objet contenant le nom de la `page` que l'on souhaite mesurer (correspond à la `catégorie` de l'évènement)
+- deuxieme argument (optionnel) : un objet contenant une fonction `dispatch` qui sera exécutée à chaque fois qu'un évènement est déclenché.
+
+Par défaut, la mesure des objets sera poussée dans `window.dataLayer[]`, dans notre cas, on souhaite utiliser les fonctions spécifiques à Matomo pour pousser les évènements dans le `dataLayer`. Cela passe par ce second argument et la fonction `dispatch`.
+
 On peut utiliser la fonction `mergeProps` pour combiner les props venant des différentes sources du container (state, dispatch, container).
 
 ## Upgrade de la version
