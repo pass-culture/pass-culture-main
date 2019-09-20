@@ -42,7 +42,7 @@ class Verso extends React.PureComponent {
         })}
       >
         <div
-          className="verso-wrapper is-black-text scroll-y flex-rows is-relative text-left"
+          className="verso-wrapper"
           ref={this.versoWrapper}
         >
           <VersoHeaderContainer

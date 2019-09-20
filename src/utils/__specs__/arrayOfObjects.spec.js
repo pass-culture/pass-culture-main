@@ -96,24 +96,4 @@ describe('src | utils | arrayOfObjects | sortAlphabeticallyArrayOfObjectsByPrope
     // then
     expect(result).toStrictEqual(expected)
   })
-
-  it.skip("should return typesArray if property passed doesn't match any object key", () => {
-    // given
-    const typesArray = [
-      {
-        description: 'Fake description',
-        sublabel: 'Bo',
-      },
-      {
-        description: 'Another Fake description',
-        sublabel: 'Ar',
-      },
-    ]
-
-    // when
-    const result = typesArray.sort(sortAlphabeticallyArrayOfObjectsByProperty('fake'))
-
-    // then
-    expect(result).toStrictEqual(typesArray)
-  })
 })

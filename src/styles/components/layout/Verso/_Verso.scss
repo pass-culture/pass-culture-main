@@ -1,0 +1,93 @@
+.verso {
+  transition: transform 250ms;
+  z-index: $zindex-verso-view;
+  transform: translate(0, 100%);
+  will-change: transform;
+  height: 100%;
+
+  &.flipped {
+    // A remplacer par react-transition-group
+    // pour gérer les transitions dans le composant
+    transform: translate(0, 0);
+  }
+
+  &.with-header {
+    // NOTE: permet de passer le verso au dessus du header
+    // - dans la recherche
+    margin-top: $header-height;
+
+    .verso-info {
+      padding-bottom: $header-height;
+    }
+  }
+
+  .footer {
+    position: absolute;
+    bottom: calc(#{$footer-height} - #{$page-padding});
+    left: 0;
+    right: 0;
+    height: $footer-height;
+    text-align: right;
+    padding: $footer-height-padding $page-padding;
+    display: flex;
+    align-items: center;
+    flex-direction: row-reverse;
+  }
+
+  .verso-wrapper {
+    @extend .is-black-text;
+    @extend .scroll-y;
+    @extend .flex-rows;
+    @extend .is-relative;
+    @extend .text-left;
+
+    cursor: initial;
+    height: 100%;
+    min-height: 100%;
+    padding-top: 56.25%;
+    -webkit-overflow-scrolling: touch;
+
+    .verso-header {
+      flex-shrink: 0;
+    }
+
+    .with-triangle::before {
+      $triangle-diag: 50px;
+
+      content: '';
+      background-color: inherit;
+      height: $triangle-diag;
+      left: 0;
+      margin: auto;
+      position: absolute;
+      right: 0;
+      top: -$triangle-diag/2;
+      transform: rotate(45deg);
+      width: $triangle-diag;
+      z-index: -1;
+    }
+
+    .verso-content {
+      background-color: $white;
+      padding-bottom: $footer-height;
+      flex: 1;
+
+      div.description {
+        margin-top: 0.5rem;
+      }
+
+      h3 {
+        padding-top: 0.75rem;
+        padding-bottom: 0.5rem;
+        color: $primary;
+        font-weight: 700;
+        font-size: 1.5rem;
+      }
+
+      p {
+        padding-bottom: 1rem;
+      }
+    }
+  }
+
+}
