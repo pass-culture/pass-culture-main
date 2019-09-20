@@ -21,6 +21,9 @@ describe('src | components | pages | search | FilterControls', () => {
     props = {
       isVisible: true,
       location: {},
+      match: {
+        params: {},
+      },
       onClickFilterButton: jest.fn(() => () => null),
       query: {
         change: jest.fn(),
@@ -92,6 +95,26 @@ describe('src | components | pages | search | FilterControls', () => {
 
       // then
       expect(props.onClickFilterButton).toHaveBeenCalledWith(props.isVisible)
+      expect(props.query.change).toHaveBeenCalledWith(
+        { page: null },
+        { pathname: '/recherche/resultats/tout' }
+      )
+    })
+
+    it('should close the filters and change the URL to the current category', () => {
+      // given
+      props.match.params.category = 'Jouer'
+      const wrapper = shallow(<FilterControls {...props} />)
+
+      // when
+      wrapper.instance().handleOnClickFilterButton()
+
+      // then
+      expect(props.onClickFilterButton).toHaveBeenCalledWith(props.isVisible)
+      expect(props.query.change).toHaveBeenCalledWith(
+        { page: null },
+        { pathname: '/recherche/resultats/Jouer' }
+      )
     })
   })
 

@@ -156,18 +156,21 @@ class Search extends PureComponent {
   }
 
   handleOnSubmit = event => {
-    const { query } = this.props
+    const { match, query } = this.props
+    const { params } = match
+    const { category } = params
     const { value } = event.target.elements.keywords
     event.preventDefault()
 
     this.setState({ isFilterVisible: false })
 
+    const nextPathname = `/recherche/resultats/${category || 'tout'}`
     query.change(
       {
         'mots-cles': value === '' ? null : value,
         page: 1,
       },
-      { pathname: '/recherche/resultats/tout' }
+      { pathname: nextPathname }
     )
   }
 

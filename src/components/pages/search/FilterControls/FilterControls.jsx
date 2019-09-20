@@ -59,12 +59,13 @@ class FilterControls extends Component {
   }
 
   handleOnClickFilterButton = () => {
-    const { isVisible, onClickFilterButton, query } = this.props
+    const { isVisible, match, onClickFilterButton, query } = this.props
+    const category = match.params.category
     const { params } = this.state
-
     params.page = null
+    const nextPathname = `/recherche/resultats/${category || 'tout'}`
     this.setState({ shouldResetDate: false }, () =>
-      query.change(params, { pathname: '/recherche/resultats' })
+      query.change(params, { pathname: nextPathname })
     )
     onClickFilterButton(isVisible)()
   }
@@ -194,6 +195,11 @@ class FilterControls extends Component {
 FilterControls.propTypes = {
   isVisible: PropTypes.bool.isRequired,
   location: PropTypes.shape().isRequired,
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      category: PropTypes.string,
+    }).isRequired,
+  }).isRequired,
   onClickFilterButton: PropTypes.func.isRequired,
   query: PropTypes.shape().isRequired,
 }

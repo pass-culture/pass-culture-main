@@ -604,7 +604,7 @@ describe('src | components | pages | Search', () => {
           expect(wrapper.state()).toStrictEqual(expected)
         })
 
-        it('should change query', () => {
+        it('should change query and pathname to tout when no category', () => {
           // when
           wrapperInstance.handleOnSubmit(event)
 
@@ -620,11 +620,34 @@ describe('src | components | pages | Search', () => {
           expect(queryChangeMock).toHaveBeenCalledWith(argument1, argument2)
           queryChangeMock.mockClear()
         })
+
+        it('should change query and pathname to current category', () => {
+          // given
+          props.match.params.category = 'Jouer'
+          const wrapper = shallow(<Search {...props} />)
+          const wrapperInstance = wrapper.instance()
+
+          // when
+          wrapperInstance.handleOnSubmit(event)
+
+          const argument1 = {
+            'mots-cles': 'AnyWord',
+            page: 1,
+          }
+          const argument2 = {
+            pathname: '/recherche/resultats/Jouer',
+          }
+
+          // then
+          expect(queryChangeMock).toHaveBeenCalledWith(argument1, argument2)
+          queryChangeMock.mockClear()
+        })
       })
 
       describe('when keywords is an empty string', () => {
         it('should change query with mots-clés setted to null', () => {
           // given
+          props.match.params.category = undefined
           const eventEmptyWord = Object.assign(jest.fn(), {
             preventDefault: () => {},
             target: {
