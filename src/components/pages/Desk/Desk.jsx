@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import {getRequestErrorStringFromErrors} from 'pass-culture-shared'
+import { getRequestErrorStringFromErrors } from 'pass-culture-shared'
 import { NavLink } from 'react-router-dom'
 import DeskState from './DeskState/DeskState'
 import Main from '../../layout/Main'
-import HeroSection from "../../layout/HeroSection/HeroSection"
+import HeroSection from '../../layout/HeroSection/HeroSection'
 
 const CODE_MAX_LENGTH = 6
 const CODE_REGEX_VALIDATION = /[^a-z0-9]/i
@@ -61,8 +61,10 @@ class Desk extends React.PureComponent {
     })
   }
 
-  handleSuccessWhenValidateBooking = () => {
+  handleSuccessWhenValidateBooking = code => {
+    const { trackValidateBookingSuccess } = this.props
     this.setState({ status: CODE_REGISTERING_SUCCESS })
+    trackValidateBookingSuccess(code)
   }
 
   handleFailWhenValidateBooking = (state, action) => {
@@ -112,7 +114,7 @@ class Desk extends React.PureComponent {
     this.setState({ status: CODE_REGISTERING_IN_PROGRESS, code: '' })
     validateBooking(
       code,
-      this.handleSuccessWhenValidateBooking,
+      this.handleSuccessWhenValidateBooking(code),
       this.handleFailWhenValidateBooking
     )
   }
@@ -180,6 +182,7 @@ class Desk extends React.PureComponent {
 
   render() {
     const { code, status } = this.state
+
     return (
       <Main name="desk">
         <HeroSection title="Guichet">
@@ -228,6 +231,7 @@ class Desk extends React.PureComponent {
 
 Desk.propTypes = {
   getBookingFromCode: PropTypes.func.isRequired,
+  trackValidateBookingSuccess: PropTypes.func.isRequired,
   validateBooking: PropTypes.func.isRequired,
 }
 

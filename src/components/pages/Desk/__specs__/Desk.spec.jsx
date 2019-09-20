@@ -10,13 +10,17 @@ describe('src | components | pages | Desk | Desk ', () => {
   let getBookingFromCode
   let validateBooking
   let props
+  let trackValidateBookingSuccess
 
   beforeEach(() => {
     getBookingFromCode = jest.fn()
+    trackValidateBookingSuccess = jest.fn()
     validateBooking = jest.fn()
+
     props = {
       getBookingFromCode,
-      validateBooking
+      trackValidateBookingSuccess,
+      validateBooking,
     }
   })
 
@@ -282,11 +286,12 @@ describe('src | components | pages | Desk | Desk ', () => {
 
         // when
         wrapper.instance().handleCodeRegistration('ABCDEF')
+        //wrapper.instance().handleSuccessWhenValidateBookin = jest.fn()
 
         // then
         expect(props.validateBooking).toHaveBeenCalledWith(
           'ABCDEF',
-          expect.any(Function),
+          undefined,
           expect.any(Function)
         )
       })

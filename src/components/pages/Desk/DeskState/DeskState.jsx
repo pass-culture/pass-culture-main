@@ -20,23 +20,37 @@ const DeskState = ({ message, level, booking }) => (
     <table className="booking-summary">
       <tbody>
         <tr>
-          <th>{'Utilisateur :'}</th>
-          <td>{booking && booking.userName}</td>
+          <th>
+            {'Utilisateur :'}
+          </th>
+          <td>
+            {booking && booking.userName}
+          </td>
         </tr>
         <tr>
-          <th>{'Offre :'}</th>
-          <td>{booking && booking.offerName}</td>
+          <th>
+            {'Offre :'}
+          </th>
+          <td>
+            {booking && booking.offerName}
+          </td>
         </tr>
         <tr>
-          <th>{'Date de l’offre :'}</th>
-          <td>{displayBookingDate(booking)}</td>
+          <th>
+            {'Date de l’offre :'}
+          </th>
+          <td>
+            {displayBookingDate(booking)}
+          </td>
         </tr>
       </tbody>
     </table>
     <div className={`state ${level}`}>
       {level === 'success' && <Icon svg="picto-validation" />}
       {level === 'error' && <Icon svg="picto-echec" />}
-      <span>{message}</span>
+      <span>
+        {message}
+      </span>
     </div>
   </div>
 )
