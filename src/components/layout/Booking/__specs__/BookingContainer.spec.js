@@ -189,7 +189,7 @@ describe('src | components | layout | Booking | BookingContainer', () => {
   })
 
   describe('mergeProps', () => {
-    it('should spread stateProps and dispatch props into mergedProps', () => {
+    it('should spread stateProps, dispatchProps and ownProps into mergedProps', () => {
       // given
       const stateProps = {
         offer: {
@@ -199,14 +199,25 @@ describe('src | components | layout | Booking | BookingContainer', () => {
       const dispatchProps = {
         handleSubmit: () => {},
       }
-
+      const ownProps = {
+        match: {
+          params: {
+            bookings: 'AE',
+          },
+        },
+      }
       // when
-      const mergedProps = mergeProps(stateProps, dispatchProps)
+      const mergedProps = mergeProps(stateProps, dispatchProps, ownProps)
 
       // then
       expect(mergedProps).toStrictEqual({
         offer: { id: 'B4' },
         handleSubmit: expect.any(Function),
+        match: {
+          params: {
+            bookings: 'AE',
+          },
+        },
         trackBookingSuccess: expect.any(Function),
       })
     })

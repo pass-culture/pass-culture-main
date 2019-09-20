@@ -49,6 +49,7 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
   return {
     ...stateProps,
     ...dispatchProps,
+    ...ownProps,
     trackBookingSuccess: () => {
       ownProps.tracking.trackEvent({ action: 'bookingOffer', name: offerId })
     },
@@ -60,6 +61,7 @@ export default compose(
   withTracking('Offer'),
   connect(
     mapStateToProps,
-    mapDispatchToProps
+    mapDispatchToProps,
+    mergeProps
   )
 )(Booking)
