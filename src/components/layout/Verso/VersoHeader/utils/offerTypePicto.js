@@ -1,6 +1,4 @@
-import { ICONS_URL } from '../../../../../utils/config'
-
-const CATEGORIES_ICONS = {
+const OFFER_TYPE_PICTO = {
   AUDIOVISUEL: 'musique',
   CINEMA: 'cinema',
   CINEMA_ABO: 'cinema',
@@ -23,15 +21,4 @@ const CATEGORIES_ICONS = {
   SPECTACLE_VIVANT_ABO: 'spectacle',
 }
 
-const findPictoByOfferType = (offerType) => {
-  if (!offerType) {
-    return null
-  }
-
-  const category = offerType.split('.')
-  const picto = CATEGORIES_ICONS[category[1]]
-
-  return `${ICONS_URL}/picto-${picto}.svg`
-}
-
-export default findPictoByOfferType
+export default OFFER_TYPE_PICTO

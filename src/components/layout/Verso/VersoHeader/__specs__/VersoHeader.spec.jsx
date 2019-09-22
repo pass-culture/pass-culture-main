@@ -30,7 +30,7 @@ describe('src | components | layout | Verso | VersoHeader', () => {
     expect(wrapper).toMatchSnapshot()
   })
 
-  it('should display the offer name as title when provided', () => {
+  it('should display the offer title when provided', () => {
     // when
     const wrapper = shallow(<VersoHeader {...props} />)
 
@@ -39,7 +39,7 @@ describe('src | components | layout | Verso | VersoHeader', () => {
     expect(offerName.text()).toContain('Offer title')
   })
 
-  it('should not display the offer name as title when not provided', () => {
+  it('should not display the offer title when not provided', () => {
     // given
     props.title = null
 
@@ -51,7 +51,7 @@ describe('src | components | layout | Verso | VersoHeader', () => {
     expect(offerName).toHaveLength(0)
   })
 
-  it('should display the offer venue name as subtitle when provided', () => {
+  it('should display the offer subtitle when provided', () => {
     // when
     const wrapper = shallow(<VersoHeader {...props} />)
 
@@ -60,7 +60,7 @@ describe('src | components | layout | Verso | VersoHeader', () => {
     expect(offerVenue.text()).toContain('Offer subtitle')
   })
 
-  it('should not display the offer venue name as subtitle when not provided', () => {
+  it('should not display the offer subtitle when not provided', () => {
     // given
     props.subtitle = null
 
@@ -72,7 +72,7 @@ describe('src | components | layout | Verso | VersoHeader', () => {
     expect(offerVenue).toHaveLength(0)
   })
 
-  it('should display a triangle element with the right background', () => {
+  it('should display a div element (triangle) with the right background', () => {
     // when
     const wrapper = shallow(<VersoHeader {...props} />)
 
@@ -86,9 +86,9 @@ describe('src | components | layout | Verso | VersoHeader', () => {
     const wrapper = shallow(<VersoHeader {...props} />)
 
     // then
-    const picto = wrapper.find('#verso-offer-picto-type')
+    const picto = wrapper.find('#verso-offer-type-picto')
     expect(picto).toHaveLength(1)
-    expect(picto.prop('alt')).toBe('EventType.SPECTACLE_VIVANT')
+    expect(picto.prop('alt')).toBe('spectacle vivant')
     expect(picto.prop('src')).toBe(`${ICONS_URL}/picto-spectacle.svg`)
   })
 
@@ -100,7 +100,7 @@ describe('src | components | layout | Verso | VersoHeader', () => {
     const wrapper = shallow(<VersoHeader {...props} />)
 
     // then
-    const picto = wrapper.find('#verso-offer-picto-type')
+    const picto = wrapper.find('#verso-offer-type-picto')
     expect(picto).toHaveLength(0)
   })
 })
