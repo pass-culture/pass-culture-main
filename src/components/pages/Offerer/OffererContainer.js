@@ -11,6 +11,7 @@ import get from 'lodash.get'
 import { requestData } from 'redux-saga-data'
 import { offererNormalizer } from '../../../utils/normalizers'
 import { showNotification } from 'pass-culture-shared'
+import withTracking from '../../hocs/withTracking'
 
 export const mapStateToProps = (state, ownProps) => {
   const { currentUser, match } = ownProps
@@ -62,10 +63,23 @@ export const mapDispatchToProps = dispatch => {
   }
 }
 
+export const mergeProps = (stateProps, dispatchProps, ownProps) => {
+  return {
+    ...stateProps,
+    ...dispatchProps,
+    ...ownProps,
+    trackCreateOffererSuccess: createdOffererId => {
+      ownProps.tracking.trackEvent({ action: 'createOfferer', name: createdOffererId })
+    },
+  }
+}
+
 export default compose(
+  withTracking('Offerer'),
   withRequiredLogin,
   connect(
     mapStateToProps,
-    mapDispatchToProps
+    mapDispatchToProps,
+    mergeProps
   )
 )(Offerer)

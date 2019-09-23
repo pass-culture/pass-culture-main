@@ -11,26 +11,27 @@ describe('src | components | pages | Offerer', () => {
       getOfferer: jest.fn(),
       getUserOfferers: jest.fn(),
       history: {
-        push: jest.fn()
+        push: jest.fn(),
       },
       match: {
         params: {
-          offererId: 'AA'
-        }
+          offererId: 'AA',
+        },
       },
       offerer: {
         bic: 'ABC',
-        iban: 'DEF'
+        iban: 'DEF',
       },
       offererName: 'fake offerer name',
       query: {
         context: jest.fn().mockReturnValue({
           isCreatedEntity: true,
           isModifiedEntity: false,
-          readOnly: false
-        })
+          readOnly: false,
+        }),
       },
-      showNotification: jest.fn()
+      showNotification: jest.fn(),
+      trackCreateOffererSuccess: jest.fn(),
     }
   })
 
@@ -40,6 +41,25 @@ describe('src | components | pages | Offerer', () => {
 
     // then
     expect(wrapper).toMatchSnapshot()
+  })
+
+  describe('event tracking', () => {
+    it('should track offerer creation', () => {
+      // given
+      const state = {}
+      const action = {
+        payload: {
+          id: 'Ty5645dgfd',
+        },
+      }
+      const wrapper = shallow(<Offerer {...props} />)
+
+      // when
+      wrapper.instance().onHandleSuccess(state, action)
+
+      // then
+      expect(props.trackCreateOffererSuccess).toHaveBeenCalledWith('Ty5645dgfd')
+    })
   })
 
   describe('render', () => {
@@ -54,7 +74,9 @@ describe('src | components | pages | Offerer', () => {
       // then
       const bankInstructions = wrapper.find('.bank-instructions-label')
       expect(bankInstructions).toHaveLength(1)
-      expect(bankInstructions.text()).toBe('Le pass Culture vous contactera prochainement afin d’enregistrer vos coordonnées bancaires. Une fois votre BIC / IBAN renseigné, ces informations apparaitront ci-dessous.')
+      expect(bankInstructions.text()).toBe(
+        'Le pass Culture vous contactera prochainement afin d’enregistrer vos coordonnées bancaires. Une fois votre BIC / IBAN renseigné, ces informations apparaitront ci-dessous.'
+      )
     })
 
     it('should not render a bank instructions block when bank information are provided', () => {

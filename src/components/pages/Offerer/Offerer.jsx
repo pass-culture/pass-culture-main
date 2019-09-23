@@ -23,6 +23,7 @@ class Offerer extends Component {
       },
       query,
     } = this.props
+
     const { isCreatedEntity } = query.context()
 
     if (!isCreatedEntity) {
@@ -38,9 +39,13 @@ class Offerer extends Component {
     showNotification('Vous étes déjà rattaché à cette structure.', 'danger')
   }
 
-  onHandleSuccess = () => {
-    const { history, query, showNotification } = this.props
+  onHandleSuccess = (state, action) => {
+    const { payload } = action
+    const CreatedOffererId = payload.id
+    const { history, query, showNotification, trackCreateOffererSuccess } = this.props
     const { isCreatedEntity } = query.context()
+
+    trackCreateOffererSuccess(CreatedOffererId)
 
     history.push('/structures')
 
@@ -178,6 +183,7 @@ Offerer.propTypes = {
   offererName: PropTypes.string.isRequired,
   query: PropTypes.shape().isRequired,
   showNotification: PropTypes.func.isRequired,
+  trackCreateOffererSuccess: PropTypes.func.isRequired,
 }
 
 export default Offerer

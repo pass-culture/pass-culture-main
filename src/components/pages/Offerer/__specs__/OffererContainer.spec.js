@@ -1,4 +1,4 @@
-import { mapDispatchToProps } from '../OffererContainer'
+import { mapDispatchToProps, mergeProps } from '../OffererContainer'
 
 describe('src | components | pages | Offerer | OffererContainer', () => {
   let dispatch
@@ -91,6 +91,49 @@ describe('src | components | pages | Offerer | OffererContainer', () => {
           },
           type: 'SHOW_NOTIFICATION',
         })
+      })
+    })
+  })
+
+  describe('mergeProps', () => {
+    it('should spread stateProps, dispatchProps and ownProps into mergedProps', () => {
+      // given
+      const stateProps = {}
+      const dispatchProps = {
+        getOfferer: () => {},
+      }
+      const ownProps = {
+        match: {
+          params: {},
+        },
+      }
+
+      // when
+      const mergedProps = mergeProps(stateProps, dispatchProps, ownProps)
+
+      // then
+      expect(mergedProps).toStrictEqual({
+        getOfferer: expect.any(Function),
+        match: ownProps.match,
+        trackCreateOffererSuccess: expect.any(Function),
+      })
+    })
+
+    it('should map a tracking event for validate a booking', () => {
+      // given
+      const stateProps = {}
+      const ownProps = {
+        tracking: {
+          trackEvent: jest.fn(),
+        },
+      }
+      // when
+      mergeProps(stateProps, {}, ownProps).trackCreateOffererSuccess('RTgfd67')
+
+      // then
+      expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
+        action: 'createOfferer',
+        name: 'RTgfd67',
       })
     })
   })
