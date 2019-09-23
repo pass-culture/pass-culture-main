@@ -164,7 +164,7 @@ class Offer(PcObject,
         total_quantity = 0
 
         for stock in bookable_stocks:
-            bookings = filter(lambda b: not b.isCancelled, stock.bookings)
+            bookings = filter(lambda b: not b.isCancelled and (b.dateUsed and b.dateUsed >= stock.dateModified), stock.bookings)
             total_quantity += sum(map(lambda s: s.quantity, bookings))
 
         available_stocks = sum(map(lambda s: s.available if s.isBookable else 0, self.stocks))

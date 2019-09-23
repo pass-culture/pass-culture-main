@@ -101,7 +101,8 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=0)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(user2, stock, venue, recommendation, quantity=3)
+            booking = create_booking(user2, stock, venue, recommendation, quantity=3,
+                                     date_used=datetime.utcnow() + timedelta(days=2))
 
             PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
 
@@ -124,8 +125,10 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=10)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(user2, stock, venue, recommendation, quantity=3)
-            booking2 = create_booking(user2, stock2, venue, recommendation, quantity=10)
+            booking = create_booking(user2, stock, venue, recommendation, quantity=3,
+                                     date_used=datetime.utcnow() + timedelta(days=2))
+            booking2 = create_booking(user2, stock2, venue, recommendation, quantity=10,
+                                      date_used=datetime.utcnow() + timedelta(days=2))
 
             PcObject.save(booking, booking2, deposit, user, offer, stock, stock2, user2)
 
@@ -285,7 +288,8 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=0)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(user2, stock, venue, recommendation, quantity=3)
+            booking = create_booking(user2, stock, venue, recommendation, quantity=3,
+                                     date_used=datetime.utcnow() + timedelta(days=2))
 
             PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
 
@@ -308,8 +312,10 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=10)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(user2, stock, venue, recommendation, quantity=3)
-            booking2 = create_booking(user2, stock2, venue, recommendation, quantity=10)
+            booking = create_booking(user2, stock, venue, recommendation, quantity=3,
+                                     date_used=datetime.utcnow() + timedelta(days=2))
+            booking2 = create_booking(user2, stock2, venue, recommendation, quantity=10,
+                                      date_used=datetime.utcnow() + timedelta(days=2))
 
             PcObject.save(booking, booking2, deposit, user, offer, stock, stock2, user2)
 
@@ -474,7 +480,8 @@ class DateRangeTest:
         # given
         offer = create_offer_with_event_product()
         offer.stocks = [
-            create_stock(offer, beginning_datetime=four_days_ago, end_datetime=five_days_from_now, is_soft_deleted=True),
+            create_stock(offer, beginning_datetime=four_days_ago, end_datetime=five_days_from_now,
+                         is_soft_deleted=True),
             create_stock(offer, beginning_datetime=two_days_ago, end_datetime=five_days_from_now),
             create_stock(offer, beginning_datetime=two_days_ago, end_datetime=ten_days_from_now)
         ]
@@ -491,7 +498,6 @@ class DateRangeTest:
         # then
         assert offer.dateRange == DateTimes()
 
-
     def test_is_empty_if_event_only_has_a_soft_deleted_occurence(self):
         # given
         offer = create_offer_with_event_product()
@@ -501,6 +507,7 @@ class DateRangeTest:
 
         # then
         assert offer.dateRange == DateTimes()
+
 
 class CreateOfferTest:
     @clean_database
@@ -754,17 +761,17 @@ def test_event_offer_offerType_returns_None_if_type_does_not_match_EventType_enu
 
 
 class IsFullyBookedTest:
-    def test_returns_true_if_all_available_stocks_are_booked(self):
+    def test_returns_true_if_all_available_stocks_are_booked_after_last_update(self):
         # given
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         user = create_user()
-        stock1 = create_stock(available=2)
-        stock2 = create_stock(available=1)
-        create_booking(user, stock=stock1, quantity=1)
-        create_booking(user, stock=stock1, quantity=1)
-        create_booking(user, stock=stock2, quantity=1)
+        stock1 = create_stock(available=2, date_modified=datetime(2019, 1, 1))
+        stock2 = create_stock(available=1, date_modified=datetime(2019, 1, 1))
+        create_booking(user, stock=stock1, quantity=1, is_used=True, date_used=datetime(2019, 2, 1))
+        create_booking(user, stock=stock1, quantity=1, is_used=True, date_used=datetime(2019, 2, 1))
+        create_booking(user, stock=stock2, quantity=1, is_used=True, date_used=datetime(2019, 2, 1))
         offer.stocks = [stock1, stock2]
 
         # then
@@ -791,10 +798,10 @@ class IsFullyBookedTest:
         offer = Offer()
         user = create_user()
         stock1 = create_stock(available=2, booking_limit_datetime=datetime.utcnow() - timedelta(weeks=3))
-        stock2 = create_stock(available=1)
-        stock3 = create_stock(available=1)
-        create_booking(user, stock=stock2, quantity=1)
-        create_booking(user, stock=stock3, quantity=1)
+        stock2 = create_stock(available=1, date_modified=datetime(2019, 1, 1))
+        stock3 = create_stock(available=1, date_modified=datetime(2019, 1, 1))
+        create_booking(user, stock=stock2, quantity=1, is_used=True, date_used=datetime(2019, 2, 1))
+        create_booking(user, stock=stock3, quantity=1, is_used=True, date_used=datetime(2019, 2, 1))
         offer.stocks = [stock1, stock2, stock3]
 
         # then
@@ -809,6 +816,20 @@ class IsFullyBookedTest:
         create_booking(user, stock=stock1, quantity=1)
         create_booking(user, stock=stock2, quantity=1)
         offer.stocks = [stock1, stock2]
+
+        # then
+        assert offer.isFullyBooked is False
+
+    def test_returns_false_if_stocks_are_booked_before_last_update(self):
+        # given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        user = create_user()
+        stock1 = create_stock(available=2, date_modified=datetime(2019, 1, 1))
+        create_booking(user, stock=stock1, quantity=1, is_used=True, date_used=datetime(2018, 1, 1))
+        create_booking(user, stock=stock1, quantity=1, is_used=True, date_used=datetime(2019, 2, 1))
+        offer.stocks = [stock1]
 
         # then
         assert offer.isFullyBooked is False
