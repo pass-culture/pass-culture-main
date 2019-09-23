@@ -757,7 +757,6 @@ describe('src | components | pages | Search', () => {
 
     describe('onKeywordsChange', () => {
       // when
-      // when
       const props = {
         dispatch: dispatchMock,
         history: historyMock,
@@ -793,7 +792,7 @@ describe('src | components | pages | Search', () => {
       wrapperInstance.setState({ isFilterVisible: true })
 
       it('should update state with keywords value', () => {
-        // when
+        // given
         getKeywordsInput(wrapper).props.onChange(event)
 
         // then
@@ -958,6 +957,109 @@ describe('src | components | pages | Search', () => {
           // then
           expect(filterToggleIcon.props.svg).toBe('ico-filter-active')
         })
+      })
+    })
+
+    describe('renderResults', () => {
+      it('should encode keywords', () => {
+        // given
+        const props = {
+          dispatch: dispatchMock,
+          history: historyMock,
+          location: {
+            hash: '',
+            key: 'lxn6vp',
+            pathname: '/recherche',
+            search: '?orderBy=offer.id+desc',
+            state: undefined,
+          },
+          match: {
+            params: {
+              option: undefined,
+            },
+          },
+          query: {
+            change: queryChangeMock,
+            parse: () => ({
+              categories: '%C3%89couter,Pratiquer',
+              date: '2018-09-25T09:38:20.576Z',
+              days: null,
+              distance: null,
+              jours: '0-1,1-5,5-100000',
+              latitude: null,
+              longitude: null,
+              [`mots-cles`]: "keywwords€_$ %<script>alert('toto')</script>",
+              page: '2',
+              types: null,
+            }),
+          },
+          recommendations: [],
+
+          search: {},
+          typeSublabels: [],
+          typeSublabelsAndDescription: [],
+        }
+
+        // when
+        const wrapper = shallow(<Search {...props} />)
+        const wrapperInstance = wrapper.instance()
+
+        // then
+        const expectedResult = "keywwords%E2%82%AC_$%20%25%3Cscript%3Ealert('toto')%3C/script%3E"
+        const keywordsValue = wrapperInstance.renderResults().props['keywords']
+        expect(keywordsValue).toStrictEqual(expectedResult)
+      })
+    })
+
+    describe('renderSearchNavAndResults', () => {
+      it('should encode keywords', () => {
+        // given
+        const props = {
+          dispatch: dispatchMock,
+          history: historyMock,
+          location: {
+            hash: '',
+            key: 'lxn6vp',
+            pathname: '/recherche',
+            search: '?orderBy=offer.id+desc',
+            state: undefined,
+          },
+          match: {
+            params: {
+              option: undefined,
+            },
+          },
+          query: {
+            change: queryChangeMock,
+            parse: () => ({
+              categories: '%C3%89couter,Pratiquer',
+              date: '2018-09-25T09:38:20.576Z',
+              days: null,
+              distance: null,
+              jours: '0-1,1-5,5-100000',
+              latitude: null,
+              longitude: null,
+              [`mots-cles`]: "keywwords€_$ %<script>alert('toto')</script>",
+              page: '2',
+              types: null,
+            }),
+          },
+          recommendations: [],
+
+          search: {},
+          typeSublabels: [],
+          typeSublabelsAndDescription: [],
+        }
+
+        // when
+        const wrapper = shallow(<Search {...props} />)
+        const wrapperInstance = wrapper.instance()
+
+        // then
+        const expectedResult = "keywwords%E2%82%AC_$%20%25%3Cscript%3Ealert('toto')%3C/script%3E"
+        const keywordsValue = wrapperInstance.renderSearchNavAndResults().props['children'][1]
+          .props['keywords']
+        expect(keywordsValue).toStrictEqual(expectedResult)
       })
     })
   })

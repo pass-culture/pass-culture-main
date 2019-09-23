@@ -221,7 +221,7 @@ class Search extends PureComponent {
     const { params } = match
 
     const queryParams = query.parse()
-    const keywords = queryParams[`mots-cles`]
+    const keywords = encodeURI(queryParams[`mots-cles`])
     let description
     const category = decodeURIComponent(queryParams.categories || params.category)
     if (location.pathname.includes('/resultats/')) {
@@ -247,7 +247,7 @@ class Search extends PureComponent {
   renderResults = () => {
     const { query, recommendations, typeSublabels } = this.props
     const queryParams = query.parse()
-    const keywords = queryParams[`mots-cles`]
+    const keywords = encodeURI(queryParams[`mots-cles`])
 
     return (
       <ResultsContainer

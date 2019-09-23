@@ -85,7 +85,6 @@ describe('src | components | pages | search | utils', () => {
     // given
     let items
     let keywords
-    let queryParams
     let result
     let expected
     let cameFromOfferTypesPage
@@ -99,17 +98,6 @@ describe('src | components | pages | search | utils', () => {
             hasReceivedFirstSuccessData = true
             items = [{}, {}, {}, {}]
             keywords = 'keyword'
-
-            queryParams = {
-              categories: null,
-              date: null,
-              days: null,
-              distance: null,
-              jours: null,
-              latitude: null,
-              longitude: null,
-              [`mots-cles`]: 'keyword',
-            }
 
             // when
             result = searchResultsTitle(
@@ -130,19 +118,6 @@ describe('src | components | pages | search | utils', () => {
             hasReceivedFirstSuccessData = true
             items = [{}]
             keywords = 'keyword'
-
-            queryParams = {
-              categories: null,
-              date: null,
-              days: null,
-              distance: null,
-              jours: null,
-              latitude: null,
-              longitude: null,
-              [`mots-cles`]: 'keyword',
-              page: '2',
-              types: null,
-            }
 
             // when
             result = searchResultsTitle(
@@ -165,18 +140,6 @@ describe('src | components | pages | search | utils', () => {
             hasReceivedFirstSuccessData = true
             items = []
             keywords = 'keyword'
-            queryParams = {
-              categories: null,
-              date: null,
-              days: null,
-              distance: null,
-              jours: null,
-              latitude: null,
-              longitude: null,
-              [`mots-cles`]: 'keyword',
-              page: '2',
-              types: null,
-            }
 
             // when
             result = searchResultsTitle(
@@ -202,17 +165,6 @@ describe('src | components | pages | search | utils', () => {
             items = [{}, {}, {}, {}]
             keywords = 'keyword'
 
-            queryParams = {
-              categories: 'Applaudir',
-              date: null,
-              days: null,
-              distance: null,
-              jours: null,
-              latitude: null,
-              longitude: null,
-              [`mots-cles`]: 'keyword',
-            }
-
             // when
             result = searchResultsTitle(
               keywords,
@@ -234,16 +186,6 @@ describe('src | components | pages | search | utils', () => {
             hasReceivedFirstSuccessData = true
             items = []
             keywords = 'keyword'
-            queryParams = {
-              categories: 'Jouer',
-              date: null,
-              days: null,
-              distance: null,
-              jours: null,
-              latitude: null,
-              longitude: null,
-              [`mots-cles`]: 'keyword',
-            }
 
             // when
             result = searchResultsTitle(
@@ -263,16 +205,6 @@ describe('src | components | pages | search | utils', () => {
 
     describe('with navigation mode', () => {
       keywords = 'fake word'
-      queryParams = {
-        categories: null,
-        date: null,
-        days: null,
-        distance: null,
-        jours: null,
-        latitude: null,
-        longitude: null,
-        [`mots-cles`]: null,
-      }
 
       describe('with results', () => {
         it('should not return title', () => {
@@ -285,7 +217,6 @@ describe('src | components | pages | search | utils', () => {
           result = searchResultsTitle(
             keywords,
             items,
-            queryParams,
             cameFromOfferTypesPage,
             hasReceivedFirstSuccessData
           )
@@ -307,7 +238,6 @@ describe('src | components | pages | search | utils', () => {
           result = searchResultsTitle(
             keywords,
             items,
-            queryParams,
             cameFromOfferTypesPage,
             hasReceivedFirstSuccessData
           )
