@@ -4,7 +4,7 @@ import { mount, shallow } from 'enzyme'
 import BookingCancel from '../BookingCancel/BookingCancel'
 import Booking from '../Booking'
 
-describe('src | components | layout | Booking', () => {
+describe('src | components | layout | Booking | Booking', () => {
   let props
   let push
   let replace

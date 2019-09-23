@@ -4,10 +4,20 @@ exports[`src | components | forms | FormFooter match the snapshots hidden separa
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <FormFooter
-    cancel={false}
+    cancel={
+      Object {
+        "disabled": false,
+        "label": "",
+      }
+    }
     className="fake className"
     externalLink={null}
-    submit={false}
+    submit={
+      Object {
+        "disabled": false,
+        "label": "",
+      }
+    }
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -28,7 +38,13 @@ ShallowWrapper {
         false,
         false,
         false,
-        false,
+        <button
+          className="flex-1 "
+          disabled={false}
+          type="submit"
+        >
+          
+        </button>,
       ],
       "className": "logout-form-footer fake className",
     },
@@ -38,7 +54,21 @@ ShallowWrapper {
       false,
       false,
       false,
-      false,
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "",
+          "className": "flex-1 ",
+          "disabled": false,
+          "id": undefined,
+          "type": "submit",
+        },
+        "ref": null,
+        "rendered": "",
+        "type": "button",
+      },
     ],
     "type": "footer",
   },
@@ -53,7 +83,13 @@ ShallowWrapper {
           false,
           false,
           false,
-          false,
+          <button
+            className="flex-1 "
+            disabled={false}
+            type="submit"
+          >
+            
+          </button>,
         ],
         "className": "logout-form-footer fake className",
       },
@@ -63,7 +99,21 @@ ShallowWrapper {
         false,
         false,
         false,
-        false,
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "",
+            "className": "flex-1 ",
+            "disabled": false,
+            "id": undefined,
+            "type": "submit",
+          },
+          "ref": null,
+          "rendered": "",
+          "type": "button",
+        },
       ],
       "type": "footer",
     },
@@ -102,7 +152,12 @@ exports[`src | components | forms | FormFooter match the snapshots hide cancel b
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <FormFooter
-    cancel={false}
+    cancel={
+      Object {
+        "disabled": false,
+        "label": "",
+      }
+    }
     className="fake className"
     externalLink={null}
     submit={

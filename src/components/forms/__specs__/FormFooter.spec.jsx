@@ -1,7 +1,7 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import { FormFooter } from '../FormFooter'
+import FormFooter from '../FormFooter'
 
 describe('src | components | forms | FormFooter', () => {
   describe('render', () => {
@@ -9,7 +9,16 @@ describe('src | components | forms | FormFooter', () => {
 
     it('hide separator when no submit and no cancel', () => {
       // given
-      const props = {}
+      const props = {
+        cancel: {
+          disabled: false,
+          label: '',
+        },
+        submit: {
+          disabled: false,
+          label: '',
+        },
+      }
 
       // when
       const wrapper = shallow(<FormFooter {...props} />)
@@ -166,9 +175,15 @@ describe('src | components | forms | FormFooter', () => {
     it('hidden separator, cancel and submit buttons', () => {
       // given
       const props = {
-        cancel: false,
+        cancel: {
+          disabled: false,
+          label: '',
+        },
         className: 'fake className',
-        submit: false,
+        submit: {
+          disabled: false,
+          label: '',
+        },
       }
 
       // when
@@ -234,7 +249,10 @@ describe('src | components | forms | FormFooter', () => {
     it('hide cancel button', () => {
       // given
       const props = {
-        cancel: false,
+        cancel: {
+          disabled: false,
+          label: '',
+        },
         className: 'fake className',
         submit: {
           className: 'fake submit className',

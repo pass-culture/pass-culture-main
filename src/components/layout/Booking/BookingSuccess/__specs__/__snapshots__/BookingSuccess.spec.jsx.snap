@@ -1,13 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | layout | Booking | BookingSuccess should match snapshot 1`] = `
+exports[`src | components | layout | Booking | BookingSuccess should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <BookingSuccess
     bookedPayload={
       Object {
+        "completedUrl": "http://fake-url.com",
         "stock": Object {
-          "price": 12.5,
+          "price": "12.5",
         },
         "token": "G8G8G8",
       }
@@ -62,34 +63,34 @@ ShallowWrapper {
              
             ont été déduits de votre pass.
           </span>
-          <span
-            className="is-block"
-          >
-            Présentez le code suivant sur place :
-          </span>
         </p>,
         <p
           className="my28"
         >
-          <b
-            className="is-block is-size-1 fs48"
+          <a
+            className="is-primary-text is-primary-border px12 py8"
             data-token="g8g8g8"
-            id="booking-booked-token"
+            href="http://fake-url.com"
+            id="booking-online-booked-button"
+            rel="noopener noreferrer"
+            target="_blank"
           >
-            g8g8g8
-          </b>
+            <b>
+              Accéder à l’offre numérique
+            </b>
+          </a>
         </p>,
         <p>
           <React.Fragment>
             <span
               className="is-block"
             >
-              Retrouvez ce code et les détails de l’offre dans
+              Retrouvez l’adresse Internet et les détails de
             </span>
             <span
               className="is-block"
             >
-              la rubrique 
+              l’offre dans la rubrique 
               <Link
                 replace={false}
                 to="/reservations"
@@ -100,6 +101,10 @@ ShallowWrapper {
                   Mes Réservations
                 </b>
               </Link>
+            </span>
+            <span
+              className="is-block"
+            >
                de votre compte
             </span>
           </React.Fragment>
@@ -209,11 +214,7 @@ ShallowWrapper {
                
               ont été déduits de votre pass.
             </span>,
-            <span
-              className="is-block"
-            >
-              Présentez le code suivant sur place :
-            </span>,
+            false,
           ],
         },
         "ref": null,
@@ -238,18 +239,7 @@ ShallowWrapper {
             ],
             "type": "span",
           },
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": "Présentez le code suivant sur place :",
-              "className": "is-block",
-            },
-            "ref": null,
-            "rendered": "Présentez le code suivant sur place :",
-            "type": "span",
-          },
+          false,
         ],
         "type": "p",
       },
@@ -259,34 +249,54 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            <b
-              className="is-block is-size-1 fs48"
+            false,
+            <a
+              className="is-primary-text is-primary-border px12 py8"
               data-token="g8g8g8"
-              id="booking-booked-token"
+              href="http://fake-url.com"
+              id="booking-online-booked-button"
+              rel="noopener noreferrer"
+              target="_blank"
             >
-              g8g8g8
-            </b>,
-            undefined,
+              <b>
+                Accéder à l’offre numérique
+              </b>
+            </a>,
           ],
           "className": "my28",
         },
         "ref": null,
         "rendered": Array [
+          false,
           Object {
             "instance": null,
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": "g8g8g8",
-              "className": "is-block is-size-1 fs48",
+              "children": <b>
+                Accéder à l’offre numérique
+              </b>,
+              "className": "is-primary-text is-primary-border px12 py8",
               "data-token": "g8g8g8",
-              "id": "booking-booked-token",
+              "href": "http://fake-url.com",
+              "id": "booking-online-booked-button",
+              "rel": "noopener noreferrer",
+              "target": "_blank",
             },
             "ref": null,
-            "rendered": "g8g8g8",
-            "type": "b",
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Accéder à l’offre numérique",
+              },
+              "ref": null,
+              "rendered": "Accéder à l’offre numérique",
+              "type": "b",
+            },
+            "type": "a",
           },
-          undefined,
         ],
         "type": "p",
       },
@@ -296,16 +306,17 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
+            false,
             <React.Fragment>
               <span
                 className="is-block"
               >
-                Retrouvez ce code et les détails de l’offre dans
+                Retrouvez l’adresse Internet et les détails de
               </span>
               <span
                 className="is-block"
               >
-                la rubrique 
+                l’offre dans la rubrique 
                 <Link
                   replace={false}
                   to="/reservations"
@@ -316,14 +327,18 @@ ShallowWrapper {
                     Mes Réservations
                   </b>
                 </Link>
+              </span>
+              <span
+                className="is-block"
+              >
                  de votre compte
               </span>
             </React.Fragment>,
-            undefined,
           ],
         },
         "ref": null,
         "rendered": Array [
+          false,
           Object {
             "instance": null,
             "key": undefined,
@@ -333,12 +348,12 @@ ShallowWrapper {
                 <span
                   className="is-block"
                 >
-                  Retrouvez ce code et les détails de l’offre dans
+                  Retrouvez l’adresse Internet et les détails de
                 </span>,
                 <span
                   className="is-block"
                 >
-                  la rubrique 
+                  l’offre dans la rubrique 
                   <Link
                     replace={false}
                     to="/reservations"
@@ -349,6 +364,10 @@ ShallowWrapper {
                       Mes Réservations
                     </b>
                   </Link>
+                </span>,
+                <span
+                  className="is-block"
+                >
                    de votre compte
                 </span>,
               ],
@@ -360,11 +379,11 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": "Retrouvez ce code et les détails de l’offre dans",
+                  "children": "Retrouvez l’adresse Internet et les détails de",
                   "className": "is-block",
                 },
                 "ref": null,
-                "rendered": "Retrouvez ce code et les détails de l’offre dans",
+                "rendered": "Retrouvez l’adresse Internet et les détails de",
                 "type": "span",
               },
               Object {
@@ -373,7 +392,7 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "children": Array [
-                    "la rubrique ",
+                    "l’offre dans la rubrique ",
                     <Link
                       replace={false}
                       to="/reservations"
@@ -384,13 +403,12 @@ ShallowWrapper {
                         Mes Réservations
                       </b>
                     </Link>,
-                    " de votre compte",
                   ],
                   "className": "is-block",
                 },
                 "ref": null,
                 "rendered": Array [
-                  "la rubrique ",
+                  "l’offre dans la rubrique ",
                   Object {
                     "instance": null,
                     "key": undefined,
@@ -419,14 +437,24 @@ ShallowWrapper {
                     },
                     "type": [Function],
                   },
-                  " de votre compte",
                 ],
+                "type": "span",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": " de votre compte",
+                  "className": "is-block",
+                },
+                "ref": null,
+                "rendered": " de votre compte",
                 "type": "span",
               },
             ],
             "type": Symbol(react.fragment),
           },
-          undefined,
         ],
         "type": "p",
       },
@@ -473,34 +501,34 @@ ShallowWrapper {
                
               ont été déduits de votre pass.
             </span>
-            <span
-              className="is-block"
-            >
-              Présentez le code suivant sur place :
-            </span>
           </p>,
           <p
             className="my28"
           >
-            <b
-              className="is-block is-size-1 fs48"
+            <a
+              className="is-primary-text is-primary-border px12 py8"
               data-token="g8g8g8"
-              id="booking-booked-token"
+              href="http://fake-url.com"
+              id="booking-online-booked-button"
+              rel="noopener noreferrer"
+              target="_blank"
             >
-              g8g8g8
-            </b>
+              <b>
+                Accéder à l’offre numérique
+              </b>
+            </a>
           </p>,
           <p>
             <React.Fragment>
               <span
                 className="is-block"
               >
-                Retrouvez ce code et les détails de l’offre dans
+                Retrouvez l’adresse Internet et les détails de
               </span>
               <span
                 className="is-block"
               >
-                la rubrique 
+                l’offre dans la rubrique 
                 <Link
                   replace={false}
                   to="/reservations"
@@ -511,6 +539,10 @@ ShallowWrapper {
                     Mes Réservations
                   </b>
                 </Link>
+              </span>
+              <span
+                className="is-block"
+              >
                  de votre compte
               </span>
             </React.Fragment>
@@ -620,11 +652,7 @@ ShallowWrapper {
                  
                 ont été déduits de votre pass.
               </span>,
-              <span
-                className="is-block"
-              >
-                Présentez le code suivant sur place :
-              </span>,
+              false,
             ],
           },
           "ref": null,
@@ -649,18 +677,7 @@ ShallowWrapper {
               ],
               "type": "span",
             },
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": "Présentez le code suivant sur place :",
-                "className": "is-block",
-              },
-              "ref": null,
-              "rendered": "Présentez le code suivant sur place :",
-              "type": "span",
-            },
+            false,
           ],
           "type": "p",
         },
@@ -670,34 +687,54 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              <b
-                className="is-block is-size-1 fs48"
+              false,
+              <a
+                className="is-primary-text is-primary-border px12 py8"
                 data-token="g8g8g8"
-                id="booking-booked-token"
+                href="http://fake-url.com"
+                id="booking-online-booked-button"
+                rel="noopener noreferrer"
+                target="_blank"
               >
-                g8g8g8
-              </b>,
-              undefined,
+                <b>
+                  Accéder à l’offre numérique
+                </b>
+              </a>,
             ],
             "className": "my28",
           },
           "ref": null,
           "rendered": Array [
+            false,
             Object {
               "instance": null,
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": "g8g8g8",
-                "className": "is-block is-size-1 fs48",
+                "children": <b>
+                  Accéder à l’offre numérique
+                </b>,
+                "className": "is-primary-text is-primary-border px12 py8",
                 "data-token": "g8g8g8",
-                "id": "booking-booked-token",
+                "href": "http://fake-url.com",
+                "id": "booking-online-booked-button",
+                "rel": "noopener noreferrer",
+                "target": "_blank",
               },
               "ref": null,
-              "rendered": "g8g8g8",
-              "type": "b",
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Accéder à l’offre numérique",
+                },
+                "ref": null,
+                "rendered": "Accéder à l’offre numérique",
+                "type": "b",
+              },
+              "type": "a",
             },
-            undefined,
           ],
           "type": "p",
         },
@@ -707,16 +744,17 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
+              false,
               <React.Fragment>
                 <span
                   className="is-block"
                 >
-                  Retrouvez ce code et les détails de l’offre dans
+                  Retrouvez l’adresse Internet et les détails de
                 </span>
                 <span
                   className="is-block"
                 >
-                  la rubrique 
+                  l’offre dans la rubrique 
                   <Link
                     replace={false}
                     to="/reservations"
@@ -727,14 +765,18 @@ ShallowWrapper {
                       Mes Réservations
                     </b>
                   </Link>
+                </span>
+                <span
+                  className="is-block"
+                >
                    de votre compte
                 </span>
               </React.Fragment>,
-              undefined,
             ],
           },
           "ref": null,
           "rendered": Array [
+            false,
             Object {
               "instance": null,
               "key": undefined,
@@ -744,12 +786,12 @@ ShallowWrapper {
                   <span
                     className="is-block"
                   >
-                    Retrouvez ce code et les détails de l’offre dans
+                    Retrouvez l’adresse Internet et les détails de
                   </span>,
                   <span
                     className="is-block"
                   >
-                    la rubrique 
+                    l’offre dans la rubrique 
                     <Link
                       replace={false}
                       to="/reservations"
@@ -760,6 +802,10 @@ ShallowWrapper {
                         Mes Réservations
                       </b>
                     </Link>
+                  </span>,
+                  <span
+                    className="is-block"
+                  >
                      de votre compte
                   </span>,
                 ],
@@ -771,11 +817,11 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": "Retrouvez ce code et les détails de l’offre dans",
+                    "children": "Retrouvez l’adresse Internet et les détails de",
                     "className": "is-block",
                   },
                   "ref": null,
-                  "rendered": "Retrouvez ce code et les détails de l’offre dans",
+                  "rendered": "Retrouvez l’adresse Internet et les détails de",
                   "type": "span",
                 },
                 Object {
@@ -784,7 +830,7 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": Array [
-                      "la rubrique ",
+                      "l’offre dans la rubrique ",
                       <Link
                         replace={false}
                         to="/reservations"
@@ -795,13 +841,12 @@ ShallowWrapper {
                           Mes Réservations
                         </b>
                       </Link>,
-                      " de votre compte",
                     ],
                     "className": "is-block",
                   },
                   "ref": null,
                   "rendered": Array [
-                    "la rubrique ",
+                    "l’offre dans la rubrique ",
                     Object {
                       "instance": null,
                       "key": undefined,
@@ -830,14 +875,24 @@ ShallowWrapper {
                       },
                       "type": [Function],
                     },
-                    " de votre compte",
                   ],
+                  "type": "span",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": " de votre compte",
+                    "className": "is-block",
+                  },
+                  "ref": null,
+                  "rendered": " de votre compte",
                   "type": "span",
                 },
               ],
               "type": Symbol(react.fragment),
             },
-            undefined,
           ],
           "type": "p",
         },

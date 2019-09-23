@@ -4,7 +4,7 @@ import { Form } from 'react-final-form'
 import { Redirect } from 'react-router'
 
 import PasswordForm from '../PasswordForm'
-import { FormFooter } from '../../../../forms/FormFooter'
+import FormFooter from '../../../../forms/FormFooter'
 
 describe('src | components | pages | activation | password | Password', () => {
   let props

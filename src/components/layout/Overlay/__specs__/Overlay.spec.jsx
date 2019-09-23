@@ -4,7 +4,13 @@ import React from 'react'
 import Overlay from '../Overlay'
 
 describe('src | components | layout | Overlay | Overlay', () => {
-  let props = {}
+  let props
+
+  beforeEach(() => {
+    props = {
+      isVisible: false,
+    }
+  })
 
   it('should match the snapshot', () => {
     // when

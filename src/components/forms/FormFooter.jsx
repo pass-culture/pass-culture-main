@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 import { FormFooterObject } from '../../types'
 
-export class FormFooter extends Component {
+class FormFooter extends Component {
   renderSubmitButton = buttonOptions => {
     const attributes = {
       className: `flex-1 ${buttonOptions.className || ''}`,

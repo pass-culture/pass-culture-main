@@ -26,7 +26,7 @@ ShallowWrapper {
         },
       }
     }
-    initialDateParams={false}
+    shouldResetDate={false}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],

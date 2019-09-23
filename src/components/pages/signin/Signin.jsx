@@ -8,7 +8,7 @@ import EmailField from '../../forms/inputs/EmailField'
 import PasswordField from '../../forms/inputs/PasswordField'
 import canSubmitForm from './canSubmitForm'
 
-import { FormFooter } from '../../forms'
+import FormFooter from '../../forms/FormFooter'
 import { parseSubmitErrors } from '../../forms/utils'
 
 const submitButtonOptions = {

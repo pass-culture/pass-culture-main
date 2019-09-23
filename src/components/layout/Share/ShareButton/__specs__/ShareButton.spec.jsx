@@ -34,6 +34,8 @@ describe('src | components | layout | Share | ShareButton | ShareButton', () => 
           offerName: 'Fake offer name',
           openPopin: openPopinMock,
           text: 'Fake text',
+          trackShareOfferByLink: () => {},
+          trackShareOfferByMail: () => {},
           url: 'http://www.fake-url.com',
         }
 

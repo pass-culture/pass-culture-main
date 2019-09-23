@@ -5,7 +5,7 @@ import { Form } from 'react-final-form'
 
 import canSubmitForm from './canSubmitForm'
 import FormInputs from './FormInputs'
-import { FormFooter } from '../../../forms'
+import FormFooter from '../../../forms/FormFooter'
 
 class PasswordForm extends PureComponent {
   constructor(props) {

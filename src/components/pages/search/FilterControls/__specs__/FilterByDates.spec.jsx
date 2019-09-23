@@ -28,7 +28,7 @@ describe('src | components | pages | search | FilterControls | FilterByDates', (
           orderBy: 'offer.id+desc',
         },
       },
-      initialDateParams: false,
+      shouldResetDate: false,
     }
   })
 

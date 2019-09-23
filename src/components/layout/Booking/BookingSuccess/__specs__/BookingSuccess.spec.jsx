@@ -9,16 +9,17 @@ describe('src | components | layout | Booking | BookingSuccess', () => {
   beforeEach(() => {
     props = {
       bookedPayload: {
+        completedUrl: 'http://fake-url.com',
         token: 'G8G8G8',
         stock: {
-          price: 12.5,
+          price: '12.5',
         },
       },
       isEvent: true,
     }
   })
 
-  it('should match snapshot', () => {
+  it('should match the snapshot', () => {
     // when
     const wrapper = shallow(<BookingSuccess {...props} />)
 
