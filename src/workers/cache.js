@@ -21,16 +21,10 @@ function registerValidSW(swUrl) {
         installingWorker.onstatechange = () => {
           if (installingWorker.state === 'installed') {
             if (navigator.serviceWorker.controller) {
-              if (
-                window.location.pathname === '/decouverte' ||
-                window.location.pathname === '/' ||
-                // eslint-disable-next-line
-                window.confirm(
-                  'Une nouvelle version a été téléchargée. Redémarrer pour l’utiliser ?'
-                )
-              ) {
-                window.location.reload()
-              }
+              window.location.reload()
+              window.alert(
+                'Nous avons mis à jour le pass Culture ! L‘application va maintenant se relancer pour appliquer les changements.'
+              )
             } else {
               logger.log('Content is cached for offline use.')
             }
