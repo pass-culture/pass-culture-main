@@ -231,7 +231,7 @@ Pré-requis : installer [jq](https://stedolan.github.io/jq/download/)
 
 En premier lieu: 
  - bien vérifier qu'on a, en local, **main** et tous les submodules **(api, pro, webapp)** à jour par rapport à **master**
- - de là on peut poser un tag `pc -t I.P.S. tag` (pour savoir le tag précédent, il suffit de faire un git tag dans pass-culture-main)
+ - de là on peut poser un tag `pc -t I.P.S. tag` (pour savoir le tag précédent, il suffit de faire un `git tag` dans pass-culture-main)
  - se rendre sur CircleCI pour vérifier qu'il y a un job lancé par submodule **(api, pro, webapp)**, ainsi que **main** qui a également lancé autant de jobs qu'il y a de submodules,
  - réaliser le déploiement lorsque les tests de chaque submodule sont bien **verts**
 
