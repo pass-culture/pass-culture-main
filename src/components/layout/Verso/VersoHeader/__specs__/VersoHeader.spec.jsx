@@ -88,7 +88,7 @@ describe('src | components | layout | Verso | VersoHeader', () => {
     // then
     const picto = wrapper.find('#verso-offer-type-picto')
     expect(picto).toHaveLength(1)
-    expect(picto.prop('alt')).toBe('spectacle vivant')
+    expect(picto.prop('alt')).toBe('')
     expect(picto.prop('src')).toBe(`${ICONS_URL}/picto-spectacle.svg`)
   })
 

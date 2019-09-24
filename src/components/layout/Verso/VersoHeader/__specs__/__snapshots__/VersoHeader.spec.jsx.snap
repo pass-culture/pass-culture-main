@@ -43,7 +43,7 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <img
-          alt="spectacle vivant"
+          alt=""
           id="verso-offer-type-picto"
           src="http://localhost/icons/picto-spectacle.svg"
         />,
@@ -120,7 +120,7 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "alt": "spectacle vivant",
+          "alt": "",
           "id": "verso-offer-type-picto",
           "src": "http://localhost/icons/picto-spectacle.svg",
         },
@@ -269,7 +269,7 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <img
-            alt="spectacle vivant"
+            alt=""
             id="verso-offer-type-picto"
             src="http://localhost/icons/picto-spectacle.svg"
           />,
@@ -346,7 +346,7 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "alt": "spectacle vivant",
+            "alt": "",
             "id": "verso-offer-type-picto",
             "src": "http://localhost/icons/picto-spectacle.svg",
           },

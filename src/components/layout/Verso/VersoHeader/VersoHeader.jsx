@@ -5,7 +5,6 @@ import Draggable from 'react-draggable'
 import getUrlWithoutDetailsPart from '../../../../helpers/getUrlWithoutDetailsPart'
 import { getPageY } from '../../../../utils/getPageY'
 import findOfferPictoPathByOfferType from './utils/findOfferPictoPathByOfferType'
-import buildOfferAltPictoByOfferType from './utils/buildOfferAltPictoByOfferType'
 
 const toRectoDraggableBounds = {
   bottom: 0,
@@ -29,7 +28,6 @@ class VersoHeader extends Component {
 
   render() {
     const { backgroundColor, subtitle, title, type } = this.props
-    const offerAltPicto = buildOfferAltPictoByOfferType(type)
     const offerPictoPath = findOfferPictoPathByOfferType(type)
 
     return (
@@ -38,7 +36,7 @@ class VersoHeader extends Component {
         style={{ backgroundColor }}
       >
         {type && <img
-          alt={offerAltPicto}
+          alt={''}
           id="verso-offer-type-picto"
           src={offerPictoPath}
                  />}
