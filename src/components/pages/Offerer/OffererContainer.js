@@ -70,7 +70,7 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
     ...ownProps,
     trackCreateOffererSuccess: createdOffererId => {
       ownProps.tracking.trackEvent({ action: 'createOfferer', name: createdOffererId })
-    },
+    }
   }
 }
 

@@ -71,6 +71,8 @@ ShallowWrapper {
         },
       }
     }
+    trackCreateVenue={[MockFunction]}
+    trackModifyVenue={[MockFunction]}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],

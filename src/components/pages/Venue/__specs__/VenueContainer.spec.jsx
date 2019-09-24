@@ -7,7 +7,7 @@ import { assignData } from 'fetch-normalize-data'
 
 import { venueNormalizer } from '../../../../utils/normalizers'
 import configureStore from '../../../../utils/store'
-import VenueContainer, { mapDispatchToProps, mapStateToProps } from '../VenueContainer'
+import VenueContainer, { mapDispatchToProps, mapStateToProps, mergeProps } from '../VenueContainer'
 
 window.scroll = () => {}
 
@@ -95,6 +95,8 @@ global.fetch = url => {
   }
   if (url.includes('offerers')) {
     const response = new Response(JSON.stringify({ id: MANAGING_OFFERER_ID }))
+    console.log('======= url ========', url)
+    console.log('======== response =======', response)
     return response
   }
   if (url.includes('users')) {
@@ -229,9 +231,7 @@ describe('src | components | pages | VenueContainer', () => {
             normalizer: venueNormalizer,
           }
           const receivedConfig = mockRequestDataCatch.mock.calls.slice(-1)[0][0]
-          Object.keys(expectedSubConfig).forEach(key =>
-            expect(receivedConfig[key]).toStrictEqual(expectedSubConfig[key])
-          )
+          Object.keys(expectedSubConfig).forEach(key => expect(receivedConfig[key]).toStrictEqual(expectedSubConfig[key]))
 
           // done
           done()
@@ -578,7 +578,6 @@ describe('src | components | pages | VenueContainer', () => {
             Object.keys(expectedSubConfig).forEach(key =>
               expect(receivedConfig[key]).toStrictEqual(expectedSubConfig[key])
             )
-
             // done
             done()
           })
@@ -678,6 +677,71 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
         config: { apiPath: '/userOfferers/APEQ', method: 'GET' },
         type: 'REQUEST_DATA_GET_/USEROFFERERS/APEQ',
       })
+    })
+  })
+})
+
+describe('src | components | pages | VenueContainer | mergeProps', () => {
+  it('should spread stateProps, dispatchProps and ownProps into mergedProps', () => {
+    // given
+    const stateProps = {}
+    const dispatchProps = {
+      handleInitialRequest: () => {},
+    }
+    const ownProps = {
+      match: {
+        params: {},
+      },
+    }
+
+    // when
+    const mergedProps = mergeProps(stateProps, dispatchProps, ownProps)
+
+    // then
+    expect(mergedProps).toStrictEqual({
+      match: ownProps.match,
+      handleInitialRequest: expect.any(Function),
+      trackCreateVenue: expect.any(Function),
+      trackModifyVenue: expect.any(Function)
+
+    })
+  })
+
+  it('should map a tracking event for creating a venue', () => {
+    // given
+    const stateProps = {
+    }
+    const ownProps = {
+      tracking: {
+        trackEvent: jest.fn(),
+      },
+    }
+    // when
+    mergeProps(stateProps, {}, ownProps).trackCreateVenue('RTgfd67')
+
+    // then
+    expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
+      action: 'createVenue',
+      name: 'RTgfd67',
+    })
+  })
+
+  it('should map a tracking event for updating a venue', () => {
+    // given
+    const stateProps = {
+    }
+    const ownProps = {
+      tracking: {
+        trackEvent: jest.fn(),
+      },
+    }
+    // when
+    mergeProps(stateProps, {}, ownProps).trackModifyVenue('RTgfd67')
+
+    // then
+    expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
+      action: 'modifyVenue',
+      name: 'RTgfd67',
     })
   })
 })

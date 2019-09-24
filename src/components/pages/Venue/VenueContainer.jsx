@@ -14,6 +14,7 @@ import selectUserOffererByOffererIdAndUserIdAndRightsType from '../../../selecto
 import selectOffererById from '../../../selectors/selectOffererById'
 import { offererNormalizer, venueNormalizer } from '../../../utils/normalizers'
 import { formatPatch } from '../../../utils/formatPatch'
+import withTracking from '../../hocs/withTracking'
 
 const handleOnClick = dispatch => () => dispatch(closeNotification())
 
@@ -156,10 +157,26 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
   }
 }
 
+export const mergeProps = (stateProps, dispatchProps, ownProps) => {
+  return {
+    ...stateProps,
+    ...dispatchProps,
+    ...ownProps,
+    trackCreateVenue: (createdVenueId) => {
+      ownProps.tracking.trackEvent({ action: 'createVenue', name: createdVenueId })
+    },
+    trackModifyVenue: (venueId) => {
+      ownProps.tracking.trackEvent({ action: 'modifyVenue', name: venueId })
+    },
+  }
+}
+
 export default compose(
+  withTracking('Venue'),
   withRequiredLogin,
   connect(
     mapStateToProps,
-    mapDispatchToProps
+    mapDispatchToProps,
+    mergeProps
   )
 )(Venue)

@@ -61,21 +61,30 @@ class Venue extends Component {
         params: { offererId },
       },
       query,
+      trackCreateVenue,
+      trackModifyVenue
     } = this.props
+
     const { id: venueId } = formInitialValues
     const nextState = { isRequestPending: false }
     const { isCreatedEntity } = query.context({ id: venueId })
 
     this.setState(nextState, () => {
       handleSubmitRequestSuccess(state, action)
-
-      if (isCreatedEntity) {
-        history.push(`/structures/${offererId}`)
-      } else {
-        query.changeToReadOnly(null)
-      }
       formResolver()
     })
+
+    const createdVenueId = action.payload.datum.id
+
+    if (isCreatedEntity) {
+      history.push(`/structures/${offererId}`)
+      trackCreateVenue(createdVenueId)
+
+    } else {
+      trackModifyVenue(venueId)
+      query.changeToReadOnly(null)
+    }
+
   }
 
   handleOnFormSubmit = formValues => {
@@ -190,9 +199,12 @@ class Venue extends Component {
       offerer,
     } = this.props
 
+
+    // isCreatedEntity > Valider ou Créer une venue
+
     const { name: offererName } = offerer || {}
     const { id: initialId, isVirtual: initialIsVirtual, name: initialName, siret: initialSiret } =
-      formInitialValues || {}
+    formInitialValues || {}
     const { isCreatedEntity } = query.context({
       id: venueId,
     })
@@ -261,6 +273,8 @@ Venue.propTypes = {
   match: PropTypes.shape().isRequired,
   offerer: PropTypes.shape().isRequired,
   query: PropTypes.shape().isRequired,
+  trackCreateVenue: PropTypes.func.isRequired,
+  trackModifyVenue: PropTypes.func.isRequired
 }
 
 export default Venue

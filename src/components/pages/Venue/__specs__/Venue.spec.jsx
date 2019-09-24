@@ -43,7 +43,9 @@ describe('src | components | pages | Venue', () => {
           isModifiedEntity: false,
           readOnly: false
         }),
-      }
+      },
+      trackCreateVenue: jest.fn(),
+      trackModifyVenue: jest.fn()
     }
   })
 
@@ -295,6 +297,56 @@ describe('src | components | pages | Venue', () => {
           })
         })
       })
+    })
+  })
+
+  describe('event tracking', () => {
+    it('should track venue creation', () => {
+      // given
+      const state = {}
+      const action = {
+        payload: {
+          datum: {
+          id: 'Ty5645dgfd'
+          }
+        },
+      }
+      const wrapper = shallow(<Venue {...props} />)
+      const formResolver = jest.fn()
+
+
+      // when
+      wrapper.instance().handleFormSuccess(formResolver)(state, action)
+
+      // then
+      expect(props.trackCreateVenue).toHaveBeenCalledWith('Ty5645dgfd')
+    })
+
+    it('should track venue update', () => {
+      // given
+      const state = {}
+
+      jest.spyOn(props.query, 'context').mockReturnValue({
+        isCreatedEntity: false,
+        isModifiedEntity: false,
+        readOnly: false
+      })
+
+      const action = {
+        payload: {
+          datum: {
+          id: 'Ty5645dgfd'
+          }
+        },
+      }
+      const wrapper = shallow(<Venue {...props} />)
+      const formResolver = jest.fn()
+
+      // when
+      wrapper.instance().handleFormSuccess(formResolver)(state, action)
+
+      // then
+      expect(props.trackModifyVenue).toHaveBeenCalledWith('CM')
     })
   })
 })
