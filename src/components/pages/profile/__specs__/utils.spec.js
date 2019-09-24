@@ -79,5 +79,17 @@ describe('src | components | pages | profile | utils', () => {
       const expected = 110
       expect(result).toStrictEqual(expected)
     })
+
+    it('should return only two decimals', () => {
+      // given
+      const wallet = 231.38
+      const expense = { actual: 154.8, max: 200 }
+
+      // then
+      const result = getAvailableBalanceByType(wallet)(expense)
+
+      // when
+      expect(result).toBe(45.2)
+    })
   })
 })
