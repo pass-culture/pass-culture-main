@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { requestData } from 'redux-saga-data'
+import { requestData, reinitializeData } from 'redux-saga-data'
 
 import SignoutButton from './SignoutButton'
 import { toggleMainMenu } from '../../../../reducers/menu'
@@ -10,6 +10,7 @@ export const mapDispatchToProps = dispatch => ({
       const handleSuccessAfterSignout = () => {
         history.push('/connexion')
         dispatch(toggleMainMenu())
+        dispatch(reinitializeData({ excludes: ['features'] }))
       }
       dispatch(
         requestData({
