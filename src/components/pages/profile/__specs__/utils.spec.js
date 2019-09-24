@@ -83,13 +83,13 @@ describe('src | components | pages | profile | utils', () => {
     it('should return only two decimals', () => {
       // given
       const wallet = 231.38
-      const expense = { actual: 154.8, max: 200 }
+      const expense = { actual: 154.82, max: 200 }
 
       // then
       const result = getAvailableBalanceByType(wallet)(expense)
 
       // when
-      expect(result).toBe(45.2)
+      expect(result).toBe(45.18)
     })
   })
 })
