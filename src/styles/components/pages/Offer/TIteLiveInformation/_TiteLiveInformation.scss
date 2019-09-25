@@ -1,0 +1,33 @@
+.titelive-information {
+  display: flex;
+  margin-bottom: 1.5rem;
+}
+
+.titelive-thumb {
+  display: flex;
+}
+
+.titelive-details {
+  padding-left: 1rem;
+  display: block;
+}
+
+.titelive-header {
+  display: flex;
+  align-items: center;
+
+  .titelive-title {
+    padding-left: 1rem;
+  }
+
+  span{
+    padding-left: 0.75rem;
+    vertical-align: middle;
+  }
+}
+
+.titelive-explanation {
+  @extend .small-text;
+
+  text-align: justify;
+}
