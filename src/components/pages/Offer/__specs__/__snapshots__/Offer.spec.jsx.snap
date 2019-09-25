@@ -463,6 +463,7 @@ ShallowWrapper {
                 </div>
               </div>
             </div>,
+            false,
             undefined,
             <div>
               <h2
@@ -1030,6 +1031,7 @@ ShallowWrapper {
             ],
             "type": "div",
           },
+          false,
           undefined,
           Object {
             "instance": null,
@@ -1859,6 +1861,7 @@ ShallowWrapper {
                   </div>
                 </div>
               </div>,
+              false,
               undefined,
               <div>
                 <h2
@@ -2426,6 +2429,7 @@ ShallowWrapper {
               ],
               "type": "div",
             },
+            false,
             undefined,
             Object {
               "instance": null,

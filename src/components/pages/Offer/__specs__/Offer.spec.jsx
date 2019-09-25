@@ -5,6 +5,7 @@ import { Field, Form } from 'pass-culture-shared'
 import Offer from '../Offer'
 import MediationsManager from '../MediationsManager/MediationsManagerContainer'
 import HeroSection from '../../../layout/HeroSection/HeroSection'
+import TiteLiveInformation from '../TiteLiveInformation/TiteLiveInformationContainer'
 
 describe('src | components | pages | Offer | Offer ', () => {
   let dispatch
@@ -238,7 +239,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         // then
         const preview_section = wrapper.find(HeroSection)
         const preview_link = preview_section.find('.cta')
-        expect(preview_link.exists()).toBeFalsy()
+        expect(preview_link.exists()).toBe(false)
       })
     })
 
@@ -301,8 +302,8 @@ describe('src | components | pages | Offer | Offer ', () => {
           isEvent: true,
           isThing: false,
           activeMediation: {
-            id: 'MED'
-          }
+            id: 'MED',
+          },
         }
 
         // when
@@ -438,6 +439,36 @@ describe('src | components | pages | Offer | Offer ', () => {
         // then
         const modifyOfferButton = wrapper.find('#modify-offer-button')
         expect(modifyOfferButton.prop('disabled')).toStrictEqual('disabled')
+      })
+
+      it('should display TiteLiveInformation if offer was generated from TiteLive provider', () => {
+        // given
+        props.query.context = () => ({
+          isCreatedEntity: false,
+          isModifiedEntity: false,
+          readOnly: true,
+        })
+        props.isEditableOffer = false
+        props.offer = {
+          id: 'VAG',
+          productId: '6GD',
+          isEvent: true,
+          isThing: false,
+          activeMediation: {
+            id: 'MED',
+          },
+          lastProvider: {
+            name: 'TiteLive Stocks',
+          },
+        }
+        // when
+        const wrapper = shallow(<Offer {...props} />)
+
+        // then
+        const titeLiveInformationComponent = wrapper.find(TiteLiveInformation)
+
+        // then
+        expect(titeLiveInformationComponent).toHaveLength(1)
       })
     })
 
