@@ -65,6 +65,32 @@ describe('src | components | pages | search | Results', () => {
     })
   })
 
+  describe('handleSetHasMore', () => {
+    it('should set state to false is there less than 10 items in new batch', () => {
+      // given
+      const wrapper = shallow(<Results {...props} />)
+      const itemLength = 4
+
+      // when
+      wrapper.instance().handleSetHasMore(itemLength)
+
+      // then
+      expect(wrapper.state(['hasMore'])).toBe(false)
+    })
+
+    it('should set state to true is there are 10 items in new batch', () => {
+      // given
+      const wrapper = shallow(<Results {...props} />)
+      const itemLength = 10
+
+      // when
+      wrapper.instance().handleSetHasMore(itemLength)
+
+      // then
+      expect(wrapper.state(['hasMore'])).toBe(true)
+    })
+  })
+
   describe('handleShouldCancelLoading()', () => {
     it('should return isLoading = false if its loading', () => {
       // given
@@ -122,6 +148,7 @@ describe('src | components | pages | search | Results', () => {
     const items = [
       {
         offerId: 'Q4',
+        id: 'id',
       },
     ]
 

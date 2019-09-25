@@ -1,4 +1,3 @@
-import uniqBy from 'lodash.uniqby'
 import moment from 'moment'
 import { parse, stringify } from 'query-string'
 import { createSelector } from 'reselect'
@@ -105,7 +104,9 @@ export const getRecommendationSearch = (search, types) => {
 const selectRecommendationsBySearchQuery = createSelector(
   state => state.data.recommendations,
   state => state.data.types,
-  (state, location) => location.search.replace(PAGE_REGEXP, ''),
+  (state, location) => {
+    return location.search.replace(PAGE_REGEXP, '')
+  },
   (recommendations, types, searchWithoutPage) => {
     const searchQuery = getRecommendationSearch(searchWithoutPage, types)
 
@@ -116,11 +117,6 @@ const selectRecommendationsBySearchQuery = createSelector(
       const searchRecommendationWithoutPage = recommendation.search.replace(PAGE_REGEXP, '')
       return searchRecommendationWithoutPage === searchQuery
     })
-
-    filteredRecommendations = uniqBy(
-      filteredRecommendations,
-      recommendation => recommendation.productOrTutoIdentifier
-    )
 
     return filteredRecommendations
   }
