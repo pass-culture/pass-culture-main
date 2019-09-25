@@ -1,4 +1,4 @@
-import { mapStateToProps } from '../OfferContainer'
+import { mapStateToProps, mergeProps } from '../OfferContainer'
 import state from '../../../utils/mocks/state'
 
 describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
@@ -14,6 +14,8 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
       query: {
         translate: jest.fn(),
       },
+      trackCreateOffer: jest.fn(),
+      trackModifyOffer: jest.fn(),
     }
   })
 
@@ -23,7 +25,7 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
       const result = mapStateToProps(state, props)
 
       // then
-      expect(result).toEqual({
+      expect(result).toStrictEqual({
         formInitialValues: expect.any(Object),
         formOffererId: 'BA',
         formVenueId: 'DA',
@@ -53,6 +55,65 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
         url: 'https://ilestencoretemps.fr/',
         venue: expect.any(Object),
         venues: expect.any(Object),
+      })
+    })
+  })
+
+  describe('mergeProps', () => {
+    it('should spread stateProps, dispatchProps and ownProps into mergedProps', () => {
+      // given
+      const stateProps = {}
+      const dispatchProps = {}
+      const ownProps = {
+        match: {
+          params: {},
+        },
+      }
+
+      // when
+      const mergedProps = mergeProps(stateProps, dispatchProps, ownProps)
+
+      // then
+      expect(mergedProps).toStrictEqual({
+        match: ownProps.match,
+        trackCreateOffer: expect.any(Function),
+        trackModifyOffer: expect.any(Function),
+      })
+    })
+
+    it('should map a tracking event for creating a venue', () => {
+      // given
+      const stateProps = {}
+      const ownProps = {
+        tracking: {
+          trackEvent: jest.fn(),
+        },
+      }
+      // when
+      mergeProps(stateProps, {}, ownProps).trackCreateOffer('RTgfd67')
+
+      // then
+      expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
+        action: 'createOffer',
+        name: 'RTgfd67',
+      })
+    })
+
+    it('should map a tracking event for updating a venue', () => {
+      // given
+      const stateProps = {}
+      const ownProps = {
+        tracking: {
+          trackEvent: jest.fn(),
+        },
+      }
+      // when
+      mergeProps(stateProps, {}, ownProps).trackModifyOffer('RTgfd67')
+
+      // then
+      expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
+        action: 'modifyOffer',
+        name: 'RTgfd67',
       })
     })
   })

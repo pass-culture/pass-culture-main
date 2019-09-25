@@ -90,7 +90,24 @@ export const mapStateToProps = (state, ownProps) => {
   }
 }
 
+export const mergeProps = (stateProps, dispatchProps, ownProps) => {
+  return {
+    ...stateProps,
+    ...dispatchProps,
+    ...ownProps,
+    trackCreateOffer: createdOfferId => {
+      ownProps.tracking.trackEvent({ action: 'createOffer', name: createdOfferId })
+    },
+    trackModifyOffer: offerId => {
+      ownProps.tracking.trackEvent({ action: 'modifyOffer', name: offerId })
+    },
+  }
+}
+
 export default compose(
   withRequiredLogin,
-  connect(mapStateToProps)
+  connect(
+    mapStateToProps,
+    mergeProps
+  )
 )(Offer)

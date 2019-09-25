@@ -206,7 +206,8 @@ class Offer extends Component {
   handleChangeOnClick = query => () => query.changeToModification()
 
   onHandleFormSuccess = (state, action) => {
-    const { offer, query } = this.props
+    const { offer, query, trackCreateOffer, trackModifyOffer } = this.props
+
     const previousOfferId = offer && offer.id
     const {
       payload: { datum },
@@ -215,6 +216,14 @@ class Offer extends Component {
 
     const queryParams = previousOfferId ? {} : { gestion: '' }
     query.changeToReadOnly(queryParams, { id: offerId })
+
+    const { isCreatedEntity } = query.context({ id: offerId })
+
+    if (isCreatedEntity) {
+      trackCreateOffer(offerId)
+    } else {
+      trackModifyOffer(previousOfferId)
+    }
   }
 
   handleVenueRedirect = () => {
@@ -732,6 +741,8 @@ Offer.propTypes = {
   location: PropTypes.shape().isRequired,
   match: PropTypes.shape().isRequired,
   query: PropTypes.shape().isRequired,
+  trackCreateOffer: PropTypes.func.isRequired,
+  trackModifyOffer: PropTypes.func.isRequired,
   venues: PropTypes.arrayOf(PropTypes.shape()),
 }
 

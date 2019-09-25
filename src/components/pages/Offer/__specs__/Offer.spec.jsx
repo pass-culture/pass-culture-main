@@ -39,6 +39,8 @@ describe('src | components | pages | Offer | Offer ', () => {
       venues: [],
       product: {},
       history: {},
+      trackCreateOffer: jest.fn(),
+      trackModifyOffer: jest.fn(),
     }
   })
 
@@ -100,6 +102,8 @@ describe('src | components | pages | Offer | Offer ', () => {
           },
           dispatch: dispatch,
           history: {},
+          trackCreateOffer: jest.fn(),
+          trackModifyOffer: jest.fn(),
         }
 
         const wrapper = shallow(<Offer {...initialProps} />)
@@ -240,7 +244,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         // then
         const preview_section = wrapper.find(HeroSection)
         const preview_link = preview_section.find('.cta')
-        expect(preview_link.exists()).toBe(false)
+        expect(preview_link).toHaveLength(0)
       })
     })
 
@@ -518,6 +522,61 @@ describe('src | components | pages | Offer | Offer ', () => {
         const modifyOfferButton = wrapper.find('#modify-offer-button')
         expect(modifyOfferButton.prop('disabled')).toStrictEqual('')
       })
+    })
+  })
+
+  describe('event tracking', () => {
+    it('should track offer creation', () => {
+      // given
+      const state = {}
+
+      const action = {
+        payload: {
+          datum: {
+            id: 'Ty5645dgfd',
+          },
+        },
+      }
+      jest.spyOn(props.query, 'context').mockReturnValue({
+        isCreatedEntity: true,
+      })
+      const wrapper = shallow(<Offer {...props} />)
+
+      // when
+      wrapper.instance().onHandleFormSuccess(state, action)
+
+      // then
+      expect(props.trackCreateOffer).toHaveBeenCalledWith('Ty5645dgfd')
+    })
+
+    it('should track offer update', () => {
+      // given
+      const state = {}
+
+      props.offer = {
+        id: 'RTgYD45',
+      }
+
+      jest.spyOn(props.query, 'context').mockReturnValue({
+        isCreatedEntity: false,
+        isModifiedEntity: false,
+        readOnly: false,
+      })
+
+      const action = {
+        payload: {
+          datum: {
+            id: 'Ty5645dgfd',
+          },
+        },
+      }
+      const wrapper = shallow(<Offer {...props} />)
+
+      // when
+      wrapper.instance().onHandleFormSuccess(state, action)
+
+      // then
+      expect(props.trackModifyOffer).toHaveBeenCalledWith('RTgYD45')
     })
   })
 })

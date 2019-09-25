@@ -51,6 +51,8 @@ ShallowWrapper {
       }
     }
     selectedOfferType={Object {}}
+    trackCreateOffer={[MockFunction]}
+    trackModifyOffer={[MockFunction]}
     venues={Array []}
   />,
   Symbol(enzyme.__renderer__): Object {
