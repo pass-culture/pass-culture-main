@@ -59,9 +59,11 @@ OFFER_INCLUDES = [
     "isDigital",
     "isThing",
     "stockAlertMessage",
+    "lastProvider",
     {
         "key": "product",
         "includes": [
+            'thumbUrl',
             'offerType',
             '-type'
         ]

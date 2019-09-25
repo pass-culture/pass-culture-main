@@ -1,4 +1,3 @@
-
 from sqlalchemy import Binary, CheckConstraint, Column, Integer
 
 from utils.human_ids import humanize
