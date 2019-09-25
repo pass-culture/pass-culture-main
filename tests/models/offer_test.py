@@ -394,7 +394,7 @@ class AddStockAlertMessageToOfferTest:
             assert result == 'plus de places pour 3 offres'
 
         @clean_database
-        def test_check_offer_with_usesd_stocks_before_stock_last_update(self, app):
+        def test_check_offer_with_used_stocks_before_stock_last_update(self, app):
             # given
             user = create_user(email='user@test.com')
             user2 = create_user(email='user2@test.com')

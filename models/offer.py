@@ -5,6 +5,7 @@ from sqlalchemy import and_, ARRAY, Boolean, CheckConstraint, false, Integer, Te
 from sqlalchemy.orm import column_property, relationship
 from sqlalchemy.sql import select, func
 
+from domain.bookings import filter_bookings_to_compute_remaining_stock
 from domain.keywords import create_ts_vector_and_table_args
 from models import ExtraDataMixin
 from models.criterion import Criterion
@@ -165,12 +166,7 @@ class Offer(PcObject,
         total_booked_quantity = 0
 
         for stock in bookable_stocks:
-            bookings = filter(lambda b: not b.isCancelled
-                                        and not b.isUsed
-                                        or (b.isUsed
-                                            and b.dateUsed
-                                            and b.dateUsed >= stock.dateModified),
-                              stock.bookings)
+            bookings = filter_bookings_to_compute_remaining_stock(stock)
             total_booked_quantity += sum(map(lambda s: s.quantity, bookings))
 
         available_stocks = sum(map(lambda s: s.available if s.isBookable else 0, self.stocks))
