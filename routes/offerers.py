@@ -58,7 +58,8 @@ def list_offerers():
                                 order_by=Offerer.name,
                                 includes=OFFERER_INCLUDES,
                                 paginate=10,
-                                page=request.args.get('page'))
+                                page=request.args.get('page'),
+                                with_total_data_count=True)
 
 
 @app.route('/offerers/<id>', methods=['GET'])

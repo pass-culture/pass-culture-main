@@ -119,8 +119,8 @@ def check_order_by(order_by):
             check_single_order_by_string(part)
 
 
-def handle_rest_get_list(modelClass, query=None, refine=None, order_by=None, flask_request=None, includes=(),
-                         print_elements=None, paginate=None, page=None, populate=None):
+def handle_rest_get_list(modelClass, query=None, headers=None, refine=None, order_by=None, flask_request=None, includes=(),
+                         print_elements=None, paginate=None, page=None, populate=None, with_total_data_count=False):
     if flask_request is None:
         flask_request = request
 
@@ -139,6 +139,11 @@ def handle_rest_get_list(modelClass, query=None, refine=None, order_by=None, fla
     if order_by:
         check_order_by(order_by)
         query = query_with_order_by(query, order_by)
+
+    # TOTAL_DATA COUNT
+    if with_total_data_count:
+        total_data_count = query.count()
+
     # PAGINATE
     if paginate:
         if page is not None:
@@ -157,8 +162,16 @@ def handle_rest_get_list(modelClass, query=None, refine=None, order_by=None, fla
     if print_elements:
         print(elements)
 
+    # RESPONSE
+    response = jsonify(elements)
+
+    # HEADERS
+    if with_total_data_count:
+        response.headers['Access-Control-Expose-Headers'] = 'Total-Data-Count'
+        response.headers['Total-Data-Count'] = with_total_data_count
+
     # RETURN
-    return jsonify(elements), 200
+    return response, 200
 
 
 def ensure_provider_can_update(obj):

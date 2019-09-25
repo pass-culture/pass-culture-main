@@ -38,8 +38,17 @@ def list_offers():
         keywords_string=request.args.get('keywords')
     )
 
-    return handle_rest_get_list(Offer, query=query, order_by='offer.id desc', includes=OFFER_INCLUDES, paginate=10,
-                                page=request.args.get('page'))
+    return handle_rest_get_list(Offer,
+        includes=OFFER_INCLUDES,
+        order_by='offer.id desc',
+        page=request.args.get('page'),
+        paginate=10,
+        query=query,
+        with_total_data_count=True
+    )
+
+
+
 
 
 @app.route('/offers/<id>', methods=['GET'])
