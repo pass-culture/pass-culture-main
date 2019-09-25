@@ -3,32 +3,19 @@ import get from 'lodash.get'
 import { Icon, pluralize } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import Dotdotdot from 'react-dotdotdot'
+import PropTypes from 'prop-types'
 import { NavLink } from 'react-router-dom'
-import { requestData } from 'redux-saga-data'
 
 import Price from '../../../layout/Price'
 import Thumb from '../../../layout/Thumb'
-import { offerNormalizer } from '../../../../utils/normalizers'
-import PropTypes from 'prop-types'
 
 class OfferItem extends Component {
   handleOnDeactivateClick = () => {
-    const { dispatch, offer } = this.props
+    const { offer, updateOffer, trackActivateOffer, trackDeactivateOffer } = this.props
     const { id, isActive } = offer || {}
+    updateOffer(id, !isActive)
 
-    dispatch(
-      requestData({
-        apiPath: `/offers/${id}`,
-        body: {
-          isActive: !isActive,
-        },
-        isMergingDatum: true,
-        isMutatingDatum: true,
-        isMutaginArray: false,
-        method: 'PATCH',
-        normalizer: offerNormalizer,
-      })
-    )
+    isActive ? trackDeactivateOffer(id) : trackActivateOffer(id)
   }
 
   buildNumberOfParticipantsLabel = (groupSizeMin, groupSizeMax) => {
@@ -230,6 +217,9 @@ OfferItem.propTypes = {
   product: PropTypes.shape().isRequired,
   stockAlertMessage: PropTypes.string.isRequired,
   stocks: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  trackActivateOffer: PropTypes.func.isRequired,
+  trackDeactivateOffer: PropTypes.func.isRequired,
+  updateOffer: PropTypes.func.isRequired,
   venue: PropTypes.shape().isRequired,
 }
 

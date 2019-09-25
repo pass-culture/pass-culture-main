@@ -9,7 +9,7 @@ import selectOffersByOffererIdAndVenueId from '../../../selectors/selectOffersBy
 import selectVenueById from '../../../selectors/selectVenueById'
 import { translateQueryParamsToApiParams } from '../../../utils/translate'
 
-export function mapStateToProps(state, ownProps) {
+export const mapStateToProps = (state, ownProps) => {
   const { query } = ownProps
   const queryParams = query.parse()
   const apiQueryParams = translateQueryParamsToApiParams(queryParams)

@@ -68,6 +68,9 @@ ShallowWrapper {
     product={Object {}}
     stockAlertMessage="fake alert message"
     stocks={Array []}
+    trackActivateOffer={[MockFunction]}
+    trackDeactivateOffer={[MockFunction]}
+    updateOffer={[MockFunction]}
     venue={
       Object {
         "name": "Paris",

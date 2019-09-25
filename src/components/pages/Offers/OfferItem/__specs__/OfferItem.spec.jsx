@@ -10,21 +10,20 @@ import OfferItem from '../OfferItem'
 import offersMock from '../../__specs__/offersMock'
 
 describe('src | components | pages | Offers | OfferItem', () => {
-  let dispatch = jest.fn()
   let props
 
   beforeEach(() => {
     props = {
       aggregatedStock: {},
-      dispatch: dispatch,
+      dispatch: jest.fn(),
+      offer: offersMock[0],
+      mediations: [{ id: 'HA', isActive: true, thumbUrl: 'https://url.to/thumb' }],
       location: {
         search: '?orderBy=offer.id+desc',
       },
       maxDate: {
         format: jest.fn(),
       },
-      mediations: [{ id: 'HA', isActive: true, thumbUrl: 'https://url.to/thumb' }],
-      offer: offersMock[0],
       offerTypeLabel: 'fake label',
       offerer: {},
       product: {},
@@ -33,6 +32,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
       venue: {
         name: 'Paris',
       },
+      trackActivateOffer: jest.fn(),
+      trackDeactivateOffer: jest.fn(),
+      updateOffer: jest.fn(),
     }
   })
 
@@ -47,36 +49,16 @@ describe('src | components | pages | Offers | OfferItem', () => {
   })
 
   describe('click on "disable" button', () => {
-    it('should dispatch an action with the correct payload', () => {
+    it('should activate or deactivate offer', () => {
       // given
       const wrapper = shallow(<OfferItem {...props} />)
       const disableButton = wrapper.find('button')
-      const expectedParams = {
-        config: {
-          apiPath: '/offers/M4',
-          body: { isActive: false },
-          isMergingDatum: true,
-          isMutaginArray: false,
-          isMutatingDatum: true,
-          method: 'PATCH',
-          normalizer: {
-            mediations: 'mediations',
-            product: { normalizer: { offers: 'offers' }, stateKey: 'products' },
-            stocks: 'stocks',
-            venue: {
-              normalizer: { managingOfferer: 'offerers' },
-              stateKey: 'venues',
-            },
-          },
-        },
-        type: 'REQUEST_DATA_PATCH_/OFFERS/M4',
-      }
 
       // when
       disableButton.simulate('click')
 
       // then
-      expect(dispatch.mock.calls[0][0]).toStrictEqual(expectedParams)
+      expect(props.updateOffer).toHaveBeenCalledWith('M4', false)
     })
   })
 
@@ -506,6 +488,39 @@ describe('src | components | pages | Offers | OfferItem', () => {
         expect(navLinkComponent.prop('to')).toBe('/offres/1M?gestion')
         expect(navLinkComponent.text()).toBe('1 prix')
       })
+    })
+  })
+
+  describe('event tracking', () => {
+    it('should track deactivate offer when offer is active', () => {
+      // given
+      props.offer = {
+        id: 'Xvgty46d',
+        isActive: true,
+      }
+
+      const wrapper = shallow(<OfferItem {...props} />)
+
+      // when
+      wrapper.instance().handleOnDeactivateClick()
+
+      // then
+      expect(props.trackDeactivateOffer).toHaveBeenCalledWith('Xvgty46d')
+    })
+
+    it('should track activate offer when offer is inactive', () => {
+      // given
+      props.offer = {
+        id: 'FG674FR',
+        isActive: false,
+      }
+      const wrapper = shallow(<OfferItem {...props} />)
+
+      // when
+      wrapper.instance().handleOnDeactivateClick()
+
+      // then
+      expect(props.trackActivateOffer).toHaveBeenCalledWith('FG674FR')
     })
   })
 })
