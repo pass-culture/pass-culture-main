@@ -33,7 +33,7 @@ def test_beginning_datetime_cannot_be_after_end_datetime(app):
 
 
 @clean_database
-def test_date_modified_should_be_updated_on_save(app):
+def test_date_modified_should_be_updated_if_available_changed(app):
     # given
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -49,6 +49,25 @@ def test_date_modified_should_be_updated_on_save(app):
     # then
     stock = Stock.query.first()
     assert stock.dateModified.timestamp() == approx(datetime.now().timestamp())
+
+
+@clean_database
+def test_date_modified_should_not_be_updated_if_price_changed(app):
+    # given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_offer_with_thing_product(venue)
+    stock = create_stock(offer=offer, date_modified=datetime(2018, 2, 12), available=1, price=1)
+    PcObject.save(stock)
+
+    # when
+    stock = Stock.query.first()
+    stock.price = 5
+    PcObject.save(stock)
+
+    # then
+    stock = Stock.query.first()
+    assert stock.dateModified == datetime(2018, 2, 12)
 
 
 @clean_database

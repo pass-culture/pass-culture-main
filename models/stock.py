@@ -172,7 +172,9 @@ Stock.trig_update_date_ddl = """
     CREATE OR REPLACE FUNCTION save_stock_modification_date()
     RETURNS TRIGGER AS $$
     BEGIN
-      NEW."dateModified" = NOW();
+      IF NEW.available != OLD.available THEN
+        NEW."dateModified" = NOW();
+      END IF;
       RETURN NEW;
     END;
     $$ LANGUAGE plpgsql;
