@@ -126,38 +126,6 @@ describe('src | components | MonPassCulture', () => {
       expect(physicalElement.text()).toBe(expected)
     })
 
-    it('render with invalid wallet balance', () => {
-      // given
-      const props = {
-        currentUser: {
-          expenses: {
-            digital: { actual: 120, max: 200 },
-            physical: { actual: 140, max: 200 },
-          },
-          wallet_balance: null,
-        },
-      }
-
-      // when
-      const wrapper = shallow(<MonPassCulture {...props} />)
-      const walletElement = wrapper.find(walletId)
-      const digitalElement = wrapper.find(digitalId)
-      const physicalElement = wrapper.find(physicalId)
-
-      // then
-      let expected = `Il reste -- €`
-      let text = walletElement.text()
-      expect(text).toBe(expected)
-
-      expected = `Jusqu’à -- € pour les offres numériques`
-      text = digitalElement.text()
-      expect(text).toBe(expected)
-
-      expected = `Jusqu’à -- € pour les biens culturels`
-      text = physicalElement.text()
-      expect(text).toBe(expected)
-    })
-
     it('should render end validity date', () => {
       // given
       const props = {

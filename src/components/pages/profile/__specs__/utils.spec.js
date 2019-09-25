@@ -2,58 +2,6 @@ import { getAvailableBalanceByType } from '../utils'
 
 describe('src | components | pages | profile | utils', () => {
   describe('getAvailableBalanceByType', () => {
-    it('returns a placeholder string if missing wallet balance', () => {
-      // given
-      const wallet = null
-      const expense = { actual: 0, max: 0 }
-
-      // then
-      const result = getAvailableBalanceByType(wallet)(expense)
-
-      // when
-      const expected = '--'
-      expect(result).toStrictEqual(expected)
-    })
-
-    it('returns a placeholder string if missing max', () => {
-      // given
-      const wallet = 0
-      const expense = { actual: 0, max: null }
-
-      // then
-      const result = getAvailableBalanceByType(wallet)(expense)
-
-      // when
-      const expected = '--'
-      expect(result).toStrictEqual(expected)
-    })
-
-    it('returns a placeholder string if missing actual', () => {
-      // given
-      const wallet = 0
-      const expense = { actual: null, max: 0 }
-
-      // then
-      const result = getAvailableBalanceByType(wallet)(expense)
-
-      // when
-      const expected = '--'
-      expect(result).toStrictEqual(expected)
-    })
-
-    it('returns minimum values between wallet and expense', () => {
-      // given
-      const wallet = 0
-      const expense = { actual: 0, max: 0 }
-
-      // then
-      const result = getAvailableBalanceByType(wallet)(expense)
-
-      // when
-      const expected = 0
-      expect(result).toStrictEqual(expected)
-    })
-
     it('returns wallet balance if lower than max - actual', () => {
       // given
       const wallet = 100
@@ -63,8 +11,7 @@ describe('src | components | pages | profile | utils', () => {
       const result = getAvailableBalanceByType(wallet)(expense)
 
       // when
-      const expected = 100
-      expect(result).toStrictEqual(expected)
+      expect(result).toStrictEqual('100')
     })
 
     it('returns max - actual if lower than wallet balance', () => {
@@ -76,11 +23,10 @@ describe('src | components | pages | profile | utils', () => {
       const result = getAvailableBalanceByType(wallet)(expense)
 
       // when
-      const expected = 110
-      expect(result).toStrictEqual(expected)
+      expect(result).toStrictEqual('110')
     })
 
-    it('should return only two decimals', () => {
+    it('it returns a balance with a maximum of two decimals when has decimal figures', () => {
       // given
       const wallet = 231.38
       const expense = { actual: 154.82, max: 200 }
@@ -89,7 +35,19 @@ describe('src | components | pages | profile | utils', () => {
       const result = getAvailableBalanceByType(wallet)(expense)
 
       // when
-      expect(result).toBe(45.18)
+      expect(result).toBe('45.18')
+    })
+
+    it('returns exactly two decimals when balance has one decimal figure', () => {
+      // given
+      const wallet = 231.38
+      const expense = { actual: 154.8, max: 200 }
+
+      // then
+      const result = getAvailableBalanceByType(wallet)(expense)
+
+      // when
+      expect(result).toBe('45.20')
     })
   })
 })
