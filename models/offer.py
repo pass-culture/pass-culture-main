@@ -19,6 +19,7 @@ from models.venue import Venue
 from utils.date import DateTimes
 from utils.inflect_engine import pluralize
 
+
 class Offer(PcObject,
             Model,
             ExtraDataMixin,
@@ -161,14 +162,19 @@ class Offer(PcObject,
             return False
 
         bookable_stocks = list(filter(lambda s: s.isBookable, self.stocks))
-        total_quantity = 0
+        total_booked_quantity = 0
 
         for stock in bookable_stocks:
-            bookings = filter(lambda b: not b.isCancelled and (b.dateUsed and b.dateUsed >= stock.dateModified), stock.bookings)
-            total_quantity += sum(map(lambda s: s.quantity, bookings))
+            bookings = filter(lambda b: not b.isCancelled
+                                        and not b.isUsed
+                                        or (b.isUsed
+                                            and b.dateUsed
+                                            and b.dateUsed >= stock.dateModified),
+                              stock.bookings)
+            total_booked_quantity += sum(map(lambda s: s.quantity, bookings))
 
         available_stocks = sum(map(lambda s: s.available if s.isBookable else 0, self.stocks))
-        return total_quantity >= available_stocks
+        return total_booked_quantity >= available_stocks
 
     @property
     def lastStock(self):

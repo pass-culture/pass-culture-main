@@ -243,7 +243,7 @@ def create_stock_from_event_occurrence(event_occurrence, price=10, available=10,
 
 
 def create_stock_from_offer(offer, price=10, available=10, soft_deleted=False, booking_limit_datetime=None,
-                            beginning_datetime=None, end_datetime=None):
+                            beginning_datetime=None, end_datetime=None, date_modified=datetime.utcnow()):
     stock = Stock()
     stock.offer = offer
     stock.price = price
@@ -252,6 +252,7 @@ def create_stock_from_offer(offer, price=10, available=10, soft_deleted=False, b
     stock.bookingLimitDatetime = booking_limit_datetime
     stock.beginningDatetime = beginning_datetime
     stock.endDatetime = end_datetime
+    stock.dateModified = date_modified
     return stock
 
 

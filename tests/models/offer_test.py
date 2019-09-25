@@ -101,8 +101,7 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=0)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(user2, stock, venue, recommendation, quantity=3,
-                                     date_used=datetime.utcnow() + timedelta(days=2))
+            booking = create_booking(user2, stock, venue, recommendation, quantity=3)
 
             PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
 
@@ -125,10 +124,8 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=10)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(user2, stock, venue, recommendation, quantity=3,
-                                     date_used=datetime.utcnow() + timedelta(days=2))
-            booking2 = create_booking(user2, stock2, venue, recommendation, quantity=10,
-                                      date_used=datetime.utcnow() + timedelta(days=2))
+            booking = create_booking(user2, stock, venue, recommendation, quantity=3)
+            booking2 = create_booking(user2, stock2, venue, recommendation, quantity=10)
 
             PcObject.save(booking, booking2, deposit, user, offer, stock, stock2, user2)
 
@@ -288,8 +285,7 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=0)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(user2, stock, venue, recommendation, quantity=3,
-                                     date_used=datetime.utcnow() + timedelta(days=2))
+            booking = create_booking(user2, stock, venue, recommendation, quantity=3)
 
             PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
 
@@ -312,10 +308,8 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=10)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(user2, stock, venue, recommendation, quantity=3,
-                                     date_used=datetime.utcnow() + timedelta(days=2))
-            booking2 = create_booking(user2, stock2, venue, recommendation, quantity=10,
-                                      date_used=datetime.utcnow() + timedelta(days=2))
+            booking = create_booking(user2, stock, venue, recommendation, quantity=3)
+            booking2 = create_booking(user2, stock2, venue, recommendation, quantity=10)
 
             PcObject.save(booking, booking2, deposit, user, offer, stock, stock2, user2)
 
@@ -398,6 +392,32 @@ class AddStockAlertMessageToOfferTest:
 
             # then
             assert result == 'plus de places pour 3 offres'
+
+        @clean_database
+        def test_check_offer_with_usesd_stocks_before_stock_last_update(self, app):
+            # given
+            user = create_user(email='user@test.com')
+            user2 = create_user(email='user2@test.com')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_offer_with_event_product(venue)
+            recommendation = create_recommendation(offer, user)
+
+            stock = create_stock_from_offer(offer, available=5, date_modified=datetime.utcnow())
+
+            deposit = create_deposit(user2, amount=500)
+            booking = create_booking(user2, stock, venue, recommendation,
+                                     quantity=5,
+                                     is_used=True,
+                                     date_used=datetime.utcnow() - timedelta(days=3))
+
+            PcObject.save(booking, deposit, user, offer, stock, user2)
+
+            # when
+            result = offer.stockAlertMessage
+
+            # then
+            assert result == 'encore 5 places'
 
 
 class BaseScoreTest:
