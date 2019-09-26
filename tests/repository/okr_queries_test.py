@@ -6,7 +6,7 @@ from models import PcObject, ThingType
 from models.db import db
 from repository.okr_queries import get_all_beneficiary_users_details, get_experimentation_session_column, \
     get_department_column, get_activation_date_column, get_typeform_filling_date, get_first_connection, \
-    get_first_booking, get_second_booking, get_booking_on_third_product_type_test
+    get_first_booking, get_second_booking, get_booking_on_third_product_type, get_last_recommendation
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_venue, create_offer_with_thing_product, create_stock, \
     create_booking, create_recommendation
@@ -50,31 +50,32 @@ class GetAllExperimentationUsersDetailsTest:
         PcObject.save(user1, booking_activation, recommendation, booking1, booking2, booking3)
         booking_activation.isUsed = True
         user2.needsToFillCulturalSurvey = False
-        PcObject.save(booking_activation, user2)
+        recommendation = create_recommendation(offer3, user2)
+        PcObject.save(booking_activation, user2, recommendation)
         date_after_changes = datetime.utcnow()
 
         # When
         experimentation_users = get_all_beneficiary_users_details()
 
         # Then
-        assert experimentation_users.shape == (2, 8)
+        assert experimentation_users.shape == (2, 9)
 
         assert experimentation_users.loc[0].equals(
             pandas.Series(
-                data=[2, "93", user1.dateCreated, pandas.NaT, pandas.NaT, pandas.NaT, pandas.NaT, pandas.NaT],
+                data=[2, "93", user1.dateCreated, pandas.NaT, pandas.NaT, pandas.NaT, pandas.NaT, pandas.NaT, pandas.NaT],
                 index=["Vague d'expérimentation", "Département", "Date d'activation", "Date de remplissage du typeform",
                        "Date de première connection", "Date de première réservation", "Date de deuxième réservation",
-                       "Date de première réservation dans 3 catégories différentes"]
+                       "Date de première réservation dans 3 catégories différentes", "Date de dernière recommandation"]
             )
         )
         assert experimentation_users.loc[
             1, ["Vague d'expérimentation", "Département", "Date de première connection", "Date de première réservation",
-                "Date de deuxième réservation", "Date de première réservation dans 3 catégories différentes"]].equals(
+                "Date de deuxième réservation", "Date de première réservation dans 3 catégories différentes", "Date de dernière recommandation"]].equals(
             pandas.Series(
-                data=[1, "08", datetime(2019, 2, 3), datetime(2019, 3, 7), datetime(2019, 4, 7), datetime(2019, 5, 7)],
+                data=[1, "08", datetime(2019, 2, 3), datetime(2019, 3, 7), datetime(2019, 4, 7), datetime(2019, 5, 7), recommendation.dateCreated],
                 index=["Vague d'expérimentation", "Département", "Date de première connection",
                        "Date de première réservation", "Date de deuxième réservation",
-                       "Date de première réservation dans 3 catégories différentes"]
+                       "Date de première réservation dans 3 catégories différentes", "Date de dernière recommandation"]
             )
         )
         assert beginning_test_date < experimentation_users.loc[1, "Date d'activation"] < date_after_changes
@@ -512,7 +513,7 @@ class GetBookingOnThirdProductTypeTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_booking_on_third_product_type_test(connection)
+        experimentation_users = get_booking_on_third_product_type(connection)
 
         # Then
         assert experimentation_users.loc[
@@ -540,7 +541,7 @@ class GetBookingOnThirdProductTypeTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_booking_on_third_product_type_test(connection)
+        experimentation_users = get_booking_on_third_product_type(connection)
 
         # Then
         assert experimentation_users.loc[user.id, 'Date de première réservation dans 3 catégories différentes'] is None
@@ -553,7 +554,58 @@ class GetBookingOnThirdProductTypeTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_booking_on_third_product_type_test(connection)
+        experimentation_users = get_booking_on_third_product_type(connection)
 
         # Then
         assert experimentation_users.empty
+
+
+class GetLastRecommendationTest:
+    @clean_database
+    def test_returns_max_recommandation_dateCreated_for_a_user_if_has_any_recommendation(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        recommendation1 = create_recommendation(offer, user)
+        PcObject.save(recommendation1)
+        date_after_first_recommendation = datetime.utcnow()
+        recommendation2 = create_recommendation(offer, user)
+        PcObject.save(recommendation2)
+        date_after_second_recommendation = datetime.utcnow()
+        connection = db.engine.connect()
+
+        # When
+        experimentation_users = get_last_recommendation(connection)
+
+        # Then
+        assert date_after_first_recommendation < experimentation_users.loc[
+            user.id, 'Date de dernière recommandation'] < date_after_second_recommendation
+
+    @clean_database
+    def test_returns_none_if_no_recommendation(self, app):
+        # Given
+        user = create_user()
+        PcObject.save(user)
+        connection = db.engine.connect()
+
+        # When
+        experimentation_users = get_last_recommendation(connection)
+
+        # Then
+        assert experimentation_users.loc[user.id, 'Date de dernière recommandation'] is None
+
+    @clean_database
+    def test_returns_empty_series_if_user_cannot_book_free_offers(self, app):
+        # Given
+        user = create_user(can_book_free_offers=False)
+        PcObject.save(user)
+        connection = db.engine.connect()
+
+        # When
+        experimentation_users = get_last_recommendation(connection)
+
+        # Then
+        assert experimentation_users.empty
+
