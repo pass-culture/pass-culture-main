@@ -93,7 +93,6 @@ ShallowWrapper {
                     svg="ico-offres-r"
                   />
                   Nouvelle offre
-                   
                 </NavLink>
               </li>
               <li>
@@ -184,7 +183,6 @@ ShallowWrapper {
                       svg="ico-offres-r"
                     />
                     Nouvelle offre
-                     
                   </NavLink>
                 </li>
                 <li>
@@ -285,7 +283,6 @@ ShallowWrapper {
                         svg="ico-offres-r"
                       />
                       Nouvelle offre
-                       
                     </NavLink>
                   </li>
                   <li>
@@ -342,7 +339,6 @@ ShallowWrapper {
                           svg="ico-offres-r"
                         />
                         Nouvelle offre
-                         
                       </NavLink>
                     </li>,
                     <li>
@@ -367,7 +363,6 @@ ShallowWrapper {
                           svg="ico-offres-r"
                         />
                         Nouvelle offre
-                         
                       </NavLink>,
                     },
                     "ref": null,
@@ -383,7 +378,6 @@ ShallowWrapper {
                             svg="ico-offres-r"
                           />,
                           "Nouvelle offre",
-                          " ",
                           undefined,
                         ],
                         "className": "has-text-primary",
@@ -403,7 +397,6 @@ ShallowWrapper {
                           "type": [Function],
                         },
                         "Nouvelle offre",
-                        " ",
                         undefined,
                       ],
                       "type": [Function],
@@ -663,7 +656,6 @@ ShallowWrapper {
                       svg="ico-offres-r"
                     />
                     Nouvelle offre
-                     
                   </NavLink>
                 </li>
                 <li>
@@ -754,7 +746,6 @@ ShallowWrapper {
                         svg="ico-offres-r"
                       />
                       Nouvelle offre
-                       
                     </NavLink>
                   </li>
                   <li>
@@ -855,7 +846,6 @@ ShallowWrapper {
                           svg="ico-offres-r"
                         />
                         Nouvelle offre
-                         
                       </NavLink>
                     </li>
                     <li>
@@ -912,7 +902,6 @@ ShallowWrapper {
                             svg="ico-offres-r"
                           />
                           Nouvelle offre
-                           
                         </NavLink>
                       </li>,
                       <li>
@@ -937,7 +926,6 @@ ShallowWrapper {
                             svg="ico-offres-r"
                           />
                           Nouvelle offre
-                           
                         </NavLink>,
                       },
                       "ref": null,
@@ -953,7 +941,6 @@ ShallowWrapper {
                               svg="ico-offres-r"
                             />,
                             "Nouvelle offre",
-                            " ",
                             undefined,
                           ],
                           "className": "has-text-primary",
@@ -973,7 +960,6 @@ ShallowWrapper {
                             "type": [Function],
                           },
                           "Nouvelle offre",
-                          " ",
                           undefined,
                         ],
                         "type": [Function],

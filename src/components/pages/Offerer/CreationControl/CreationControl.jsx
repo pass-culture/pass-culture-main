@@ -18,7 +18,9 @@ const CreationControl = ({ parseFormChild }) =>
         </NavLink>
       </div>
       <div className="control">
-        <SubmitButton className="button is-primary is-medium">{'Valider'}</SubmitButton>
+        <SubmitButton className="button is-primary is-medium">
+          {'Valider'}
+        </SubmitButton>
       </div>
     </div>,
     parseFormChild

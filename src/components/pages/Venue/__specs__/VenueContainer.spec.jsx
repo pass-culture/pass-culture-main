@@ -594,7 +594,7 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
       const state = {
         data: {
           offerers: [{ id: 1 }],
-          userOfferers: [{ offererId: 1, rights: 'RightsType.admin', userId: 1 }],
+          userOfferers: [{ offererId: 1, rights: 'admin', userId: 1 }],
           venues: [],
         },
         user: { email: 'john.doe@email.com' },
@@ -621,9 +621,10 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
       expect(result).toStrictEqual({
         adminUserOfferer: {
           offererId: 1,
-          rights: 'RightsType.admin',
+          rights: 'admin',
           userId: 1,
         },
+
         offerer: { id: 1 },
         formInitialValues: {
           bookingEmail: 'john.doe@email.com',

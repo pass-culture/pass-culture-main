@@ -12,12 +12,12 @@ const selectVenuesByOffererIdAndOfferType = createCachedSelector(
     let filteredVenues = venues
 
     if (optionalOffererId)
-      filteredVenues = filteredVenues.filter(v => v.managingOffererId === optionalOffererId)
+      filteredVenues = filteredVenues.filter(venue => venue.managingOffererId === optionalOffererId)
 
     if (optionalOfferType) {
-      if (optionalOfferType.offlineOnly) filteredVenues = filteredVenues.filter(v => !v.isVirtual)
+      if (optionalOfferType.offlineOnly) filteredVenues = filteredVenues.filter(venue => !venue.isVirtual)
       else if (optionalOfferType.onlineOnly)
-        filteredVenues = filteredVenues.filter(v => v.isVirtual)
+        filteredVenues = filteredVenues.filter(venue => venue.isVirtual)
     }
 
     return filteredVenues

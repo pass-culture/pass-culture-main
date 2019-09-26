@@ -963,7 +963,7 @@ const state = {
       {
         offererId: 'FE',
         userId: 'FE',
-        rights: 'RightsType.admin',
+        rights: 'admin',
       },
     ],
     venues: [

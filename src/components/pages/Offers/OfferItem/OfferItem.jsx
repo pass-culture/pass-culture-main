@@ -144,9 +144,10 @@ class OfferItem extends Component {
             <li>
               {maxDate && `jusqu’au ${maxDate.format('DD/MM/YYYY')}`}
             </li>
-            {stockAlertMessage && <li>
+            {stockAlertMessage &&
+            <li>
               {stockAlertMessage}
-                                  </li>}
+            </li>}
             <li>
               {priceMin === priceMax ? (
                 <Price value={priceMin || 0} />

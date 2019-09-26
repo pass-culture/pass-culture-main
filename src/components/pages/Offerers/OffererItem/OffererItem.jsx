@@ -18,7 +18,9 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
         </NavLink>
       </li>
     ) : (
-      <li>{'0 offre'}</li>
+      <li>
+        {'0 offre'}
+      </li>
     )
 
   const canCreateOnlyVirtualOffer = venues.length === 1 && venues[0].isVirtual
@@ -32,7 +34,8 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
           to={`/offres/creation?structure=${id}`}
         >
           <Icon svg="ico-offres-r" />
-          {'Nouvelle offre'} {canCreateOnlyVirtualOffer && 'numérique'}
+          {'Nouvelle offre'}
+          {canCreateOnlyVirtualOffer && 'numérique'}
         </NavLink>
       </li>
       {$offersCount}
@@ -54,9 +57,9 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
           className="has-text-primary"
           to={`/structures/${id}/`}
         >
-        <Icon svg="ico-venue" />
-        {pluralize(physicalVenues.length, 'lieux')}
-      </NavLink>
+          <Icon svg="ico-venue" />
+          {pluralize(physicalVenues.length, 'lieux')}
+        </NavLink>
       </li>
       <li>
         <NavLink
@@ -74,7 +77,9 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
     <li className="offerer-item">
       <div className="list-content">
         <p className="name">
-          <NavLink to={showPath}>{name}</NavLink>
+          <NavLink to={showPath}>
+            {name}
+          </NavLink>
         </p>
         {!isValidated && (
           <p

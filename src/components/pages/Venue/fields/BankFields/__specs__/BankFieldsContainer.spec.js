@@ -20,7 +20,7 @@ describe('src | components | pages | Venue | fields | BankFieldsContainer', () =
       expect(result).toStrictEqual({
         adminUserOfferer: {
           offererId: 'FE',
-          rights: 'RightsType.admin',
+          rights: 'admin',
           userId: 'FE',
         },
       })
