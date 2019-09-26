@@ -170,9 +170,8 @@ def handle_rest_get_list(modelClass, query=None, headers=None, refine=None, orde
 
     # HEADERS
     if with_total_data_count:
-        response.headers['Items-Per-Page-Count'] = paginate
         response.headers['Total-Data-Count'] = total_data_count
-        response.headers['Access-Control-Expose-Headers'] = 'Items-Per-Page-Count, Total-Data-Count'
+        response.headers['Access-Control-Expose-Headers'] = 'Total-Data-Count'
 
     # RETURN
     return response, 200
