@@ -19,6 +19,14 @@ class Results extends PureComponent {
     }
   }
 
+  componentDidMount() {
+    const { items } = this.props
+
+    if (items.length) {
+      this.handleSetHasReceivedFirstSuccessData()
+    }
+  }
+
   componentDidUpdate(prevProps) {
     const { items } = this.props
 
