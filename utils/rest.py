@@ -118,6 +118,9 @@ def check_order_by(order_by):
         for part in order_by.split(','):
             check_single_order_by_string(part)
 
+class Headers:
+    def add_header():
+
 
 def handle_rest_get_list(modelClass, query=None, headers=None, refine=None, order_by=None, flask_request=None, includes=(),
                          print_elements=None, paginate=None, page=None, populate=None, with_total_data_count=False):
@@ -167,8 +170,9 @@ def handle_rest_get_list(modelClass, query=None, headers=None, refine=None, orde
 
     # HEADERS
     if with_total_data_count:
-        response.headers['Access-Control-Expose-Headers'] = 'Total-Data-Count'
-        response.headers['Total-Data-Count'] = with_total_data_count
+        response.headers['Items-Per-Page-Count'] = paginate
+        response.headers['Total-Data-Count'] = total_data_count
+        response.headers['Access-Control-Expose-Headers'] = 'Items-Per-Page-Count, Total-Data-Count'
 
     # RETURN
     return response, 200
