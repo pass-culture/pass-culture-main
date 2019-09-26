@@ -1,27 +1,46 @@
-from sqlalchemy.orm.attributes import flag_modified
+from models import Product
+from models.db import db
 
-from models import Product, PcObject
+CHUNK_SIZE = 500
 
 
 def add_isbn_in_product_extra_data():
-    page = 0
-    has_more_result = True
+    product_index = 0
 
-    query = Product.query \
-        .filter(Product.idAtProviders != None) \
-        .filter(Product.lastProviderId != None) \
-        .filter(Product.extraData['isbn'] == None) \
-        .order_by(Product.id.desc())
+    connection = db.engine.connect()
+    number_of_products_in_base = connection.execute("""
+        SELECT MAX(id)
+        FROM product;
+    """).scalar()
+    print("%s products to check in base" % number_of_products_in_base)
 
-    while has_more_result:
-        products = query.paginate(page, per_page=1000, error_out=False).items
-        page += 1
-        if len(products) == 0:
-            has_more_result = False
+    while product_index <= number_of_products_in_base:
+        next_product_index = product_index + CHUNK_SIZE
+        products_to_update = connection.execute("""
+            SELECT *
+            FROM product
+            WHERE id > """ + str(product_index) + """
+            AND id <= """ + str(next_product_index) + """
+            AND type = 'ThingType.LIVRE_EDITION' 
+            AND "idAtProviders" IS NOT NULL
+            AND "extraData" IS NOT NULL
+            AND "extraData"::jsonb ->> 'isbn' IS NULL
+            ORDER BY id ASC;
+        """).fetchall()
 
-        for product in products:
-            product.extraData['isbn'] = product.idAtProviders
-            flag_modified(product, 'extraData')
+        for product_to_update in products_to_update:
+            product_to_update['extraData']['isbn'] = product_to_update['idAtProviders']
+            try:
+                connection = db.engine.connect()
+                statement = Product.__table__.update(). \
+                    where(Product.id == product_to_update['id']). \
+                    values(product_to_update)
+                connection.execute(statement)
+            except ValueError as e:
+                print('ERROR during object update: '
+                      + e.__class__.__name__ + ' ' + str(e))
 
-        print("Updating %s000 products" % page)
-        PcObject.save(*products)
+        product_index += CHUNK_SIZE
+        percentage_done = 100 * (min(product_index, number_of_products_in_base) / number_of_products_in_base)
+        print("%s percent checked" % percentage_done)
+    print("All products have been updated")

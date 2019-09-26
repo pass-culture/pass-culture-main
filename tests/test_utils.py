@@ -307,12 +307,16 @@ def create_product_with_thing_type(
         thumb_count=1,
         url=None,
         owning_offerer=None,
+        extra_data=None,
 ) -> Product:
     product = Product()
     product.type = str(thing_type)
     product.name = thing_name
     product.description = description
-    product.extraData = {'author': author_name}
+    if extra_data:
+        product.extraData = extra_data
+    else:
+        product.extraData = {'author': author_name}
     product.isNational = is_national
     if id_at_providers is None:
         id_at_providers = ''.join(random.choices(string.digits, k=13))
