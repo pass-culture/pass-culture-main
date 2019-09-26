@@ -2,6 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { NavLink } from 'react-router-dom'
 
+import { version } from '../../../../package.json'
+
 const EMPTY_FIELD_PLACEHOLDER = 'Non renseigné'
 
 class MesInformations extends React.PureComponent {
@@ -58,6 +60,7 @@ class MesInformations extends React.PureComponent {
           {'Mes Informations'}
         </h3>
         <div className="px12 pc-list">{fields.map(this.renderInformation)}</div>
+        <div className="app-version">{`v${version}`}</div>
       </div>
     )
   }
