@@ -5,7 +5,8 @@ import pandas
 from models import PcObject, ThingType
 from models.db import db
 from repository.okr_queries import get_all_beneficiary_users_details, get_experimentation_session_column, \
-    get_department_column, get_activation_date_column, get_typeform_filling_date, get_first_connection
+    get_department_column, get_activation_date_column, get_typeform_filling_date, get_first_connection, \
+    get_first_booking
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_venue, create_offer_with_thing_product, create_stock, \
     create_booking, create_recommendation
@@ -32,33 +33,34 @@ class GetAllExperimentationUsersDetailsTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         activation_offer = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
-        stock = create_stock(offer=activation_offer, price=0)
-        booking = create_booking(user2, stock, is_used=False)
+        stock_activation = create_stock(offer=activation_offer, price=0)
+        booking_activation = create_booking(user2, stock_activation, is_used=False)
         offer = create_offer_with_thing_product(venue)
         recommendation = create_recommendation(offer, user2, date_created=datetime(2019, 2, 3))
-        PcObject.save(user1, booking, recommendation)
-        booking.isUsed = True
+        stock = create_stock(price=0, offer=offer)
+        booking = create_booking(user2, stock, date_created=datetime(2019, 3, 7))
+        PcObject.save(user1, booking_activation, recommendation, booking)
+        booking_activation.isUsed = True
         user2.needsToFillCulturalSurvey = False
-        PcObject.save(booking, user2)
+        PcObject.save(booking_activation, user2)
         date_after_changes = datetime.utcnow()
 
         # When
         experimentation_users = get_all_beneficiary_users_details()
 
         # Then
-        print(experimentation_users)
-        assert experimentation_users.shape == (2, 5)
+        assert experimentation_users.shape == (2, 6)
 
         assert experimentation_users.loc[0].equals(
             pandas.Series(
-                data=[2, "93", user1.dateCreated, pandas.NaT, pandas.NaT],
-                index=["Vague d'expérimentation", "Département", "Date d'activation", "Date de remplissage du typeform", "Date de première connection"]
+                data=[2, "93", user1.dateCreated, pandas.NaT, pandas.NaT, pandas.NaT],
+                index=["Vague d'expérimentation", "Département", "Date d'activation", "Date de remplissage du typeform", "Date de première connection", "Date de première réservation"]
             )
         )
-        assert experimentation_users.loc[1, ["Vague d'expérimentation", "Département", "Date de première connection"]].equals(
+        assert experimentation_users.loc[1, ["Vague d'expérimentation", "Département", "Date de première connection", "Date de première réservation"]].equals(
             pandas.Series(
-                data=[1, "08", datetime(2019, 2, 3)],
-                index=["Vague d'expérimentation", "Département", "Date de première connection"]
+                data=[1, "08", datetime(2019, 2, 3), datetime(2019, 3, 7)],
+                index=["Vague d'expérimentation", "Département", "Date de première connection", "Date de première réservation"]
             )
         )
         assert beginning_test_date < experimentation_users.loc[1, "Date d'activation"] < date_after_changes
@@ -319,6 +321,72 @@ class GetFirstConnectionTest:
 
         # When
         experimentation_users = get_first_connection(connection)
+
+        # Then
+        assert experimentation_users.empty
+
+class GetFirstBookingTest:
+    @clean_database
+    def test_returns_booking_date_created_if_user_has_booked(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+        first_booking_date = datetime(2019, 9, 19, 12, 0, 0)
+        booking = create_booking(user, stock, date_created=first_booking_date)
+        PcObject.save(booking)
+        connection = db.engine.connect()
+
+        # When
+        experimentation_users = get_first_booking(connection)
+
+        # Then
+        assert experimentation_users.loc[user.id, 'Date de première réservation'] == first_booking_date
+
+    @clean_database
+    def test_returns_none_if_user_has_not_booked(self, app):
+        # Given
+        user = create_user()
+        PcObject.save(user)
+        connection = db.engine.connect()
+
+        # When
+        experimentation_users = get_first_booking(connection)
+
+        # Then
+        print(experimentation_users)
+        assert experimentation_users.loc[user.id, 'Date de première réservation'] is None
+
+    @clean_database
+    def test_returns_none_if_booking_on_activation_offer(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue, thing_type='ThingType.ACTIVATION')
+        stock = create_stock(offer=offer, price=0)
+        first_booking_date = datetime(2019, 9, 19, 12, 0, 0)
+        booking = create_booking(user, stock, date_created=first_booking_date)
+        PcObject.save(booking)
+        connection = db.engine.connect()
+
+        # When
+        experimentation_users = get_first_booking(connection)
+
+        # Then
+        assert experimentation_users.loc[user.id, 'Date de première réservation'] is None
+
+    @clean_database
+    def test_returns_empty_series_if_user_cannot_book_free_offers(self, app):
+        # Given
+        user = create_user(can_book_free_offers=False)
+        PcObject.save(user)
+        connection = db.engine.connect()
+
+        # When
+        experimentation_users = get_first_booking(connection)
 
         # Then
         assert experimentation_users.empty
