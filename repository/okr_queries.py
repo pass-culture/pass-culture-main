@@ -10,7 +10,8 @@ def get_all_beneficiary_users_details():
         [
             get_experimentation_session_column(connection),
             get_department_column(connection),
-            get_activation_date_column(connection)
+            get_activation_date_column(connection),
+            get_typeform_filling_date(connection)
         ],
         axis=1
     )
@@ -84,3 +85,23 @@ def get_activation_date_column(connection):
     '''
     return pandas.read_sql(query, connection, index_col='user_id')
 
+
+def get_typeform_filling_date(connection):
+    query = '''
+    WITH typeform_filled AS (
+        SELECT activity.issued_at, "user".id AS user_id, "user"."canBookFreeOffers"
+        FROM "user" 
+        LEFT JOIN "activity"    
+         ON (activity.old_data ->> 'id')::int = "user".id  
+         AND activity.table_name='user'    
+         AND activity.verb='update'    
+         AND activity.changed_data ->> 'needsToFillCulturalSurvey'='false'
+      )
+      
+    SELECT 
+     typeform_filled.issued_at AS "Date de remplissage du typeform",
+     typeform_filled.user_id AS user_id
+    FROM typeform_filled
+    WHERE typeform_filled."canBookFreeOffers"
+    '''
+    return pandas.read_sql(query, connection, index_col='user_id')

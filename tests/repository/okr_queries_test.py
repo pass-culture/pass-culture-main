@@ -5,7 +5,7 @@ import pandas
 from models import PcObject, ThingType
 from models.db import db
 from repository.okr_queries import get_all_beneficiary_users_details, get_experimentation_session_column, \
-    get_department_column, get_activation_date_column
+    get_department_column, get_activation_date_column, get_typeform_filling_date_test
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_venue, create_offer_with_thing_product, create_stock, \
     create_booking
@@ -27,8 +27,8 @@ class GetAllExperimentationUsersDetailsTest:
     def test_should_return_values_for_users_who_can_book_free_offers(self, app):
         # Given
         beginning_test_date = datetime.now()
-        user1 = create_user(can_book_free_offers=True, departement_code='93', date_created=datetime(2019, 1, 1, 12, 0, 0))
-        user2 = create_user(can_book_free_offers=True, departement_code='08', email='em@a.il')
+        user1 = create_user(can_book_free_offers=True, departement_code='93', date_created=datetime(2019, 1, 1, 12, 0, 0), needs_to_fill_cultural_survey=True)
+        user2 = create_user(can_book_free_offers=True, departement_code='08', email='em@a.il', needs_to_fill_cultural_survey=True)
         offerer = create_offerer()
         venue = create_venue(offerer)
         activation_offer = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
@@ -36,20 +36,22 @@ class GetAllExperimentationUsersDetailsTest:
         booking = create_booking(user2, stock, is_used=False)
         PcObject.save(user1, booking)
         booking.isUsed = True
-        PcObject.save(booking)
-        date_after_used = datetime.utcnow()
+        user2.needsToFillCulturalSurvey = False
+        PcObject.save(booking, user2)
+        date_after_changes = datetime.utcnow()
 
         # When
         experimentation_users = get_all_beneficiary_users_details()
 
         # Then
-        assert experimentation_users.shape == (2, 3)
+        assert experimentation_users.shape == (2, 4)
 
         assert experimentation_users.loc[0].equals(
-            pandas.Series(data=[2, "93", user1.dateCreated], index=["Vague d'expérimentation", "Département", "Date d'activation"]))
+            pandas.Series(data=[2, "93", user1.dateCreated, pandas.NaT], index=["Vague d'expérimentation", "Département", "Date d'activation", "Date de remplissage du typeform"]))
         assert experimentation_users.loc[1, ["Vague d'expérimentation", "Département"]].equals(
             pandas.Series(data=[1, "08"], index=["Vague d'expérimentation", "Département"]))
-        assert beginning_test_date < experimentation_users.loc[1, "Date d'activation"] < date_after_used
+        assert beginning_test_date < experimentation_users.loc[1, "Date d'activation"] < date_after_changes
+        assert beginning_test_date < experimentation_users.loc[1, "Date de remplissage du typeform"] < date_after_changes
 
 
 class GetExperimentationSessionColumnTest:
@@ -217,3 +219,50 @@ class GetActivationDateColumnTest:
 
         # Then
         assert experimentation_users['Date d\'activation'].empty
+
+class GetTypeformFillingDateTest:
+    @clean_database
+    def test_returns_date_when_has_filled_cultural_survey_was_updated_to_false(self, app):
+        # Given
+        beginning_test_date = datetime.utcnow()
+        user = create_user(needs_to_fill_cultural_survey=True)
+        PcObject.save(user)
+        user.needsToFillCulturalSurvey = False
+        PcObject.save(user)
+        date_after_used = datetime.utcnow()
+        connection = db.engine.connect()
+
+        # When
+        experimentation_users = get_typeform_filling_date_test(connection)
+
+        # Then
+        assert beginning_test_date < experimentation_users.loc[
+            user.id, 'Date de remplissage du typeform'] < date_after_used
+
+    @clean_database
+    def test_returns_none_when_has_filled_cultural_survey_never_updated_to_false(self, app):
+        # Given
+        user = create_user(needs_to_fill_cultural_survey=True)
+        PcObject.save(user)
+        connection = db.engine.connect()
+
+
+        # When
+        experimentation_users = get_typeform_filling_date_test(connection)
+
+        # Then
+        assert experimentation_users.loc[user.id, 'Date de remplissage du typeform'] is None
+
+    @clean_database
+    def test_returns_empty_series_if_user_cannot_book_free_offers(self, app):
+        # Given
+        user = create_user(can_book_free_offers=False)
+        PcObject.save(user)
+        connection = db.engine.connect()
+
+
+        # When
+        experimentation_users = get_typeform_filling_date_test(connection)
+
+        # Then
+        assert experimentation_users.empty
