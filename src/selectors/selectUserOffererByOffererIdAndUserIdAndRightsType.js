@@ -14,7 +14,7 @@ const selectUserOffererByOffererIdAndUserIdAndRightsType = createCachedSelector(
       userOfferer =>
         userOfferer.offererId === offererId &&
         userOfferer.userId === userId &&
-        userOfferer.rights === `RightsType.${rightsType}`
+        userOfferer.rights === rightsType
     )
   }
 )(mapArgsToCacheKey)

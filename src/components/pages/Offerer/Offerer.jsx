@@ -1,6 +1,7 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
 import { Field, Form } from 'pass-culture-shared'
+import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
 import CreationControl from './CreationControl/CreationControl'
@@ -8,7 +9,7 @@ import ModificationControl from './ModificationControl/ModificationControl'
 import HeroSection from '../../layout/HeroSection/HeroSection'
 import Main from '../../layout/Main'
 import { formatPatch } from '../../../utils/formatPatch'
-import PropTypes from 'prop-types'
+import Venues from './Venues/Venues'
 
 const OFFERER_CREATION_PATCH_KEYS = ['address', 'city', 'name', 'siren', 'postalCode']
 const OFFERER_MODIFICATION_PATCH_KEYS = ['bic', 'iban', 'rib']
@@ -41,11 +42,16 @@ class Offerer extends Component {
 
   onHandleSuccess = (state, action) => {
     const { payload } = action
+    const { offererId } = this.props
     const CreatedOffererId = payload.id
-    const { history, query, showNotification, trackCreateOffererSuccess } = this.props
+    const { history, query, showNotification, trackCreateOfferer, trackModifyOfferer } = this.props
     const { isCreatedEntity } = query.context()
 
-    trackCreateOffererSuccess(CreatedOffererId)
+    if (isCreatedEntity) {
+      trackCreateOfferer(CreatedOffererId)
+    } else {
+      trackModifyOfferer(offererId)
+    }
 
     history.push('/structures')
 
@@ -62,7 +68,7 @@ class Offerer extends Component {
     formatPatch(patch, patchConfig, OFFERER_CREATION_PATCH_KEYS, OFFERER_MODIFICATION_PATCH_KEYS)
 
   render() {
-    const { adminUserOfferer, offerer, offererName, query } = this.props
+    const { adminUserOfferer, offerer, offererId, offererName, query, venues } = this.props
     const { isCreatedEntity, isModifiedEntity, readOnly } = query.context()
     const areSirenFieldsVisible = get(offerer, 'id') || offererName
     const areBankInfosReadOnly = readOnly || !adminUserOfferer
@@ -166,6 +172,12 @@ class Offerer extends Component {
               />
             </div>
             {isCreatedEntity ? <CreationControl /> : <ModificationControl {...this.props} />}
+            <div>
+              {!isCreatedEntity && <Venues
+                offererId={offererId}
+                venues={venues}
+                                   />}
+            </div>
           </div>
         </Form>
       </Main>
@@ -180,10 +192,12 @@ Offerer.propTypes = {
   history: PropTypes.shape().isRequired,
   match: PropTypes.shape().isRequired,
   offerer: PropTypes.shape().isRequired,
+  offererId: PropTypes.string.isRequired,
   offererName: PropTypes.string.isRequired,
   query: PropTypes.shape().isRequired,
   showNotification: PropTypes.func.isRequired,
-  trackCreateOffererSuccess: PropTypes.func.isRequired,
+  trackCreateOfferer: PropTypes.func.isRequired,
+  trackModifyOfferer: PropTypes.func.isRequired,
 }
 
 export default Offerer

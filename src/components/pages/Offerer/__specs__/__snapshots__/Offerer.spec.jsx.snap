@@ -23,9 +23,12 @@ ShallowWrapper {
       Object {
         "bic": "ABC",
         "iban": "DEF",
+        "id": "AA",
       }
     }
+    offererId="AA"
     offererName="fake offerer name"
+    parseFormChild={[MockFunction]}
     query={
       Object {
         "context": [MockFunction] {
@@ -46,7 +49,9 @@ ShallowWrapper {
       }
     }
     showNotification={[MockFunction]}
-    trackCreateOffererSuccess={[MockFunction]}
+    trackCreateOfferer={[MockFunction]}
+    trackModifyOfferer={[MockFunction]}
+    venues={Array []}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -80,7 +85,7 @@ ShallowWrapper {
         <withRouter(Connect(_Form))
           BlockComponent={null}
           Tag="form"
-          action="/offerers/"
+          action="/offerers/AA"
           className="section"
           errorsPatch={Object {}}
           failNotification="Formulaire non validé"
@@ -101,6 +106,7 @@ ShallowWrapper {
             Object {
               "bic": "ABC",
               "iban": "DEF",
+              "id": "AA",
             }
           }
           readOnly={false}
@@ -119,6 +125,7 @@ ShallowWrapper {
                 label="SIREN"
                 layout="horizontal"
                 name="siren"
+                readOnly="AA"
                 required={true}
                 size="normal"
                 storeValue={[Function]}
@@ -193,6 +200,7 @@ ShallowWrapper {
               />
             </div>
             <CreationControl />
+            <div />
           </div>
         </withRouter(Connect(_Form))>,
       ],
@@ -236,7 +244,7 @@ ShallowWrapper {
         "props": Object {
           "BlockComponent": null,
           "Tag": "form",
-          "action": "/offerers/",
+          "action": "/offerers/AA",
           "children": Array [
             <div
               className="section"
@@ -251,6 +259,7 @@ ShallowWrapper {
                   label="SIREN"
                   layout="horizontal"
                   name="siren"
+                  readOnly="AA"
                   required={true}
                   size="normal"
                   storeValue={[Function]}
@@ -325,6 +334,7 @@ ShallowWrapper {
                 />
               </div>
               <CreationControl />
+              <div />
             </div>,
           ],
           "className": "section",
@@ -346,6 +356,7 @@ ShallowWrapper {
           "patch": Object {
             "bic": "ABC",
             "iban": "DEF",
+            "id": "AA",
           },
           "readOnly": false,
           "successNotification": "Formulaire non validé",
@@ -367,6 +378,7 @@ ShallowWrapper {
                   label="SIREN"
                   layout="horizontal"
                   name="siren"
+                  readOnly="AA"
                   required={true}
                   size="normal"
                   storeValue={[Function]}
@@ -414,6 +426,7 @@ ShallowWrapper {
                     label="SIREN"
                     layout="horizontal"
                     name="siren"
+                    readOnly="AA"
                     required={true}
                     size="normal"
                     storeValue={[Function]}
@@ -460,7 +473,7 @@ ShallowWrapper {
                     "label": "SIREN",
                     "layout": "horizontal",
                     "name": "siren",
-                    "readOnly": undefined,
+                    "readOnly": "AA",
                     "required": true,
                     "size": "normal",
                     "storeValue": [Function],
@@ -562,6 +575,7 @@ ShallowWrapper {
                   />
                 </div>,
                 <CreationControl />,
+                <div />,
               ],
               "className": "section",
             },
@@ -690,6 +704,17 @@ ShallowWrapper {
                 "rendered": null,
                 "type": [Function],
               },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": false,
+                },
+                "ref": null,
+                "rendered": false,
+                "type": "div",
+              },
             ],
             "type": "div",
           },
@@ -723,7 +748,7 @@ ShallowWrapper {
           <withRouter(Connect(_Form))
             BlockComponent={null}
             Tag="form"
-            action="/offerers/"
+            action="/offerers/AA"
             className="section"
             errorsPatch={Object {}}
             failNotification="Formulaire non validé"
@@ -744,6 +769,7 @@ ShallowWrapper {
               Object {
                 "bic": "ABC",
                 "iban": "DEF",
+                "id": "AA",
               }
             }
             readOnly={false}
@@ -762,6 +788,7 @@ ShallowWrapper {
                   label="SIREN"
                   layout="horizontal"
                   name="siren"
+                  readOnly="AA"
                   required={true}
                   size="normal"
                   storeValue={[Function]}
@@ -836,6 +863,7 @@ ShallowWrapper {
                 />
               </div>
               <CreationControl />
+              <div />
             </div>
           </withRouter(Connect(_Form))>,
         ],
@@ -879,7 +907,7 @@ ShallowWrapper {
           "props": Object {
             "BlockComponent": null,
             "Tag": "form",
-            "action": "/offerers/",
+            "action": "/offerers/AA",
             "children": Array [
               <div
                 className="section"
@@ -894,6 +922,7 @@ ShallowWrapper {
                     label="SIREN"
                     layout="horizontal"
                     name="siren"
+                    readOnly="AA"
                     required={true}
                     size="normal"
                     storeValue={[Function]}
@@ -968,6 +997,7 @@ ShallowWrapper {
                   />
                 </div>
                 <CreationControl />
+                <div />
               </div>,
             ],
             "className": "section",
@@ -989,6 +1019,7 @@ ShallowWrapper {
             "patch": Object {
               "bic": "ABC",
               "iban": "DEF",
+              "id": "AA",
             },
             "readOnly": false,
             "successNotification": "Formulaire non validé",
@@ -1010,6 +1041,7 @@ ShallowWrapper {
                     label="SIREN"
                     layout="horizontal"
                     name="siren"
+                    readOnly="AA"
                     required={true}
                     size="normal"
                     storeValue={[Function]}
@@ -1057,6 +1089,7 @@ ShallowWrapper {
                       label="SIREN"
                       layout="horizontal"
                       name="siren"
+                      readOnly="AA"
                       required={true}
                       size="normal"
                       storeValue={[Function]}
@@ -1103,7 +1136,7 @@ ShallowWrapper {
                       "label": "SIREN",
                       "layout": "horizontal",
                       "name": "siren",
-                      "readOnly": undefined,
+                      "readOnly": "AA",
                       "required": true,
                       "size": "normal",
                       "storeValue": [Function],
@@ -1205,6 +1238,7 @@ ShallowWrapper {
                     />
                   </div>,
                   <CreationControl />,
+                  <div />,
                 ],
                 "className": "section",
               },
@@ -1332,6 +1366,17 @@ ShallowWrapper {
                   "ref": null,
                   "rendered": null,
                   "type": [Function],
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": false,
+                  },
+                  "ref": null,
+                  "rendered": false,
+                  "type": "div",
                 },
               ],
               "type": "div",

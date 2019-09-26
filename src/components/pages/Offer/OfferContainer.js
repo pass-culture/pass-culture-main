@@ -17,6 +17,7 @@ import selectTypeByIsVenueVirtualAndOfferTypeValue from '../../../selectors/sele
 import selectVenueById from '../../../selectors/selectVenueById'
 import selectVenuesByOffererIdAndOfferType from '../../../selectors/selectVenuesByOffererIdAndOfferType'
 import selectOfferers from '../../../selectors/selectOfferers'
+import withTracking from '../../hocs/withTracking'
 
 export const mapStateToProps = (state, ownProps) => {
   const {
@@ -105,6 +106,7 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 }
 
 export default compose(
+  withTracking('Offer'),
   withRequiredLogin,
   connect(
     mapStateToProps,

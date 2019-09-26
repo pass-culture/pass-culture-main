@@ -28,6 +28,7 @@ export const mapStateToProps = (state, ownProps) => {
       'admin'
     ),
     offerer: selectOffererById(state, offererId),
+    offererId,
     offererName: get(state, 'form.offerer.name'),
     venues: selectPhysicalVenuesByOffererId(state, offererId),
   }
@@ -68,9 +69,12 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
     ...stateProps,
     ...dispatchProps,
     ...ownProps,
-    trackCreateOffererSuccess: createdOffererId => {
+    trackCreateOfferer: createdOffererId => {
       ownProps.tracking.trackEvent({ action: 'createOfferer', name: createdOffererId })
-    }
+    },
+    trackModifyOfferer: offererId => {
+      ownProps.tracking.trackEvent({ action: 'modifyOfferer', name: offererId })
+    },
   }
 }
 

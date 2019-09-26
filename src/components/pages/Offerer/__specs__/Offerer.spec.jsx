@@ -19,9 +19,12 @@ describe('src | components | pages | Offerer', () => {
         },
       },
       offerer: {
+        id: 'AA',
         bic: 'ABC',
         iban: 'DEF',
       },
+      parseFormChild: jest.fn(),
+      offererId: 'AA',
       offererName: 'fake offerer name',
       query: {
         context: jest.fn().mockReturnValue({
@@ -31,7 +34,9 @@ describe('src | components | pages | Offerer', () => {
         }),
       },
       showNotification: jest.fn(),
-      trackCreateOffererSuccess: jest.fn(),
+      trackCreateOfferer: jest.fn(),
+      trackModifyOfferer: jest.fn(),
+      venues: [],
     }
   })
 
@@ -58,46 +63,86 @@ describe('src | components | pages | Offerer', () => {
       wrapper.instance().onHandleSuccess(state, action)
 
       // then
-      expect(props.trackCreateOffererSuccess).toHaveBeenCalledWith('Ty5645dgfd')
+      expect(props.trackCreateOfferer).toHaveBeenCalledWith('Ty5645dgfd')
+    })
+
+    it('should track offerer modification', () => {
+      // given
+      const state = {}
+      const action = {
+        payload: {
+          id: 'Ty5645dgfd',
+        },
+      }
+      jest.spyOn(props.query, 'context').mockReturnValue({
+        isCreatedEntity: false,
+      })
+      const wrapper = shallow(<Offerer {...props} />)
+
+      // when
+      wrapper.instance().onHandleSuccess(state, action)
+
+      // then
+      expect(props.trackModifyOfferer).toHaveBeenCalledWith('AA')
     })
   })
 
   describe('render', () => {
-    it('should render a bank instructions block when bank information are not provided', () => {
-      // given
-      props.offerer.bic = null
-      props.offerer.iban = null
+    describe('bank informations', () => {
+      it('should render a bank instructions block when bank information are not provided', () => {
+        // given
+        props.offerer.bic = null
+        props.offerer.iban = null
 
-      // when
-      const wrapper = shallow(<Offerer {...props} />)
+        // when
+        const wrapper = shallow(<Offerer {...props} />)
 
-      // then
-      const bankInstructions = wrapper.find('.bank-instructions-label')
-      expect(bankInstructions).toHaveLength(1)
-      expect(bankInstructions.text()).toBe(
-        'Le pass Culture vous contactera prochainement afin d’enregistrer vos coordonnées bancaires. Une fois votre BIC / IBAN renseigné, ces informations apparaitront ci-dessous.'
-      )
+        // then
+        const bankInstructions = wrapper.find('.bank-instructions-label')
+        expect(bankInstructions).toHaveLength(1)
+        expect(bankInstructions.text()).toBe(
+          'Le pass Culture vous contactera prochainement afin d’enregistrer vos coordonnées bancaires. Une fois votre BIC / IBAN renseigné, ces informations apparaitront ci-dessous.'
+        )
+      })
+
+      it('should not render a bank instructions block when bank information are provided', () => {
+        // when
+        const wrapper = shallow(<Offerer {...props} />)
+
+        // then
+        const bankInstructions = wrapper.find('.bank-instructions-label')
+        expect(bankInstructions).toHaveLength(0)
+      })
+
+      it('should not render a bank instructions block when offerer name is not provided', () => {
+        // given
+        props.offererName = ''
+
+        // when
+        const wrapper = shallow(<Offerer {...props} />)
+
+        // then
+        const bankInstructions = wrapper.find('.bank-instructions-label')
+        expect(bankInstructions).toHaveLength(0)
+      })
     })
 
-    it('should not render a bank instructions block when bank information are provided', () => {
-      // when
-      const wrapper = shallow(<Offerer {...props} />)
+    describe('venues information', () => {
+      it('should render a Venues Component', () => {
+        // given
+        props.venues = [{}, {}, {}]
 
-      // then
-      const bankInstructions = wrapper.find('.bank-instructions-label')
-      expect(bankInstructions).toHaveLength(0)
-    })
+        jest.spyOn(props.query, 'context').mockReturnValue({
+          isCreatedEntity: false,
+        })
 
-    it('should not render a bank instructions block when offerer name is not provided', () => {
-      // given
-      props.offererName = ''
+        // when
+        const wrapper = shallow(<Offerer {...props} />)
+        const venuesComponent = wrapper.find('Venues')
 
-      // when
-      const wrapper = shallow(<Offerer {...props} />)
-
-      // then
-      const bankInstructions = wrapper.find('.bank-instructions-label')
-      expect(bankInstructions).toHaveLength(0)
+        // then
+        expect(venuesComponent).toHaveLength(1)
+      })
     })
   })
 })

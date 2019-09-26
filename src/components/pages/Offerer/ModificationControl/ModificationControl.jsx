@@ -1,12 +1,9 @@
-import get from 'lodash.get'
 import { CancelButton, recursiveMap, SubmitButton } from 'pass-culture-shared'
 import React, { Fragment } from 'react'
 import { NavLink } from 'react-router-dom'
 import PropTypes from 'prop-types'
 
-import VenueItem from '../VenueItem/VenueItem'
-
-const ModificationControl = ({ adminUserOfferer, parseFormChild, offerer, query, venues }) => {
+const ModificationControl = ({ adminUserOfferer, parseFormChild, offerer, query }) => {
   const { readOnly } = query.context()
   const { id } = offerer || {}
   return recursiveMap(
@@ -16,7 +13,7 @@ const ModificationControl = ({ adminUserOfferer, parseFormChild, offerer, query,
           adminUserOfferer && (
             <NavLink
               className="button is-secondary is-medium"
-              to={`/structures/${id}?modifie`}
+              to={`/structures/${id}?modification`}
             >
               {'Modifier les informations'}
             </NavLink>
@@ -43,27 +40,6 @@ const ModificationControl = ({ adminUserOfferer, parseFormChild, offerer, query,
         )}
       </div>
       <br />
-      <div className="section">
-        <h2 className="main-list-title">
-          {'Lieux'}
-        </h2>
-        <ul className="main-list venues-list">
-          {venues.map(v => (
-            <VenueItem
-              key={v.id}
-              venue={v}
-            />
-          ))}
-        </ul>
-        <div className="has-text-centered">
-          <NavLink
-            className="button is-secondary is-outlined"
-            to={`/structures/${get(offerer, 'id')}/lieux/creation`}
-          >
-            {'+ Ajouter un lieu'}
-          </NavLink>
-        </div>
-      </div>
     </Fragment>,
     parseFormChild
   )
@@ -82,7 +58,6 @@ ModificationControl.propTypes = {
   }),
   parseFormChild: PropTypes.func.isRequired,
   query: PropTypes.shape().isRequired,
-  venues: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
 
 export default ModificationControl
