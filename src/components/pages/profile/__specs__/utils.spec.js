@@ -2,7 +2,7 @@ import { getAvailableBalanceByType } from '../utils'
 
 describe('src | components | pages | profile | utils', () => {
   describe('getAvailableBalanceByType', () => {
-    it('returns wallet balance if lower than max - actual', () => {
+    it('returns wallet balance if lower than max minus actual', () => {
       // given
       const wallet = 100
       const expense = { actual: 0, max: 200 }
@@ -14,7 +14,7 @@ describe('src | components | pages | profile | utils', () => {
       expect(result).toStrictEqual('100')
     })
 
-    it('returns max - actual if lower than wallet balance', () => {
+    it('returns max minus actual if lower than wallet balance', () => {
       // given
       const wallet = 400
       const expense = { actual: 90, max: 200 }
@@ -26,7 +26,7 @@ describe('src | components | pages | profile | utils', () => {
       expect(result).toStrictEqual('110')
     })
 
-    it('it returns a balance with a maximum of two decimals when has decimal figures', () => {
+    it('returns a balance with a maximum of two decimals when has decimal figures', () => {
       // given
       const wallet = 231.38
       const expense = { actual: 154.82, max: 200 }
