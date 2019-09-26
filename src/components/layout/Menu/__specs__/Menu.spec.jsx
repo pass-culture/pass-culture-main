@@ -58,7 +58,12 @@ describe('src | components | menu | Menu', () => {
     it('should open the menu with one CloseLink, one Header, two SimpleLink, five NavLink and one SignoutButton', () => {
       // given
       const history = createBrowserHistory()
-      const initialState = { data: { features: [] } }
+      const initialState = {
+        data: {
+          features: [],
+        },
+      }
+      props.currentUser = { wallet_balance: 300 }
       const store = configureStore([])(initialState)
       const wrapper = mount(
         <Provider store={store}>

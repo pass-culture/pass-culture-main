@@ -1,4 +1,9 @@
-const getWalletValue = (user, fallback = '--') =>
-  user && typeof user.wallet_balance === 'number' ? user.wallet_balance : fallback
+import formatDecimals from '../numbers/formatDecimals'
+
+const getWalletValue = user => {
+  if (user) {
+    return formatDecimals(user.wallet_balance)
+  }
+}
 
 export default getWalletValue

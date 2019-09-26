@@ -254,11 +254,11 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": 500,
+                  "children": "500",
                   "className": "fs44 is-semi-bold wallet-value",
                 },
                 "ref": null,
-                "rendered": 500,
+                "rendered": "500",
                 "type": "span",
               },
               Object {
@@ -523,11 +523,11 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": 500,
+                    "children": "500",
                     "className": "fs44 is-semi-bold wallet-value",
                   },
                   "ref": null,
-                  "rendered": 500,
+                  "rendered": "500",
                   "type": "span",
                 },
                 Object {
