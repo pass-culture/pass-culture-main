@@ -42,11 +42,7 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
                 user_name
             )
             recommendations_by_name[recommendation_name] = \
-                create_recommendation(
-                    date_read="2018-12-17T15:59:11.689Z",
-                    mediation=tuto_mediation,
-                    user=user
-                )
+                create_recommendation(user=user, mediation=tuto_mediation, date_read="2018-12-17T15:59:11.689Z")
 
         (activation_mediation_name, mediation) = activation_mediation_items[0]
 
@@ -55,12 +51,7 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
             user_name
         )
         recommendations_by_name[activation_recommendation_name] = \
-            create_recommendation(
-                is_clicked=True,
-                mediation=mediation,
-                offer=mediation.offer,
-                user=user
-            )
+            create_recommendation(offer=mediation.offer, user=user, mediation=mediation, is_clicked=True)
 
         user_has_recommendation_on_something_else_than_activation_offers = any([
             user_tag in user_name
@@ -107,11 +98,7 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
                 mediation = None
 
             recommendations_by_name[recommendation_name] = \
-                create_recommendation(
-                    mediation=mediation,
-                    offer=offer,
-                    user=user
-                )
+                create_recommendation(offer=offer, user=user, mediation=mediation)
 
     PcObject.save(*recommendations_by_name.values())
 

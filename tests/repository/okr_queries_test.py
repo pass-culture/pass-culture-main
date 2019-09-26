@@ -5,10 +5,10 @@ import pandas
 from models import PcObject, ThingType
 from models.db import db
 from repository.okr_queries import get_all_beneficiary_users_details, get_experimentation_session_column, \
-    get_department_column, get_activation_date_column, get_typeform_filling_date_test
+    get_department_column, get_activation_date_column, get_typeform_filling_date, get_first_connection
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_venue, create_offer_with_thing_product, create_stock, \
-    create_booking
+    create_booking, create_recommendation
 
 
 class GetAllExperimentationUsersDetailsTest:
@@ -34,7 +34,9 @@ class GetAllExperimentationUsersDetailsTest:
         activation_offer = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
         stock = create_stock(offer=activation_offer, price=0)
         booking = create_booking(user2, stock, is_used=False)
-        PcObject.save(user1, booking)
+        offer = create_offer_with_thing_product(venue)
+        recommendation = create_recommendation(offer, user2, date_created=datetime(2019, 2, 3))
+        PcObject.save(user1, booking, recommendation)
         booking.isUsed = True
         user2.needsToFillCulturalSurvey = False
         PcObject.save(booking, user2)
@@ -44,12 +46,21 @@ class GetAllExperimentationUsersDetailsTest:
         experimentation_users = get_all_beneficiary_users_details()
 
         # Then
-        assert experimentation_users.shape == (2, 4)
+        print(experimentation_users)
+        assert experimentation_users.shape == (2, 5)
 
         assert experimentation_users.loc[0].equals(
-            pandas.Series(data=[2, "93", user1.dateCreated, pandas.NaT], index=["Vague d'expérimentation", "Département", "Date d'activation", "Date de remplissage du typeform"]))
-        assert experimentation_users.loc[1, ["Vague d'expérimentation", "Département"]].equals(
-            pandas.Series(data=[1, "08"], index=["Vague d'expérimentation", "Département"]))
+            pandas.Series(
+                data=[2, "93", user1.dateCreated, pandas.NaT, pandas.NaT],
+                index=["Vague d'expérimentation", "Département", "Date d'activation", "Date de remplissage du typeform", "Date de première connection"]
+            )
+        )
+        assert experimentation_users.loc[1, ["Vague d'expérimentation", "Département", "Date de première connection"]].equals(
+            pandas.Series(
+                data=[1, "08", datetime(2019, 2, 3)],
+                index=["Vague d'expérimentation", "Département", "Date de première connection"]
+            )
+        )
         assert beginning_test_date < experimentation_users.loc[1, "Date d'activation"] < date_after_changes
         assert beginning_test_date < experimentation_users.loc[1, "Date de remplissage du typeform"] < date_after_changes
 
@@ -233,7 +244,7 @@ class GetTypeformFillingDateTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_typeform_filling_date_test(connection)
+        experimentation_users = get_typeform_filling_date(connection)
 
         # Then
         assert beginning_test_date < experimentation_users.loc[
@@ -248,7 +259,7 @@ class GetTypeformFillingDateTest:
 
 
         # When
-        experimentation_users = get_typeform_filling_date_test(connection)
+        experimentation_users = get_typeform_filling_date(connection)
 
         # Then
         assert experimentation_users.loc[user.id, 'Date de remplissage du typeform'] is None
@@ -262,7 +273,52 @@ class GetTypeformFillingDateTest:
 
 
         # When
-        experimentation_users = get_typeform_filling_date_test(connection)
+        experimentation_users = get_typeform_filling_date(connection)
+
+        # Then
+        assert experimentation_users.empty
+
+
+class GetFirstConnectionTest:
+    @clean_database
+    def test_returns_min_recommandation_dateCreated_for_a_user_if_has_any_recommendation(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        recommendation = create_recommendation(offer, user, date_created=datetime(2019, 1, 1))
+        PcObject.save(recommendation)
+        connection = db.engine.connect()
+
+        # When
+        experimentation_users = get_first_connection(connection)
+
+        # Then
+        assert experimentation_users.loc[user.id, 'Date de première connection'] == datetime(2019, 1, 1)
+
+    @clean_database
+    def test_returns_none_if_no_recommendation(self, app):
+        # Given
+        user = create_user()
+        PcObject.save(user)
+        connection = db.engine.connect()
+
+        # When
+        experimentation_users = get_first_connection(connection)
+
+        # Then
+        assert experimentation_users.loc[user.id, 'Date de première connection'] is None
+
+    @clean_database
+    def test_returns_empty_series_if_user_cannot_book_free_offers(self, app):
+        # Given
+        user = create_user(can_book_free_offers=False)
+        PcObject.save(user)
+        connection = db.engine.connect()
+
+        # When
+        experimentation_users = get_first_connection(connection)
 
         # Then
         assert experimentation_users.empty

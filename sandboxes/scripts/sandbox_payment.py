@@ -175,7 +175,8 @@ def save_sandbox():
         ),
         create_booking(
             user1,
-            recommendation=create_recommendation(offer=non_reimbursable_stock_of_offerer_with_iban.resolvedOffer, user=user1),
+            recommendation=create_recommendation(offer=non_reimbursable_stock_of_offerer_with_iban.resolvedOffer,
+                                                 user=user1),
             stock=non_reimbursable_stock_of_offerer_with_iban,
             venue=venue_online_of_offerer_with_iban,
             token='TOKEN6',
@@ -183,7 +184,8 @@ def save_sandbox():
         ),
         create_booking(
             user2,
-            recommendation=create_recommendation(offer=non_reimbursable_stock_of_offerer_with_iban.resolvedOffer, user=user2),
+            recommendation=create_recommendation(offer=non_reimbursable_stock_of_offerer_with_iban.resolvedOffer,
+                                                 user=user2),
             stock=non_reimbursable_stock_of_offerer_with_iban,
             venue=venue_online_of_offerer_with_iban,
             token='TOKEN7',
@@ -191,7 +193,8 @@ def save_sandbox():
         ),
         create_booking(
             user3,
-            recommendation=create_recommendation(offer=non_reimbursable_stock_of_offerer_with_iban.resolvedOffer, user=user3),
+            recommendation=create_recommendation(offer=non_reimbursable_stock_of_offerer_with_iban.resolvedOffer,
+                                                 user=user3),
             stock=non_reimbursable_stock_of_offerer_with_iban,
             venue=venue_online_of_offerer_with_iban,
             token='TOKEN8',
@@ -199,7 +202,8 @@ def save_sandbox():
         ),
         create_booking(
             user4,
-            recommendation=create_recommendation(offer=non_reimbursable_stock_of_offerer_with_iban.resolvedOffer, user=user4),
+            recommendation=create_recommendation(offer=non_reimbursable_stock_of_offerer_with_iban.resolvedOffer,
+                                                 user=user4),
             stock=non_reimbursable_stock_of_offerer_with_iban,
             venue=venue_online_of_offerer_with_iban,
             token='TOKEN9',
@@ -207,7 +211,8 @@ def save_sandbox():
         ),
         create_booking(
             user5,
-            recommendation=create_recommendation(offer=non_reimbursable_stock_of_offerer_with_iban.resolvedOffer, user=user5),
+            recommendation=create_recommendation(offer=non_reimbursable_stock_of_offerer_with_iban.resolvedOffer,
+                                                 user=user5),
             stock=non_reimbursable_stock_of_offerer_with_iban,
             venue=venue_online_of_offerer_with_iban,
             token='TOKE10',

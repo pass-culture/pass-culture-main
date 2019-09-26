@@ -791,14 +791,8 @@ class Put:
             upsert_tuto_mediations()
             tuto_mediation0 = Mediation.query.filter_by(tutoIndex=0).one()
             tuto_mediation1 = Mediation.query.filter_by(tutoIndex=1).one()
-            tuto_recommendation0 = create_recommendation(
-                mediation=tuto_mediation0,
-                user=user
-            )
-            tuto_recommendation1 = create_recommendation(
-                mediation=tuto_mediation1,
-                user=user
-            )
+            tuto_recommendation0 = create_recommendation(user=user, mediation=tuto_mediation0)
+            tuto_recommendation1 = create_recommendation(user=user, mediation=tuto_mediation1)
             PcObject.save(tuto_recommendation0, tuto_recommendation1)
             humanized_tuto_recommendation0_id = humanize(tuto_recommendation0.id)
             humanized_tuto_recommendation1_id = humanize(tuto_recommendation1.id)

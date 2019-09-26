@@ -11,7 +11,8 @@ def get_all_beneficiary_users_details():
             get_experimentation_session_column(connection),
             get_department_column(connection),
             get_activation_date_column(connection),
-            get_typeform_filling_date(connection)
+            get_typeform_filling_date(connection),
+            get_first_connection(connection)
         ],
         axis=1
     )
@@ -89,13 +90,13 @@ def get_activation_date_column(connection):
 def get_typeform_filling_date(connection):
     query = '''
     WITH typeform_filled AS (
-        SELECT activity.issued_at, "user".id AS user_id, "user"."canBookFreeOffers"
-        FROM "user" 
-        LEFT JOIN "activity"    
-         ON (activity.old_data ->> 'id')::int = "user".id  
-         AND activity.table_name='user'    
-         AND activity.verb='update'    
-         AND activity.changed_data ->> 'needsToFillCulturalSurvey'='false'
+     SELECT activity.issued_at, "user".id AS user_id, "user"."canBookFreeOffers"
+     FROM "user" 
+     LEFT JOIN "activity"    
+      ON (activity.old_data ->> 'id')::int = "user".id  
+      AND activity.table_name='user'    
+      AND activity.verb='update'    
+      AND activity.changed_data ->> 'needsToFillCulturalSurvey'='false'
       )
       
     SELECT 
@@ -104,4 +105,26 @@ def get_typeform_filling_date(connection):
     FROM typeform_filled
     WHERE typeform_filled."canBookFreeOffers"
     '''
+    return pandas.read_sql(query, connection, index_col='user_id')
+
+
+def get_first_connection(connection):
+    query = '''
+    WITH recommendation_dates AS (
+     SELECT 
+      MIN(recommendation."dateCreated") AS first_recommendation_date, 
+      "user".id AS user_id,
+      "user"."canBookFreeOffers"
+     FROM "user"
+     LEFT JOIN recommendation ON recommendation."userId" = "user".id 
+     GROUP BY "user".id 
+    )
+    
+    SELECT 
+     recommendation_dates.first_recommendation_date AS "Date de première connection",
+     recommendation_dates.user_id AS user_id
+    FROM recommendation_dates
+    WHERE recommendation_dates."canBookFreeOffers"
+    '''
+
     return pandas.read_sql(query, connection, index_col='user_id')

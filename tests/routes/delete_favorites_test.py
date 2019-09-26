@@ -16,8 +16,7 @@ class Delete:
                 offerer, postal_code='29100', siret='12345678912341')
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             mediation = None
-            recommendation = create_recommendation(
-                offer=offer, user=user, mediation=mediation)
+            recommendation = create_recommendation(offer=offer, user=user, mediation=mediation)
             favorite = create_favorite(mediation, offer, user)
             PcObject.save(recommendation, user, favorite)
 
