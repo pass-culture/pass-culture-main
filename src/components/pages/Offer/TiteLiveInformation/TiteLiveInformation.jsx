@@ -1,9 +1,9 @@
 import React, { Fragment, PureComponent } from 'react'
 import Thumb from '../../../layout/Thumb'
-import { PROVIDER_ICONS } from '../../Venue/VenueProvidersManager/VenueProviderItem/utils/providerIcons'
 import Icon from '../../../layout/Icon'
 import ReactTooltip from 'react-tooltip'
 import PropTypes from 'prop-types'
+import { PROVIDER_ICONS } from '../../../utils/providers'
 
 class TiteLiveInformation extends PureComponent {
   componentDidMount() {
@@ -11,10 +11,11 @@ class TiteLiveInformation extends PureComponent {
   }
 
   render() {
-    const { offererId, thumbUrl, venueId } = this.props
+    const { offererId, productName, thumbUrl, venueId } = this.props
     const providerIcon = PROVIDER_ICONS['TiteLiveStocks']
 
-    const tooltipContent =
+    const thumbAltDescription = 'couverture du livre ' + productName
+    const tooltip =
       '<div>' +
       '<p>Vous pouvez modifier vos choix de synchronisation sur' +
       " <a href='/structures/" +
@@ -31,7 +32,7 @@ class TiteLiveInformation extends PureComponent {
         <div className="titelive-information">
           <div className="titelive-thumb">
             <Thumb
-              alt="offre"
+              alt={thumbAltDescription}
               src={thumbUrl}
             />
           </div>
@@ -39,11 +40,13 @@ class TiteLiveInformation extends PureComponent {
             <div className="titelive-header">
               <Icon svg={providerIcon} />
               <div className="titelive-title">
-                {'Offre synchronisée avec Tite Live'}
+                <h1>
+                  {'Offre synchronisée avec Tite Live'}
+                </h1>
                 <span
                   className="button"
                   data-place="bottom"
-                  data-tip={tooltipContent}
+                  data-tip={tooltip}
                   data-type="info"
                 >
                   <Icon svg="picto-info" />
@@ -65,11 +68,12 @@ class TiteLiveInformation extends PureComponent {
 }
 
 TiteLiveInformation.defaultProps = {
-  thumbUrl: undefined,
+  thumbUrl: null,
 }
 
 TiteLiveInformation.propTypes = {
   offererId: PropTypes.string.isRequired,
+  productName: PropTypes.string.isRequired,
   thumbUrl: PropTypes.string,
   venueId: PropTypes.string.isRequired,
 }

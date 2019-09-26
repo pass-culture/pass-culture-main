@@ -27,6 +27,7 @@ describe('src | components | pages | Offer | TiteLiveInformation | TiteLiveInfor
         offererId: 'ABCD',
         product: {
           id: 'ART',
+          name: 'Super Livre',
           thumbUrl: 'http://localhost/storage/thumbs/products/AERTR',
         },
       }
@@ -37,6 +38,7 @@ describe('src | components | pages | Offer | TiteLiveInformation | TiteLiveInfor
       // then
       expect(result).toStrictEqual({
         offererId: 'ABCD',
+        productName: 'Super Livre',
         thumbUrl: 'http://localhost/storage/thumbs/products/AERTR',
         venueId: 'EFGH',
       })

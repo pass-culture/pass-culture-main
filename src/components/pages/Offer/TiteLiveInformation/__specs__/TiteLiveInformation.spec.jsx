@@ -1,6 +1,7 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 import TiteLiveInformation from '../TiteLiveInformation'
+import Thumb from '../../../../layout/Thumb'
 
 describe('src | components | pages | Offer | TiteLiveInformation | TiteLiveInformation', () => {
   let props
@@ -8,6 +9,7 @@ describe('src | components | pages | Offer | TiteLiveInformation | TiteLiveInfor
   beforeEach(() => {
     props = {
       offererId: 'ABCD',
+      productName: 'Super Livre',
       thumbUrl: 'http://localhost/storage/thumbs/products/AERTR',
       venueId: 'EARZ',
     }
@@ -31,6 +33,17 @@ describe('src | components | pages | Offer | TiteLiveInformation | TiteLiveInfor
       expect(link).toHaveLength(1)
       expect(link.prop('className')).toBe('button')
       expect(link.prop('data-tip')).toContain("<a href='/structures/ABCD/lieux/EARZ'>")
+    })
+
+    it('should render thumb alternate description with product name', () => {
+      // when
+      const wrapper = shallow(<TiteLiveInformation {...props} />)
+
+      // then
+      const link = wrapper.find(Thumb)
+      expect(link).toHaveLength(1)
+      expect(link.prop('alt')).toBe('couverture du livre Super Livre')
+      expect(link.prop('src')).toBe('http://localhost/storage/thumbs/products/AERTR')
     })
   })
 })

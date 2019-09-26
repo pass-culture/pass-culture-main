@@ -175,6 +175,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           isEvent: true,
           isThing: false,
           lastProviderId: null,
+          lastProvider: null,
           modelName: 'Offer',
           productId: '94',
           venueId: 'AQ',
@@ -257,6 +258,9 @@ describe('src | components | pages | Offer | Offer ', () => {
         props.offer = {
           id: 'VAG',
           productId: 'V24',
+          lastProvider: {
+            name: 'Open Agenda',
+          },
         }
 
         // when
@@ -279,6 +283,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           productId: '6GD',
           isEvent: true,
           isThing: false,
+          lastProvider: null,
         }
 
         // when
@@ -301,6 +306,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           productId: '6GD',
           isEvent: true,
           isThing: false,
+          lastProvider: null,
           activeMediation: {
             id: 'MED',
           },
@@ -449,6 +455,14 @@ describe('src | components | pages | Offer | Offer ', () => {
           readOnly: true,
         })
         props.isEditableOffer = false
+        props.offerer = {
+          id: 'AZERT',
+        }
+        props.product = {
+          id: '6GD',
+          name: 'super livre',
+          thumbUrl: 'http://localhost/image/6GD',
+        }
         props.offer = {
           id: 'VAG',
           productId: '6GD',
@@ -461,14 +475,19 @@ describe('src | components | pages | Offer | Offer ', () => {
             name: 'TiteLive Stocks',
           },
         }
+
         // when
         const wrapper = shallow(<Offer {...props} />)
 
         // then
         const titeLiveInformationComponent = wrapper.find(TiteLiveInformation)
-
-        // then
         expect(titeLiveInformationComponent).toHaveLength(1)
+        expect(titeLiveInformationComponent.prop('offererId')).toBe('AZERT')
+        expect(titeLiveInformationComponent.prop('product')).toStrictEqual({
+          id: '6GD',
+          name: 'super livre',
+          thumbUrl: 'http://localhost/image/6GD',
+        })
       })
     })
 

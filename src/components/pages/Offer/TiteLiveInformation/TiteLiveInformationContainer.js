@@ -1,6 +1,5 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import get from 'lodash.get'
 
 import selectOfferById from '../../../../selectors/selectOfferById'
 import TiteLiveInformation from './TiteLiveInformation'
@@ -16,16 +15,12 @@ export const mapStateToProps = (state, ownProps) => {
   } = ownProps
 
   const offer = selectOfferById(state, offerId)
-  const venueId = get(offer, 'venueId')
-
-  if (!offer) {
-    return {}
-  }
-
-  const thumbUrl = get(product, 'thumbUrl')
+  const { venueId } = offer
+  const { name: productName, thumbUrl } = product
 
   return {
     offererId,
+    productName,
     thumbUrl,
     venueId,
   }

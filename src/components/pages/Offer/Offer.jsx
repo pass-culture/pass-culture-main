@@ -26,7 +26,7 @@ import { getDurationInHours, getDurationInMinutes } from './utils/duration'
 
 import { OFFERERS_API_PATH } from '../../../config/apiPaths'
 import { buildWebappDiscoveryUrl } from './utils/buildWebappDiscoveryUrl'
-import checkIfOfferIsTiteLiveGenerated from './utils/checkIfOfferIsTiteLiveGenerated'
+import isTiteLiveOffer from './utils/isTiteLiveOffer'
 import TiteLiveInformation from './TiteLiveInformation/TiteLiveInformationContainer'
 
 const DURATION_LIMIT_TIME = 100
@@ -309,7 +309,7 @@ class Offer extends Component {
     const offerId = get(offer, 'id')
     const mediationId = get(get(offer, 'activeMediation'), 'id')
 
-    const isTiteLiveOffer = checkIfOfferIsTiteLiveGenerated(offer)
+    const offerFromTiteLive = isTiteLiveOffer(offer)
 
     const offerWebappUrl = buildWebappDiscoveryUrl(offerId, mediationId)
     const offererId = get(offerer, 'id')
@@ -509,10 +509,10 @@ class Offer extends Component {
               </div>
             )}
           </div>
-          {isTiteLiveOffer && <TiteLiveInformation
+          {offerFromTiteLive && <TiteLiveInformation
             offererId={offererId}
             product={product}
-                              />}
+                                />}
           {!isCreatedEntity && offer && <MediationsManager />}
           {showAllForm && (
             <div>

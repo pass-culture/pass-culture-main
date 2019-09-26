@@ -5,6 +5,7 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <TiteLiveInformation
     offererId="ABCD"
+    productName="Super Livre"
     thumbUrl="http://localhost/storage/thumbs/products/AERTR"
     venueId="EARZ"
   />,
@@ -29,7 +30,7 @@ ShallowWrapper {
           className="titelive-thumb"
         >
           <Thumb
-            alt="offre"
+            alt="couverture du livre Super Livre"
             src="http://localhost/storage/thumbs/products/AERTR"
           />
         </div>
@@ -46,7 +47,9 @@ ShallowWrapper {
             <div
               className="titelive-title"
             >
-              Offre synchronisée avec Tite Live
+              <h1>
+                Offre synchronisée avec Tite Live
+              </h1>
               <span
                 className="button"
                 data-place="bottom"
@@ -81,7 +84,7 @@ ShallowWrapper {
             className="titelive-thumb"
           >
             <Thumb
-              alt="offre"
+              alt="couverture du livre Super Livre"
               src="http://localhost/storage/thumbs/products/AERTR"
             />
           </div>,
@@ -98,7 +101,9 @@ ShallowWrapper {
               <div
                 className="titelive-title"
               >
-                Offre synchronisée avec Tite Live
+                <h1>
+                  Offre synchronisée avec Tite Live
+                </h1>
                 <span
                   className="button"
                   data-place="bottom"
@@ -131,7 +136,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": <Thumb
-              alt="offre"
+              alt="couverture du livre Super Livre"
               src="http://localhost/storage/thumbs/products/AERTR"
             />,
             "className": "titelive-thumb",
@@ -142,7 +147,7 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "function",
             "props": Object {
-              "alt": "offre",
+              "alt": "couverture du livre Super Livre",
               "src": "http://localhost/storage/thumbs/products/AERTR",
             },
             "ref": null,
@@ -167,7 +172,9 @@ ShallowWrapper {
                 <div
                   className="titelive-title"
                 >
-                  Offre synchronisée avec Tite Live
+                  <h1>
+                    Offre synchronisée avec Tite Live
+                  </h1>
                   <span
                     className="button"
                     data-place="bottom"
@@ -206,7 +213,9 @@ ShallowWrapper {
                   <div
                     className="titelive-title"
                   >
-                    Offre synchronisée avec Tite Live
+                    <h1>
+                      Offre synchronisée avec Tite Live
+                    </h1>
                     <span
                       className="button"
                       data-place="bottom"
@@ -242,7 +251,9 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": Array [
-                      "Offre synchronisée avec Tite Live",
+                      <h1>
+                        Offre synchronisée avec Tite Live
+                      </h1>,
                       <span
                         className="button"
                         data-place="bottom"
@@ -259,7 +270,17 @@ ShallowWrapper {
                   },
                   "ref": null,
                   "rendered": Array [
-                    "Offre synchronisée avec Tite Live",
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "Offre synchronisée avec Tite Live",
+                      },
+                      "ref": null,
+                      "rendered": "Offre synchronisée avec Tite Live",
+                      "type": "h1",
+                    },
                     Object {
                       "instance": null,
                       "key": undefined,
@@ -340,7 +361,7 @@ ShallowWrapper {
             className="titelive-thumb"
           >
             <Thumb
-              alt="offre"
+              alt="couverture du livre Super Livre"
               src="http://localhost/storage/thumbs/products/AERTR"
             />
           </div>
@@ -357,7 +378,9 @@ ShallowWrapper {
               <div
                 className="titelive-title"
               >
-                Offre synchronisée avec Tite Live
+                <h1>
+                  Offre synchronisée avec Tite Live
+                </h1>
                 <span
                   className="button"
                   data-place="bottom"
@@ -392,7 +415,7 @@ ShallowWrapper {
               className="titelive-thumb"
             >
               <Thumb
-                alt="offre"
+                alt="couverture du livre Super Livre"
                 src="http://localhost/storage/thumbs/products/AERTR"
               />
             </div>,
@@ -409,7 +432,9 @@ ShallowWrapper {
                 <div
                   className="titelive-title"
                 >
-                  Offre synchronisée avec Tite Live
+                  <h1>
+                    Offre synchronisée avec Tite Live
+                  </h1>
                   <span
                     className="button"
                     data-place="bottom"
@@ -442,7 +467,7 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": <Thumb
-                alt="offre"
+                alt="couverture du livre Super Livre"
                 src="http://localhost/storage/thumbs/products/AERTR"
               />,
               "className": "titelive-thumb",
@@ -453,7 +478,7 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "function",
               "props": Object {
-                "alt": "offre",
+                "alt": "couverture du livre Super Livre",
                 "src": "http://localhost/storage/thumbs/products/AERTR",
               },
               "ref": null,
@@ -478,7 +503,9 @@ ShallowWrapper {
                   <div
                     className="titelive-title"
                   >
-                    Offre synchronisée avec Tite Live
+                    <h1>
+                      Offre synchronisée avec Tite Live
+                    </h1>
                     <span
                       className="button"
                       data-place="bottom"
@@ -517,7 +544,9 @@ ShallowWrapper {
                     <div
                       className="titelive-title"
                     >
-                      Offre synchronisée avec Tite Live
+                      <h1>
+                        Offre synchronisée avec Tite Live
+                      </h1>
                       <span
                         className="button"
                         data-place="bottom"
@@ -553,7 +582,9 @@ ShallowWrapper {
                     "nodeType": "host",
                     "props": Object {
                       "children": Array [
-                        "Offre synchronisée avec Tite Live",
+                        <h1>
+                          Offre synchronisée avec Tite Live
+                        </h1>,
                         <span
                           className="button"
                           data-place="bottom"
@@ -570,7 +601,17 @@ ShallowWrapper {
                     },
                     "ref": null,
                     "rendered": Array [
-                      "Offre synchronisée avec Tite Live",
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": "Offre synchronisée avec Tite Live",
+                        },
+                        "ref": null,
+                        "rendered": "Offre synchronisée avec Tite Live",
+                        "type": "h1",
+                      },
                       Object {
                         "instance": null,
                         "key": undefined,
