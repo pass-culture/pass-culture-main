@@ -281,6 +281,22 @@ class Get:
             assert response.json[0]['bic'] is None
             assert response.json[0]['iban'] is None
 
+        @clean_database
+        def test_returns_metadata(self, app):
+            # given
+            user = create_user(email='user@test.com')
+            offerer1 = create_offerer(siren='123456781', name='offreur C')
+            user_offerer1 = create_user_offerer(user, offerer1)
+            PcObject.save(user_offerer1)
+            auth_request = TestClient(app.test_client()).with_auth(email='user@test.com')
+
+            # when
+            response = auth_request.get('/offerers')
+
+            # then
+            assert response.status_code == 200
+            assert 'Total-Data-Count' in response.headers
+
     class Returns400:
         @clean_database
         def when_param_validated_is_not_true_nor_false(self, app):

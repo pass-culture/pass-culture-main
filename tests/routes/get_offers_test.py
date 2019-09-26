@@ -256,6 +256,19 @@ class Get:
             assert response.status_code == 200
             assert response.json == []
 
+        @clean_database
+        def test_returns_metadata(self, app):
+            # given
+            user = create_user(email='user@test.com')
+            create_offers_for(user, 20)
+            auth_request = TestClient(app.test_client()).with_auth(email='user@test.com')
+
+            # when
+            response = auth_request.get('/offers')
+
+            # then
+            assert response.status_code == 200
+            assert 'Total-Data-Count' in response.headers
 
 def create_offers_for(user, n, siren='123456789'):
     offerer = create_offerer(siren=siren)
