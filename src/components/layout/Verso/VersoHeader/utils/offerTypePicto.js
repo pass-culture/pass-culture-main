@@ -1,7 +1,7 @@
 const OFFER_TYPE_PICTO = {
-  AUDIOVISUEL: 'musique',
-  CINEMA: 'cinema',
-  CINEMA_ABO: 'cinema',
+  AUDIOVISUEL: 'visite',
+  CINEMA: 'visite',
+  CINEMA_ABO: 'visite',
   CONFERENCE_DEBAT_DEDICACE: 'conference',
   INSTRUMENT: 'atelier',
   JEUX: 'jeu',
