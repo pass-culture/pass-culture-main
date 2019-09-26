@@ -1,12 +1,14 @@
 import React from 'react'
-import HeroSection from '../../layout/HeroSection/HeroSection'
-import Main from '../../layout/Main'
 import { Form } from 'react-final-form'
 import PropTypes from 'prop-types'
-import TextField from '../../layout/form/fields/TextField'
 import { requestData } from 'redux-saga-data'
 import classnames from 'classnames'
 import { showNotification } from 'pass-culture-shared'
+
+import HeroSection from '../../layout/HeroSection/HeroSection'
+import Main from '../../layout/Main'
+import TextField from '../../layout/form/fields/TextField'
+import { version } from '../../../../package.json'
 
 class Profil extends React.Component {
   constructor(props) {
@@ -94,6 +96,9 @@ class Profil extends React.Component {
               </button>
             </div>
           </div>
+        </div>
+        <div className="app-version">
+          {`v${version}`}
         </div>
       </form>
     )

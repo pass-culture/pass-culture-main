@@ -45,7 +45,6 @@
     }
 
     .zoom {
-      // margin-top: 1rem;
       position: absolute;
       bottom: 1rem;
       left: 0;
@@ -54,4 +53,10 @@
       margin: auto;
     }
   }
+}
+
+.app-version {
+  font-size: 0.7rem;
+  padding-right: 0.5rem;
+  text-align: right;
 }
