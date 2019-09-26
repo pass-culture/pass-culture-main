@@ -47,9 +47,9 @@ ShallowWrapper {
             <div
               className="titelive-title"
             >
-              <h1>
+              <h3>
                 Offre synchronisée avec Tite Live
-              </h1>
+              </h3>
               <span
                 className="button"
                 data-place="bottom"
@@ -101,9 +101,9 @@ ShallowWrapper {
               <div
                 className="titelive-title"
               >
-                <h1>
+                <h3>
                   Offre synchronisée avec Tite Live
-                </h1>
+                </h3>
                 <span
                   className="button"
                   data-place="bottom"
@@ -172,9 +172,9 @@ ShallowWrapper {
                 <div
                   className="titelive-title"
                 >
-                  <h1>
+                  <h3>
                     Offre synchronisée avec Tite Live
-                  </h1>
+                  </h3>
                   <span
                     className="button"
                     data-place="bottom"
@@ -213,9 +213,9 @@ ShallowWrapper {
                   <div
                     className="titelive-title"
                   >
-                    <h1>
+                    <h3>
                       Offre synchronisée avec Tite Live
-                    </h1>
+                    </h3>
                     <span
                       className="button"
                       data-place="bottom"
@@ -251,9 +251,9 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": Array [
-                      <h1>
+                      <h3>
                         Offre synchronisée avec Tite Live
-                      </h1>,
+                      </h3>,
                       <span
                         className="button"
                         data-place="bottom"
@@ -279,7 +279,7 @@ ShallowWrapper {
                       },
                       "ref": null,
                       "rendered": "Offre synchronisée avec Tite Live",
-                      "type": "h1",
+                      "type": "h3",
                     },
                     Object {
                       "instance": null,
@@ -378,9 +378,9 @@ ShallowWrapper {
               <div
                 className="titelive-title"
               >
-                <h1>
+                <h3>
                   Offre synchronisée avec Tite Live
-                </h1>
+                </h3>
                 <span
                   className="button"
                   data-place="bottom"
@@ -432,9 +432,9 @@ ShallowWrapper {
                 <div
                   className="titelive-title"
                 >
-                  <h1>
+                  <h3>
                     Offre synchronisée avec Tite Live
-                  </h1>
+                  </h3>
                   <span
                     className="button"
                     data-place="bottom"
@@ -503,9 +503,9 @@ ShallowWrapper {
                   <div
                     className="titelive-title"
                   >
-                    <h1>
+                    <h3>
                       Offre synchronisée avec Tite Live
-                    </h1>
+                    </h3>
                     <span
                       className="button"
                       data-place="bottom"
@@ -544,9 +544,9 @@ ShallowWrapper {
                     <div
                       className="titelive-title"
                     >
-                      <h1>
+                      <h3>
                         Offre synchronisée avec Tite Live
-                      </h1>
+                      </h3>
                       <span
                         className="button"
                         data-place="bottom"
@@ -582,9 +582,9 @@ ShallowWrapper {
                     "nodeType": "host",
                     "props": Object {
                       "children": Array [
-                        <h1>
+                        <h3>
                           Offre synchronisée avec Tite Live
-                        </h1>,
+                        </h3>,
                         <span
                           className="button"
                           data-place="bottom"
@@ -610,7 +610,7 @@ ShallowWrapper {
                         },
                         "ref": null,
                         "rendered": "Offre synchronisée avec Tite Live",
-                        "type": "h1",
+                        "type": "h3",
                       },
                       Object {
                         "instance": null,

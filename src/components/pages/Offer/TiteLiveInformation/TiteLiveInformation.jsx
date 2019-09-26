@@ -40,9 +40,9 @@ class TiteLiveInformation extends PureComponent {
             <div className="titelive-header">
               <Icon svg={providerIcon} />
               <div className="titelive-title">
-                <h1>
+                <h3>
                   {'Offre synchronisée avec Tite Live'}
-                </h1>
+                </h3>
                 <span
                   className="button"
                   data-place="bottom"
