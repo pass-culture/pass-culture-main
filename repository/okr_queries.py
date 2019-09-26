@@ -12,7 +12,8 @@ def get_all_beneficiary_users_details():
         get_activation_date_column(connection),
         get_typeform_filling_date(connection),
         get_first_connection(connection),
-        get_first_booking(connection)
+        get_first_booking(connection),
+        get_second_booking(connection)
     ]
     beneficiary_users_details = pandas.concat(
         df_list,
@@ -153,6 +154,37 @@ def get_first_booking(connection):
     "user".id AS user_id
     FROM "user"
     LEFT JOIN bookings_grouped_by_user ON "user".id = bookings_grouped_by_user.user_id
+    WHERE "user"."canBookFreeOffers"
+    '''
+
+    return pandas.read_sql(query, connection, index_col='user_id')
+
+
+def get_second_booking(connection):
+    query = '''
+     WITH second_booking_dates AS (
+     SELECT 
+      ordered_dates."dateCreated" AS date, 
+      ordered_dates."userId" AS user_id
+      FROM ( 
+       SELECT ROW_NUMBER()  
+       OVER(
+        PARTITION BY "userId" 
+        ORDER BY booking."dateCreated" ASC
+        ) AS rank, booking."dateCreated", booking."userId"  
+       FROM booking 
+       JOIN stock ON stock.id = booking."stockId"
+       JOIN offer ON offer.id = stock."offerId"
+       WHERE offer.type != 'ThingType.ACTIVATION'
+      ) AS ordered_dates  
+      WHERE ordered_dates.rank = 2
+    )
+    
+    SELECT 
+     second_booking_dates.date AS "Date de deuxième réservation",
+     "user".id AS user_id
+    FROM "user"
+    LEFT JOIN second_booking_dates ON second_booking_dates.user_id = "user".id
     WHERE "user"."canBookFreeOffers"
     '''
 
