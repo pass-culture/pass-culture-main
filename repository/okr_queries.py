@@ -13,7 +13,8 @@ def get_all_beneficiary_users_details():
         get_typeform_filling_date(connection),
         get_first_connection(connection),
         get_first_booking(connection),
-        get_second_booking(connection)
+        get_second_booking(connection),
+        get_booking_on_third_product_type_test(connection)
     ]
     beneficiary_users_details = pandas.concat(
         df_list,
@@ -188,4 +189,42 @@ def get_second_booking(connection):
     WHERE "user"."canBookFreeOffers"
     '''
 
+    return pandas.read_sql(query, connection, index_col='user_id')
+
+
+def get_booking_on_third_product_type_test(connection):
+    query = '''
+    WITH 
+     bookings_on_distinct_types AS (
+      SELECT DISTINCT ON (offer.type, booking."userId") offer.type, booking."userId", booking."dateCreated" 
+      FROM booking 
+      JOIN stock ON stock.id = booking."stockId" 
+      JOIN offer ON offer.id = stock."offerId" 
+      WHERE offer.type != 'ThingType.ACTIVATION'
+      ORDER BY offer.type, booking."userId", booking."dateCreated" ASC
+     ), 
+     first_booking_on_third_category AS (
+      SELECT  
+       ordered_dates."dateCreated" AS date,  
+       ordered_dates."userId"  
+      FROM (  
+       SELECT   
+        ROW_NUMBER()  
+         OVER(  
+          PARTITION BY "userId"   
+          ORDER BY bookings_on_distinct_types."dateCreated" ASC  
+         ) AS rank, bookings_on_distinct_types."dateCreated",   
+        bookings_on_distinct_types."userId"   
+       FROM bookings_on_distinct_types   
+          ) AS ordered_dates  
+      WHERE ordered_dates.rank = 3  
+    )
+
+      SELECT
+       first_booking_on_third_category.date AS "Date de première réservation dans 3 catégories différentes",
+       "user".id as user_id
+      FROM "user"
+      LEFT JOIN first_booking_on_third_category ON first_booking_on_third_category."userId" = "user".id
+      WHERE "user"."canBookFreeOffers"
+    '''
     return pandas.read_sql(query, connection, index_col='user_id')
