@@ -1,12 +1,12 @@
 import { createSelector } from 'reselect'
+import { selectCurrentUser } from 'with-react-redux-login'
 
 const selectIsUserAdmin = createSelector(
-  state => state.data.users,
-  users => {
-    if (!users || users.length < 1) {
+  selectCurrentUser,
+  currentUser => {
+    if (!currentUser) {
       return false
     }
-    const currentUser = users[0]
     return currentUser.isAdmin
   }
 )
