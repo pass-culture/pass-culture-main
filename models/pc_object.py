@@ -53,6 +53,15 @@ class PcObject:
         return '<%s #%s>' % (self.__class__.__name__,
                              id)
 
+    def __eq__(self, other):
+        return other and self.id == other.id
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __hash__(self):
+        return hash(self.id)
+
     def dump(self):
         pprint(vars(self))
 

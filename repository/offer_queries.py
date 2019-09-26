@@ -179,13 +179,14 @@ def filter_offers_with_keywords_string(query, keywords_string):
 def _order_by_offer_name_containing_keyword_string(keywords_string: str, query: Query) -> Query:
     offer_alias = aliased(Offer)
     return query.order_by(
-        desc(
-            Offer.query
-                .filter(Offer.id == offer_alias.id)
-                .filter(Offer.name.op('@@')(func.plainto_tsquery(keywords_string)))
-                .order_by(offer_alias.name)
-                .exists()
-        )
+            desc(
+                Offer.query
+                    .filter(Offer.id == offer_alias.id)
+                    .filter(Offer.name.op('@@')(func.plainto_tsquery(keywords_string)))
+                    .order_by(offer_alias.name)
+                    .exists()
+            ),
+            desc(Offer.id)
     )
 
 

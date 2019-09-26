@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import random
 
 import pytest
 from freezegun import freeze_time
@@ -369,6 +370,29 @@ class GetOffersForRecommendationsSearchTest:
 
         # Then
         assert offer in search_result_offers
+
+
+    @clean_database
+    def test_search_does_not_return_duplicate(self, app):
+        # Given
+        things_stock = []
+        for x in range(0,120):
+            thing = create_product_with_thing_type(thing_name='snif')
+            offerer = create_offerer(siren=str(random.randrange(123456789, 923456789)))
+            venue = create_venue(offerer, siret=str(random.randrange(123123456789, 999923456789)))
+            thing_offer = create_offer_with_thing_product(venue, thing)
+            thing_stock = create_stock_from_offer(thing_offer)
+
+            things_stock.append(thing_stock)
+
+        PcObject.save(*things_stock)
+
+        # When
+        search_result_offers = get_offers_for_recommendations_search(page=1, keywords_string="snif")
+        search_result_offers = search_result_offers + get_offers_for_recommendations_search(page=2, keywords_string="snif")
+
+        # Then
+        assert len(search_result_offers) == len(set(search_result_offers))
 
 
 class GetActiveOffersTest:
