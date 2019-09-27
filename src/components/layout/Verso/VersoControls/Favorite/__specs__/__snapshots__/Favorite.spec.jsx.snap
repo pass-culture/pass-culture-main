@@ -1,18 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | verso | verso-controls | favorite | Favorite should match the snapshot 1`] = `
+exports[`src | components | layout | Verso | VersoControls | Favorite | Favorite when the favorite functionnality is not implemented should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Favorite
-    handleFavorite={
+    handleFavorite={[MockFunction]}
+    isFavorite={true}
+    isFeatureDisabled={true}
+    loadFavorites={
       [MockFunction] {
         "calls": Array [
-          Array [
-            "AE",
-            null,
-            true,
-            [Function],
-          ],
+          Array [],
         ],
         "results": Array [
           Object {
@@ -22,6 +20,117 @@ ShallowWrapper {
         ],
       }
     }
+    mediationId={null}
+    offerId="AE"
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": <i
+        aria-hidden="true"
+        className="font-icon icon-ico-like-on"
+        title="Retirer des favoris"
+      />,
+      "className": "fav-button",
+      "disabled": true,
+      "onClick": [Function],
+      "type": "button",
+    },
+    "ref": null,
+    "rendered": Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "aria-hidden": "true",
+        "className": "font-icon icon-ico-like-on",
+        "title": "Retirer des favoris",
+      },
+      "ref": null,
+      "rendered": null,
+      "type": "i",
+    },
+    "type": "button",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": <i
+          aria-hidden="true"
+          className="font-icon icon-ico-like-on"
+          title="Retirer des favoris"
+        />,
+        "className": "fav-button",
+        "disabled": true,
+        "onClick": [Function],
+        "type": "button",
+      },
+      "ref": null,
+      "rendered": Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "aria-hidden": "true",
+          "className": "font-icon icon-ico-like-on",
+          "title": "Retirer des favoris",
+        },
+        "ref": null,
+        "rendered": null,
+        "type": "i",
+      },
+      "type": "button",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+    Symbol(enzyme.__providerValues__): undefined,
+  },
+  Symbol(enzyme.__providerValues__): Map {},
+  Symbol(enzyme.__childContext__): null,
+}
+`;
+
+exports[`src | components | layout | Verso | VersoControls | Favorite | Favorite when the user can add to favorite should match the snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <Favorite
+    handleFavorite={[MockFunction]}
     isFavorite={true}
     isFeatureDisabled={false}
     loadFavorites={
@@ -61,7 +170,7 @@ ShallowWrapper {
       />,
       "className": "fav-button",
       "disabled": false,
-      "onClick": undefined,
+      "onClick": [Function],
       "type": "button",
     },
     "ref": null,
@@ -93,7 +202,7 @@ ShallowWrapper {
         />,
         "className": "fav-button",
         "disabled": false,
-        "onClick": undefined,
+        "onClick": [Function],
         "type": "button",
       },
       "ref": null,
@@ -105,6 +214,132 @@ ShallowWrapper {
           "aria-hidden": "true",
           "className": "font-icon icon-ico-like-on",
           "title": "Retirer des favoris",
+        },
+        "ref": null,
+        "rendered": null,
+        "type": "i",
+      },
+      "type": "button",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+    Symbol(enzyme.__providerValues__): undefined,
+  },
+  Symbol(enzyme.__providerValues__): Map {},
+  Symbol(enzyme.__childContext__): null,
+}
+`;
+
+exports[`src | components | layout | Verso | VersoControls | Favorite | Favorite when the user can delete to favorite should match the snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <Favorite
+    handleFavorite={[MockFunction]}
+    isFavorite={false}
+    isFeatureDisabled={false}
+    loadFavorites={
+      [MockFunction] {
+        "calls": Array [
+          Array [],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+        ],
+      }
+    }
+    mediationId={null}
+    offerId="AE"
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": <i
+        aria-hidden="true"
+        className="font-icon icon-ico-like"
+        title="Ajouter aux favoris"
+      />,
+      "className": "fav-button",
+      "disabled": false,
+      "onClick": [Function],
+      "type": "button",
+    },
+    "ref": null,
+    "rendered": Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "aria-hidden": "true",
+        "className": "font-icon icon-ico-like",
+        "title": "Ajouter aux favoris",
+      },
+      "ref": null,
+      "rendered": null,
+      "type": "i",
+    },
+    "type": "button",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": <i
+          aria-hidden="true"
+          className="font-icon icon-ico-like"
+          title="Ajouter aux favoris"
+        />,
+        "className": "fav-button",
+        "disabled": false,
+        "onClick": [Function],
+        "type": "button",
+      },
+      "ref": null,
+      "rendered": Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "aria-hidden": "true",
+          "className": "font-icon icon-ico-like",
+          "title": "Ajouter aux favoris",
         },
         "ref": null,
         "rendered": null,

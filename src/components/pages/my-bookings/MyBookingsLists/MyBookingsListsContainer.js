@@ -9,6 +9,7 @@ import { withRouter } from 'react-router-dom'
 export const mapStateToProps = state => {
   const otherBookings = selectOtherBookings(state)
   const soonBookings = selectSoonBookings(state)
+
   return { otherBookings, soonBookings }
 }
 

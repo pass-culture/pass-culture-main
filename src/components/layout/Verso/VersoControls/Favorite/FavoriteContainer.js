@@ -22,7 +22,7 @@ export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
   const isFeatureDisabled = selectIsFeatureDisabled(state, 'FAVORITE_OFFER')
   const mediation = selectMediationByRouterMatch(state, match) || {}
-  const { id: mediationId = null } = mediation
+  const { id: mediationId } = mediation
   const offer = selectOfferByRouterMatch(state, match) || {}
   const { id: offerId } = offer
   const favorite = selectFavoriteByOfferId(state, offerId)
@@ -37,7 +37,7 @@ export const mapStateToProps = (state, ownProps) => {
 }
 
 export const mapDispatchToProps = dispatch => ({
-  handleFavorite: (offerId, mediationId, isFavorite, showFailModal) => () => {
+  handleFavorite: (offerId, mediationId, isFavorite, showFailModal, handleSuccess) => () => {
     dispatch(
       requestData({
         apiPath: apiPath(isFavorite, offerId),
@@ -46,6 +46,7 @@ export const mapDispatchToProps = dispatch => ({
           offerId,
         },
         handleFail: showFailModal,
+        handleSuccess,
         method: isFavorite ? 'DELETE' : 'POST',
         normalizer: favoriteNormalizer,
       })

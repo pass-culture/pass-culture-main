@@ -11,18 +11,40 @@ const showFailModal = () => {
 }
 
 class Favorite extends PureComponent {
+  constructor() {
+    super()
+
+    this.state = { isWaitingApi: false }
+  }
+
   componentDidMount() {
     const { loadFavorites } = this.props
+
     loadFavorites()
   }
 
+  handleSuccess = () => {
+    this.setState({ isWaitingApi: false })
+  }
+
+  handleFavorite = (offerId, mediationId, isFavorite) => () => {
+    const { handleFavorite } = this.props
+
+    this.setState(
+      { isWaitingApi: true },
+      handleFavorite(offerId, mediationId, isFavorite, showFailModal, this.handleSuccess)
+    )
+  }
+
   render() {
-    const { handleFavorite, isFavorite, isFeatureDisabled, mediationId, offerId } = this.props
+    const { isFavorite, isFeatureDisabled, mediationId, offerId } = this.props
+    const { isWaitingApi } = this.state
+
     return (
       <button
         className="fav-button"
-        disabled={isFeatureDisabled}
-        onClick={handleFavorite(offerId, mediationId, isFavorite, showFailModal)}
+        disabled={isFeatureDisabled || isWaitingApi}
+        onClick={this.handleFavorite(offerId, mediationId, isFavorite)}
         type="button"
       >
         <i
@@ -36,13 +58,15 @@ class Favorite extends PureComponent {
 }
 
 Favorite.defaultProps = {
+  isFavorite: true,
+  isFeatureDisabled: false,
   mediationId: null,
 }
 
 Favorite.propTypes = {
   handleFavorite: PropTypes.func.isRequired,
-  isFavorite: PropTypes.bool.isRequired,
-  isFeatureDisabled: PropTypes.bool.isRequired,
+  isFavorite: PropTypes.bool,
+  isFeatureDisabled: PropTypes.bool,
   loadFavorites: PropTypes.func.isRequired,
   mediationId: PropTypes.string,
   offerId: PropTypes.string.isRequired,
