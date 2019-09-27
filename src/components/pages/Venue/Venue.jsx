@@ -199,9 +199,6 @@ class Venue extends Component {
       offerer,
     } = this.props
 
-
-    // isCreatedEntity > Valider ou Créer une venue
-
     const { name: offererName } = offerer || {}
     const { id: initialId, isVirtual: initialIsVirtual, name: initialName, siret: initialSiret } =
     formInitialValues || {}

@@ -28,21 +28,16 @@ export const mapStateToProps = (state, ownProps) => {
   } = ownProps
   const { id: currentUserId } = currentUser
   const { isCreatedEntity } = query.context()
-
   const formInitialValues = selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity(
     state,
     venueId,
     offererId,
     isCreatedEntity
   )
+  const adminUserOfferer = selectUserOffererByOffererIdAndUserIdAndRightsType(state, offererId, currentUserId,  'admin')
 
   return {
-    adminUserOfferer: selectUserOffererByOffererIdAndUserIdAndRightsType(
-      state,
-      offererId,
-      currentUserId,
-      'admin'
-    ),
+    adminUserOfferer,
     formInitialValues,
     offerer: selectOffererById(state, offererId),
   }
