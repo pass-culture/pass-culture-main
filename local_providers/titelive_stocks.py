@@ -56,6 +56,7 @@ class TiteLiveStocks(LocalProvider):
         self.more_pages = True
         self.data = None
         self.product = None
+        self.offerId = None
 
     def __next__(self):
         self.index = self.index + 1
@@ -93,7 +94,7 @@ class TiteLiveStocks(LocalProvider):
 
         return [providable_info_offer, providable_info_stock]
 
-    def updateObject(self, obj):
+    def fill_object_attributes(self, obj):
         assert obj.idAtProviders == "%s@%s" % (self.titelive_stock['ref'], self.venue_siret)
         if isinstance(obj, Stock):
             self.update_stock_object(obj, self.titelive_stock)
@@ -107,7 +108,7 @@ class TiteLiveStocks(LocalProvider):
         obj.price = int(stock_information['price']) / PRICE_DIVIDER_TO_EURO
         obj.available = int(stock_information['available'])
         obj.bookingLimitDatetime = None
-        obj.offerId = self.providables[0].id
+        obj.offerId = self.offerId
 
     def update_offer_object(self, obj, stock_information):
         obj.name = self.product.name
@@ -120,6 +121,8 @@ class TiteLiveStocks(LocalProvider):
         if obj.id is None:
             next_id = self.get_next_offer_id_from_sequence()
             obj.id = next_id
+
+        self.offerId = obj.id
 
         if int(stock_information['available']) == 0:
             obj.isActive = False

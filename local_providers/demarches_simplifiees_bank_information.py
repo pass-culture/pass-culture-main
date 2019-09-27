@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from connectors.api_demarches_simplifiees import get_application_details
 from domain.bank_account import format_raw_iban_or_bic
@@ -44,14 +44,12 @@ class BankInformationProvider(LocalProvider):
 
         self.bank_information_dict = self.retrieve_bank_information(self.application_details)
 
-        if 'idAtProviders' not in self.bank_information_dict:
-            self.log_provider_event(LocalProviderEventType.SyncError,
-                          f'unknown siret or siren for application id {self.application_id}')
+        if not self.bank_information_dict:
             return None
 
         return self.retrieve_providable_info()
 
-    def updateObject(self, bank_information):
+    def fill_object_attributes(self, bank_information):
         bank_information.iban = format_raw_iban_or_bic(self.bank_information_dict['iban'])
         bank_information.bic = format_raw_iban_or_bic(self.bank_information_dict['bic'])
         bank_information.applicationId = self.bank_information_dict['applicationId']
@@ -73,7 +71,7 @@ class BankInformationProvider(LocalProvider):
                                                                       DATE_ISO_FORMAT)
         return [providable_info]
 
-    def retrieve_bank_information(self, application_details: dict) -> dict:
+    def retrieve_bank_information(self, application_details: dict) -> Optional[dict]:
         bank_information_dict = dict()
         bank_information_dict['iban'] = _find_value_in_fields(application_details['dossier']["champs"], "IBAN")
         bank_information_dict['bic'] = _find_value_in_fields(application_details['dossier']["champs"], "BIC")
@@ -95,7 +93,13 @@ class BankInformationProvider(LocalProvider):
         else:
             self.log_provider_event(LocalProviderEventType.SyncError,
                           f'unknown RIB affiliation for application id {self.application_id}')
-            raise UnknownRibAffiliation
+            return None
+
+        if 'idAtProviders' not in bank_information_dict:
+            self.log_provider_event(LocalProviderEventType.SyncError,
+                                    f'unknown siret or siren for application id {self.application_id}')
+            return None
+
         return bank_information_dict
 
 

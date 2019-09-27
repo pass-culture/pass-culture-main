@@ -140,12 +140,16 @@ class VenueWithoutSIRETBankInformationProviderTest:
                                                               app):
         # given
         APPLICATION_ID_2 = 2
+
         last_provider_sync = LocalProviderEvent()
         last_provider_sync.date = datetime(2020, 1, 2)
         find_latest_sync_end_event.return_value = last_provider_sync
-        get_all_application_ids_for_procedure.return_value = [self.APPLICATION_ID,
-                                                                                     APPLICATION_ID_2]
-        get_application_details.return_value = _create_detail_response(self.APPLICATION_ID, self.OFFERER_ID,
+        get_all_application_ids_for_procedure.return_value = [
+            self.APPLICATION_ID,
+            APPLICATION_ID_2
+        ]
+        get_application_details.return_value = _create_detail_response(self.APPLICATION_ID,
+                                                                       self.OFFERER_ID,
                                                                        self.VENUE_ID)
 
         PROCEDURE_ID_VENUE_WITHOUT_SIRET = '5636727'
@@ -163,7 +167,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
                           VenueWithoutSIRETBankInformationProvider,
                           None,
                           checkedObjects=0,
-                          createdObjects=2,
+                          createdObjects=0,
                           updatedObjects=0,
                           erroredObjects=0,
                           checkedThumbs=0,

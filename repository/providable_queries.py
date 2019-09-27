@@ -38,7 +38,7 @@ def get_existing_object(model_type: Model, id_at_providers: str) -> Optional[Dic
     return _dict_to_object(db_object_dict, model_type) if db_object_dict else None
 
 
-def get_last_modification_date_for_provider(provider_id: int, pc_obj: Model) -> datetime:
+def get_last_update_for_provider(provider_id: int, pc_obj: Model) -> datetime:
     if pc_obj.lastProviderId == provider_id:
         return pc_obj.dateModifiedAtLastProvider
     for change in pc_obj.activity():

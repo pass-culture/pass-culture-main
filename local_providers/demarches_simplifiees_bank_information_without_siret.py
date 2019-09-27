@@ -74,7 +74,7 @@ class VenueWithoutSIRETBankInformationProvider(LocalProvider):
         providable_info.date_modified_at_provider = self.application_details['updated_at']
         return [providable_info]
 
-    def updateObject(self, bank_information):
+    def fill_object_attributes(self, bank_information):
         bank_information.iban = format_raw_iban_or_bic(self.application_details['IBAN'])
         bank_information.bic = format_raw_iban_or_bic(self.application_details['BIC'])
         bank_information.applicationId = self.application_details['applicationId']

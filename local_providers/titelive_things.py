@@ -81,7 +81,7 @@ class TiteLiveThings(LocalProvider):
         providable_info.date_modified_at_provider = read_things_date(self.infos['date_updated'])
         return [providable_info]
 
-    def updateObject(self, thing):
+    def fill_object_attributes(self, thing):
         assert thing.idAtProviders == self.infos['ean13']
 
         thing.name = trim_with_elipsis(self.infos['titre'], 140)

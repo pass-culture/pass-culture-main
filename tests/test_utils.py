@@ -13,6 +13,7 @@ from postgresql_audit.flask import versioning_manager
 from simplejson import JSONDecodeError
 
 import models
+from local_providers.providable_info import ProvidableInfo
 from models import Booking, \
     Criterion, \
     Deposit, \
@@ -28,10 +29,10 @@ from models import Booking, \
     User, \
     UserOfferer, \
     BankInformation, \
-    Venue, PaymentMessage, VenueProvider, Product, Favorite
+    Venue, PaymentMessage, VenueProvider, Product, Favorite, Provider
 from models.beneficiary_import import BeneficiaryImport
 from models.beneficiary_import_status import ImportStatus, BeneficiaryImportStatus
-from models.db import db
+from models.db import db, Model
 from models.email import Email, EmailStatus
 from models.feature import FeatureToggle, Feature
 from models.payment import PaymentDetails
@@ -896,3 +897,23 @@ def deactivate_feature(feature_toggle: FeatureToggle):
     feature = Feature.query.filter_by(name=feature_toggle.name).one()
     feature.isActive = False
     PcObject.save(feature)
+
+
+def create_provider(local_class: str, is_active: bool = True) -> Provider:
+    provider = Provider()
+    provider.localClass = local_class
+    provider.isActive = is_active
+    provider.name = 'My Test Provider'
+    return provider
+
+def create_providable_info(model_name: Model = Product,
+                           id_at_providers: str = '1',
+                           date_modified: datetime = None) -> ProvidableInfo:
+    providable_info = ProvidableInfo()
+    providable_info.type = model_name
+    providable_info.id_at_providers = id_at_providers
+    if date_modified:
+        providable_info.date_modified_at_provider = date_modified
+    else:
+        providable_info.date_modified_at_provider = datetime.utcnow()
+    return providable_info

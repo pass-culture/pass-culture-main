@@ -69,7 +69,7 @@ class TiteLiveThingDescriptions(LocalProvider):
 
         return [providable_info]
 
-    def updateObject(self, thing):
+    def fill_object_attributes(self, thing):
         with self.zip.open(self.desc_zipinfo) as f:
             thing.description = f.read().decode('iso-8859-1')
 

@@ -361,8 +361,7 @@ class BankInformationProviderProviderTest:
         PcObject.save(bank_information_provider.provider)
 
         # when
-        with pytest.raises(UnknownRibAffiliation):
-            bank_information_provider.updateObjects()
+        bank_information_provider.updateObjects()
 
         # Then
         bank_information = BankInformation.query.all()
