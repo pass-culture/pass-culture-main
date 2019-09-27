@@ -1,7 +1,6 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 import { NavLink } from 'react-router-dom'
-import { resolveIsNew } from 'pass-culture-shared'
 
 import Offers from '../Offers'
 import OfferItem from '../OfferItem/OfferItemContainer'
@@ -13,7 +12,6 @@ describe('src | components | pages | Offers | Offers', () => {
   let parse
   let props
   let currentUser
-  let prevProps
 
   beforeEach(() => {
     change = jest.fn()
@@ -24,11 +22,12 @@ describe('src | components | pages | Offers | Offers', () => {
     props = {
       currentUser,
       dispatch,
-      offers: [],
+      loadOffers: jest.fn(),
       location: {
         pathname: '/offres',
-        search: 'offres?lieu=AQ&structure=A4'
+        search: 'offres?lieu=AQ&structure=A4',
       },
+      offers: [],
       pagination: {
         apiQuery: {
           keywords: null,
@@ -41,32 +40,9 @@ describe('src | components | pages | Offers | Offers', () => {
         change,
         parse,
       },
+      resetLoadedOffers: jest.fn(),
       types: [],
-      venue: {}
-    }
-
-    prevProps = {
-      currentUser,
-      dispatch,
-      offers: [],
-      location: {
-        pathname: '/offres',
-        search: 'offres?lieu=AQ&structure=A4'
-      },
-      pagination: {
-        apiQuery: {
-          keywords: null,
-          offererId: null,
-          orderBy: 'offer.id+desc',
-          venueId: null,
-        },
-      },
-      query: {
-        change,
-        parse,
-      },
-      types: [],
-      venue: {}
+      venue: {},
     }
   })
 
@@ -100,7 +76,7 @@ describe('src | components | pages | Offers | Offers', () => {
       it('should be displayed when offerer is given', () => {
         // given
         props.offerer = {
-          name: "Scope La Brique"
+          name: 'Scope La Brique',
         }
 
         // when
@@ -108,7 +84,7 @@ describe('src | components | pages | Offers | Offers', () => {
         const offererButton = wrapper.find('button.offerer-filter')
         // then
         expect(offererButton).toHaveLength(1)
-        expect(offererButton.text()).toBe("Structure : Scope La Brique<Icon />")
+        expect(offererButton.text()).toBe('Structure : Scope La Brique<Icon />')
       })
 
       it('should not be displayed when offerer is given', () => {
@@ -126,7 +102,7 @@ describe('src | components | pages | Offers | Offers', () => {
       it('should update url and remove offerer filter', () => {
         // given
         props.offerer = {
-          name: "Scope La Brique"
+          name: 'Scope La Brique',
         }
 
         // when
@@ -134,8 +110,8 @@ describe('src | components | pages | Offers | Offers', () => {
         const offererButton = wrapper.find('button.offerer-filter')
         offererButton.simulate('click')
         const expected = {
-          "page": null,
-          "structure": null
+          page: null,
+          structure: null,
         }
 
         // then
@@ -147,7 +123,7 @@ describe('src | components | pages | Offers | Offers', () => {
       it('should be displayed when venue is given', () => {
         // given
         props.venue = {
-          name: "La verbeuse"
+          name: 'La verbeuse',
         }
 
         // when
@@ -155,7 +131,7 @@ describe('src | components | pages | Offers | Offers', () => {
         const offererButton = wrapper.find('button.venue-filter')
         // then
         expect(offererButton).toHaveLength(1)
-        expect(offererButton.text()).toBe("Lieu : La verbeuse<Icon />")
+        expect(offererButton.text()).toBe('Lieu : La verbeuse<Icon />')
       })
 
       it('should not be displayed when venue is given', () => {
@@ -173,7 +149,7 @@ describe('src | components | pages | Offers | Offers', () => {
       it('should update url and remove venue filter', () => {
         // given
         props.venue = {
-          name: "La verbeuse"
+          name: 'La verbeuse',
         }
 
         // when
@@ -181,8 +157,8 @@ describe('src | components | pages | Offers | Offers', () => {
         const offererButton = wrapper.find('button.venue-filter')
         offererButton.simulate('click')
         const expected = {
-          "page": null,
-          "lieu": null
+          page: null,
+          lieu: null,
         }
 
         // then
@@ -228,13 +204,15 @@ describe('src | components | pages | Offers | Offers', () => {
           // when
           const wrapper = shallow(<Offers {...props} />)
           const navLink = wrapper.find(NavLink)
-          const span = wrapper.find(NavLink).find('span').at(1)
+          const span = wrapper
+            .find(NavLink)
+            .find('span')
+            .at(1)
 
           // then
           expect(navLink).toHaveLength(1)
           expect(navLink.props().to).toStrictEqual('/offres/creation?structure=XY')
-          expect(span.text()).toBe("Créer une offre")
-
+          expect(span.text()).toBe('Créer une offre')
         })
       })
       describe('when lieu or (VenueId)', () => {
@@ -248,12 +226,15 @@ describe('src | components | pages | Offers | Offers', () => {
           // when
           const wrapper = shallow(<Offers {...props} />)
           const navLink = wrapper.find(NavLink)
-          const span = wrapper.find(NavLink).find('span').at(1)
+          const span = wrapper
+            .find(NavLink)
+            .find('span')
+            .at(1)
 
           // then
           expect(navLink).toHaveLength(1)
           expect(navLink.props().to).toStrictEqual('/offres/creation?lieu=G6')
-          expect(span.text()).toBe("Créer une offre")
+          expect(span.text()).toBe('Créer une offre')
         })
       })
     })
@@ -262,11 +243,12 @@ describe('src | components | pages | Offers | Offers', () => {
       it('should be displayed when offers and venue are given', () => {
         // given
         props.venue = {
-          name: 'Le biennommé'
+          name: 'Le biennommé',
         }
-        props.offers = [{
-          id: "N9"
-          }
+        props.offers = [
+          {
+            id: 'N9',
+          },
         ]
 
         // when
@@ -275,15 +257,16 @@ describe('src | components | pages | Offers | Offers', () => {
 
         // then
         expect(deactivateButton).toHaveLength(1)
-        expect(deactivateButton.text()).toBe("Désactiver toutes les offres")
+        expect(deactivateButton.text()).toBe('Désactiver toutes les offres')
       })
 
       it('should not be displayed when offers or venue is missing', () => {
         // given
         props.venue = null
-        props.offers = [{
-          id: "N9"
-          }
+        props.offers = [
+          {
+            id: 'N9',
+          },
         ]
 
         // when
@@ -298,11 +281,12 @@ describe('src | components | pages | Offers | Offers', () => {
         // given
         props.venue = {
           id: 'GY',
-          name: 'Le biennommé'
+          name: 'Le biennommé',
         }
-        props.offers = [{
-          id: "N9"
-          }
+        props.offers = [
+          {
+            id: 'N9',
+          },
         ]
         // given
         const wrapper = shallow(<Offers {...props} />)
@@ -313,13 +297,13 @@ describe('src | components | pages | Offers | Offers', () => {
 
         // then
         const expected = {
-          'config':
-          { 'apiPath': '/venues/GY/offers/deactivate',
-            'handleSuccess': undefined,
-            'method': 'PUT',
-            'stateKey': 'offers',
+          config: {
+            apiPath: '/venues/GY/offers/deactivate',
+            handleSuccess: undefined,
+            method: 'PUT',
+            stateKey: 'offers',
           },
-          'type': 'REQUEST_DATA_PUT_OFFERS'
+          type: 'REQUEST_DATA_PUT_OFFERS',
         }
         expect(props.dispatch).toHaveBeenCalledWith(expected)
       })
@@ -329,11 +313,12 @@ describe('src | components | pages | Offers | Offers', () => {
       it('should be displayed when offers and venue are given', () => {
         // given
         props.venue = {
-          name: 'Le biennommé'
+          name: 'Le biennommé',
         }
-        props.offers = [{
-          id: "N9"
-          }
+        props.offers = [
+          {
+            id: 'N9',
+          },
         ]
 
         // when
@@ -341,15 +326,16 @@ describe('src | components | pages | Offers | Offers', () => {
         const activateButton = wrapper.find('button.activate')
         // then
         expect(activateButton).toHaveLength(1)
-        expect(activateButton.text()).toBe("Activer toutes les offres")
+        expect(activateButton.text()).toBe('Activer toutes les offres')
       })
 
       it('should not be displayed when offers or venue is missing', () => {
         // given
         props.venue = null
-        props.offers = [{
-          id: "N9"
-          }
+        props.offers = [
+          {
+            id: 'N9',
+          },
         ]
 
         // when
@@ -364,11 +350,12 @@ describe('src | components | pages | Offers | Offers', () => {
         // given
         props.venue = {
           id: 'GY',
-          name: 'Le biennommé'
+          name: 'Le biennommé',
         }
-        props.offers = [{
-          id: "N9"
-          }
+        props.offers = [
+          {
+            id: 'N9',
+          },
         ]
         // given
         const wrapper = shallow(<Offers {...props} />)
@@ -385,7 +372,7 @@ describe('src | components | pages | Offers | Offers', () => {
             method: 'PUT',
             stateKey: 'offers',
           },
-          type: 'REQUEST_DATA_PUT_OFFERS'
+          type: 'REQUEST_DATA_PUT_OFFERS',
         }
         expect(props.dispatch).toHaveBeenCalledWith(expected)
       })
@@ -424,14 +411,11 @@ describe('src | components | pages | Offers | Offers', () => {
           // when
           wrapper.instance().handleOnSubmit(event)
 
-          const expected = {
-            patch: {
-              offers: [],
-            },
-            type: 'ASSIGN_DATA',
-          }
-
           // then
+          const expected = {
+            config: { apiPath: '/types', method: 'GET' },
+            type: 'REQUEST_DATA_GET_/TYPES',
+          }
           expect(dispatch.mock.calls[0][0]).toStrictEqual(expected)
           dispatch.mockClear()
         })
@@ -489,10 +473,8 @@ describe('src | components | pages | Offers | Offers', () => {
         // when
         shallow(<Offers {...props} />)
         const expectedAssignData = {
-          patch: {
-            offers: [],
-          },
-          type: 'ASSIGN_DATA',
+          config: { apiPath: '/types', method: 'GET' },
+          type: 'REQUEST_DATA_GET_/TYPES',
         }
 
         // then
@@ -516,138 +498,71 @@ describe('src | components | pages | Offers | Offers', () => {
         }
 
         // then
-        expect(dispatch.mock.calls[3][0]).toStrictEqual(expected)
+        expect(dispatch.mock.calls[0][0]).toStrictEqual(expected)
       })
 
       it('should change query when there is pagination', () => {
         // given
-        props.query.parse =  () => ({'page': '2'})
+        props.query.parse = () => ({ page: '2' })
 
         // when
         const wrapper = shallow(<Offers {...props} />)
         wrapper.instance().componentDidMount()
-        const expected = {'page': null}
+        const expected = { page: null }
 
         // then
         expect(props.query.change).toHaveBeenCalledWith(expected)
         dispatch.mockClear()
-    })
-
-    describe('handleSubmitRequestSuccess', () => {
-      it('sould dispatch a succes notificationMessage', () => {
-        // given
-        const wrapper = shallow(<Offers {...props} />)
-
-        // when
-        wrapper.instance().handleSubmitRequestSuccess('Fake message')
-
-        // then
-        const expected = {
-          'patch': {
-            'text': 'Fake message',
-            'type': 'success'
-          },
-          'type': 'SHOW_NOTIFICATION'
-        }
-
-        expect(props.dispatch).toHaveBeenCalledWith(expected)
       })
-    })
 
-    describe('componentDidUpdate', () => {
-      describe('when location has change', () => {
-        it('should dispatch assignData when component is rendered', () => {
+      describe('handleSubmitRequestSuccess', () => {
+        it('sould dispatch a succes notificationMessage', () => {
           // given
-          props.query.parse = () => ({lieu: 'TY'})
-          props.location =  {
-            pathname: '/offres',
-            search: 'offres?lieu=AQ',
-          }
-          const prevProps = props
+          const wrapper = shallow(<Offers {...props} />)
 
           // when
-          const wrapper = shallow(<Offers {...props} />)
-          wrapper.instance().componentDidUpdate(prevProps)
-
-          const resolve = (datum) => resolveIsNew(datum, 'dateCreated', comparedTo)
-          const expected = { hasMore: true, isLoading: true }
-          const expectedAssignData = {
-              config: {
-                apiPath: "/offers?venueId=TY",
-                handleFail: expect.any(Function),
-                handleSuccess: expect.any(Function),
-                method: 'GET',
-                normalizer: {
-                  mediations: 'mediations',
-                  product: {
-                    normalizer: {
-                      offers  : 'offers'
-                    },
-                  stateKey: 'products'
-                  },
-                  stocks: 'stocks',
-                  venue: {
-                    normalizer: {
-                      managingOfferer: 'offerers'
-                    },
-                  stateKey: 'venues'
-                }
-              },
-              resolve
-                },
-                type: 'REQUEST_DATA_GET_/OFFERS?VENUEID=TY'}
+          wrapper.instance().handleSubmitRequestSuccess('Fake message')
 
           // then
-          expect(dispatch.mock.calls[2][0].config.apiPath).toStrictEqual(expectedAssignData.config.apiPath)
-          expect(dispatch.mock.calls[2][0].config.method).toStrictEqual(expectedAssignData.config.method)
-          expect(dispatch.mock.calls[2][0].config.type).toStrictEqual(expectedAssignData.config.type)
-          expect(wrapper.state()).toStrictEqual(expected)
+          const expected = {
+            patch: {
+              text: 'Fake message',
+              type: 'success',
+            },
+            type: 'SHOW_NOTIFICATION',
+          }
 
-          dispatch.mockClear()
+          expect(props.dispatch).toHaveBeenCalledWith(expected)
         })
       })
 
-      it('should set isLoading to false when offers load is finished', () => {
-        // given
-        props.offers = [
-          {id: 'AE' },
-          {id: 'FA' },
-          {id: 'DF' },
-        ]
+      describe('componentDidUpdate', () => {
+        describe('when location has change', () => {
+          it('should dispatch assignData when component is rendered', () => {
+            // given
+            props.query.parse = () => ({ lieu: 'TY' })
+            props.location = {
+              pathname: '/offres',
+              search: 'offres?lieu=AQ',
+            }
+            const prevProps = props
 
-        prevProps.offers = [
-          {id: 'AE' },
-        ]
+            // when
+            const wrapper = shallow(<Offers {...props} />)
+            wrapper.instance().componentDidUpdate(prevProps)
 
-        const wrapper = shallow(<Offers {...props} />)
+            const expected = { hasMore: true, isLoading: true }
 
-        // when
-        wrapper.instance().componentDidUpdate(prevProps)
+            // then
+            expect(dispatch.mock.calls[0][0].config.apiPath).toBe('/types')
+            expect(dispatch.mock.calls[0][0].type).toBe('REQUEST_DATA_GET_/TYPES')
+            expect(dispatch.mock.calls[0][0].config.method).toBe('GET')
+            expect(wrapper.state()).toStrictEqual(expected)
 
-        // then
-        expect(wrapper.state()).toHaveProperty('isLoading', false)
+            dispatch.mockClear()
+          })
+        })
       })
-
-      it('should set hasMore to false when less than 10 offers has been loaded', () => {
-        // given
-        props.offers = [
-          {id: 'AE' },
-          {id: 'FA' },
-          {id: 'DF' },
-        ]
-
-        prevProps.offers = [{id: 'AE' },]
-
-        const wrapper = shallow(<Offers {...props} />)
-
-        // when
-        wrapper.instance().componentDidUpdate(prevProps)
-
-        // then
-        expect(wrapper.state()).toHaveProperty('hasMore', false)
-      })
-
-    })
     })
   })
 })

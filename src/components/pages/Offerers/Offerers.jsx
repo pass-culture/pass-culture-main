@@ -15,49 +15,38 @@ import TextField from '../../layout/form/fields/TextField'
 import { mapApiToBrowser, translateQueryParamsToApiParams } from '../../../utils/translate'
 import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
 import userHasNoOffersInAPhysicalVenueYet from './utils/userHasNoOffersInAPhysicalVenueYet'
+import selectOfferers from '../../../selectors/selectOfferers'
 
 class Offerers extends Component {
   constructor(props) {
     super(props)
-    const { resetLoadedOfferers } = props
 
     this.state = {
       hasMore: false,
       isLoading: false,
     }
-
-    resetLoadedOfferers()
   }
 
   componentDidMount() {
-    const { currentUser, offerers, showNotification } = this.props
+    const { currentUser, offerers, query, showNotification } = this.props
 
     const url = createVenueForOffererUrl(offerers)
-
     if (userHasNoOffersInAPhysicalVenueYet(currentUser)) {
       showNotification(url)
     }
 
-    this.handleRequestData()
+    const queryParams = query.parse()
+    if (queryParams.page) {
+      query.change({ page: null })
+    } else {
+      this.handleRequestData()
+    }
   }
 
   componentDidUpdate(prevProps) {
-    const { location, offerers } = this.props
-    const numberOfOfferersPerLoad = 10
-    const offerersHasBeenLoaded = offerers.length > prevProps.offerers.length
+    const { location } = this.props
 
-    if (offerersHasBeenLoaded) {
-      this.scrollerIsNotLoading()
-
-      const allOfferersLoaded = offerers.length !== prevProps.offerers.length + numberOfOfferersPerLoad
-      if (allOfferersLoaded) {
-        this.noMoreDataToLoad()
-      }
-    }
-
-    const { hasMore } = this.state
-
-    if (location.search !== prevProps.location.search && hasMore) {
+    if (location.search !== prevProps.location.search) {
       this.handleRequestData()
     }
   }
@@ -68,23 +57,6 @@ class Offerers extends Component {
       closeNotification()
     }
   }
-
-  scrollerIsNotLoading = () => {
-    this.setState({ isLoading: false })
-  }
-
-  noMoreDataToLoad = () => {
-    this.setState({ hasMore: false })
-  }
-
-  handleFail = () => {
-    this.setState({
-      hasMore: false,
-      isLoading: false,
-    })
-  }
-
-  handleSuccess = () => {}
 
   handleRequestData = () => {
     const { currentUser, loadOfferers, query } = this.props
@@ -101,24 +73,45 @@ class Offerers extends Component {
       loadOffererParameters.isValidated = true
     }
 
+    const handleSuccess = (state, action) => {
+      const { payload } = action
+      const { headers } = payload
+
+      const nextOfferers = selectOfferers(state)
+      const totalOfferersCount = parseInt(headers['total-data-count'], 10)
+      const currentOfferersCount = nextOfferers.length
+
+      this.setState({
+        hasMore: currentOfferersCount < totalOfferersCount,
+        isLoading: false,
+      })
+    }
+
+    const handleFail = () => {
+      this.setState({
+        isLoading: false,
+      })
+    }
+
     this.setState(
       { isLoading: true, hasMore: true },
-      loadOfferers(this.handleSuccess, this.handleFail, loadOffererParameters)
+      loadOfferers(handleSuccess, handleFail, loadOffererParameters)
     )
   }
 
   handleOnKeywordsSubmit = values => {
-    const { assignData, query } = this.props
+    const { query, resetLoadedOfferers } = this.props
     const { keywords } = values
+    const queryParams = query.parse()
 
     const isEmptyKeywords = typeof keywords === 'undefined' || keywords === ''
-
-    assignData()
 
     query.change({
       [mapApiToBrowser.keywords]: isEmptyKeywords ? null : keywords,
       page: null,
     })
+
+    if (queryParams[mapApiToBrowser.keywords] !== keywords) resetLoadedOfferers()
   }
 
   renderTextField = () => (
@@ -152,6 +145,16 @@ class Offerers extends Component {
       />
     </form>
   )
+
+  onPageChange = page => {
+    const { query } = this.props
+    query.change({ page }, { historyMethod: 'replace' })
+  }
+
+  onPageReset = () => {
+    const { query } = this.props
+    query.change({ page: null })
+  }
 
   render() {
     const { offerers, query } = this.props
@@ -214,6 +217,8 @@ class Offerers extends Component {
         <LoadingInfiniteScroll
           className="main-list offerers-list"
           element="ul"
+          handlePageChange={this.onPageChange}
+          handlePageReset={this.onPageReset}
           hasMore={hasMore}
           isLoading={isLoading}
           loader={<Spinner key="spinner" />}
@@ -232,18 +237,17 @@ class Offerers extends Component {
             )
           })}
         </LoadingInfiniteScroll>
+        {hasMore === false && 'Fin des résultats'}
       </Main>
     )
   }
 }
 
 Offerers.propTypes = {
-  assignData: PropTypes.func.isRequired,
   closeNotification: PropTypes.func.isRequired,
   currentUser: PropTypes.shape().isRequired,
   loadOfferers: PropTypes.func.isRequired,
   offerers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  query: PropTypes.shape().isRequired,
   resetLoadedOfferers: PropTypes.func.isRequired,
   showNotification: PropTypes.func.isRequired,
 }

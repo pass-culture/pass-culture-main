@@ -5,27 +5,23 @@ import React, { Component } from 'react'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
 import { NavLink } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
-import { assignData } from 'fetch-normalize-data'
 
 import HeroSection from '../../layout/HeroSection/HeroSection'
 import Spinner from '../../layout/Spinner'
 import Main from '../../layout/Main'
-import { offerNormalizer } from '../../../utils/normalizers'
+
 import { mapApiToBrowser, translateQueryParamsToApiParams } from '../../../utils/translate'
 import OfferItemContainer from './OfferItem/OfferItemContainer'
+import selectOffersByOffererIdAndVenueId from '../../../selectors/selectOffersByOffererIdAndVenueId'
 
 class Offers extends Component {
   constructor(props) {
     super(props)
 
-    const { dispatch } = props
-
     this.state = {
       hasMore: false,
       isLoading: false,
     }
-
-    dispatch(assignData({ offers: [] }))
   }
 
   componentDidMount() {
@@ -40,37 +36,15 @@ class Offers extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { location, offers } = this.props
-    const numberOfOffersPerLoad = 10
-    const offersHasBeenLoaded = offers.length > prevProps.offers.length
+    const { location } = this.props
 
-
-    if (offersHasBeenLoaded) {
-      this.scrollerIsNotLoading()
-
-      const allOffersLoaded = offers.length !== prevProps.offers.length + numberOfOffersPerLoad
-      if (allOffersLoaded) {
-        this.noMoreDataToLoad()
-      }
-    }
-
-    const { hasMore } = this.state
-
-    if (location.search !== prevProps.location.search && hasMore) {
+    if (location.search !== prevProps.location.search) {
       this.handleRequestData()
     }
   }
 
-  scrollerIsNotLoading = () => {
-    this.setState({ isLoading: false })
-  }
-
-  noMoreDataToLoad = () => {
-    this.setState({ hasMore: false })
-  }
-
   handleRequestData = () => {
-    const { comparedTo, dispatch, query, types } = this.props
+    const { comparedTo, dispatch, loadOffers, query, types } = this.props
 
     types.length === 0 && dispatch(requestData({ apiPath: '/types' }))
 
@@ -79,27 +53,37 @@ class Offers extends Component {
     const apiParamsString = stringify(apiParams)
     const apiPath = `/offers?${apiParamsString}`
 
-    this.setState({ isLoading: true, hasMore: true }, () => {
-      dispatch(
-        requestData({
-          apiPath,
-          handleFail: () => {
-            this.setState({
-              hasMore: false,
-              isLoading: false,
-            })
-          },
-          handleSuccess: () => {},
-          normalizer: offerNormalizer,
-          resolve: datum => resolveIsNew(datum, 'dateCreated', comparedTo),
-        })
-      )
-    })
+    const handleSuccess = (state, action) => {
+      const { payload } = action
+      const { headers } = payload
+      const apiQueryParams = translateQueryParamsToApiParams(queryParams)
+      const { offererId, venueId } = apiQueryParams
+      const nextOffers = selectOffersByOffererIdAndVenueId(state, offererId, venueId)
+      const totalOffersCount = parseInt(headers['total-data-count'], 10)
+      const currentOffersCount = nextOffers.length
+
+      this.setState({
+        hasMore: currentOffersCount < totalOffersCount,
+        isLoading: false,
+      })
+    }
+
+    const handleFail = () =>
+      this.setState({
+        isLoading: false,
+      })
+
+    const resolve = datum => resolveIsNew(datum, 'dateCreated', comparedTo)
+
+    this.setState({ hasMore: true, isLoading: true }, () =>
+      loadOffers({ apiPath, handleSuccess, handleFail, resolve })
+    )
   }
 
   handleOnSubmit = event => {
     event.preventDefault()
-    const { dispatch, query } = this.props
+    const { query, resetLoadedOffers } = this.props
+    const queryParams = query.parse()
     const value = event.target.elements.search.value
 
     query.change({
@@ -107,7 +91,7 @@ class Offers extends Component {
       page: null,
     })
 
-    dispatch(assignData({ offers: [] }))
+    if (queryParams[mapApiToBrowser.keywords] !== value) resetLoadedOffers()
   }
 
   handleSubmitRequestSuccess = notificationMessage => {
@@ -141,7 +125,9 @@ class Offers extends Component {
         apiPath: `/venues/${venue.id}/offers/deactivate`,
         method: 'PUT',
         stateKey: 'offers',
-        handleSuccess: this.handleSubmitRequestSuccess('Toutes les offres de ce lieu ont été désactivées avec succès')
+        handleSuccess: this.handleSubmitRequestSuccess(
+          'Toutes les offres de ce lieu ont été désactivées avec succès'
+        ),
       })
     )
   }
@@ -153,19 +139,21 @@ class Offers extends Component {
         apiPath: `/venues/${venue.id}/offers/activate`,
         method: 'PUT',
         stateKey: 'offers',
-        handleSuccess: this.handleSubmitRequestSuccess('Toutes les offres de ce lieu ont été activées avec succès')
+        handleSuccess: this.handleSubmitRequestSuccess(
+          'Toutes les offres de ce lieu ont été activées avec succès'
+        ),
       })
     )
   }
 
-  handleOnClick = () => {
-    // TODO
-    // query.change({ })}
+  onPageChange = page => {
+    const { query } = this.props
+    query.change({ page }, { historyMethod: 'replace' })
   }
 
-  handleOnChange = () => {
-    // TODO pagination.orderBy
-    // query.change({})
+  onPageReset = () => {
+    const { query } = this.props
+    query.change({ page: null })
   }
 
   render() {
@@ -185,6 +173,7 @@ class Offers extends Component {
     }
 
     const [orderName, orderDirection] = (orderBy || '').split('+')
+
     return (
       <Main
         id="offers"
@@ -235,8 +224,7 @@ class Offers extends Component {
                 disabled
                 type="button"
               >
-                &nbsp;
-                &nbsp;
+                &nbsp; &nbsp;
                 <Icon svg="ico-filter" />
               </button>
             </p>
@@ -244,7 +232,7 @@ class Offers extends Component {
         </form>
 
         <ul className="section">
-          { offerer &&
+          {offerer && (
             <button
               className="offerer-filter tag is-rounded is-medium"
               onClick={this.handleOnOffererClick(query)}
@@ -257,8 +245,8 @@ class Offers extends Component {
               </span>
               <Icon svg="ico-close-r" />
             </button>
-          }
-          { venue &&
+          )}
+          {venue && (
             <button
               className="venue-filter tag is-rounded is-medium"
               onClick={this.handleOnVenueClick(query)}
@@ -270,7 +258,7 @@ class Offers extends Component {
               </span>
               <Icon svg="ico-close-r" />
             </button>
-          }
+          )}
         </ul>
         <div className="section">
           {false && (
@@ -309,31 +297,31 @@ class Offers extends Component {
             </div>
           )}
 
-          {
-            offers && venue && (
-              <div className="offers-list-actions">
-                <button
-                  className="button deactivate is-secondary is-small"
-                  onClick={this.handleOnDeactivateAllVenueOffersClick}
-                  type="button"
-                >
-                  {'Désactiver toutes les offres'}
-                </button>
+          {offers && venue && (
+            <div className="offers-list-actions">
+              <button
+                className="button deactivate is-secondary is-small"
+                onClick={this.handleOnDeactivateAllVenueOffersClick}
+                type="button"
+              >
+                {'Désactiver toutes les offres'}
+              </button>
 
-                <button
-                  className="button activate is-secondary is-small"
-                  onClick={this.handleOnActivateAllVenueOffersClick}
-                  type="button"
-                >
-                  {'Activer toutes les offres'}
-                </button>
-              </div>
-            )
-          }
+              <button
+                className="button activate is-secondary is-small"
+                onClick={this.handleOnActivateAllVenueOffersClick}
+                type="button"
+              >
+                {'Activer toutes les offres'}
+              </button>
+            </div>
+          )}
 
           <LoadingInfiniteScroll
             className="offers-list main-list"
             element="ul"
+            handlePageChange={this.onPageChange}
+            handlePageReset={this.onPageReset}
             hasMore={hasMore}
             isLoading={isLoading}
             loader={<Spinner key="spinner" />}
@@ -345,6 +333,7 @@ class Offers extends Component {
               />
             ))}
           </LoadingInfiniteScroll>
+          {hasMore === false && 'Fin des résultats'}
         </div>
       </Main>
     )
@@ -354,6 +343,7 @@ class Offers extends Component {
 Offers.propTypes = {
   currentUser: PropTypes.shape().isRequired,
   offers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  resetLoadedOffers: PropTypes.func.isRequired,
 }
 
 export default Offers

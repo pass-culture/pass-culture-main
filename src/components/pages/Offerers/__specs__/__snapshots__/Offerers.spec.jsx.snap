@@ -4,9 +4,9 @@ exports[`src | components | pages | Offerers | Offerers should match the snapsho
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Offerers
-    assignData={[MockFunction]}
     closeNotification={[MockFunction]}
     currentUser={Object {}}
+    dispatch={[MockFunction]}
     loadOfferers={
       [MockFunction] {
         "calls": Array [
@@ -28,6 +28,7 @@ ShallowWrapper {
     }
     location={
       Object {
+        "pathname": "/structures",
         "search": "",
       }
     }
@@ -52,19 +53,7 @@ ShallowWrapper {
         "parse": [Function],
       }
     }
-    resetLoadedOfferers={
-      [MockFunction] {
-        "calls": Array [
-          Array [],
-        ],
-        "results": Array [
-          Object {
-            "type": "return",
-            "value": undefined,
-          },
-        ],
-      }
-    }
+    resetLoadedOfferers={[MockFunction]}
     showNotification={
       [MockFunction] {
         "calls": Array [
@@ -152,11 +141,16 @@ ShallowWrapper {
           render={[Function]}
         />,
         <br />,
-        <withRouter(_withQueryRouter)
+        <LoadingInfiniteScroll
           className="main-list offerers-list"
           element="ul"
+          getScrollParent={null}
+          handlePageChange={[Function]}
+          handlePageReset={[Function]}
           hasMore={true}
+          initialLoad={true}
           isLoading={true}
+          isReverse={false}
           loader={
             <Spinner
               Tag="div"
@@ -166,6 +160,11 @@ ShallowWrapper {
               style={null}
             />
           }
+          pageStart={0}
+          ref={null}
+          threshold={250}
+          useCapture={false}
+          useWindow={true}
         >
           <PendingOffererItem
             offerer={
@@ -175,7 +174,8 @@ ShallowWrapper {
               }
             }
           />
-        </withRouter(_withQueryRouter)>,
+        </LoadingInfiniteScroll>,
+        false,
       ],
       "id": "offerers",
       "name": "offerers",
@@ -417,7 +417,7 @@ ShallowWrapper {
       Object {
         "instance": null,
         "key": undefined,
-        "nodeType": "function",
+        "nodeType": "class",
         "props": Object {
           "children": Array [
             <PendingOffererItem
@@ -431,8 +431,13 @@ ShallowWrapper {
           ],
           "className": "main-list offerers-list",
           "element": "ul",
+          "getScrollParent": null,
+          "handlePageChange": [Function],
+          "handlePageReset": [Function],
           "hasMore": true,
+          "initialLoad": true,
           "isLoading": true,
+          "isReverse": false,
           "loader": <Spinner
             Tag="div"
             className={null}
@@ -440,6 +445,11 @@ ShallowWrapper {
             label="Chargement"
             style={null}
           />,
+          "pageStart": 0,
+          "ref": null,
+          "threshold": 250,
+          "useCapture": false,
+          "useWindow": true,
         },
         "ref": null,
         "rendered": Array [
@@ -460,6 +470,7 @@ ShallowWrapper {
         ],
         "type": [Function],
       },
+      false,
     ],
     "type": [Function],
   },
@@ -526,11 +537,16 @@ ShallowWrapper {
             render={[Function]}
           />,
           <br />,
-          <withRouter(_withQueryRouter)
+          <LoadingInfiniteScroll
             className="main-list offerers-list"
             element="ul"
+            getScrollParent={null}
+            handlePageChange={[Function]}
+            handlePageReset={[Function]}
             hasMore={true}
+            initialLoad={true}
             isLoading={true}
+            isReverse={false}
             loader={
               <Spinner
                 Tag="div"
@@ -540,6 +556,11 @@ ShallowWrapper {
                 style={null}
               />
             }
+            pageStart={0}
+            ref={null}
+            threshold={250}
+            useCapture={false}
+            useWindow={true}
           >
             <PendingOffererItem
               offerer={
@@ -549,7 +570,8 @@ ShallowWrapper {
                 }
               }
             />
-          </withRouter(_withQueryRouter)>,
+          </LoadingInfiniteScroll>,
+          false,
         ],
         "id": "offerers",
         "name": "offerers",
@@ -791,7 +813,7 @@ ShallowWrapper {
         Object {
           "instance": null,
           "key": undefined,
-          "nodeType": "function",
+          "nodeType": "class",
           "props": Object {
             "children": Array [
               <PendingOffererItem
@@ -805,8 +827,13 @@ ShallowWrapper {
             ],
             "className": "main-list offerers-list",
             "element": "ul",
+            "getScrollParent": null,
+            "handlePageChange": [Function],
+            "handlePageReset": [Function],
             "hasMore": true,
+            "initialLoad": true,
             "isLoading": true,
+            "isReverse": false,
             "loader": <Spinner
               Tag="div"
               className={null}
@@ -814,6 +841,11 @@ ShallowWrapper {
               label="Chargement"
               style={null}
             />,
+            "pageStart": 0,
+            "ref": null,
+            "threshold": 250,
+            "useCapture": false,
+            "useWindow": true,
           },
           "ref": null,
           "rendered": Array [
@@ -834,6 +866,7 @@ ShallowWrapper {
           ],
           "type": [Function],
         },
+        false,
       ],
       "type": [Function],
     },

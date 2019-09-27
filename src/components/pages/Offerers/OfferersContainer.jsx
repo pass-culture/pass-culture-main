@@ -2,10 +2,9 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import { withRequiredLogin } from '../../hocs'
-import { requestData } from 'redux-saga-data'
 import Offerers from './Offerers'
 import { closeNotification, showNotification } from 'pass-culture-shared'
-import { assignData } from 'fetch-normalize-data'
+import { assignData, requestData } from 'redux-saga-data'
 import { offererNormalizer } from '../../../utils/normalizers'
 import selectOfferers from '../../../selectors/selectOfferers'
 
@@ -19,14 +18,6 @@ export const mapStateToProps = state => {
 }
 
 export const mapDispatchToProps = dispatch => ({
-  assignData: () => dispatch(
-    assignData(
-      {
-        offerers: []
-      }
-    )
-  ),
-
   closeNotification: () => dispatch(closeNotification()),
 
   loadOfferers: (handleSuccess, handleFail, loadOffererParameters = {}) => {
@@ -38,7 +29,7 @@ export const mapDispatchToProps = dispatch => ({
       apiPath += `?validated=${isValidated}`
     }
 
-    if (keywords !== undefined && keywords !== ''){
+    if (keywords !== undefined && keywords !== '') {
       apiPath += `&${keywords}`
     }
 
@@ -66,7 +57,7 @@ export const mapDispatchToProps = dispatch => ({
   },
 
   resetLoadedOfferers: () => {
-    dispatch(assignData({offerers: []}))
+    dispatch(assignData({ offerers: [] }))
   },
 })
 

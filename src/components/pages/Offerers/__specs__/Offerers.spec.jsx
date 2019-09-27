@@ -6,38 +6,23 @@ import OffererItemContainer from '../OffererItem/OffererItemContainer'
 import PendingOffererItem from '../OffererItem/PendingOffererItem'
 
 describe('src | components | pages | Offerers | Offerers', () => {
+  let change
+  let dispatch
   let props
-  let prevProps
 
   beforeEach(() => {
-    props = {
-      assignData: jest.fn(),
-      closeNotification: jest.fn(),
-      currentUser: {},
-      loadOfferers: jest.fn(),
-      resetLoadedOfferers: jest.fn(),
-      offerers: [{ id: 'AE', siren: '1234567' }],
-      pagination: {
-        apiQuery: {
-          keywords: null,
-        },
-      },
-      query: {
-        change: jest.fn(),
-        parse: () => ({ 'mots-cles': null }),
-      },
-      showNotification: jest.fn(),
-      location: {
-        search: '',
-      },
-    }
+    change = jest.fn()
+    dispatch = jest.fn()
 
-    prevProps = {
-      assignData: jest.fn(),
+    props = {
       closeNotification: jest.fn(),
       currentUser: {},
+      dispatch,
       loadOfferers: jest.fn(),
-      resetLoadedOfferers: jest.fn(),
+      location: {
+        pathname: '/structures',
+        search: '',
+      },
       offerers: [{ id: 'AE', siren: '1234567' }],
       pagination: {
         apiQuery: {
@@ -45,13 +30,11 @@ describe('src | components | pages | Offerers | Offerers', () => {
         },
       },
       query: {
-        change: jest.fn(),
+        change,
         parse: () => ({ 'mots-cles': null }),
       },
+      resetLoadedOfferers: jest.fn(),
       showNotification: jest.fn(),
-      location: {
-        search: '',
-      },
     }
   })
 
@@ -240,48 +223,6 @@ describe('src | components | pages | Offerers | Offerers', () => {
           })
         })
       })
-    })
-  })
-
-  describe('componentDidUpdate', () => {
-    it('should set isLoading to false when offerers load is finished', () => {
-      // given
-      props.offerers = [
-        {id: 'AE' },
-        {id: 'FA' },
-        {id: 'DF' },
-      ]
-
-      prevProps.offerers = [
-        {id: 'AE' },
-      ]
-
-      const wrapper = shallow(<Offerers {...props} />)
-
-      // when
-      wrapper.instance().componentDidUpdate(prevProps)
-
-      // then
-      expect(wrapper.state()).toHaveProperty('isLoading', false)
-    })
-
-    it('should set hasMore to false when less than 10 offerers has been loaded', () => {
-      // given
-      props.offerers = [
-        {id: 'AE' },
-        {id: 'FA' },
-        {id: 'DF' },
-      ]
-
-      prevProps.offerers = [{id: 'AE' },]
-
-      const wrapper = shallow(<Offerers {...props} />)
-
-      // when
-      wrapper.instance().componentDidUpdate(prevProps)
-
-      // then
-      expect(wrapper.state()).toHaveProperty('hasMore', false)
     })
   })
 })

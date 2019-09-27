@@ -14,47 +14,11 @@ ShallowWrapper {
         "calls": Array [
           Array [
             Object {
-              "patch": Object {
-                "offers": Array [],
-              },
-              "type": "ASSIGN_DATA",
-            },
-          ],
-          Array [
-            Object {
               "config": Object {
                 "apiPath": "/types",
                 "method": "GET",
               },
               "type": "REQUEST_DATA_GET_/TYPES",
-            },
-          ],
-          Array [
-            Object {
-              "config": Object {
-                "apiPath": "/offers?",
-                "handleFail": [Function],
-                "handleSuccess": [Function],
-                "method": "GET",
-                "normalizer": Object {
-                  "mediations": "mediations",
-                  "product": Object {
-                    "normalizer": Object {
-                      "offers": "offers",
-                    },
-                    "stateKey": "products",
-                  },
-                  "stocks": "stocks",
-                  "venue": Object {
-                    "normalizer": Object {
-                      "managingOfferer": "offerers",
-                    },
-                    "stateKey": "venues",
-                  },
-                },
-                "resolve": [Function],
-              },
-              "type": "REQUEST_DATA_GET_/OFFERS?",
             },
           ],
         ],
@@ -63,10 +27,22 @@ ShallowWrapper {
             "type": "return",
             "value": undefined,
           },
-          Object {
-            "type": "return",
-            "value": undefined,
-          },
+        ],
+      }
+    }
+    loadOffers={
+      [MockFunction] {
+        "calls": Array [
+          Array [
+            Object {
+              "apiPath": "/offers?",
+              "handleFail": [Function],
+              "handleSuccess": [Function],
+              "resolve": [Function],
+            },
+          ],
+        ],
+        "results": Array [
           Object {
             "type": "return",
             "value": undefined,
@@ -97,6 +73,7 @@ ShallowWrapper {
         "parse": [Function],
       }
     }
+    resetLoadedOffers={[MockFunction]}
     types={Array []}
     venue={Object {}}
   />,
@@ -220,11 +197,16 @@ ShallowWrapper {
               Activer toutes les offres
             </button>
           </div>
-          <withRouter(_withQueryRouter)
+          <LoadingInfiniteScroll
             className="offers-list main-list"
             element="ul"
+            getScrollParent={null}
+            handlePageChange={[Function]}
+            handlePageReset={[Function]}
             hasMore={true}
+            initialLoad={true}
             isLoading={true}
+            isReverse={false}
             loader={
               <Spinner
                 Tag="div"
@@ -234,6 +216,11 @@ ShallowWrapper {
                 style={null}
               />
             }
+            pageStart={0}
+            ref={null}
+            threshold={250}
+            useCapture={false}
+            useWindow={true}
           />
         </div>,
       ],
@@ -653,11 +640,16 @@ ShallowWrapper {
                 Activer toutes les offres
               </button>
             </div>,
-            <withRouter(_withQueryRouter)
+            <LoadingInfiniteScroll
               className="offers-list main-list"
               element="ul"
+              getScrollParent={null}
+              handlePageChange={[Function]}
+              handlePageReset={[Function]}
               hasMore={true}
+              initialLoad={true}
               isLoading={true}
+              isReverse={false}
               loader={
                 <Spinner
                   Tag="div"
@@ -667,7 +659,13 @@ ShallowWrapper {
                   style={null}
                 />
               }
+              pageStart={0}
+              ref={null}
+              threshold={250}
+              useCapture={false}
+              useWindow={true}
             />,
+            false,
           ],
           "className": "section",
         },
@@ -733,13 +731,18 @@ ShallowWrapper {
           Object {
             "instance": null,
             "key": undefined,
-            "nodeType": "function",
+            "nodeType": "class",
             "props": Object {
               "children": Array [],
               "className": "offers-list main-list",
               "element": "ul",
+              "getScrollParent": null,
+              "handlePageChange": [Function],
+              "handlePageReset": [Function],
               "hasMore": true,
+              "initialLoad": true,
               "isLoading": true,
+              "isReverse": false,
               "loader": <Spinner
                 Tag="div"
                 className={null}
@@ -747,11 +750,17 @@ ShallowWrapper {
                 label="Chargement"
                 style={null}
               />,
+              "pageStart": 0,
+              "ref": null,
+              "threshold": 250,
+              "useCapture": false,
+              "useWindow": true,
             },
             "ref": null,
             "rendered": Array [],
             "type": [Function],
           },
+          false,
         ],
         "type": "div",
       },
@@ -870,11 +879,16 @@ ShallowWrapper {
                 Activer toutes les offres
               </button>
             </div>
-            <withRouter(_withQueryRouter)
+            <LoadingInfiniteScroll
               className="offers-list main-list"
               element="ul"
+              getScrollParent={null}
+              handlePageChange={[Function]}
+              handlePageReset={[Function]}
               hasMore={true}
+              initialLoad={true}
               isLoading={true}
+              isReverse={false}
               loader={
                 <Spinner
                   Tag="div"
@@ -884,6 +898,11 @@ ShallowWrapper {
                   style={null}
                 />
               }
+              pageStart={0}
+              ref={null}
+              threshold={250}
+              useCapture={false}
+              useWindow={true}
             />
           </div>,
         ],
@@ -1303,11 +1322,16 @@ ShallowWrapper {
                   Activer toutes les offres
                 </button>
               </div>,
-              <withRouter(_withQueryRouter)
+              <LoadingInfiniteScroll
                 className="offers-list main-list"
                 element="ul"
+                getScrollParent={null}
+                handlePageChange={[Function]}
+                handlePageReset={[Function]}
                 hasMore={true}
+                initialLoad={true}
                 isLoading={true}
+                isReverse={false}
                 loader={
                   <Spinner
                     Tag="div"
@@ -1317,7 +1341,13 @@ ShallowWrapper {
                     style={null}
                   />
                 }
+                pageStart={0}
+                ref={null}
+                threshold={250}
+                useCapture={false}
+                useWindow={true}
               />,
+              false,
             ],
             "className": "section",
           },
@@ -1383,13 +1413,18 @@ ShallowWrapper {
             Object {
               "instance": null,
               "key": undefined,
-              "nodeType": "function",
+              "nodeType": "class",
               "props": Object {
                 "children": Array [],
                 "className": "offers-list main-list",
                 "element": "ul",
+                "getScrollParent": null,
+                "handlePageChange": [Function],
+                "handlePageReset": [Function],
                 "hasMore": true,
+                "initialLoad": true,
                 "isLoading": true,
+                "isReverse": false,
                 "loader": <Spinner
                   Tag="div"
                   className={null}
@@ -1397,11 +1432,17 @@ ShallowWrapper {
                   label="Chargement"
                   style={null}
                 />,
+                "pageStart": 0,
+                "ref": null,
+                "threshold": 250,
+                "useCapture": false,
+                "useWindow": true,
               },
               "ref": null,
               "rendered": Array [],
               "type": [Function],
             },
+            false,
           ],
           "type": "div",
         },

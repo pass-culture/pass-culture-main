@@ -67,19 +67,6 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
       dispatch = jest.fn()
     })
 
-    it('enable to assign data', () => {
-      // when
-      mapDispatchToProps(dispatch).assignData()
-
-      // then
-      expect(dispatch).toHaveBeenCalledWith({
-        patch: {
-          offerers: [],
-        },
-        type: 'ASSIGN_DATA',
-      })
-    })
-
     it('enable to close notification', () => {
       // when
       mapDispatchToProps(dispatch).closeNotification()
@@ -153,7 +140,10 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
         const handleSuccess = jest.fn()
 
         // when
-        mapDispatchToProps(dispatch).loadOfferers(handleSuccess, handleFail, { isValidated: true, keywords: 'keywords=nice%20words' })
+        mapDispatchToProps(dispatch).loadOfferers(handleSuccess, handleFail, {
+          isValidated: true,
+          keywords: 'keywords=nice%20words',
+        })
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
