@@ -11,8 +11,8 @@ const showFailModal = () => {
 }
 
 class Favorite extends PureComponent {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
 
     this.state = { isWaitingApi: false }
   }

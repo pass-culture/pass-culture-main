@@ -10,8 +10,9 @@ import Spinner from '../../../layout/Spinner/Spinner'
 const ITEMS_PER_PAGE = 10
 
 class Results extends PureComponent {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
+
     this.state = {
       hasMore: false,
       hasReceivedFirstSuccessData: false,

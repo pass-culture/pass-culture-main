@@ -8,8 +8,8 @@ import RectoContainer from '../Recto/RectoContainer'
 import VersoContainer from '../Verso/VersoContainer'
 
 class Details extends PureComponent {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
 
     this.state = {
       isDetailsView: false,

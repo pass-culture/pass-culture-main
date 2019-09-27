@@ -20,8 +20,9 @@ const transitionStyles = {
 }
 
 class Loader extends React.PureComponent {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
+
     this.state = { isFirstLoad: true }
   }
 
