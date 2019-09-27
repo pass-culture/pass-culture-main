@@ -54,7 +54,9 @@ describe('src | components | pages | Offerer', () => {
       const state = {}
       const action = {
         payload: {
-          id: 'Ty5645dgfd',
+          datum: {
+            id: 'Ty5645dgfd',
+          },
         },
       }
       const wrapper = shallow(<Offerer {...props} />)
@@ -71,7 +73,9 @@ describe('src | components | pages | Offerer', () => {
       const state = {}
       const action = {
         payload: {
-          id: 'Ty5645dgfd',
+          datum: {
+            id: 'Ty5645dgfd',
+          },
         },
       }
       jest.spyOn(props.query, 'context').mockReturnValue({

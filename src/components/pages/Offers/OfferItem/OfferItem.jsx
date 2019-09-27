@@ -14,7 +14,6 @@ class OfferItem extends Component {
     const { offer, updateOffer, trackActivateOffer, trackDeactivateOffer } = this.props
     const { id, isActive } = offer || {}
     updateOffer(id, !isActive)
-
     isActive ? trackDeactivateOffer(id) : trackActivateOffer(id)
   }
 
@@ -144,10 +143,9 @@ class OfferItem extends Component {
             <li>
               {maxDate && `jusqu’au ${maxDate.format('DD/MM/YYYY')}`}
             </li>
-            {stockAlertMessage &&
-            <li>
+            {stockAlertMessage && <li>
               {stockAlertMessage}
-            </li>}
+                                  </li>}
             <li>
               {priceMin === priceMax ? (
                 <Price value={priceMin || 0} />

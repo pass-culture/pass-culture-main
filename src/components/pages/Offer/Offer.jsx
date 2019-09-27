@@ -208,6 +208,7 @@ class Offer extends Component {
   onHandleFormSuccess = (state, action) => {
     const { offer, query, trackCreateOffer, trackModifyOffer } = this.props
 
+    const { isCreatedEntity } = query.context()
     const previousOfferId = offer && offer.id
     const {
       payload: { datum },
@@ -216,8 +217,6 @@ class Offer extends Component {
 
     const queryParams = previousOfferId ? {} : { gestion: '' }
     query.changeToReadOnly(queryParams, { id: offerId })
-
-    const { isCreatedEntity } = query.context({ id: offerId })
 
     if (isCreatedEntity) {
       trackCreateOffer(offerId)
@@ -312,7 +311,6 @@ class Offer extends Component {
 
     const { isEvent } = offer || {}
     const { isCreatedEntity, isModifiedEntity, method, readOnly } = query.context()
-
     const isEventType = get(selectedOfferType, 'type') === 'Event' || isEvent
 
     const offerId = get(offer, 'id')

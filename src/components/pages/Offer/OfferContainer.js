@@ -110,6 +110,7 @@ export default compose(
   withRequiredLogin,
   connect(
     mapStateToProps,
+    null,
     mergeProps
   )
 )(Offer)

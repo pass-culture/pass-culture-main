@@ -43,7 +43,8 @@ class Offerer extends Component {
   onHandleSuccess = (state, action) => {
     const { payload } = action
     const { offererId } = this.props
-    const CreatedOffererId = payload.id
+
+    const CreatedOffererId = payload.datum.id
     const { history, query, showNotification, trackCreateOfferer, trackModifyOfferer } = this.props
     const { isCreatedEntity } = query.context()
 

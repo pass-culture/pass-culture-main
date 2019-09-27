@@ -555,6 +555,7 @@ describe('src | components | pages | Offer | Offer ', () => {
 
       props.offer = {
         id: 'RTgYD45',
+        lastProvider: null,
       }
 
       jest.spyOn(props.query, 'context').mockReturnValue({
