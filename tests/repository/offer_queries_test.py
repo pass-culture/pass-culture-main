@@ -376,7 +376,7 @@ class GetOffersForRecommendationsSearchTest:
     def test_search_does_not_return_duplicate(self, app):
         # Given
         things_stock = []
-        for x in range(0,120):
+        for x in range(0, 120):
             thing = create_product_with_thing_type(thing_name='snif')
             offerer = create_offerer(siren=str(random.randrange(123456789, 923456789)))
             venue = create_venue(offerer, siret=str(random.randrange(123123456789, 999923456789)))
