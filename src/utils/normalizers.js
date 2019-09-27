@@ -2,12 +2,7 @@ export const bookingNormalizer = {
   stock: {
     stateKey: 'stocks',
     normalizer: {
-      offer: {
-        normalizer: {
-          favorites: 'favorites',
-        },
-        stateKey: 'offers',
-      },
+      offer: 'offers',
     },
   },
   mediation: 'mediations',
