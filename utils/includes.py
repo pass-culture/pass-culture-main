@@ -187,7 +187,6 @@ WEBAPP_GET_BOOKING_INCLUDES = [
             {
                 "key": "offer",
                 "includes": [
-                    "favorites",
                     "isFinished",
                     "isFullyBooked",
                     "offerType",
@@ -205,6 +204,12 @@ WEBAPP_GET_BOOKING_INCLUDES = [
                     }
                 ]
             },
+        ]
+    },
+    {
+        "key": "user",
+        "includes": [
+            "favorites"
         ]
     },
     "mediation",

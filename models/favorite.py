@@ -12,7 +12,8 @@ class Favorite(PcObject, Model):
                     nullable=False)
 
     user = relationship('User',
-                        foreign_keys=[userId])
+                        foreign_keys=[userId],
+                        backref='favorites')
 
     offerId = Column(BigInteger,
                      ForeignKey("offer.id"),
