@@ -66,7 +66,7 @@ describe('src | components | pages | search | Results', () => {
   })
 
   describe('handleSetHasMore', () => {
-    it('should set state to false is there less than 10 items in new batch', () => {
+    it('should set state to false when there is less than 10 items in new batch', () => {
       // given
       const wrapper = shallow(<Results {...props} />)
       const itemLength = 4
@@ -78,7 +78,7 @@ describe('src | components | pages | search | Results', () => {
       expect(wrapper.state(['hasMore'])).toBe(false)
     })
 
-    it('should set state to true is there are 10 items in new batch', () => {
+    it('should set state to true when there are 10 items in new batch', () => {
       // given
       const wrapper = shallow(<Results {...props} />)
       const itemLength = 10

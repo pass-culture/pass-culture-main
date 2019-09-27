@@ -104,9 +104,8 @@ export const getRecommendationSearch = (search, types) => {
 const selectRecommendationsBySearchQuery = createSelector(
   state => state.data.recommendations,
   state => state.data.types,
-  (state, location) => {
-    return location.search.replace(PAGE_REGEXP, '')
-  },
+  (state, location) => location.search.replace(PAGE_REGEXP, ''),
+
   (recommendations, types, searchWithoutPage) => {
     const searchQuery = getRecommendationSearch(searchWithoutPage, types)
 
