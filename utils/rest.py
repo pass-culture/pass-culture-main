@@ -118,9 +118,6 @@ def check_order_by(order_by):
         for part in order_by.split(','):
             check_single_order_by_string(part)
 
-class Headers:
-    def add_header():
-
 
 def handle_rest_get_list(modelClass, query=None, headers=None, refine=None, order_by=None, flask_request=None, includes=(),
                          print_elements=None, paginate=None, page=None, populate=None, with_total_data_count=False):
@@ -152,7 +149,7 @@ def handle_rest_get_list(modelClass, query=None, headers=None, refine=None, orde
         if page is not None:
             page = int(page)
         query = query.paginate(page, per_page=paginate, error_out=False) \
-            .items
+                    .items
 
     objects = [o for o in query]
     if populate:
