@@ -1,8 +1,8 @@
-from sqlalchemy import Column, BigInteger, ForeignKey
+from sqlalchemy import Column, BigInteger, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 
-from models.pc_object import PcObject
 from models.db import Model
+from models.pc_object import PcObject
 
 
 class Favorite(PcObject, Model):
@@ -32,6 +32,14 @@ class Favorite(PcObject, Model):
     mediation = relationship('Mediation',
                              foreign_keys=[mediationId],
                              backref='favorites')
+
+    __table_args__ = (
+        UniqueConstraint(
+            'userId',
+            'offerId',
+            name='unique_favorite',
+        ),
+    )
 
     @property
     def thumbUrl(self):
