@@ -94,10 +94,7 @@ class Recommendation(PcObject, Model):
         if self.mediationId:
             return self.mediation.thumbUrl
 
-        if self.offer.product.thumbCount:
-            return self.offer.product.thumbUrl
-
-        if self.offer.idAtProviders:
+        if self.offer.product.thumbCount >= 0:
             return self.offer.product.thumbUrl
 
     @property
