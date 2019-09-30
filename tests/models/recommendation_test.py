@@ -4,7 +4,7 @@ from models import PcObject
 from tests.conftest import clean_database
 from tests.test_utils import create_recommendation, create_offer_with_thing_product, create_product_with_thing_type, \
     create_venue, create_offerer, \
-    create_mediation, create_user, create_offer_with_event_product, create_favorite
+    create_mediation, create_user, create_offer_with_event_product, create_favorite, create_product_with_event_type
 
 
 @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
@@ -39,6 +39,23 @@ def test_model_should_use_mediation_first_as_thumbUrl(get_storage_base_url):
 
     # then
     assert recommendation.thumbUrl == "http://localhost/storage/thumbs/mediations/AE"
+
+
+@patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
+def test_model_should_use_product_image_as_thumbUrl_when_no_mediation_and_offer_is_from_external_provider(get_storage_base_url):
+    # given
+    user = create_user(email='user@test.com')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    product = create_product_with_event_type()
+    product.id = 10000
+    offer = create_offer_with_event_product(venue=venue, product=product, id_at_providers='111111111111')
+
+    # when
+    recommendation = create_recommendation(offer, user, mediation=None)
+
+    # then
+    assert recommendation.thumbUrl == "http://localhost/storage/thumbs/products/E49A"
 
 
 @patch('models.has_thumb_mixin.get_storage_base_url', return_value='https://passculture.app/storage/v2')

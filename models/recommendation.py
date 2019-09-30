@@ -97,6 +97,9 @@ class Recommendation(PcObject, Model):
         if self.offer.product.thumbCount:
             return self.offer.product.thumbUrl
 
+        if self.offer.idAtProviders:
+            return self.offer.product.thumbUrl
+
     @property
     def productOrTutoIdentifier(self):
         if self.offer and self.offer.productId:
