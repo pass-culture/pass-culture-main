@@ -202,6 +202,48 @@ describe('src | components | pages | discovery | deck | DeckContainer', () => {
         // then
         expect(result.isFlipDisabled).toBe(true)
       })
+
+      it('should be true when currentRecommendation the last tuto recommendation', () => {
+        // given
+        mediation = {
+          id: 'RT',
+          offerId: 'tuto',
+          thumbCount: 1,
+          tutoIndex: -1,
+        }
+        offer = {
+          id: 'tuto',
+        }
+        recommendation = {
+          productOrTutoIdentifier: 'product_0',
+          id: 'AE',
+          mediationId: 'fin',
+          offerId: 'tuto',
+        }
+        initialState = {
+          data: {
+            bookings: [],
+            mediations: [mediation],
+            offers: [offer],
+            recommendations: [recommendation],
+          },
+        }
+
+        const props = {
+          match: {
+            params: {
+              mediationId: 'fin',
+              offerId: 'tuto',
+            },
+          },
+        }
+
+        // when
+        const result = mapStateToProps(initialState, props)
+
+        // then
+        expect(result.isFlipDisabled).toBe(true)
+      })
     })
 
     describe('nextLimit', () => {

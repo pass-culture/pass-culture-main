@@ -1,6 +1,4 @@
-import selectUniqAndIndexifiedRecommendations, {
-  fakeLastRecommendation,
-} from '../selectUniqAndIndexifiedRecommendations'
+import selectUniqAndIndexifiedRecommendations from '../selectUniqAndIndexifiedRecommendations'
 
 describe('src | components | pages | discovery | selectors | selectUniqAndIndexifiedRecommendations', () => {
   it('should return an array of object having an `uniqId` property', () => {
@@ -46,7 +44,22 @@ describe('src | components | pages | discovery | selectors | selectUniqAndIndexi
     const result = selectUniqAndIndexifiedRecommendations(state)
 
     // then
-    expect(result).toStrictEqual([fakeLastRecommendation])
+    expect(result).toStrictEqual([
+      {
+        productOrTutoIdentifier: 'tuto_-1',
+        index: 0,
+        mediation: {
+          firstThumbDominantColor: [205, 54, 70],
+          frontText:
+            'Vous avez parcouru toutes les offres. Revenez bientôt pour découvrir les nouveautés.',
+          id: 'fin',
+          thumbCount: 1,
+          tutoIndex: -1,
+        },
+        mediationId: 'fin',
+        thumbUrl: `http://localhost/splash-finReco@2x.png`,
+      },
+    ])
   })
 
   it('should return recommendations', () => {

@@ -3,8 +3,9 @@ import { createSelector } from 'reselect'
 
 import { ROOT_PATH } from '../../../../utils/config'
 
-export const fakeLastRecommendation = {
+export const makeFakeLastRecommendation = index => ({
   productOrTutoIdentifier: 'tuto_-1',
+  index,
   mediation: {
     firstThumbDominantColor: [205, 54, 70],
     frontText:
@@ -15,7 +16,7 @@ export const fakeLastRecommendation = {
   },
   mediationId: 'fin',
   thumbUrl: `${ROOT_PATH}/splash-finReco@2x.png`,
-}
+})
 
 const selectUniqAndIndexifiedRecommendations = createSelector(
   state => state.data.recommendations,
@@ -35,7 +36,7 @@ const selectUniqAndIndexifiedRecommendations = createSelector(
       Object.assign({ index }, recommendation)
     )
 
-    filteredRecommendations.push(fakeLastRecommendation)
+    filteredRecommendations.push(makeFakeLastRecommendation(filteredRecommendations.length))
 
     return filteredRecommendations
   }

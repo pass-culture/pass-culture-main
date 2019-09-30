@@ -27,7 +27,8 @@ export const mapStateToProps = (state, ownProps) => {
   const nbRecos = recommendations ? recommendations.length : 0
 
   const isTutoWithOnlyOneThumb = typeof tutoIndex === 'number' && thumbCount <= 1
-  const hasNoVerso = !currentRecommendation || isTutoWithOnlyOneThumb
+  const isLastTuto = currentMediationId === 'fin'
+  const hasNoVerso = !currentRecommendation || isTutoWithOnlyOneThumb || isLastTuto
 
   const nextLimit =
     nbRecos > 0 &&
