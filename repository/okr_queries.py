@@ -20,15 +20,15 @@ def get_all_beneficiary_users_details():
     connection = db.engine.connect()
 
     df_list = [
-        get_experimentation_session_column(connection),
-        get_department_column(connection),
-        get_activation_date_column(connection),
-        get_typeform_filling_date(connection),
-        get_first_connection(connection),
-        get_first_booking(connection),
-        get_second_booking(connection),
-        get_booking_on_third_product_type(connection),
-        get_last_recommendation(connection),
+        get_experimentation_sessions(connection),
+        get_departments(connection),
+        get_activation_dates(connection),
+        get_typeform_filling_dates(connection),
+        get_first_connection_dates(connection),
+        get_number_of_first_bookings(connection),
+        get_number_of_second_bookings(connection),
+        get_number_of_bookings_on_third_product_type(connection),
+        get_last_recommendation_date(connection),
         get_number_of_bookings(connection),
         get_number_of_non_cancelled_bookings(connection)
     ]
@@ -40,7 +40,7 @@ def get_all_beneficiary_users_details():
     return beneficiary_users_details
 
 
-def get_experimentation_session_column(connection):
+def get_experimentation_sessions(connection):
     query = '''
     WITH experimentation_session AS (
         SELECT 
@@ -67,7 +67,7 @@ def get_experimentation_session_column(connection):
     return pandas.read_sql_query(query, connection, index_col="user_id")
 
 
-def get_department_column(connection):
+def get_departments(connection):
     query = '''
     SELECT 
      "user"."departementCode" AS "Département",
@@ -78,7 +78,7 @@ def get_department_column(connection):
     return pandas.read_sql(query, connection, index_col="user_id")
 
 
-def get_activation_date_column(connection):
+def get_activation_dates(connection):
     query = '''
     WITH validated_activation_booking AS (
      SELECT activity.issued_at, booking."userId", booking."isUsed" AS is_used
@@ -111,7 +111,7 @@ def get_activation_date_column(connection):
     return pandas.read_sql(query, connection, index_col='user_id')
 
 
-def get_typeform_filling_date(connection):
+def get_typeform_filling_dates(connection):
     query = '''
     WITH typeform_filled AS (
      SELECT activity.issued_at, "user".id AS user_id, "user"."canBookFreeOffers"
@@ -132,7 +132,7 @@ def get_typeform_filling_date(connection):
     return pandas.read_sql(query, connection, index_col='user_id')
 
 
-def get_first_connection(connection):
+def get_first_connection_dates(connection):
     query = recommendation_dates_query + \
             '''
             SELECT 
@@ -145,7 +145,7 @@ def get_first_connection(connection):
     return pandas.read_sql(query, connection, index_col='user_id')
 
 
-def get_first_booking(connection):
+def get_number_of_first_bookings(connection):
     query = '''
     WITH bookings_grouped_by_user AS (
     SELECT 
@@ -168,7 +168,7 @@ def get_first_booking(connection):
     return pandas.read_sql(query, connection, index_col='user_id')
 
 
-def get_second_booking(connection):
+def get_number_of_second_bookings(connection):
     query = '''
      WITH second_booking_dates AS (
      SELECT 
@@ -199,7 +199,7 @@ def get_second_booking(connection):
     return pandas.read_sql(query, connection, index_col='user_id')
 
 
-def get_booking_on_third_product_type(connection):
+def get_number_of_bookings_on_third_product_type(connection):
     query = '''
     WITH 
      bookings_on_distinct_types AS (
@@ -237,7 +237,7 @@ def get_booking_on_third_product_type(connection):
     return pandas.read_sql(query, connection, index_col='user_id')
 
 
-def get_last_recommendation(connection):
+def get_last_recommendation_date(connection):
     query = recommendation_dates_query + \
             '''
             SELECT 

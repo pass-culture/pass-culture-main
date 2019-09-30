@@ -4,9 +4,9 @@ import pandas
 
 from models import PcObject, ThingType
 from models.db import db
-from repository.okr_queries import get_all_beneficiary_users_details, get_experimentation_session_column, \
-    get_department_column, get_activation_date_column, get_typeform_filling_date, get_first_connection, \
-    get_first_booking, get_second_booking, get_booking_on_third_product_type, get_last_recommendation, \
+from repository.okr_queries import get_all_beneficiary_users_details, get_experimentation_sessions, \
+    get_departments, get_activation_dates, get_typeform_filling_dates, get_first_connection_dates, \
+    get_number_of_first_bookings, get_number_of_second_bookings, get_number_of_bookings_on_third_product_type, get_last_recommendation_date, \
     get_number_of_bookings, get_number_of_non_cancelled_bookings
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_venue, create_offer_with_thing_product, create_stock, \
@@ -21,9 +21,9 @@ class GetAllExperimentationUsersDetailsTest:
         PcObject.save(user)
 
         # When
-        experimentation_users = get_all_beneficiary_users_details()
+        experimentation_users_details = get_all_beneficiary_users_details()
         # Then
-        assert experimentation_users.empty
+        assert experimentation_users_details.empty
 
     @clean_database
     def test_should_return_values_for_users_who_can_book_free_offers(self, app):
@@ -55,35 +55,41 @@ class GetAllExperimentationUsersDetailsTest:
         PcObject.save(booking_activation, user2, recommendation)
         date_after_changes = datetime.utcnow()
 
+        expected_first_row = pandas.Series(
+            data=[2, "93", user1.dateCreated, pandas.NaT, pandas.NaT, pandas.NaT, pandas.NaT, pandas.NaT, pandas.NaT, 0,
+                  0],
+            index=["Vague d'expérimentation", "Département", "Date d'activation", "Date de remplissage du typeform",
+                   "Date de première connection", "Date de première réservation", "Date de deuxième réservation",
+                   "Date de première réservation dans 3 catégories différentes", "Date de dernière recommandation",
+                   "Nombre de réservations totales", "Nombre de réservations non annulées"])
+        columns_to_check_for_exact_values_in_second_row = ["Vague d'expérimentation", "Département",
+                                                           "Date de première connection",
+                                                           "Date de première réservation",
+                                                           "Date de deuxième réservation",
+                                                           "Date de première réservation dans 3 catégories différentes",
+                                                           "Date de dernière recommandation",
+                                                           "Nombre de réservations totales",
+                                                           "Nombre de réservations non annulées"]
+        expected_second_row = pandas.Series(
+            data=[1, "08", datetime(2019, 2, 3), datetime(2019, 3, 7), datetime(2019, 4, 7), datetime(2019, 5, 7),
+                  recommendation.dateCreated, 3, 2], index=columns_to_check_for_exact_values_in_second_row)
+
         # When
-        experimentation_users = get_all_beneficiary_users_details()
+        experimentation_users_details = get_all_beneficiary_users_details()
 
         # Then
-        assert experimentation_users.shape == (2, 11)
-        assert experimentation_users.loc[0].equals(
-            pandas.Series(
-                data=[2, "93", user1.dateCreated, pandas.NaT, pandas.NaT, pandas.NaT, pandas.NaT, pandas.NaT, pandas.NaT, 0, 0],
-                index=["Vague d'expérimentation", "Département", "Date d'activation", "Date de remplissage du typeform",
-                       "Date de première connection", "Date de première réservation", "Date de deuxième réservation",
-                       "Date de première réservation dans 3 catégories différentes", "Date de dernière recommandation", "Nombre de réservations totales", "Nombre de réservations non annulées"]
-            )
+        assert experimentation_users_details.shape == (2, 11)
+        assert experimentation_users_details.loc[0].equals(expected_first_row)
+        assert experimentation_users_details.loc[
+            1, columns_to_check_for_exact_values_in_second_row].equals(
+            expected_second_row
         )
-        assert experimentation_users.loc[
-            1, ["Vague d'expérimentation", "Département", "Date de première connection", "Date de première réservation",
-                "Date de deuxième réservation", "Date de première réservation dans 3 catégories différentes", "Date de dernière recommandation", "Nombre de réservations totales", "Nombre de réservations non annulées"]].equals(
-            pandas.Series(
-                data=[1, "08", datetime(2019, 2, 3), datetime(2019, 3, 7), datetime(2019, 4, 7), datetime(2019, 5, 7), recommendation.dateCreated, 3, 2],
-                index=["Vague d'expérimentation", "Département", "Date de première connection",
-                       "Date de première réservation", "Date de deuxième réservation",
-                       "Date de première réservation dans 3 catégories différentes", "Date de dernière recommandation", "Nombre de réservations totales", "Nombre de réservations non annulées"]
-            )
-        )
-        assert beginning_test_date < experimentation_users.loc[1, "Date d'activation"] < date_after_changes
-        assert beginning_test_date < experimentation_users.loc[
+        assert beginning_test_date < experimentation_users_details.loc[1, "Date d'activation"] < date_after_changes
+        assert beginning_test_date < experimentation_users_details.loc[
             1, "Date de remplissage du typeform"] < date_after_changes
 
 
-class GetExperimentationSessionColumnTest:
+class GetExperimentationSessionsTest:
     @clean_database
     def test_should_be_a_series_with_1_if_user_has_used_activation_booking(self, app):
         # Given
@@ -97,9 +103,9 @@ class GetExperimentationSessionColumnTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_experimentation_session_column(connection)
+        experimentation_sessions = get_experimentation_sessions(connection)
         # Then
-        assert experimentation_users["Vague d'expérimentation"].equals(
+        assert experimentation_sessions["Vague d'expérimentation"].equals(
             pandas.Series(data=[1], name="Vague d'expérimentation", index=[user.id]))
 
     @clean_database
@@ -115,9 +121,9 @@ class GetExperimentationSessionColumnTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_experimentation_session_column(connection)
+        experimentation_sessions = get_experimentation_sessions(connection)
         # Then
-        assert experimentation_users["Vague d'expérimentation"].equals(
+        assert experimentation_sessions["Vague d'expérimentation"].equals(
             pandas.Series(data=[2], name="Vague d'expérimentation", index=[user.id]))
 
     @clean_database
@@ -128,10 +134,10 @@ class GetExperimentationSessionColumnTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_experimentation_session_column(connection)
+        experimentation_sessions = get_experimentation_sessions(connection)
 
         # Then
-        assert experimentation_users["Vague d'expérimentation"].equals(
+        assert experimentation_sessions["Vague d'expérimentation"].equals(
             pandas.Series(data=[2], name="Vague d'expérimentation", index=[user.id]))
 
     @clean_database
@@ -142,13 +148,13 @@ class GetExperimentationSessionColumnTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_experimentation_session_column(connection)
+        experimentation_sessions = get_experimentation_sessions(connection)
 
         # Then
-        assert experimentation_users["Vague d'expérimentation"].empty
+        assert experimentation_sessions["Vague d'expérimentation"].empty
 
 
-class GetDepartmentColumnTest:
+class GetDepartmentsTest:
     @clean_database
     def test_should_return_user_departement_code_when_user_can_book_free_offer(self, app):
         # Given
@@ -157,9 +163,9 @@ class GetDepartmentColumnTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_department_column(connection)
+        departements = get_departments(connection)
         # Then
-        assert experimentation_users['Département'].equals(
+        assert departements['Département'].equals(
             pandas.Series(data=['01'], name='Département', index=[user.id]))
 
     @clean_database
@@ -170,12 +176,12 @@ class GetDepartmentColumnTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_department_column(connection)
+        departements = get_departments(connection)
         # Then
-        assert experimentation_users['Département'].empty
+        assert departements['Département'].empty
 
 
-class GetActivationDateColumnTest:
+class GetActivationDateTest:
     @clean_database
     def test_should_return_date_when_activation_booking_was_used_if_it_is_used(self, app):
         # Given
@@ -193,10 +199,10 @@ class GetActivationDateColumnTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_activation_date_column(connection)
+        activation_dates = get_activation_dates(connection)
 
         # Then
-        assert beginning_test_date < experimentation_users.loc[user.id, 'Date d\'activation'] < date_after_used
+        assert beginning_test_date < activation_dates.loc[user.id, 'Date d\'activation'] < date_after_used
 
     @clean_database
     def test_should_return_date_created_for_user_when_no_activation_booking(self, app):
@@ -206,10 +212,10 @@ class GetActivationDateColumnTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_activation_date_column(connection)
+        activation_dates = get_activation_dates(connection)
 
         # Then
-        assert experimentation_users['Date d\'activation'].equals(
+        assert activation_dates['Date d\'activation'].equals(
             pandas.Series(data=[datetime(2019, 8, 31)], name='Date d\'activation', index=[user.id]))
 
     @clean_database
@@ -225,10 +231,10 @@ class GetActivationDateColumnTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_activation_date_column(connection)
+        activation_dates = get_activation_dates(connection)
 
         # Then
-        assert experimentation_users['Date d\'activation'].equals(
+        assert activation_dates['Date d\'activation'].equals(
             pandas.Series(data=[datetime(2019, 8, 31)], name='Date d\'activation', index=[user.id]))
 
     @clean_database
@@ -244,13 +250,13 @@ class GetActivationDateColumnTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_activation_date_column(connection)
+        activation_dates = get_activation_dates(connection)
 
         # Then
-        assert experimentation_users['Date d\'activation'].empty
+        assert activation_dates['Date d\'activation'].empty
 
 
-class GetTypeformFillingDateTest:
+class GetTypeformFillingDatesTest:
     @clean_database
     def test_returns_date_when_has_filled_cultural_survey_was_updated_to_false(self, app):
         # Given
@@ -263,10 +269,10 @@ class GetTypeformFillingDateTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_typeform_filling_date(connection)
+        typeform_filling_dates = get_typeform_filling_dates(connection)
 
         # Then
-        assert beginning_test_date < experimentation_users.loc[
+        assert beginning_test_date < typeform_filling_dates.loc[
             user.id, 'Date de remplissage du typeform'] < date_after_used
 
     @clean_database
@@ -277,10 +283,10 @@ class GetTypeformFillingDateTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_typeform_filling_date(connection)
+        typeform_filling_dates = get_typeform_filling_dates(connection)
 
         # Then
-        assert experimentation_users.loc[user.id, 'Date de remplissage du typeform'] is None
+        assert typeform_filling_dates.loc[user.id, 'Date de remplissage du typeform'] is None
 
     @clean_database
     def test_returns_empty_series_if_user_cannot_book_free_offers(self, app):
@@ -290,13 +296,13 @@ class GetTypeformFillingDateTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_typeform_filling_date(connection)
+        typeform_filling_dates = get_typeform_filling_dates(connection)
 
         # Then
-        assert experimentation_users.empty
+        assert typeform_filling_dates.empty
 
 
-class GetFirstConnectionTest:
+class GetFirstConnectionDatesTest:
     @clean_database
     def test_returns_min_recommandation_dateCreated_for_a_user_if_has_any_recommendation(self, app):
         # Given
@@ -309,10 +315,10 @@ class GetFirstConnectionTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_first_connection(connection)
+        first_connections = get_first_connection_dates(connection)
 
         # Then
-        assert experimentation_users.loc[user.id, 'Date de première connection'] == datetime(2019, 1, 1)
+        assert first_connections.loc[user.id, 'Date de première connection'] == datetime(2019, 1, 1)
 
     @clean_database
     def test_returns_none_if_no_recommendation(self, app):
@@ -322,10 +328,10 @@ class GetFirstConnectionTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_first_connection(connection)
+        first_connections = get_first_connection_dates(connection)
 
         # Then
-        assert experimentation_users.loc[user.id, 'Date de première connection'] is None
+        assert first_connections.loc[user.id, 'Date de première connection'] is None
 
     @clean_database
     def test_returns_empty_series_if_user_cannot_book_free_offers(self, app):
@@ -335,13 +341,13 @@ class GetFirstConnectionTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_first_connection(connection)
+        first_connections = get_first_connection_dates(connection)
 
         # Then
-        assert experimentation_users.empty
+        assert first_connections.empty
 
 
-class GetFirstBookingTest:
+class GetNumberOfFirstBookingsTest:
     @clean_database
     def test_returns_booking_date_created_if_user_has_booked(self, app):
         # Given
@@ -356,10 +362,10 @@ class GetFirstBookingTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_first_booking(connection)
+        first_bookings = get_number_of_first_bookings(connection)
 
         # Then
-        assert experimentation_users.loc[user.id, 'Date de première réservation'] == first_booking_date
+        assert first_bookings.loc[user.id, 'Date de première réservation'] == first_booking_date
 
     @clean_database
     def test_returns_none_if_user_has_not_booked(self, app):
@@ -369,11 +375,11 @@ class GetFirstBookingTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_first_booking(connection)
+        first_bookings = get_number_of_first_bookings(connection)
 
         # Then
-        print(experimentation_users)
-        assert experimentation_users.loc[user.id, 'Date de première réservation'] is None
+        print(first_bookings)
+        assert first_bookings.loc[user.id, 'Date de première réservation'] is None
 
     @clean_database
     def test_returns_none_if_booking_on_activation_offer(self, app):
@@ -389,10 +395,10 @@ class GetFirstBookingTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_first_booking(connection)
+        firts_bookings = get_number_of_first_bookings(connection)
 
         # Then
-        assert experimentation_users.loc[user.id, 'Date de première réservation'] is None
+        assert firts_bookings.loc[user.id, 'Date de première réservation'] is None
 
     @clean_database
     def test_returns_empty_series_if_user_cannot_book_free_offers(self, app):
@@ -402,13 +408,13 @@ class GetFirstBookingTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_first_booking(connection)
+        first_bookings = get_number_of_first_bookings(connection)
 
         # Then
-        assert experimentation_users.empty
+        assert first_bookings.empty
 
 
-class GetSecondBookingTest:
+class GetNumberOfSecondBookingsTest:
     @clean_database
     def test_returns_date_created_of_second_booking_if_exists(self, app):
         # Given
@@ -425,10 +431,10 @@ class GetSecondBookingTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_second_booking(connection)
+        second_bookings = get_number_of_second_bookings(connection)
 
         # Then
-        assert experimentation_users.loc[user.id, 'Date de deuxième réservation'] == second_booking_date
+        assert second_bookings.loc[user.id, 'Date de deuxième réservation'] == second_booking_date
 
     @clean_database
     def test_returns_None_if_user_has_only_one_booking(self, app):
@@ -444,10 +450,10 @@ class GetSecondBookingTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_second_booking(connection)
+        second_bookings = get_number_of_second_bookings(connection)
 
         # Then
-        assert experimentation_users.loc[user.id, 'Date de deuxième réservation'] is None
+        assert second_bookings.loc[user.id, 'Date de deuxième réservation'] is None
 
     @clean_database
     def test_returns_None_if_booking_on_activation_offer(self, app):
@@ -467,10 +473,10 @@ class GetSecondBookingTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_second_booking(connection)
+        second_bookings = get_number_of_second_bookings(connection)
 
         # Then
-        assert experimentation_users.loc[user.id, 'Date de deuxième réservation'] is None
+        assert second_bookings.loc[user.id, 'Date de deuxième réservation'] is None
 
     @clean_database
     def test_returns_empty_series_if_user_cannot_book_free_offers(self, app):
@@ -480,13 +486,13 @@ class GetSecondBookingTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_second_booking(connection)
+        second_bookings = get_number_of_second_bookings(connection)
 
         # Then
-        assert experimentation_users.empty
+        assert second_bookings.empty
 
 
-class GetBookingOnThirdProductTypeTest:
+class GetNumberOfBookingsOnThirdProductTypeTest:
     @clean_database
     def test_returns_date_created_of_first_booking_on_more_than_three_types(self, app):
         # Given
@@ -513,10 +519,10 @@ class GetBookingOnThirdProductTypeTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_booking_on_third_product_type(connection)
+        bookings_on_third_product_type = get_number_of_bookings_on_third_product_type(connection)
 
         # Then
-        assert experimentation_users.loc[
+        assert bookings_on_third_product_type.loc[
                    user.id, 'Date de première réservation dans 3 catégories différentes'] == booking_date_jeux_video1
 
     @clean_database
@@ -541,10 +547,10 @@ class GetBookingOnThirdProductTypeTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_booking_on_third_product_type(connection)
+        bookings_on_third_product_type = get_number_of_bookings_on_third_product_type(connection)
 
         # Then
-        assert experimentation_users.loc[user.id, 'Date de première réservation dans 3 catégories différentes'] is None
+        assert bookings_on_third_product_type.loc[user.id, 'Date de première réservation dans 3 catégories différentes'] is None
 
     @clean_database
     def test_returns_empty_series_if_user_cannot_book_free_offers(self, app):
@@ -554,13 +560,13 @@ class GetBookingOnThirdProductTypeTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_booking_on_third_product_type(connection)
+        bookings_on_third_product_type = get_number_of_bookings_on_third_product_type(connection)
 
         # Then
-        assert experimentation_users.empty
+        assert bookings_on_third_product_type.empty
 
 
-class GetLastRecommendationTest:
+class GetLastRecommendationDateTest:
     @clean_database
     def test_returns_max_recommandation_dateCreated_for_a_user_if_has_any_recommendation(self, app):
         # Given
@@ -577,10 +583,10 @@ class GetLastRecommendationTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_last_recommendation(connection)
+        last_recommendation_dates = get_last_recommendation_date(connection)
 
         # Then
-        assert date_after_first_recommendation < experimentation_users.loc[
+        assert date_after_first_recommendation < last_recommendation_dates.loc[
             user.id, 'Date de dernière recommandation'] < date_after_second_recommendation
 
     @clean_database
@@ -591,10 +597,10 @@ class GetLastRecommendationTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_last_recommendation(connection)
+        last_recommendation_dates = get_last_recommendation_date(connection)
 
         # Then
-        assert experimentation_users.loc[user.id, 'Date de dernière recommandation'] is None
+        assert last_recommendation_dates.loc[user.id, 'Date de dernière recommandation'] is None
 
     @clean_database
     def test_returns_empty_series_if_user_cannot_book_free_offers(self, app):
@@ -604,10 +610,10 @@ class GetLastRecommendationTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_last_recommendation(connection)
+        last_recommendation_dates = get_last_recommendation_date(connection)
 
         # Then
-        assert experimentation_users.empty
+        assert last_recommendation_dates.empty
 
 
 class GetNumberOfBookingsTest:
@@ -630,10 +636,10 @@ class GetNumberOfBookingsTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_number_of_bookings(connection)
+        bookings = get_number_of_bookings(connection)
 
         # Then
-        assert experimentation_users.loc[user.id, 'Nombre de réservations totales'] == 2
+        assert bookings.loc[user.id, 'Nombre de réservations totales'] == 2
 
     @clean_database
     def test_returns_None_if_no_booking(self, app):
@@ -643,10 +649,10 @@ class GetNumberOfBookingsTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_number_of_bookings(connection)
+        bookings = get_number_of_bookings(connection)
 
         # Then
-        assert experimentation_users.loc[user.id, 'Nombre de réservations totales'] == 0
+        assert bookings.loc[user.id, 'Nombre de réservations totales'] == 0
 
     @clean_database
     def test_returns_empty_series_if_user_cannot_book_free_offers(self, app):
@@ -656,10 +662,11 @@ class GetNumberOfBookingsTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_number_of_bookings(connection)
+        bookings = get_number_of_bookings(connection)
 
         # Then
-        assert experimentation_users.empty
+        assert bookings.empty
+
 
 class GetNumberOfNonCancelledBookingsTest:
     @clean_database
@@ -684,10 +691,10 @@ class GetNumberOfNonCancelledBookingsTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_number_of_non_cancelled_bookings(connection)
+        non_cancelled_bookings = get_number_of_non_cancelled_bookings(connection)
 
         # Then
-        assert experimentation_users.loc[user.id, 'Nombre de réservations non annulées'] == 1
+        assert non_cancelled_bookings.loc[user.id, 'Nombre de réservations non annulées'] == 1
 
     @clean_database
     def test_returns_0_if_no_booking(self, app):
@@ -697,10 +704,10 @@ class GetNumberOfNonCancelledBookingsTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_number_of_non_cancelled_bookings(connection)
+        non_cancelled_bookings = get_number_of_non_cancelled_bookings(connection)
 
         # Then
-        assert experimentation_users.loc[user.id, 'Nombre de réservations non annulées'] == 0
+        assert non_cancelled_bookings.loc[user.id, 'Nombre de réservations non annulées'] == 0
 
     @clean_database
     def test_returns_empty_series_if_user_cannot_book_free_offers(self, app):
@@ -710,7 +717,7 @@ class GetNumberOfNonCancelledBookingsTest:
         connection = db.engine.connect()
 
         # When
-        experimentation_users = get_number_of_non_cancelled_bookings(connection)
+        non_cancelled_bookings = get_number_of_non_cancelled_bookings(connection)
 
         # Then
-        assert experimentation_users.empty
+        assert non_cancelled_bookings.empty
