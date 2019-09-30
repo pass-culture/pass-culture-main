@@ -28,7 +28,8 @@ def get_all_beneficiary_users_details():
         get_first_booking(connection),
         get_second_booking(connection),
         get_booking_on_third_product_type(connection),
-        get_last_recommendation(connection)
+        get_last_recommendation(connection),
+        get_number_of_bookings(connection)
     ]
     beneficiary_users_details = pandas.concat(
         df_list,
@@ -247,3 +248,28 @@ def get_last_recommendation(connection):
     return pandas.read_sql(query, connection, index_col='user_id')
 
 
+def get_number_of_bookings(connection):
+    query = '''
+    WITH bookings_grouped_by_user AS (
+     SELECT 
+      MIN(booking."dateCreated") AS date, 
+      SUM(booking.quantity) AS number_of_bookings,
+      "userId" AS user_id
+     FROM booking 
+     JOIN stock ON stock.id = booking."stockId"
+     JOIN offer ON offer.id = stock."offerId" 
+      AND offer.type != 'ThingType.ACTIVATION'
+     GROUP BY user_id
+    )
+    
+    SELECT 
+     CASE 
+      WHEN bookings_grouped_by_user.number_of_bookings IS NULL THEN 0
+      ELSE bookings_grouped_by_user.number_of_bookings 
+     END AS "Nombre de réservations totales",
+     "user".id AS user_id
+    FROM "user"
+    LEFT JOIN bookings_grouped_by_user ON "user".id = bookings_grouped_by_user.user_id
+    WHERE "user"."canBookFreeOffers"
+    '''
+    return pandas.read_sql(query, connection, index_col='user_id')
