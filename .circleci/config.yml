@@ -28,6 +28,7 @@ jobs:
             yarn install
             yarn fontello
             yarn test:unit --coverage
+            yarn coveralls
       - store_artifacts:
           path: ~/pass-culture-main/webapp/coverage
       - run:
