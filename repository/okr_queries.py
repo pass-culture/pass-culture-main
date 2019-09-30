@@ -29,7 +29,8 @@ def get_all_beneficiary_users_details():
         get_second_booking(connection),
         get_booking_on_third_product_type(connection),
         get_last_recommendation(connection),
-        get_number_of_bookings(connection)
+        get_number_of_bookings(connection),
+        get_number_of_non_cancelled_bookings(connection)
     ]
     beneficiary_users_details = pandas.concat(
         df_list,
@@ -133,13 +134,13 @@ def get_typeform_filling_date(connection):
 
 def get_first_connection(connection):
     query = recommendation_dates_query + \
-    '''
-    SELECT 
-     recommendation_dates.first_recommendation_date AS "Date de première connection",
-     recommendation_dates.user_id AS user_id
-    FROM recommendation_dates
-    WHERE recommendation_dates."canBookFreeOffers"
-    '''
+            '''
+            SELECT 
+             recommendation_dates.first_recommendation_date AS "Date de première connection",
+             recommendation_dates.user_id AS user_id
+            FROM recommendation_dates
+            WHERE recommendation_dates."canBookFreeOffers"
+            '''
 
     return pandas.read_sql(query, connection, index_col='user_id')
 
@@ -238,13 +239,13 @@ def get_booking_on_third_product_type(connection):
 
 def get_last_recommendation(connection):
     query = recommendation_dates_query + \
-        '''
-        SELECT 
-         recommendation_dates.last_recommendation_date AS "Date de dernière recommandation",
-         recommendation_dates.user_id AS user_id
-        FROM recommendation_dates
-        WHERE recommendation_dates."canBookFreeOffers"
-        '''
+            '''
+            SELECT 
+             recommendation_dates.last_recommendation_date AS "Date de dernière recommandation",
+             recommendation_dates.user_id AS user_id
+            FROM recommendation_dates
+            WHERE recommendation_dates."canBookFreeOffers"
+            '''
     return pandas.read_sql(query, connection, index_col='user_id')
 
 
@@ -270,6 +271,32 @@ def get_number_of_bookings(connection):
      "user".id AS user_id
     FROM "user"
     LEFT JOIN bookings_grouped_by_user ON "user".id = bookings_grouped_by_user.user_id
+    WHERE "user"."canBookFreeOffers"
+    '''
+    return pandas.read_sql(query, connection, index_col='user_id')
+
+
+def get_number_of_non_cancelled_bookings(connection):
+    query = '''
+    WITH non_cancelled_bookings_grouped_by_user AS(
+    SELECT 
+     SUM(booking.quantity) AS number_of_bookings,
+     "userId" AS user_id
+    FROM booking 
+    JOIN stock ON stock.id = booking."stockId"
+    JOIN offer ON offer.id = stock."offerId" AND offer.type != 'ThingType.ACTIVATION'
+    WHERE 
+     booking."isCancelled" IS FALSE
+    GROUP BY user_id
+    )
+    SELECT 
+     CASE 
+      WHEN non_cancelled_bookings_grouped_by_user.number_of_bookings IS NULL THEN 0 
+      ELSE non_cancelled_bookings_grouped_by_user.number_of_bookings 
+    END AS "Nombre de réservations non annulées",
+     "user".id AS user_id
+    FROM "user"
+    LEFT JOIN non_cancelled_bookings_grouped_by_user ON non_cancelled_bookings_grouped_by_user.user_id = "user".id
     WHERE "user"."canBookFreeOffers"
     '''
     return pandas.read_sql(query, connection, index_col='user_id')

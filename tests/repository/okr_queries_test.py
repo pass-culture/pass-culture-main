@@ -7,7 +7,7 @@ from models.db import db
 from repository.okr_queries import get_all_beneficiary_users_details, get_experimentation_session_column, \
     get_department_column, get_activation_date_column, get_typeform_filling_date, get_first_connection, \
     get_first_booking, get_second_booking, get_booking_on_third_product_type, get_last_recommendation, \
-    get_number_of_bookings
+    get_number_of_bookings, get_number_of_non_cancelled_bookings
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_venue, create_offer_with_thing_product, create_stock, \
     create_booking, create_recommendation
@@ -47,7 +47,7 @@ class GetAllExperimentationUsersDetailsTest:
         stock3 = create_stock(price=0, offer=offer3)
         booking1 = create_booking(user2, stock1, date_created=datetime(2019, 3, 7))
         booking2 = create_booking(user2, stock2, date_created=datetime(2019, 4, 7))
-        booking3 = create_booking(user2, stock3, date_created=datetime(2019, 5, 7))
+        booking3 = create_booking(user2, stock3, date_created=datetime(2019, 5, 7), is_cancelled=True)
         PcObject.save(user1, booking_activation, recommendation, booking1, booking2, booking3)
         booking_activation.isUsed = True
         user2.needsToFillCulturalSurvey = False
@@ -59,23 +59,23 @@ class GetAllExperimentationUsersDetailsTest:
         experimentation_users = get_all_beneficiary_users_details()
 
         # Then
-        assert experimentation_users.shape == (2, 10)
+        assert experimentation_users.shape == (2, 11)
         assert experimentation_users.loc[0].equals(
             pandas.Series(
-                data=[2, "93", user1.dateCreated, pandas.NaT, pandas.NaT, pandas.NaT, pandas.NaT, pandas.NaT, pandas.NaT, 0],
+                data=[2, "93", user1.dateCreated, pandas.NaT, pandas.NaT, pandas.NaT, pandas.NaT, pandas.NaT, pandas.NaT, 0, 0],
                 index=["Vague d'expérimentation", "Département", "Date d'activation", "Date de remplissage du typeform",
                        "Date de première connection", "Date de première réservation", "Date de deuxième réservation",
-                       "Date de première réservation dans 3 catégories différentes", "Date de dernière recommandation", "Nombre de réservations totales"]
+                       "Date de première réservation dans 3 catégories différentes", "Date de dernière recommandation", "Nombre de réservations totales", "Nombre de réservations non annulées"]
             )
         )
         assert experimentation_users.loc[
             1, ["Vague d'expérimentation", "Département", "Date de première connection", "Date de première réservation",
-                "Date de deuxième réservation", "Date de première réservation dans 3 catégories différentes", "Date de dernière recommandation", "Nombre de réservations totales"]].equals(
+                "Date de deuxième réservation", "Date de première réservation dans 3 catégories différentes", "Date de dernière recommandation", "Nombre de réservations totales", "Nombre de réservations non annulées"]].equals(
             pandas.Series(
-                data=[1, "08", datetime(2019, 2, 3), datetime(2019, 3, 7), datetime(2019, 4, 7), datetime(2019, 5, 7), recommendation.dateCreated, 3],
+                data=[1, "08", datetime(2019, 2, 3), datetime(2019, 3, 7), datetime(2019, 4, 7), datetime(2019, 5, 7), recommendation.dateCreated, 3, 2],
                 index=["Vague d'expérimentation", "Département", "Date de première connection",
                        "Date de première réservation", "Date de deuxième réservation",
-                       "Date de première réservation dans 3 catégories différentes", "Date de dernière recommandation", "Nombre de réservations totales"]
+                       "Date de première réservation dans 3 catégories différentes", "Date de dernière recommandation", "Nombre de réservations totales", "Nombre de réservations non annulées"]
             )
         )
         assert beginning_test_date < experimentation_users.loc[1, "Date d'activation"] < date_after_changes
@@ -657,6 +657,60 @@ class GetNumberOfBookingsTest:
 
         # When
         experimentation_users = get_number_of_bookings(connection)
+
+        # Then
+        assert experimentation_users.empty
+
+class GetNumberOfNonCancelledBookingsTest:
+    @clean_database
+    def test_returns_number_of_bookings_for_user_ignoring_activation_for_cancelled_bookings(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer_non_cancelled = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
+        stock_non_cancelled = create_stock(offer=offer_non_cancelled, price=0)
+        booking_non_cancelled = create_booking(user, stock_non_cancelled)
+        offer_cancelled = create_offer_with_thing_product(venue, thing_type=ThingType.AUDIOVISUEL)
+        stock_cancelled = create_stock(offer=offer_cancelled, price=0)
+        booking_cancelled = create_booking(user, stock_cancelled, is_cancelled=True)
+        offer_cancelled2 = create_offer_with_thing_product(venue, thing_type=ThingType.AUDIOVISUEL)
+        stock_cancelled2 = create_stock(offer=offer_cancelled2, price=0)
+        booking_cancelled2 = create_booking(user, stock_cancelled2, is_cancelled=True)
+        offer_activation = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        stock_activation = create_stock(offer=offer_activation, price=0)
+        booking_activation = create_booking(user, stock_activation)
+        PcObject.save(booking_non_cancelled, booking_cancelled, booking_activation, booking_cancelled2)
+        connection = db.engine.connect()
+
+        # When
+        experimentation_users = get_number_of_non_cancelled_bookings(connection)
+
+        # Then
+        assert experimentation_users.loc[user.id, 'Nombre de réservations non annulées'] == 1
+
+    @clean_database
+    def test_returns_0_if_no_booking(self, app):
+        # Given
+        user = create_user()
+        PcObject.save(user)
+        connection = db.engine.connect()
+
+        # When
+        experimentation_users = get_number_of_non_cancelled_bookings(connection)
+
+        # Then
+        assert experimentation_users.loc[user.id, 'Nombre de réservations non annulées'] == 0
+
+    @clean_database
+    def test_returns_empty_series_if_user_cannot_book_free_offers(self, app):
+        # Given
+        user = create_user(can_book_free_offers=False)
+        PcObject.save(user)
+        connection = db.engine.connect()
+
+        # When
+        experimentation_users = get_number_of_non_cancelled_bookings(connection)
 
         # Then
         assert experimentation_users.empty
