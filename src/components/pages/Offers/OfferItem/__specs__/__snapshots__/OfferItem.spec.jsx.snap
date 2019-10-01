@@ -65,11 +65,7 @@ ShallowWrapper {
     }
     offerTypeLabel="fake label"
     offerer={Object {}}
-    product={
-      Object {
-        "thumbUrl": "/fake-product-url",
-      }
-    }
+    product={Object {}}
     stockAlertMessage="fake alert message"
     stocks={Array []}
     venue={

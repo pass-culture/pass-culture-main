@@ -27,9 +27,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       offer: offersMock[0],
       offerTypeLabel: 'fake label',
       offerer: {},
-      product: {
-        thumbUrl: '/fake-product-url',
-      },
+      product: {},
       stockAlertMessage: 'fake alert message',
       stocks: [],
       venue: {
