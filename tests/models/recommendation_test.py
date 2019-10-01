@@ -8,11 +8,29 @@ from tests.test_utils import create_recommendation, create_offer_with_thing_prod
 
 
 @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
-def test_model_should_have_thumbUrl_using_productId_when_no_mediation(get_storage_base_url):
+def test_model_thumbUrl_should_use_mediation_first_as_thumbUrl(get_storage_base_url):
     # given
-    product = create_product_with_thing_type()
+    user = create_user(email='user@test.com')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    product = create_product_with_event_type(dominant_color=b'\x00\x00\x00', thumb_count=1)
+    offer = create_offer_with_event_product(product=product, venue=venue)
+    mediation = create_mediation(offer)
+    mediation.id = 1
+
+    # when
+    recommendation = create_recommendation(offer, user, mediation=mediation)
+    recommendation.mediationId = 1
+
+    # then
+    assert recommendation.thumbUrl == "http://localhost/storage/thumbs/mediations/AE"
+
+
+@patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
+def test_model_thumbUrl_should_have_thumbUrl_using_productId_when_no_mediation(get_storage_base_url):
+    # given
+    product = create_product_with_thing_type(dominant_color=b'\x00\x00\x00', thumb_count=1)
     product.id = 2
-    product.thumbCount = 0
     offerer = create_offerer()
     venue = create_venue(offerer=offerer)
     offer = create_offer_with_thing_product(product=product, venue=venue)
@@ -25,21 +43,19 @@ def test_model_should_have_thumbUrl_using_productId_when_no_mediation(get_storag
 
 
 @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
-def test_model_should_use_mediation_first_as_thumbUrl(get_storage_base_url):
+def test_model_thumbUrl_should_return_None_when_no_mediation_and_no_product_thumb(get_storage_base_url):
     # given
-    user = create_user(email='user@test.com')
+    product = create_product_with_thing_type(dominant_color=None, thumb_count=0)
+    product.id = 2
     offerer = create_offerer()
-    venue = create_venue(offerer)
-    offer = create_offer_with_event_product(venue)
-    mediation = create_mediation(offer)
-    mediation.id = 1
+    venue = create_venue(offerer=offerer)
+    offer = create_offer_with_thing_product(product=product, venue=venue)
 
     # when
-    recommendation = create_recommendation(offer, user, mediation=mediation)
-    recommendation.mediationId = 1
+    recommendation = create_recommendation(offer)
 
     # then
-    assert recommendation.thumbUrl == "http://localhost/storage/thumbs/mediations/AE"
+    assert recommendation.thumbUrl is None
 
 
 @patch('models.has_thumb_mixin.get_storage_base_url', return_value='https://passculture.app/storage/v2')
@@ -58,6 +74,7 @@ def test_model_should_use_environment_variable(get_storage_base_url):
 
     # then
     assert recommendation.thumbUrl == "https://passculture.app/storage/v2/thumbs/mediations/AE"
+
 
 @clean_database
 def test_model_should_return_false_if_no_favorite_exists_for_offer_mediation_and_user(app):

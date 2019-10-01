@@ -1,11 +1,14 @@
 from datetime import datetime, timedelta
+from unittest.mock import patch
 
 import pytest
 
 from models import Booking, Offer, Stock, User, Product, PcObject, ApiErrors
 from tests.conftest import clean_database
 from tests.test_utils import create_product_with_thing_type, create_offerer, create_venue, \
-    create_offer_with_thing_product, create_stock_from_offer, create_user, create_booking
+    create_offer_with_thing_product, create_stock_from_offer, create_user, create_booking, \
+    create_offer_with_event_product, create_mediation, create_stock, create_recommendation, \
+    create_product_with_event_type
 
 
 def test_booking_completed_url_gets_normalized():
@@ -34,6 +37,7 @@ def test_booking_completed_url_gets_normalized():
 
     # Then
     assert completedUrl == 'http://javascript:alert("plop")'
+
 
 @clean_database
 def test_raises_error_on_booking_when_existing_booking_is_used_and_booking_date_is_after_last_update_on_stock(app):
@@ -64,6 +68,63 @@ def test_raises_error_on_booking_when_existing_booking_is_used_and_booking_date_
 
     # Then
     assert e.value.errors['global'] == ['la quantité disponible pour cette offre est atteinte']
+
+
+@patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
+def test_model_thumbUrl_should_use_mediation_first_as_thumbUrl(get_storage_base_url):
+    # given
+    user = create_user(email='user@test.com')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    product = create_product_with_event_type(dominant_color=b'\x00\x00\x00', thumb_count=1)
+    offer = create_offer_with_event_product(product=product, venue=venue)
+    mediation = create_mediation(offer=offer)
+    mediation.id = 1
+    stock = create_stock(price=12, available=1, offer=offer)
+    recommendation = create_recommendation(idx=100, mediation=mediation, offer=offer, user=user)
+    recommendation.mediationId = mediation.id
+
+    # when
+    booking = create_booking(recommendation=recommendation, stock=stock, user=user, venue=venue)
+
+    # then
+    assert booking.thumbUrl == "http://localhost/storage/thumbs/mediations/AE"
+
+
+@patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
+def test_model_thumbUrl_should_have_thumbUrl_using_productId_when_no_mediation(get_storage_base_url):
+    # given
+    user = create_user(email='user@test.com')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    product = create_product_with_event_type(dominant_color=b'\x00\x00\x00', thumb_count=1)
+    product.id = 2
+    offer = create_offer_with_event_product(product=product, venue=venue)
+    stock = create_stock(price=12, available=1, offer=offer)
+
+    # when
+    booking = create_booking(recommendation=None, stock=stock, user=user, venue=venue)
+
+    # then
+    assert booking.thumbUrl == "http://localhost/storage/thumbs/products/A9"
+
+
+@patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
+def test_model_thumbUrl_should_return_None_when_no_mediation_or_product_without_thumb(get_storage_base_url):
+    # given
+    user = create_user(email='user@test.com')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    product = create_product_with_event_type(dominant_color=None, thumb_count=0)
+    product.id = 2
+    offer = create_offer_with_event_product(product=product, venue=venue)
+    stock = create_stock(price=12, available=1, offer=offer)
+
+    # when
+    booking = create_booking(recommendation=None, stock=stock, user=user, venue=venue)
+
+    # then
+    assert booking.thumbUrl is None
 
 
 class BookingIsCancellableTest:
