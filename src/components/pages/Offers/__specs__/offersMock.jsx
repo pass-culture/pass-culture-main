@@ -1,7 +1,11 @@
 const mockedOffers = [
   {
     id: 'M4',
-    activeMediation: { isActive: true, thumbUrl: 'https://url.to/thumb' },
+    activeMediation: {
+      id: 'HA',
+      isActive: true,
+      thumbUrl: 'https://url.to/thumb',
+    },
     bookingEmail: 'booking.email@test.com',
     dateCreated: '2019-02-25T09:50:10.735519Z',
     dateModifiedAtLastProvider: '2019-02-25T09:50:31.881297Z',

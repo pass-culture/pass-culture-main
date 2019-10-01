@@ -1,4 +1,4 @@
-import { IS_PROD } from '../../../../utils/config'
+import { IS_PROD } from '../../../utils/config'
 
 export const buildWebappDiscoveryUrl = (offerId, mediationId) => {
   const currentUrl = window.location.href

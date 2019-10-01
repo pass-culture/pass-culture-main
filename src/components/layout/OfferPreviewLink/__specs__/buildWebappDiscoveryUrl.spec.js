@@ -1,5 +1,5 @@
 import { buildWebappDiscoveryUrl } from '../buildWebappDiscoveryUrl'
-import * as config from '../../../../../utils/config'
+import * as config from '../../../../utils/config'
 
 
 describe('src | components | pages | Offer | utils | buildWebappDiscoveryUrl', () => {

@@ -40,6 +40,7 @@ ShallowWrapper {
     offer={
       Object {
         "activeMediation": Object {
+          "id": "HA",
           "isActive": true,
           "thumbUrl": "https://url.to/thumb",
         },
@@ -201,6 +202,11 @@ ShallowWrapper {
                 />
                 Modifier
               </NavLink>
+              <OfferPreviewLink
+                className="button is-secondary is-small preview_link"
+                href="http://localhost/decouverte/M4/HA"
+                onClick={[Function]}
+              />
               <button
                 className="button is-secondary is-small activ-switch"
                 onClick={[Function]}
@@ -341,6 +347,11 @@ ShallowWrapper {
                   />
                   Modifier
                 </NavLink>
+                <OfferPreviewLink
+                  className="button is-secondary is-small preview_link"
+                  href="http://localhost/decouverte/M4/HA"
+                  onClick={[Function]}
+                />
                 <button
                   className="button is-secondary is-small activ-switch"
                   onClick={[Function]}
@@ -686,6 +697,11 @@ ShallowWrapper {
                     />
                     Modifier
                   </NavLink>
+                  <OfferPreviewLink
+                    className="button is-secondary is-small preview_link"
+                    href="http://localhost/decouverte/M4/HA"
+                    onClick={[Function]}
+                  />
                   <button
                     className="button is-secondary is-small activ-switch"
                     onClick={[Function]}
@@ -809,6 +825,11 @@ ShallowWrapper {
                       />
                       Modifier
                     </NavLink>,
+                    <OfferPreviewLink
+                      className="button is-secondary is-small preview_link"
+                      href="http://localhost/decouverte/M4/HA"
+                      onClick={[Function]}
+                    />,
                     <button
                       className="button is-secondary is-small activ-switch"
                       onClick={[Function]}
@@ -856,6 +877,19 @@ ShallowWrapper {
                       },
                       "Modifier",
                     ],
+                    "type": [Function],
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "className": "button is-secondary is-small preview_link",
+                      "href": "http://localhost/decouverte/M4/HA",
+                      "onClick": [Function],
+                    },
+                    "ref": null,
+                    "rendered": null,
                     "type": [Function],
                   },
                   Object {
@@ -1033,6 +1067,11 @@ ShallowWrapper {
                   />
                   Modifier
                 </NavLink>
+                <OfferPreviewLink
+                  className="button is-secondary is-small preview_link"
+                  href="http://localhost/decouverte/M4/HA"
+                  onClick={[Function]}
+                />
                 <button
                   className="button is-secondary is-small activ-switch"
                   onClick={[Function]}
@@ -1173,6 +1212,11 @@ ShallowWrapper {
                     />
                     Modifier
                   </NavLink>
+                  <OfferPreviewLink
+                    className="button is-secondary is-small preview_link"
+                    href="http://localhost/decouverte/M4/HA"
+                    onClick={[Function]}
+                  />
                   <button
                     className="button is-secondary is-small activ-switch"
                     onClick={[Function]}
@@ -1518,6 +1562,11 @@ ShallowWrapper {
                       />
                       Modifier
                     </NavLink>
+                    <OfferPreviewLink
+                      className="button is-secondary is-small preview_link"
+                      href="http://localhost/decouverte/M4/HA"
+                      onClick={[Function]}
+                    />
                     <button
                       className="button is-secondary is-small activ-switch"
                       onClick={[Function]}
@@ -1641,6 +1690,11 @@ ShallowWrapper {
                         />
                         Modifier
                       </NavLink>,
+                      <OfferPreviewLink
+                        className="button is-secondary is-small preview_link"
+                        href="http://localhost/decouverte/M4/HA"
+                        onClick={[Function]}
+                      />,
                       <button
                         className="button is-secondary is-small activ-switch"
                         onClick={[Function]}
@@ -1688,6 +1742,19 @@ ShallowWrapper {
                         },
                         "Modifier",
                       ],
+                      "type": [Function],
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "function",
+                      "props": Object {
+                        "className": "button is-secondary is-small preview_link",
+                        "href": "http://localhost/decouverte/M4/HA",
+                        "onClick": [Function],
+                      },
+                      "ref": null,
+                      "rendered": null,
                       "type": [Function],
                     },
                     Object {

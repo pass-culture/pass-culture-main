@@ -8,8 +8,20 @@ import { NavLink } from 'react-router-dom'
 
 import Price from '../../../layout/Price'
 import Thumb from '../../../layout/Thumb'
+import OfferPreviewLink from '../../../layout/OfferPreviewLink/OfferPreviewLink'
+import { buildWebappDiscoveryUrl } from '../../../layout/OfferPreviewLink/buildWebappDiscoveryUrl'
 
 class OfferItem extends Component {
+  handleHrefClick = () => event => {
+    event.preventDefault()
+    const { offer } = this.props
+    const offerId = get(offer, 'id')
+    const mediationId = get(get(offer, 'activeMediation'), 'id')
+    const offerWebappUrl = buildWebappDiscoveryUrl(offerId, mediationId)
+
+    window.open(offerWebappUrl, 'targetWindow', 'toolbar=no,width=375,height=667').focus()
+  }
+
   handleOnDeactivateClick = () => {
     const { offer, updateOffer, trackActivateOffer, trackDeactivateOffer } = this.props
     const { id, isActive } = offer || {}
@@ -75,6 +87,9 @@ class OfferItem extends Component {
     const thumbUrl = this.getThumbUrl()
     const numberOfMediations = get(mediations, 'length')
     const remainingStockQuantity = get(stocks, 'length')
+    const mediationId = get(get(offer, 'activeMediation'), 'id')
+    const offerWebappUrl = buildWebappDiscoveryUrl(offer.id, mediationId)
+    const offerHasActiveMediations = get(offer, 'activeMediation')
 
     return (
       <li
@@ -143,9 +158,10 @@ class OfferItem extends Component {
             <li>
               {maxDate && `jusqu’au ${maxDate.format('DD/MM/YYYY')}`}
             </li>
-            {stockAlertMessage && <li>
-              {stockAlertMessage}
-                                  </li>}
+            {stockAlertMessage &&
+              <li>
+                {stockAlertMessage}
+              </li>}
             <li>
               {priceMin === priceMax ? (
                 <Price value={priceMin || 0} />
@@ -170,7 +186,7 @@ class OfferItem extends Component {
                   <Icon svg="ico-stars" />
                 </span>
                 <span>
-                  {get(mediations, 'length') ? 'Accroches' : 'Ajouter une Accroche'}
+                  {numberOfMediations ? 'Accroches' : 'Ajouter une Accroche'}
                 </span>
               </NavLink>
             </li>
@@ -182,6 +198,14 @@ class OfferItem extends Component {
                 <Icon svg="ico-pen-r" />
                 {'Modifier'}
               </NavLink>
+
+              {offerHasActiveMediations && (
+                <OfferPreviewLink
+                  className="button is-secondary is-small preview_link"
+                  href={offerWebappUrl}
+                  onClick={this.handleHrefClick()}
+                />
+              )}
 
               <button
                 className="button is-secondary is-small activ-switch"

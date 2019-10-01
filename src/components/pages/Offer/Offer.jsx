@@ -25,9 +25,10 @@ import { offerNormalizer } from '../../../utils/normalizers'
 import { getDurationInHours, getDurationInMinutes } from './utils/duration'
 
 import { OFFERERS_API_PATH } from '../../../config/apiPaths'
-import { buildWebappDiscoveryUrl } from './utils/buildWebappDiscoveryUrl'
+import { buildWebappDiscoveryUrl } from '../../layout/OfferPreviewLink/buildWebappDiscoveryUrl'
 import isTiteLiveOffer from './utils/isTiteLiveOffer'
 import TiteLiveInformation from './TiteLiveInformation/TiteLiveInformationContainer'
+import OfferPreviewLink from '../../layout/OfferPreviewLink/OfferPreviewLink'
 
 const DURATION_LIMIT_TIME = 100
 
@@ -358,25 +359,11 @@ class Offer extends Component {
           title={title}
         >
           {offer && mediationId && (
-            <div className="title-action-links">
-              <a
-                className="cta button"
-                href={offerWebappUrl}
-                onClick={this.handleHrefClick()}
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                <span
-                  className="tip-icon"
-                  data-place="bottom"
-                  data-tip="<p>Ouvrir un nouvel onglet avec la prévisualisation de l'offre</p>"
-                  data-type="info"
-                >
-                  <Icon svg="ico-eye" />
-                </span>
-                {'Prévisualiser'}
-              </a>
-            </div>
+            <OfferPreviewLink
+              className='title-action-links'
+              href={offerWebappUrl}
+              onClick={this.handleHrefClick()}
+            />
           )}
 
           <p className="subtitle">

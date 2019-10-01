@@ -313,7 +313,9 @@ describe('src | components | pages | Offer | Offer ', () => {
           lastProvider: null,
           activeMediation: {
             id: 'MED',
+            isActive: true,
           },
+          mediationsIds: ['MED'],
         }
 
         // when
@@ -321,13 +323,14 @@ describe('src | components | pages | Offer | Offer ', () => {
 
         // then
         const preview_section = wrapper.find(HeroSection)
-        const preview_link = preview_section.find('.cta')
-        expect(preview_link.text()).toStrictEqual('<Icon />Prévisualiser')
+
+        const preview_link = preview_section.find('OfferPreviewLink')
+        expect(preview_link.prop('href')).toMatch('/decouverte/VAG/MED')
       })
     })
 
     describe('display venue informations', () => {
-      it('should display venue name when venue publicName is not provided', () => {
+      it('should display venue name when enue publicName is not provided', () => {
         // given
         props.query.context = () => ({
           isCreatedEntity: true,
