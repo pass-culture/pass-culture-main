@@ -9,6 +9,7 @@ import { requestData } from 'redux-saga-data'
 import Price from '../../../layout/Price'
 import Thumb from '../../../layout/Thumb'
 import { offerNormalizer } from '../../../../utils/normalizers'
+import PropTypes from 'prop-types'
 
 class OfferItem extends Component {
   handleOnDeactivateClick = () => {
@@ -53,6 +54,20 @@ class OfferItem extends Component {
     }
   }
 
+  getThumbUrl = () => {
+    const { offer, product } = this.props
+
+    if (offer.activeMediation) {
+      return offer.activeMediation.thumbUrl
+    }
+
+    if (product.thumbUrl) {
+      return product.thumbUrl
+    }
+
+    return ''
+  }
+
   render() {
     const {
       aggregatedStock,
@@ -60,18 +75,18 @@ class OfferItem extends Component {
       maxDate,
       mediations,
       offer,
-      product,
-      stocks,
       offerTypeLabel,
       offerer,
+      product,
       stockAlertMessage,
+      stocks,
       venue,
     } = this.props
 
     const { isNew } = offer || {}
     const { groupSizeMin, groupSizeMax, priceMin, priceMax } = aggregatedStock || {}
     const { name } = product || {}
-    const thumbUrl = offer.activeMediation ? offer.activeMediation.thumbUrl : ''
+    const thumbUrl = this.getThumbUrl()
     const numberOfMediations = get(mediations, 'length')
     const remainingStockQuantity = get(stocks, 'length')
 
@@ -92,16 +107,24 @@ class OfferItem extends Component {
             title={name}
             to={`/offres/${offer.id}${search}`}
           >
-            <Dotdotdot clamp={1}>{name}</Dotdotdot>
+            <Dotdotdot clamp={1}>
+              {name}
+            </Dotdotdot>
           </NavLink>
           <ul className="infos">
-            <li className="is-uppercase">{offerTypeLabel}</li>
+            <li className="is-uppercase">
+              {offerTypeLabel}
+            </li>
             <li>
-              <span className="label">{'Structure : '}</span>
+              <span className="label">
+                {'Structure : '}
+              </span>
               {offerer && offerer.name}
             </li>
             <li>
-              <span className="label">{'Lieu : '}</span>
+              <span className="label">
+                {'Lieu : '}
+              </span>
               {(venue && venue.publicName) || venue.name}
             </li>
           </ul>
@@ -117,7 +140,9 @@ class OfferItem extends Component {
                 <div>
                   <Icon svg="picto-group" />
                   {', '}
-                  <p>{this.buildNumberOfParticipantsLabel(groupSizeMin, groupSizeMax)}</p>
+                  <p>
+                    {this.buildNumberOfParticipantsLabel(groupSizeMin, groupSizeMax)}
+                  </p>
                 </div>
               )}
             </li>
@@ -129,8 +154,12 @@ class OfferItem extends Component {
                 {this.buildProductNavLinkLabel(offer, remainingStockQuantity)}
               </NavLink>
             </li>
-            <li>{maxDate && `jusqu’au ${maxDate.format('DD/MM/YYYY')}`}</li>
-            {stockAlertMessage && <li>{stockAlertMessage}</li>}
+            <li>
+              {maxDate && `jusqu’au ${maxDate.format('DD/MM/YYYY')}`}
+            </li>
+            {stockAlertMessage && <li>
+              {stockAlertMessage}
+                                  </li>}
             <li>
               {priceMin === priceMax ? (
                 <Price value={priceMin || 0} />
@@ -154,7 +183,9 @@ class OfferItem extends Component {
                 <span className="icon">
                   <Icon svg="ico-stars" />
                 </span>
-                <span>{get(mediations, 'length') ? 'Accroches' : 'Ajouter une Accroche'}</span>
+                <span>
+                  {get(mediations, 'length') ? 'Accroches' : 'Ajouter une Accroche'}
+                </span>
               </NavLink>
             </li>
             <li>
@@ -188,7 +219,18 @@ class OfferItem extends Component {
   }
 }
 
-OfferItem.defaultProps = {
-  maxDescriptionLength: 300,
+OfferItem.propTypes = {
+  aggregatedStock: PropTypes.shape().isRequired,
+  location: PropTypes.shape().isRequired,
+  maxDate: PropTypes.shape().isRequired,
+  mediations: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  offer: PropTypes.shape().isRequired,
+  offerTypeLabel: PropTypes.string.isRequired,
+  offerer: PropTypes.shape().isRequired,
+  product: PropTypes.shape().isRequired,
+  stockAlertMessage: PropTypes.string.isRequired,
+  stocks: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  venue: PropTypes.shape().isRequired,
 }
+
 export default OfferItem

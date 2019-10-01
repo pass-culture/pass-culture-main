@@ -4,13 +4,30 @@ exports[`src | components | pages | Offers | OfferItem snapshot should match sna
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <OfferItem
+    aggregatedStock={Object {}}
     dispatch={[MockFunction]}
     location={
       Object {
         "search": "?orderBy=offer.id+desc",
       }
     }
-    maxDescriptionLength={300}
+    maxDate={
+      Object {
+        "format": [MockFunction] {
+          "calls": Array [
+            Array [
+              "DD/MM/YYYY",
+            ],
+          ],
+          "results": Array [
+            Object {
+              "type": "return",
+              "value": undefined,
+            },
+          ],
+        },
+      }
+    }
     mediations={
       Array [
         Object {
@@ -46,6 +63,14 @@ ShallowWrapper {
         "venueId": "CU",
       }
     }
+    offerTypeLabel="fake label"
+    offerer={Object {}}
+    product={
+      Object {
+        "thumbUrl": "/fake-product-url",
+      }
+    }
+    stockAlertMessage="fake alert message"
     stocks={Array []}
     venue={
       Object {
@@ -93,7 +118,9 @@ ShallowWrapper {
           >
             <li
               className="is-uppercase"
-            />
+            >
+              fake label
+            </li>
             <li>
               <span
                 className="label"
@@ -126,7 +153,12 @@ ShallowWrapper {
                 0 prix
               </NavLink>
             </li>
-            <li />
+            <li>
+              jusqu’au undefined
+            </li>
+            <li>
+              fake alert message
+            </li>
             <li>
               <Price
                 Tag="span"
@@ -186,7 +218,7 @@ ShallowWrapper {
           </ul>
         </div>,
       ],
-      "className": "offer-item active",
+      "className": "offer-item active product",
     },
     "ref": null,
     "rendered": Array [
@@ -226,7 +258,9 @@ ShallowWrapper {
             >
               <li
                 className="is-uppercase"
-              />
+              >
+                fake label
+              </li>
               <li>
                 <span
                   className="label"
@@ -259,7 +293,12 @@ ShallowWrapper {
                   0 prix
                 </NavLink>
               </li>
-              <li />
+              <li>
+                jusqu’au undefined
+              </li>
+              <li>
+                fake alert message
+              </li>
               <li>
                 <Price
                   Tag="span"
@@ -365,7 +404,9 @@ ShallowWrapper {
               "children": Array [
                 <li
                   className="is-uppercase"
-                />,
+                >
+                  fake label
+                </li>,
                 <li>
                   <span
                     className="label"
@@ -391,11 +432,11 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": undefined,
+                  "children": "fake label",
                   "className": "is-uppercase",
                 },
                 "ref": null,
-                "rendered": null,
+                "rendered": "fake label",
                 "type": "li",
               },
               Object {
@@ -485,8 +526,12 @@ ShallowWrapper {
                     0 prix
                   </NavLink>
                 </li>,
-                <li />,
-                undefined,
+                <li>
+                  jusqu’au undefined
+                </li>,
+                <li>
+                  fake alert message
+                </li>,
                 <li>
                   <Price
                     Tag="span"
@@ -556,13 +601,23 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": undefined,
+                  "children": "jusqu’au undefined",
                 },
                 "ref": null,
-                "rendered": null,
+                "rendered": "jusqu’au undefined",
                 "type": "li",
               },
-              undefined,
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "fake alert message",
+                },
+                "ref": null,
+                "rendered": "fake alert message",
+                "type": "li",
+              },
               Object {
                 "instance": null,
                 "key": undefined,
@@ -895,7 +950,9 @@ ShallowWrapper {
             >
               <li
                 className="is-uppercase"
-              />
+              >
+                fake label
+              </li>
               <li>
                 <span
                   className="label"
@@ -928,7 +985,12 @@ ShallowWrapper {
                   0 prix
                 </NavLink>
               </li>
-              <li />
+              <li>
+                jusqu’au undefined
+              </li>
+              <li>
+                fake alert message
+              </li>
               <li>
                 <Price
                   Tag="span"
@@ -988,7 +1050,7 @@ ShallowWrapper {
             </ul>
           </div>,
         ],
-        "className": "offer-item active",
+        "className": "offer-item active product",
       },
       "ref": null,
       "rendered": Array [
@@ -1028,7 +1090,9 @@ ShallowWrapper {
               >
                 <li
                   className="is-uppercase"
-                />
+                >
+                  fake label
+                </li>
                 <li>
                   <span
                     className="label"
@@ -1061,7 +1125,12 @@ ShallowWrapper {
                     0 prix
                   </NavLink>
                 </li>
-                <li />
+                <li>
+                  jusqu’au undefined
+                </li>
+                <li>
+                  fake alert message
+                </li>
                 <li>
                   <Price
                     Tag="span"
@@ -1167,7 +1236,9 @@ ShallowWrapper {
                 "children": Array [
                   <li
                     className="is-uppercase"
-                  />,
+                  >
+                    fake label
+                  </li>,
                   <li>
                     <span
                       className="label"
@@ -1193,11 +1264,11 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": undefined,
+                    "children": "fake label",
                     "className": "is-uppercase",
                   },
                   "ref": null,
-                  "rendered": null,
+                  "rendered": "fake label",
                   "type": "li",
                 },
                 Object {
@@ -1287,8 +1358,12 @@ ShallowWrapper {
                       0 prix
                     </NavLink>
                   </li>,
-                  <li />,
-                  undefined,
+                  <li>
+                    jusqu’au undefined
+                  </li>,
+                  <li>
+                    fake alert message
+                  </li>,
                   <li>
                     <Price
                       Tag="span"
@@ -1358,13 +1433,23 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": undefined,
+                    "children": "jusqu’au undefined",
                   },
                   "ref": null,
-                  "rendered": null,
+                  "rendered": "jusqu’au undefined",
                   "type": "li",
                 },
-                undefined,
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "fake alert message",
+                  },
+                  "ref": null,
+                  "rendered": "fake alert message",
+                  "type": "li",
+                },
                 Object {
                   "instance": null,
                   "key": undefined,

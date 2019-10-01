@@ -15,16 +15,26 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
   beforeEach(() => {
     props = {
+      aggregatedStock: {},
       dispatch: dispatch,
-      offer: offersMock[0],
-      mediations: [{ id: 'HA', isActive: true, thumbUrl: 'https://url.to/thumb' }],
       location: {
         search: '?orderBy=offer.id+desc',
       },
+      maxDate: {
+        format: jest.fn(),
+      },
+      mediations: [{ id: 'HA', isActive: true, thumbUrl: 'https://url.to/thumb' }],
+      offer: offersMock[0],
+      offerTypeLabel: 'fake label',
+      offerer: {},
+      product: {
+        thumbUrl: '/fake-product-url',
+      },
+      stockAlertMessage: 'fake alert message',
+      stocks: [],
       venue: {
         name: 'Paris',
       },
-      stocks: [],
     }
   })
 
@@ -87,9 +97,25 @@ describe('src | components | pages | Offers | OfferItem', () => {
         expect(thumbComponent.prop('src')).toBe('https://url.to/thumb')
       })
 
-      it('should render a Thumb Component with an empty url when offer does not have an active mediation', () => {
+      it('should render a Thumb Component with url from product when offer does not have an active mediation', () => {
         // given
-        props.offer = offersMock[1]
+        props.offer.activeMediation = null
+        props.product.thumbUrl = '/fake-product-url'
+        props.mediations = []
+
+        // when
+        const wrapper = shallow(<OfferItem {...props} />)
+
+        // then
+        const thumbComponent = wrapper.find(Thumb)
+        expect(thumbComponent.prop('alt')).toBe('offre')
+        expect(thumbComponent.prop('src')).toBe('/fake-product-url')
+      })
+
+      it('should render a Thumb Component with an empty url when offer does not have an active mediation and product does not have a thumb url', () => {
+        // given
+        props.offer.activeMediation = null
+        props.product.thumbUrl = null
         props.mediations = []
 
         // when
