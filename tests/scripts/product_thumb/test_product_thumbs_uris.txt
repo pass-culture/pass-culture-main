@@ -1,0 +1,7 @@
+thumbs/products/XXXX
+thumbs/products/XXXX_1
+thumbs/products/YYYY
+thumbs/products/YYYY_1
+thumbs/products/ZZZZ
+thumbs/products/ZZZZ_1
+thumbs/products/ZZZZ_2
