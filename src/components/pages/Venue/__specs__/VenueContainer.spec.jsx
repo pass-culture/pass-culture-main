@@ -130,20 +130,19 @@ describe('src | components | pages | VenueContainer | mergeProps', () => {
       match: ownProps.match,
       handleInitialRequest: expect.any(Function),
       trackCreateVenue: expect.any(Function),
-      trackModifyVenue: expect.any(Function)
-
+      trackModifyVenue: expect.any(Function),
     })
   })
 
   it('should map a tracking event for creating a venue', () => {
     // given
-    const stateProps = {
-    }
+    const stateProps = {}
     const ownProps = {
       tracking: {
         trackEvent: jest.fn(),
       },
     }
+
     // when
     mergeProps(stateProps, {}, ownProps).trackCreateVenue('RTgfd67')
 
@@ -156,8 +155,7 @@ describe('src | components | pages | VenueContainer | mergeProps', () => {
 
   it('should map a tracking event for updating a venue', () => {
     // given
-    const stateProps = {
-    }
+    const stateProps = {}
     const ownProps = {
       tracking: {
         trackEvent: jest.fn(),

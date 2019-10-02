@@ -29,7 +29,7 @@ describe('src | selectors | selectVenuesByOffererIdAndOfferType', () => {
             postalCode: '97300',
             publicName: null,
             siret: '22222223111111',
-            thumbCount: 0
+            thumbCount: 0,
           },
           {
             address: 'RUE PASTEUR',
@@ -54,16 +54,17 @@ describe('src | selectors | selectVenuesByOffererIdAndOfferType', () => {
             postalCode: '97300',
             publicName: null,
             siret: '22222223111111',
-            thumbCount: 0
-          }
-        ]
-      }
+            thumbCount: 0,
+          },
+        ],
+      },
     }
 
     const offererId = 'BQ'
     const selectedOfferType = {
       appLabel: 'Abonnements',
-      description: 'Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
+      description:
+        'Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
       id: 10,
       isActive: true,
       offlineOnly: true,
@@ -74,6 +75,7 @@ describe('src | selectors | selectVenuesByOffererIdAndOfferType', () => {
       value: 'ThingType.CINEMA_ABO',
     }
 
+    // when
     const expected = [
       {
         address: 'RUE PANACOCO',
@@ -98,16 +100,13 @@ describe('src | selectors | selectVenuesByOffererIdAndOfferType', () => {
         postalCode: '97300',
         publicName: null,
         siret: '22222223111111',
-        thumbCount: 0
-      }
+        thumbCount: 0,
+      },
     ]
-
-    // when
     const result = selectVenuesByOffererIdAndOfferType(state, offererId, selectedOfferType)
 
     // then
     expect(result).toStrictEqual(expected)
-
   })
   it('should return an empty array when state contains no venues', () => {
     // given

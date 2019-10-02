@@ -85,7 +85,7 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
       })
     })
 
-    it('should map a tracking event for creating a venue', () => {
+    it('should map a tracking event for creating an offer', () => {
       // given
       const stateProps = {}
       const ownProps = {
@@ -103,7 +103,7 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
       })
     })
 
-    it('should map a tracking event for updating a venue', () => {
+    it('should map a tracking event for updating an offer', () => {
       // given
       const stateProps = {}
       const ownProps = {
