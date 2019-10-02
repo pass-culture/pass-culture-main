@@ -8,6 +8,7 @@ describe('src | components | pages | discovery | Discovery', () => {
 
   beforeEach(() => {
     props = {
+      deleteTutos: jest.fn(),
       loadRecommendations: jest.fn(),
       location: {
         pathname: '',
@@ -26,6 +27,7 @@ describe('src | components | pages | discovery | Discovery', () => {
       saveLoadRecommendationsTimestamp: jest.fn(),
       shouldReloadRecommendations: false,
       showPasswordChangedPopin: jest.fn(),
+      tutos: [],
       withBackButton: false,
     }
   })
@@ -51,6 +53,42 @@ describe('src | components | pages | discovery | Discovery', () => {
         isLoading: false,
       }
       expect(wrapper.state()).toStrictEqual(expected)
+    })
+  })
+
+  describe('when unmount Discovery', () => {
+    it('should delete tutos for new user', () => {
+      // given
+      props.tutos = [
+        {
+          id: 'hello',
+          productOrTutoIdentifier: 'tuto_0',
+        },
+      ]
+      const wrapper = shallow(<Discovery {...props} />)
+
+      // when
+      wrapper.unmount()
+
+      // then
+      expect(props.deleteTutos).toHaveBeenCalledWith([
+        {
+          id: 'hello',
+          productOrTutoIdentifier: 'tuto_0',
+        },
+      ])
+    })
+
+    it('should not delete tutos for old user', () => {
+      // given
+      props.tutos = []
+      const wrapper = shallow(<Discovery {...props} />)
+
+      // when
+      wrapper.unmount()
+
+      // then
+      expect(props.deleteTutos).toHaveLength(0)
     })
   })
 })

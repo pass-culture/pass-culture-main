@@ -22,7 +22,6 @@ class Results extends PureComponent {
 
   componentDidMount() {
     const { items } = this.props
-
     if (items.length) {
       this.handleSetHasMore(items.length)
       this.handleSetHasReceivedFirstSuccessData()

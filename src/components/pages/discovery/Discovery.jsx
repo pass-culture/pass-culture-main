@@ -44,6 +44,13 @@ class Discovery extends PureComponent {
     }
   }
 
+  componentWillUnmount() {
+    const { deleteTutos, tutos } = this.props
+    if (tutos.length > 0) {
+      deleteTutos(tutos)
+    }
+  }
+
   handleRequestFail = () => {
     const { onRequestFailRedirectToHome } = this.props
     const nextState = { hasError: true, isLoading: true }
@@ -157,6 +164,7 @@ Discovery.defaultProps = {
 
 Discovery.propTypes = {
   currentRecommendation: PropTypes.shape(),
+  deleteTutos: PropTypes.func.isRequired,
   loadRecommendations: PropTypes.func.isRequired,
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired,
@@ -174,6 +182,7 @@ Discovery.propTypes = {
   saveLoadRecommendationsTimestamp: PropTypes.func.isRequired,
   shouldReloadRecommendations: PropTypes.bool.isRequired,
   showPasswordChangedPopin: PropTypes.func.isRequired,
+  tutos: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
 
 export default Discovery

@@ -5,6 +5,7 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Discovery
     currentRecommendation={null}
+    deleteTutos={[MockFunction]}
     loadRecommendations={[MockFunction]}
     location={
       Object {
@@ -53,6 +54,7 @@ ShallowWrapper {
         ],
       }
     }
+    tutos={Array []}
     withBackButton={false}
   />,
   Symbol(enzyme.__renderer__): Object {

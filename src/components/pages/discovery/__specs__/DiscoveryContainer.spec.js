@@ -1,4 +1,4 @@
-import { mapDispatchToProps } from '../DiscoveryContainer'
+import { mapStateToProps, mapDispatchToProps } from '../DiscoveryContainer'
 
 import { recommendationNormalizer } from '../../../../utils/normalizers'
 
@@ -26,6 +26,46 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         parse: () => ({}),
       },
     }
+  })
+  describe('mapStateToProps()', () => {
+    it('should return an object of props', () => {
+      // given
+      const state = {
+        data: {
+          recommendations: [],
+        },
+      }
+
+      const ownProps = {
+        match: {
+          params: {},
+        },
+      }
+
+      // when
+      const props = mapStateToProps(state, ownProps)
+
+      // then
+      expect(props).toStrictEqual({
+        currentRecommendation: {
+          mediation: {
+            firstThumbDominantColor: [205, 54, 70],
+            frontText:
+              'Vous avez parcouru toutes les offres. Revenez bientôt pour découvrir les nouveautés.',
+            id: 'fin',
+            thumbCount: 1,
+            tutoIndex: -1,
+          },
+          mediationId: 'fin',
+          productOrTutoIdentifier: 'tuto_-1',
+          thumbUrl: 'http://localhost/splash-finReco@2x.png',
+        },
+        readRecommendations: undefined,
+        recommendations: [],
+        shouldReloadRecommendations: true,
+        tutos: [],
+      })
+    })
   })
 
   describe('mapDispatchToProps()', () => {
@@ -170,6 +210,27 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
 
           // then
           expect(ownProps.history.replace).toHaveBeenCalledWith('/decouverte/tuto/vide')
+        })
+
+        it('should delete tutos from store when leaving discovery', () => {
+          // given
+          const tutos = {
+            id: 'ABCD',
+          }
+
+          // when
+          mapDispatchToProps(dispatch, null).deleteTutos(tutos)
+
+          // then
+          expect(dispatch).toHaveBeenCalledWith({
+            config: {},
+            patch: {
+              recommendations: {
+                id: 'ABCD',
+              },
+            },
+            type: 'DELETE_DATA',
+          })
         })
       })
     })

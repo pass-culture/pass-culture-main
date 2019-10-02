@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { toast } from 'react-toastify'
-import { assignData, requestData } from 'redux-saga-data'
+import { assignData, deleteData, requestData } from 'redux-saga-data'
 
 import Discovery from './Discovery'
 import {
@@ -9,6 +9,7 @@ import {
   isDiscoveryStartupUrl,
 } from './utils/utils'
 import selectCurrentRecommendation from './selectors/selectCurrentRecommendation'
+import selectTutos from './selectors/selectTutos'
 import { withRequiredLogin } from '../../hocs'
 import { getOfferIdAndMediationIdApiPathQueryString } from '../../../helpers'
 import { saveLastRecommendationsRequestTimestamp } from '../../../reducers/data'
@@ -19,7 +20,7 @@ export const mapStateToProps = (state, ownProps) => {
   const { params } = match
   const { mediationId, offerId } = params
   const currentRecommendation = selectCurrentRecommendation(state, offerId, mediationId)
-
+  const tutos = selectTutos(state)
   const { readRecommendations, recommendations } = (state && state.data) || {}
   const shouldReloadRecommendations =
     checkIfShouldReloadRecommendationsBecauseOfLongTime(state) ||
@@ -29,10 +30,15 @@ export const mapStateToProps = (state, ownProps) => {
     readRecommendations,
     recommendations,
     shouldReloadRecommendations,
+    tutos,
   }
 }
 
 export const mapDispatchToProps = (dispatch, props) => ({
+  deleteTutos: recommendations => {
+    dispatch(deleteData({ recommendations }))
+  },
+
   loadRecommendations: (
     handleRequestSuccess,
     handleRequestFail,
