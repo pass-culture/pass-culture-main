@@ -315,6 +315,7 @@ def _filter_recommendable_offers_for_search(offer_query):
     offer_query = offer_query.reset_joinpoint() \
                              .filter(Offer.isActive == True) \
                              .filter(_has_active_and_validated_offerer()) \
+                             .filter(Venue.validationToken == None) \
                              .filter(_offer_has_bookable_stocks())
     return offer_query
 

@@ -120,7 +120,7 @@ class DepartmentOrNationalOffersTest:
 @freeze_time(REFERENCE_DATE)
 class GetOffersForRecommendationsSearchTest:
     @clean_database
-    def test_search_by_one_event_type_returns_only_offers_on_events_of_that_type(self, app):
+    def test_should_return_only_offers_on_events_of_that_type_when_searching_by_one_event_type(self, app):
         # Given
         type_label = EventType.CONFERENCE_DEBAT_DEDICACE
         other_type_label = EventType.MUSIQUE
@@ -177,7 +177,7 @@ class GetOffersForRecommendationsSearchTest:
         assert concert_offer not in offers
 
     @clean_database
-    def test_search_by_one_thing_type_returns_only_offers_on_things_of_that_type(self, app):
+    def test_should_return_only_offers_on_things_of_that_type_when_searching_by_one_thing_type(self, app):
         # Given
         type_label_ok = ThingType.JEUX_VIDEO
         type_label_ko = ThingType.LIVRE_EDITION
@@ -217,7 +217,7 @@ class GetOffersForRecommendationsSearchTest:
         assert ok_offer_2 in offers
 
     @clean_database
-    def test_search_by_datetime_only_returns_recommendations_starting_during_time_interval(self, app):
+    def test_should_return_recommendations_starting_during_time_interval_when_searching_by_datetime_only(self, app):
         # Duplicate
         # Given
         offerer = create_offerer()
@@ -244,7 +244,7 @@ class GetOffersForRecommendationsSearchTest:
         assert ko_stock_after.resolvedOffer not in search_result_offers
 
     @clean_database
-    def test_search_with_several_partial_keywords_returns_things_and_events_with_name_containing_keywords(self, app):
+    def test_should_return_things_and_events_with_name_containing_keywords_when_searching_with_several_partial_keywords(self, app):
         # Given
         thing_ok = create_product_with_thing_type(thing_name='Rencontre de michel')
         thing_product = create_product_with_thing_type(thing_name='Rencontre avec jean-luc')
@@ -269,7 +269,7 @@ class GetOffersForRecommendationsSearchTest:
         assert event_ko_offer not in offers
 
     @clean_database
-    def test_search_without_accents_matches_offer_with_accents_1(self, app):
+    def test_should_matches_offer_with_accents_when_searching_without_accents_1(self, app):
         # Given
         thing_product_ok = create_product_with_thing_type(thing_name='Nez à nez')
         offerer = create_offerer()
@@ -285,7 +285,7 @@ class GetOffersForRecommendationsSearchTest:
         assert thing_ok_offer in offers
 
     @clean_database
-    def test_search_with_accents_matches_offer_without_accents_2(self, app):
+    def test_should_matches_offer_with_accents_when_searching_without_accents_2(self, app):
         # Given
         thing_ok = create_product_with_thing_type(thing_name='Déjà')
         offerer = create_offerer()
@@ -301,7 +301,7 @@ class GetOffersForRecommendationsSearchTest:
         assert thing_ok_offer in offers
 
     @clean_database
-    def test_search_does_not_return_offers_by_types_with_booking_limit_date_over(self, app):
+    def test_should_not_return_offers_by_types_with_booking_limit_date_over_when_searching(self, app):
         # Given
         three_hours_ago = datetime.utcnow() - timedelta(hours=3)
         type_label = ThingType.JEUX_VIDEO
@@ -321,7 +321,7 @@ class GetOffersForRecommendationsSearchTest:
         assert not search_result_offers
 
     @clean_database
-    def test_search_does_not_return_offers_by_types_with_all_beginning_datetime_passed_and_no_booking_limit_datetime(
+    def test_should_not_return_offers_by_types_with_all_beginning_datetime_passed_and_no_booking_limit_datetime_when_searching(
             self, app):
         # Given
         three_hours_ago = datetime.utcnow() - timedelta(hours=3)
@@ -344,7 +344,7 @@ class GetOffersForRecommendationsSearchTest:
         assert not search_result_offers
 
     @clean_database
-    def test_search_return_offers_by_types_with_some_but_not_all_beginning_datetime_passed_and_no_booking_limit_datetime(
+    def test_should_return_offers_by_types_with_some_but_not_all_beginning_datetime_passed_and_no_booking_limit_datetime_when_searching(
             self, app):
         # Given
         three_hours_ago = datetime.utcnow() - timedelta(hours=3)
@@ -373,7 +373,7 @@ class GetOffersForRecommendationsSearchTest:
 
 
     @clean_database
-    def test_search_does_not_return_duplicate(self, app):
+    def test_should_not_return_duplicate_when_searching(self, app):
         # Given
         things_stock = []
         for x in range(0, 120):
@@ -388,11 +388,152 @@ class GetOffersForRecommendationsSearchTest:
         PcObject.save(*things_stock)
 
         # When
-        search_result_offers = get_offers_for_recommendations_search(page=1, keywords_string="snif")
-        search_result_offers = search_result_offers + get_offers_for_recommendations_search(page=2, keywords_string="snif")
+        search_result_offers = get_offers_for_recommendations_search(page=1, keywords_string='snif')
+        search_result_offers = search_result_offers + get_offers_for_recommendations_search(page=2, keywords_string='snif')
 
         # Then
         assert len(search_result_offers) == len(set(search_result_offers))
+
+
+    @clean_database
+    def test_should_not_return_deactivated_offer_when_searching(self, app):
+        # Given
+        thing = create_product_with_thing_type()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue, thing, is_active=False)
+        thing_stock = create_stock_from_offer(offer)
+
+        PcObject.save(thing_stock)
+
+        # When
+        search_result_offers = get_offers_for_recommendations_search(page=None)
+
+        # Then
+        assert offer not in search_result_offers
+
+
+    @clean_database
+    def test_should_not_return_offers_with_not_validated_offerer_when_searching(self, app):
+        # Given
+        thing = create_product_with_thing_type()
+        offerer = create_offerer(validation_token='not_validated')
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue, thing)
+        thing_stock = create_stock_from_offer(offer)
+
+        PcObject.save(thing_stock)
+
+        # When
+        search_result_offers = get_offers_for_recommendations_search(page=None)
+
+        # Then
+        assert offer not in search_result_offers
+
+
+    @clean_database
+    def test_should_not_return_offers_with_deactivated_offerer_when_searching(self, app):
+        # Given
+        thing = create_product_with_thing_type()
+        offerer = create_offerer(is_active=False)
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue, thing)
+        thing_stock = create_stock_from_offer(offer)
+
+        PcObject.save(thing_stock)
+
+        # When
+        search_result_offers = get_offers_for_recommendations_search(page=None)
+
+        # Then
+        assert offer not in search_result_offers
+
+    @clean_database
+    def test_should_not_return_offers_with_not_validated_venue_when_searching(self, app):
+        # Given
+        thing = create_product_with_thing_type()
+        offerer = create_offerer()
+        venue = create_venue(offerer, validation_token='not_validated')
+        offer = create_offer_with_thing_product(venue, thing)
+        thing_stock = create_stock_from_offer(offer)
+
+        PcObject.save(thing_stock)
+
+        # When
+        search_result_offers = get_offers_for_recommendations_search(page=None)
+
+        # Then
+        assert offer not in search_result_offers
+
+
+    @clean_database
+    def test_should_not_return_offers_with_not_bookable_soft_deleted_stock_when_searching(self, app):
+        # Given
+        thing = create_product_with_thing_type()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer_with_soft_deleted_stock = create_offer_with_thing_product(venue, thing)
+        thing_stock = create_stock_from_offer(offer_with_soft_deleted_stock, soft_deleted=True)
+
+        PcObject.save(thing_stock)
+
+        # When
+        search_result_offers = get_offers_for_recommendations_search(page=None)
+
+        # Then
+        assert offer_with_soft_deleted_stock not in search_result_offers
+
+
+    @clean_database
+    def test_should_not_return_offers_with_past_booking_limit_datetime_when_searching(self, app):
+        # Given
+        thing = create_product_with_thing_type()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer_with_passed_booking_limit_datetime =  create_offer_with_thing_product(venue, thing)
+        thing_stock = create_stock_from_offer(offer_with_passed_booking_limit_datetime, booking_limit_datetime=datetime(2010, 1, 6, 12, 30))
+
+        PcObject.save(thing_stock)
+
+        # When
+        search_result_offers = get_offers_for_recommendations_search(page=None)
+
+        # Then
+        assert offer_with_passed_booking_limit_datetime not in search_result_offers
+
+
+    @clean_database
+    def test_should_not_return_offer_in_past_when_searching(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer_in_past = _create_event_stock_and_offer_for_date(venue, datetime(2018, 1, 6, 12, 30))
+
+        PcObject.save(offer_in_past)
+
+        # When
+        search_result_offers = get_offers_for_recommendations_search(page=None)
+
+        # Then
+        assert offer_in_past not in search_result_offers
+
+
+    @clean_database
+    def test_should_not_return_offers_with_not_available_stock_when_searching(self, app):
+        # Given
+        thing = create_product_with_thing_type()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer_with_not_available_stock = create_offer_with_thing_product(venue, thing)
+        thing_stock = create_stock_from_offer(offer_with_not_available_stock, available=0)
+
+        PcObject.save(thing_stock)
+
+        # When
+        search_result_offers = get_offers_for_recommendations_search(page=None)
+
+        # Then
+        assert offer_with_not_available_stock not in search_result_offers
 
 
 class GetActiveOffersTest:
@@ -863,14 +1004,6 @@ def test_find_offers_by_venue_id_return_offers_matching_venue_id(app):
     assert offers[0].venueId == venue.id
 
 
-def _create_event_stock_and_offer_for_date(venue, date):
-    product = create_product_with_event_type()
-    offer = create_offer_with_event_product(venue, product)
-    event_occurrence = create_event_occurrence(offer, beginning_datetime=date, end_datetime=date + timedelta(hours=1))
-    stock = create_stock_from_event_occurrence(event_occurrence, booking_limit_date=date)
-    return stock
-
-
 @pytest.mark.standalone
 class BaseScoreTest:
 
@@ -921,7 +1054,6 @@ class GetActiveOffersTest:
 
         # Then
         assert len(offers) == 4
-
     @clean_database
     def test_get_active_offers_with_criteria_should_return_offer_with_highest_base_score_first(self, app):
         # Given
@@ -973,3 +1105,11 @@ class GetActiveOffersTest:
 
         # Then
         assert offers == [offer2, offer3, offer1]
+
+
+def _create_event_stock_and_offer_for_date(venue, date):
+    product = create_product_with_event_type()
+    offer = create_offer_with_event_product(venue, product)
+    event_occurrence = create_event_occurrence(offer, beginning_datetime=date, end_datetime=date + timedelta(hours=1))
+    stock = create_stock_from_event_occurrence(event_occurrence, booking_limit_date=date)
+    return stock
