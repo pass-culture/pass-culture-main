@@ -269,6 +269,7 @@ class Get:
             # then
             assert response.status_code == 200
             assert 'Total-Data-Count' in response.headers
+            assert response.headers['Total-Data-Count'] == "20"
 
 def create_offers_for(user, n, siren='123456789'):
     offerer = create_offerer(siren=siren)
