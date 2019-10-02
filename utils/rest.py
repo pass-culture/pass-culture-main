@@ -120,7 +120,7 @@ def check_order_by(order_by):
 
 
 def handle_rest_get_list(modelClass, query=None, headers=None, refine=None, order_by=None, flask_request=None, includes=(),
-                         print_elements=None, paginate=None, page=None, populate=None, with_total_data_count=False):
+                         print_elements=None, paginate=None, page=None, populate=None, with_total_data_count=False, should_distinct=False):
     if flask_request is None:
         flask_request = request
 
@@ -141,7 +141,9 @@ def handle_rest_get_list(modelClass, query=None, headers=None, refine=None, orde
         query = query_with_order_by(query, order_by)
 
     # TOTAL_DATA COUNT
-    if with_total_data_count:
+    if should_distinct and with_total_data_count:
+        total_data_count = query.distinct().count()
+    elif with_total_data_count:
         total_data_count = query.count()
 
     # PAGINATE

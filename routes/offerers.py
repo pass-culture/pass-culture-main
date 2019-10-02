@@ -46,6 +46,9 @@ def list_offerers():
     keywords = request.args.get('keywords')
     if keywords is not None:
         query = filter_offerers_with_keywords_string(query.join(Venue), keywords)
+        should_distinct_offerers=True
+    else:
+        should_distinct_offerers =False
 
     offerers = query.all()
 
@@ -54,6 +57,7 @@ def list_offerers():
 
 
     return handle_rest_get_list(Offerer,
+                                should_distinct=should_distinct_offerers,
                                 query=query,
                                 order_by=Offerer.name,
                                 includes=OFFERER_INCLUDES,
