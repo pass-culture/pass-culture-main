@@ -22,6 +22,7 @@ describe('src | components | pages | OfferItemContainer', () => {
           stockAlertMessage: 'encore 10 en stock',
           venueId: 'DA',
         },
+        stocks: [{}],
       }
     })
 
@@ -40,7 +41,7 @@ describe('src | components | pages | OfferItemContainer', () => {
       expect(result.aggregatedStock).toStrictEqual(expected)
     })
 
-    it('should return the value maxDate', () => {
+    it('should not return the value maxDate when no stocks', () => {
       // given
 
       // when

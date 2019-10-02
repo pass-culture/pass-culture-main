@@ -93,6 +93,7 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
           trackEvent: jest.fn(),
         },
       }
+
       // when
       mergeProps(stateProps, {}, ownProps).trackCreateOffer('RTgfd67')
 
@@ -111,6 +112,7 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
           trackEvent: jest.fn(),
         },
       }
+
       // when
       mergeProps(stateProps, {}, ownProps).trackModifyOffer('RTgfd67')
 
