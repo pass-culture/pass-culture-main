@@ -86,7 +86,8 @@ class ProcessProductThumbTest:
         get_product_thumb.assert_called_once_with('thumbs/products/A6UQA')
 
     @clean_database
-    def test_should_set_product_thumb_count_to_one_and_set_first_thumb_dominant_color_when_thumb_is_main(self, app):
+    @patch('scripts.product_thumb.update_product_thumb.logger.info')
+    def test_should_set_product_thumb_count_to_one_and_set_first_thumb_dominant_color_when_thumb_is_main(self, logger_info, app):
         # Given
         product = create_product_with_thing_type(thumb_count=0)
         PcObject.save(product)
@@ -102,6 +103,8 @@ class ProcessProductThumbTest:
         assert product.thumbCount == 1
         assert product.firstThumbDominantColor == b'\xc6\xbdj'
         assert success
+        logger_info.assert_called_once_with(
+            f'[BATCH][PRODUCT THUMB UPDATE] Product with id: "{product.id}" / uri: "{uri}" processed successfully')
 
     @clean_database
     def test_should_increase_product_thumb_count_by_one_and_not_set_first_thumb_dominant_color_when_thumb_is_not_main(
@@ -169,7 +172,8 @@ class ProcessProductThumbTest:
         assert not success
 
     @clean_database
-    def test_should_not_fetch_product_thumb_when_is_not_main(self, app):
+    @patch('scripts.product_thumb.update_product_thumb.logger.info')
+    def test_should_not_fetch_product_thumb_when_is_not_main(self, logger_info, app):
         # Given
         product = create_product_with_thing_type(thumb_count=1, dominant_color=b'\xcc\x80')
         PcObject.save(product)
@@ -183,7 +187,8 @@ class ProcessProductThumbTest:
         # Then
         get_product_thumb.assert_not_called()
         assert success
-
+        logger_info.assert_called_once_with(
+            f'[BATCH][PRODUCT THUMB UPDATE] Product with id: "{product.id}" / uri: "{uri}" processed successfully')
 
 class ProcessFileTest:
     def test_should_iterate_through_file_containing_product_thumbs_uris(self):

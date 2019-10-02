@@ -42,6 +42,8 @@ def process_product_thumb(uri: str, get_product_thumb=_get_product_thumb):
                          f'thumb was not processed for product with id: "{product.id}" / uri: "{uri}"')
             return
         _update_product_thumb(product, product_thumb)
+        logger.info(
+            f'[BATCH][PRODUCT THUMB UPDATE] Product with id: "{product.id}" / uri: "{uri}" processed successfully')
         return True
     else:
         logger.error(f'[BATCH][PRODUCT THUMB UPDATE] Product not found for id: "{product_id}" / uri: "{uri}"')
