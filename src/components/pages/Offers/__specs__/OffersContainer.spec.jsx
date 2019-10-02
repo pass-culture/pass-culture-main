@@ -1,44 +1,32 @@
-import { mapStateToProps } from '../OffersContainer'
+import { mapDispatchToProps, mapStateToProps } from '../OffersContainer'
 
 import state from '../../../utils/mocks/state'
 
 describe('src | components | pages | Offers | OffersContainer', () => {
-  let change
-  let dispatch
   let parse
   let ownProps
   let currentUser
 
   beforeEach(() => {
-    change = jest.fn()
-    dispatch = jest.fn()
     parse = () => ({ lieu: 'DA', structure: 'BA' })
     currentUser = {}
 
     ownProps = {
       currentUser,
-      dispatch,
+      handleOnActivateAllVenueOffersClick: jest.fn(),
+      handleOnDeactivateAllVenueOffersClick: jest.fn(),
+      handleSubmitRequestSuccess: jest.fn(),
+      loadOffers: jest.fn(),
+      loadTypes: jest.fn(),
       offers: [],
-      location: {
-        pathname: '/offres',
-      },
-      pagination: {
-        apiQuery: {
-          keywords: null,
-          offererId: null,
-          orderBy: 'offer.id+desc',
-          venueId: null,
-        },
-      },
       query: {
-        change,
         parse,
       },
-      search: '',
-      types: [],
+      resetLoadedOffers: jest.fn(),
       venue: {},
     }
   })
+
   describe('mapStateToProps', () => {
     it('should return the value lastTrackerMoment', () => {
       // when
@@ -150,6 +138,131 @@ describe('src | components | pages | Offers | OffersContainer', () => {
 
       // then
       expect(result.venue).toStrictEqual(expected)
+    })
+  })
+
+  describe('mapDispatchToProps', () => {
+    let dispatch
+
+    beforeEach(() => {
+      dispatch = jest.fn()
+    })
+
+    describe('closeNotification', () => {
+      it('enable to close notification', () => {
+        // when
+        mapDispatchToProps(dispatch).closeNotification()
+
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          type: 'CLOSE_NOTIFICATION',
+        })
+      })
+    })
+
+    describe('handleOnActivateAllVenueOffersClick', () => {
+      it('should activate all offers', () => {
+        // given
+        const venue = {
+          id: 'AF',
+        }
+
+        // when
+        mapDispatchToProps(dispatch).handleOnActivateAllVenueOffersClick()(venue)
+
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          config: {
+            apiPath: '/venues/AF/offers/activate',
+            handleSuccess: undefined,
+            method: 'PUT',
+            stateKey: 'offers',
+          },
+          type: 'REQUEST_DATA_PUT_OFFERS',
+        })
+      })
+    })
+
+    describe('handleOnDeactivateAllVenueOffersClick', () => {
+      it('should deactivate all offers', () => {
+        // given
+        const venue = {
+          id: 'AF',
+        }
+
+        // when
+        mapDispatchToProps(dispatch).handleOnDeactivateAllVenueOffersClick()(venue)
+
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          config: {
+            apiPath: '/venues/AF/offers/deactivate',
+            handleSuccess: undefined,
+            method: 'PUT',
+            stateKey: 'offers',
+          },
+          type: 'REQUEST_DATA_PUT_OFFERS',
+        })
+      })
+    })
+
+    describe('loadOffers', () => {
+      it('should load all offers', () => {
+        // when
+        mapDispatchToProps(dispatch).loadOffers()
+
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          config: {
+            method: 'GET',
+            normalizer: {
+              mediations: 'mediations',
+              product: {
+                normalizer: {
+                  offers: 'offers',
+                },
+                stateKey: 'products',
+              },
+              stocks: 'stocks',
+              venue: {
+                normalizer: {
+                  managingOfferer: 'offerers',
+                },
+                stateKey: 'venues',
+              },
+            },
+          },
+          type: 'REQUEST_DATA_GET_UNDEFINED',
+        })
+      })
+    })
+
+    describe('loadTypes', () => {
+      it('should load all types', () => {
+        // when
+        mapDispatchToProps(dispatch).loadTypes()
+
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          config: { apiPath: '/types', method: 'GET' },
+          type: 'REQUEST_DATA_GET_/TYPES',
+        })
+      })
+    })
+
+    describe('resetLoadedOffers', () => {
+      it('should reset all loaded offers', () => {
+        // when
+        mapDispatchToProps(dispatch).resetLoadedOffers()
+
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          patch: {
+            offers: [],
+          },
+          type: 'ASSIGN_DATA',
+        })
+      })
     })
   })
 })

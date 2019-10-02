@@ -6,31 +6,18 @@ import OffererItemContainer from '../OffererItem/OffererItemContainer'
 import PendingOffererItem from '../OffererItem/PendingOffererItem'
 
 describe('src | components | pages | Offerers | Offerers', () => {
-  let change
-  let dispatch
   let props
 
   beforeEach(() => {
-    change = jest.fn()
-    dispatch = jest.fn()
-
     props = {
       closeNotification: jest.fn(),
       currentUser: {},
-      dispatch,
       loadOfferers: jest.fn(),
       location: {
-        pathname: '/structures',
         search: '',
       },
       offerers: [{ id: 'AE', siren: '1234567' }],
-      pagination: {
-        apiQuery: {
-          keywords: null,
-        },
-      },
       query: {
-        change,
         parse: () => ({ 'mots-cles': null }),
       },
       resetLoadedOfferers: jest.fn(),

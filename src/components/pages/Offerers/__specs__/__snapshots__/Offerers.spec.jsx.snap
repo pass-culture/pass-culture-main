@@ -6,7 +6,6 @@ ShallowWrapper {
   Symbol(enzyme.__unrendered__): <Offerers
     closeNotification={[MockFunction]}
     currentUser={Object {}}
-    dispatch={[MockFunction]}
     loadOfferers={
       [MockFunction] {
         "calls": Array [
@@ -28,7 +27,6 @@ ShallowWrapper {
     }
     location={
       Object {
-        "pathname": "/structures",
         "search": "",
       }
     }
@@ -40,16 +38,8 @@ ShallowWrapper {
         },
       ]
     }
-    pagination={
-      Object {
-        "apiQuery": Object {
-          "keywords": null,
-        },
-      }
-    }
     query={
       Object {
-        "change": [MockFunction],
         "parse": [Function],
       }
     }

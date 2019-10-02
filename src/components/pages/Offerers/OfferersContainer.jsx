@@ -43,6 +43,10 @@ export const mapDispatchToProps = dispatch => ({
     )
   },
 
+  resetLoadedOfferers: () => {
+    dispatch(assignData({ offerers: [] }))
+  },
+
   showNotification: url => {
     dispatch(
       showNotification({
@@ -54,10 +58,6 @@ export const mapDispatchToProps = dispatch => ({
         urlLabel: 'Nouveau lieu',
       })
     )
-  },
-
-  resetLoadedOfferers: () => {
-    dispatch(assignData({ offerers: [] }))
   },
 })
 

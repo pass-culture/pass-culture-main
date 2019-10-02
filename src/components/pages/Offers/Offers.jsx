@@ -1,10 +1,9 @@
-import { Icon, resolveIsNew, showNotification } from 'pass-culture-shared'
+import { Icon, resolveIsNew } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import { stringify } from 'query-string'
 import React, { Component } from 'react'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
 import { NavLink } from 'react-router-dom'
-import { requestData } from 'redux-saga-data'
 
 import HeroSection from '../../layout/HeroSection/HeroSection'
 import Spinner from '../../layout/Spinner'
@@ -43,10 +42,17 @@ class Offers extends Component {
     }
   }
 
-  handleRequestData = () => {
-    const { comparedTo, dispatch, loadOffers, query, types } = this.props
+  componentWillUnmount() {
+    const { closeNotification, notification } = this.props
+    if (notification && notification.tag === 'offers-activation') {
+      closeNotification()
+    }
+  }
 
-    types.length === 0 && dispatch(requestData({ apiPath: '/types' }))
+  handleRequestData = () => {
+    const { comparedTo, loadTypes, loadOffers, query, types } = this.props
+
+    types.length === 0 && loadTypes()
 
     const queryParams = query.parse()
     const apiParams = translateQueryParamsToApiParams(queryParams)
@@ -94,16 +100,6 @@ class Offers extends Component {
     if (queryParams[mapApiToBrowser.keywords] !== value) resetLoadedOffers()
   }
 
-  handleSubmitRequestSuccess = notificationMessage => {
-    const { dispatch } = this.props
-    dispatch(
-      showNotification({
-        text: notificationMessage,
-        type: 'success',
-      })
-    )
-  }
-
   handleOnVenueClick = query => () => {
     query.change({
       [mapApiToBrowser.venueId]: null,
@@ -118,34 +114,6 @@ class Offers extends Component {
     })
   }
 
-  handleOnDeactivateAllVenueOffersClick = () => {
-    const { dispatch, venue } = this.props
-    dispatch(
-      requestData({
-        apiPath: `/venues/${venue.id}/offers/deactivate`,
-        method: 'PUT',
-        stateKey: 'offers',
-        handleSuccess: this.handleSubmitRequestSuccess(
-          'Toutes les offres de ce lieu ont été désactivées avec succès'
-        ),
-      })
-    )
-  }
-
-  handleOnActivateAllVenueOffersClick = () => {
-    const { dispatch, venue } = this.props
-    dispatch(
-      requestData({
-        apiPath: `/venues/${venue.id}/offers/activate`,
-        method: 'PUT',
-        stateKey: 'offers',
-        handleSuccess: this.handleSubmitRequestSuccess(
-          'Toutes les offres de ce lieu ont été activées avec succès'
-        ),
-      })
-    )
-  }
-
   onPageChange = page => {
     const { query } = this.props
     query.change({ page }, { historyMethod: 'replace' })
@@ -157,7 +125,15 @@ class Offers extends Component {
   }
 
   render() {
-    const { currentUser, offers, offerer, query, venue } = this.props
+    const {
+      currentUser,
+      handleOnDeactivateAllVenueOffersClick,
+      handleOnActivateAllVenueOffersClick,
+      offers,
+      offerer,
+      query,
+      venue,
+    } = this.props
 
     const { isAdmin } = currentUser || {}
     const queryParams = query.parse()
@@ -301,7 +277,7 @@ class Offers extends Component {
             <div className="offers-list-actions">
               <button
                 className="button deactivate is-secondary is-small"
-                onClick={this.handleOnDeactivateAllVenueOffersClick}
+                onClick={handleOnDeactivateAllVenueOffersClick(venue)}
                 type="button"
               >
                 {'Désactiver toutes les offres'}
@@ -309,7 +285,7 @@ class Offers extends Component {
 
               <button
                 className="button activate is-secondary is-small"
-                onClick={this.handleOnActivateAllVenueOffersClick}
+                onClick={handleOnActivateAllVenueOffersClick(venue)}
                 type="button"
               >
                 {'Activer toutes les offres'}
@@ -340,10 +316,20 @@ class Offers extends Component {
   }
 }
 
+Offers.defaultProps = {
+  venue: undefined,
+}
+
 Offers.propTypes = {
+  closeNotification: PropTypes.func.isRequired,
   currentUser: PropTypes.shape().isRequired,
+  handleOnActivateAllVenueOffersClick: PropTypes.func.isRequired,
+  handleOnDeactivateAllVenueOffersClick: PropTypes.func.isRequired,
+  loadOffers: PropTypes.func.isRequired,
+  loadTypes: PropTypes.func.isRequired,
   offers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   resetLoadedOffers: PropTypes.func.isRequired,
+  venue: PropTypes.arrayOf(),
 }
 
 export default Offers

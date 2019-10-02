@@ -67,13 +67,15 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
       dispatch = jest.fn()
     })
 
-    it('enable to close notification', () => {
-      // when
-      mapDispatchToProps(dispatch).closeNotification()
+    describe('closeNotification', () => {
+      it('enable to close notification', () => {
+        // when
+        mapDispatchToProps(dispatch).closeNotification()
 
-      // then
-      expect(dispatch).toHaveBeenCalledWith({
-        type: 'CLOSE_NOTIFICATION',
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          type: 'CLOSE_NOTIFICATION',
+        })
       })
     })
 
@@ -194,28 +196,30 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
       })
     })
 
-    it('enable to show notification', () => {
-      // given
-      const url = '/offerers'
+    describe('showNotification', () => {
+      it('enable to show notification', () => {
+        // given
+        const url = '/offerers'
 
-      //when
-      mapDispatchToProps(dispatch).showNotification(url)
+        //when
+        mapDispatchToProps(dispatch).showNotification(url)
 
-      // then
-      expect(dispatch).toHaveBeenCalledWith({
-        patch: {
-          tag: 'offerers',
-          text:
-            'Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)',
-          type: 'info',
-          url: '/offerers',
-          urlLabel: 'Nouveau lieu',
-        },
-        type: 'SHOW_NOTIFICATION',
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          patch: {
+            tag: 'offerers',
+            text:
+              'Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)',
+            type: 'info',
+            url: '/offerers',
+            urlLabel: 'Nouveau lieu',
+          },
+          type: 'SHOW_NOTIFICATION',
+        })
       })
     })
 
-    describe('resetOfferers', () => {
+    describe('resetLoadedOfferers', () => {
       it('should clean the offerers already loaded with an ASSIGN_DATA event', () => {
         // given
         const functions = mapDispatchToProps(dispatch)

@@ -1,4 +1,4 @@
-import { lastTrackerMoment } from 'pass-culture-shared'
+import { closeNotification, lastTrackerMoment, showNotification } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { assignData, requestData } from 'redux-saga-data'
@@ -19,6 +19,7 @@ export const mapStateToProps = (state, ownProps) => {
 
   return {
     lastTrackerMoment: lastTrackerMoment(state, 'offers'),
+    notification: state.notification,
     offers: selectOffersByOffererIdAndVenueId(state, offererId, venueId),
     offerer: selectOffererById(state, offererId),
     types: state.data.types,
@@ -26,19 +27,58 @@ export const mapStateToProps = (state, ownProps) => {
   }
 }
 
-export const mapDispatchToProps = dispatch => ({
-  dispatch,
-
-  loadOffers: config =>
+export const mapDispatchToProps = dispatch => {
+  const showOffersActivationNotification = notificationMessage => {
     dispatch(
-      requestData({
-        ...config,
-        normalizer: offerNormalizer,
+      showNotification({
+        tag: 'offers-activation',
+        text: notificationMessage,
+        type: 'success',
       })
-    ),
+    )
+  }
+  return {
+    closeNotification: () => dispatch(closeNotification()),
 
-  resetLoadedOffers: () => dispatch(assignData({ offers: [] })),
-})
+    handleOnActivateAllVenueOffersClick: () => venue => {
+      dispatch(
+        requestData({
+          apiPath: `/venues/${venue.id}/offers/activate`,
+          method: 'PUT',
+          stateKey: 'offers',
+          handleSuccess: showOffersActivationNotification(
+            'Toutes les offres de ce lieu ont été activées avec succès'
+          ),
+        })
+      )
+    },
+
+    handleOnDeactivateAllVenueOffersClick: () => venue => {
+      dispatch(
+        requestData({
+          apiPath: `/venues/${venue.id}/offers/deactivate`,
+          method: 'PUT',
+          stateKey: 'offers',
+          handleSuccess: showOffersActivationNotification(
+            'Toutes les offres de ce lieu ont été désactivées avec succès'
+          ),
+        })
+      )
+    },
+
+    loadOffers: config =>
+      dispatch(
+        requestData({
+          ...config,
+          normalizer: offerNormalizer,
+        })
+      ),
+
+    loadTypes: () => dispatch(requestData({ apiPath: '/types' })),
+
+    resetLoadedOffers: () => dispatch(assignData({ offers: [] })),
+  }
+}
 
 export default compose(
   withRequiredLogin,

@@ -8,34 +8,25 @@ import mockedOffers from './offersMock'
 
 describe('src | components | pages | Offers | Offers', () => {
   let change
-  let dispatch
   let parse
   let props
   let currentUser
 
   beforeEach(() => {
     change = jest.fn()
-    dispatch = jest.fn()
     parse = () => ({})
     currentUser = { isAdmin: false }
 
     props = {
       currentUser,
-      dispatch,
+      handleOnActivateAllVenueOffersClick: jest.fn(),
+      handleOnDeactivateAllVenueOffersClick: jest.fn(),
       loadOffers: jest.fn(),
+      loadTypes: jest.fn(),
       location: {
-        pathname: '/offres',
         search: 'offres?lieu=AQ&structure=A4',
       },
       offers: [],
-      pagination: {
-        apiQuery: {
-          keywords: null,
-          offererId: null,
-          orderBy: 'offer.id+desc',
-          venueId: null,
-        },
-      },
       query: {
         change,
         parse,
@@ -52,8 +43,6 @@ describe('src | components | pages | Offers | Offers', () => {
 
     // then
     expect(wrapper).toMatchSnapshot()
-    dispatch.mockClear()
-    change.mockClear()
   })
 
   describe('render', () => {
@@ -67,8 +56,6 @@ describe('src | components | pages | Offers | Offers', () => {
           hasMore: true,
           isLoading: true,
         })
-        dispatch.mockClear()
-        change.mockClear()
       })
     })
 
@@ -109,13 +96,12 @@ describe('src | components | pages | Offers | Offers', () => {
         const wrapper = shallow(<Offers {...props} />)
         const offererButton = wrapper.find('button.offerer-filter')
         offererButton.simulate('click')
-        const expected = {
-          page: null,
-          structure: null,
-        }
 
         // then
-        expect(props.query.change).toHaveBeenCalledWith(expected)
+        expect(props.query.change).toHaveBeenCalledWith({
+          page: null,
+          structure: null,
+        })
       })
     })
 
@@ -156,13 +142,12 @@ describe('src | components | pages | Offers | Offers', () => {
         const wrapper = shallow(<Offers {...props} />)
         const offererButton = wrapper.find('button.venue-filter')
         offererButton.simulate('click')
-        const expected = {
-          page: null,
-          lieu: null,
-        }
 
         // then
-        expect(props.query.change).toHaveBeenCalledWith(expected)
+        expect(props.query.change).toHaveBeenCalledWith({
+          page: null,
+          lieu: null,
+        })
       })
     })
 
@@ -296,16 +281,10 @@ describe('src | components | pages | Offers | Offers', () => {
         deactivateButton.simulate('click')
 
         // then
-        const expected = {
-          config: {
-            apiPath: '/venues/GY/offers/deactivate',
-            handleSuccess: undefined,
-            method: 'PUT',
-            stateKey: 'offers',
-          },
-          type: 'REQUEST_DATA_PUT_OFFERS',
-        }
-        expect(props.dispatch).toHaveBeenCalledWith(expected)
+        expect(props.handleOnDeactivateAllVenueOffersClick).toHaveBeenCalledWith({
+          id: 'GY',
+          name: 'Le biennommé',
+        })
       })
     })
 
@@ -365,16 +344,10 @@ describe('src | components | pages | Offers | Offers', () => {
         activateButton.simulate('click')
 
         // then
-        const expected = {
-          config: {
-            apiPath: '/venues/GY/offers/activate',
-            handleSuccess: undefined,
-            method: 'PUT',
-            stateKey: 'offers',
-          },
-          type: 'REQUEST_DATA_PUT_OFFERS',
-        }
-        expect(props.dispatch).toHaveBeenCalledWith(expected)
+        expect(props.handleOnActivateAllVenueOffersClick).toHaveBeenCalledWith({
+          id: 'GY',
+          name: 'Le biennommé',
+        })
       })
     })
 
@@ -390,35 +363,6 @@ describe('src | components | pages | Offers | Offers', () => {
             },
           },
         })
-        it('should update state with isLoading to true on form submit', () => {
-          // given
-          const wrapper = shallow(<Offers {...props} />)
-
-          // when
-          wrapper.instance().handleOnSubmit(event)
-
-          // then
-          expect(wrapper.state()).toStrictEqual({
-            hasMore: true,
-            isLoading: true,
-          })
-        })
-
-        it('should dispatch assignData with good params on form submit', () => {
-          // given
-          const wrapper = shallow(<Offers {...props} />)
-
-          // when
-          wrapper.instance().handleOnSubmit(event)
-
-          // then
-          const expected = {
-            config: { apiPath: '/types', method: 'GET' },
-            type: 'REQUEST_DATA_GET_/TYPES',
-          }
-          expect(dispatch.mock.calls[0][0]).toStrictEqual(expected)
-          dispatch.mockClear()
-        })
 
         it('should change query', () => {
           // given
@@ -426,13 +370,12 @@ describe('src | components | pages | Offers | Offers', () => {
 
           // when
           wrapper.instance().handleOnSubmit(event)
-          const expected = {
-            'mots-cles': 'AnyWord',
-            page: null,
-          }
 
           // then
-          expect(change.mock.calls[0][0]).toStrictEqual(expected)
+          expect(change.mock.calls[0][0]).toStrictEqual({
+            'mots-cles': 'AnyWord',
+            page: null,
+          })
           change.mockClear()
         })
       })
@@ -454,114 +397,49 @@ describe('src | components | pages | Offers | Offers', () => {
 
           // when
           wrapper.instance().handleOnSubmit(eventEmptyWord)
-          const expected = {
+          // then
+          expect(change.mock.calls[0][0]).toStrictEqual({
             'mots-cles': null,
             page: null,
-          }
-
-          // then
-          expect(change.mock.calls[0][0]).toStrictEqual(expected)
+          })
           change.mockClear()
         })
       })
     })
-  })
 
-  describe('functions', () => {
-    describe('constructor', () => {
-      it('should dispatch assignData when component is constructed', () => {
-        // when
-        shallow(<Offers {...props} />)
-        const expectedAssignData = {
-          config: { apiPath: '/types', method: 'GET' },
-          type: 'REQUEST_DATA_GET_/TYPES',
-        }
-
-        // then
-        expect(dispatch.mock.calls[0][0]).toStrictEqual(expectedAssignData)
-        dispatch.mockClear()
-        change.mockClear()
-      })
-    })
-
-    describe('componentDidMount', () => {
-      it('should dispatch handleRequestData when there is no pagination', () => {
-        // when
-        const wrapper = shallow(<Offers {...props} />)
-        wrapper.instance().componentDidMount()
-        const expected = {
-          config: {
-            apiPath: '/types',
-            method: 'GET',
-          },
-          type: 'REQUEST_DATA_GET_/TYPES',
-        }
-
-        // then
-        expect(dispatch.mock.calls[0][0]).toStrictEqual(expected)
-      })
-
-      it('should change query when there is pagination', () => {
+    describe('when leaving page', () => {
+      it('should close offers activation / deactivation notifcation', () => {
         // given
-        props.query.parse = () => ({ page: '2' })
+        props = {
+          ...props,
+          closeNotification: jest.fn(),
+          notification: {
+            tag: 'offers-activation',
+          },
+        }
+        const wrapper = shallow(<Offers {...props} />)
 
         // when
-        const wrapper = shallow(<Offers {...props} />)
-        wrapper.instance().componentDidMount()
-        const expected = { page: null }
+        wrapper.unmount()
 
         // then
-        expect(props.query.change).toHaveBeenCalledWith(expected)
-        dispatch.mockClear()
+        expect(props.closeNotification).toHaveBeenCalledWith()
       })
 
-      describe('handleSubmitRequestSuccess', () => {
-        it('sould dispatch a succes notificationMessage', () => {
-          // given
-          const wrapper = shallow(<Offers {...props} />)
+      it('should not fail on null notifcation', () => {
+        // given
+        props = {
+          ...props,
+          closeNotification: jest.fn(),
+          notification: null,
+        }
+        const wrapper = shallow(<Offers {...props} />)
 
-          // when
-          wrapper.instance().handleSubmitRequestSuccess('Fake message')
+        // when
+        wrapper.unmount()
 
-          // then
-          const expected = {
-            patch: {
-              text: 'Fake message',
-              type: 'success',
-            },
-            type: 'SHOW_NOTIFICATION',
-          }
-
-          expect(props.dispatch).toHaveBeenCalledWith(expected)
-        })
-      })
-
-      describe('componentDidUpdate', () => {
-        describe('when location has change', () => {
-          it('should dispatch assignData when component is rendered', () => {
-            // given
-            props.query.parse = () => ({ lieu: 'TY' })
-            props.location = {
-              pathname: '/offres',
-              search: 'offres?lieu=AQ',
-            }
-            const prevProps = props
-
-            // when
-            const wrapper = shallow(<Offers {...props} />)
-            wrapper.instance().componentDidUpdate(prevProps)
-
-            const expected = { hasMore: true, isLoading: true }
-
-            // then
-            expect(dispatch.mock.calls[0][0].config.apiPath).toBe('/types')
-            expect(dispatch.mock.calls[0][0].type).toBe('REQUEST_DATA_GET_/TYPES')
-            expect(dispatch.mock.calls[0][0].config.method).toBe('GET')
-            expect(wrapper.state()).toStrictEqual(expected)
-
-            dispatch.mockClear()
-          })
-        })
+        // then
+        expect(props.closeNotification).not.toHaveBeenCalledWith()
       })
     })
   })

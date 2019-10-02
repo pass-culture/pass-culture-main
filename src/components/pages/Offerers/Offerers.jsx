@@ -247,7 +247,9 @@ Offerers.propTypes = {
   closeNotification: PropTypes.func.isRequired,
   currentUser: PropTypes.shape().isRequired,
   loadOfferers: PropTypes.func.isRequired,
+  location: PropTypes.shape().isRequired,
   offerers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  query: PropTypes.shape().isRequired,
   resetLoadedOfferers: PropTypes.func.isRequired,
   showNotification: PropTypes.func.isRequired,
 }

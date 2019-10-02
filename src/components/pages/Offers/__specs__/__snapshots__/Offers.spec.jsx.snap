@@ -9,20 +9,43 @@ ShallowWrapper {
         "isAdmin": false,
       }
     }
-    dispatch={
+    handleOnActivateAllVenueOffersClick={
       [MockFunction] {
         "calls": Array [
           Array [
-            Object {
-              "config": Object {
-                "apiPath": "/types",
-                "method": "GET",
-              },
-              "type": "REQUEST_DATA_GET_/TYPES",
-            },
+            Object {},
+          ],
+          Array [
+            Object {},
           ],
         ],
         "results": Array [
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+        ],
+      }
+    }
+    handleOnDeactivateAllVenueOffersClick={
+      [MockFunction] {
+        "calls": Array [
+          Array [
+            Object {},
+          ],
+          Array [
+            Object {},
+          ],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
           Object {
             "type": "return",
             "value": undefined,
@@ -50,23 +73,25 @@ ShallowWrapper {
         ],
       }
     }
+    loadTypes={
+      [MockFunction] {
+        "calls": Array [
+          Array [],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+        ],
+      }
+    }
     location={
       Object {
-        "pathname": "/offres",
         "search": "offres?lieu=AQ&structure=A4",
       }
     }
     offers={Array []}
-    pagination={
-      Object {
-        "apiQuery": Object {
-          "keywords": null,
-          "offererId": null,
-          "orderBy": "offer.id+desc",
-          "venueId": null,
-        },
-      }
-    }
     query={
       Object {
         "change": [MockFunction],
@@ -184,14 +209,12 @@ ShallowWrapper {
           >
             <button
               className="button deactivate is-secondary is-small"
-              onClick={[Function]}
               type="button"
             >
               Désactiver toutes les offres
             </button>
             <button
               className="button activate is-secondary is-small"
-              onClick={[Function]}
               type="button"
             >
               Activer toutes les offres
@@ -627,14 +650,12 @@ ShallowWrapper {
             >
               <button
                 className="button deactivate is-secondary is-small"
-                onClick={[Function]}
                 type="button"
               >
                 Désactiver toutes les offres
               </button>
               <button
                 className="button activate is-secondary is-small"
-                onClick={[Function]}
                 type="button"
               >
                 Activer toutes les offres
@@ -680,14 +701,12 @@ ShallowWrapper {
               "children": Array [
                 <button
                   className="button deactivate is-secondary is-small"
-                  onClick={[Function]}
                   type="button"
                 >
                   Désactiver toutes les offres
                 </button>,
                 <button
                   className="button activate is-secondary is-small"
-                  onClick={[Function]}
                   type="button"
                 >
                   Activer toutes les offres
@@ -704,7 +723,7 @@ ShallowWrapper {
                 "props": Object {
                   "children": "Désactiver toutes les offres",
                   "className": "button deactivate is-secondary is-small",
-                  "onClick": [Function],
+                  "onClick": undefined,
                   "type": "button",
                 },
                 "ref": null,
@@ -718,7 +737,7 @@ ShallowWrapper {
                 "props": Object {
                   "children": "Activer toutes les offres",
                   "className": "button activate is-secondary is-small",
-                  "onClick": [Function],
+                  "onClick": undefined,
                   "type": "button",
                 },
                 "ref": null,
@@ -866,14 +885,12 @@ ShallowWrapper {
             >
               <button
                 className="button deactivate is-secondary is-small"
-                onClick={[Function]}
                 type="button"
               >
                 Désactiver toutes les offres
               </button>
               <button
                 className="button activate is-secondary is-small"
-                onClick={[Function]}
                 type="button"
               >
                 Activer toutes les offres
@@ -1309,14 +1326,12 @@ ShallowWrapper {
               >
                 <button
                   className="button deactivate is-secondary is-small"
-                  onClick={[Function]}
                   type="button"
                 >
                   Désactiver toutes les offres
                 </button>
                 <button
                   className="button activate is-secondary is-small"
-                  onClick={[Function]}
                   type="button"
                 >
                   Activer toutes les offres
@@ -1362,14 +1377,12 @@ ShallowWrapper {
                 "children": Array [
                   <button
                     className="button deactivate is-secondary is-small"
-                    onClick={[Function]}
                     type="button"
                   >
                     Désactiver toutes les offres
                   </button>,
                   <button
                     className="button activate is-secondary is-small"
-                    onClick={[Function]}
                     type="button"
                   >
                     Activer toutes les offres
@@ -1386,7 +1399,7 @@ ShallowWrapper {
                   "props": Object {
                     "children": "Désactiver toutes les offres",
                     "className": "button deactivate is-secondary is-small",
-                    "onClick": [Function],
+                    "onClick": undefined,
                     "type": "button",
                   },
                   "ref": null,
@@ -1400,7 +1413,7 @@ ShallowWrapper {
                   "props": Object {
                     "children": "Activer toutes les offres",
                     "className": "button activate is-secondary is-small",
-                    "onClick": [Function],
+                    "onClick": undefined,
                     "type": "button",
                   },
                   "ref": null,
