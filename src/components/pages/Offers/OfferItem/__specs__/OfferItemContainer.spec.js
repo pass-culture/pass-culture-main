@@ -82,8 +82,7 @@ describe('src | components | pages | OfferItemContainer', () => {
       const result = mapStateToProps(state, ownProps)
       const expected = {
         dateModifiedAtLastProvider: '2019-03-07T10:40:03.865368Z',
-        description:
-          'Ainsi la personne avec qui elle avait confessé qu’elle allait goûter, avec qui elle vous avait supplié de la laisser goûter, cette personne, raison avouée par la nécessité, ce n’était pas elle, c’était une autre, c’était encore autre chose ! Autre chose, quoi ? Une autre, qui ?',
+        description: 'Ainsi la personne avec qui elle avait confessé qu’elle allait goûter, avec qui elle vous avait supplié de la laisser goûter, cette personne, raison avouée par la nécessité, ce n’était pas elle, c’était une autre, c’était encore autre chose ! Autre chose, quoi ? Une autre, qui ?',
         extraData: {
           author: 'Eloise Jomenrency',
         },
@@ -98,7 +97,7 @@ describe('src | components | pages | OfferItemContainer', () => {
         offerType: {
           description:
             'Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?',
-          label: 'Jeux Vidéo',
+          proLabel: 'Jeux Vidéo',
           offlineOnly: false,
           onlineOnly: true,
           sublabel: 'Jouer',

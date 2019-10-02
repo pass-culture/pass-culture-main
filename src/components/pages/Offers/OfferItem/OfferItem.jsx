@@ -90,6 +90,7 @@ class OfferItem extends Component {
     const mediationId = get(get(offer, 'activeMediation'), 'id')
     const offerWebappUrl = buildWebappDiscoveryUrl(offer.id, mediationId)
     const offerHasActiveMediations = get(offer, 'activeMediation')
+    const offerisEditable = get(offer, 'isEditable')
 
     return (
       <li
@@ -158,10 +159,9 @@ class OfferItem extends Component {
             <li>
               {maxDate && `jusqu’au ${maxDate.format('DD/MM/YYYY')}`}
             </li>
-            {stockAlertMessage &&
-              <li>
-                {stockAlertMessage}
-              </li>}
+            {stockAlertMessage && <li>
+              {stockAlertMessage}
+                                  </li>}
             <li>
               {priceMin === priceMax ? (
                 <Price value={priceMin || 0} />
@@ -177,9 +177,9 @@ class OfferItem extends Component {
           <ul className="actions">
             <li>
               <NavLink
-                className={`button addMediations is-small ${
+                className={`button is-small ${
                   numberOfMediations ? 'is-secondary' : 'is-primary is-outlined'
-                }`}
+                } add-mediations-link`}
                 to={`/offres/${offer.id}${numberOfMediations ? '' : `/accroches/nouveau${search}`}`}
               >
                 <span className="icon">
@@ -190,23 +190,27 @@ class OfferItem extends Component {
                 </span>
               </NavLink>
             </li>
-            <li>
-              <NavLink
-                className="button is-secondary is-small edit-link"
-                to={`/offres/${offer.id}`}
-              >
-                <Icon svg="ico-pen-r" />
-                {'Modifier'}
-              </NavLink>
-
-              {offerHasActiveMediations && (
+            {offerHasActiveMediations && (
+              <li>
                 <OfferPreviewLink
-                  className="button is-secondary is-small preview_link"
+                  className="button is-secondary is-small offer-preview-link"
                   href={offerWebappUrl}
                   onClick={this.handleHrefClick()}
                 />
-              )}
-
+              </li>
+            )}
+            {offerisEditable && (
+              <li>
+                <NavLink
+                  className="button is-secondary is-small edit-link"
+                  to={`/offres/${offer.id}`}
+                >
+                  <Icon svg="ico-pen-r" />
+                  {'Modifier'}
+                </NavLink>
+              </li>
+            )}
+            <li>
               <button
                 className="button is-secondary is-small activ-switch"
                 onClick={this.handleOnDeactivateClick}

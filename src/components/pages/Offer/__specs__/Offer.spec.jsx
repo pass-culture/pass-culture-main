@@ -237,9 +237,11 @@ describe('src | components | pages | Offer | Offer ', () => {
         props.selectedOfferType = {
           type: 'Event',
         }
+        const wrapper = shallow(<Offer {...props} />)
 
         // when
-        const wrapper = shallow(<Offer {...props} />)
+        const preview_section = wrapper.find(HeroSection)
+        const preview_link = preview_section.find('OfferPreviewLink')
 
         // then
         const preview_section = wrapper.find(HeroSection)
@@ -317,20 +319,19 @@ describe('src | components | pages | Offer | Offer ', () => {
           },
           mediationsIds: ['MED'],
         }
-
-        // when
         const wrapper = shallow(<Offer {...props} />)
 
-        // then
+        // when
         const preview_section = wrapper.find(HeroSection)
 
+        // then
         const preview_link = preview_section.find('OfferPreviewLink')
         expect(preview_link.prop('href')).toMatch('/decouverte/VAG/MED')
       })
     })
 
     describe('display venue informations', () => {
-      it('should display venue name when enue publicName is not provided', () => {
+      it('should display venue name when venue publicName is not provided', () => {
         // given
         props.query.context = () => ({
           isCreatedEntity: true,

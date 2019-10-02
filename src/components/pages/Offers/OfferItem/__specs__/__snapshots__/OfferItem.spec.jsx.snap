@@ -50,6 +50,7 @@ ShallowWrapper {
         "id": "M4",
         "idAtProviders": null,
         "isActive": true,
+        "isEditablle": true,
         "isEvent": false,
         "isThing": true,
         "lastProviderId": null,
@@ -175,7 +176,7 @@ ShallowWrapper {
               <NavLink
                 activeClassName="active"
                 aria-current="page"
-                className="button addMediations is-small is-secondary"
+                className="button is-small is-secondary add-mediations-link"
                 to="/offres/M4"
               >
                 <span
@@ -191,22 +192,13 @@ ShallowWrapper {
               </NavLink>
             </li>
             <li>
-              <NavLink
-                activeClassName="active"
-                aria-current="page"
-                className="button is-secondary is-small edit-link"
-                to="/offres/M4"
-              >
-                <Icon
-                  svg="ico-pen-r"
-                />
-                Modifier
-              </NavLink>
               <OfferPreviewLink
-                className="button is-secondary is-small preview_link"
+                className="button is-secondary is-small offer-preview-link"
                 href="http://localhost/decouverte/M4/HA"
                 onClick={[Function]}
               />
+            </li>
+            <li>
               <button
                 className="button is-secondary is-small activ-switch"
                 onClick={[Function]}
@@ -320,7 +312,7 @@ ShallowWrapper {
                 <NavLink
                   activeClassName="active"
                   aria-current="page"
-                  className="button addMediations is-small is-secondary"
+                  className="button is-small is-secondary add-mediations-link"
                   to="/offres/M4"
                 >
                   <span
@@ -336,22 +328,13 @@ ShallowWrapper {
                 </NavLink>
               </li>
               <li>
-                <NavLink
-                  activeClassName="active"
-                  aria-current="page"
-                  className="button is-secondary is-small edit-link"
-                  to="/offres/M4"
-                >
-                  <Icon
-                    svg="ico-pen-r"
-                  />
-                  Modifier
-                </NavLink>
                 <OfferPreviewLink
-                  className="button is-secondary is-small preview_link"
+                  className="button is-secondary is-small offer-preview-link"
                   href="http://localhost/decouverte/M4/HA"
                   onClick={[Function]}
                 />
+              </li>
+              <li>
                 <button
                   className="button is-secondary is-small activ-switch"
                   onClick={[Function]}
@@ -670,7 +653,7 @@ ShallowWrapper {
                   <NavLink
                     activeClassName="active"
                     aria-current="page"
-                    className="button addMediations is-small is-secondary"
+                    className="button is-small is-secondary add-mediations-link"
                     to="/offres/M4"
                   >
                     <span
@@ -686,22 +669,14 @@ ShallowWrapper {
                   </NavLink>
                 </li>,
                 <li>
-                  <NavLink
-                    activeClassName="active"
-                    aria-current="page"
-                    className="button is-secondary is-small edit-link"
-                    to="/offres/M4"
-                  >
-                    <Icon
-                      svg="ico-pen-r"
-                    />
-                    Modifier
-                  </NavLink>
                   <OfferPreviewLink
-                    className="button is-secondary is-small preview_link"
+                    className="button is-secondary is-small offer-preview-link"
                     href="http://localhost/decouverte/M4/HA"
                     onClick={[Function]}
                   />
+                </li>,
+                undefined,
+                <li>
                   <button
                     className="button is-secondary is-small activ-switch"
                     onClick={[Function]}
@@ -728,7 +703,7 @@ ShallowWrapper {
                   "children": <NavLink
                     activeClassName="active"
                     aria-current="page"
-                    className="button addMediations is-small is-secondary"
+                    className="button is-small is-secondary add-mediations-link"
                     to="/offres/M4"
                   >
                     <span
@@ -763,7 +738,7 @@ ShallowWrapper {
                         Accroches
                       </span>,
                     ],
-                    "className": "button addMediations is-small is-secondary",
+                    "className": "button is-small is-secondary add-mediations-link",
                     "to": "/offres/M4",
                   },
                   "ref": null,
@@ -813,54 +788,75 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": Array [
-                    <NavLink
-                      activeClassName="active"
-                      aria-current="page"
-                      className="button is-secondary is-small edit-link"
-                      to="/offres/M4"
-                    >
-                      <Icon
-                        svg="ico-pen-r"
-                      />
-                      Modifier
-                    </NavLink>,
-                    <OfferPreviewLink
-                      className="button is-secondary is-small preview_link"
-                      href="http://localhost/decouverte/M4/HA"
-                      onClick={[Function]}
-                    />,
-                    <button
-                      className="button is-secondary is-small activ-switch"
-                      onClick={[Function]}
-                      type="button"
-                    >
-                      <span>
-                        <Icon
-                          svg="ico-close-r"
-                        />
-                        Désactiver
-                      </span>
-                    </button>,
-                  ],
+                  "children": <OfferPreviewLink
+                    className="button is-secondary is-small offer-preview-link"
+                    href="http://localhost/decouverte/M4/HA"
+                    onClick={[Function]}
+                  />,
                 },
                 "ref": null,
-                "rendered": Array [
-                  Object {
+                "rendered": Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "function",
+                  "props": Object {
+                    "className": "button is-secondary is-small offer-preview-link",
+                    "href": "http://localhost/decouverte/M4/HA",
+                    "onClick": [Function],
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": [Function],
+                },
+                "type": "li",
+              },
+              undefined,
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": <button
+                    className="button is-secondary is-small activ-switch"
+                    onClick={[Function]}
+                    type="button"
+                  >
+                    <span>
+                      <Icon
+                        svg="ico-close-r"
+                      />
+                      Désactiver
+                    </span>
+                  </button>,
+                },
+                "ref": null,
+                "rendered": Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": <span>
+                      <Icon
+                        svg="ico-close-r"
+                      />
+                      Désactiver
+                    </span>,
+                    "className": "button is-secondary is-small activ-switch",
+                    "onClick": [Function],
+                    "type": "button",
+                  },
+                  "ref": null,
+                  "rendered": Object {
                     "instance": null,
                     "key": undefined,
-                    "nodeType": "function",
+                    "nodeType": "host",
                     "props": Object {
-                      "activeClassName": "active",
-                      "aria-current": "page",
                       "children": Array [
                         <Icon
-                          svg="ico-pen-r"
+                          svg="ico-close-r"
                         />,
-                        "Modifier",
+                        "Désactiver",
                       ],
-                      "className": "button is-secondary is-small edit-link",
-                      "to": "/offres/M4",
                     },
                     "ref": null,
                     "rendered": Array [
@@ -869,77 +865,18 @@ ShallowWrapper {
                         "key": undefined,
                         "nodeType": "function",
                         "props": Object {
-                          "svg": "ico-pen-r",
+                          "svg": "ico-close-r",
                         },
                         "ref": null,
                         "rendered": null,
                         "type": [Function],
                       },
-                      "Modifier",
+                      "Désactiver",
                     ],
-                    "type": [Function],
+                    "type": "span",
                   },
-                  Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "function",
-                    "props": Object {
-                      "className": "button is-secondary is-small preview_link",
-                      "href": "http://localhost/decouverte/M4/HA",
-                      "onClick": [Function],
-                    },
-                    "ref": null,
-                    "rendered": null,
-                    "type": [Function],
-                  },
-                  Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "host",
-                    "props": Object {
-                      "children": <span>
-                        <Icon
-                          svg="ico-close-r"
-                        />
-                        Désactiver
-                      </span>,
-                      "className": "button is-secondary is-small activ-switch",
-                      "onClick": [Function],
-                      "type": "button",
-                    },
-                    "ref": null,
-                    "rendered": Object {
-                      "instance": null,
-                      "key": undefined,
-                      "nodeType": "host",
-                      "props": Object {
-                        "children": Array [
-                          <Icon
-                            svg="ico-close-r"
-                          />,
-                          "Désactiver",
-                        ],
-                      },
-                      "ref": null,
-                      "rendered": Array [
-                        Object {
-                          "instance": null,
-                          "key": undefined,
-                          "nodeType": "function",
-                          "props": Object {
-                            "svg": "ico-close-r",
-                          },
-                          "ref": null,
-                          "rendered": null,
-                          "type": [Function],
-                        },
-                        "Désactiver",
-                      ],
-                      "type": "span",
-                    },
-                    "type": "button",
-                  },
-                ],
+                  "type": "button",
+                },
                 "type": "li",
               },
             ],
@@ -1040,7 +977,7 @@ ShallowWrapper {
                 <NavLink
                   activeClassName="active"
                   aria-current="page"
-                  className="button addMediations is-small is-secondary"
+                  className="button is-small is-secondary add-mediations-link"
                   to="/offres/M4"
                 >
                   <span
@@ -1056,22 +993,13 @@ ShallowWrapper {
                 </NavLink>
               </li>
               <li>
-                <NavLink
-                  activeClassName="active"
-                  aria-current="page"
-                  className="button is-secondary is-small edit-link"
-                  to="/offres/M4"
-                >
-                  <Icon
-                    svg="ico-pen-r"
-                  />
-                  Modifier
-                </NavLink>
                 <OfferPreviewLink
-                  className="button is-secondary is-small preview_link"
+                  className="button is-secondary is-small offer-preview-link"
                   href="http://localhost/decouverte/M4/HA"
                   onClick={[Function]}
                 />
+              </li>
+              <li>
                 <button
                   className="button is-secondary is-small activ-switch"
                   onClick={[Function]}
@@ -1185,7 +1113,7 @@ ShallowWrapper {
                   <NavLink
                     activeClassName="active"
                     aria-current="page"
-                    className="button addMediations is-small is-secondary"
+                    className="button is-small is-secondary add-mediations-link"
                     to="/offres/M4"
                   >
                     <span
@@ -1201,22 +1129,13 @@ ShallowWrapper {
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink
-                    activeClassName="active"
-                    aria-current="page"
-                    className="button is-secondary is-small edit-link"
-                    to="/offres/M4"
-                  >
-                    <Icon
-                      svg="ico-pen-r"
-                    />
-                    Modifier
-                  </NavLink>
                   <OfferPreviewLink
-                    className="button is-secondary is-small preview_link"
+                    className="button is-secondary is-small offer-preview-link"
                     href="http://localhost/decouverte/M4/HA"
                     onClick={[Function]}
                   />
+                </li>
+                <li>
                   <button
                     className="button is-secondary is-small activ-switch"
                     onClick={[Function]}
@@ -1535,7 +1454,7 @@ ShallowWrapper {
                     <NavLink
                       activeClassName="active"
                       aria-current="page"
-                      className="button addMediations is-small is-secondary"
+                      className="button is-small is-secondary add-mediations-link"
                       to="/offres/M4"
                     >
                       <span
@@ -1551,22 +1470,14 @@ ShallowWrapper {
                     </NavLink>
                   </li>,
                   <li>
-                    <NavLink
-                      activeClassName="active"
-                      aria-current="page"
-                      className="button is-secondary is-small edit-link"
-                      to="/offres/M4"
-                    >
-                      <Icon
-                        svg="ico-pen-r"
-                      />
-                      Modifier
-                    </NavLink>
                     <OfferPreviewLink
-                      className="button is-secondary is-small preview_link"
+                      className="button is-secondary is-small offer-preview-link"
                       href="http://localhost/decouverte/M4/HA"
                       onClick={[Function]}
                     />
+                  </li>,
+                  undefined,
+                  <li>
                     <button
                       className="button is-secondary is-small activ-switch"
                       onClick={[Function]}
@@ -1593,7 +1504,7 @@ ShallowWrapper {
                     "children": <NavLink
                       activeClassName="active"
                       aria-current="page"
-                      className="button addMediations is-small is-secondary"
+                      className="button is-small is-secondary add-mediations-link"
                       to="/offres/M4"
                     >
                       <span
@@ -1628,7 +1539,7 @@ ShallowWrapper {
                           Accroches
                         </span>,
                       ],
-                      "className": "button addMediations is-small is-secondary",
+                      "className": "button is-small is-secondary add-mediations-link",
                       "to": "/offres/M4",
                     },
                     "ref": null,
@@ -1678,54 +1589,75 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": Array [
-                      <NavLink
-                        activeClassName="active"
-                        aria-current="page"
-                        className="button is-secondary is-small edit-link"
-                        to="/offres/M4"
-                      >
-                        <Icon
-                          svg="ico-pen-r"
-                        />
-                        Modifier
-                      </NavLink>,
-                      <OfferPreviewLink
-                        className="button is-secondary is-small preview_link"
-                        href="http://localhost/decouverte/M4/HA"
-                        onClick={[Function]}
-                      />,
-                      <button
-                        className="button is-secondary is-small activ-switch"
-                        onClick={[Function]}
-                        type="button"
-                      >
-                        <span>
-                          <Icon
-                            svg="ico-close-r"
-                          />
-                          Désactiver
-                        </span>
-                      </button>,
-                    ],
+                    "children": <OfferPreviewLink
+                      className="button is-secondary is-small offer-preview-link"
+                      href="http://localhost/decouverte/M4/HA"
+                      onClick={[Function]}
+                    />,
                   },
                   "ref": null,
-                  "rendered": Array [
-                    Object {
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "className": "button is-secondary is-small offer-preview-link",
+                      "href": "http://localhost/decouverte/M4/HA",
+                      "onClick": [Function],
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
+                  "type": "li",
+                },
+                undefined,
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": <button
+                      className="button is-secondary is-small activ-switch"
+                      onClick={[Function]}
+                      type="button"
+                    >
+                      <span>
+                        <Icon
+                          svg="ico-close-r"
+                        />
+                        Désactiver
+                      </span>
+                    </button>,
+                  },
+                  "ref": null,
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": <span>
+                        <Icon
+                          svg="ico-close-r"
+                        />
+                        Désactiver
+                      </span>,
+                      "className": "button is-secondary is-small activ-switch",
+                      "onClick": [Function],
+                      "type": "button",
+                    },
+                    "ref": null,
+                    "rendered": Object {
                       "instance": null,
                       "key": undefined,
-                      "nodeType": "function",
+                      "nodeType": "host",
                       "props": Object {
-                        "activeClassName": "active",
-                        "aria-current": "page",
                         "children": Array [
                           <Icon
-                            svg="ico-pen-r"
+                            svg="ico-close-r"
                           />,
-                          "Modifier",
+                          "Désactiver",
                         ],
-                        "className": "button is-secondary is-small edit-link",
-                        "to": "/offres/M4",
                       },
                       "ref": null,
                       "rendered": Array [
@@ -1734,77 +1666,18 @@ ShallowWrapper {
                           "key": undefined,
                           "nodeType": "function",
                           "props": Object {
-                            "svg": "ico-pen-r",
+                            "svg": "ico-close-r",
                           },
                           "ref": null,
                           "rendered": null,
                           "type": [Function],
                         },
-                        "Modifier",
+                        "Désactiver",
                       ],
-                      "type": [Function],
+                      "type": "span",
                     },
-                    Object {
-                      "instance": null,
-                      "key": undefined,
-                      "nodeType": "function",
-                      "props": Object {
-                        "className": "button is-secondary is-small preview_link",
-                        "href": "http://localhost/decouverte/M4/HA",
-                        "onClick": [Function],
-                      },
-                      "ref": null,
-                      "rendered": null,
-                      "type": [Function],
-                    },
-                    Object {
-                      "instance": null,
-                      "key": undefined,
-                      "nodeType": "host",
-                      "props": Object {
-                        "children": <span>
-                          <Icon
-                            svg="ico-close-r"
-                          />
-                          Désactiver
-                        </span>,
-                        "className": "button is-secondary is-small activ-switch",
-                        "onClick": [Function],
-                        "type": "button",
-                      },
-                      "ref": null,
-                      "rendered": Object {
-                        "instance": null,
-                        "key": undefined,
-                        "nodeType": "host",
-                        "props": Object {
-                          "children": Array [
-                            <Icon
-                              svg="ico-close-r"
-                            />,
-                            "Désactiver",
-                          ],
-                        },
-                        "ref": null,
-                        "rendered": Array [
-                          Object {
-                            "instance": null,
-                            "key": undefined,
-                            "nodeType": "function",
-                            "props": Object {
-                              "svg": "ico-close-r",
-                            },
-                            "ref": null,
-                            "rendered": null,
-                            "type": [Function],
-                          },
-                          "Désactiver",
-                        ],
-                        "type": "span",
-                      },
-                      "type": "button",
-                    },
-                  ],
+                    "type": "button",
+                  },
                   "type": "li",
                 },
               ],

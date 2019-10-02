@@ -46,18 +46,34 @@ li.offer-item {
         margin-right: inherit;
       }
     }
-
-    li:last-child {
-      margin-top: 5px;
+    // hérite de BETAGOUV/pass-culture-main/pro/src/styles/global/_layout.scss
+    li.img {
+      height: 0.6rem;
+      vertical-align: middle;
+      margin-right: 0.2rem;
     }
 
     .edit-link {
       border-right: 1px solid #EFEFF4;
       padding-right: 10px;
       margin-right: 10px;
+      margin-top: 5px;
     }
 
-    .button.addMediations {
+    .offer-preview-link {
+      border-right: 1px solid #EFEFF4;
+      padding-right: 10px;
+      margin-right: 10px;
+      margin-top: 5px;
+    }
+
+    .activ-switch {
+      padding-right: 10px;
+      margin-right: 10px;
+      margin-top: 5px;
+    }
+
+    .add-mediations-link {
       margin-top: 5px;
     }
   }

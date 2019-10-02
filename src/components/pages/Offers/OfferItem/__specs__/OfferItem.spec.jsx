@@ -111,6 +111,144 @@ describe('src | components | pages | Offers | OfferItem', () => {
         expect(thumbComponent.prop('src')).toBe('')
       })
     })
+    describe('action buttons', () => {
+      describe('switch activate', () => {
+        // TODO
+        // Button exists
+        it('should dispatch an action with the correct payload', () => {
+          // given
+          const wrapper = shallow(<OfferItem {...props} />)
+          const disableButton = wrapper.find('button')
+          const expectedParams = {
+            config: {
+              apiPath: '/offers/M4',
+              body: { isActive: false },
+              isMergingDatum: true,
+              isMutaginArray: false,
+              isMutatingDatum: true,
+              method: 'PATCH',
+              normalizer: {
+                mediations: 'mediations',
+                product: { normalizer: { offers: 'offers' }, stateKey: 'products' },
+                stocks: 'stocks',
+                venue: {
+                  normalizer: { managingOfferer: 'offerers' },
+                  stateKey: 'venues',
+                },
+              },
+            },
+            type: 'REQUEST_DATA_PATCH_/OFFERS/M4',
+          }
+
+          // when
+          disableButton.simulate('click')
+
+          // then
+          expect(dispatch.mock.calls[0][0]).toStrictEqual(expectedParams)
+        })
+      })
+
+      describe('preview link', () => {
+        it('should not be displayed when offer has no active mediation', () => {
+          // given
+          props.offer = offersMock[1]
+
+          const wrapper = shallow(<OfferItem {...props} />)
+
+          // when
+          const offerPreviewLink = wrapper.find('OfferPreviewLink')
+
+          // then
+          expect(offerPreviewLink).toHaveLength(0)
+        })
+
+        it('should be displayed when offer has an active mediation', () => {
+          // given
+          props.offer = {
+            id: 'M4',
+            activeMediation: {
+              id: 'HA',
+              isActive: true,
+              thumbUrl: 'https://url.to/thumb',
+            },
+            bookingEmail: 'booking.email@test.com',
+            dateCreated: '2019-02-25T09:50:10.735519Z',
+            dateModifiedAtLastProvider: '2019-02-25T09:50:31.881297Z',
+            idAtProviders: null,
+            isActive: true,
+            isEvent: false,
+            isThing: true,
+            lastProviderId: null,
+            modelName: 'Offer',
+            productId: 'EY',
+            venueId: 'CU',
+            mediationsIds: ['HA'],
+            stocksIds: ['MQ'],
+          }
+
+          const wrapper = shallow(<OfferItem {...props} />)
+
+          // when
+          const offerPreviewLink = wrapper.find('OfferPreviewLink')
+
+          // then
+          expect(offerPreviewLink).toHaveLength(1)
+          expect(offerPreviewLink.prop('href')).toMatch('/decouverte/M4/HA')
+        })
+
+        it('should open a new window with correct link', () => {
+          // given
+          props.offer = {
+            id: 'M4',
+            activeMediation: {
+              id: 'HA',
+              isActive: true,
+              thumbUrl: 'https://url.to/thumb',
+            },
+            bookingEmail: 'booking.email@test.com',
+            dateCreated: '2019-02-25T09:50:10.735519Z',
+            dateModifiedAtLastProvider: '2019-02-25T09:50:31.881297Z',
+            idAtProviders: null,
+            isActive: true,
+            isEvent: false,
+            isThing: true,
+            lastProviderId: null,
+            modelName: 'Offer',
+            productId: 'EY',
+            venueId: 'CU',
+            mediationsIds: ['HA'],
+            stocksIds: ['MQ'],
+          }
+
+          const wrapper = shallow(<OfferItem {...props} />)
+          const offerPreviewLink = wrapper.find('OfferPreviewLink')
+
+          jest.spyOn(global.window, 'open').mockImplementation(() => Object.create(window))
+
+          jest.spyOn(global.window, 'focus').mockImplementation(() => {})
+
+          const url = 'http://localhost/decouverte/M4/HA'
+
+          // when
+          offerPreviewLink.simulate('click', { preventDefault: jest.fn() })
+
+          // then
+          expect(global.window.open).toHaveBeenCalledWith(
+            url,
+            'targetWindow',
+            'toolbar=no,width=375,height=667'
+          )
+        })
+      })
+
+      describe('add mediations', () => {
+        // TODO
+      })
+
+      describe('edit link', () => {
+        // TODO
+      })
+    })
 
     it('should contain a Navlink Component with the right props and containing a DotDotDot component', () => {
       // given
@@ -226,99 +364,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       const numberOfParticipantsLabel = offerInfosSubElements.at(0).find('p')
       expect(numberOfParticipantsLabel.text()).toBe('2 - 5')
-    })
-
-    describe('preview link', () => {
-      it('should not be dislayed when offer has no active mediation', () => {
-        // given
-        props.offer = offersMock[1]
-
-        const wrapper = shallow(<OfferItem {...props} />)
-
-        // when
-        const offerPreviewLink = wrapper.find('OfferPreviewLink')
-
-        // then
-        expect(offerPreviewLink).toHaveLength(0)
-      })
-
-      it('should be dislayed when offer has an active mediation', () => {
-        // given
-        props.offer = {
-          id: 'M4',
-          activeMediation: {
-            id: 'HA',
-            isActive: true,
-            thumbUrl: 'https://url.to/thumb',
-          },
-          bookingEmail: 'booking.email@test.com',
-          dateCreated: '2019-02-25T09:50:10.735519Z',
-          dateModifiedAtLastProvider: '2019-02-25T09:50:31.881297Z',
-          idAtProviders: null,
-          isActive: true,
-          isEvent: false,
-          isThing: true,
-          lastProviderId: null,
-          modelName: 'Offer',
-          productId: 'EY',
-          venueId: 'CU',
-          mediationsIds: ['HA'],
-          stocksIds: ['MQ'],
-        }
-
-        const wrapper = shallow(<OfferItem {...props} />)
-
-        // when
-        const offerPreviewLink = wrapper.find('OfferPreviewLink')
-
-        // then
-        expect(offerPreviewLink).toHaveLength(1)
-        expect(offerPreviewLink.prop('href')).toMatch('/decouverte/M4/HA')
-      })
-
-      it('should open a new window with correct link', () => {
-        // given
-        props.offer = {
-          id: 'M4',
-          activeMediation: {
-            id: 'HA',
-            isActive: true,
-            thumbUrl: 'https://url.to/thumb',
-          },
-          bookingEmail: 'booking.email@test.com',
-          dateCreated: '2019-02-25T09:50:10.735519Z',
-          dateModifiedAtLastProvider: '2019-02-25T09:50:31.881297Z',
-          idAtProviders: null,
-          isActive: true,
-          isEvent: false,
-          isThing: true,
-          lastProviderId: null,
-          modelName: 'Offer',
-          productId: 'EY',
-          venueId: 'CU',
-          mediationsIds: ['HA'],
-          stocksIds: ['MQ'],
-        }
-
-        const wrapper = shallow(<OfferItem {...props} />)
-        const offerPreviewLink = wrapper.find('OfferPreviewLink')
-
-        jest.spyOn(global.window, 'open').mockImplementation(() => Object.create(window))
-
-        jest.spyOn(global.window, 'focus').mockImplementation(() => {})
-
-        const url = 'http://localhost/decouverte/M4/HA'
-
-        // when
-        offerPreviewLink.simulate('click', { preventDefault: jest.fn() })
-
-        // then
-        expect(global.window.open).toHaveBeenCalledWith(
-          url,
-          'targetWindow',
-          'toolbar=no,width=375,height=667'
-        )
-      })
     })
 
     describe('when offer is an event product ', () => {

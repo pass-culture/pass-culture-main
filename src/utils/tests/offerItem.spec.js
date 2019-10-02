@@ -4,7 +4,7 @@ describe('getOfferTypeLabel', () => {
   describe('when event exists', () => {
     it('should return event offer type label', () => {
       // given
-      const product = { offerType: { label: 'Conférence — Débat — Dédicace' } }
+      const product = { offerType: { proLabel: 'Conférence — Débat — Dédicace' } }
 
       // when
       const offerTypeLabel = getOfferTypeLabel(product)
@@ -17,7 +17,7 @@ describe('getOfferTypeLabel', () => {
   describe('when thing exists', () => {
     it('should return thing offer type label', () => {
       // given
-      const product = { offerType: { label: 'Jeux (Biens physiques)' } }
+      const product = { offerType: { proLabel: 'Jeux (Biens physiques)' } }
 
       // when
       const offerTypeLabel = getOfferTypeLabel(product)

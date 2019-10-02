@@ -429,7 +429,7 @@ const state = {
         offerType: {
           description:
             'Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?',
-          label: 'Jeux Vidéo',
+          proLabel: 'Jeux Vidéo',
           offlineOnly: false,
           onlineOnly: true,
           sublabel: 'Jouer',
@@ -456,7 +456,7 @@ const state = {
         offerType: {
           description:
             'S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?',
-          label: 'Presse (Abonnements)',
+          proLabel: 'Presse (Abonnements)',
           offlineOnly: false,
           onlineOnly: true,
           sublabel: 'Lire',
@@ -484,7 +484,7 @@ const state = {
         offerType: {
           description:
             'Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?',
-          label: 'Jeux Vidéo',
+          proLabel: 'Jeux Vidéo',
           offlineOnly: false,
           onlineOnly: true,
           sublabel: 'Jouer',
@@ -512,7 +512,7 @@ const state = {
         offerType: {
           description:
             'S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?',
-          label: 'Presse (Abonnements)',
+          proLabel: 'Presse (Abonnements)',
           offlineOnly: false,
           onlineOnly: true,
           sublabel: 'Lire',
@@ -540,7 +540,7 @@ const state = {
         offerType: {
           description:
             'Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?',
-          label: 'Jeux Vidéo',
+          proLabel: 'Jeux Vidéo',
           offlineOnly: false,
           onlineOnly: true,
           sublabel: 'Jouer',
@@ -568,7 +568,7 @@ const state = {
         offerType: {
           description:
             'S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?',
-          label: 'Presse (Abonnements)',
+          proLabel: 'Presse (Abonnements)',
           offlineOnly: false,
           onlineOnly: true,
           sublabel: 'Lire',
@@ -596,7 +596,7 @@ const state = {
         offerType: {
           description:
             'Plutôt rock, rap ou classique ? Sur un smartphone avec des écouteurs ou entre amis au concert ?',
-          label: 'Musique (sur supports physiques ou en ligne)',
+          proLabel: 'Musique (sur supports physiques ou en ligne)',
           offlineOnly: false,
           onlineOnly: false,
           sublabel: 'Écouter',
@@ -624,7 +624,7 @@ const state = {
         offerType: {
           description:
             'Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
-          label: 'Musées — Patrimoine (Abonnements, Visites libres)',
+          proLabel: 'Musées — Patrimoine (Abonnements, Visites libres)',
           offlineOnly: true,
           onlineOnly: false,
           sublabel: 'Regarder',
@@ -652,7 +652,7 @@ const state = {
         offerType: {
           description:
             'Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?',
-          label: 'Jeux Vidéo',
+          proLabel: 'Jeux Vidéo',
           offlineOnly: false,
           onlineOnly: true,
           sublabel: 'Jouer',
@@ -680,7 +680,7 @@ const state = {
         offerType: {
           description:
             'Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
-          label: 'Cinéma (Abonnements)',
+          proLabel: 'Cinéma (Abonnements)',
           offlineOnly: true,
           onlineOnly: false,
           sublabel: 'Regarder',

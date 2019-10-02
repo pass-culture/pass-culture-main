@@ -1,31 +1,28 @@
 import Icon from '../../layout/Icon'
-import React from "react"
-import PropTypes from "prop-types"
+import React from 'react'
+import PropTypes from 'prop-types'
 
 const OfferPreviewLink = ({ className, offerWebappUrl, onClick }) => {
   return (
-    <div className={className}>
-      <a
-        className='cta button'
-        href={offerWebappUrl}
-        onClick={onClick}
-        rel="noopener noreferrer"
-        target="_blank"
+    <a
+      className={className}
+      href={offerWebappUrl}
+      onClick={onClick}
+      rel="noopener noreferrer"
+      target="_blank"
+    >
+      <span
+        className="tip-icon"
+        data-place="bottom"
+        data-tip="<p>Ouvrir un nouvel onglet avec la prévisualisation de l'offre</p>"
+        data-type="info"
       >
-        <span
-          className="tip-icon"
-          data-place="bottom"
-          data-tip="<p>Ouvrir un nouvel onglet avec la prévisualisation de l'offre</p>"
-          data-type="info"
-        >
-          <Icon svg="ico-eye" />
-        </span>
-        {'Prévisualiser'}
-      </a>
-    </div>
+        <Icon svg="ico-eye" />
+      </span>
+      {'Prévisualiser'}
+    </a>
   )
 }
-
 
 OfferPreviewLink.propTypes = {
   className: PropTypes.string.isRequired,

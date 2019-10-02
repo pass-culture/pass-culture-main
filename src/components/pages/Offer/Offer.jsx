@@ -359,11 +359,13 @@ class Offer extends Component {
           title={title}
         >
           {offer && mediationId && (
-            <OfferPreviewLink
-              className='title-action-links'
-              href={offerWebappUrl}
-              onClick={this.handleHrefClick()}
-            />
+            <div className="title-action-links">
+              <OfferPreviewLink
+                className="cta button"
+                href={offerWebappUrl}
+                onClick={this.handleHrefClick()}
+              />
+            </div>
           )}
 
           <p className="subtitle">
