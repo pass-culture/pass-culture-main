@@ -188,6 +188,8 @@ class LocalProvider(Iterator):
         chunk_to_insert = {}
         chunk_to_update = {}
 
+        last_defined_providable_info = None
+
         try:
             for providable_infos in self:
                 self.providables = []
@@ -198,6 +200,7 @@ class LocalProvider(Iterator):
 
                 for providable_info in providable_infos:
                     if providable_info is not None:
+                        last_defined_providable_info = providable_info
                         chunk_key = providable_info.id_at_providers + '|' + str(providable_info.type.__name__)
 
                         pc_obj = get_existing_pc_obj(providable_info, chunk_to_insert, chunk_to_update)
@@ -258,11 +261,11 @@ class LocalProvider(Iterator):
                                     chunk_to_update[chunk_key] = pc_obj
 
                         if len(chunk_to_insert) + len(chunk_to_update) >= CHUNK_MAX_SIZE:
-                            save_chunks(chunk_to_insert, chunk_to_update, providable_info)
+                            save_chunks(chunk_to_insert, chunk_to_update, last_defined_providable_info)
 
                             chunk_to_insert = {}
                             chunk_to_update = {}
-
+            
                     self.checkedObjects += 1
 
                 if limit is not None and \
@@ -270,11 +273,11 @@ class LocalProvider(Iterator):
                     break
         except Exception as e:
             if len(chunk_to_insert) + len(chunk_to_update) > 0:
-                save_chunks(chunk_to_insert, chunk_to_update, providable_info)
+                save_chunks(chunk_to_insert, chunk_to_update, last_defined_providable_info)
             raise e
 
         if len(chunk_to_insert) + len(chunk_to_update) > 0:
-            save_chunks(chunk_to_insert, chunk_to_update, providable_info)
+            save_chunks(chunk_to_insert, chunk_to_update, last_defined_providable_info)
 
         logger.info("  Checked " + str(self.checkedObjects) + " objects")
         logger.info("  Created " + str(self.createdObjects) + " objects")
