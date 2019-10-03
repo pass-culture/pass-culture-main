@@ -114,6 +114,19 @@ def pc_synchronize_titelive_thumbs():
     logger.info("[BATCH][TITELIVE THUMBS] Cron synchronize_titelive_thumbs: END")
 
 
+def pc_synchronize_titelive_stocks():
+    logger.info("[BATCH][TITELIVE STOCKS] Cron synchronize_titelive_stocks: START")
+    with app.app_context():
+        subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
+                         + ' --venue-provider-id %s' % str(new_venue_provider.id),
+                         shell=True,
+                         cwd=API_ROOT_PATH)
+        output, error = process.communicate()
+        logger.info(StringIO(output))
+        logger.info(StringIO(error))
+    logger.info("[BATCH][TITELIVE STOCKS] Cron synchronize_titelive_stocks: END")
+
+
 def pc_retrieve_offerers_bank_information():
     logger.info("[BATCH][BANK INFORMATION] Cron retrieve_offerers_bank_information: START")
     with app.app_context():
