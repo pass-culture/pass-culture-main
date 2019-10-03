@@ -1,3 +1,4 @@
+import os
 from unittest.mock import MagicMock, patch
 
 from models import PcObject
@@ -21,10 +22,11 @@ class GetProductThumbTest:
         _get_product_thumb(uri)
 
         # Then
-        requests_get.assert_called_once_with(OBJECT_STORAGE_URL + '/' + uri)
+        thumb_storage_url = os.path.join(OBJECT_STORAGE_URL, uri)
+        requests_get.assert_called_once_with(thumb_storage_url)
 
     @patch('scripts.product_thumb.update_product_thumb.requests.get')
-    def test_should_return_response_content_when_status_code_200(self, requests_get):
+    def test_should_return_product_thumb_when_status_code_200(self, requests_get):
         # Given
         uri = 'thumbs/products/A6UQA'
         requests_get.return_value = MagicMock(status_code=200, content=IMAGE_AS_BYTES)
@@ -77,7 +79,7 @@ class ProcessProductThumbTest:
     def test_should_call_object_storage_connector_with_right_uri(self, app):
         # Given
         uri = 'thumbs/products/A6UQA'
-        get_product_thumb = MagicMock(return_value=IMAGE_AS_BYTES)
+        get_product_thumb = MagicMock()
 
         # When
         process_product_thumb(uri, get_product_thumb)
@@ -87,13 +89,14 @@ class ProcessProductThumbTest:
 
     @clean_database
     @patch('scripts.product_thumb.update_product_thumb.logger.info')
-    def test_should_set_product_thumb_count_to_one_and_set_first_thumb_dominant_color_when_thumb_is_main(self, logger_info, app):
+    def test_should_increase_product_thumb_count_by_one_and_set_first_thumb_dominant_color_when_thumb_is_main(self, logger_info, app):
         # Given
-        product = create_product_with_thing_type(thumb_count=0)
+        product = create_product_with_thing_type(thumb_count=0, dominant_color=None)
         PcObject.save(product)
         human_product_id = humanize(product.id)
         uri = f'thumbs/products/{human_product_id}'
         get_product_thumb = MagicMock(return_value=IMAGE_AS_BYTES)
+        main_thumb_dominant_color = b'\xc6\xbdj'
 
         # When
         success = process_product_thumb(uri, get_product_thumb)
@@ -101,7 +104,7 @@ class ProcessProductThumbTest:
         # Then
         db.session.refresh(product)
         assert product.thumbCount == 1
-        assert product.firstThumbDominantColor == b'\xc6\xbdj'
+        assert product.firstThumbDominantColor == main_thumb_dominant_color
         assert success
         logger_info.assert_called_once_with(
             f'[BATCH][PRODUCT THUMB UPDATE] Product with id: "{product.id}" / uri: "{uri}" processed successfully')
@@ -110,7 +113,8 @@ class ProcessProductThumbTest:
     def test_should_increase_product_thumb_count_by_one_and_not_set_first_thumb_dominant_color_when_thumb_is_not_main(
             self, app):
         # Given
-        product = create_product_with_thing_type(thumb_count=1, dominant_color=b'\xcc\x80')
+        main_thumb_dominant_color = b'\xcc\x80'
+        product = create_product_with_thing_type(thumb_count=1, dominant_color=main_thumb_dominant_color)
         PcObject.save(product)
         human_product_id = humanize(product.id)
         uri = f'thumbs/products/{human_product_id}_1'
@@ -122,7 +126,7 @@ class ProcessProductThumbTest:
         # Then
         db.session.refresh(product)
         assert product.thumbCount == 2
-        assert product.firstThumbDominantColor == b'\xcc\x80'
+        assert product.firstThumbDominantColor == main_thumb_dominant_color
 
     @patch('scripts.product_thumb.update_product_thumb._compute_product_id_from_uri')
     def test_should_not_compute_product_id_for_uri_when_product_thumb_is_not_found(self, compute_product_id):

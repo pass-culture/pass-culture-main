@@ -1,7 +1,7 @@
 import os
 import re
 from io import BytesIO
-from typing import Callable
+from typing import Callable, Optional
 
 import requests
 
@@ -13,8 +13,9 @@ from utils.logger import logger
 OBJECT_STORAGE_URL = os.environ.get('OBJECT_STORAGE_URL')
 
 
-def _get_product_thumb(uri: str):
-    response = requests.get(OBJECT_STORAGE_URL + '/' + uri)
+def _get_product_thumb(uri: str) -> Optional[bytes]:
+    thumb_storage_url = os.path.join(OBJECT_STORAGE_URL, uri)
+    response = requests.get(thumb_storage_url)
 
     if response.status_code != 200:
         logger.error(f'[BATCH][PRODUCT THUMB UPDATE] Could not get thumb for uri {uri}')
@@ -23,7 +24,7 @@ def _get_product_thumb(uri: str):
     return response.content
 
 
-def process_product_thumb(uri: str, get_product_thumb=_get_product_thumb):
+def process_product_thumb(uri: str, get_product_thumb: Callable = _get_product_thumb) -> Optional[bool]:
     is_main_thumb = '_' not in uri
 
     product_thumb = None
@@ -41,10 +42,12 @@ def process_product_thumb(uri: str, get_product_thumb=_get_product_thumb):
             logger.error(f'[BATCH][PRODUCT THUMB UPDATE] Trying to process secondary thumb when main '
                          f'thumb was not processed for product with id: "{product.id}" / uri: "{uri}"')
             return
+
         _update_product_thumb(product, product_thumb)
         logger.info(
             f'[BATCH][PRODUCT THUMB UPDATE] Product with id: "{product.id}" / uri: "{uri}" processed successfully')
         return True
+
     else:
         logger.error(f'[BATCH][PRODUCT THUMB UPDATE] Product not found for id: "{product_id}" / uri: "{uri}"')
 
@@ -62,8 +65,9 @@ def _get_first_thumb_dominant_color_from_image(image: bytes) -> bytes:
 
 
 def _compute_product_id_from_uri(uri: str) -> int:
-    end_of_uri = uri.split('/')[-1]
-    human_id = re.sub(r'_[^_]+$', '', end_of_uri)
+    last_uri_chunk = uri.split('/')[-1]
+    characters_after_underscore = r'_[^_]+$'
+    human_id = re.sub(characters_after_underscore, '', last_uri_chunk)
     return dehumanize(human_id)
 
 
