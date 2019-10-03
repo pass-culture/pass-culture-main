@@ -34,9 +34,6 @@ db.init_app(app)
 
 TITELIVE_STOCKS_PROVIDER_NAME = "TiteLiveStocks"
 
-TITELIVE_STOCKS_RUNNING_MINUTE = os.environ.get("TITELIVE_STOCKS_RUNNING_MINUTE")
-TITELIVE_STOCKS_RUNNING_HOUR = os.environ.get("TITELIVE_STOCKS_RUNNING_HOUR")
-
 def pc_send_final_booking_recaps():
     print("[BATCH] Cron send_final_booking_recaps: START")
     with app.app_context():
@@ -219,7 +216,7 @@ if __name__ == '__main__':
 
     if feature_cron_synchronize_titelive_stocks():
         scheduler.add_job(pc_synchronize_titelive_stocks, 'cron', id='synchronize_titelive_stocks',
-                          day='*', hour=TITELIVE_STOCKS_RUNNING_HOUR, minute= TITELIVE_STOCKS_RUNNING_MINUTE)
+                          day='*', hour='4')
 
     if feature_cron_send_remedial_emails():
         scheduler.add_job(pc_send_remedial_emails, 'cron', id='send_remedial_emails', minute='*/15')
