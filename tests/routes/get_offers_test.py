@@ -241,7 +241,7 @@ class Get:
 
         @clean_database
         def test_does_not_show_anything_to_user_offerer_when_not_validated(self, app):
-            # Given
+            # given
             user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
@@ -249,15 +249,15 @@ class Get:
             offer = create_offer_with_thing_product(venue)
             PcObject.save(user_offerer, offer)
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
-            # When
+            # when
             response = auth_request.get('/offers')
 
-            # Then
+            # then
             assert response.status_code == 200
             assert response.json == []
 
         @clean_database
-        def test_returns_metadata(self, app):
+        def test_returns_total_data_count_in_headers(self, app):
             # given
             user = create_user(email='user@test.com')
             create_offers_for(user, 20)
@@ -268,7 +268,6 @@ class Get:
 
             # then
             assert response.status_code == 200
-            assert 'Total-Data-Count' in response.headers
             assert response.headers['Total-Data-Count'] == "20"
 
 def create_offers_for(user, n, siren='123456789'):

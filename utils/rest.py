@@ -119,60 +119,44 @@ def check_order_by(order_by):
             check_single_order_by_string(part)
 
 
-def handle_rest_get_list(modelClass, query=None, headers=None, refine=None, order_by=None, flask_request=None, includes=(),
-                         print_elements=None, paginate=None, page=None, populate=None, with_total_data_count=False, should_distinct=False):
-    if flask_request is None:
-        flask_request = request
+def handle_rest_get_list(modelClass, query=None, refine=None, order_by=None, includes=(),
+                         print_elements=None, paginate=None, page=None, with_total_data_count=False,
+                         should_distinct=False):
 
     if query is None:
         query = modelClass.query
 
-    # DELETED
     if issubclass(modelClass, SoftDeletableMixin):
         query = query.filter_by(isSoftDeleted=False)
 
-    # REFINE
     if refine:
         query = refine(query)
 
-    # ORDER BY
     if order_by:
         check_order_by(order_by)
         query = query_with_order_by(query, order_by)
 
-    # TOTAL_DATA COUNT
     if should_distinct and with_total_data_count:
         total_data_count = query.distinct().count()
     elif with_total_data_count:
         total_data_count = query.count()
 
-    # PAGINATE
     if paginate:
         if page is not None:
             page = int(page)
-        query = query.paginate(page, per_page=paginate, error_out=False) \
-                    .items
+        query = query.paginate(page, per_page=paginate, error_out=False).items
 
-    objects = [o for o in query]
-    if populate:
-        objects = list(map(populate, objects))
-
-    # DICTIFY
     elements = [as_dict(o, includes=includes) for o in query]
 
-    # PRINT
     if print_elements:
         print(elements)
 
-    # RESPONSE
     response = jsonify(elements)
 
-    # HEADERS
     if with_total_data_count:
         response.headers['Total-Data-Count'] = total_data_count
         response.headers['Access-Control-Expose-Headers'] = 'Total-Data-Count'
 
-    # RETURN
     return response, 200
 
 

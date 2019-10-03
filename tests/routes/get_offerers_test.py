@@ -285,9 +285,9 @@ class Get:
         def test_returns_metadata(self, app):
             # given
             user = create_user(email='user@test.com')
-            offerer1 = create_offerer(name='offreur C')
-            user_offerer1 = create_user_offerer(user, offerer1)
-            PcObject.save(user_offerer1)
+            offerer = create_offerer(name='offreur C')
+            user_offerer = create_user_offerer(user, offerer)
+            PcObject.save(user_offerer)
             auth_request = TestClient(app.test_client()).with_auth(email='user@test.com')
 
             # when
@@ -295,7 +295,6 @@ class Get:
 
             # then
             assert response.status_code == 200
-            assert 'Total-Data-Count' in response.headers
             assert response.headers['Total-Data-Count'] == "1"
 
 
@@ -317,7 +316,6 @@ class Get:
 
             # then
             assert response.status_code == 200
-            assert 'Total-Data-Count' in response.headers
             assert response.headers['Total-Data-Count'] == "2"
 
     class Returns400:
