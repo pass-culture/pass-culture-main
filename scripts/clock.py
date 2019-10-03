@@ -15,8 +15,9 @@ from repository.feature_queries import feature_cron_send_final_booking_recaps_en
 from repository.feature_queries import feature_cron_send_wallet_balances
 from repository.feature_queries import feature_import_beneficiaries_enabled, \
     feature_cron_synchronize_titelive_things, feature_cron_synchronize_titelive_descriptions, \
-    feature_cron_synchronize_titelive_thumbs, \
+    feature_cron_synchronize_titelive_thumbs, feature_cron_synchronize_titelive_stocks, \
     feature_cron_retrieve_bank_information_for_venue_without_siret
+from repository.provider_queries import get_provider_by_local_class
 from repository.user_queries import find_most_recent_beneficiary_creation_date
 from scripts.beneficiary import remote_import
 from scripts.dashboard.write_dashboard import write_dashboard
@@ -31,6 +32,10 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['DEBUG'] = True
 db.init_app(app)
 
+TITELIVE_STOCKS_PROVIDER_NAME = "TiteLiveStocks"
+
+TITELIVE_STOCKS_RUNNING_MINUTE = os.environ.get("TITELIVE_STOCKS_RUNNING_MINUTE")
+TITELIVE_STOCKS_RUNNING_HOUR = os.environ.get("TITELIVE_STOCKS_RUNNING_HOUR")
 
 def pc_send_final_booking_recaps():
     print("[BATCH] Cron send_final_booking_recaps: START")
@@ -117,8 +122,9 @@ def pc_synchronize_titelive_thumbs():
 def pc_synchronize_titelive_stocks():
     logger.info("[BATCH][TITELIVE STOCKS] Cron synchronize_titelive_stocks: START")
     with app.app_context():
-        subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
-                         + ' --venue-provider-id %s' % str(new_venue_provider.id),
+        titelive_stocks_provider_id = get_provider_by_local_class(TITELIVE_STOCKS_PROVIDER_NAME).id
+        process = subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables_by_provider_id --provider-id '
+                         + str(titelive_stocks_provider_id),
                          shell=True,
                          cwd=API_ROOT_PATH)
         output, error = process.communicate()
@@ -210,6 +216,10 @@ if __name__ == '__main__':
     if feature_cron_synchronize_titelive_thumbs():
         scheduler.add_job(pc_synchronize_titelive_thumbs, 'cron', id='synchronize_titelive_thumbs',
                           day='*', hour='3')
+
+    if feature_cron_synchronize_titelive_stocks():
+        scheduler.add_job(pc_synchronize_titelive_stocks, 'cron', id='synchronize_titelive_stocks',
+                          day='*', hour=TITELIVE_STOCKS_RUNNING_HOUR, minute= TITELIVE_STOCKS_RUNNING_MINUTE)
 
     if feature_cron_send_remedial_emails():
         scheduler.add_job(pc_send_remedial_emails, 'cron', id='send_remedial_emails', minute='*/15')

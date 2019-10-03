@@ -5,7 +5,7 @@ from pprint import pprint
 from flask import current_app as app
 
 import local_providers
-from models import VenueProvider # pas besoin de faire un import de venue_provider.py ?
+from models import VenueProvider
 
 
 @app.manager.option('-p',
@@ -36,14 +36,13 @@ def update_providables(provider_name: str, venue_provider_id: str, limit: int):
 @app.manager.option('-p',
                     '--provider-id',
                     help='Update providables for this provider')
-def update_providables_by_provider_id(provider_id: int):
-    print('provider_id : ' + provider_id)
+def update_providables_by_provider_id(provider_id: str):
+    provider_id = int(provider_id)
     venue_providers = VenueProvider.query.filter(VenueProvider.providerId == provider_id).all()
-    print('venue_providers : ' , venue_providers)
     for venue_provider in venue_providers:
         ProviderClass = get_class_by_name(venue_provider.provider.localClass)
         provider = ProviderClass(venue_provider)
-        # do_update(provider)
+        do_update(provider, None)
     pass
 
 

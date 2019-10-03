@@ -101,7 +101,7 @@ class TiteLiveStocks(LocalProvider):
             self.update_offer_object(obj, self.titelive_stock)
 
     def updateObjects(self, limit=None):
-        super().updateObjects(limit) # ??
+        super().updateObjects(limit)
 
     def update_stock_object(self, obj, stock_information):
         obj.price = int(stock_information['price']) / PRICE_DIVIDER_TO_EURO
