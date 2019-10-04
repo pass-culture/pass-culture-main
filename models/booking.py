@@ -21,7 +21,6 @@ from utils.string_processing import format_decimal
 
 
 class Booking(PcObject, Model, VersionedMixin):
-
     id = Column(BigInteger,
                 primary_key=True,
                 autoincrement=True)
@@ -110,7 +109,7 @@ class Booking(PcObject, Model, VersionedMixin):
             return ['global', 'la quantité disponible pour cette offre est atteinte']
         elif 'insufficientFunds' in str(ie.orig):
             return ['insufficientFunds',
-                                "Le solde de votre pass est insuffisant pour réserver cette offre."]
+                    "Le solde de votre pass est insuffisant pour réserver cette offre."]
         return PcObject.restize_integrity_error(ie)
 
     @property
@@ -160,9 +159,6 @@ class Booking(PcObject, Model, VersionedMixin):
         if self.recommendation:
             return self.recommendation.thumbUrl
 
-        if self.stock.offer.product.thumbCount:
-            return self.stock.offer.product.thumbUrl
-
     @property
     def mediation(self):
         if self.recommendation:
@@ -172,6 +168,7 @@ class Booking(PcObject, Model, VersionedMixin):
     def mediationId(self):
         if self.recommendation:
             return self.recommendation.mediationId
+
 
 class ActivationUser:
     CSV_HEADER = [

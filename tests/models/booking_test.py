@@ -97,24 +97,6 @@ def test_model_thumbUrl_should_have_thumbUrl_using_productId_when_no_mediation(g
     user = create_user(email='user@test.com')
     offerer = create_offerer()
     venue = create_venue(offerer)
-    product = create_product_with_event_type(dominant_color=b'\x00\x00\x00', thumb_count=1)
-    product.id = 2
-    offer = create_offer_with_event_product(product=product, venue=venue)
-    stock = create_stock(price=12, available=1, offer=offer)
-
-    # when
-    booking = create_booking(recommendation=None, stock=stock, user=user, venue=venue)
-
-    # then
-    assert booking.thumbUrl == "http://localhost/storage/thumbs/products/A9"
-
-
-@patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
-def test_model_thumbUrl_should_return_None_when_no_mediation_or_product_without_thumb(get_storage_base_url):
-    # given
-    user = create_user(email='user@test.com')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
     product = create_product_with_event_type(dominant_color=None, thumb_count=0)
     product.id = 2
     offer = create_offer_with_event_product(product=product, venue=venue)
@@ -124,7 +106,7 @@ def test_model_thumbUrl_should_return_None_when_no_mediation_or_product_without_
     booking = create_booking(recommendation=None, stock=stock, user=user, venue=venue)
 
     # then
-    assert booking.thumbUrl is None
+    assert booking.thumbUrl == "http://localhost/storage/thumbs/products/A9"
 
 
 class BookingIsCancellableTest:

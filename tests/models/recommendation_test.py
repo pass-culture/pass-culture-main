@@ -29,22 +29,6 @@ def test_model_thumbUrl_should_use_mediation_first_as_thumbUrl(get_storage_base_
 @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
 def test_model_thumbUrl_should_have_thumbUrl_using_productId_when_no_mediation(get_storage_base_url):
     # given
-    product = create_product_with_thing_type(dominant_color=b'\x00\x00\x00', thumb_count=1)
-    product.id = 2
-    offerer = create_offerer()
-    venue = create_venue(offerer=offerer)
-    offer = create_offer_with_thing_product(product=product, venue=venue)
-
-    # when
-    recommendation = create_recommendation(offer)
-
-    # then
-    assert recommendation.thumbUrl == "http://localhost/storage/thumbs/products/A9"
-
-
-@patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
-def test_model_thumbUrl_should_return_None_when_no_mediation_and_no_product_thumb(get_storage_base_url):
-    # given
     product = create_product_with_thing_type(dominant_color=None, thumb_count=0)
     product.id = 2
     offerer = create_offerer()
@@ -55,7 +39,7 @@ def test_model_thumbUrl_should_return_None_when_no_mediation_and_no_product_thum
     recommendation = create_recommendation(offer)
 
     # then
-    assert recommendation.thumbUrl is None
+    assert recommendation.thumbUrl == "http://localhost/storage/thumbs/products/A9"
 
 
 @patch('models.has_thumb_mixin.get_storage_base_url', return_value='https://passculture.app/storage/v2')

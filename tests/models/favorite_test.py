@@ -28,7 +28,7 @@ def test_model_thumbUrl_should_use_mediation_first_as_thumbUrl(get_storage_base_
 def test_model_thumbUrl_should_have_thumbUrl_using_productId_when_no_mediation(get_storage_base_url):
     # given
     user = create_user(email='user@booking.com')
-    product = create_product_with_thing_type(dominant_color=b'\x00\x00\x00', thumb_count=1)
+    product = create_product_with_thing_type(dominant_color=None, thumb_count=0)
     product.id = 1
     offerer = create_offerer()
     venue = create_venue(offerer=offerer)
@@ -39,19 +39,3 @@ def test_model_thumbUrl_should_have_thumbUrl_using_productId_when_no_mediation(g
 
     # then
     assert favorite.thumbUrl == "http://localhost/storage/thumbs/products/AE"
-
-
-@patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
-def test_model_thumbUrl_should_return_None_when_no_mediation_and_product_without_thumb(get_storage_base_url):
-    # given
-    user = create_user(email='user@booking.com')
-    product = create_product_with_thing_type(dominant_color=None, thumb_count=0)
-    offerer = create_offerer()
-    venue = create_venue(offerer=offerer)
-    offer = create_offer_with_thing_product(product=product, venue=venue)
-
-    # when
-    favorite = create_favorite(mediation=None, offer=offer, user=user)
-
-    # then
-    assert favorite.thumbUrl is None
