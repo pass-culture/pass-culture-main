@@ -1275,7 +1275,7 @@ class MakePaymentsReportEmailTest:
 
 
 class UserValidationEmailsTest:
-    def test_makemake_webapp_user_validation_email_includes_validation_url_with_token_and_user_email(self, app):
+    def test_make_webapp_user_validation_email_includes_validation_url_with_token_and_user_email(self, app):
         # Given
         user = create_user(email="test@email.com")
         user.generate_validation_token()
@@ -1299,7 +1299,7 @@ class UserValidationEmailsTest:
         assert email['Subject'] == 'Validation de votre adresse email pour le pass Culture'
         assert email['FromEmail'] == 'support@passculture.app'
 
-    def test_makemake_pro_user_validation_email_includes_validation_url_with_token_and_user_email(self, app):
+    def test_make_pro_user_validation_email_includes_validation_url_with_token_and_user_email(self, app):
         # Given
         user = create_user(email="test@email.com")
         user.generate_validation_token()
@@ -1333,14 +1333,14 @@ class UserValidationEmailsTest:
         # Given
         user = create_user(email="test@email.com")
         user.generate_validation_token()
-        app_origin_url = 'portail-pro'
+        offerer = create_offerer(name='Bar des amis')
 
         # When
-        email = make_user_waiting_for_validation_by_admin_email(user, app_origin_url, is_webapp=False)
+        email = make_user_waiting_for_validation_by_admin_email(user, offerer)
         expected = {
             'FromEmail': 'dev@passculture.app',
             'FromName': 'pass Culture pro',
-            'Subject': f'[pass Culture pro] Votre structure {user.publicName} est en cours de validation',
+            'Subject': f'[pass Culture pro] Votre structure {offerer.name} est en cours de validation',
             'MJ-TemplateID': '778329',
             'MJ-TemplateLanguage': 'true',
             'Recipients': [
@@ -1351,7 +1351,7 @@ class UserValidationEmailsTest:
             ],
             'Vars':
                 {
-                    'nom_structure': 'John Doe'
+                    'nom_structure': 'Bar des amis'
                 }
         }
 

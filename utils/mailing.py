@@ -9,7 +9,7 @@ from flask import current_app as app, render_template
 
 from connectors import api_entreprises
 from domain.user_activation import generate_set_password_url
-from models import Offer, Email, PcObject
+from models import Offer, Email, PcObject, Offerer
 from models import RightsType, User
 from models.email import EmailStatus
 from models.offer_type import ProductType
@@ -397,8 +397,8 @@ def make_user_validation_email(user: User, app_origin_url: str, is_webapp: bool)
     return data
 
 
-def make_user_waiting_for_validation_by_admin_email(user: User, app_origin_url: str, is_webapp: bool) -> dict:
-    data = _pro_user_waiting_for_validation_by_admin_email(user, app_origin_url)
+def make_user_waiting_for_validation_by_admin_email(user: User, offerer: Offerer) -> dict:
+    data = _pro_user_waiting_for_validation_by_admin_email(user, offerer)
     return data
 
 
@@ -710,9 +710,9 @@ def make_pro_user_validation_email(user: User, app_origin_url: str) -> dict:
     }
 
 
-def _pro_user_waiting_for_validation_by_admin_email(user: User, app_origin_url: str):
+def _pro_user_waiting_for_validation_by_admin_email(user: User, offerer: Offerer):
     from_name = 'pass Culture pro'
-    offerer_name = user.publicName
+    offerer_name = offerer.name
     return {
         'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
         'FromName': from_name,
@@ -722,7 +722,7 @@ def _pro_user_waiting_for_validation_by_admin_email(user: User, app_origin_url: 
         'Recipients': [
             {
                 "Email": user.email,
-                "Name": offerer_name
+                "Name": user.publicName
             }
         ],
         'Vars': {

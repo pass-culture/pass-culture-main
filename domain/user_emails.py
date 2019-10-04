@@ -148,8 +148,8 @@ def send_user_validation_email(user: User, send_email: Callable[..., bool], app_
     email = make_user_validation_email(user, app_origin_url, is_webapp)
     return send_email(data=email)
 
-def send_user_waiting_for_validation_by_admin_email(user: User, send_email: Callable[..., bool], app_origin_url: str, is_webapp: bool) -> bool:
-    email = make_user_waiting_for_validation_by_admin_email(user, app_origin_url, is_webapp)
+def send_user_waiting_for_validation_by_admin_email(user: User, send_email: Callable[..., bool], offerer: Offerer) -> bool:
+    email = make_user_waiting_for_validation_by_admin_email(user, offerer)
     return send_email(data=email)
 
 

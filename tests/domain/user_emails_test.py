@@ -1,3 +1,4 @@
+from pprint import pprint
 from unittest.mock import patch, Mock, call
 
 from domain.user_emails import send_user_driven_cancellation_email_to_user, \
@@ -6,7 +7,7 @@ from domain.user_emails import send_user_driven_cancellation_email_to_user, \
     send_booking_confirmation_email_to_user, send_booking_recap_emails, send_final_booking_recap_email, \
     send_validation_confirmation_email, send_batch_cancellation_emails_to_users, \
     send_batch_cancellation_email_to_offerer, send_user_validation_email, send_venue_validation_confirmation_email, \
-    send_reset_password_email, send_activation_notification_email
+    send_reset_password_email, send_activation_notification_email, send_user_waiting_for_validation_by_admin_email
 from models import Offerer, UserOfferer, User, RightsType
 from tests.test_utils import create_user, create_booking, create_stock_with_event_offer, create_offerer, create_venue, \
     create_offer_with_thing_product, create_stock_with_thing_offer, create_mocked_bookings
@@ -599,6 +600,29 @@ class SendUserValidationEmailTest:
         make_email.assert_called_once()
         mocked_send_email.call_args[1]['To'] = user.email
 
+
+class SendUserWaitingForValidationByAdminEmailTest:
+    def when_feature_send_mail_to_users_enabled_sends_email_to_user_with_offerer_name_in_subject(self):
+        # Given
+        user = create_user()
+        user.generate_validation_token()
+        offerer = create_offerer(name='Bar des amis')
+        mocked_send_email = Mock()
+        return_value = Mock()
+        return_value.status_code = 200
+        mocked_send_email.return_value = return_value
+
+        # When
+        with patch('domain.user_emails.make_user_validation_email',
+                   return_value={'Html-part': ''}) as make_email, patch(
+            'utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
+            send_user_waiting_for_validation_by_admin_email(user, mocked_send_email, offerer)
+
+        # Then
+        mocked_send_email.assert_called_once()
+        args = mocked_send_email.call_args
+        data = args[1]['data']
+        assert data['Subject'] == '[pass Culture pro] Votre structure Bar des amis est en cours de validation'
 
 class SendResetPasswordEmailTest:
     def when_feature_send_emails_enabled_sends_a_reset_password_email_to_user(self, app):
