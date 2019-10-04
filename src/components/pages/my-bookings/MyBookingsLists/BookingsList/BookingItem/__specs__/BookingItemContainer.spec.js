@@ -2,75 +2,292 @@ import { mapStateToProps, mergeProps, ribbonLabelAndType } from '../BookingItemC
 
 describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList | BookingItem | BookingItemContainer', () => {
   describe('mapStateToProps()', () => {
-    it('should return props with date elements', () => {
-      // given
-      const bookingId = 'AE'
-      const token = 'BBBB'
-      const offerId = 'CCCC'
-      const isCancelled = true
-      const mediationId = 'AAAA'
-      const departementCode = '93'
-      const productName = 'Fake booking name'
-      const beginningDatetime = '2019-05-15T20:00:00Z'
-      const pathname = '/reservations'
-      const search = ''
-      const thumbUrl = 'https://example.net/mediation/image'
-      const mediation = {
-        id: mediationId,
-      }
-      const isFinished = false
-      const offer = {
-        id: offerId,
-        isEvent: true,
-        isFinished,
-        product: { name: productName },
-        venue: {
-          departementCode,
-        },
-      }
-      const recommendationId = 'AE'
-      const recommendation = {
-        id: recommendationId,
-        mediationId,
-        offerId,
-        thumbUrl,
-      }
-      const state = {
+    let state
+    let ownProps
+
+    beforeEach(() => {
+      state = {
         data: {
-          mediations: [mediation],
-          offers: [offer],
-          recommendations: [recommendation],
-          stocks: [{ id: 'AA', offerId, beginningDatetime }],
+          mediations: [
+            {
+              id: 'AAAA',
+            },
+          ],
+          offers: [
+            {
+              id: 'CCCC',
+              product: { name: 'Fake booking name' },
+              venue: {
+                departementCode: '93',
+              },
+            },
+          ],
+          recommendations: [
+            {
+              id: 'AE',
+              mediationId: 'AAAA',
+              offerId: 'CCCC',
+              thumbUrl: 'https://example.net/mediation/image',
+            },
+          ],
+          stocks: [
+            {
+              id: 'AA',
+              offerId: 'CCCC',
+            },
+          ],
         },
       }
-      const ownProps = {
+      ownProps = {
         booking: {
-          id: bookingId,
-          isCancelled,
-          recommendationId,
+          id: 'AE',
+          recommendationId: 'AE',
           stockId: 'AA',
-          token,
+          token: 'BBBB',
         },
         location: {
-          pathname,
-          search,
+          pathname: '/reservations',
+          search: '',
         },
       }
+    })
+
+    it('should return props with null ribbon', () => {
+      // when
+      const props = mapStateToProps(state, ownProps)
+
+      // then
+      expect(props).toStrictEqual({
+        mediation: {
+          id: 'AAAA',
+        },
+        offer: {
+          id: 'CCCC',
+          product: { name: 'Fake booking name' },
+          venue: {
+            departementCode: '93',
+          },
+        },
+        recommendation: {
+          id: 'AE',
+          mediationId: 'AAAA',
+          offerId: 'CCCC',
+          thumbUrl: 'https://example.net/mediation/image',
+        },
+        ribbon: null,
+        stock: { id: 'AA', offerId: 'CCCC' },
+      })
+    })
+    it('should return props with "retiré" ribbon when physical offer is used', () => {
+      // given
+      ownProps.booking.isUsed = true
+      state.data.offers[0].isDigital = false
+      state.data.offers[0].isEvent = false
 
       // when
       const props = mapStateToProps(state, ownProps)
 
       // then
       expect(props).toStrictEqual({
-        isFinished,
-        mediation,
-        offer,
-        recommendation,
+        mediation: {
+          id: 'AAAA',
+        },
+        offer: {
+          id: 'CCCC',
+          isDigital: false,
+          isEvent: false,
+          product: { name: 'Fake booking name' },
+          venue: {
+            departementCode: '93',
+          },
+        },
+        recommendation: {
+          id: 'AE',
+          mediationId: 'AAAA',
+          offerId: 'CCCC',
+          thumbUrl: 'https://example.net/mediation/image',
+        },
+        ribbon: {
+          label: 'Retiré',
+          type: 'finished',
+        },
+        stock: { id: 'AA', offerId: 'CCCC' },
+      })
+    })
+
+    it('should return props with "utilisé" ribbon when digital offer is used', () => {
+      // given
+      ownProps.booking.isUsed = true
+      state.data.offers[0].isDigital = true
+
+      // when
+      const props = mapStateToProps(state, ownProps)
+
+      // then
+      expect(props).toStrictEqual({
+        mediation: {
+          id: 'AAAA',
+        },
+        offer: {
+          id: 'CCCC',
+          isDigital: true,
+          product: { name: 'Fake booking name' },
+          venue: {
+            departementCode: '93',
+          },
+        },
+        recommendation: {
+          id: 'AE',
+          mediationId: 'AAAA',
+          offerId: 'CCCC',
+          thumbUrl: 'https://example.net/mediation/image',
+        },
+        ribbon: {
+          label: 'Utilisé',
+          type: 'finished',
+        },
+        stock: { id: 'AA', offerId: 'CCCC' },
+      })
+    })
+
+    it('should return props with "terminé" ribbon when event is over', () => {
+      // given
+      state.data.offers[0].isEventExpired = true
+
+      // when
+      const props = mapStateToProps(state, ownProps)
+
+      // then
+      expect(props).toStrictEqual({
+        mediation: {
+          id: 'AAAA',
+        },
+        offer: {
+          id: 'CCCC',
+          isEventExpired: true,
+          product: { name: 'Fake booking name' },
+          venue: {
+            departementCode: '93',
+          },
+        },
+        recommendation: {
+          id: 'AE',
+          mediationId: 'AAAA',
+          offerId: 'CCCC',
+          thumbUrl: 'https://example.net/mediation/image',
+        },
+        ribbon: {
+          label: 'Terminé',
+          type: 'finished',
+        },
+        stock: { id: 'AA', offerId: 'CCCC' },
+      })
+    })
+
+    it('should return props with "aujourd\'hui" ribbon when booking is today', () => {
+      // given
+      const today = new Date()
+      state.data.offers[0].isEvent = true
+      state.data.stocks[0].beginningDatetime = today
+
+      // when
+      const props = mapStateToProps(state, ownProps)
+
+      // then
+      expect(props).toStrictEqual({
+        mediation: {
+          id: 'AAAA',
+        },
+        offer: {
+          id: 'CCCC',
+          isEvent: true,
+          product: { name: 'Fake booking name' },
+          venue: {
+            departementCode: '93',
+          },
+        },
+        recommendation: {
+          id: 'AE',
+          mediationId: 'AAAA',
+          offerId: 'CCCC',
+          thumbUrl: 'https://example.net/mediation/image',
+        },
+        ribbon: {
+          label: 'Aujourd’hui',
+          type: 'today',
+        },
+        stock: { beginningDatetime: today, id: 'AA', offerId: 'CCCC' },
+      })
+    })
+
+    it('should return props with "demain" ribbon when booking is tomorrow', () => {
+      // given
+      const today = new Date()
+      const tomorrow = new Date()
+      tomorrow.setDate(today.getDate() + 1)
+      state.data.offers[0].isEvent = true
+      state.data.stocks[0].beginningDatetime = tomorrow
+
+      // when
+      const props = mapStateToProps(state, ownProps)
+
+      // then
+      expect(props).toStrictEqual({
+        mediation: {
+          id: 'AAAA',
+        },
+        offer: {
+          id: 'CCCC',
+          isEvent: true,
+          product: { name: 'Fake booking name' },
+          venue: {
+            departementCode: '93',
+          },
+        },
+        recommendation: {
+          id: 'AE',
+          mediationId: 'AAAA',
+          offerId: 'CCCC',
+          thumbUrl: 'https://example.net/mediation/image',
+        },
+        ribbon: {
+          label: 'Demain',
+          type: 'tomorrow',
+        },
+        stock: { beginningDatetime: tomorrow, id: 'AA', offerId: 'CCCC' },
+      })
+    })
+
+    it('should return props with "annulé" ribbon when offer is cancelled', () => {
+      // given
+      ownProps.booking.isCancelled = true
+
+      // when
+      const props = mapStateToProps(state, ownProps)
+
+      // then
+      expect(props).toStrictEqual({
+        mediation: {
+          id: 'AAAA',
+        },
+        offer: {
+          id: 'CCCC',
+          product: { name: 'Fake booking name' },
+          venue: {
+            departementCode: '93',
+          },
+        },
+        recommendation: {
+          id: 'AE',
+          mediationId: 'AAAA',
+          offerId: 'CCCC',
+          thumbUrl: 'https://example.net/mediation/image',
+        },
         ribbon: {
           label: 'Annulé',
           type: 'cancelled',
         },
-        stock: { beginningDatetime: '2019-05-15T20:00:00Z', id: 'AA', offerId: 'CCCC' },
+        stock: { id: 'AA', offerId: 'CCCC' },
       })
     })
   })
@@ -81,11 +298,20 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
         // given
         const isUsed = false
         const isCancelled = false
-        const isFinished = false
+        const isPhysical = false
+        const isDigital = false
+        const isEventExpired = false
         const humanizeRelativeDate = 'Aujourd’hui'
 
         // when
-        const ribbon = ribbonLabelAndType(isUsed, isCancelled, isFinished, humanizeRelativeDate)
+        const ribbon = ribbonLabelAndType(
+          isUsed,
+          isCancelled,
+          isPhysical,
+          isDigital,
+          isEventExpired,
+          humanizeRelativeDate
+        )
 
         // then
         expect(ribbon).toStrictEqual({
@@ -100,11 +326,20 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
         // given
         const isUsed = false
         const isCancelled = false
-        const isFinished = false
+        const isPhysical = false
+        const isDigital = false
+        const isEventExpired = false
         const humanizeRelativeDate = 'Demain'
 
         // when
-        const ribbon = ribbonLabelAndType(isUsed, isCancelled, isFinished, humanizeRelativeDate)
+        const ribbon = ribbonLabelAndType(
+          isUsed,
+          isCancelled,
+          isPhysical,
+          isDigital,
+          isEventExpired,
+          humanizeRelativeDate
+        )
 
         // then
         expect(ribbon).toStrictEqual({
@@ -115,14 +350,43 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
     })
 
     describe('when the reservation is used', () => {
-      it('should return an object with "Terminé" et "finished"', () => {
+      it('should return nothing when offer is not passed', () => {
         // given
         const isUsed = true
         const isCancelled = false
-        const isFinished = false
+        const isPhysical = false
+        const isDigital = false
+        const isEventExpired = false
 
         // when
-        const ribbon = ribbonLabelAndType(isUsed, isCancelled, isFinished)
+        const ribbon = ribbonLabelAndType(
+          isUsed,
+          isCancelled,
+          isPhysical,
+          isDigital,
+          isEventExpired
+        )
+
+        // then
+        expect(ribbon).toBeNull()
+      })
+
+      it('should return an object with "Terminé" et "finished" when offer is passed', () => {
+        // given
+        const isUsed = true
+        const isCancelled = false
+        const isPhysical = false
+        const isDigital = false
+        const isEventExpired = true
+
+        // when
+        const ribbon = ribbonLabelAndType(
+          isUsed,
+          isCancelled,
+          isPhysical,
+          isDigital,
+          isEventExpired
+        )
 
         // then
         expect(ribbon).toStrictEqual({
@@ -130,21 +394,51 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
           type: 'finished',
         })
       })
-    })
 
-    describe('when the reservation is finished', () => {
-      it('should return an object with "Terminé" et "finished"', () => {
+      it('should return an object with "Retiré" and "finished" for physcical offer', () => {
         // given
-        const isUsed = false
+        const isUsed = true
         const isCancelled = false
-        const isFinished = true
+        const isDigital = false
+        const isPhysical = true
+        const isEventExpired = false
 
         // when
-        const ribbon = ribbonLabelAndType(isUsed, isCancelled, isFinished)
+        const ribbon = ribbonLabelAndType(
+          isUsed,
+          isCancelled,
+          isPhysical,
+          isDigital,
+          isEventExpired
+        )
 
         // then
         expect(ribbon).toStrictEqual({
-          label: 'Terminé',
+          label: 'Retiré',
+          type: 'finished',
+        })
+      })
+
+      it('should return an object with "Utilisé" and "finished" for numeric offer', () => {
+        // given
+        const isUsed = true
+        const isCancelled = false
+        const isDigital = true
+        const isPhysical = false
+        const isEventExpired = false
+
+        // when
+        const ribbon = ribbonLabelAndType(
+          isUsed,
+          isCancelled,
+          isPhysical,
+          isDigital,
+          isEventExpired
+        )
+
+        // then
+        expect(ribbon).toStrictEqual({
+          label: 'Utilisé',
           type: 'finished',
         })
       })
@@ -155,10 +449,9 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
         // given
         const isUsed = false
         const isCancelled = true
-        const isFinished = false
 
         // when
-        const ribbon = ribbonLabelAndType(isUsed, isCancelled, isFinished)
+        const ribbon = ribbonLabelAndType(isUsed, isCancelled)
 
         // then
         expect(ribbon).toStrictEqual({
@@ -173,10 +466,9 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
         // given
         const isUsed = false
         const isCancelled = false
-        const isFinished = false
 
         // when
-        const ribbon = ribbonLabelAndType(isUsed, isCancelled, isFinished)
+        const ribbon = ribbonLabelAndType(isUsed, isCancelled)
 
         // then
         expect(ribbon).toBeNull()
