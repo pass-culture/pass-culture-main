@@ -1,4 +1,4 @@
-import selectThumbUrlByRouterMatch, { DEFAULT_THUMB_URL } from '../selectThumbUrlByRouterMatch'
+import selectThumbUrlByRouterMatch from '../selectThumbUrlByRouterMatch'
 
 describe('src | selectors | selectThumbUrlByRouterMatch', () => {
   let booking
@@ -45,34 +45,9 @@ describe('src | selectors | selectThumbUrlByRouterMatch', () => {
     }
   })
 
-  it('should return default thumb url when offerId in match and offer is without product thumb and without mediation', () => {
-    // given
-    offer.product.thumbCount = 0
-    offer.product.thumbUrl = undefined
-    const state = {
-      data: {
-        bookings: [],
-        favorites: [],
-        mediations: [],
-        offers: [offer],
-        stocks: [],
-      },
-    }
-    const match = {
-      params: {
-        offerId,
-      },
-    }
-
-    // when
-    const result = selectThumbUrlByRouterMatch(state, match)
-
-    // then
-    expect(result).toBe(DEFAULT_THUMB_URL)
-  })
-
   it('should return product thumbUrl when offerId in match and offer is without mediation and without booking', () => {
     // given
+    offer.product.thumbCount = 0
     const state = {
       data: {
         bookings: [],
