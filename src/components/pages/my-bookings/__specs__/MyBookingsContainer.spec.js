@@ -1,14 +1,13 @@
 import { mapDispatchToProps, mapStateToProps } from '../MyBookingsContainer'
-import { bookingNormalizer } from '../../../../utils/normalizers'
+import { myBookingsNormalizer } from '../../../../utils/normalizers'
 
 describe('src | components | pages | my-bookings | MyBookingsContainer', () => {
   describe('mapStateToProps()', () => {
-    it('should return an object', () => {
+    it('should return my bookings', () => {
       // given
       const state = {
         data: {
           bookings: [],
-          offers: [],
         },
       }
 
@@ -17,7 +16,7 @@ describe('src | components | pages | my-bookings | MyBookingsContainer', () => {
 
       // then
       expect(props).toStrictEqual({
-        validBookings: expect.any(Object),
+        bookings: expect.any(Object),
       })
     })
   })
@@ -39,7 +38,7 @@ describe('src | components | pages | my-bookings | MyBookingsContainer', () => {
           handleFail: expect.any(Function),
           handleSuccess: expect.any(Function),
           method: 'GET',
-          normalizer: bookingNormalizer,
+          normalizer: myBookingsNormalizer,
         },
         type: 'REQUEST_DATA_GET_/BOOKINGS',
       })

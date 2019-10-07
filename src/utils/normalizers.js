@@ -1,11 +1,21 @@
-export const bookingNormalizer = {
+export const myBookingsNormalizer = {
+  mediation: 'mediations',
   stock: {
-    stateKey: 'stocks',
     normalizer: {
       offer: 'offers',
     },
+    stateKey: 'stocks',
   },
+}
+
+export const bookingNormalizer = {
   mediation: 'mediations',
+  stock: {
+    normalizer: {
+      offer: 'offers',
+    },
+    stateKey: 'stocks',
+  },
   user: {
     isMergingDatum: true,
     stateKey: 'users',
@@ -25,10 +35,10 @@ export const favoriteNormalizer = {
 
 export const recommendationNormalizer = {
   bookings: {
-    stateKey: 'bookings',
     normalizer: {
       stock: 'stocks',
     },
+    stateKey: 'bookings',
   },
   mediation: 'mediations',
   offer: {

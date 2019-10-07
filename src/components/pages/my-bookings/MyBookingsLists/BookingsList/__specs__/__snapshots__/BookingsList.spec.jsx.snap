@@ -1,10 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | my-bookings | MyBookingsList | BookingsList | BookingsList should match the snapshot 1`] = `
+exports[`src | components | pages | my-bookings | MyBookingsList | BookingsList | BookingsList when I have two bookings should render a list of two bookings 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <Unknown
-    bookings={Array []}
+  Symbol(enzyme.__unrendered__): <BookingsList
+    bookings={
+      Array [
+        Object {
+          "id": "ME",
+        },
+        Object {
+          "id": "FA",
+        },
+      ]
+    }
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -20,10 +29,52 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "host",
     "props": Object {
-      "children": Array [],
+      "children": Array [
+        <withRouter(WithTracking(Connect(BookingItem)))
+          booking={
+            Object {
+              "id": "ME",
+            }
+          }
+        />,
+        <withRouter(WithTracking(Connect(BookingItem)))
+          booking={
+            Object {
+              "id": "FA",
+            }
+          }
+        />,
+      ],
     },
     "ref": null,
-    "rendered": Array [],
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": "ME",
+        "nodeType": "function",
+        "props": Object {
+          "booking": Object {
+            "id": "ME",
+          },
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": "FA",
+        "nodeType": "function",
+        "props": Object {
+          "booking": Object {
+            "id": "FA",
+          },
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+    ],
     "type": "ul",
   },
   Symbol(enzyme.__nodes__): Array [
@@ -32,10 +83,52 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "host",
       "props": Object {
-        "children": Array [],
+        "children": Array [
+          <withRouter(WithTracking(Connect(BookingItem)))
+            booking={
+              Object {
+                "id": "ME",
+              }
+            }
+          />,
+          <withRouter(WithTracking(Connect(BookingItem)))
+            booking={
+              Object {
+                "id": "FA",
+              }
+            }
+          />,
+        ],
       },
       "ref": null,
-      "rendered": Array [],
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": "ME",
+          "nodeType": "function",
+          "props": Object {
+            "booking": Object {
+              "id": "ME",
+            },
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": "FA",
+          "nodeType": "function",
+          "props": Object {
+            "booking": Object {
+              "id": "FA",
+            },
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+      ],
       "type": "ul",
     },
   ],

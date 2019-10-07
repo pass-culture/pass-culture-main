@@ -1,4 +1,4 @@
-import { formatRecommendationDates, formatEndValidityDate } from '../date'
+import { formatRecommendationDates, formatEndValidityDate, dateStringPlusTimeZone } from '../date'
 
 describe('src | utils | date | date', () => {
   describe('formatEndValidityDate()', () => {
@@ -57,6 +57,20 @@ describe('src | utils | date | date', () => {
         // https://github.com/nodejs/node-v0.x-archive/issues/4689
         expect(result).toBe('du 2018-10-25 au 2018-10-26')
       })
+    })
+  })
+
+  describe('dateStringPlusTimeZone()', () => {
+    it('should return date string plus the time zone', () => {
+      // given
+      const dateString = '2019-10-10T20:00:00Z'
+      const departementCode = '97'
+
+      // when
+      const timestamp = dateStringPlusTimeZone(dateString, departementCode)
+
+      // then
+      expect(timestamp).toBe('2019-10-10 17:00:00')
     })
   })
 })

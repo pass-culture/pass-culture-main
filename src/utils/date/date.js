@@ -1,3 +1,6 @@
+import moment from 'moment'
+import 'moment-timezone'
+
 import { getTimezone } from '../timezone'
 
 const formatDate = (date, timeZone) => {
@@ -29,4 +32,10 @@ export const formatEndValidityDate = date => {
   date.setFullYear(date.getFullYear() + 1)
 
   return `${date.toLocaleDateString('fr-FR', options)}`
+}
+
+export const dateStringPlusTimeZone = (dateString, departementCode) => {
+  return moment(dateString)
+    .tz(getTimezone(departementCode))
+    .format('YYYY-MM-DD HH:mm:ss')
 }

@@ -3,7 +3,7 @@ import React from 'react'
 
 import BookingItemContainer from './BookingItem/BookingItemContainer'
 
-export const BookingsList = ({ bookings }) => (
+const BookingsList = ({ bookings }) => (
   <ul>
     {bookings.map(booking => (
       <BookingItemContainer

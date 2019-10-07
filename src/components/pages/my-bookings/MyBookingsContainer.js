@@ -3,12 +3,12 @@ import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
 import MyBookings from './MyBookings'
-import selectValidBookings from './selectors/selectValidBookings'
+import { selectBookings } from '../../../selectors/data/bookingsSelector'
 import { withRequiredLogin } from '../../hocs'
-import { bookingNormalizer } from '../../../utils/normalizers'
+import { myBookingsNormalizer } from '../../../utils/normalizers'
 
 export const mapStateToProps = state => ({
-  validBookings: selectValidBookings(state),
+  bookings: selectBookings(state),
 })
 
 export const mapDispatchToProps = dispatch => ({
@@ -18,7 +18,7 @@ export const mapDispatchToProps = dispatch => ({
         apiPath: '/bookings',
         handleFail,
         handleSuccess,
-        normalizer: bookingNormalizer,
+        normalizer: myBookingsNormalizer,
       })
     )
   },

@@ -41,6 +41,7 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
       ownProps = {
         booking: {
           id: 'AE',
+          isEventExpired: false,
           recommendationId: 'AE',
           stockId: 'AA',
           token: 'BBBB',
@@ -78,6 +79,7 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
         stock: { id: 'AA', offerId: 'CCCC' },
       })
     })
+
     it('should return props with "retiré" ribbon when physical offer is used', () => {
       // given
       ownProps.booking.isUsed = true
@@ -152,7 +154,7 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
 
     it('should return props with "terminé" ribbon when event is over', () => {
       // given
-      state.data.offers[0].isEventExpired = true
+      ownProps.booking.isEventExpired = true
 
       // when
       const props = mapStateToProps(state, ownProps)
@@ -164,7 +166,6 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
         },
         offer: {
           id: 'CCCC',
-          isEventExpired: true,
           product: { name: 'Fake booking name' },
           venue: {
             departementCode: '93',
@@ -184,7 +185,7 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
       })
     })
 
-    it('should return props with "aujourd\'hui" ribbon when booking is today', () => {
+    it('should return props with "aujourd’hui" ribbon when booking is today', () => {
       // given
       const today = new Date()
       state.data.offers[0].isEvent = true
@@ -294,7 +295,7 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
 
   describe('ribbonLabelAndType()', () => {
     describe('when the reservation is today', () => {
-      it('should return an object with "Aujourd’hui" et "today"', () => {
+      it('should return an object with "Aujourd’hui" and "today"', () => {
         // given
         const isUsed = false
         const isCancelled = false
@@ -371,9 +372,9 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
         expect(ribbon).toBeNull()
       })
 
-      it('should return an object with "Terminé" et "finished" when offer is passed', () => {
+      it('should return an object with "Terminé" and "finished" when offer is passed', () => {
         // given
-        const isUsed = true
+        const isUsed = false
         const isCancelled = false
         const isPhysical = false
         const isDigital = false
@@ -445,7 +446,7 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
     })
 
     describe('when the reservation is cancelled', () => {
-      it('should return an object with "Annulé" et "cancelled"', () => {
+      it('should return an object with "Annulé" and "cancelled"', () => {
         // given
         const isUsed = false
         const isCancelled = true

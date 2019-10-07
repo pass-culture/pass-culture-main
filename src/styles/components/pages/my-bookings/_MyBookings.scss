@@ -5,7 +5,7 @@
 
 .mb-header {
   color: $white;
-  font-size: 1.2rem;
+  font-size: rem(15px);
   font-style: italic;
   margin-bottom: 1rem;
   text-transform: uppercase;
@@ -29,6 +29,19 @@
   @include dotted($primary, top);
 
   color: $primary;
-  font-size: 2.9rem;
+  font-size: rem(47px);
   padding: 0.5rem 0 0 1rem;
+}
+
+.mb-infos {
+  color: $white;
+}
+
+.mb-info-picto {
+  margin-bottom: rem(6px);
+  text-align: center;
+
+  img {
+    width: 44px;
+  }
 }

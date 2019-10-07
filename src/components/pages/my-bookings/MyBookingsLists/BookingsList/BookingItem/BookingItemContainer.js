@@ -73,7 +73,8 @@ export const mapStateToProps = (state, ownProps) => {
   const recommendation = selectRecommendationById(state, recommendationId) || {}
   const mediation = selectMediationById(state, recommendation.mediationId)
   const offer = selectOfferById(state, stock.offerId)
-  const { isEventExpired, isDigital, isEvent } = offer
+  const { isDigital, isEvent } = offer
+  const { isEventExpired } = booking
   const isPhysical = !isDigital && !isEvent
   const ribbon = ribbonLabelAndType(
     isUsed,

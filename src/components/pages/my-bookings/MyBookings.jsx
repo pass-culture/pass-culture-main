@@ -35,9 +35,9 @@ class MyBookings extends Component {
   }
 
   render() {
-    const { validBookings } = this.props
+    const { bookings } = this.props
     const { hasError, isLoading } = this.state
-    const isEmpty = validBookings.length === 0
+    const isEmpty = bookings.length === 0
 
     if (isLoading) {
       return (<LoaderContainer
@@ -60,6 +60,7 @@ class MyBookings extends Component {
 }
 
 MyBookings.propTypes = {
+  bookings: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired,
     search: PropTypes.string.isRequired,
@@ -70,7 +71,6 @@ MyBookings.propTypes = {
     }).isRequired,
   }).isRequired,
   requestGetBookings: PropTypes.func.isRequired,
-  validBookings: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
 
 export default MyBookings

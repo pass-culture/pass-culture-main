@@ -56,6 +56,7 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
         },
       },
       stock: { id: 'future stock 1', beginningDatetime: '2030-08-21T20:00:00Z' },
+      trackConsultOffer: jest.fn(),
     }
   })
 
