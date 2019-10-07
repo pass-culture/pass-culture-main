@@ -243,6 +243,7 @@ ShallowWrapper {
                 label="Email auquel envoyer les réservations"
                 layout="horizontal"
                 name="bookingEmail"
+                readOnly={false}
                 size="normal"
                 storeValue={[Function]}
                 sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations"
@@ -510,6 +511,7 @@ ShallowWrapper {
                   label="Email auquel envoyer les réservations"
                   layout="horizontal"
                   name="bookingEmail"
+                  readOnly={false}
                   size="normal"
                   storeValue={[Function]}
                   sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations"
@@ -1083,6 +1085,7 @@ ShallowWrapper {
                     label="Email auquel envoyer les réservations"
                     layout="horizontal"
                     name="bookingEmail"
+                    readOnly={false}
                     size="normal"
                     storeValue={[Function]}
                     sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations"
@@ -1172,6 +1175,7 @@ ShallowWrapper {
                       label="Email auquel envoyer les réservations"
                       layout="horizontal"
                       name="bookingEmail"
+                      readOnly={false}
                       size="normal"
                       storeValue={[Function]}
                       sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations"
@@ -1241,6 +1245,7 @@ ShallowWrapper {
                       "label": "Email auquel envoyer les réservations",
                       "layout": "horizontal",
                       "name": "bookingEmail",
+                      "readOnly": false,
                       "size": "normal",
                       "storeValue": [Function],
                       "sublabel": "Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations",
@@ -1641,6 +1646,7 @@ ShallowWrapper {
                   label="Email auquel envoyer les réservations"
                   layout="horizontal"
                   name="bookingEmail"
+                  readOnly={false}
                   size="normal"
                   storeValue={[Function]}
                   sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations"
@@ -1908,6 +1914,7 @@ ShallowWrapper {
                     label="Email auquel envoyer les réservations"
                     layout="horizontal"
                     name="bookingEmail"
+                    readOnly={false}
                     size="normal"
                     storeValue={[Function]}
                     sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations"
@@ -2481,6 +2488,7 @@ ShallowWrapper {
                       label="Email auquel envoyer les réservations"
                       layout="horizontal"
                       name="bookingEmail"
+                      readOnly={false}
                       size="normal"
                       storeValue={[Function]}
                       sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations"
@@ -2570,6 +2578,7 @@ ShallowWrapper {
                         label="Email auquel envoyer les réservations"
                         layout="horizontal"
                         name="bookingEmail"
+                        readOnly={false}
                         size="normal"
                         storeValue={[Function]}
                         sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations"
@@ -2639,6 +2648,7 @@ ShallowWrapper {
                         "label": "Email auquel envoyer les réservations",
                         "layout": "horizontal",
                         "name": "bookingEmail",
+                        "readOnly": false,
                         "size": "normal",
                         "storeValue": [Function],
                         "sublabel": "Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations",
