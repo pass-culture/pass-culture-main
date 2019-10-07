@@ -34,8 +34,8 @@ class EventType(SearchableType):
         'isActive': True
     }
     CINEMA = {
-        'proLabel': "Cinéma — projections, séances, évènements",
-        'appLabel': "Projections, Séances, Évènements",
+        'proLabel': "Cinéma - projections et autres évènements",
+        'appLabel': "Cinéma",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Regarder",
@@ -54,8 +54,8 @@ class EventType(SearchableType):
         'isActive': True
     }
     JEUX = {
-        'proLabel': "Jeux — évenements, rencontres, concours",
-        'appLabel': "Évenements, Rencontres, Concours",
+        'proLabel': "Jeux - événements, rencontres, concours",
+        'appLabel': "Jeux - événement, rencontre ou concours",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Jouer",
@@ -64,8 +64,8 @@ class EventType(SearchableType):
         'isActive': True
     }
     MUSIQUE = {
-        'proLabel': "Musique — concerts, festivals",
-        'appLabel': "Concerts, Festivals",
+        'proLabel': "Musique - concerts, festivals",
+        'appLabel': "Concert ou festival",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Écouter",
@@ -74,8 +74,8 @@ class EventType(SearchableType):
         'isActive': True
     }
     MUSEES_PATRIMOINE = {
-        'proLabel': "Musées, patrimoine — expositions, visites guidées, activités spécifiques",
-        'appLabel': "Expositions, visites guidées, activités spécifiques",
+        'proLabel': "Musées, galeries, patrimoine - visites ponctuelles, visites guidées, activités spécifiques",
+        'appLabel': "Musée, arts visuels et patrimoine",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Regarder",
@@ -84,8 +84,8 @@ class EventType(SearchableType):
         'isActive': True
     }
     PRATIQUE_ARTISTIQUE = {
-        'proLabel': "Pratique — séances d’essai et stages ponctuels",
-        'appLabel': "Séances d’essai et stages ponctuels",
+        'proLabel': "Pratique artistique - séances d'essai et stages ponctuels",
+        'appLabel': "Pratique artistique",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Pratiquer",
@@ -95,7 +95,7 @@ class EventType(SearchableType):
     }
     SPECTACLE_VIVANT = {
         'proLabel': "Spectacle vivant",
-        'appLabel': "Spectacle vivant",
+        'appLabel': "Spectacle",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Applaudir",
@@ -126,8 +126,8 @@ class ThingType(SearchableType):
         'isActive': True
     }
     AUDIOVISUEL = {
-        'proLabel': "Audiovisuel — films sur supports physiques et VOD",
-        'appLabel': "Films sur supports physiques et VOD",
+        'proLabel': "Audiovisuel - films sur supports physiques et VOD",
+        'appLabel': "Film",
         'offlineOnly': False,
         'onlineOnly': False,
         'sublabel': "Regarder",
@@ -136,8 +136,8 @@ class ThingType(SearchableType):
         'isActive': True
     }
     CINEMA_ABO = {
-        'proLabel': "Cinéma — abonnements",
-        'appLabel': "Abonnements",
+        'proLabel': "Cinéma - cartes d'abonnement",
+        'appLabel': "Carte d'abonnement cinéma",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Regarder",
@@ -156,8 +156,8 @@ class ThingType(SearchableType):
         'isActive': False
     }
     JEUX_VIDEO_ABO = {
-        'proLabel': "Jeux — abonnements",
-        'appLabel': "Jeux — abonnements",
+        'proLabel': "Jeux - abonnements",
+        'appLabel': "Jeux - abonnements",
         'offlineOnly': False,
         'onlineOnly': True,
         'sublabel': "Jouer",
@@ -166,8 +166,8 @@ class ThingType(SearchableType):
         'isActive': True
     }
     JEUX_VIDEO = {
-        'proLabel': "Jeux vidéo",
-        'appLabel': "Jeux vidéo",
+        'proLabel': "Jeux vidéo en ligne",
+        'appLabel': "Jeux vidéo en ligne",
         'offlineOnly': False,
         'onlineOnly': True,
         'sublabel': "Jouer",
@@ -176,7 +176,7 @@ class ThingType(SearchableType):
         'isActive': True
     }
     LIVRE_AUDIO = {
-        'proLabel': "Livre audio numérique",
+        'proLabel': "Livres audio numériques",
         'appLabel': "Livre audio numérique",
         'offlineOnly': False,
         'onlineOnly': True,
@@ -186,8 +186,8 @@ class ThingType(SearchableType):
         'isActive': True
     }
     LIVRE_EDITION = {
-        'proLabel': "Livre - format papier ou numérique, abonnements lecture",
-        'appLabel': "Livres, cartes bibliothèque ou médiathèque",
+        'proLabel': "Livres papier ou numérique, abonnements lecture",
+        'appLabel': "Livre ou carte lecture",
         'offlineOnly': False,
         'onlineOnly': False,
         'sublabel': "Lire",
@@ -196,8 +196,8 @@ class ThingType(SearchableType):
         'isActive': True
     }
     MUSEES_PATRIMOINE_ABO = {
-        'proLabel': "Musées, arts visuels & patrimoine",
-        'appLabel': "Visites libres et abonnements",
+        'proLabel': "Musées, galeries, patrimoine - entrées libres, abonnements",
+        'appLabel': "Musée, arts visuels et patrimoine",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Regarder",
@@ -206,7 +206,7 @@ class ThingType(SearchableType):
         'isActive': True
     }
     MUSIQUE_ABO = {
-        'proLabel': "Musique — abonnements concerts",
+        'proLabel': "Musique - cartes d'abonnement concerts",
         'appLabel': "Abonnements concerts",
         'offlineOnly': True,
         'onlineOnly': False,
@@ -216,8 +216,8 @@ class ThingType(SearchableType):
         'isActive': True
     }
     MUSIQUE = {
-        'proLabel': "Musique (sur supports physiques ou en ligne)",
-        'appLabel': "Supports physiques ou en ligne",
+        'proLabel': "Musique - supports physique ou en ligne",
+        'appLabel': "Musique",
         'offlineOnly': False,
         'onlineOnly': False,
         'sublabel': "Écouter",
@@ -227,7 +227,7 @@ class ThingType(SearchableType):
     }
     OEUVRE_ART = {
         'proLabel': "Vente d'œuvres d'art",
-        'appLabel': "Achat d'œuvres d’art",
+        'appLabel': "Œuvres d’art",
         'offlineOnly': False,
         'onlineOnly': False,
         'sublabel': "Regarder",
@@ -236,8 +236,8 @@ class ThingType(SearchableType):
         'isActive': True
     }
     PRATIQUE_ARTISTIQUE_ABO = {
-        'proLabel': "Pratique artistique — abonnements",
-        'appLabel': "Pratique artistique — abonnements",
+        'proLabel': "Pratique artistique - abonnements, cours",
+        'appLabel': "Pratique artistique",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Pratiquer",
@@ -246,8 +246,8 @@ class ThingType(SearchableType):
         'isActive': True
     }
     PRESSE_ABO = {
-        'proLabel': "Presse — abonnements",
-        'appLabel': "Presse — abonnements",
+        'proLabel': "Presse en ligne - abonnements",
+        'appLabel': "Presse en ligne",
         'offlineOnly': False,
         'onlineOnly': True,
         'sublabel': "Lire",
@@ -257,7 +257,7 @@ class ThingType(SearchableType):
     }
     INSTRUMENT = {
         'proLabel': "Vente et location d’instruments de musique",
-        'appLabel': "Achat et location d’instruments de musique",
+        'appLabel': "Instrument de musique",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Pratiquer",
@@ -266,8 +266,8 @@ class ThingType(SearchableType):
         'isActive': True
     }
     SPECTACLE_VIVANT_ABO = {
-        'proLabel': "Spectacle vivant — abonnements",
-        'appLabel': "Spectacle vivant — abonnements",
+        'proLabel': "Spectacle vivant - cartes d'abonnement",
+        'appLabel': "Abonnement spectacles",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Applaudir",

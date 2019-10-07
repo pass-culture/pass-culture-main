@@ -17,8 +17,8 @@ class GetFormattedEventOrThingTypesTest:
             'description': 'Action, science-fiction, documentaire ou comédie sentimentale '
                            '? En salle, en plein air ou bien au chaud chez soi ? Et si '
                            'c’était plutôt cette exposition qui allait faire son cinéma ?',
-            'proLabel': 'Cinéma — projections, séances, évènements',
-            'appLabel': 'Projections, Séances, Évènements',
+            'proLabel': 'Cinéma - projections et autres évènements',
+            'appLabel': 'Cinéma',
             'isActive': True
         }
         assert len(types) == 21

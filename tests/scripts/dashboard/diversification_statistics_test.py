@@ -1150,6 +1150,10 @@ class GetCountsByTypeAndDigitalCountsTest:
         bookings_by_type_and_digital_counts = get_offer_counts_grouped_by_type_and_medium(
             query_get_booking_counts_grouped_by_type_and_medium, 'Nombre de réservations')
 
+        dataframe__all = bookings_by_type_and_digital_counts.eq(expected_dataframe).all(axis=1)
+        print(bookings_by_type_and_digital_counts[~dataframe__all])
+        print(expected_dataframe[~dataframe__all])
+
         # Then
         assert bookings_by_type_and_digital_counts.equals(expected_dataframe)
 

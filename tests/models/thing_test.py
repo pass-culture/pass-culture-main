@@ -64,8 +64,8 @@ def test_thing_offerType_returns_dict_matching_ThingType_enum():
     thing_product = create_product_with_thing_type(thing_type=ThingType.LIVRE_EDITION)
     expected_value = {
         'conditionalFields': ["author", "isbn"],
-        'proLabel': 'Livre - format papier ou numérique, abonnements lecture',
-        'appLabel': 'Livres, cartes bibliothèque ou médiathèque',
+        'proLabel': 'Livres papier ou numérique, abonnements lecture',
+        'appLabel': 'Livre ou carte lecture',
         'offlineOnly': False,
         'onlineOnly': False,
         'sublabel': 'Lire',

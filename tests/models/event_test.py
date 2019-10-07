@@ -49,7 +49,7 @@ def test_event_offerType_returns_dict_matching_EventType_enum():
     expected_value = {
         'conditionalFields': ["author", "showType", "stageDirector", "performer"],
         'proLabel': "Spectacle vivant",
-        'appLabel': "Spectacle vivant",
+        'appLabel': "Spectacle",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Applaudir",

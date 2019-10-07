@@ -160,7 +160,7 @@ class Post:
                                'Assister à une pièce de théâtre, '
                                'ou se laisser conter une histoire ?',
                 'proLabel': 'Spectacle vivant',
-                'appLabel': 'Spectacle vivant',
+                'appLabel': 'Spectacle',
                 'offlineOnly': True,
                 'onlineOnly': False,
                 'sublabel': 'Applaudir',
@@ -243,8 +243,8 @@ class Post:
                 'description': 'Résoudre l’énigme d’un jeu de piste dans votre ville ? '
                                'Jouer en ligne entre amis ? '
                                'Découvrir cet univers étrange avec une manette ?',
-                'proLabel': 'Jeux vidéo',
-                'appLabel': 'Jeux vidéo',
+                'proLabel': 'Jeux vidéo en ligne',
+                'appLabel': 'Jeux vidéo en ligne',
                 'offlineOnly': False,
                 'onlineOnly': True,
                 'sublabel': 'Jouer',

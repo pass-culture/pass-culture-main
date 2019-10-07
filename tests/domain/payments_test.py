@@ -429,7 +429,7 @@ class CreatePaymentDetailsTest:
 
         # then
         assert details.offer_name == 'Test Book'
-        assert details.offer_type == 'Audiovisuel — films sur supports physiques et VOD'
+        assert details.offer_type == 'Audiovisuel - films sur supports physiques et VOD'
 
 
 class CreateAllPaymentsDetailsTest:
