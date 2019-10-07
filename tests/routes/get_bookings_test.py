@@ -33,12 +33,15 @@ class Get:
             assert response.status_code == 200
             assert len(all_bookings) == 2
             assert 'completedUrl' in first_booking
+            assert 'isEventExpired' in first_booking
             assert 'isUserCancellable' in first_booking
             assert 'mediation' in first_booking
             assert 'mediationId' in first_booking
             assert 'thumbUrl' in first_booking
             assert 'user' in first_booking
             assert 'offer' in first_booking['stock']
+            assert 'isDigital' in first_booking['stock']['offer']
+            assert 'isEvent' in first_booking['stock']['offer']
             assert 'isFinished' in first_booking['stock']['offer']
             assert 'isFullyBooked' in first_booking['stock']['offer']
             assert 'offerType' in first_booking['stock']['offer']
@@ -50,3 +53,4 @@ class Get:
             assert 'validationToken' not in first_booking['stock']['offer']['venue']
             assert 'favorites' in first_booking['user']
             assert len(first_booking['user']['favorites']) == 1
+

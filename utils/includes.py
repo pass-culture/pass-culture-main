@@ -180,6 +180,7 @@ USER_INCLUDES = [
 
 WEBAPP_GET_BOOKING_INCLUDES = [
     "completedUrl",
+    'isEventExpired',
     "isUserCancellable",
     {
         "key": "stock",
@@ -187,6 +188,8 @@ WEBAPP_GET_BOOKING_INCLUDES = [
             {
                 "key": "offer",
                 "includes": [
+                    'isDigital',
+                    'isEvent',
                     "isFinished",
                     "isFullyBooked",
                     "offerType",
