@@ -1,5 +1,7 @@
 from functools import partial
+from typing import Callable, List, Optional
 
+from gspread import Spreadsheet
 from pygsheets import Worksheet
 
 from connectors.google_spreadsheet import get_dashboard_spreadsheet
@@ -17,7 +19,7 @@ from scripts.dashboard.diversification_statistics import get_offer_counts_groupe
     count_all_cancelled_bookings, query_get_offer_counts_grouped_by_type_and_medium_for_departement, \
     query_get_booking_counts_grouped_by_type_and_medium_for_departement
 
-EXPERIMENTATION_DEPARTEMENTS = DEPARTEMENT_CODE_VISIBILITY.keys()
+EXPERIMENTATION_DEPARTEMENTS = list(DEPARTEMENT_CODE_VISIBILITY.keys())
 
 
 class DashboardConfig:
@@ -29,15 +31,7 @@ class DashboardConfig:
     top_20_table_size = 21
 
 
-def write_dashboard():
-    worksheet_names = EXPERIMENTATION_DEPARTEMENTS
-    worksheet_names.append('Global')
-    spreadsheet = get_dashboard_spreadsheet()
-    for worksheet in worksheet_names:
-        write_dashboard_worksheet(spreadsheet, worksheet)
-
-
-def write_dashboard_worksheet(spreadsheet, tab_name: str):
+def write_dashboard_worksheet(spreadsheet: Spreadsheet, tab_name: str):
     current_row = 1
 
     worksheet = _initialize_worksheet(spreadsheet, tab_name)
@@ -51,14 +45,24 @@ def write_dashboard_worksheet(spreadsheet, tab_name: str):
     _write_finance_section(departement_code, worksheet, current_row)
 
 
-def _get_departement_code(tab_name):
+def write_dashboard(connect_to_spreadsheet: Callable = get_dashboard_spreadsheet,
+                    write_worksheet: Callable = write_dashboard_worksheet,
+                    experimentation_departements: List = EXPERIMENTATION_DEPARTEMENTS):
+    worksheet_names = experimentation_departements
+    worksheet_names.append('Global')
+    spreadsheet = connect_to_spreadsheet()
+    for worksheet in worksheet_names:
+        write_worksheet(spreadsheet, worksheet)
+
+
+def _get_departement_code(tab_name: str) -> Optional[str]:
     departement_code = None
     if tab_name != 'Global':
         departement_code = tab_name
     return departement_code
 
 
-def _write_finance_section(departement_code, worksheet, current_row):
+def _write_finance_section(departement_code: str, worksheet: Worksheet, current_row: int):
     worksheet.update_value(f'A{current_row}', '3/ FINANCEMENT')
     current_row += DashboardConfig.space_between_tables
     current_row = _write_finance_table(departement_code, worksheet, current_row)
@@ -74,7 +78,7 @@ def _write_finance_section(departement_code, worksheet, current_row):
     worksheet.set_dataframe(get_top_20_offerers_by_amount_table(departement_code), f'A{current_row}')
 
 
-def _write_diversification_section(departement_code, worksheet, current_row):
+def _write_diversification_section(departement_code: str, worksheet: Worksheet, current_row: int) -> int:
     worksheet.update_value(f'A{current_row}', '2/ DIVERSIFICATION')
     current_row += DashboardConfig.space_between_tables
     current_row = _write_diversification_table(departement_code, worksheet, current_row)
@@ -85,7 +89,7 @@ def _write_diversification_section(departement_code, worksheet, current_row):
     return current_row
 
 
-def _write_usage_section(departement_code, worksheet, current_row):
+def _write_usage_section(departement_code: str, worksheet: Worksheet, current_row: int) -> int:
     worksheet.update_value(f'A{current_row}', '1/ UTILISATION')
     current_row += DashboardConfig.space_between_tables
     current_row = _write_usage_table(departement_code, worksheet, current_row, )
@@ -97,7 +101,7 @@ def _write_usage_section(departement_code, worksheet, current_row):
     return current_row
 
 
-def _initialize_worksheet(spreadsheet, tab_name):
+def _initialize_worksheet(spreadsheet: Spreadsheet, tab_name: str) -> Worksheet:
     all_worksheets = [ws.title for ws in spreadsheet.worksheets()]
     if tab_name in all_worksheets:
         worksheet = spreadsheet.worksheet_by_title(tab_name)
