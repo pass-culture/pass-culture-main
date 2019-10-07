@@ -10,20 +10,15 @@ from domain.user_activation import create_initial_deposit, check_is_activation_b
 from domain.user_emails import send_booking_recap_emails, \
     send_booking_confirmation_email_to_user, send_cancellation_emails_to_user_and_offerer, \
     send_activation_notification_email
-from models import ApiErrors, Booking, PcObject, Stock, RightsType, EventType, Offerer
+from models import ApiErrors, Booking, PcObject, Stock, RightsType, EventType, Offerer, Offer
 from models.offer_type import ProductType
 from repository import booking_queries
-from repository.booking_queries import find_active_bookings_by_user_id, \
-    find_all_bookings_for_stock_and_user, \
-    find_all_offerer_bookings, find_all_digital_bookings_for_offerer
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from routes.serialization import serialize, as_dict
 from utils.human_ids import dehumanize, humanize
-from utils.includes import WEBAPP_GET_BOOKING_INCLUDES, \
-    WEBAPP_PATCH_POST_BOOKING_INCLUDES
+from utils.includes import WEBAPP_GET_BOOKING_INCLUDES, WEBAPP_PATCH_POST_BOOKING_INCLUDES
 from utils.mailing import MailServiceException, send_raw_email
-from utils.rest import ensure_current_user_has_rights, \
-    expect_json_data
+from utils.rest import ensure_current_user_has_rights, expect_json_data
 from utils.token import random_token
 from validation.bookings import check_booking_is_usable, \
     check_can_book_free_offer, \
@@ -85,25 +80,25 @@ def get_bookings_csv():
                                                                      current_user)
     if only_digital_venues:
         bookings = chain(
-            *list(map(lambda offerer: find_all_digital_bookings_for_offerer(offerer.id, offer_id, date_from, date_to),
+            *list(map(lambda offerer: booking_queries.find_digital_bookings_for_offerer(offerer.id, offer_id, date_from, date_to),
                       query)))
     else:
         bookings = chain(
-            *list(map(lambda offerer: find_all_offerer_bookings(offerer.id, venue_id, offer_id, date_from, date_to),
+            *list(map(lambda offerer: booking_queries.find_offerer_bookings(offerer.id, venue_id, offer_id, date_from, date_to),
                       query)))
 
     bookings_csv = generate_bookings_details_csv(bookings)
 
     return bookings_csv.encode('utf-8-sig'), \
-           200, \
-           {'Content-type': 'text/csv; charset=utf-8;',
-            'Content-Disposition': 'attachment; filename=reservations_pass_culture.csv'}
+        200, \
+        {'Content-type': 'text/csv; charset=utf-8;',
+         'Content-Disposition': 'attachment; filename=reservations_pass_culture.csv'}
 
 
 @app.route('/bookings', methods=['GET'])
 @login_required
 def get_bookings():
-    bookings = Booking.query.filter_by(userId=current_user.id).all()
+    bookings = booking_queries.find_for_my_bookings_page(current_user.id)
     return jsonify([as_dict(b, includes=WEBAPP_GET_BOOKING_INCLUDES) for b in bookings]), 200
 
 
@@ -127,7 +122,8 @@ def create_booking():
     try:
         check_has_stock_id(stock_id)
         check_existing_stock(stock)
-        user_bookings = find_all_bookings_for_stock_and_user(stock, current_user)
+        user_bookings = booking_queries.find_for_stock_and_user(
+            stock, current_user)
         check_already_booked(user_bookings)
         check_has_quantity(quantity)
         check_booking_quantity_limit(quantity)
@@ -149,7 +145,7 @@ def create_booking():
         'recommendationId': recommendation_id if recommendation_id else None
     })
 
-    bookings = find_active_bookings_by_user_id(current_user.id)
+    bookings = booking_queries.find_active_bookings_by_user_id(current_user.id)
 
     expenses = get_expenses(bookings)
     check_expenses_limits(expenses, new_booking)
@@ -185,7 +181,8 @@ def patch_booking(booking_id):
     is_user_cancellation = booking.user == current_user
     check_booking_is_cancellable(booking, is_user_cancellation)
     booking_offerer = booking.stock.resolvedOffer.venue.managingOffererId
-    is_offerer_cancellation = current_user.hasRights(RightsType.editor, booking_offerer)
+    is_offerer_cancellation = current_user.hasRights(
+        RightsType.editor, booking_offerer)
 
     if not is_user_cancellation and not is_offerer_cancellation:
         return "Vous n'avez pas le droit d'annuler cette réservation", 403
@@ -210,12 +207,14 @@ def get_booking_by_token(token):
     check_user_is_logged_in_or_email_is_provided(current_user, email)
 
     booking_token_upper_case = token.upper()
-    booking = booking_queries.find_by(booking_token_upper_case, email, offer_id)
+    booking = booking_queries.find_by(
+        booking_token_upper_case, email, offer_id)
     check_booking_is_usable(booking)
 
     offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
 
-    current_user_can_validate_booking = check_user_can_validate_bookings(current_user, offerer_id)
+    current_user_can_validate_booking = check_user_can_validate_bookings(
+        current_user, offerer_id)
     if current_user_can_validate_booking:
         response = _create_response_to_get_booking_by_token(booking)
         return jsonify(response), 200
@@ -227,10 +226,12 @@ def patch_booking_by_token(token):
     email = request.args.get('email', None)
     offer_id = dehumanize(request.args.get('offer_id', None))
     booking_token_upper_case = token.upper()
-    booking = booking_queries.find_by(booking_token_upper_case, email, offer_id)
+    booking = booking_queries.find_by(
+        booking_token_upper_case, email, offer_id)
 
     if current_user.is_authenticated:
-        ensure_current_user_has_rights(RightsType.editor, booking.stock.resolvedOffer.venue.managingOffererId)
+        ensure_current_user_has_rights(
+            RightsType.editor, booking.stock.resolvedOffer.venue.managingOffererId)
     else:
         check_email_and_offer_id_for_anonymous_user(email, offer_id)
 

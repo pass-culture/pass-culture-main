@@ -5,7 +5,7 @@ from models.offer import Offer
 from models.payment import Payment
 from models.stock import Stock
 from models.venue import Venue
-from repository.booking_queries import find_date_used
+from repository import booking_queries
 
 
 def find_all_offerer_payments(offerer_id):
@@ -22,7 +22,7 @@ def find_all_offerer_reimbursement_details(offerer_id):
     reimbursement_details = [
         ReimbursementDetails(
             offerer_payment,
-            find_date_used(offerer_payment.booking)
+            booking_queries.find_date_used(offerer_payment.booking)
         )
         for offerer_payment in offerer_payments
     ]

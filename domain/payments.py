@@ -17,7 +17,7 @@ from models import PaymentMessage
 from models.payment import Payment, PaymentDetails
 from models.payment_status import TransactionStatus
 from models.user import WalletBalance
-from repository.booking_queries import find_date_used
+from repository import booking_queries
 
 XML_NAMESPACE = {'ns': 'urn:iso:std:iso:20022:tech:xsd:pain.001.001.03'}
 
@@ -68,13 +68,14 @@ def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> P
     if payment.iban:
         payment.setStatus(TransactionStatus.PENDING)
     else:
-        payment.setStatus(TransactionStatus.NOT_PROCESSABLE, detail='IBAN et BIC manquants sur l\'offreur')
+        payment.setStatus(TransactionStatus.NOT_PROCESSABLE,
+                          detail='IBAN et BIC manquants sur l\'offreur')
 
     return payment
 
 
 def filter_out_already_paid_for_bookings(booking_reimbursements: List[BookingReimbursement]) -> List[
-    BookingReimbursement]:
+        BookingReimbursement]:
     return list(filter(lambda x: not x.booking.payments, booking_reimbursements))
 
 
@@ -102,7 +103,8 @@ def generate_message_file(payments: List[Payment], pass_culture_iban: str, pass_
         'transactions/transaction_banque_de_france.xml',
         message_name=message_name,
         creation_datetime=now.isoformat(),
-        requested_execution_datetime=datetime.strftime(now + timedelta(days=7), "%Y-%m-%d"),
+        requested_execution_datetime=datetime.strftime(
+            now + timedelta(days=7), "%Y-%m-%d"),
         transactions=transactions,
         number_of_transactions=len(transactions),
         total_amount=total_amount,
@@ -129,11 +131,11 @@ def generate_file_checksum(file: str):
     return sha256(encoded_file).digest()
 
 
-def create_all_payments_details(payments: List[Payment], find_booking_date_used=find_date_used) -> List[PaymentDetails]:
+def create_all_payments_details(payments: List[Payment], find_booking_date_used=booking_queries.find_date_used) -> List[PaymentDetails]:
     return list(map(lambda p: create_payment_details(p, find_booking_date_used), payments))
 
 
-def create_payment_details(payment: Payment, find_booking_date_used=find_date_used) -> PaymentDetails:
+def create_payment_details(payment: Payment, find_booking_date_used=booking_queries.find_date_used) -> PaymentDetails:
     return PaymentDetails(payment, find_booking_date_used(payment.booking))
 
 
@@ -208,8 +210,10 @@ def apply_banishment(payments: List[Payment], ids_to_ban: List[int]) -> Tuple[Li
 
 
 def _group_payments_into_transactions(payments: List[Payment]) -> List[Transaction]:
-    payments_with_iban = sorted(filter(lambda x: x.iban, payments), key=lambda x: (x.iban, x.bic))
-    payments_by_iban = itertools.groupby(payments_with_iban, lambda x: (x.iban, x.bic))
+    payments_with_iban = sorted(
+        filter(lambda x: x.iban, payments), key=lambda x: (x.iban, x.bic))
+    payments_by_iban = itertools.groupby(
+        payments_with_iban, lambda x: (x.iban, x.bic))
 
     transactions = []
     for (iban, bic), grouped_payments in payments_by_iban:

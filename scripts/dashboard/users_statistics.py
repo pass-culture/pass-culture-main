@@ -7,7 +7,7 @@ from sqlalchemy.orm import Query
 import repository.user_queries as user_repository
 from models import Booking, User, Stock, Offer, ThingType, EventType
 from models.db import db
-from repository.booking_queries import count_non_cancelled_bookings, count_non_cancelled_bookings_by_departement
+from repository import booking_queries
 
 
 def count_activated_users(departement_code: str = None) -> int:
@@ -27,8 +27,8 @@ def count_users_having_booked(departement_code: str = None) -> int:
 def get_mean_number_of_bookings_per_user_having_booked(departement_code: str = None) -> float:
     number_of_users_having_booked = count_users_having_booked(departement_code)
 
-    number_of_non_cancelled_bookings = count_non_cancelled_bookings() if (departement_code is None) \
-        else count_non_cancelled_bookings_by_departement(departement_code)
+    number_of_non_cancelled_bookings = booking_queries.count_non_cancelled() if (departement_code is None) \
+        else booking_queries.count_non_cancelled_by_departement(departement_code)
     if not number_of_users_having_booked:
         return 0
 
@@ -37,7 +37,8 @@ def get_mean_number_of_bookings_per_user_having_booked(departement_code: str = N
 
 def get_mean_amount_spent_by_user(departement_code: str = None) -> float:
     number_of_users_having_booked = count_users_having_booked(departement_code)
-    amount_spent_on_bookings = _query_amount_spent_by_departement(departement_code).scalar()
+    amount_spent_on_bookings = _query_amount_spent_by_departement(
+        departement_code).scalar()
 
     if not amount_spent_on_bookings:
         return 0

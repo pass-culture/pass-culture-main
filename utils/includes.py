@@ -209,14 +209,7 @@ WEBAPP_GET_BOOKING_INCLUDES = [
             },
         ]
     },
-    {
-        "key": "user",
-        "includes": [
-            "favorites"
-        ]
-    },
     "mediation",
-    "mediationId",
     "thumbUrl"
 ]
 

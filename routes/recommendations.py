@@ -9,7 +9,7 @@ from recommendations_engine import create_recommendations_for_discovery, \
     create_recommendations_for_search, \
     get_recommendation_search_params, \
     give_requested_recommendation_to_user
-from repository.booking_queries import find_bookings_from_recommendation
+from repository import booking_queries
 from repository.recommendation_queries import update_read_recommendations
 from routes.serialization import as_dict
 from utils.config import BLOB_SIZE
@@ -17,6 +17,7 @@ from utils.human_ids import dehumanize
 from utils.includes import WEBAPP_GET_BOOKING_INCLUDES, RECOMMENDATION_INCLUDES
 from utils.logger import logger
 from utils.rest import expect_json_data
+import json
 
 
 @app.route('/recommendations', methods=['GET'])
@@ -77,8 +78,10 @@ def put_recommendations():
         update_read_recommendations(request.json['readRecommendations'] or [])
 
     if 'seenRecommendationIds' in json_keys:
-        humanized_seen_recommendation_ids = request.json['seenRecommendationIds'] or []
-        seen_recommendation_ids = list(map(dehumanize, humanized_seen_recommendation_ids))
+        humanized_seen_recommendation_ids = request.json['seenRecommendationIds'] or [
+        ]
+        seen_recommendation_ids = list(
+            map(dehumanize, humanized_seen_recommendation_ids))
     else:
         seen_recommendation_ids = []
 
@@ -91,7 +94,8 @@ def put_recommendations():
         mediation_id
     )
 
-    logger.debug(lambda: '(special) requested_recommendation %s' % requested_recommendation)
+    logger.debug(lambda: '(special) requested_recommendation %s' %
+                 requested_recommendation)
 
     created_recommendations = create_recommendations_for_discovery(
         BLOB_SIZE,
@@ -125,7 +129,8 @@ def _serialize_recommendation(reco):
     dict_reco = as_dict(reco, includes=RECOMMENDATION_INCLUDES)
 
     if reco.offer:
-        bookings = find_bookings_from_recommendation(reco, current_user)
+        bookings = booking_queries.find_from_recommendation(
+            reco, current_user)
         dict_reco['bookings'] = _serialize_bookings(bookings)
 
     return dict_reco

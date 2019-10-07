@@ -1,5 +1,5 @@
 from models import Booking, PcObject
-from repository.booking_queries import find_date_used
+from repository import booking_queries
 
 CHUNK_SIZE = 500
 
@@ -14,7 +14,7 @@ def fill_date_used_for_bookings():
     counter = 0
 
     for booking in bookings:
-        booking.dateUsed = find_date_used(booking)
+        booking.dateUsed = booking_queries.find_date_used(booking)
         try:
             PcObject.save(booking)
         except Exception:

@@ -5,9 +5,8 @@ from sqlalchemy import text, func
 
 from models import Offerer, UserOfferer, Venue, Offer, Stock, Booking, EventType, ThingType, User
 from models.db import db
-from repository.booking_queries import count_all_bookings, \
-    count_all_cancelled_bookings as query_count_all_cancelled_bookings, count_bookings_by_departement, \
-    count_all_cancelled_bookings_by_departement, _query_get_used_or_finished_bookings_on_non_activation_offers
+from repository import booking_queries
+from repository.booking_queries import count_cancelled as query_count_all_cancelled_bookings
 from repository.offer_queries import get_active_offers_ids_query
 from repository.offerer_queries import count_offerer, count_offerer_with_stock, count_offerer_by_departement, \
     count_offerer_with_stock_by_departement
@@ -23,7 +22,8 @@ def get_offerer_with_stock_count(departement_code: str = None) -> int:
 
 def get_offerers_with_offer_available_on_discovery_count(departement_code: str = None) -> int:
     active_offers_ids = get_active_offers_ids_query()
-    query = Offerer.query.join(Venue).join(Offer).filter(Offer.id.in_(active_offers_ids))
+    query = Offerer.query.join(Venue).join(
+        Offer).filter(Offer.id.in_(active_offers_ids))
 
     if departement_code:
         query = query \
@@ -72,7 +72,8 @@ def get_offers_available_on_discovery_count(departement_code: str = None) -> int
     query = Offer.query.filter(Offer.id.in_(offer_ids_subquery))
 
     if departement_code:
-        query = query.join(Venue).filter(Venue.departementCode == departement_code)
+        query = query.join(Venue).filter(
+            Venue.departementCode == departement_code)
 
     return query.count()
 
@@ -83,7 +84,8 @@ def get_offers_with_non_cancelled_bookings_count(departement_code: str = None) -
         .join(Booking)
 
     if departement_code:
-        query = query.join(Venue).filter(Venue.departementCode == departement_code)
+        query = query.join(Venue).filter(
+            Venue.departementCode == departement_code)
 
     return query \
         .filter(Booking.isCancelled == False) \
@@ -94,11 +96,11 @@ def get_offers_with_non_cancelled_bookings_count(departement_code: str = None) -
 
 
 def get_all_bookings_count(departement_code: str = None) -> int:
-    return count_bookings_by_departement(departement_code) if departement_code else count_all_bookings()
+    return booking_queries.count_by_departement(departement_code) if departement_code else booking_queries.count()
 
 
 def get_all_used_or_finished_bookings(departement_code: str) -> int:
-    query = _query_get_used_or_finished_bookings_on_non_activation_offers() \
+    query = booking_queries._query_keep_only_used_or_finished_bookings_on_non_activation_offers() \
         .join(User)
     if departement_code:
         query = query.filter(User.departementCode == departement_code)
@@ -108,7 +110,7 @@ def get_all_used_or_finished_bookings(departement_code: str) -> int:
 
 
 def count_all_cancelled_bookings(departement_code: str = None) -> int:
-    return count_all_cancelled_bookings_by_departement(
+    return booking_queries.count_cancelled_by_departement(
         departement_code) if departement_code else query_count_all_cancelled_bookings()
 
 
@@ -125,7 +127,7 @@ def get_offer_counts_grouped_by_type_and_medium(query_get_counts_per_type_and_di
         support = 'Numérique' if is_digital else 'Physique'
         offers_by_type_and_digital_table.loc[
             (offers_by_type_and_digital_table['type'] == offer_type) & (
-                    offers_by_type_and_digital_table['Support'] == support),
+                offers_by_type_and_digital_table['Support'] == support),
             counts_column_name] = counts
 
     offers_by_type_and_digital_table.drop('type', axis=1, inplace=True)
@@ -163,7 +165,8 @@ def _get_offers_grouped_by_type_and_medium() -> pandas.DataFrame:
 
     type_and_digital_dataframe = pandas.DataFrame(
         data={'Catégorie': human_types, 'Support': digital_or_physical, 'type': types})
-    type_and_digital_dataframe.sort_values(by=['Catégorie', 'Support'], inplace=True, ascending=True)
+    type_and_digital_dataframe.sort_values(
+        by=['Catégorie', 'Support'], inplace=True, ascending=True)
     type_and_digital_dataframe.reset_index(drop=True, inplace=True)
 
     return type_and_digital_dataframe
@@ -172,8 +175,8 @@ def _get_offers_grouped_by_type_and_medium() -> pandas.DataFrame:
 def query_get_offer_counts_grouped_by_type_and_medium() -> List[Tuple[str, bool, int]]:
     return db.engine.execute(
         """
-        SELECT type, url IS NOT NULL AS is_digital, count(DISTINCT offer.id) 
-        FROM offer 
+        SELECT type, url IS NOT NULL AS is_digital, count(DISTINCT offer.id)
+        FROM offer
         JOIN stock ON stock."offerId" = offer.id
         JOIN venue ON venue.id = offer."venueId"
         JOIN offerer ON offerer.id = venue."managingOffererId"
@@ -183,11 +186,11 @@ def query_get_offer_counts_grouped_by_type_and_medium() -> List[Tuple[str, bool,
 
 
 def query_get_offer_counts_grouped_by_type_and_medium_for_departement(departement_code: str) -> List[
-    Tuple[str, bool, int]]:
+        Tuple[str, bool, int]]:
     return db.engine.execute(
         text("""
-        SELECT offer.type, offer.url IS NOT NULL AS is_digital, count(DISTINCT offer.id) 
-        FROM offer 
+        SELECT offer.type, offer.url IS NOT NULL AS is_digital, count(DISTINCT offer.id)
+        FROM offer
         JOIN stock ON stock."offerId" = offer.id
         JOIN venue ON venue.id = offer."venueId"
         JOIN offerer ON offerer.id = venue."managingOffererId"
@@ -202,7 +205,7 @@ def query_get_booking_counts_grouped_by_type_and_medium() -> List[Tuple[str, boo
     return db.engine.execute(
         """
         SELECT offer.type, offer.url IS NOT NULL AS is_digital, SUM(booking.quantity)
-        FROM booking 
+        FROM booking
         JOIN stock ON stock.id = booking."stockId"
         JOIN offer ON offer.id = stock."offerId"
         WHERE booking."isCancelled" IS FALSE
@@ -211,11 +214,11 @@ def query_get_booking_counts_grouped_by_type_and_medium() -> List[Tuple[str, boo
 
 
 def query_get_booking_counts_grouped_by_type_and_medium_for_departement(departement_code: str) -> List[
-    Tuple[str, bool, int]]:
+        Tuple[str, bool, int]]:
     return db.engine.execute(
         text("""
         SELECT offer.type, offer.url IS NOT NULL AS is_digital, SUM(booking.quantity)
-        FROM booking 
+        FROM booking
         JOIN stock ON stock.id = booking."stockId"
         JOIN offer ON offer.id = stock."offerId"
         JOIN "user" ON "user".id = booking."userId"

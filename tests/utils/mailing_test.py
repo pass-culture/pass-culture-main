@@ -182,7 +182,7 @@ def test_booking_recap_email_html_should_have_place_and_structure(app):
     booking.token = '56789'
 
     # When
-    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[booking]):
+    with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking]):
         recap_email = make_offerer_booking_recap_email_after_user_action(booking)
 
     # Then
@@ -220,7 +220,7 @@ def test_booking_recap_email_html_should_have_unsubscribe_option(app):
     booking.token = '56789'
 
     # When
-    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[booking]):
+    with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking]):
         recap_email = make_offerer_booking_recap_email_after_user_action(booking)
 
     # Then
@@ -256,7 +256,7 @@ def test_booking_recap_email_html_should_not_have_cancelled_or_used_bookings(app
     ongoing_bookings = [booking1, booking2]
 
     # When
-    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=ongoing_bookings):
+    with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=ongoing_bookings):
         recap_email = make_offerer_booking_recap_email_after_user_action(booking1)
 
     # Then
@@ -283,7 +283,7 @@ def test_offerer_recap_email_past_offer_without_booking(app):
                                           end_datetime=end_datetime, booking_limit_datetime=booking_limit_datetime)
 
     # When
-    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[]):
+    with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[]):
         recap_email = make_final_recap_email_for_stock_with_event(stock)
 
     # Then
@@ -313,7 +313,7 @@ def test_offerer_recap_email_past_offer_with_booking(app):
     stock.bookings = [booking]
 
     # When
-    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[booking]):
+    with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking]):
         recap_email = make_final_recap_email_for_stock_with_event(stock)
 
     # Then
@@ -353,7 +353,7 @@ def test_offerer_recap_email_does_not_send_cancelled_or_used_booking(app):
     ongoing_bookings = [booking1, booking2]
 
     # When
-    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=ongoing_bookings):
+    with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=ongoing_bookings):
         recap_email = make_final_recap_email_for_stock_with_event(stock)
 
     # Then
@@ -381,7 +381,7 @@ def test_offerer_recap_email_has_unsubscribe_options(app):
     ongoing_bookings = [booking1, booking2]
 
     # When
-    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=ongoing_bookings):
+    with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=ongoing_bookings):
         recap_email = make_final_recap_email_for_stock_with_event(stock)
 
     # Then
@@ -416,7 +416,7 @@ def test_offerer_recap_email_future_offer_when_new_booking_with_old_booking(app)
     booking_2.token = '67890'
 
     # When
-    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[booking_1, booking_2]):
+    with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking_1, booking_2]):
         recap_email = make_offerer_booking_recap_email_after_user_action(booking_2)
 
     # Then
@@ -451,7 +451,7 @@ def test_offerer_booking_recap_email_thing_offer_has_action_and_recap_html(app):
     booking2 = create_booking(user2, stock, venue, token='12345')
 
     # When
-    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[booking1, booking2]):
+    with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking1, booking2]):
         recap_email = make_offerer_booking_recap_email_after_user_action(booking1)
 
     # Then
@@ -484,7 +484,7 @@ def test_offerer_booking_recap_email_thing_offer_has_recap_table(app):
     booking2 = create_booking(user2, stock, venue, token='12345')
 
     # When
-    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[booking1, booking2]):
+    with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking1, booking2]):
         recap_email = make_offerer_booking_recap_email_after_user_action(booking1)
 
     # Then
@@ -514,7 +514,7 @@ def test_offerer_booking_recap_email_thing_offer_does_not_have_validation_tokens
     booking2 = create_booking(user2, stock, venue, token='12345')
 
     # When
-    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[booking1, booking2]):
+    with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking1, booking2]):
         recap_email = make_offerer_booking_recap_email_after_user_action(booking1)
 
     # Then
@@ -677,7 +677,7 @@ def test_make_offerer_booking_user_cancellation_email_for_physical_venue(app):
     PcObject.save(booking_1, booking_2)
 
     # When
-    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[booking_1]):
+    with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking_1]):
         recap_email = make_offerer_booking_recap_email_after_user_action(booking_2, is_cancellation=True)
 
     # Then
@@ -714,7 +714,7 @@ def test_make_offerer_booking_recap_email_after_user_cancellation_should_have_un
     PcObject.save(booking_1, booking_2)
 
     # When
-    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[booking_1]):
+    with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking_1]):
         recap_email = make_offerer_booking_recap_email_after_user_action(booking_2, is_cancellation=True)
 
     # Then
@@ -753,7 +753,7 @@ def test_make_offerer_driven_cancellation_email_for_user_event(app):
     booking = create_booking(user, stock)
 
     # When
-    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[]):
+    with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[]):
         email = make_offerer_driven_cancellation_email_for_user(booking)
 
     # Then
@@ -779,7 +779,7 @@ def test_make_offerer_driven_cancellation_email_for_user_thing(app):
     booking = create_booking(user, stock, quantity=2)
 
     # When
-    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[]):
+    with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[]):
         email = make_offerer_driven_cancellation_email_for_user(booking)
 
     # Then
@@ -811,7 +811,7 @@ def test_make_offerer_driven_cancellation_email_for_offerer_event_when_no_other_
     booking = create_booking(user, stock)
 
     # When
-    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[]):
+    with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[]):
         email = make_offerer_driven_cancellation_email_for_offerer(booking)
 
     # Then
@@ -849,7 +849,7 @@ def test_make_offerer_driven_cancellation_email_for_offerer_event_when_other_boo
     booking2 = create_booking(user2, stock, token='12345')
 
     # When
-    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[booking2]):
+    with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking2]):
         email = make_offerer_driven_cancellation_email_for_offerer(booking1)
 
     # Then
@@ -881,7 +881,7 @@ def test_make_offerer_driven_cancellation_email_for_offerer_thing_and_already_ex
     ongoing_bookings = [booking2]
 
     # When
-    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=ongoing_bookings):
+    with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=ongoing_bookings):
         email = make_offerer_driven_cancellation_email_for_offerer(booking)
 
     # Then
@@ -1040,7 +1040,7 @@ def test_make_offerer_booking_user_cancellation_for_thing_email_when_virtual_ven
     PcObject.save(booking_1, booking_2)
 
     # When
-    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[booking_1]):
+    with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking_1]):
         recap_email = make_offerer_booking_recap_email_after_user_action(booking_2, is_cancellation=True)
 
         # Then
@@ -1067,7 +1067,7 @@ def test_make_offerer_booking_user_cancellation_for_event_email_when_virtual_ven
     PcObject.save(booking_1, booking_2)
 
     # When
-    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[booking_1]):
+    with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking_1]):
         recap_email = make_offerer_booking_recap_email_after_user_action(booking_2, is_cancellation=True)
 
         # Then
@@ -1092,7 +1092,7 @@ def test_make_offerer_booking_user_cancellation_email_for_thing_has_cancellation
     PcObject.save(booking_1, booking_2)
 
     # When
-    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[booking_1]):
+    with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking_1]):
         recap_email = make_offerer_booking_recap_email_after_user_action(booking_2, is_cancellation=True)
 
     # Then
@@ -1116,7 +1116,7 @@ def test_make_offerer_booking_user_cancellation_email_for_event_has_cancellation
     PcObject.save(booking_1, booking_2)
 
     # When
-    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[booking_1]):
+    with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking_1]):
         recap_email = make_offerer_booking_recap_email_after_user_action(booking_2, is_cancellation=True)
 
     # Then
@@ -1138,7 +1138,7 @@ def test_make_offerer_booking_user_cancellation_has_recap_information_but_no_tok
     PcObject.save(booking_1, booking_2)
 
     # When
-    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[booking_1]):
+    with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking_1]):
         recap_email = make_offerer_booking_recap_email_after_user_action(booking_2, is_cancellation=True)
 
     # Then

@@ -2,17 +2,18 @@ from datetime import datetime
 
 from domain.stocks import STOCK_DELETION_DELAY
 from models import PcObject
-from repository.booking_queries import find_all_not_used_and_not_cancelled
+from repository import booking_queries
 
 
 def update_booking_used_after_stock_occurrence():
-    bookings_to_process = find_all_not_used_and_not_cancelled()
+    bookings_to_process = booking_queries.find_not_used_and_not_cancelled()
     bookings_id_errors = []
 
     for booking in bookings_to_process:
         if booking.stock.endDatetime:
             now = datetime.utcnow()
-            booking_on_event_considered_used_after_delay = now > booking.stock.endDatetime + STOCK_DELETION_DELAY
+            booking_on_event_considered_used_after_delay = now > booking.stock.endDatetime + \
+                STOCK_DELETION_DELAY
             if booking_on_event_considered_used_after_delay:
                 booking.isUsed = True
                 booking.dateUsed = now

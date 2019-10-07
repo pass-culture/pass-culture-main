@@ -14,7 +14,7 @@ from models import RightsType, User
 from models.email import EmailStatus
 from models.offer_type import ProductType
 from repository import email_queries
-from repository.booking_queries import find_all_ongoing_bookings_by_stock
+from repository import booking_queries
 from repository.feature_queries import feature_send_mail_to_users_enabled
 from repository.user_offerer_queries import find_user_offerer_email
 from utils import logger
@@ -39,7 +39,8 @@ if SUPPORT_EMAIL_ADDRESS is None or SUPPORT_EMAIL_ADDRESS == '':
     raise ValueError("Missing environment variable SUPPORT_EMAIL_ADDRESS")
 
 if ADMINISTRATION_EMAIL_ADDRESS is None or ADMINISTRATION_EMAIL_ADDRESS == '':
-    raise ValueError("Missing environment variable ADMINISTRATION_EMAIL_ADDRESS")
+    raise ValueError(
+        "Missing environment variable ADMINISTRATION_EMAIL_ADDRESS")
 
 if DEV_EMAIL_ADDRESS is None or DEV_EMAIL_ADDRESS == '':
     raise ValueError("Missing environment variable DEV_EMAIL_ADDRESS")
@@ -93,7 +94,7 @@ def make_final_recap_email_for_stock_with_event(stock):
     formatted_datetime = format_datetime(date_in_tz)
     email_subject = '[Réservations] Récapitulatif pour {} le {}'.format(stock.offer.product.name,
                                                                         formatted_datetime)
-    stock_bookings = find_all_ongoing_bookings_by_stock(stock)
+    stock_bookings = booking_queries.find_ongoing_bookings_by_stock(stock)
     email_html = render_template('mails/offerer_final_recap_email.html',
                                  booking_is_on_event=booking_is_on_event,
                                  number_of_bookings=len(stock_bookings),
@@ -113,7 +114,8 @@ def make_final_recap_email_for_stock_with_event(stock):
 def make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=False):
     venue = booking.stock.resolvedOffer.venue
     user = booking.user
-    stock_bookings = find_all_ongoing_bookings_by_stock(booking.stock)
+    stock_bookings = booking_queries.find_ongoing_bookings_by_stock(
+        booking.stock)
     product = booking.stock.resolvedOffer.product
     human_offer_id = humanize(booking.stock.resolvedOffer.id)
     booking_is_on_event = booking.stock.beginningDatetime is not None
@@ -158,7 +160,8 @@ def write_object_validation_email(offerer, user_offerer, get_by_siren=api_entrep
                                  user_offerer=user_offerer,
                                  user_vars=pformat(vars_obj_user),
                                  offerer=offerer,
-                                 offerer_vars_user_offerer=pformat(vars(user_offerer.offerer)),
+                                 offerer_vars_user_offerer=pformat(
+                                     vars(user_offerer.offerer)),
                                  offerer_vars=pformat(vars(offerer)),
                                  api_entreprise=pformat(api_entreprise),
                                  api_url=API_URL)
@@ -210,7 +213,8 @@ def make_offerer_driven_cancellation_email_for_offerer(booking):
     user_email = booking.user.email
     email_subject = 'Confirmation de votre annulation de réservation pour {}, proposé par {}'.format(stock_name,
                                                                                                      venue.name)
-    ongoing_stock_bookings = find_all_ongoing_bookings_by_stock(booking.stock)
+    ongoing_stock_bookings = booking_queries.find_ongoing_bookings_by_stock(
+        booking.stock)
     stock_date_time = None
     booking_is_on_event = booking.stock.beginningDatetime is not None
     if booking_is_on_event:
@@ -221,7 +225,8 @@ def make_offerer_driven_cancellation_email_for_offerer(booking):
                                  user_name=user_name,
                                  user_email=user_email,
                                  stock_date_time=stock_date_time,
-                                 number_of_bookings=len(ongoing_stock_bookings),
+                                 number_of_bookings=len(
+                                     ongoing_stock_bookings),
                                  stock_bookings=ongoing_stock_bookings,
                                  stock_name=stock_name,
                                  venue=venue,
@@ -241,7 +246,8 @@ def make_user_booking_recap_email(booking, is_cancellation=False):
         email_html, email_subject = _generate_user_driven_cancellation_email_for_user(user,
                                                                                       stock)
     else:
-        email_html, email_subject = _generate_reservation_email_html_subject(booking)
+        email_html, email_subject = _generate_reservation_email_html_subject(
+            booking)
 
     return {
         'FromName': 'Pass Culture',
@@ -282,9 +288,11 @@ def make_validation_confirmation_email(user_offerer, offerer):
         user_offerer_rights=user_offerer_rights
     )
     if user_offerer and offerer:
-        subject = 'Validation de votre structure et de compte {} rattaché'.format(user_offerer_rights)
+        subject = 'Validation de votre structure et de compte {} rattaché'.format(
+            user_offerer_rights)
     elif user_offerer:
-        subject = 'Validation de compte {} rattaché à votre structure'.format(user_offerer_rights)
+        subject = 'Validation de compte {} rattaché à votre structure'.format(
+            user_offerer_rights)
     else:
         subject = 'Validation de votre structure'
     return {
@@ -296,7 +304,8 @@ def make_validation_confirmation_email(user_offerer, offerer):
 
 
 def make_venue_validation_email(venue):
-    html = render_template('mails/venue_validation_email.html', venue=venue, api_url=API_URL)
+    html = render_template(
+        'mails/venue_validation_email.html', venue=venue, api_url=API_URL)
     return {
         'FromEmail': SUPPORT_EMAIL_ADDRESS,
         'FromName': 'pass Culture',
@@ -419,7 +428,8 @@ def subscribe_newsletter(user):
             'Email': user.email,
             'Name': user.publicName
         }
-        contact_json = app.mailjet_client.contact.create(data=contact_data).json()
+        contact_json = app.mailjet_client.contact.create(
+            data=contact_data).json()
         contact = contact_json['Data'][0] if 'Data' in contact_json else None
 
     if contact is None:
@@ -444,7 +454,8 @@ def subscribe_newsletter(user):
 def make_payment_message_email(xml: str, checksum: bytes) -> dict:
     now = datetime.utcnow()
     xml_b64encode = base64.b64encode(xml.encode('utf-8')).decode()
-    file_name = "message_banque_de_france_{}.xml".format(datetime.strftime(now, "%Y%m%d"))
+    file_name = "message_banque_de_france_{}.xml".format(
+        datetime.strftime(now, "%Y%m%d"))
 
     return {
         'FromEmail': SUPPORT_EMAIL_ADDRESS,
@@ -473,11 +484,13 @@ def make_payment_details_email(csv: str) -> dict:
 
 def make_payments_report_email(not_processable_csv: str, error_csv: str, grouped_payments: Dict) -> Dict:
     now = datetime.utcnow()
-    not_processable_csv_b64encode = base64.b64encode(not_processable_csv.encode('utf-8')).decode()
+    not_processable_csv_b64encode = base64.b64encode(
+        not_processable_csv.encode('utf-8')).decode()
     error_csv_b64encode = base64.b64encode(error_csv.encode('utf-8')).decode()
     formatted_date = datetime.strftime(now, "%Y-%m-%d")
-    number_of_payments_for_one_status = lambda key_value: len(key_value[1])
-    total_number_of_payments = sum(map(number_of_payments_for_one_status, grouped_payments.items()))
+    def number_of_payments_for_one_status(key_value): return len(key_value[1])
+    total_number_of_payments = sum(
+        map(number_of_payments_for_one_status, grouped_payments.items()))
 
     return {
         'Subject': "Récapitulatif des paiements pass Culture Pro - {}".format(formatted_date),
@@ -534,7 +547,8 @@ def make_activation_users_email(csv: str) -> dict:
 
 
 def make_venue_validation_confirmation_email(venue):
-    html = render_template('mails/venue_validation_confirmation_email.html', venue=venue)
+    html = render_template(
+        'mails/venue_validation_confirmation_email.html', venue=venue)
     return {
         'Subject': 'Validation du rattachement du lieu "{}" à votre structure "{}"'.format(venue.name,
                                                                                            venue.managingOfferer.name),
@@ -610,7 +624,8 @@ def _generate_reservation_email_html_subject(booking):
     booking_is_on_event = stock.beginningDatetime is None
 
     if booking_is_on_event:
-        email_subject = 'Confirmation de votre commande pour {}'.format(stock_description)
+        email_subject = 'Confirmation de votre commande pour {}'.format(
+            stock_description)
         email_html = render_template('mails/user_confirmation_email_thing.html',
                                      user=user,
                                      booking_token=booking.token,
@@ -620,7 +635,8 @@ def _generate_reservation_email_html_subject(booking):
     else:
         date_in_tz = _get_event_datetime(stock)
         formatted_date_time = format_datetime(date_in_tz)
-        email_subject = 'Confirmation de votre réservation pour {}'.format(stock_description)
+        email_subject = 'Confirmation de votre réservation pour {}'.format(
+            stock_description)
         email_html = render_template('mails/user_confirmation_email_event.html',
                                      user=user,
                                      booking_token=booking.token,
@@ -635,7 +651,8 @@ def _generate_reservation_email_html_subject(booking):
 def _generate_user_driven_cancellation_email_for_user(user, stock):
     venue = stock.resolvedOffer.venue
     if stock.beginningDatetime is None:
-        email_subject = 'Annulation de votre commande pour {}'.format(stock.resolvedOffer.product.name)
+        email_subject = 'Annulation de votre commande pour {}'.format(
+            stock.resolvedOffer.product.name)
         email_html = render_template('mails/user_cancellation_email_thing.html',
                                      user=user,
                                      thing_name=stock.resolvedOffer.product.name,
@@ -681,7 +698,8 @@ def _get_stock_description(stock):
 def make_webapp_user_validation_email(user: User, app_origin_url: str) -> dict:
     template = 'mails/webapp_user_validation_email.html'
     from_name = 'pass Culture'
-    email_html = render_template(template, user=user, api_url=API_URL, app_origin_url=app_origin_url)
+    email_html = render_template(
+        template, user=user, api_url=API_URL, app_origin_url=app_origin_url)
     return {'Html-part': email_html,
             'To': user.email,
             'Subject': 'Validation de votre adresse email pour le pass Culture',
