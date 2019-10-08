@@ -17,6 +17,7 @@ class Get:
 
             # Then
             assert response.status_code == 200
+            assert '<a href="/dashboard/users">' in response.data.decode('utf-8')
 
     class Returns401:
         @clean_database

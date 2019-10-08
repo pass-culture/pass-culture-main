@@ -8,7 +8,7 @@ from repository.okr_queries import get_beneficiary_users_details
 
 @app.route('/dashboard/', methods=['GET'])
 @login_required
-def show_okr_page():
+def show_dashboard_page():
     if not current_user.isAdmin:
         raise ForbiddenError()
     return render_template('dashboard/home_page.html')

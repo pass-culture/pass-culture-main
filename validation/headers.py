@@ -46,7 +46,7 @@ def _get_origin_header_whitelist():
             'localhost:3000',
             'http://localhost:3001',
             'https://localhost:3001',
-            'localhost:3001'
+            'localhost:3001',
         ]
     valid_urls.extend(_get_origin_header_whitelist_for_non_dev_environments(API_URL))
     return valid_urls
@@ -59,7 +59,7 @@ def _get_endpoint_exceptions():
             'get_all_offerers_with_managing_user_information_and_venue',
             'get_all_offerers_with_managing_user_information_and_not_virtual_venue',
             'get_all_offerers_with_venue', 'get_pending_validation',
-            'get_export_venues', 'get_export_offerers', 'get_bookings_csv', 'list_features', 'show_okr_page', 'get_users_stats']
+            'get_export_venues', 'get_export_offerers', 'get_bookings_csv', 'list_features', 'show_dashboard_page', 'get_users_stats']
 
 
 def _get_origin_header_whitelist_for_non_dev_environments(api_url):
