@@ -1,7 +1,9 @@
 export class OffererClass {
-  constructor(id, name, bic, iban, adminUserOfferer) {
+  constructor(id, siren, name, address, bic, iban, adminUserOfferer) {
     this.id = id
+    this.siren = siren
     this.name = name
+    this.address = address
     this.bic = bic
     this.iban = iban
     this.adminUserOfferer = adminUserOfferer

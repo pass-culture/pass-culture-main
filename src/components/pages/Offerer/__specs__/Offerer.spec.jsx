@@ -8,7 +8,15 @@ describe('src | components | pages | Offerer', () => {
 
   beforeEach(() => {
     props = {
-      offerer: new OffererClass('AA', 'fake offerer name', 'ABC', 'DEF', false),
+      offerer: new OffererClass(
+        'AA',
+        '222111234',
+        'fake offerer name',
+        'fake address',
+        'ABC',
+        'DEF',
+        false
+      ),
       getOfferer: jest.fn(),
       getUserOfferers: jest.fn(),
       history: {
@@ -89,13 +97,13 @@ describe('src | components | pages | Offerer', () => {
         // when
         const wrapper = shallow(<Offerer {...props} />)
 
-      // then
-      const bankInstructions = wrapper.find('.bank-instructions-label')
-      expect(bankInstructions).toHaveLength(1)
-      expect(bankInstructions.text()).toBe(
-        'Le pass Culture vous contactera prochainement afin d’enregistrer vos coordonnées bancaires. Une fois votre BIC / IBAN renseigné, ces informations apparaitront ci-dessous.'
-      )
-    })
+        // then
+        const bankInstructions = wrapper.find('.bank-instructions-label')
+        expect(bankInstructions).toHaveLength(1)
+        expect(bankInstructions.text()).toBe(
+          'Le pass Culture vous contactera prochainement afin d’enregistrer vos coordonnées bancaires. Une fois votre BIC / IBAN renseigné, ces informations apparaitront ci-dessous.'
+        )
+      })
 
       it('should not render a bank instructions block when bank information are provided', () => {
         // when
@@ -106,9 +114,9 @@ describe('src | components | pages | Offerer', () => {
         expect(bankInstructions).toHaveLength(0)
       })
 
-    it('should not render a bank instructions block when offerer name is not provided', () => {
-      // given
-      props.offerer.name = ''
+      it('should not render a bank instructions block when offerer name is not provided', () => {
+        // given
+        props.offerer.name = ''
 
         // when
         const wrapper = shallow(<Offerer {...props} />)

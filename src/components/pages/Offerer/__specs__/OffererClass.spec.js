@@ -25,7 +25,7 @@ describe('src | components | pages | Offerer | OffererClass', () => {
     describe('when neither id or name exists', () => {
       it('should return false', () => {
         // given
-        const offerer = new OffererClass('', '', 'bic', 'iban', {})
+        const offerer = new OffererClass('', 'siren', '', 'address', 'bic', 'iban', {})
 
         // when then
         expect(offerer.isIdOrNameDefined()).toBe(false)
@@ -37,7 +37,7 @@ describe('src | components | pages | Offerer | OffererClass', () => {
     describe('when offerer bic and iban exists', () => {
       it('should return true', () => {
         // given
-        const offerer = new OffererClass('id', 'name', 'bic', 'iban', {})
+        const offerer = new OffererClass('id', 'siren', 'name', 'address', 'bic', 'iban', {})
 
         // when then
         expect(offerer.areBankInformationProvided()).toBe(true)
@@ -47,7 +47,7 @@ describe('src | components | pages | Offerer | OffererClass', () => {
     describe('when offerer bic doesnt exist', () => {
       it('should return false', () => {
         // given
-        const offerer = new OffererClass('id', 'name', '', 'iban', {})
+        const offerer = new OffererClass('', 'siren', '', 'address', '', 'iban', {})
 
         // when then
         expect(offerer.areBankInformationProvided()).toBe(false)
@@ -57,7 +57,7 @@ describe('src | components | pages | Offerer | OffererClass', () => {
     describe('when offerer iban doesnt exist', () => {
       it('should return false', () => {
         // given
-        const offerer = new OffererClass('id', 'name', 'bic', '', {})
+        const offerer = new OffererClass('', 'siren', '', 'address', 'bic', '', {})
 
         // when then
         expect(offerer.areBankInformationProvided()).toBe(false)
@@ -67,7 +67,7 @@ describe('src | components | pages | Offerer | OffererClass', () => {
     describe('when neither offerer iban or bic exist', () => {
       it('should return false', () => {
         // given
-        const offerer = new OffererClass('id', 'name', '', '', {})
+        const offerer = new OffererClass('', 'siren', '', 'address', '', '', {})
 
         // when then
         expect(offerer.areBankInformationProvided()).toBe(false)
