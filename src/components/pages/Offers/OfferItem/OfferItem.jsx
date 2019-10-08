@@ -174,7 +174,7 @@ class OfferItem extends Component {
               )}
             </li>
           </ul>
-          <ul className="actions offer-actions-list ">
+          <ul className="actions offer-actions-list">
             <li>
               <NavLink
                 className={`button is-small ${

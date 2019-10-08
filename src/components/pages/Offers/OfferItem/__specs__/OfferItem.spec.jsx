@@ -11,11 +11,13 @@ import offersMock from '../../__specs__/offersMock'
 
 describe('src | components | pages | Offers | OfferItem', () => {
   let props
+  let dispatch = jest.fn()
+  let updateOffer = jest.fn()
 
   beforeEach(() => {
     props = {
       aggregatedStock: {},
-      dispatch: jest.fn(),
+      dispatch,
       offer: offersMock[0],
       mediations: [{ id: 'HA', isActive: true, thumbUrl: 'https://url.to/thumb' }],
       location: {
@@ -34,7 +36,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       },
       trackActivateOffer: jest.fn(),
       trackDeactivateOffer: jest.fn(),
-      updateOffer: jest.fn(),
+      updateOffer,
     }
   })
 
@@ -47,22 +49,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       expect(wrapper).toMatchSnapshot()
     })
   })
-
-  describe('click on "disable" button', () => {
-    it('should activate or deactivate offer', () => {
-      // given
-      const wrapper = shallow(<OfferItem {...props} />)
-      const disableButton = wrapper.find('button')
-
-      // when
-      disableButton.simulate('click')
-
-      // then
-      expect(props.updateOffer).toHaveBeenCalledWith('M4', false)
-    })
-  })
-
-  describe('render offer item', () => {
+  describe('render', () => {
     describe('thumb Component', () => {
       it('should render a Thumb Component with the given url when offer has an active mediation', () => {
         // given
@@ -113,38 +100,47 @@ describe('src | components | pages | Offers | OfferItem', () => {
     })
     describe('action buttons', () => {
       describe('switch activate', () => {
-        // TODO
-        // Button exists
-        it('should dispatch an action with the correct payload', () => {
+        it('should deactivate when offer is active', () => {
           // given
           const wrapper = shallow(<OfferItem {...props} />)
           const disableButton = wrapper.find('button')
-          const expectedParams = {
-            config: {
-              apiPath: '/offers/M4',
-              body: { isActive: false },
-              isMergingDatum: true,
-              isMutaginArray: false,
-              isMutatingDatum: true,
-              method: 'PATCH',
-              normalizer: {
-                mediations: 'mediations',
-                product: { normalizer: { offers: 'offers' }, stateKey: 'products' },
-                stocks: 'stocks',
-                venue: {
-                  normalizer: { managingOfferer: 'offerers' },
-                  stateKey: 'venues',
-                },
-              },
-            },
-            type: 'REQUEST_DATA_PATCH_/OFFERS/M4',
-          }
-
           // when
           disableButton.simulate('click')
 
           // then
-          expect(dispatch.mock.calls[0][0]).toStrictEqual(expectedParams)
+          expect(updateOffer).toHaveBeenCalledWith('M4', false)
+        })
+
+        it('should activate when offer is not active', () => {
+          // given
+          props.offer = {
+            id: 'M4',
+            activeMediation: {
+              id: 'HA',
+              isActive: true,
+              thumbUrl: 'https://url.to/thumb',
+            },
+            bookingEmail: 'booking.email@test.com',
+            dateCreated: '2019-02-25T09:50:10.735519Z',
+            dateModifiedAtLastProvider: '2019-02-25T09:50:31.881297Z',
+            idAtProviders: null,
+            isActive: false,
+            isEvent: false,
+            isThing: true,
+            lastProviderId: null,
+            modelName: 'Offer',
+            productId: 'EY',
+            venueId: 'CU',
+            mediationsIds: ['HA'],
+            stocksIds: ['MQ'],
+          }
+          const wrapper = shallow(<OfferItem {...props} />)
+          const disableButton = wrapper.find('button')
+          // when
+          disableButton.simulate('click')
+
+          // then
+          expect(updateOffer).toHaveBeenCalledWith('M4', true)
         })
       })
 
@@ -160,6 +156,40 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
           // then
           expect(offerPreviewLink).toHaveLength(0)
+        })
+
+        it('should be displayed when offer is no editable', () => {
+          // given
+          props.offer = {
+            id: 'M4',
+            activeMediation: {
+              id: 'HA',
+              isActive: true,
+              thumbUrl: 'https://url.to/thumb',
+            },
+            bookingEmail: 'booking.email@test.com',
+            dateCreated: '2019-02-25T09:50:10.735519Z',
+            dateModifiedAtLastProvider: '2019-02-25T09:50:31.881297Z',
+            idAtProviders: null,
+            isActive: true,
+            isEvent: false,
+            isEditable: false,
+            isThing: true,
+            lastProviderId: null,
+            modelName: 'Offer',
+            productId: 'EY',
+            venueId: 'CU',
+            mediationsIds: ['HA'],
+            stocksIds: ['MQ'],
+          }
+
+          const wrapper = shallow(<OfferItem {...props} />)
+
+          // when
+          const offerPreviewLink = wrapper.find('OfferPreviewLink')
+
+          // then
+          expect(offerPreviewLink).toHaveLength(1)
         })
 
         it('should be displayed when offer has an active mediation', () => {
@@ -241,12 +271,132 @@ describe('src | components | pages | Offers | OfferItem', () => {
         })
       })
 
-      describe('add mediations', () => {
-        // TODO
+      describe('edit offer link', () => {
+        it('should be displayed when offer is editable', () => {
+          // given
+          props.offer = {
+            id: 'M4',
+            activeMediation: {
+              id: 'HA',
+              isActive: true,
+              thumbUrl: 'https://url.to/thumb',
+            },
+            bookingEmail: 'booking.email@test.com',
+            dateCreated: '2019-02-25T09:50:10.735519Z',
+            dateModifiedAtLastProvider: '2019-02-25T09:50:31.881297Z',
+            idAtProviders: null,
+            isActive: true,
+            isEvent: false,
+            isEditable: true,
+            isThing: true,
+            lastProviderId: null,
+            modelName: 'Offer',
+            productId: 'EY',
+            venueId: 'CU',
+            mediationsIds: ['HA'],
+            stocksIds: ['MQ'],
+          }
+
+          const wrapper = shallow(<OfferItem {...props} />)
+
+          // when
+          const editOfferLink = wrapper.find('.edit-link')
+
+          // then
+          expect(editOfferLink).toHaveLength(1)
+        })
+
+        it('should not be displayed when offer is no editable', () => {
+          // given
+          props.offer = {
+            id: 'M4',
+            activeMediation: {
+              id: 'HA',
+              isActive: true,
+              thumbUrl: 'https://url.to/thumb',
+            },
+            bookingEmail: 'booking.email@test.com',
+            dateCreated: '2019-02-25T09:50:10.735519Z',
+            dateModifiedAtLastProvider: '2019-02-25T09:50:31.881297Z',
+            idAtProviders: null,
+            isActive: true,
+            isEvent: false,
+            isEditable: false,
+            isThing: true,
+            lastProviderId: null,
+            modelName: 'Offer',
+            productId: 'EY',
+            venueId: 'CU',
+            mediationsIds: ['HA'],
+            stocksIds: ['MQ'],
+          }
+
+          const wrapper = shallow(<OfferItem {...props} />)
+
+          // when
+          const editOfferLink = wrapper.find('.edit-link')
+
+          // then
+          expect(editOfferLink).toHaveLength(0)
+        })
       })
 
-      describe('edit link', () => {
-        // TODO
+      describe('mediations link', () => {
+        it('should display a link to offer when offer has one or more mediations', () => {
+          // given
+          props.offer = offersMock[1]
+
+          const wrapper = shallow(<OfferItem {...props} />)
+
+          // when
+          const addMediationsLink = wrapper.find('.add-mediations-link')
+          const textSpan = addMediationsLink.find('span').at(1)
+          const icon = addMediationsLink.find('Icon')
+
+          // then
+          expect(addMediationsLink).toHaveLength(1)
+          expect(addMediationsLink.prop('className')).toBe('button is-small is-secondary add-mediations-link')
+          expect(addMediationsLink.prop('to')).toBe('/offres/KU')
+          expect(icon.prop('svg')).toBe('ico-stars')
+          expect(textSpan.text()).toBe('Accroches')
+        })
+
+        it('should display a link to add a mediationo when offer no mediations yet', () => {
+          // given
+          props.mediations = []
+          props.offer = {
+            id: 'M4',
+            activeMediation: null,
+            bookingEmail: 'booking.email@test.com',
+            dateCreated: '2019-02-25T09:50:10.735519Z',
+            dateModifiedAtLastProvider: '2019-02-25T09:50:31.881297Z',
+            idAtProviders: null,
+            isActive: true,
+            isEvent: false,
+            isEditable: true,
+            isThing: true,
+            lastProviderId: null,
+            modelName: 'Offer',
+            productId: 'EY',
+            venueId: 'CU',
+            mediationsIds: [],
+            stocksIds: ['MQ'],
+          }
+
+          const wrapper = shallow(<OfferItem {...props} />)
+
+          // when
+          const addMediationsLink = wrapper.find('.add-mediations-link')
+          const textSpan = addMediationsLink.find('span').at(1)
+          const icon = addMediationsLink.find('Icon')
+
+          // then
+          expect(addMediationsLink).toHaveLength(1)
+          expect(addMediationsLink.prop('className')).toBe('button is-small is-primary is-outlined add-mediations-link')
+          expect(addMediationsLink.prop('to')).toBe('/offres/M4/accroches/nouveau?orderBy=offer.id+desc')
+          expect(icon.prop('svg')).toBe('ico-stars')
+          expect(textSpan.text()).toBe('Ajouter une Accroche')
+        })
       })
     })
 
@@ -402,9 +552,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
         // then
         const ulElements = wrapper.find('ul')
         const stockAvailabilityElement = ulElements
-          .at(1)
-          .find('li')
-          .at(3)
+        .at(1)
+        .find('li')
+        .at(3)
         expect(stockAvailabilityElement.text()).toBe('plus de places')
       })
 
@@ -443,9 +593,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
         // then
         const ulElements = wrapper.find('ul')
         const stockAvailabilityElement = ulElements
-          .at(1)
-          .find('li')
-          .at(3)
+        .at(1)
+        .find('li')
+        .at(3)
         expect(stockAvailabilityElement.text()).toBe('encore 1 place')
       })
 
@@ -484,9 +634,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
         // then
         const ulElements = wrapper.find('ul')
         const stockAvailabilityElement = ulElements
-          .at(1)
-          .find('li')
-          .at(3)
+        .at(1)
+        .find('li')
+        .at(3)
         expect(stockAvailabilityElement.text()).toBe('encore 2 places')
       })
 
@@ -542,10 +692,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
         // then
         const ulElements = wrapper.find('ul')
         const navLinkComponent = ulElements
-          .at(1)
-          .find('li')
-          .at(1)
-          .find(NavLink)
+        .at(1)
+        .find('li')
+        .at(1)
+        .find(NavLink)
         expect(navLinkComponent.prop('className')).toBe('has-text-primary')
         expect(navLinkComponent.prop('to')).toBe('/offres/1M?gestion')
         expect(navLinkComponent.text()).toBe('2 dates')
@@ -588,9 +738,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
         // then
         const ulElements = wrapper.find('ul')
         const stockAvailabilityElement = ulElements
-          .at(1)
-          .find('li')
-          .at(3)
+        .at(1)
+        .find('li')
+        .at(3)
         expect(stockAvailabilityElement.text()).toBe('plus de stock')
       })
 
@@ -646,10 +796,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
         // then
         const ulElements = wrapper.find('ul')
         const navLinkComponent = ulElements
-          .at(1)
-          .find('li')
-          .at(1)
-          .find(NavLink)
+        .at(1)
+        .find('li')
+        .at(1)
+        .find(NavLink)
         expect(navLinkComponent.prop('className')).toBe('has-text-primary')
         expect(navLinkComponent.prop('to')).toBe('/offres/1M?gestion')
         expect(navLinkComponent.text()).toBe('1 prix')

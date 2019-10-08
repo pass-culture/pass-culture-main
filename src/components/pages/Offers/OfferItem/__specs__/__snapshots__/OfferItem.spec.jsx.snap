@@ -170,7 +170,7 @@ ShallowWrapper {
             </li>
           </ul>
           <ul
-            className="actions offer-actions-list "
+            className="actions offer-actions-list"
           >
             <li>
               <NavLink
@@ -319,7 +319,7 @@ ShallowWrapper {
               </li>
             </ul>,
             <ul
-              className="actions offer-actions-list "
+              className="actions offer-actions-list"
             >
               <li>
                 <NavLink
@@ -729,7 +729,7 @@ ShallowWrapper {
                   </button>
                 </li>,
               ],
-              "className": "actions offer-actions-list ",
+              "className": "actions offer-actions-list",
             },
             "ref": null,
             "rendered": Array [
@@ -1061,7 +1061,7 @@ ShallowWrapper {
               </li>
             </ul>
             <ul
-              className="actions offer-actions-list "
+              className="actions offer-actions-list"
             >
               <li>
                 <NavLink
@@ -1210,7 +1210,7 @@ ShallowWrapper {
                 </li>
               </ul>,
               <ul
-                className="actions offer-actions-list "
+                className="actions offer-actions-list"
               >
                 <li>
                   <NavLink
@@ -1620,7 +1620,7 @@ ShallowWrapper {
                     </button>
                   </li>,
                 ],
-                "className": "actions offer-actions-list ",
+                "className": "actions offer-actions-list",
               },
               "ref": null,
               "rendered": Array [

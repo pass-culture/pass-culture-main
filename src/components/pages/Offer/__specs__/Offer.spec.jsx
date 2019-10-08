@@ -244,8 +244,6 @@ describe('src | components | pages | Offer | Offer ', () => {
         const preview_link = preview_section.find('OfferPreviewLink')
 
         // then
-        const preview_section = wrapper.find(HeroSection)
-        const preview_link = preview_section.find('.cta')
         expect(preview_link).toHaveLength(0)
       })
     })
