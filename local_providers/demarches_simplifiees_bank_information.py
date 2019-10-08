@@ -1,6 +1,5 @@
 import os
 from datetime import datetime
-from typing import Dict
 
 from connectors.api_demarches_simplifiees import get_application_details
 from domain.bank_account import format_raw_iban_or_bic
@@ -11,7 +10,6 @@ from models import BankInformation
 from models.local_provider_event import LocalProviderEventType
 from repository import offerer_queries, venue_queries
 from repository.bank_information_queries import get_last_update_from_bank_information
-from scripts.payment.bank_information_retrial import retry_linked_payments
 from utils.date import DATE_ISO_FORMAT
 
 
@@ -58,12 +56,6 @@ class BankInformationProvider(LocalProvider):
         bank_information.applicationId = self.bank_information_dict['applicationId']
         bank_information.offererId = self.bank_information_dict.get('offererId', None)
         bank_information.venueId = self.bank_information_dict.get('venueId', None)
-
-    def save_chunks(self, chunk_to_insert: Dict[str, BankInformation], chunk_to_update: Dict[str, BankInformation],
-                    providable_info: ProvidableInfo):
-        super(BankInformationProvider, self).save_chunks(chunk_to_insert, chunk_to_update, providable_info)
-        bank_information_list = list(chunk_to_insert.values()) + list(chunk_to_update.values())
-        retry_linked_payments(bank_information_list)
 
     def retrieve_providable_info(self):
         providable_info = ProvidableInfo()
