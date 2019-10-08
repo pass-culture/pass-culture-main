@@ -2,7 +2,9 @@ import os
 
 from typing import List, Tuple
 
-from scripts.payment.batch_steps import generate_new_payments, concatenate_payments_with_errors_and_retries, send_transactions, send_payments_report, send_payments_details, send_wallet_balances
+from scripts.payment.batch_steps import generate_new_payments, concatenate_payments_with_errors_and_retries, \
+    send_transactions, send_payments_report, send_payments_details, send_wallet_balances, \
+    set_not_processable_payments_with_bank_information_to_retry
 from utils.logger import logger
 from utils.mailing import parse_email_addresses
 from models.payment import Payment
@@ -54,6 +56,7 @@ def generate_or_collect_payments(payment_message_id: str = None) -> Tuple[List[P
         pending_payments, not_processable_payments = generate_new_payments()
 
         logger.info('[BATCH][PAYMENTS] STEP 2 : collect payments in ERROR and RETRY statuses')
+        set_not_processable_payments_with_bank_information_to_retry()
         payments_to_send = concatenate_payments_with_errors_and_retries(pending_payments)
     else:
         logger.info('[BATCH][PAYMENTS] STEP 1 Bis : collect payments corresponding to payment_message_id')

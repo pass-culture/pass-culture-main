@@ -14,21 +14,24 @@ class GenerateAndSendPaymentsTest:
     })
     @patch('scripts.payment.batch.get_payments_by_message_id')
     @patch('scripts.payment.batch.generate_new_payments', return_value=([], []))
+    @patch('scripts.payment.batch.set_not_processable_payments_with_bank_information_to_retry', return_value=[])
     @patch('scripts.payment.batch.concatenate_payments_with_errors_and_retries', return_value=[])
     @patch('scripts.payment.batch.send_transactions', return_value=[])
     @patch('scripts.payment.batch.send_payments_report', return_value=[])
     @patch('scripts.payment.batch.send_payments_details', return_value=[])
     @patch('scripts.payment.batch.send_wallet_balances', return_value=[])
     @clean_database
-    def test_should_retrieve_all_steps_except_1BIS_when_messageId_is_None(self, \
-                                                                          send_wallet_balances, \
-                                                                          send_payments_details, \
-                                                                          send_payments_report, \
-                                                                          send_transactions, \
-                                                                          concatenate_payments_with_errors_and_retries, \
-                                                                          generate_new_payments, \
-                                                                          get_payments_by_message_id, \
-                                                                          environment, app):
+    def test_should_retrieve_all_steps_except_1BIS_when_messageId_is_None(self,
+                                                                          send_wallet_balances,
+                                                                          send_payments_details,
+                                                                          send_payments_report,
+                                                                          send_transactions,
+                                                                          concatenate_payments_with_errors_and_retries,
+                                                                          set_not_processable_payments_with_bank_information_to_retry,
+                                                                          generate_new_payments,
+                                                                          get_payments_by_message_id,
+                                                                          environment,
+                                                                          app):
         # Given
         feature = Feature.query.filter_by(name=FeatureToggle.DEGRESSIVE_REIMBURSEMENT_RATE).first()
         feature.isActive = False
@@ -39,6 +42,7 @@ class GenerateAndSendPaymentsTest:
 
         # Then
         generate_new_payments.assert_called_once()
+        set_not_processable_payments_with_bank_information_to_retry.assert_called_once()
         concatenate_payments_with_errors_and_retries.assert_called_once()
         send_transactions.assert_called_once()
         send_payments_report.assert_called_once()
@@ -54,20 +58,22 @@ class GenerateAndSendPaymentsTest:
     })
     @patch('scripts.payment.batch.get_payments_by_message_id')
     @patch('scripts.payment.batch.generate_new_payments', return_value=([], []))
+    @patch('scripts.payment.batch.set_not_processable_payments_with_bank_information_to_retry', return_value=[])
     @patch('scripts.payment.batch.concatenate_payments_with_errors_and_retries', return_value=[])
     @patch('scripts.payment.batch.send_transactions', return_value=[])
     @patch('scripts.payment.batch.send_payments_report', return_value=[])
     @patch('scripts.payment.batch.send_payments_details', return_value=[])
     @patch('scripts.payment.batch.send_wallet_balances', return_value=[])
     @clean_database
-    def test_should_start_script_at_1BIS_step_when_messageId_is_Given(self, \
-                                                                      send_wallet_balances, \
-                                                                      send_payments_details, \
-                                                                      send_payments_report, \
-                                                                      send_transactions, \
-                                                                      concatenate_payments_with_errors_and_retries, \
-                                                                      generate_new_payments, \
-                                                                      get_payments_by_message_id, \
+    def test_should_start_script_at_1BIS_step_when_messageId_is_Given(self,
+                                                                      send_wallet_balances,
+                                                                      send_payments_details,
+                                                                      send_payments_report,
+                                                                      send_transactions,
+                                                                      concatenate_payments_with_errors_and_retries,
+                                                                      set_not_processable_payments_with_bank_information_to_retry,
+                                                                      generate_new_payments,
+                                                                      get_payments_by_message_id,
                                                                       environment, app):
         # When
         generate_and_send_payments('ar5y65dtre45')
@@ -80,4 +86,5 @@ class GenerateAndSendPaymentsTest:
         send_wallet_balances.assert_called_once()
 
         generate_new_payments.assert_not_called()
+        set_not_processable_payments_with_bank_information_to_retry.assert_not_called()
         concatenate_payments_with_errors_and_retries.assert_not_called()
