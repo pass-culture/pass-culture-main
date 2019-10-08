@@ -247,7 +247,8 @@ class Search extends PureComponent {
   renderResults = () => {
     const { query, recommendations, typeSublabels } = this.props
     const queryParams = query.parse()
-    const keywords = encodeURI(queryParams[`mots-cles`])
+    const keywords =
+      queryParams['mots-cles'] !== undefined ? encodeURI(queryParams['mots-cles']) : ''
 
     return (
       <ResultsContainer

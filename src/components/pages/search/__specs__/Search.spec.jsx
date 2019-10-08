@@ -355,15 +355,14 @@ describe('src | components | pages | Search', () => {
 
         // when
         const wrapper = shallow(<Search {...props} />)
-        const expected = {
+
+        // then
+        expect(wrapper.state()).toStrictEqual({
           isLoading: false,
           isFilterVisible: false,
           keywordsKey: 0,
           keywordsValue: 'Fake',
-        }
-
-        // then
-        expect(wrapper.state()).toStrictEqual(expected)
+        })
       })
     })
 
@@ -402,16 +401,15 @@ describe('src | components | pages | Search', () => {
           // when
           const wrapper = shallow(<Search {...props} />)
           wrapper.instance().componentDidMount()
-          const expectedRequestedGetTypes = {
+
+          // then
+          expect(dispatchMock.mock.calls[1][0]).toStrictEqual({
             config: {
               apiPath: '/types',
               method: 'GET',
             },
             type: 'REQUEST_DATA_GET_/TYPES',
-          }
-
-          // then
-          expect(dispatchMock.mock.calls[1][0]).toStrictEqual(expectedRequestedGetTypes)
+          })
         })
       })
     })
@@ -549,59 +547,63 @@ describe('src | components | pages | Search', () => {
     })
 
     describe('handleOnSubmit', () => {
-      // when
-      const props = {
-        dispatch: dispatchMock,
-        history: historyMock,
-        location: {
-          hash: '',
-          key: 'lxn6vp',
-          pathname: '/recherche',
-          search: '?orderBy=offer.id+desc',
-          state: undefined,
-        },
-        match: {
-          params: {
-            option: undefined,
+      let props
+      let event
+      let wrapper
+      let wrapperInstance
+
+      beforeEach(() => {
+        props = {
+          dispatch: dispatchMock,
+          history: historyMock,
+          location: {
+            hash: '',
+            key: 'lxn6vp',
+            pathname: '/recherche',
+            search: '?orderBy=offer.id+desc',
+            state: undefined,
           },
-        },
-        query: {
-          change: queryChangeMock,
-          parse: () => ({ page: '1' }),
-        },
-        recommendations: [],
-        search: {},
-        typeSublabels: [],
-        typeSublabelsAndDescription: [],
-      }
-      const wrapper = shallow(<Search {...props} />)
-      const event = Object.assign(jest.fn(), {
-        preventDefault: () => {},
-        target: {
-          elements: {
-            keywords: {
-              value: 'AnyWord',
+          match: {
+            params: {
+              option: undefined,
             },
           },
-        },
+          query: {
+            change: queryChangeMock,
+            parse: () => ({ page: '1' }),
+          },
+          recommendations: [],
+          search: {},
+          typeSublabels: [],
+          typeSublabelsAndDescription: [],
+        }
+        wrapper = shallow(<Search {...props} />)
+        event = Object.assign(jest.fn(), {
+          preventDefault: () => {},
+          target: {
+            elements: {
+              keywords: {
+                value: 'AnyWord',
+              },
+            },
+          },
+        })
+        wrapperInstance = wrapper.instance()
+        wrapperInstance.setState({ isFilterVisible: true })
       })
-      const wrapperInstance = wrapper.instance()
-      wrapperInstance.setState({ isFilterVisible: true })
 
       describe('when keywords is not an empty string', () => {
         it('should update state with mots-clés set to value given', () => {
           // when
           wrapperInstance.handleOnSubmit(event)
 
-          const expected = {
+          // then
+          expect(wrapper.state()).toStrictEqual({
             isLoading: false,
             isFilterVisible: false,
             keywordsKey: 0,
             keywordsValue: undefined,
-          }
-
-          // then
-          expect(wrapper.state()).toStrictEqual(expected)
+          })
         })
 
         it('should change query and pathname to tout when no category', () => {
@@ -727,15 +729,13 @@ describe('src | components | pages | Search', () => {
         const button = getRefreshKeywordsButton(wrapper)
         button.props.onClick()
 
-        const expected = {
+        // then
+        expect(wrapper.state()).toStrictEqual({
           isLoading: false,
           isFilterVisible: false,
           keywordsKey: 1,
           keywordsValue: '',
-        }
-
-        // then
-        expect(wrapper.state()).toStrictEqual(expected)
+        })
       })
 
       it('should change navigation', () => {
@@ -796,15 +796,12 @@ describe('src | components | pages | Search', () => {
         getKeywordsInput(wrapper).props.onChange(event)
 
         // then
-        const expected = {
+        expect(wrapper.state()).toStrictEqual({
           isLoading: false,
           isFilterVisible: true,
           keywordsKey: 0,
           keywordsValue: 'Any',
-        }
-
-        // then
-        expect(wrapper.state()).toStrictEqual(expected)
+        })
       })
     })
 
@@ -847,21 +844,18 @@ describe('src | components | pages | Search', () => {
         })
 
         it('isFilterVisible state is false', () => {
-          const expected = {
+          // then
+          expect(filterToggleIcon.props.svg).toBe('ico-filter')
+          expect(wrapper.state()).toStrictEqual({
             isLoading: false,
             isFilterVisible: false,
             keywordsKey: 0,
             keywordsValue: undefined,
-          }
-
-          // then
-          expect(filterToggleIcon.props.svg).toBe('ico-filter')
-          expect(wrapper.state()).toStrictEqual(expected)
+          })
         })
       })
 
       describe('when user click on the icon button', () => {
-        // when
         // when
         const props = {
           dispatch: dispatchMock,
@@ -894,15 +888,13 @@ describe('src | components | pages | Search', () => {
         const filterToggleIcon = getFilterToggle(wrapper).props.children
 
         it('should update isFilterVisible state to true', () => {
-          const expected = {
+          // then
+          expect(wrapper.state()).toStrictEqual({
             isLoading: false,
             isFilterVisible: true,
             keywordsKey: 0,
             keywordsValue: undefined,
-          }
-
-          // then
-          expect(wrapper.state()).toStrictEqual(expected)
+          })
         })
 
         it('should show chevron-up icon', () => {
@@ -938,7 +930,7 @@ describe('src | components | pages | Search', () => {
                 jours: '0-1,1-5,5-100000',
                 latitude: null,
                 longitude: null,
-                [`mots-cles`]: null,
+                ['mots-cles']: null,
                 page: '2',
                 types: null,
               }),
@@ -989,7 +981,7 @@ describe('src | components | pages | Search', () => {
               jours: '0-1,1-5,5-100000',
               latitude: null,
               longitude: null,
-              [`mots-cles`]: "keywwords€_$ %<script>alert('toto')</script>",
+              ['mots-cles']: "keywwords€_$ %<script>alert('toto')</script>",
               page: '2',
               types: null,
             }),
@@ -1005,31 +997,46 @@ describe('src | components | pages | Search', () => {
       describe('renderResults', () => {
         it('should encode keywords', () => {
           // given
-
-          // when
           const wrapper = shallow(<Search {...props} />)
           const wrapperInstance = wrapper.instance()
 
-          // then
-          const expectedResult = "keywwords%E2%82%AC_$%20%25%3Cscript%3Ealert('toto')%3C/script%3E"
+          // when
           const keywordsValue = wrapperInstance.renderResults().props['keywords']
-          expect(keywordsValue).toStrictEqual(expectedResult)
+
+          // then
+          expect(keywordsValue).toBe(
+            "keywwords%E2%82%AC_$%20%25%3Cscript%3Ealert('toto')%3C/script%3E"
+          )
+        })
+
+        it('should return empty string when no keywords', () => {
+          // given
+          props.query.parse = () => ({})
+          const wrapper = shallow(<Search {...props} />)
+          const wrapperInstance = wrapper.instance()
+
+          // when
+          const keywordsValue = wrapperInstance.renderResults().props['keywords']
+
+          // then
+          expect(keywordsValue).toBe('')
         })
       })
 
       describe('renderSearchNavAndResults', () => {
         it('should encode keywords', () => {
           // given
-
-          // when
           const wrapper = shallow(<Search {...props} />)
           const wrapperInstance = wrapper.instance()
 
-          // then
-          const expectedResult = "keywwords%E2%82%AC_$%20%25%3Cscript%3Ealert('toto')%3C/script%3E"
+          // when
           const keywordsValue = wrapperInstance.renderSearchNavAndResults().props['children'][1]
             .props['keywords']
-          expect(keywordsValue).toStrictEqual(expectedResult)
+
+          // then
+          expect(keywordsValue).toBe(
+            "keywwords%E2%82%AC_$%20%25%3Cscript%3Ealert('toto')%3C/script%3E"
+          )
         })
       })
     })

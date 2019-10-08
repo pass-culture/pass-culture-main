@@ -55,7 +55,7 @@ export const isInitialQueryWithoutFilters = (initialParams, filterParams) =>
   )
 
 export const searchResultsTitle = (
-  keywords,
+  keywords = '',
   items,
   cameFromOfferTypesPage = false,
   hasReceivedFirstSuccessData
@@ -70,7 +70,7 @@ export const searchResultsTitle = (
   } else {
     const count = items.length
     const resultString = pluralize(count, 'résultats')
-    const keywordsString = decodeURI(keywords || '')
+    const keywordsString = decodeURI(keywords)
 
     if (isEmpty(keywordsString)) {
       resultTitle = `${resultString}`

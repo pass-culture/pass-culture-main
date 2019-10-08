@@ -43,21 +43,8 @@ ShallowWrapper {
               "type": "REQUEST_DATA_GET_/TYPES",
             },
           ],
-          Array [
-            Object {
-              "config": Object {
-                "apiPath": "/types",
-                "method": "GET",
-              },
-              "type": "REQUEST_DATA_GET_/TYPES",
-            },
-          ],
         ],
         "results": Array [
-          Object {
-            "type": "return",
-            "value": undefined,
-          },
           Object {
             "type": "return",
             "value": undefined,
@@ -94,15 +81,8 @@ ShallowWrapper {
             Array [
               "/recherche",
             ],
-            Array [
-              "/recherche",
-            ],
           ],
           "results": Array [
-            Object {
-              "type": "return",
-              "value": undefined,
-            },
             Object {
               "type": "return",
               "value": undefined,
@@ -163,17 +143,8 @@ ShallowWrapper {
                 "page": null,
               },
             ],
-            Array [
-              Object {
-                "page": null,
-              },
-            ],
           ],
           "results": Array [
-            Object {
-              "type": "return",
-              "value": undefined,
-            },
             Object {
               "type": "return",
               "value": undefined,
