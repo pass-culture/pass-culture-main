@@ -6,14 +6,16 @@ from freezegun import freeze_time
 from lxml.etree import DocumentInvalid
 
 from models import PcObject
+from models.db import db
 from models.payment import Payment
 from models.payment_status import TransactionStatus, PaymentStatus
 from scripts.payment.batch_steps import send_transactions, send_payments_details, \
     send_wallet_balances, \
-    send_payments_report, concatenate_payments_with_errors_and_retries
+    send_payments_report, concatenate_payments_with_errors_and_retries, \
+    set_not_processable_payments_with_bank_information_to_retry
 from tests.conftest import clean_database, mocked_mail
 from tests.test_utils import create_offerer, create_venue, create_offer_with_thing_product, create_stock_from_offer, \
-    create_booking, create_user, create_deposit, create_payment
+    create_booking, create_user, create_deposit, create_payment, create_bank_information
 
 
 class ConcatenatePaymentsWithErrorsAndRetriesTest:
@@ -475,3 +477,28 @@ def test_send_payments_report_does_not_send_anything_if_no_payments_are_provided
 
     # then
     app.mailjet_client.send.create.assert_not_called()
+
+
+class SetNotProcessablePaymentsWithBankInformationToRetryTest:
+    @clean_database
+    def test_(self, app):
+        # Given
+        offerer = create_offerer(name='first offerer')
+        user = create_user()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock_from_offer(offer, price=0)
+        booking = create_booking(user, stock)
+        bank_information = create_bank_information(offerer=offerer)
+        not_processable_payment = create_payment(booking, offerer, Decimal(10), status=TransactionStatus.NOT_PROCESSABLE, iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+        sent_payment = create_payment(booking, offerer, Decimal(10), status=TransactionStatus.SENT, iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+        PcObject.save(bank_information, not_processable_payment, sent_payment)
+
+        # When
+        set_not_processable_payments_with_bank_information_to_retry()
+
+        # Then
+        queried_not_processable_payment = Payment.query.filter_by(id=not_processable_payment.id).one()
+        queried_sent_payment = Payment.query.filter_by(id=sent_payment.id).one()
+        assert queried_not_processable_payment.currentStatus.status == TransactionStatus.RETRY
+        assert queried_sent_payment.currentStatus.status == TransactionStatus.SENT
