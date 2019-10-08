@@ -71,7 +71,7 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_iban_is_miss
     ]
 
     # when
-    with pytest.raises(Exception) as e:
+    with pytest.raises(Exception):
         send_transactions(payments, None, 'AZERTY9Q666', '0000', ['comptable@test.com'])
 
     # then

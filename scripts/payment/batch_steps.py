@@ -165,3 +165,10 @@ def send_payments_report(payments: List[Payment], recipients: List[str]) -> None
         send_payments_report_emails(not_processable_csv, error_csv, groups, recipients, send_raw_email)
     except MailServiceException as e:
         logger.error('[BATCH][PAYMENTS] Error while sending payments reports to MailJet', e)
+
+
+def set_not_processable_payments_with_bank_information_to_retry():
+    payments_to_retry = payment_queries.find_not_processable_with_bank_information()
+    pass
+
+

@@ -3,8 +3,10 @@ from typing import List
 from flask import render_template
 from sqlalchemy import text
 
-from models import Venue, PaymentMessage, Payment, PaymentStatus
+from domain.payments import keep_only_not_processable_payments
+from models import Venue, PaymentMessage, Payment, PaymentStatus, BankInformation, Offerer, Booking, Stock, Offer
 from models.db import db
+from models.payment_status import TransactionStatus
 
 
 def find_message_checksum(message_name: str) -> str:
@@ -39,3 +41,32 @@ def _keep_only_venues_with_no_bank_information(query):
 def get_payments_by_message_id(payment_message_id: str) -> List[Payment]:
     payment_query = Payment.query.join(PaymentMessage).filter(PaymentMessage.name == payment_message_id)
     return payment_query.all()
+
+
+def find_not_processable_with_bank_information():
+    most_recent_payment_status = PaymentStatus.query\
+        .with_entities(PaymentStatus.id)\
+        .distinct(PaymentStatus.paymentId)\
+        .order_by(PaymentStatus.paymentId, PaymentStatus.date.desc())\
+        .subquery()
+
+    not_processable_payment_ids = PaymentStatus.query\
+        .with_entities(PaymentStatus.paymentId)\
+        .filter(PaymentStatus.id.in_(most_recent_payment_status))\
+        .filter_by(status=TransactionStatus.NOT_PROCESSABLE)\
+        .subquery()
+
+    predicate_matches_venue_or_offerer = (Venue.id == BankInformation.venueId) | (
+            Offerer.id == BankInformation.offererId)
+
+    payments_with_bank_information = Payment.query\
+        .filter(Payment.id.in_(not_processable_payment_ids))\
+        .join(Booking)\
+        .join(Stock)\
+        .join(Offer)\
+        .join(Venue)\
+        .join(Offerer)\
+        .join(BankInformation, predicate_matches_venue_or_offerer)\
+        .all()
+
+    return keep_only_not_processable_payments(payments_with_bank_information)

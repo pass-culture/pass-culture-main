@@ -1,12 +1,13 @@
 import uuid
+from decimal import Decimal
 
 from models import PcObject
 from models.payment_status import TransactionStatus, PaymentStatus
 from repository.payment_queries import find_message_checksum, find_error_payments, find_retry_payments, \
-    find_payments_by_message, get_payments_by_message_id
+    find_payments_by_message, get_payments_by_message_id, find_not_processable_with_bank_information
 from tests.conftest import clean_database
 from tests.test_utils import create_payment_message, create_payment, create_booking, create_user, create_deposit, \
-    create_stock_from_offer
+    create_stock_from_offer, create_bank_information
 from tests.test_utils import create_venue, create_offerer, create_offer_with_thing_product
 
 
@@ -231,3 +232,87 @@ class GeneratePayementsByMessageIdTest:
         # Then
         assert len(payements_by_id) == 1
         assert payements_by_id[0].paymentMessage.name == 'ABCD123'
+
+
+class FindNotProcessableWithBankInformationTest:
+    @clean_database
+    def test_should_not_return_payments_to_retry_if_no_bank_information(self, app):
+        # Given
+        offerer = create_offerer(name='first offerer')
+        user = create_user()
+        venue = create_venue(offerer)
+        stock = create_stock_from_offer(create_offer_with_thing_product(venue), price=0)
+        booking = create_booking(user, stock)
+        not_processable_payment = create_payment(booking, offerer, Decimal(10),
+                                                 status=TransactionStatus.NOT_PROCESSABLE,
+                                                 iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+        PcObject.save(not_processable_payment)
+
+        # When
+        payments_to_retry = find_not_processable_with_bank_information()
+
+        # Then
+        assert payments_to_retry == []
+
+    @clean_database
+    def test_should_return_payment_to_retry_if_bank_information_linked_to_offerer_and_current_status_is_not_processable(self, app):
+        # Given
+        offerer = create_offerer(name='first offerer')
+        user = create_user()
+        venue = create_venue(offerer)
+        stock = create_stock_from_offer(create_offer_with_thing_product(venue), price=0)
+        booking = create_booking(user, stock)
+        not_processable_payment = create_payment(booking, offerer, Decimal(10),
+                                                 status=TransactionStatus.NOT_PROCESSABLE,
+                                                 iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+        bank_information = create_bank_information(offerer=offerer)
+        PcObject.save(not_processable_payment, bank_information)
+
+        # When
+        payments_to_retry = find_not_processable_with_bank_information()
+
+        # Then
+        assert not_processable_payment in payments_to_retry
+
+    @clean_database
+    def test_should_not_return_payments_to_retry_if_bank_information_linked_to_offerer_and_current_status_is_not_not_processable(self, app):
+        # Given
+        offerer = create_offerer(name='first offerer')
+        user = create_user()
+        venue = create_venue(offerer)
+        stock = create_stock_from_offer(create_offer_with_thing_product(venue), price=0)
+        booking = create_booking(user, stock)
+        not_processable_payment = create_payment(booking, offerer, Decimal(10),
+                                                 status=TransactionStatus.NOT_PROCESSABLE,
+                                                 iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+        bank_information = create_bank_information(offerer=offerer)
+        PcObject.save(not_processable_payment, bank_information)
+        not_processable_payment.setStatus(TransactionStatus.SENT)
+        PcObject.save(not_processable_payment)
+
+        # When
+        payments_to_retry = find_not_processable_with_bank_information()
+
+        # Then
+        assert payments_to_retry == []
+
+    @clean_database
+    def test_should_return_payment_to_retry_if_bank_information_linked_to_venue_and_current_status_is_not_processable(self, app):
+        # Given
+        offerer = create_offerer(name='first offerer')
+        user = create_user()
+        venue = create_venue(offerer)
+        stock = create_stock_from_offer(create_offer_with_thing_product(venue), price=0)
+        booking = create_booking(user, stock)
+        not_processable_payment = create_payment(booking, offerer, Decimal(10),
+                                                 status=TransactionStatus.NOT_PROCESSABLE,
+                                                 iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+        bank_information = create_bank_information(venue=venue)
+        PcObject.save(not_processable_payment, bank_information)
+
+        # When
+        payments_to_retry = find_not_processable_with_bank_information()
+
+        # Then
+        assert not_processable_payment in payments_to_retry
+
