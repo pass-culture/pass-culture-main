@@ -11,6 +11,7 @@ IS_DEV = ENV == 'development'
 IS_INTEGRATION = ENV == 'integration'
 IS_STAGING = ENV == 'staging'
 IS_PROD = ENV == 'production'
+IS_DATALAKE = ENV == 'datalake'
 LOG_LEVEL = int(os.environ.get('LOG_LEVEL', LOG_LEVEL_INFO))
 
 if IS_DEV:
