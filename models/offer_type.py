@@ -167,7 +167,7 @@ class ThingType(SearchableType):
     }
     JEUX_VIDEO = {
         'proLabel': "Jeux vidéo en ligne",
-        'appLabel': "Jeux vidéo en ligne",
+        'appLabel': "Jeu vidéo en ligne",
         'offlineOnly': False,
         'onlineOnly': True,
         'sublabel': "Jouer",
@@ -227,7 +227,7 @@ class ThingType(SearchableType):
     }
     OEUVRE_ART = {
         'proLabel': "Vente d'œuvres d'art",
-        'appLabel': "Œuvres d’art",
+        'appLabel': "Œuvre d’art",
         'offlineOnly': False,
         'onlineOnly': False,
         'sublabel': "Regarder",

@@ -84,6 +84,6 @@ class Get:
             assert "Vente et location d’instruments de musique" in pro_labels
             assert "Vente d'œuvres d'art" in pro_labels
 
-            assert "Œuvres d’art" in app_labels
+            assert "Œuvre d’art" in app_labels
             assert "Instrument de musique" in app_labels
             assert "Livre ou carte lecture" in app_labels

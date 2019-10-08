@@ -244,7 +244,7 @@ class Post:
                                'Jouer en ligne entre amis ? '
                                'Découvrir cet univers étrange avec une manette ?',
                 'proLabel': 'Jeux vidéo en ligne',
-                'appLabel': 'Jeux vidéo en ligne',
+                'appLabel': 'Jeu vidéo en ligne',
                 'offlineOnly': False,
                 'onlineOnly': True,
                 'sublabel': 'Jouer',
