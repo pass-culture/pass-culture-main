@@ -30,7 +30,7 @@ from utils.mailing import make_activation_notification_email, make_batch_cancell
     make_reset_password_email, \
     make_user_booking_recap_email, \
     make_user_validation_email, \
-    make_user_waiting_for_validation_by_admin_email, \
+    make_pro_user_waiting_for_validation_by_admin_email, \
     make_validation_confirmation_email, \
     make_venue_validation_confirmation_email, \
     make_venue_validation_email, \
@@ -1329,14 +1329,14 @@ class UserValidationEmailsTest:
         # Then
         assert email == expected
 
-    def test_make_user_waiting_for_validation_by_admin_email(self, app):
+    def test_make_pro_user_waiting_for_validation_by_admin_email(self, app):
         # Given
         user = create_user(email="test@email.com")
         user.generate_validation_token()
         offerer = create_offerer(name='Bar des amis')
 
         # When
-        email = make_user_waiting_for_validation_by_admin_email(user, offerer)
+        email = make_pro_user_waiting_for_validation_by_admin_email(user, offerer)
         expected = {
             'FromEmail': 'dev@passculture.app',
             'FromName': 'pass Culture pro',

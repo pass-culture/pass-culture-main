@@ -397,7 +397,7 @@ def make_user_validation_email(user: User, app_origin_url: str, is_webapp: bool)
     return data
 
 
-def make_user_waiting_for_validation_by_admin_email(user: User, offerer: Offerer) -> dict:
+def make_pro_user_waiting_for_validation_by_admin_email(user: User, offerer: Offerer) -> dict:
     data = _pro_user_waiting_for_validation_by_admin_email(user, offerer)
     return data
 

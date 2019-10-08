@@ -5,7 +5,7 @@ from flask_login import login_required, current_user
 
 import models
 from domain.admin_emails import maybe_send_offerer_validation_email
-from domain.user_emails import send_user_waiting_for_validation_by_admin_email
+from domain.user_emails import send_pro_user_waiting_for_validation_by_admin_email
 from domain.payments import read_message_name_in_message_file, \
     generate_file_checksum
 from domain.user_emails import send_validation_confirmation_email, send_venue_validation_confirmation_email
@@ -96,7 +96,7 @@ def validate_user(token):
             _ask_for_validation(offerer, user_offerer)
 
         try:
-            send_user_waiting_for_validation_by_admin_email(user_to_validate, send_raw_email, offerer)
+            send_pro_user_waiting_for_validation_by_admin_email(user_to_validate, send_raw_email, offerer)
         except MailServiceException as e:
             app.logger.error('Mail service failure', e)
 

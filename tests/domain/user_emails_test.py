@@ -7,7 +7,7 @@ from domain.user_emails import send_user_driven_cancellation_email_to_user, \
     send_booking_confirmation_email_to_user, send_booking_recap_emails, send_final_booking_recap_email, \
     send_validation_confirmation_email, send_batch_cancellation_emails_to_users, \
     send_batch_cancellation_email_to_offerer, send_user_validation_email, send_venue_validation_confirmation_email, \
-    send_reset_password_email, send_activation_notification_email, send_user_waiting_for_validation_by_admin_email
+    send_reset_password_email, send_activation_notification_email, send_pro_user_waiting_for_validation_by_admin_email
 from models import Offerer, UserOfferer, User, RightsType
 from tests.test_utils import create_user, create_booking, create_stock_with_event_offer, create_offerer, create_venue, \
     create_offer_with_thing_product, create_stock_with_thing_offer, create_mocked_bookings
@@ -616,7 +616,7 @@ class SendUserWaitingForValidationByAdminEmailTest:
         with patch('domain.user_emails.make_user_validation_email',
                    return_value={'Html-part': ''}) as make_email, patch(
             'utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
-            send_user_waiting_for_validation_by_admin_email(user, mocked_send_email, offerer)
+            send_pro_user_waiting_for_validation_by_admin_email(user, mocked_send_email, offerer)
 
         # Then
         mocked_send_email.assert_called_once()
