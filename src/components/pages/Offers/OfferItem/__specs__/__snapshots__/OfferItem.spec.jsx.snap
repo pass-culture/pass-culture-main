@@ -50,7 +50,7 @@ ShallowWrapper {
         "id": "M4",
         "idAtProviders": null,
         "isActive": true,
-        "isEditablle": true,
+        "isEditable": true,
         "isEvent": false,
         "isThing": true,
         "lastProviderId": null,
@@ -170,7 +170,7 @@ ShallowWrapper {
             </li>
           </ul>
           <ul
-            className="actions"
+            className="actions offer-actions-list "
           >
             <li>
               <NavLink
@@ -197,6 +197,19 @@ ShallowWrapper {
                 href="http://localhost/decouverte/M4/HA"
                 onClick={[Function]}
               />
+            </li>
+            <li>
+              <NavLink
+                activeClassName="active"
+                aria-current="page"
+                className="button is-secondary is-small edit-link"
+                to="/offres/M4"
+              >
+                <Icon
+                  svg="ico-pen-r"
+                />
+                Modifier
+              </NavLink>
             </li>
             <li>
               <button
@@ -306,7 +319,7 @@ ShallowWrapper {
               </li>
             </ul>,
             <ul
-              className="actions"
+              className="actions offer-actions-list "
             >
               <li>
                 <NavLink
@@ -333,6 +346,19 @@ ShallowWrapper {
                   href="http://localhost/decouverte/M4/HA"
                   onClick={[Function]}
                 />
+              </li>
+              <li>
+                <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  className="button is-secondary is-small edit-link"
+                  to="/offres/M4"
+                >
+                  <Icon
+                    svg="ico-pen-r"
+                  />
+                  Modifier
+                </NavLink>
               </li>
               <li>
                 <button
@@ -675,7 +701,19 @@ ShallowWrapper {
                     onClick={[Function]}
                   />
                 </li>,
-                undefined,
+                <li>
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="button is-secondary is-small edit-link"
+                    to="/offres/M4"
+                  >
+                    <Icon
+                      svg="ico-pen-r"
+                    />
+                    Modifier
+                  </NavLink>
+                </li>,
                 <li>
                   <button
                     className="button is-secondary is-small activ-switch"
@@ -691,7 +729,7 @@ ShallowWrapper {
                   </button>
                 </li>,
               ],
-              "className": "actions",
+              "className": "actions offer-actions-list ",
             },
             "ref": null,
             "rendered": Array [
@@ -810,7 +848,59 @@ ShallowWrapper {
                 },
                 "type": "li",
               },
-              undefined,
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="button is-secondary is-small edit-link"
+                    to="/offres/M4"
+                  >
+                    <Icon
+                      svg="ico-pen-r"
+                    />
+                    Modifier
+                  </NavLink>,
+                },
+                "ref": null,
+                "rendered": Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "function",
+                  "props": Object {
+                    "activeClassName": "active",
+                    "aria-current": "page",
+                    "children": Array [
+                      <Icon
+                        svg="ico-pen-r"
+                      />,
+                      "Modifier",
+                    ],
+                    "className": "button is-secondary is-small edit-link",
+                    "to": "/offres/M4",
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "function",
+                      "props": Object {
+                        "svg": "ico-pen-r",
+                      },
+                      "ref": null,
+                      "rendered": null,
+                      "type": [Function],
+                    },
+                    "Modifier",
+                  ],
+                  "type": [Function],
+                },
+                "type": "li",
+              },
               Object {
                 "instance": null,
                 "key": undefined,
@@ -971,7 +1061,7 @@ ShallowWrapper {
               </li>
             </ul>
             <ul
-              className="actions"
+              className="actions offer-actions-list "
             >
               <li>
                 <NavLink
@@ -998,6 +1088,19 @@ ShallowWrapper {
                   href="http://localhost/decouverte/M4/HA"
                   onClick={[Function]}
                 />
+              </li>
+              <li>
+                <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  className="button is-secondary is-small edit-link"
+                  to="/offres/M4"
+                >
+                  <Icon
+                    svg="ico-pen-r"
+                  />
+                  Modifier
+                </NavLink>
               </li>
               <li>
                 <button
@@ -1107,7 +1210,7 @@ ShallowWrapper {
                 </li>
               </ul>,
               <ul
-                className="actions"
+                className="actions offer-actions-list "
               >
                 <li>
                   <NavLink
@@ -1134,6 +1237,19 @@ ShallowWrapper {
                     href="http://localhost/decouverte/M4/HA"
                     onClick={[Function]}
                   />
+                </li>
+                <li>
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="button is-secondary is-small edit-link"
+                    to="/offres/M4"
+                  >
+                    <Icon
+                      svg="ico-pen-r"
+                    />
+                    Modifier
+                  </NavLink>
                 </li>
                 <li>
                   <button
@@ -1476,7 +1592,19 @@ ShallowWrapper {
                       onClick={[Function]}
                     />
                   </li>,
-                  undefined,
+                  <li>
+                    <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="button is-secondary is-small edit-link"
+                      to="/offres/M4"
+                    >
+                      <Icon
+                        svg="ico-pen-r"
+                      />
+                      Modifier
+                    </NavLink>
+                  </li>,
                   <li>
                     <button
                       className="button is-secondary is-small activ-switch"
@@ -1492,7 +1620,7 @@ ShallowWrapper {
                     </button>
                   </li>,
                 ],
-                "className": "actions",
+                "className": "actions offer-actions-list ",
               },
               "ref": null,
               "rendered": Array [
@@ -1611,7 +1739,59 @@ ShallowWrapper {
                   },
                   "type": "li",
                 },
-                undefined,
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="button is-secondary is-small edit-link"
+                      to="/offres/M4"
+                    >
+                      <Icon
+                        svg="ico-pen-r"
+                      />
+                      Modifier
+                    </NavLink>,
+                  },
+                  "ref": null,
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "activeClassName": "active",
+                      "aria-current": "page",
+                      "children": Array [
+                        <Icon
+                          svg="ico-pen-r"
+                        />,
+                        "Modifier",
+                      ],
+                      "className": "button is-secondary is-small edit-link",
+                      "to": "/offres/M4",
+                    },
+                    "ref": null,
+                    "rendered": Array [
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "function",
+                        "props": Object {
+                          "svg": "ico-pen-r",
+                        },
+                        "ref": null,
+                        "rendered": null,
+                        "type": [Function],
+                      },
+                      "Modifier",
+                    ],
+                    "type": [Function],
+                  },
+                  "type": "li",
+                },
                 Object {
                   "instance": null,
                   "key": undefined,

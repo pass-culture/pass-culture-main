@@ -23,7 +23,6 @@ li.offer-item {
 
   ul {
     border-top: 1px solid #EFEFF4;
-
     li,
     .label {
       font-size: 0.82rem;
@@ -39,46 +38,41 @@ li.offer-item {
   }
 
   ul.actions {
-    .button {
-      margin-right: 2rem;
+    &.offer-actions-list {
+      justify-content: flex-end;
+      padding-top: 0.2rem;
 
-      &:last-child {
-        margin-right: inherit;
+      a, button {
+        font-weight: $weight-medium;
+      }
+
+      img {
+        height: 0.6rem;
+      }
+
+      li {
+        flex-grow: 1;
+        text-align: center;
+      }
+
+      li {
+        &:nth-child(2) {
+          border-right: 1px solid #EFEFF4;
+        }
+        &:nth-child(3) {
+          border-right: 1px solid #EFEFF4;
+        }
+
+        &:first-child {
+          flex-grow: 6;
+          text-align: left;
+        }
+        &:last-child {
+          width: rem(50px);
+          text-align: center;
+          border-right: none;
+        }
       }
     }
-    // hérite de BETAGOUV/pass-culture-main/pro/src/styles/global/_layout.scss
-    li.img {
-      height: 0.6rem;
-      vertical-align: middle;
-      margin-right: 0.2rem;
-    }
-
-    .edit-link {
-      border-right: 1px solid #EFEFF4;
-      padding-right: 10px;
-      margin-right: 10px;
-      margin-top: 5px;
-    }
-
-    .offer-preview-link {
-      border-right: 1px solid #EFEFF4;
-      padding-right: 10px;
-      margin-right: 10px;
-      margin-top: 5px;
-    }
-
-    .activ-switch {
-      padding-right: 10px;
-      margin-right: 10px;
-      margin-top: 5px;
-    }
-
-    .add-mediations-link {
-      margin-top: 5px;
-    }
   }
-}
-
-ul.main-list li.offer-item {
-  padding-bottom: 0.6rem;
 }
