@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from models import Offer, PcObject, ApiErrors, ThingType, EventType, Product
+from models import Offer, PcObject, ApiErrors, ThingType, EventType, Product, Provider
 from routes.serialization import as_dict
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, create_user, create_mediation, create_recommendation, \
@@ -980,11 +980,25 @@ class IsEditableTest:
         offer.lastProviderId = 21
 
         # then
-        assert offer.isEditable == False
+        assert offer.isEditable is False
+
+    def test_returns_true_if_offer_is_coming_from_TiteLive_provider(self, app):
+        # given
+        provider = Provider()
+        provider.name = 'myProvider'
+        provider.localClass = 'TiteLive is my class'
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        offer.providerId = 21
+        offer.lastProvider = provider
+
+        # then
+        assert offer.isEditable is True
 
     def test_returns_true_if_offer_is_not_coming_from_provider(self, app):
         # given
         offer = Offer()
 
         # then
-        assert offer.isEditable == True
+        assert offer.isEditable is True
