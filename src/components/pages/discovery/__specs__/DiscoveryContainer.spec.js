@@ -48,6 +48,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
       // then
       expect(props).toStrictEqual({
         currentRecommendation: {
+          index: 0,
           mediation: {
             firstThumbDominantColor: [205, 54, 70],
             frontText:
