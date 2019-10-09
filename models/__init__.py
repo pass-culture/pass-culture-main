@@ -1,4 +1,5 @@
 from models.api_errors import ApiErrors
+from models.api_key import ApiKey
 from models.bank_information import BankInformation
 from models.beneficiary_import import BeneficiaryImport
 from models.beneficiary_import_status import BeneficiaryImportStatus
@@ -44,6 +45,7 @@ from models.versioned_mixin import VersionedMixin
 __all__ = (
     'VersionedMixin',
     'ApiErrors',
+    'ApiKey',
     'BankInformation',
     'BeneficiaryImport',
     'BeneficiaryImportStatus',
