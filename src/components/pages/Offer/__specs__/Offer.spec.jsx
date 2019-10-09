@@ -249,6 +249,54 @@ describe('src | components | pages | Offer | Offer ', () => {
         // then
         expect(preview_link).toHaveLength(0)
       })
+
+      describe('when the offer is an Event', () => {
+        it('should allow to set an event duration', () => {
+          // given
+          props.match = {
+            params: {
+              offerId: 'QU',
+            },
+          }
+          props.selectedOfferType = {
+            type: 'Event',
+          }
+
+          // when
+          const wrapper = shallow(<Offer {...props} />)
+
+          // then
+          const fieldGroups = wrapper.find('.field-group')
+          const fieldGroupForUsefulInformation = fieldGroups.at(1)
+          const durationField = fieldGroupForUsefulInformation.find(Field).at(2)
+          expect(fieldGroups).toHaveLength(3)
+          expect(durationField.prop('name')).toStrictEqual('durationMinutes')
+        })
+      })
+
+      describe('when the offer is a Thing', () => {
+        it('should a duration field should be available', () => {
+          // given
+          props.match = {
+            params: {
+              offerId: 'QU',
+            },
+          }
+          props.selectedOfferType = {
+            type: 'Thing',
+          }
+
+          // when
+          const wrapper = shallow(<Offer {...props} />)
+
+          // then
+          const fieldGroups = wrapper.find('.field-group')
+          const fieldGroupForUsefulInformation = fieldGroups.at(1)
+          const durationField = fieldGroupForUsefulInformation.find(Field).at(2)
+          expect(fieldGroups).toHaveLength(3)
+          expect(durationField.prop('name')).toStrictEqual('bookingEmail')
+        })
+      })
     })
 
     describe('when updating the offer', () => {
@@ -379,50 +427,6 @@ describe('src | components | pages | Offer | Offer ', () => {
         const venueField = fieldGroupForUsefulInformation.find(Field).at(1)
         expect(fieldGroups).toHaveLength(3)
         expect(venueField.prop('options')).toStrictEqual(expectedOptions)
-      })
-
-      it('should display correctly duration field when EventType', () => {
-        // given
-        props.match = {
-          params: {
-            offerId: 'QU',
-          },
-        }
-        props.selectedOfferType = {
-          type: 'Event',
-        }
-
-        // when
-        const wrapper = shallow(<Offer {...props} />)
-
-        // then
-        const fieldGroups = wrapper.find('.field-group')
-        const fieldGroupForUsefulInformation = fieldGroups.at(1)
-        const durationField = fieldGroupForUsefulInformation.find(Field).at(2)
-        expect(fieldGroups).toHaveLength(3)
-        expect(durationField.prop('name')).toStrictEqual('durationMinutes')
-      })
-
-      it('should not display correctly duration field when Thing', () => {
-        // given
-        props.match = {
-          params: {
-            offerId: 'QU',
-          },
-        }
-        props.selectedOfferType = {
-          type: 'Thing',
-        }
-
-        // when
-        const wrapper = shallow(<Offer {...props} />)
-
-        // then
-        const fieldGroups = wrapper.find('.field-group')
-        const fieldGroupForUsefulInformation = fieldGroups.at(1)
-        const durationField = fieldGroupForUsefulInformation.find(Field).at(2)
-        expect(fieldGroups).toHaveLength(3)
-        expect(durationField.prop('name')).toStrictEqual('bookingEmail')
       })
     })
 
