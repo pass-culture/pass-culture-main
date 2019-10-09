@@ -56,8 +56,8 @@ class TiteLiveInformation extends PureComponent {
             <div className="titelive-explanation">
               <p>
                 {'Le visuel par défaut, les informations et le stock de cette offre sont synchronisés' +
-                  ' avec les données Tite Live tous les soirs. De ce fait, seule sa description est modifiable,' +
-                  ' pour vos besoins d’éditorialisation pour le pass Culture.'}
+                  ' avec les données Tite Live tous les soirs. De ce fait, seuls sa description et son titre sont modifiables,' +
+                  " pour vos besoins d'éditorialisation pour le pass Culture."}
               </p>
             </div>
           </div>
