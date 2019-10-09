@@ -52,6 +52,29 @@ class Delete:
             assert booking1 in bookings
             assert booking2 in bookings
 
+        @clean_database
+        def when_stock_is_on_an_offer_from_titelive_provider(self, app):
+            # given
+            tite_live_provider = Provider \
+                .query \
+                .filter(Provider.localClass == 'TiteLiveThings') \
+                .first()
+
+            user = create_user(email='test@email.com')
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            offer = create_offer_with_thing_product(venue, last_provider_id=tite_live_provider.id)
+            stock = create_stock(offer=offer)
+            PcObject.save(user, stock, user_offerer)
+
+            # when
+            response = TestClient(app.test_client()).with_auth('test@email.com') \
+                .delete('/stocks/' + humanize(stock.id))
+
+            # then
+            assert response.status_code == 200
+
     class Returns400:
         @clean_database
         def when_stock_is_an_event_that_ended_more_than_two_days_ago(self, app):
@@ -76,30 +99,6 @@ class Delete:
             assert response.status_code == 400
             assert response.json['global'] == ["L'événement s'est terminé il y a plus de deux jours, " \
                                                "la suppression est impossible."]
-
-        @clean_database
-        def when_stock_is_on_an_offer_from_provider(self, app):
-            # given
-            tite_live_provider = Provider \
-                .query \
-                .filter(Provider.localClass == 'TiteLiveThings') \
-                .first()
-
-            user = create_user(email='test@email.com')
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
-            venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue, last_provider_id=tite_live_provider.id)
-            stock = create_stock(offer=offer)
-            PcObject.save(user, stock, user_offerer)
-
-            # when
-            response = TestClient(app.test_client()).with_auth('test@email.com') \
-                .delete('/stocks/' + humanize(stock.id))
-
-            # then
-            assert response.status_code == 400
-            assert response.json["global"] == ["Les offres importées ne sont pas modifiables"]
 
 
     class Returns403:
