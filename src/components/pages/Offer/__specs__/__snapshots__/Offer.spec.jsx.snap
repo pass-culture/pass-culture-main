@@ -112,7 +112,7 @@ ShallowWrapper {
           successNotification="Formulaire non validé"
         >
           <div
-            className="field-group"
+            className="field-group offer-form"
           >
             <Field
               displayValue={[Function]}
@@ -377,7 +377,7 @@ ShallowWrapper {
           "action": "/offers/undefined",
           "children": Array [
             <div
-              className="field-group"
+              className="field-group offer-form"
             >
               <Field
                 displayValue={[Function]}
@@ -693,7 +693,7 @@ ShallowWrapper {
                   </div>
                 </div>,
               ],
-              "className": "field-group",
+              "className": "field-group offer-form",
             },
             "ref": null,
             "rendered": Array [
@@ -1510,7 +1510,7 @@ ShallowWrapper {
             successNotification="Formulaire non validé"
           >
             <div
-              className="field-group"
+              className="field-group offer-form"
             >
               <Field
                 displayValue={[Function]}
@@ -1775,7 +1775,7 @@ ShallowWrapper {
             "action": "/offers/undefined",
             "children": Array [
               <div
-                className="field-group"
+                className="field-group offer-form"
               >
                 <Field
                   displayValue={[Function]}
@@ -2091,7 +2091,7 @@ ShallowWrapper {
                     </div>
                   </div>,
                 ],
-                "className": "field-group",
+                "className": "field-group offer-form",
               },
               "ref": null,
               "rendered": Array [
