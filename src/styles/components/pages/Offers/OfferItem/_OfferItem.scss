@@ -49,13 +49,11 @@ li.offer-item {
       img {
         height: 0.6rem;
       }
-
+      
       li {
         flex-grow: 1;
         text-align: center;
-      }
 
-      li {
         &:nth-child(2) {
           border-right: 1px solid #EFEFF4;
         }

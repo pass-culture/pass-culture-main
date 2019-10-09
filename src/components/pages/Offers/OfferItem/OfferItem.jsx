@@ -12,7 +12,7 @@ import OfferPreviewLink from '../../../layout/OfferPreviewLink/OfferPreviewLink'
 import { buildWebappDiscoveryUrl } from '../../../layout/OfferPreviewLink/buildWebappDiscoveryUrl'
 
 class OfferItem extends Component {
-  handleHrefClick = () => event => {
+  handleHrefClick = event => {
     event.preventDefault()
     const { offer } = this.props
     const offerId = get(offer, 'id')
@@ -195,7 +195,7 @@ class OfferItem extends Component {
                 <OfferPreviewLink
                   className="button is-secondary is-small offer-preview-link"
                   href={offerWebappUrl}
-                  onClick={this.handleHrefClick()}
+                  onClick={this.handleHrefClick}
                 />
               </li>
             )}

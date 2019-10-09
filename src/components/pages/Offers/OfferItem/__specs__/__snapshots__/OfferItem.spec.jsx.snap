@@ -44,25 +44,11 @@ ShallowWrapper {
           "isActive": true,
           "thumbUrl": "https://url.to/thumb",
         },
-        "bookingEmail": "booking.email@test.com",
-        "dateCreated": "2019-02-25T09:50:10.735519Z",
-        "dateModifiedAtLastProvider": "2019-02-25T09:50:31.881297Z",
         "id": "M4",
-        "idAtProviders": null,
         "isActive": true,
         "isEditable": true,
-        "isEvent": false,
-        "isThing": true,
-        "lastProviderId": null,
-        "mediationsIds": Array [
-          "HA",
-        ],
-        "modelName": "Offer",
-        "productId": "EY",
-        "stocksIds": Array [
-          "MQ",
-        ],
-        "venueId": "CU",
+        "isEvent": true,
+        "isThing": false,
       }
     }
     offerTypeLabel="fake label"
@@ -151,7 +137,7 @@ ShallowWrapper {
                 className="has-text-primary"
                 to="/offres/M4?gestion"
               >
-                0 prix
+                0 date
               </NavLink>
             </li>
             <li>
@@ -300,7 +286,7 @@ ShallowWrapper {
                   className="has-text-primary"
                   to="/offres/M4?gestion"
                 >
-                  0 prix
+                  0 date
                 </NavLink>
               </li>
               <li>
@@ -542,7 +528,7 @@ ShallowWrapper {
                     className="has-text-primary"
                     to="/offres/M4?gestion"
                   >
-                    0 prix
+                    0 date
                   </NavLink>
                 </li>,
                 <li>
@@ -594,7 +580,7 @@ ShallowWrapper {
                     className="has-text-primary"
                     to="/offres/M4?gestion"
                   >
-                    0 prix
+                    0 date
                   </NavLink>,
                 },
                 "ref": null,
@@ -605,12 +591,12 @@ ShallowWrapper {
                   "props": Object {
                     "activeClassName": "active",
                     "aria-current": "page",
-                    "children": "0 prix",
+                    "children": "0 date",
                     "className": "has-text-primary",
                     "to": "/offres/M4?gestion",
                   },
                   "ref": null,
-                  "rendered": "0 prix",
+                  "rendered": "0 date",
                   "type": [Function],
                 },
                 "type": "li",
@@ -1042,7 +1028,7 @@ ShallowWrapper {
                   className="has-text-primary"
                   to="/offres/M4?gestion"
                 >
-                  0 prix
+                  0 date
                 </NavLink>
               </li>
               <li>
@@ -1191,7 +1177,7 @@ ShallowWrapper {
                     className="has-text-primary"
                     to="/offres/M4?gestion"
                   >
-                    0 prix
+                    0 date
                   </NavLink>
                 </li>
                 <li>
@@ -1433,7 +1419,7 @@ ShallowWrapper {
                       className="has-text-primary"
                       to="/offres/M4?gestion"
                     >
-                      0 prix
+                      0 date
                     </NavLink>
                   </li>,
                   <li>
@@ -1485,7 +1471,7 @@ ShallowWrapper {
                       className="has-text-primary"
                       to="/offres/M4?gestion"
                     >
-                      0 prix
+                      0 date
                     </NavLink>,
                   },
                   "ref": null,
@@ -1496,12 +1482,12 @@ ShallowWrapper {
                     "props": Object {
                       "activeClassName": "active",
                       "aria-current": "page",
-                      "children": "0 prix",
+                      "children": "0 date",
                       "className": "has-text-primary",
                       "to": "/offres/M4?gestion",
                     },
                     "ref": null,
-                    "rendered": "0 prix",
+                    "rendered": "0 date",
                     "type": [Function],
                   },
                   "type": "li",

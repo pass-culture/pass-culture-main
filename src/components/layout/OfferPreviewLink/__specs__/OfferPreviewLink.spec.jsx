@@ -37,12 +37,16 @@ describe('src | components | layout | OfferPreviewLink', () => {
         expect(link.text()).toStrictEqual('<Icon />Prévisualiser')
       })
 
-      it('should call a function that open an new window on clicking', () => {
+      it('should execute the onClick property with the link is clicked', () => {
         // given
-        const wrapper = shallow(<OfferPreviewLink {...props} />)
+        const wrapper = shallow(
+          <div>
+            <OfferPreviewLink {...props} />
+          </div>
+        )
 
         // when
-        wrapper.find('a').simulate('click')
+        wrapper.find('OfferPreviewLink').simulate('click')
 
         // then
         expect(props.onClick).toHaveBeenCalledWith()

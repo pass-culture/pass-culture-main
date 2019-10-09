@@ -14,18 +14,24 @@ describe('src | components | pages | Offers | OfferItem', () => {
   let dispatch = jest.fn()
   let updateOffer = jest.fn()
 
+  const activeOfferWithActiveMediation = offersMock[0]
+  const activeOfferWithOutActiveMediation = offersMock[1]
+  const deactivedOfferWithActiveMediation = offersMock[2]
+  const activeOfferWithActiveMediationAndNotEditable = offersMock[3]
+  const activeThingOfferWithActiveMediation = offersMock[4]
+
   beforeEach(() => {
     props = {
       aggregatedStock: {},
       dispatch,
-      offer: offersMock[0],
-      mediations: [{ id: 'HA', isActive: true, thumbUrl: 'https://url.to/thumb' }],
+      offer: activeOfferWithActiveMediation,
       location: {
         search: '?orderBy=offer.id+desc',
       },
       maxDate: {
         format: jest.fn(),
       },
+      mediations: [{ id: 'HA', isActive: true, thumbUrl: 'https://url.to/thumb' }],
       offerTypeLabel: 'fake label',
       offerer: {},
       product: {},
@@ -53,24 +59,19 @@ describe('src | components | pages | Offers | OfferItem', () => {
     describe('thumb Component', () => {
       it('should render a Thumb Component with the given url when offer has an active mediation', () => {
         // given
-        props.offer.activeMediation = {
-          id: 'EY',
-          isActive: true,
-          thumbUrl: 'https://url.to/thumb',
-        }
-
-        // when
         const wrapper = shallow(<OfferItem {...props} />)
 
-        // then
+        // when
         const thumbComponent = wrapper.find(Thumb)
+
+        // then
         expect(thumbComponent.prop('alt')).toBe('offre')
         expect(thumbComponent.prop('src')).toBe('https://url.to/thumb')
       })
 
       it('should render a Thumb Component with url from product when offer does not have an active mediation', () => {
         // given
-        props.offer.activeMediation = null
+        props.offer = activeOfferWithOutActiveMediation
         props.product.thumbUrl = '/fake-product-url'
         props.mediations = []
 
@@ -85,69 +86,53 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should render a Thumb Component with an empty url when offer does not have an active mediation and product does not have a thumb url', () => {
         // given
-        props.offer.activeMediation = null
+        props.offer = activeOfferWithOutActiveMediation
         props.product.thumbUrl = null
         props.mediations = []
-
-        // when
         const wrapper = shallow(<OfferItem {...props} />)
 
-        // then
+        // when
         const thumbComponent = wrapper.find(Thumb)
+
+        // then
         expect(thumbComponent.prop('alt')).toBe('offre')
         expect(thumbComponent.prop('src')).toBe('')
       })
     })
+
     describe('action buttons', () => {
       describe('switch activate', () => {
         it('should deactivate when offer is active', () => {
           // given
+          props.offer = activeOfferWithActiveMediation
           const wrapper = shallow(<OfferItem {...props} />)
           const disableButton = wrapper.find('button')
+
           // when
           disableButton.simulate('click')
 
           // then
-          expect(updateOffer).toHaveBeenCalledWith('M4', false)
+          expect(updateOffer).toHaveBeenCalledWith(activeOfferWithActiveMediation.id, false)
         })
 
         it('should activate when offer is not active', () => {
           // given
-          props.offer = {
-            id: 'M4',
-            activeMediation: {
-              id: 'HA',
-              isActive: true,
-              thumbUrl: 'https://url.to/thumb',
-            },
-            bookingEmail: 'booking.email@test.com',
-            dateCreated: '2019-02-25T09:50:10.735519Z',
-            dateModifiedAtLastProvider: '2019-02-25T09:50:31.881297Z',
-            idAtProviders: null,
-            isActive: false,
-            isEvent: false,
-            isThing: true,
-            lastProviderId: null,
-            modelName: 'Offer',
-            productId: 'EY',
-            venueId: 'CU',
-            mediationsIds: ['HA'],
-            stocksIds: ['MQ'],
-          }
+          props.offer = deactivedOfferWithActiveMediation
           const wrapper = shallow(<OfferItem {...props} />)
           const disableButton = wrapper.find('button')
+
           // when
           disableButton.simulate('click')
 
           // then
-          expect(updateOffer).toHaveBeenCalledWith('M4', true)
+          expect(updateOffer).toHaveBeenCalledWith(deactivedOfferWithActiveMediation.id, true)
         })
       })
 
       describe('preview link', () => {
         it('should not be displayed when offer has no active mediation', () => {
           // given
-          props.offer = offersMock[1]
+          props.offer = activeOfferWithOutActiveMediation
 
           const wrapper = shallow(<OfferItem {...props} />)
 
@@ -158,31 +143,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
           expect(offerPreviewLink).toHaveLength(0)
         })
 
-        it('should be displayed when offer is no editable', () => {
+        it('should be displayed when offer is no editable has an active mediation', () => {
           // given
-          props.offer = {
-            id: 'M4',
-            activeMediation: {
-              id: 'HA',
-              isActive: true,
-              thumbUrl: 'https://url.to/thumb',
-            },
-            bookingEmail: 'booking.email@test.com',
-            dateCreated: '2019-02-25T09:50:10.735519Z',
-            dateModifiedAtLastProvider: '2019-02-25T09:50:31.881297Z',
-            idAtProviders: null,
-            isActive: true,
-            isEvent: false,
-            isEditable: false,
-            isThing: true,
-            lastProviderId: null,
-            modelName: 'Offer',
-            productId: 'EY',
-            venueId: 'CU',
-            mediationsIds: ['HA'],
-            stocksIds: ['MQ'],
-          }
-
+          props.offer = activeOfferWithActiveMediationAndNotEditable
           const wrapper = shallow(<OfferItem {...props} />)
 
           // when
@@ -194,27 +157,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
         it('should be displayed when offer has an active mediation', () => {
           // given
-          props.offer = {
-            id: 'M4',
-            activeMediation: {
-              id: 'HA',
-              isActive: true,
-              thumbUrl: 'https://url.to/thumb',
-            },
-            bookingEmail: 'booking.email@test.com',
-            dateCreated: '2019-02-25T09:50:10.735519Z',
-            dateModifiedAtLastProvider: '2019-02-25T09:50:31.881297Z',
-            idAtProviders: null,
-            isActive: true,
-            isEvent: false,
-            isThing: true,
-            lastProviderId: null,
-            modelName: 'Offer',
-            productId: 'EY',
-            venueId: 'CU',
-            mediationsIds: ['HA'],
-            stocksIds: ['MQ'],
-          }
+          props.offer = activeOfferWithActiveMediation
 
           const wrapper = shallow(<OfferItem {...props} />)
 
@@ -228,27 +171,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
         it('should open a new window with correct link', () => {
           // given
-          props.offer = {
-            id: 'M4',
-            activeMediation: {
-              id: 'HA',
-              isActive: true,
-              thumbUrl: 'https://url.to/thumb',
-            },
-            bookingEmail: 'booking.email@test.com',
-            dateCreated: '2019-02-25T09:50:10.735519Z',
-            dateModifiedAtLastProvider: '2019-02-25T09:50:31.881297Z',
-            idAtProviders: null,
-            isActive: true,
-            isEvent: false,
-            isThing: true,
-            lastProviderId: null,
-            modelName: 'Offer',
-            productId: 'EY',
-            venueId: 'CU',
-            mediationsIds: ['HA'],
-            stocksIds: ['MQ'],
-          }
+          props.offer = activeOfferWithActiveMediation
 
           const wrapper = shallow(<OfferItem {...props} />)
           const offerPreviewLink = wrapper.find('OfferPreviewLink')
@@ -274,28 +197,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       describe('edit offer link', () => {
         it('should be displayed when offer is editable', () => {
           // given
-          props.offer = {
-            id: 'M4',
-            activeMediation: {
-              id: 'HA',
-              isActive: true,
-              thumbUrl: 'https://url.to/thumb',
-            },
-            bookingEmail: 'booking.email@test.com',
-            dateCreated: '2019-02-25T09:50:10.735519Z',
-            dateModifiedAtLastProvider: '2019-02-25T09:50:31.881297Z',
-            idAtProviders: null,
-            isActive: true,
-            isEvent: false,
-            isEditable: true,
-            isThing: true,
-            lastProviderId: null,
-            modelName: 'Offer',
-            productId: 'EY',
-            venueId: 'CU',
-            mediationsIds: ['HA'],
-            stocksIds: ['MQ'],
-          }
+          props.offer = activeOfferWithActiveMediation
 
           const wrapper = shallow(<OfferItem {...props} />)
 
@@ -308,29 +210,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
         it('should not be displayed when offer is no editable', () => {
           // given
-          props.offer = {
-            id: 'M4',
-            activeMediation: {
-              id: 'HA',
-              isActive: true,
-              thumbUrl: 'https://url.to/thumb',
-            },
-            bookingEmail: 'booking.email@test.com',
-            dateCreated: '2019-02-25T09:50:10.735519Z',
-            dateModifiedAtLastProvider: '2019-02-25T09:50:31.881297Z',
-            idAtProviders: null,
-            isActive: true,
-            isEvent: false,
-            isEditable: false,
-            isThing: true,
-            lastProviderId: null,
-            modelName: 'Offer',
-            productId: 'EY',
-            venueId: 'CU',
-            mediationsIds: ['HA'],
-            stocksIds: ['MQ'],
-          }
-
+          props.offer = activeOfferWithActiveMediationAndNotEditable
           const wrapper = shallow(<OfferItem {...props} />)
 
           // when
@@ -344,8 +224,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       describe('mediations link', () => {
         it('should display a link to offer when offer has one or more mediations', () => {
           // given
-          props.offer = offersMock[1]
-
+          props.offer = activeOfferWithActiveMediation
           const wrapper = shallow(<OfferItem {...props} />)
 
           // when
@@ -356,32 +235,15 @@ describe('src | components | pages | Offers | OfferItem', () => {
           // then
           expect(addMediationsLink).toHaveLength(1)
           expect(addMediationsLink.prop('className')).toBe('button is-small is-secondary add-mediations-link')
-          expect(addMediationsLink.prop('to')).toBe('/offres/KU')
+          expect(addMediationsLink.prop('to')).toBe('/offres/M4')
           expect(icon.prop('svg')).toBe('ico-stars')
           expect(textSpan.text()).toBe('Accroches')
         })
 
-        it('should display a link to add a mediationo when offer no mediations yet', () => {
+        it('should display a link to add a mediation when offer no mediations yet', () => {
           // given
           props.mediations = []
-          props.offer = {
-            id: 'M4',
-            activeMediation: null,
-            bookingEmail: 'booking.email@test.com',
-            dateCreated: '2019-02-25T09:50:10.735519Z',
-            dateModifiedAtLastProvider: '2019-02-25T09:50:31.881297Z',
-            idAtProviders: null,
-            isActive: true,
-            isEvent: false,
-            isEditable: true,
-            isThing: true,
-            lastProviderId: null,
-            modelName: 'Offer',
-            productId: 'EY',
-            venueId: 'CU',
-            mediationsIds: [],
-            stocksIds: ['MQ'],
-          }
+          props.offer = activeOfferWithOutActiveMediation
 
           const wrapper = shallow(<OfferItem {...props} />)
 
@@ -390,10 +252,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
           const textSpan = addMediationsLink.find('span').at(1)
           const icon = addMediationsLink.find('Icon')
 
-          // then
+          // thenu
           expect(addMediationsLink).toHaveLength(1)
           expect(addMediationsLink.prop('className')).toBe('button is-small is-primary is-outlined add-mediations-link')
-          expect(addMediationsLink.prop('to')).toBe('/offres/M4/accroches/nouveau?orderBy=offer.id+desc')
+          expect(addMediationsLink.prop('to')).toBe('/offres/GH/accroches/nouveau?orderBy=offer.id+desc')
           expect(icon.prop('svg')).toBe('ico-stars')
           expect(textSpan.text()).toBe('Ajouter une Accroche')
         })
@@ -524,27 +386,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         }
         props.stocks = []
         props.stockAlertMessage = 'plus de places'
-        props.offer = {
-          id: '1M',
-          activeMediation: {
-            id: 'EY',
-            isActive: true,
-            thumbUrl: 'https://url.to/thumb',
-          },
-          bookingEmail: 'booking.email@test.com',
-          dateCreated: '2019-02-25T09:50:10.735519Z',
-          dateModifiedAtLastProvider: '2019-02-25T09:50:31.598542Z',
-          productId: 42,
-          idAtProviders: null,
-          isActive: true,
-          isEvent: true,
-          isThing: false,
-          lastProviderId: null,
-          modelName: 'Offer',
-          venueId: 'BE',
-          mediationsIds: ['EY'],
-          stocksIds: ['JQ'],
-        }
+        props.offer = activeOfferWithActiveMediation
 
         // when
         const wrapper = shallow(<OfferItem {...props} />)
@@ -565,27 +407,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         }
         props.stocks = [{}]
         props.stockAlertMessage = 'encore 1 place'
-        props.offer = {
-          id: '1M',
-          activeMediation: {
-            id: 'EY',
-            isActive: true,
-            thumbUrl: 'https://url.to/thumb',
-          },
-          bookingEmail: 'booking.email@test.com',
-          dateCreated: '2019-02-25T09:50:10.735519Z',
-          dateModifiedAtLastProvider: '2019-02-25T09:50:31.598542Z',
-          productId: 42,
-          idAtProviders: null,
-          isActive: true,
-          isEvent: true,
-          isThing: false,
-          lastProviderId: null,
-          modelName: 'Offer',
-          venueId: 'BE',
-          mediationsIds: ['EY'],
-          stocksIds: ['JQ'],
-        }
+        props.offer = activeOfferWithActiveMediation
 
         // when
         const wrapper = shallow(<OfferItem {...props} />)
@@ -606,27 +428,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         }
         props.stocks = [{}, {}]
         props.stockAlertMessage = 'encore 2 places'
-        props.offer = {
-          id: '1M',
-          activeMediation: {
-            id: 'EY',
-            isActive: true,
-            thumbUrl: 'https://url.to/thumb',
-          },
-          bookingEmail: 'booking.email@test.com',
-          dateCreated: '2019-02-25T09:50:10.735519Z',
-          dateModifiedAtLastProvider: '2019-02-25T09:50:31.598542Z',
-          productId: 42,
-          idAtProviders: null,
-          isActive: true,
-          isEvent: true,
-          isThing: false,
-          lastProviderId: null,
-          modelName: 'Offer',
-          venueId: 'BE',
-          mediationsIds: ['EY'],
-          stocksIds: ['JQ'],
-        }
+        props.offer = activeOfferWithActiveMediation
 
         // when
         const wrapper = shallow(<OfferItem {...props} />)
@@ -664,27 +466,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           offerType: { label: 'Conférence — Débat — Dédicace' },
         }
         props.stocks = [{}, {}]
-        props.offer = {
-          id: '1M',
-          activeMediation: {
-            id: 'EY',
-            isActive: true,
-            thumbUrl: 'https://url.to/thumb',
-          },
-          bookingEmail: 'booking.email@test.com',
-          dateCreated: '2019-02-25T09:50:10.735519Z',
-          dateModifiedAtLastProvider: '2019-02-25T09:50:31.598542Z',
-          productId: 42,
-          idAtProviders: null,
-          isActive: true,
-          isEvent: true,
-          isThing: false,
-          lastProviderId: null,
-          modelName: 'Offer',
-          venueId: 'BE',
-          mediationsIds: ['EY'],
-          stocksIds: ['JQ'],
-        }
+        props.offer = activeOfferWithActiveMediation
 
         // when
         const wrapper = mount(<OfferItem {...props} />, options)
@@ -697,7 +479,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         .at(1)
         .find(NavLink)
         expect(navLinkComponent.prop('className')).toBe('has-text-primary')
-        expect(navLinkComponent.prop('to')).toBe('/offres/1M?gestion')
+        expect(navLinkComponent.prop('to')).toBe('/offres/M4?gestion')
         expect(navLinkComponent.text()).toBe('2 dates')
       })
     })
@@ -710,27 +492,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         }
         props.stocks = []
         props.stockAlertMessage = 'plus de stock'
-        props.offer = {
-          activeMediation: {
-            id: 'EY',
-            isActive: true,
-            thumbUrl: 'https://url.to/thumb',
-          },
-          bookingEmail: 'booking.email@test.com',
-          dateCreated: '2019-02-25T09:50:10.735519Z',
-          dateModifiedAtLastProvider: '2019-02-25T09:50:31.598542Z',
-          id: '1M',
-          idAtProviders: null,
-          isActive: true,
-          isEvent: false,
-          isThing: true,
-          lastProviderId: null,
-          mediationsIds: ['EY'],
-          modelName: 'Offer',
-          productId: 42,
-          stocksIds: ['JQ'],
-          venueId: 'BE',
-        }
+        props.offer = activeThingOfferWithActiveMediation
 
         // when
         const wrapper = shallow(<OfferItem {...props} />)
@@ -768,27 +530,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           offerType: { label: 'Une place de cinéma' },
         }
         props.stocks = [{}]
-        props.offer = {
-          id: '1M',
-          activeMediation: {
-            id: 'EY',
-            isActive: true,
-            thumbUrl: 'https://url.to/thumb',
-          },
-          bookingEmail: 'booking.email@test.com',
-          dateCreated: '2019-02-25T09:50:10.735519Z',
-          dateModifiedAtLastProvider: '2019-02-25T09:50:31.598542Z',
-          productId: 42,
-          idAtProviders: null,
-          isActive: true,
-          isEvent: false,
-          isThing: true,
-          lastProviderId: null,
-          modelName: 'Offer',
-          venueId: 'BE',
-          mediationsIds: ['EY'],
-          stocksIds: ['JQ'],
-        }
+        props.offer = activeThingOfferWithActiveMediation
 
         // when
         const wrapper = mount(<OfferItem {...props} />, options)
@@ -801,7 +543,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         .at(1)
         .find(NavLink)
         expect(navLinkComponent.prop('className')).toBe('has-text-primary')
-        expect(navLinkComponent.prop('to')).toBe('/offres/1M?gestion')
+        expect(navLinkComponent.prop('to')).toBe('/offres/THING?gestion')
         expect(navLinkComponent.text()).toBe('1 prix')
       })
     })
@@ -810,10 +552,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
   describe('event tracking', () => {
     it('should track deactivate offer when offer is active', () => {
       // given
-      props.offer = {
-        id: 'Xvgty46d',
-        isActive: true,
-      }
+      props.offer = activeThingOfferWithActiveMediation
 
       const wrapper = shallow(<OfferItem {...props} />)
 
@@ -821,22 +560,19 @@ describe('src | components | pages | Offers | OfferItem', () => {
       wrapper.instance().handleOnDeactivateClick()
 
       // then
-      expect(props.trackDeactivateOffer).toHaveBeenCalledWith('Xvgty46d')
+      expect(props.trackDeactivateOffer).toHaveBeenCalledWith(activeThingOfferWithActiveMediation.id)
     })
 
     it('should track activate offer when offer is inactive', () => {
       // given
-      props.offer = {
-        id: 'FG674FR',
-        isActive: false,
-      }
+      props.offer = deactivedOfferWithActiveMediation
       const wrapper = shallow(<OfferItem {...props} />)
 
       // when
       wrapper.instance().handleOnDeactivateClick()
 
       // then
-      expect(props.trackActivateOffer).toHaveBeenCalledWith('FG674FR')
+      expect(props.trackActivateOffer).toHaveBeenCalledWith(deactivedOfferWithActiveMediation.id)
     })
   })
 })
