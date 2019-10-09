@@ -24,6 +24,12 @@
     }
   }
 
+  .offer-form {
+    select {
+      max-width: rem(550px);
+    }
+  }
+
   .nb-dates {
     color: $red;
     font-weight: $weight-bold;

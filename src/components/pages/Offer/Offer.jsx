@@ -400,7 +400,7 @@ class Offer extends Component {
           patch={formInitialValues}
           readOnly={readOnly}
         >
-          <div className="field-group">
+          <div className="field-group offer-form">
             <Field
               isExpanded
               label="Titre de l’offre"
