@@ -54,12 +54,10 @@ const CONDITIONAL_FIELDS = {
 }
 
 class Offer extends Component {
-  componentWillMount() {
-    const { dispatch } = this.props
-    dispatch(resetForm())
-  }
 
   componentDidMount() {
+    const { dispatch } = this.props
+    dispatch(resetForm())
     this.handleVenueRedirect()
     this.handleShowStocksManager()
     this.setDefaultBookingEmailIfNew()
@@ -160,9 +158,7 @@ class Offer extends Component {
               dispatch(
                 showModal(
                   <div>
-                    {
-                      'Vous devez avoir déjà enregistré un lieu dans une de vos structures pour ajouter des offres'
-                    }
+                    {'Vous devez avoir déjà enregistré un lieu dans une de vos structures pour ajouter des offres'}
                   </div>,
                   {
                     onCloseClick: () => history.push('/structures'),
@@ -380,13 +376,13 @@ class Offer extends Component {
           </p>
         </HeroSection>
         <Form
-          Tag={null}
           action={formApiPath}
           handleSuccess={this.onHandleFormSuccess}
           method={method}
           name="offer"
           patch={formInitialValues}
           readOnly={readOnly}
+          Tag={null}
         >
           <div className="field-group offer-form">
             <Field
@@ -399,8 +395,8 @@ class Offer extends Component {
               label="Type"
               name="type"
               optionLabel="proLabel"
-              optionValue="value"
               options={types}
+              optionValue="value"
               placeholder={
                 get(formInitialValues, 'type') && !selectedOfferType
                   ? get(formInitialValues, 'offerTypeValue')
@@ -417,8 +413,8 @@ class Offer extends Component {
                   label="Genre musical"
                   name="musicType"
                   optionLabel="label"
-                  optionValue="code"
                   options={musicOptions}
+                  optionValue="code"
                   setKey="extraData"
                   type="select"
                 />
@@ -428,8 +424,8 @@ class Offer extends Component {
                     label="Sous genre"
                     name="musicSubType"
                     optionLabel="label"
-                    optionValue="code"
                     options={musicSubOptions}
+                    optionValue="code"
                     setKey="extraData"
                     type="select"
                   />
@@ -443,8 +439,8 @@ class Offer extends Component {
                   label="Type de spectacle"
                   name="showType"
                   optionLabel="label"
-                  optionValue="code"
                   options={showOptions}
+                  optionValue="code"
                   setKey="extraData"
                   type="select"
                 />
@@ -454,8 +450,8 @@ class Offer extends Component {
                     label="Sous type"
                     name="showSubType"
                     optionLabel="label"
-                    optionValue="code"
                     options={showSubOptions}
+                    optionValue="code"
                     setKey="extraData"
                     type="select"
                   />
@@ -573,16 +569,23 @@ class Offer extends Component {
                   />
                 )}
                 {isEventType && (
-                  <Field
-                    getDurationInHours={getDurationInHours}
-                    getDurationInMinutes={getDurationInMinutes}
-                    label="Durée"
-                    limitTimeInHours={DURATION_LIMIT_TIME}
-                    name="durationMinutes"
-                    placeholder="HH:MM"
-                    readOnly={offerFromTiteLive}
-                    type="duration"
-                  />
+                  <Fragment>
+                    <Field
+                      getDurationInHours={getDurationInHours}
+                      getDurationInMinutes={getDurationInMinutes}
+                      label="Durée"
+                      limitTimeInHours={DURATION_LIMIT_TIME}
+                      name="durationMinutes"
+                      placeholder="HH:MM"
+                      readOnly={offerFromTiteLive}
+                      type="duration"
+                    />
+                    <Field
+                      label="Accepter les offres duo"
+                      name="isDuo"
+                      type="checkbox"
+                    />
+                  </Fragment>
                 )}
                 <Field
                   label="Email auquel envoyer les réservations"

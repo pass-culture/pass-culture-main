@@ -23,6 +23,13 @@
     "jsx-a11y/label-has-for": "off",
     "no-var": "error",
     "react/forbid-component-props": "off",
+    "react/jsx-curly-brace-presence": [
+      1,
+      {
+        "props": "never",
+        "children": "always"
+      }
+    ],
     "react/jsx-fragments": "off",
     "react/jsx-indent": [
       2,

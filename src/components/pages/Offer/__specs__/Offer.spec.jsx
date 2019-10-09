@@ -272,10 +272,31 @@ describe('src | components | pages | Offer | Offer ', () => {
           expect(fieldGroups).toHaveLength(3)
           expect(durationField.prop('name')).toStrictEqual('durationMinutes')
         })
+
+
+        it('should allow to configure the offer as a DUO', () => {
+          // given
+          props.match = {
+            params: {
+              offerId: 'QU',
+            },
+          }
+          props.selectedOfferType = {
+            type: 'Event',
+          }
+          const wrapper = shallow(<Offer {...props} />)
+
+          // when
+          const isDuoCheckbox = wrapper.find(Field).find({ name: 'isDuo' })
+
+          // then
+          expect(isDuoCheckbox).toHaveLength(1)
+          expect(isDuoCheckbox.prop('type')).toStrictEqual('checkbox')
+        })
       })
 
       describe('when the offer is a Thing', () => {
-        it('should a duration field should be available', () => {
+        it('should have a bookingEmail', () => {
           // given
           props.match = {
             params: {
@@ -295,6 +316,25 @@ describe('src | components | pages | Offer | Offer ', () => {
           const durationField = fieldGroupForUsefulInformation.find(Field).at(2)
           expect(fieldGroups).toHaveLength(3)
           expect(durationField.prop('name')).toStrictEqual('bookingEmail')
+        })
+
+        it('should not have the duo option', () => {
+          // given
+          props.match = {
+            params: {
+              offerId: 'QU',
+            },
+          }
+          props.selectedOfferType = {
+            type: 'Thing',
+          }
+          const wrapper = shallow(<Offer {...props} />)
+
+          // when
+          const isDuoCheckbox = wrapper.find(Field).find({ name: 'isDuo' })
+
+          // then
+          expect(isDuoCheckbox).toHaveLength(0)
         })
       })
     })
@@ -387,8 +427,8 @@ describe('src | components | pages | Offer | Offer ', () => {
           isModifiedEntity: false,
           readOnly: false,
         })
-        props.venues = [{ name: 'quel beau théâtre' }, { name: 'quel beau musée' }]
-        const expectedOptions = [{ name: 'quel beau théâtre' }, { name: 'quel beau musée' }]
+        props.venues = [ { name: 'quel beau théâtre' }, { name: 'quel beau musée' } ]
+        const expectedOptions = [ { name: 'quel beau théâtre' }, { name: 'quel beau musée' } ]
 
         // when
         const wrapper = shallow(<Offer {...props} />)
