@@ -194,6 +194,35 @@ class Patch:
             assert response.status_code == 200
             assert Offer.query.get(offer_id).isActive
 
+        @clean_database
+        def when_patch_an_offer_that_is_imported_with_local_provider(self, app):
+            # given
+            tite_live_provider = Provider \
+                .query \
+                .filter(Provider.localClass == 'TiteLiveThings') \
+                .first()
+
+            user = create_user()
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            offer = create_offer_with_thing_product(venue,
+                                                    booking_email='old@email.com',
+                                                    last_provider_id=tite_live_provider.id)
+
+            PcObject.save(offer, user, user_offerer)
+            json = {
+                'bookingEmail': 'offer@email.com',
+            }
+
+            # When
+            response = TestClient(app.test_client()).with_auth(user.email).patch(
+                f'{API_URL}/offers/{humanize(offer.id)}',
+                json=json)
+
+            # then
+            assert response.status_code == 200
+
     class Returns400:
         @clean_database
         def when_trying_to_patch_forbidden_attributes(self, app):
@@ -231,37 +260,6 @@ class Patch:
             assert response.json['owningOffererId'] == ['Vous ne pouvez pas modifier cette information']
             for key in forbidden_keys:
                 assert key in response.json
-
-        @clean_database
-        def when_trying_to_patch_an_offer_than_cannot_be_updated(self, app):
-            # given
-            tite_live_provider = Provider \
-                .query \
-                .filter(Provider.localClass == 'TiteLiveThings') \
-                .first()
-
-            user = create_user()
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
-            venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue,
-                                                    booking_email='old@email.com',
-                                                    last_provider_id=tite_live_provider.id)
-
-            PcObject.save(offer, user, user_offerer)
-            json = {
-                'bookingEmail': 'offer@email.com',
-            }
-
-            # When
-            response = TestClient(app.test_client()).with_auth(user.email).patch(
-                f'{API_URL}/offers/{humanize(offer.id)}',
-                json=json)
-
-            # then
-            assert response.status_code == 400
-            assert Offer.query.get(offer.id).bookingEmail == 'old@email.com'
-            assert response.json['global'] == ["Les offres importées ne sont pas modifiables"]
 
     class Returns403:
         @clean_database
