@@ -8,7 +8,7 @@ const SelectSourceField = ({ handleChange, providers, venueProviders }) => ({ in
     {...input}
     className="field-select"
     id="provider-options"
-    onBlur={event => handleChange(event, input)}
+    onChange={event => handleChange(event, input)}
   >
     <option
       key={DEFAULT_PROVIDER_OPTION.id}
