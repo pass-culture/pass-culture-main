@@ -6,12 +6,12 @@ from models.api_errors import ForbiddenError
 from repository.okr_queries import get_beneficiary_users_details
 
 
-@app.route('/dashboard/', methods=['GET'])
+@app.route('/dashboard', methods=['GET'])
 @login_required
 def show_dashboard_page():
     if not current_user.isAdmin:
         raise ForbiddenError()
-    return render_template('dashboard/home_page.html')
+    return render_template('dashboard/home_page.html'), 200
 
 
 @app.route('/dashboard/users', methods=['GET'])

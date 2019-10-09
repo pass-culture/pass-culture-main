@@ -46,7 +46,7 @@ def _get_origin_header_whitelist():
             'localhost:3000',
             'http://localhost:3001',
             'https://localhost:3001',
-            'localhost:3001',
+            'localhost:3001'
         ]
     valid_urls.extend(_get_origin_header_whitelist_for_non_dev_environments(API_URL))
     return valid_urls

@@ -1,4 +1,4 @@
-from utils.config import IS_DEV, IS_DATALAKE
+from utils.config import IS_DEV, IS_DATALAKE, IS_TESTING
 
 
 def install_routes():
@@ -29,7 +29,7 @@ def install_routes():
         import routes.venues
         import routes.health_check
 
-    if IS_DATALAKE or IS_DEV:
+    if IS_DATALAKE or IS_DEV or IS_TESTING:
         import routes.dashboard
 
     if IS_DEV:
