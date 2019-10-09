@@ -55,8 +55,10 @@ def generate_or_collect_payments(payment_message_id: str = None) -> Tuple[List[P
         logger.info('[BATCH][PAYMENTS] STEP 1 : generate payments')
         pending_payments, not_processable_payments = generate_new_payments()
 
-        logger.info('[BATCH][PAYMENTS] STEP 2 : collect payments in ERROR and RETRY statuses')
+        logger.info('[BATCH][PAYMENTS] STEP 2 : set NOT_PROCESSABLE payments to RETRY')
         set_not_processable_payments_with_bank_information_to_retry()
+
+        logger.info('[BATCH][PAYMENTS] STEP 2 Bis : collect payments in ERROR and RETRY statuses')
         payments_to_send = concatenate_payments_with_errors_and_retries(pending_payments)
     else:
         logger.info('[BATCH][PAYMENTS] STEP 1 Bis : collect payments corresponding to payment_message_id')

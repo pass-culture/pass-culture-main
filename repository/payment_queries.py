@@ -59,7 +59,7 @@ def find_not_processable_with_bank_information():
     predicate_matches_venue_or_offerer = (Venue.id == BankInformation.venueId) | (
             Offerer.id == BankInformation.offererId)
 
-    payments_with_bank_information = Payment.query\
+    not_processable_payments_with_bank_information = Payment.query\
         .filter(Payment.id.in_(not_processable_payment_ids))\
         .join(Booking)\
         .join(Stock)\
@@ -69,4 +69,4 @@ def find_not_processable_with_bank_information():
         .join(BankInformation, predicate_matches_venue_or_offerer)\
         .all()
 
-    return keep_only_not_processable_payments(payments_with_bank_information)
+    return keep_only_not_processable_payments(not_processable_payments_with_bank_information)
