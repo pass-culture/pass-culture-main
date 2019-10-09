@@ -63,7 +63,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       const importMessageContainer = wrapper.find('.import-label-container')
       expect(importMessageContainer).toHaveLength(1)
       expect(importMessageContainer.text()).toBe(
-        'Importation en cours. Cette étape peut durer plusieurs dizaines de minutes.'
+        'Importation en cours. Cette étape peut durer plusieurs dizaines de minutes. Vous pouvez fermer votre navigateur et revenir plus tard.'
       )
     })
 

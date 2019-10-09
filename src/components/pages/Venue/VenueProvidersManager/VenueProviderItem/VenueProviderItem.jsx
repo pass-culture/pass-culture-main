@@ -24,7 +24,7 @@ const VenueProviderItem = ({ venueProvider }) => {
           </strong>
           {!lastSyncDate && (
             <div className="fs14 import-label-container">
-              {'Importation en cours. Cette étape peut durer plusieurs dizaines de minutes.'}
+              {'Importation en cours. Cette étape peut durer plusieurs dizaines de minutes. Vous pouvez fermer votre navigateur et revenir plus tard.'}
             </div>
           )}
         </div>
