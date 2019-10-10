@@ -4,8 +4,8 @@ exports[`src | components | pages | Offer | TiteLiveInformation | TiteLiveInform
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <TiteLiveInformation
+    offerName="Super Livre"
     offererId="ABCD"
-    productName="Super Livre"
     thumbUrl="http://localhost/storage/thumbs/products/AERTR"
     venueId="EARZ"
   />,

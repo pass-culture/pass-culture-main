@@ -299,7 +299,6 @@ class Offer extends Component {
       offer,
       offerer,
       offerers,
-      product,
       query,
       stocks,
       selectedOfferType,
@@ -321,7 +320,7 @@ class Offer extends Component {
 
     const offerWebappUrl = buildWebappDiscoveryUrl(offerId, mediationId)
     const offererId = get(offerer, 'id')
-    const productName = get(product, 'name')
+    const offerName = get(offer, 'name')
     const showAllForm = selectedOfferType || !isCreatedEntity
     const venueId = get(venue, 'id')
     const isOfferActive = get(offer, 'isActive')
@@ -355,7 +354,7 @@ class Offer extends Component {
         name="offer"
       >
         <HeroSection
-          subtitle={productName && productName}
+          subtitle={offerName && offerName}
           title={title}
         >
           {offer && mediationId && (
@@ -463,7 +462,7 @@ class Offer extends Component {
                 )}
               </Fragment>
             )}
-            {!isCreatedEntity && product && (
+            {!isCreatedEntity && offer && (
               <div className="field is-horizontal field-text">
                 <div className="field-label">
                   <label
@@ -507,7 +506,6 @@ class Offer extends Component {
           </div>
           {offerFromTiteLive && <TiteLiveInformation
             offererId={offererId}
-            product={product}
                                 />}
           {!isCreatedEntity && offer && <MediationsManager />}
           {showAllForm && (

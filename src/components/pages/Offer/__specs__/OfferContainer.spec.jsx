@@ -50,7 +50,6 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
         offerTypeError: undefined,
         offerer: expect.any(Object),
         offerers: expect.any(Object),
-        product: expect.any(Object),
         providers: [],
         selectedOfferType: expect.any(Object),
         showSubOptions: undefined,

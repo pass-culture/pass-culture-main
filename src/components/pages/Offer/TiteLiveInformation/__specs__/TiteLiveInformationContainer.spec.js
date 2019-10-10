@@ -7,7 +7,8 @@ describe('src | components | pages | Offer | TiteLiveInformation | TiteLiveInfor
   beforeEach(() => {
     state = {
       data: {
-        offers: [{ id: 'UU', isEvent: true, isThing: false, venueId: 'EFGH' }],
+        offers: [{ id: 'UU', name: 'Super Livre', isEvent: true, isThing: false, venueId: 'EFGH', productId: 'AGDK' }],
+        products: [{id: 'AGDK', thumbUrl: 'http://localhost/storage/thumbs/products/AERTR'}]
       },
     }
     props = {
@@ -25,11 +26,6 @@ describe('src | components | pages | Offer | TiteLiveInformation | TiteLiveInfor
           },
         },
         offererId: 'ABCD',
-        product: {
-          id: 'ART',
-          name: 'Super Livre',
-          thumbUrl: 'http://localhost/storage/thumbs/products/AERTR',
-        },
       }
 
       // when
@@ -38,7 +34,7 @@ describe('src | components | pages | Offer | TiteLiveInformation | TiteLiveInfor
       // then
       expect(result).toStrictEqual({
         offererId: 'ABCD',
-        productName: 'Super Livre',
+        offerName: 'Super Livre',
         thumbUrl: 'http://localhost/storage/thumbs/products/AERTR',
         venueId: 'EFGH',
       })

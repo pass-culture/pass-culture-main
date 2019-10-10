@@ -37,7 +37,10 @@ describe('src | components | pages | Offer | Offer ', () => {
       selectedOfferType: {},
       dispatch: dispatch,
       venues: [],
-      product: {},
+      offer: {
+        name: 'Super Livre',
+        lastProvider: null,
+      },
       history: {},
       trackCreateOffer: jest.fn(),
       trackModifyOffer: jest.fn(),
@@ -489,11 +492,6 @@ describe('src | components | pages | Offer | Offer ', () => {
         const titeLiveInformationComponent = wrapper.find(TiteLiveInformation)
         expect(titeLiveInformationComponent).toHaveLength(1)
         expect(titeLiveInformationComponent.prop('offererId')).toBe('AZERT')
-        expect(titeLiveInformationComponent.prop('product')).toStrictEqual({
-          id: '6GD',
-          name: 'super livre',
-          thumbUrl: 'http://localhost/image/6GD',
-        })
       })
     })
 

@@ -9,7 +9,7 @@ describe('src | components | pages | Offer | TiteLiveInformation | TiteLiveInfor
   beforeEach(() => {
     props = {
       offererId: 'ABCD',
-      productName: 'Super Livre',
+      offerName: 'Super Livre',
       thumbUrl: 'http://localhost/storage/thumbs/products/AERTR',
       venueId: 'EARZ',
     }

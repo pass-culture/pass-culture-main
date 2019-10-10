@@ -79,7 +79,6 @@ export const mapStateToProps = (state, ownProps) => {
     offerer,
     offerers,
     offerTypeError,
-    product,
     providers,
     showSubOptions,
     stocks,

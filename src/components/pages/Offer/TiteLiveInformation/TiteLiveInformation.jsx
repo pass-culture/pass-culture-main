@@ -11,10 +11,10 @@ class TiteLiveInformation extends PureComponent {
   }
 
   render() {
-    const { offererId, productName, thumbUrl, venueId } = this.props
+    const { offererId, offerName, thumbUrl, venueId } = this.props
     const providerIcon = PROVIDER_ICONS['TiteLiveStocks']
 
-    const thumbAltDescription = 'couverture du livre ' + productName
+    const thumbAltDescription = 'couverture du livre ' + offerName
     const tooltip =
       '<div>' +
       '<p>Vous pouvez modifier vos choix de synchronisation sur' +
@@ -73,7 +73,7 @@ TiteLiveInformation.defaultProps = {
 
 TiteLiveInformation.propTypes = {
   offererId: PropTypes.string.isRequired,
-  productName: PropTypes.string.isRequired,
+  offerName: PropTypes.string.isRequired,
   thumbUrl: PropTypes.string,
   venueId: PropTypes.string.isRequired,
 }
