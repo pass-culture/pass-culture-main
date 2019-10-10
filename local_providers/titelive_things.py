@@ -6,7 +6,6 @@ from connectors.ftp_titelive import get_files_to_process_from_titelive_ftp, conn
 from domain.titelive import get_date_from_filename, read_things_date
 from local_providers.local_provider import LocalProvider
 from local_providers.providable_info import ProvidableInfo
-from domain.titelive_provider import TiteLiveProvider
 from models import Product, ThingType, BookFormat
 from models.local_provider_event import LocalProviderEventType
 from repository import local_provider_event_queries
@@ -18,7 +17,7 @@ THINGS_FOLDER_NAME_TITELIVE = 'livre3_11'
 NUMBER_OF_ELEMENTS_PER_LINE = 46  # (45 elements from line + \n)
 
 
-class TiteLiveThings(LocalProvider, TiteLiveProvider):
+class TiteLiveThings(LocalProvider):
     help = ""
     identifierDescription = "Pas d'identifiant nécessaire" \
                             + "(on synchronise tout)"

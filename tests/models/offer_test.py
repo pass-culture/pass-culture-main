@@ -2,8 +2,6 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from domain.titelive_provider import TiteLiveProvider
-from local_providers import TiteLiveStocks
 from models import Offer, PcObject, ApiErrors, ThingType, EventType, Product, Provider
 from routes.serialization import as_dict
 from tests.conftest import clean_database
@@ -978,13 +976,8 @@ def test_date_range_is_empty_if_event_has_no_stocks():
 class IsEditableTest:
     def test_returns_false_if_offer_is_coming_from_provider(self, app):
         # given
-        provider = Provider()
-        provider.name = 'myProvider'
-        provider.localClass = 'BankInformationProvider'
         offer = Offer()
         offer.lastProviderId = 21
-        offer.lastProvider = provider
-
 
         # then
         assert offer.isEditable is False
@@ -993,7 +986,7 @@ class IsEditableTest:
         # given
         provider = Provider()
         provider.name = 'myProvider'
-        provider.localClass = 'TiteLiveStocks'
+        provider.localClass = 'TiteLive is my class'
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
@@ -1024,7 +1017,7 @@ class IsFromProviderTest:
         # given
         provider = Provider()
         provider.name = 'myProvider'
-        provider.localClass = 'TiteLiveStocks'
+        provider.localClass = 'TiteLive is my class'
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)

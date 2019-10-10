@@ -5,7 +5,6 @@ from sqlalchemy import Sequence
 
 from local_providers.local_provider import LocalProvider
 from local_providers.providable_info import ProvidableInfo
-from domain.titelive_provider import TiteLiveProvider
 from models import Offer, VenueProvider
 from models.db import db, Model
 from models.stock import Stock
@@ -31,7 +30,7 @@ def get_data(last_seen_isbn, last_date_checked, venue_siret):
     return req_result.json()
 
 
-class TiteLiveStocks(LocalProvider, TiteLiveProvider):
+class TiteLiveStocks(LocalProvider):
     help = ""
     identifierDescription = "Code Titelive de la librairie"
     identifierRegexp = "^\d+$"

@@ -7,8 +7,6 @@ from sqlalchemy.sql import select, func
 
 from domain.bookings import filter_bookings_to_compute_remaining_stock
 from domain.keywords import create_ts_vector_and_table_args
-from domain.provider import Provider
-from domain.titelive_provider import TiteLiveProvider
 from models import ExtraDataMixin
 from models.criterion import Criterion
 from models.db import db, Model
@@ -153,12 +151,8 @@ class Offer(PcObject,
 
     @property
     def isEditable(self):
-        if self.isFromProvider:
-            OfferProvider = Provider.get_provider_by_name(self.lastProvider.localClass)
-
-            return issubclass(OfferProvider, TiteLiveProvider)
-
-        return True
+        local_class = self.lastProvider.localClass if self.lastProvider else ''
+        return self.isFromProvider is False or 'TiteLive' in local_class
 
     @property
     def isFromProvider(self):

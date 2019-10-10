@@ -3,12 +3,10 @@ from datetime import datetime
 from io import BytesIO
 from pathlib import PurePath
 
-from connectors.ftp_titelive import get_files_to_process_from_titelive_ftp,\
-    get_zip_file_from_ftp
+from connectors.ftp_titelive import get_files_to_process_from_titelive_ftp, get_zip_file_from_ftp
 from domain.titelive import get_date_from_filename
 from local_providers.local_provider import LocalProvider
 from local_providers.providable_info import ProvidableInfo
-from domain.titelive_provider import TiteLiveProvider
 from models.local_provider_event import LocalProviderEventType
 from models import Product
 
@@ -20,7 +18,7 @@ THUMB_FOLDER_NAME_TITELIVE = 'Atoo'
 SYNCHONISABLE_FILE_EXTENSION = '_75.jpg'
 
 
-class TiteLiveThingThumbs(LocalProvider, TiteLiveProvider):
+class TiteLiveThingThumbs(LocalProvider):
     help = ""
     identifierDescription = "Pas d'identifiant nécessaire" \
                             + "(on synchronise tout)"
