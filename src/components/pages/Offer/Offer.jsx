@@ -488,7 +488,7 @@ class Offer extends Component {
                     </span>
                     <button
                       className="button is-primary is-outlined is-small manage-stock"
-                      disabled={isEditableOffer ? '' : 'disabled'}
+                      disabled={isEditableOffer && !offerFromTiteLive ? '' : 'disabled'}
                       id="manage-stocks"
                       onClick={this.handleOnClick(query)}
                       type="button"
