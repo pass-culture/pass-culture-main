@@ -44,7 +44,7 @@ describe('src | components | pages | search | selectors | selectRecommendationsB
 
     it('should return date', () => {
       // given
-      const search = 'date=2019-09-05T15%3A12%3A57.008Z&jours=1-5%2C5-100000&page=1'
+      const search = 'date=2019-09-05T15%3A12%3A57.008Z&jours=1-5%2C5-100000'
 
       // when
       const recommendationSearch = getRecommendationSearch(search, types)
@@ -53,6 +53,17 @@ describe('src | components | pages | search | selectors | selectRecommendationsB
       expect(recommendationSearch).toBe(
         'days_intervals=[[datetime.datetime(2019, 9, 6, 15, 12, 57, 008000, tzinfo=tzlocal()), datetime.datetime(2019, 9, 10, 15, 12, 57, 008000, tzinfo=tzlocal())], [datetime.datetime(2019, 9, 10, 15, 12, 57, 008000, tzinfo=tzlocal()), datetime.datetime(2293, 6, 20, 15, 12, 57, 008000, tzinfo=tzlocal())]]'
       )
+    })
+
+    it('should return number of page', () => {
+      // given
+      const search = 'mots-cles=yo&page=666'
+
+      // when
+      const recommendationSearch = getRecommendationSearch(search, types)
+
+      // then
+      expect(recommendationSearch).toBe('keywords_string=yo&page=666')
     })
   })
 
@@ -68,7 +79,7 @@ describe('src | components | pages | search | selectors | selectRecommendationsB
         {
           id: 'BF',
           productOrTutoIdentifier: 'product_GV',
-          search: 'keywords_string=mimi',
+          search: 'keywords_string=mimi&page=13',
         },
       ]
       const oldSearchRecommendations = [

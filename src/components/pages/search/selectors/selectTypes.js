@@ -4,8 +4,10 @@ import { createSelector } from 'reselect'
 
 import arrayOfObjects, { removeDuplicatesObjects } from '../../../../utils/arrayOfObjects'
 
+export const selectTypes = state => state.data.types
+
 const selectTypeSublabels = createSelector(
-  state => state.data.types,
+  selectTypes,
   types => {
     const sublabelTypes = uniq(types.map(type => type.sublabel))
     sublabelTypes.sort()
@@ -13,8 +15,8 @@ const selectTypeSublabels = createSelector(
   }
 )
 
-export const selectTypes = createSelector(
-  state => state.data.types,
+export const selectTypeSublabelsAndDescription = createSelector(
+  selectTypes,
   types => {
     const sublabelTypesAndDescription = types.map(type => pick(type, ['description', 'sublabel']))
 

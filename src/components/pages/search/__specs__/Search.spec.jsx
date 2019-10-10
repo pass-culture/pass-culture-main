@@ -60,7 +60,6 @@ const getFilterToggle = wrapper =>
 
 describe('src | components | pages | Search', () => {
   // Initializing Mocks
-  const dispatchMock = jest.fn()
   const queryChangeMock = jest.fn()
   const historyMock = { replace: jest.fn(), push: jest.fn() }
 
@@ -68,8 +67,9 @@ describe('src | components | pages | Search', () => {
     let props
     beforeEach(() => {
       props = {
-        dispatch: dispatchMock,
         history: historyMock,
+        getRecommendations: jest.fn(),
+        getTypes: jest.fn(),
         location: {
           hash: '',
           key: 'lxn6vp',
@@ -88,6 +88,7 @@ describe('src | components | pages | Search', () => {
         },
         recommendations: [],
         search: {},
+        types: [{}],
         typeSublabels: [],
         typeSublabelsAndDescription: [],
       }
@@ -107,7 +108,8 @@ describe('src | components | pages | Search', () => {
       let props
       beforeEach(() => {
         props = {
-          dispatch: dispatchMock,
+          getRecommendations: jest.fn(),
+          getTypes: jest.fn(),
           history: historyMock,
           location: {
             hash: '',
@@ -126,8 +128,8 @@ describe('src | components | pages | Search', () => {
             parse: () => ({ page: '1' }),
           },
           recommendations: [],
-
           search: {},
+          types: [{}],
           typeSublabels: [],
           typeSublabelsAndDescription: [],
         }
@@ -165,7 +167,7 @@ describe('src | components | pages | Search', () => {
         expect(searchFilterComponent.props.isVisible).toBe(false)
       })
 
-      it('filter shoud be visible when state isFilterVisible is set to true ', () => {
+      it('filter shoud be visible when state isFilterVisible is set to true', () => {
         // given
         const wrapper = shallow(<Search {...props} />)
 
@@ -195,7 +197,8 @@ describe('src | components | pages | Search', () => {
         let props
         beforeEach(() => {
           props = {
-            dispatch: dispatchMock,
+            getRecommendations: jest.fn(),
+            getTypes: jest.fn(),
             history: historyMock,
             location: {
               hash: '',
@@ -214,8 +217,8 @@ describe('src | components | pages | Search', () => {
               parse: () => ({ page: '1' }),
             },
             recommendations: [],
-
             search: {},
+            types: [{}],
             typeSublabels: [],
             typeSublabelsAndDescription: [],
           }
@@ -245,7 +248,8 @@ describe('src | components | pages | Search', () => {
         let props
         beforeEach(() => {
           props = {
-            dispatch: dispatchMock,
+            getRecommendations: jest.fn(),
+            getTypes: jest.fn(),
             history: historyMock,
             location: {
               hash: '',
@@ -268,8 +272,8 @@ describe('src | components | pages | Search', () => {
               }),
             },
             recommendations: [],
-
             search: {},
+            types: [{}],
             typeSublabels: [],
             typeSublabelsAndDescription: [
               {
@@ -323,8 +327,9 @@ describe('src | components | pages | Search', () => {
       let props
       beforeEach(() => {
         props = {
-          dispatch: dispatchMock,
           history: historyMock,
+          getRecommendations: jest.fn(),
+          getTypes: jest.fn(),
           location: {
             hash: '',
             key: 'lxn6vp',
@@ -342,7 +347,7 @@ describe('src | components | pages | Search', () => {
             parse: () => ({ page: '1' }),
           },
           recommendations: [],
-
+          types: [{}],
           search: {},
           typeSublabels: [],
           typeSublabelsAndDescription: [],
@@ -371,7 +376,8 @@ describe('src | components | pages | Search', () => {
         let props
         beforeEach(() => {
           props = {
-            dispatch: dispatchMock,
+            getRecommendations: jest.fn(),
+            getTypes: jest.fn(),
             history: historyMock,
             location: {
               hash: '',
@@ -390,26 +396,20 @@ describe('src | components | pages | Search', () => {
               parse: () => ({ page: '1' }),
             },
             recommendations: [],
-
             search: {},
+            types: [{}],
             typeSublabels: [],
             typeSublabelsAndDescription: [],
           }
         })
 
-        it('should dispatch requestDataTypes when component is rendered', () => {
+        it('should request DataTypes when component is rendered', () => {
           // when
           const wrapper = shallow(<Search {...props} />)
           wrapper.instance().componentDidMount()
 
           // then
-          expect(dispatchMock.mock.calls[1][0]).toStrictEqual({
-            config: {
-              apiPath: '/types',
-              method: 'GET',
-            },
-            type: 'REQUEST_DATA_GET_/TYPES',
-          })
+          expect(props.getTypes).toHaveBeenCalledWith()
         })
       })
     })
@@ -420,7 +420,8 @@ describe('src | components | pages | Search', () => {
           let props
           beforeEach(() => {
             props = {
-              dispatch: dispatchMock,
+              getRecommendations: jest.fn(),
+              getTypes: jest.fn(),
               history: historyMock,
               location: {
                 hash: '',
@@ -439,8 +440,8 @@ describe('src | components | pages | Search', () => {
                 parse: () => ({ page: '1' }),
               },
               recommendations: [],
-
               search: {},
+              types: [{}],
               typeSublabels: [],
               typeSublabelsAndDescription: [],
             }
@@ -462,7 +463,8 @@ describe('src | components | pages | Search', () => {
           let props
           beforeEach(() => {
             props = {
-              dispatch: dispatchMock,
+              getRecommendations: jest.fn(),
+              getTypes: jest.fn(),
               history: historyMock,
               location: {
                 hash: '',
@@ -481,8 +483,8 @@ describe('src | components | pages | Search', () => {
                 parse: () => ({ page: '1' }),
               },
               recommendations: [],
-
               search: {},
+              types: [{}],
               typeSublabels: [],
               typeSublabelsAndDescription: [],
             }
@@ -510,7 +512,8 @@ describe('src | components | pages | Search', () => {
         let props
         beforeEach(() => {
           props = {
-            dispatch: dispatchMock,
+            getRecommendations: jest.fn(),
+            getTypes: jest.fn(),
             history: historyMock,
             location: {
               hash: '',
@@ -529,8 +532,8 @@ describe('src | components | pages | Search', () => {
               parse: () => ({ page: '1' }),
             },
             recommendations: [],
-
             search: {},
+            types: [{}],
             typeSublabels: [],
             typeSublabelsAndDescription: [],
           }
@@ -554,7 +557,8 @@ describe('src | components | pages | Search', () => {
 
       beforeEach(() => {
         props = {
-          dispatch: dispatchMock,
+          getRecommendations: jest.fn(),
+          getTypes: jest.fn(),
           history: historyMock,
           location: {
             hash: '',
@@ -574,6 +578,7 @@ describe('src | components | pages | Search', () => {
           },
           recommendations: [],
           search: {},
+          types: [{}],
           typeSublabels: [],
           typeSublabelsAndDescription: [],
         }
@@ -684,7 +689,8 @@ describe('src | components | pages | Search', () => {
       let props
       beforeEach(() => {
         props = {
-          dispatch: dispatchMock,
+          getRecommendations: jest.fn(),
+          getTypes: jest.fn(),
           history: historyMock,
           location: {
             hash: '',
@@ -703,8 +709,8 @@ describe('src | components | pages | Search', () => {
             parse: () => ({ page: '1' }),
           },
           recommendations: [],
-
           search: {},
+          types: [{}],
           typeSublabels: [],
           typeSublabelsAndDescription: [],
         }
@@ -758,7 +764,8 @@ describe('src | components | pages | Search', () => {
     describe('onKeywordsChange', () => {
       // when
       const props = {
-        dispatch: dispatchMock,
+        getRecommendations: jest.fn(),
+        getTypes: jest.fn(),
         history: historyMock,
         location: {
           hash: '',
@@ -778,6 +785,7 @@ describe('src | components | pages | Search', () => {
         },
         recommendations: [],
         search: {},
+        types: [{}],
         typeSublabels: [],
         typeSublabelsAndDescription: [],
       }
@@ -809,7 +817,8 @@ describe('src | components | pages | Search', () => {
       describe('when user does not click on the icon button', () => {
         // given
         const props = {
-          dispatch: dispatchMock,
+          getRecommendations: jest.fn(),
+          getTypes: jest.fn(),
           history: historyMock,
           location: {
             hash: '',
@@ -828,8 +837,8 @@ describe('src | components | pages | Search', () => {
             parse: () => ({ page: '1' }),
           },
           recommendations: [],
-
           search: {},
+          types: [{}],
           typeSublabels: [],
           typeSublabelsAndDescription: [],
         }
@@ -858,7 +867,8 @@ describe('src | components | pages | Search', () => {
       describe('when user click on the icon button', () => {
         // when
         const props = {
-          dispatch: dispatchMock,
+          getRecommendations: jest.fn(),
+          getTypes: jest.fn(),
           history: historyMock,
           location: {
             hash: '',
@@ -877,8 +887,8 @@ describe('src | components | pages | Search', () => {
             parse: () => ({ page: '1' }),
           },
           recommendations: [],
-
           search: {},
+          types: [{}],
           typeSublabels: [],
           typeSublabelsAndDescription: [],
         }
@@ -906,7 +916,8 @@ describe('src | components | pages | Search', () => {
         it('should show ico-filter-active icon', () => {
           // given
           const props = {
-            dispatch: dispatchMock,
+            getRecommendations: jest.fn(),
+            getTypes: jest.fn(),
             history: historyMock,
             location: {
               hash: '',
@@ -936,8 +947,8 @@ describe('src | components | pages | Search', () => {
               }),
             },
             recommendations: [],
-
             search: {},
+            types: [{}],
             typeSublabels: [],
             typeSublabelsAndDescription: [],
           }
@@ -957,7 +968,8 @@ describe('src | components | pages | Search', () => {
 
       beforeEach(() => {
         props = {
-          dispatch: dispatchMock,
+          getRecommendations: jest.fn(),
+          getTypes: jest.fn(),
           history: historyMock,
           location: {
             hash: '',
@@ -987,8 +999,8 @@ describe('src | components | pages | Search', () => {
             }),
           },
           recommendations: [],
-
           search: {},
+          types: [{}],
           typeSublabels: [],
           typeSublabelsAndDescription: [],
         }
@@ -1038,6 +1050,230 @@ describe('src | components | pages | Search', () => {
             "keywwords%E2%82%AC_$%20%25%3Cscript%3Ealert('toto')%3C/script%3E"
           )
         })
+      })
+    })
+
+    describe('handleRecommendationsRequest', () => {
+      let props
+
+      beforeEach(() => {
+        props = {
+          getRecommendations: jest.fn(),
+          getTypes: jest.fn(),
+          history: historyMock,
+          location: {
+            hash: '',
+            key: 'lxn6vp',
+            pathname: '/resultats',
+            search: '?mots-cles=bonjour',
+          },
+          match: {
+            params: {},
+          },
+          query: {
+            change: queryChangeMock,
+            parse: () => ({}),
+          },
+          recommendations: [],
+          search: {},
+          types: [{}],
+          typeSublabels: [],
+          typeSublabelsAndDescription: [],
+        }
+      })
+      it('should not request recommendations when not in result', () => {
+        // given
+        props.location.pathname = '/recherche'
+        const wrapper = shallow(<Search {...props} />)
+        const wrapperInstance = wrapper.instance()
+
+        // when
+        const result = wrapperInstance.handleRecommendationsRequest()
+
+        // then
+        expect(result).toBeUndefined()
+      })
+
+      it('should launch loading when it is first page request', () => {
+        // given
+        props.query.parse = () => ({
+          page: '1',
+        })
+
+        const wrapper = shallow(<Search {...props} />)
+        const wrapperInstance = wrapper.instance()
+
+        // when
+        wrapperInstance.handleRecommendationsRequest()
+
+        // then
+        expect(wrapper.state('isLoading')).toBe(true)
+      })
+
+      it('should not launch loading when it is not first page request', () => {
+        // given
+        props.query.parse = () => ({
+          page: '2',
+        })
+        const wrapper = shallow(<Search {...props} />)
+        const wrapperInstance = wrapper.instance()
+
+        // when
+        wrapperInstance.handleRecommendationsRequest()
+
+        // then
+        expect(wrapper.state('isLoading')).toBe(false)
+      })
+
+      it('should request data if needed', () => {
+        // given
+        props.recommendations = [
+          {
+            id: 'ABCD',
+          },
+        ]
+        props.query.parse = () => ({
+          'mots-cles': 'yolo',
+        })
+        const wrapper = shallow(<Search {...props} />)
+        const wrapperInstance = wrapper.instance()
+
+        // when
+        wrapperInstance.handleRecommendationsRequest()
+
+        // then
+        expect(props.getRecommendations).toHaveBeenCalledWith(
+          '/recommendations?keywords=yolo',
+          expect.any(Function)
+        )
+      })
+
+      it('should not request data if not needed', () => {
+        // given
+        props.recommendations = [
+          {
+            id: 'ABCD',
+            search: 'keywords_string=bonjour',
+          },
+        ]
+        props.query.parse = () => ({
+          'mots-cles': 'yolo',
+        })
+        const wrapper = shallow(<Search {...props} />)
+        const wrapperInstance = wrapper.instance()
+
+        // when
+        wrapperInstance.handleRecommendationsRequest()
+
+        // then
+        expect(props.getRecommendations).not.toHaveBeenCalled()
+        expect(wrapper.state('isLoading')).toBe(false)
+      })
+    })
+
+    describe('isRecommendationFound', () => {
+      let props
+
+      beforeEach(() => {
+        props = {
+          getRecommendations: jest.fn(),
+          getTypes: jest.fn(),
+          history: historyMock,
+          location: {
+            hash: '',
+            key: 'lxn6vp',
+            pathname: '/resultats',
+            search: '?mots-cles=bonjour',
+          },
+          match: {
+            params: {},
+          },
+          query: {
+            change: queryChangeMock,
+            parse: () => ({}),
+          },
+          recommendations: [],
+          search: {},
+          types: [{}],
+          typeSublabels: [],
+          typeSublabelsAndDescription: [],
+        }
+      })
+
+      it('should return true if recommendations are found', () => {
+        // given
+        props.location.search = '?mots-cles=bonjour'
+        props.recommendations = [
+          {
+            id: 'ABCD',
+            search: 'keywords_string=bonjour',
+          },
+        ]
+        const wrapper = shallow(<Search {...props} />)
+        const wrapperInstance = wrapper.instance()
+
+        // when
+        const result = wrapperInstance.isRecommendationFound()
+
+        // then
+        expect(result).toBe(true)
+      })
+
+      it('should return false if no recommendations are found', () => {
+        // given
+        props.location.search = '?mots-cles=bonjour'
+        props.recommendations = [
+          {
+            id: 'ABCD',
+            search: 'keywords_string=NOT_FOUND',
+          },
+        ]
+        const wrapper = shallow(<Search {...props} />)
+        const wrapperInstance = wrapper.instance()
+
+        // when
+        const result = wrapperInstance.isRecommendationFound()
+
+        // then
+        expect(result).toBe(false)
+      })
+
+      it('should return false if page are different', () => {
+        // given
+        props.location.search = '?mots-cles=presque&page=1'
+        props.recommendations = [
+          {
+            id: 'ABCD',
+            search: 'keywords_string=presque&page=2',
+          },
+        ]
+        const wrapper = shallow(<Search {...props} />)
+        const wrapperInstance = wrapper.instance()
+
+        // when
+        const result = wrapperInstance.isRecommendationFound()
+
+        // then
+        expect(result).toBe(false)
+      })
+
+      it('should return true for same search without page on recommendation and with page=1', () => {
+        // given
+        props.location.search = '?mots-cles=presque&page=1'
+        props.recommendations = [
+          {
+            id: 'ABCD',
+            search: 'keywords_string=presque',
+          },
+        ]
+        const wrapper = shallow(<Search {...props} />)
+        const wrapperInstance = wrapper.instance()
+
+        // when
+        const result = wrapperInstance.isRecommendationFound()
+
+        // then
+        expect(result).toBe(true)
       })
     })
   })

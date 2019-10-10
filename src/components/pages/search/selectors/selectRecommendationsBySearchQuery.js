@@ -98,6 +98,10 @@ export const getRecommendationSearch = (search, types) => {
     )
   }
 
+  if (searchParams.page) {
+    recommendationSearch['page'] = searchParams.page
+  }
+
   return getStringifiedRecommendationSearch(recommendationSearch)
 }
 
@@ -108,7 +112,6 @@ const selectRecommendationsBySearchQuery = createSelector(
 
   (recommendations, types, searchWithoutPage) => {
     const searchQuery = getRecommendationSearch(searchWithoutPage, types)
-
     let filteredRecommendations = recommendations.filter(recommendation => {
       if (recommendation.search === null) {
         return false

@@ -4,59 +4,13 @@ exports[`src | components | pages | Search snapshot should match the snapshot 1`
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Search
-    dispatch={
+    getRecommendations={[MockFunction]}
+    getTypes={
       [MockFunction] {
         "calls": Array [
-          Array [
-            Object {
-              "config": Object {
-                "apiPath": "/types",
-                "method": "GET",
-              },
-              "type": "REQUEST_DATA_GET_/TYPES",
-            },
-          ],
-          Array [
-            Object {
-              "config": Object {
-                "apiPath": "/types",
-                "method": "GET",
-              },
-              "type": "REQUEST_DATA_GET_/TYPES",
-            },
-          ],
-          Array [
-            Object {
-              "config": Object {
-                "apiPath": "/types",
-                "method": "GET",
-              },
-              "type": "REQUEST_DATA_GET_/TYPES",
-            },
-          ],
-          Array [
-            Object {
-              "config": Object {
-                "apiPath": "/types",
-                "method": "GET",
-              },
-              "type": "REQUEST_DATA_GET_/TYPES",
-            },
-          ],
+          Array [],
         ],
         "results": Array [
-          Object {
-            "type": "return",
-            "value": undefined,
-          },
-          Object {
-            "type": "return",
-            "value": undefined,
-          },
-          Object {
-            "type": "return",
-            "value": undefined,
-          },
           Object {
             "type": "return",
             "value": undefined,
@@ -170,6 +124,11 @@ ShallowWrapper {
     search={Object {}}
     typeSublabels={Array []}
     typeSublabelsAndDescription={Array []}
+    types={
+      Array [
+        Object {},
+      ]
+    }
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],

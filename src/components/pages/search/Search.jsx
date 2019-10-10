@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import { stringify } from 'query-string'
 import React, { Fragment, PureComponent } from 'react'
 import { Switch, Route } from 'react-router-dom'
-import { requestData } from 'redux-saga-data'
 
 import NavByOfferTypeContainer from './NavByOfferType/NavByOfferTypeContainer'
 import NavResultsHeader from './NavResultsHeader'
@@ -17,10 +16,10 @@ import {
   translateBrowserUrlToApiUrl,
 } from './helpers'
 import HeaderContainer from '../../layout/Header/HeaderContainer'
+import { getRecommendationSearch } from './selectors/selectRecommendationsBySearchQuery'
 import Icon from '../../layout/Icon/Icon'
 import Spinner from '../../layout/Spinner/Spinner'
 import RelativeFooterContainer from '../../layout/RelativeFooter/RelativeFooterContainer'
-import { recommendationNormalizer } from '../../../utils/normalizers'
 
 class Search extends PureComponent {
   constructor(props) {
@@ -38,9 +37,9 @@ class Search extends PureComponent {
   }
 
   componentDidMount() {
-    const { dispatch, query } = this.props
+    const { getTypes, query } = this.props
 
-    dispatch(requestData({ apiPath: '/types' }))
+    getTypes()
 
     const queryParams = query.parse()
     if (queryParams.page) {
@@ -108,10 +107,9 @@ class Search extends PureComponent {
   }
 
   handleRecommendationsRequest = () => {
-    const { dispatch, location, query } = this.props
+    const { getRecommendations, location, query } = this.props
     const isResultatsView = location.pathname.includes('resultats')
     if (!isResultatsView) return
-
     const queryParams = query.parse()
     const apiParams = translateBrowserUrlToApiUrl(queryParams)
     const apiParamsString = stringify(apiParams)
@@ -119,15 +117,16 @@ class Search extends PureComponent {
     if (this.isFirstPageRequest(queryParams)) {
       this.setState({ isLoading: true })
     }
-    dispatch(
-      requestData({
-        apiPath,
-        handleSuccess: () => {
-          this.setState({ isLoading: false })
-        },
-        normalizer: recommendationNormalizer,
-      })
-    )
+    const recommendationsAlreadyExist = this.isRecommendationFound()
+    if (!recommendationsAlreadyExist) {
+      getRecommendations(apiPath, this.handleDataSuccess)
+    } else {
+      this.setState({ isLoading: false })
+    }
+  }
+
+  handleDataSuccess = () => {
+    this.setState({ isLoading: false })
   }
 
   handleShouldRedirectToSearch = () => {
@@ -200,6 +199,17 @@ class Search extends PureComponent {
   isFirstPageRequest = queryParams => {
     const { page = '' } = queryParams
     return page === '1' || page === ''
+  }
+
+  isRecommendationFound = () => {
+    const { location, recommendations, types } = this.props
+    const searchQuery = getRecommendationSearch(location.search, types)
+    const foundRecommendations = recommendations.filter(
+      recommendation =>
+        recommendation.search === searchQuery || `${recommendation.search}&page=1` === searchQuery
+    )
+
+    return foundRecommendations.length > 0 ? true : false
   }
 
   renderNavByOfferTypeContainer = typeSublabels => () => (
@@ -397,7 +407,8 @@ class Search extends PureComponent {
 }
 
 Search.propTypes = {
-  dispatch: PropTypes.func.isRequired,
+  getRecommendations: PropTypes.func.isRequired,
+  getTypes: PropTypes.func.isRequired,
   history: PropTypes.shape({
     replace: PropTypes.func.isRequired,
   }).isRequired,
@@ -419,6 +430,13 @@ Search.propTypes = {
     PropTypes.shape({
       description: PropTypes.string,
       sublabel: PropTypes.string,
+    })
+  ).isRequired,
+  types: PropTypes.arrayOf(
+    PropTypes.shape({
+      appLabel: PropTypes.string,
+      description: PropTypes.string,
+      id: PropTypes.number,
     })
   ).isRequired,
 }

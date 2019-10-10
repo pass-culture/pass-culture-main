@@ -1,4 +1,4 @@
-import selectTypeSublabelsSelector, { selectTypes } from '../selectTypes'
+import selectTypeSublabelsSelector, { selectTypeSublabelsAndDescription } from '../selectTypes'
 import state from '../../../../../mocks/stateWithTypes'
 
 describe('selectTypeSublabels', () => {
@@ -14,7 +14,7 @@ describe('selectTypeSublabels', () => {
     ])
   })
 })
-describe('selectTypes', () => {
+describe('selectTypeSublabelsAndDescription', () => {
   it('should select the global state', () => {
     const expected = [
       {
@@ -52,6 +52,6 @@ describe('selectTypes', () => {
         sublabel: 'Rencontrer',
       },
     ]
-    expect(selectTypes(state)).toStrictEqual(expected)
+    expect(selectTypeSublabelsAndDescription(state)).toStrictEqual(expected)
   })
 })
