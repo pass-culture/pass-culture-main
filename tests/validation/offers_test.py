@@ -1,6 +1,10 @@
+from pprint import pprint
+
 import pytest
 
+from domain.provider import Provider
 from models import ApiErrors, ThingType, EventType, Offer
+from tests.test_utils import create_offerer, create_venue, create_offer_with_thing_product
 from validation.offers import check_has_venue_id, check_offer_type_is_valid, check_offer_is_editable
 
 
@@ -52,10 +56,16 @@ class CheckOfferTypeIsValidTest:
 
 
 class CheckOfferIsEditableTest:
-    def test_raises_error_when_offer_is_not_editable(self):
+    def test_raises_error_when_offer_is_not_editable(self, app):
         # given
-        offer = Offer()
-        offer.lastProviderId = "42"
+        provider = Provider()
+        provider.name = 'myProvider'
+        provider.localClass = 'BankInformationProvider'
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        offer.lastProviderId = 21
+        offer.lastProvider = provider
 
         # when
         with pytest.raises(ApiErrors) as error:

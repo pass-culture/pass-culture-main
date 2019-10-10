@@ -5,6 +5,7 @@ from connectors.ftp_titelive import get_files_to_process_from_titelive_ftp, get_
 from domain.titelive import get_date_from_filename, read_description_date
 from local_providers.local_provider import LocalProvider
 from local_providers.providable_info import ProvidableInfo
+from domain.titelive_provider import TiteLiveProvider
 from models import Product
 from models.local_provider_event import LocalProviderEventType
 
@@ -16,7 +17,7 @@ DESCRIPTION_FOLDER_NAME_TITELIVE = 'ResumesLivres'
 END_FILE_IDENTIFIER = '_p.txt'
 
 
-class TiteLiveThingDescriptions(LocalProvider):
+class TiteLiveThingDescriptions(LocalProvider, TiteLiveProvider):
     help = ""
     identifierDescription = "Pas d'identifiant nécessaire" \
                             + "(on synchronise tout)"
