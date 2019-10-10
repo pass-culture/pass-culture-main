@@ -7,8 +7,6 @@ Create Date: 2019-10-09 12:29:08.587700
 """
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy import ForeignKey
-
 
 
 # revision identifiers, used by Alembic.
@@ -22,7 +20,7 @@ def upgrade():
     op.create_table(
     'api_key',
     sa.Column('id', sa.BigInteger, primary_key=True, autoincrement=True),
-    sa.Column('offererId', sa.BigInteger, ForeignKey('offerer.id'), nullable=True),
+    sa.Column('offererId', sa.BigInteger, sa.ForeignKey('offerer.id'), nullable=False),
     sa.Column('value', sa.String(64), nullable=False)
     )
 
