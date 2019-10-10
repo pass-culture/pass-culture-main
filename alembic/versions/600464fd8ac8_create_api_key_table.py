@@ -10,6 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy import ForeignKey
 
 
+
 # revision identifiers, used by Alembic.
 revision = '600464fd8ac8'
 down_revision = '621aad6436f9'
@@ -24,6 +25,7 @@ def upgrade():
     sa.Column('offererId', sa.BigInteger, ForeignKey('offerer.id'), nullable=True),
     sa.Column('value', sa.String(64), nullable=False)
     )
+
 
 def downgrade():
     op.drop_table('api_key')
