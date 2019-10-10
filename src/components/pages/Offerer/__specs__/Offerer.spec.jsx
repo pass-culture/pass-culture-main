@@ -5,18 +5,17 @@ import { OffererClass } from '../OffererClass'
 
 describe('src | components | pages | Offerer', () => {
   let props
-
+  const offerer = {
+    id: 'AA',
+    name: 'fake offerer name',
+    address: 'fake address',
+    bic: 'ABC',
+    iban: 'DEF',
+  }
+  const adminUserOfferer = {}
   beforeEach(() => {
     props = {
-      offerer: new OffererClass(
-        'AA',
-        '222111234',
-        'fake offerer name',
-        'fake address',
-        'ABC',
-        'DEF',
-        false
-      ),
+      offerer: new OffererClass(offerer, adminUserOfferer),
       getOfferer: jest.fn(),
       getUserOfferers: jest.fn(),
       history: {

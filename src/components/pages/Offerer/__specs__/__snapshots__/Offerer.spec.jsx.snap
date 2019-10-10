@@ -13,13 +13,15 @@ ShallowWrapper {
     }
     offerer={
       OffererClass {
-        "adminUserOfferer": false,
+        "address": "fake address",
+        "adminUserOfferer": Object {},
         "areBankInformationProvided": [Function],
         "bic": "ABC",
         "iban": "DEF",
         "id": "AA",
         "isIdOrNameDefined": [Function],
         "name": "fake offerer name",
+        "siren": "",
       }
     }
     query={
@@ -97,13 +99,15 @@ ShallowWrapper {
           onSubmit={null}
           patch={
             OffererClass {
-              "adminUserOfferer": false,
+              "address": "fake address",
+              "adminUserOfferer": Object {},
               "areBankInformationProvided": [Function],
               "bic": "ABC",
               "iban": "DEF",
               "id": "AA",
               "isIdOrNameDefined": [Function],
               "name": "fake offerer name",
+              "siren": "",
             }
           }
           readOnly={false}
@@ -177,7 +181,7 @@ ShallowWrapper {
                 label="BIC"
                 layout="horizontal"
                 name="bic"
-                readOnly={true}
+                readOnly={false}
                 size="normal"
                 storeValue={[Function]}
                 type="bic"
@@ -190,7 +194,7 @@ ShallowWrapper {
                 label="IBAN"
                 layout="horizontal"
                 name="iban"
-                readOnly={true}
+                readOnly={false}
                 size="normal"
                 storeValue={[Function]}
                 type="iban"
@@ -311,7 +315,7 @@ ShallowWrapper {
                   label="BIC"
                   layout="horizontal"
                   name="bic"
-                  readOnly={true}
+                  readOnly={false}
                   size="normal"
                   storeValue={[Function]}
                   type="bic"
@@ -324,7 +328,7 @@ ShallowWrapper {
                   label="IBAN"
                   layout="horizontal"
                   name="iban"
-                  readOnly={true}
+                  readOnly={false}
                   size="normal"
                   storeValue={[Function]}
                   type="iban"
@@ -351,13 +355,15 @@ ShallowWrapper {
           "onEscapeKey": null,
           "onSubmit": null,
           "patch": OffererClass {
-            "adminUserOfferer": false,
+            "address": "fake address",
+            "adminUserOfferer": Object {},
             "areBankInformationProvided": [Function],
             "bic": "ABC",
             "iban": "DEF",
             "id": "AA",
             "isIdOrNameDefined": [Function],
             "name": "fake offerer name",
+            "siren": "",
           },
           "readOnly": false,
           "successNotification": "Formulaire non validé",
@@ -556,7 +562,7 @@ ShallowWrapper {
                     label="BIC"
                     layout="horizontal"
                     name="bic"
-                    readOnly={true}
+                    readOnly={false}
                     size="normal"
                     storeValue={[Function]}
                     type="bic"
@@ -569,7 +575,7 @@ ShallowWrapper {
                     label="IBAN"
                     layout="horizontal"
                     name="iban"
-                    readOnly={true}
+                    readOnly={false}
                     size="normal"
                     storeValue={[Function]}
                     type="iban"
@@ -628,7 +634,7 @@ ShallowWrapper {
                       label="BIC"
                       layout="horizontal"
                       name="bic"
-                      readOnly={true}
+                      readOnly={false}
                       size="normal"
                       storeValue={[Function]}
                       type="bic"
@@ -641,7 +647,7 @@ ShallowWrapper {
                       label="IBAN"
                       layout="horizontal"
                       name="iban"
-                      readOnly={true}
+                      readOnly={false}
                       size="normal"
                       storeValue={[Function]}
                       type="iban"
@@ -663,7 +669,7 @@ ShallowWrapper {
                       "label": "BIC",
                       "layout": "horizontal",
                       "name": "bic",
-                      "readOnly": true,
+                      "readOnly": false,
                       "size": "normal",
                       "storeValue": [Function],
                       "type": "bic",
@@ -684,7 +690,7 @@ ShallowWrapper {
                       "label": "IBAN",
                       "layout": "horizontal",
                       "name": "iban",
-                      "readOnly": true,
+                      "readOnly": false,
                       "size": "normal",
                       "storeValue": [Function],
                       "type": "iban",
@@ -768,13 +774,15 @@ ShallowWrapper {
             onSubmit={null}
             patch={
               OffererClass {
-                "adminUserOfferer": false,
+                "address": "fake address",
+                "adminUserOfferer": Object {},
                 "areBankInformationProvided": [Function],
                 "bic": "ABC",
                 "iban": "DEF",
                 "id": "AA",
                 "isIdOrNameDefined": [Function],
                 "name": "fake offerer name",
+                "siren": "",
               }
             }
             readOnly={false}
@@ -848,7 +856,7 @@ ShallowWrapper {
                   label="BIC"
                   layout="horizontal"
                   name="bic"
-                  readOnly={true}
+                  readOnly={false}
                   size="normal"
                   storeValue={[Function]}
                   type="bic"
@@ -861,7 +869,7 @@ ShallowWrapper {
                   label="IBAN"
                   layout="horizontal"
                   name="iban"
-                  readOnly={true}
+                  readOnly={false}
                   size="normal"
                   storeValue={[Function]}
                   type="iban"
@@ -982,7 +990,7 @@ ShallowWrapper {
                     label="BIC"
                     layout="horizontal"
                     name="bic"
-                    readOnly={true}
+                    readOnly={false}
                     size="normal"
                     storeValue={[Function]}
                     type="bic"
@@ -995,7 +1003,7 @@ ShallowWrapper {
                     label="IBAN"
                     layout="horizontal"
                     name="iban"
-                    readOnly={true}
+                    readOnly={false}
                     size="normal"
                     storeValue={[Function]}
                     type="iban"
@@ -1022,13 +1030,15 @@ ShallowWrapper {
             "onEscapeKey": null,
             "onSubmit": null,
             "patch": OffererClass {
-              "adminUserOfferer": false,
+              "address": "fake address",
+              "adminUserOfferer": Object {},
               "areBankInformationProvided": [Function],
               "bic": "ABC",
               "iban": "DEF",
               "id": "AA",
               "isIdOrNameDefined": [Function],
               "name": "fake offerer name",
+              "siren": "",
             },
             "readOnly": false,
             "successNotification": "Formulaire non validé",
@@ -1227,7 +1237,7 @@ ShallowWrapper {
                       label="BIC"
                       layout="horizontal"
                       name="bic"
-                      readOnly={true}
+                      readOnly={false}
                       size="normal"
                       storeValue={[Function]}
                       type="bic"
@@ -1240,7 +1250,7 @@ ShallowWrapper {
                       label="IBAN"
                       layout="horizontal"
                       name="iban"
-                      readOnly={true}
+                      readOnly={false}
                       size="normal"
                       storeValue={[Function]}
                       type="iban"
@@ -1299,7 +1309,7 @@ ShallowWrapper {
                         label="BIC"
                         layout="horizontal"
                         name="bic"
-                        readOnly={true}
+                        readOnly={false}
                         size="normal"
                         storeValue={[Function]}
                         type="bic"
@@ -1312,7 +1322,7 @@ ShallowWrapper {
                         label="IBAN"
                         layout="horizontal"
                         name="iban"
-                        readOnly={true}
+                        readOnly={false}
                         size="normal"
                         storeValue={[Function]}
                         type="iban"
@@ -1334,7 +1344,7 @@ ShallowWrapper {
                         "label": "BIC",
                         "layout": "horizontal",
                         "name": "bic",
-                        "readOnly": true,
+                        "readOnly": false,
                         "size": "normal",
                         "storeValue": [Function],
                         "type": "bic",
@@ -1355,7 +1365,7 @@ ShallowWrapper {
                         "label": "IBAN",
                         "layout": "horizontal",
                         "name": "iban",
-                        "readOnly": true,
+                        "readOnly": false,
                         "size": "normal",
                         "storeValue": [Function],
                         "type": "iban",

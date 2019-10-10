@@ -5,30 +5,42 @@ describe('src | components | pages | Offerer | OffererClass', () => {
     describe('when offerer id exists', () => {
       it('should return true', () => {
         // given
-        const offerer = new OffererClass('id', '', 'bic', 'iban', {})
+        const offerer = {
+          id: 'id',
+          bic: 'bic',
+          iban: 'iban',
+        }
+        const offererInstance = new OffererClass(offerer, {})
 
         // when then
-        expect(offerer.isIdOrNameDefined()).toBe(true)
+        expect(offererInstance.isIdOrNameDefined()).toBe(true)
       })
     })
 
     describe('when offerer name exists', () => {
       it('should return true', () => {
         // given
-        const offerer = new OffererClass('', 'name', 'bic', 'iban', {})
-
+        const offerer = {
+          name: 'name',
+          bic: 'bic',
+          iban: 'iban',
+        }
+        const offererInstance = new OffererClass(offerer, {})
         // when then
-        expect(offerer.isIdOrNameDefined()).toBe(true)
+        expect(offererInstance.isIdOrNameDefined()).toBe(true)
       })
     })
 
     describe('when neither id or name exists', () => {
       it('should return false', () => {
         // given
-        const offerer = new OffererClass('', 'siren', '', 'address', 'bic', 'iban', {})
-
+        const offerer = {
+          bic: 'bic',
+          iban: 'iban',
+        }
+        const offererInstance = new OffererClass(offerer, {})
         // when then
-        expect(offerer.isIdOrNameDefined()).toBe(false)
+        expect(offererInstance.isIdOrNameDefined()).toBe(false)
       })
     })
   })
@@ -36,41 +48,52 @@ describe('src | components | pages | Offerer | OffererClass', () => {
   describe('areBankInformationProvided', () => {
     describe('when offerer bic and iban exists', () => {
       it('should return true', () => {
-        // given
-        const offerer = new OffererClass('id', 'siren', 'name', 'address', 'bic', 'iban', {})
-
+        const offerer = {
+          name: 'name',
+          bic: 'bic',
+          iban: 'iban',
+        }
+        const offererInstance = new OffererClass(offerer, {})
         // when then
-        expect(offerer.areBankInformationProvided()).toBe(true)
+        expect(offererInstance.areBankInformationProvided()).toBe(true)
       })
     })
 
     describe('when offerer bic doesnt exist', () => {
       it('should return false', () => {
         // given
-        const offerer = new OffererClass('', 'siren', '', 'address', '', 'iban', {})
-
+        const offerer = {
+          name: 'name',
+          iban: 'iban',
+        }
+        const offererInstance = new OffererClass(offerer, {})
         // when then
-        expect(offerer.areBankInformationProvided()).toBe(false)
+        expect(offererInstance.areBankInformationProvided()).toBe(false)
       })
     })
 
     describe('when offerer iban doesnt exist', () => {
       it('should return false', () => {
         // given
-        const offerer = new OffererClass('', 'siren', '', 'address', 'bic', '', {})
-
+        const offerer = {
+          name: 'name',
+          bic: 'bic',
+        }
+        const offererInstance = new OffererClass(offerer, {})
         // when then
-        expect(offerer.areBankInformationProvided()).toBe(false)
+        expect(offererInstance.areBankInformationProvided()).toBe(false)
       })
     })
 
     describe('when neither offerer iban or bic exist', () => {
       it('should return false', () => {
         // given
-        const offerer = new OffererClass('', 'siren', '', 'address', '', '', {})
-
+        const offerer = {
+          name: 'name',
+        }
+        const offererInstance = new OffererClass(offerer, {})
         // when then
-        expect(offerer.areBankInformationProvided()).toBe(false)
+        expect(offererInstance.areBankInformationProvided()).toBe(false)
       })
     })
   })
