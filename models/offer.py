@@ -155,6 +155,7 @@ class Offer(PcObject,
     def isEditable(self):
         if self.isFromProvider:
             OfferProvider = Provider.get_provider_by_name(self.lastProvider.localClass)
+
             return issubclass(OfferProvider, TiteLiveProvider)
 
         return True
