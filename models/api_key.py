@@ -6,11 +6,14 @@ from sqlalchemy import BigInteger, Column, CHAR, ForeignKey
 from models.db import Model
 from models.pc_object import PcObject
 
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 
 
 class ApiKey(PcObject, Model):
-    value = Column(CHAR(64), nullable=False)
+    value = Column(CHAR(64),
+                   index=True,
+                   nullable=False
+                   )
 
     offererId = Column(BigInteger,
                        ForeignKey('offerer.id'),
@@ -19,5 +22,4 @@ class ApiKey(PcObject, Model):
 
     offerer = relationship('Offerer',
                            foreign_keys=[offererId],
-                           backref='apiKey',
-                           uselist=False)
+                           backref=backref('apiKey', uselist=False))

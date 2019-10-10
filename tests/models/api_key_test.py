@@ -26,12 +26,12 @@ def test_save_api_key_create_relation_offerer_api_key(app):
     offerer = create_offerer()
     PcObject.save(offerer)
 
-    #offererApiKey = ApiKey()
-    #offererApiKey.value = random_token(64)
-    #offererApiKey.offererId = offerer.id
+    offererApiKey = ApiKey()
+    offererApiKey.value = random_token(64)
+    offererApiKey.offererId = offerer.id
 
     # when
-    #PcObject.save(offererApiKey)
+    PcObject.save(offererApiKey)
 
     # then
-    assert offerer.apiKey is not None
+    assert offerer.apiKey.value == offererApiKey.value
