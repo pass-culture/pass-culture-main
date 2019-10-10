@@ -21,8 +21,10 @@ from utils.rest import ensure_current_user_has_rights, \
     handle_rest_get_list, \
     load_or_404, \
     login_or_api_key_required
-from validation.stocks import check_request_has_offer_id, check_dates_are_allowed_on_new_stock, \
-    check_dates_are_allowed_on_existing_stock
+from validation.stocks import check_request_has_offer_id,\
+    check_dates_are_allowed_on_new_stock, \
+    check_dates_are_allowed_on_existing_stock,\
+    check_stocks_are_editable_for_offer
 from validation.offers import check_offer_is_editable
 
 search_models = [
@@ -69,10 +71,14 @@ def create_stock():
     check_request_has_offer_id(request_data)
     offer_id = dehumanize(request_data.get('offerId', None))
     offer = get_offer_by_id(offer_id)
+
     check_offer_is_editable(offer)
+
     check_dates_are_allowed_on_new_stock(request_data, offer)
     offerer = offerer_queries.get_by_offer_id(offer_id)
     ensure_current_user_has_rights(RightsType.editor, offerer.id)
+
+    check_stocks_are_editable_for_offer(offer)
 
     new_stock = Stock(from_dict=request_data)
     PcObject.save(new_stock)
@@ -94,6 +100,8 @@ def edit_stock(stock_id):
     offerer_id = stock.resolvedOffer.venue.managingOffererId
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
 
+    check_stocks_are_editable_for_offer(stock.offer)
+
     stock.populate_from_dict(stock_data)
     PcObject.save(stock)
 
@@ -108,7 +116,9 @@ def delete_stock(id):
     offerer_id = stock.resolvedOffer.venue.managingOffererId
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
     bookings = delete_stock_and_cancel_bookings(stock)
-    
+
+    check_stocks_are_editable_for_offer(stock.offer)
+
     if bookings:
         try:
             send_batch_cancellation_emails_to_users(bookings, send_raw_email)

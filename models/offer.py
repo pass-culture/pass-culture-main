@@ -152,7 +152,11 @@ class Offer(PcObject,
     @property
     def isEditable(self):
         local_class = self.lastProvider.localClass if self.lastProvider else ''
-        return self.lastProviderId is None or 'TiteLive' in local_class
+        return self.isFromProvider is False or 'TiteLive' in local_class
+
+    @property
+    def isFromProvider(self):
+        return self.lastProviderId is not None
 
     @property
     def isFinished(self):

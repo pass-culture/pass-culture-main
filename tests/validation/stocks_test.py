@@ -2,11 +2,16 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from models import ApiErrors, Venue
+from models import ApiErrors, Venue, Provider
 from routes.serialization import serialize
-from tests.test_utils import create_offer_with_thing_product, create_offer_with_event_product
+from tests.test_utils import create_offer_with_thing_product, \
+    create_offer_with_event_product, \
+    create_offerer, \
+    create_venue
 from utils.human_ids import humanize
-from validation.stocks import check_dates_are_allowed_on_new_stock, check_dates_are_allowed_on_existing_stock
+from validation.stocks import check_dates_are_allowed_on_new_stock, \
+    check_dates_are_allowed_on_existing_stock, \
+    check_stocks_are_editable_for_offer
 
 
 class CheckDatesAreAllowedOnNewStockTest:
@@ -346,3 +351,36 @@ class CheckDatesAreAllowedOnExistingStockTest:
             assert e.value.errors['bookingLimitDatetime'] == [
                 'Ce paramètre est obligatoire'
             ]
+
+
+class CheckStocksAreEditableForOfferTest:
+    def test_fail_when_offer_is_from_provider(self, app):
+        # Given
+        provider = Provider()
+        provider.name = 'myProvider'
+        provider.localClass = 'TiteLiveClass'
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        offer.lastProviderId = 21
+        offer.lastProvider = provider
+
+        # When
+        with pytest.raises(ApiErrors) as e:
+            check_stocks_are_editable_for_offer(offer)
+
+        # Then
+        assert e.value.errors['global'] == [
+            'Les offres importées ne sont pas modifiables'
+        ]
+
+    def test_does_not_raise_an_error_when_offer_is_not_from_provider(self, app):
+        # given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        offer.lastProviderId = None
+        offer.lastProvider = None
+
+        # when
+        check_stocks_are_editable_for_offer(offer)

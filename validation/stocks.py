@@ -1,6 +1,13 @@
 from models import ApiErrors, Offer
 
 
+def check_stocks_are_editable_for_offer(offer: Offer):
+    if offer.isFromProvider:
+        api_errors = ApiErrors()
+        api_errors.add_error('global', 'Les offres importées ne sont pas modifiables')
+        raise api_errors
+
+
 def check_offer_offerer_exists(offerer):
     if offerer is None:
         api_errors = ApiErrors()

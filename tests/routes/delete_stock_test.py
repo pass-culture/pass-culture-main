@@ -52,6 +52,7 @@ class Delete:
             assert booking1 in bookings
             assert booking2 in bookings
 
+    class Returns400:
         @clean_database
         def when_stock_is_on_an_offer_from_titelive_provider(self, app):
             # given
@@ -73,9 +74,10 @@ class Delete:
                 .delete('/stocks/' + humanize(stock.id))
 
             # then
-            assert response.status_code == 200
+            assert response.status_code == 400
+            assert response.json["global"] == ["Les offres importées ne sont pas modifiables"]
 
-    class Returns400:
+
         @clean_database
         def when_stock_is_an_event_that_ended_more_than_two_days_ago(self, app):
             # given

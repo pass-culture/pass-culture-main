@@ -990,7 +990,7 @@ class IsEditableTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        offer.providerId = 21
+        offer.lastProviderId = 21
         offer.lastProvider = provider
 
         # then
@@ -1002,3 +1002,34 @@ class IsEditableTest:
 
         # then
         assert offer.isEditable is True
+
+
+class IsFromProviderTest:
+    def test_returns_True_if_offer_is_coming_from_provider(self, app):
+        # given
+        offer = Offer()
+        offer.lastProviderId = 21
+
+        # then
+        assert offer.isFromProvider is True
+
+    def test_returns_True_if_offer_is_coming_from_TiteLive_provider(self, app):
+        # given
+        provider = Provider()
+        provider.name = 'myProvider'
+        provider.localClass = 'TiteLive is my class'
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        offer.lastProviderId = 21
+        offer.lastProvider = provider
+
+        # then
+        assert offer.isFromProvider is True
+
+    def test_returns_False_if_offer_is_not_coming_from_provider(self, app):
+        # given
+        offer = Offer()
+
+        # then
+        assert offer.isFromProvider is False
