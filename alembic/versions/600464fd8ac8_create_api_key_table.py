@@ -8,7 +8,6 @@ Create Date: 2019-10-09 12:29:08.587700
 from alembic import op
 import sqlalchemy as sa
 
-
 # revision identifiers, used by Alembic.
 revision = '600464fd8ac8'
 down_revision = '621aad6436f9'
@@ -18,10 +17,10 @@ depends_on = None
 
 def upgrade():
     op.create_table(
-    'api_key',
-    sa.Column('id', sa.BigInteger, primary_key=True, autoincrement=True),
-    sa.Column('offererId', sa.BigInteger, sa.ForeignKey('offerer.id'), nullable=False),
-    sa.Column('value', sa.String(64), nullable=False)
+        'api_key',
+        sa.Column('id', sa.BigInteger, primary_key=True, autoincrement=True),
+        sa.Column('offererId', sa.BigInteger, sa.ForeignKey('offerer.id'), nullable=False),
+        sa.Column('value', sa.String(64), nullable=False)
     )
 
 
