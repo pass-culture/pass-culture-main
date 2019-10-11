@@ -57,6 +57,7 @@ OFFER_INCLUDES = [
     "isEditable",
     "isEvent",
     "isDigital",
+    "isDuo",
     "isThing",
     "stockAlertMessage",
     "lastProvider",

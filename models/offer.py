@@ -81,6 +81,11 @@ class Offer(PcObject,
                         default=False,
                         nullable=False)
 
+    isDuo = Column(Boolean,
+                        server_default=false(),
+                        default=False,
+                        nullable=False)
+
     dateCreated = Column(DateTime,
                          nullable=False,
                          default=datetime.utcnow)
