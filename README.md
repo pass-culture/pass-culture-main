@@ -304,6 +304,18 @@ ou
 pc pgcli
 ```
 
+### Configuration de Metabase
+En local, metabase se lance en même temps que tous les conteneurs en faisant:
+```bash
+pc start-backend
+```
+Pour configurer Metabase, il suffit de créer un compte admin, puis de se connecter à la database produit. Pour cela, il faut renseigner les informations suivantes :
+- Host : pc-postgres
+- Port : 5432
+- Database name : pass_culture
+- Database username : pass_culture
+- Database password : passq
+
 ### Connexion en ligne de commande python à un environnement (testing | staging | production)
 
 ```bash
