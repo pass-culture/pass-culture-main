@@ -3,9 +3,9 @@ import selectShowSubTypeByCodeAndSubCode from '../selectShowSubTypeByCodeAndSubC
 
 const state = { data: { showTypes } }
 
-describe('src | components | verso | verso-content | verso-content-offer | selectors', () => {
-  describe('selectShowSubTypeByCodeAndSubCode', () => {
-    it('find the show sub type with the good code', () => {
+describe('src | components | layout | Verso | VersoContent | VersoContentOffer | selectors | selectShowSubTypeByCodeAndSubCode', () => {
+  describe('when the code is valid', () => {
+    it('should return the show sub type', () => {
       // given
       const code = 100
       const subCode = 101
@@ -16,8 +16,10 @@ describe('src | components | verso | verso-content | verso-content-offer | selec
       // then
       expect(showSubType.code).toStrictEqual(subCode)
     })
+  })
 
-    it('does not find any show sub type', () => {
+  describe('when the code is not valid', () => {
+    it('should return undefined', () => {
       // given
       const code = 100
       const subCode = 666
@@ -26,7 +28,7 @@ describe('src | components | verso | verso-content | verso-content-offer | selec
       const showSubType = selectShowSubTypeByCodeAndSubCode(state, String(code), String(subCode))
 
       // then
-      expect(showSubType).toStrictEqual(undefined)
+      expect(showSubType).toBeUndefined()
     })
   })
 })

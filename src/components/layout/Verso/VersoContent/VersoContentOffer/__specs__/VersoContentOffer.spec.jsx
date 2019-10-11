@@ -51,6 +51,7 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
       isFinished: false,
       maxShownDates: 7,
       offer,
+      style: 'Rap / Contenders',
     }
 
     // when

@@ -23,8 +23,6 @@ ShallowWrapper {
     isCancelled={true}
     isFinished={false}
     maxShownDates={7}
-    musicSubType={null}
-    musicType={null}
     offer={
       Object {
         "description": "fake description",
@@ -50,8 +48,7 @@ ShallowWrapper {
         },
       }
     }
-    showSubType={null}
-    showType={null}
+    style="Rap / Contenders"
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -80,6 +77,9 @@ ShallowWrapper {
             >
               Presse — Abonnements
             </span>
+          </div>
+          <div>
+            Genre : Rap / Contenders
           </div>
         </React.Fragment>,
         <React.Fragment>
@@ -161,7 +161,9 @@ ShallowWrapper {
                 Presse — Abonnements
               </span>
             </div>,
-            undefined,
+            <div>
+              Genre : Rap / Contenders
+            </div>,
             undefined,
             undefined,
             undefined,
@@ -215,7 +217,17 @@ ShallowWrapper {
             ],
             "type": "div",
           },
-          undefined,
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Genre : Rap / Contenders",
+            },
+            "ref": null,
+            "rendered": "Genre : Rap / Contenders",
+            "type": "div",
+          },
           undefined,
           undefined,
           undefined,
@@ -567,6 +579,9 @@ ShallowWrapper {
                 Presse — Abonnements
               </span>
             </div>
+            <div>
+              Genre : Rap / Contenders
+            </div>
           </React.Fragment>,
           <React.Fragment>
             <h3>
@@ -647,7 +662,9 @@ ShallowWrapper {
                   Presse — Abonnements
                 </span>
               </div>,
-              undefined,
+              <div>
+                Genre : Rap / Contenders
+              </div>,
               undefined,
               undefined,
               undefined,
@@ -701,7 +718,17 @@ ShallowWrapper {
               ],
               "type": "div",
             },
-            undefined,
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Genre : Rap / Contenders",
+              },
+              "ref": null,
+              "rendered": "Genre : Rap / Contenders",
+              "type": "div",
+            },
             undefined,
             undefined,
             undefined,

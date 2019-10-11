@@ -3,9 +3,9 @@ import selectMusicSubTypeByCodeAndSubCode from '../selectMusicSubTypeByCodeAndSu
 
 const state = { data: { musicTypes } }
 
-describe('src | components | verso | verso-content | verso-content-offer | selectors', () => {
-  describe('selectMusicSubTypeByCodeAndSubCode', () => {
-    it('find the music sub type with the good code', () => {
+describe('src | components | layout | Verso | VersoContent | VersoContentOffer | selectors | selectMusicSubTypeByCodeAndSubCode', () => {
+  describe('when the code is valid', () => {
+    it('should return the music sub type', () => {
       // given
       const code = 501
       const subCode = 519
@@ -14,10 +14,12 @@ describe('src | components | verso | verso-content | verso-content-offer | selec
       const musicSubType = selectMusicSubTypeByCodeAndSubCode(state, String(code), String(subCode))
 
       // then
-      expect(musicSubType.code).toStrictEqual(subCode)
+      expect(musicSubType.code).toBe(subCode)
     })
+  })
 
-    it('does not find any music sub type', () => {
+  describe('when the code is not valid', () => {
+    it('should return undefined', () => {
       // given
       const code = 501
       const subCode = 666
@@ -26,7 +28,7 @@ describe('src | components | verso | verso-content | verso-content-offer | selec
       const musicSubType = selectMusicSubTypeByCodeAndSubCode(state, String(code), String(subCode))
 
       // then
-      expect(musicSubType).toStrictEqual(undefined)
+      expect(musicSubType).toBeUndefined()
     })
   })
 })

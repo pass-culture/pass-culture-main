@@ -4,18 +4,6 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
   describe('mapStateToProps', () => {
     it('should return an object containing bookables, current recommendation and information regarding the offer expiration', () => {
       // given
-      const mediation = {
-        id: 2,
-      }
-      const offer = {
-        id: 1,
-        isFinished: false,
-        stocks: [{}],
-        venue: {
-          latitude: 48.91683,
-          longitude: 2.4388,
-        },
-      }
       const recommendation = {
         mediationId: 2,
         offerId: 1,
@@ -25,8 +13,22 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
         data: {
           bookings: [],
           favorites: [],
-          mediations: [mediation],
-          offers: [offer],
+          mediations: [
+            {
+              id: 2,
+            },
+          ],
+          offers: [
+            {
+              id: 1,
+              isFinished: false,
+              stocks: [{}],
+              venue: {
+                latitude: 48.91683,
+                longitude: 2.4388,
+              },
+            },
+          ],
           recommendations: [recommendation],
           stocks: [{ offerId: 1 }],
         },

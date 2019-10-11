@@ -3,9 +3,9 @@ import selectShowTypeByCode from '../selectShowTypeByCode'
 
 const state = { data: { showTypes } }
 
-describe('src | components | verso | verso-content | verso-content-offer | selectors', () => {
-  describe('selectShowTypeByCode', () => {
-    it('find the show type with the good code', () => {
+describe('src | components | layout | Verso | VersoContent | VersoContentOffer | selectors | selectShowTypeByCode', () => {
+  describe('when the code is valid', () => {
+    it('should return the show sub type', () => {
       // given
       const code = 100
 
@@ -15,8 +15,10 @@ describe('src | components | verso | verso-content | verso-content-offer | selec
       // then
       expect(showType.code).toStrictEqual(code)
     })
+  })
 
-    it('does not find any show type', () => {
+  describe('when the code is not valid', () => {
+    it('should return undefined', () => {
       // given
       const code = 666
 
@@ -24,7 +26,7 @@ describe('src | components | verso | verso-content | verso-content-offer | selec
       const showType = selectShowTypeByCode(state, String(code))
 
       // then
-      expect(showType).toStrictEqual(undefined)
+      expect(showType).toBeUndefined()
     })
   })
 })

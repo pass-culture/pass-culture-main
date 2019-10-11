@@ -1,13 +1,9 @@
 import createCachedSelector from 're-reselect'
 
-function mapArgsToCacheKey(state, code) {
-  return code || ''
-}
-
 const selectMusicTypeByCode = createCachedSelector(
   state => state.data.musicTypes,
   (state, code) => code,
-  (musicTypes, code) => (musicTypes || []).find(musicType => musicType.code.toString() === code)
-)(mapArgsToCacheKey)
+  (musicTypes, code) => musicTypes.find(musicType => musicType.code.toString() === code)
+)((state, code) => code)
 
 export default selectMusicTypeByCode

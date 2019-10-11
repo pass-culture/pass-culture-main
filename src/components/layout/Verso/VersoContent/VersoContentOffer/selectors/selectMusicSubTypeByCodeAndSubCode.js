@@ -2,10 +2,6 @@ import createCachedSelector from 're-reselect'
 
 import selectMusicTypeByCode from './selectMusicTypeByCode'
 
-function mapArgsToCacheKey(state, code, subCode) {
-  return `${code || ''}/${subCode || ''}`
-}
-
 const selectMusicSubTypeByCodeAndSubCode = createCachedSelector(
   selectMusicTypeByCode,
   (state, code, subCode) => subCode,
@@ -13,8 +9,9 @@ const selectMusicSubTypeByCodeAndSubCode = createCachedSelector(
     if (!musicType) {
       return undefined
     }
+
     return musicType.children.find(musicSubType => musicSubType.code.toString() === subCode)
   }
-)(mapArgsToCacheKey)
+)((state, code, subCode) => `${code || ''}/${subCode || ''}`)
 
 export default selectMusicSubTypeByCodeAndSubCode

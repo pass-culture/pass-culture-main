@@ -11,6 +11,7 @@ import { navigationLink } from '../../../../../utils/geolocation'
 class VersoContentOffer extends PureComponent {
   componentDidMount() {
     const { handleRequestMusicAndShowTypes } = this.props
+
     handleRequestMusicAndShowTypes()
   }
 
@@ -34,14 +35,11 @@ class VersoContentOffer extends PureComponent {
   }
 
   renderOfferWhat() {
-    const { musicSubType, musicType, offer, showSubType, showType } = this.props
+    const { offer, style } = this.props
     const { durationMinutes, extraData, offerType } = offer || {}
     const { author, performer, speaker, stageDirector } = extraData || {}
     const { appLabel } = offerType || {}
-
     const duration = getDurationFromMinutes(durationMinutes)
-    const type = get(musicType, 'label') || get(showType, 'label')
-    const subType = get(musicSubType, 'label') || get(showSubType, 'label')
 
     return (
       <Fragment>
@@ -55,7 +53,7 @@ class VersoContentOffer extends PureComponent {
           </span>
           {durationMinutes && <span>{` - Durée ${duration}`}</span>}
         </div>
-        {type && <div>{`Genre : ${type} ${subType && `/ ${subType}`}`}</div>}
+        {style && <div>{`Genre : ${style}`}</div>}
         {author && <div>{`Auteur : ${author}`}</div>}
         {performer && <div>{`Interprète : ${performer}`}</div>}
         {speaker && <div>{`Intervenant : ${speaker}`}</div>}
@@ -66,15 +64,17 @@ class VersoContentOffer extends PureComponent {
 
   renderEventOfferDateInfos() {
     const { bookables, maxShownDates } = this.props
-    const sliced = bookables.slice(0, maxShownDates)
+    const slicedBookables = bookables.slice(0, maxShownDates)
     const hasMoreBookables = bookables.length > maxShownDates
 
     return (
       <Fragment>
-        {sliced.map(obj => (
-          <li key={obj.id}>
-            {capitalize(obj.humanBeginningDate)}
-            {!obj.userHasCancelledThisDate && obj.userHasAlreadyBookedThisDate && ' (réservé)'}
+        {slicedBookables.map(bookable => (
+          <li key={bookable.id}>
+            {capitalize(bookable.humanBeginningDate)}
+            {!bookable.userHasCancelledThisDate &&
+              bookable.userHasAlreadyBookedThisDate &&
+              ' (réservé)'}
           </li>
         ))}
         {hasMoreBookables && <li>{'Cliquez sur "j’y vais" pour voir plus de dates.'}</li>}
@@ -170,11 +170,8 @@ VersoContentOffer.defaultProps = {
   isCancelled: true,
   isFinished: false,
   maxShownDates: 7,
-  musicSubType: null,
-  musicType: null,
   offer: null,
-  showSubType: null,
-  showType: null,
+  style: '',
 }
 
 VersoContentOffer.propTypes = {
@@ -185,13 +182,10 @@ VersoContentOffer.propTypes = {
   isCancelled: PropTypes.bool,
   isFinished: PropTypes.bool,
   maxShownDates: PropTypes.number,
-  musicSubType: PropTypes.shape(),
-  musicType: PropTypes.shape(),
   offer: PropTypes.shape({
     product: PropTypes.shape(),
   }),
-  showSubType: PropTypes.shape(),
-  showType: PropTypes.shape(),
+  style: PropTypes.string,
 }
 
 export default VersoContentOffer
