@@ -81,9 +81,8 @@ class OfferItem extends Component {
       venue,
     } = this.props
 
-    const { isNew } = offer || {}
+    const { isNew, name } = offer || {}
     const { groupSizeMin, groupSizeMax, priceMin, priceMax } = aggregatedStock || {}
-    const { name } = product || {}
     const thumbUrl = this.getThumbUrl()
     const numberOfMediations = get(mediations, 'length')
     const remainingStockQuantity = get(stocks, 'length')

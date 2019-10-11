@@ -40,6 +40,12 @@ ShallowWrapper {
         },
       }
     }
+    offer={
+      Object {
+        "lastProvider": null,
+        "name": "Super Livre",
+      }
+    }
     query={
       Object {
         "change": [Function],
@@ -74,7 +80,7 @@ ShallowWrapper {
       },
       "children": Array [
         <HeroSection
-          subtitle={null}
+          subtitle="Super Livre"
           title="Détails de l’offre"
         >
           <p
@@ -139,7 +145,67 @@ ShallowWrapper {
               sublabel="Le type d’offre ne peut pas être modifié une fois l’offre enregistrée."
               type="select"
             />
+            <div
+              className="field is-horizontal field-text"
+            >
+              <div
+                className="field-label"
+              >
+                <label
+                  className="label"
+                  htmlFor="input_offers_name"
+                >
+                  <div
+                    className="subtitle"
+                  >
+                    Stocks :
+                  </div>
+                </label>
+              </div>
+              <div
+                className="field-body"
+              >
+                <div
+                  className="control"
+                  style={
+                    Object {
+                      "paddingTop": "0.25rem",
+                    }
+                  }
+                >
+                  <span
+                    className="nb-dates"
+                    style={
+                      Object {
+                        "paddingTop": "0.25rem",
+                      }
+                    }
+                  >
+                    undefined stock
+                  </span>
+                  <button
+                    className="button is-primary is-outlined is-small manage-stock"
+                    disabled=""
+                    id="manage-stocks"
+                    onClick={[Function]}
+                    type="button"
+                  >
+                    <span
+                      className="icon"
+                    >
+                      <Icon
+                        svg="ico-calendar"
+                      />
+                    </span>
+                    <span>
+                      Gérer les stocks
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
+          <withRouter(Connect(MediationsManager)) />
           <div>
             <h2
               className="main-list-title"
@@ -275,7 +341,7 @@ ShallowWrapper {
               Les offres payantes seront visibles dans l’application, toutefois les utilisateurs ne pourront les réserver que s’ils ont activé leur portefeuille numérique de 500 € sur Internet ou lors d’un des événements d’activation.
             </p>,
           ],
-          "subtitle": null,
+          "subtitle": "Super Livre",
           "title": "Détails de l’offre",
         },
         "ref": null,
@@ -346,9 +412,68 @@ ShallowWrapper {
                 sublabel="Le type d’offre ne peut pas être modifié une fois l’offre enregistrée."
                 type="select"
               />
+              <div
+                className="field is-horizontal field-text"
+              >
+                <div
+                  className="field-label"
+                >
+                  <label
+                    className="label"
+                    htmlFor="input_offers_name"
+                  >
+                    <div
+                      className="subtitle"
+                    >
+                      Stocks :
+                    </div>
+                  </label>
+                </div>
+                <div
+                  className="field-body"
+                >
+                  <div
+                    className="control"
+                    style={
+                      Object {
+                        "paddingTop": "0.25rem",
+                      }
+                    }
+                  >
+                    <span
+                      className="nb-dates"
+                      style={
+                        Object {
+                          "paddingTop": "0.25rem",
+                        }
+                      }
+                    >
+                      undefined stock
+                    </span>
+                    <button
+                      className="button is-primary is-outlined is-small manage-stock"
+                      disabled=""
+                      id="manage-stocks"
+                      onClick={[Function]}
+                      type="button"
+                    >
+                      <span
+                        className="icon"
+                      >
+                        <Icon
+                          svg="ico-calendar"
+                        />
+                      </span>
+                      <span>
+                        Gérer les stocks
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>,
             false,
-            undefined,
+            <withRouter(Connect(MediationsManager)) />,
             <div>
               <h2
                 className="main-list-title"
@@ -516,7 +641,65 @@ ShallowWrapper {
                 />,
                 false,
                 false,
-                undefined,
+                <div
+                  className="field is-horizontal field-text"
+                >
+                  <div
+                    className="field-label"
+                  >
+                    <label
+                      className="label"
+                      htmlFor="input_offers_name"
+                    >
+                      <div
+                        className="subtitle"
+                      >
+                        Stocks :
+                      </div>
+                    </label>
+                  </div>
+                  <div
+                    className="field-body"
+                  >
+                    <div
+                      className="control"
+                      style={
+                        Object {
+                          "paddingTop": "0.25rem",
+                        }
+                      }
+                    >
+                      <span
+                        className="nb-dates"
+                        style={
+                          Object {
+                            "paddingTop": "0.25rem",
+                          }
+                        }
+                      >
+                        undefined stock
+                      </span>
+                      <button
+                        className="button is-primary is-outlined is-small manage-stock"
+                        disabled=""
+                        id="manage-stocks"
+                        onClick={[Function]}
+                        type="button"
+                      >
+                        <span
+                          className="icon"
+                        >
+                          <Icon
+                            svg="ico-calendar"
+                          />
+                        </span>
+                        <span>
+                          Gérer les stocks
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>,
               ],
               "className": "field-group offer-form",
             },
@@ -568,12 +751,306 @@ ShallowWrapper {
               },
               false,
               false,
-              undefined,
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <div
+                      className="field-label"
+                    >
+                      <label
+                        className="label"
+                        htmlFor="input_offers_name"
+                      >
+                        <div
+                          className="subtitle"
+                        >
+                          Stocks :
+                        </div>
+                      </label>
+                    </div>,
+                    <div
+                      className="field-body"
+                    >
+                      <div
+                        className="control"
+                        style={
+                          Object {
+                            "paddingTop": "0.25rem",
+                          }
+                        }
+                      >
+                        <span
+                          className="nb-dates"
+                          style={
+                            Object {
+                              "paddingTop": "0.25rem",
+                            }
+                          }
+                        >
+                          undefined stock
+                        </span>
+                        <button
+                          className="button is-primary is-outlined is-small manage-stock"
+                          disabled=""
+                          id="manage-stocks"
+                          onClick={[Function]}
+                          type="button"
+                        >
+                          <span
+                            className="icon"
+                          >
+                            <Icon
+                              svg="ico-calendar"
+                            />
+                          </span>
+                          <span>
+                            Gérer les stocks
+                          </span>
+                        </button>
+                      </div>
+                    </div>,
+                  ],
+                  "className": "field is-horizontal field-text",
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": <label
+                        className="label"
+                        htmlFor="input_offers_name"
+                      >
+                        <div
+                          className="subtitle"
+                        >
+                          Stocks :
+                        </div>
+                      </label>,
+                      "className": "field-label",
+                    },
+                    "ref": null,
+                    "rendered": Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": <div
+                          className="subtitle"
+                        >
+                          Stocks :
+                        </div>,
+                        "className": "label",
+                        "htmlFor": "input_offers_name",
+                      },
+                      "ref": null,
+                      "rendered": Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": "Stocks :",
+                          "className": "subtitle",
+                        },
+                        "ref": null,
+                        "rendered": "Stocks :",
+                        "type": "div",
+                      },
+                      "type": "label",
+                    },
+                    "type": "div",
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": <div
+                        className="control"
+                        style={
+                          Object {
+                            "paddingTop": "0.25rem",
+                          }
+                        }
+                      >
+                        <span
+                          className="nb-dates"
+                          style={
+                            Object {
+                              "paddingTop": "0.25rem",
+                            }
+                          }
+                        >
+                          undefined stock
+                        </span>
+                        <button
+                          className="button is-primary is-outlined is-small manage-stock"
+                          disabled=""
+                          id="manage-stocks"
+                          onClick={[Function]}
+                          type="button"
+                        >
+                          <span
+                            className="icon"
+                          >
+                            <Icon
+                              svg="ico-calendar"
+                            />
+                          </span>
+                          <span>
+                            Gérer les stocks
+                          </span>
+                        </button>
+                      </div>,
+                      "className": "field-body",
+                    },
+                    "ref": null,
+                    "rendered": Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": Array [
+                          <span
+                            className="nb-dates"
+                            style={
+                              Object {
+                                "paddingTop": "0.25rem",
+                              }
+                            }
+                          >
+                            undefined stock
+                          </span>,
+                          <button
+                            className="button is-primary is-outlined is-small manage-stock"
+                            disabled=""
+                            id="manage-stocks"
+                            onClick={[Function]}
+                            type="button"
+                          >
+                            <span
+                              className="icon"
+                            >
+                              <Icon
+                                svg="ico-calendar"
+                              />
+                            </span>
+                            <span>
+                              Gérer les stocks
+                            </span>
+                          </button>,
+                        ],
+                        "className": "control",
+                        "style": Object {
+                          "paddingTop": "0.25rem",
+                        },
+                      },
+                      "ref": null,
+                      "rendered": Array [
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "host",
+                          "props": Object {
+                            "children": "undefined stock",
+                            "className": "nb-dates",
+                            "style": Object {
+                              "paddingTop": "0.25rem",
+                            },
+                          },
+                          "ref": null,
+                          "rendered": "undefined stock",
+                          "type": "span",
+                        },
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "host",
+                          "props": Object {
+                            "children": Array [
+                              <span
+                                className="icon"
+                              >
+                                <Icon
+                                  svg="ico-calendar"
+                                />
+                              </span>,
+                              <span>
+                                Gérer les stocks
+                              </span>,
+                            ],
+                            "className": "button is-primary is-outlined is-small manage-stock",
+                            "disabled": "",
+                            "id": "manage-stocks",
+                            "onClick": [Function],
+                            "type": "button",
+                          },
+                          "ref": null,
+                          "rendered": Array [
+                            Object {
+                              "instance": null,
+                              "key": undefined,
+                              "nodeType": "host",
+                              "props": Object {
+                                "children": <Icon
+                                  svg="ico-calendar"
+                                />,
+                                "className": "icon",
+                              },
+                              "ref": null,
+                              "rendered": Object {
+                                "instance": null,
+                                "key": undefined,
+                                "nodeType": "function",
+                                "props": Object {
+                                  "svg": "ico-calendar",
+                                },
+                                "ref": null,
+                                "rendered": null,
+                                "type": [Function],
+                              },
+                              "type": "span",
+                            },
+                            Object {
+                              "instance": null,
+                              "key": undefined,
+                              "nodeType": "host",
+                              "props": Object {
+                                "children": "Gérer les stocks",
+                              },
+                              "ref": null,
+                              "rendered": "Gérer les stocks",
+                              "type": "span",
+                            },
+                          ],
+                          "type": "button",
+                        },
+                      ],
+                      "type": "div",
+                    },
+                    "type": "div",
+                  },
+                ],
+                "type": "div",
+              },
             ],
             "type": "div",
           },
           false,
-          undefined,
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {},
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
           Object {
             "instance": null,
             "key": undefined,
@@ -1015,7 +1492,7 @@ ShallowWrapper {
         },
         "children": Array [
           <HeroSection
-            subtitle={null}
+            subtitle="Super Livre"
             title="Détails de l’offre"
           >
             <p
@@ -1080,7 +1557,67 @@ ShallowWrapper {
                 sublabel="Le type d’offre ne peut pas être modifié une fois l’offre enregistrée."
                 type="select"
               />
+              <div
+                className="field is-horizontal field-text"
+              >
+                <div
+                  className="field-label"
+                >
+                  <label
+                    className="label"
+                    htmlFor="input_offers_name"
+                  >
+                    <div
+                      className="subtitle"
+                    >
+                      Stocks :
+                    </div>
+                  </label>
+                </div>
+                <div
+                  className="field-body"
+                >
+                  <div
+                    className="control"
+                    style={
+                      Object {
+                        "paddingTop": "0.25rem",
+                      }
+                    }
+                  >
+                    <span
+                      className="nb-dates"
+                      style={
+                        Object {
+                          "paddingTop": "0.25rem",
+                        }
+                      }
+                    >
+                      undefined stock
+                    </span>
+                    <button
+                      className="button is-primary is-outlined is-small manage-stock"
+                      disabled=""
+                      id="manage-stocks"
+                      onClick={[Function]}
+                      type="button"
+                    >
+                      <span
+                        className="icon"
+                      >
+                        <Icon
+                          svg="ico-calendar"
+                        />
+                      </span>
+                      <span>
+                        Gérer les stocks
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
+            <withRouter(Connect(MediationsManager)) />
             <div>
               <h2
                 className="main-list-title"
@@ -1216,7 +1753,7 @@ ShallowWrapper {
                 Les offres payantes seront visibles dans l’application, toutefois les utilisateurs ne pourront les réserver que s’ils ont activé leur portefeuille numérique de 500 € sur Internet ou lors d’un des événements d’activation.
               </p>,
             ],
-            "subtitle": null,
+            "subtitle": "Super Livre",
             "title": "Détails de l’offre",
           },
           "ref": null,
@@ -1287,9 +1824,68 @@ ShallowWrapper {
                   sublabel="Le type d’offre ne peut pas être modifié une fois l’offre enregistrée."
                   type="select"
                 />
+                <div
+                  className="field is-horizontal field-text"
+                >
+                  <div
+                    className="field-label"
+                  >
+                    <label
+                      className="label"
+                      htmlFor="input_offers_name"
+                    >
+                      <div
+                        className="subtitle"
+                      >
+                        Stocks :
+                      </div>
+                    </label>
+                  </div>
+                  <div
+                    className="field-body"
+                  >
+                    <div
+                      className="control"
+                      style={
+                        Object {
+                          "paddingTop": "0.25rem",
+                        }
+                      }
+                    >
+                      <span
+                        className="nb-dates"
+                        style={
+                          Object {
+                            "paddingTop": "0.25rem",
+                          }
+                        }
+                      >
+                        undefined stock
+                      </span>
+                      <button
+                        className="button is-primary is-outlined is-small manage-stock"
+                        disabled=""
+                        id="manage-stocks"
+                        onClick={[Function]}
+                        type="button"
+                      >
+                        <span
+                          className="icon"
+                        >
+                          <Icon
+                            svg="ico-calendar"
+                          />
+                        </span>
+                        <span>
+                          Gérer les stocks
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>,
               false,
-              undefined,
+              <withRouter(Connect(MediationsManager)) />,
               <div>
                 <h2
                   className="main-list-title"
@@ -1457,7 +2053,65 @@ ShallowWrapper {
                   />,
                   false,
                   false,
-                  undefined,
+                  <div
+                    className="field is-horizontal field-text"
+                  >
+                    <div
+                      className="field-label"
+                    >
+                      <label
+                        className="label"
+                        htmlFor="input_offers_name"
+                      >
+                        <div
+                          className="subtitle"
+                        >
+                          Stocks :
+                        </div>
+                      </label>
+                    </div>
+                    <div
+                      className="field-body"
+                    >
+                      <div
+                        className="control"
+                        style={
+                          Object {
+                            "paddingTop": "0.25rem",
+                          }
+                        }
+                      >
+                        <span
+                          className="nb-dates"
+                          style={
+                            Object {
+                              "paddingTop": "0.25rem",
+                            }
+                          }
+                        >
+                          undefined stock
+                        </span>
+                        <button
+                          className="button is-primary is-outlined is-small manage-stock"
+                          disabled=""
+                          id="manage-stocks"
+                          onClick={[Function]}
+                          type="button"
+                        >
+                          <span
+                            className="icon"
+                          >
+                            <Icon
+                              svg="ico-calendar"
+                            />
+                          </span>
+                          <span>
+                            Gérer les stocks
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>,
                 ],
                 "className": "field-group offer-form",
               },
@@ -1509,12 +2163,306 @@ ShallowWrapper {
                 },
                 false,
                 false,
-                undefined,
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      <div
+                        className="field-label"
+                      >
+                        <label
+                          className="label"
+                          htmlFor="input_offers_name"
+                        >
+                          <div
+                            className="subtitle"
+                          >
+                            Stocks :
+                          </div>
+                        </label>
+                      </div>,
+                      <div
+                        className="field-body"
+                      >
+                        <div
+                          className="control"
+                          style={
+                            Object {
+                              "paddingTop": "0.25rem",
+                            }
+                          }
+                        >
+                          <span
+                            className="nb-dates"
+                            style={
+                              Object {
+                                "paddingTop": "0.25rem",
+                              }
+                            }
+                          >
+                            undefined stock
+                          </span>
+                          <button
+                            className="button is-primary is-outlined is-small manage-stock"
+                            disabled=""
+                            id="manage-stocks"
+                            onClick={[Function]}
+                            type="button"
+                          >
+                            <span
+                              className="icon"
+                            >
+                              <Icon
+                                svg="ico-calendar"
+                              />
+                            </span>
+                            <span>
+                              Gérer les stocks
+                            </span>
+                          </button>
+                        </div>
+                      </div>,
+                    ],
+                    "className": "field is-horizontal field-text",
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": <label
+                          className="label"
+                          htmlFor="input_offers_name"
+                        >
+                          <div
+                            className="subtitle"
+                          >
+                            Stocks :
+                          </div>
+                        </label>,
+                        "className": "field-label",
+                      },
+                      "ref": null,
+                      "rendered": Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": <div
+                            className="subtitle"
+                          >
+                            Stocks :
+                          </div>,
+                          "className": "label",
+                          "htmlFor": "input_offers_name",
+                        },
+                        "ref": null,
+                        "rendered": Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "host",
+                          "props": Object {
+                            "children": "Stocks :",
+                            "className": "subtitle",
+                          },
+                          "ref": null,
+                          "rendered": "Stocks :",
+                          "type": "div",
+                        },
+                        "type": "label",
+                      },
+                      "type": "div",
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": <div
+                          className="control"
+                          style={
+                            Object {
+                              "paddingTop": "0.25rem",
+                            }
+                          }
+                        >
+                          <span
+                            className="nb-dates"
+                            style={
+                              Object {
+                                "paddingTop": "0.25rem",
+                              }
+                            }
+                          >
+                            undefined stock
+                          </span>
+                          <button
+                            className="button is-primary is-outlined is-small manage-stock"
+                            disabled=""
+                            id="manage-stocks"
+                            onClick={[Function]}
+                            type="button"
+                          >
+                            <span
+                              className="icon"
+                            >
+                              <Icon
+                                svg="ico-calendar"
+                              />
+                            </span>
+                            <span>
+                              Gérer les stocks
+                            </span>
+                          </button>
+                        </div>,
+                        "className": "field-body",
+                      },
+                      "ref": null,
+                      "rendered": Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": Array [
+                            <span
+                              className="nb-dates"
+                              style={
+                                Object {
+                                  "paddingTop": "0.25rem",
+                                }
+                              }
+                            >
+                              undefined stock
+                            </span>,
+                            <button
+                              className="button is-primary is-outlined is-small manage-stock"
+                              disabled=""
+                              id="manage-stocks"
+                              onClick={[Function]}
+                              type="button"
+                            >
+                              <span
+                                className="icon"
+                              >
+                                <Icon
+                                  svg="ico-calendar"
+                                />
+                              </span>
+                              <span>
+                                Gérer les stocks
+                              </span>
+                            </button>,
+                          ],
+                          "className": "control",
+                          "style": Object {
+                            "paddingTop": "0.25rem",
+                          },
+                        },
+                        "ref": null,
+                        "rendered": Array [
+                          Object {
+                            "instance": null,
+                            "key": undefined,
+                            "nodeType": "host",
+                            "props": Object {
+                              "children": "undefined stock",
+                              "className": "nb-dates",
+                              "style": Object {
+                                "paddingTop": "0.25rem",
+                              },
+                            },
+                            "ref": null,
+                            "rendered": "undefined stock",
+                            "type": "span",
+                          },
+                          Object {
+                            "instance": null,
+                            "key": undefined,
+                            "nodeType": "host",
+                            "props": Object {
+                              "children": Array [
+                                <span
+                                  className="icon"
+                                >
+                                  <Icon
+                                    svg="ico-calendar"
+                                  />
+                                </span>,
+                                <span>
+                                  Gérer les stocks
+                                </span>,
+                              ],
+                              "className": "button is-primary is-outlined is-small manage-stock",
+                              "disabled": "",
+                              "id": "manage-stocks",
+                              "onClick": [Function],
+                              "type": "button",
+                            },
+                            "ref": null,
+                            "rendered": Array [
+                              Object {
+                                "instance": null,
+                                "key": undefined,
+                                "nodeType": "host",
+                                "props": Object {
+                                  "children": <Icon
+                                    svg="ico-calendar"
+                                  />,
+                                  "className": "icon",
+                                },
+                                "ref": null,
+                                "rendered": Object {
+                                  "instance": null,
+                                  "key": undefined,
+                                  "nodeType": "function",
+                                  "props": Object {
+                                    "svg": "ico-calendar",
+                                  },
+                                  "ref": null,
+                                  "rendered": null,
+                                  "type": [Function],
+                                },
+                                "type": "span",
+                              },
+                              Object {
+                                "instance": null,
+                                "key": undefined,
+                                "nodeType": "host",
+                                "props": Object {
+                                  "children": "Gérer les stocks",
+                                },
+                                "ref": null,
+                                "rendered": "Gérer les stocks",
+                                "type": "span",
+                              },
+                            ],
+                            "type": "button",
+                          },
+                        ],
+                        "type": "div",
+                      },
+                      "type": "div",
+                    },
+                  ],
+                  "type": "div",
+                },
               ],
               "type": "div",
             },
             false,
-            undefined,
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {},
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
             Object {
               "instance": null,
               "key": undefined,

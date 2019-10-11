@@ -55,7 +55,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
       expect(wrapper).toMatchSnapshot()
     })
   })
+
   describe('render', () => {
+
     describe('thumb Component', () => {
       it('should render a Thumb Component with the given url when offer has an active mediation', () => {
         // given
@@ -262,24 +264,37 @@ describe('src | components | pages | Offers | OfferItem', () => {
       })
     })
 
-    it('should contain a Navlink Component with the right props and containing a DotDotDot component', () => {
-      // given
-      props.product = {
-        name: 'fake name',
-      }
-      props.stocks = []
+    describe('offer title', () => {
+      it('should display title from offer and not use product details', () => {
+        // Given
+        props.offer.name = 'Harry Potter vol.1'
+        props.product.name = 'Harry Potter vol.2'
 
-      // when
-      const wrapper = shallow(<OfferItem {...props} />)
+        // When
+        const wrapper = shallow(<OfferItem {...props} />)
 
-      // then
-      const navLinkComponent = wrapper.find(NavLink).first()
-      expect(navLinkComponent.prop('className')).toBe('name')
-      expect(navLinkComponent.prop('to')).toBe('/offres/M4?orderBy=offer.id+desc')
-      expect(navLinkComponent.prop('title')).toBe('fake name')
-      const dotdotdotComponent = navLinkComponent.find(Dotdotdot)
-      expect(dotdotdotComponent.prop('clamp')).toBe(1)
-      expect(dotdotdotComponent.html()).toBe('<div>fake name</div>')
+        // Then
+        const firstLink = wrapper.find(NavLink).first()
+        expect(firstLink.prop('title')).toStrictEqual('Harry Potter vol.1')
+      })
+
+      it('should contain a Navlink Component with the right props and containing a DotDotDot component', () => {
+        // given
+        props.offer.name = 'fake name'
+        props.stocks = []
+
+        // when
+        const wrapper = shallow(<OfferItem {...props} />)
+
+        // then
+        const navLinkComponent = wrapper.find(NavLink).first()
+        expect(navLinkComponent.prop('className')).toBe('name')
+        expect(navLinkComponent.prop('to')).toBe('/offres/M4?orderBy=offer.id+desc')
+        expect(navLinkComponent.prop('title')).toBe('fake name')
+        const dotdotdotComponent = navLinkComponent.find(Dotdotdot)
+        expect(dotdotdotComponent.prop('clamp')).toBe(1)
+        expect(dotdotdotComponent.html()).toBe('<div>fake name</div>')
+      })
     })
 
     it('should display informations of the type of offer, the offerer and the venue name when venue public name is not given', () => {
