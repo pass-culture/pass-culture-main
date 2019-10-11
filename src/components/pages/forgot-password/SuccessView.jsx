@@ -33,7 +33,7 @@ class SuccessView extends Component {
 
   renderResetSuccessMessage = () => (
     <p className="is-medium">
-      {'Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter'}
+      {'Votre mot de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter'}
     </p>
   )
 
