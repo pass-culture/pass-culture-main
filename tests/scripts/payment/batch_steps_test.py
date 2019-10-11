@@ -481,7 +481,7 @@ def test_send_payments_report_does_not_send_anything_if_no_payments_are_provided
 
 class SetNotProcessablePaymentsWithBankInformationToRetryTest:
     @clean_database
-    def test_(self, app):
+    def test_should_set_not_processable_payments_to_retry(self, app):
         # Given
         offerer = create_offerer(name='first offerer')
         user = create_user()
@@ -501,4 +501,50 @@ class SetNotProcessablePaymentsWithBankInformationToRetryTest:
         queried_not_processable_payment = Payment.query.filter_by(id=not_processable_payment.id).one()
         queried_sent_payment = Payment.query.filter_by(id=sent_payment.id).one()
         assert queried_not_processable_payment.currentStatus.status == TransactionStatus.RETRY
+        assert queried_not_processable_payment.iban == 'CF13QSDFGH456789'
+        assert queried_not_processable_payment.bic == 'QSDFGH8Z555'
         assert queried_sent_payment.currentStatus.status == TransactionStatus.SENT
+
+    @clean_database
+    def test_should_set_not_processable_payments_to_retry_and_update_bank_information_from_payment_using_offerer_information_when_missing(self, app):
+        # Given
+        offerer = create_offerer(name='first offerer')
+        user = create_user()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock_from_offer(offer, price=0)
+        booking = create_booking(user, stock)
+        bank_information = create_bank_information(offerer=offerer)
+        not_processable_payment = create_payment(booking, offerer, Decimal(10), status=TransactionStatus.NOT_PROCESSABLE, iban=None, bic=None)
+        sent_payment = create_payment(booking, offerer, Decimal(10), status=TransactionStatus.SENT, iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+        PcObject.save(bank_information, not_processable_payment, sent_payment)
+
+        # When
+        set_not_processable_payments_with_bank_information_to_retry()
+
+        # Then
+        queried_not_processable_payment = Payment.query.filter_by(id=not_processable_payment.id).one()
+        assert queried_not_processable_payment.iban == 'FR7630006000011234567890189'
+        assert queried_not_processable_payment.bic == 'QSDFGH8Z555'
+
+    @clean_database
+    def test_should_set_not_processable_payments_to_retry_and_update_bank_information_from_payment_using_venue_information_when_missing(self, app):
+        # Given
+        offerer = create_offerer(name='first offerer')
+        user = create_user()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock_from_offer(offer, price=0)
+        booking = create_booking(user, stock)
+        bank_information = create_bank_information(venue=venue)
+        not_processable_payment = create_payment(booking, offerer, Decimal(10), status=TransactionStatus.NOT_PROCESSABLE, iban=None, bic=None)
+        sent_payment = create_payment(booking, offerer, Decimal(10), status=TransactionStatus.SENT, iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+        PcObject.save(bank_information, not_processable_payment, sent_payment)
+
+        # When
+        set_not_processable_payments_with_bank_information_to_retry()
+
+        # Then
+        queried_not_processable_payment = Payment.query.filter_by(id=not_processable_payment.id).one()
+        assert queried_not_processable_payment.iban == 'FR7630006000011234567890189'
+        assert queried_not_processable_payment.bic == 'QSDFGH8Z555'
