@@ -1,7 +1,7 @@
-import createCachedSelector from 're-reselect'
+import { createSelector } from 'reselect'
 
-export const getProductById = createCachedSelector(
+export const getProductById = createSelector(
   state => state.data.products,
   (state, productId) => productId,
   (products, productId) => products.find(product => product.id === productId)
-)((state, productId) => productId)
+)

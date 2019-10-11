@@ -7,10 +7,12 @@ describe('src | selectors | data | productsSelectors', () => {
         // given
         const store = {
           data: {
-            products: [{
-              id: 'AGKD',
-            }]
-          }
+            products: [
+              {
+                id: 'AGKD',
+              },
+            ],
+          },
         }
         const productId = 'AGKD'
 
@@ -19,8 +21,26 @@ describe('src | selectors | data | productsSelectors', () => {
 
         // then
         expect(product).toStrictEqual({
-          id: 'AGKD'
+          id: 'AGKD',
         })
+      })
+    })
+
+    describe('when product does not exist in products', () => {
+      it('should return it', () => {
+        // given
+        const store = {
+          data: {
+            products: [],
+          },
+        }
+        const productId = 'AGKD'
+
+        // when
+        const product = getProductById(store, productId)
+
+        // then
+        expect(product).toStrictEqual()
       })
     })
   })
