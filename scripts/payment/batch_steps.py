@@ -170,14 +170,13 @@ def send_payments_report(payments: List[Payment], recipients: List[str]) -> None
 def set_not_processable_payments_with_bank_information_to_retry():
     payments_to_retry = payment_queries.find_not_processable_with_bank_information()
     for payment in payments_to_retry:
-        if not payment.bic and not payment.iban:
-            if payment.booking.stock.offer.venue.bic and payment.booking.stock.offer.venue.bic :
-                payment.bic = payment.booking.stock.offer.venue.bic
-                payment.iban = payment.booking.stock.offer.venue.iban
-            else:
-                payment.bic = payment.booking.stock.offer.venue.managingOfferer.bic
-                payment.iban = payment.booking.stock.offer.venue.managingOfferer.iban
+        payment_bank_information_is_on_venue = payment.booking.stock.offer.venue.bic and payment.booking.stock.offer.venue.bic
+        payment_bank_information_is_on_offerer = payment.booking.stock.offer.venue.managingOfferer.bic and payment.booking.stock.offer.venue.managingOfferer.bic
+        if payment_bank_information_is_on_venue:
+            payment.bic = payment.booking.stock.offer.venue.bic
+            payment.iban = payment.booking.stock.offer.venue.iban
+        elif payment_bank_information_is_on_offerer:
+            payment.bic = payment.booking.stock.offer.venue.managingOfferer.bic
+            payment.iban = payment.booking.stock.offer.venue.managingOfferer.iban
         payment.setStatus(TransactionStatus.RETRY)
     PcObject.save(*payments_to_retry)
-
-
