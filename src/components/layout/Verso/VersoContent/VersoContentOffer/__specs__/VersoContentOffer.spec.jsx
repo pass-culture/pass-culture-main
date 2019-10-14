@@ -280,6 +280,9 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
         isCancelled: false,
         distance: '1',
         handleRequestMusicAndShowTypes: jest.fn(),
+        offer: {
+          id: 'ID',
+        },
       }
 
       // when
@@ -294,11 +297,15 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
   describe('when the offer is not booked', () => {
     it('should not render the offer link', () => {
       // given
+      offer.id = 'ID'
       const props = {
         bookables: [],
         isCancelled: null,
         distance: '1',
         handleRequestMusicAndShowTypes: jest.fn(),
+        offer: {
+          id: 'ID',
+        },
       }
 
       // when
@@ -313,11 +320,15 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
   describe('when the offer is cancelled', () => {
     it('should not render the offer link', () => {
       // given
+      offer.id = 'ID'
       const props = {
         bookables: [],
         isCancelled: true,
         distance: '1',
         handleRequestMusicAndShowTypes: jest.fn(),
+        offer: {
+          id: 'ID',
+        },
       }
 
       // when

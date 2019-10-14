@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import Draggable from 'react-draggable'
 
+import DuoOfferContainer from '../../../../layout/DuoOffer/DuoOfferContainer'
 import Icon from '../../../../layout/Icon/Icon'
 import Price from '../../../../layout/Price/Price'
 import FinishableContainer from '../../../../layout/Finishable/FinishableContainer'
@@ -79,6 +80,7 @@ export class Navigation extends React.PureComponent {
       backgroundGradient,
       distanceClue,
       flipHandler,
+      offerId,
       priceRange,
       separator,
       transitionTimeout,
@@ -124,6 +126,7 @@ export class Navigation extends React.PureComponent {
                         id="deck-navigation-offer-price"
                         value={priceRange}
                       />
+                      {offerId && <DuoOfferContainer offerId={offerId} />}
                       <div className="separator">{separator}</div>
                       <div>{distanceClue}</div>
                     </FinishableContainer>
@@ -145,6 +148,7 @@ Navigation.defaultProps = {
   flipHandler: null,
   handleGoNext: null,
   handleGoPrevious: null,
+  offerId: '',
   priceRange: null,
   transitionTimeout: 250,
   verticalSlideRatio: 0.3,
@@ -157,6 +161,7 @@ Navigation.propTypes = {
   handleGoNext: PropTypes.func,
   handleGoPrevious: PropTypes.func,
   height: PropTypes.number.isRequired,
+  offerId: PropTypes.string,
   priceRange: PropTypes.arrayOf(PropTypes.number),
   separator: PropTypes.string.isRequired,
   trackConsultOffer: PropTypes.func.isRequired,

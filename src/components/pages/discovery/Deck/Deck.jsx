@@ -190,6 +190,7 @@ class Deck extends Component {
             handleGoNext={(nextRecommendation && this.handleGoNext) || null}
             handleGoPrevious={(previousRecommendation && this.handleGoPrevious) || null}
             height={height}
+            offerId={currentRecommendation.offerId}
           />
         )}
       </div>

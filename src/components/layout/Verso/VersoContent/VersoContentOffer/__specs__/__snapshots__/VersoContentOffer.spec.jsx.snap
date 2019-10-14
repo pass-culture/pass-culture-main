@@ -81,6 +81,10 @@ ShallowWrapper {
           <div>
             Genre : Rap / Contenders
           </div>
+          <Connect(DuoOffer)
+            label="Vous pouvez réserver deux places."
+            offerId="X9"
+          />
         </React.Fragment>,
         <React.Fragment>
           <h3>
@@ -168,6 +172,10 @@ ShallowWrapper {
             undefined,
             undefined,
             undefined,
+            <Connect(DuoOffer)
+              label="Vous pouvez réserver deux places."
+              offerId="X9"
+            />,
           ],
         },
         "ref": null,
@@ -232,6 +240,18 @@ ShallowWrapper {
           undefined,
           undefined,
           undefined,
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "class",
+            "props": Object {
+              "label": "Vous pouvez réserver deux places.",
+              "offerId": "X9",
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
         ],
         "type": Symbol(react.fragment),
       },
@@ -582,6 +602,10 @@ ShallowWrapper {
             <div>
               Genre : Rap / Contenders
             </div>
+            <Connect(DuoOffer)
+              label="Vous pouvez réserver deux places."
+              offerId="X9"
+            />
           </React.Fragment>,
           <React.Fragment>
             <h3>
@@ -669,6 +693,10 @@ ShallowWrapper {
               undefined,
               undefined,
               undefined,
+              <Connect(DuoOffer)
+                label="Vous pouvez réserver deux places."
+                offerId="X9"
+              />,
             ],
           },
           "ref": null,
@@ -733,6 +761,18 @@ ShallowWrapper {
             undefined,
             undefined,
             undefined,
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "class",
+              "props": Object {
+                "label": "Vous pouvez réserver deux places.",
+                "offerId": "X9",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
           ],
           "type": Symbol(react.fragment),
         },

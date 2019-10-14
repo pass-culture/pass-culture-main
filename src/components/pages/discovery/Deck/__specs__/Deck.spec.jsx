@@ -12,6 +12,7 @@ describe('src | components | pages | discovery | Deck | Deck', () => {
       backButton: true,
       currentRecommendation: {
         bookingsIds: [],
+        offerId: 'ABCD',
       },
       dispatch: jest.fn(),
       draggable: true,

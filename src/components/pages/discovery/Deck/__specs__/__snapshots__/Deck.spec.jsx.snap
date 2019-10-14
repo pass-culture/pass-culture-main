@@ -8,6 +8,7 @@ ShallowWrapper {
     currentRecommendation={
       Object {
         "bookingsIds": Array [],
+        "offerId": "ABCD",
       }
     }
     dispatch={[MockFunction]}
@@ -123,6 +124,7 @@ ShallowWrapper {
           handleGoNext={null}
           handleGoPrevious={null}
           height={947}
+          offerId="ABCD"
         />,
       ],
       "className": "is-clipped is-relative",
@@ -243,6 +245,7 @@ ShallowWrapper {
           "handleGoNext": null,
           "handleGoPrevious": null,
           "height": 947,
+          "offerId": "ABCD",
         },
         "ref": null,
         "rendered": null,
@@ -319,6 +322,7 @@ ShallowWrapper {
             handleGoNext={null}
             handleGoPrevious={null}
             height={947}
+            offerId="ABCD"
           />,
         ],
         "className": "is-clipped is-relative",
@@ -439,6 +443,7 @@ ShallowWrapper {
             "handleGoNext": null,
             "handleGoPrevious": null,
             "height": 947,
+            "offerId": "ABCD",
           },
           "ref": null,
           "rendered": null,

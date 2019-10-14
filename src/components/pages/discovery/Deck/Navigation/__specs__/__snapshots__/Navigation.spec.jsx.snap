@@ -10,6 +10,7 @@ ShallowWrapper {
     handleGoNext={null}
     handleGoPrevious={null}
     height={500}
+    offerId=""
     priceRange={Array []}
     separator="-"
     trackConsultOffer={[MockFunction]}
@@ -113,6 +114,7 @@ ShallowWrapper {
                     id="deck-navigation-offer-price"
                     value={Array []}
                   />
+                  
                   <div
                     className="separator"
                   >
@@ -215,6 +217,7 @@ ShallowWrapper {
                       id="deck-navigation-offer-price"
                       value={Array []}
                     />
+                    
                     <div
                       className="separator"
                     >
@@ -322,6 +325,7 @@ ShallowWrapper {
                       id="deck-navigation-offer-price"
                       value={Array []}
                     />
+                    
                     <div
                       className="separator"
                     >
@@ -383,6 +387,7 @@ ShallowWrapper {
                       id="deck-navigation-offer-price"
                       value={Array []}
                     />
+                    
                     <div
                       className="separator"
                     >
@@ -453,6 +458,7 @@ ShallowWrapper {
                         id="deck-navigation-offer-price"
                         value={Array []}
                       />
+                      
                       <div
                         className="separator"
                       >
@@ -514,6 +520,7 @@ ShallowWrapper {
                         id="deck-navigation-offer-price"
                         value={Array []}
                       />
+                      
                       <div
                         className="separator"
                       >
@@ -541,6 +548,7 @@ ShallowWrapper {
                           id="deck-navigation-offer-price"
                           value={Array []}
                         />,
+                        "",
                         <div
                           className="separator"
                         >
@@ -567,6 +575,7 @@ ShallowWrapper {
                         "rendered": null,
                         "type": [Function],
                       },
+                      "",
                       Object {
                         "instance": null,
                         "key": undefined,
@@ -705,6 +714,7 @@ ShallowWrapper {
                       id="deck-navigation-offer-price"
                       value={Array []}
                     />
+                    
                     <div
                       className="separator"
                     >
@@ -807,6 +817,7 @@ ShallowWrapper {
                         id="deck-navigation-offer-price"
                         value={Array []}
                       />
+                      
                       <div
                         className="separator"
                       >
@@ -914,6 +925,7 @@ ShallowWrapper {
                         id="deck-navigation-offer-price"
                         value={Array []}
                       />
+                      
                       <div
                         className="separator"
                       >
@@ -975,6 +987,7 @@ ShallowWrapper {
                         id="deck-navigation-offer-price"
                         value={Array []}
                       />
+                      
                       <div
                         className="separator"
                       >
@@ -1045,6 +1058,7 @@ ShallowWrapper {
                           id="deck-navigation-offer-price"
                           value={Array []}
                         />
+                        
                         <div
                           className="separator"
                         >
@@ -1106,6 +1120,7 @@ ShallowWrapper {
                           id="deck-navigation-offer-price"
                           value={Array []}
                         />
+                        
                         <div
                           className="separator"
                         >
@@ -1133,6 +1148,7 @@ ShallowWrapper {
                             id="deck-navigation-offer-price"
                             value={Array []}
                           />,
+                          "",
                           <div
                             className="separator"
                           >
@@ -1159,6 +1175,7 @@ ShallowWrapper {
                           "rendered": null,
                           "type": [Function],
                         },
+                        "",
                         Object {
                           "instance": null,
                           "key": undefined,

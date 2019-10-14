@@ -1,6 +1,19 @@
 .verso-info {
   padding: $page-padding;
 
+  .duo-logo {
+    border-radius: 10px;
+    font-size: rem(12px);
+    font-weight: 600;
+    padding-left: rem(1px);
+    padding-right: rem(2px);
+    padding-bottom: rem(1px);
+  }
+
+  .duo-label {
+    padding-left: 2px;
+  }
+
   .offerer {
     text-align: right;
     color: $primary;

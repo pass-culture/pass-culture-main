@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { capitalize } from 'react-final-form-utils'
 
+import DuoOfferContainer from '../../../DuoOffer/DuoOfferContainer'
 import getDurationFromMinutes from './utils/getDurationFromMinutes'
 import VersoActionsBar from './VersoActionsBar/VersoActionsBar'
 import Icon from '../../../Icon/Icon'
@@ -58,6 +59,12 @@ class VersoContentOffer extends PureComponent {
         {performer && <div>{`Interprète : ${performer}`}</div>}
         {speaker && <div>{`Intervenant : ${speaker}`}</div>}
         {stageDirector && <div>{`Metteur en scène : ${stageDirector}`}</div>}
+        {offer.id && (
+          <DuoOfferContainer
+            label="Vous pouvez réserver deux places."
+            offerId={offer.id}
+          />
+        )}
       </Fragment>
     )
   }
@@ -183,6 +190,7 @@ VersoContentOffer.propTypes = {
   isNotBookable: PropTypes.bool,
   maxShownDates: PropTypes.number,
   offer: PropTypes.shape({
+    id: PropTypes.string,
     product: PropTypes.shape(),
   }),
   style: PropTypes.string,
