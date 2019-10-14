@@ -255,7 +255,7 @@ pc -e demo -t 3.0.1 deploy
 
 A la fin de l'opération, une fenêtre de votre navigateur s'ouvrira sur le workflow en cours.
 
-Après avoir livré en production, ne pas oublier de livrer ensuite sur les environements de demo et d'integration.  
+Après avoir livré en production, ne pas oublier de livrer ensuite sur les environements de demo, d'integration et de datalake.  
 
 #### Publier pass-culture-shared sur npm
 
