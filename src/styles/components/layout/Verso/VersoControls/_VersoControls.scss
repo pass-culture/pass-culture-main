@@ -1,48 +1,21 @@
-.font-icon {
-  font-size: 2.7rem;
-}
+.verso-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: $primary;
+  height: rem(62px);
+  padding: rem(8px) rem(12px);
 
-.verso {
-  .verso-controls {
-    @extend .is-clipped;
+  li {
+    text-align: center;
+  }
 
-    height: 62px;
-    min-height: 62px;
+  .font-icon {
+    font-size: rem(43px);
+    width: rem(8px);
 
-    .font-icon {
-      width: 0.5rem;
-
-      &::before {
-        margin-left: 0;
-        margin-right: 0;
-      }
+    &::before {
+      margin: 0;
     }
   }
-
-  .verso-controls ul {
-    @extend .no-list-style;
-
-    height: 62px;
-    min-height: 62px;
-  }
-
-  .verso-controls span[class^='icon-']::before {
-    margin: 0;
-  }
-
-  .verso-controls li {
-    @extend .text-center;
-    @extend .is-inline-block;
-  }
-
-  .verso-controls .cancel-button {
-    background: transparent;
-    color: white;
-    border: 2px solid white;
-    border-left-style: dotted;
-  }
-}
-
-#verso-cancel-booking-button:disabled {
-  opacity: 1;
 }

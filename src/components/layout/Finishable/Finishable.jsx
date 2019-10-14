@@ -3,30 +3,27 @@ import React from 'react'
 
 import Icon from '../Icon/Icon'
 
-const Finishable = ({ isFinished, children }) => {
-  if (!isFinished) return children
-  return (
+const Finishable = ({ isNotBookable, children }) =>
+  isNotBookable ? (
     <div className="finishable">
       {children}
-      <span className="finish-ribon">
-        <span className="finish-ribon-background" />
-        <Icon
-          alt="Terminé"
-          className="finish-ribon-img"
-          svg="badge-termine"
-        />
-      </span>
+      <Icon
+        alt="Réservation finie"
+        className="finishable-ribbon-img"
+        svg="badge-termine"
+      />
     </div>
+  ) : (
+    children
   )
-}
 
 Finishable.defaultProps = {
-  children: null,
+  isNotBookable: false,
 }
 
 Finishable.propTypes = {
-  children: PropTypes.node,
-  isFinished: PropTypes.bool.isRequired,
+  children: PropTypes.node.isRequired,
+  isNotBookable: PropTypes.bool,
 }
 
 export default Finishable

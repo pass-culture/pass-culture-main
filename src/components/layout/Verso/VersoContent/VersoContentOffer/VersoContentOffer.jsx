@@ -94,7 +94,7 @@ class VersoContentOffer extends PureComponent {
   }
 
   renderOfferWhen() {
-    const { isFinished, offer } = this.props
+    const { isNotBookable, offer } = this.props
     const { isThing } = offer || {}
 
     const offerDateInfos = isThing
@@ -105,7 +105,7 @@ class VersoContentOffer extends PureComponent {
       <Fragment>
         <h3>{'Quand ?'}</h3>
         <ul className="dates-info">
-          {isFinished ? <li>{'L’offre n’est plus disponible.'}</li> : offerDateInfos}
+          {isNotBookable ? <li>{'L’offre n’est plus disponible.'}</li> : offerDateInfos}
         </ul>
       </Fragment>
     )
@@ -168,7 +168,7 @@ class VersoContentOffer extends PureComponent {
 VersoContentOffer.defaultProps = {
   booking: null,
   isCancelled: true,
-  isFinished: false,
+  isNotBookable: false,
   maxShownDates: 7,
   offer: null,
   style: '',
@@ -180,7 +180,7 @@ VersoContentOffer.propTypes = {
   distance: PropTypes.string.isRequired,
   handleRequestMusicAndShowTypes: PropTypes.func.isRequired,
   isCancelled: PropTypes.bool,
-  isFinished: PropTypes.bool,
+  isNotBookable: PropTypes.bool,
   maxShownDates: PropTypes.number,
   offer: PropTypes.shape({
     product: PropTypes.shape(),

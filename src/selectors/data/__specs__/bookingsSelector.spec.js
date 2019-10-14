@@ -349,23 +349,23 @@ describe('selectFinishedBookings()', () => {
         offers: [
           {
             id: 'o1',
-            isFinished: false,
+            isNotBookable: false,
           },
           {
             id: 'o2',
-            isFinished: false,
+            isNotBookable: false,
           },
           {
             id: 'o3',
-            isFinished: true,
+            isNotBookable: true,
           },
           {
             id: 'o4',
-            isFinished: true,
+            isNotBookable: true,
           },
           {
             id: 'o5',
-            isFinished: false,
+            isNotBookable: false,
           },
         ],
         stocks: [

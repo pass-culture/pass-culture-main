@@ -48,7 +48,7 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
       bookables: [],
       distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
-      isFinished: false,
+      isNotBookable: false,
       maxShownDates: 7,
       offer,
       style: 'Rap / Contenders',
@@ -84,7 +84,7 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
       bookables: [],
       distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
-      isFinished: false,
+      isNotBookable: false,
       maxShownDates: 7,
       offer,
     }
@@ -102,7 +102,7 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
       bookables: [],
       distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
-      isFinished: false,
+      isNotBookable: false,
       maxShownDates: 7,
       offer,
     }
@@ -123,7 +123,7 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
       bookables: [{ id: 1 }, { id: 2 }, { id: 3 }],
       distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
-      isFinished: false,
+      isNotBookable: false,
       maxShownDates: 1,
       offer,
     }
@@ -145,7 +145,7 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
       ],
       distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
-      isFinished: false,
+      isNotBookable: false,
       maxShownDates: 1,
       offer,
     }
@@ -167,7 +167,7 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
       ],
       distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
-      isFinished: false,
+      isNotBookable: false,
       maxShownDates: 1,
       offer,
     }
@@ -186,7 +186,7 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
       bookables: [{ id: 1 }, { id: 2 }],
       distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
-      isFinished: true,
+      isNotBookable: true,
       maxShownDates: 1,
       offer,
     }
@@ -205,7 +205,7 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
       bookables: [{ id: 1 }, { id: 2 }],
       distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
-      isFinished: true,
+      isNotBookable: true,
       maxShownDates: 1,
       offer,
     }
@@ -228,7 +228,7 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
       bookables: [{ id: 1 }, { id: 2 }],
       distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
-      isFinished: true,
+      isNotBookable: true,
       maxShownDates: 1,
       offer,
     }
@@ -251,7 +251,7 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
       bookables: [{ id: 1 }, { id: 2 }],
       distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
-      isFinished: true,
+      isNotBookable: true,
       maxShownDates: 1,
       offer,
     }

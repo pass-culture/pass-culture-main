@@ -2,19 +2,11 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 const Wallet = ({ value }) => (
-  <div id="verso-wallet">
-    <small
-      className="is-block"
-      id="verso-wallet-label"
-    >
-      {'Mon pass'}
-    </small>
-    <span
-      className="is-block"
-      id="verso-wallet-value"
-    >
+  <div className="verso-wallet">
+    <div className="verso-wallet-label">{'Mon pass'}</div>
+    <div className="verso-wallet-amount">
       {value}&nbsp;{'€'}
-    </span>
+    </div>
   </div>
 )
 

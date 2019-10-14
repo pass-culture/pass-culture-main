@@ -1,4 +1,4 @@
-const getIsFinished = (offer, mediation, booking) => {
+const getIsNotBookable = (offer, mediation, booking) => {
   if (!offer) {
     return false
   }
@@ -9,7 +9,7 @@ const getIsFinished = (offer, mediation, booking) => {
   if (isUsed) {
     return false
   }
-  return offer.isFinished
+  return offer.isNotBookable
 }
 
-export default getIsFinished
+export default getIsNotBookable

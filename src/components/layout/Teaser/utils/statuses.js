@@ -3,7 +3,7 @@ export const isReserved = statuses =>
 
 export const reservationStatuses = (
   isActive,
-  isFinished,
+  isNotBookable,
   isFullyBooked,
   hasBookings,
   humanizeRelativeDate,
@@ -11,7 +11,7 @@ export const reservationStatuses = (
 ) => {
   const statuses = []
 
-  if (isFinished) {
+  if (isNotBookable) {
     return [
       {
         label: 'Terminé',

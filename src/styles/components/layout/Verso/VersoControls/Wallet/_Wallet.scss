@@ -1,7 +1,12 @@
-#verso-wallet-value {
-  font-size: 1.25rem;
+.verso-wallet {
+  color: $white;
+}
 
-  @media (min-width: $tablet) {
-    font-size: 1.5rem;
-  }
+.verso-wallet-label {
+  font-size: rem(13px);
+}
+
+.verso-wallet-amount {
+  font-size: rem(20px);
+  font-weight: 500;
 }

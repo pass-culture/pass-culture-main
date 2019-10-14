@@ -1,63 +1,36 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
+
 import VersoControls from '../VersoControls'
 
-import FinishableContainer from '../../../Finishable/FinishableContainer'
-import CancelButton from '../booking/CancelThisLink/CancelThisLinkContainer'
-import BookThisButton from '../booking/BookThisLink/BookThisLinkContainer'
-
 describe('src | components | layout | Verso | VersoControls | VersoControls', () => {
-  it('should render component with a bookable offer', () => {
-    // given
-    const props = {
-      showCancelView: false
-    }
+  describe('when the offer is not booked', () => {
+    it('should render the wallet, the favorite button, the share button and the booking link', () => {
+      // given
+      const props = {
+        isBooked: false,
+      }
 
-    // when
-    const wrapper = shallow(<VersoControls {...props} />)
-    const finishable = wrapper.find(FinishableContainer)
-    const cancel = wrapper.find(CancelButton)
-    const bookThis = wrapper.find(BookThisButton)
+      // when
+      const wrapper = shallow(<VersoControls {...props} />)
 
-    // then
-    expect(finishable).toHaveLength(1)
-    expect(cancel).toHaveLength(0)
-    expect(bookThis).toHaveLength(1)
+      // then
+      expect(wrapper).toMatchSnapshot()
+    })
   })
 
-  it('should render component with a already booked/cancellable offer', () => {
-    // given
-    const props = {
-      showCancelView: true
-    }
+  describe('when the offer is booked', () => {
+    it('should render the wallet, the favorite button, the share button and the cancelling link', () => {
+      // given
+      const props = {
+        isBooked: true,
+      }
 
-    // when
-    const wrapper = shallow(<VersoControls {...props} />)
-    const finishable = wrapper.find(FinishableContainer)
-    const cancel = wrapper.find(CancelButton)
-    const bookthis = wrapper.find(BookThisButton)
+      // when
+      const wrapper = shallow(<VersoControls {...props} />)
 
-    // then
-    expect(finishable).toHaveLength(1)
-    expect(cancel).toHaveLength(1)
-    expect(bookthis).toHaveLength(0)
-  })
-
-  it('should render component with a already booked/cancellable offer (réécrire)', () => {
-    // given
-    const props = {
-      showCancelView: true
-    }
-
-    // when
-    const wrapper = shallow(<VersoControls {...props} />)
-    const finishable = wrapper.find(FinishableContainer)
-    const cancel = wrapper.find(CancelButton)
-    const bookthis = wrapper.find(BookThisButton)
-
-    // then
-    expect(finishable).toHaveLength(1)
-    expect(cancel).toHaveLength(1)
-    expect(bookthis).toHaveLength(0)
+      // then
+      expect(wrapper).toMatchSnapshot()
+    })
   })
 })

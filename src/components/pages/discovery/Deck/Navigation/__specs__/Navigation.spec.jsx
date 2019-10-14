@@ -35,7 +35,7 @@ describe('src | components | pages | discovery | Deck | Navigation', () => {
             distanceClue: '',
             flipHandler: jest.fn(),
             height: 500,
-            isFinished: false,
+            isNotBookable: false,
             priceRange: [],
             separator: '-',
             trackConsultOffer: jest.fn(),
@@ -45,9 +45,7 @@ describe('src | components | pages | discovery | Deck | Navigation', () => {
           const wrapper = shallow(<Navigation {...props} />)
 
           // then
-          expect(wrapper.props().style.background).toStrictEqual(
-            props.backgroundGradient
-          )
+          expect(wrapper.props().style.background).toStrictEqual(props.backgroundGradient)
         })
       })
     })

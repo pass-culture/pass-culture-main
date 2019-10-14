@@ -21,7 +21,7 @@ describe('src | components | pages | discovery | deck | DeckContainer', () => {
     offerId = 2
     offer = {
       id: offerId,
-      isFinished: false,
+      isNotBookable: false,
       stocks: [{}],
       venue: {
         latitude: 48.91683,

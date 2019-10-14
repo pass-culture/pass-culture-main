@@ -57,15 +57,16 @@
     min-width: 5rem;
     text-align: center;
 
-    &.finish-icon {
-      width: 80px;
-    }
-
     .separator {
       font-family: initial;
       font-weight: bold;
       opacity: 0.5;
       line-height: 1rem;
+    }
+
+    .finishable-ribbon-img {
+      margin-left: -40px;
+      top: 0;
     }
   }
 }

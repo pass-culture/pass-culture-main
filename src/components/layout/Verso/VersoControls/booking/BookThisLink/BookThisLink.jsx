@@ -1,48 +1,32 @@
-import React, { Component } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
-import VersoPriceFormatter from '../VersoPriceFormatter/VersoPriceFormatter'
 import Price from '../../../../Price/Price'
 
-class BookThisLink extends Component {
-  formatOutputPrice = ([startingPrice, endingPrice], devise) => (
-    <VersoPriceFormatter
-      devise={devise}
-      endingPrice={endingPrice}
-      startingPrice={startingPrice}
+const BookThisLink = ({ isNotBookable, priceRange, destinationLink }) => (
+  <Link
+    className="flex-columns"
+    disabled={isNotBookable}
+    id="verso-booking-button"
+    to={destinationLink}
+  >
+    <Price
+      className="pc-ticket-button-price flex-columns items-center"
+      free="Gratuit"
+      value={priceRange}
     />
-  )
-
-  render() {
-    const { isFinished, priceRange, destinationLink } = this.props
-
-    return (
-      <Link
-        className="flex-columns"
-        disabled={isFinished}
-        id="verso-booking-button"
-        to={destinationLink}
-      >
-        <Price
-          className="pc-ticket-button-price flex-columns items-center"
-          format={this.formatOutputPrice}
-          free="Gratuit"
-          value={priceRange}
-        />
-        <span className="pc-ticket-button-label">{'J’y vais !'}</span>
-      </Link>
-    )
-  }
-}
+    <span className="pc-ticket-button-label">{'J’y vais !'}</span>
+  </Link>
+)
 
 BookThisLink.defaultProps = {
-  isFinished: false,
+  isNotBookable: false,
 }
 
 BookThisLink.propTypes = {
   destinationLink: PropTypes.string.isRequired,
-  isFinished: PropTypes.bool,
+  isNotBookable: PropTypes.bool,
   priceRange: PropTypes.arrayOf(PropTypes.number.isRequired).isRequired,
 }
 

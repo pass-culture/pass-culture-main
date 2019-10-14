@@ -11,6 +11,7 @@ import selectFirstMatchingBookingByOfferId from '../../../selectors/selectFirstM
 import selectOfferById from '../../../selectors/selectOfferById'
 import selectStockById from '../../../selectors/selectStockById'
 import getHumanizeRelativeDate from '../../../utils/date/getHumanizeRelativeDate'
+import getIsBooked from '../../../helpers/getIsBooked'
 
 export const humanizeBeginningDateTime = (hasBookings, state, booking) => {
   let humanizeRelativeDate = ''
@@ -27,9 +28,9 @@ export const mapStateToProps = (state, ownProps) => {
   const { handleToggleTeaser, item, isEditMode } = ownProps
   const { offerId, mediationId } = item
   const offer = selectOfferById(state, offerId)
-  const { dateRange, isActive, isFinished, isFullyBooked, venue } = offer
+  const { dateRange, isActive, isNotBookable, isFullyBooked, venue } = offer
   const booking = selectFirstMatchingBookingByOfferId(state, offerId)
-  const isBooked = booking && !booking.isCancelled
+  const isBooked = getIsBooked(booking)
   const hasBookings = booking !== null
   const humanizeRelativeDistance = getHumanizeRelativeDistance(
     state.geolocation.latitude,
@@ -43,7 +44,7 @@ export const mapStateToProps = (state, ownProps) => {
   const humanizeRelativeDate = humanizeBeginningDateTime(hasBookings, state, booking)
   const statuses = reservationStatuses(
     isActive,
-    isFinished,
+    isNotBookable,
     isFullyBooked,
     hasBookings,
     humanizeRelativeDate,

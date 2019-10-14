@@ -19,7 +19,7 @@ const bookOfferButton = Selector('#verso-booking-button')
 
 const bookingToken = Selector('#booking-booked-token')
 const bookingSuccessButton = Selector('#booking-success-ok-button')
-const checkReversedIcon = Selector('#verso-cancel-booking-button-reserved')
+const checkReversedIcon = Selector('.verso-cancel-booking-button-reserved')
 const closeMenu = Selector('#main-menu-fixed-container .close-link')
 const openMenuFromVerso = Selector('#verso-footer .profile-button')
 const bookingErrorReasons = Selector('#booking-error-reasons p')

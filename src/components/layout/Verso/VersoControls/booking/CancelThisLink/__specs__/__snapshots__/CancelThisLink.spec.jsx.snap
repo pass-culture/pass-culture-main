@@ -17,7 +17,7 @@ ShallowWrapper {
         "push": [MockFunction],
       }
     }
-    isBookingFinished={false}
+    isNotBookable={false}
     location={
       Object {
         "pathname": "",
@@ -57,8 +57,7 @@ ShallowWrapper {
             value={null}
           />
           <i
-            className="icon-ico-check fs24"
-            id="verso-cancel-booking-button-reserved"
+            className="icon-ico-check fs24 verso-cancel-booking-button-reserved"
           />
         </span>,
         <span
@@ -67,9 +66,8 @@ ShallowWrapper {
           Annuler
         </span>,
       ],
-      "className": "flex-columns no-background",
+      "className": "flex-columns no-background verso-cancel-booking-button",
       "disabled": false,
-      "id": "verso-cancel-booking-button",
       "onClick": [Function],
       "type": "button",
     },
@@ -87,8 +85,7 @@ ShallowWrapper {
               value={null}
             />,
             <i
-              className="icon-ico-check fs24"
-              id="verso-cancel-booking-button-reserved"
+              className="icon-ico-check fs24 verso-cancel-booking-button-reserved"
             />,
           ],
           "className": "pc-ticket-button-price reserved",
@@ -113,8 +110,7 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "className": "icon-ico-check fs24",
-              "id": "verso-cancel-booking-button-reserved",
+              "className": "icon-ico-check fs24 verso-cancel-booking-button-reserved",
             },
             "ref": null,
             "rendered": null,
@@ -154,8 +150,7 @@ ShallowWrapper {
               value={null}
             />
             <i
-              className="icon-ico-check fs24"
-              id="verso-cancel-booking-button-reserved"
+              className="icon-ico-check fs24 verso-cancel-booking-button-reserved"
             />
           </span>,
           <span
@@ -164,9 +159,8 @@ ShallowWrapper {
             Annuler
           </span>,
         ],
-        "className": "flex-columns no-background",
+        "className": "flex-columns no-background verso-cancel-booking-button",
         "disabled": false,
-        "id": "verso-cancel-booking-button",
         "onClick": [Function],
         "type": "button",
       },
@@ -184,8 +178,7 @@ ShallowWrapper {
                 value={null}
               />,
               <i
-                className="icon-ico-check fs24"
-                id="verso-cancel-booking-button-reserved"
+                className="icon-ico-check fs24 verso-cancel-booking-button-reserved"
               />,
             ],
             "className": "pc-ticket-button-price reserved",
@@ -210,8 +203,7 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "className": "icon-ico-check fs24",
-                "id": "verso-cancel-booking-button-reserved",
+                "className": "icon-ico-check fs24 verso-cancel-booking-button-reserved",
               },
               "ref": null,
               "rendered": null,

@@ -5,7 +5,7 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <BookThisLink
     destinationLink="fake/url"
-    isFinished={false}
+    isNotBookable={false}
     location={
       Object {
         "search": "",
@@ -41,7 +41,6 @@ ShallowWrapper {
       "children": Array [
         <Price
           className="pc-ticket-button-price flex-columns items-center"
-          format={[Function]}
           free="Gratuit"
           value={
             Array [
@@ -70,7 +69,6 @@ ShallowWrapper {
         "nodeType": "function",
         "props": Object {
           "className": "pc-ticket-button-price flex-columns items-center",
-          "format": [Function],
           "free": "Gratuit",
           "value": Array [
             10,
@@ -105,7 +103,6 @@ ShallowWrapper {
         "children": Array [
           <Price
             className="pc-ticket-button-price flex-columns items-center"
-            format={[Function]}
             free="Gratuit"
             value={
               Array [
@@ -134,7 +131,6 @@ ShallowWrapper {
           "nodeType": "function",
           "props": Object {
             "className": "pc-ticket-button-price flex-columns items-center",
-            "format": [Function],
             "free": "Gratuit",
             "value": Array [
               10,
@@ -187,6 +183,5 @@ ShallowWrapper {
     Symbol(enzyme.__providerValues__): undefined,
   },
   Symbol(enzyme.__providerValues__): Map {},
-  Symbol(enzyme.__childContext__): null,
 }
 `;

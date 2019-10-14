@@ -11,7 +11,7 @@ describe('src | components | verso | verso-controls | booking | BookThisLink', (
   beforeEach(() => {
     props = {
       destinationLink: 'fake/url',
-      isFinished: false,
+      isNotBookable: false,
       location: {
         search: '',
       },

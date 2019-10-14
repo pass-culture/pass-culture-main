@@ -2,55 +2,39 @@ import { shallow } from 'enzyme'
 import React from 'react'
 
 import Finishable from '../Finishable'
-import Icon from '../../Icon/Icon'
 
-describe('src | components | layout | Finishable', () => {
-  const finishableClass = '.finishable'
+describe('src | components | layout | Finishable | Finishable', () => {
   let props
 
   beforeEach(() => {
     props = {
-      children: <div className="content">{'cette offre n’est pas terminée'}</div>,
-      isFinished: true,
+      children: <p>{'Cette offre n’est pas terminée'}</p>,
     }
   })
 
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<Finishable {...props} />)
+  describe('when the offer is bookable', () => {
+    it('should not render the ribbon', () => {
+      // given
+      props.isNotBookable = false
 
-    // then
-    expect(wrapper).toMatchSnapshot()
+      // when
+      const wrapper = shallow(<Finishable {...props} />)
+
+      // then
+      expect(wrapper).toMatchSnapshot()
+    })
   })
 
-  it('should not contains finishable element', () => {
-    // given
-    props.isFinished = false
-    const wrapper = shallow(<Finishable {...props} />)
+  describe('when the offer is not bookable', () => {
+    it('should render the ribbon', () => {
+      // given
+      props.isNotBookable = true
 
-    // when
-    const content = wrapper.find('.content')
-    const icon = wrapper.find(Icon)
-    const finishable = wrapper.find(finishableClass)
+      // when
+      const wrapper = shallow(<Finishable {...props} />)
 
-    // then
-    expect(content).toHaveLength(1)
-    expect(icon).toHaveLength(0)
-    expect(finishable).toHaveLength(0)
-  })
-
-  it('should contains finishable element', () => {
-    // given
-    const wrapper = shallow(<Finishable {...props} />)
-
-    // when
-    const content = wrapper.find('.content')
-    const icon = wrapper.find(Icon)
-    const finishable = wrapper.find(finishableClass)
-
-    // then
-    expect(content).toHaveLength(1)
-    expect(icon).toHaveLength(1)
-    expect(finishable).toHaveLength(1)
+      // then
+      expect(wrapper).toMatchSnapshot()
+    })
   })
 })

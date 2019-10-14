@@ -1,10 +1,10 @@
-import getIsFinished from '../getIsFinished'
+import getIsNotBookable from '../getIsNotBookable'
 
-describe('src | helpers | getIsFinished', () => {
-  describe('getIsFinished', () => {
+describe('src | helpers | getIsNotBookable', () => {
+  describe('getIsNotBookable', () => {
     it('should return false when no recommendation', () => {
       // when
-      const result = getIsFinished(null)
+      const result = getIsNotBookable(null)
 
       // then
       expect(result).toBe(false)
@@ -12,10 +12,10 @@ describe('src | helpers | getIsFinished', () => {
 
     it('should return false when no mediation', () => {
       // given
-      const offer = { isFinished: false }
+      const offer = { isNotBookable: false }
 
       // when
-      const result = getIsFinished(offer)
+      const result = getIsNotBookable(offer)
 
       // then
       expect(result).toBe(false)
@@ -27,7 +27,7 @@ describe('src | helpers | getIsFinished', () => {
       const mediation = { tutoIndex: 1 }
 
       // when
-      const result = getIsFinished(offer, mediation)
+      const result = getIsNotBookable(offer, mediation)
 
       // then
       expect(result).toBe(false)
@@ -36,12 +36,12 @@ describe('src | helpers | getIsFinished', () => {
     it('should return false when offer is not finished', () => {
       // given
       const offer = {
-        isFinished: false,
+        isNotBookable: false,
       }
       const mediation = {}
 
       // when
-      const result = getIsFinished(offer, mediation)
+      const result = getIsNotBookable(offer, mediation)
 
       // then
       expect(result).toBe(false)
@@ -50,12 +50,12 @@ describe('src | helpers | getIsFinished', () => {
     it('should return true when offer is finished', () => {
       // given
       const offer = {
-        isFinished: true,
+        isNotBookable: true,
       }
       const mediation = {}
 
       // when
-      const result = getIsFinished(offer, mediation)
+      const result = getIsNotBookable(offer, mediation)
 
       // then
       expect(result).toBe(true)

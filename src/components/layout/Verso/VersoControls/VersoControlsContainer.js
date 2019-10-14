@@ -4,13 +4,15 @@ import { compose } from 'redux'
 
 import VersoControls from './VersoControls'
 import selectBookingByRouterMatch from '../../../../selectors/selectBookingByRouterMatch'
+import getIsBooked from '../../../../helpers/getIsBooked'
 
 const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
   const booking = selectBookingByRouterMatch(state, match)
-  const showCancelView = booking && !booking.isCancelled
+  const isBooked = getIsBooked(booking)
+
   return {
-    showCancelView,
+    isBooked,
   }
 }
 

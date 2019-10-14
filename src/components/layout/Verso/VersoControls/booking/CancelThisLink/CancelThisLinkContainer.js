@@ -6,22 +6,22 @@ import { requestData } from 'redux-saga-data'
 import withTracking from '../../../../../hocs/withTracking'
 import CancelThisLink from './CancelThisLink'
 import PopinButton from './PopinButton'
-
 import { bookingNormalizer } from '../../../../../../utils/normalizers'
 import { closeSharePopin, openSharePopin } from '../../../../../../reducers/share'
 import selectBookingByRouterMatch from '../../../../../../selectors/selectBookingByRouterMatch'
 import selectOfferByRouterMatch from '../../../../../../selectors/selectOfferByRouterMatch'
 import selectStockById from '../../../../../../selectors/selectStockById'
-import selectIsFinishedByRouterMatch from '../../../../../../selectors/selectIsFinishedByRouterMatch'
+import selectIsNotBookableByRouterMatch from '../../../../../../selectors/selectIsNotBookableByRouterMatch'
+import getIsBooked from '../../../../../../helpers/getIsBooked'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
   const booking = selectBookingByRouterMatch(state, match)
   const offer = selectOfferByRouterMatch(state, match)
-  const isBookingFinished = selectIsFinishedByRouterMatch(state, match)
+  const isNotBookable = selectIsNotBookableByRouterMatch(state, match) && !getIsBooked(booking)
   const stock = selectStockById(state, booking.stockId)
 
-  return { booking, isBookingFinished, offer, stock }
+  return { booking, isNotBookable, offer, stock }
 }
 
 export const mapDispatchToProps = (dispatch, ownProps) => {

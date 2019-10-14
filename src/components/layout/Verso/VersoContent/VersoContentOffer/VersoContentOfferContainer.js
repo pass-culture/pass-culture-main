@@ -8,14 +8,14 @@ import getStyle from './utils/getStyle'
 import selectBookables from '../../../../../selectors/selectBookables'
 import selectBookingByRouterMatch from '../../../../../selectors/selectBookingByRouterMatch'
 import selectDistanceByRouterMatch from '../../../../../selectors/selectDistanceByRouterMatch'
-import selectIsFinishedByRouterMatch from '../../../../../selectors/selectIsFinishedByRouterMatch'
+import selectIsNotBookableByRouterMatch from '../../../../../selectors/selectIsNotBookableByRouterMatch'
 import selectOfferByRouterMatch from '../../../../../selectors/selectOfferByRouterMatch'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
   const offer = selectOfferByRouterMatch(state, match) || {}
   const bookables = selectBookables(state, offer)
-  const isFinished = selectIsFinishedByRouterMatch(state, match)
+  const isNotBookable = selectIsNotBookableByRouterMatch(state, match)
   const { product } = offer || {}
   const { extraData } = product || {}
   const style = getStyle(state, extraData)
@@ -28,7 +28,7 @@ export const mapStateToProps = (state, ownProps) => {
     booking,
     distance,
     isCancelled,
-    isFinished,
+    isNotBookable,
     offer,
     style,
   }

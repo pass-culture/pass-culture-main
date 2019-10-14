@@ -35,11 +35,9 @@
   }
 
   .verso-wrapper {
-    @extend .is-black-text;
     @extend .scroll-y;
     @extend .flex-rows;
     @extend .is-relative;
-    @extend .text-left;
 
     cursor: initial;
     height: 100%;
@@ -90,4 +88,10 @@
     }
   }
 
+  .finishable-ribbon-img {
+    height: 30%;
+    right: -3%;
+    top: 50%;
+    width: 55%;
+  }
 }

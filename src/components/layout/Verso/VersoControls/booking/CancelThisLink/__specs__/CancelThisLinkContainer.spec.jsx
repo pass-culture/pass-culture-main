@@ -4,13 +4,13 @@ import { mapDispatchToProps, mapStateToProps } from '../CancelThisLinkContainer'
 
 describe('src | components | layout | Verso | VersoControls | booking | CancelThisLinkContainer', () => {
   describe('mapStateToProps', () => {
-    it('should map booking, isBookingFinished and offer', () => {
+    it('should map booking, isNotBookable and offer', () => {
       // given
       const state = {
         data: {
           bookings: [{ id: 'AE' }],
           mediations: [{ id: 'AE' }],
-          offers: [{ id: 'BF', isFinished: false }],
+          offers: [{ id: 'BF', isNotBookable: false }],
           stocks: [{ offerId: 'BF' }],
         },
       }
@@ -28,8 +28,8 @@ describe('src | components | layout | Verso | VersoControls | booking | CancelTh
       // then
       expect(props).toStrictEqual({
         booking: { id: 'AE' },
-        isBookingFinished: false,
-        offer: { id: 'BF', isFinished: false },
+        isNotBookable: false,
+        offer: { id: 'BF', isNotBookable: false },
         stock: { offerId: 'BF' },
       })
     })
@@ -52,7 +52,7 @@ describe('src | components | layout | Verso | VersoControls | booking | CancelTh
           push,
         },
         isCancelled: false,
-        isFinished: false,
+        isNotBookable: false,
         location: {},
         match: { params: {} },
         priceValue: 42,

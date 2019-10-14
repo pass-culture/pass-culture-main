@@ -32,11 +32,11 @@ class CancelThisLink extends PureComponent {
       history,
       location,
       match: { params },
-      isBookingFinished,
+      isNotBookable,
     } = this.props
     const { pathname, search } = location
     const { id: bookingId } = booking
-    if (isBookingFinished || params.cancellation) {
+    if (isNotBookable || params.cancellation) {
       return
     }
     let bookingUrl = pathname
@@ -51,15 +51,14 @@ class CancelThisLink extends PureComponent {
   }
 
   render() {
-    const { booking, isBookingFinished, stock } = this.props
+    const { booking, isNotBookable, stock } = this.props
     const { isCancelled } = booking || {}
     const { price } = stock || {}
 
     return (
       <button
-        className="flex-columns no-background"
-        disabled={isBookingFinished}
-        id="verso-cancel-booking-button"
+        className="flex-columns no-background verso-cancel-booking-button"
+        disabled={isNotBookable}
         onClick={this.handleOnClick}
         type="button"
       >
@@ -69,10 +68,7 @@ class CancelThisLink extends PureComponent {
             value={price}
           />
           {!isCancelled && (
-            <i
-              className="icon-ico-check fs24"
-              id="verso-cancel-booking-button-reserved"
-            />
+            <i className="icon-ico-check fs24 verso-cancel-booking-button-reserved" />
           )}
         </span>
         <span className="pc-ticket-button-label">{'Annuler'}</span>
@@ -82,7 +78,7 @@ class CancelThisLink extends PureComponent {
 }
 
 CancelThisLink.defaultProps = {
-  isBookingFinished: false,
+  isNotBookable: false,
 }
 
 CancelThisLink.propTypes = {
@@ -90,7 +86,7 @@ CancelThisLink.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
-  isBookingFinished: PropTypes.bool,
+  isNotBookable: PropTypes.bool,
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired,
     search: PropTypes.string.isRequired,

@@ -1,12 +1,12 @@
-import selectIsFinishedByRouterMatch from '../selectIsFinishedByRouterMatch'
+import selectIsNotBookableByRouterMatch from '../selectIsNotBookableByRouterMatch'
 
-describe('src | selectors | selectIsFinishedByRouterMatch', () => {
+describe('src | selectors | selectIsNotBookableByRouterMatch', () => {
   let offer
 
   beforeEach(() => {
     offer = {
       id: 'AE',
-      isFinished: false,
+      isNotBookable: false,
     }
   })
 
@@ -29,7 +29,7 @@ describe('src | selectors | selectIsFinishedByRouterMatch', () => {
     }
 
     // when
-    const result = selectIsFinishedByRouterMatch(state, match)
+    const result = selectIsNotBookableByRouterMatch(state, match)
 
     // then
     expect(result).toBe(false)
@@ -60,7 +60,7 @@ describe('src | selectors | selectIsFinishedByRouterMatch', () => {
     }
 
     // when
-    const result = selectIsFinishedByRouterMatch(state, match)
+    const result = selectIsNotBookableByRouterMatch(state, match)
 
     // then
     expect(result).toBe(false)
@@ -87,7 +87,7 @@ describe('src | selectors | selectIsFinishedByRouterMatch', () => {
     }
 
     // when
-    const result = selectIsFinishedByRouterMatch(state, match)
+    const result = selectIsNotBookableByRouterMatch(state, match)
 
     // then
     expect(result).toBe(false)

@@ -29,8 +29,8 @@ describe('src | components | layout | Teaser | TeaserContainer', () => {
             dateRange: ['2000-07-21T20:00:00Z', '2030-08-21T20:00:00Z'],
             id: 'o1',
             isActive: true,
-            isFinished: false,
             isFullyBooked: false,
+            isNotBookable: false,
             name: 'Fake offer name',
             offerType: {
               appLabel: 'Fake offer type',
