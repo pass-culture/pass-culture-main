@@ -7,6 +7,7 @@
     "node": ">=8.12.0 <8.16"
   },
   "dependencies": {
+    "@sentry/browser": "^5.7.0",
     "@typeform/embed": "0.7.1",
     "classnames": "2.2.5",
     "colorsys": "1.0.20",
@@ -34,7 +35,6 @@
     "postcss-loader": "^3.0.0",
     "prop-types": "^15.6.2",
     "query-string": "4.3.4",
-    "raven-js": "^3.26.3",
     "re-reselect": "^3.4.0",
     "react": "^0.14||^15.5.4||^16.1.1",
     "react-copy-to-clipboard": "^5.0.1",

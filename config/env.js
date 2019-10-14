@@ -1,5 +1,3 @@
-
-
 const fs = require('fs')
 const path = require('path')
 const paths = require('./paths')
@@ -7,11 +5,9 @@ const paths = require('./paths')
 // Make sure that including paths.js after env.js will read .env variables.
 delete require.cache[require.resolve('./paths')]
 
-const {NODE_ENV} = process.env
+const { NODE_ENV } = process.env
 if (!NODE_ENV) {
-  throw new Error(
-    'The NODE_ENV environment variable is required but was not specified.'
-  )
+  throw new Error('The NODE_ENV environment variable is required but was not specified.')
 }
 
 // https://github.com/bkeepers/dotenv#what-other-env-files-can-i-use
@@ -67,6 +63,7 @@ function getClientEnvironment(publicUrl) {
       },
       {
         API_URL: process.env.API_URL || 'http://localhost',
+        ENVIRONMENT_NAME: process.env.ENVIRONMENT_NAME,
         // Helpful for quick testing the dexis sync
         // system in a worker or not
         HAS_WORKERS: process.env.HAS_WORKERS || false,
@@ -82,6 +79,7 @@ function getClientEnvironment(publicUrl) {
         TYPEFORM_URL_CULTURAL_PRACTICES_POLL:
           process.env.TYPEFORM_URL_CULTURAL_PRACTICES_POLL ||
           'https://passculture.typeform.com/to/T8rurj',
+        SENTRY_SERVER_URL: process.env.SENTRY_SERVER_URL,
       }
     )
   // Stringify all values so we can feed into Webpack DefinePlugin

@@ -8,7 +8,12 @@ import getMobileOperatingSystem from '../helpers/getMobileOperatingSystem'
 
 moment.locale('fr-fr')
 
-export const { NODE_ENV, TYPEFORM_URL_CULTURAL_PRACTICES_POLL } = process.env
+export const {
+  NODE_ENV,
+  TYPEFORM_URL_CULTURAL_PRACTICES_POLL,
+  ENVIRONMENT_NAME,
+  SENTRY_SERVER_URL,
+} = process.env
 export const APP_VERSION = version
 export const USE_REDUX_PERSIST = false
 export const PERSIST_STORE_KEY = 'app-passculture'
