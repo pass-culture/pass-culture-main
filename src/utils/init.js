@@ -1,6 +1,6 @@
 import './icon'
 import './form'
-import './raven'
+import './sentry'
 
 import '../styles/index.scss'
 import 'typeface-barlow'

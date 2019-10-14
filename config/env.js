@@ -8,9 +8,7 @@ delete require.cache[require.resolve('./paths')]
 
 const NODE_ENV = process.env.NODE_ENV
 if (!NODE_ENV) {
-  throw new Error(
-    'The NODE_ENV environment variable is required but was not specified.'
-  )
+  throw new Error('The NODE_ENV environment variable is required but was not specified.')
 }
 
 // https://github.com/bkeepers/dotenv#what-other-env-files-can-i-use
@@ -66,6 +64,7 @@ function getClientEnvironment(publicUrl) {
       },
       {
         API_URL: process.env.API_URL,
+        ENVIRONMENT_NAME: process.env.ENVIRONMENT_NAME,
         // package name for api
         NAME: name,
         // Useful for determining whether we’re running in production mode.
@@ -79,6 +78,7 @@ function getClientEnvironment(publicUrl) {
         // VERSION FOR API
         VERSION: version,
         MATOMO_SERVER_URL: process.env.MATOMO_SERVER_URL,
+        SENTRY_SERVER_URL: process.env.SENTRY_SERVER_URL,
       }
     )
   // Stringify all values so we can feed into Webpack DefinePlugin
