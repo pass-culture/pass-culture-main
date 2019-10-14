@@ -90,7 +90,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
             onClick: handleClosePopin,
           }),
         ],
-        handleClose: () => history.push(`${pathname.split('/reservation')[0]}${search}`),
+        handleClose: () => history.push(`${pathname.split('/reservation/')[0]}${search}`),
         text: 'Souhaitez-vous réellement annuler cette réservation ?',
         offerName,
       }

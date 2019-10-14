@@ -38,7 +38,7 @@ export const mapStateToProps = (state, ownProps) => {
     venue.longitude
   )
   const { pathname, search } = location
-  const stringifiedMediationId = mediationId ? `/${mediationId}` : ''
+  const stringifiedMediationId = mediationId ? `/${mediationId}` : '/vide'
   const detailsUrl = `${pathname}/details/${offer.id}${stringifiedMediationId}${search}`
   const humanizeRelativeDate = humanizeBeginningDateTime(hasBookings, state, booking)
   const statuses = reservationStatuses(
