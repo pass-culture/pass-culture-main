@@ -159,7 +159,7 @@ class Offer(PcObject,
         return self.lastProviderId is not None
 
     @property
-    def isFinished(self):
+    def isNotBookable(self):
         return all(map(lambda s: not s.isBookable, self.stocks))
 
     @property

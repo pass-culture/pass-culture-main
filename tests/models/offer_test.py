@@ -55,7 +55,8 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=None)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(user2, stock, venue, recommendation, quantity=3)
+            booking = create_booking(
+                user2, stock, venue, recommendation, quantity=3)
 
             PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
 
@@ -78,7 +79,8 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=0)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(user2, stock, venue, recommendation, quantity=3)
+            booking = create_booking(
+                user2, stock, venue, recommendation, quantity=3)
 
             PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
 
@@ -101,7 +103,8 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=0)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(user2, stock, venue, recommendation, quantity=3)
+            booking = create_booking(
+                user2, stock, venue, recommendation, quantity=3)
 
             PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
 
@@ -124,10 +127,13 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=10)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(user2, stock, venue, recommendation, quantity=3)
-            booking2 = create_booking(user2, stock2, venue, recommendation, quantity=10)
+            booking = create_booking(
+                user2, stock, venue, recommendation, quantity=3)
+            booking2 = create_booking(
+                user2, stock2, venue, recommendation, quantity=10)
 
-            PcObject.save(booking, booking2, deposit, user, offer, stock, stock2, user2)
+            PcObject.save(booking, booking2, deposit, user,
+                          offer, stock, stock2, user2)
 
             # when
             result = offer.stockAlertMessage
@@ -148,10 +154,13 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=150)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(user2, stock, venue, recommendation, quantity=3)
-            booking2 = create_booking(user2, stock2, venue, recommendation, quantity=20)
+            booking = create_booking(
+                user2, stock, venue, recommendation, quantity=3)
+            booking2 = create_booking(
+                user2, stock2, venue, recommendation, quantity=20)
 
-            PcObject.save(booking, booking2, deposit, user, offer, stock, stock2, user2)
+            PcObject.save(booking, booking2, deposit, user,
+                          offer, stock, stock2, user2)
 
             # when
             result = offer.stockAlertMessage
@@ -172,7 +181,8 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=10)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(user2, stock2, venue, recommendation, quantity=10)
+            booking = create_booking(
+                user2, stock2, venue, recommendation, quantity=10)
 
             PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
 
@@ -198,10 +208,13 @@ class AddStockAlertMessageToOfferTest:
             stock4 = create_stock_from_offer(offer, available=None)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(user2, stock2, venue, recommendation, quantity=5)
-            booking2 = create_booking(user2, stock3, venue, recommendation, quantity=1)
+            booking = create_booking(
+                user2, stock2, venue, recommendation, quantity=5)
+            booking2 = create_booking(
+                user2, stock3, venue, recommendation, quantity=1)
 
-            PcObject.save(booking, booking2, deposit, user, offer, stock, stock2, stock3, stock4, user2)
+            PcObject.save(booking, booking2, deposit, user, offer,
+                          stock, stock2, stock3, stock4, user2)
 
             # when
             result = offer.stockAlertMessage
@@ -239,7 +252,8 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=None)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(user2, stock, venue, recommendation, quantity=3)
+            booking = create_booking(
+                user2, stock, venue, recommendation, quantity=3)
 
             PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
 
@@ -262,7 +276,8 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=0)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(user2, stock, venue, recommendation, quantity=3)
+            booking = create_booking(
+                user2, stock, venue, recommendation, quantity=3)
 
             PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
 
@@ -285,7 +300,8 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=0)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(user2, stock, venue, recommendation, quantity=3)
+            booking = create_booking(
+                user2, stock, venue, recommendation, quantity=3)
 
             PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
 
@@ -308,10 +324,13 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=10)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(user2, stock, venue, recommendation, quantity=3)
-            booking2 = create_booking(user2, stock2, venue, recommendation, quantity=10)
+            booking = create_booking(
+                user2, stock, venue, recommendation, quantity=3)
+            booking2 = create_booking(
+                user2, stock2, venue, recommendation, quantity=10)
 
-            PcObject.save(booking, booking2, deposit, user, offer, stock, stock2, user2)
+            PcObject.save(booking, booking2, deposit, user,
+                          offer, stock, stock2, user2)
 
             # when
             result = offer.stockAlertMessage
@@ -332,10 +351,13 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=40)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(user2, stock, venue, recommendation, quantity=3)
-            booking2 = create_booking(user2, stock2, venue, recommendation, quantity=11)
+            booking = create_booking(
+                user2, stock, venue, recommendation, quantity=3)
+            booking2 = create_booking(
+                user2, stock2, venue, recommendation, quantity=11)
 
-            PcObject.save(booking, booking2, deposit, user, offer, stock, stock2, user2)
+            PcObject.save(booking, booking2, deposit, user,
+                          offer, stock, stock2, user2)
 
             # when
             result = offer.stockAlertMessage
@@ -356,7 +378,8 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=10)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(user2, stock2, venue, recommendation, quantity=10)
+            booking = create_booking(
+                user2, stock2, venue, recommendation, quantity=10)
 
             PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
 
@@ -382,10 +405,13 @@ class AddStockAlertMessageToOfferTest:
             stock4 = create_stock_from_offer(offer, available=None)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(user2, stock2, venue, recommendation, quantity=5)
-            booking2 = create_booking(user2, stock3, venue, recommendation, quantity=1)
+            booking = create_booking(
+                user2, stock2, venue, recommendation, quantity=5)
+            booking2 = create_booking(
+                user2, stock3, venue, recommendation, quantity=1)
 
-            PcObject.save(booking, booking2, deposit, user, offer, stock, stock2, stock3, stock4, user2)
+            PcObject.save(booking, booking2, deposit, user, offer,
+                          stock, stock2, stock3, stock4, user2)
 
             # when
             result = offer.stockAlertMessage
@@ -403,7 +429,8 @@ class AddStockAlertMessageToOfferTest:
             offer = create_offer_with_event_product(venue)
             recommendation = create_recommendation(offer, user)
 
-            stock = create_stock_from_offer(offer, available=5, date_modified=datetime.utcnow())
+            stock = create_stock_from_offer(
+                offer, available=5, date_modified=datetime.utcnow())
 
             deposit = create_deposit(user2, amount=500)
             booking = create_booking(user2, stock, venue, recommendation,
@@ -461,7 +488,8 @@ class DateRangeTest:
         offer_dict = as_dict(offer, includes=["dateRange"])
 
         # Then
-        assert offer_dict['dateRange'] == ['2018-10-22T10:10:10Z', '2018-10-22T13:10:10Z']
+        assert offer_dict['dateRange'] == [
+            '2018-10-22T10:10:10Z', '2018-10-22T13:10:10Z']
 
     def test_is_empty_if_offer_is_on_a_thing(self):
         # given
@@ -476,7 +504,8 @@ class DateRangeTest:
         # given
         offer = create_offer_with_event_product()
         offer.stocks = [
-            create_stock(offer, beginning_datetime=two_days_ago, end_datetime=five_days_from_now)
+            create_stock(offer, beginning_datetime=two_days_ago,
+                         end_datetime=five_days_from_now)
         ]
 
         # then
@@ -486,10 +515,14 @@ class DateRangeTest:
         # given
         offer = create_offer_with_event_product()
         offer.stocks = [
-            create_stock(offer, beginning_datetime=four_days_ago, end_datetime=five_days_from_now),
-            create_stock(offer, beginning_datetime=four_days_ago, end_datetime=ten_days_from_now),
-            create_stock(offer, beginning_datetime=two_days_ago, end_datetime=five_days_from_now),
-            create_stock(offer, beginning_datetime=two_days_ago, end_datetime=ten_days_from_now)
+            create_stock(offer, beginning_datetime=four_days_ago,
+                         end_datetime=five_days_from_now),
+            create_stock(offer, beginning_datetime=four_days_ago,
+                         end_datetime=ten_days_from_now),
+            create_stock(offer, beginning_datetime=two_days_ago,
+                         end_datetime=five_days_from_now),
+            create_stock(offer, beginning_datetime=two_days_ago,
+                         end_datetime=ten_days_from_now)
         ]
 
         # then
@@ -502,8 +535,10 @@ class DateRangeTest:
         offer.stocks = [
             create_stock(offer, beginning_datetime=four_days_ago, end_datetime=five_days_from_now,
                          is_soft_deleted=True),
-            create_stock(offer, beginning_datetime=two_days_ago, end_datetime=five_days_from_now),
-            create_stock(offer, beginning_datetime=two_days_ago, end_datetime=ten_days_from_now)
+            create_stock(offer, beginning_datetime=two_days_ago,
+                         end_datetime=five_days_from_now),
+            create_stock(offer, beginning_datetime=two_days_ago,
+                         end_datetime=ten_days_from_now)
         ]
 
         # then
@@ -522,7 +557,8 @@ class DateRangeTest:
         # given
         offer = create_offer_with_event_product()
         offer.stocks = [
-            create_stock(offer, beginning_datetime=two_days_ago, end_datetime=five_days_from_now, is_soft_deleted=True),
+            create_stock(offer, beginning_datetime=two_days_ago,
+                         end_datetime=five_days_from_now, is_soft_deleted=True),
         ]
 
         # then
@@ -534,7 +570,8 @@ class CreateOfferTest:
     def test_success_when_is_digital_and_virtual_venue(self, app):
         # Given
         url = 'http://mygame.fr/offre'
-        digital_thing = create_product_with_thing_type(thing_type=ThingType.JEUX_VIDEO, url=url, is_national=True)
+        digital_thing = create_product_with_thing_type(
+            thing_type=ThingType.JEUX_VIDEO, url=url, is_national=True)
         offerer = create_offerer()
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
         PcObject.save(virtual_venue)
@@ -550,9 +587,11 @@ class CreateOfferTest:
     @clean_database
     def test_success_when_is_physical_and_physical_venue(self, app):
         # Given
-        physical_thing = create_product_with_thing_type(thing_type=ThingType.LIVRE_EDITION, url=None)
+        physical_thing = create_product_with_thing_type(
+            thing_type=ThingType.LIVRE_EDITION, url=None)
         offerer = create_offerer()
-        physical_venue = create_venue(offerer, is_virtual=False, siret=offerer.siren + '12345')
+        physical_venue = create_venue(
+            offerer, is_virtual=False, siret=offerer.siren + '12345')
         PcObject.save(physical_venue)
 
         offer = create_offer_with_thing_product(physical_venue, physical_thing)
@@ -566,7 +605,8 @@ class CreateOfferTest:
     @clean_database
     def test_fails_when_is_digital_but_physical_venue(self, app):
         # Given
-        digital_thing = create_product_with_thing_type(thing_type=ThingType.JEUX_VIDEO, url='http://mygame.fr/offre')
+        digital_thing = create_product_with_thing_type(
+            thing_type=ThingType.JEUX_VIDEO, url='http://mygame.fr/offre')
         offerer = create_offerer()
         physical_venue = create_venue(offerer)
         PcObject.save(physical_venue)
@@ -583,7 +623,8 @@ class CreateOfferTest:
     @clean_database
     def test_fails_when_is_physical_but_venue_is_virtual(self, app):
         # Given
-        physical_thing = create_product_with_thing_type(thing_type=ThingType.JEUX_VIDEO, url=None)
+        physical_thing = create_product_with_thing_type(
+            thing_type=ThingType.JEUX_VIDEO, url=None)
         offerer = create_offerer()
         digital_venue = create_venue(offerer, is_virtual=True, siret=None)
         PcObject.save(digital_venue)
@@ -616,7 +657,8 @@ class CreateOfferTest:
     @clean_database
     def test_offer_is_marked_as_isevent_property(self):
         # Given
-        physical_thing = create_product_with_thing_type(thing_type=ThingType.JEUX_VIDEO, url=None)
+        physical_thing = create_product_with_thing_type(
+            thing_type=ThingType.JEUX_VIDEO, url=None)
         offerer = create_offerer()
         digital_venue = create_venue(offerer, is_virtual=True, siret=None)
 
@@ -629,7 +671,8 @@ class CreateOfferTest:
 
     def test_offer_is_marked_as_isthing_property(self):
         # Given
-        event_product = create_product_with_event_type(event_type=EventType.CINEMA)
+        event_product = create_product_with_event_type(
+            event_type=EventType.CINEMA)
         offerer = create_offerer()
         digital_venue = create_venue(offerer, is_virtual=False, siret=None)
 
@@ -657,7 +700,8 @@ class CreateOfferTest:
     def test_create_digital_offer_success(self, app):
         # Given
         url = 'http://mygame.fr/offre'
-        digital_thing = create_product_with_thing_type(thing_type=ThingType.JEUX_VIDEO, url=url, is_national=True)
+        digital_thing = create_product_with_thing_type(
+            thing_type=ThingType.JEUX_VIDEO, url=url, is_national=True)
         offerer = create_offerer()
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
         PcObject.save(virtual_venue)
@@ -673,7 +717,8 @@ class CreateOfferTest:
     @clean_database
     def test_offer_error_when_thing_is_digital_but_venue_not_virtual(self, app):
         # Given
-        digital_thing = create_product_with_thing_type(thing_type=ThingType.JEUX_VIDEO, url='http://mygame.fr/offre')
+        digital_thing = create_product_with_thing_type(
+            thing_type=ThingType.JEUX_VIDEO, url='http://mygame.fr/offre')
         offerer = create_offerer()
         physical_venue = create_venue(offerer)
         PcObject.save(physical_venue)
@@ -701,7 +746,8 @@ def test_thing_offer_offerType_returns_dict_matching_ThingType_enum():
     # given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION)
+    offer = create_offer_with_thing_product(
+        venue, thing_type=ThingType.LIVRE_EDITION)
     expected_value = {
         'conditionalFields': ["author", "isbn"],
         'proLabel': 'Livres papier ou numérique, abonnements lecture',
@@ -730,7 +776,8 @@ def test_event_offer_offerType_returns_dict_matching_EventType_enum():
     # given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_offer_with_event_product(venue, event_type=EventType.SPECTACLE_VIVANT)
+    offer = create_offer_with_event_product(
+        venue, event_type=EventType.SPECTACLE_VIVANT)
     expected_value = {
         'conditionalFields': ["author", "showType", "stageDirector", "performer"],
         'proLabel': "Spectacle vivant",
@@ -789,9 +836,12 @@ class IsFullyBookedTest:
         user = create_user()
         stock1 = create_stock(available=2, date_modified=datetime(2019, 1, 1))
         stock2 = create_stock(available=1, date_modified=datetime(2019, 1, 1))
-        create_booking(user, stock=stock1, quantity=1, is_used=True, date_used=datetime(2019, 2, 1))
-        create_booking(user, stock=stock1, quantity=1, is_used=True, date_used=datetime(2019, 2, 1))
-        create_booking(user, stock=stock2, quantity=1, is_used=True, date_used=datetime(2019, 2, 1))
+        create_booking(user, stock=stock1, quantity=1,
+                       is_used=True, date_used=datetime(2019, 2, 1))
+        create_booking(user, stock=stock1, quantity=1,
+                       is_used=True, date_used=datetime(2019, 2, 1))
+        create_booking(user, stock=stock2, quantity=1,
+                       is_used=True, date_used=datetime(2019, 2, 1))
         offer.stocks = [stock1, stock2]
 
         # then
@@ -817,11 +867,14 @@ class IsFullyBookedTest:
         # given
         offer = Offer()
         user = create_user()
-        stock1 = create_stock(available=2, booking_limit_datetime=datetime.utcnow() - timedelta(weeks=3))
+        stock1 = create_stock(
+            available=2, booking_limit_datetime=datetime.utcnow() - timedelta(weeks=3))
         stock2 = create_stock(available=1, date_modified=datetime(2019, 1, 1))
         stock3 = create_stock(available=1, date_modified=datetime(2019, 1, 1))
-        create_booking(user, stock=stock2, quantity=1, is_used=True, date_used=datetime(2019, 2, 1))
-        create_booking(user, stock=stock3, quantity=1, is_used=True, date_used=datetime(2019, 2, 1))
+        create_booking(user, stock=stock2, quantity=1,
+                       is_used=True, date_used=datetime(2019, 2, 1))
+        create_booking(user, stock=stock3, quantity=1,
+                       is_used=True, date_used=datetime(2019, 2, 1))
         offer.stocks = [stock1, stock2, stock3]
 
         # then
@@ -847,15 +900,17 @@ class IsFullyBookedTest:
         offer = create_offer_with_thing_product(venue)
         user = create_user()
         stock1 = create_stock(available=2, date_modified=datetime(2019, 1, 1))
-        create_booking(user, stock=stock1, quantity=1, is_used=True, date_used=datetime(2018, 1, 1))
-        create_booking(user, stock=stock1, quantity=1, is_used=True, date_used=datetime(2019, 2, 1))
+        create_booking(user, stock=stock1, quantity=1,
+                       is_used=True, date_used=datetime(2018, 1, 1))
+        create_booking(user, stock=stock1, quantity=1,
+                       is_used=True, date_used=datetime(2019, 2, 1))
         offer.stocks = [stock1]
 
         # then
         assert offer.isFullyBooked is False
 
 
-class IsFinishedTest:
+class IsNotBookableTest:
     def test_returns_true_if_all_stocks_have_past_booking_limit_datetime(self):
         # given
         now = datetime.utcnow()
@@ -866,7 +921,7 @@ class IsFinishedTest:
         offer.stocks = [stock1, stock2, stock3]
 
         # then
-        assert offer.isFinished is True
+        assert offer.isNotBookable is True
 
     def test_returns_false_if_any_stock_has_future_booking_limit_datetime(self):
         # given
@@ -878,7 +933,7 @@ class IsFinishedTest:
         offer.stocks = [stock1, stock2, stock3]
 
         # then
-        assert offer.isFinished is False
+        assert offer.isNotBookable is False
 
     def test_returns_false_if_all_stocks_have_no_booking_limit_datetime(self):
         # given
@@ -889,7 +944,7 @@ class IsFinishedTest:
         offer.stocks = [stock1, stock2, stock3]
 
         # then
-        assert offer.isFinished is False
+        assert offer.isNotBookable is False
 
 
 class ActiveMediationTest:
@@ -916,9 +971,12 @@ class ActiveMediationTest:
         # given
         offer = Offer()
         offer.mediations = [
-            create_mediation(offer, front_text='1st', date_created=four_days_ago, is_active=True),
-            create_mediation(offer, front_text='2nd', date_created=now, is_active=False),
-            create_mediation(offer, front_text='3rd', date_created=two_days_ago, is_active=True)
+            create_mediation(offer, front_text='1st',
+                             date_created=four_days_ago, is_active=True),
+            create_mediation(offer, front_text='2nd',
+                             date_created=now, is_active=False),
+            create_mediation(offer, front_text='3rd',
+                             date_created=two_days_ago, is_active=True)
         ]
 
         # then
@@ -940,7 +998,8 @@ def test_date_range_matches_the_occurrence_if_only_one_occurrence():
     offer = Offer()
     offer.product = create_product_with_event_type()
     offer.stocks = [
-        create_stock(offer=offer, beginning_datetime=two_days_ago, end_datetime=five_days_from_now)
+        create_stock(offer=offer, beginning_datetime=two_days_ago,
+                     end_datetime=five_days_from_now)
     ]
 
     # then
@@ -952,10 +1011,14 @@ def test_date_range_starts_at_first_beginning_date_time_and_ends_at_last_end_dat
     offer = Offer()
     offer.product = create_product_with_event_type()
     offer.stocks = [
-        create_stock(offer=offer, beginning_datetime=two_days_ago, end_datetime=five_days_from_now),
-        create_stock(offer=offer, beginning_datetime=four_days_ago, end_datetime=five_days_from_now),
-        create_stock(offer=offer, beginning_datetime=four_days_ago, end_datetime=ten_days_from_now),
-        create_stock(offer=offer, beginning_datetime=two_days_ago, end_datetime=ten_days_from_now)
+        create_stock(offer=offer, beginning_datetime=two_days_ago,
+                     end_datetime=five_days_from_now),
+        create_stock(offer=offer, beginning_datetime=four_days_ago,
+                     end_datetime=five_days_from_now),
+        create_stock(offer=offer, beginning_datetime=four_days_ago,
+                     end_datetime=ten_days_from_now),
+        create_stock(offer=offer, beginning_datetime=two_days_ago,
+                     end_datetime=ten_days_from_now)
     ]
 
     # then

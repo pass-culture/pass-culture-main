@@ -45,7 +45,7 @@ class Get:
             assert 'offer' in first_booking['stock']
             assert 'isDigital' in first_booking['stock']['offer']
             assert 'isEvent' in first_booking['stock']['offer']
-            assert 'isFinished' in first_booking['stock']['offer']
+            assert 'isNotBookable' in first_booking['stock']['offer']
             assert 'isFullyBooked' in first_booking['stock']['offer']
             assert 'offerType' in first_booking['stock']['offer']
             assert 'product' in first_booking['stock']['offer']

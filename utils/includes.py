@@ -43,7 +43,7 @@ EVENT_INCLUDES = [
 ]
 
 OFFER_INCLUDES = [
-    'isFinished',
+    'isNotBookable',
     'isFullyBooked',
     {
         "key": "activeMediation",
@@ -105,7 +105,7 @@ FAVORITE_INCLUDES = [
             "dateRange",
             "favorites",
             "isEvent",
-            "isFinished",
+            "isNotBookable",
             "isThing",
             "isFullyBooked",
             "offerType",
@@ -137,7 +137,7 @@ RECOMMENDATION_INCLUDES = [
         "includes": [
             "dateRange",
             "isEvent",
-            'isFinished',
+            'isNotBookable',
             'isFullyBooked',
             "isThing",
             "offerType",
@@ -190,7 +190,7 @@ WEBAPP_GET_BOOKING_INCLUDES = [
                 "includes": [
                     'isDigital',
                     'isEvent',
-                    "isFinished",
+                    "isNotBookable",
                     "isFullyBooked",
                     "offerType",
                     {
@@ -226,7 +226,7 @@ WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
                     "dateRange",
                     "favorites",
                     "isEvent",
-                    "isFinished",
+                    "isNotBookable",
                     "isFullyBooked",
                     "isThing",
                     "offerType",
@@ -270,7 +270,7 @@ PRO_BOOKING_INCLUDES = [
                 {
                     "key": "resolvedOffer",
                     "includes": [
-                        'isFinished',
+                        'isNotBookable',
                         'isFullyBooked',
                         {
                             "key": "product",
