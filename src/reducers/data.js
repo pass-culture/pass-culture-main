@@ -3,6 +3,7 @@ import { createDataReducer } from 'redux-saga-data'
 const data = createDataReducer({
   bookings: [],
   events: [],
+  features: [],
   mediations: [],
   offers: [],
   offerers: [],

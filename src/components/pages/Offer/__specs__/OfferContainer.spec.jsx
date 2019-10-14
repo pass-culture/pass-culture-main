@@ -1,4 +1,4 @@
-import { mapStateToProps, mergeProps } from '../OfferContainer'
+import { mapDispatchToProps, mapStateToProps, mergeProps } from '../OfferContainer'
 import state from '../../../utils/mocks/state'
 
 describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
@@ -20,16 +20,32 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
   })
 
   describe('mapStateToProps', () => {
-    it('should return an object of props', () => {
+    it('should return an of props', () => {
       // when
       const result = mapStateToProps(state, props)
 
       // then
       expect(result).toStrictEqual({
-        formInitialValues: expect.any(Object),
+        formInitialValues: {
+          ageMax: undefined,
+          ageMin: undefined,
+          bookingEmail: 'booking.email@test.com',
+          condition: undefined,
+          description: undefined,
+          durationMinutes: undefined,
+          extraData: undefined,
+          isNational: undefined,
+          mediaUrls: undefined,
+          name: undefined,
+          offererId: 'BA',
+          type: undefined,
+          url: undefined,
+          venueId: 'DA',
+        },
         formOffererId: 'BA',
         formVenueId: 'DA',
         isEditableOffer: undefined,
+        isFeatureDisabled: true,
         musicSubOptions: undefined,
         offer: {
           bookingEmail: 'booking.email@test.com',
@@ -47,17 +63,224 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
           stocksIds: ['MU'],
           venueId: 'DA',
         },
+        offerer: {
+          address: 'RUE DES SAPOTILLES',
+          bic: 'QSDFGH8Z566',
+          city: 'Cayenne',
+          dateCreated: '2019-03-07T10:39:23.560414Z',
+          dateModifiedAtLastProvider: '2019-03-07T10:39:57.823508Z',
+          firstThumbDominantColor: null,
+          iban: 'FR7630001007941234567890185',
+          id: 'BA',
+          idAtProviders: null,
+          isActive: true,
+          isValidated: true,
+          lastProviderId: null,
+          modelName: 'Offerer',
+          nOffers: 5,
+          name: 'Bar des amis',
+          postalCode: '97300',
+          siren: '222222233',
+          thumbCount: 0,
+          validationToken: null,
+        },
+        offerers: [
+          {
+            address: 'RUE DES SAPOTILLES',
+            bic: 'QSDFGH8Z566',
+            city: 'Cayenne',
+            dateCreated: '2019-03-07T10:39:23.560414Z',
+            dateModifiedAtLastProvider: '2019-03-07T10:39:57.823508Z',
+            firstThumbDominantColor: null,
+            iban: 'FR7630001007941234567890185',
+            id: 'BA',
+            idAtProviders: null,
+            isActive: true,
+            isValidated: true,
+            lastProviderId: null,
+            modelName: 'Offerer',
+            nOffers: 5,
+            name: 'Bar des amis',
+            postalCode: '97300',
+            siren: '222222233',
+            thumbCount: 0,
+            validationToken: null,
+          },
+          {
+            address: 'RUE DES POMMES ROSAS',
+            city: 'Cayenne',
+            dateCreated: '2019-03-07T10:39:23.560414Z',
+            dateModifiedAtLastProvider: '2019-03-07T10:39:57.843884Z',
+            firstThumbDominantColor: null,
+            id: 'CA',
+            idAtProviders: null,
+            isActive: true,
+            isValidated: false,
+            lastProviderId: null,
+            modelName: 'Offerer',
+            nOffers: 10,
+            name: 'Cinéma du coin',
+            postalCode: '97300',
+            siren: '222222232',
+            thumbCount: 0,
+            validationToken: 'w3hDQgjYRIyYTxOYY08nwgH3BzI',
+          },
+        ],
         offerTypeError: undefined,
-        offerer: expect.any(Object),
-        offerers: expect.any(Object),
         providers: [],
-        selectedOfferType: expect.any(Object),
+        selectedOfferType: {
+          appLabel: 'Jeux Vidéo',
+          description:
+            'Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?',
+          id: 12,
+          offlineOnly: false,
+          onlineOnly: true,
+          proLabel: 'Jeux Vidéo',
+          sublabel: 'Jouer',
+          type: 'Thing',
+          value: 'ThingType.JEUX_VIDEO',
+        },
         showSubOptions: undefined,
-        stocks: expect.any(Object),
-        types: expect.any(Object),
+        stocks: [
+          {
+            available: 10,
+            bookingLimitDatetime: null,
+            bookingRecapSent: null,
+            dateModified: '2019-03-07T10:40:07.318721Z',
+            dateModifiedAtLastProvider: '2019-03-07T10:40:07.318695Z',
+            eventOccurrenceId: null,
+            groupSize: 1,
+            id: 'MU',
+            idAtProviders: null,
+            isSoftDeleted: false,
+            lastProviderId: null,
+            modelName: 'Stock',
+            offerId: 'UU',
+            price: 17,
+          },
+        ],
+        types: [
+          {
+            appLabel: 'Audiovisuel (Films sur supports physiques et VOD)',
+            description:
+              'Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
+            id: 9,
+            offlineOnly: false,
+            onlineOnly: false,
+            proLabel: 'Audiovisuel (Films sur supports physiques et VOD)',
+            sublabel: 'Regarder',
+            type: 'Thing',
+            value: 'ThingType.AUDIOVISUEL',
+          },
+          {
+            appLabel: 'Jeux Vidéo',
+            description:
+              'Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?',
+            id: 12,
+            offlineOnly: false,
+            onlineOnly: true,
+            proLabel: 'Jeux Vidéo',
+            sublabel: 'Jouer',
+            type: 'Thing',
+            value: 'ThingType.JEUX_VIDEO',
+          },
+          {
+            appLabel: 'Livre — Édition',
+            description:
+              'S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?',
+            id: 13,
+            offlineOnly: false,
+            onlineOnly: false,
+            proLabel: 'Livre — Édition',
+            sublabel: 'Lire',
+            type: 'Thing',
+            value: 'ThingType.LIVRE_EDITION',
+          },
+          {
+            appLabel: 'Musique (sur supports physiques ou en ligne)',
+            description:
+              'Plutôt rock, rap ou classique ? Sur un smartphone avec des écouteurs ou entre amis au concert ?',
+            id: 16,
+            offlineOnly: false,
+            onlineOnly: false,
+            proLabel: 'Musique (sur supports physiques ou en ligne)',
+            sublabel: 'Écouter',
+            type: 'Thing',
+            value: 'ThingType.MUSIQUE',
+          },
+          {
+            appLabel: 'pass Culture : activation en ligne',
+            description: 'Activez votre pass Culture grâce à cette offre',
+            id: 8,
+            offlineOnly: false,
+            onlineOnly: true,
+            proLabel: 'pass Culture : activation en ligne',
+            sublabel: 'Activation',
+            type: 'Thing',
+            value: 'ThingType.ACTIVATION',
+          },
+          {
+            appLabel: 'Presse (Abonnements)',
+            description:
+              'S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?',
+            id: 18,
+            offlineOnly: false,
+            onlineOnly: true,
+            proLabel: 'Presse (Abonnements)',
+            sublabel: 'Lire',
+            type: 'Thing',
+            value: 'ThingType.PRESSE_ABO',
+          },
+        ],
         url: 'https://ilestencoretemps.fr/',
-        venue: expect.any(Object),
-        venues: expect.any(Object),
+        venue: {
+          address: null,
+          bookingEmail: 'john.doe@test.com',
+          city: null,
+          comment: null,
+          dateModifiedAtLastProvider: '2019-03-07T10:40:03.234016Z',
+          departementCode: null,
+          firstThumbDominantColor: null,
+          id: 'DA',
+          idAtProviders: null,
+          isValidated: true,
+          isVirtual: true,
+          lastProviderId: null,
+          latitude: 48.83638,
+          longitude: 2.40027,
+          managingOffererId: 'BA',
+          modelName: 'Venue',
+          name: 'Le Sous-sol (Offre numérique)',
+          postalCode: null,
+          siret: null,
+          thumbCount: 0,
+          validationToken: null,
+        },
+        venues: [
+          {
+            address: null,
+            bookingEmail: 'john.doe@test.com',
+            city: null,
+            comment: null,
+            dateModifiedAtLastProvider: '2019-03-07T10:40:03.234016Z',
+            departementCode: null,
+            firstThumbDominantColor: null,
+            id: 'DA',
+            idAtProviders: null,
+            isValidated: true,
+            isVirtual: true,
+            lastProviderId: null,
+            latitude: 48.83638,
+            longitude: 2.40027,
+            managingOffererId: 'BA',
+            modelName: 'Venue',
+            name: 'Le Sous-sol (Offre numérique)',
+            postalCode: null,
+            siret: null,
+            thumbCount: 0,
+            validationToken: null,
+          },
+        ],
       })
     })
   })
@@ -122,4 +345,33 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
       })
     })
   })
+
+  describe('mapDispatchToProps', () => {
+    let dispatch
+
+    beforeEach(() => {
+      dispatch = jest.fn()
+    })
+
+    describe('loadVenue', () => {
+      it('should load venues using API', () => {
+        // given
+        const venueId = 'EF'
+
+        //when
+        mapDispatchToProps(dispatch).loadVenue()(venueId)
+
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          config: {
+            apiPath: '/venues/EF',
+            method: 'GET',
+            normalizer: {
+              managingOffererId: 'offerers',
+            },
+          },
+          type: 'REQUEST_DATA_GET_/VENUES/EF',
+        })
+      })
+    })})
 })

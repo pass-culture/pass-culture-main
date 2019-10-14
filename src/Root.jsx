@@ -8,6 +8,7 @@ import NoMatchPage from './components/pages/NoMatch/NoMatch'
 import routes from './utils/routes'
 import configureStore from './utils/store'
 import MatomoContainer from './components/matomo/MatomoContainer'
+import FeaturedRouteContainer from './components/router/FeaturedRouteContainer'
 
 const { store, persistor } = configureStore()
 
@@ -25,7 +26,7 @@ const Root = () => {
                 {routes.map(route => {
                   const isExact = typeof route.exact !== 'undefined' ? route.exact : true
                   // first props, last overrides
-                  return (<Route
+                  return (<FeaturedRouteContainer
                     {...route}
                     exact={isExact}
                     key={route.path}

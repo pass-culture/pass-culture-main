@@ -13,8 +13,14 @@ describe('src | components | pages | Offer | Offer ', () => {
 
   beforeEach(() => {
     dispatch = jest.fn()
-
     props = {
+      currentUser: {
+        isAdmin: false,
+      },
+      dispatch: dispatch,
+      isEditableOffer: true,
+      isFeatureDisabled: true,
+      loadVenue: jest.fn(),
       location: {
         search: '?lieu=AQ',
       },
@@ -23,10 +29,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           offerId: 'creation',
         },
       },
-      isEditableOffer: true,
-      currentUser: {
-        isAdmin: false,
-      },
+      mergeOfferError: jest.fn(),
       query: {
         change: () => ({}),
         changeToReadOnly: () => ({}),
@@ -35,8 +38,6 @@ describe('src | components | pages | Offer | Offer ', () => {
         translate: () => ({ venue: 'AQ ' }),
       },
       selectedOfferType: {},
-      dispatch: dispatch,
-      venues: [],
       offer: {
         name: 'Super Livre',
         lastProvider: null,
@@ -44,6 +45,7 @@ describe('src | components | pages | Offer | Offer ', () => {
       history: {},
       trackCreateOffer: jest.fn(),
       trackModifyOffer: jest.fn(),
+      venues: [],
     }
   })
 
@@ -273,7 +275,6 @@ describe('src | components | pages | Offer | Offer ', () => {
           expect(durationField.prop('name')).toStrictEqual('durationMinutes')
         })
 
-
         it('should allow to configure the offer as a DUO', () => {
           // given
           props.match = {
@@ -281,6 +282,7 @@ describe('src | components | pages | Offer | Offer ', () => {
               offerId: 'QU',
             },
           }
+          props.isFeatureDisabled = false
           props.selectedOfferType = {
             type: 'Event',
           }
@@ -427,8 +429,8 @@ describe('src | components | pages | Offer | Offer ', () => {
           isModifiedEntity: false,
           readOnly: false,
         })
-        props.venues = [ { name: 'quel beau théâtre' }, { name: 'quel beau musée' } ]
-        const expectedOptions = [ { name: 'quel beau théâtre' }, { name: 'quel beau musée' } ]
+        props.venues = [{ name: 'quel beau théâtre' }, { name: 'quel beau musée' }]
+        const expectedOptions = [{ name: 'quel beau théâtre' }, { name: 'quel beau musée' }]
 
         // when
         const wrapper = shallow(<Offer {...props} />)

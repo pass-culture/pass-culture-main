@@ -28,6 +28,8 @@ ShallowWrapper {
     }
     history={Object {}}
     isEditableOffer={true}
+    isFeatureDisabled={true}
+    loadVenue={[MockFunction]}
     location={
       Object {
         "search": "?lieu=AQ",
@@ -40,6 +42,7 @@ ShallowWrapper {
         },
       }
     }
+    mergeOfferError={[MockFunction]}
     offer={
       Object {
         "lastProvider": null,
@@ -311,7 +314,7 @@ ShallowWrapper {
                 requiredFields={Array []}
                 type="submit"
               >
-                Enregistrer 
+                Enregistrer
               </SubmitButton>
             </div>
           </div>
@@ -579,7 +582,7 @@ ShallowWrapper {
                   requiredFields={Array []}
                   type="submit"
                 >
-                  Enregistrer 
+                  Enregistrer
                 </SubmitButton>
               </div>
             </div>,
@@ -1386,7 +1389,7 @@ ShallowWrapper {
                     requiredFields={Array []}
                     type="submit"
                   >
-                    Enregistrer 
+                    Enregistrer
                   </SubmitButton>
                 </div>,
               ],
@@ -1442,7 +1445,7 @@ ShallowWrapper {
                     requiredFields={Array []}
                     type="submit"
                   >
-                    Enregistrer 
+                    Enregistrer
                   </SubmitButton>,
                   "className": "control",
                 },
@@ -1453,7 +1456,7 @@ ShallowWrapper {
                   "nodeType": "function",
                   "props": Object {
                     "children": Array [
-                      "Enregistrer ",
+                      "Enregistrer",
                       undefined,
                     ],
                     "className": "button is-primary is-medium",
@@ -1464,7 +1467,7 @@ ShallowWrapper {
                   },
                   "ref": null,
                   "rendered": Array [
-                    "Enregistrer ",
+                    "Enregistrer",
                     undefined,
                   ],
                   "type": [Function],
@@ -1723,7 +1726,7 @@ ShallowWrapper {
                   requiredFields={Array []}
                   type="submit"
                 >
-                  Enregistrer 
+                  Enregistrer
                 </SubmitButton>
               </div>
             </div>
@@ -1991,7 +1994,7 @@ ShallowWrapper {
                     requiredFields={Array []}
                     type="submit"
                   >
-                    Enregistrer 
+                    Enregistrer
                   </SubmitButton>
                 </div>
               </div>,
@@ -2798,7 +2801,7 @@ ShallowWrapper {
                       requiredFields={Array []}
                       type="submit"
                     >
-                      Enregistrer 
+                      Enregistrer
                     </SubmitButton>
                   </div>,
                 ],
@@ -2854,7 +2857,7 @@ ShallowWrapper {
                       requiredFields={Array []}
                       type="submit"
                     >
-                      Enregistrer 
+                      Enregistrer
                     </SubmitButton>,
                     "className": "control",
                   },
@@ -2865,7 +2868,7 @@ ShallowWrapper {
                     "nodeType": "function",
                     "props": Object {
                       "children": Array [
-                        "Enregistrer ",
+                        "Enregistrer",
                         undefined,
                       ],
                       "className": "button is-primary is-medium",
@@ -2876,7 +2879,7 @@ ShallowWrapper {
                     },
                     "ref": null,
                     "rendered": Array [
-                      "Enregistrer ",
+                      "Enregistrer",
                       undefined,
                     ],
                     "type": [Function],

@@ -1,12 +1,13 @@
 import get from 'lodash.get'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
+import { requestData } from 'redux-saga-data'
 
 import Offer from './Offer'
-import selectFormInitialValuesByProductAndOfferAndOffererAndVenue from './utils/selectFormInitialValuesByProductAndOfferAndOffererAndVenue'
 import { withRequiredLogin } from '../../hocs'
 import withTracking from '../../hocs/withTracking'
 
+import selectFormInitialValuesByProductAndOfferAndOffererAndVenue from './utils/selectFormInitialValuesByProductAndOfferAndOffererAndVenue'
 import selectOfferById from '../../../selectors/selectOfferById'
 import { selectOffererById } from '../../../selectors/data/offerersSelectors'
 import selectProductById from '../../../selectors/selectProductById'
@@ -21,6 +22,8 @@ import {
   selectVenuesByOffererIdAndOfferType,
 } from '../../../selectors/data/venuesSelectors'
 import { selectOfferers } from '../../../selectors/data/offerersSelectors'
+import selectIsFeatureDisabled from '../../router/selectors/selectIsFeatureDisabled'
+
 
 export const mapStateToProps = (state, ownProps) => {
   const {
@@ -72,21 +75,24 @@ export const mapStateToProps = (state, ownProps) => {
   const showSubOptions = extraData.showType && selectShowSubOptionsByShowType(extraData.showType)
   const offerTypeError = get(state, 'errors.offer.type')
 
+  const isFeatureDisabled = selectIsFeatureDisabled(state, 'DUO_OFFER')
+
   return {
     formInitialValues,
     formOffererId,
     formVenueId,
     isEditableOffer,
+    isFeatureDisabled,
     musicSubOptions,
     offer,
     offerer,
     offerers,
     offerTypeError,
     providers,
+    selectedOfferType,
     showSubOptions,
     stocks,
     types,
-    selectedOfferType,
     url,
     venue,
     venues,
@@ -103,6 +109,21 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
     },
     trackModifyOffer: offerId => {
       ownProps.tracking.trackEvent({ action: 'modifyOffer', name: offerId })
+    },
+  }
+}
+
+export const mapDispatchToProps = dispatch => {
+  return {
+    loadVenue: () => venueId => {
+      dispatch(
+        requestData({
+          apiPath: `/venues/${venueId}`,
+          normalizer: {
+            managingOffererId: 'offerers',
+          },
+        })
+      )
     },
   }
 }

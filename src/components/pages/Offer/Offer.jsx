@@ -3,16 +3,14 @@ import PropTypes from 'prop-types'
 import {
   Field,
   Form,
-  Icon,
-  mergeErrors,
+  Icon, mergeErrors,
   mergeForm,
-  pluralize,
-  resetForm,
+  pluralize, resetForm,
   showModal,
   SubmitButton,
 } from 'pass-culture-shared'
 
-import React, { Component, Fragment } from 'react'
+import React, { PureComponent, Fragment } from 'react'
 import { NavLink } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
 
@@ -53,11 +51,14 @@ const CONDITIONAL_FIELDS = {
   performer: ['EventType.MUSIQUE', 'ThingType.MUSIQUE', 'EventType.SPECTACLE_VIVANT'],
 }
 
-class Offer extends Component {
-
-  componentDidMount() {
+class Offer extends PureComponent {
+  constructor(props) {
+    super(props)
     const { dispatch } = this.props
     dispatch(resetForm())
+  }
+
+  componentDidMount() {
     this.handleVenueRedirect()
     this.handleShowStocksManager()
     this.setDefaultBookingEmailIfNew()
@@ -108,7 +109,7 @@ class Offer extends Component {
       dispatch(
         mergeErrors('offer', {
           type: [
-            'Il y a eu un problème avec la création de cette offre: son type est incompatible avec le lieu enregistré.',
+            'Il y a eu un problème avec la création de cette offre : son type est incompatible avec le lieu enregistré.',
           ],
         })
       )
@@ -117,8 +118,9 @@ class Offer extends Component {
 
   onHandleDataRequest = (handleSuccess, handleFail) => {
     const {
-      history,
       dispatch,
+      history,
+      loadVenue,
       match: {
         params: { offerId },
       },
@@ -138,12 +140,7 @@ class Offer extends Component {
         })
       )
     } else if (venueId) {
-      requestData({
-        apiPath: `/venues/${venueId}`,
-        normalizer: {
-          managingOffererId: 'offerers',
-        },
-      })
+      loadVenue(venueId)
     } else {
       const offerersPath = offererId ? `${OFFERERS_API_PATH}/${offererId}` : OFFERERS_API_PATH
 
@@ -286,11 +283,13 @@ class Offer extends Component {
     window.open(offerWebappUrl, 'targetWindow', 'toolbar=no,width=375,height=667').focus()
   }
 
+
   render() {
     const {
       currentUser,
       formInitialValues,
       isEditableOffer,
+      isFeatureDisabled,
       musicSubOptions,
       offer,
       offerer,
@@ -580,11 +579,12 @@ class Offer extends Component {
                       readOnly={offerFromTiteLive}
                       type="duration"
                     />
-                    <Field
-                      label="Accepter les offres duo"
-                      name="isDuo"
-                      type="checkbox"
-                    />
+                    {!isFeatureDisabled && (
+                      <Field
+                        label="Accepter les offres duo"
+                        name="isDuo"
+                        type="checkbox"
+                      />)}
                   </Fragment>
                 )}
                 <Field
@@ -714,8 +714,10 @@ class Offer extends Component {
                 </NavLink>
               ) : (
                 showAllForm && (
-                  <SubmitButton className="button is-primary is-medium">
-                    {'Enregistrer '}
+                  <SubmitButton
+                    className="button is-primary is-medium"
+                  >
+                    {'Enregistrer'}
                     {isCreatedEntity && 'et passer ' + (isEventType ? 'aux dates' : 'aux stocks')}
                   </SubmitButton>
                 )
@@ -729,6 +731,7 @@ class Offer extends Component {
 }
 
 Offer.defaultProps = {
+  isFeatureDisabled: true,
   venues: [],
 }
 
@@ -736,9 +739,11 @@ Offer.propTypes = {
   currentUser: PropTypes.shape().isRequired,
   dispatch: PropTypes.func.isRequired,
   isEditableOffer: PropTypes.bool.isRequired,
+  isFeatureDisabled: PropTypes.bool,
+  loadVenue: PropTypes.func.isRequired,
   location: PropTypes.shape().isRequired,
-  match: PropTypes.shape().isRequired,
   query: PropTypes.shape().isRequired,
+  selectedOfferType: PropTypes.arrayOf().isRequired,
   trackCreateOffer: PropTypes.func.isRequired,
   trackModifyOffer: PropTypes.func.isRequired,
   venues: PropTypes.arrayOf(PropTypes.shape()),
