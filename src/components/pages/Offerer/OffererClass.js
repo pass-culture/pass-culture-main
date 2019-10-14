@@ -1,6 +1,6 @@
 export class OffererClass {
   constructor(offerer = {}, adminUserOfferer) {
-    this.id = offerer.id || ''
+    this.id = offerer.id || undefined // pass-culture-shared awaits undefined to condition the submit method (PATCH vs POST)
     this.siren = offerer.siren || ''
     this.name = offerer.name || ''
     this.address = offerer.address || ''

@@ -33,7 +33,7 @@ describe('src | components | pages | Offerer | OffererContainer', () => {
         },
         form: {
           offerer: {
-            name: 'Gaumont cinéma',
+            name: 'Form Gaumont cinéma',
           },
         },
       }
@@ -66,14 +66,28 @@ describe('src | components | pages | Offerer | OffererContainer', () => {
           },
         }),
         venues: [],
+        formCurrentValues: {
+          offererName: 'Form Gaumont cinéma',
+        }
       })
     })
   })
 
   describe('mapDispatchToProps', () => {
     it('should return an object of functions', () => {
+      // given
+      const ownProps = {
+        currentUser: {
+          id: 'TY56er',
+        },
+        match: {
+          params: {
+            offererId: 'AGH',
+          },
+        },
+      }
       // when
-      const functions = mapDispatchToProps(dispatch)
+      const functions = mapDispatchToProps(dispatch, ownProps)
 
       // then
       expect(functions).toStrictEqual({
@@ -86,19 +100,28 @@ describe('src | components | pages | Offerer | OffererContainer', () => {
     describe('getOfferer', () => {
       it('should get offerer using API with the right parameters', () => {
         // given
-        const offererId = 'AB'
+        const ownProps = {
+          currentUser: {
+            id: 'TY56er',
+          },
+          match: {
+            params: {
+              offererId: 'AGH',
+            },
+          },
+        }
         const handleFail = jest.fn()
         const handleSuccess = jest.fn()
-        const functions = mapDispatchToProps(dispatch)
+        const functions = mapDispatchToProps(dispatch, ownProps)
         const { getOfferer } = functions
 
         // when
-        getOfferer(offererId, handleFail, handleSuccess)
+        getOfferer(handleFail, handleSuccess)
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
           config: {
-            apiPath: '/offerers/AB',
+            apiPath: '/offerers/AGH',
             handleFail: expect.any(Function),
             handleSuccess: expect.any(Function),
             method: 'GET',
@@ -109,7 +132,7 @@ describe('src | components | pages | Offerer | OffererContainer', () => {
               },
             },
           },
-          type: 'REQUEST_DATA_GET_/OFFERERS/AB',
+          type: 'REQUEST_DATA_GET_/OFFERERS/AGH',
         })
       })
     })
@@ -117,20 +140,29 @@ describe('src | components | pages | Offerer | OffererContainer', () => {
     describe('getUserOfferers', () => {
       it('should get user offerers using API with the right parameters', () => {
         // given
-        const offererId = 'AB'
-        const functions = mapDispatchToProps(dispatch)
+        const ownProps = {
+          currentUser: {
+            id: 'TY56er',
+          },
+          match: {
+            params: {
+              offererId: 'AGH',
+            },
+          },
+        }
+        const functions = mapDispatchToProps(dispatch, ownProps)
         const { getUserOfferers } = functions
 
         // when
-        getUserOfferers(offererId)
+        getUserOfferers()
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
           config: {
-            apiPath: '/userOfferers/AB',
+            apiPath: '/userOfferers/AGH',
             method: 'GET',
           },
-          type: 'REQUEST_DATA_GET_/USEROFFERERS/AB',
+          type: 'REQUEST_DATA_GET_/USEROFFERERS/AGH',
         })
       })
     })
@@ -138,9 +170,19 @@ describe('src | components | pages | Offerer | OffererContainer', () => {
     describe('showNotification', () => {
       it('should display a notification with the right parameters', () => {
         // given
+        const ownProps = {
+          currentUser: {
+            id: 'TY56er',
+          },
+          match: {
+            params: {
+              offererId: 'AGH',
+            },
+          },
+        }
         const message = 'my message'
         const type = 'success'
-        const functions = mapDispatchToProps(dispatch)
+        const functions = mapDispatchToProps(dispatch, ownProps)
         const { showNotification } = functions
 
         // when

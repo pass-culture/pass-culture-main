@@ -16,6 +16,9 @@ describe('src | components | pages | Offerer', () => {
   beforeEach(() => {
     props = {
       offerer: new OffererClass(offerer, adminUserOfferer),
+      formCurrentValues: {
+        offererName: 'fake form offerer name'
+      },
       getOfferer: jest.fn(),
       getUserOfferers: jest.fn(),
       history: {

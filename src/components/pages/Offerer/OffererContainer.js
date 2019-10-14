@@ -2,6 +2,7 @@ import { showNotification } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
+import get from 'lodash.get'
 
 import Offerer from './Offerer'
 import { makeOffererComponentValueObject } from './OffererFactory'
@@ -29,12 +30,20 @@ export const mapStateToProps = (state, ownProps) => {
       state
     ),
     venues: selectPhysicalVenuesByOffererId(state, offererId),
+    formCurrentValues: {
+      offererName: get(state, 'form.offerer.name'),
+    }
   }
 }
 
-export const mapDispatchToProps = dispatch => {
+export const mapDispatchToProps = (dispatch, ownProps) => {
+  const {
+    match: {
+      params: { offererId },
+    } = {}
+  } = ownProps
   return {
-    getOfferer: (offererId, handleFail, handleSuccess) => {
+    getOfferer: (handleFail, handleSuccess) => {
       dispatch(
         requestData({
           apiPath: `/offerers/${offererId}`,
@@ -44,7 +53,7 @@ export const mapDispatchToProps = dispatch => {
         })
       )
     },
-    getUserOfferers: offererId => {
+    getUserOfferers: () => {
       dispatch(
         requestData({
           apiPath: `/userOfferers/${offererId}`,

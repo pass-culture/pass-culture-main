@@ -16,12 +16,12 @@ const OFFERER_MODIFICATION_PATCH_KEYS = ['bic', 'iban', 'rib']
 
 class Offerer extends Component {
   onHandleDataRequest = (handleSuccess, handleFail) => {
-    const { getOfferer, getUserOfferers, offerer, query } = this.props
+    const { getOfferer, getUserOfferers, query } = this.props
     const { isCreatedEntity } = query.context()
 
     if (!isCreatedEntity) {
-      getOfferer(offerer.id, handleFail, handleSuccess)
-      getUserOfferers(offerer.id)
+      getOfferer(handleFail, handleSuccess)
+      getUserOfferers()
       return
     }
     handleSuccess()
@@ -59,7 +59,8 @@ class Offerer extends Component {
     formatPatch(patch, patchConfig, OFFERER_CREATION_PATCH_KEYS, OFFERER_MODIFICATION_PATCH_KEYS)
 
   render() {
-    const { offerer, query, venues } = this.props
+    const { offerer, query, venues, formCurrentValues } = this.props
+    const { offererName } = formCurrentValues
     const { isCreatedEntity, isModifiedEntity, readOnly } = query.context()
     const areBankInfosReadOnly = readOnly || !offerer.adminUserOfferer
 
@@ -93,7 +94,7 @@ class Offerer extends Component {
           <div className="section">
             <div className="field-group">
               <Field
-                disabling={this.handleDisabling(offerer.name)}
+                disabling={this.handleDisabling(offererName)}
                 label="SIREN"
                 name="siren"
                 readOnly={offerer.id}
@@ -174,6 +175,7 @@ class Offerer extends Component {
 }
 
 Offerer.propTypes = {
+  formCurrentValues: PropTypes.shape().isRequired,
   getOfferer: PropTypes.func.isRequired,
   getUserOfferers: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
