@@ -4,7 +4,6 @@ from utils.config import IS_DEV, IS_DATALAKE, IS_TESTING
 def install_routes():
     if not IS_DATALAKE:
         import routes.bookings
-        import routes.client_errors
         import routes.error_handlers
         import routes.export
         import routes.favorites

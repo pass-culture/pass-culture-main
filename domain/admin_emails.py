@@ -5,18 +5,7 @@ from utils.mailing import write_object_validation_email, make_payment_message_em
     make_venue_validation_email, compute_email_html_part_and_recipients, make_payment_details_email, \
     make_payments_report_email, make_wallet_balances_email, make_offer_creation_notification_email, \
     make_beneficiaries_import_email,  make_activation_users_email, \
-    ADMINISTRATION_EMAIL_ADDRESS, DEV_EMAIL_ADDRESS
-
-
-def send_dev_email(subject: str, html_text: str, send_email: Callable[[dict], bool]) -> bool:
-    email = {
-        'FromName': 'Pass Culture Dev',
-        'FromEmail': DEV_EMAIL_ADDRESS,
-        'Subject': subject,
-        'Html-part': html_text,
-        'To': DEV_EMAIL_ADDRESS
-    }
-    return send_email(data=email)
+    ADMINISTRATION_EMAIL_ADDRESS
 
 
 def maybe_send_offerer_validation_email(offerer: Offerer, user_offerer: UserOfferer,
