@@ -1,0 +1,28 @@
+---
+- name: Install Sentry server
+  hosts: sentry
+  become: true
+  tasks:
+    - import_tasks: tasks/install_docker.yml
+      tags:
+        - 'docker'
+
+    - import_tasks: tasks/install_git.yml
+      tags:
+        - 'git'
+
+    - name: Create Sentry directory
+      file:
+        path: /opt/sentry
+        state: directory
+      tags:
+        - 'sentry'
+
+    - name: Clone Sentry project
+      git:
+        repo: 'https://github.com/getsentry/onpremise'
+        dest: /opt/sentry
+      tags:
+        - 'sentry'
+
+#    -name: Run Sentry install.sh
