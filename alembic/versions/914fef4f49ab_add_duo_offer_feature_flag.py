@@ -1,7 +1,7 @@
 """add_duo_offer_feature_flag
 
 Revision ID: 914fef4f49ab
-Revises: 621aad6436f9
+Revises: 600464fd8ac8
 Create Date: 2019-10-09 12:05:13.610887
 
 """
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 from models.feature import FeatureToggle
 
 revision = '914fef4f49ab'
-down_revision = '621aad6436f9'
+down_revision = '600464fd8ac8'
 branch_labels = None
 depends_on = None
 
