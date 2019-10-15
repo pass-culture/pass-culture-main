@@ -1,7 +1,7 @@
 import getStyle from '../getStyle'
 
 describe('src | components | layout | Verso | VersoContent | VersoContentOffer | utils | getStyle', () => {
-  describe('when extra data of product is undefined', () => {
+  describe('when it is a tuto', () => {
     it('should return empty string', () => {
       // given
       const state = {}
@@ -15,7 +15,21 @@ describe('src | components | layout | Verso | VersoContent | VersoContentOffer |
     })
   })
 
-  describe('when the product is of the music style', () => {
+  describe('when it is an offer with no extra data', () => {
+    it('should return empty string', () => {
+      // given
+      const state = {}
+      const extraData = null
+
+      // when
+      const style = getStyle(state, extraData)
+
+      // then
+      expect(style).toBe('')
+    })
+  })
+
+  describe('when the offer is of the music style', () => {
     it('should return this label and sub label', () => {
       // given
       const state = {
@@ -47,7 +61,7 @@ describe('src | components | layout | Verso | VersoContent | VersoContentOffer |
     })
   })
 
-  describe('when the product is of the show style', () => {
+  describe('when the offer is of the show style', () => {
     it('should return this label and sub label', () => {
       // given
       const state = {

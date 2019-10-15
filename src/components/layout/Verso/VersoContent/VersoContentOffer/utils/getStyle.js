@@ -4,7 +4,7 @@ import selectShowTypeByCode from '../selectors/selectShowTypeByCode'
 import selectShowSubTypeByCodeAndSubCode from '../selectors/selectShowSubTypeByCodeAndSubCode'
 
 const getStyle = (state, extraData) => {
-  if (extraData === undefined) return ''
+  if (extraData === undefined || extraData === null) return ''
 
   let style = ''
   let type = ''

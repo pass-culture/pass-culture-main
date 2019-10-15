@@ -16,8 +16,7 @@ export const mapStateToProps = (state, ownProps) => {
   const offer = selectOfferByRouterMatch(state, match) || {}
   const bookables = selectBookables(state, offer)
   const isNotBookable = selectIsNotBookableByRouterMatch(state, match)
-  const { product } = offer || {}
-  const { extraData } = product || {}
+  const { extraData } = offer || {}
   const style = getStyle(state, extraData)
   const booking = selectBookingByRouterMatch(state, match)
   const distance = selectDistanceByRouterMatch(state, match)
