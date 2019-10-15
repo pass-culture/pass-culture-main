@@ -409,7 +409,7 @@ class Post:
             assert error_message['quantity'] == ['Vous devez préciser une quantité pour la réservation']
 
         @clean_database
-        def when_more_than_one_quantity(self, app):
+        def when_more_than_one_quantity_and_offer_is_not_duo(self, app):
             # Given
             user = create_user(email='test@email.com')
             offerer = create_offerer()
@@ -421,7 +421,8 @@ class Post:
             booking_json = {
                 'stockId': humanize(stock.id),
                 'recommendationId': None,
-                'quantity': 5
+                'quantity': 5,
+                'isDuo': False,
             }
 
             # When
@@ -431,6 +432,59 @@ class Post:
             error_message = response.json
             assert response.status_code == 400
             assert error_message['quantity'] == ["Vous ne pouvez pas réserver plus d'une offre à la fois"]
+
+
+        @clean_database
+        def when_more_than_two_quantity_and_offer_is_duo(self, app):
+            # Given
+            user = create_user(email='test@email.com')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            thing_offer = create_offer_with_thing_product(venue)
+            stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
+            PcObject.save(stock, user)
+
+            booking_json = {
+                'stockId': humanize(stock.id),
+                'recommendationId': None,
+                'quantity': 3,
+                'isDuo': True,
+            }
+
+            # When
+            response = TestClient(app.test_client()).with_auth('test@email.com').post('/bookings',
+                                                                                      json=booking_json)
+            # Then
+            error_message = response.json
+            assert response.status_code == 400
+            assert error_message['quantity'] == ["Vous devez réserver deux offres s'il s'agit d'une offre DUO"]
+
+
+        @clean_database
+        def when_quantity_is_one_and_offer_is_duo(self, app):
+            # Given
+            user = create_user(email='test@email.com')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            thing_offer = create_offer_with_thing_product(venue)
+            stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
+            PcObject.save(stock, user)
+
+            booking_json = {
+                'stockId': humanize(stock.id),
+                'recommendationId': None,
+                'quantity': 1,
+                'isDuo': True,
+            }
+
+            # When
+            response = TestClient(app.test_client()).with_auth('test@email.com').post('/bookings',
+                                                                                      json=booking_json)
+            # Then
+            error_message = response.json
+            assert response.status_code == 400
+            assert error_message['quantity'] == ["Vous devez réserver deux offres s'il s'agit d'une offre DUO"]
+
 
         @clean_database
         def when_event_occurrence_beginning_datetime_has_passed(self, app):

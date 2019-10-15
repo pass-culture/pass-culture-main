@@ -116,6 +116,7 @@ def create_booking():
     stock_id = request.json.get('stockId')
     recommendation_id = request.json.get('recommendationId')
     quantity = request.json.get('quantity')
+    is_duo = request.json.get('isDuo')
 
     stock = Stock.query.filter_by(id=dehumanize(stock_id)).first()
 
@@ -126,7 +127,7 @@ def create_booking():
             stock, current_user)
         check_already_booked(user_bookings)
         check_has_quantity(quantity)
-        check_booking_quantity_limit(quantity)
+        check_booking_quantity_limit(quantity, is_duo)
         check_offer_date(stock)
         check_not_soft_deleted_stock(stock)
         check_can_book_free_offer(stock, current_user)
