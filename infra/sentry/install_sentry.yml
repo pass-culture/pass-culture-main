@@ -25,4 +25,10 @@
       tags:
         - 'sentry'
 
-#    -name: Run Sentry install.sh
+    - name: Copy sentry conf file
+      template:
+        src: sentry.conf.py.j2
+        dest: /opt/sentry/sentry.conf.py
+
+    - name: Run Sentry install.sh
+      command:
