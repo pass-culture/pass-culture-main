@@ -29,9 +29,9 @@ def check_booking_quantity_limit(quantity, is_duo):
         api_errors.add_error('quantity', "Vous ne pouvez pas réserver plus d'une offre à la fois")
         raise api_errors
 
-    if quantity != 2 and is_duo:
+    if quantity > 2 and is_duo:
         api_errors = ApiErrors()
-        api_errors.add_error('quantity', "Vous devez réserver deux offres s'il s'agit d'une offre DUO")
+        api_errors.add_error('quantity', "Vous ne pouvez pas réserver plus de deux offres s'il s'agit d'une offre DUO")
         raise api_errors
 
 

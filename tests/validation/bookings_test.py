@@ -312,18 +312,6 @@ class CheckBookingQuantityLimitTest:
             # then
             pytest.fail('Booking for single offer must not raise any exceptions')
 
-    def test_raise_error_when_booking_quantity_is_one_and_offer_is_duo(self):
-        # given
-        quantity = 1
-        is_duo = True
-
-        # when
-        with pytest.raises(ApiErrors) as api_errors:
-            check_booking_quantity_limit(quantity, is_duo)
-
-        # then
-        assert api_errors.value.errors['quantity'] == ["Vous devez réserver deux offres s'il s'agit d'une offre DUO"]
-
     def test_raise_error_when_booking_quantity_is_more_than_two_and_offer_is_duo(self):
         # given
         quantity = 3
@@ -334,7 +322,19 @@ class CheckBookingQuantityLimitTest:
             check_booking_quantity_limit(quantity, is_duo)
 
         # then
-        assert api_errors.value.errors['quantity'] == ["Vous devez réserver deux offres s'il s'agit d'une offre DUO"]
+        assert api_errors.value.errors['quantity'] == ["Vous ne pouvez pas réserver plus de deux offres s'il s'agit d'une offre DUO"]
+
+    def test_does_not_raise_an_error_when_booking_quantity_is_one_and_offer_is_duo(self):
+        # given
+        quantity = 1
+        is_duo = True
+
+        # when
+        try:
+            check_booking_quantity_limit(quantity, is_duo)
+        except ApiErrors:
+            # then
+            pytest.fail('Booking for duo offers must not raise any exceptions')
 
     def test_does_not_raise_an_error_when_booking_quantity_is_two_and_offer_is_duo(self):
         # given
