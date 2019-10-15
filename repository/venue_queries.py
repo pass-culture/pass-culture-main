@@ -1,3 +1,5 @@
+from builtins import int
+
 from datetime import datetime
 from typing import List
 
@@ -32,6 +34,10 @@ def find_by_offer_id(offer_id):
 
 def find_by_siret(siret):
     return Venue.query.filter_by(siret=siret).first()
+
+
+def find_by_managing_offerer_id(offerer_id: int) -> Venue:
+    return Venue.query.filter_by(managingOffererId=offerer_id).first()
 
 
 def find_filtered_venues(sirens=None,
