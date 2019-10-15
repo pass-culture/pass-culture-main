@@ -2,11 +2,15 @@ from unittest.mock import Mock
 
 import pytest
 
-from models import ApiErrors, User, PcObject
+from models import ApiErrors, ApiKey, User, PcObject
 from tests.conftest import clean_database
 from tests.test_utils import create_offerer, create_user, create_user_offerer
-from validation.users import check_valid_signup_webapp, check_user_can_validate_bookings, check_valid_signup_pro
-
+from validation.users import check_valid_signup_webapp,\
+    check_user_can_validate_bookings,\
+    check_user_can_validate_v2_bookings,\
+    check_valid_signup_pro,\
+    check_user_with_api_key_can_validate_bookings
+from utils.token import random_token
 
 def test_check_valid_signup_webapp_raises_api_error_if_not_contact_ok():
     # Given
@@ -164,3 +168,33 @@ def test_check_user_can_validate_bookings_raise_api_error_when_user_is_authentic
 
     # Then
     assert errors.value.errors['global'] == ["Cette contremarque n'a pas été trouvée"]
+
+
+
+def test_check_user_can_validate_bookings_raise_api_error_when_user_is_authenticated_and_does_not_have_editor_rights_on_booking_v2(
+        app):
+    # Given
+    user = User()
+    user.is_authenticated = True
+
+    # When
+    with pytest.raises(ApiErrors) as errors:
+        check_user_can_validate_v2_bookings(user, None)
+
+    # Then
+    assert errors.value.errors['user'] == ["Vous n'avez pas les droits suffisants pour éditer cette contremarque."]
+
+
+def test_check_user_with_api_key_can_validate_bookings_raise_api_error_when_user_is_authenticated_and_does_not_have_editor_rights_on_booking(
+        app):
+    # Given
+    apiKey = ApiKey()
+    apiKey.value = random_token(64)
+    apiKey.offererId = 67
+
+    # When
+    with pytest.raises(ApiErrors) as errors:
+        check_user_with_api_key_can_validate_bookings(apiKey, None)
+
+    # Then
+    assert errors.value.errors['user'] == ["Vous n'avez pas les droits suffisants pour éditer cette contremarque."]

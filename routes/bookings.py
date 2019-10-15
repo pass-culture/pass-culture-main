@@ -14,11 +14,15 @@ from models import ApiErrors, Booking, PcObject, Stock, RightsType, EventType, O
 from models.offer_type import ProductType
 from repository import booking_queries
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
+from repository.api_key_queries import find_api_key_by_value
 from routes.serialization import serialize, as_dict
 from utils.human_ids import dehumanize, humanize
 from utils.includes import WEBAPP_GET_BOOKING_INCLUDES, WEBAPP_PATCH_POST_BOOKING_INCLUDES
 from utils.mailing import MailServiceException, send_raw_email
-from utils.rest import ensure_current_user_has_rights, expect_json_data
+from utils.rest import ensure_current_user_has_rights, \
+    expect_json_data, \
+    login_or_api_key_required, \
+    login_or_api_key_required_v2
 from utils.token import random_token
 from validation.bookings import check_booking_is_usable, \
     check_can_book_free_offer, \
@@ -32,10 +36,17 @@ from validation.bookings import check_booking_is_usable, \
     check_offer_date, \
     check_offer_is_active, \
     check_stock_booking_limit_date, \
-    check_user_is_logged_in_or_email_is_provided, check_email_and_offer_id_for_anonymous_user, \
-    check_booking_is_cancellable, check_stock_venue_is_validated, check_rights_for_activation_offer, \
+    check_user_is_logged_in_or_api_key_is_provided,\
+    check_user_is_logged_in_or_email_is_provided,\
+    check_email_and_offer_id_for_anonymous_user, \
+    check_booking_is_cancellable,\
+    check_stock_venue_is_validated,\
+    check_rights_for_activation_offer, \
     check_rights_to_get_bookings_csv
-from validation.users import check_user_can_validate_bookings
+from validation.users import check_user_can_validate_bookings,\
+    check_user_with_api_key_can_validate_bookings,\
+    check_user_can_validate_v2_bookings
+
 from datetime import datetime
 
 
@@ -214,12 +225,42 @@ def get_booking_by_token(token):
 
     offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
 
-    current_user_can_validate_booking = check_user_can_validate_bookings(
-        current_user, offerer_id)
+    current_user_can_validate_booking = check_user_can_validate_bookings(current_user, offerer_id)
+
     if current_user_can_validate_booking:
         response = _create_response_to_get_booking_by_token(booking)
         return jsonify(response), 200
     return '', 204
+
+
+@app.route('/v2/bookings/token/<token>', methods=["GET"])
+@login_or_api_key_required_v2
+def get_booking_by_token_v2(token):
+    app_authorization_api_key = None
+    authorization_header = request.headers.get('Authorization', None)
+    if authorization_header:
+        app_authorization_api_key = authorization_header.replace("Bearer ", "")
+
+    check_user_is_logged_in_or_api_key_is_provided(current_user, app_authorization_api_key)
+
+    valid_api_key = find_api_key_by_value(app_authorization_api_key)
+
+    booking_token_upper_case = token.upper()
+    booking = booking_queries.find_by(booking_token_upper_case)
+
+    check_booking_is_usable(booking)
+
+    offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
+
+    if current_user:
+        current_user_can_validate_booking = check_user_can_validate_v2_bookings(current_user, offerer_id)
+
+    if valid_api_key:
+        user_with_api_key_can_validate_booking = check_user_with_api_key_can_validate_bookings(valid_api_key, offerer_id)
+
+    if current_user_can_validate_booking or user_with_api_key_can_validate_booking:
+        response = _create_response_to_get_booking_by_token(booking)
+        return jsonify(response), 200
 
 
 @app.route('/bookings/token/<token>', methods=["PATCH"])

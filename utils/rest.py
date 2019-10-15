@@ -13,6 +13,7 @@ from sqlalchemy.sql.functions import random
 from models.api_errors import ApiErrors
 from models.db import db
 from models.soft_deletable_mixin import SoftDeletableMixin
+from repository.api_key_queries import find_api_key_by_value
 from routes.serialization import as_dict
 from utils.human_ids import dehumanize, humanize
 from utils.string_processing import dashify
@@ -25,18 +26,6 @@ def get_provider_from_api_key():
             .filter_by(apiKey=request.headers['apikey']) \
             .first()
 
-
-def api_key_required(f):
-    @wraps(f)
-    def wrapper(*args, **kwds):
-        request.provider = get_provider_from_api_key()
-        if request.provider is None:
-            return "API key required", 403
-        return f(*args, **kwds)
-
-    return wrapper
-
-
 def login_or_api_key_required(f):
     @wraps(f)
     def wrapper(*args, **kwds):
@@ -44,6 +33,23 @@ def login_or_api_key_required(f):
         if request.provider is None:
             if not current_user.is_authenticated:
                 return "API key or login required", 403
+        return f(*args, **kwds)
+
+    return wrapper
+
+
+def login_or_api_key_required_v2(f):
+    @wraps(f)
+    def wrapper(*args, **kwds):
+        authenticateUser = None
+        authorization_header = request.headers.get('Authorization', None)
+        if authorization_header:
+            app_authorization_api_key = authorization_header.replace("Bearer ", "")
+            authenticateUser = find_api_key_by_value(app_authorization_api_key)
+        
+        if authenticateUser is None:
+            if not current_user.is_authenticated:
+                return "API key or login required", 401
         return f(*args, **kwds)
 
     return wrapper

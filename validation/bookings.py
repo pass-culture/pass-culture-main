@@ -128,6 +128,14 @@ def check_user_is_logged_in_or_email_is_provided(user, email):
         raise api_errors
 
 
+def check_user_is_logged_in_or_api_key_is_provided(user, api_key):
+    if not (user.is_authenticated or api_key):
+        api_errors = ApiErrors()
+        api_errors.add_error('api_key',
+                            'Vous devez préciser l\'api key de l\'utilisateur quand vous n\'êtes pas connecté(e)')
+        raise api_errors
+
+
 def check_booking_is_usable(booking: Booking):
     resource_gone_error = ResourceGoneError()
     if booking.isUsed:
@@ -199,5 +207,3 @@ def check_rights_to_get_bookings_csv(user, venue_id=None, offer_id=None):
             api_errors.add_error('offerId', "Cette offre n'existe pas.")
             raise api_errors
         ensure_current_user_has_rights(user=user, rights=RightsType.editor, offerer_id=venue.managingOffererId)
-
-

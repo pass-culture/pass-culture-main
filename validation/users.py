@@ -101,3 +101,28 @@ def check_user_can_validate_bookings(self, offerer_id):
             raise api_errors
     else:
         return False
+
+def check_user_can_validate_v2_bookings(self, offerer_id):
+    if self.is_authenticated:
+        if self.hasRights(RightsType.editor, offerer_id):
+            return True
+        else:
+            api_errors = ApiErrors()
+            api_errors.status_code = 403
+            api_errors.add_error('user', 'Vous n\'avez pas les droits suffisants pour éditer cette contremarque.')
+            raise api_errors
+    else:
+        return False
+
+
+def check_user_with_api_key_can_validate_bookings(user_with_api_key: str, offerer_id: str):
+    if user_with_api_key:
+        if user_with_api_key.offererId == offerer_id:
+                return True
+        else:
+            api_errors = ApiErrors()
+            api_errors.status_code = 403
+            api_errors.add_error('user', 'Vous n\'avez pas les droits suffisants pour éditer cette contremarque.')
+            raise api_errors
+    else:
+        return False
