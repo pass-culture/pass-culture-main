@@ -1,0 +1,13 @@
+[Service]
+Type=simple
+
+User=ubuntu
+Group=ubuntu
+UMask=007
+
+ExecStart=/opt/jupyterhub/create_database_tunnel.sh
+
+Restart=on-failure
+
+# Configures the time to wait before service is stopped forcefully.
+TimeoutStopSec=300
