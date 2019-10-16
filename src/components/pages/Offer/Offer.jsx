@@ -283,7 +283,6 @@ class Offer extends PureComponent {
     window.open(offerWebappUrl, 'targetWindow', 'toolbar=no,width=375,height=667').focus()
   }
 
-
   render() {
     const {
       currentUser,
@@ -373,6 +372,7 @@ class Offer extends PureComponent {
               'Les offres payantes seront visibles dans l’application, toutefois les utilisateurs ne pourront les réserver que s’ils ont activé leur portefeuille numérique de 500 € sur Internet ou lors d’un des événements d’activation.'
             }
           </p>
+
         </HeroSection>
         <Form
           action={formApiPath}
@@ -581,10 +581,12 @@ class Offer extends PureComponent {
                     />
                     {!isFeatureDisabled && (
                       <Field
+                        info="<p>En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l'accompagnateur.</p>"
                         label="Accepter les offres duo"
                         name="isDuo"
                         type="checkbox"
-                      />)}
+                      />
+                    )}
                   </Fragment>
                 )}
                 <Field
