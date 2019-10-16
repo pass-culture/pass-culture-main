@@ -168,7 +168,7 @@ describe('src | components | pages | Offers | OffersContainer', () => {
         }
 
         // when
-        mapDispatchToProps(dispatch).handleOnActivateAllVenueOffersClick()(venue)
+        mapDispatchToProps(dispatch).handleOnActivateAllVenueOffersClick(venue)()
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
@@ -191,7 +191,7 @@ describe('src | components | pages | Offers | OffersContainer', () => {
         }
 
         // when
-        mapDispatchToProps(dispatch).handleOnDeactivateAllVenueOffersClick()(venue)
+        mapDispatchToProps(dispatch).handleOnDeactivateAllVenueOffersClick(venue)()
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
