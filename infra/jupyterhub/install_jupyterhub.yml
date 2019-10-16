@@ -1,0 +1,63 @@
+---
+- name: Install Jupyterhub
+  hosts: jupyterhub
+  tasks:
+    - name: Install pip
+      apt:
+        name: python3-pip
+        state: present
+      become: true
+
+    - name: Install setuptools
+      apt:
+        name: 'python3-setuptools'
+        state: present
+      become: true
+
+    - name: Create jupyterhub directory
+      file:
+        path: /opt/jupyterhub
+        state: directory
+        owner: ubuntu
+      become: true
+
+    - name: Copy requirements.txt
+      copy:
+        src: requirements.txt
+        dest: /opt/jupyterhub/requirements.txt
+        owner: ubuntu
+
+    - name: Install python requirements
+      pip:
+        requirements: /opt/jupyterhub/requirements.txt
+        executable: /opt/tljh/user/bin/pip
+      become: true
+      tags: pip
+
+    - name: Install git required packages
+      apt:
+        name: git-core
+        update_cache: yes
+      become: true
+      tags: git
+
+    - name: Copy create_database_tunnel.sh
+      copy:
+        src: create_database_tunnel.sh
+        dest: /opt/jupyterhub/create_database_tunnel.sh
+        owner: ubuntu
+      become: true
+
+    - name: Copy connect_to_database.service
+      copy:
+        src: connect_to_database.service
+        dest: /etc/systemd/system/connect_to_database.service
+        owner: ubuntu
+      become: true
+
+    - name: Start connection to database service
+      systemd:
+        state: started
+        name: connect_to_database.service
+        enabled: yes
+
