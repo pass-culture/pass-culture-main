@@ -40,7 +40,7 @@ export const mapDispatchToProps = dispatch => {
   return {
     closeNotification: () => dispatch(closeNotification()),
 
-    handleOnActivateAllVenueOffersClick: () => venue => {
+    handleOnActivateAllVenueOffersClick: venue => () => {
       dispatch(
         requestData({
           apiPath: `/venues/${venue.id}/offers/activate`,
@@ -53,7 +53,7 @@ export const mapDispatchToProps = dispatch => {
       )
     },
 
-    handleOnDeactivateAllVenueOffersClick: () => venue => {
+    handleOnDeactivateAllVenueOffersClick: venue => () => {
       dispatch(
         requestData({
           apiPath: `/venues/${venue.id}/offers/deactivate`,
