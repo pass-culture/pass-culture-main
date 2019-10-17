@@ -457,7 +457,7 @@ class Post:
             error_message = response.json
             assert response.status_code == 400
             assert error_message['quantity'] == [
-                "Vous ne pouvez pas réserver plus de deux offres s'il s'agit d'une offre DUO"]
+                "Vous ne pouvez pas réserver plus de deux places s'il s'agit d'une offre DUO"]
 
         @clean_database
         def when_event_occurrence_beginning_datetime_has_passed(self, app):

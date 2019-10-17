@@ -322,7 +322,7 @@ class CheckBookingQuantityLimitTest:
             check_booking_quantity_limit(quantity, is_duo)
 
         # then
-        assert api_errors.value.errors['quantity'] == ["Vous ne pouvez pas réserver plus de deux offres s'il s'agit d'une offre DUO"]
+        assert api_errors.value.errors['quantity'] == ["Vous ne pouvez pas réserver plus de deux places s'il s'agit d'une offre DUO"]
 
     def test_does_not_raise_an_error_when_booking_quantity_is_one_and_offer_is_duo(self):
         # given

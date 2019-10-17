@@ -344,6 +344,7 @@ def create_product_with_event_type(
         dominant_color=None,
         duration_minutes=60,
         is_national=False,
+        is_duo=False,
         thumb_count=0,
 ) -> Product:
     product = Product()
@@ -352,6 +353,7 @@ def create_product_with_event_type(
     product.durationMinutes = duration_minutes
     product.thumbCount = thumb_count
     product.isNational = is_national
+    product.isDuo = is_duo
     product.type = str(event_type)
     product.firstThumbDominantColor = dominant_color
     if product.thumbCount > 0 and not dominant_color:
@@ -364,8 +366,7 @@ def create_offer_with_thing_product(venue, product=None, date_created=datetime.u
                                     booking_email='booking.email@test.com',
                                     thing_type=ThingType.AUDIOVISUEL, thing_name='Test Book', media_urls=['test/urls'],
                                     author_name='Test Author', description=None, thumb_count=1, dominant_color=None,
-                                    url=None,
-                                    is_national=False, is_active=True, id_at_providers=None, idx=None,
+                                    url=None, is_national=False, is_active=True, id_at_providers=None, idx=None,
                                     last_provider_id=None) -> Offer:
     offer = Offer()
     if product:
