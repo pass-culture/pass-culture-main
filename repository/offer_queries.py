@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from typing import List
 
+from flask_sqlalchemy import BaseQuery
 from sqlalchemy import desc, func, or_
 from sqlalchemy.orm import aliased, joinedload
 from sqlalchemy.orm.query import Query
@@ -155,19 +156,26 @@ def _date_interval_to_filter(date_interval):
             (Stock.beginningDatetime <= date_interval[1]))
 
 
-def filter_offers_with_keywords_string(query, keywords_string):
-    get_filter_matching_ts_query_for_offer = create_get_filter_matching_ts_query_in_any_model(
-        Offer,
-        Venue,
-        Offerer
+def filter_offers_with_keywords_string(query: BaseQuery, keywords_string):
+    get_filter_matching_ts_query_for_offer = create_get_filter_matching_ts_query_in_any_model(Offer)
+    offer_keywords_filter = create_filter_matching_all_keywords_in_any_model(
+        get_filter_matching_ts_query_for_offer, keywords_string
     )
+    query1 = query.filter(offer_keywords_filter)
 
-    keywords_filter = create_filter_matching_all_keywords_in_any_model(
-        get_filter_matching_ts_query_for_offer,
-        keywords_string
+    get_filter_matching_ts_query_for_venue = create_get_filter_matching_ts_query_in_any_model(Venue)
+    venue_keywords_filter = create_filter_matching_all_keywords_in_any_model(
+        get_filter_matching_ts_query_for_venue, keywords_string
     )
+    query2 = query.filter(venue_keywords_filter)
 
-    query = query.filter(keywords_filter)
+    get_filter_matching_ts_query_for_offerer = create_get_filter_matching_ts_query_in_any_model(Offerer)
+    offerer_keywords_filter = create_filter_matching_all_keywords_in_any_model(
+        get_filter_matching_ts_query_for_offerer, keywords_string
+    )
+    query3 = query.filter(offerer_keywords_filter)
+
+    query = query1.union(query2, query3)
 
     query = _order_by_offer_name_containing_keyword_string(keywords_string, query)
 
@@ -261,12 +269,6 @@ def find_offers_with_filter_parameters(
     if venue_id is not None:
         query = query.filter(Offer.venueId == venue_id)
 
-    if keywords_string is not None:
-        query = filter_offers_with_keywords_string(
-            query,
-            keywords_string
-        )
-
     if offerer_id is not None:
         query = query.filter(Venue.managingOffererId == offerer_id)
 
@@ -275,6 +277,14 @@ def find_offers_with_filter_parameters(
             query,
             user
         )
+
+    if keywords_string is not None:
+        query = filter_offers_with_keywords_string(
+            query,
+            keywords_string
+        )
+    else:
+        query = query.order_by(Offer.id.desc())
 
     return query
 

@@ -1,4 +1,3 @@
-""" extra data mixin """
 from sqlalchemy import Column
 from sqlalchemy.dialects.postgresql import JSON
 

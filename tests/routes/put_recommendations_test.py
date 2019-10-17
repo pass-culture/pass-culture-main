@@ -277,6 +277,8 @@ class Put:
             thing_offer2 = create_offer_with_thing_product(venue67, thing_name='thing 67', url=None, is_national=False)
             stock1 = create_stock_from_offer(thing_offer1)
             stock2 = create_stock_from_offer(thing_offer2)
+            create_mediation(thing_offer1)
+            create_mediation(thing_offer2)
             PcObject.save(user, stock1, stock2)
 
             # when
@@ -299,7 +301,7 @@ class Put:
             user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
-            event_offer = create_offer_with_event_product(venue, thumb_count=1)
+            event_offer = create_offer_with_event_product(venue)
             now = datetime.utcnow()
             four_days_from_now = now + timedelta(days=4)
             eight_days_from_now = now + timedelta(days=8)
@@ -317,6 +319,9 @@ class Put:
             thing_offer2 = create_offer_with_thing_product(venue)
             soft_deleted_thing_stock = create_stock_from_offer(thing_offer1, soft_deleted=True)
             thing_stock = create_stock_from_offer(thing_offer2, soft_deleted=False)
+            create_mediation(thing_offer1)
+            create_mediation(thing_offer2)
+            create_mediation(event_offer)
             PcObject.save(user, event_stock, soft_deleted_event_stock, thing_stock, soft_deleted_thing_stock)
             event_offer_id = event_offer.id
             thing_offer2_id = thing_offer2.id
@@ -365,7 +370,7 @@ class Put:
 
             # then
             assert response.status_code == 200
-            assert len(response.json) == 1
+            assert len(response.json) == 0
 
         @clean_database
         def when_offers_have_no_thumb_count_for_thing_and_no_mediation(self, app):
@@ -487,7 +492,7 @@ class Put:
 
             # then
             assert response.status_code == 200
-            assert len(response.json) == 1
+            assert len(response.json) == 0
 
         @clean_database
         def when_offers_have_non_validated_venues(self, app):
@@ -501,6 +506,8 @@ class Put:
             stock_venue_not_validated = create_stock_from_offer(offer_venue_not_validated)
             stock_venue_validated = create_stock_from_offer(offer_venue_validated)
             user = create_user(email='test@email.com')
+            create_mediation(offer_venue_not_validated)
+            create_mediation(offer_venue_validated)
             PcObject.save(stock_venue_not_validated, stock_venue_validated, user)
             venue_validated_id = venue_validated.id
             venue_not_validated_id = venue_not_validated.id
@@ -552,20 +559,23 @@ class Put:
             user = create_user(email='weird.bug@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer1 = create_offer_with_thing_product(venue, thumb_count=1)
-            offer2 = create_offer_with_event_product(venue, thumb_count=1)
-            offer3 = create_offer_with_thing_product(venue, thumb_count=1)
-            offer4 = create_offer_with_thing_product(venue, thumb_count=1)
+            offer1 = create_offer_with_thing_product(venue)
+            offer2 = create_offer_with_event_product(venue)
+            offer3 = create_offer_with_thing_product(venue)
+            offer4 = create_offer_with_thing_product(venue)
             now = datetime.utcnow()
             event_occurrence = create_event_occurrence(offer2, beginning_datetime=now + timedelta(hours=72),
                                                        end_datetime=now + timedelta(hours=74))
-            mediation = create_mediation(offer2)
+            create_mediation(offer1)
+            create_mediation(offer2)
+            create_mediation(offer3)
+            create_mediation(offer4)
             stock1 = create_stock_from_offer(offer1, price=0)
             stock2 = create_stock_from_event_occurrence(event_occurrence, price=0, available=10, soft_deleted=False,
                                                         booking_limit_date=now + timedelta(days=3))
             stock3 = create_stock_from_offer(offer3, price=0)
             stock4 = create_stock_from_offer(offer4, price=0)
-            PcObject.save(user, stock1, stock2, stock3, stock4, mediation)
+            PcObject.save(user, stock1, stock2, stock3, stock4)
             offer1_id = offer1.id
             offer2_id = offer2.id
             offer3_id = offer3.id
@@ -597,15 +607,17 @@ class Put:
             user = create_user(email='user1@user.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer_event = create_offer_with_event_product(venue, thumb_count=1, dominant_color=b'123')
+            offer_event = create_offer_with_event_product(venue)
             event_occurrence = create_event_occurrence(
                 offer_event,
                 beginning_datetime=four_days_from_now,
                 end_datetime=eight_days_from_now
             )
             event_stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
-            offer_thing = create_offer_with_thing_product(venue, thumb_count=1, dominant_color=b'123')
+            offer_thing = create_offer_with_thing_product(venue)
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
+            create_mediation(offer_thing)
+            create_mediation(offer_event)
             PcObject.save(user, event_stock, stock_thing)
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -759,6 +771,8 @@ class Put:
             thing_offer2 = create_offer_with_thing_product(venue)
             stock3 = create_stock_from_offer(thing_offer1)
             stock4 = create_stock_from_offer(thing_offer2)
+            create_mediation(thing_offer1)
+            create_mediation(thing_offer2)
             PcObject.save(stock1, stock2, stock3, stock4, user)
             upsert_tuto_mediations()
 
@@ -880,8 +894,10 @@ class Put:
                     end_datetime=eight_days_from_now
                 )
                 event_stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
-                offer_thing = create_offer_with_thing_product(venue, thumb_count=1, dominant_color=b'123')
+                offer_thing = create_offer_with_thing_product(venue)
                 stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
+                create_mediation(offer_thing)
+                create_mediation(offer_event)
                 PcObject.save(event_stock, stock_thing)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)

@@ -39,16 +39,13 @@ def list_offers():
     )
 
     return handle_rest_get_list(Offer,
-        includes=OFFER_INCLUDES,
-        order_by='offer.id desc',
-        page=request.args.get('page'),
-        paginate=10,
-        query=query,
-        with_total_data_count=True
-    )
-
-
-
+                                includes=OFFER_INCLUDES,
+                                order_by=None,
+                                page=request.args.get('page'),
+                                paginate=10,
+                                query=query,
+                                with_total_data_count=True
+                                )
 
 
 @app.route('/offers/<id>', methods=['GET'])

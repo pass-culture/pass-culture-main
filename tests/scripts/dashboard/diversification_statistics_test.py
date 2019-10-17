@@ -596,7 +596,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         assert number_of_offers == 0
 
     @clean_database
-    def test_returns_1_if_only_offerer_without_mediation(self, app):
+    def test_returns_0_if_only_offerer_without_mediation(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -608,7 +608,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         number_of_offers = get_offers_available_on_discovery_count()
 
         # Then
-        assert number_of_offers == 1
+        assert number_of_offers == 0
 
     @clean_database
     def test_returns_0_if_only_offerer_without_mediation_and_thumb_count(self, app):
