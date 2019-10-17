@@ -1045,6 +1045,10 @@ class GetActiveOffersTest:
         stock2 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
         stock3 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.AUDIOVISUEL)
         stock4 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX)
+        create_mediation(stock1.offer)
+        create_mediation(stock2.offer)
+        create_mediation(stock3.offer)
+        create_mediation(stock4.offer)
 
         PcObject.save(stock1, stock2, stock3, stock4)
 
@@ -1054,6 +1058,7 @@ class GetActiveOffersTest:
 
         # Then
         assert len(offers) == 4
+
     @clean_database
     def test_get_active_offers_with_criteria_should_return_offer_with_highest_base_score_first(self, app):
         # Given
@@ -1067,6 +1072,9 @@ class GetActiveOffersTest:
         offer2 = create_offer_with_thing_product(venue, thing_type=ThingType.JEUX_VIDEO, thumb_count=1)
         stock2 = create_stock_from_offer(offer2, price=0)
         offer2.criteria = [create_criterion(name='positive', score_delta=1)]
+
+        create_mediation(stock1.offer)
+        create_mediation(stock2.offer)
 
         PcObject.save(stock1, stock2)
 
@@ -1095,6 +1103,10 @@ class GetActiveOffersTest:
         offer3 = create_offer_with_thing_product(venue, thing_type=ThingType.JEUX_VIDEO, thumb_count=1)
         stock3 = create_stock_from_offer(offer3, price=0)
         offer3.criteria = []
+
+        create_mediation(stock1.offer)
+        create_mediation(stock2.offer)
+        create_mediation(stock3.offer)
 
         PcObject.save(stock1, stock2, stock3)
 

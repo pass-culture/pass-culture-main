@@ -127,10 +127,8 @@ def _round_robin_by_type_onlineness_and_criteria(order_by: List):
 
 
 def _with_image(offer_query):
-    has_image_predicate = (Product.thumbCount > 0) | _build_has_active_mediation_predicate()
-    return offer_query.join(Product, Offer.productId == Product.id) \
-        .filter(has_image_predicate)
-
+    has_image_predicate = _build_has_active_mediation_predicate()
+    return offer_query.filter(has_image_predicate)
 
 
 def _with_validated_venue(offer_query):

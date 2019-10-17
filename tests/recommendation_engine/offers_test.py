@@ -3,7 +3,8 @@ from typing import List
 from models import PcObject, Offerer, Stock
 from recommendations_engine import create_recommendations_for_discovery
 from tests.conftest import clean_database
-from tests.test_utils import create_user, create_offerer, create_venue, create_offer_with_thing_product, create_stock
+from tests.test_utils import create_user, create_offerer, create_venue, create_offer_with_thing_product, create_stock, \
+    create_mediation
 
 
 class CreateRecommendationsForDiscoveryTest:
@@ -16,10 +17,10 @@ class CreateRecommendationsForDiscoveryTest:
         user = create_user(departement_code='93')
         offerer_ok = create_offerer()
         offerer_ko = create_offerer(siren='987654321')
-        expected_stocks_recommended = _create_and_save_stock_for_offererer_in_departements(offerer_ok,
-                                                                                           departements_ok)
-        expected_stocks_not_recommended = _create_and_save_stock_for_offererer_in_departements(offerer_ko,
-                                                                                               departements_ko)
+        expected_stocks_recommended = _create_and_save_stock_for_offerer_in_departements(offerer_ok,
+                                                                                         departements_ok)
+        expected_stocks_not_recommended = _create_and_save_stock_for_offerer_in_departements(offerer_ko,
+                                                                                             departements_ko)
         PcObject.save(user)
         PcObject.save(*(expected_stocks_recommended + expected_stocks_not_recommended))
         offer_ids_in_adjacent_department = set([stock.offerId for stock in expected_stocks_recommended])
@@ -39,8 +40,8 @@ class CreateRecommendationsForDiscoveryTest:
 
         user = create_user(departement_code='00')
         offerer_ok = create_offerer()
-        expected_stocks_recommended = _create_and_save_stock_for_offererer_in_departements(offerer_ok,
-                                                                                           departements_ok)
+        expected_stocks_recommended = _create_and_save_stock_for_offerer_in_departements(offerer_ok,
+                                                                                         departements_ok)
         PcObject.save(user)
         PcObject.save(*expected_stocks_recommended)
         offer_ids_in_adjacent_department = set([stock.offerId for stock in expected_stocks_recommended])
@@ -54,12 +55,14 @@ class CreateRecommendationsForDiscoveryTest:
         assert recommended_offer_ids == offer_ids_in_adjacent_department
 
 
-def _create_and_save_stock_for_offererer_in_departements(offerer: Offerer, departement_codes: List[str]) -> Stock:
+def _create_and_save_stock_for_offerer_in_departements(offerer: Offerer, departement_codes: List[str]) -> Stock:
     stock_list = []
     for i, departement_code in enumerate(departement_codes):
         siret = f'{offerer.siren}{99999 - i}'
         venue = create_venue(offerer, postal_code="{:<5}".format(departement_code), siret=siret)
         offer = create_offer_with_thing_product(venue)
+        mediation = create_mediation(offer)
+        PcObject.save(mediation)
         stock = create_stock(offer=offer, available=10)
         stock_list.append(stock)
     return stock_list
