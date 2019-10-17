@@ -118,7 +118,7 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
           className: 'text-center',
           disabled: false,
           id: 'booking-form-time-picker-field',
-          label: 'Choisissez une heure',
+          label: 'Choisissez une heure :',
           name: 'time',
           placeholder: 'Heure et prix',
           options: [

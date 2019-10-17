@@ -140,7 +140,6 @@ describe('src | components | layout | Booking | BookingContainer', () => {
         // then
         expect(result).toStrictEqual({
           bookables: [],
-          booking: state.data.bookings[0],
           offer: state.data.offers[0],
           recommendation: state.data.recommendations[0],
         })

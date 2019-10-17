@@ -2,8 +2,10 @@ import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { Route } from 'react-router-dom'
 
-import BookingContainer from '../Booking/BookingContainer'
+import BookingContainer from '../../pages/Booking/BookingContainer'
+import BookingCancellationContainer from '../../pages/BookingCancellation/BookingCancellationContainer'
 import isDetailsView from '../../../helpers/isDetailsView'
+import getIsConfirmingCancelling from '../../../helpers/getIsConfirmingCancelling'
 import RectoContainer from '../Recto/RectoContainer'
 import VersoContainer from '../Verso/VersoContainer'
 
@@ -31,6 +33,21 @@ class Details extends PureComponent {
     })
   }
 
+  renderBookingOrCancellation = route => {
+    const { match } = this.props
+    const isConfirmingCancelling = getIsConfirmingCancelling(match)
+    return isConfirmingCancelling
+      ? this.renderBookingCancellation(route)
+      : this.renderBooking(route)
+  }
+
+  renderBookingCancellation = route => {
+    return (<BookingCancellationContainer
+      extraClassName="with-header"
+      {...route}
+            />)
+  }
+
   renderBooking = route => (<BookingContainer
     extraClassName="with-header"
     {...route}
@@ -44,7 +61,7 @@ class Details extends PureComponent {
       <Fragment>
         <Route
           path={bookingPath}
-          render={this.renderBooking}
+          render={this.renderBookingOrCancellation}
         />
         <VersoContainer
           areDetailsVisible={isDetailsView}

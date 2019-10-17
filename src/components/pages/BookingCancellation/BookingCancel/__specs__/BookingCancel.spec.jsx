@@ -5,7 +5,7 @@ import BookingCancel from '../BookingCancel'
 
 const NO_BREAK_SPACE = '\u00A0'
 
-describe('src | components | layout | Booking | BookingCancel', () => {
+describe('src | components | layout | BookingCancellation | BookingCancel', () => {
   let props
 
   beforeEach(() => {

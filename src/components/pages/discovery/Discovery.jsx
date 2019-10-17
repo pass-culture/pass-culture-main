@@ -3,10 +3,12 @@ import React, { Fragment, PureComponent } from 'react'
 import { Route } from 'react-router-dom'
 
 import DeckContainer from './Deck/DeckContainer'
-import BookingContainer from '../../layout/Booking/BookingContainer'
+import BookingContainer from '../Booking/BookingContainer'
+import BookingCancellationContainer from '../BookingCancellation/BookingCancellationContainer'
 import AbsoluteFooterContainer from '../../layout/AbsoluteFooter/AbsoluteFooterContainer'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import isDetailsView from '../../../helpers/isDetailsView'
+import getIsConfirmingCancelling from '../../../helpers/getIsConfirmingCancelling'
 
 class Discovery extends PureComponent {
   constructor(props) {
@@ -104,6 +106,18 @@ class Discovery extends PureComponent {
     })
   }
 
+  renderBookingOrCancellation = route => {
+    const { match } = this.props
+    const isConfirmingCancelling = getIsConfirmingCancelling(match)
+    return isConfirmingCancelling
+      ? this.renderBookingCancellation(route)
+      : this.renderBooking(route)
+  }
+
+  renderBookingCancellation = route => {
+    return <BookingCancellationContainer {...route} />
+  }
+
   renderBooking = route => {
     const { currentRecommendation } = this.props
     return (<BookingContainer
@@ -136,7 +150,7 @@ class Discovery extends PureComponent {
               <Route
                 key="route-discovery-booking"
                 path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId(creation|[A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?/:menu(menu)?"
-                render={this.renderBooking}
+                render={this.renderBookingOrCancellation}
               />
             </Fragment>
           )}

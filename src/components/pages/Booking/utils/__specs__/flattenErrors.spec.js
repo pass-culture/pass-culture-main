@@ -21,7 +21,7 @@ describe('src | components | booking | utils | flattenErrors', () => {
     it('should return an error', () => {
       const acc = []
       const err = [['error one', 'error two'], [['error three'], ['error four']]]
-      expect(flattenErrors(acc, err)).not.toEqual([
+      expect(flattenErrors(acc, err)).not.toStrictEqual([
         'error one',
         'error two',
         'error three',

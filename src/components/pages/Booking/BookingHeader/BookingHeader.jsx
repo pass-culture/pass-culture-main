@@ -24,8 +24,8 @@ BookingHeader.propTypes = {
   offer: PropTypes.shape({
     name: PropTypes.string,
     venue: PropTypes.shape({
-      name: PropTypes.string
-    })
+      name: PropTypes.string,
+    }),
   }),
 }
 

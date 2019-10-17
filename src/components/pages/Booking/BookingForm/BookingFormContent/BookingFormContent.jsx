@@ -36,8 +36,9 @@ class BookingFormContent extends Component {
     const { values } = this.props
     const { value } = input
     const calendarDates = getCalendarProvider(values)
-    const calendarLabel = calendarDates.length === 1 ? '' : 'Choisissez une date'
+    const calendarLabel = calendarDates.length === 1 ? '' : 'Choisissez une date :'
     const dateFormat = 'DD MMMM YYYY'
+
     return (
       <DatePickerField
         {...input}
@@ -62,7 +63,7 @@ class BookingFormContent extends Component {
     const bookableTimes = parseHoursByStockId(values)
     const hasOneBookableTime = bookableTimes.length === 1
     const hasBookableTimes = bookableTimes.length > 0
-    const hourLabel = hasOneBookableTime ? '' : 'Choisissez une heure'
+    const hourLabel = hasOneBookableTime ? '' : 'Choisissez une heure :'
 
     return (
       <form

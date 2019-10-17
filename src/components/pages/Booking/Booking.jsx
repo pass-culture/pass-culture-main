@@ -4,7 +4,6 @@ import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { Transition } from 'react-transition-group'
 
-import BookingCancel from './BookingCancel/BookingCancel'
 import BookingForm from './BookingForm/BookingForm'
 import BookingError from './BookingError/BookingError'
 import BookingLoader from './BookingLoader/BookingLoader'
@@ -13,7 +12,6 @@ import BookingSuccess from './BookingSuccess/BookingSuccess'
 import externalSubmitForm from '../../forms/utils/externalSubmitForm'
 import { priceIsDefined } from '../../../helpers/getDisplayPrice'
 import getIsBooking from '../../../helpers/getIsBooking'
-import getIsConfirmingCancelling from '../../../helpers/getIsConfirmingCancelling'
 import { ROOT_PATH } from '../../../utils/config'
 
 const BOOKING_FORM_ID = 'form-create-booking'
@@ -104,11 +102,9 @@ class Booking extends PureComponent {
   }
 
   renderFormControls = () => {
-    const { match } = this.props
     const { canSubmitForm, bookedPayload, isSubmitting, isErrored } = this.state
 
-    const isConfirmingCancelling = getIsConfirmingCancelling(match)
-    const showCancelButton = !isSubmitting && !bookedPayload && !isConfirmingCancelling
+    const showCancelButton = !isSubmitting && !bookedPayload
     const showSubmitButton = showCancelButton && canSubmitForm && !isErrored
 
     return (
@@ -145,23 +141,12 @@ class Booking extends PureComponent {
             <b>{'OK'}</b>
           </button>
         )}
-
-        {isConfirmingCancelling && (
-          <button
-            className="text-center my5"
-            id="booking-cancellation-confirmation-button"
-            onClick={this.handleReturnToDetails}
-            type="button"
-          >
-            {'OK'}
-          </button>
-        )}
       </Fragment>
     )
   }
 
   render() {
-    const { bookables, booking, extraClassName, match, offer, recommendation } = this.props
+    const { bookables, extraClassName, match, offer, recommendation } = this.props
 
     const isBooking = getIsBooking(match)
 
@@ -172,10 +157,8 @@ class Booking extends PureComponent {
     const { canSubmitForm, errors, bookedPayload, isErrored, isSubmitting, mounted } = this.state
     const { id: recommendationId } = recommendation || {}
     const { isEvent } = offer || {}
-    const isConfirmingCancelling = getIsConfirmingCancelling(match)
     const defaultBookable = bookables && bookables[0]
-    const showForm =
-      defaultBookable && !bookedPayload && !isConfirmingCancelling && !isErrored && !isSubmitting
+    const showForm = defaultBookable && !bookedPayload && !isErrored && !isSubmitting
 
     let date
     let price
@@ -209,12 +192,10 @@ class Booking extends PureComponent {
             <div className="main flex-rows flex-1 scroll-y">
               <BookingHeader offer={offer} />
               <div
-                className={`content flex-1 flex-center ${
-                  isConfirmingCancelling ? '' : 'items-center'
-                }`}
+                className="content flex-1 flex-center items-center"
                 style={{ backgroundImage }}
               >
-                <div className={`${isConfirmingCancelling ? '' : 'py36 px12'} flex-rows`}>
+                <div className="py36 px12 flex-rows">
                   {isSubmitting && <BookingLoader />}
 
                   {bookedPayload && (
@@ -223,11 +204,6 @@ class Booking extends PureComponent {
                       isEvent={isEvent}
                     />
                   )}
-
-                  {isConfirmingCancelling && <BookingCancel
-                    booking={booking}
-                    isEvent={isEvent}
-                                             />}
 
                   {isErrored && <BookingError errors={errors} />}
 
@@ -258,7 +234,6 @@ class Booking extends PureComponent {
 
 Booking.defaultProps = {
   bookables: null,
-  booking: null,
   extraClassName: null,
   offer: null,
   recommendation: null,
@@ -266,7 +241,6 @@ Booking.defaultProps = {
 
 Booking.propTypes = {
   bookables: PropTypes.arrayOf(PropTypes.shape()),
-  booking: PropTypes.shape(),
   extraClassName: PropTypes.string,
   handleSubmit: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
