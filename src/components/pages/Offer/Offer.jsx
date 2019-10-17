@@ -3,9 +3,11 @@ import PropTypes from 'prop-types'
 import {
   Field,
   Form,
-  Icon, mergeErrors,
+  Icon,
+  mergeErrors,
   mergeForm,
-  pluralize, resetForm,
+  pluralize,
+  resetForm,
   showModal,
   SubmitButton,
 } from 'pass-culture-shared'
@@ -120,7 +122,6 @@ class Offer extends PureComponent {
     const {
       dispatch,
       history,
-      loadVenue,
       match: {
         params: { offerId },
       },
@@ -140,7 +141,14 @@ class Offer extends PureComponent {
         })
       )
     } else if (venueId) {
-      loadVenue(venueId)
+      dispatch(
+        requestData({
+          apiPath: `/venues/${venueId}`,
+          normalizer: {
+            managingOffererId: 'offerers',
+          },
+        })
+      )
     } else {
       const offerersPath = offererId ? `${OFFERERS_API_PATH}/${offererId}` : OFFERERS_API_PATH
 
@@ -576,7 +584,6 @@ class Offer extends PureComponent {
                       limitTimeInHours={DURATION_LIMIT_TIME}
                       name="durationMinutes"
                       placeholder="HH:MM"
-                      readOnly={offerFromTiteLive}
                       type="duration"
                     />
                     {!isFeatureDisabled && (
@@ -742,7 +749,6 @@ Offer.propTypes = {
   dispatch: PropTypes.func.isRequired,
   isEditableOffer: PropTypes.bool.isRequired,
   isFeatureDisabled: PropTypes.bool,
-  loadVenue: PropTypes.func.isRequired,
   location: PropTypes.shape().isRequired,
   query: PropTypes.shape().isRequired,
   selectedOfferType: PropTypes.arrayOf().isRequired,

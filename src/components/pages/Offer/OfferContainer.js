@@ -1,7 +1,6 @@
 import get from 'lodash.get'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { requestData } from 'redux-saga-data'
 
 import Offer from './Offer'
 import { withRequiredLogin } from '../../hocs'
@@ -23,7 +22,6 @@ import {
 } from '../../../selectors/data/venuesSelectors'
 import { selectOfferers } from '../../../selectors/data/offerersSelectors'
 import selectIsFeatureDisabled from '../../router/selectors/selectIsFeatureDisabled'
-
 
 export const mapStateToProps = (state, ownProps) => {
   const {
@@ -61,6 +59,7 @@ export const mapStateToProps = (state, ownProps) => {
   const stocks = selectStocksByOfferId(state, offerId)
   const url = get(state, 'form.offer.url') || get(product, 'url')
 
+  // should return value object
   const formInitialValues = selectFormInitialValuesByProductAndOfferAndOffererAndVenue(
     state,
     product,
@@ -68,6 +67,7 @@ export const mapStateToProps = (state, ownProps) => {
     offerer,
     venue
   )
+
   const extraData = get(state, 'form.offer.extraData') || {}
 
   const musicSubOptions =
@@ -109,21 +109,6 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
     },
     trackModifyOffer: offerId => {
       ownProps.tracking.trackEvent({ action: 'modifyOffer', name: offerId })
-    },
-  }
-}
-
-export const mapDispatchToProps = dispatch => {
-  return {
-    loadVenue: () => venueId => {
-      dispatch(
-        requestData({
-          apiPath: `/venues/${venueId}`,
-          normalizer: {
-            managingOffererId: 'offerers',
-          },
-        })
-      )
     },
   }
 }

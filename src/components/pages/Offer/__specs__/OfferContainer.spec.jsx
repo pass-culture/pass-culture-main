@@ -1,4 +1,4 @@
-import { mapDispatchToProps, mapStateToProps, mergeProps } from '../OfferContainer'
+import { mapStateToProps, mergeProps } from '../OfferContainer'
 import state from '../../../utils/mocks/state'
 
 describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
@@ -20,7 +20,7 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
   })
 
   describe('mapStateToProps', () => {
-    it('should return an of props', () => {
+    it('should return an object of props', () => {
       // when
       const result = mapStateToProps(state, props)
 
@@ -34,6 +34,7 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
           description: undefined,
           durationMinutes: undefined,
           extraData: undefined,
+          isDuo: undefined,
           isNational: undefined,
           mediaUrls: undefined,
           name: undefined,
@@ -345,33 +346,4 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
       })
     })
   })
-
-  describe('mapDispatchToProps', () => {
-    let dispatch
-
-    beforeEach(() => {
-      dispatch = jest.fn()
-    })
-
-    describe('loadVenue', () => {
-      it('should load venues using API', () => {
-        // given
-        const venueId = 'EF'
-
-        //when
-        mapDispatchToProps(dispatch).loadVenue()(venueId)
-
-        // then
-        expect(dispatch).toHaveBeenCalledWith({
-          config: {
-            apiPath: '/venues/EF',
-            method: 'GET',
-            normalizer: {
-              managingOffererId: 'offerers',
-            },
-          },
-          type: 'REQUEST_DATA_GET_/VENUES/EF',
-        })
-      })
-    })})
 })

@@ -14,6 +14,7 @@ const productKeys = [
   'description',
   'durationMinutes',
   'extraData',
+  'isDuo',
   'isNational',
   'mediaUrls',
   'name',
