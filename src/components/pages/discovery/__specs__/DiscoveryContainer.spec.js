@@ -1,13 +1,16 @@
-import { mapDispatchToProps } from '../DiscoveryContainer'
+import { mapStateToProps, mapDispatchToProps } from '../DiscoveryContainer'
 import { recommendationNormalizer } from '../../../../utils/normalizers'
 
 jest.mock('redux-thunk-data', () => {
-  const actualModule = jest.requireActual('redux-thunk-data')
-  const { requestData } = jest.requireActual('fetch-normalize-data')
-  const mockRequestData = requestData
+  const { assignData, createDataReducer, deleteData, requestData } = jest.requireActual(
+    'fetch-normalize-data'
+  )
+
   return {
-    ...actualModule,
-    requestData: mockRequestData,
+    assignData,
+    createDataReducer,
+    deleteData,
+    requestData,
   }
 })
 
@@ -36,6 +39,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
       },
     }
   })
+
   describe('mapStateToProps()', () => {
     it('should return an object of props', () => {
       // given

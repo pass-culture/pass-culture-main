@@ -56,7 +56,7 @@
     "redux": "^3.6.0",
     "redux-persist": "^5.10.0",
     "redux-thunk": "^2.3.0",
-    "redux-thunk-data": "1.6.3",
+    "redux-thunk-data": "1.6.5",
     "reselect": "^3.0.1",
     "testcafe": "^0.20.4",
     "typeface-barlow": "^0.0.54",

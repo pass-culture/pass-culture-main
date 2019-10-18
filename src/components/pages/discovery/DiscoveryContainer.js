@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { toast } from 'react-toastify'
-import { assignData, deleteData, requestData } from 'redux-saga-data'
+import { assignData, deleteData, requestData } from 'redux-thunk-data'
 
 import Discovery from './Discovery'
 import {

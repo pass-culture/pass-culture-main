@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { requestData, reinitializeData } from 'redux-saga-data'
+import { requestData, reinitializeData } from 'redux-thunk-data'
 
 import SignoutButton from './SignoutButton'
 import { toggleMainMenu } from '../../../../reducers/menu'

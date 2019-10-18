@@ -1,5 +1,13 @@
 import { mapStateToProps, mapDispatchToProps } from '../SearchContainer'
 
+jest.mock('redux-thunk-data', () => {
+  const { requestData } = jest.requireActual('fetch-normalize-data')
+
+  return {
+    requestData,
+  }
+})
+
 describe('src | components | pages | SearchContainer', () => {
   describe('mapStateToProps', () => {
     it('should return an object of props', () => {

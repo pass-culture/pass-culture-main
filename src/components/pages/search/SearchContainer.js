@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
+import { requestData } from 'redux-thunk-data'
 
-import { requestData } from 'redux-saga-data'
 import Search from './Search'
 import { withRequiredLogin } from '../../hocs'
 import selectTypeSublabels, {

@@ -1,7 +1,13 @@
-import * as reduxSagaData from 'redux-saga-data'
-
 import { mapDispatchToProps, mapStateToProps, mergeProps } from '../BookingContainer'
 import { bookingNormalizer } from '../../../../utils/normalizers'
+
+jest.mock('redux-thunk-data', () => {
+  const { requestData } = jest.requireActual('fetch-normalize-data')
+
+  return {
+    requestData,
+  }
+})
 
 describe('src | components | layout | Booking | BookingContainer', () => {
   let state
@@ -157,7 +163,6 @@ describe('src | components | layout | Booking | BookingContainer', () => {
         }
         const handleRequestFail = jest.fn()
         const handleRequestSuccess = jest.fn()
-        jest.spyOn(reduxSagaData, 'requestData')
 
         // when
         mapDispatchToProps(dispatch).handleSubmit(
@@ -167,22 +172,25 @@ describe('src | components | layout | Booking | BookingContainer', () => {
         )
 
         // then
-        expect(reduxSagaData.requestData).toHaveBeenCalledWith({
-          apiPath: '/bookings',
-          body: {
-            bookables: [],
-            date: '2019-09-19T22:00:00.000Z',
-            price: 27,
-            recommendationId: 'NQ',
-            stockId: 'BM',
-            time: 'BM',
-            quantity: 1,
+        expect(dispatch).toHaveBeenCalledWith({
+          config: {
+            apiPath: '/bookings',
+            body: {
+              bookables: [],
+              date: '2019-09-19T22:00:00.000Z',
+              price: 27,
+              recommendationId: 'NQ',
+              stockId: 'BM',
+              time: 'BM',
+              quantity: 1,
+            },
+            handleFail: handleRequestFail,
+            handleSuccess: handleRequestSuccess,
+            method: 'POST',
+            name: 'booking',
+            normalizer: bookingNormalizer,
           },
-          handleFail: handleRequestFail,
-          handleSuccess: handleRequestSuccess,
-          method: 'POST',
-          name: 'booking',
-          normalizer: bookingNormalizer,
+          type: 'REQUEST_DATA_POST_/BOOKINGS',
         })
       })
     })
