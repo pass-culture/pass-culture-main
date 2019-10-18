@@ -16,9 +16,8 @@ def get_mediation_helper(mediation):
 
 def get_offer_helper(offer):
     return dict(as_dict(offer), **{
-        "keywordsString": '{} {}'.format(
-            offer.product.name,
-            offer.venue.name
+        "keywordsString": '{}'.format(
+            offer.product.name
         ).replace('?', ' ')
                 .replace('!', ' ') \
                 .replace('(', '') \
