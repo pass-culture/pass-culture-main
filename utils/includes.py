@@ -79,7 +79,6 @@ OFFER_INCLUDES = [
                 "key": "managingOfferer",
                 "includes": [
                     "-validationToken",
-                    "nOffers",
                     "isValidated",
                     "bic",
                     "iban"
