@@ -49,8 +49,10 @@ def _bookable_offers(offers_query: Query) -> Query:
     offers_query = offers_query.filter(stocks_query.exists())
     return offers_query
 
+
 def _has_active_and_validated_offerer() -> BinaryExpression:
     return (Offerer.isActive == True) & (Offerer.validationToken == None)
+
 
 def _with_active_and_validated_offerer(query):
     query = query.join(Offerer, Offerer.id == Venue.managingOffererId) \
@@ -141,8 +143,8 @@ def _build_occurs_soon_or_is_thing_predicate():
     return Stock.query.filter((Stock.offerId == Offer.id)
                               & ((Stock.beginningDatetime == None)
                                  | ((Stock.beginningDatetime > datetime.utcnow())
-                              & (Stock.beginningDatetime < (datetime.utcnow() + timedelta(days=10)))))) \
-                       .exists()
+                                    & (Stock.beginningDatetime < (datetime.utcnow() + timedelta(days=10)))))) \
+        .exists()
 
 
 def _build_has_active_mediation_predicate():
@@ -162,6 +164,7 @@ def filter_offers_with_keywords_string(query: BaseQuery, keywords_string):
         get_filter_matching_ts_query_for_offer, keywords_string
     )
     query1 = query.filter(offer_keywords_filter)
+    query1 = _order_by_offer_name_containing_keyword_string(keywords_string, query1)
 
     get_filter_matching_ts_query_for_venue = create_get_filter_matching_ts_query_in_any_model(Venue)
     venue_keywords_filter = create_filter_matching_all_keywords_in_any_model(
@@ -175,9 +178,7 @@ def filter_offers_with_keywords_string(query: BaseQuery, keywords_string):
     )
     query3 = query.filter(offerer_keywords_filter)
 
-    query = query1.union(query2, query3)
-
-    query = _order_by_offer_name_containing_keyword_string(keywords_string, query)
+    query = query1.union_all(query2, query3)
 
     return query
 
@@ -185,14 +186,14 @@ def filter_offers_with_keywords_string(query: BaseQuery, keywords_string):
 def _order_by_offer_name_containing_keyword_string(keywords_string: str, query: Query) -> Query:
     offer_alias = aliased(Offer)
     return query.order_by(
-            desc(
-                Offer.query
-                    .filter(Offer.id == offer_alias.id)
-                    .filter(Offer.name.op('@@')(func.plainto_tsquery(keywords_string)))
-                    .order_by(offer_alias.name)
-                    .exists()
-            ),
-            desc(Offer.id)
+        desc(
+            Offer.query
+                .filter(Offer.id == offer_alias.id)
+                .filter(Offer.name.op('@@')(func.plainto_tsquery(keywords_string)))
+                .order_by(offer_alias.name)
+                .exists()
+        ),
+        desc(Offer.id)
     )
 
 
@@ -205,16 +206,18 @@ def get_is_offer_selected_by_keywords_string_at_column(offer, keywords_string, c
         column
     ) is not None
 
+
 def _offer_has_stocks_compatible_with_days_intervals(days_intervals):
     event_beginningdate_in_interval_filter = or_(*map(
         _date_interval_to_filter, days_intervals))
     stock_has_no_beginning_date_time = Stock.beginningDatetime == None
     return Stock.query \
-               .filter(Stock.offerId == Offer.id) \
-               .filter(
-                    event_beginningdate_in_interval_filter | \
-                    stock_has_no_beginning_date_time
-                ).exists()
+        .filter(Stock.offerId == Offer.id) \
+        .filter(
+        event_beginningdate_in_interval_filter | \
+        stock_has_no_beginning_date_time
+    ).exists()
+
 
 def get_offers_for_recommendations_search(
         date=None,
@@ -226,7 +229,6 @@ def get_offers_for_recommendations_search(
         longitude=None,
         max_distance=None,
         days_intervals=None):
-
     query = _filter_recommendable_offers_for_search(build_offer_search_base_query())
 
     if max_distance is not None and latitude is not None and longitude is not None:
@@ -237,11 +239,11 @@ def get_offers_for_recommendations_search(
             longitude
         )
         query = query.filter(distance_instrument < max_distance) \
-                     .reset_joinpoint()
+            .reset_joinpoint()
 
     if days_intervals is not None:
         query = query.filter(_offer_has_stocks_compatible_with_days_intervals(days_intervals)) \
-                     .reset_joinpoint()
+            .reset_joinpoint()
 
     if keywords_string is not None:
         query = filter_offers_with_keywords_string(query, keywords_string)
@@ -292,9 +294,9 @@ def find_offers_with_filter_parameters(
 def _build_has_remaining_stock_predicate():
     stock_has_undefined_available = Stock.available == None
     booked_stock_quantity = Booking.query.filter(
-        (Booking.stockId == Stock.id) &\
+        (Booking.stockId == Stock.id) & \
         (Booking.isCancelled == False)
-     ).statement.with_only_columns([func.coalesce(func.sum(Booking.quantity), 0)])
+    ).statement.with_only_columns([func.coalesce(func.sum(Booking.quantity), 0)])
     still_more_available_than_booked_stock = Stock.available > booked_stock_quantity
     return stock_has_undefined_available | still_more_available_than_booked_stock
 
@@ -319,12 +321,13 @@ def _offer_has_bookable_stocks():
         .filter(_build_has_remaining_stock_predicate()) \
         .exists()
 
+
 def _filter_recommendable_offers_for_search(offer_query):
     offer_query = offer_query.reset_joinpoint() \
-                             .filter(Offer.isActive == True) \
-                             .filter(_has_active_and_validated_offerer()) \
-                             .filter(Venue.validationToken == None) \
-                             .filter(_offer_has_bookable_stocks())
+        .filter(Offer.isActive == True) \
+        .filter(_has_active_and_validated_offerer()) \
+        .filter(Venue.validationToken == None) \
+        .filter(_offer_has_bookable_stocks())
     return offer_query
 
 
@@ -380,6 +383,6 @@ def get_offer_by_id(offer_id):
 
 
 def find_offers_by_venue_id(venue_id: int) -> List[Offer]:
-    return Offer.query\
-        .filter_by(venueId=venue_id)\
+    return Offer.query \
+        .filter_by(venueId=venue_id) \
         .all()

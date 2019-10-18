@@ -802,22 +802,33 @@ class Get:
         @clean_database
         def when_searching_by_keywords_offer_with_matching_pattern_in_name_return_firsts(self, app):
             user = create_user(email='test@email.com')
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer1 = create_offer_with_event_product(venue, event_name='Training',
+            offerer = create_offerer(name='modern')
+            venue1 = create_venue(offerer)
+            venue2 = create_venue(offerer, name='modern', siret="12345678912365")
+            offer1 = create_offer_with_event_product(venue1, event_name='Modern Tango')
+            offer2 = create_offer_with_event_product(venue1, event_name='Training in Modern Jazz')
+            offer3 = create_offer_with_event_product(venue1, event_name='Training',
                                                      description='Modern modern Jazz, Salsa & Co')
-            offer2 = create_offer_with_event_product(venue, event_name='Training in Modern Jazz')
+            offer4 = create_offer_with_event_product(venue2, event_name='modern Plus')
+            offer5 = create_offer_with_event_product(venue1, event_name='Tango Plus')
 
             event_occurrence1 = create_event_occurrence(offer1, beginning_datetime=self.in_one_hour,
                                                         end_datetime=self.ten_days_from_now)
             event_occurrence2 = create_event_occurrence(offer2, beginning_datetime=self.in_one_hour,
                                                         end_datetime=self.ten_days_from_now)
+            event_occurrence3 = create_event_occurrence(offer3, beginning_datetime=self.in_one_hour,
+                                                        end_datetime=self.ten_days_from_now)
+            event_occurrence4 = create_event_occurrence(offer4, beginning_datetime=self.in_one_hour,
+                                                        end_datetime=self.ten_days_from_now)
+            event_occurrence5 = create_event_occurrence(offer5, beginning_datetime=self.in_one_hour,
+                                                        end_datetime=self.ten_days_from_now)
 
-            recommendation1 = create_recommendation(offer1, user)
-            recommendation2 = create_recommendation(offer2, user)
             stock1 = create_stock_from_event_occurrence(event_occurrence1)
             stock2 = create_stock_from_event_occurrence(event_occurrence2)
-            PcObject.save(stock1, stock2, recommendation1, recommendation2)
+            stock3 = create_stock_from_event_occurrence(event_occurrence3)
+            stock4 = create_stock_from_event_occurrence(event_occurrence4)
+            stock5 = create_stock_from_event_occurrence(event_occurrence5)
+            PcObject.save(stock1, stock2, stock3, stock4, stock5, user)
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).get(
@@ -826,5 +837,9 @@ class Get:
 
             # Then
             assert response.status_code == 200
-            assert len(response.json) == 2
+            assert len(response.json) == 5
             assert response.json[0]['offer']['name'] == 'Training in Modern Jazz'
+            assert response.json[1]['offer']['name'] == 'modern Plus'
+            assert response.json[2]['offer']['name'] == 'Modern Tango'
+            assert response.json[3]['offer']['name'] == 'Training'
+            assert response.json[4]['offer']['name'] == 'Tango Plus'
