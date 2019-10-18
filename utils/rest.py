@@ -46,7 +46,7 @@ def login_or_api_key_required_v2(f):
         if authorization_header:
             app_authorization_api_key = authorization_header.replace("Bearer ", "")
             authenticateUser = find_api_key_by_value(app_authorization_api_key)
-        
+
         if authenticateUser is None:
             if not current_user.is_authenticated:
                 return "API key or login required", 401

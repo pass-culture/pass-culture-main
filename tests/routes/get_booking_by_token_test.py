@@ -300,6 +300,26 @@ class Get:
             assert error_message['email'] == [
                 'Vous devez préciser l\'email de l\'utilisateur quand vous n\'êtes pas connecté(e)']
 
+        @clean_database
+        def when_user_doesnt_have_rights_and_token_exists(self, app):
+            # Given
+            user = create_user(email='user@email.fr')
+            querying_user = create_user(email='querying@email.fr')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_offer_with_event_product(venue, event_name='Event Name')
+            event_occurrence = create_event_occurrence(offer)
+            stock = create_stock_from_event_occurrence(event_occurrence, price=0)
+            booking = create_booking(user, stock, venue=venue)
+
+            PcObject.save(querying_user, booking)
+
+            # When
+            response = TestClient(app.test_client()).with_auth('querying@email.fr').get(
+                '/bookings/token/{}'.format(booking.token))
+            # Then
+            assert response.status_code == 400
+            assert response.json['global'] == ["Cette contremarque n'a pas été trouvée"]
 
 
     class Returns403:
@@ -328,26 +348,6 @@ class Get:
             assert response.json['beginningDatetime'] == [
                 'Vous ne pouvez pas valider cette contremarque plus de 72h avant le début de l\'évènement']
 
-        @clean_database
-        def when_user_doesnt_have_rights_and_token_exists(self, app):
-            # Given
-            user = create_user(email='user@email.fr')
-            querying_user = create_user(email='querying@email.fr')
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event_name='Event Name')
-            event_occurrence = create_event_occurrence(offer)
-            stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-            booking = create_booking(user, stock, venue=venue)
-
-            PcObject.save(querying_user, booking)
-
-            # When
-            response = TestClient(app.test_client()).with_auth('querying@email.fr').get(
-                '/bookings/token/{}'.format(booking.token))
-            # Then
-            assert response.status_code == 400
-            assert response.json['global'] == ["Cette contremarque n'a pas été trouvée"]
 
     class Returns410:
         @clean_database

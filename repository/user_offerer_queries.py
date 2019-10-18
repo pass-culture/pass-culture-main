@@ -32,3 +32,6 @@ def count_user_offerers_by_offerer(offerer):
 def find_one_or_none_by_user_id(user_id):
     return UserOfferer.query.filter_by(userId=user_id).one_or_none()
 
+
+def find_one_or_none_by_offerer_id(offerer_id):
+    return UserOfferer.query.filter_by(offererId=offerer_id).one_or_none()

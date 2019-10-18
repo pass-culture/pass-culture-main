@@ -1,19 +1,16 @@
 from datetime import datetime, timedelta
-from urllib.parse import urlencode
 
 from models import ApiKey, PcObject, EventType
-from routes.serialization import serialize
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_stock_with_thing_offer, \
     create_venue, create_offerer, \
     create_user, create_booking, create_offer_with_event_product, \
     create_event_occurrence, create_stock_from_event_occurrence, create_user_offerer, create_stock_with_event_offer
-from utils.human_ids import humanize
 from utils.token import random_token
 
 
 class Get:
-    class Returns200:
+    class Returns204:
         @clean_database
         def when_user_has_rights_and_regular_offer(self, app):
             # Given
@@ -29,22 +26,13 @@ class Get:
 
             PcObject.save(user_offerer, booking)
 
-            expected_json = {'bookingId': humanize(booking.id),
-                             'date': serialize(booking.stock.beginningDatetime),
-                             'email': 'user@email.fr',
-                             'isUsed': False,
-                             'offerName': 'Event Name',
-                             'userName': 'John Doe',
-                             'venueDepartementCode': '93'}
-
             # When
             url = 'v2/bookings/token/{}'.format(booking.token)
             response = TestClient(app.test_client()).with_auth('admin@email.fr').get(url)
 
             # Then
-            assert response.status_code == 200
-            response_json = response.json
-            assert response_json == expected_json
+            assert response.headers['Content-type'] == 'application/json'
+            assert response.status_code == 204
 
         @clean_database
         def when_user_has_api_key_and_rights_and_regular_offer(self, app):
@@ -67,14 +55,6 @@ class Get:
 
             PcObject.save(offererApiKey)
 
-            expected_json = {'bookingId': humanize(booking.id),
-                             'date': serialize(booking.stock.beginningDatetime),
-                             'email': 'user@email.fr',
-                             'isUsed': False,
-                             'offerName': 'Event Name',
-                             'userName': 'John Doe',
-                             'venueDepartementCode': '93'}
-
             # When
             user2ApiKey = 'Bearer ' + offererApiKey.value
             booking_token = booking.token.lower()
@@ -87,9 +67,8 @@ class Get:
             )
 
             # Then
-            assert response.status_code == 200
-            response_json = response.json
-            assert response_json == expected_json
+            assert response.status_code == 204
+
 
         @clean_database
         def when_user_has_rights_and_regular_offer_and_token_in_lower_case(self, app):
@@ -105,24 +84,15 @@ class Get:
             booking = create_booking(user, stock, venue=venue)
 
             PcObject.save(user_offerer, booking)
-
-            expected_json = {'bookingId': humanize(booking.id),
-                             'date': serialize(booking.stock.beginningDatetime),
-                             'email': 'user@email.fr',
-                             'isUsed': False,
-                             'offerName': 'Event Name',
-                             'userName': 'John Doe',
-                             'venueDepartementCode': '93'}
-
+               #
             # When
             booking_token = booking.token.lower()
             url = 'v2/bookings/token/{}'.format(booking_token)
             response = TestClient(app.test_client()).with_auth('admin@email.fr').get(url)
 
             # Then
-            assert response.status_code == 200
-            response_json = response.json
-            assert response_json == expected_json
+            assert response.status_code == 204
+
 
         @clean_database
         def when_activation_event_and_user_has_rights(self, app):
@@ -139,25 +109,14 @@ class Get:
 
             PcObject.save(admin_user, booking)
 
-            expected_json = {'bookingId': humanize(booking.id),
-                             'date': serialize(booking.stock.beginningDatetime),
-                             'dateOfBirth': '2001-02-01T00:00:00Z',
-                             'email': 'user@email.fr',
-                             'isUsed': False,
-                             'offerName': 'Offre d\'activation',
-                             'phoneNumber': '0698765432',
-                             'userName': 'John Doe',
-                             'venueDepartementCode': '93'}
-
             # When
             response = TestClient(app.test_client()) \
                 .with_auth('admin@email.fr') \
                 .get('v2/bookings/token/{}'.format(booking.token))
 
             # Then
-            assert response.status_code == 200
-            response_json = response.json
-            assert response_json == expected_json
+            assert response.status_code == 204
+
 
     class Returns401:
         @clean_database

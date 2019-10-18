@@ -1,5 +1,9 @@
 from domain.password import check_password_strength
+from flask import request
+from flask_login import current_user
 from models import ApiErrors, RightsType
+
+from repository.user_offerer_queries import find_one_or_none_by_offerer_id
 
 
 def check_allowed_changes_for_user(data):
@@ -102,27 +106,28 @@ def check_user_can_validate_bookings(self, offerer_id):
     else:
         return False
 
+
 def check_user_can_validate_v2_bookings(self, offerer_id):
-    if self.is_authenticated:
-        if self.hasRights(RightsType.editor, offerer_id):
-            return True
-        else:
-            api_errors = ApiErrors()
-            api_errors.status_code = 403
-            api_errors.add_error('user', 'Vous n\'avez pas les droits suffisants pour éditer cette contremarque.')
-            raise api_errors
+    if self.hasRights(RightsType.editor, offerer_id):
+        return True
     else:
-        return False
+        api_errors = ApiErrors()
+        api_errors.status_code = 403
+        api_errors.add_error('user', 'Vous n\'avez pas les droits suffisants pour éditer cette contremarque.')
+        raise api_errors
 
 
-def check_user_with_api_key_can_validate_bookings(user_with_api_key: str, offerer_id: str):
-    if user_with_api_key:
-        if user_with_api_key.offererId == offerer_id:
-                return True
-        else:
-            api_errors = ApiErrors()
-            api_errors.status_code = 403
-            api_errors.add_error('user', 'Vous n\'avez pas les droits suffisants pour éditer cette contremarque.')
-            raise api_errors
+def check_user_with_api_key_can_validate_bookings(valid_api_key: str, offerer_id: int):
+    user_offerer = find_one_or_none_by_offerer_id(offerer_id)
+    user_offerer_has_editor_right = check_user_offerer_has_rights(RightsType.editor, user_offerer)
+
+    if valid_api_key.offererId == offerer_id and user_offerer_has_editor_right:
+        return True
     else:
-        return False
+        api_errors = ApiErrors()
+        api_errors.status_code = 403
+        api_errors.add_error('user', 'Vous n\'avez pas les droits suffisants pour éditer cette contremarque.')
+        raise api_errors
+
+def check_user_offerer_has_rights(rights, user_offerer):
+    return user_offerer.rights is rights

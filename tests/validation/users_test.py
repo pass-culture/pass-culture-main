@@ -128,73 +128,108 @@ def test_check_valid_signup_pro_does_not_raise_api_error_if_contact_ok_is_true_h
         # Then
         assert False
 
+class CheckUserCanValidateBookingsTest:
+    class UserHasRightsTest:
+        @clean_database
+        def test_check_user_can_validate_bookings_return_true_when_user_is_authenticated_and_has_editor_rights_on_booking(
+                self, app):
+            # Given
+            user = create_user()
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer, None)
+            PcObject.save(user, offerer, user_offerer)
 
-def test_check_user_can_validate_bookings_return_false_when_user_is_not_authenticated(app):
-    # Given
-    user = User()
-    user.is_authenticated = False
+            # When
+            result = check_user_can_validate_bookings(user, offerer.id)
 
-    # When
-    result = check_user_can_validate_bookings(user, None)
+            # Then
+            assert result is True
 
-    # Then
-    assert result is False
+        @clean_database
+        def test_check_user_can_validate_bookings_return_true_when_user_has_api_key_and_has_editor_rights_on_booking(
+                self, app):
+            # Given
+            user = create_user()
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer, None)
+
+            PcObject.save(user, offerer, user_offerer)
+
+            validApiKey = ApiKey()
+            validApiKey.value = random_token(64)
+            validApiKey.offererId = offerer.id
+
+            PcObject.save(validApiKey)
+
+            result = check_user_with_api_key_can_validate_bookings(validApiKey, offerer.id)
+
+            # Then
+            assert result is True
+
+        @clean_database
+        def test_check_user_can_validate_v2_bookings_return_true_when_user_has_editor_rights_on_booking(
+                self, app):
+            # Given
+            user = create_user()
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer, None)
+
+            PcObject.save(user, offerer, user_offerer)
+
+            result = check_user_can_validate_v2_bookings(user, offerer.id)
+
+            # Then
+            assert result is True
+
+    class UserHaveNoRights:
+        def test_check_user_can_validate_bookings_return_false_when_user_is_not_authenticated(self, app):
+            # Given
+            user = User()
+            user.is_authenticated = False
+
+            # When
+            result = check_user_can_validate_bookings(user, None)
+
+            # Then
+            assert result is False
 
 
-@clean_database
-def test_check_user_can_validate_bookings_return_true_when_user_is_authenticated_and_has_editor_rights_on_booking(app):
-    # Given
-    user = create_user()
-    offerer = create_offerer()
-    user_offerer = create_user_offerer(user, offerer, None)
-    PcObject.save(user, offerer, user_offerer)
+        def test_check_user_can_validate_bookings_raise_api_error_when_user_is_authenticated_and_does_not_have_editor_rights_on_booking(
+                self, app):
+            # Given
+            user = User()
+            user.is_authenticated = True
 
-    # When
-    result = check_user_can_validate_bookings(user, offerer.id)
+            # When
+            with pytest.raises(ApiErrors) as errors:
+                check_user_can_validate_bookings(user, None)
 
-    # Then
-    assert result is True
+            # Then
+            assert errors.value.errors['global'] == ["Cette contremarque n'a pas été trouvée"]
 
+        def test_check_user_can_validate_v2_bookings_raise_api_error_when_user_is_authenticated_and_does_not_have_editor_rights_on_booking(
+                self, app):
+            # Given
+            user = User()
+            user.is_authenticated = True
 
-def test_check_user_can_validate_bookings_raise_api_error_when_user_is_authenticated_and_does_not_have_editor_rights_on_booking(
-        app):
-    # Given
-    user = User()
-    user.is_authenticated = True
+            # When
+            with pytest.raises(ApiErrors) as errors:
+                check_user_can_validate_v2_bookings(user, None)
 
-    # When
-    with pytest.raises(ApiErrors) as errors:
-        check_user_can_validate_bookings(user, None)
+            # Then
+            assert errors.value.errors['user'] == ["Vous n'avez pas les droits suffisants pour éditer cette contremarque."]
 
-    # Then
-    assert errors.value.errors['global'] == ["Cette contremarque n'a pas été trouvée"]
+        def test_check_user_with_api_key_can_validate_bookings_raise_api_error_when_user_is_authenticated_and_does_not_have_editor_rights_on_booking(
+                self, app):
+            # Given
+            validApiKey = ApiKey()
+            validApiKey.value = random_token(64)
+            validApiKey.offererId = 67
 
+            # When
+            with pytest.raises(ApiErrors) as errors:
+                check_user_with_api_key_can_validate_bookings(validApiKey, None)
 
-
-def test_check_user_can_validate_bookings_raise_api_error_when_user_is_authenticated_and_does_not_have_editor_rights_on_booking_v2(
-        app):
-    # Given
-    user = User()
-    user.is_authenticated = True
-
-    # When
-    with pytest.raises(ApiErrors) as errors:
-        check_user_can_validate_v2_bookings(user, None)
-
-    # Then
-    assert errors.value.errors['user'] == ["Vous n'avez pas les droits suffisants pour éditer cette contremarque."]
-
-
-def test_check_user_with_api_key_can_validate_bookings_raise_api_error_when_user_is_authenticated_and_does_not_have_editor_rights_on_booking(
-        app):
-    # Given
-    apiKey = ApiKey()
-    apiKey.value = random_token(64)
-    apiKey.offererId = 67
-
-    # When
-    with pytest.raises(ApiErrors) as errors:
-        check_user_with_api_key_can_validate_bookings(apiKey, None)
-
-    # Then
-    assert errors.value.errors['user'] == ["Vous n'avez pas les droits suffisants pour éditer cette contremarque."]
+            # Then
+            assert errors.value.errors['user'] == ["Vous n'avez pas les droits suffisants pour éditer cette contremarque."]

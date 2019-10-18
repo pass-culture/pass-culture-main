@@ -236,32 +236,34 @@ def get_booking_by_token(token):
 @app.route('/v2/bookings/token/<token>', methods=["GET"])
 @login_or_api_key_required_v2
 def get_booking_by_token_v2(token):
-    app_authorization_api_key = None
     authorization_header = request.headers.get('Authorization', None)
-    if authorization_header:
+    current_user_can_validate_booking = False
+    user_with_api_key_can_validate_booking = False
+
+    if authorization_header and 'Bearer' in authorization_header:
         app_authorization_api_key = authorization_header.replace("Bearer ", "")
+    else:
+        app_authorization_api_key = None
 
     check_user_is_logged_in_or_api_key_is_provided(current_user, app_authorization_api_key)
-
     valid_api_key = find_api_key_by_value(app_authorization_api_key)
 
     booking_token_upper_case = token.upper()
     booking = booking_queries.find_by(booking_token_upper_case)
-
     check_booking_is_usable(booking)
 
     offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
 
-    if current_user:
+    if current_user and current_user.is_authenticated:
         current_user_can_validate_booking = check_user_can_validate_v2_bookings(current_user, offerer_id)
 
     if valid_api_key:
         user_with_api_key_can_validate_booking = check_user_with_api_key_can_validate_bookings(valid_api_key, offerer_id)
 
-    if current_user_can_validate_booking or user_with_api_key_can_validate_booking:
-        response = _create_response_to_get_booking_by_token(booking)
-        return jsonify(response), 200
+    payload = jsonify()
 
+    if current_user_can_validate_booking or user_with_api_key_can_validate_booking:
+        return payload, 204, {'Content-Type': 'application/json'}
 
 @app.route('/bookings/token/<token>', methods=["PATCH"])
 def patch_booking_by_token(token):
