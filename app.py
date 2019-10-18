@@ -43,7 +43,6 @@ app.config['REMEMBER_COOKIE_DURATION'] = 90 * 24 * 3600
 app.config['PERMANENT_SESSION_LIFETIME'] = 90 * 24 * 3600
 app.config['FLASK_ADMIN_SWATCH'] = 'flatly'
 app.config['FLASK_ADMIN_FLUID_LAYOUT'] = True
-app.config['SQLALCHEMY_ECHO'] = True
 
 
 @app.teardown_request

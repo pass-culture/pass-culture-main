@@ -90,9 +90,6 @@ def get_active_offers(departement_codes=None, offer_id=None, limit=None,
     query = query.order_by(_round_robin_by_type_onlineness_and_criteria(order_by))
 
     query = query.options(joinedload('mediations'),
-                          joinedload('stocks'),
-                          joinedload('stocks.bookings'),
-                          joinedload('venue'),
                           joinedload('product'))
 
     if limit:
