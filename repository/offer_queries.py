@@ -20,6 +20,7 @@ from models import Booking, \
     ThingType, \
     Venue, \
     Product
+from models.db import Model
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from utils.distance import get_sql_geo_distance_in_kilometers
 from utils.logger import logger
@@ -154,33 +155,31 @@ def _build_has_active_mediation_predicate():
 
 
 def _date_interval_to_filter(date_interval):
-    return ((Stock.beginningDatetime >= date_interval[0]) & \
+    return ((Stock.beginningDatetime >= date_interval[0]) &
             (Stock.beginningDatetime <= date_interval[1]))
 
 
-def filter_offers_with_keywords_string(query: BaseQuery, keywords_string):
-    get_filter_matching_ts_query_for_offer = create_get_filter_matching_ts_query_in_any_model(Offer)
-    offer_keywords_filter = create_filter_matching_all_keywords_in_any_model(
-        get_filter_matching_ts_query_for_offer, keywords_string
+def filter_offers_with_keywords_string(query: BaseQuery, keywords_string: str) -> BaseQuery:
+    query_on_offer_using_keywords = _build_query_using_keywords_on_model(keywords_string, query, Offer)
+    query_on_offer_using_keywords = _order_by_offer_name_containing_keyword_string(keywords_string,
+                                                                                   query_on_offer_using_keywords)
+
+    query_on_venue_using_keywords = _build_query_using_keywords_on_model(keywords_string, query, Venue)
+
+    query_on_offerer_using_keywords = _build_query_using_keywords_on_model(keywords_string, query, Offerer)
+
+    return query_on_offer_using_keywords.union_all(
+        query_on_venue_using_keywords,
+        query_on_offerer_using_keywords
     )
-    query1 = query.filter(offer_keywords_filter)
-    query1 = _order_by_offer_name_containing_keyword_string(keywords_string, query1)
 
-    get_filter_matching_ts_query_for_venue = create_get_filter_matching_ts_query_in_any_model(Venue)
-    venue_keywords_filter = create_filter_matching_all_keywords_in_any_model(
-        get_filter_matching_ts_query_for_venue, keywords_string
+
+def _build_query_using_keywords_on_model(keywords_string: str, query: BaseQuery, model: Model) -> BaseQuery:
+    text_search_filters_on_model = create_get_filter_matching_ts_query_in_any_model(model)
+    model_keywords_filter = create_filter_matching_all_keywords_in_any_model(
+        text_search_filters_on_model, keywords_string
     )
-    query2 = query.filter(venue_keywords_filter)
-
-    get_filter_matching_ts_query_for_offerer = create_get_filter_matching_ts_query_in_any_model(Offerer)
-    offerer_keywords_filter = create_filter_matching_all_keywords_in_any_model(
-        get_filter_matching_ts_query_for_offerer, keywords_string
-    )
-    query3 = query.filter(offerer_keywords_filter)
-
-    query = query1.union_all(query2, query3)
-
-    return query
+    return query.filter(model_keywords_filter)
 
 
 def _order_by_offer_name_containing_keyword_string(keywords_string: str, query: Query) -> Query:
