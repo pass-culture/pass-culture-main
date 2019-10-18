@@ -14,7 +14,7 @@ from tests.test_utils import create_event_occurrence, \
     create_offer_with_thing_product, \
     create_user, \
     create_venue, \
-    create_stock_with_thing_offer
+    create_stock_with_thing_offer, create_booking
 from utils.human_ids import humanize
 from utils.tutorials import upsert_tuto_mediations
 
@@ -946,3 +946,26 @@ class Put:
             stocks_response = recommendation['offer']['stocks']
             assert len(stocks_response) == 2
             assert all('isBookable' in stocks_response[i] for i in range(0, len(stocks_response)))
+
+
+        @clean_database
+        def when_user_has_bookings_on_recommended_offers(self, app):
+            # given
+            user = create_user(departement_code='93', can_book_free_offers=True, is_admin=False)
+            offerer = create_offerer()
+            venue = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
+            thing_offer = create_offer_with_thing_product(venue, thing_name='thing 93', url=None, is_national=False)
+            stock = create_stock_from_offer(thing_offer, price=0)
+            booking = create_booking(user, stock, venue)
+            PcObject.save(booking)
+            booking_id = booking.id
+
+            # when
+            response = TestClient(app.test_client()).with_auth(user.email) \
+                .put(RECOMMENDATION_URL, json={'readRecommendations': []})
+
+            # then
+            assert response.status_code == 200
+            recommendation_response = response.json[0]
+            assert 'bookings' in recommendation_response
+            assert recommendation_response['bookings'][0]['id'] == humanize(booking_id)

@@ -3,7 +3,7 @@ from flask_login import current_user, login_required
 
 from domain.build_recommendations import move_requested_recommendation_first, \
     move_tutorial_recommendations_first
-from models import PcObject, Recommendation
+from models import PcObject, Recommendation, Booking, Stock, Offer
 from models.api_errors import ResourceNotFoundError
 from recommendations_engine import create_recommendations_for_discovery, \
     create_recommendations_for_search, \
@@ -122,17 +122,25 @@ def put_recommendations():
 
 
 def _serialize_recommendations(recos):
-    return list(map(_serialize_recommendation, recos))
+    offer_types = ['ThingType.ACTIVATION', 'EventType.ACTIVATION']
+
+    bookings = Booking.query \
+        .filter_by(userId=current_user.id) \
+        .join(Stock) \
+        .join(Offer) \
+        .distinct(Booking.stockId) \
+        .filter(~Offer.type.in_(offer_types)) \
+        .order_by(Booking.stockId, Booking.isCancelled, Booking.dateCreated.desc()) \
+        .all()
+    serialized_recommendations = list(map(_serialize_recommendation, recos))
+    for sr in serialized_recommendations:
+        bookings_for_recommendation = [b for b in bookings if b.stock.offerId == dehumanize(sr["offerId"])]
+        sr['bookings'] = _serialize_bookings(bookings_for_recommendation)
+    return serialized_recommendations
 
 
 def _serialize_recommendation(reco):
     dict_reco = as_dict(reco, includes=RECOMMENDATION_INCLUDES)
-
-    if reco.offer:
-        bookings = booking_queries.find_from_recommendation(
-            reco, current_user)
-        dict_reco['bookings'] = _serialize_bookings(bookings)
-
     return dict_reco
 
 
