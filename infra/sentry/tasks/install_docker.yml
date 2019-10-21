@@ -45,6 +45,10 @@
   pip:
     name: docker-compose
 
+- name: Install docker to use docker_compose module
+  pip:
+    name: docker
+
 - name: Check docker-compose
   command: "docker-compose --version"
   changed_when: false
