@@ -1,11 +1,10 @@
 import os
 import re
-from io import BytesIO
 from typing import Callable, Optional
 
 import requests
 
-from domain.mediations import compute_dominant_color
+from domain.mediations import BLACK
 from models import Product, PcObject
 from utils.human_ids import dehumanize
 from utils.logger import logger
@@ -58,12 +57,6 @@ def process_file(file_path: str, _process_product_thumb: Callable = process_prod
         _process_product_thumb(uri=line)
 
 
-def _get_first_thumb_dominant_color_from_image(image: bytes) -> bytes:
-    bytes_img = BytesIO(image)
-    first_thumb_dominant_color = compute_dominant_color(bytes_img.read())
-    return first_thumb_dominant_color
-
-
 def _compute_product_id_from_uri(uri: str) -> int:
     last_uri_chunk = uri.split('/')[-1]
     characters_after_underscore = r'_[^_]+$'
@@ -74,5 +67,5 @@ def _compute_product_id_from_uri(uri: str) -> int:
 def _update_product_thumb(product: Product, product_thumb: bytes):
     product.thumbCount += 1
     if product_thumb:
-        product.firstThumbDominantColor = _get_first_thumb_dominant_color_from_image(product_thumb)
+        product.firstThumbDominantColor = BLACK
     PcObject.save(product)

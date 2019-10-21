@@ -2,7 +2,7 @@ from typing import Callable
 
 import requests
 
-from domain.mediations import DO_NOT_CROP, standardize_image, compute_dominant_color
+from domain.mediations import DO_NOT_CROP, standardize_image, BLACK
 from models import ApiErrors
 from models.pc_object import PcObject
 from utils.logger import logger
@@ -54,7 +54,7 @@ def save_thumb(
         if dominant_color:
             model_with_thumb.firstThumbDominantColor = dominant_color
         else:
-            model_with_thumb.firstThumbDominantColor = compute_dominant_color(new_thumb)
+            model_with_thumb.firstThumbDominantColor = BLACK
 
     store_thumb(
         'thumbs',

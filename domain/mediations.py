@@ -3,10 +3,8 @@ from typing import List
 
 import PIL
 from PIL.Image import Image
-from colorthief import ColorThief
 
 from models import Mediation, User
-from utils.logger import logger
 
 MAX_THUMB_WIDTH = 750
 CONVERSION_QUALITY = 90
@@ -20,18 +18,6 @@ def standardize_image(image: bytes, crop_params: List) -> bytes:
     resized_image = _resize_image(cropped_image)
     standard_image = _convert_to_jpeg(resized_image)
     return standard_image
-
-
-def compute_dominant_color(thumb: bytes) -> bytes:
-    thumb_bytes = io.BytesIO(thumb)
-    thumb_color_theft = ColorThief(thumb_bytes)
-    dominant_color = bytearray(thumb_color_theft.get_color(quality=1))
-
-    if dominant_color is None:
-        logger.warning('Warning: could not determine dominant_color for thumb')
-        return BLACK
-    else:
-        return dominant_color
 
 
 def create_new_mediation(offer_id: int, offerer_id: int, user: User, credit: str) -> Mediation:
