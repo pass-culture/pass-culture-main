@@ -11,6 +11,7 @@ from tests.test_utils import create_recommendation
 
 ACTIVE_OFFERS_WITH_RECOMMENDATION_PER_USER_REMOVE_MODULO = 2
 
+
 def create_industrial_recommendations(mediations_by_name, offers_by_name, users_by_name):
     logger.info('create_industrial_recommendations')
 
@@ -19,12 +20,6 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
     first_mediation = Mediation.query.filter_by(tutoIndex=0).one()
     second_mediation = Mediation.query.filter_by(tutoIndex=1).one()
     tuto_mediations = [first_mediation, second_mediation]
-
-    activation_mediation_items = [
-        mediation_item
-        for mediation_item in mediations_by_name.items()
-        if mediation_item[1].offer.product.offerType['value'] == str(EventType.ACTIVATION)
-    ]
 
     for (user_name, user) in users_by_name.items():
 
@@ -42,16 +37,8 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
                 user_name
             )
             recommendations_by_name[recommendation_name] = \
-                create_recommendation(user=user, mediation=tuto_mediation, date_read="2018-12-17T15:59:11.689Z")
-
-        (activation_mediation_name, mediation) = activation_mediation_items[0]
-
-        activation_recommendation_name = '{} / {}'.format(
-            activation_mediation_name,
-            user_name
-        )
-        recommendations_by_name[activation_recommendation_name] = \
-            create_recommendation(offer=mediation.offer, user=user, mediation=mediation, is_clicked=True)
+                create_recommendation(
+                    user=user, mediation=tuto_mediation, date_read="2018-12-17T15:59:11.689Z")
 
         user_has_recommendation_on_something_else_than_activation_offers = any([
             user_tag in user_name
@@ -98,7 +85,8 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
                 mediation = None
 
             recommendations_by_name[recommendation_name] = \
-                create_recommendation(offer=offer, user=user, mediation=mediation)
+                create_recommendation(
+                    offer=offer, user=user, mediation=mediation)
 
     PcObject.save(*recommendations_by_name.values())
 
@@ -112,6 +100,7 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
                     offer.product.type
                 )
 
-    logger.info('created {} recommendations'.format(len(recommendations_by_name)))
+    logger.info('created {} recommendations'.format(
+        len(recommendations_by_name)))
 
     return recommendations_by_name

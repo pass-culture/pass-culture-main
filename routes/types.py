@@ -7,4 +7,4 @@ from domain.types import get_formatted_active_product_types
 @app.route('/types', methods=['GET'])
 @login_required
 def list_types():
-    return jsonify(get_formatted_active_product_types(with_activation_type=current_user.isAdmin)), 200
+    return jsonify(get_formatted_active_product_types()), 200

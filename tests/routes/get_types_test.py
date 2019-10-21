@@ -40,7 +40,8 @@ class Get:
         @clean_database
         def when_user_is_admin(self, app):
             # given
-            admin_user = create_user(email='pctest.admin93.0@btmx.fr', can_book_free_offers=False, is_admin=True)
+            admin_user = create_user(
+                email='pctest.admin93.0@btmx.fr', can_book_free_offers=False, is_admin=True)
             PcObject.save(admin_user)
 
             # when
@@ -53,8 +54,8 @@ class Get:
             # then
             assert response.status_code == 200
             types_values = [type['value'] for type in types]
-            assert 'ThingType.ACTIVATION' in types_values
-            assert 'EventType.ACTIVATION' in types_values
+            assert 'ThingType.ACTIVATION' not in types_values
+            assert 'EventType.ACTIVATION' not in types_values
 
         @clean_database
         def when_user_returns_types_labels(self, app):

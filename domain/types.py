@@ -3,7 +3,7 @@ from typing import List
 from models.offer_type import EventType, ThingType
 
 
-def get_formatted_active_product_types(with_activation_type=False) -> List:
+def get_formatted_active_product_types() -> List:
     active_event_format_types = [
         type_obj.as_dict() for type_obj in EventType
         if type_obj.value['isActive']
@@ -14,8 +14,8 @@ def get_formatted_active_product_types(with_activation_type=False) -> List:
     ]
     all_active_types = active_event_format_types + active_thing_format_types
 
-    if not with_activation_type:
-        all_active_types = filter(lambda t: 'ACTIVATION' not in t['value'], all_active_types)
+    all_active_types = filter(
+        lambda t: 'ACTIVATION' not in t['value'], all_active_types)
 
     return list(all_active_types)
 
