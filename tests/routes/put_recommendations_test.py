@@ -328,7 +328,7 @@ class Put:
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email) \
-                                                    .put(RECOMMENDATION_URL, json={})
+                .put(RECOMMENDATION_URL, json={})
 
             # Then
             recommendations = response.json
@@ -947,16 +947,16 @@ class Put:
             assert len(stocks_response) == 2
             assert all('isBookable' in stocks_response[i] for i in range(0, len(stocks_response)))
 
-
         @clean_database
         def when_user_has_bookings_on_recommended_offers(self, app):
             # given
             user = create_user(departement_code='93', can_book_free_offers=True, is_admin=False)
             offerer = create_offerer()
             venue = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
-            thing_offer = create_offer_with_thing_product(venue, thing_name='thing 93', url=None, is_national=False)
-            stock = create_stock_from_offer(thing_offer, price=0)
+            offer = create_offer_with_thing_product(venue, thing_name='thing 93', url=None, is_national=False)
+            stock = create_stock_from_offer(offer, price=0)
             booking = create_booking(user, stock, venue)
+            create_mediation(offer)
             PcObject.save(booking)
             booking_id = booking.id
 

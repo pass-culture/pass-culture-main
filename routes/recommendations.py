@@ -3,21 +3,17 @@ from flask_login import current_user, login_required
 
 from domain.build_recommendations import move_requested_recommendation_first, \
     move_tutorial_recommendations_first
-from models import PcObject, Recommendation, Booking, Stock, Offer
-from models.api_errors import ResourceNotFoundError
+from models import PcObject, Recommendation
 from recommendations_engine import create_recommendations_for_discovery, \
     create_recommendations_for_search, \
     get_recommendation_search_params, \
     give_requested_recommendation_to_user
-from repository import booking_queries
 from repository.recommendation_queries import update_read_recommendations
-from routes.serialization import as_dict
+from routes.serialization.recommendation_serialize import serialize_recommendations, serialize_recommendation
 from utils.config import BLOB_SIZE
 from utils.human_ids import dehumanize
-from utils.includes import WEBAPP_GET_BOOKING_INCLUDES, RECOMMENDATION_INCLUDES
 from utils.logger import logger
 from utils.rest import expect_json_data
-import json
 
 
 @app.route('/recommendations', methods=['GET'])
@@ -28,7 +24,7 @@ def list_recommendations():
         current_user,
         **search_params
     )
-    return jsonify(_serialize_recommendations(recommendations)), 200
+    return jsonify(serialize_recommendations(recommendations, current_user)), 200
 
 
 @app.route('/recommendations/offers/<offer_id>', methods=['GET'])
@@ -40,7 +36,7 @@ def get_recommendation(offer_id):
         dehumanize(request.args.get('mediationId'))
     )
 
-    return jsonify(_serialize_recommendation(recommendation)), 200
+    return jsonify(serialize_recommendation(recommendation, current_user)), 200
 
 
 @app.route('/recommendations/<recommendation_id>', methods=['PATCH'])
@@ -51,7 +47,7 @@ def patch_recommendation(recommendation_id):
     recommendation = query.first_or_404()
     recommendation.populate_from_dict(request.json)
     PcObject.save(recommendation)
-    return jsonify(_serialize_recommendation(recommendation)), 200
+    return jsonify(serialize_recommendation(recommendation, current_user)), 200
 
 
 @app.route('/recommendations/read', methods=['PUT'])
@@ -65,7 +61,7 @@ def put_read_recommendations():
         Recommendation.id.in_(read_recommendation_ids)
     ).all()
 
-    return jsonify(_serialize_recommendations(read_recommendations)), 200
+    return jsonify(serialize_recommendations(read_recommendations, current_user)), 200
 
 
 @app.route('/recommendations', methods=['PUT'])
@@ -95,13 +91,12 @@ def put_recommendations():
     )
 
     logger.debug(lambda: '(special) requested_recommendation %s' %
-                 requested_recommendation)
+                         requested_recommendation)
 
     created_recommendations = create_recommendations_for_discovery(
         BLOB_SIZE,
         user=current_user
     )
-
     logger.debug(lambda: '(new recos)' + str([(reco, reco.mediation, reco.dateRead)
                                               for reco in created_recommendations]))
     logger.debug(lambda: '(new reco) count %i', len(created_recommendations))
@@ -118,35 +113,4 @@ def put_recommendations():
                                 for reco in recommendations])
                          + str(len(recommendations)))
 
-    return jsonify(_serialize_recommendations(recommendations)), 200
-
-
-def _serialize_recommendations(recos):
-    offer_types = ['ThingType.ACTIVATION', 'EventType.ACTIVATION']
-
-    bookings = Booking.query \
-        .filter_by(userId=current_user.id) \
-        .join(Stock) \
-        .join(Offer) \
-        .distinct(Booking.stockId) \
-        .filter(~Offer.type.in_(offer_types)) \
-        .order_by(Booking.stockId, Booking.isCancelled, Booking.dateCreated.desc()) \
-        .all()
-    serialized_recommendations = list(map(_serialize_recommendation, recos))
-    for sr in serialized_recommendations:
-        bookings_for_recommendation = [b for b in bookings if b.stock.offerId == dehumanize(sr["offerId"])]
-        sr['bookings'] = _serialize_bookings(bookings_for_recommendation)
-    return serialized_recommendations
-
-
-def _serialize_recommendation(reco):
-    dict_reco = as_dict(reco, includes=RECOMMENDATION_INCLUDES)
-    return dict_reco
-
-
-def _serialize_bookings(bookings):
-    return list(map(_serialize_booking, bookings))
-
-
-def _serialize_booking(booking):
-    return as_dict(booking, includes=WEBAPP_GET_BOOKING_INCLUDES)
+    return jsonify(serialize_recommendations(recommendations, current_user)), 200

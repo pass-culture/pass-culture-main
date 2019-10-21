@@ -555,7 +555,7 @@ def create_event_occurrence(
     return event_occurrence
 
 
-def create_mediation(offer, author=None, date_created=datetime.utcnow(), front_text='Some front text',
+def create_mediation(offer=None, author=None, date_created=datetime.utcnow(), front_text='Some front text',
                      back_text='Some back test', is_active=True, tuto_index=None):
     mediation = Mediation()
     mediation.offer = offer
