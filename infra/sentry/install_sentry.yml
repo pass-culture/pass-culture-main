@@ -52,6 +52,10 @@
       tags:
         - 'sentry'
 
+    - import_tasks: tasks/install_nginx.yml
+      tags:
+        - 'nginx'
+#
 #    - name: Configure administrator account
 #      expect:
 #        command: docker-compose run --rm web createuser
