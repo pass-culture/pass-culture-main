@@ -117,7 +117,8 @@ class Booking(PcObject, Model, VersionedMixin):
         if self.stock.beginningDatetime:
             event_start_time_is_over = self.stock.beginningDatetime <= datetime.utcnow()
             return event_start_time_is_over
-        else:
+        else\
+                :
             return False
 
     CSV_HEADER = [
@@ -127,6 +128,7 @@ class Booking(PcObject, Model, VersionedMixin):
         "Prénom utilisateur",
         "E-mail utilisateur",
         "Date de la réservation",
+        "Quantité",
         "Tarif pass Culture",
         "Statut",
     ]
@@ -150,6 +152,7 @@ class Booking(PcObject, Model, VersionedMixin):
             self.user.firstName,
             self.user.email,
             self.dateCreated,
+            self.quantity,
             format_decimal(self.amount),
             self.statusLabel
         ]

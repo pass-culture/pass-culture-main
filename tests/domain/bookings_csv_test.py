@@ -27,7 +27,7 @@ class BookingsCSVTest:
 
         # then
         assert _get_header(
-            csv) == 'Raison sociale du lieu;Nom de l\'offre;Nom utilisateur;Prénom utilisateur;E-mail utilisateur;Date de la réservation;Tarif pass Culture;Statut'
+            csv) == 'Raison sociale du lieu;Nom de l\'offre;Nom utilisateur;Prénom utilisateur;E-mail utilisateur;Date de la réservation;Quantité;Tarif pass Culture;Statut'
 
     @clean_database
     def test_generate_bookings_details_csv_with_headers_and_three_bookings_lines(self, app):
@@ -44,7 +44,7 @@ class BookingsCSVTest:
 
         bookings = Booking.query.all()
 
-        expected_line = 'La petite librairie;Test Book;Doe;John;jane.doe@test.com;2010-01-01 00:00:00;12;En attente'
+        expected_line = 'La petite librairie;Test Book;Doe;John;jane.doe@test.com;2010-01-01 00:00:00;1;12;En attente'
 
         # when
         csv = generate_bookings_details_csv(bookings)
