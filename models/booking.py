@@ -117,8 +117,7 @@ class Booking(PcObject, Model, VersionedMixin):
         if self.stock.beginningDatetime:
             event_start_time_is_over = self.stock.beginningDatetime <= datetime.utcnow()
             return event_start_time_is_over
-        else\
-                :
+        else:
             return False
 
     CSV_HEADER = [
