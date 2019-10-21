@@ -601,26 +601,6 @@ elif [[ "$CMD" == "access-db-logs" ]]; then
   source "$INFRA_SCRIPTS_PATH"/access_db_logs.sh
   access_db_logs $SCALINGO_APP
 
-# Connect to Postgresql database in command line using psql
-elif [[ "$CMD" == "psql" ]]; then
-  COLUMNS=${COLUMNS:-''};
-  if [[ "$ENV" == "development" ]]; then
-    RUN='docker exec -it pc-postgres bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pass_culture pass_culture $*"'
-  else
-    scalingo -a "$SCALINGO_APP" pgsql-console
-    exit
-  fi
-
-# Connect to Postgresql test database in command line using psql
-elif [[ "$CMD" == "psql-test" ]]; then
-  COLUMNS=${COLUMNS:-''};
-  if [[ "$ENV" == "development" ]]; then
-    RUN='docker exec -it pc-postgres-pytest bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pytest pass_culture $*"'
-  else
-      echo "Only available in development environment"
-    exit
-  fi
-
 # Connect to Postgresql database in command line using pgcli
 elif [[ "$CMD" == "pgcli" ]]; then
   COLUMNS=${COLUMNS:-''};
@@ -631,7 +611,6 @@ elif [[ "$CMD" == "pgcli" ]]; then
     scalingo -a "$SCALINGO_APP" run 'pgcli $DATABASE_URL'
     exit
   fi
-
 
 # Open a python prompt in the specified environment
 elif [[ "$CMD" == "python" ]]; then
