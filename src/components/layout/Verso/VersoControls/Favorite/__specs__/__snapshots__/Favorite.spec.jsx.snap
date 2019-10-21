@@ -37,14 +37,15 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "host",
     "props": Object {
+      "aria-label": "Retirer des favoris",
       "children": <i
-        aria-hidden="true"
+        aria-hidden={true}
         className="font-icon icon-ico-like-on"
-        title="Retirer des favoris"
       />,
       "className": "fav-button",
       "disabled": true,
       "onClick": [Function],
+      "title": "Retirer des favoris",
       "type": "button",
     },
     "ref": null,
@@ -53,9 +54,8 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "host",
       "props": Object {
-        "aria-hidden": "true",
+        "aria-hidden": true,
         "className": "font-icon icon-ico-like-on",
-        "title": "Retirer des favoris",
       },
       "ref": null,
       "rendered": null,
@@ -69,14 +69,15 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "host",
       "props": Object {
+        "aria-label": "Retirer des favoris",
         "children": <i
-          aria-hidden="true"
+          aria-hidden={true}
           className="font-icon icon-ico-like-on"
-          title="Retirer des favoris"
         />,
         "className": "fav-button",
         "disabled": true,
         "onClick": [Function],
+        "title": "Retirer des favoris",
         "type": "button",
       },
       "ref": null,
@@ -85,9 +86,8 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "aria-hidden": "true",
+          "aria-hidden": true,
           "className": "font-icon icon-ico-like-on",
-          "title": "Retirer des favoris",
         },
         "ref": null,
         "rendered": null,
@@ -163,14 +163,15 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "host",
     "props": Object {
+      "aria-label": "Retirer des favoris",
       "children": <i
-        aria-hidden="true"
+        aria-hidden={true}
         className="font-icon icon-ico-like-on"
-        title="Retirer des favoris"
       />,
       "className": "fav-button",
       "disabled": false,
       "onClick": [Function],
+      "title": "Retirer des favoris",
       "type": "button",
     },
     "ref": null,
@@ -179,9 +180,8 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "host",
       "props": Object {
-        "aria-hidden": "true",
+        "aria-hidden": true,
         "className": "font-icon icon-ico-like-on",
-        "title": "Retirer des favoris",
       },
       "ref": null,
       "rendered": null,
@@ -195,14 +195,15 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "host",
       "props": Object {
+        "aria-label": "Retirer des favoris",
         "children": <i
-          aria-hidden="true"
+          aria-hidden={true}
           className="font-icon icon-ico-like-on"
-          title="Retirer des favoris"
         />,
         "className": "fav-button",
         "disabled": false,
         "onClick": [Function],
+        "title": "Retirer des favoris",
         "type": "button",
       },
       "ref": null,
@@ -211,9 +212,8 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "aria-hidden": "true",
+          "aria-hidden": true,
           "className": "font-icon icon-ico-like-on",
-          "title": "Retirer des favoris",
         },
         "ref": null,
         "rendered": null,
@@ -289,14 +289,15 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "host",
     "props": Object {
+      "aria-label": "Ajouter aux favoris",
       "children": <i
-        aria-hidden="true"
+        aria-hidden={true}
         className="font-icon icon-ico-like"
-        title="Ajouter aux favoris"
       />,
       "className": "fav-button",
       "disabled": false,
       "onClick": [Function],
+      "title": "Ajouter aux favoris",
       "type": "button",
     },
     "ref": null,
@@ -305,9 +306,8 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "host",
       "props": Object {
-        "aria-hidden": "true",
+        "aria-hidden": true,
         "className": "font-icon icon-ico-like",
-        "title": "Ajouter aux favoris",
       },
       "ref": null,
       "rendered": null,
@@ -321,14 +321,15 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "host",
       "props": Object {
+        "aria-label": "Ajouter aux favoris",
         "children": <i
-          aria-hidden="true"
+          aria-hidden={true}
           className="font-icon icon-ico-like"
-          title="Ajouter aux favoris"
         />,
         "className": "fav-button",
         "disabled": false,
         "onClick": [Function],
+        "title": "Ajouter aux favoris",
         "type": "button",
       },
       "ref": null,
@@ -337,9 +338,8 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "aria-hidden": "true",
+          "aria-hidden": true,
           "className": "font-icon icon-ico-like",
-          "title": "Ajouter aux favoris",
         },
         "ref": null,
         "rendered": null,

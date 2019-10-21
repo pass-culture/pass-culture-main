@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | layout | Verso | VersoControls | booking | CancelThisLink | CancelThisLink should match the snapshot 1`] = `
+exports[`src | components | layout | Verso | VersoControls | booking | CancellingAction | CancellingAction when the offer is booking should render a button to cancelling the booking 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <CancelThisLink
+  Symbol(enzyme.__unrendered__): <CancellingAction
     booking={
       Object {
         "id": "AAA",
@@ -12,12 +12,12 @@ ShallowWrapper {
         },
       }
     }
+    cancellingUrl="/reservation/annulation"
     history={
       Object {
         "push": [MockFunction],
       }
     }
-    isNotBookable={false}
     location={
       Object {
         "pathname": "",
@@ -31,7 +31,7 @@ ShallowWrapper {
     }
     offer={Object {}}
     openCancelPopin={[MockFunction]}
-    stock={Object {}}
+    price={20}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -49,25 +49,24 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <span
-          className="pc-ticket-button-price reserved"
+          className="ticket-price ticket-reserved"
         >
           <Price
             className=""
             free="Gratuit"
-            value={null}
+            value={20}
           />
           <i
-            className="icon-ico-check fs24 verso-cancel-booking-button-reserved"
+            className="icon-ico-check ticket-reserved-icon"
           />
         </span>,
         <span
-          className="pc-ticket-button-label"
+          className="ticket-label"
         >
           Annuler
         </span>,
       ],
-      "className": "flex-columns no-background verso-cancel-booking-button",
-      "disabled": false,
+      "className": "ticket-action",
       "onClick": [Function],
       "type": "button",
     },
@@ -82,13 +81,13 @@ ShallowWrapper {
             <Price
               className=""
               free="Gratuit"
-              value={null}
+              value={20}
             />,
             <i
-              className="icon-ico-check fs24 verso-cancel-booking-button-reserved"
+              className="icon-ico-check ticket-reserved-icon"
             />,
           ],
-          "className": "pc-ticket-button-price reserved",
+          "className": "ticket-price ticket-reserved",
         },
         "ref": null,
         "rendered": Array [
@@ -99,7 +98,7 @@ ShallowWrapper {
             "props": Object {
               "className": "",
               "free": "Gratuit",
-              "value": null,
+              "value": 20,
             },
             "ref": null,
             "rendered": null,
@@ -110,7 +109,7 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "className": "icon-ico-check fs24 verso-cancel-booking-button-reserved",
+              "className": "icon-ico-check ticket-reserved-icon",
             },
             "ref": null,
             "rendered": null,
@@ -125,7 +124,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": "Annuler",
-          "className": "pc-ticket-button-label",
+          "className": "ticket-label",
         },
         "ref": null,
         "rendered": "Annuler",
@@ -142,25 +141,24 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <span
-            className="pc-ticket-button-price reserved"
+            className="ticket-price ticket-reserved"
           >
             <Price
               className=""
               free="Gratuit"
-              value={null}
+              value={20}
             />
             <i
-              className="icon-ico-check fs24 verso-cancel-booking-button-reserved"
+              className="icon-ico-check ticket-reserved-icon"
             />
           </span>,
           <span
-            className="pc-ticket-button-label"
+            className="ticket-label"
           >
             Annuler
           </span>,
         ],
-        "className": "flex-columns no-background verso-cancel-booking-button",
-        "disabled": false,
+        "className": "ticket-action",
         "onClick": [Function],
         "type": "button",
       },
@@ -175,13 +173,13 @@ ShallowWrapper {
               <Price
                 className=""
                 free="Gratuit"
-                value={null}
+                value={20}
               />,
               <i
-                className="icon-ico-check fs24 verso-cancel-booking-button-reserved"
+                className="icon-ico-check ticket-reserved-icon"
               />,
             ],
-            "className": "pc-ticket-button-price reserved",
+            "className": "ticket-price ticket-reserved",
           },
           "ref": null,
           "rendered": Array [
@@ -192,7 +190,7 @@ ShallowWrapper {
               "props": Object {
                 "className": "",
                 "free": "Gratuit",
-                "value": null,
+                "value": 20,
               },
               "ref": null,
               "rendered": null,
@@ -203,7 +201,7 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "className": "icon-ico-check fs24 verso-cancel-booking-button-reserved",
+                "className": "icon-ico-check ticket-reserved-icon",
               },
               "ref": null,
               "rendered": null,
@@ -218,7 +216,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": "Annuler",
-            "className": "pc-ticket-button-label",
+            "className": "ticket-label",
           },
           "ref": null,
           "rendered": "Annuler",

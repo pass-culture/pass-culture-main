@@ -1,0 +1,32 @@
+.ticket-action {
+  display: flex;
+}
+
+.ticket-price,
+.ticket-label {
+  border: 2px solid $white;
+  color: $white;
+  font-size: rem(18px);
+  font-weight: 700;
+  padding: rem(8px) rem(12px);
+
+  @media screen and (max-width: $iphone6) {
+    padding: rem(6px);
+  }
+}
+
+.ticket-price {
+  border-right: 0;
+}
+
+.ticket-reserved {
+  border: 0;
+}
+
+.ticket-reserved-icon {
+  font-size: rem(24px);
+}
+
+.ticket-label {
+  border-left-style: dotted;
+}

@@ -42,15 +42,16 @@ class Favorite extends PureComponent {
 
     return (
       <button
+        aria-label={alternativeText(isFavorite)}
         className="fav-button"
         disabled={isFeatureDisabled || isWaitingApi}
         onClick={this.handleFavorite(offerId, mediationId, isFavorite)}
+        title={alternativeText(isFavorite)}
         type="button"
       >
         <i
-          aria-hidden="true"
+          aria-hidden
           className={`font-icon ${iconClass(isFavorite)}`}
-          title={alternativeText(isFavorite)}
         />
       </button>
     )

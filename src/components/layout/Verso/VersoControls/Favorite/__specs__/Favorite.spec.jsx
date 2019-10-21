@@ -61,7 +61,7 @@ describe('src | components | layout | Verso | VersoControls | Favorite | Favorit
       wrapper.find('button').simulate('click')
 
       // then
-      expect(wrapper.find('i').props().title).toBe('Retirer des favoris')
+      expect(wrapper.find('button').props().title).toBe('Retirer des favoris')
     })
   })
 
@@ -75,7 +75,7 @@ describe('src | components | layout | Verso | VersoControls | Favorite | Favorit
       wrapper.find('button').simulate('click')
 
       // then
-      expect(wrapper.find('i').props().title).toBe('Ajouter aux favoris')
+      expect(wrapper.find('button').props().title).toBe('Ajouter aux favoris')
     })
   })
 

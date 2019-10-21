@@ -4,24 +4,36 @@ import { compose } from 'redux'
 import { requestData } from 'redux-thunk-data'
 
 import withTracking from '../../../../../hocs/withTracking'
-import CancelThisLink from './CancelThisLink'
+import CancellingAction from './CancellingAction'
 import PopinButton from './PopinButton'
 import { bookingNormalizer } from '../../../../../../utils/normalizers'
 import { closeSharePopin, openSharePopin } from '../../../../../../reducers/share'
 import selectBookingByRouterMatch from '../../../../../../selectors/selectBookingByRouterMatch'
 import selectOfferByRouterMatch from '../../../../../../selectors/selectOfferByRouterMatch'
 import selectStockById from '../../../../../../selectors/selectStockById'
-import selectIsNotBookableByRouterMatch from '../../../../../../selectors/selectIsNotBookableByRouterMatch'
-import getIsBooked from '../../../../../../helpers/getIsBooked'
+
+export const getCancellingUrl = (bookingId, params, pathname, search) => {
+  let bookingUrl = pathname
+
+  bookingUrl = `${bookingUrl}/reservation`
+
+  if (params.bookingId === undefined) {
+    bookingUrl = `${bookingUrl}/${bookingId}`
+  }
+
+  return `${bookingUrl}/annulation${search}`
+}
 
 export const mapStateToProps = (state, ownProps) => {
-  const { match } = ownProps
+  const { location, match } = ownProps
+  const { pathname, search } = location
   const booking = selectBookingByRouterMatch(state, match)
+  const cancellingUrl = getCancellingUrl(booking.id, match.params, pathname, search)
   const offer = selectOfferByRouterMatch(state, match)
-  const isNotBookable = selectIsNotBookableByRouterMatch(state, match) && !getIsBooked(booking)
   const stock = selectStockById(state, booking.stockId)
+  const price = stock.price
 
-  return { booking, isNotBookable, offer, stock }
+  return { booking, cancellingUrl, offer, price }
 }
 
 export const mapDispatchToProps = (dispatch, ownProps) => {
@@ -44,9 +56,8 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
     const options = {
       buttons: [
         PopinButton({
-          id: 'popin-cancel-booking-fail-ok',
+          action: handleClosePopin,
           label: 'OK',
-          onClick: handleClosePopin,
         }),
       ],
       text: message.join('\n'),
@@ -80,19 +91,17 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
       const options = {
         buttons: [
           PopinButton({
-            id: 'popin-cancel-booking-yes',
+            action: () => requestPatchBooking(bookingId, offerId),
             label: 'Oui',
-            onClick: () => requestPatchBooking(bookingId, offerId),
           }),
           PopinButton({
-            id: 'popin-cancel-booking-no',
+            action: handleClosePopin,
             label: 'Non',
-            onClick: handleClosePopin,
           }),
         ],
         handleClose: () => history.push(`${pathname.split('/reservation/')[0]}${search}`),
         text: 'Souhaitez-vous réellement annuler cette réservation ?',
-        offerName,
+        title: offerName,
       }
       dispatch(openSharePopin(options))
     },
@@ -106,4 +115,4 @@ export default compose(
     mapStateToProps,
     mapDispatchToProps
   )
-)(CancelThisLink)
+)(CancellingAction)

@@ -60,7 +60,7 @@ ShallowWrapper {
               C’est par là
             </span>
             <span
-              aria-hidden="true"
+              aria-hidden={true}
               className="pc-icon icon-legacy-next-long"
               title="C’est par là"
             />
@@ -200,7 +200,7 @@ ShallowWrapper {
               C’est par là
             </span>
             <span
-              aria-hidden="true"
+              aria-hidden={true}
               className="pc-icon icon-legacy-next-long"
               title="C’est par là"
             />
@@ -220,7 +220,7 @@ ShallowWrapper {
                 C’est par là
               </span>,
               <span
-                aria-hidden="true"
+                aria-hidden={true}
                 className="pc-icon icon-legacy-next-long"
                 title="C’est par là"
               />,
@@ -249,7 +249,7 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "aria-hidden": "true",
+                "aria-hidden": true,
                 "className": "pc-icon icon-legacy-next-long",
                 "title": "C’est par là",
               },
@@ -313,7 +313,7 @@ ShallowWrapper {
                 C’est par là
               </span>
               <span
-                aria-hidden="true"
+                aria-hidden={true}
                 className="pc-icon icon-legacy-next-long"
                 title="C’est par là"
               />
@@ -453,7 +453,7 @@ ShallowWrapper {
                 C’est par là
               </span>
               <span
-                aria-hidden="true"
+                aria-hidden={true}
                 className="pc-icon icon-legacy-next-long"
                 title="C’est par là"
               />
@@ -473,7 +473,7 @@ ShallowWrapper {
                   C’est par là
                 </span>,
                 <span
-                  aria-hidden="true"
+                  aria-hidden={true}
                   className="pc-icon icon-legacy-next-long"
                   title="C’est par là"
                 />,
@@ -502,7 +502,7 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "aria-hidden": "true",
+                  "aria-hidden": true,
                   "className": "pc-icon icon-legacy-next-long",
                   "title": "C’est par là",
                 },

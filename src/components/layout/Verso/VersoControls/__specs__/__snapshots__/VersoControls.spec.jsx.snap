@@ -33,7 +33,7 @@ ShallowWrapper {
           <withRouter(WithTracking(Connect(ShareButton))) />
         </li>
         <li>
-          <withRouter(WithTracking(Connect(CancelThisLink))) />
+          <withRouter(WithTracking(Connect(CancellingAction))) />
         </li>
       </ul>,
     },
@@ -54,7 +54,7 @@ ShallowWrapper {
             <withRouter(WithTracking(Connect(ShareButton))) />
           </li>,
           <li>
-            <withRouter(WithTracking(Connect(CancelThisLink))) />
+            <withRouter(WithTracking(Connect(CancellingAction))) />
           </li>,
         ],
         "className": "verso-controls",
@@ -123,7 +123,7 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": <withRouter(WithTracking(Connect(CancelThisLink))) />,
+            "children": <withRouter(WithTracking(Connect(CancellingAction))) />,
           },
           "ref": null,
           "rendered": Object {
@@ -161,7 +161,7 @@ ShallowWrapper {
             <withRouter(WithTracking(Connect(ShareButton))) />
           </li>
           <li>
-            <withRouter(WithTracking(Connect(CancelThisLink))) />
+            <withRouter(WithTracking(Connect(CancellingAction))) />
           </li>
         </ul>,
       },
@@ -182,7 +182,7 @@ ShallowWrapper {
               <withRouter(WithTracking(Connect(ShareButton))) />
             </li>,
             <li>
-              <withRouter(WithTracking(Connect(CancelThisLink))) />
+              <withRouter(WithTracking(Connect(CancellingAction))) />
             </li>,
           ],
           "className": "verso-controls",
@@ -251,7 +251,7 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": <withRouter(WithTracking(Connect(CancelThisLink))) />,
+              "children": <withRouter(WithTracking(Connect(CancellingAction))) />,
             },
             "ref": null,
             "rendered": Object {
@@ -333,7 +333,7 @@ ShallowWrapper {
           <withRouter(WithTracking(Connect(ShareButton))) />
         </li>
         <li>
-          <withRouter(Connect(BookThisLink)) />
+          <withRouter(Connect(BookingAction)) />
         </li>
       </ul>,
     },
@@ -354,7 +354,7 @@ ShallowWrapper {
             <withRouter(WithTracking(Connect(ShareButton))) />
           </li>,
           <li>
-            <withRouter(Connect(BookThisLink)) />
+            <withRouter(Connect(BookingAction)) />
           </li>,
         ],
         "className": "verso-controls",
@@ -423,7 +423,7 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": <withRouter(Connect(BookThisLink)) />,
+            "children": <withRouter(Connect(BookingAction)) />,
           },
           "ref": null,
           "rendered": Object {
@@ -461,7 +461,7 @@ ShallowWrapper {
             <withRouter(WithTracking(Connect(ShareButton))) />
           </li>
           <li>
-            <withRouter(Connect(BookThisLink)) />
+            <withRouter(Connect(BookingAction)) />
           </li>
         </ul>,
       },
@@ -482,7 +482,7 @@ ShallowWrapper {
               <withRouter(WithTracking(Connect(ShareButton))) />
             </li>,
             <li>
-              <withRouter(Connect(BookThisLink)) />
+              <withRouter(Connect(BookingAction)) />
             </li>,
           ],
           "className": "verso-controls",
@@ -551,7 +551,7 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": <withRouter(Connect(BookThisLink)) />,
+              "children": <withRouter(Connect(BookingAction)) />,
             },
             "ref": null,
             "rendered": Object {

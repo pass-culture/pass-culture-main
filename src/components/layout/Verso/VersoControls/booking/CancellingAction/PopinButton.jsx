@@ -1,12 +1,11 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-const PopinButton = ({ label, id, onClick }) => (
+const PopinButton = ({ action, label }) => (
   <button
-    className="no-background py12 is-bold fs14"
-    id={id}
+    className="popin-button"
     key={label}
-    onClick={onClick}
+    onClick={action}
     type="button"
   >
     {label}
@@ -14,9 +13,8 @@ const PopinButton = ({ label, id, onClick }) => (
 )
 
 PopinButton.propTypes = {
-  id: PropTypes.string.isRequired,
+  action: PropTypes.func.isRequired,
   label: PropTypes.string.isRequired,
-  onClick: PropTypes.func.isRequired,
 }
 
 export default PopinButton

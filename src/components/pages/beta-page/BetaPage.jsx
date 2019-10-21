@@ -21,7 +21,7 @@ export const BetaPage = () => (
       >
         <span className="fs32 is-italic is-semi-bold">{'C’est par là'}</span>
         <span
-          aria-hidden="true"
+          aria-hidden
           className="pc-icon icon-legacy-next-long"
           title="C’est par là"
         />

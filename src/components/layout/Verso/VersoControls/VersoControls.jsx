@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import BookThisLinkContainer from './booking/BookThisLink/BookThisLinkContainer'
-import CancelThisLinkContainer from './booking/CancelThisLink/CancelThisLinkContainer'
+import BookingActionContainer from './booking/BookingAction/BookingActionContainer'
+import CancellingActionContainer from './booking/CancellingAction/CancellingActionContainer'
 import FavoriteContainer from './Favorite/FavoriteContainer'
 import WalletContainer from './Wallet/WalletContainer'
 import FinishableContainer from '../../Finishable/FinishableContainer'
@@ -20,7 +20,7 @@ const VersoControls = ({ isBooked }) => (
       <li>
         <ShareButtonContainer />
       </li>
-      <li>{isBooked ? <CancelThisLinkContainer /> : <BookThisLinkContainer />}</li>
+      <li>{isBooked ? <CancellingActionContainer /> : <BookingActionContainer />}</li>
     </ul>
   </FinishableContainer>
 )

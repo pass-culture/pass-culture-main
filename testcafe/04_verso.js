@@ -3,29 +3,24 @@ import { Selector } from 'testcafe'
 import { fetchSandbox } from './helpers/sandboxes'
 import createUserRoleFromUserSandbox from './helpers/createUserRoleFromUserSandbox'
 import getPageUrl from './helpers/getPageUrl'
-
 import { ROOT_PATH } from '../src/utils/config'
 import getMenuWalletValue from './helpers/getMenuWalletValue'
 
 const discoverURL = `${ROOT_PATH}decouverte`
 const bookingsDetailsURL = `${ROOT_PATH}reservations/details`
-
 const openVersoButton = Selector('#deck-open-verso-button')
-
 const openDeckMenu = Selector('#deck-footer .profile-button')
 const sendBookingButton = Selector('#booking-validation-button')
 const alreadyBookedOfferButton = Selector('#verso-already-booked-button')
-const bookOfferButton = Selector('#verso-booking-button')
-
+const bookOfferButton = Selector('button').withText('J’y vais !')
 const bookingToken = Selector('#booking-booked-token')
 const bookingSuccessButton = Selector('#booking-success-ok-button')
-const checkReversedIcon = Selector('.verso-cancel-booking-button-reserved')
+const checkReversedIcon = Selector('.ticket-reserved-icon')
 const closeMenu = Selector('#main-menu-fixed-container .close-link')
 const openMenuFromVerso = Selector('#verso-footer .profile-button')
 const bookingErrorReasons = Selector('#booking-error-reasons p')
 const dateSelectBox = Selector('#booking-form-date-picker-field')
 const myBookingsMenuButton = Selector('#main-menu-navigation a').nth(2)
-
 const selectableDates = Selector(
   '.react-datepicker__day--selected, .react-datepicker__day:not(.react-datepicker__day--disabled)'
 )
@@ -59,8 +54,8 @@ test("Je peux réserver l'offre", async t => {
   await t
     .expect(alreadyBookedOfferButton.exists)
     .notOk()
-    .expect(bookOfferButton.textContent)
-    .contains(`J’y vais !`)
+    .expect(bookOfferButton.exists)
+    .ok()
 })
 
 test("Parcours complet de réservation d'une offre thing", async t => {

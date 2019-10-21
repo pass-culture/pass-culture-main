@@ -12,12 +12,12 @@ const RelativeFooter = ({ className, disabled, location, theme }) => {
         className={`no-border no-background no-outline no-select pc-theme-${theme}`}
         disabled={disabled}
         id="open-menu-button"
+        title="Afficher le menu de navigation"
         to={menuUrl}
       >
         <span
           aria-hidden
           className="icon-legacy-user-circle-outline"
-          title="Afficher le menu de navigation"
         />
       </Link>
     </footer>
