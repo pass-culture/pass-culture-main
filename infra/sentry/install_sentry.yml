@@ -45,22 +45,12 @@
       tags:
         - 'sentry'
 
-    #- name: Run compose to start containers
-      #docker_compose:
-        #project_src: /opt/sentry
-      #tags:
-        #- 'sentry'
-        #- 'test'
-
-#    - name: Salut
-#      debug: 'Salut'
-#      docker_compose:
-#        project_src: /opt/sentry
-#        state: present
-#      tags:
-#        - 'sentry'
-#        - 'test'
-
+    - name: Run compose to start containers
+      docker_service:
+        project_src: /opt/sentry
+        state: present
+      tags:
+        - 'sentry'
 
 #    - name: Configure administrator account
 #      expect:
