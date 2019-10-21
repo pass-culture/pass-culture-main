@@ -13,7 +13,6 @@ from tests.test_utils import create_product_with_thing_type, create_offerer, cre
 
 def test_booking_completed_url_gets_normalized():
     # Given
-
     product = Product()
     product.url = 'javascript:alert("plop")'
 
@@ -107,6 +106,23 @@ def test_model_thumbUrl_should_have_thumbUrl_using_productId_when_no_mediation(g
 
     # then
     assert booking.thumbUrl == "http://localhost/storage/thumbs/products/A9"
+
+
+@patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
+def test_model_qrCodeUrl_should_have_qrCodeUrl_using_booking_token(get_storage_base_url):
+    # given
+    user = create_user(email='user@test.com')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    product = create_product_with_event_type()
+    offer = create_offer_with_event_product(product=product, venue=venue)
+    stock = create_stock(offer=offer)
+
+    # when
+    booking = create_booking(token=1, stock=stock, user=user)
+
+    # then
+    assert booking.qrCodeUrl == "http://localhost/storage/thumbs/bookings/AE"
 
 
 class BookingIsCancellableTest:

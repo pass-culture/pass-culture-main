@@ -17,7 +17,8 @@ from models.db import Model
 from models.pc_object import PcObject
 from models.versioned_mixin import VersionedMixin
 from utils.human_ids import humanize
-from utils.string_processing import format_decimal
+from utils.object_storage import get_storage_base_url
+from utils.string_processing import format_decimal, get_model_plural_name
 
 
 class Booking(PcObject, Model, VersionedMixin):
@@ -171,6 +172,11 @@ class Booking(PcObject, Model, VersionedMixin):
         if self.recommendation:
             return self.recommendation.mediationId
 
+    @property
+    def qrCodeUrl(self):
+        base_url = get_storage_base_url()
+        thumb_url = base_url + "/thumbs"
+        return '{}/{}/{}'.format(thumb_url, get_model_plural_name(self), humanize(self.token))
 
 class ActivationUser:
     CSV_HEADER = [
