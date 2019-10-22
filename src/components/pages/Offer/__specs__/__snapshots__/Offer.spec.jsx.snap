@@ -26,6 +26,11 @@ ShallowWrapper {
         ],
       }
     }
+    formInitialValues={
+      Object {
+        "isDuo": false,
+      }
+    }
     history={Object {}}
     isEditableOffer={true}
     isFeatureDisabled={true}
@@ -117,6 +122,11 @@ ShallowWrapper {
           onEnterKey={null}
           onEscapeKey={null}
           onSubmit={null}
+          patch={
+            Object {
+              "isDuo": false,
+            }
+          }
           successNotification="Formulaire non validé"
         >
           <div
@@ -604,7 +614,9 @@ ShallowWrapper {
           "onEnterKey": null,
           "onEscapeKey": null,
           "onSubmit": null,
-          "patch": undefined,
+          "patch": Object {
+            "isDuo": false,
+          },
           "readOnly": undefined,
           "successNotification": "Formulaire non validé",
         },
@@ -1186,6 +1198,7 @@ ShallowWrapper {
                     undefined,
                     false,
                     undefined,
+                    undefined,
                     <Field
                       displayValue={[Function]}
                       errors={null}
@@ -1251,6 +1264,7 @@ ShallowWrapper {
                   },
                   undefined,
                   false,
+                  undefined,
                   undefined,
                   Object {
                     "instance": null,
@@ -1529,6 +1543,11 @@ ShallowWrapper {
             onEnterKey={null}
             onEscapeKey={null}
             onSubmit={null}
+            patch={
+              Object {
+                "isDuo": false,
+              }
+            }
             successNotification="Formulaire non validé"
           >
             <div
@@ -2016,7 +2035,9 @@ ShallowWrapper {
             "onEnterKey": null,
             "onEscapeKey": null,
             "onSubmit": null,
-            "patch": undefined,
+            "patch": Object {
+              "isDuo": false,
+            },
             "readOnly": undefined,
             "successNotification": "Formulaire non validé",
           },
@@ -2598,6 +2619,7 @@ ShallowWrapper {
                       undefined,
                       false,
                       undefined,
+                      undefined,
                       <Field
                         displayValue={[Function]}
                         errors={null}
@@ -2663,6 +2685,7 @@ ShallowWrapper {
                     },
                     undefined,
                     false,
+                    undefined,
                     undefined,
                     Object {
                       "instance": null,

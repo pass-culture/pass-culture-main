@@ -18,6 +18,9 @@ describe('src | components | pages | Offer | Offer ', () => {
         isAdmin: false,
       },
       dispatch: dispatch,
+      formInitialValues: {
+        isDuo: false,
+      },
       isEditableOffer: true,
       isFeatureDisabled: true,
       loadVenue: jest.fn(),
@@ -99,6 +102,9 @@ describe('src | components | pages | Offer | Offer ', () => {
             isAdmin: false,
           },
           isEditableOffer: true,
+          formInitialValues: {
+            isDuo: false,
+          },
           query: {
             changeToReadOnly: queryChangeToReadOnly,
             context: () => ({}),
@@ -289,7 +295,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           const wrapper = shallow(<Offer {...props} />)
 
           // when
-          const isDuoCheckbox = wrapper.find(Field).find({ name: 'isDuo' })
+          const isDuoCheckbox = wrapper.find('#isDigital')
 
           // then
           expect(isDuoCheckbox).toHaveLength(1)

@@ -37,7 +37,66 @@
     margin-right: 2rem;
   }
 
+  .select-duo-offer {
+    @extend .no-background;
+    @extend .mb12;
+    @extend .mt16;
+
+    label {
+      white-space: pre;
+      margin-left: 0.7rem;
+      vertical-align: top;
+    }
+
+    .duo-label-italic {
+      font-style: italic;
+    }
+
+    .tip-icon {
+      margin-left: 3px;
+    }
+
+    div {
+      margin-bottom: rem(11px);
+    }
+  }
+
+  .pc-checkbox {
+    background: url(/icons/checkbox.svg) no-repeat;
+    background-size: 20px;
+    border: none;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border-radius: 0;
+    margin-bottom: rem(12px);
+
+    &:active,
+    &:checked {
+      &::after {
+        content: '';
+        background: url(/icons/checkbox-check.svg) center no-repeat;
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+
   .subtitle {
     margin-bottom: 12px;
+  }
+
+  .main-list-title {
+    @extend .is-uppercase;
+
+    border-bottom: thin solid;
+    display: block;
+    font-weight: $weight-bold;
+    margin: 0.75rem 0;
+    overflow-y: hidden;
+
+    span {
+      margin-top: 3.5px;
+    }
   }
 }

@@ -116,6 +116,8 @@ class Offer extends PureComponent {
         })
       )
     }
+
+    this.setDefaultIsDuo()
   }
 
   onHandleDataRequest = (handleSuccess, handleFail) => {
@@ -266,6 +268,24 @@ class Offer extends PureComponent {
     }
   }
 
+  setDefaultIsDuo() {
+    const { dispatch, isFeatureDisabled, query, selectedOfferType } = this.props
+
+    if (isFeatureDisabled) return
+
+    const { isCreatedEntity } = query.context()
+    if (!isCreatedEntity) return
+
+    const isEventType = get(selectedOfferType, 'type') === 'Event'
+    if (!isEventType) return
+
+      dispatch(
+        mergeForm('offer', {
+          isDuo: true,
+        })
+      )
+  }
+
   hasConditionalField(fieldName) {
     const { selectedOfferType } = this.props
     if (!selectedOfferType) {
@@ -289,6 +309,15 @@ class Offer extends PureComponent {
 
     const offerWebappUrl = buildWebappDiscoveryUrl(offerId, mediationId)
     window.open(offerWebappUrl, 'targetWindow', 'toolbar=no,width=375,height=667').focus()
+  }
+
+  handleCheckIsDuo = (event)  => {
+    const { dispatch } = this.props
+    dispatch(
+      mergeForm('offer', {
+        isDuo: event.target.checked,
+      })
+    )
   }
 
   render() {
@@ -346,6 +375,17 @@ class Offer extends PureComponent {
       }
     } else {
       title = 'Détails de l’offre'
+    }
+
+
+    let isDuoDefaultStatus
+    if (!isFeatureDisabled) {
+      if (formInitialValues.isDuo === undefined) {
+        isDuoDefaultStatus = true
+      }
+      else {
+        isDuoDefaultStatus = formInitialValues.isDuo
+      }
     }
 
     return (
@@ -576,26 +616,45 @@ class Offer extends PureComponent {
                   />
                 )}
                 {isEventType && (
-                  <Fragment>
-                    <Field
-                      getDurationInHours={getDurationInHours}
-                      getDurationInMinutes={getDurationInMinutes}
-                      label="Durée"
-                      limitTimeInHours={DURATION_LIMIT_TIME}
-                      name="durationMinutes"
-                      placeholder="HH:MM"
-                      type="duration"
+                  <Field
+                    getDurationInHours={getDurationInHours}
+                    getDurationInMinutes={getDurationInMinutes}
+                    label="Durée"
+                    limitTimeInHours={DURATION_LIMIT_TIME}
+                    name="durationMinutes"
+                    placeholder="HH:MM"
+                    type="duration"
+                  />
+                  )}
+                {isEventType && !isFeatureDisabled && (
+                  <div className="select-duo-offer">
+                    <input
+                      className="pc-checkbox input"
+                      defaultChecked={isDuoDefaultStatus}
+                      id="isDigital"
+                      onClick={this.handleCheckIsDuo}
+                      type="checkbox"
                     />
-                    {!isFeatureDisabled && (
-                      <Field
-                        info="<p>En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l'accompagnateur.</p>"
-                        label="Accepter les offres duo"
-                        name="isDuo"
-                        type="checkbox"
+                    <label htmlFor="isDigital">
+                      {'Accepter les réservations '}
+                      <span className="duo-label-italic">
+                        {'duo'}
+                      </span>
+                    </label>
+                    <span
+                      className="tip-icon"
+                      data-place="bottom"
+                      data-tip={"En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l'accompagnateur."}
+                      data-type="info"
+                    >
+                      <Icon
+                        alt="image d’aide à l’information"
+                        svg="picto-info"
                       />
-                    )}
-                  </Fragment>
-                )}
+                    </span>
+                  </div>
+                  )}
+
                 <Field
                   label="Email auquel envoyer les réservations"
                   name="bookingEmail"
@@ -727,7 +786,7 @@ class Offer extends PureComponent {
                     className="button is-primary is-medium"
                   >
                     {'Enregistrer'}
-                    {isCreatedEntity && 'et passer ' + (isEventType ? 'aux dates' : 'aux stocks')}
+                    {isCreatedEntity && ' et passer ' + (isEventType ? 'aux dates' : 'aux stocks')}
                   </SubmitButton>
                 )
               )}

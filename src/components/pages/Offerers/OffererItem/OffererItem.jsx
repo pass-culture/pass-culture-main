@@ -35,7 +35,7 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
         >
           <Icon svg="ico-offres-r" />
           {'Nouvelle offre'}
-          {canCreateOnlyVirtualOffer && 'numérique'}
+          {canCreateOnlyVirtualOffer && ' numérique'}
         </NavLink>
       </li>
       {$offersCount}
