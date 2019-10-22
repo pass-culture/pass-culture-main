@@ -7,7 +7,7 @@ Create Date: 2019-10-11 08:57:18.433458
 """
 from alembic import op
 import sqlalchemy as sa
-
+from sqlalchemy.sql import expression
 
 # revision identifiers, used by Alembic.
 revision = 'eda764ae6b37'
@@ -17,7 +17,7 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column('offer', sa.Column('isDuo', sa.Boolean, nullable=False, default=False))
+    op.add_column('offer', sa.Column('isDuo', sa.Boolean, nullable=False, server_default=expression.false()))
 
 
 def downgrade():
