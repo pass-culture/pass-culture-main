@@ -2,6 +2,12 @@
 - name: Install Sentry server
   hosts: sentry
   become: true
+  vars:
+    service_host: "logs.passculture.app"
+    service_admin_email: "eperret@octo.com"
+    service_name: "sentry"
+    service_root_directory: "/opt"
+    letsencrypt_ssl_dir: "/etc/letsencrypt/live"
   tasks:
     - import_tasks: tasks/install_docker.yml
       tags:
@@ -63,9 +69,17 @@
       tags:
         - 'nginx'
 
+    - name: Generate dhparams file
+      shell: openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
+
   roles:
     - role: firewalld
       tags: 'firewalld'
+    - role: letsencrypt
+      tags: 'letsencrypt'
+    - role: service
+      tags: 'service'
+
 #
 #    - name: Configure administrator account
 #      expect:
