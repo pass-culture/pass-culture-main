@@ -51,7 +51,8 @@ http {
     server {
       listen 443 ssl;
       server_name {{ service_host }};
-      root {{ service_root_directory }}/{{ service_name }};
+
+      root /usr/share/nginx/html;
 
       index index.html;
       ssl_certificate {{ letsencrypt_ssl_dir }}/{{ service_host }}/fullchain.pem;
@@ -65,7 +66,7 @@ http {
       ssl_stapling on;
       ssl_stapling_verify on;
       location / {
-          try_files $uri $uri/ /index.html;
+          proxy_pass http://127.0.0.1:9000;
       }
     }
 }
