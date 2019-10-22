@@ -1,42 +1,26 @@
-#- name: Install depends
-#  yum:
-#    name: {{ item }}
-#    state: latest
-#  with_items:
-#    - python
-#    - python-dev
-#    - gcc
-#    - dialog
-#    - libaugeas0
-#    - augeas-lenses
-#    - libssl-dev
-#    - libffi-dev
-#    - ca-certificates
-#    - libpython-dev
-#    - zlib1g-dev
-#
+#- name: Pip uninstall dependencies
+#  pip:
+#    name: ['requests', 'six', 'urllib3']
+#    state: present
 
-#- name: Lets Encrypt client
-#  git:
-#    dest: /opt/certbot
-#    clone: yes
-#    repo: 'https://github.com/certbot/certbot'
-#    force: yes
+- name: Yum reinstall dependecies
+  yum:
+    name: ['python-requests', 'python-six', 'python-urllib3']
 
 - name: Install cerbot
   yum:
     name: ['certbot', 'python2-certbot-nginx']
 
-#- name: Add crontab to renew certificates
-#  cron:
-#    minute: "30"
-#    hour: "2"
-#    weekday: "1"
-#    job: "/opt/certbot/certbot-auto renew >> /var/log/le-renew.log"
-#
-#- name: Add crontab to reload server
-#  cron:
-#    minute: "35"
-#    hour: "2"
-#    weekday: "1"
-#    job: "/etc/init.d/nginx reload"
+- name: Add crontab to renew certificates
+  cron:
+    minute: "30"
+    hour: "2"
+    weekday: "1"
+    job: "/usr/bin/certbot renew >> /var/log/le-renew.log"
+
+- name: Add crontab to reload server
+  cron:
+    minute: "35"
+    hour: "2"
+    weekday: "1"
+    job: "/usr/sbin/nginx reload"

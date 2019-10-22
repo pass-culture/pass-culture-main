@@ -1,26 +1,11 @@
-#- name: Add http nginx configuration
-#  template:
-#    src: service.http.conf.j2
-#    dest: /etc/nginx/sites-available/{{ service_name }}.http.conf
-#    owner: www-data
-#    group: www-data
-#    mode: 0644
-#
-#- name: Add http nginx symlink
-#  file:
-#    src: /etc/nginx/sites-available/{{ service_name }}.http.conf
-#    dest: /etc/nginx/sites-enabled/{{ service_name }}.http
-#    owner: www-data
-#    group: www-data
-#    state: link
-#
-#- name: reload nginx
-#  service:
-#    name: nginx
-#    state: reloaded
+- name: check if certificate file exists
+  stat:
+    path: "{{ letsencrypt_ssl_dir }}/{{ service_host }}/fullchain.pem"
+  register: certificate_file
 
 - name: Create certificate
   shell: certbot certonly --webroot --email {{ service_admin_email }} --agree-tos --webroot-path=/usr/share/nginx/html -d {{ service_host }};
+  when:  certificate_file.stat.exists
 
 #- name: Add https nginx configuration
 #  template:
