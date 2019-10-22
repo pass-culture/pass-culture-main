@@ -1,0 +1,81 @@
+{
+	"swagger": "2.0",
+	"info": {
+		"description": "This is a sample server Petstore server.  You can find out more about Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).  For this sample, you can use the api key `special-key` to test the authorization filters.",
+		"version": "0.0.1",
+		"title": "DOCUMENTATION API PASS CULTURE",
+		"termsOfService": "https://docs.passculture.app/textes-normatifs",
+		"contact": {
+			"email": "apiteam@swagger.io"
+		},
+		"license": {
+			"name": "Apache 2.0",
+			"url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+		}
+	},
+	"host": "localhost",
+	"basePath": "/v2",
+	"tags": [{
+		"name": "bookings/token",
+		"description": "<h1>CONTREMARQUE</h1></br>Le dispositif repose sur deux éléments principaux :</br></br><ul><li> - l’affichage, directement sur l'application mobile pass Culture, de codes de réservations sous la forme de QR codes contenant toutes les informations nécessaires à la validation d’une réservation. Dans ce QR code figure notamment le code “contremarque” qui est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation. Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et est transmis à cette occasion à l’utilisateur ;</li></br><li> - un webservice permettant de consulter la validité d’une réservation, et un second permettant de valider celle-ci. La validation d’une réservation a pour effet de prouver la réalisation du service proposé et engendre un remboursement selon les conditions prévues dans les CGU de la plateforme pass Culture.</li></ul>",
+		"externalDocs": {
+			"description": "Find out more",
+			"url": "http://swagger.io"
+		}
+	}],
+	"schemes": ["http", "https"],
+	"paths": {
+		"/bookings/token/{token}": {
+			"get": {
+				"tags": ["bookings"],
+				"summary": "Vérifier une contremarque",
+				"description": "A compléter ......",
+				"operationId": "findBookingsByToken",
+				"produces": ["application/json"],
+				"parameters": [{
+					"name": "token",
+					"in": "path",
+					"description": "Code contremarque de la réservation",
+					"required": true,
+					"style" : "simple",
+          			"explode" : false,
+					"schema" : {
+            		"type" : "string"
+          			}
+				}],
+				"responses": {
+					"204": {
+						"description": "La contremarque existe et n’est pas validée",
+						"application/json" : {}
+					},
+					"401" : {
+						"description" : "L’API_KEY n’a pas été fournie dans la requête HTTP"
+					},
+          			"403" : {
+            			"description" : "TO DO"
+          			},
+          			"404" : {
+						"description" : "La contremarque n’existe pas"
+					},
+          			"410" : {
+            			"description" : "La contremarque n’est plus valide car elle a déjà été validée"
+          			}
+				},
+				"security": [{
+					"api_key": []
+				}]
+			}
+		}
+	},
+	"securityDefinitions": {
+		"api_key": {
+			"type": "apiKey",
+			"name": "Authorization",
+			"in": "header"
+		}
+	},
+	"externalDocs": {
+		"description": "Find out more about Swagger",
+		"url": "http://swagger.io"
+	}
+}
