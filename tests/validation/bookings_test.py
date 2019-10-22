@@ -1,8 +1,6 @@
 from datetime import datetime, timedelta
 from unittest.mock import Mock
 
-from models import User
-
 import pytest
 
 from domain.expenses import SUBVENTION_PHYSICAL_THINGS, SUBVENTION_DIGITAL_THINGS
@@ -16,9 +14,7 @@ from validation.bookings import check_expenses_limits, \
     check_booking_is_cancellable, \
     check_booking_quantity_limit, \
     check_booking_is_usable, \
-    check_rights_to_get_bookings_csv,\
-    check_user_is_logged_in_or_api_key_is_provided, \
-    check_user_is_logged_in_or_email_is_provided
+    check_rights_to_get_bookings_csv
 
 
 class CheckExpenseLimitsTest:
@@ -354,31 +350,3 @@ class CheckBookingQuantityLimitTest:
         except ApiErrors:
             # then
             pytest.fail('Booking for duo offers must not raise any exceptions')
-
-
-class CheckRightsToGetBookingsTokenByTokenTest:
-    @clean_database
-    def test_raises_an_error_when_no_api_key_nor_user_logged(self, app):
-        # given
-        user = User()
-        user.is_authenticated = False
-        api_key = None
-
-        # then
-        with pytest.raises(ApiErrors) as e:
-            check_user_is_logged_in_or_api_key_is_provided(user, api_key)
-        assert e.value.errors['api_key'] == [
-            "Vous devez préciser l'api key de l'utilisateur quand vous n'êtes pas connecté(e)"]
-
-    @clean_database
-    def test_raises_an_error_when_no_email_nor_user_logged(self, app):
-        # given
-        user = User()
-        user.is_authenticated = False
-        email = None
-
-        # then
-        with pytest.raises(ApiErrors) as e:
-            check_user_is_logged_in_or_email_is_provided(user, email)
-        assert e.value.errors['email'] == [
-            "Vous devez préciser l'email de l'utilisateur quand vous n'êtes pas connecté(e)"]

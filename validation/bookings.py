@@ -120,22 +120,6 @@ def check_expenses_limits(expenses: dict, booking: Booking, find_stock=find_stoc
             )
 
 
-def check_user_is_logged_in_or_email_is_provided(user, email):
-    if not (user.is_authenticated or email):
-        api_errors = ApiErrors()
-        api_errors.add_error('email',
-                            'Vous devez préciser l\'email de l\'utilisateur quand vous n\'êtes pas connecté(e)')
-        raise api_errors
-
-
-def check_user_is_logged_in_or_api_key_is_provided(user, api_key):
-    if not (user.is_authenticated or api_key):
-        api_errors = ApiErrors()
-        api_errors.add_error('api_key',
-                            'Vous devez préciser l\'api key de l\'utilisateur quand vous n\'êtes pas connecté(e)')
-        raise api_errors
-
-
 def check_booking_is_usable(booking: Booking):
     resource_gone_error = ResourceGoneError()
     if booking.isUsed:
