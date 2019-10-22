@@ -7,7 +7,9 @@ export const selectIsEnoughStockForOfferDuo = createCachedSelector(
   (state, offerId) => offerId,
   selectStocksByOfferId,
   (offerId, stocks) => {
-    const stocksAvailableForOfferDuo = stocks.filter(stock => stock.available >= 2)
+    const stocksAvailableForOfferDuo = stocks.filter(
+      stock => stock.available === null || stock.available >= 2
+    )
     return stocksAvailableForOfferDuo.length > 0 ? true : false
   }
 )((state, offerId) => offerId || '')

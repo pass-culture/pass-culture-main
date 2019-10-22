@@ -24,6 +24,28 @@ describe('src | components | layout | Duo | selectors | stocksSelector', () => {
       expect(isEnoughStockForOfferDuo).toBe(true)
     })
 
+    it('should return true when there is unlimited stock', () => {
+      // given
+      const state = {
+        data: {
+          stocks: [
+            {
+              offerId: 'AAAA',
+              available: null,
+            },
+          ],
+        },
+      }
+
+      const offerId = 'AAAA'
+
+      // when
+      const isEnoughStockForOfferDuo = selectIsEnoughStockForOfferDuo(state, offerId)
+
+      // then
+      expect(isEnoughStockForOfferDuo).toBe(true)
+    })
+
     it('should return false when there is no stock with more than two available', () => {
       // given
       const state = {
