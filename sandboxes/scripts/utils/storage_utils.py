@@ -34,10 +34,7 @@ def store_public_object_from_sandbox_assets(folder, obj, product_type, index=0):
                 symlink_path=thumb_path
             )
         else:
-            store_public_object(folder,
-                                plural_model_name + '/' + thumb_id,
-                                thumb_file.read(),
-                                MIMES_BY_FOLDER[folder],
+            store_public_object(folder, plural_model_name + '/' + thumb_id, thumb_file.read(), MIMES_BY_FOLDER[folder],
                                 symlink_path=thumb_path)
 
     PcObject.save(obj)

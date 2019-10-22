@@ -1,3 +1,4 @@
+from datetime import datetime
 from itertools import chain
 
 import dateutil
@@ -10,7 +11,7 @@ from domain.user_activation import create_initial_deposit, check_is_activation_b
 from domain.user_emails import send_booking_recap_emails, \
     send_booking_confirmation_email_to_user, send_cancellation_emails_to_user_and_offerer, \
     send_activation_notification_email
-from models import ApiErrors, Booking, PcObject, Stock, RightsType, EventType, Offerer, Offer
+from models import ApiErrors, Booking, PcObject, Stock, RightsType, EventType, Offerer
 from models.offer_type import ProductType
 from repository import booking_queries
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
@@ -88,25 +89,28 @@ def get_bookings_csv():
                                                                      current_user)
     if only_digital_venues:
         bookings = chain(
-            *list(map(lambda offerer: booking_queries.find_digital_bookings_for_offerer(offerer.id, offer_id, date_from, date_to),
+            *list(map(lambda offerer: booking_queries.find_digital_bookings_for_offerer(offerer.id, offer_id, date_from,
+                                                                                        date_to),
                       query)))
     else:
         bookings = chain(
-            *list(map(lambda offerer: booking_queries.find_offerer_bookings(offerer.id, venue_id, offer_id, date_from, date_to),
+            *list(map(lambda offerer: booking_queries.find_offerer_bookings(offerer.id, venue_id, offer_id, date_from,
+                                                                            date_to),
                       query)))
 
     bookings_csv = generate_bookings_details_csv(bookings)
 
     return bookings_csv.encode('utf-8-sig'), \
-        200, \
-        {'Content-type': 'text/csv; charset=utf-8;',
-         'Content-Disposition': 'attachment; filename=reservations_pass_culture.csv'}
+           200, \
+           {'Content-type': 'text/csv; charset=utf-8;',
+            'Content-Disposition': 'attachment; filename=reservations_pass_culture.csv'}
 
 
 @app.route('/bookings', methods=['GET'])
 @login_required
 def get_bookings():
     bookings = booking_queries.find_for_my_bookings_page(current_user.id)
+
     return jsonify([as_dict(b, includes=WEBAPP_GET_BOOKING_INCLUDES) for b in bookings]), 200
 
 

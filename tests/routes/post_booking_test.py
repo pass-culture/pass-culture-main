@@ -166,7 +166,6 @@ class Post:
             stock = create_stock_with_event_offer(offerer, venue, price=200)
             event_offer = stock.resolvedOffer
             recommendation = create_recommendation(event_offer, user)
-            deposit_date = datetime.utcnow() - timedelta(minutes=2)
             deposit = create_deposit(user, amount=0)
 
             PcObject.save(recommendation)

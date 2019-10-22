@@ -210,6 +210,7 @@ WEBAPP_GET_BOOKING_INCLUDES = [
         ]
     },
     "mediation",
+    "qrCode",
     "thumbUrl"
 ]
 

@@ -49,6 +49,7 @@ class Get:
             assert 'isFullyBooked' in first_booking['stock']['offer']
             assert 'offerType' in first_booking['stock']['offer']
             assert 'product' in first_booking['stock']['offer']
+            assert 'qrCode' in first_booking
             assert 'thumbUrl' in first_booking['stock']['offer']['product']
             assert 'stocks' in first_booking['stock']['offer']
             assert 'isBookable' in first_booking['stock']['offer']['stocks'][0]

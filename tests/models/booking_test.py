@@ -108,21 +108,22 @@ def test_model_thumbUrl_should_have_thumbUrl_using_productId_when_no_mediation(g
     assert booking.thumbUrl == "http://localhost/storage/thumbs/products/A9"
 
 
-@patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
-def test_model_qrCodeUrl_should_have_qrCodeUrl_using_booking_token(get_storage_base_url):
+def test_model_qrCode_should_have_qrCode_as_base64_string():
     # given
     user = create_user(email='user@test.com')
     offerer = create_offerer()
     venue = create_venue(offerer)
-    product = create_product_with_event_type()
+    product = create_product_with_event_type(dominant_color=None, thumb_count=0)
+    product.id = 2
     offer = create_offer_with_event_product(product=product, venue=venue)
-    stock = create_stock(offer=offer)
+    stock = create_stock(price=12, available=1, offer=offer)
 
     # when
-    booking = create_booking(token=1, stock=stock, user=user)
+    booking = create_booking(recommendation=None, stock=stock, user=user, venue=venue)
 
     # then
-    assert booking.qrCodeUrl == "http://localhost/storage/thumbs/bookings/AE"
+    assert booking.qrCode is not None
+    assert type(booking.qrCode) is str
 
 
 class BookingIsCancellableTest:

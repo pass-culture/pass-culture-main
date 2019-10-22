@@ -5,12 +5,11 @@ from postgresql_audit.flask import versioning_manager
 from sqlalchemy import and_, text, func
 from sqlalchemy.orm import Query
 
-from domain.keywords import create_filter_matching_all_keywords_in_any_model, create_get_filter_matching_ts_query_in_any_model
+from domain.keywords import create_get_filter_matching_ts_query_in_any_model
 from domain.stocks import STOCK_DELETION_DELAY
 from models import Booking, EventType, Offer, Offerer, Payment, Product, Recommendation, Stock, ThingType, User, Venue
 from models.api_errors import ResourceNotFoundError
 from models.db import db
-from utils.rest import query_with_order_by, check_order_by
 
 get_filter_matching_ts_query_for_booking = create_get_filter_matching_ts_query_in_any_model(
     Product,

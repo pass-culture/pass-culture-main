@@ -17,10 +17,10 @@ class GetAllApplicationsForProcedureTest:
         token = '12345'
 
         # When
-
         applications_for_procedure = get_all_applications_for_procedure(procedure_id=procedure_id, token=token,
                                                                         results_per_page=1000)
 
+        # Then
         call_args = requests_get.call_args
         assert call_args[0] == (
             'https://www.demarches-simplifiees.fr/api/v1/procedures/1/dossiers?token=12345&page=1&resultats_par_page=1000',)
@@ -56,9 +56,9 @@ class GetApplicationDetailsTest:
         token = '12345'
 
         # When
-
         application_details = get_application_details(application_id, procedure_id, token)
 
+        # Then
         call_args = requests_get.call_args
         assert call_args[0] == ('https://www.demarches-simplifiees.fr/api/v1/procedures/1/dossiers/2?token=12345',)
         assert application_details == {'test': 'value'}

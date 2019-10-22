@@ -17,8 +17,7 @@ from models.db import Model
 from models.pc_object import PcObject
 from models.versioned_mixin import VersionedMixin
 from utils.human_ids import humanize
-from utils.object_storage import get_storage_base_url
-from utils.string_processing import format_decimal, get_model_plural_name
+from utils.string_processing import format_decimal
 
 
 class Booking(PcObject, Model, VersionedMixin):
@@ -121,18 +120,6 @@ class Booking(PcObject, Model, VersionedMixin):
         else:
             return False
 
-    CSV_HEADER = [
-        "Raison sociale du lieu",
-        "Nom de l'offre",
-        "Nom utilisateur",
-        "Prénom utilisateur",
-        "E-mail utilisateur",
-        "Date de la réservation",
-        "Quantité",
-        "Tarif pass Culture",
-        "Statut",
-    ]
-
     @property
     def statusLabel(self):
         if self.isCancelled:
@@ -173,10 +160,10 @@ class Booking(PcObject, Model, VersionedMixin):
             return self.recommendation.mediationId
 
     @property
-    def qrCodeUrl(self):
-        base_url = get_storage_base_url()
-        thumb_url = base_url + "/thumbs"
-        return '{}/{}/{}'.format(thumb_url, get_model_plural_name(self), humanize(self.token))
+    def qrCode(self):
+        from domain.bookings import generate_qr_code
+        return generate_qr_code(self)
+
 
 class ActivationUser:
     CSV_HEADER = [
