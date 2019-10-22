@@ -96,7 +96,7 @@ class ProcessProductThumbTest:
         human_product_id = humanize(product.id)
         uri = f'thumbs/products/{human_product_id}'
         get_product_thumb = MagicMock(return_value=IMAGE_AS_BYTES)
-        main_thumb_dominant_color = b'\xc6\xbdj'
+        main_thumb_dominant_color = b'\x00\x00\x00'
 
         # When
         success = process_product_thumb(uri, get_product_thumb)

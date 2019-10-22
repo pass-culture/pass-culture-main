@@ -16,7 +16,6 @@ from models.offer_type import ThingType, EventType, ProductType
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.stock import Stock
-from models.venue import Venue
 from utils.date import DateTimes
 from utils.inflect_engine import pluralize
 
@@ -106,6 +105,7 @@ class Offer(PcObject,
         if self.venue:
             venue = self.venue
         else:
+            from models.venue import Venue
             venue = Venue.query.get(self.venueId)
         if self.isDigital and not venue.isVirtual:
             api_errors.add_error('venue',
