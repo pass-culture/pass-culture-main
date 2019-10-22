@@ -4,6 +4,7 @@
   align-items: center;
   background-color: $primary;
   height: rem(62px);
+  min-height: 62px;
   padding: rem(8px) rem(12px);
 
   li {
