@@ -61,9 +61,12 @@ class Booking extends PureComponent {
 
   handleFormSubmit = formValues => {
     const { handleSubmit } = this.props
+    const { isDuo } = formValues
+    const quantity = isDuo ? 2 : 1
+    const payload = { ...formValues, quantity }
     this.setState(
       { isSubmitting: true },
-      handleSubmit(formValues, this.handleRequestFail, this.handleRequestSuccess)
+      handleSubmit(payload, this.handleRequestFail, this.handleRequestSuccess)
     )
   }
 
@@ -156,7 +159,7 @@ class Booking extends PureComponent {
 
     const { canSubmitForm, errors, bookedPayload, isErrored, isSubmitting, mounted } = this.state
     const { id: recommendationId } = recommendation || {}
-    const { isEvent } = offer || {}
+    const { isEvent, id: offerId } = offer || {}
     const defaultBookable = bookables && bookables[0]
     const showForm = defaultBookable && !bookedPayload && !isErrored && !isSubmitting
 
@@ -215,6 +218,7 @@ class Booking extends PureComponent {
                       initialValues={formInitialValues}
                       isEvent={isEvent}
                       isReadOnly={isReadOnly}
+                      offerId={offerId}
                       onFormSubmit={this.handleFormSubmit}
                       onSetCanSubmitForm={this.handleSetCanSubmitForm}
                     />
@@ -254,7 +258,7 @@ Booking.propTypes = {
   }).isRequired,
   offer: PropTypes.shape({
     isEvent: PropTypes.bool,
-    offerId: PropTypes.string,
+    id: PropTypes.string,
   }),
   recommendation: PropTypes.shape({
     id: PropTypes.string,

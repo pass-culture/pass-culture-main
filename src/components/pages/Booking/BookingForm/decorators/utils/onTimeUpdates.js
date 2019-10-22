@@ -11,7 +11,7 @@ const onTimeUpdates = (selectedStockId, name, allFormValues) => {
   if (!isValid) return resetObj
   const { bookables } = allFormValues
   const { price, id: stockId } = bookables.find(bookable => bookable.id === selectedStockId)
-  return { price, stockId }
+  return { isDuo: false, price, stockId }
 }
 
 export default onTimeUpdates

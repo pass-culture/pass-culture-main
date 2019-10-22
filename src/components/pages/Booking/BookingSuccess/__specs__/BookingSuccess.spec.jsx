@@ -10,6 +10,7 @@ describe('src | components | layout | Booking | BookingSuccess', () => {
     props = {
       bookedPayload: {
         completedUrl: 'http://fake-url.com',
+        quantity: 1,
         token: 'G8G8G8',
         stock: {
           price: '12.5',
@@ -19,7 +20,30 @@ describe('src | components | layout | Booking | BookingSuccess', () => {
     }
   })
 
-  it('should match the snapshot', () => {
+  it('should match the snapshot when booking an event', () => {
+    // when
+    const wrapper = shallow(<BookingSuccess {...props} />)
+
+    // then
+    expect(wrapper).toMatchSnapshot()
+  })
+
+  it('should match the snapshot when booking a duo event', () => {
+    // given
+    props.bookedPayload.quantity = 2
+
+    // when
+    const wrapper = shallow(<BookingSuccess {...props} />)
+
+    // then
+    expect(wrapper).toMatchSnapshot()
+  })
+
+  it('should match the snapshot when booking a thing event', () => {
+    // givn
+    props.bookedPayload.quantity = 1
+    props.isEvent = false
+
     // when
     const wrapper = shallow(<BookingSuccess {...props} />)
 

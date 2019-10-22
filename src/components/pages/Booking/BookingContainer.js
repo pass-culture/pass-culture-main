@@ -24,11 +24,11 @@ export const mapStateToProps = (state, ownProps) => {
 }
 
 export const mapDispatchToProps = dispatch => ({
-  handleSubmit: (formValues, handleRequestFail, handleRequestSuccess) => {
+  handleSubmit: (payload, handleRequestFail, handleRequestSuccess) => {
     dispatch(
       requestData({
         apiPath: '/bookings',
-        body: { ...formValues, quantity: 1 },
+        body: { ...payload },
         handleFail: handleRequestFail,
         handleSuccess: handleRequestSuccess,
         method: 'POST',

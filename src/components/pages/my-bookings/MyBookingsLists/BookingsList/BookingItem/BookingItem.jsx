@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
+
+import DuoOfferContainer from '../../../../../layout/DuoOffer/DuoOfferContainer'
 import Icon from '../../../../../layout/Icon/Icon'
 import Ribbon from '../../../../../layout/Ribbon/Ribbon'
 import { getTimezone } from '../../../../../../utils/timezone'
@@ -15,11 +17,12 @@ const getDetailsUrl = (bookingId, location) => {
 const getQrCodeUrl = detailsUrl => `${detailsUrl}/qrcode`
 
 const BookingItem = ({ booking, location, offer, ribbon, stock, trackConsultOffer }) => {
-  const { id: bookingId, qrCode, token, thumbUrl } = booking
+  const { id: bookingId, qrCode, quantity, token, thumbUrl } = booking
   const { beginningDatetime } = stock
   const { label, type } = ribbon || {}
-  const { name: offerName, venue } = offer
+  const { id: offerId, name: offerName, venue } = offer
   const { departementCode } = venue
+  const isDuo = quantity === 2
   const detailsUrl = getDetailsUrl(bookingId, location)
   const timeZone = getTimezone(departementCode)
   const humanizedDate = beginningDatetime && humanizeDate(beginningDatetime, timeZone)
@@ -43,7 +46,10 @@ const BookingItem = ({ booking, location, offer, ribbon, stock, trackConsultOffe
         <div className="teaser-wrapper">
           <div className="mb-heading">
             <div className="teaser-title-booking">{offerName}</div>
-            <div className="teaser-sub-title">{humanizedDate || 'Permanent'}</div>
+            <div className="teaser-sub-title">
+              {isDuo && <DuoOfferContainer offerId={offerId} />}
+              {humanizedDate || 'Permanent'}
+            </div>
           </div>
         </div>
         <div className="teaser-arrow">
@@ -80,6 +86,7 @@ BookingItem.propTypes = {
   booking: PropTypes.shape({
     id: PropTypes.string,
     qrCode: PropTypes.string,
+    quantity: PropTypes.number,
     thumbUrl: PropTypes.string,
     token: PropTypes.string.isRequired,
   }).isRequired,
@@ -89,6 +96,7 @@ BookingItem.propTypes = {
   }).isRequired,
   offer: PropTypes.shape({
     name: PropTypes.string.isRequired,
+    id: PropTypes.string,
     product: PropTypes.shape({
       name: PropTypes.string,
     }).isRequired,

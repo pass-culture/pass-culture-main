@@ -152,10 +152,12 @@ describe('src | components | layout | Booking | BookingContainer', () => {
       it('should call dispatch with request data', () => {
         // given
         const dispatch = jest.fn()
-        const formValues = {
+        const payload = {
           bookables: [],
           date: '2019-09-19T22:00:00.000Z',
+          isDuo: true,
           price: 27,
+          quantity: 2,
           recommendationId: 'NQ',
           stockId: 'BM',
           time: 'BM',
@@ -164,11 +166,7 @@ describe('src | components | layout | Booking | BookingContainer', () => {
         const handleRequestSuccess = jest.fn()
 
         // when
-        mapDispatchToProps(dispatch).handleSubmit(
-          formValues,
-          handleRequestFail,
-          handleRequestSuccess
-        )
+        mapDispatchToProps(dispatch).handleSubmit(payload, handleRequestFail, handleRequestSuccess)
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
@@ -177,11 +175,12 @@ describe('src | components | layout | Booking | BookingContainer', () => {
             body: {
               bookables: [],
               date: '2019-09-19T22:00:00.000Z',
+              isDuo: true,
               price: 27,
               recommendationId: 'NQ',
               stockId: 'BM',
               time: 'BM',
-              quantity: 1,
+              quantity: 2,
             },
             handleFail: handleRequestFail,
             handleSuccess: handleRequestSuccess,

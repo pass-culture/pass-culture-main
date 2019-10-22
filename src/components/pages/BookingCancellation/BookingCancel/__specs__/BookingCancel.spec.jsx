@@ -11,6 +11,7 @@ describe('src | components | layout | BookingCancellation | BookingCancel', () =
   beforeEach(() => {
     props = {
       booking: {
+        quantity: 1,
         amount: 12,
       },
       isEvent: true,

@@ -2,22 +2,23 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { Form } from 'react-final-form'
 
-import BookingFormContent from './BookingFormContent/BookingFormContent'
+import BookingFormContentContainer from './BookingFormContent/BookingFormContentContainer'
 import eventDecorators from './decorators/eventDecorators'
 
 class BookingForm extends Component {
   renderBookingFormContent = formParams => {
-    const { className, formId, isEvent, isReadOnly, onSetCanSubmitForm } = this.props
+    const { className, formId, isEvent, isReadOnly, offerId, onSetCanSubmitForm } = this.props
     const { handleSubmit, invalid, values } = formParams
 
     return (
-      <BookingFormContent
+      <BookingFormContentContainer
         className={className}
         formId={formId}
         handleSubmit={handleSubmit}
         invalid={invalid}
         isEvent={isEvent}
         isReadOnly={isReadOnly}
+        offerId={offerId}
         onChange={onSetCanSubmitForm}
         values={values}
       />
@@ -43,6 +44,7 @@ BookingForm.defaultProps = {
   initialValues: null,
   isEvent: false,
   isReadOnly: false,
+  offerId: '',
 }
 
 BookingForm.propTypes = {
@@ -51,6 +53,7 @@ BookingForm.propTypes = {
   initialValues: PropTypes.shape(),
   isEvent: PropTypes.bool,
   isReadOnly: PropTypes.bool,
+  offerId: PropTypes.string,
   onFormSubmit: PropTypes.func.isRequired,
   onSetCanSubmitForm: PropTypes.func.isRequired,
 }

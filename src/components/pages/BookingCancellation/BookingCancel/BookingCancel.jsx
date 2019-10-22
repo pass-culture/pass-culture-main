@@ -5,8 +5,8 @@ import Icon from '../../Icon/Icon'
 import getDisplayPrice from '../../../../helpers/getDisplayPrice'
 
 const BookingCancel = ({ isEvent, booking }) => {
-  const { amount } = booking || {}
-  const price = getDisplayPrice(amount)
+  const { amount, quantity } = booking || {}
+  const price = getDisplayPrice(amount * quantity)
   const cssClass = isEvent ? 'event' : 'thing'
 
   return (

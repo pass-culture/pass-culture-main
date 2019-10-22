@@ -5,8 +5,10 @@ import { Field } from 'react-final-form'
 
 import getCalendarProvider from '../../utils/getCalendarProvider'
 import parseHoursByStockId from '../../utils/parseHoursByStockId'
+import CheckBoxField from '../../../../forms/inputs/CheckBoxField'
 import SelectField from '../../../../forms/inputs/SelectField'
 import DatePickerField from '../../../../forms/inputs/DatePickerField/DatePickerField'
+import DuoOfferContainer from '../../../../layout/DuoOffer/DuoOfferContainer'
 
 class BookingFormContent extends Component {
   componentDidMount() {
@@ -57,14 +59,24 @@ class BookingFormContent extends Component {
     )
   }
 
+  renderIsDuo = () => {
+    const { offerId } = this.props
+
+    return (<DuoOfferContainer
+      label="Réserver 2 places"
+      offerId={offerId}
+            />)
+  }
+
   render() {
-    const { className, formId, handleSubmit, isEvent, isReadOnly, values } = this.props
-    const { price } = values
+    const { className, formId, handleSubmit, isEvent, isReadOnly, isStockDuo, values } = this.props
+    const { price, isDuo } = values
     const bookableTimes = parseHoursByStockId(values)
     const hasOneBookableTime = bookableTimes.length === 1
     const hasBookableTimes = bookableTimes.length > 0
     const hourLabel = hasOneBookableTime ? '' : 'Choisissez une heure :'
-
+    const displayPriceWarning = !isEvent || (bookableTimes && hasBookableTimes)
+    const computedPrice = isDuo ? price * 2 : price
     return (
       <form
         className={classnames(className, {
@@ -90,13 +102,23 @@ class BookingFormContent extends Component {
                 readOnly={hasOneBookableTime}
               />
             )}
+            {isStockDuo && (
+              <div className="isDuo">
+                <CheckBoxField
+                  name="isDuo"
+                  required={false}
+                >
+                  {this.renderIsDuo()}
+                </CheckBoxField>
+              </div>
+            )}
           </Fragment>
         )}
 
-        {!isEvent && (
+        {displayPriceWarning && (
           <p className="text-center fs22">
             <span className="is-block">{'Vous êtes sur le point de réserver'}</span>
-            <span className="is-block">{`cette offre pour ${price} €.`}</span>
+            <span className="is-block">{`cette offre pour ${computedPrice} €.`}</span>
           </p>
         )}
       </form>
@@ -108,6 +130,8 @@ BookingFormContent.defaultProps = {
   className: '',
   isEvent: false,
   isReadOnly: false,
+  isStockDuo: false,
+  offerId: '',
 }
 
 BookingFormContent.propTypes = {
@@ -117,6 +141,8 @@ BookingFormContent.propTypes = {
   invalid: PropTypes.bool.isRequired,
   isEvent: PropTypes.bool,
   isReadOnly: PropTypes.bool,
+  isStockDuo: PropTypes.bool,
+  offerId: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   values: PropTypes.shape().isRequired,
 }

@@ -11,7 +11,7 @@ import isSameDayInEachTimezone from '../../../../../../helpers/isSameDayInEachTi
 const onCalendarUpdates = (selectedDate, name, allFormValues) => {
   if (!allFormValues) throw new Error('Missing arguments form values')
   if (!selectedDate) return allFormValues
-  const resetObj = { price: null, stockId: null, time: null }
+  const resetObj = { isDuo: null, price: null, stockId: null, time: null }
   const isValid = selectedDate && moment.isMoment(selectedDate)
   if (!isValid) return resetObj
   // iteration sur l'array bookables
@@ -26,6 +26,7 @@ const onCalendarUpdates = (selectedDate, name, allFormValues) => {
       .find(o => isSameDayInEachTimezone(selectedDate, o.beginningDatetime))
   if (!filtered) return resetObj
   return {
+    isDuo: false,
     price: filtered.price,
     stockId: filtered.id,
     time: filtered.id,

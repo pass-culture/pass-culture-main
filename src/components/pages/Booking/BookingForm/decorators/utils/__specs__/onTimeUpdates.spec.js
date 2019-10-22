@@ -41,7 +41,7 @@ describe('src | components | booking | utils | onTimeUpdates', () => {
   it('return a valid object with price and stockID', () => {
     const price = 0
     const stockId = 'AAAA'
-    const expected = { price, stockId }
+    const expected = { isDuo: false, price, stockId }
     const args = [
       stockId,
       'a-name',

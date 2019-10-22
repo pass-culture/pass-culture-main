@@ -10,6 +10,7 @@ ShallowWrapper {
     initialValues={Object {}}
     isEvent={true}
     isReadOnly={false}
+    offerId=""
     onFormSubmit={[MockFunction]}
     onSetCanSubmitForm={[MockFunction]}
   />,

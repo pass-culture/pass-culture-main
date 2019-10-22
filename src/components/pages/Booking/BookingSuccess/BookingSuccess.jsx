@@ -6,8 +6,9 @@ import Icon from '../../Icon/Icon'
 import getDisplayPrice from '../../../../helpers/getDisplayPrice'
 
 const BookingSuccess = ({ bookedPayload, isEvent }) => {
-  const { completedUrl, stock, token } = bookedPayload || {}
+  const { completedUrl, quantity, stock, token } = bookedPayload || {}
   const { price } = stock || {}
+  const isDuo = quantity == 2
   const cssClass = (isEvent && 'event') || 'thing'
   return (
     <div className={`booked text-center ${cssClass}`}>
@@ -19,7 +20,9 @@ const BookingSuccess = ({ bookedPayload, isEvent }) => {
           <Icon svg="picto-validation" />
         </span>
         <span className="is-block mb36">
-          {isEvent && 'Votre réservation est validée.'}
+          {isEvent && 'Votre réservation'}
+          {isEvent && isDuo && <i>{' duo '}</i>}
+          {isEvent && 'est validée.'}
           {!isEvent && (
             <Fragment>
               <span className="is-block">{'Votre pouvez accéder à cette offre'}</span>
@@ -30,7 +33,7 @@ const BookingSuccess = ({ bookedPayload, isEvent }) => {
       </h3>
       <p>
         <span className="is-block">
-          {getDisplayPrice(price)} {'ont été déduits de votre pass.'}
+          {getDisplayPrice(price * quantity)} {'ont été déduits de votre pass.'}
         </span>
         {!completedUrl && (
           <span className="is-block">{'Présentez le code suivant sur place :'}</span>

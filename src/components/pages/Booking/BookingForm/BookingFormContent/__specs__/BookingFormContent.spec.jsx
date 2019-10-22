@@ -16,10 +16,12 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
       className: 'fake className',
       formId: 'fake formId',
       invalid: false,
+      isStockDuo: false,
       isEvent: false,
       isReadOnly: false,
       handleSubmit,
       onChange: jest.fn(),
+      offerId: 'o1',
       values: {
         bookables: [],
         date: null,
@@ -28,7 +30,48 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
     }
   })
 
-  it('should match snapshot', () => {
+  it('should match snapshot when booking a thing', () => {
+    // when
+    const wrapper = shallow(<BookingFormContent {...props} />)
+
+    // then
+    expect(wrapper).toMatchSnapshot()
+  })
+
+  it('should match snapshot when booking an event', () => {
+    // given
+    props.isEvent = true
+    props.values = {
+      bookables: [
+        {
+          id: 'B1',
+        },
+      ],
+      date: '21/10/2001',
+      price: '5',
+    }
+
+    // when
+    const wrapper = shallow(<BookingFormContent {...props} />)
+
+    // then
+    expect(wrapper).toMatchSnapshot()
+  })
+
+  it('should match snapshot when booking a duo event', () => {
+    // given
+    props.isStockDuo = true
+    props.isEvent = true
+    props.values = {
+      bookables: [
+        {
+          id: 'B1',
+        },
+      ],
+      date: '21/10/2001',
+      price: '5',
+    }
+
     // when
     const wrapper = shallow(<BookingFormContent {...props} />)
 

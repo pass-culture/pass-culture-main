@@ -1,7 +1,7 @@
 import moment from 'moment'
 import onCalendarUpdates from '../onCalendarUpdates'
 
-const resetObj = { price: null, stockId: null, time: null }
+const resetObj = { isDuo: null, price: null, stockId: null, time: null }
 
 describe('src | components | booking | utils | onCalendarUpdates', () => {
   it('should throw if no form values defined || not object', () => {
@@ -100,7 +100,7 @@ describe('src | components | booking | utils | onCalendarUpdates', () => {
   it('returns expected if matching', () => {
     const mom = moment()
     const match = { beginningDatetime: mom, id: 'AAA', price: 1 }
-    const expected = { price: 1, stockId: 'AAA', time: 'AAA' }
+    const expected = { isDuo: false, price: 1, stockId: 'AAA', time: 'AAA' }
     const formValues = {
       bookables: [match],
     }
@@ -112,7 +112,7 @@ describe('src | components | booking | utils | onCalendarUpdates', () => {
     const mom = moment()
     const match1 = { beginningDatetime: mom, id: 'AAA', price: 1 }
     const match2 = { beginningDatetime: mom, id: 'BBB', price: 1 }
-    const expected = { price: 1, stockId: 'AAA', time: 'AAA' }
+    const expected = { isDuo: false, price: 1, stockId: 'AAA', time: 'AAA' }
     const formValues = {
       bookables: [match1, match2],
     }

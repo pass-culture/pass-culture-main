@@ -3,6 +3,28 @@
   color: $black;
   z-index: $zindex-booking-card;
 
+  .isDuo {
+    padding-top: rem(20px);
+  }
+
+  .duo-logo {
+    border-radius: 10px;
+    font-size: rem(15px);
+    font-weight: 600;
+    padding-left: rem(1px);
+    padding-right: rem(2px);
+    padding-bottom: rem(1px);
+  }
+
+  .duo-label {
+    padding-left: rem(8px);
+    font-size: rem(20px);
+  }
+
+  .form-checkbox {
+    margin-top: rem(5px);
+  }
+
   header {
     background: #261801;
     color: $white;
@@ -20,6 +42,11 @@
       font-size: 22px;
     }
   }
+
+  .label-contact-inner {
+    align-items: center;
+  }
+
 
   &.with-header {
     margin-top: $header-height;

@@ -15,6 +15,22 @@
   background-color: $white;
   border-radius: 4px;
   margin-bottom: 0.75rem;
+
+  .isDuo {
+    padding-top: rem(20px);
+  }
+
+  .duo-logo {
+    border-radius: 8px;
+    color: $primary;
+    font-size: rem(12px);
+    font-weight: 700;
+    margin-right: rem(4px);
+    padding-bottom: rem(1px);
+    padding-left: rem(1px);
+    padding-right: rem(2px);
+    line-height: 1.2rem;
+  }
 }
 
 .mb-heading {
