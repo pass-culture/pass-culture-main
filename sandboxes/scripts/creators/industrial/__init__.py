@@ -9,6 +9,7 @@ from sandboxes.scripts.creators.industrial.create_industrial_event_offers import
 from sandboxes.scripts.creators.industrial.create_industrial_event_stocks import *
 from sandboxes.scripts.creators.industrial.create_industrial_mediations import *
 from sandboxes.scripts.creators.industrial.create_industrial_offerers_with_pro_users import *
+from sandboxes.scripts.creators.industrial.create_industrial_pro_users_api_keys import *
 from sandboxes.scripts.creators.industrial.create_industrial_payments import *
 from sandboxes.scripts.creators.industrial.create_industrial_pro_users import *
 from sandboxes.scripts.creators.industrial.create_industrial_recommendations import *
@@ -82,3 +83,5 @@ def save_industrial_sandbox():
     create_industrial_bookings(recommendations_by_name, stocks_by_name)
 
     create_industrial_payments()
+
+    create_industrial_pro_users_api_keys(offerers_by_name)

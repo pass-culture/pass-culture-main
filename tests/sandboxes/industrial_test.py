@@ -18,6 +18,7 @@ def test_save_industrial_sandbox(app):
 
     # then
     assertCreatedCounts(
+        ApiKey=13,
         Booking=41,
         Deposit=8,
         Mediation=86,

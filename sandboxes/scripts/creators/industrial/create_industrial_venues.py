@@ -1,7 +1,6 @@
 import re
 
 from models.pc_object import PcObject
-from models import Offerer, Venue
 from sandboxes.scripts.mocks.venue_mocks import MOCK_NAMES
 from utils.logger import logger
 from tests.test_utils import create_venue, create_bank_information

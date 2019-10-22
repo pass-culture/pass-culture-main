@@ -14,22 +14,28 @@ from simplejson import JSONDecodeError
 
 import models
 from local_providers.providable_info import ProvidableInfo
-from models import Booking, \
+from models import ApiKey, \
+    BankInformation, \
+    Booking, \
     Criterion, \
     Deposit, \
     EventType, \
+    Favorite,\
     Mediation, \
     Offer, \
     Offerer, \
     Payment, \
+    PaymentMessage,\
+    Product,\
+    Provider, \
     Recommendation, \
     RightsType, \
     Stock, \
     ThingType, \
     User, \
     UserOfferer, \
-    BankInformation, \
-    Venue, PaymentMessage, VenueProvider, Product, Favorite, Provider
+    Venue, \
+    VenueProvider
 from models.beneficiary_import import BeneficiaryImport
 from models.beneficiary_import_status import ImportStatus, BeneficiaryImportStatus
 from models.db import db, Model
@@ -898,7 +904,6 @@ def deactivate_feature(feature_toggle: FeatureToggle):
     feature.isActive = False
     PcObject.save(feature)
 
-
 def create_provider(local_class: str, is_active: bool = True, is_enable_for_pro: bool = True) -> Provider:
     provider = Provider()
     provider.localClass = local_class
@@ -918,3 +923,10 @@ def create_providable_info(model_name: Model = Product,
     else:
         providable_info.date_modified_at_provider = datetime.utcnow()
     return providable_info
+
+def create_api_key(offerer, value):
+    offererApiKey = ApiKey()
+    offererApiKey.value = value
+    offererApiKey.offererId = offerer.id
+
+    PcObject.save(offererApiKey)
