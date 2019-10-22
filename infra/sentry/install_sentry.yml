@@ -2,12 +2,9 @@
 - name: Install Sentry server
   hosts: sentry
   become: true
-  vars:
-    service_host: "logs.passculture.app"
-    service_admin_email: "eperret@octo.com"
-    service_name: "sentry"
-    service_root_directory: "/opt"
-    letsencrypt_ssl_dir: "/etc/letsencrypt/live"
+  roles:
+    - role: letsencrypt
+      tags: 'letsencrypt'
   tasks:
     - import_tasks: tasks/install_docker.yml
       tags:
@@ -17,70 +14,37 @@
       tags:
         - 'git'
 
-    - name: Create Sentry directory
-      file:
-        path: /opt/sentry
-        state: directory
+    - import_tasks: tasks/install_sentry.yml
       tags:
         - 'sentry'
 
-    - name: Clone Sentry project
-      git:
-        repo: 'https://github.com/getsentry/onpremise'
-        dest: /opt/sentry
-        update: no
+    - import_tasks: tasks/firewalld.yml
       tags:
-        - 'sentry'
-
-    - name: Update Sentry configuration
-      blockinfile:
-        path: /opt/sentry/sentry.conf.py
-        block: |
-          #####################
-          # GOOGLE AUTH LOGIN #
-          #####################
-
-          SENTRY_OPTIONS['auth-google.client-id'] = "{{ google_client_id }}"
-          SENTRY_OPTIONS['auth-google.client-secret'] = "{{ google_client_secret }}"
-      tags:
-        - 'sentry'
-
-    - name: check if sentry/.env file exists
-      stat:
-        path: /opt/sentry/.env
-      register: sentry_env_file
-
-    - name: Run Sentry install.sh
-      command: ./install.sh >> installation_logs.txt
-      args:
-        chdir: /opt/sentry
-      when: sentry_env_file.stat.exists == false
-      tags:
-        - 'sentry'
-
-    - name: Run compose to start containers
-      docker_service:
-        project_src: /opt/sentry
-        state: present
-      tags:
-        - 'sentry'
+        - 'firewalld'
 
     - import_tasks: tasks/install_nginx.yml
       tags:
         - 'nginx'
 
-    - name: Generate dhparams file
+    - name: check if dhparams file exists
+      stat:
+        path: /etc/ssl/certs/dhparam.pem
+      register: dhparams_file
+
+    - name: Generate  dhparams file
       shell: openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
+      when: dhparams_file.stat.exists == false
 
-  roles:
-    - role: firewalld
-      tags: 'firewalld'
-    - role: letsencrypt
-      tags: 'letsencrypt'
-    - role: service
-      tags: 'service'
+    - import_tasks: tasks/certificate.yml
+      tags:
+        - 'certificate'
 
-#
+  handlers:
+    - name: Firewalld
+      service:
+        name: firewalld
+        state: restarted
+
 #    - name: Configure administrator account
 #      expect:
 #        command: docker-compose run --rm web createuser
