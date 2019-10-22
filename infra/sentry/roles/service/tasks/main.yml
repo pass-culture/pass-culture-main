@@ -1,0 +1,44 @@
+#- name: Add http nginx configuration
+#  template:
+#    src: service.http.conf.j2
+#    dest: /etc/nginx/sites-available/{{ service_name }}.http.conf
+#    owner: www-data
+#    group: www-data
+#    mode: 0644
+#
+#- name: Add http nginx symlink
+#  file:
+#    src: /etc/nginx/sites-available/{{ service_name }}.http.conf
+#    dest: /etc/nginx/sites-enabled/{{ service_name }}.http
+#    owner: www-data
+#    group: www-data
+#    state: link
+#
+#- name: reload nginx
+#  service:
+#    name: nginx
+#    state: reloaded
+
+- name: Create certificate
+  shell: certbot certonly --webroot --email {{ service_admin_email }} --agree-tos --webroot-path=/usr/share/nginx/html -d {{ service_host }};
+
+#- name: Add https nginx configuration
+#  template:
+#    src: service.https.conf.j2
+#    dest: /etc/nginx/sites-available/{{ service_name }}.https.conf
+#    owner: www-data
+#    group: www-data
+#    mode: 0644
+#
+#- name: Add external https nginx symlink
+#  file:
+#    src: /etc/nginx/sites-available/{{ service_name }}.https.conf
+#    dest: /etc/nginx/sites-enabled/{{ service_name }}.https
+#    owner: www-data
+#    group: www-data
+#    state: link
+
+#- name: reload nginx
+#  service:
+#    name: nginx
+#    state: reloaded
