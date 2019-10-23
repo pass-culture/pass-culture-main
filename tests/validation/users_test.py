@@ -7,11 +7,9 @@ from models import ApiErrors, ApiKey, User, PcObject
 from tests.conftest import clean_database
 from tests.test_utils import create_offerer, create_user, create_user_offerer
 from validation.users import check_valid_signup_webapp,\
-    check_user_can_validate_bookings,\
-    check_user_can_validate_bookings_v2,\
-    check_valid_signup_pro,\
-    check_api_key_allows_to_validate_booking
+    check_valid_signup_pro
 from utils.token import random_token
+
 
 def test_check_valid_signup_webapp_raises_api_error_if_not_contact_ok():
     # Given
@@ -128,109 +126,3 @@ def test_check_valid_signup_pro_does_not_raise_api_error_if_contact_ok_is_true_h
     except ApiErrors:
         # Then
         assert False
-
-class CheckUserCanValidateBookingsTest:
-    class UserHasRightsTest:
-        @clean_database
-        def test_check_user_can_validate_bookings_returns_true_when_user_is_authenticated_and_has_editor_rights_on_booking(
-                self, app):
-            # Given
-            user = create_user()
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer, None)
-            PcObject.save(user, offerer, user_offerer)
-
-            # When
-            result = check_user_can_validate_bookings(user, offerer.id)
-
-            # Then
-            assert result is True
-
-        @clean_database
-        def test_check_user_can_validate_bookings_returns_true_when_api_key_is_provided_and_has_editor_rights_on_booking(
-                self, app):
-            # Given
-            user = create_user()
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer, None)
-
-            PcObject.save(user, offerer, user_offerer)
-
-            validApiKey = ApiKey()
-            validApiKey.value = random_token(64)
-            validApiKey.offererId = offerer.id
-
-            PcObject.save(validApiKey)
-
-            # When
-            result = check_api_key_allows_to_validate_booking(validApiKey, offerer.id)
-
-            # Then
-            assert result is True
-
-        @clean_database
-        def test_check_user_can_validate_v2_bookings_return_true_when_user_has_editor_rights_on_booking(
-                self, app):
-            # Given
-            user = create_user()
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer, None)
-
-            PcObject.save(user, offerer, user_offerer)
-
-            result = check_user_can_validate_bookings_v2(user, offerer.id)
-
-            # Then
-            assert result is True
-
-    class UserHaveNoRightsTest:
-        def test_check_user_can_validate_bookings_return_false_when_user_is_not_logged_in(self, app):
-            # Given
-            user = AnonymousUserMixin()
-
-            # When
-            result = check_user_can_validate_bookings(user, None)
-
-            # Then
-            assert result is False
-
-
-        def test_check_user_can_validate_bookings_raise_api_error_when_user_is_authenticated_and_does_not_have_editor_rights_on_booking(
-                self, app):
-            # Given
-            user = User()
-            user.is_authenticated = True
-
-            # When
-            with pytest.raises(ApiErrors) as errors:
-                check_user_can_validate_bookings(user, None)
-
-            # Then
-            assert errors.value.errors['global'] == ["Cette contremarque n'a pas été trouvée"]
-
-        def test_check_user_can_validate_v2_bookings_raise_api_error_when_user_is_authenticated_and_does_not_have_editor_rights_on_booking(
-                self, app):
-            # Given
-            user = User()
-            user.is_authenticated = True
-
-            # When
-            with pytest.raises(ApiErrors) as errors:
-                check_user_can_validate_bookings_v2(user, None)
-
-            # Then
-            assert errors.value.errors['user'] == ["Vous n'avez pas les droits suffisants pour éditer cette contremarque."]
-
-        def test_check_user_with_api_key_can_validate_bookings_raise_api_error_when_user_is_authenticated_and_does_not_have_editor_rights_on_booking(
-                self, app):
-            # Given
-            validApiKey = ApiKey()
-            validApiKey.value = random_token(64)
-            validApiKey.offererId = 67
-
-            # When
-            with pytest.raises(ApiErrors) as errors:
-                check_api_key_allows_to_validate_booking(validApiKey, None)
-
-            # Then
-            assert errors.value.errors['user'] == ["Vous n'avez pas les droits suffisants pour éditer cette contremarque."]

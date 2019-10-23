@@ -16,14 +16,24 @@ def check_event_occurrence_offerer_exists(offerer):
         raise api_errors
 ```
 
+Si ces validations sont utilisées dans les routes et génèrent des exceptions et des codes réponses api, il est préférable d'utiliser les classes d'erreurs existantes en customisant la réponse si nécessaire.
+
+Par exemple :
+```python
+def check_api_key_allows_to_validate_booking(valid_api_key: ApiKey, offerer_id: int):
+    if not valid_api_key.offererId == offerer_id:
+        api_errors = ForbiddenError()
+        api_errors.add_error('user', 'Vous n\'avez pas les droits suffisants pour éditer cette contremarque.')
+        raise api_errors
+```
+
 ## Don't
 Ces fonctions ne doivent pas contenir : des règles de gestion, des _queries_ vers la base de données ou des appels à des
 web services.
 
 ## Testing
 Ces fonctions sont testées de manière unitaire et ne nécessitent ni _mocking_, ni instanciation de la base de donnée
-ou d'un contexte Flask. Ces tests doivent être extrêmement rapides à l'exécution et sont généralement un excellent terrain
-d'apprentissage pour le Test Driven Development (TDD).
+ou d'un contexte Flask. Ces tests doivent être extrêmement rapides à l'exécution et sont généralement un excellent terrain d'apprentissage pour le Test Driven Development (TDD).
 
 Ils ont pour objectif de :
 * lister les comportements et responsabilités d'une fonction

@@ -26,7 +26,7 @@ class CheckUserCanValidateBookingTest:
         # Then
         assert result is True
 
-    def test_check_user_can_validate_bookings_return_false_when_user_is_not_logged_in(self, app):
+    def test_check_user_can_validate_bookings_returns_false_when_user_is_not_logged_in(self, app):
         # Given
         user = AnonymousUserMixin()
 
@@ -109,7 +109,7 @@ class CheckApiKeyAllowsToValidateBookingTest:
         except:
             assert False
 
-    def test_check_user_with_api_key_can_validate_bookings_raise_api_error_when_user_is_authenticated_and_does_not_have_editor_rights_on_booking(
+    def test_api_key_is_provided_but_related_offerer_does_not_have_rights_on_booking(
             self, app):
         # Given
         validApiKey = ApiKey()
