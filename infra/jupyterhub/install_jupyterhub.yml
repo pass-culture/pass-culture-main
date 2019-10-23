@@ -1,25 +1,32 @@
 ---
 - name: Install Jupyterhub
   hosts: jupyterhub
+  become: true
   tasks:
     - name: Install pip
       apt:
         name: python3-pip
         state: present
-      become: true
 
     - name: Install setuptools
       apt:
         name: 'python3-setuptools'
         state: present
-      become: true
+
+    - name: Check if dhparams file exists
+      stat:
+        path: /etc/ssl/certs/dhparam.pem
+      register: dhparams_file
+
+    - name: Generate  dhparams file
+      shell: openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
+      when: dhparams_file.stat.exists == false
 
     - name: Create jupyterhub directory
       file:
         path: /opt/jupyterhub
         state: directory
         owner: ubuntu
-      become: true
 
     - name: Copy requirements.txt
       copy:
@@ -31,14 +38,12 @@
       pip:
         requirements: /opt/jupyterhub/requirements.txt
         executable: /opt/tljh/user/bin/pip
-      become: true
       tags: pip
 
     - name: Install git required packages
       apt:
         name: git-core
         update_cache: yes
-      become: true
       tags: git
 
     - name: Copy create_database_tunnel.sh
@@ -47,7 +52,6 @@
         dest: /opt/jupyterhub/create_database_tunnel.sh
         owner: ubuntu
         mode: u=rwx,g=rx,o=rx
-      become: true
       tags: copy
 
     - name: Check if scalingo cli is installed
@@ -73,11 +77,9 @@
         src: connect_to_database.service
         dest: /etc/systemd/system/connect_to_database.service
         owner: ubuntu
-      become: true
 
     - name: Start connection to database service
       systemd:
         state: started
         name: connect_to_database.service
         enabled: yes
-
