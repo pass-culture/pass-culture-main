@@ -21,7 +21,8 @@ import {
   selectVenuesByOffererIdAndOfferType,
 } from '../../../selectors/data/venuesSelectors'
 import { selectOfferers } from '../../../selectors/data/offerersSelectors'
-import selectIsFeatureDisabled from '../../router/selectors/selectIsFeatureDisabled'
+import selectIsFeatureActive from '../../router/selectors/selectIsFeatureActive'
+import { mergeForm } from 'pass-culture-shared'
 
 export const mapStateToProps = (state, ownProps) => {
   const {
@@ -75,14 +76,14 @@ export const mapStateToProps = (state, ownProps) => {
   const showSubOptions = extraData.showType && selectShowSubOptionsByShowType(extraData.showType)
   const offerTypeError = get(state, 'errors.offer.type')
 
-  const isFeatureDisabled = selectIsFeatureDisabled(state, 'DUO_OFFER')
+  const isFeatureActive = selectIsFeatureActive(state, 'DUO_OFFER')
 
   return {
     formInitialValues,
     formOffererId,
     formVenueId,
     isEditableOffer,
-    isFeatureDisabled,
+    isFeatureActive,
     musicSubOptions,
     offer,
     offerer,
@@ -113,12 +114,22 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
   }
 }
 
+export const mapDispatchToProps = dispatch => ({
+    updateFormSetIsDuo : (isDuo) => {
+      dispatch(
+        mergeForm('offer', {
+          isDuo: isDuo,
+        })
+      )
+    }
+})
+
 export default compose(
   withTracking('Offer'),
   withRequiredLogin,
   connect(
     mapStateToProps,
-    null,
+    mapDispatchToProps,
     mergeProps
   )
 )(Offer)

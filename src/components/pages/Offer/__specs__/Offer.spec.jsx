@@ -22,7 +22,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         isDuo: false,
       },
       isEditableOffer: true,
-      isFeatureDisabled: true,
+      isFeatureActive: true,
       loadVenue: jest.fn(),
       location: {
         search: '?lieu=AQ',
@@ -187,6 +187,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           id: 'N9',
           idAtProviders: null,
           isActive: true,
+          isDuo: false,
           isEvent: true,
           isThing: false,
           lastProviderId: null,
@@ -281,21 +282,21 @@ describe('src | components | pages | Offer | Offer ', () => {
           expect(durationField.prop('name')).toStrictEqual('durationMinutes')
         })
 
-        it('should allow to configure the offer as a DUO', () => {
+        it('should allow to configure the offer as DUO', () => {
           // given
           props.match = {
             params: {
               offerId: 'QU',
             },
           }
-          props.isFeatureDisabled = false
+          props.isFeatureActive = true
           props.selectedOfferType = {
             type: 'Event',
           }
           const wrapper = shallow(<Offer {...props} />)
 
           // when
-          const isDuoCheckbox = wrapper.find('#isDigital')
+          const isDuoCheckbox = wrapper.find('#isDuo')
 
           // then
           expect(isDuoCheckbox).toHaveLength(1)
@@ -339,7 +340,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           const wrapper = shallow(<Offer {...props} />)
 
           // when
-          const isDuoCheckbox = wrapper.find(Field).find({ name: 'isDuo' })
+          const isDuoCheckbox = wrapper.find('#isDuo')
 
           // then
           expect(isDuoCheckbox).toHaveLength(0)

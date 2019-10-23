@@ -1,4 +1,4 @@
-import { mapStateToProps, mergeProps } from '../OfferContainer'
+import { mapDispatchToProps, mapStateToProps, mergeProps } from '../OfferContainer'
 import state from '../../../utils/mocks/state'
 
 describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
@@ -46,7 +46,7 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
         formOffererId: 'BA',
         formVenueId: 'DA',
         isEditableOffer: undefined,
-        isFeatureDisabled: true,
+        isFeatureActive: false,
         musicSubOptions: undefined,
         offer: {
           bookingEmail: 'booking.email@test.com',
@@ -346,4 +346,35 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
       })
     })
   })
+
+  describe('mapDispatchToProps', () => {
+    let dispatch
+    let props
+
+    beforeEach(() => {
+      dispatch = jest.fn()
+      props = mapDispatchToProps(dispatch)
+    })
+
+    describe('updateFormSetIsDuo', () => {
+      it('should update offer isDuo value in form', () => {
+        // given
+        const isDuo = true
+
+        // when
+        props.updateFormSetIsDuo(isDuo)
+
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          config: undefined,
+          name: "offer",
+          patch: {
+            "isDuo": true,
+          },
+          type: 'MERGE_FORM_OFFER_ISDUO',
+        })
+      })
+    })
+  })
+
 })

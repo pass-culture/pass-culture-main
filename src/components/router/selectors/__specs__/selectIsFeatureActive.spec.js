@@ -1,16 +1,16 @@
-import selectIsFeatureDisabled from '../selectIsFeatureDisabled'
+import selectisFeatureActive from '../selectIsFeatureActive'
 
-describe('src | components | router | selectors | selectIsFeatureDisabled', () => {
+describe('src | components | router | selectors | selectisFeatureActive', () => {
   it('should return true when features is Empty', () => {
     // when
     const state = { data: { features: [] } }
     const featureName = null
 
     // when
-    const isFeatureDisabled = selectIsFeatureDisabled(state, featureName)
+    const isFeatureActive = selectisFeatureActive(state, featureName)
 
     // then
-    expect(isFeatureDisabled).toStrictEqual(true)
+    expect(isFeatureActive).toStrictEqual(false)
   })
 
   it('should return true when featureName is falsy', () => {
@@ -19,10 +19,10 @@ describe('src | components | router | selectors | selectIsFeatureDisabled', () =
     const featureName = null
 
     // when
-    const isFeatureDisabled = selectIsFeatureDisabled(state, featureName)
+    const isFeatureActive = selectisFeatureActive(state, featureName)
 
     // then
-    expect(isFeatureDisabled).toStrictEqual(true)
+    expect(isFeatureActive).toStrictEqual(false)
   })
 
   it('should return true when selected feature is not found', () => {
@@ -31,10 +31,10 @@ describe('src | components | router | selectors | selectIsFeatureDisabled', () =
     const featureName = 'BAR'
 
     // when
-    const isFeatureDisabled = selectIsFeatureDisabled(state, featureName)
+    const isFeatureActive = selectisFeatureActive(state, featureName)
 
     // then
-    expect(isFeatureDisabled).toStrictEqual(true)
+    expect(isFeatureActive).toStrictEqual(false)
   })
 
   it('should return true when selected feature is not active', () => {
@@ -43,9 +43,9 @@ describe('src | components | router | selectors | selectIsFeatureDisabled', () =
     const featureName = 'FOO'
 
     // when
-    const isFeatureDisabled = selectIsFeatureDisabled(state, featureName)
+    const isFeatureActive = selectisFeatureActive(state, featureName)
 
     // then
-    expect(isFeatureDisabled).toStrictEqual(true)
+    expect(isFeatureActive).toStrictEqual(false)
   })
 })

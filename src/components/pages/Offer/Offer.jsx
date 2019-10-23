@@ -117,7 +117,7 @@ class Offer extends PureComponent {
       )
     }
 
-    this.setDefaultIsDuo()
+    this.setDefaultIsDuoIfNewAndEvent()
   }
 
   onHandleDataRequest = (handleSuccess, handleFail) => {
@@ -268,10 +268,10 @@ class Offer extends PureComponent {
     }
   }
 
-  setDefaultIsDuo() {
-    const { dispatch, isFeatureDisabled, query, selectedOfferType } = this.props
+  setDefaultIsDuoIfNewAndEvent() {
+    const { isFeatureActive, query, updateFormSetIsDuo, selectedOfferType } = this.props
 
-    if (isFeatureDisabled) return
+    if (!isFeatureActive) return
 
     const { isCreatedEntity } = query.context()
     if (!isCreatedEntity) return
@@ -279,11 +279,7 @@ class Offer extends PureComponent {
     const isEventType = get(selectedOfferType, 'type') === 'Event'
     if (!isEventType) return
 
-      dispatch(
-        mergeForm('offer', {
-          isDuo: true,
-        })
-      )
+    updateFormSetIsDuo(true)
   }
 
   hasConditionalField(fieldName) {
@@ -312,12 +308,8 @@ class Offer extends PureComponent {
   }
 
   handleCheckIsDuo = (event)  => {
-    const { dispatch } = this.props
-    dispatch(
-      mergeForm('offer', {
-        isDuo: event.target.checked,
-      })
-    )
+    const { updateFormSetIsDuo } = this.props
+    updateFormSetIsDuo(event.target.checked)
   }
 
   render() {
@@ -325,7 +317,7 @@ class Offer extends PureComponent {
       currentUser,
       formInitialValues,
       isEditableOffer,
-      isFeatureDisabled,
+      isFeatureActive,
       musicSubOptions,
       offer,
       offerer,
@@ -379,7 +371,7 @@ class Offer extends PureComponent {
 
 
     let isDuoDefaultStatus
-    if (!isFeatureDisabled) {
+    if (isFeatureActive) {
       if (formInitialValues.isDuo === undefined) {
         isDuoDefaultStatus = true
       }
@@ -626,12 +618,12 @@ class Offer extends PureComponent {
                     type="duration"
                   />
                   )}
-                {isEventType && !isFeatureDisabled && (
+                {isEventType && isFeatureActive && (
                   <div className="select-duo-offer">
                     <input
                       className="pc-checkbox input"
                       defaultChecked={isDuoDefaultStatus}
-                      id="isDigital"
+                      id="isDuo"
                       onClick={this.handleCheckIsDuo}
                       type="checkbox"
                     />
@@ -799,7 +791,7 @@ class Offer extends PureComponent {
 }
 
 Offer.defaultProps = {
-  isFeatureDisabled: true,
+  isFeatureActive: true,
   venues: [],
 }
 
@@ -807,7 +799,7 @@ Offer.propTypes = {
   currentUser: PropTypes.shape().isRequired,
   dispatch: PropTypes.func.isRequired,
   isEditableOffer: PropTypes.bool.isRequired,
-  isFeatureDisabled: PropTypes.bool,
+  isFeatureActive: PropTypes.bool,
   location: PropTypes.shape().isRequired,
   query: PropTypes.shape().isRequired,
   selectedOfferType: PropTypes.arrayOf().isRequired,

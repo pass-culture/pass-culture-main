@@ -2,19 +2,19 @@ import createCachedSelector from 're-reselect'
 
 const mapArgsToCacheKey = (state, featureName) => featureName || ''
 
-const selectIsFeatureDisabled = createCachedSelector(
+const selectIsFeatureActive = createCachedSelector(
   state => state.data.features,
   (state, featureName) => featureName,
   (features, featureName) => {
     if (!features) {
-      return true
+      return false
     }
     const selectedFeature = features.find(feature => feature.nameKey === featureName)
     if (!selectedFeature) {
-      return true
+      return false
     }
-    return !selectedFeature.isActive
+    return selectedFeature.isActive
   }
 )(mapArgsToCacheKey)
 
-export default selectIsFeatureDisabled
+export default selectIsFeatureActive
