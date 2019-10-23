@@ -13,6 +13,7 @@ import {
 } from 'pass-culture-shared'
 
 import React, { PureComponent, Fragment } from 'react'
+import ReactToolTip from 'react-tooltip'
 import { NavLink } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
 
@@ -118,6 +119,8 @@ class Offer extends PureComponent {
     }
 
     this.setDefaultIsDuoIfNewAndEvent()
+
+    ReactToolTip.rebuild()
   }
 
   onHandleDataRequest = (handleSuccess, handleFail) => {
