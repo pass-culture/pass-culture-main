@@ -1,7 +1,7 @@
-#- name: Pip uninstall dependencies
-#  pip:
-#    name: ['requests', 'six', 'urllib3']
-#    state: present
+- name: Pip uninstall dependencies
+  pip:
+    name: ['requests', 'six', 'urllib3']
+    state: absent
 
 - name: Yum reinstall dependecies
   yum:
@@ -10,6 +10,11 @@
 - name: Install cerbot
   yum:
     name: ['certbot', 'python2-certbot-nginx']
+
+- name: Install or update python requirements
+  pip:
+    name: ['cffi', 'six', 'requests==2.6.0']
+    state: latest
 
 - name: Add crontab to renew certificates
   cron:
