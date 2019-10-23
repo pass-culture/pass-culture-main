@@ -17,7 +17,7 @@ from utils.human_ids import humanize
 BOOKING_CANCELLATION_DELAY = timedelta(hours=72)
 QR_CODE_PASS_CULTURE_VERSION = 'v1'
 QR_CODE_VERSION = 10
-QR_CODE_BOX_SIZE = 3
+QR_CODE_BOX_SIZE = 2
 QR_CODE_BOX_BORDER = 1
 CSV_HEADER = [
     "Raison sociale du lieu",
@@ -26,6 +26,7 @@ CSV_HEADER = [
     "Prénom utilisateur",
     "E-mail utilisateur",
     "Date de la réservation",
+    "Quantité",
     "Tarif pass Culture",
     "Statut",
 ]
@@ -65,20 +66,32 @@ def generate_qr_code(booking: Booking) -> str:
 
     offer_type = 'EVT' if booking.stock.offer.isEvent else 'BIEN'
     offer_date_time = booking.stock.beginningDatetime if booking.stock.beginningDatetime else ''
+    product_extra_data = booking.stock.offer.product.extraData
+    product_isbn = ''
+    if product_extra_data:
+        if 'isbn' in product_extra_data:
+            product_isbn = product_extra_data['isbn']
 
-    qr.add_data(
-        f'PASSCULTURE:{QR_CODE_PASS_CULTURE_VERSION};'
-        f'TOKEN:{booking.token};'
-        f'EMAIL:{booking.user.email};'
-        f'OFFERID:{humanize(booking.stock.offer.id)};'
-        f'OFFERNAME:{booking.stock.offer.name};'
-        f'VENUE:{booking.stock.offer.venue.name};'
-        f'TYPE:{offer_type};'
-        f'FORMULA:{offer_formula};'
-        f'DATETIME:{offer_date_time};'
-        f'PRICE:{booking.stock.price};'
-        f'QTY:{booking.quantity}')
-    qr.make(fit=True)
+    data = f'PASSCULTURE:{QR_CODE_PASS_CULTURE_VERSION};' \
+           f'TOKEN:{booking.token};' \
+           f'EMAIL:{booking.user.email};' \
+           f'OFFERID:{humanize(booking.stock.offer.id)};' \
+           f'OFFERNAME:{booking.stock.offer.name};' \
+           f'VENUE:{booking.stock.offer.venue.name};' \
+           f'TYPE:{offer_type};' \
+           f'PRICE:{booking.stock.price};' \
+           f'QTY:{booking.quantity};'
+
+    if offer_formula != '':
+        data += f'FORMULA:{offer_formula};'
+
+    if offer_date_time != '':
+        data += f'DATETIME:{offer_date_time};'
+
+    if product_isbn != '':
+        data += f'EAN13:{product_isbn};'
+
+    qr.add_data(data)
     image = qr.make_image(fill_color='black', back_color='white')
     return _convert_to_base64(image)
 

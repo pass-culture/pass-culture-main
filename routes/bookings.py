@@ -14,8 +14,8 @@ from domain.user_emails import send_booking_recap_emails, \
 from models import ApiErrors, Booking, PcObject, Stock, RightsType, EventType, Offerer
 from models.offer_type import ProductType
 from repository import booking_queries
-from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from repository.api_key_queries import find_api_key_by_value
+from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from routes.serialization import serialize, as_dict
 from utils.human_ids import dehumanize, humanize
 from utils.includes import WEBAPP_GET_BOOKING_INCLUDES, WEBAPP_PATCH_POST_BOOKING_INCLUDES
@@ -36,16 +36,15 @@ from validation.bookings import check_booking_is_usable, \
     check_offer_is_active, \
     check_stock_booking_limit_date, \
     check_email_and_offer_id_for_anonymous_user, \
-    check_booking_is_cancellable,\
-    check_stock_venue_is_validated,\
+    check_booking_is_cancellable, \
+    check_stock_venue_is_validated, \
     check_rights_for_activation_offer, \
     check_rights_to_get_bookings_csv
 from validation.users_authentifications import check_user_is_logged_in_or_email_is_provided, \
-login_or_api_key_required_v2
-from validation.users_authorizations import check_user_can_validate_bookings,\
-    check_api_key_allows_to_validate_booking,\
+    login_or_api_key_required_v2
+from validation.users_authorizations import check_user_can_validate_bookings, \
+    check_api_key_allows_to_validate_booking, \
     check_user_can_validate_bookings_v2
-from datetime import datetime
 
 
 @app.route('/bookings/csv', methods=['GET'])
@@ -321,6 +320,7 @@ def _create_response_to_get_booking_by_token(booking):
                          'dateOfBirth': serialize(booking.user.dateOfBirth)})
 
     return response
+
 
 def _create_response_to_get_booking_by_token_v2(booking):
     offer_name = booking.stock.resolvedOffer.product.name
