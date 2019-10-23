@@ -109,7 +109,7 @@ class CheckApiKeyAllowsToValidateBookingTest:
         except:
             assert False
 
-    def test_api_key_is_provided_but_related_offerer_does_not_have_rights_on_booking(
+    def test_raises_exception_when_api_key_is_provided_but_related_offerer_does_not_have_rights_on_booking(
             self, app):
         # Given
         validApiKey = ApiKey()

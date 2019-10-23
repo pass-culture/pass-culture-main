@@ -235,8 +235,8 @@ def get_booking_by_token(token):
 def get_booking_by_token_v2(token):
     authorization_header = request.headers.get('Authorization', None)
     headers_contains_api_key_authorization = authorization_header and 'Bearer' in authorization_header
-
     if headers_contains_api_key_authorization:
+
         app_authorization_api_key = authorization_header.replace("Bearer ", "")
     else:
         app_authorization_api_key = None
@@ -250,7 +250,7 @@ def get_booking_by_token_v2(token):
 
     offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
 
-    if current_user and current_user.is_authenticated:
+    if current_user.is_authenticated:
         # warning : current user is not none when user is not logged in
         check_user_can_validate_bookings_v2(current_user, offerer_id)
 
