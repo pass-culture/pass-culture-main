@@ -35,6 +35,8 @@
   command: ./install.sh >> installation_logs.txt
   args:
     chdir: /opt/sentry
+  environment:
+    CI: true
   when: sentry_env_file.stat.exists == false
   tags:
     - 'sentry'
