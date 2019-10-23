@@ -29,10 +29,10 @@ class BookingsTest:
 
             # then
             build_qr_code.assert_called_once_with(
-                version=20,
+                version=10,
                 error_correction=3,
-                box_size=1,
-                border=1,
+                box_size=10,
+                border=4,
             )
 
         @patch('domain.bookings.qrcode.QRCode.add_data')
@@ -54,7 +54,7 @@ class BookingsTest:
 
             # then
             build_qr_code_booking_info.assert_called_once_with(
-                f'PASSCULTURE:20;'
+                f'PASSCULTURE:v1;'
                 f'TOKEN:ABCDE;'
                 f'EMAIL:user@test.com;'
                 f'OFFERID:AE;'
@@ -86,7 +86,7 @@ class BookingsTest:
 
             # then
             build_qr_code_booking_info.assert_called_once_with(
-                f'PASSCULTURE:20;'
+                f'PASSCULTURE:v1;'
                 f'TOKEN:ABCDE;'
                 f'EMAIL:user@test.com;'
                 f'OFFERID:AE;'
@@ -118,7 +118,7 @@ class BookingsTest:
 
             # then
             build_qr_code_booking_info.assert_called_once_with(
-                f'PASSCULTURE:20;'
+                f'PASSCULTURE:v1;'
                 f'TOKEN:ABCDE;'
                 f'EMAIL:user@test.com;'
                 f'OFFERID:AE;'
@@ -150,7 +150,7 @@ class BookingsTest:
 
             # then
             build_qr_code_booking_info.assert_called_once_with(
-                f'PASSCULTURE:20;'
+                f'PASSCULTURE:v1;'
                 f'TOKEN:ABCDE;'
                 f'EMAIL:user@test.com;'
                 f'OFFERID:AE;'
@@ -182,7 +182,7 @@ class BookingsTest:
 
             # then
             build_qr_code_booking_info.assert_called_once_with(
-                f'PASSCULTURE:20;'
+                f'PASSCULTURE:v1;'
                 f'TOKEN:ABCDE;'
                 f'EMAIL:user@test.com;'
                 f'OFFERID:AE;'
@@ -218,7 +218,7 @@ class BookingsTest:
                 fill_color='black',
             )
 
-        def test_should_build_qr_code_image_as_bytes(self):
+        def test_should_build_qr_code_image_as_base64_string(self):
             # given
             user = create_user(email='user@test.com')
             offerer = create_offerer()
@@ -233,4 +233,4 @@ class BookingsTest:
 
             # then
             assert type(qr_code) is str
-            assert qr_code == "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGMAAABjAQAAAACnQIM4AAAFcUlEQVR4nFXU+TvUeQDA8c/n6zuYpKgoNmac48yx2lY5RsiVq1p0rHvDZMNurdqn2tltc5TSU1k25EhuzzYiHYbBGDHROtOYzHcwIwozjpgxY/a33Wff/8DrtzdUgP/iAyo7J8WU2BgqvaFFJMIWvEg6e7grQGnMJ0uMTA1tzTcya2ZtybpyEcDSQNqnkTXinf2cb83XENBVE6uHM6BwroQBgOweqwFNyiZXU0J7ugCkWvwLfKZCxdJJJEG7NriPax/Gh5zJHOzvKLKnEa8IHwAnVUNsJU0FGQnvjvCF4HWsSkCZbqEKsA5pxdBBgiOQLfWuhRsY5/agglTudsVdo8mexPabdFTv8+S9S0v0hRtvPF8xQHGGsrVxvnxzs22QKwYWTnv6a61cFH/xXY1yJNq5tLPlRqJi5Xuv1moR+HOr50++8Ip33R+j7kSQVgx/stDlqbfZhi1Hgsk6j5PCJydkstNVfRhM28JQUopDCCuijiAW4nd33gfbNRtRw/ZlAciqz5jeEQUrjUJ5WDR4M+/WhbYel9lgD7cRYUOZVH2xIEZ3vxCRjCEmuWvBP3M3CHU5hzkMwBKrrlscU3S/E0UwI0GFjdvb5SaKSCYo4WJwSnwJwSXYL4nne/xYkNYwFZPUjjFh0OYBERBeNFmYCfPHqcpOWBcj+CVVrl+EcepeE5IpFSn5y+Je7551q1GKiy0ZPaPv//zE1IbR2R1GkkJwn7a0bh7ERq5/edA8Eq7TZJZxwaH9m0j9yiYonUIwPPTDyFw0jbMsAHLL3qzbgkzk6gBniIi2bZtI+nid761clX+GDIqEsYOUu53PZaa/kjBUktw67Ryu1LQrOWmCAeQfHWtPzZVu6QgyHSXCFsXTZEW4ikJJpOk+CIpizRSmFRyay6PzJAzmbfAm7I7r187aZe5whvI9hvtGz3/QWtHocvFG27ZPUMMpeJq7SG+JDIpWjLtNcYI2JyYkYTBvPOLyV4mfXq4T64AzlK/DcrqWpswjSqneG2ljvphMY8nNMljLjWRQlCoLNq2YT3F1uEbCEIlecGr01oEXIQNSJwaQ4+X0U/b1t9qPVo8SQXNi/vEJ3GVW4PMjNyNB4WpWiWmnsM3V4xoJQ+BlcVR00qRuZH21EwPKm5mlzjnM7oOTO/W9UXqH63Ca8qsqNlFiSQZFq7vdtNOnfnR1yCFhqERPZ5USiDUuz3K4DDRGbEz2s1eJkfaxG+Phi8XC2/1seVCHQ4LKPoSvpqyaTW5w1Ko5v40K8hxc2uFQ5gfiyG6lYrhwKyUYL3n2ixtHSKGjJW/VB8VMT1DowZmTInqEJwKeQRzen00rB3DR121VW/Pccm+Iua8X8siAMYdZmuU1Wo91AdS998A3Dp9ZmPFrrQ4qHEvMqMORmhfRp+kX+tHelYiu5cWSt0yuSRYDCcQxaggzjy/0Gzi/AmiJzVytgvsyyfL1fiMypJcf4NUBZ5FaX1n8FFw0dJy5PfSERT+UYLEKs8eLh3wKFwTCcfYIBgbOxm/uxpzE+Ll2k0jQ7c7b6LR4FB2inZuNofyJwPS1x4G4dh0SnwymI1iGWWjVg5JjM1aR4Hev/lvs0jft/h+QoxhiaWBox0sXPLupN0wAoJJEOPcbpwBd23SZT0QEQfL5B4nSTFxwbTUZbvg7emviSr1CGmgljrDuqYZas1hi9447PK2LDkvLC5TCtlvJCPn491BRnLrpvm+0nn4FphEPqTFlqjrr/NMP4+6Y7EVc+PM2GteSo9R1/LMBOsWvBGo0s+X3dtU+DAR4rM01JkrLO81rBwAKvr5wUH8l2qohLVeDAVv4vD6NccoDi8quNiagDmvUjQ1b6VQcuBRAhP976z8ei5Ba7vqYPQAAAABJRU5ErkJggg=="
+            assert qr_code == "data:image/png;base64,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"

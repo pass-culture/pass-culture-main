@@ -15,8 +15,9 @@ from models.stock import Stock
 from utils.human_ids import humanize
 
 BOOKING_CANCELLATION_DELAY = timedelta(hours=72)
-QR_CODE_VERSION = 20
-QR_CODE_BOX_SIZE = 1
+QR_CODE_PASS_CULTURE_VERSION = 'v1'
+QR_CODE_VERSION = 10
+QR_CODE_BOX_SIZE = 3
 QR_CODE_BOX_BORDER = 1
 CSV_HEADER = [
     "Raison sociale du lieu",
@@ -66,7 +67,7 @@ def generate_qr_code(booking: Booking) -> str:
     offer_date_time = booking.stock.beginningDatetime if booking.stock.beginningDatetime else ''
 
     qr.add_data(
-        f'PASSCULTURE:{QR_CODE_VERSION};'
+        f'PASSCULTURE:{QR_CODE_PASS_CULTURE_VERSION};'
         f'TOKEN:{booking.token};'
         f'EMAIL:{booking.user.email};'
         f'OFFERID:{humanize(booking.stock.offer.id)};'
@@ -77,6 +78,7 @@ def generate_qr_code(booking: Booking) -> str:
         f'DATETIME:{offer_date_time};'
         f'PRICE:{booking.stock.price};'
         f'QTY:{booking.quantity}')
+    qr.make(fit=True)
     image = qr.make_image(fill_color='black', back_color='white')
     return _convert_to_base64(image)
 
