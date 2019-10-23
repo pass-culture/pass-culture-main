@@ -2,6 +2,7 @@ import moment from 'moment'
 import 'moment-timezone'
 
 import { getTimezone } from '../timezone'
+import { capitalize } from 'react-final-form-utils'
 
 const formatDate = (date, timeZone) => {
   const options = {
@@ -39,3 +40,10 @@ export const dateStringPlusTimeZone = (dateString, departementCode) => {
     .tz(getTimezone(departementCode))
     .format('YYYY-MM-DD HH:mm:ss')
 }
+
+export const humanizeDate = (date, timezone) =>
+  capitalize(
+    moment(date)
+      .tz(timezone)
+      .format('dddd DD/MM/YYYY à H:mm')
+  )

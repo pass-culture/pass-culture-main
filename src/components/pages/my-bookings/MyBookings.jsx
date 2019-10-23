@@ -5,6 +5,8 @@ import MyBookingsListsContainer from './MyBookingsLists/MyBookingsListsContainer
 import MyBookingDetailsContainer from './MyBookingDetails/MyBookingDetailsContainer'
 import HeaderContainer from '../../layout/Header/HeaderContainer'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
+import { Route, Switch } from 'react-router'
+import QrCodeContainer from './MyBookingsLists/BookingsList/QrCode/QrCodeContainer'
 
 class MyBookings extends Component {
   constructor(props) {
@@ -16,7 +18,7 @@ class MyBookings extends Component {
     }
   }
 
-  componentDidMount = () => {
+  componentDidMount() {
     const { requestGetBookings } = this.props
     requestGetBookings(this.handleFail, this.handleSuccess)
   }
@@ -37,7 +39,7 @@ class MyBookings extends Component {
   render() {
     const { bookings } = this.props
     const { hasError, isLoading } = this.state
-    const isEmpty = bookings.length === 0
+    const hasNoBookings = bookings.length === 0
 
     if (isLoading) {
       return (<LoaderContainer
@@ -52,8 +54,28 @@ class MyBookings extends Component {
           shouldBackFromDetails
           title="Mes réservations"
         />
-        <MyBookingsListsContainer isEmpty={isEmpty} />
-        <MyBookingDetailsContainer bookingPath="/reservations/:details(details|transition)/:bookingId([A-Z0-9]+)/:booking(reservation)/:cancellation(annulation)?/:confirmation(confirmation)?" />
+        <Switch>
+          <Route
+            exact
+            path={'/reservations'}
+          >
+            <MyBookingsListsContainer isEmpty={hasNoBookings} />
+          </Route>
+          <Route
+            exact
+            path={
+              '/reservations/:details(details|transition)/:bookingId([A-Z0-9]+)/:booking(reservation)?/:cancellation(annulation)?/:confirmation(confirmation)?'
+            }
+          >
+            <MyBookingDetailsContainer bookingPath="/reservations/:details(details|transition)/:bookingId([A-Z0-9]+)/:booking(reservation)/:cancellation(annulation)?/:confirmation(confirmation)?" />
+          </Route>
+          <Route
+            exact
+            path={'/reservations/:details(details)/:bookingId([A-Z0-9]+)/:qrcode(qrcode)'}
+          >
+            <QrCodeContainer />
+          </Route>
+        </Switch>
       </div>
     )
   }

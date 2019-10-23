@@ -1,39 +1,29 @@
-import moment from 'moment'
 import PropTypes from 'prop-types'
 import React from 'react'
-import { capitalize } from 'react-final-form-utils'
 import { Link } from 'react-router-dom'
-
-import { ICONS_URL } from '../../../../../../utils/config'
 import Icon from '../../../../../layout/Icon/Icon'
 import Ribbon from '../../../../../layout/Ribbon/Ribbon'
 import { getTimezone } from '../../../../../../utils/timezone'
-
-const DEFAULT_THUMB_URL = `${ICONS_URL}/picto-placeholder-visueloffre.png`
-
-export const stringify = date => timeZone =>
-  capitalize(
-    moment(date)
-      .tz(timeZone)
-      .format('dddd DD/MM/YYYY à H:mm')
-  )
+import { humanizeDate } from '../../../../../../utils/date/date'
+import { DEFAULT_THUMB_URL } from '../../../../../../utils/thumb'
 
 const getDetailsUrl = (bookingId, location) => {
-  const { search } = location
-
-  return `/reservations/details/${bookingId}${search}`
+  const { pathname, search } = location
+  return `${pathname}/details/${bookingId}${search}`
 }
 
+const getQrCodeUrl = detailsUrl => `${detailsUrl}/qrcode`
+
 const BookingItem = ({ booking, location, offer, ribbon, stock, trackConsultOffer }) => {
-  const { id: bookingId, token, thumbUrl } = booking
+  const { id: bookingId, qrCode, token, thumbUrl } = booking
   const { beginningDatetime } = stock
   const { label, type } = ribbon || {}
-  const { product, venue } = offer
-  const { name: productName } = product
+  const { name: offerName, venue } = offer
   const { departementCode } = venue
   const detailsUrl = getDetailsUrl(bookingId, location)
   const timeZone = getTimezone(departementCode)
-  const stringifyDate = beginningDatetime && stringify(beginningDatetime)(timeZone)
+  const humanizedDate = beginningDatetime && humanizeDate(beginningDatetime, timeZone)
+
   return (
     <li
       className="mb-my-booking"
@@ -52,10 +42,9 @@ const BookingItem = ({ booking, location, offer, ribbon, stock, trackConsultOffe
         </div>
         <div className="teaser-wrapper">
           <div className="mb-heading">
-            <div className="teaser-title-booking">{productName}</div>
-            <div className="teaser-sub-title">{stringifyDate || 'Permanent'}</div>
+            <div className="teaser-title-booking">{offerName}</div>
+            <div className="teaser-sub-title">{humanizedDate || 'Permanent'}</div>
           </div>
-          <div className="mb-token">{token.toLowerCase()}</div>
         </div>
         <div className="teaser-arrow">
           {ribbon && <Ribbon
@@ -68,6 +57,17 @@ const BookingItem = ({ booking, location, offer, ribbon, stock, trackConsultOffe
           />
         </div>
       </Link>
+      {qrCode && (
+        <div className="mb-token">
+          <Icon svg="ico-qrcode" />
+          <Link
+            className="mb-token-link"
+            to={getQrCodeUrl(detailsUrl)}
+          >
+            {'Accéder à ma contremarque'}
+          </Link>
+        </div>
+      )}
     </li>
   )
 }
@@ -79,6 +79,7 @@ BookingItem.defaultProps = {
 BookingItem.propTypes = {
   booking: PropTypes.shape({
     id: PropTypes.string,
+    qrCode: PropTypes.string,
     thumbUrl: PropTypes.string,
     token: PropTypes.string.isRequired,
   }).isRequired,
@@ -87,6 +88,7 @@ BookingItem.propTypes = {
     search: PropTypes.string.isRequired,
   }).isRequired,
   offer: PropTypes.shape({
+    name: PropTypes.string.isRequired,
     product: PropTypes.shape({
       name: PropTypes.string,
     }).isRequired,

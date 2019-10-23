@@ -1,7 +1,7 @@
 import selectRecommendationsBySearchQuery, {
   getRecommendationSearch,
 } from '../selectRecommendationsBySearchQuery'
-import state from '../../../../../mocks/stateWithTypes'
+import state from '../../../../../mocks/state'
 
 const types = state.data.types
 

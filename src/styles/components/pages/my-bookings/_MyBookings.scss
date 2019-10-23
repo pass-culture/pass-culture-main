@@ -20,17 +20,19 @@
 .mb-heading {
   display: flex;
   flex-direction: column;
-  height: 50%;
   justify-content: space-around;
   padding: 0.5rem 1rem;
 }
 
 .mb-token {
   @include dotted($primary, top);
-
   color: $primary;
-  font-size: rem(47px);
-  padding: 0.5rem 0 0 1rem;
+  text-align: center;
+}
+
+.mb-token-link {
+  color: $primary;
+  vertical-align: middle;
 }
 
 .mb-infos {

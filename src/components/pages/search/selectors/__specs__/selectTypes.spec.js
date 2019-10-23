@@ -1,5 +1,5 @@
 import selectTypeSublabelsSelector, { selectTypeSublabelsAndDescription } from '../selectTypes'
-import state from '../../../../../mocks/stateWithTypes'
+import state from '../../../../../mocks/state'
 
 describe('selectTypeSublabels', () => {
   it('should select the global state', () => {

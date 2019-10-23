@@ -1,4 +1,4 @@
-import { formatRecommendationDates, formatEndValidityDate, dateStringPlusTimeZone } from '../date'
+import { dateStringPlusTimeZone, formatEndValidityDate, formatRecommendationDates } from '../date'
 
 describe('src | utils | date | date', () => {
   describe('formatEndValidityDate()', () => {

@@ -1,0 +1,59 @@
+.qr-code {
+  background-image: linear-gradient(90deg, $purple-blue 0%, $primary 100%);
+  height: 100%;
+  overflow-y: scroll;
+
+  .absolute-footer {
+    height: $footer-height;
+  }
+}
+
+.qr-code-header {
+  @include dotted($primary, bottom);
+
+  display: flex;
+  flex-direction: column;
+  margin-bottom: rem(10px);
+  padding: rem(18px);
+}
+
+.qr-code-offer-name {
+  font-size: rem(18px);
+  font-weight: bold;
+  line-height: 21px;
+}
+
+.qr-code-offer-beginning-datetime {
+  color: $grey-dark;
+  font-size: rem(13px);
+  line-height: rem(16px);
+  margin-bottom: rem(10px);
+}
+
+.qr-code-venue-name {
+  color: $grey-dark;
+  font-size: rem(13px);
+  line-height: rem(16px);
+  text-align: right;
+}
+
+.qr-code-token {
+  color: $primary;
+  font-size: rem(48px);
+  font-weight: 300;
+  line-height: 58px;
+  margin-bottom: rem(10px);
+  text-align: center;
+}
+
+.qr-code-image {
+  margin-bottom: rem(10px);
+  text-align: center;
+}
+
+.qr-code-white-card {
+  background-color: white;
+  border-radius: 3px;
+  margin: rem(50px) rem(10px) rem($footer-height + rem(10px)) rem(10px);
+  padding-bottom: rem(10px);
+}

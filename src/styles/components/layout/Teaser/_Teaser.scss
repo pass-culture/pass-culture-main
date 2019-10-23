@@ -18,7 +18,7 @@
 
 .teaser-link {
   display: flex;
-  height: 150px;
+  height: 140px;
 }
 
 .teaser-thumb {
@@ -62,7 +62,6 @@
   color: $grey;
   font-size: 0.8rem;
   font-weight: 600;
-  padding-top: 0.3rem;
   @include multiLineEllipsis(1);
 }
 

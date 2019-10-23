@@ -12,7 +12,7 @@ import FilterByOfferTypesContainer from '../FilterByOfferTypesContainer'
 import FilterControls from '../FilterControls'
 import FilterControlsContainer from '../FilterControlsContainer'
 import { INITIAL_FILTER_PARAMS } from '../../helpers'
-import REDUX_STATE from '../../../../../mocks/reduxState'
+import state from '../../../../../mocks/state'
 
 describe('src | components | pages | search | FilterControls', () => {
   let props
@@ -59,7 +59,7 @@ describe('src | components | pages | search | FilterControls', () => {
     it('should reinitialize the state if the URL has changed', () => {
       // given
       const mockOnClickFilterButton = jest.fn(() => () => null)
-      const store = configureStore([])(REDUX_STATE)
+      const store = configureStore([])(state)
       const history = createBrowserHistory()
       history.push('/test?categories=Jouer')
       const wrapper = mount(
@@ -198,7 +198,7 @@ describe('src | components | pages | search | FilterControls', () => {
   describe('render()', () => {
     it('should have three filters and one reset button and one filter button by default', () => {
       // given
-      const store = configureStore([])(REDUX_STATE)
+      const store = configureStore([])(state)
       const wrapper = mount(
         <Provider store={store}>
           <FilterControls {...props} />

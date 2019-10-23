@@ -1,11 +1,8 @@
 import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
-
-import { ICONS_URL } from '../../../utils/config'
 import Icon from '../Icon/Icon'
-
-const DEFAULT_THUMB_URL = `${ICONS_URL}/picto-placeholder-visueloffre.png`
+import { DEFAULT_THUMB_URL } from '../../../utils/thumb'
 
 class Teaser extends Component {
   renderTeaser = () => {
