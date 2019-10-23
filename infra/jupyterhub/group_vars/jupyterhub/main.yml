@@ -1,1 +1,6 @@
 datalake_postgres_url: "{{ vault_datalake_postgres_url }}"
+
+certificate_admin_email: "{{ vault_certificate_admin_email }}"
+service_host: "datahub.passculture.app"
+service_name: "datahub"
+service_root_directory: "/opt"
