@@ -1,10 +1,12 @@
 import React from 'react'
-import { shallow } from 'enzyme'
+import { shallow, mount } from 'enzyme'
 import { Field, Form } from 'pass-culture-shared'
 
 import Offer from '../Offer'
 import MediationsManager from '../MediationsManager/MediationsManagerContainer'
 import HeroSection from '../../../layout/HeroSection/HeroSection'
+import * as ReactToolTip from 'react-tooltip'
+
 import TiteLiveInformation from '../TiteLiveInformation/TiteLiveInformationContainer'
 
 describe('src | components | pages | Offer | Offer ', () => {
@@ -237,6 +239,25 @@ describe('src | components | pages | Offer | Offer ', () => {
 
         // then
         expect(wrapper.find(Form).prop('action')).toStrictEqual('/offers')
+      })
+
+      it('should display tooltip for duo offers when event offer is created', () => {
+        // given
+        ReactToolTip.rebuild = jest.fn()
+        props.match = {
+          params: {
+            offerId: 'QU',
+          },
+        }
+        props.isFeatureActive = true
+        props.selectedOfferType = {
+          type: 'Event',
+        }
+
+        const wrapper = shallow(<Offer {...props} />)
+        // then
+        expect(ReactToolTip.rebuild).toHaveBeenCalled()
+
       })
 
       it('should not display preview link', () => {
