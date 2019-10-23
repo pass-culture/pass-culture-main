@@ -20,9 +20,7 @@ from utils.human_ids import dehumanize, humanize
 from utils.includes import WEBAPP_GET_BOOKING_INCLUDES, WEBAPP_PATCH_POST_BOOKING_INCLUDES
 from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, \
-    expect_json_data, \
-    login_or_api_key_required, \
-    login_or_api_key_required_v2
+    expect_json_data
 from utils.token import random_token
 from validation.bookings import check_booking_is_usable, \
     check_can_book_free_offer, \
@@ -36,17 +34,16 @@ from validation.bookings import check_booking_is_usable, \
     check_offer_date, \
     check_offer_is_active, \
     check_stock_booking_limit_date, \
-    check_user_is_logged_in_or_api_key_is_provided,\
-    check_user_is_logged_in_or_email_is_provided,\
     check_email_and_offer_id_for_anonymous_user, \
     check_booking_is_cancellable,\
     check_stock_venue_is_validated,\
     check_rights_for_activation_offer, \
     check_rights_to_get_bookings_csv
-from validation.users import check_user_can_validate_bookings,\
-    check_user_with_api_key_can_validate_bookings,\
-    check_user_can_validate_v2_bookings
-
+from validation.users_authentifications import check_user_is_logged_in_or_email_is_provided, \
+login_or_api_key_required_v2
+from validation.users_authorizations import check_user_can_validate_bookings,\
+    check_api_key_allows_to_validate_booking,\
+    check_user_can_validate_bookings_v2
 from datetime import datetime
 
 
@@ -237,33 +234,32 @@ def get_booking_by_token(token):
 @login_or_api_key_required_v2
 def get_booking_by_token_v2(token):
     authorization_header = request.headers.get('Authorization', None)
-    current_user_can_validate_booking = False
-    user_with_api_key_can_validate_booking = False
+    headers_contains_api_key_authorization = authorization_header and 'Bearer' in authorization_header
 
-    if authorization_header and 'Bearer' in authorization_header:
+    if headers_contains_api_key_authorization:
         app_authorization_api_key = authorization_header.replace("Bearer ", "")
     else:
         app_authorization_api_key = None
 
-    check_user_is_logged_in_or_api_key_is_provided(current_user, app_authorization_api_key)
     valid_api_key = find_api_key_by_value(app_authorization_api_key)
 
     booking_token_upper_case = token.upper()
     booking = booking_queries.find_by(booking_token_upper_case)
+
     check_booking_is_usable(booking)
 
     offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
 
     if current_user and current_user.is_authenticated:
-        current_user_can_validate_booking = check_user_can_validate_v2_bookings(current_user, offerer_id)
+        # warning : current user is not none when user is not logged in
+        check_user_can_validate_bookings_v2(current_user, offerer_id)
 
     if valid_api_key:
-        user_with_api_key_can_validate_booking = check_user_with_api_key_can_validate_bookings(valid_api_key, offerer_id)
+        check_api_key_allows_to_validate_booking(valid_api_key, offerer_id)
 
-    payload = jsonify()
+    response = _create_response_to_get_booking_by_token(booking)
+    return jsonify(response), 200
 
-    if current_user_can_validate_booking or user_with_api_key_can_validate_booking:
-        return payload, 204, {'Content-Type': 'application/json'}
 
 @app.route('/bookings/token/<token>', methods=["PATCH"])
 def patch_booking_by_token(token):
@@ -300,6 +296,29 @@ def activate_user(user_to_activate):
 
 
 def _create_response_to_get_booking_by_token(booking):
+    offer_name = booking.stock.resolvedOffer.product.name
+    date = None
+    product = booking.stock.resolvedOffer.product
+    is_event = ProductType.is_event(product.type)
+    if is_event:
+        date = serialize(booking.stock.beginningDatetime)
+    venue_departement_code = booking.stock.resolvedOffer.venue.departementCode
+    response = {
+        'bookingId': humanize(booking.id),
+        'date': date,
+        'email': booking.user.email,
+        'isUsed': booking.isUsed,
+        'offerName': offer_name,
+        'userName': booking.user.publicName,
+        'venueDepartementCode': venue_departement_code,
+    }
+    if product.type == str(EventType.ACTIVATION):
+        response.update({'phoneNumber': booking.user.phoneNumber,
+                         'dateOfBirth': serialize(booking.user.dateOfBirth)})
+
+    return response
+
+def _create_response_to_get_booking_by_token_v2(booking):
     offer_name = booking.stock.resolvedOffer.product.name
     date = None
     product = booking.stock.resolvedOffer.product

@@ -10,7 +10,7 @@ from utils.token import random_token
 
 
 class Get:
-    class Returns204:
+    class Returns200:
         @clean_database
         def when_user_has_rights_and_regular_offer(self, app):
             # Given
@@ -25,17 +25,17 @@ class Get:
             booking = create_booking(user, stock, venue=venue)
 
             PcObject.save(user_offerer, booking)
+            url = 'v2/bookings/token/{}'.format(booking.token)
 
             # When
-            url = 'v2/bookings/token/{}'.format(booking.token)
             response = TestClient(app.test_client()).with_auth('admin@email.fr').get(url)
 
             # Then
             assert response.headers['Content-type'] == 'application/json'
-            assert response.status_code == 204
+            assert response.status_code == 200
 
         @clean_database
-        def when_user_has_api_key_and_rights_and_regular_offer(self, app):
+        def when_api_key_is_provided_and_rights_and_regular_offer(self, app):
             # Given
             user = create_user(public_name='John Doe', email='user@email.fr')
             user2 = create_user(public_name='Jane Doe', email='user2@email.fr')
@@ -55,10 +55,11 @@ class Get:
 
             PcObject.save(offererApiKey)
 
-            # When
             user2ApiKey = 'Bearer ' + offererApiKey.value
             booking_token = booking.token.lower()
             url = 'v2/bookings/token/{}'.format(booking_token)
+
+            # When
             response = TestClient(app.test_client()).get(
                 url,
                 headers={
@@ -67,7 +68,7 @@ class Get:
             )
 
             # Then
-            assert response.status_code == 204
+            assert response.status_code == 200
 
 
         @clean_database
@@ -84,14 +85,15 @@ class Get:
             booking = create_booking(user, stock, venue=venue)
 
             PcObject.save(user_offerer, booking)
-               #
-            # When
+
             booking_token = booking.token.lower()
             url = 'v2/bookings/token/{}'.format(booking_token)
+
+            # When
             response = TestClient(app.test_client()).with_auth('admin@email.fr').get(url)
 
             # Then
-            assert response.status_code == 204
+            assert response.status_code == 200
 
 
         @clean_database
@@ -115,7 +117,7 @@ class Get:
                 .get('v2/bookings/token/{}'.format(booking.token))
 
             # Then
-            assert response.status_code == 204
+            assert response.status_code == 200
 
 
     class Returns401:
@@ -133,17 +135,16 @@ class Get:
 
             PcObject.save(admin_user, booking)
 
+            url = 'v2/bookings/token/{}'.format(booking.token)
 
             # When
-            url = 'v2/bookings/token/{}'.format(booking.token)
             response = TestClient(app.test_client()).get(url)
 
             # Then
             assert response.status_code == 401
 
-
         @clean_database
-        def when_user_not_logged_in(self, app):
+        def when_user_not_logged_in_and_not_existing_api_key_given(self, app):
             # Given
             user = create_user(email='user@email.fr')
             admin_user = create_user(email='admin@email.fr')
@@ -156,12 +157,16 @@ class Get:
 
             PcObject.save(admin_user, booking)
 
-            # When
             url = 'v2/bookings/token/{}'.format(booking.token)
-            response = TestClient(app.test_client()).with_auth('querying@email.fr').get(url)
+
+            # When
+            response = TestClient(app.test_client()).get(url, headers={
+                    'Authorization': 'Bearer WrongApiKey1234567',
+                    'Origin': 'http://localhost'})
 
             # Then
             assert response.status_code == 401
+
 
     class Returns403:
         @clean_database
@@ -178,13 +183,53 @@ class Get:
 
             PcObject.save(querying_user, booking)
 
-            # When
             url = 'v2/bookings/token/{}'.format(booking.token)
+
+            # When
             response = TestClient(app.test_client()).with_auth('querying@email.fr').get(url)
 
             # Then
             assert response.status_code == 403
             assert response.json['user'] == ["Vous n'avez pas les droits suffisants pour éditer cette contremarque."]
+
+        @clean_database
+        def when_api_key_given_not_related_to_booking_offerer(self, app):
+            # Given
+            user = create_user(email='user@email.fr')
+            admin_user = create_user(email='admin@email.fr')
+            offerer = create_offerer()
+            offerer2 = create_offerer(siren='987654321')
+            user_offerer = create_user_offerer(admin_user, offerer)
+
+            offererApiKey = ApiKey()
+            venue = create_venue(offerer)
+            offer = create_offer_with_event_product(venue, event_name='Event Name')
+            event_occurrence = create_event_occurrence(offer)
+            stock = create_stock_from_event_occurrence(event_occurrence, price=0)
+            booking = create_booking(user, stock, venue=venue)
+
+            PcObject.save(admin_user, booking, user_offerer, offerer2)
+
+            offererApiKey.value = random_token(64)
+            offererApiKey.offererId = offerer2.id
+
+            PcObject.save(offererApiKey)
+
+            user2ApiKey = 'Bearer ' + offererApiKey.value
+            url = 'v2/bookings/token/{}'.format(booking.token)
+
+            # When
+            response = TestClient(app.test_client()).get(
+                url,
+                headers={
+                    'Authorization': user2ApiKey,
+                    'Origin': 'http://localhost'}
+            )
+
+            # Then
+            assert response.status_code == 403
+            assert response.json['user'] == ["Vous n'avez pas les droits suffisants pour éditer cette contremarque."]
+
 
         @clean_database
         def when_booking_is_on_stock_with_beginning_datetime_in_more_than_72_hours(self, app):
@@ -202,14 +247,16 @@ class Get:
 
             PcObject.save(admin_user, booking)
 
-            # When
             url = 'v2/bookings/token/{}'.format(booking.token)
+
+            # When
             response = TestClient(app.test_client()).with_auth('admin@email.fr').get(url)
 
             # Then
             assert response.status_code == 403
             assert response.json['beginningDatetime'] == [
             'Vous ne pouvez pas valider cette contremarque plus de 72h avant le début de l\'évènement']
+
 
     class Returns404:
         @clean_database
@@ -218,8 +265,9 @@ class Get:
             admin_user = create_user(email='admin@email.fr')
             PcObject.save(admin_user)
 
-            # When
             url = 'v2/bookings/token/{}'.format('12345')
+
+            # When
             response = TestClient(app.test_client()).with_auth('admin@email.fr').get(url)
 
             # Then
@@ -248,9 +296,10 @@ class Get:
 
             PcObject.save(offererApiKey)
 
-            # When
             user2ApiKey = 'Bearer ' + offererApiKey.value
             url = 'v2/bookings/token/{}'.format('12345')
+
+            # When
             response = TestClient(app.test_client()).get(
                 url,
                 headers={
@@ -282,9 +331,10 @@ class Get:
 
             PcObject.save(offererApiKey)
 
-            # When
             user2ApiKey = 'Bearer ' + offererApiKey.value
             url = 'v2/bookings/token/{}'.format(booking.token)
+
+            # When
             response = TestClient(app.test_client()).get(
                 url,
                 headers={
@@ -315,10 +365,10 @@ class Get:
 
             PcObject.save(offererApiKey)
 
-
-            # When
             user2ApiKey = 'Bearer ' + offererApiKey.value
             url = 'v2/bookings/token/{}'.format(booking.token)
+
+            # When
             response = TestClient(app.test_client()).get(
                 url,
                 headers={

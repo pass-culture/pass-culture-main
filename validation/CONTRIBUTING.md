@@ -54,3 +54,22 @@ def test_check_valid_signup_raises_api_error_if_not_contact_ok():
     # Then
     assert errors.value.errors['contact_ok'] == ['Vous devez obligatoirement cocher cette case.']
 ```
+
+Utiliser le try/except pour les cas passants :
+
+Par exemple :
+``python
+def test_does_not_raise_error_when_user_is_authenticated(self, app):
+    # given
+    user = User()
+    user.is_authenticated = True
+    email = 'fake@email.com'
+
+    # When
+    try:
+        check_user_is_logged_in_or_email_is_provided(user, email)
+
+    # Then
+    except:
+        assert False
+```
