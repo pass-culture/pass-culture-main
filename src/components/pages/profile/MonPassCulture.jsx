@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import { getAvailableBalanceByType } from './utils'
-import { getWalletValue } from '../../../utils/user'
+import getAvailableBalanceByType from './utils'
+import getWalletValue from '../../../utils/user/getWalletValue'
 import { formatEndValidityDate } from '../../../utils/date/date'
 
 const MonPassCulture = ({ currentUser }) => {

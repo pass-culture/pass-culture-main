@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-export const BetaPage = () => (
+const BetaPage = () => (
   <div className="beta-page page pc-gradient flex-rows">
     <main className="pc-main padded flex-rows flex-center">
       <h1>

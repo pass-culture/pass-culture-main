@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { isSameDayInEachTimezone } from '../../../../../../helpers'
+import isSameDayInEachTimezone from '../../../../../../helpers/isSameDayInEachTimezone'
 
 /**
  * Calcule les valeurs du form

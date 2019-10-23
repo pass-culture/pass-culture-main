@@ -1,4 +1,4 @@
-import { parseSubmitErrors } from '../parseSubmitErrors'
+import parseSubmitErrors from '../parseSubmitErrors'
 
 describe('src | components | forms | utils | parseSubmitErrors ', () => {
   it('tODO Remplire ce test', () => {

@@ -3,7 +3,7 @@ import { compose } from 'redux'
 import { selectCurrentUser } from 'with-react-redux-login'
 
 import Profile from './Profile'
-import { withRequiredLogin } from '../../hocs'
+import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
 
 const mapStateToProps = state => ({
   currentUser: selectCurrentUser(state),

@@ -1,4 +1,4 @@
-import { hasNumber } from './hasNumber'
+import hasNumber from './hasNumber'
 
 describe('src | utils | strings | hasNumber', () => {
   it('return false', () => {

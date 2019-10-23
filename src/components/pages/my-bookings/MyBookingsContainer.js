@@ -4,7 +4,7 @@ import { requestData } from 'redux-thunk-data'
 
 import MyBookings from './MyBookings'
 import { selectBookings } from '../../../selectors/data/bookingsSelector'
-import { withRequiredLogin } from '../../hocs'
+import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
 import { myBookingsNormalizer } from '../../../utils/normalizers'
 
 export const mapStateToProps = state => ({

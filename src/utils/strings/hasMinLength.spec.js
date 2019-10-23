@@ -1,4 +1,4 @@
-import { hasMinLength } from './hasMinLength'
+import hasMinLength from './hasMinLength'
 
 describe('src | utils | strings | hasMinLength', () => {
   it('return false', () => {

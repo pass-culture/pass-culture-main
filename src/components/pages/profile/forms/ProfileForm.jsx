@@ -5,7 +5,7 @@ import { requestData } from 'redux-thunk-data'
 import { resolveCurrentUser } from 'with-react-redux-login'
 
 import { ROOT_PATH } from '../../../../utils/config'
-import { parseSubmitErrors } from '../../../forms/utils'
+import parseSubmitErrors from '../../../forms/utils/parseSubmitErrors'
 import Header from '../../../layout/Header/Header'
 import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
 

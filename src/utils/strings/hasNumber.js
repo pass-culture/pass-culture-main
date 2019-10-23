@@ -1,6 +1,6 @@
-import { isString } from './isString'
+import isString from './isString'
 
-export function hasNumber(value) {
+const hasNumber = value => {
   if (!isString(value) || !value.trim().length) return false
   return /[0-9]/.test(value)
 }

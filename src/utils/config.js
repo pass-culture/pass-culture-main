@@ -4,7 +4,7 @@ import 'moment-duration-format'
 import 'moment-timezone'
 
 import { version } from '../../package.json'
-import { getMobileOperatingSystem } from '../helpers'
+import getMobileOperatingSystem from '../helpers/getMobileOperatingSystem'
 
 moment.locale('fr-fr')
 

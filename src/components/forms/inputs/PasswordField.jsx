@@ -4,7 +4,7 @@ import { Field } from 'react-final-form'
 
 import FormError from '../FormError'
 import InputLabel from '../InputLabel'
-import { validatePasswordField } from '../validators'
+import validatePasswordField from '../validators/validatePasswordField'
 import hasErrorMessage from '../utils/hasErrorMessage'
 
 class PasswordField extends PureComponent {

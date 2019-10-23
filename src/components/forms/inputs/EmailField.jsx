@@ -4,7 +4,7 @@ import { Field } from 'react-final-form'
 
 import FormError from '../FormError'
 import InputLabel from '../InputLabel'
-import { isEmpty } from '../../../utils/strings'
+import isEmpty from '../../../utils/strings/isEmpty'
 import hasErrorMessage from '../utils/hasErrorMessage'
 
 const DEFAULT_REQUIRED_ERROR = 'Ce champ est requis'

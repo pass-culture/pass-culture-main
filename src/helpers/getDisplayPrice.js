@@ -28,7 +28,7 @@ export const priceIsDefined = value => {
   )
 }
 
-export const getDisplayPrice = (simplePriceOrPriceRange, freeValue = null) => {
+const getDisplayPrice = (simplePriceOrPriceRange, freeValue = null) => {
   const priceRange = Array.isArray(simplePriceOrPriceRange)
     ? simplePriceOrPriceRange
     : [simplePriceOrPriceRange]

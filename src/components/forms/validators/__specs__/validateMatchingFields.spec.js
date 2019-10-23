@@ -1,5 +1,5 @@
-import { strings } from '../strings'
-import { validateMatchingFields } from '../validateMatchingFields'
+import strings from '../strings'
+import validateMatchingFields from '../validateMatchingFields'
 
 describe('src | components | forms | validators | validateMatchingFields', () => {
   it('it expect to return undefined - mainvalue is falsey', () => {

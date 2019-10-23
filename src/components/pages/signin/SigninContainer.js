@@ -3,7 +3,7 @@ import { compose } from 'redux'
 import { requestData } from 'redux-thunk-data'
 
 import Signin from './Signin'
-import { withNotRequiredLogin } from '../../hocs'
+import withNotRequiredLogin from '../../hocs/with-login/withNotRequiredLogin'
 
 export const mapDispatchToProps = dispatch => ({
   submitSigninForm: (values, fail, success) => {

@@ -1,6 +1,6 @@
-import { isString } from './isString'
+import isString from './isString'
 
-export function hasUppercase(value) {
+const hasUppercase = value => {
   if (!isString(value) || !value.trim().length) return false
   return /[A-Z]/.test(value)
 }

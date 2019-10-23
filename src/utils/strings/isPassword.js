@@ -1,10 +1,10 @@
-import { isString } from './isString'
-import { hasNumber } from './hasNumber'
-import { hasMinLength } from './hasMinLength'
-import { hasUppercase } from './hasUppercase'
-import { hasLowercase } from './hasLowercase'
+import isString from './isString'
+import hasNumber from './hasNumber'
+import hasMinLength from './hasMinLength'
+import hasUppercase from './hasUppercase'
+import hasLowercase from './hasLowercase'
 
-export const isPassword = (value, count = 12) =>
+const isPassword = (value, count = 12) =>
   value &&
   isString(value) &&
   hasMinLength(value, count) &&

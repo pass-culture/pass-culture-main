@@ -20,7 +20,7 @@ export const handleSuccess = (state, action, ownProps) => {
   }
 }
 
-const withNotRequiredLogin = compose(
+export const withNotRequiredLogin = compose(
   withFrenchQueryRouter,
   withLogin({
     handleSuccess,

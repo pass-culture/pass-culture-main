@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import { FormError } from '../../../forms'
-import { validateMatchingFields } from '../../../forms/validators'
+import FormError from '../../../forms/FormError'
+import validateMatchingFields from '../../../forms/validators/validateMatchingFields'
 import CheckBoxField from '../../../forms/inputs/CheckBoxField'
 import HiddenField from '../../../forms/inputs/HiddenField'
 import PasswordField from '../../../forms/inputs/PasswordField'

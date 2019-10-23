@@ -1,8 +1,8 @@
-import { isEmpty } from '../utils/strings'
+import isEmpty from '../utils/strings/isEmpty'
 
 const isValid = user => user && typeof user === 'object' && user.id && typeof user.id === 'string'
 
-export const getShareURL = (user = {}, offerId = '', mediationId = 'vide') => {
+const getShareURL = (user = {}, offerId = '', mediationId = 'vide') => {
   if (!isValid(user)) return null
   if (isEmpty(offerId)) return null
 

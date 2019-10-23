@@ -3,7 +3,7 @@ import { compose } from 'redux'
 import { requestData } from 'redux-thunk-data'
 
 import MyFavorites from './MyFavorites'
-import { withRequiredLogin } from '../../hocs'
+import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
 import selectFavorites from '../../../selectors/selectFavorites'
 import { favoriteNormalizer } from '../../../utils/normalizers'
 

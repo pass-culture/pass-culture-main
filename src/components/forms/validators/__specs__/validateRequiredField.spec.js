@@ -1,5 +1,5 @@
-import { strings } from '../strings'
-import { validateRequiredField } from '../validateRequiredField'
+import strings from '../strings'
+import validateRequiredField from '../validateRequiredField'
 
 describe('src | components | forms | validators | validateRequiredField', () => {
   it('it expect to return default error with a string value', () => {

@@ -6,7 +6,7 @@ import VersoContainer from '../../../../layout/Verso/VersoContainer'
 import isDetailsView from '../../../../../helpers/isDetailsView'
 import { getHeaderColor } from '../../../../../utils/colors'
 
-export class Card extends PureComponent {
+class Card extends PureComponent {
   componentDidMount() {
     const { handleReadRecommendation, position, recommendation } = this.props
 

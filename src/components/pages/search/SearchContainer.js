@@ -3,7 +3,7 @@ import { compose } from 'redux'
 import { requestData } from 'redux-thunk-data'
 
 import Search from './Search'
-import { withRequiredLogin } from '../../hocs'
+import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
 import selectTypeSublabels, {
   selectTypes,
   selectTypeSublabelsAndDescription,

@@ -1,4 +1,4 @@
-import { isEmpty } from './isEmpty'
+import isEmpty from './isEmpty'
 
 describe('src | utils | strings | isEmpty', () => {
   it('return false', () => {

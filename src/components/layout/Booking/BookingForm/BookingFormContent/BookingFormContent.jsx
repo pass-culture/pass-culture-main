@@ -3,7 +3,8 @@ import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
 import { Field } from 'react-final-form'
 
-import { getCalendarProvider, parseHoursByStockId } from '../../utils'
+import getCalendarProvider from '../../utils/getCalendarProvider'
+import parseHoursByStockId from '../../utils/parseHoursByStockId'
 import SelectField from '../../../../forms/inputs/SelectField'
 import DatePickerField from '../../../../forms/inputs/DatePickerField/DatePickerField'
 

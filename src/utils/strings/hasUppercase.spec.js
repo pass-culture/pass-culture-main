@@ -1,4 +1,4 @@
-import { hasUppercase } from './hasUppercase'
+import hasUppercase from './hasUppercase'
 
 describe('src | utils | strings | hasUppercase', () => {
   it('return false', () => {

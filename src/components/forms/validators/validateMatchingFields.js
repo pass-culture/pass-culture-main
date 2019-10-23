@@ -1,5 +1,5 @@
-import { strings } from './strings'
-import { isEmpty } from '../../../utils/strings'
+import strings from './strings'
+import isEmpty from '../../../utils/strings/isEmpty'
 
 export const validateMatchingFields = (
   value,

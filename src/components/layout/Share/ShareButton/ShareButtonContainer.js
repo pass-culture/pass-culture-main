@@ -5,7 +5,7 @@ import { selectCurrentUser } from 'with-react-redux-login'
 
 import withTracking from '../../../hocs/withTracking'
 import ShareButton from './ShareButton'
-import { getShareURL } from '../../../../helpers'
+import getShareURL from '../../../../helpers/getShareURL'
 import selectMediationByRouterMatch from '../../../../selectors/selectMediationByRouterMatch'
 import selectOfferByRouterMatch from '../../../../selectors/selectOfferByRouterMatch'
 import { openSharePopin, closeSharePopin } from '../../../../reducers/share'

@@ -4,7 +4,7 @@ import { Field } from 'react-final-form'
 
 import FormError from '../FormError'
 import InputLabel from '../InputLabel'
-import { validateRequiredField } from '../validators'
+import validateRequiredField from '../validators/validateRequiredField'
 import hasErrorMessage from '../utils/hasErrorMessage'
 
 class InputField extends Component {

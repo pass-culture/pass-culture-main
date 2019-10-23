@@ -1,4 +1,4 @@
-export const parseSubmitErrors = errors =>
+const parseSubmitErrors = errors =>
   Object.keys(errors).reduce((acc, key) => {
     // FIXME -> test avec un array d'erreurs
     // a deplacer dans un tests unitaires

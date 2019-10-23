@@ -1,6 +1,6 @@
-import { isString } from './isString'
+import isString from './isString'
 
-export function isEmpty(value) {
+const isEmpty = value => {
   if (!isString(value)) return false
   return value.trim().length === 0
 }

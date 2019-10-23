@@ -5,7 +5,7 @@ import { Provider } from 'react-redux'
 import { Route, Router, Switch } from 'react-router-dom'
 
 import { configureTestStore } from './configure'
-import { OnMountCaller } from './OnMountCaller'
+import OnMountCaller from './OnMountCaller'
 import withNotRequiredLogin from '../withNotRequiredLogin'
 
 const Test = () => null

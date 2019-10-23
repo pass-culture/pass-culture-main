@@ -1,7 +1,7 @@
-import { strings } from './strings'
-import { isPassword } from '../../../utils/strings'
+import strings from './strings'
+import isPassword from '../../../utils/strings/isPassword'
 
-export const validatePasswordField = value => {
+const validatePasswordField = value => {
   if (isPassword(value)) return undefined
   return strings.PASSWORD_ERROR_MESSAGE
 }

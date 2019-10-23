@@ -1,4 +1,4 @@
-import { getDepartementByCode } from '../../../helpers'
+import getDepartementByCode from '../../../helpers/getDepartementByCode'
 import IdentifiantForm from './forms/fields/UserIdentifierField'
 import UserPasswordField from './forms/fields/UserPasswordField'
 

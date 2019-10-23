@@ -1,12 +1,12 @@
 import React from 'react'
 import { shallow } from 'enzyme'
-import { UserPasswordField } from '../UserPasswordField'
 
-import { FormError } from '../../../../../forms'
-import { validateMatchingFields } from '../../../../../forms/validators'
+import { UserPasswordField } from '../UserPasswordField'
+import FormError from '../../../../../forms/FormError'
+import { validateMatchingFields } from '../../../../../forms/validators/validateMatchingFields'
 import PasswordField from '../../../../../forms/inputs/PasswordField'
 
-jest.mock('../../../../../forms/validators', () => ({
+jest.mock('../../../../../forms/validators/validateMatchingFields', () => ({
   validateMatchingFields: jest.fn(),
 }))
 

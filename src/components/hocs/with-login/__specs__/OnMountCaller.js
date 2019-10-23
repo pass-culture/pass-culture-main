@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import { Component } from 'react'
 
-export class OnMountCaller extends Component {
+class OnMountCaller extends Component {
   componentDidMount() {
     const { onMountCallback } = this.props
     onMountCallback()

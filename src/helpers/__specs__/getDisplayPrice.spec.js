@@ -1,9 +1,9 @@
-import { getDisplayPrice, priceIsDefined } from '../getDisplayPrice'
+import getDisplayPrice, { priceIsDefined } from '../getDisplayPrice'
 
 const RIGHTWARDS_ARROW = '\u2192'
 const NO_BREAK_SPACE = '\u00A0'
 
-describe('src | helper | getDisplayPrice', () => {
+describe('src | helper | getDisplayPrice', () => {
   describe('priceIsDefined', () => {
     it('returns false', () => {
       let value = null

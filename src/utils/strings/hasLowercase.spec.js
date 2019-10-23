@@ -1,4 +1,4 @@
-import { hasLowercase } from './hasLowercase'
+import hasLowercase from './hasLowercase'
 
 describe('src | utils | strings | hasLowercase', () => {
   it('return false', () => {

@@ -3,9 +3,10 @@ import moment from 'moment'
 import createCachedSelector from 're-reselect'
 
 import { pipe } from '../utils/functionnals'
-import { filterAvailableStocks } from '../helpers'
+import filterAvailableStocks from '../helpers/filterAvailableStocks'
 import { getTimezone } from '../utils/timezone'
-import { isEmpty, isString } from '../utils/strings'
+import isEmpty from '../utils/strings/isEmpty'
+import isString from '../utils/strings/isString'
 import selectStocksByOfferId from './selectStocksByOfferId'
 
 const MODIFIER_STRING_ID = 'selectBookables'

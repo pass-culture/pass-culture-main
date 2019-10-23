@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
 
 import FormError from '../FormError'
-import { isEmpty } from '../../../utils/strings'
+import isEmpty from '../../../utils/strings/isEmpty'
 
 const DEFAULT_REQUIRED_ERROR = 'Ce champ est requis'
 const validateRequiredField = value => {

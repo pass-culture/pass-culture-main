@@ -1,4 +1,4 @@
-import { getAvailableBalanceByType } from '../utils'
+import getAvailableBalanceByType from '../utils'
 
 describe('src | components | pages | profile | utils', () => {
   describe('getAvailableBalanceByType', () => {

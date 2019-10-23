@@ -1,7 +1,8 @@
 import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 
-import { FormError, FormFooter } from '../../forms'
+import FormError from '../../forms/FormError'
+import FormFooter from '../../forms/FormFooter'
 import HiddenField from '../../forms/inputs/HiddenField'
 import PasswordField from '../../forms/inputs/PasswordField'
 import withResetForm from './withResetForm'

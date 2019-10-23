@@ -1,4 +1,4 @@
-export const isString = value => {
+const isString = value => {
   if (typeof value !== 'string') return false
   return true
 }

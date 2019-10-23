@@ -1,4 +1,4 @@
-import { withNotRequiredLogin } from '../../hocs'
+import withNotRequiredLogin from '../../hocs/with-login/withNotRequiredLogin'
 
 import Signup from './Signup'
 

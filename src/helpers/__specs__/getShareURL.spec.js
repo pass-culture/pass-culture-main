@@ -1,4 +1,4 @@
-import { getShareURL } from '../getShareURL'
+import getShareURL from '../getShareURL'
 
 describe('src | helpers | getShareURL', () => {
   describe('when user is not defined', () => {

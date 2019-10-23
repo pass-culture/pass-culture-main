@@ -10,8 +10,8 @@ import {
 } from './utils/utils'
 import selectCurrentRecommendation from './selectors/selectCurrentRecommendation'
 import selectTutos from './selectors/selectTutos'
-import { withRequiredLogin } from '../../hocs'
-import { getOfferIdAndMediationIdApiPathQueryString } from '../../../helpers'
+import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
+import getOfferIdAndMediationIdApiPathQueryString from '../../../helpers/getOfferIdAndMediationIdApiPathQueryString'
 import { saveLastRecommendationsRequestTimestamp } from '../../../reducers/data'
 import { recommendationNormalizer } from '../../../utils/normalizers'
 

@@ -1,7 +1,7 @@
 import { pluralize } from 'react-final-form-utils'
 import { getObjectWithMappedKeys } from 'with-query-router'
 
-import { isEmpty } from '../../../utils/strings'
+import isEmpty from '../../../utils/strings/isEmpty'
 
 export const INITIAL_FILTER_PARAMS = {
   categories: null,
