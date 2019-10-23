@@ -4,12 +4,12 @@
   register: certificate_file
 
 - name: Create certificate
-  shell: certbot certonly --webroot --email {{ service_admin_email }} --agree-tos --webroot-path=/usr/share/nginx/html -d {{ service_host }};
-  when:  certificate_file.stat.exists
+  shell: certbot certonly --webroot --email {{ certificate_admin_email }} --agree-tos --webroot-path=/usr/share/nginx/html -d {{ service_host }};
+  when:  certificate_file.stat.exists == false
 
 - name: Add nginx configuration with SSL certificate
   template:
     src: nginx_conf.j2
     dest: /etc/nginx/nginx.conf
     mode: 0644
-  notify: 'nginx'
+    notify: reload nginx

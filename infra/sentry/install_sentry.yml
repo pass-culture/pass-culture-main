@@ -26,7 +26,7 @@
       tags:
         - 'nginx'
 
-    - name: check if dhparams file exists
+    - name: Check if dhparams file exists
       stat:
         path: /etc/ssl/certs/dhparam.pem
       register: dhparams_file

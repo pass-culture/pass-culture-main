@@ -1,9 +1,9 @@
 - name: Create Sentry directory
-    file:
-      path: /opt/sentry
-      state: directory
-    tags:
-      - 'sentry'
+  file:
+    path: /opt/sentry
+    state: directory
+  tags:
+    - 'sentry'
 
 - name: Clone Sentry project
   git:
