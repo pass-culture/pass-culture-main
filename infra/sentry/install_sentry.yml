@@ -2,9 +2,6 @@
 - name: Install Sentry server
   hosts: sentry
   become: true
-  roles:
-    - role: letsencrypt
-      tags: 'letsencrypt'
   tasks:
     - import_tasks: tasks/install_docker.yml
       tags:
@@ -40,10 +37,15 @@
         - 'certificate'
 
   handlers:
-    - name: Firewalld
+    - name: restart_firewalld
       service:
         name: firewalld
         state: restarted
+
+    - name: reload nginx
+      service:
+        name: nginx
+        state: reloaded
 
 #    - name: Configure administrator account
 #      expect:

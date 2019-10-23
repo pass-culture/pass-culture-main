@@ -2,12 +2,12 @@
     port: 80/tcp
     permanent: yes
     state: enabled
-  notify: 'Firewalld'
+  notify: restart_firewalld
   tags: 'firewalld'
 
 - firewalld:
     port: 443/tcp
     permanent: yes
     state: enabled
-  notify: 'Firewalld'
+  notify: restart_firewalld
   tags: 'firewalld'

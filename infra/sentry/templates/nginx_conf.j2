@@ -40,9 +40,12 @@ http {
       server_name {{ service_host }};
       root /usr/share/nginx/html;
       index index.html index.htm index.nginx-debian.html;
+
+      # Allows to renew certificate
       location ~ /.well-known {
         allow all;
       }
+
       location / {
         return 301 https://$host$request_uri;
       }
