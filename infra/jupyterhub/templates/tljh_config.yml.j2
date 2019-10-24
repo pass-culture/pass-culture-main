@@ -1,0 +1,22 @@
+users:
+  admin:
+  - {{ admin_user }}
+  allowed:
+{% for user in allowed_users %}
+  - {{ user }}
+{% endfor %}
+http:
+  port: 80
+https:
+  enabled: true
+  letsencrypt:
+    email: {{ admin_user }}
+    domains:
+{% for domain in jupyterhub_domains %}
+    - {{ domain }}
+{% endfor %}
+auth:
+  type: oauthenticator.google.GoogleOAuthenticator
+  GoogleOAuthenticator:
+    client_id: {{ google_client_id }}
+    client_secret: {{ google_client_secret }}

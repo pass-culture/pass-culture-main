@@ -13,15 +13,6 @@
         name: 'python3-setuptools'
         state: present
 
-    - name: Check if dhparams file exists
-      stat:
-        path: /etc/ssl/certs/dhparam.pem
-      register: dhparams_file
-
-    - name: Generate  dhparams file
-      shell: openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
-      when: dhparams_file.stat.exists == false
-
     - name: Create jupyterhub directory
       file:
         path: /opt/jupyterhub
@@ -45,6 +36,17 @@
         name: git-core
         update_cache: yes
       tags: git
+
+    - name: Copy tljh config
+      template:
+        src: tljh_config.yml.j2
+        dest: /opt/tljh/config/config.yaml
+        owner: ubuntu
+        mode: u=rw,g=r,o=r
+      tags: copy-tljh
+      notify: Reload tljh config
+
+    - meta: flush_handlers
 
     - name: Copy create_database_tunnel.sh
       template:
@@ -83,3 +85,8 @@
         state: started
         name: connect_to_database.service
         enabled: yes
+
+
+  handlers:
+    - name: Reload tljh config
+      command: tljh-config reload
