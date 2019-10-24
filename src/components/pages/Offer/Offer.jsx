@@ -117,9 +117,12 @@ class Offer extends PureComponent {
         })
       )
     }
-
     this.setDefaultIsDuoIfNewAndEvent()
 
+    this.forceReactToolTip()
+  }
+
+  forceReactToolTip() {
     ReactToolTip.rebuild()
   }
 
