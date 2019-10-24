@@ -19,12 +19,12 @@ NUMBER_OF_ELEMENTS_PER_LINE = 46  # (45 elements from line + \n)
 
 class TiteLiveThings(LocalProvider):
     help = ""
-    identifierDescription = "Pas d'identifiant nécessaire" \
+    identifier_description = "Pas d'identifiant nécessaire" \
                             + "(on synchronise tout)"
-    identifierRegexp = None
+    identifier_regexp = None
     name = "TiteLive (Epagine / Place des libraires.com)"
     object_type = Product
-    canCreate = True
+    can_create = True
 
     def __init__(self):
         super().__init__()

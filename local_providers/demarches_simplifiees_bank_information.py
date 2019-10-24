@@ -20,11 +20,11 @@ class UnknownRibAffiliation(Exception):
 
 class BankInformationProvider(LocalProvider):
     help = ""
-    identifierDescription = "siren / siret"
-    identifierRegexp = None
+    identifier_description = "siren / siret"
+    identifier_regexp = None
     name = "Demarches simplifiees / Bank Information"
     object_type = BankInformation
-    canCreate = True
+    can_create = True
 
     def __init__(self):
         super().__init__()
@@ -44,12 +44,12 @@ class BankInformationProvider(LocalProvider):
 
         self.bank_information_dict = self.retrieve_bank_information(self.application_details)
 
-        if not self.bank_information_dict:
+        if self.bank_information_dict is None:
             return None
 
         return self.retrieve_providable_info()
 
-    def fill_object_attributes(self, bank_information):
+    def fill_object_attributes(self, bank_information: BankInformation):
         bank_information.iban = format_raw_iban_or_bic(self.bank_information_dict['iban'])
         bank_information.bic = format_raw_iban_or_bic(self.bank_information_dict['bic'])
         bank_information.applicationId = self.bank_information_dict['applicationId']

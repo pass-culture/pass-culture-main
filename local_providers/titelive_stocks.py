@@ -32,11 +32,11 @@ def get_data(last_seen_isbn, last_date_checked, venue_siret):
 
 class TiteLiveStocks(LocalProvider):
     help = ""
-    identifierDescription = "Code Titelive de la librairie"
-    identifierRegexp = "^\d+$"
+    identifier_description = "Code Titelive de la librairie"
+    identifier_regexp = "^\d+$"
     name = "TiteLive Stocks (Epagine / Place des libraires.com)"
     object_type = Stock
-    canCreate = True
+    can_create = True
 
     def __init__(self, venue_provider: VenueProvider, **options):
         super().__init__(venue_provider, **options)

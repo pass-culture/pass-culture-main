@@ -36,7 +36,7 @@ class LocalProvider(Iterator):
 
     @property
     @abstractmethod
-    def canCreate(self):
+    def can_create(self):
         pass
 
     @property
@@ -65,12 +65,12 @@ class LocalProvider(Iterator):
 
     @property
     @abstractmethod
-    def identifierDescription(self):
+    def identifier_description(self):
         pass
 
     @property
     @abstractmethod
-    def identifierRegexp(self):
+    def identifier_regexp(self):
         pass
 
     @property
@@ -202,7 +202,7 @@ class LocalProvider(Iterator):
                 pc_object = get_existing_pc_obj(providable_info, chunk_to_insert, chunk_to_update)
 
                 if pc_object is None:
-                    if not self.canCreate:
+                    if not self.can_create:
                         continue
 
                     try:

@@ -4,11 +4,11 @@ from models import Product, VenueProvider, ThingType
 
 class TestLocalProvider(LocalProvider):
     help = ""
-    identifierDescription = "Code LocalProvider"
-    identifierRegexp = "*"
+    identifier_description = "Code LocalProvider"
+    identifier_regexp = "*"
     name = "LocalProvider Test"
     object_type = Product
-    canCreate = True
+    can_create = True
 
     def __init__(self, venue_provider: VenueProvider = None):
         super().__init__(venue_provider)
@@ -24,11 +24,11 @@ class TestLocalProvider(LocalProvider):
 
 class TestLocalProviderWithApiErrors(LocalProvider):
     help = ""
-    identifierDescription = "Code LocalProvider With Api Errors"
-    identifierRegexp = "*"
+    identifier_description = "Code LocalProvider With Api Errors"
+    identifier_regexp = "*"
     name = "LocalProvider Test"
     object_type = Product
-    canCreate = True
+    can_create = True
 
     def __init__(self, venue_provider: VenueProvider = None):
         super().__init__(venue_provider)
@@ -46,11 +46,11 @@ class TestLocalProviderWithApiErrors(LocalProvider):
 
 class TestLocalProviderNoCreation(LocalProvider):
     help = ""
-    identifierDescription = "Code LocalProvider No Creation"
-    identifierRegexp = "*"
+    identifier_description = "Code LocalProvider No Creation"
+    identifier_regexp = "*"
     name = "LocalProvider Test No Creation"
     object_type = Product
-    canCreate = False
+    can_create = False
 
     def __init__(self, venue_provider: VenueProvider = None):
         super().__init__(venue_provider)

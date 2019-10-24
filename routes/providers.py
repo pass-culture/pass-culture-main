@@ -14,8 +14,8 @@ def list_providers():
         p_dict = as_dict(provider)
         if provider.localClass is not None and hasattr(local_providers, provider.localClass):
             provider_class = getattr(local_providers, provider.localClass)
-            p_dict['identifierRegexp'] = provider_class.identifierRegexp
-            p_dict['identifierDescription'] = provider_class.identifierDescription
+            p_dict['identifierRegexp'] = provider_class.identifier_regexp
+            p_dict['identifierDescription'] = provider_class.identifier_description
         del p_dict['apiKey']
         del p_dict['apiKeyGenerationDate']
         result.append(p_dict)
