@@ -4,7 +4,7 @@ from models import Product, VenueProvider, ThingType
 
 class TestLocalProvider(LocalProvider):
     help = ""
-    identifier_description = "Code LocalProvider"
+    identifier_description = "Generic class for test purpose"
     identifier_regexp = "*"
     name = "LocalProvider Test"
     object_type = Product
@@ -24,7 +24,7 @@ class TestLocalProvider(LocalProvider):
 
 class TestLocalProviderWithApiErrors(LocalProvider):
     help = ""
-    identifier_description = "Code LocalProvider With Api Errors"
+    identifier_description = "Generic class for test purpose with ApiErrors"
     identifier_regexp = "*"
     name = "LocalProvider Test"
     object_type = Product
@@ -46,7 +46,7 @@ class TestLocalProviderWithApiErrors(LocalProvider):
 
 class TestLocalProviderNoCreation(LocalProvider):
     help = ""
-    identifier_description = "Code LocalProvider No Creation"
+    identifier_description = "Generic class for test purpose with no creation"
     identifier_regexp = "*"
     name = "LocalProvider Test No Creation"
     object_type = Product

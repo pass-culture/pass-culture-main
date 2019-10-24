@@ -1,6 +1,6 @@
 import re
 from io import TextIOWrapper, BytesIO
-from typing import Dict
+from typing import Dict, List
 
 from connectors.ftp_titelive import get_files_to_process_from_titelive_ftp, connect_to_titelive_ftp
 from domain.titelive import get_date_from_filename, read_things_date
@@ -46,7 +46,7 @@ class TiteLiveThings(LocalProvider):
 
         self.data_lines = get_lines_from_thing_file(str(self.thing_file))
 
-    def __next__(self):
+    def __next__(self) -> List[ProvidableInfo]:
         if self.data_lines is None:
             self.open_next_file()
 
@@ -81,20 +81,20 @@ class TiteLiveThings(LocalProvider):
         providable_info.date_modified_at_provider = read_things_date(self.infos['date_updated'])
         return [providable_info]
 
-    def fill_object_attributes(self, thing):
-        assert thing.idAtProviders == self.infos['ean13']
+    def fill_object_attributes(self, product: Product):
+        assert product.idAtProviders == self.infos['ean13']
 
-        thing.name = trim_with_elipsis(self.infos['titre'], 140)
-        thing.datePublished = read_things_date(self.infos['date_parution'])
-        thing.type = self.thing_type
-        thing.extraData = self.extraData.copy()
-        thing.extraData.update(get_extra_data_from_infos(self.infos))
+        product.name = trim_with_elipsis(self.infos['titre'], 140)
+        product.datePublished = read_things_date(self.infos['date_parution'])
+        product.type = self.thing_type
+        product.extraData = self.extraData.copy()
+        product.extraData.update(get_extra_data_from_infos(self.infos))
 
         if self.infos['url_extrait_pdf'] != '':
-            if thing.mediaUrls is None:
-                thing.mediaUrls = []
+            if product.mediaUrls is None:
+                product.mediaUrls = []
 
-            thing.mediaUrls.append(self.infos['url_extrait_pdf'])
+            product.mediaUrls.append(self.infos['url_extrait_pdf'])
 
     def get_remaining_files_to_check(self, ordered_thing_files: list):
         latest_sync_part_end_event = local_provider_event_queries.find_latest_sync_part_end_event(self.provider)

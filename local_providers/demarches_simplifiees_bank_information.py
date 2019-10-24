@@ -37,7 +37,7 @@ class BankInformationProvider(LocalProvider):
             get_all_application_ids_for_procedure(self.PROCEDURE_ID, self.TOKEN,
                                                   most_recent_known_application_date))
 
-    def __next__(self):
+    def __next__(self) -> List[ProvidableInfo]:
         self.application_id = next(self.application_ids)
 
         self.application_details = get_application_details(self.application_id, self.PROCEDURE_ID, self.TOKEN)

@@ -15,12 +15,12 @@ class LocalProviderTest:
     class UpdateObjectsTest:
         @patch('tests.local_providers.provider_test_utils.TestLocalProvider.__next__')
         @clean_database
-        def test_iterator_is_called_until_exhausted(self, dummy_function, app):
+        def test_iterator_is_called_until_exhausted(self, next_function, app):
             # Given
             provider_test = create_provider('TestLocalProvider')
             PcObject.save(provider_test)
 
-            dummy_function.side_effect = [
+            next_function.side_effect = [
                 None,
                 None,
                 None
@@ -32,7 +32,7 @@ class LocalProviderTest:
             provider.updateObjects()
 
             # Then
-            assert dummy_function.call_count == 4
+            assert next_function.call_count == 4
 
         @patch('tests.local_providers.provider_test_utils.TestLocalProvider.__next__')
         @clean_database
@@ -243,11 +243,12 @@ class LocalProviderTest:
             product = provider.create_object(providable_info)
 
             # Then
+            assert isinstance(product, Product)
             assert product.name == 'New Product'
             assert product.type == str(ThingType.LIVRE_EDITION)
 
         @clean_database
-        def test_raise_api_errors_exception_when_object_has_model_errors(self, app):
+        def test_raises_api_errors_exception_when_errors_occur_on_model(self, app):
             # Given
             provider_test = create_provider('TestLocalProviderWithApiErrors')
             PcObject.save(provider_test)
@@ -290,7 +291,7 @@ class LocalProviderTest:
             assert existing_product.type == str(ThingType.LIVRE_EDITION)
 
         @clean_database
-        def test_raise_api_errors_exception_when_object_has_model_errors(self, app):
+        def test_raise_api_errors_exception_when_errors_occur_on_model(self, app):
             # Given
             provider_test = create_provider('TestLocalProviderWithApiErrors')
             PcObject.save(provider_test)

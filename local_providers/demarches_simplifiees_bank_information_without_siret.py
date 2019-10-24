@@ -47,7 +47,7 @@ class VenueWithoutSIRETBankInformationProvider(LocalProvider):
             get_all_application_ids_for_procedure(self.PROCEDURE_ID, self.TOKEN, last_sync_date)
         )
 
-    def __next__(self) -> ProvidableInfo:
+    def __next__(self) -> List[ProvidableInfo]:
         self.application_id = next(self.application_ids)
 
         application_response = get_application_details(self.application_id, self.PROCEDURE_ID, self.TOKEN)
@@ -74,7 +74,7 @@ class VenueWithoutSIRETBankInformationProvider(LocalProvider):
         providable_info.date_modified_at_provider = self.application_details['updated_at']
         return [providable_info]
 
-    def fill_object_attributes(self, bank_information):
+    def fill_object_attributes(self, bank_information: BankInformation):
         bank_information.iban = format_raw_iban_or_bic(self.application_details['IBAN'])
         bank_information.bic = format_raw_iban_or_bic(self.application_details['BIC'])
         bank_information.applicationId = self.application_details['applicationId']

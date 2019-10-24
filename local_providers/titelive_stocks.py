@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Union, List
 
 import requests
 from sqlalchemy import Sequence
@@ -56,9 +57,9 @@ class TiteLiveStocks(LocalProvider):
         self.more_pages = True
         self.data = None
         self.product = None
-        self.offerId = None
+        self.offer_id = None
 
-    def __next__(self):
+    def __next__(self) -> List[ProvidableInfo]:
         self.index = self.index + 1
 
         if self.data is None \
@@ -94,38 +95,36 @@ class TiteLiveStocks(LocalProvider):
 
         return [providable_info_offer, providable_info_stock]
 
-    def fill_object_attributes(self, obj):
-        assert obj.idAtProviders == "%s@%s" % (self.titelive_stock['ref'], self.venue_siret)
-        if isinstance(obj, Stock):
-            self.update_stock_object(obj, self.titelive_stock)
-        elif isinstance(obj, Offer):
-            self.update_offer_object(obj, self.titelive_stock)
+    def fill_object_attributes(self, stock_or_offer: Union[Stock, Offer]):
+        assert stock_or_offer.idAtProviders == "%s@%s" % (self.titelive_stock['ref'], self.venue_siret)
+        if isinstance(stock_or_offer, Stock):
+            self.update_stock(stock_or_offer, self.titelive_stock)
+        elif isinstance(stock_or_offer, Offer):
+            self.update_offer(stock_or_offer, self.titelive_stock)
 
-    def updateObjects(self, limit=None):
-        super().updateObjects(limit)
+    def update_stock(self, stock: Stock, stock_information: dict):
+        stock.price = int(stock_information['price']) / PRICE_DIVIDER_TO_EURO
+        stock.available = int(stock_information['available'])
+        stock.bookingLimitDatetime = None
+        stock.offerId = self.offer_id
 
-    def update_stock_object(self, obj, stock_information):
-        obj.price = int(stock_information['price']) / PRICE_DIVIDER_TO_EURO
-        obj.available = int(stock_information['available'])
-        obj.bookingLimitDatetime = None
-        obj.offerId = self.offerId
+    def update_offer(self, offer: Offer, stock_information: dict):
+        offer.name = self.product.name
+        offer.description = self.product.description
+        offer.type = self.product.type
+        offer.extraData = self.product.extraData
+        offer.bookingEmail = self.venue_booking_email
+        offer.venueId = self.venueId
+        offer.productId = self.product.id
 
-    def update_offer_object(self, obj, stock_information):
-        obj.name = self.product.name
-        obj.description = self.product.description
-        obj.type = self.product.type
-        obj.extraData = self.product.extraData
-        obj.bookingEmail = self.venue_booking_email
-        obj.venueId = self.venueId
-        obj.productId = self.product.id
-        if obj.id is None:
+        if offer.id is None:
             next_id = self.get_next_offer_id_from_sequence()
-            obj.id = next_id
+            offer.id = next_id
 
-        self.offerId = obj.id
+        self.offer_id = offer.id
 
         if int(stock_information['available']) == 0:
-            obj.isActive = False
+            offer.isActive = False
 
     def get_next_offer_id_from_sequence(self):
         sequence = Sequence('offer_id_seq')

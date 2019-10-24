@@ -2,6 +2,7 @@ import re
 from datetime import datetime
 from io import BytesIO
 from pathlib import PurePath
+from typing import List
 
 from connectors.ftp_titelive import get_files_to_process_from_titelive_ftp, get_zip_file_from_ftp
 from domain.titelive import get_date_from_filename
@@ -51,7 +52,7 @@ class TiteLiveThingThumbs(LocalProvider):
                                           sorted(self.zip.infolist(),
                                                  key=lambda f: f.filename)))
 
-    def __next__(self):
+    def __next__(self) -> List[ProvidableInfo]:
         if self.thumb_zipinfos is None:
             self.open_next_file()
 

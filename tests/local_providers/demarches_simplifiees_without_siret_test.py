@@ -169,7 +169,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
                           checkedObjects=0,
                           createdObjects=0,
                           updatedObjects=0,
-                          erroredObjects=0,
+                          erroredObjects=2,
                           checkedThumbs=0,
                           createdThumbs=0,
                           updatedThumbs=0,

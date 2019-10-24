@@ -136,6 +136,7 @@ class LocalProvider(Iterator):
         errors = pc_object.errors()
         if errors and len(errors.errors) > 0:
             self.log_provider_event(LocalProviderEventType.SyncError, 'ApiErrors')
+            self.erroredObjects += 1
             raise errors
 
         self.createdObjects += 1
@@ -143,6 +144,7 @@ class LocalProvider(Iterator):
 
     def handle_update(self, pc_object, providable_info):
         self.fill_object_attributes(pc_object)
+
         pc_object.lastProviderId = self.provider.id
         pc_object.dateModifiedAtLastProvider = providable_info.date_modified_at_provider
 
@@ -237,12 +239,12 @@ class LocalProvider(Iterator):
 
                         chunk_to_update[chunk_key] = pc_object
 
+                self.checkedObjects += 1
+
                 if len(chunk_to_insert) + len(chunk_to_update) >= CHUNK_MAX_SIZE:
                     save_chunks(chunk_to_insert, chunk_to_update, providable_info)
                     chunk_to_insert = {}
                     chunk_to_update = {}
-
-                self.checkedObjects += 1
 
         if len(chunk_to_insert) + len(chunk_to_update) > 0:
             save_chunks(chunk_to_insert, chunk_to_update, providable_info)

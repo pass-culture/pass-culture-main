@@ -1,5 +1,6 @@
 import re
 from pathlib import PurePath
+from typing import List
 
 from connectors.ftp_titelive import get_files_to_process_from_titelive_ftp, get_zip_file_from_ftp
 from domain.titelive import get_date_from_filename, read_description_date
@@ -50,7 +51,7 @@ class TiteLiveThingDescriptions(LocalProvider):
 
         self.date_modified = read_description_date(str(get_date_from_filename(self.zip, DATE_REGEXP)))
 
-    def __next__(self):
+    def __next__(self) -> List[ProvidableInfo]:
         if self.desc_zipinfos is None:
             self.open_next_file()
 
@@ -69,11 +70,11 @@ class TiteLiveThingDescriptions(LocalProvider):
 
         return [providable_info]
 
-    def fill_object_attributes(self, thing):
+    def fill_object_attributes(self, product: Product):
         with self.zip.open(self.desc_zipinfo) as f:
-            thing.description = f.read().decode('iso-8859-1')
+            product.description = f.read().decode('iso-8859-1')
 
-    def get_remaining_files_to_check(self, all_zips):
+    def get_remaining_files_to_check(self, all_zips) -> iter:
         latest_sync_part_end_event = local_provider_event_queries.find_latest_sync_part_end_event(self.provider)
 
         if latest_sync_part_end_event is None:
@@ -83,7 +84,7 @@ class TiteLiveThingDescriptions(LocalProvider):
                 filter(lambda z: get_date_from_filename(z, DATE_REGEXP) > int(latest_sync_part_end_event.payload),
                        all_zips))
 
-    def get_description_files_from_zip_info(self):
+    def get_description_files_from_zip_info(self) -> iter:
         sorted_files = sorted(self.zip.infolist(), key=lambda f: f.filename)
         filtered_files = filter(lambda f: f.filename.lower().endswith(END_FILE_IDENTIFIER), sorted_files)
         return iter(filtered_files)
