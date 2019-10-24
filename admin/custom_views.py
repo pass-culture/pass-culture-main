@@ -12,7 +12,8 @@ class OfferAdminView(BaseAdminView):
     can_edit = True
     can_delete = False
     column_list = ['id', 'name', 'type', 'baseScore', 'criteria']
-    column_labels = dict(name='Nom', type='Type', baseScore='Score', criteria='Tag')
+    column_labels = dict(name='Nom', type='Type',
+                         baseScore='Score', criteria='Tag')
     column_searchable_list = ['name']
     column_filters = ['type']
     form_columns = ['criteria']
@@ -23,7 +24,8 @@ class CriteriaAdminView(BaseAdminView):
     can_edit = True
     can_delete = True
     column_list = ['id', 'name', 'description', 'scoreDelta']
-    column_labels = dict(name='Nom', description='Description', scoreDelta='Score')
+    column_labels = dict(
+        name='Nom', description='Description', scoreDelta='Score')
     column_searchable_list = ['name', 'description']
     column_filters = []
     form_columns = ['name', 'description', 'scoreDelta']
@@ -32,7 +34,8 @@ class CriteriaAdminView(BaseAdminView):
 class OffererAdminView(BaseAdminView):
     can_edit = True
     column_list = ['id', 'name', 'siren', 'city', 'postalCode', 'address']
-    column_labels = dict(name='Nom', siren='SIREN', city='Ville', postalCode='Code postal', address='Adresse')
+    column_labels = dict(name='Nom', siren='SIREN', city='Ville',
+                         postalCode='Code postal', address='Adresse')
     column_searchable_list = ['name', 'siren']
     column_filters = ['postalCode', 'city']
     form_columns = ['name', 'siren', 'city', 'postalCode', 'address']
@@ -51,23 +54,27 @@ class UserAdminView(BaseAdminView):
     )
     column_searchable_list = ['publicName', 'email', 'firstName', 'lastName']
     column_filters = ['postalCode', 'canBookFreeOffers']
-    form_columns = ['email', 'firstName', 'lastName', 'publicName', 'dateOfBirth', 'departementCode', 'postalCode']
+    form_columns = ['email', 'firstName', 'lastName',
+                    'publicName', 'dateOfBirth', 'departementCode', 'postalCode']
 
 
 class VenueAdminView(BaseAdminView):
     can_edit = True
-    column_list = ['id', 'name', 'siret', 'city', 'postalCode', 'address', 'publicName', 'latitude', 'longitude']
+    column_list = ['id', 'name', 'siret', 'city', 'postalCode',
+                   'address', 'publicName', 'latitude', 'longitude']
     column_labels = dict(name='Nom', siret='SIRET', city='Ville', postalCode='Code postal', address='Adresse',
                          publicName='Nom d\'usage', latitude='Latitude', longitude='Longitude')
     column_searchable_list = ['name', 'siret', 'publicName']
     column_filters = ['postalCode', 'city', 'publicName']
-    form_columns = ['name', 'siret', 'city', 'postalCode', 'address', 'publicName', 'latitude', 'longitude']
+    form_columns = ['name', 'siret', 'city', 'postalCode',
+                    'address', 'publicName', 'latitude', 'longitude']
 
 
 class FeatureAdminView(BaseAdminView):
     can_edit = True
     column_list = ['name', 'description', 'isActive']
-    column_labels = dict(name='Nom', description='Description', isActive='Activé')
+    column_labels = dict(
+        name='Nom', description='Description', isActive='Activé')
     form_columns = ['isActive']
 
 
@@ -83,7 +90,9 @@ class BeneficiaryImportView(BaseAdminView):
         'detail': "Détail",
         'authorEmail': 'Statut modifié par'
     }
-    column_searchable_list = ['beneficiary.email', 'demarcheSimplifieeApplicationId']
+    column_searchable_list = ['beneficiary.email',
+                              'demarcheSimplifieeApplicationId']
+    column_filters = ['currentStatus']
     column_sortable_list = ['beneficiary.email', 'demarcheSimplifieeApplicationId', 'currentStatus', 'updatedAt',
                             'detail', 'authorEmail']
 
@@ -97,7 +106,8 @@ class BeneficiaryImportView(BaseAdminView):
             statuses = TextAreaField('Status précédents', default=obj.history,
                                      render_kw={'readonly': True, 'rows': len(obj.statuses)})
             detail = StringField('Raison du changement de statut')
-            status = SelectField('Nouveau statut', choices=[(s.name, s.value) for s in ImportStatus])
+            status = SelectField('Nouveau statut', choices=[
+                                 (s.name, s.value) for s in ImportStatus])
 
         return _NewStatusForm(get_form_data())
 
@@ -105,7 +115,9 @@ class BeneficiaryImportView(BaseAdminView):
         new_status = ImportStatus(new_status_form.status.data)
 
         if is_import_status_change_allowed(beneficiary_import.currentStatus, new_status):
-            beneficiary_import.setStatus(new_status, detail=new_status_form.detail.data, author=current_user)
+            beneficiary_import.setStatus(
+                new_status, detail=new_status_form.detail.data, author=current_user)
             PcObject.save(beneficiary_import)
         else:
-            new_status_form.status.errors.append(IMPORT_STATUS_MODIFICATION_RULE)
+            new_status_form.status.errors.append(
+                IMPORT_STATUS_MODIFICATION_RULE)
