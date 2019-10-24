@@ -1,8 +1,8 @@
 matplotlib==3.1.1
 numpy==1.17.0
 pandas==0.25.0
+pygsheet==0.1.19b25
 sqlalchemy==1.3.6
 scikit-learn==0.21.3
 psycopg2-binary==2.8.3
 nbstripout==0.3.1
-ipykernel
