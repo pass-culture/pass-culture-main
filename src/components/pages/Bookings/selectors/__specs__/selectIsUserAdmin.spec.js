@@ -1,4 +1,5 @@
 import selectIsUserAdmin from '../selectIsUserAdmin'
+import { getCurrentUserUUID } from 'with-react-redux-login'
 
 describe('src | components | pages | Bookings | selectors | selectIsUserAdmin', () => {
   it('should return false when state contains no users', () => {
@@ -24,6 +25,7 @@ describe('src | components | pages | Bookings | selectors | selectIsUserAdmin', 
           {
             id: 'FA',
             isAdmin: true,
+            currentUserUUID: getCurrentUserUUID(),
           },
         ],
       },

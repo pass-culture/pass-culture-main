@@ -6,6 +6,7 @@ import React from 'react'
 import { Router } from 'react-router'
 
 import MatomoContainer from '../MatomoContainer'
+import { getCurrentUserUUID } from 'with-react-redux-login'
 
 describe('src | components | matomo | Matomo', () => {
   let fakeMatomo
@@ -23,7 +24,11 @@ describe('src | components | matomo | Matomo', () => {
       push: jest.fn(),
     }
     window._paq = fakeMatomo
-    initialState = { user: null }
+    initialState = {
+      data: {
+        users: [],
+      },
+    }
     store = mockStore(initialState)
   })
 
@@ -97,7 +102,14 @@ describe('src | components | matomo | Matomo', () => {
   describe('when user is logged', () => {
     it('should dispatch setUserId with current user id', () => {
       // given
-      store = mockStore({ user: { id: 'TY' } })
+      store = mockStore({
+        data: {
+          users: [{
+            id: 'TY',
+            currentUserUUID: getCurrentUserUUID(),
+          }],
+        },
+      })
 
       // when
       mount(

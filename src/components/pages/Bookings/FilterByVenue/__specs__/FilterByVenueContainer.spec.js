@@ -1,4 +1,5 @@
 import { mapStateToProps, mapDispatchToProps } from '../FilterByVenueContainer'
+import { getCurrentUserUUID } from 'with-react-redux-login'
 
 describe('src | components | pages | Bookings | FilterByVenueContainer', () => {
   describe('mapStateToProps', () => {
@@ -48,6 +49,7 @@ describe('src | components | pages | Bookings | FilterByVenueContainer', () => {
             {
               id: 'EY',
               isAdmin: 'True',
+              currentUserUUID: getCurrentUserUUID(),
             },
           ],
         },

@@ -1,4 +1,5 @@
 import createCachedSelector from 're-reselect'
+import { selectCurrentUser } from 'with-react-redux-login'
 
 import { selectVenueById } from '../../../../selectors/data/venuesSelectors'
 
@@ -10,8 +11,8 @@ const selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity = createCac
   selectVenueById,
   (state, venueId, offererId) => offererId,
   (state, venueId, offererId, isCreatedEntity) => isCreatedEntity,
-  state => state.user && state.user.email,
-  (venue, offererId, isCreatedEntity, bookingEmail) => {
+  selectCurrentUser,
+  (venue, offererId, isCreatedEntity, currentUser) => {
     const defaultData = {
       managingOffererId: offererId,
     }
@@ -19,7 +20,7 @@ const selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity = createCac
     const formInitialValues = Object.assign(defaultData, venue)
 
     if (isCreatedEntity) {
-      formInitialValues.bookingEmail = bookingEmail
+      formInitialValues.bookingEmail = currentUser.email
     }
 
     return formInitialValues

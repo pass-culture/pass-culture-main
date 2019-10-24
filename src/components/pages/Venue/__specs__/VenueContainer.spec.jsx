@@ -1,4 +1,5 @@
 import { mapDispatchToProps, mapStateToProps, mergeProps } from '../VenueContainer'
+import { getCurrentUserUUID } from 'with-react-redux-login'
 
 window.scroll = () => {}
 
@@ -23,8 +24,13 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
           offerers: [{ id: 1 }],
           userOfferers: [{ offererId: 1, rights: 'admin', userId: 1 }],
           venues: [],
+          users: [
+            {
+              email: 'john.doe@email.com',
+              currentUserUUID: getCurrentUserUUID(),
+            },
+          ],
         },
-        user: { email: 'john.doe@email.com' },
       }
       const props = {
         currentUser: { id: 1 },

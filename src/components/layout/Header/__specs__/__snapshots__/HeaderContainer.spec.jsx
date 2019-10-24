@@ -1,5 +1,5 @@
-import React from 'react'
 import { mapStateToProps } from '../../HeaderContainer'
+import { getCurrentUserUUID } from 'with-react-redux-login'
 
 describe('src | components | Layout | Header | HeaderContainer', () => {
   describe('mapStateToProps', () => {
@@ -7,11 +7,12 @@ describe('src | components | Layout | Header | HeaderContainer', () => {
       // given
       const state = {
         data: {
-          offerers: []
+          offerers: [],
+          users: [{
+            publicName: 'super nom',
+            currentUserUUID: getCurrentUserUUID(),
+          }]
         },
-        user: {
-          publicName: 'super nom'
-        }
       }
 
       // when

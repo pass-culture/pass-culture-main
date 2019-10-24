@@ -1,10 +1,18 @@
 import { mapStateToProps } from '../MatomoContainer'
+import { getCurrentUserUUID } from 'with-react-redux-login'
 
 describe('src | components | matomo | MatomoContainer', () => {
   describe('mapStateToProps', () => {
     it('should return an object of props when user is logged in', () => {
       // given
-      const state = { user: { id: 'TY7' } }
+      const state = {
+        data: {
+          users: [{
+            id: 'TY7',
+            currentUserUUID: getCurrentUserUUID(),
+          }]
+        }
+      }
 
       // when
       const props = mapStateToProps(state)
@@ -15,7 +23,11 @@ describe('src | components | matomo | MatomoContainer', () => {
 
     it('should return an object of props when user is logged out', () => {
       // given
-      const state = { user: null }
+      const state = {
+        data: {
+          users: []
+        }
+      }
 
       // when
       const props = mapStateToProps(state)
