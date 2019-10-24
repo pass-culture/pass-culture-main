@@ -52,7 +52,7 @@ class UserAdminView(BaseAdminView):
         resetPasswordToken='Jeton d\'activation et réinitialisation de mot de passe',
         validationToken='Jeton de validation d\'adresse email'
     )
-    column_searchable_list = ['publicName', 'email', 'firstName', 'lastName']
+    column_searchable_list = ['id', 'publicName', 'email', 'firstName', 'lastName']
     column_filters = ['postalCode', 'canBookFreeOffers']
     form_columns = ['email', 'firstName', 'lastName',
                     'publicName', 'dateOfBirth', 'departementCode', 'postalCode']
