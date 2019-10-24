@@ -4,7 +4,7 @@ import React, { Fragment } from 'react'
 import FormError from '../../../../forms/FormError'
 import isEmpty from '../../../../../utils/strings/isEmpty'
 import PasswordField from '../../../../forms/inputs/PasswordField'
-import { validateMatchingFields } from '../../../../forms/validators/validateMatchingFields'
+import validateMatchingFields from '../../../../forms/validators/validateMatchingFields'
 import withProfileForm from '../withProfileForm'
 
 const ERROR_OLD_PASSWORD = 'L’ancien mot de passe est manquant.'

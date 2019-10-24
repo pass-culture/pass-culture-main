@@ -1,31 +1,11 @@
-import { shallow } from 'enzyme'
-import React from 'react'
-
-import withRequiredLogin, {
-  handleFail,
-  handleSuccess,
-} from '../withRequiredLogin'
-import {
-  getRedirectToSignin,
-  getRedirectToCurrentLocationOrTypeform,
-} from '../helpers'
-
-const Test = () => null
-const RequiredLoginTest = withRequiredLogin(Test)
+import { handleFail, handleSuccess } from '../withRequiredLogin'
+import { getRedirectToSignin, getRedirectToCurrentLocationOrTypeform } from '../helpers'
 
 jest.mock('../helpers')
 
 describe('src | components | pages | hocs | with-login | withRequiredLogin - unit tests', () => {
   beforeEach(() => {
     fetch.resetMocks()
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<RequiredLoginTest />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('handleFail()', () => {
@@ -58,8 +38,8 @@ describe('src | components | pages | hocs | with-login | withRequiredLogin - uni
           datum: {
             email: 'michel.marx@youpi.fr',
             needsToFillCulturalSurvey: false,
-          }
-        }
+          },
+        },
       }
 
       const ownProps = {

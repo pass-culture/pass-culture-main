@@ -1,23 +1,9 @@
-import { shallow } from 'enzyme'
-import React from 'react'
-
-import withNotRequiredLogin, { handleSuccess } from '../withNotRequiredLogin'
+import { handleSuccess } from '../withNotRequiredLogin'
 import { getRedirectToCurrentLocationOrDiscovery } from '../helpers'
 
 jest.mock('../helpers')
 
-const Test = () => null
-const NotRequiredLoginTest = withNotRequiredLogin(Test)
-
 describe('src | components | pages | hocs | with-login | withNotRequiredLogin', () => {
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<NotRequiredLoginTest />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
   beforeEach(() => {
     fetch.resetMocks()
   })
@@ -30,20 +16,20 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
         payload: {
           datum: {
             email: 'michel.marx@youpi.fr',
-            needsToFillCulturalSurvey: false
-          }
-        }
+            needsToFillCulturalSurvey: false,
+          },
+        },
       }
       const ownProps = {
         history: {
           push: jest.fn(),
         },
         location: {
-          hash: "",
+          hash: '',
           key: expect.any(String),
-          pathname: "/test",
-          search: "",
-          state: undefined
+          pathname: '/test',
+          search: '',
+          state: undefined,
         },
       }
 
