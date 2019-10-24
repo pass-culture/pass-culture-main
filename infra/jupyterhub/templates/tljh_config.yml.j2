@@ -1,6 +1,8 @@
 users:
   admin:
+{% for admin_user in admin_users %}
   - {{ admin_user }}
+{% endfor %}
   allowed:
 {% for user in allowed_users %}
   - {{ user }}
@@ -10,7 +12,7 @@ http:
 https:
   enabled: true
   letsencrypt:
-    email: {{ admin_user }}
+    email: {{ admin_users[0] }}
     domains:
 {% for domain in jupyterhub_domains %}
     - {{ domain }}
