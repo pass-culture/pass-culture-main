@@ -80,11 +80,14 @@ class FeatureAdminView(BaseAdminView):
 
 class BeneficiaryImportView(BaseAdminView):
     can_edit = True
-    column_list = ['beneficiary.email', 'demarcheSimplifieeApplicationId', 'currentStatus', 'updatedAt', 'detail',
-                   'authorEmail']
+    column_list = ['beneficiary.firstName', 'beneficiary.lastName', 'beneficiary.email', 'beneficiary.postalCode',
+                   'demarcheSimplifieeApplicationId', 'currentStatus', 'updatedAt', 'detail', 'authorEmail']
     column_labels = {
         'demarcheSimplifieeApplicationId': 'Dossier DMS',
-        'beneficiary.email': 'Bénéficiaire',
+        'beneficiary.lastName': 'Nom',
+        'beneficiary.firstName': 'Prénom',
+        'beneficiary.postalCode': 'Code postal',
+        'beneficiary.email': 'Adresse e-mail',
         'currentStatus': "Statut",
         'updatedAt': "Date",
         'detail': "Détail",
@@ -93,8 +96,8 @@ class BeneficiaryImportView(BaseAdminView):
     column_searchable_list = ['beneficiary.email',
                               'demarcheSimplifieeApplicationId']
     column_filters = ['currentStatus']
-    column_sortable_list = ['beneficiary.email', 'demarcheSimplifieeApplicationId', 'currentStatus', 'updatedAt',
-                            'detail', 'authorEmail']
+    column_sortable_list = ['beneficiary.email', 'beneficiary.firstName', 'beneficiary.lastName', 'beneficiary.postalCode',
+                            'demarcheSimplifieeApplicationId', 'currentStatus', 'updatedAt', 'detail', 'authorEmail']
 
     def edit_form(self, obj=None):
         class _NewStatusForm(Form):
