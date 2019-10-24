@@ -1,10 +1,7 @@
 datalake_postgres_url: "{{ vault_datalake_postgres_url }}"
 
-service_host: "datahub.passculture.app"
-service_name: "datahub"
-service_root_directory: "/opt"
 google_client_id: "{{ vault_google_client_id }}"
 google_client_secret: "{{ vault_google_client_secret }}"
-admin_user: "{{ vault_admin_user }}"
+admin_users: "{{ vault_admin_users }}"
 allowed_users: "{{ vault_allowed_users }}"
 jupyterhub_domains: "{{ vault_jupyterhub_domains }}"
