@@ -112,6 +112,7 @@ class ProductFields extends Component {
           />
           <NumberField
             format={formatPrice(readOnly)}
+            min="0"
             name="price"
             onBlur={this.handleOnPriceBlur}
             placeholder="Gratuit"
@@ -135,6 +136,7 @@ class ProductFields extends Component {
         <td className="tooltiped">
           <NumberField
             format={createFormatAvailable()}
+            min="0"
             name="available"
             placeholder="Illimité"
             readOnly={readOnly}

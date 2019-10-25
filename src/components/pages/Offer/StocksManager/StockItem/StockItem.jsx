@@ -73,7 +73,7 @@ class StockItem extends Component {
     if (body.price === '') {
       body.price = 0
     }
-    if (body.available === '') {
+    if (body.available === '' || body.available === 0 ) {
       body.available = null
     }
 

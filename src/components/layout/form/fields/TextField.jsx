@@ -22,7 +22,7 @@ class TextField extends Component {
     const { type } = this.props
 
     if (type === 'number') {
-      this.handlePreventEPlusMinusKeypresses()
+      this.hasEnteredPlusOrMinusAfterNumbers()
     }
   }
 
@@ -32,13 +32,15 @@ class TextField extends Component {
     }
   }
 
-  handlePreventEPlusMinusKeypresses = () => {
+  hasEnteredPlusOrMinusAfterNumbers = () => {
     this.keypressListener = this.inputElement.addEventListener('keypress', event => {
-      const hasPressedEKeys = event.which === 69 || event.which === 101
-      const hasPressedPlusOrMinusAfterNumbers =
-        this.inputElement.value && (event.which === 45 || event.which === 43)
+      const hasEnteredEKeys = event.which === 69 || event.which === 101
+      const eventWhichForMinusKey = 45
+      const eventWhichForPlusKey = 43
+      const hasEnteredPlusOrMinusAfterNumbers =
+        this.inputElement.value && (event.keyCode === eventWhichForMinusKey || event.keyCode === eventWhichForPlusKey)
 
-      if (hasPressedEKeys || hasPressedPlusOrMinusAfterNumbers) {
+      if (hasEnteredEKeys || hasEnteredPlusOrMinusAfterNumbers) {
         event.preventDefault()
       }
     })
@@ -51,6 +53,7 @@ class TextField extends Component {
       id,
       innerClassName,
       label,
+      min,
       name,
       placeholder,
       readOnly,
@@ -96,6 +99,7 @@ class TextField extends Component {
                 {...inputProps}
                 className={`field-input field-${type}`}
                 disabled={disabled || readOnly}
+                min={min}
                 placeholder={readOnly ? '' : placeholder}
                 readOnly={readOnly}
                 ref={_e => {
