@@ -119,14 +119,15 @@ def test_model_qrCode_should_return_qrCode_as_base64_string_when_booking_is_not_
     stock = create_stock(price=12, available=1, offer=offer)
 
     # when
-    booking = create_booking(recommendation=None, stock=stock, user=user, venue=venue, is_used=False, is_cancelled=False)
+    booking = create_booking(recommendation=None, stock=stock, user=user, venue=venue, is_used=False,
+                             is_cancelled=False)
 
     # then
     assert booking.qrCode is not None
     assert type(booking.qrCode) is str
 
 
-def test_model_qrCode_should_not_return_qrCode_as_base64_string_when_booking_is_used_and_cancelled():
+def test_model_qrCode_should_return_qrCode_as_None_when_booking_is_used_and_cancelled():
     # given
     user = create_user(email='user@test.com')
     offerer = create_offerer()
@@ -138,6 +139,40 @@ def test_model_qrCode_should_not_return_qrCode_as_base64_string_when_booking_is_
 
     # when
     booking = create_booking(recommendation=None, stock=stock, user=user, venue=venue, is_used=True, is_cancelled=True)
+
+    # then
+    assert booking.qrCode is None
+
+
+def test_model_qrCode_should_return_qrCode_as_None_when_booking_is_used_and_not_cancelled():
+    # given
+    user = create_user(email='user@test.com')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    product = create_product_with_event_type(dominant_color=None, thumb_count=0)
+    product.id = 2
+    offer = create_offer_with_event_product(product=product, venue=venue)
+    stock = create_stock(price=12, available=1, offer=offer)
+
+    # when
+    booking = create_booking(recommendation=None, stock=stock, user=user, venue=venue, is_used=True, is_cancelled=False)
+
+    # then
+    assert booking.qrCode is None
+
+
+def test_model_qrCode_should_return_qrCode_as_None_when_booking_is_not_used_and_is_cancelled():
+    # given
+    user = create_user(email='user@test.com')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    product = create_product_with_event_type(dominant_color=None, thumb_count=0)
+    product.id = 2
+    offer = create_offer_with_event_product(product=product, venue=venue)
+    stock = create_stock(price=12, available=1, offer=offer)
+
+    # when
+    booking = create_booking(recommendation=None, stock=stock, user=user, venue=venue, is_used=False, is_cancelled=True)
 
     # then
     assert booking.qrCode is None

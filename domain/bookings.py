@@ -16,7 +16,7 @@ from utils.human_ids import humanize
 
 BOOKING_CANCELLATION_DELAY = timedelta(hours=72)
 QR_CODE_PASS_CULTURE_VERSION = 'v1'
-QR_CODE_VERSION = 10
+QR_CODE_VERSION = 20
 QR_CODE_BOX_SIZE = 2
 QR_CODE_BOX_BORDER = 1
 CSV_HEADER = [
@@ -61,16 +61,16 @@ def generate_qr_code(booking: Booking) -> str:
     offer_formula = ''
     if booking.stock.offer.type == str(EventType.CINEMA):
         offer_formula = 'PLACE'
-    if booking.stock.offer.type == str(ThingType.CINEMA_ABO):
+    elif booking.stock.offer.type == str(ThingType.CINEMA_ABO):
         offer_formula = 'ABO'
 
-    offer_type = 'EVT' if booking.stock.offer.isEvent else 'BIEN'
+    offer_type = 'EVENEMENT' if booking.stock.offer.isEvent else 'BIEN'
     offer_date_time = booking.stock.beginningDatetime if booking.stock.beginningDatetime else ''
-    product_extra_data = booking.stock.offer.product.extraData
+    offer_extra_data = booking.stock.offer.extraData
+
     product_isbn = ''
-    if product_extra_data:
-        if 'isbn' in product_extra_data:
-            product_isbn = product_extra_data['isbn']
+    if offer_extra_data and 'isbn' in offer_extra_data:
+        product_isbn = offer_extra_data['isbn']
 
     data = f'PASSCULTURE:{QR_CODE_PASS_CULTURE_VERSION};' \
            f'TOKEN:{booking.token};' \
@@ -80,7 +80,7 @@ def generate_qr_code(booking: Booking) -> str:
            f'VENUE:{booking.stock.offer.venue.name};' \
            f'TYPE:{offer_type};' \
            f'PRICE:{booking.stock.price};' \
-           f'QTY:{booking.quantity};'
+           f'QUANTITY:{booking.quantity};'
 
     if offer_formula != '':
         data += f'FORMULA:{offer_formula};'
@@ -93,10 +93,10 @@ def generate_qr_code(booking: Booking) -> str:
 
     qr.add_data(data)
     image = qr.make_image(fill_color='black', back_color='white')
-    return _convert_to_base64(image)
+    return _convert_image_to_base64(image)
 
 
-def _convert_to_base64(image: Image) -> str:
+def _convert_image_to_base64(image: Image) -> str:
     image_as_bytes = io.BytesIO()
     image.save(image_as_bytes)
     image_as_base64 = base64.b64encode(image_as_bytes.getvalue())

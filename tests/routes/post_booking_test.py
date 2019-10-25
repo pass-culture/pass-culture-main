@@ -134,7 +134,6 @@ class Post:
             recommendation = create_recommendation(thing_offer, user)
             PcObject.save(recommendation)
 
-            deposit_date = datetime.utcnow() - timedelta(minutes=2)
             deposit = create_deposit(user, amount=500)
             PcObject.save(deposit)
 
@@ -209,8 +208,6 @@ class Post:
             thing_stock_price_12 = create_stock_with_thing_offer(offerer, venue, thing_offer, price=12)
 
             PcObject.save(thing_stock_price_190, thing_stock_price_12)
-
-            deposit_date = datetime.utcnow() - timedelta(minutes=2)
 
             deposit = create_deposit(user, amount=500, source='public')
 
@@ -466,7 +463,6 @@ class Post:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            deposit_date = datetime.utcnow() - timedelta(minutes=2)
             deposit = create_deposit(user, amount=200)
             offer = create_offer_with_event_product(venue, event_name='Event Name', event_type=EventType.CINEMA)
             event_occurrence = create_event_occurrence(offer, beginning_datetime=five_days_ago,
@@ -497,7 +493,6 @@ class Post:
             five_days_ago = datetime.utcnow() - timedelta(days=5)
             user = create_user(email='test@email.com')
             offerer = create_offerer()
-            deposit_date = datetime.utcnow() - timedelta(minutes=2)
             deposit = create_deposit(user, amount=200)
             venue = create_venue(offerer)
 
@@ -527,8 +522,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             thing_offer = create_offer_with_thing_product(venue)
-            deposit_date = datetime.utcnow() - timedelta(minutes=2)
-            deposit = create_deposit(user, amount=200)
+            create_deposit(user, amount=200)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
             booking = create_booking(user, stock, venue, is_cancelled=False)
             PcObject.save(stock, user, booking)
@@ -763,7 +757,6 @@ class Post:
             recommendation = create_recommendation(thing_offer, user)
             PcObject.save(recommendation)
 
-            deposit_date = datetime.utcnow() - timedelta(minutes=2)
             deposit = create_deposit(user, amount=500)
             PcObject.save(deposit)
 
@@ -791,8 +784,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             thing_offer = create_offer_with_thing_product(venue)
-            deposit_date = datetime.utcnow() - timedelta(minutes=2)
-            deposit = create_deposit(user, amount=200)
+            create_deposit(user, amount=200)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
             booking = create_booking(user, stock, venue, is_cancelled=True)
             PcObject.save(stock, user, booking)
