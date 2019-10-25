@@ -27,6 +27,7 @@ def _get_origin_header_whitelist():
             'https://localhost',
             'localhost',
             'https://localhost:3000',
+            'https://localhost:5000',
             'localhost:3000',
             'http://localhost:3001',
             'https://localhost:3001',
