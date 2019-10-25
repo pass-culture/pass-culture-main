@@ -1,6 +1,6 @@
 import createCachedSelector from 're-reselect'
 
-import selectBookingByRouterMatch from './selectBookingByRouterMatch'
+import { selectBookingByRouterMatch } from './data/bookingsSelector'
 import selectFavoriteById from './selectFavoriteById'
 import selectRecommendationById from './selectRecommendationById'
 import selectRecommendationByOfferIdAndMediationId from './selectRecommendationByOfferIdAndMediationId'

@@ -3,6 +3,22 @@
   color: $black;
   z-index: $zindex-booking-card;
 
+  &.entered {
+    top: 0;
+    transition: top 250ms ease-in-out;
+  }
+
+  &.entering {
+    top: 100%;
+    transition: top 250ms ease-in-out;
+  }
+
+  &.exited {
+    display: none;
+    visibility: none;
+    transition: top 250ms ease-in-out;
+  }
+
   .isDuo {
     padding-top: rem(20px);
   }

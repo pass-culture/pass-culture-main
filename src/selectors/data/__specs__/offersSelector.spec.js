@@ -1,6 +1,6 @@
-import selectOfferByRouterMatch from '../selectOfferByRouterMatch'
+import { selectOfferByRouterMatch } from '../offersSelector'
 
-describe('src | selectors | selectOfferByRouterMatch', () => {
+describe('selectOfferByRouterMatch', () => {
   it('should return offer when offerId in match', () => {
     // given
     const state = {

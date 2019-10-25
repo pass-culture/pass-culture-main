@@ -1,7 +1,11 @@
+import createCachedSelector from 're-reselect'
 import moment from 'moment'
 import { createSelector } from 'reselect'
 
+import selectBookingById from '../selectBookingById'
+import selectFirstMatchingBookingByOfferId from '../selectFirstMatchingBookingByOfferId'
 import selectStockById from '../selectStockById'
+import selectStocksByOfferId from '../selectStocksByOfferId'
 import selectOfferById from '../selectOfferById'
 import { selectOffers } from './offersSelector'
 import { selectStocks } from './stocksSelector'
@@ -120,3 +124,31 @@ export const selectUsedBookings = createSelector(
   state => state.data.bookings,
   bookings => bookings.filter(booking => booking.isUsed)
 )
+
+function mapArgsToCacheKeyForSelectBookingByRouterMatch(state, match) {
+  const { params } = match
+  const { bookingId, mediationId, offerId } = params
+  return `${bookingId || ' '}${mediationId || ' '}${offerId || ' '}`
+}
+
+export const selectBookingByRouterMatch = createCachedSelector(
+  state => state.data.bookings,
+  state => state.data.stocks,
+  (state, match) => selectBookingById(state, match.params.bookingId),
+  (state, match) => selectOfferById(state, match.params.offerId),
+  (bookings, allStocks, booking, offer) => {
+    if (booking) return booking
+
+    if (offer) {
+      const stocks = selectStocksByOfferId({ data: { stocks: allStocks } }, offer.id)
+      const firstMatchingBooking = selectFirstMatchingBookingByOfferId(
+        {
+          data: { bookings, stocks },
+        },
+        offer.id
+      )
+
+      return firstMatchingBooking
+    }
+  }
+)(mapArgsToCacheKeyForSelectBookingByRouterMatch)

@@ -28,8 +28,6 @@ describe('src | components | layout | BookingCancellation | BookingCancellation'
   })
 
   it('should match snapshot', () => {
-    // given
-    // url: '/foo/reservation/AE',
     // when
     const wrapper = shallow(<BookingCancellation {...props} />)
 
@@ -37,7 +35,7 @@ describe('src | components | layout | BookingCancellation | BookingCancellation'
     expect(wrapper).toMatchSnapshot()
   })
 
-  it('should replace history with url without reservations', () => {
+  it('should redirect to details page', () => {
     // given
     const wrapper = mount(<BookingCancellation {...props} />)
     const okButton = wrapper.find('#booking-cancellation-confirmation-button')

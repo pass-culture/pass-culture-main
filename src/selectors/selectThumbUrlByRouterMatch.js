@@ -1,8 +1,8 @@
 import createCachedSelector from 're-reselect'
 
-import selectBookingByRouterMatch from './selectBookingByRouterMatch'
+import { selectBookingByRouterMatch } from './data/bookingsSelector'
 import selectMediationByRouterMatch from './selectMediationByRouterMatch'
-import selectOfferByRouterMatch from './selectOfferByRouterMatch'
+import { selectOfferByRouterMatch } from './data/offersSelector'
 
 function mapArgsToCacheKey(state, match) {
   const { params } = match

@@ -16,19 +16,7 @@ import { ROOT_PATH } from '../../../utils/config'
 
 const BOOKING_FORM_ID = 'form-create-booking'
 
-const duration = 250
 const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`
-
-const defaultStyle = {
-  top: '100%',
-  transition: `top ${duration}ms ease-in-out`,
-}
-
-const transitionStyles = {
-  entered: { top: 0 },
-  entering: { top: '100%' },
-  exited: { display: 'none', visibility: 'none' },
-}
 
 class Booking extends PureComponent {
   constructor(props) {
@@ -188,9 +176,8 @@ class Booking extends PureComponent {
       >
         {state => (
           <div
-            className={classnames('is-overlay is-clipped flex-rows', extraClassName)}
+            className={classnames('is-overlay is-clipped flex-rows', extraClassName, state)}
             id="booking-card"
-            style={{ ...defaultStyle, ...transitionStyles[state] }}
           >
             <div className="main flex-rows flex-1 scroll-y">
               <BookingHeader offer={offer} />

@@ -1,4 +1,5 @@
 import createCachedSelector from 're-reselect'
+
 import selectOfferById from '../selectOfferById'
 import selectStocksByOfferId from '../selectStocksByOfferId'
 import selectStockById from '../selectStockById'

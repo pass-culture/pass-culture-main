@@ -6,7 +6,7 @@ import { compose } from 'redux'
 import Favorite from './Favorite'
 import selectFavoriteByOfferId from '../../../../../selectors/selectFavoriteByOfferId'
 import selectMediationByRouterMatch from '../../../../../selectors/selectMediationByRouterMatch'
-import selectOfferByRouterMatch from '../../../../../selectors/selectOfferByRouterMatch'
+import { selectOfferByRouterMatch } from '../../../../../selectors/data/offersSelector'
 import selectIsFeatureDisabled from '../../../../router/selectors/selectIsFeatureDisabled'
 import { favoriteNormalizer } from '../../../../../utils/normalizers'
 

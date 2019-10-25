@@ -74,6 +74,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
           productOrTutoIdentifier: 'tuto_-1',
           thumbUrl: 'http://localhost/splash-finReco@2x.png',
         },
+        isConfirmingCancelling: false,
         readRecommendations: undefined,
         recommendations: [],
         shouldReloadRecommendations: true,

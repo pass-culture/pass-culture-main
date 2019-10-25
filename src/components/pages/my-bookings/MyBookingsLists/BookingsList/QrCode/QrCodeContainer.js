@@ -3,7 +3,7 @@ import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 
 import QrCode from './QrCode'
-import selectBookingByRouterMatch from '../../../../../../selectors/selectBookingByRouterMatch'
+import { selectBookingByRouterMatch } from '../../../../../../selectors/data/bookingsSelector'
 import { selectStockById } from '../../../../../../selectors/selectStockById'
 import { selectOfferById } from '../../../../../../selectors/selectOfferById'
 import { getTimezone } from '../../../../../../utils/timezone'

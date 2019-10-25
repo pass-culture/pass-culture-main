@@ -7,7 +7,7 @@ import withTracking from '../../../hocs/withTracking'
 import ShareButton from './ShareButton'
 import getShareURL from '../../../../helpers/getShareURL'
 import selectMediationByRouterMatch from '../../../../selectors/selectMediationByRouterMatch'
-import selectOfferByRouterMatch from '../../../../selectors/selectOfferByRouterMatch'
+import { selectOfferByRouterMatch } from '../../../../selectors/data/offersSelector'
 import { openSharePopin, closeSharePopin } from '../../../../reducers/share'
 
 export const mapStateToProps = (state, ownProps) => {

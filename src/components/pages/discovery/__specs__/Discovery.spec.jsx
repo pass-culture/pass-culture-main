@@ -9,6 +9,7 @@ describe('src | components | pages | discovery | Discovery', () => {
   beforeEach(() => {
     props = {
       deleteTutos: jest.fn(),
+      isConfirmingCancelling: true,
       loadRecommendations: jest.fn(),
       location: {
         pathname: '',

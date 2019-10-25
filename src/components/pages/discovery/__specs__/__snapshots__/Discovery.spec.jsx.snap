@@ -6,6 +6,7 @@ ShallowWrapper {
   Symbol(enzyme.__unrendered__): <Discovery
     currentRecommendation={null}
     deleteTutos={[MockFunction]}
+    isConfirmingCancelling={true}
     loadRecommendations={[MockFunction]}
     location={
       Object {

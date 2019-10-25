@@ -5,7 +5,7 @@ import { Route } from 'react-router-dom'
 import BookingContainer from '../../pages/Booking/BookingContainer'
 import BookingCancellationContainer from '../../pages/BookingCancellation/BookingCancellationContainer'
 import isDetailsView from '../../../helpers/isDetailsView'
-import getIsConfirmingCancelling from '../../../helpers/getIsConfirmingCancelling'
+
 import RectoContainer from '../Recto/RectoContainer'
 import VersoContainer from '../Verso/VersoContainer'
 
@@ -34,8 +34,8 @@ class Details extends PureComponent {
   }
 
   renderBookingOrCancellation = route => {
-    const { match } = this.props
-    const isConfirmingCancelling = getIsConfirmingCancelling(match)
+    const { isConfirmingCancelling } = this.props
+
     return isConfirmingCancelling
       ? this.renderBookingCancellation(route)
       : this.renderBooking(route)
@@ -75,6 +75,7 @@ class Details extends PureComponent {
 
 Details.propTypes = {
   bookingPath: PropTypes.string.isRequired,
+  isConfirmingCancelling: PropTypes.bool.isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
       details: PropTypes.string,

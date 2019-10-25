@@ -1,6 +1,6 @@
 import createCachedSelector from 're-reselect'
 
-import selectOfferByRouterMatch from './selectOfferByRouterMatch'
+import { selectOfferByRouterMatch } from './data/offersSelector'
 import { getHumanizeRelativeDistance } from '../utils/geolocation'
 
 function mapArgsToCacheKey(state, match) {

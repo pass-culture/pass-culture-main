@@ -266,11 +266,17 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": "Mercredi 21/08/2030 à 22:00",
+                    "children": Array [
+                      false,
+                      "Mercredi 21/08/2030 à 22:00",
+                    ],
                     "className": "teaser-sub-title",
                   },
                   "ref": null,
-                  "rendered": "Mercredi 21/08/2030 à 22:00",
+                  "rendered": Array [
+                    false,
+                    "Mercredi 21/08/2030 à 22:00",
+                  ],
                   "type": "div",
                 },
               ],
@@ -584,11 +590,17 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "host",
                     "props": Object {
-                      "children": "Mercredi 21/08/2030 à 22:00",
+                      "children": Array [
+                        false,
+                        "Mercredi 21/08/2030 à 22:00",
+                      ],
                       "className": "teaser-sub-title",
                     },
                     "ref": null,
-                    "rendered": "Mercredi 21/08/2030 à 22:00",
+                    "rendered": Array [
+                      false,
+                      "Mercredi 21/08/2030 à 22:00",
+                    ],
                     "type": "div",
                   },
                 ],

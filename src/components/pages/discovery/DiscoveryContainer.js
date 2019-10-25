@@ -8,6 +8,7 @@ import {
   checkIfShouldReloadRecommendationsBecauseOfLongTime,
   isDiscoveryStartupUrl,
 } from './utils/utils'
+import getIsConfirmingCancelling from '../../../helpers/getIsConfirmingCancelling'
 import selectCurrentRecommendation from './selectors/selectCurrentRecommendation'
 import selectTutos from './selectors/selectTutos'
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
@@ -20,6 +21,7 @@ export const mapStateToProps = (state, ownProps) => {
   const { params } = match
   const { mediationId, offerId } = params
   const currentRecommendation = selectCurrentRecommendation(state, offerId, mediationId)
+  const isConfirmingCancelling = getIsConfirmingCancelling(match)
   const tutos = selectTutos(state)
   const { readRecommendations, recommendations } = (state && state.data) || {}
   const shouldReloadRecommendations =
@@ -27,6 +29,7 @@ export const mapStateToProps = (state, ownProps) => {
     (recommendations && recommendations.length <= 0)
   return {
     currentRecommendation,
+    isConfirmingCancelling,
     readRecommendations,
     recommendations,
     shouldReloadRecommendations,

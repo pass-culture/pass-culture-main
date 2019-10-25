@@ -6,7 +6,7 @@ import { requestData } from 'redux-thunk-data'
 import withTracking from '../../hocs/withTracking'
 import Booking from './Booking'
 import selectBookables from '../../../selectors/selectBookables'
-import selectOfferByRouterMatch from '../../../selectors/selectOfferByRouterMatch'
+import { selectOfferByRouterMatch } from '../../../selectors/data/offersSelector'
 import selectRecommendationByRouterMatch from '../../../selectors/selectRecommendationByRouterMatch'
 import { bookingNormalizer } from '../../../utils/normalizers'
 
@@ -28,7 +28,7 @@ export const mapDispatchToProps = dispatch => ({
     dispatch(
       requestData({
         apiPath: '/bookings',
-        body: { ...payload },
+        body: payload,
         handleFail: handleRequestFail,
         handleSuccess: handleRequestSuccess,
         method: 'POST',

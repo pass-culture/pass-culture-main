@@ -8,7 +8,6 @@ import BookingCancellationContainer from '../BookingCancellation/BookingCancella
 import AbsoluteFooterContainer from '../../layout/AbsoluteFooter/AbsoluteFooterContainer'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import isDetailsView from '../../../helpers/isDetailsView'
-import getIsConfirmingCancelling from '../../../helpers/getIsConfirmingCancelling'
 
 class Discovery extends PureComponent {
   constructor(props) {
@@ -107,8 +106,8 @@ class Discovery extends PureComponent {
   }
 
   renderBookingOrCancellation = route => {
-    const { match } = this.props
-    const isConfirmingCancelling = getIsConfirmingCancelling(match)
+    const { isConfirmingCancelling } = this.props
+
     return isConfirmingCancelling
       ? this.renderBookingCancellation(route)
       : this.renderBooking(route)
@@ -179,6 +178,7 @@ Discovery.defaultProps = {
 Discovery.propTypes = {
   currentRecommendation: PropTypes.shape(),
   deleteTutos: PropTypes.func.isRequired,
+  isConfirmingCancelling: PropTypes.bool.isRequired,
   loadRecommendations: PropTypes.func.isRequired,
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired,
