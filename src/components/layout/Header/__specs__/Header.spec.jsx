@@ -1,10 +1,10 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 
-import BackLink from '../BackLink'
+import BackLink from '../BackLink/BackLink'
 import CloseLink from '../CloseLink/CloseLink'
 import Header from '../Header'
-import SubmitButton from '../SubmitButton'
+import SubmitButton from '../SubmitButton/SubmitButton'
 
 describe('src | components | layout | Header | Header', () => {
   let props

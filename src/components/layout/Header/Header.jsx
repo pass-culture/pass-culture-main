@@ -1,17 +1,16 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import BackLink from './BackLink'
+import BackLink from './BackLink/BackLink'
 import CloseLink from './CloseLink/CloseLink'
-import SubmitButton from './SubmitButton'
+import SubmitButton from './SubmitButton/SubmitButton'
 import getIsTransitionDetailsUrl from '../../../helpers/getIsTransitionDetailsUrl'
 
 class Header extends Component {
   componentDidMount() {
     const { history, match } = this.props
 
-    const isTransitionDetailsUrl = getIsTransitionDetailsUrl(match)
-    if (isTransitionDetailsUrl) {
+    if (getIsTransitionDetailsUrl(match)) {
       history.push(this.getRemovedTransitionUrl())
     }
   }
@@ -21,8 +20,9 @@ class Header extends Component {
 
     const hasTransitionJustHappened =
       getIsTransitionDetailsUrl(match) && !getIsTransitionDetailsUrl(prevProps.match)
+
     if (hasTransitionJustHappened) {
-      setTimeout(() => history.replace(this.getRemovedTransitionUrl()), 300)
+      history.replace(this.getRemovedTransitionUrl())
     }
   }
 

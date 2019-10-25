@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import Icon from '../Icon/Icon'
+import Icon from '../../Icon/Icon'
 
 const BackLink = ({ actionOnClick, backTitle, backTo }) => (
   <Link

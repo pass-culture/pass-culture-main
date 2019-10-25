@@ -41,6 +41,7 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
 
     // then
     const absoluteFooterContainer = wrapper.find(AbsoluteFooterContainer)
+    expect(absoluteFooterContainer.prop('areDetailsVisible')).toBe(false)
     expect(absoluteFooterContainer.prop('borderTop')).toBe(true)
     expect(absoluteFooterContainer.prop('colored')).toBe(true)
     expect(absoluteFooterContainer.prop('id')).toBe('verso-footer')
