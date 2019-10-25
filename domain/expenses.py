@@ -10,11 +10,15 @@ PHYSICAL_EXPENSES_CAPPED_TYPES = [
     ThingType.INSTRUMENT,
     ThingType.JEUX,
     ThingType.LIVRE_EDITION,
-    ThingType.MUSIQUE
+    ThingType.MUSIQUE,
+    ThingType.OEUVRE_ART
 ]
 DIGITAL_EXPENSES_CAPPED_TYPES = [
     ThingType.AUDIOVISUEL,
     ThingType.JEUX_VIDEO,
+    ThingType.JEUX_VIDEO_ABO,
+    ThingType.LIVRE_AUDIO,
+    ThingType.LIVRE_EDITION,
     ThingType.MUSIQUE,
     ThingType.PRESSE_ABO
 ]
@@ -70,9 +74,6 @@ def is_eligible_to_digital_products_capping(product: Product) -> bool:
 
 
 def is_eligible_to_physical_products_capping(product: Product) -> bool:
-    if product.isDigital and product.type == str(ThingType.LIVRE_EDITION):
-        return True
-
     if not product.isDigital and product.type in map(str, PHYSICAL_EXPENSES_CAPPED_TYPES):
         return True
 

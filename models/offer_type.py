@@ -228,7 +228,7 @@ class ThingType(SearchableType):
     OEUVRE_ART = {
         'proLabel': "Vente d'œuvres d'art",
         'appLabel': "Œuvre d’art",
-        'offlineOnly': False,
+        'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Regarder",
         'description': "Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?",
