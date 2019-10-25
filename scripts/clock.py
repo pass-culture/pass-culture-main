@@ -11,13 +11,14 @@ from models.db import db
 from repository.feature_queries import feature_cron_send_final_booking_recaps_enabled, \
     feature_cron_generate_and_send_payments, \
     feature_cron_retrieve_offerers_bank_information, feature_cron_send_remedial_emails, feature_write_dashboard_enabled, \
-    feature_update_booking_used
+    feature_update_booking_used, feature_delete_all_unread_recommendations_older_than_one_week_enabled
 from repository.feature_queries import feature_cron_send_wallet_balances
 from repository.feature_queries import feature_import_beneficiaries_enabled, \
     feature_cron_synchronize_titelive_things, feature_cron_synchronize_titelive_descriptions, \
     feature_cron_synchronize_titelive_thumbs, feature_cron_synchronize_titelive_stocks, \
-    feature_cron_retrieve_bank_information_for_venue_without_siret
+
 from repository.provider_queries import get_provider_by_local_class
+from repository.recommendation_queries import delete_all_unread_recommendations_older_than_one_week
 from repository.user_queries import find_most_recent_beneficiary_creation_date
 from scripts.beneficiary import remote_import
 from scripts.dashboard.write_dashboard import write_dashboard
@@ -180,6 +181,13 @@ def pc_write_dashboard():
     logger.info("[BATCH][WRITE DASHBOARD] Cron write_dashboard: END")
 
 
+def pc_delete_all_unread_recommendations_older_than_one_week():
+    logger.info("[BATCH] Cron delete_all_unread_recommendations_older_than_one_week: START")
+    with app.app_context():
+        delete_all_unread_recommendations_older_than_one_week()
+    logger.info("[BATCH] Cron delete_all_unread_recommendations_older_than_one_week: END")
+
+
 if __name__ == '__main__':
     orm.configure_mappers()
     scheduler = BlockingScheduler()
@@ -229,5 +237,11 @@ if __name__ == '__main__':
 
     if feature_update_booking_used():
         scheduler.add_job(pc_update_booking_used, 'cron', id='pc_update_booking_used', day='*', hour='0')
+
+    if feature_delete_all_unread_recommendations_older_than_one_week_enabled():
+        scheduler.add_job(pc_delete_all_unread_recommendations_older_than_one_week,
+                          'cron',
+                          id='pc_delete_all_unread_recommendations_older_than_one_week',
+                          day_of_week='mon', hour='23')
 
     scheduler.start()

@@ -1,11 +1,11 @@
-from datetime import datetime
-from sqlalchemy import func, or_, and_
-from sqlalchemy.sql.expression import literal
+from datetime import datetime, timedelta
 
-from models import Mediation, \
-                   Offer, \
-                   Recommendation, \
-                   Stock
+from sqlalchemy import func, or_, and_
+from sqlalchemy.sql.expression import literal, delete
+
+from models import Offer, \
+    Recommendation, \
+    Stock
 from models.api_errors import ResourceNotFoundError
 from models.db import db
 from models.mediation import Mediation
@@ -150,3 +150,11 @@ def find_recommendation_already_created_on_discovery(offer_id: int, mediation_id
         query = query.filter(Offer.id == offer_id)
 
     return query.first()
+
+
+def delete_all_unread_recommendations_older_than_one_week():
+    is_unread = Recommendation.dateRead == None
+    is_older_than_one_week = Recommendation.dateCreated < datetime.utcnow() - timedelta(days=8)
+
+    Recommendation.query.filter(is_unread & is_older_than_one_week).delete()
+

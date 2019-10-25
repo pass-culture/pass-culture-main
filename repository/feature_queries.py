@@ -81,3 +81,8 @@ def feature_write_dashboard_enabled():
 
 def feature_update_booking_used():
     return os.environ.get('UPDATE_BOOKING_USED', False)
+
+
+def feature_delete_all_unread_recommendations_older_than_one_week_enabled():
+    return os.environ.get('CRON_CLEAN_OLD_UNREAD_RECOMMENDATIONS', False)
+
