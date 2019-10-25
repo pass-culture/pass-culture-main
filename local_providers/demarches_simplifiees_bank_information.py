@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 from connectors.api_demarches_simplifiees import get_application_details
 from domain.bank_account import format_raw_iban_or_bic
@@ -56,13 +56,6 @@ class BankInformationProvider(LocalProvider):
         bank_information.offererId = self.bank_information_dict.get('offererId', None)
         bank_information.venueId = self.bank_information_dict.get('venueId', None)
 
-
-    def save_chunks(self, chunk_to_insert: Dict[str, BankInformation], chunk_to_update: Dict[str, BankInformation],
-                    providable_info: ProvidableInfo):
-        super(BankInformationProvider, self).save_chunks(chunk_to_insert, chunk_to_update, providable_info)
-        bank_information_list = list(chunk_to_insert.values()) + list(chunk_to_update.values())
-        retry_linked_payments(bank_information_list)
-
     def retrieve_providable_info(self) -> List[ProvidableInfo]:
         providable_info = ProvidableInfo()
         providable_info.id_at_providers = self.bank_information_dict['idAtProviders']
@@ -92,7 +85,7 @@ class BankInformationProvider(LocalProvider):
                 bank_information_dict['idAtProviders'] = siret
         else:
             self.log_provider_event(LocalProviderEventType.SyncError,
-                          f'unknown RIB affiliation for application id {self.application_id}')
+                                    f'unknown RIB affiliation for application id {self.application_id}')
             return None
 
         if 'idAtProviders' not in bank_information_dict:

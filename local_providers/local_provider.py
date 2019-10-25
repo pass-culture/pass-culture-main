@@ -193,7 +193,8 @@ class LocalProvider(Iterator):
         last_defined_providable_info = None
 
         for providable_infos in self:
-            if limit and self.checkedObjects >= limit:
+            objects_limit_reached = limit and self.checkedObjects >= limit
+            if objects_limit_reached:
                 break
 
             if providable_infos is None:
@@ -233,7 +234,8 @@ class LocalProvider(Iterator):
                     initial_thumb_count = pc_object.thumbCount
                     self.handle_thumb(pc_object)
 
-                    if pc_object.thumbCount != initial_thumb_count:
+                    pc_object_has_new_thumbs = pc_object.thumbCount != initial_thumb_count
+                    if pc_object_has_new_thumbs:
                         errors = pc_object.errors()
                         if errors and len(errors.errors) > 0:
                             self.log_provider_event(LocalProviderEventType.SyncError, 'ApiErrors')

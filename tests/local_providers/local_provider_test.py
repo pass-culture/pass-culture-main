@@ -61,9 +61,9 @@ class LocalProviderTest:
 
         @patch('tests.local_providers.provider_test_utils.TestLocalProvider.__next__')
         @clean_database
-        def test_local_provider_create_new_object_when_no_object_in_database(self,
-                                                                             next_function,
-                                                                             app):
+        def test_creates_new_object_when_no_object_in_database(self,
+                                                               next_function,
+                                                               app):
             # Given
             provider_test = create_provider('TestLocalProvider')
             PcObject.save(provider_test)
@@ -86,9 +86,9 @@ class LocalProviderTest:
 
         @patch('tests.local_providers.provider_test_utils.TestLocalProvider.__next__')
         @clean_database
-        def test_local_provider_update_existing_object(self,
-                                                       next_function,
-                                                       app):
+        def test_updates_existing_object(self,
+                                         next_function,
+                                         app):
             # Given
             provider_test = create_provider('TestLocalProvider')
             PcObject.save(provider_test)
@@ -119,9 +119,9 @@ class LocalProviderTest:
 
         @patch('tests.local_providers.provider_test_utils.TestLocalProvider.__next__')
         @clean_database
-        def test_local_provider_does_not_update_existing_object_when_date_is_older_than_last_modified_date(self,
-                                                                                                           next_function,
-                                                                                                           app):
+        def test_does_not_update_existing_object_when_date_is_older_than_last_modified_date(self,
+                                                                                            next_function,
+                                                                                            app):
             # Given
             provider_test = create_provider('TestLocalProvider')
             PcObject.save(provider_test)
@@ -152,9 +152,9 @@ class LocalProviderTest:
 
         @patch('tests.local_providers.provider_test_utils.TestLocalProvider.__next__')
         @clean_database
-        def test_local_provider_does_not_update_objects_when_venue_provider_is_not_active(self,
-                                                                                          next_function,
-                                                                                          app):
+        def test_does_not_update_objects_when_venue_provider_is_not_active(self,
+                                                                           next_function,
+                                                                           app):
             # Given
             provider_test = create_provider('TestLocalProvider')
             PcObject.save(provider_test)
@@ -181,9 +181,9 @@ class LocalProviderTest:
 
         @patch('tests.local_providers.provider_test_utils.TestLocalProvider.__next__')
         @clean_database
-        def test_local_provider_does_not_update_objects_when_provider_is_not_active(self,
-                                                                                    next_function,
-                                                                                    app):
+        def test_does_not_update_objects_when_provider_is_not_active(self,
+                                                                     next_function,
+                                                                     app):
             # Given
             provider_test = create_provider('TestLocalProvider', is_active=False)
             PcObject.save(provider_test)
@@ -204,9 +204,9 @@ class LocalProviderTest:
 
         @patch('tests.local_providers.provider_test_utils.TestLocalProviderNoCreation.__next__')
         @clean_database
-        def test_local_provider_do_not_create_new_object_when_can_create_is_false(self,
-                                                                                  next_function,
-                                                                                  app):
+        def test_does_not_create_new_object_when_can_create_is_false(self,
+                                                                     next_function,
+                                                                     app):
             # Given
             provider_test = create_provider('TestLocalProviderNoCreation')
             PcObject.save(provider_test)
@@ -227,9 +227,9 @@ class LocalProviderTest:
 
         @patch('tests.local_providers.provider_test_utils.TestLocalProvider.__next__')
         @clean_database
-        def test_local_provider_create_only_one_object_when_limit_is_one(self,
-                                                                         next_function,
-                                                                         app):
+        def test_creates_only_one_object_when_limit_is_one(self,
+                                                           next_function,
+                                                           app):
             # Given
             provider_test = create_provider('TestLocalProvider')
             PcObject.save(provider_test)
@@ -271,6 +271,7 @@ class LocalProviderTest:
             assert isinstance(product, Product)
             assert product.name == 'New Product'
             assert product.type == str(ThingType.LIVRE_EDITION)
+            assert product.lastProviderId == provider_test.id
 
         @clean_database
         def test_raises_api_errors_exception_when_errors_occur_on_model_and_log_error(self, app):
@@ -318,7 +319,7 @@ class LocalProviderTest:
             assert existing_product.type == str(ThingType.LIVRE_EDITION)
 
         @clean_database
-        def test_raise_api_errors_exception_when_errors_occur_on_model(self, app):
+        def test_raises_api_errors_exception_when_errors_occur_on_model(self, app):
             # Given
             provider_test = create_provider('TestLocalProviderWithApiErrors')
             PcObject.save(provider_test)

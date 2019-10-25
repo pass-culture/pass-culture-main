@@ -36,9 +36,8 @@ class TestLocalProviderWithApiErrors(LocalProvider):
 
     def fill_object_attributes(self, obj):
         obj.name = 'New Product'
-        obj.type = str(ThingType.LIVRE_EDITION)
-        obj.url = 'http://url.com'
         obj.type = str(ThingType.JEUX)
+        obj.url = 'http://url.com'
 
     def __next__(self):
         pass
