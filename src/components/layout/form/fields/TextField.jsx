@@ -10,7 +10,7 @@ import getRequiredValidate from '../utils/getRequiredValidate'
 function getInputValue(inputType, value) {
   const isStringifiedNumber = inputType === 'number' && typeof value === 'string'
 
-  if (!value || isStringifiedNumber) {
+  if (isStringifiedNumber) {
     return ''
   }
 

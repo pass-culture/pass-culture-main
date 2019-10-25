@@ -1,7 +1,7 @@
 import moment from 'moment'
 
 export const getRemainingStocksCount = (available, remainingQuantity) => {
-  if (!available || available === 0) {
+  if (available === null || available === '' ) {
     return 'Illimité'
   }
 
@@ -56,7 +56,7 @@ export function errorKeyToFrenchKey(errorKey) {
 }
 
 export const createFormatAvailable = () => value => {
-  if (value === null || value === 0 || value === '') {
+  if (value === null || value === '') {
     return 'Illimité'
   }
   return value
