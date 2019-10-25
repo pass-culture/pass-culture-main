@@ -899,11 +899,12 @@ def deactivate_feature(feature_toggle: FeatureToggle):
     PcObject.save(feature)
 
 
-def create_provider(local_class: str, is_active: bool = True) -> Provider:
+def create_provider(local_class: str, is_active: bool = True, is_enable_for_pro: bool = True) -> Provider:
     provider = Provider()
     provider.localClass = local_class
     provider.isActive = is_active
     provider.name = 'My Test Provider'
+    provider.enabledForPro = is_enable_for_pro
     return provider
 
 def create_providable_info(model_name: Model = Product,

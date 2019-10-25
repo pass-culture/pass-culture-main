@@ -4,23 +4,24 @@ from models import Provider, LocalProviderEvent, PcObject
 from models.local_provider_event import LocalProviderEventType
 from repository.local_provider_event_queries import find_latest_sync_end_event
 from tests.conftest import clean_database
+from tests.test_utils import create_provider
 
 
 class FindLatestSyncEndEventTest:
     def test_return_none_when_no_event_happended(self, app):
         # Given
-        provider = Provider()
+        provider = create_provider('Provider Test')
 
         # When
         last_event = find_latest_sync_end_event(provider)
 
         # Then
-        assert last_event == None
+        assert last_event is None
 
     @clean_database
     def test_return_last_sync_event_from_the_provider(self, app):
         # Given
-        provider = Provider.query.first()
+        provider = create_provider('Provider Test')
 
         most_recent_event = LocalProviderEvent()
         most_recent_event.provider = provider

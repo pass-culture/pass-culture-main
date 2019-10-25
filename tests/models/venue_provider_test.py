@@ -1,17 +1,13 @@
 from models import PcObject, Provider
 from tests.conftest import clean_database
 from tests.test_utils import create_offerer, create_venue, create_offer_with_thing_product, \
-    create_offer_with_event_product, create_venue_provider
+    create_offer_with_event_product, create_venue_provider, create_provider
 
 
 @clean_database
 def test_nOffers_with_one_venue_provider(app):
     # given
-    provider = Provider()
-    provider.name = 'Open Agenda'
-    provider.localClass = 'OpenAgenda'
-    provider.isActive = True
-    provider.enabledForPro = True
+    provider = create_provider('OpenAgenda')
     PcObject.save(provider)
 
     offerer = create_offerer()
@@ -33,16 +29,8 @@ def test_nOffers_with_one_venue_provider(app):
 @clean_database
 def test_nOffers_with_two_venue_providers_from_different_providers(app):
     # given
-    provider1 = Provider()
-    provider1.name = 'Open Agenda'
-    provider1.localClass = 'OpenAgenda'
-    provider1.isActive = True
-    provider1.enabledForPro = True
-    provider2 = Provider()
-    provider2.name = 'TiteLive'
-    provider2.localClass = 'TiteLive'
-    provider2.isActive = True
-    provider2.enabledForPro = True
+    provider1 = create_provider('OpenAgenda')
+    provider2 = create_provider('TiteLive')
     PcObject.save(provider1, provider2)
 
     offerer = create_offerer()

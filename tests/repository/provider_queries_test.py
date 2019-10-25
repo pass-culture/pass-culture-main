@@ -1,24 +1,16 @@
-from models import Provider, PcObject
-from models.db import db
+from models import PcObject
 from repository.provider_queries import get_enabled_providers_for_pro
 from tests.conftest import clean_database
+from tests.test_utils import create_provider
 
 
 class GetEnabledProvidersForProTest:
     @clean_database
     def test_get_enabled_providers_for_pro(self, app):
         # given
-        provider1 = Provider()
-        provider1.name = 'Open Agenda'
-        provider1.localClass = 'OpenAgenda'
-        provider1.isActive = False
-        provider1.enabledForPro = False
+        provider1 = create_provider('OpenAgenda', is_active=False, is_enable_for_pro=False)
 
-        provider2 = Provider()
-        provider2.name = 'Tite Live'
-        provider2.localClass = 'TiteLive'
-        provider2.isActive = True
-        provider2.enabledForPro = True
+        provider2 = create_provider('TiteLive', is_active=True, is_enable_for_pro=True)
         PcObject.save(provider1, provider2)
 
         # when
@@ -26,8 +18,3 @@ class GetEnabledProvidersForProTest:
 
         # then
         assert enabled_providers == [provider2]
-
-        # clean
-        db.session.delete(provider1)
-        db.session.delete(provider2)
-        db.session.commit()

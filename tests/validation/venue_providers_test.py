@@ -2,7 +2,8 @@ import pytest
 
 from models import ApiErrors, Provider, PcObject
 from tests.conftest import clean_database
-from tests.test_utils import create_offerer, create_user, create_user_offerer, create_venue, create_venue_provider
+from tests.test_utils import create_offerer, create_user, create_user_offerer, create_venue, create_venue_provider, \
+    create_provider
 from utils.human_ids import humanize
 from validation.venue_providers import validate_new_venue_provider_information
 
@@ -11,11 +12,7 @@ class ValidateNewVenueProviderInformationTest:
     @clean_database
     def test_returns_true_when_all_information_are_present_and_well_formed(self, app):
         # given
-        provider = Provider()
-        provider.name = 'Open Agenda'
-        provider.localClass = 'OpenAgenda'
-        provider.isActive = True
-        provider.enabledForPro = True
+        provider = create_provider('OpenAgenda')
         offerer = create_offerer()
         user = create_user()
         user_offerer = create_user_offerer(user, offerer, is_admin=True)
@@ -110,11 +107,7 @@ class ValidateNewVenueProviderInformationTest:
     @clean_database
     def test_raise_errors_if_provider_is_not_active(self, app):
         # given
-        provider = Provider()
-        provider.name = 'Open Agenda'
-        provider.localClass = 'OpenAgenda'
-        provider.isActive = False
-        provider.enabledForPro = True
+        provider = create_provider('OpenAgenda', is_active=False)
         PcObject.save(provider)
 
         payload = {
@@ -134,11 +127,7 @@ class ValidateNewVenueProviderInformationTest:
     @clean_database
     def test_raise_errors_if_provider_is_not_enable_for_pro(self, app):
         # given
-        provider = Provider()
-        provider.name = 'Open Agenda'
-        provider.localClass = 'OpenAgenda'
-        provider.isActive = True
-        provider.enabledForPro = False
+        provider = create_provider('OpenAgenda', is_enable_for_pro=False)
         PcObject.save(provider)
 
         payload = {
@@ -158,11 +147,7 @@ class ValidateNewVenueProviderInformationTest:
     @clean_database
     def test_raise_errors_if_venue_provider_already_exists(self, app):
         # given
-        provider = Provider()
-        provider.name = 'Open Agenda'
-        provider.localClass = 'OpenAgenda'
-        provider.isActive = True
-        provider.enabledForPro = True
+        provider = create_provider('OpenAgenda')
         offerer = create_offerer()
         user = create_user()
         user_offerer = create_user_offerer(user, offerer, is_admin=True)

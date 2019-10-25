@@ -3,7 +3,8 @@ from unittest.mock import patch
 
 import pytest
 
-from models import Product, PcObject, ThingType, VenueProvider, ApiErrors
+from models import Product, PcObject, ThingType, VenueProvider, ApiErrors, LocalProviderEvent
+from models.local_provider_event import LocalProviderEventType
 from tests.conftest import clean_database
 from tests.local_providers.provider_test_utils import TestLocalProvider, TestLocalProviderWithApiErrors, \
     TestLocalProviderNoCreation
@@ -33,6 +34,30 @@ class LocalProviderTest:
 
             # Then
             assert next_function.call_count == 4
+
+        @patch('tests.local_providers.provider_test_utils.TestLocalProvider.__next__')
+        @clean_database
+        def test_iterator_should_log_provider_event_from_start_to_stop(self, next_function, app):
+            # Given
+            provider_test = create_provider('TestLocalProvider')
+            PcObject.save(provider_test)
+
+            next_function.side_effect = [
+                None,
+                None
+            ]
+
+            provider = TestLocalProvider()
+
+            # When
+            provider.updateObjects()
+
+            # Then
+            provider_events = LocalProviderEvent.query \
+                .order_by(LocalProviderEvent.id.asc()) \
+                .all()
+            assert provider_events[0].type == LocalProviderEventType.SyncStart
+            assert provider_events[1].type == LocalProviderEventType.SyncEnd
 
         @patch('tests.local_providers.provider_test_utils.TestLocalProvider.__next__')
         @clean_database
@@ -248,7 +273,7 @@ class LocalProviderTest:
             assert product.type == str(ThingType.LIVRE_EDITION)
 
         @clean_database
-        def test_raises_api_errors_exception_when_errors_occur_on_model(self, app):
+        def test_raises_api_errors_exception_when_errors_occur_on_model_and_log_error(self, app):
             # Given
             provider_test = create_provider('TestLocalProviderWithApiErrors')
             PcObject.save(provider_test)
@@ -265,6 +290,8 @@ class LocalProviderTest:
             assert api_errors.value.errors[
                        'url'] == ['Une offre de type Jeux (support physique) ne peut pas être numérique']
             assert Product.query.count() == 0
+            provider_event = LocalProviderEvent.query.one()
+            assert provider_event.type == LocalProviderEventType.SyncError
 
     class HandleUpdateTest:
         @clean_database
@@ -313,3 +340,5 @@ class LocalProviderTest:
             # Then
             assert api_errors.value.errors[
                        'url'] == ['Une offre de type Jeux (support physique) ne peut pas être numérique']
+            provider_event = LocalProviderEvent.query.one()
+            assert provider_event.type == LocalProviderEventType.SyncError
