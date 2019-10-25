@@ -50,6 +50,7 @@ ShallowWrapper {
           />
           <NumberField
             format={[Function]}
+            min="0"
             name="price"
             onBlur={[Function]}
             placeholder="Gratuit"
@@ -85,6 +86,7 @@ ShallowWrapper {
         >
           <NumberField
             format={[Function]}
+            min="0"
             name="available"
             placeholder="Illimité"
             readOnly={false}
@@ -120,6 +122,7 @@ ShallowWrapper {
             />,
             <NumberField
               format={[Function]}
+              min="0"
               name="price"
               onBlur={[Function]}
               placeholder="Gratuit"
@@ -163,6 +166,7 @@ ShallowWrapper {
             "nodeType": "function",
             "props": Object {
               "format": [Function],
+              "min": "0",
               "name": "price",
               "onBlur": [Function],
               "placeholder": "Gratuit",
@@ -239,6 +243,7 @@ ShallowWrapper {
         "props": Object {
           "children": <NumberField
             format={[Function]}
+            min="0"
             name="available"
             placeholder="Illimité"
             readOnly={false}
@@ -254,6 +259,7 @@ ShallowWrapper {
           "nodeType": "function",
           "props": Object {
             "format": [Function],
+            "min": "0",
             "name": "available",
             "placeholder": "Illimité",
             "readOnly": false,
@@ -304,6 +310,7 @@ ShallowWrapper {
             />
             <NumberField
               format={[Function]}
+              min="0"
               name="price"
               onBlur={[Function]}
               placeholder="Gratuit"
@@ -339,6 +346,7 @@ ShallowWrapper {
           >
             <NumberField
               format={[Function]}
+              min="0"
               name="available"
               placeholder="Illimité"
               readOnly={false}
@@ -374,6 +382,7 @@ ShallowWrapper {
               />,
               <NumberField
                 format={[Function]}
+                min="0"
                 name="price"
                 onBlur={[Function]}
                 placeholder="Gratuit"
@@ -417,6 +426,7 @@ ShallowWrapper {
               "nodeType": "function",
               "props": Object {
                 "format": [Function],
+                "min": "0",
                 "name": "price",
                 "onBlur": [Function],
                 "placeholder": "Gratuit",
@@ -493,6 +503,7 @@ ShallowWrapper {
           "props": Object {
             "children": <NumberField
               format={[Function]}
+              min="0"
               name="available"
               placeholder="Illimité"
               readOnly={false}
@@ -508,6 +519,7 @@ ShallowWrapper {
             "nodeType": "function",
             "props": Object {
               "format": [Function],
+              "min": "0",
               "name": "available",
               "placeholder": "Illimité",
               "readOnly": false,
