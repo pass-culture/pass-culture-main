@@ -22,7 +22,7 @@ class TextField extends Component {
     const { type } = this.props
 
     if (type === 'number') {
-      this.hasEnteredPlusOrMinusAfterNumbers()
+      this.hasEnteredSignsAfterOrBeforeNumbers()
     }
   }
 
@@ -32,15 +32,12 @@ class TextField extends Component {
     }
   }
 
-  hasEnteredPlusOrMinusAfterNumbers = () => {
+  hasEnteredSignsAfterOrBeforeNumbers = () => {
     this.keypressListener = this.inputElement.addEventListener('keypress', event => {
-      const hasEnteredEKeys = event.which === 69 || event.which === 101
-      const eventWhichForMinusKey = 45
-      const eventWhichForPlusKey = 43
-      const hasEnteredPlusOrMinusAfterNumbers =
-        this.inputElement.value && (event.keyCode === eventWhichForMinusKey || event.keyCode === eventWhichForPlusKey)
+      const hasEnteredSymbolsKeys = event.key === '*' || event.key === '%'
+      const hasEnteredPlusOrMinusKeys = event.key === '-'|| event.key === '+'
 
-      if (hasEnteredEKeys || hasEnteredPlusOrMinusAfterNumbers) {
+      if (hasEnteredSymbolsKeys || hasEnteredPlusOrMinusKeys) {
         event.preventDefault()
       }
     })
