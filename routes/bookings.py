@@ -181,7 +181,7 @@ def create_booking():
     return jsonify(as_dict(new_booking, includes=WEBAPP_PATCH_POST_BOOKING_INCLUDES)), 201
 
 
-@app.route('/bookings/<booking_id>', methods=['PATCH'])
+@app.route('/bookings/<booking_id>', methods=["PATCH"])
 @login_required
 def patch_booking(booking_id):
     is_cancelled = request.json.get('isCancelled')
@@ -245,7 +245,6 @@ def get_booking_by_token_v2(token):
     authorization_header = request.headers.get('Authorization', None)
     headers_contains_api_key_authorization = authorization_header and 'Bearer' in authorization_header
     if headers_contains_api_key_authorization:
-
         app_authorization_api_key = authorization_header.replace("Bearer ", "")
     else:
         app_authorization_api_key = None
@@ -285,6 +284,52 @@ def patch_booking_by_token(token):
         check_email_and_offer_id_for_anonymous_user(email, offer_id)
 
     check_booking_is_usable(booking)
+
+    if check_is_activation_booking(booking):
+        activate_user(booking.user)
+        send_activation_notification_email(booking.user, send_raw_email)
+
+    booking.isUsed = True
+    booking.dateUsed = datetime.utcnow()
+    PcObject.save(booking)
+
+    return '', 204
+
+
+@app.route('/v2/bookings/token/<token>', methods=["PATCH"])
+@login_or_api_key_required_v2
+def patch_booking_by_token_v2(token):
+    print('***** INSIDE ROUTE ****** ')
+
+    # get booking and Offerer Id
+    # ----------------------------------------------------------------
+    booking_token_upper_case = token.upper()
+    booking = booking_queries.find_by(
+        booking_token_upper_case)
+
+    check_booking_is_usable(booking)
+
+    offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
+    # ----------------------------------------------------------------
+
+    # get api key from header
+    # ----------------------------------------------------------------
+    authorization_header = request.headers.get('Authorization', None)
+    headers_contains_api_key_authorization = authorization_header and 'Bearer' in authorization_header
+    if headers_contains_api_key_authorization:
+        app_authorization_api_key = authorization_header.replace("Bearer ", "")
+    else:
+        app_authorization_api_key = None
+
+    valid_api_key = find_api_key_by_value(app_authorization_api_key)
+    # ----------------------------------------------------------------
+
+    if current_user.is_authenticated:
+        check_user_can_validate_bookings_v2(current_user, offerer_id)
+
+    if valid_api_key:
+        check_api_key_allows_to_validate_booking(valid_api_key, offerer_id)
+
 
     if check_is_activation_booking(booking):
         activate_user(booking.user)

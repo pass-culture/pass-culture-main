@@ -1,4 +1,3 @@
-from datetime import datetime
 from urllib.parse import urlencode
 
 from models import PcObject, EventType, ThingType, Deposit, Booking, User

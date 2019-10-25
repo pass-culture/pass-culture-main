@@ -25,8 +25,11 @@ from models import ApiKey, \
     Offer, \
     Offerer, \
     Payment, \
+<<<<<<< HEAD
     PaymentMessage,\
     Product,\
+=======
+>>>>>>> (PC-2365) : add v2 route for patch bookings token with api key and basic auth
     Provider, \
     Recommendation, \
     RightsType, \
@@ -34,8 +37,13 @@ from models import ApiKey, \
     ThingType, \
     User, \
     UserOfferer, \
+<<<<<<< HEAD
     Venue, \
     VenueProvider
+=======
+    BankInformation, \
+    Venue, PaymentMessage, VenueProvider, Product, Favorite, ApiKey
+>>>>>>> (PC-2365) : add v2 route for patch bookings token with api key and basic auth
 from models.beneficiary_import import BeneficiaryImport
 from models.beneficiary_import_status import ImportStatus, BeneficiaryImportStatus
 from models.db import db, Model
@@ -933,3 +941,4 @@ def create_api_key(offerer, value):
     offererApiKey.offererId = offerer.id
 
     PcObject.save(offererApiKey)
+    return offererApiKey
