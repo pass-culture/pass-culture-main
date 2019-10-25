@@ -8,57 +8,19 @@ from models import User, UserOfferer, Offerer
 from scripts.offerer.file_import import fill_user_from, \
     fill_user_offerer_from, \
     create_activated_user_offerer, \
-    split_rows_with_no_duplicated_emails, \
     fill_offerer_from, \
+    iterate_rows_for_user_offerers, \
     UserNotCreatedException, \
-    OffererNotCreatedException, \
-    fill_virtual_venue_from
+    OffererNotCreatedException
 from tests.test_utils import create_user, \
     create_offerer
 from utils.token import random_token
 
-
-class SplitRowsWithNoDuplicatedEmailsTest:
-    def test_returns_given_list(self):
+class IterateRowForUserOfferersTest:
+    @patch('scripts.offerer.file_import.create_activated_user_offerer')
+    def test_ignores_the_first_line_with_csv_headers(self, create_activated_user_offerer):
         # given
-        csv_reader = [
-            ['Mortimer', 'Philip', 'abc@bletchley.co.uk'],
-            ['Mortimer', 'Philip', 'def@bletchley.co.uk'],
-            ['Mortimer', 'Philip', 'ghi@bletchley.co.uk'],
-            ['Mortimer', 'Philip', 'jkl@bletchley.co.uk'],
-            ['Mortimer', 'Philip', 'mno@bletchley.co.uk']
-        ]
-
-        # when
-        rows = split_rows_with_no_duplicated_emails(csv_reader)
-
-        # then
-        assert rows == [
-            ['Mortimer', 'Philip', 'abc@bletchley.co.uk'],
-            ['Mortimer', 'Philip', 'def@bletchley.co.uk'],
-            ['Mortimer', 'Philip', 'ghi@bletchley.co.uk'],
-            ['Mortimer', 'Philip', 'jkl@bletchley.co.uk'],
-            ['Mortimer', 'Philip', 'mno@bletchley.co.uk']
-        ]
-
-    def test_returns_given_list_with_no_duplicate_emails(self):
-        # given
-        csv_reader = [
-            ['Mortimer', 'Philip', '%s@bletchley.co.uk' % random_token()],
-            ['Mortimer', 'Philip', 'abcd@bletchley.co.uk'],
-            ['Mortimer', 'Philip', '%s@bletchley.co.uk' % random_token()],
-            ['Mortimer', 'Philip', '%s@bletchley.co.uk' % random_token()],
-            ['Mortimer', 'Philip', 'abcd@bletchley.co.uk']
-        ]
-
-        # when
-        rows = split_rows_with_no_duplicated_emails(csv_reader)
-
-        # then
-        assert len(rows) == 4
-
-    def test_ignores_the_first_line_with_csv_headers(self):
-        # given
+        create_activated_user_offerer.return_value = UserOfferer()
         csv_reader = [
             ['nom', 'prénom', 'email'],
             ['Mortimer', 'Philip', '%s@bletchley.co.uk' % random_token()],
@@ -67,13 +29,15 @@ class SplitRowsWithNoDuplicatedEmailsTest:
         ]
 
         # when
-        rows = split_rows_with_no_duplicated_emails(csv_reader)
+        user_offerers = iterate_rows_for_user_offerers(csv_reader)
 
         # then
-        assert len(rows) == 3
+        assert len(user_offerers) == 3
 
-    def test_ignores_empty_lines(self):
+    @patch('scripts.offerer.file_import.create_activated_user_offerer')
+    def test_ignores_empty_lines(self, create_activated_user_offerer):
         # given
+        create_activated_user_offerer.return_value = UserOfferer()
         csv_reader = [
             ['nom', 'prénom', 'email'],
             [],
@@ -83,10 +47,10 @@ class SplitRowsWithNoDuplicatedEmailsTest:
         ]
 
         # when
-        rows = split_rows_with_no_duplicated_emails(csv_reader)
+        user_offerers = iterate_rows_for_user_offerers(csv_reader)
 
         # then
-        assert len(rows) == 2
+        assert len(user_offerers) == 2
 
 class CreateActivatedUserOffererTest:
     def setup_method(self):
@@ -124,30 +88,6 @@ class CreateActivatedUserOffererTest:
         assert user_offerer.userId == 123
         assert user_offerer.offererId == 234
 
-class FillVirtualVenueFromTest:
-    def setup_method(self):
-        self.csv_row = [
-            'Mortimer',
-            'Philip',
-            'pmortimer@bletchley.co.uk',
-            '29',
-            '362521879',
-            '29200',
-            'Bletchley',
-            'MyBletcheyCompany'
-        ]
-        self.offerer = create_offerer(siren='362521879', name='MyBletcheyCompany', idx=234)
-
-    def test_returns_a_virtual_venue_from_csv_row(self):
-        # when
-        virtual_venue = fill_virtual_venue_from(self.csv_row, self.offerer, User())
-
-        # then
-        assert virtual_venue.bookingEmail == 'pmortimer@bletchley.co.uk'
-        assert virtual_venue.name == 'MyBletcheyCompany'
-        assert virtual_venue.managingOfferer == self.offerer
-        assert virtual_venue.isVirtual == True
-
 class FillUserOffererFromTest:
     def setup_method(self):
         self.csv_row = [
@@ -174,8 +114,8 @@ class FillUserOffererFromTest:
         )
 
         # then
-        assert user_offerer.userId == 123
-        assert user_offerer.offererId == 234
+        assert user_offerer.user == blake
+        assert user_offerer.offerer == blakes_company
 
     def test_raise_error_when_user_relative_to_csv_not_created(self):
         # given

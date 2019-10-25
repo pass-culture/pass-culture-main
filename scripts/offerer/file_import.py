@@ -1,12 +1,11 @@
-from builtins import Exception
-
 import csv
 
 from datetime import datetime
-from typing import List, Iterable, Callable
+from typing import List, Callable
 
-from models import Offerer, PcObject, User, UserOfferer, Venue
+from models import Offerer, PcObject, User, UserOfferer
 from models.user_offerer import RightsType
+from models.venue import create_digital_venue
 from domain.password import random_password, generate_reset_token
 from repository.offerer_queries import find_by_siren
 from repository.user_queries import find_user_by_email
@@ -31,30 +30,25 @@ class UserNotCreatedException(Exception):
 class OffererNotCreatedException(Exception):
     pass
 
-def split_rows_with_no_duplicated_emails(csv_reader: Iterable) \
-        -> List[List[List[str]]]:
-    rows = []
-    existing_emails = set()
-
-    for line in csv_reader:
-        if _is_header_or_blank_line(line):
+def iterate_rows_for_user_offerers(csv_rows: List[List[str]]) -> List:
+    user_offerers = []
+    for row in csv_rows:
+        if _is_header_or_blank_line(row):
             continue
 
-        email = line[USER_EMAIL_COLUMN_INDEX]
-
-        if email not in existing_emails:
-            rows.append(line)
-            existing_emails.add(email)
-
-    logger.info('Lecture des lignes CSV (%s) terminée\n' % len(rows))
-    return rows
+        user_offerer = create_activated_user_offerer(row)
+        if user_offerer:
+            user_offerers.append(user_offerer)
+            logger.info('Enregistrement de %s comptes pro' %
+                        (len(user_offerers)))
+    return user_offerers
 
 def create_activated_user_offerer(
         csv_row: List[str],
         find_user: Callable = find_user_by_email,
         find_offerer: Callable = find_by_siren,
         find_user_offerer: Callable = find_one_or_none_by_user_id_and_offerer_id,
-) -> List[UserOfferer]:
+) -> UserOfferer:
     user = find_user(csv_row[USER_EMAIL_COLUMN_INDEX])
     if not user:
         user = User()
@@ -70,7 +64,7 @@ def create_activated_user_offerer(
 
     virtual_venue = find_by_managing_offerer_id(filled_offerer.id)
     if not virtual_venue:
-        filled_virtual_venue = fill_virtual_venue_from(csv_row, filled_offerer, Venue())
+        filled_virtual_venue = create_digital_venue(offerer)
         PcObject.save(filled_virtual_venue)
 
     user_offerer = find_user_offerer(filled_user.id, filled_offerer.id)
@@ -81,13 +75,6 @@ def create_activated_user_offerer(
     else:
         return None
 
-def fill_virtual_venue_from(csv_row: List[str], offerer: Offerer, venue: Venue) -> Venue:
-    venue.bookingEmail = csv_row[USER_EMAIL_COLUMN_INDEX]
-    venue.name = csv_row[OFFERER_NAME_COLUMN_INDEX]
-    venue.managingOfferer = offerer
-    venue.isVirtual = True
-    return venue
-
 def fill_user_offerer_from(
         user_offerer: UserOfferer,
         created_user: User,
@@ -96,8 +83,8 @@ def fill_user_offerer_from(
     if created_user.id is None: raise UserNotCreatedException()
     if created_offerer.id is None: raise OffererNotCreatedException()
 
-    user_offerer.userId = created_user.id
-    user_offerer.offererId = created_offerer.id
+    user_offerer.user = created_user
+    user_offerer.offerer = created_offerer
     user_offerer.rights = RightsType.editor
     return user_offerer
 
@@ -132,17 +119,9 @@ def run(csv_file_path: str) -> None:
     logger.info('[STEP 1] Lecture du fichier CSV')
     csv_file = open(csv_file_path)
     csv_reader = csv.reader(csv_file)
-    rows = split_rows_with_no_duplicated_emails(csv_reader)
 
-    logger.info(
-        '[STEP 2] Enregistrement des structures et lieux')
-    user_offerers = []
-    for row in rows:
-        user_offerer = create_activated_user_offerer(row)
-        if user_offerer:
-            user_offerers.append(user_offerer)
-            logger.info('Enregistrement de %s comptes pro | %s' %
-                        (len(rows), len(user_offerers)))
+    logger.info('[STEP 2] Enregistrement des structures et lieux')
+    user_offerers = iterate_rows_for_user_offerers(csv_reader)
     logger.info('Enregistrement des comptes pro terminé\n')
 
     logger.info('[STEP 3] Décompte des objets')

@@ -1,5 +1,3 @@
-from builtins import int
-
 from datetime import datetime
 from typing import List
 

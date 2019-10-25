@@ -37,7 +37,7 @@ def find_one_or_none_by_offerer_id(offerer_id):
     return UserOfferer.query.filter_by(offererId=offerer_id).one_or_none()
 
 
-def find_one_or_none_by_user_id_and_offerer_id(user_id, offerer_id):
+def find_one_or_none_by_user_id_and_offerer_id(user_id: int, offerer_id: int) -> UserOfferer:
     return UserOfferer.query \
-        .filter_by(userId=user_id,offererId=offerer_id) \
+        .filter_by(userId=user_id, offererId=offerer_id) \
         .one_or_none()
