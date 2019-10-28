@@ -11,7 +11,7 @@ from scripts.dashboard.diversification_statistics import get_offerers_with_offer
     get_offerer_count, get_offerer_with_stock_count, get_all_bookings_count, count_all_cancelled_bookings, \
     query_get_offer_counts_grouped_by_type_and_medium_for_departement, \
     query_get_booking_counts_grouped_by_type_and_medium_for_departement, get_all_used_or_finished_bookings, \
-    get_offers_avaiblable_on_search_count, get_offerers_with_offer_available_on_search_count
+    get_offers_available_on_search_count, get_offerers_with_offer_available_on_search_count
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_stock, \
     create_offer_with_thing_product, create_venue, create_mediation, create_offer_with_event_product, create_booking
@@ -888,7 +888,7 @@ class GetOffersAvailableOnSearchCountTest:
         PcObject.save(stock)
 
         # When
-        number_of_offers = get_offers_avaiblable_on_search_count()
+        number_of_offers = get_offers_available_on_search_count()
 
         # Then
         assert number_of_offers == 0
@@ -903,7 +903,7 @@ class GetOffersAvailableOnSearchCountTest:
         PcObject.save(stock)
 
         # When
-        number_of_offers = get_offers_avaiblable_on_search_count()
+        number_of_offers = get_offers_available_on_search_count()
 
         # Then
         assert number_of_offers == 0
@@ -918,7 +918,7 @@ class GetOffersAvailableOnSearchCountTest:
         PcObject.save(stock)
 
         # When
-        number_of_offers = get_offers_avaiblable_on_search_count()
+        number_of_offers = get_offers_available_on_search_count()
 
         # Then
         assert number_of_offers == 0
@@ -933,7 +933,7 @@ class GetOffersAvailableOnSearchCountTest:
         PcObject.save(stock)
 
         # When
-        number_of_offers = get_offers_avaiblable_on_search_count()
+        number_of_offers = get_offers_available_on_search_count()
 
         # Then
         assert number_of_offers == 0
@@ -947,7 +947,7 @@ class GetOffersAvailableOnSearchCountTest:
         PcObject.save(offer)
 
         # When
-        number_of_offers = get_offers_avaiblable_on_search_count()
+        number_of_offers = get_offers_available_on_search_count()
 
         # Then
         assert number_of_offers == 0
@@ -964,7 +964,7 @@ class GetOffersAvailableOnSearchCountTest:
         PcObject.save(stock1, stock2)
 
         # When
-        number_of_offers = get_offers_avaiblable_on_search_count()
+        number_of_offers = get_offers_available_on_search_count()
 
         # Then
         assert number_of_offers == 2
@@ -982,7 +982,7 @@ class GetOffersAvailableOnSearchCountTest:
         PcObject.save(stock1, stock2)
 
         # When
-        number_of_offers = get_offers_avaiblable_on_search_count('93')
+        number_of_offers = get_offers_available_on_search_count('93')
 
         # Then
         assert number_of_offers == 1
@@ -998,7 +998,7 @@ class GetOffersAvailableOnSearchCountTest:
         PcObject.save(stock1, stock2)
 
         # When
-        number_of_offers = get_offers_avaiblable_on_search_count()
+        number_of_offers = get_offers_available_on_search_count()
 
         # Then
         assert number_of_offers == 1

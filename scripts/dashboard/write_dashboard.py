@@ -6,19 +6,20 @@ from pygsheets import Worksheet
 
 from connectors.google_spreadsheet import get_dashboard_spreadsheet
 from domain.departments import DEPARTEMENT_CODE_VISIBILITY
-from scripts.dashboard import count_activated_users, count_users_having_booked, \
-    get_mean_number_of_bookings_per_user_having_booked, get_mean_amount_spent_by_user, \
-    get_non_cancelled_bookings_by_user_departement, get_offerer_count, get_offers_with_user_offerer_and_stock_count, \
-    get_all_bookings_count, get_offerer_with_stock_count, get_offers_available_on_discovery_count, \
-    get_all_used_or_finished_bookings, get_offerers_with_offer_available_on_discovery_count, \
-    get_offers_with_non_cancelled_bookings_count, get_offerers_with_non_cancelled_bookings_count, get_total_deposits, \
-    get_total_amount_spent, get_total_amount_to_pay, get_top_20_offers_table, \
-    get_top_20_offerers_table_by_number_of_bookings, get_top_20_offerers_by_amount_table
 from scripts.dashboard.diversification_statistics import get_offer_counts_grouped_by_type_and_medium, \
     query_get_offer_counts_grouped_by_type_and_medium, query_get_booking_counts_grouped_by_type_and_medium, \
     count_all_cancelled_bookings, query_get_offer_counts_grouped_by_type_and_medium_for_departement, \
     query_get_booking_counts_grouped_by_type_and_medium_for_departement, get_offers_available_on_search_count, \
-    get_offerers_with_offer_available_on_search_count
+    get_offerers_with_offer_available_on_search_count, get_offerer_count, get_offers_with_user_offerer_and_stock_count, \
+    get_all_bookings_count, get_offerer_with_stock_count, get_offers_available_on_discovery_count, \
+    get_all_used_or_finished_bookings, get_offerers_with_offer_available_on_discovery_count, \
+    get_offers_with_non_cancelled_bookings_count, get_offerers_with_non_cancelled_bookings_count
+from scripts.dashboard.finance_statistics import get_total_deposits, \
+    get_total_amount_spent, get_total_amount_to_pay, get_top_20_offers_table, \
+    get_top_20_offerers_table_by_number_of_bookings, get_top_20_offerers_by_amount_table
+from scripts.dashboard.users_statistics import count_activated_users, count_users_having_booked, \
+    get_mean_number_of_bookings_per_user_having_booked, get_mean_amount_spent_by_user, \
+    get_non_cancelled_bookings_by_user_departement
 
 EXPERIMENTATION_DEPARTEMENTS = list(DEPARTEMENT_CODE_VISIBILITY.keys())
 
@@ -34,12 +35,9 @@ class DashboardConfig:
 
 def write_dashboard_worksheet(spreadsheet: Spreadsheet, tab_name: str):
     current_row = 1
-
     worksheet = _initialize_worksheet(spreadsheet, tab_name)
-
     worksheet.update_value(f'A{current_row}', 'TABLEAU DE BORD PASS CULTURE')
     current_row += DashboardConfig.space_between_sections
-
     departement_code = _get_departement_code(tab_name)
     current_row = _write_usage_section(departement_code, worksheet, current_row)
     current_row = _write_diversification_section(departement_code, worksheet, current_row)
