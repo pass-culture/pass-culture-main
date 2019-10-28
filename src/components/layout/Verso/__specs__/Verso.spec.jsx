@@ -117,11 +117,11 @@ describe('src | components | layout | Verso', () => {
 
   it('should scroll to initial position when Verso component props are updated', () => {
     // given
-    const scrollTo = jest.fn()
     const wrapper = shallow(<Verso {...props} />)
-    wrapper.instance()['versoWrapper'] = {
+    const instance = wrapper.instance()
+    instance['versoWrapper'] = {
       current: {
-        scrollTo,
+        scrollTop: 10,
       },
     }
     props.areDetailsVisible = false
@@ -130,16 +130,16 @@ describe('src | components | layout | Verso', () => {
     wrapper.setProps({ ...props })
 
     // then
-    expect(scrollTo).toHaveBeenCalledWith(0, 0)
+    expect(instance['versoWrapper']['current']['scrollTop']).toBe(0)
   })
 
   it('should not scroll to initial position when Verso component props are not updated', () => {
     // given
-    const scrollTo = jest.fn()
     const wrapper = shallow(<Verso {...props} />)
-    wrapper.instance()['versoWrapper'] = {
+    const instance = wrapper.instance()
+    instance['versoWrapper'] = {
       current: {
-        scrollTo,
+        scrollTop: 10,
       },
     }
 
@@ -147,6 +147,6 @@ describe('src | components | layout | Verso', () => {
     wrapper.setProps({ ...props })
 
     // then
-    expect(scrollTo).not.toHaveBeenCalled()
+    expect(instance['versoWrapper']['current']['scrollTop']).toBe(10)
   })
 })
