@@ -1,13 +1,13 @@
 from typing import List, Tuple
 
 import pandas
-from sqlalchemy import text, func
+from sqlalchemy import text
 
 from models import Offerer, UserOfferer, Venue, Offer, Stock, Booking, EventType, ThingType, User
 from models.db import db
 from repository import booking_queries
 from repository.booking_queries import count_cancelled as query_count_all_cancelled_bookings
-from repository.offer_queries import get_active_offers_ids_query
+from repository.offer_queries import get_active_offers_ids_query, _filter_recommendable_offers_for_search
 from repository.offerer_queries import count_offerer, count_offerer_with_stock, count_offerer_by_departement, \
     count_offerer_with_stock_by_departement
 
@@ -32,6 +32,17 @@ def get_offerers_with_offer_available_on_discovery_count(departement_code: str =
     return query \
         .distinct(Offerer.id) \
         .count()
+
+
+def get_offerers_with_offer_available_on_search_count(departement_code: str = None) -> int:
+    base_query = Offerer.query.join(Venue).join(Offer)
+    query = _filter_recommendable_offers_for_search(base_query)
+    query = query.distinct(Offerer.id)
+
+    if departement_code:
+        query = query.filter(Venue.departementCode == departement_code)
+
+    return query.count()
 
 
 def get_offerers_with_non_cancelled_bookings_count(departement_code: str = None) -> int:
@@ -74,6 +85,16 @@ def get_offers_available_on_discovery_count(departement_code: str = None) -> int
     if departement_code:
         query = query.join(Venue).filter(
             Venue.departementCode == departement_code)
+
+    return query.count()
+
+
+def get_offers_available_on_search_count(departement_code: str = None) -> int:
+    base_query = Offer.query.join(Venue).join(Offerer)
+    query = _filter_recommendable_offers_for_search(base_query)
+
+    if departement_code:
+        query = query.filter(Venue.departementCode == departement_code)
 
     return query.count()
 
@@ -201,7 +222,7 @@ def query_get_offer_counts_grouped_by_type_and_medium() -> List[Tuple[str, bool,
 
 
 def query_get_offer_counts_grouped_by_type_and_medium_for_departement(departement_code: str) -> List[
-        Tuple[str, bool, int]]:
+    Tuple[str, bool, int]]:
     return db.engine.execute(
         text("""
         SELECT offer.type, offer.url IS NOT NULL AS is_digital, count(DISTINCT offer.id)
@@ -229,7 +250,7 @@ def query_get_booking_counts_grouped_by_type_and_medium() -> List[Tuple[str, boo
 
 
 def query_get_booking_counts_grouped_by_type_and_medium_for_departement(departement_code: str) -> List[
-        Tuple[str, bool, int]]:
+    Tuple[str, bool, int]]:
     return db.engine.execute(
         text("""
         SELECT offer.type, offer.url IS NOT NULL AS is_digital, SUM(booking.quantity)

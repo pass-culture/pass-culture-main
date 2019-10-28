@@ -10,7 +10,8 @@ from scripts.dashboard.diversification_statistics import get_offerers_with_offer
     get_offer_counts_grouped_by_type_and_medium, query_get_booking_counts_grouped_by_type_and_medium, \
     get_offerer_count, get_offerer_with_stock_count, get_all_bookings_count, count_all_cancelled_bookings, \
     query_get_offer_counts_grouped_by_type_and_medium_for_departement, \
-    query_get_booking_counts_grouped_by_type_and_medium_for_departement, get_all_used_or_finished_bookings
+    query_get_booking_counts_grouped_by_type_and_medium_for_departement, get_all_used_or_finished_bookings, \
+    get_offers_avaiblable_on_search_count, get_offerers_with_offer_available_on_search_count
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_stock, \
     create_offer_with_thing_product, create_venue, create_mediation, create_offer_with_event_product, create_booking
@@ -297,6 +298,133 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
 
         # Then
         assert number_of_offerers == 1
+
+
+class GetOfferersWithOfferAvailableOnSearchCountTest:
+    @clean_database
+    def test_returns_0_when_only_inactive_offer(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue, is_active=False)
+        stock = create_stock(offer=offer)
+        PcObject.save(stock)
+
+        # When
+        number_of_offers = get_offerers_with_offer_available_on_search_count()
+
+        # Then
+        assert number_of_offers == 0
+
+    @clean_database
+    def test_returns_0_when_only_offer_with_unvalidated_offerer(self, app):
+        # Given
+        offerer = create_offerer(validation_token='AZERTY')
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer)
+        PcObject.save(stock)
+
+        # When
+        number_of_offers = get_offerers_with_offer_available_on_search_count()
+
+        # Then
+        assert number_of_offers == 0
+
+    @clean_database
+    def test_returns_0_when_only_offer_with_inactive_offerer(self, app):
+        # Given
+        offerer = create_offerer(is_active=False)
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer)
+        PcObject.save(stock)
+
+        # When
+        number_of_offers = get_offerers_with_offer_available_on_search_count()
+
+        # Then
+        assert number_of_offers == 0
+
+    @clean_database
+    def test_returns_0_when_only_offer_with_unvalidated_venue(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer, validation_token='AZERTY')
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer)
+        PcObject.save(stock)
+
+        # When
+        number_of_offers = get_offerers_with_offer_available_on_search_count()
+
+        # Then
+        assert number_of_offers == 0
+
+    @clean_database
+    def test_returns_0_when_only_offer_with_no_stocks(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        PcObject.save(offer)
+
+        # When
+        number_of_offers = get_offerers_with_offer_available_on_search_count()
+
+        # Then
+        assert number_of_offers == 0
+
+    @clean_database
+    def test_returns_1_when_two_offers_recommendable_for_search_from_the_same_offerer(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue)
+        offer2 = create_offer_with_thing_product(venue)
+        stock1 = create_stock(offer=offer1)
+        stock2 = create_stock(offer=offer2)
+        PcObject.save(stock1, stock2)
+
+        # When
+        number_of_offers = get_offerers_with_offer_available_on_search_count()
+
+        # Then
+        assert number_of_offers == 1
+
+    @clean_database
+    def test_returns_1_when_one_offer_with_two_stocks_recommendable_for_search(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue)
+        stock1 = create_stock(offer=offer1)
+        stock2 = create_stock(offer=offer1)
+        PcObject.save(stock1, stock2)
+
+        # When
+        number_of_offers = get_offerers_with_offer_available_on_search_count()
+
+        # Then
+        assert number_of_offers == 1
+
+    @clean_database
+    def test_returns_1_when_two_offers_recommendable_for_search_but_only_one_in_department(self, app):
+        # Given
+        offerer = create_offerer()
+        venue1 = create_venue(offerer, postal_code='93000')
+        venue2 = create_venue(offerer, postal_code='34000', siret=offerer.siren + '98765')
+        offer1 = create_offer_with_thing_product(venue1)
+        offer2 = create_offer_with_thing_product(venue2)
+        stock1 = create_stock(offer=offer1)
+        stock2 = create_stock(offer=offer2)
+        PcObject.save(stock1, stock2)
+
+        # When
+        number_of_offers = get_offerers_with_offer_available_on_search_count('93')
+
+        # Then
+        assert number_of_offers == 1
 
 
 class GetOfferersWithNonCancelledBookingsCountTest:
@@ -748,6 +876,132 @@ class GetOffersAvailableOnDiscoveryCountTest:
         # Then
         assert number_of_offers == 1
 
+
+class GetOffersAvailableOnSearchCountTest:
+    @clean_database
+    def test_returns_0_when_only_inactive_offer(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue, is_active=False)
+        stock = create_stock(offer=offer)
+        PcObject.save(stock)
+
+        # When
+        number_of_offers = get_offers_avaiblable_on_search_count()
+
+        # Then
+        assert number_of_offers == 0
+
+    @clean_database
+    def test_returns_0_when_only_offer_with_unvalidated_offerer(self, app):
+        # Given
+        offerer = create_offerer(validation_token='AZERTY')
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer)
+        PcObject.save(stock)
+
+        # When
+        number_of_offers = get_offers_avaiblable_on_search_count()
+
+        # Then
+        assert number_of_offers == 0
+
+    @clean_database
+    def test_returns_0_when_only_offer_with_inactive_offerer(self, app):
+        # Given
+        offerer = create_offerer(is_active=False)
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer)
+        PcObject.save(stock)
+
+        # When
+        number_of_offers = get_offers_avaiblable_on_search_count()
+
+        # Then
+        assert number_of_offers == 0
+
+    @clean_database
+    def test_returns_0_when_only_offer_with_unvalidated_venue(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer, validation_token='AZERTY')
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer)
+        PcObject.save(stock)
+
+        # When
+        number_of_offers = get_offers_avaiblable_on_search_count()
+
+        # Then
+        assert number_of_offers == 0
+
+    @clean_database
+    def test_returns_0_when_only_offer_with_no_stocks(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        PcObject.save(offer)
+
+        # When
+        number_of_offers = get_offers_avaiblable_on_search_count()
+
+        # Then
+        assert number_of_offers == 0
+
+    @clean_database
+    def test_returns_2_when_two_offers_recommendable_for_search(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue)
+        offer2 = create_offer_with_thing_product(venue)
+        stock1 = create_stock(offer=offer1)
+        stock2 = create_stock(offer=offer2)
+        PcObject.save(stock1, stock2)
+
+        # When
+        number_of_offers = get_offers_avaiblable_on_search_count()
+
+        # Then
+        assert number_of_offers == 2
+
+    @clean_database
+    def test_returns_1_when_two_offers_recommendable_for_search_but_only_one_in_department(self, app):
+        # Given
+        offerer = create_offerer()
+        venue1 = create_venue(offerer, postal_code='93000')
+        venue2 = create_venue(offerer, postal_code='34000', siret=offerer.siren + '98765')
+        offer1 = create_offer_with_thing_product(venue1)
+        offer2 = create_offer_with_thing_product(venue2)
+        stock1 = create_stock(offer=offer1)
+        stock2 = create_stock(offer=offer2)
+        PcObject.save(stock1, stock2)
+
+        # When
+        number_of_offers = get_offers_avaiblable_on_search_count('93')
+
+        # Then
+        assert number_of_offers == 1
+
+    @clean_database
+    def test_returns_1_when_one_offer_with_two_stocks_recommendable_for_search(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue)
+        stock1 = create_stock(offer=offer1)
+        stock2 = create_stock(offer=offer1)
+        PcObject.save(stock1, stock2)
+
+        # When
+        number_of_offers = get_offers_avaiblable_on_search_count()
+
+        # Then
+        assert number_of_offers == 1
 
 class GetOffersWithNonCancelledBookingsCountTest:
     @clean_database

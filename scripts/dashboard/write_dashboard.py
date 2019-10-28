@@ -17,7 +17,8 @@ from scripts.dashboard import count_activated_users, count_users_having_booked, 
 from scripts.dashboard.diversification_statistics import get_offer_counts_grouped_by_type_and_medium, \
     query_get_offer_counts_grouped_by_type_and_medium, query_get_booking_counts_grouped_by_type_and_medium, \
     count_all_cancelled_bookings, query_get_offer_counts_grouped_by_type_and_medium_for_departement, \
-    query_get_booking_counts_grouped_by_type_and_medium_for_departement
+    query_get_booking_counts_grouped_by_type_and_medium_for_departement, get_offers_available_on_search_count, \
+    get_offerers_with_offer_available_on_search_count
 
 EXPERIMENTATION_DEPARTEMENTS = list(DEPARTEMENT_CODE_VISIBILITY.keys())
 
@@ -169,16 +170,21 @@ def _write_diversification_table(departement_code: str, worksheet: Worksheet, cu
     worksheet.update_value(f'A{current_row}', '# Offreurs ayant mis une offre depuis le début du pass')
     worksheet.update_value(f'B{current_row}', get_offerer_with_stock_count(departement_code))
     worksheet.update_value(f'E{current_row}', '# Offres disponibles')
-    worksheet.update_value(f'F{current_row}', get_offers_available_on_discovery_count(departement_code))
+    worksheet.update_value(f'F{current_row}', get_offers_available_on_search_count(departement_code))
     worksheet.update_value(f'I{current_row}', '# Réservations validées')
     worksheet.update_value(f'J{current_row}', get_all_used_or_finished_bookings(departement_code))
     current_row += DashboardConfig.space_between_lines
     worksheet.update_value(f'A{current_row}', '# Offreurs ayant une offre disponible')
+    worksheet.update_value(f'B{current_row}', get_offerers_with_offer_available_on_search_count(departement_code))
+    worksheet.update_value(f'E{current_row}', '# Offres mises en avant')
+    worksheet.update_value(f'F{current_row}', get_offers_available_on_discovery_count(departement_code))
+    worksheet.update_value(f'I{current_row}', '# Réservations annulées')
+    worksheet.update_value(f'J{current_row}', count_all_cancelled_bookings(departement_code))
+    current_row += DashboardConfig.space_between_lines
+    worksheet.update_value(f'A{current_row}', '# Offreurs ayant une offre mise en avant')
     worksheet.update_value(f'B{current_row}', get_offerers_with_offer_available_on_discovery_count(departement_code))
     worksheet.update_value(f'E{current_row}', '# Offres réservées')
     worksheet.update_value(f'F{current_row}', get_offers_with_non_cancelled_bookings_count(departement_code))
-    worksheet.update_value(f'I{current_row}', '# Réservations annulées')
-    worksheet.update_value(f'J{current_row}', count_all_cancelled_bookings(departement_code))
     current_row += DashboardConfig.space_between_lines
     worksheet.update_value(f'A{current_row}', '# Offreurs réservés')
     worksheet.update_value(f'B{current_row}', get_offerers_with_non_cancelled_bookings_count(departement_code))

@@ -4,7 +4,7 @@ import pandas
 
 from models import PcObject, ThingType
 from models.db import db
-from repository.okr_queries import get_beneficiary_users_details, get_experimentation_sessions, \
+from repository.dashboard_queries import get_beneficiary_users_details, get_experimentation_sessions, \
     get_departments, get_activation_dates, get_typeform_filling_dates, get_first_connection_dates, \
     get_date_of_first_bookings, get_date_of_second_bookings, get_date_of_bookings_on_third_product_type, get_last_recommendation_dates, \
     get_number_of_bookings, get_number_of_non_cancelled_bookings
