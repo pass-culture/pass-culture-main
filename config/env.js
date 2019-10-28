@@ -78,7 +78,7 @@ function getClientEnvironment(publicUrl) {
         // VERSION FOR API
         VERSION: version,
         MATOMO_SERVER_URL: process.env.MATOMO_SERVER_URL,
-        SENTRY_SERVER_URL: process.env.SENTRY_SERVER_URL,
+        SENTRY_SERVER_URL_FOR_PRO: process.env.SENTRY_SERVER_URL_FOR_PRO,
       }
     )
   // Stringify all values so we can feed into Webpack DefinePlugin
