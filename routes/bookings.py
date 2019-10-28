@@ -242,14 +242,7 @@ def get_booking_by_token(token):
 @app.route('/v2/bookings/token/<token>', methods=["GET"])
 @login_or_api_key_required_v2
 def get_booking_by_token_v2(token):
-    authorization_header = request.headers.get('Authorization', None)
-    headers_contains_api_key_authorization = authorization_header and 'Bearer' in authorization_header
-    if headers_contains_api_key_authorization:
-        app_authorization_api_key = authorization_header.replace("Bearer ", "")
-    else:
-        app_authorization_api_key = None
-
-    valid_api_key = find_api_key_by_value(app_authorization_api_key)
+    valid_api_key = _get_api_key_from_header(request)
 
     booking_token_upper_case = token.upper()
     booking = booking_queries.find_by(booking_token_upper_case)
@@ -286,7 +279,7 @@ def patch_booking_by_token(token):
     check_booking_is_usable(booking)
 
     if check_is_activation_booking(booking):
-        activate_user(booking.user)
+        _activate_user(booking.user)
         send_activation_notification_email(booking.user, send_raw_email)
 
     booking.isUsed = True
@@ -296,24 +289,43 @@ def patch_booking_by_token(token):
     return '', 204
 
 
-@app.route('/v2/bookings/token/<token>', methods=["PATCH"])
+@app.route('/v2/bookings/use/token/<token>', methods=["PATCH"])
 @login_or_api_key_required_v2
 def patch_booking_by_token_v2(token):
-    print('***** INSIDE ROUTE ****** ')
-
-    # get booking and Offerer Id
-    # ----------------------------------------------------------------
     booking_token_upper_case = token.upper()
     booking = booking_queries.find_by(
         booking_token_upper_case)
-
     check_booking_is_usable(booking)
 
     offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
-    # ----------------------------------------------------------------
 
-    # get api key from header
-    # ----------------------------------------------------------------
+    valid_api_key =  _get_api_key_from_header(request)
+
+    if current_user.is_authenticated:
+        check_user_can_validate_bookings_v2(current_user, offerer_id)
+
+    if valid_api_key:
+        check_api_key_allows_to_validate_booking(valid_api_key, offerer_id)
+
+    if check_is_activation_booking(booking):
+        _activate_user(booking.user)
+        send_activation_notification_email(booking.user, send_raw_email)
+
+    booking.isUsed = True
+    booking.dateUsed = datetime.utcnow()
+    PcObject.save(booking)
+
+    return '', 204
+
+
+def _activate_user(user_to_activate):
+    check_rights_for_activation_offer(current_user)
+    user_to_activate.canBookFreeOffers = True
+    deposit = create_initial_deposit(user_to_activate)
+    PcObject.save(deposit)
+
+
+def _get_api_key_from_header(request):
     authorization_header = request.headers.get('Authorization', None)
     headers_contains_api_key_authorization = authorization_header and 'Bearer' in authorization_header
     if headers_contains_api_key_authorization:
@@ -322,32 +334,7 @@ def patch_booking_by_token_v2(token):
         app_authorization_api_key = None
 
     valid_api_key = find_api_key_by_value(app_authorization_api_key)
-    # ----------------------------------------------------------------
-
-    if current_user.is_authenticated:
-        check_user_can_validate_bookings_v2(current_user, offerer_id)
-
-    if valid_api_key:
-        check_api_key_allows_to_validate_booking(valid_api_key, offerer_id)
-
-
-    if check_is_activation_booking(booking):
-        activate_user(booking.user)
-        send_activation_notification_email(booking.user, send_raw_email)
-
-    booking.isUsed = True
-    booking.dateUsed = datetime.utcnow()
-    PcObject.save(booking)
-
-    return '', 204
-
-
-def activate_user(user_to_activate):
-    check_rights_for_activation_offer(current_user)
-    user_to_activate.canBookFreeOffers = True
-    deposit = create_initial_deposit(user_to_activate)
-    PcObject.save(deposit)
-
+    return valid_api_key
 
 def _create_response_to_get_booking_by_token(booking):
     offer_name = booking.stock.resolvedOffer.product.name

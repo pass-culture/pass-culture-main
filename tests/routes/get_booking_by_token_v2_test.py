@@ -25,7 +25,7 @@ class Get:
             booking = create_booking(user, stock, venue=venue)
 
             PcObject.save(user_offerer, booking)
-            url = 'v2/bookings/token/{}'.format(booking.token)
+            url = 'v2/bookings/use/token/{}'.format(booking.token)
 
             # When
             response = TestClient(app.test_client()).with_auth('admin@email.fr').get(url)
@@ -57,7 +57,7 @@ class Get:
 
             user2ApiKey = 'Bearer ' + offererApiKey.value
             booking_token = booking.token.lower()
-            url = 'v2/bookings/token/{}'.format(booking_token)
+            url = 'v2/bookings/use/token/{}'.format(booking_token)
 
             # When
             response = TestClient(app.test_client()).get(
@@ -87,7 +87,7 @@ class Get:
             PcObject.save(user_offerer, booking)
 
             booking_token = booking.token.lower()
-            url = 'v2/bookings/token/{}'.format(booking_token)
+            url = 'v2/bookings/use/token/{}'.format(booking_token)
 
             # When
             response = TestClient(app.test_client()).with_auth('admin@email.fr').get(url)
@@ -114,7 +114,7 @@ class Get:
             # When
             response = TestClient(app.test_client()) \
                 .with_auth('admin@email.fr') \
-                .get('v2/bookings/token/{}'.format(booking.token))
+                .get('v2/bookings/use/token/{}'.format(booking.token))
 
             # Then
             assert response.status_code == 200
@@ -135,7 +135,7 @@ class Get:
 
             PcObject.save(admin_user, booking)
 
-            url = 'v2/bookings/token/{}'.format(booking.token)
+            url = 'v2/bookings/use/token/{}'.format(booking.token)
 
             # When
             response = TestClient(app.test_client()).get(url)
@@ -157,7 +157,7 @@ class Get:
 
             PcObject.save(admin_user, booking)
 
-            url = 'v2/bookings/token/{}'.format(booking.token)
+            url = 'v2/bookings/use/token/{}'.format(booking.token)
 
             # When
             response = TestClient(app.test_client()).get(url, headers={
@@ -183,7 +183,7 @@ class Get:
 
             PcObject.save(querying_user, booking)
 
-            url = 'v2/bookings/token/{}'.format(booking.token)
+            url = 'v2/bookings/use/token/{}'.format(booking.token)
 
             # When
             response = TestClient(app.test_client()).with_auth('querying@email.fr').get(url)
@@ -216,7 +216,7 @@ class Get:
             PcObject.save(offererApiKey)
 
             user2ApiKey = 'Bearer ' + offererApiKey.value
-            url = 'v2/bookings/token/{}'.format(booking.token)
+            url = 'v2/bookings/use/token/{}'.format(booking.token)
 
             # When
             response = TestClient(app.test_client()).get(
@@ -247,7 +247,7 @@ class Get:
 
             PcObject.save(admin_user, booking)
 
-            url = 'v2/bookings/token/{}'.format(booking.token)
+            url = 'v2/bookings/use/token/{}'.format(booking.token)
 
             # When
             response = TestClient(app.test_client()).with_auth('admin@email.fr').get(url)
@@ -265,7 +265,7 @@ class Get:
             admin_user = create_user(email='admin@email.fr')
             PcObject.save(admin_user)
 
-            url = 'v2/bookings/token/{}'.format('12345')
+            url = 'v2/bookings/use/token/{}'.format('12345')
 
             # When
             response = TestClient(app.test_client()).with_auth('admin@email.fr').get(url)
@@ -297,7 +297,7 @@ class Get:
             PcObject.save(offererApiKey)
 
             user2ApiKey = 'Bearer ' + offererApiKey.value
-            url = 'v2/bookings/token/{}'.format('12345')
+            url = 'v2/bookings/use/token/{}'.format('12345')
 
             # When
             response = TestClient(app.test_client()).get(
@@ -332,7 +332,7 @@ class Get:
             PcObject.save(offererApiKey)
 
             user2ApiKey = 'Bearer ' + offererApiKey.value
-            url = 'v2/bookings/token/{}'.format(booking.token)
+            url = 'v2/bookings/use/token/{}'.format(booking.token)
 
             # When
             response = TestClient(app.test_client()).get(
@@ -366,7 +366,7 @@ class Get:
             PcObject.save(offererApiKey)
 
             user2ApiKey = 'Bearer ' + offererApiKey.value
-            url = 'v2/bookings/token/{}'.format(booking.token)
+            url = 'v2/bookings/use/token/{}'.format(booking.token)
 
             # When
             response = TestClient(app.test_client()).get(
