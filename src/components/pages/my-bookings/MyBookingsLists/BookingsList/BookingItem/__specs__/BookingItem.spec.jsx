@@ -83,7 +83,7 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
     expect(arrowIcon.prop('svg')).toBe('ico-next-S')
   })
 
-  it('should render a booking with a date when date is provided', () => {
+  it('should render a booking with a date when it is an event', () => {
     // given
     props.stock.beginningDatetime = '2019-07-08T20:00:00Z'
     props.stock.endDatetime = '2019-07-08T23:00:00Z'
@@ -96,7 +96,7 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
     expect(bookingDate).toBe('Lundi 08/07/2019 à 22:00')
   })
 
-  it('should render a booking with no date when no date is provided', () => {
+  it('should render a booking with no date when it is not an event', () => {
     // given
     props.stock.beginningDatetime = null
     props.stock.endDatetime = null
@@ -109,7 +109,7 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
     expect(bookingDate).toBe('Permanent')
   })
 
-  it('should render a booking with a thumb url on thumb when thumbUrl is provided', () => {
+  it('should render a booking with a thumb url on thumb when mediation is provided', () => {
     // given
     props.booking.thumbUrl = '/mediations/AE'
 
@@ -121,7 +121,7 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
     expect(bookingThumb.prop('src')).toBe('/mediations/AE')
   })
 
-  it('should render a booking with a default thumb url on thumb when no thumbUrl is provided', () => {
+  it('should render a booking with a default thumb url on thumb when no mediation is provided', () => {
     // given
     props.booking.thumbUrl = null
 
@@ -148,7 +148,7 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
     expect(ribbon).toHaveLength(1)
   })
 
-  it('should render a link to booking token when a qrcode is provided', () => {
+  it('should render a link to booking token when offer is not used', () => {
     // given
     props.booking.qrCode = 'data:image/png;base64,iVIVhzdjeizfjezfoizejojczez'
 
@@ -160,7 +160,7 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
     expect(bookingTokenLink).toHaveLength(1)
   })
 
-  it('should not render a link to booking token when a qrcode is not provided', () => {
+  it('should not render a link to booking token when offer is used', () => {
     // given
     props.booking.qrCode = null
 

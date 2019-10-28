@@ -1,7 +1,8 @@
 import { compose } from 'redux'
 import { withRouter } from 'react-router-dom'
-import QrCode from './QrCode'
 import { connect } from 'react-redux'
+
+import QrCode from './QrCode'
 import selectBookingByRouterMatch from '../../../../../../selectors/selectBookingByRouterMatch'
 import { selectStockById } from '../../../../../../selectors/selectStockById'
 import { selectOfferById } from '../../../../../../selectors/selectOfferById'

@@ -46,7 +46,7 @@ describe('src | components | pages | my-bookings | MyBookings', () => {
       // when
       const wrapper = shallow(<MyBookings {...props} />)
 
-      // then¬
+      // then
       const loader = wrapper.find(LoaderContainer)
       expect(loader).toHaveLength(1)
     })
@@ -57,7 +57,7 @@ describe('src | components | pages | my-bookings | MyBookings', () => {
       props.requestGetBookings.mockImplementation((fail, success) => success())
     })
 
-    it('should render a MyBookingsListsContainer component when navigating on "/reservations" path', () => {
+    it('should render a list of my bookings when navigating on my bookings page', () => {
       // given
       const history = createMemoryHistory()
       history.push('/reservations')
@@ -80,7 +80,7 @@ describe('src | components | pages | my-bookings | MyBookings', () => {
       expect(qrCode).toHaveLength(0)
     })
 
-    it('should render a QrCodeContainer component when navigating on "/reservations/details/AE/qrcode" path', () => {
+    it('should render a qr code component when navigating on qr code page', () => {
       const history = createMemoryHistory()
       history.push('/reservations/details/A9/qrcode')
 

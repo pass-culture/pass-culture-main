@@ -52,7 +52,7 @@
 }
 
 .qr-code-white-card {
-  background-color: white;
+  background-color: $white;
   border-radius: 3px;
   margin: rem(50px) rem(10px) rem($footer-height + rem(10px)) rem(10px);
   padding-bottom: rem(10px);
