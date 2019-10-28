@@ -23,7 +23,6 @@
       when: jupyterhub_installer.stat.exists == false
       tags: 'install-jupyterhub'
 
-
     - name: Install pip
       apt:
         name: python3-pip
@@ -96,10 +95,10 @@
       tags: 'scalingo-cli'
 
     - name: Copy connect_to_database.service
-      copy:
+      template:
         src: connect_to_database.service
         dest: /etc/systemd/system/connect_to_database.service
-        owner: ubuntu
+        owner: "{{ systemd_service_user }}"
 
     - name: Start connection to database service
       systemd:
