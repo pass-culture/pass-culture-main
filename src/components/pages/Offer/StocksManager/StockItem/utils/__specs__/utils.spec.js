@@ -15,7 +15,7 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
     it('should return `Illimité` when available stock is unlimited', () => {
       // given
       const available = null
-      const remainingQuantity = 1
+      const remainingQuantity = 0
 
       // when
       const result = getRemainingStocksCount(available, remainingQuantity)

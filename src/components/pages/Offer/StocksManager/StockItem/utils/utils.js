@@ -1,7 +1,9 @@
 import moment from 'moment'
 
 export const getRemainingStocksCount = (available, remainingQuantity) => {
-  if (available === null || available === '' ) {
+  const isUnlimitedWithoutTypingValue = available === null
+  const isUnlimitedAfterRemovingValue = available === ''
+  if (isUnlimitedWithoutTypingValue || isUnlimitedAfterRemovingValue) {
     return 'Illimité'
   }
 
