@@ -28,7 +28,7 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
     expect(offerName.text()).toBe('Un lit sous une rivière')
     expect(offerBeginningDatetime.text()).toBe('Mercredi 06/11/2019 à 21:00')
     expect(offerVenue.text()).toBe('Michel et son accordéon')
-    expect(bookingToken.text()).toBe('ABCDE')
+    expect(bookingToken.text()).toBe('abcde')
     expect(bookingQrCode.prop('alt')).toBe('')
     expect(bookingQrCode.prop('src')).toBe(
       'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIYAAACGAQAAAAAwAs88AAAD'

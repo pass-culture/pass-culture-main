@@ -21,6 +21,7 @@ describe('src | components | pages | my-bookings | MyBookings', () => {
   beforeEach(() => {
     props = {
       bookings: [],
+      isQrCodeFeatureDisabled: false,
       location: {
         pathname: '/reservations',
         search: '',
@@ -53,13 +54,15 @@ describe('src | components | pages | my-bookings | MyBookings', () => {
   })
 
   describe('navigating on routes', () => {
+    let history
+
     beforeEach(() => {
       props.requestGetBookings.mockImplementation((fail, success) => success())
+      history = createMemoryHistory()
     })
 
     it('should render a list of my bookings when navigating on my bookings page', () => {
       // given
-      const history = createMemoryHistory()
       history.push('/reservations')
 
       // when
@@ -80,8 +83,9 @@ describe('src | components | pages | my-bookings | MyBookings', () => {
       expect(qrCode).toHaveLength(0)
     })
 
-    it('should render a qr code component when navigating on qr code page', () => {
-      const history = createMemoryHistory()
+    it('should render a qr code when navigating on qr code page and qr code feature is active', () => {
+      // given
+      props.isQrCodeFeatureDisabled = false
       history.push('/reservations/details/A9/qrcode')
 
       // when
@@ -100,6 +104,29 @@ describe('src | components | pages | my-bookings | MyBookings', () => {
       expect(myBookings).toHaveLength(0)
       expect(myBooking).toHaveLength(0)
       expect(qrCode).toHaveLength(1)
+    })
+
+    it('should not render a qr code when navigating on qr code page and qr code feature is not active', () => {
+      // given
+      props.isQrCodeFeatureDisabled = true
+      history.push('/reservations/details/A9/qrcode')
+
+      // when
+      const wrapper = mount(
+        <Router history={history}>
+          <Provider store={store}>
+            <MyBookings {...props} />
+          </Provider>
+        </Router>
+      )
+
+      // then
+      const myBookings = wrapper.find(MyBookingsListsContainer)
+      const myBooking = wrapper.find(MyBookingDetailsContainer)
+      const qrCode = wrapper.find(QrCodeContainer)
+      expect(myBookings).toHaveLength(0)
+      expect(myBooking).toHaveLength(0)
+      expect(qrCode).toHaveLength(0)
     })
   })
 })

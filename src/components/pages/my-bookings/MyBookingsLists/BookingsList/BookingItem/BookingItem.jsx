@@ -2,12 +2,12 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import DuoOfferContainer from '../../../../../layout/DuoOffer/DuoOfferContainer'
 import Icon from '../../../../../layout/Icon/Icon'
 import Ribbon from '../../../../../layout/Ribbon/Ribbon'
 import { getTimezone } from '../../../../../../utils/timezone'
 import { humanizeDate } from '../../../../../../utils/date/date'
 import { DEFAULT_THUMB_URL } from '../../../../../../utils/thumb'
+import DuoOfferContainer from '../../../../../layout/DuoOffer/DuoOfferContainer'
 
 const getDetailsUrl = (bookingId, location) => {
   const { pathname, search } = location
@@ -16,7 +16,15 @@ const getDetailsUrl = (bookingId, location) => {
 
 const getQrCodeUrl = detailsUrl => `${detailsUrl}/qrcode`
 
-const BookingItem = ({ booking, location, offer, ribbon, stock, trackConsultOffer }) => {
+const BookingItem = ({
+  booking,
+  isQrCodeFeatureDisabled,
+  location,
+  offer,
+  ribbon,
+  stock,
+  trackConsultOffer,
+}) => {
   const { id: bookingId, qrCode, quantity, token, thumbUrl } = booking
   const { beginningDatetime } = stock
   const { label, type } = ribbon || {}
@@ -51,6 +59,7 @@ const BookingItem = ({ booking, location, offer, ribbon, stock, trackConsultOffe
               {humanizedDate || 'Permanent'}
             </div>
           </div>
+          {isQrCodeFeatureDisabled && <div className="mb-token">{token.toLowerCase()}</div>}
         </div>
         <div className="teaser-arrow">
           {ribbon && <Ribbon
@@ -63,8 +72,8 @@ const BookingItem = ({ booking, location, offer, ribbon, stock, trackConsultOffe
           />
         </div>
       </Link>
-      {qrCode && (
-        <div className="mb-token">
+      {!isQrCodeFeatureDisabled && qrCode && (
+        <div className="mb-token-link-container">
           <Icon svg="ico-qrcode" />
           <Link
             className="mb-token-link"
@@ -90,6 +99,7 @@ BookingItem.propTypes = {
     thumbUrl: PropTypes.string,
     token: PropTypes.string.isRequired,
   }).isRequired,
+  isQrCodeFeatureDisabled: PropTypes.bool.isRequired,
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired,
     search: PropTypes.string.isRequired,

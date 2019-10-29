@@ -16,6 +16,7 @@ describe('src | components | pages | my-bookings | MyBookingsContainer', () => {
       const state = {
         data: {
           bookings: [],
+          features: [],
         },
       }
 
@@ -25,6 +26,7 @@ describe('src | components | pages | my-bookings | MyBookingsContainer', () => {
       // then
       expect(props).toStrictEqual({
         bookings: expect.any(Object),
+        isQrCodeFeatureDisabled: true,
       })
     })
   })

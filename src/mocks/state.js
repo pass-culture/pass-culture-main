@@ -91,7 +91,13 @@ const state = {
       },
     ],
     favorites: [{ id: 'D4', offerId: 'AM3A' }],
-    features: [],
+    features: [
+      {
+        id: 'E5',
+        isActive: true,
+        nameKey: 'QR_CODE',
+      },
+    ],
     mediations: [{ id: 'B4', offerId: 'AM3A' }],
     offers: [
       {

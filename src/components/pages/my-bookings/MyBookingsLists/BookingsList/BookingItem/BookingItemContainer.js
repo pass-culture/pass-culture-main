@@ -10,6 +10,7 @@ import selectStockById from '../../../../../../selectors/selectStockById'
 import selectOfferById from '../../../../../../selectors/selectOfferById'
 import selectRecommendationById from '../../../../../../selectors/selectRecommendationById'
 import getHumanizeRelativeDate from '../../../../../../utils/date/getHumanizeRelativeDate'
+import selectIsFeatureDisabled from '../../../../../router/selectors/selectIsFeatureDisabled'
 
 export const ribbonLabelAndType = (
   isUsed,
@@ -84,8 +85,10 @@ export const mapStateToProps = (state, ownProps) => {
     isEventExpired,
     humanizeRelativeBeginningDate
   )
+  const isQrCodeFeatureDisabled = selectIsFeatureDisabled(state, 'QR_CODE')
 
   return {
+    isQrCodeFeatureDisabled,
     mediation,
     offer,
     recommendation,

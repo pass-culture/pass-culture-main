@@ -43,6 +43,12 @@
 .mb-token {
   @include dotted($primary, top);
   color: $primary;
+  font-size: rem(47px);
+  padding: 0.5rem 0 0 1rem;
+}
+
+.mb-token-link-container {
+  @include dotted($primary, top);
   text-align: center;
 }
 

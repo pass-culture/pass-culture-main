@@ -37,7 +37,7 @@ class MyBookings extends Component {
   }
 
   render() {
-    const { bookings } = this.props
+    const { bookings, isQrCodeFeatureDisabled } = this.props
     const { hasError, isLoading } = this.state
     const hasNoBookings = bookings.length === 0
 
@@ -73,7 +73,7 @@ class MyBookings extends Component {
             exact
             path={'/reservations/:details(details)/:bookingId([A-Z0-9]+)/:qrcode(qrcode)'}
           >
-            <QrCodeContainer />
+            {!isQrCodeFeatureDisabled && <QrCodeContainer />}
           </Route>
         </Switch>
       </div>
@@ -83,6 +83,7 @@ class MyBookings extends Component {
 
 MyBookings.propTypes = {
   bookings: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  isQrCodeFeatureDisabled: PropTypes.bool.isRequired,
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired,
     search: PropTypes.string.isRequired,

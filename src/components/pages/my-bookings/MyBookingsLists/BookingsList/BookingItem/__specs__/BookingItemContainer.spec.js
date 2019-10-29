@@ -8,6 +8,7 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
     beforeEach(() => {
       state = {
         data: {
+          features: [],
           mediations: [
             {
               id: 'AAAA',
@@ -59,6 +60,7 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
 
       // then
       expect(props).toStrictEqual({
+        isQrCodeFeatureDisabled: true,
         mediation: {
           id: 'AAAA',
         },
@@ -91,6 +93,7 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
 
       // then
       expect(props).toStrictEqual({
+        isQrCodeFeatureDisabled: true,
         mediation: {
           id: 'AAAA',
         },
@@ -127,6 +130,7 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
 
       // then
       expect(props).toStrictEqual({
+        isQrCodeFeatureDisabled: true,
         mediation: {
           id: 'AAAA',
         },
@@ -161,6 +165,7 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
 
       // then
       expect(props).toStrictEqual({
+        isQrCodeFeatureDisabled: true,
         mediation: {
           id: 'AAAA',
         },
@@ -196,6 +201,7 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
 
       // then
       expect(props).toStrictEqual({
+        isQrCodeFeatureDisabled: true,
         mediation: {
           id: 'AAAA',
         },
@@ -234,6 +240,7 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
 
       // then
       expect(props).toStrictEqual({
+        isQrCodeFeatureDisabled: true,
         mediation: {
           id: 'AAAA',
         },
@@ -268,6 +275,7 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
 
       // then
       expect(props).toStrictEqual({
+        isQrCodeFeatureDisabled: true,
         mediation: {
           id: 'AAAA',
         },

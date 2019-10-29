@@ -12,7 +12,7 @@ const QrCode = ({ humanizedBeginningDatetime, offerName, qrCode, token, venueNam
         <div className="qr-code-venue-name">{venueName}</div>
       </div>
 
-      <div className="qr-code-token">{token}</div>
+      <div className="qr-code-token">{token.toLowerCase()}</div>
       <div className="qr-code-image">
         <img
           alt=""

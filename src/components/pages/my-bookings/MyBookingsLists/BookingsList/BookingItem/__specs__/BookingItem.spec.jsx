@@ -17,9 +17,10 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
         isCancelled: false,
         qrCode: 'data:image/png;base64,iVIVhzdjeizfjezfoizejojczez',
         stock: {},
-        token: 'g9g9g9',
+        token: 'G9G9G9',
         thumbUrl: '/mediations/AE',
       },
+      isQrCodeFeatureDisabled: true,
       location: {
         pathname: '/reservations',
         search: '?',
@@ -53,7 +54,10 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
     expect(wrapper).toMatchSnapshot()
   })
 
-  it('should render a booking by default', () => {
+  it('should render a booking including token when qr code feature is inactive', () => {
+    // given
+    props.isQrCodeFeatureDisabled = true
+
     // when
     const wrapper = shallow(<BookingItem {...props} />)
 
@@ -62,8 +66,7 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
     const bookingThumb = wrapper.find('.teaser-thumb').find('img')
     const bookingName = wrapper.find('.teaser-title-booking')
     const bookingDate = wrapper.find('.teaser-sub-title')
-    const bookingTokenLink = wrapper.find('.mb-token').find(Link)
-    const qrCodeIcon = wrapper.find('.mb-token').find(Icon)
+    const bookingToken = wrapper.find('.mb-token')
     const arrowIcon = wrapper.find('.teaser-arrow').find(Icon)
     const ribbon = wrapper.find('.teaser-arrow').find(Ribbon)
 
@@ -74,16 +77,42 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
     expect(bookingThumb.prop('src')).toBe('/mediations/AE')
     expect(bookingName.text()).toBe('Un livre pas mal')
     expect(bookingDate.text()).toBe('Mercredi 21/08/2030 à 22:00')
-    expect(bookingTokenLink).toHaveLength(1)
-    expect(bookingTokenLink.prop('to')).toBe('/reservations/details/AE?/qrcode')
-    expect(qrCodeIcon).toHaveLength(1)
-    expect(qrCodeIcon.prop('svg')).toBe('ico-qrcode')
+    expect(bookingToken).toHaveLength(1)
+    expect(bookingToken.text()).toBe('g9g9g9')
+    expect(ribbon).toHaveLength(0)
+    expect(arrowIcon).toHaveLength(1)
+  })
+
+  it('should render a booking with no token when qr code feature is active', () => {
+    // given
+    props.isQrCodeFeatureDisabled = false
+
+    // when
+    const wrapper = shallow(<BookingItem {...props} />)
+
+    // then
+    const bookingLink = wrapper.find(Link).first()
+    const bookingThumb = wrapper.find('.teaser-thumb').find('img')
+    const bookingName = wrapper.find('.teaser-title-booking')
+    const bookingDate = wrapper.find('.teaser-sub-title')
+    const bookingToken = wrapper.find('.mb-token')
+    const arrowIcon = wrapper.find('.teaser-arrow').find(Icon)
+    const ribbon = wrapper.find('.teaser-arrow').find(Ribbon)
+
+    expect(bookingLink).toHaveLength(1)
+    expect(bookingLink.prop('to')).toBe('/reservations/details/AE?')
+    expect(bookingThumb).toHaveLength(1)
+    expect(bookingThumb.prop('alt')).toBe('')
+    expect(bookingThumb.prop('src')).toBe('/mediations/AE')
+    expect(bookingName.text()).toBe('Un livre pas mal')
+    expect(bookingDate.text()).toBe('Mercredi 21/08/2030 à 22:00')
+    expect(bookingToken).toHaveLength(0)
     expect(ribbon).toHaveLength(0)
     expect(arrowIcon).toHaveLength(1)
     expect(arrowIcon.prop('svg')).toBe('ico-next-S')
   })
 
-  it('should render a booking with a date when it is an event', () => {
+  it('should render a booking with a date when its an event', () => {
     // given
     props.stock.beginningDatetime = '2019-07-08T20:00:00Z'
     props.stock.endDatetime = '2019-07-08T23:00:00Z'
@@ -96,7 +125,7 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
     expect(bookingDate).toBe('Lundi 08/07/2019 à 22:00')
   })
 
-  it('should render a booking with no date when it is not an event', () => {
+  it('should render a booking with no date when its not an event', () => {
     // given
     props.stock.beginningDatetime = null
     props.stock.endDatetime = null
@@ -148,27 +177,56 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
     expect(ribbon).toHaveLength(1)
   })
 
-  it('should render a link to booking token when offer is not used', () => {
+  it('should render a link to booking qr code when offer is not used and qr code feature is active', () => {
     // given
+    props.isQrCodeFeatureDisabled = false
     props.booking.qrCode = 'data:image/png;base64,iVIVhzdjeizfjezfoizejojczez'
 
     // when
     const wrapper = shallow(<BookingItem {...props} />)
 
     // then
-    const bookingTokenLink = wrapper.find('.mb-token').find(Link)
+    const bookingTokenLink = wrapper.find('.mb-token-link-container').find(Link)
     expect(bookingTokenLink).toHaveLength(1)
+    expect(bookingTokenLink.prop('to')).toBe('/reservations/details/AE?/qrcode')
   })
 
-  it('should not render a link to booking token when offer is used', () => {
+  it('should not render a link to booking qr code when offer is used and qr code feature is active', () => {
     // given
+    props.isQrCodeFeatureDisabled = false
     props.booking.qrCode = null
 
     // when
     const wrapper = shallow(<BookingItem {...props} />)
 
     // then
-    const bookingTokenLink = wrapper.find('.mb-token').find(Link)
+    const bookingTokenLink = wrapper.find('.mb-token-link-container').find(Link)
+    expect(bookingTokenLink).toHaveLength(0)
+  })
+
+  it('should not render a link to booking qr code when offer is not used and qr code feature is inactive', () => {
+    // given
+    props.isQrCodeFeatureDisabled = true
+    props.booking.qrCode = 'data:image/png;base64,iVIVhzdjeizfjezfoizejojczez'
+
+    // when
+    const wrapper = shallow(<BookingItem {...props} />)
+
+    // then
+    const bookingTokenLink = wrapper.find('.mb-token-link-container').find(Link)
+    expect(bookingTokenLink).toHaveLength(0)
+  })
+
+  it('should not render a link to booking qr code when offer is used and qr code feature is inactive', () => {
+    // given
+    props.isQrCodeFeatureDisabled = true
+    props.booking.qrCode = null
+
+    // when
+    const wrapper = shallow(<BookingItem {...props} />)
+
+    // then
+    const bookingTokenLink = wrapper.find('.mb-token-link-container').find(Link)
     expect(bookingTokenLink).toHaveLength(0)
   })
 })
