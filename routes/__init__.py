@@ -3,7 +3,6 @@ from utils.config import IS_DEV
 
 def install_routes():
     import routes.bookings
-    import routes.client_errors
     import routes.error_handlers
     import routes.export
     import routes.favorites

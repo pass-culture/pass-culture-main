@@ -34,7 +34,7 @@ def get_offerers_with_offer_available_on_discovery_count(departement_code: str =
         .count()
 
 
-def get_offerers_with_offer_available_on_search_count(departement_code: str = None) -> int:
+def get_offerers_with_offers_available_on_search_count(departement_code: str = None) -> int:
     base_query = Offerer.query.join(Venue).join(Offer)
     query = _filter_recommendable_offers_for_search(base_query)
     query = query.distinct(Offerer.id)

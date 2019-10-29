@@ -10,7 +10,7 @@ from scripts.dashboard.diversification_statistics import get_offer_counts_groupe
     query_get_offer_counts_grouped_by_type_and_medium, query_get_booking_counts_grouped_by_type_and_medium, \
     count_all_cancelled_bookings, query_get_offer_counts_grouped_by_type_and_medium_for_departement, \
     query_get_booking_counts_grouped_by_type_and_medium_for_departement, get_offers_available_on_search_count, \
-    get_offerers_with_offer_available_on_search_count, get_offerer_count, get_offers_with_user_offerer_and_stock_count, \
+    get_offerers_with_offers_available_on_search_count, get_offerer_count, get_offers_with_user_offerer_and_stock_count, \
     get_all_bookings_count, get_offerer_with_stock_count, get_offers_available_on_discovery_count, \
     get_all_used_or_finished_bookings, get_offerers_with_offer_available_on_discovery_count, \
     get_offers_with_non_cancelled_bookings_count, get_offerers_with_non_cancelled_bookings_count
@@ -173,7 +173,7 @@ def _write_diversification_table(departement_code: str, worksheet: Worksheet, cu
     worksheet.update_value(f'J{current_row}', get_all_used_or_finished_bookings(departement_code))
     current_row += DashboardConfig.space_between_lines
     worksheet.update_value(f'A{current_row}', '# Offreurs ayant une offre disponible')
-    worksheet.update_value(f'B{current_row}', get_offerers_with_offer_available_on_search_count(departement_code))
+    worksheet.update_value(f'B{current_row}', get_offerers_with_offers_available_on_search_count(departement_code))
     worksheet.update_value(f'E{current_row}', '# Offres mises en avant')
     worksheet.update_value(f'F{current_row}', get_offers_available_on_discovery_count(departement_code))
     worksheet.update_value(f'I{current_row}', '# Réservations annulées')
