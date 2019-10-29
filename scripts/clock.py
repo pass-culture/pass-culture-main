@@ -10,13 +10,18 @@ from sqlalchemy import orm
 from models.db import db
 from repository.feature_queries import feature_cron_send_final_booking_recaps_enabled, \
     feature_cron_generate_and_send_payments, \
-    feature_cron_retrieve_offerers_bank_information, feature_cron_send_remedial_emails, feature_write_dashboard_enabled, \
-    feature_update_booking_used, feature_delete_all_unread_recommendations_older_than_one_week_enabled
-from repository.feature_queries import feature_cron_send_wallet_balances
-from repository.feature_queries import feature_import_beneficiaries_enabled, \
-    feature_cron_synchronize_titelive_things, feature_cron_synchronize_titelive_descriptions, \
-    feature_cron_synchronize_titelive_thumbs, feature_cron_synchronize_titelive_stocks, \
-
+    feature_cron_retrieve_offerers_bank_information,\
+    feature_cron_send_remedial_emails,\
+    feature_write_dashboard_enabled, \
+    feature_update_booking_used,\
+    feature_delete_all_unread_recommendations_older_than_one_week_enabled, \
+    feature_cron_retrieve_bank_information_for_venue_without_siret, \
+    feature_cron_send_wallet_balances, \
+    feature_import_beneficiaries_enabled, \
+    feature_cron_synchronize_titelive_things,\
+    feature_cron_synchronize_titelive_descriptions, \
+    feature_cron_synchronize_titelive_thumbs,\
+    feature_cron_synchronize_titelive_stocks
 from repository.provider_queries import get_provider_by_local_class
 from repository.recommendation_queries import delete_all_unread_recommendations_older_than_one_week
 from repository.user_queries import find_most_recent_beneficiary_creation_date
@@ -24,8 +29,7 @@ from scripts.beneficiary import remote_import
 from scripts.dashboard.write_dashboard import write_dashboard
 from utils.config import API_ROOT_PATH
 from utils.logger import logger
-from utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET
-from utils.mailing import parse_email_addresses
+from utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET, parse_email_addresses
 
 app = Flask(__name__, template_folder='../templates')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
@@ -34,6 +38,7 @@ app.config['DEBUG'] = True
 db.init_app(app)
 
 TITELIVE_STOCKS_PROVIDER_NAME = "TiteLiveStocks"
+
 
 def pc_send_final_booking_recaps():
     print("[BATCH] Cron send_final_booking_recaps: START")
