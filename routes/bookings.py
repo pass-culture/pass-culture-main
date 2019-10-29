@@ -12,13 +12,15 @@ from domain.user_emails import send_booking_recap_emails, \
     send_booking_confirmation_email_to_user, send_cancellation_emails_to_user_and_offerer, \
     send_activation_notification_email
 from models import ApiErrors, Booking, PcObject, Stock, RightsType, EventType, Offerer
+from models.feature import FeatureToggle
 from models.offer_type import ProductType
-from repository import booking_queries
+from repository import booking_queries, feature_queries
 from repository.api_key_queries import find_api_key_by_value
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from routes.serialization import serialize, as_dict
 from utils.human_ids import dehumanize, humanize
-from utils.includes import WEBAPP_GET_BOOKING_INCLUDES, WEBAPP_PATCH_POST_BOOKING_INCLUDES
+from utils.includes import WEBAPP_GET_BOOKING_INCLUDES, WEBAPP_PATCH_POST_BOOKING_INCLUDES, \
+    WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES
 from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, \
     expect_json_data
@@ -110,7 +112,11 @@ def get_bookings_csv():
 def get_bookings():
     bookings = booking_queries.find_for_my_bookings_page(current_user.id)
 
-    return jsonify([as_dict(b, includes=WEBAPP_GET_BOOKING_INCLUDES) for b in bookings]), 200
+    if feature_queries.is_active(FeatureToggle.QR_CODE):
+        includes = WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES
+    else:
+        includes = WEBAPP_GET_BOOKING_INCLUDES
+    return jsonify([as_dict(b, includes=includes) for b in bookings]), 200
 
 
 @app.route('/bookings/<booking_id>', methods=['GET'])

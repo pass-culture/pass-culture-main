@@ -210,6 +210,41 @@ WEBAPP_GET_BOOKING_INCLUDES = [
         ]
     },
     "mediation",
+    "thumbUrl"
+]
+
+WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES = [
+    "completedUrl",
+    'isEventExpired',
+    "isUserCancellable",
+    {
+        "key": "stock",
+        "includes": [
+            {
+                "key": "offer",
+                "includes": [
+                    'isDigital',
+                    'isEvent',
+                    "isNotBookable",
+                    "isFullyBooked",
+                    "offerType",
+                    {
+                        "key": "product",
+                        "includes": ["thumbUrl"]
+                    },
+                    {
+                        "key": "stocks",
+                        "includes": ["isBookable"]
+                    },
+                    {
+                        "key": "venue",
+                        "includes": ['-validationToken']
+                    }
+                ]
+            },
+        ]
+    },
+    "mediation",
     "qrCode",
     "thumbUrl"
 ]
