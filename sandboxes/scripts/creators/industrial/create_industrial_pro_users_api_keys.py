@@ -21,9 +21,9 @@ API_KEYS_VALUES = [
 def create_industrial_pro_users_api_keys(offerers_by_name):
     logger.info('create_industrial_pro_users_api_keys')
     n = 0
-    for (offerer) in offerers_by_name.items():
+    for offerer in offerers_by_name.items():
         create_api_key(offerer[1], API_KEYS_VALUES[n])
-        n = n + 1
+        n += 1
 
     logger.info('created {} offerers with api key'.format(len(offerers_by_name)))
 

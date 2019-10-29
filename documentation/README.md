@@ -5,7 +5,7 @@
 Nous utilisons le plugin [Flasgger](https://github.com/rochacbruno/flasgger) permettant de visualiser via une app Flask, les specifications écrites dans un fichier .json
 Flasgger est un outil de visualisation de la doc, utilisant Swagger.
 
-## Comment écrire ajouter une nouvelle route ?
+## Comment ajouter une nouvelle route ?
 
 - Nous utilisons l'outil de visualisation de documentation [Swagger](https://swagger.io/docs/specification/2-0/basic-structure/)
 - Nous suivons la specification [OpenAPI 2](https://github.com/OAI/OpenAPI-Specification/) pour construire nos fichiers .json 
@@ -33,8 +33,8 @@ Il est possible de tester les appels API en utilisant la fonction TRY OUT sur le
 - ApiKey : "NA5Q2A6YA4LUJ9FEMET4QM4QB4QMJYCQAQ5MSMTUP9QQTMGEV9SA4AUYKMKY7USA"
 
 ###  Réponses attendus avec l'utilsateur spécifié plus haut et des token (contremarques)
-- Réponse 200
-Utiliser l'api key "NA5Q2A6YA4LUJ9FEMET4QM4QB4QMJYCQAQ5MSMTUP9QQTMGEV9SA4AUYKMKY7USA" et le token 100003
+
+- Réponse 200 avec le token 100003
 
 - Réponse 410 avec le token 100005 
 
@@ -60,8 +60,7 @@ echo $(LC_CTYPE=C < /dev/urandom tr -dc A-Za-z0-9 | head -c ${1:-64})}
 ```shell script
 $ pc psql
 ```
-
-puis
+- puis
 ```sql
 INSERT INTO api_key ("offererId", value)
 VALUES
