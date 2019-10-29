@@ -58,8 +58,8 @@ http {
       root /usr/share/nginx/html;
 
       index index.html;
-      ssl_certificate {{ letsencrypt_ssl_dir }}/{{ service_host }}/fullchain.pem;
-      ssl_certificate_key {{ letsencrypt_ssl_dir }}/{{ service_host }}/privkey.pem;
+      ssl_certificate {{ lets_encrypt_ssl_dir }}/{{ service_host }}/fullchain.pem;
+      ssl_certificate_key {{ lets_encrypt_ssl_dir }}/{{ service_host }}/privkey.pem;
       ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
       ssl_prefer_server_ciphers on;
       ssl_dhparam /etc/ssl/certs/dhparam.pem;
