@@ -12,7 +12,7 @@ class FeatureToggle(enum.Enum):
     FAVORITE_OFFER = 'Permettre aux bénéficiaires d''ajouter des offres en favoris'
     DEGRESSIVE_REIMBURSEMENT_RATE = 'Permettre le remboursement avec un barème dégressif par lieu'
     DUO_OFFER = 'Permettre la réservation d’une offre pour soi et un accompagnant'
-    QR_CODE = 'Permettre la validation de contremarque via QR code'
+    QR_CODE = 'Permettre la validation d''une contremarque via QR code'
 
 
 class Feature(PcObject, Model, DeactivableMixin):
