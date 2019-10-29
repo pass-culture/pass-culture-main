@@ -1,7 +1,7 @@
 {
 	"swagger": "2.0",
 	"info": {
-		"description": "Vous pouvez utiliser l'api key <i>Bearer NA5Q2A6YA4LUJ9FEMET4QM4QB4QMJYCQAQ5MSMTUP9QQTMGEV9SA4AUYKMKY7USA</i> pour tester ainsi que des contremarques allant de 100000 à 100010",
+		"description": "Vous pouvez utiliser l'api key <i>Bearer MAX98A9UTUVQEQ3MS9ZY2A5924CMBMZQ5EFM3AA4RUPYTUB99YFA4AF4RU6EJYXM/i> pour tester",
 		"version": "0.0.1",
 		"title": "DOCUMENTATION API PASS CULTURE",
 		"termsOfService": "https://docs.passculture.app/textes-normatifs"

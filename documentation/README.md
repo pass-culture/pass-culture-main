@@ -21,26 +21,25 @@ L'application est visible sur [http://localhost:5000/documentation/swagger/](htt
 
 ## Tester les routes en local
 
-Il est possible de tester les appels API en utilisant la fonction TRY OUT sur le serveur de documentation 
+Il est possible de tester les appels API en utilisant la fonction **TRY IT OUT** sur le serveur de documentation :
 - Lancer le serveur `pc start-backend`
 - Créer des données avec `pc sandbox -n industrial`
 
-### Exemple d'utilisateur avec lequel tester 
+### Connexion via ApiKey
 
-- email : roberto.mamarx@momarx.io 
-- mot de passe : user@AZERTY123 (Si vous voulez tester en parallèle via le guichet sur l'application pro)
-- offererId : 9 (Pour pouvoir retrouver les Api Key
-- ApiKey : "NA5Q2A6YA4LUJ9FEMET4QM4QB4QMJYCQAQ5MSMTUP9QQTMGEV9SA4AUYKMKY7USA"
+Cliquer sur Authorize et entrer l'api key suivante "Bearer MAX98A9UTUVQEQ3MS9ZY2A5924CMBMZQ5EFM3AA4RUPYTUB99YFA4AF4RU6EJYXM" dans la fenêtre qui s'ouvre puis cliquer sur Authorize pour identifier l'utilisateur.
+Cliquer sur le verbe de la route, par exemple 'GET', pour voir les détails de la route.
+Cliquer sur **TRY IT OUT**  en haut à droite.
 
-###  Réponses attendus avec l'utilsateur spécifié plus haut et des token (contremarques)
+Entrer l'une des contremarques ci-dessous puis cliquer sur **Execute** pour faire l'appel api.
+
+###  Réponses attendues avec l'utilsateur spécifié plus haut et des token (contremarques)
 
 - Réponse 200 avec le token 100003
-
 - Réponse 410 avec le token 100005 
-
 - Réponse 403 avec le token 100002
 
-### Générer des ApiKey
+## Générer de de nouvelles api keys
 
 - Ouvrir un terminal
 - Utiliser cette fonction :
