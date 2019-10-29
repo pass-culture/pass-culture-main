@@ -513,21 +513,20 @@ pc build-pg
 
 ### Environnement
 
-Les tests requièrent d'avoir un environnement spécifique sur Scalingo, ici `pass-culture-dev-perf`, comportant notamment une base utilisateur.
+Les tests requièrent d'avoir un environnement spécifique sur Scalingo, ici `pass-culture-api-perf`, comportant notamment une base utilisateur.
 Pour la remplir, il faut jouer les sandboxes `industrial` et `activation`.
 
 Execution des sandboxes sur le conteneur :
 ``` bash
-scalingo -a pass-culture-dev-perf run 'PYTHONPATH=. python scripts/pc.py sandbox -n industrial'
-scalingo -a pass-culture-dev-perf run 'PYTHONPATH=. python scripts/pc.py sandbox -n activation'
+scalingo -a pass-culture-api-perf --region osc-fr1 run 'PYTHONPATH=. python scripts/pc.py sandbox -n industrial'
+scalingo -a pass-culture-api-perf --region osc-fr1 run 'PYTHONPATH=. python scripts/pc.py sandbox -n activation'
 ```
 
 Ensuite, lancer le script d'import des utilisateurs avec une liste d'utilisateurs en csv prédéfinie placée dans le dossier `artillery` sous le nom `user_list`.
 On passe en paramètre un faux email qui ne sera pas utilisé.
 
 ``` bash
-scalingo -a pass-culture-dev-perf run 'ACTIVATION_USER_RECIPIENTS=<email> python scalingo/import_users.py user_list' -f user_list
-
+scalingo -a pass-culture-api-perf --region osc-fr1 run 'ACTIVATION_USER_RECIPIENTS=epe@octo.com python /tmp/uploads/import_users.py user_list' -f scalingo/import_users.py -f user_list```
 ```
 
 Un exemple de csv utilisateur `user_list` :
