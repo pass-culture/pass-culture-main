@@ -247,8 +247,6 @@ def get_booking_by_token_v2(token):
     booking_token_upper_case = token.upper()
     booking = booking_queries.find_by(booking_token_upper_case)
 
-    check_booking_is_usable(booking)
-
     offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
 
     if current_user.is_authenticated:
@@ -257,6 +255,8 @@ def get_booking_by_token_v2(token):
 
     if valid_api_key:
         check_api_key_allows_to_validate_booking(valid_api_key, offerer_id)
+
+    check_booking_is_usable(booking)
 
     response = _create_response_to_get_booking_by_token(booking)
     return jsonify(response), 200

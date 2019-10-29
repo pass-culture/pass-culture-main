@@ -5,9 +5,11 @@ from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_stock_with_thing_offer, \
     create_venue, create_offerer, \
     create_user, create_booking, create_offer_with_event_product, \
-    create_event_occurrence, create_stock_from_event_occurrence, create_user_offerer, create_stock_with_event_offer
+    create_event_occurrence, create_stock_from_event_occurrence, create_user_offerer, create_stock_with_event_offer, \
+    create_api_key
 from utils.token import random_token
 
+API_KEY_VALUE = random_token(64)
 
 class Get:
     class Returns200:
@@ -41,7 +43,6 @@ class Get:
             user2 = create_user(public_name='Jane Doe', email='user2@email.fr')
             offerer = create_offerer()
             user_offerer = create_user_offerer(user2, offerer)
-            offererApiKey = ApiKey()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue, event_name='Event Name', event_type=EventType.CINEMA)
             event_occurrence = create_event_occurrence(offer)
@@ -50,9 +51,7 @@ class Get:
 
             PcObject.save(user_offerer, booking)
 
-            offererApiKey.value = random_token(64)
-            offererApiKey.offererId = offerer.id
-
+            offererApiKey = create_api_key(offerer, API_KEY_VALUE)
             PcObject.save(offererApiKey)
 
             user2ApiKey = 'Bearer ' + offererApiKey.value
@@ -241,7 +240,6 @@ class Get:
             offerer2 = create_offerer(siren='987654321')
             user_offerer = create_user_offerer(admin_user, offerer)
 
-            offererApiKey = ApiKey()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue, event_name='Event Name')
             event_occurrence = create_event_occurrence(offer)
@@ -250,8 +248,7 @@ class Get:
 
             PcObject.save(admin_user, booking, user_offerer, offerer2)
 
-            offererApiKey.value = random_token(64)
-            offererApiKey.offererId = offerer2.id
+            offererApiKey = create_api_key(offerer, API_KEY_VALUE)
 
             PcObject.save(offererApiKey)
 
@@ -280,12 +277,13 @@ class Get:
             user = create_user(email='user@email.fr')
             admin_user = create_user(email='admin@email.fr')
             offerer = create_offerer()
+            user_offerer = create_user_offerer(admin_user, offerer)
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0, beginning_datetime=in_73_hours,
             end_datetime=in_74_hours, booking_limit_datetime=in_72_hours)
             booking = create_booking(user, stock, venue=venue)
 
-            PcObject.save(admin_user, booking)
+            PcObject.save(admin_user, booking, user_offerer)
 
             url = '/v2/bookings/token/{}'.format(booking.token)
 
@@ -321,8 +319,6 @@ class Get:
             admin_user = create_user(email='admin@email.fr')
             offerer = create_offerer()
             user_offerer = create_user_offerer(admin_user, offerer)
-
-            offererApiKey = ApiKey()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue, event_name='Event Name')
             event_occurrence = create_event_occurrence(offer)
@@ -331,8 +327,7 @@ class Get:
 
             PcObject.save(admin_user, booking, user_offerer)
 
-            offererApiKey.value = random_token(64)
-            offererApiKey.offererId = offerer.id
+            offererApiKey = create_api_key(offerer, API_KEY_VALUE)
 
             PcObject.save(offererApiKey)
 
@@ -359,15 +354,14 @@ class Get:
             admin_user = create_user(email='admin@email.fr')
             offerer = create_offerer()
             user_offerer = create_user_offerer(admin_user, offerer)
-            offererApiKey = ApiKey()
+
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
             booking = create_booking(user, stock, venue=venue, is_used=True)
 
             PcObject.save(admin_user, booking, user_offerer)
 
-            offererApiKey.value = random_token(64)
-            offererApiKey.offererId = offerer.id
+            offererApiKey = create_api_key(offerer, API_KEY_VALUE)
 
             PcObject.save(offererApiKey)
 
@@ -393,15 +387,13 @@ class Get:
             admin_user = create_user(email='admin@email.fr')
             offerer = create_offerer()
             user_offerer = create_user_offerer(admin_user, offerer)
-            offererApiKey = ApiKey()
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
             booking = create_booking(user, stock, venue=venue, is_cancelled=True)
 
             PcObject.save(admin_user, booking, user_offerer)
 
-            offererApiKey.value = random_token(64)
-            offererApiKey.offererId = offerer.id
+            offererApiKey = create_api_key(offerer, API_KEY_VALUE)
 
             PcObject.save(offererApiKey)
 
