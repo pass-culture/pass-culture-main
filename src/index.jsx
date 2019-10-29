@@ -5,11 +5,10 @@ import './styles/index.scss'
 import 'typeface-barlow'
 
 import Root from './Root'
-import initSentry from './utils/initSentry'
+import './utils/sentry'
 import registerCacheWorker from './workers/cache'
 
 const renderApp = () => {
-  initSentry()
   // https://github.com/gaearon/react-hot-loader#troubleshooting
   ReactDOM.render(<Root />, document.getElementById('root'))
   registerCacheWorker()
