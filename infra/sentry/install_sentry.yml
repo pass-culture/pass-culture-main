@@ -28,7 +28,7 @@
         path: /etc/ssl/certs/dhparam.pem
       register: dhparams_file
 
-    - name: Generate  dhparams file
+    - name: Generate dhparams file if not exists
       shell: openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
       when: dhparams_file.stat.exists == false
 

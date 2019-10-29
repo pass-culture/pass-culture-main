@@ -30,12 +30,12 @@
     weekday: "1"
     job: "/usr/sbin/nginx reload"
 
-- name: check if certificate file exists
+- name: Check if certificate file exists
   stat:
-    path: "{{ letsencrypt_ssl_dir }}/{{ service_host }}/fullchain.pem"
+    path: "{{ lets_encrypt_ssl_dir }}/{{ service_host }}/fullchain.pem"
   register: certificate_file
 
-- name: Create certificate
+- name: Create certificate if not exists
   shell: certbot certonly --webroot --email {{ certificate_admin_email }} --agree-tos --webroot-path=/usr/share/nginx/html -d {{ service_host }};
   when:  certificate_file.stat.exists == false
 
