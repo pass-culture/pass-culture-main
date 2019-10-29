@@ -2,25 +2,27 @@
 config:
   plugins:
     metrics-by-endpoint: {}
+#    expect: {}
+    artillery-plugin-elasticsearch: {}
   defaults:
     headers:
-      Origin: "https://app.passculture-pc-epe.beta.gouv.fr"
+      Origin: "https://localhost"
       Content-Type: "application/json"
   phases:
-    - duration: 60
+    - duration: 10
       arrivalRate: 0
-      rampTo: 15
+      rampTo: 1
       name: "Warm up the application"
-    - duration: 300
-      arrivalRate: 15
-      name: "Sustained max load"
-    - duration: 60
-      arrivalRate: 15
-      rampTo: 0
-      name: "Cool down the application"
-  target: "https://pass-culture-dev-perf.scalingo.io"
+#    - duration: 300
+#      arrivalRate: 15
+#      name: "Sustained max load"
+#    - duration: 60
+#      arrivalRate: 15
+#      rampTo: 0
+#      name: "Cool down the application"
+  target: "https://pass-culture-api-perf.osc-fr1.scalingo.io"
   payload:
-    - path: "user_list"  # Needs to contains valid users
+    - path: "user_list_with_password"  # Needs to contains valid users
       fields:
         - "id"
         - "lastName"
@@ -46,28 +48,42 @@ scenarios:
             json: "id"
             as: "id"
           url: "/users/signin"
+          expect:
+            - statusCode: 201
       - put:
           url: "/recommendations"
           ifTrue: "id"
           json:
             seenRecommendationIds: []
+          expect:
+            - statusCode: 200
       - think: 20
       - put:
           url: "/recommendations"
           ifTrue: "id"
           json:
             seenRecommendationIds: []
-      - think: 20
+          expect:
+            - statusCode: 200
+#      - think: 20
       - get:
           url: "/recommendations?keywords={{ word }}"
           ifTrue: "id"
+          expect:
+            - statusCode: 200
       - get:
           url: "/recommendations?keywords={{ word }}&page=2"
           ifTrue: "id"
-      - think: 7
-      - get:
-          url: "/recommendations?keywords={{ word }}&page=3"
-          ifTrue: "id"
-      - get:
-          url: "/recommendations?keywords={{ word }}&page=4"
-          ifTrue: "id"
+          expect:
+            - statusCode: 200
+#      - think: 7
+#      - get:
+#          url: "/recommendations?keywords={{ word }}&page=3"
+#          ifTrue: "id"
+#          expect:
+#            - statusCode: 200
+#      - get:
+#          url: "/recommendations?keywords={{ word }}&page=4"
+#          ifTrue: "id"
+#          expect:
+#            - statusCode: 200
