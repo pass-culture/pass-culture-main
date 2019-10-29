@@ -22,3 +22,7 @@ auth:
   GoogleOAuthenticator:
     client_id: {{ google_auth_client_id }}
     client_secret: {{ google_auth_client_secret }}
+services:
+  cull:
+    timeout: 6000
+    every: 600
