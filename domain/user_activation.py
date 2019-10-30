@@ -43,7 +43,7 @@ def generate_set_password_url(app_domain: str, user: User) -> str:
     )
 
 
-def check_is_activation_booking(booking):
+def is_activation_booking(booking):
     return booking.stock.offer.product.type in [str(EventType.ACTIVATION), str(ThingType.ACTIVATION)]
 
 

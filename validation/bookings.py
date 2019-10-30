@@ -49,13 +49,6 @@ def check_not_soft_deleted_stock(stock):
         raise api_errors
 
 
-def check_can_book_free_offer(stock, user):
-    if not user.canBookFreeOffers and stock.price == 0:
-        api_errors = ApiErrors()
-        api_errors.add_error('cannotBookFreeOffers', 'Votre compte ne vous permet pas de faire de réservation.')
-        raise api_errors
-
-
 def check_offer_is_active(stock):
     soft_deleted_stock = stock.isSoftDeleted
     inactive_offerer = not stock.resolvedOffer.venue.managingOfferer.isActive
@@ -136,6 +129,15 @@ def check_booking_is_usable(booking: Booking):
                         'Vous ne pouvez pas valider cette contremarque plus de 72h avant le début de l\'évènement')
         raise errors
 
+def check_booking_token_is_keepable(booking: Booking):
+    resource_gone_error = ResourceGoneError()
+    if not booking.isUsed:
+        resource_gone_error.add_error('booking', "Cette réservation n'a encore été validée")
+        raise resource_gone_error
+    if booking.isCancelled:
+        resource_gone_error.add_error('booking', 'Cette réservation a été annulée')
+        raise resource_gone_error
+
 
 def check_booking_is_cancellable(booking, is_user_cancellation):
     api_errors = ApiErrors()
@@ -161,6 +163,10 @@ def check_email_and_offer_id_for_anonymous_user(email, offer_id):
     if api_errors.errors:
         raise api_errors
 
+def check_if_activation_booking_is_keepable():
+    error = ForbiddenError()
+    error.add_error('booking', "Seuls les administrateurs du pass Culture peuvent annuler des offres d'activation.")
+    raise error
 
 def check_rights_to_get_bookings_csv(user, venue_id=None, offer_id=None):
     if user.isAdmin:

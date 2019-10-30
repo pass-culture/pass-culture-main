@@ -7,7 +7,8 @@ from flask_login import current_user, login_required
 
 from domain.bookings import generate_bookings_details_csv
 from domain.expenses import get_expenses
-from domain.user_activation import create_initial_deposit, check_is_activation_booking
+from domain.user_activation import create_initial_deposit, \
+    is_activation_booking
 from domain.user_emails import send_booking_recap_emails, \
     send_booking_confirmation_email_to_user, send_cancellation_emails_to_user_and_offerer, \
     send_activation_notification_email
@@ -26,7 +27,6 @@ from utils.rest import ensure_current_user_has_rights, \
     expect_json_data
 from utils.token import random_token
 from validation.bookings import check_booking_is_usable, \
-    check_can_book_free_offer, \
     check_existing_stock, \
     check_expenses_limits, \
     check_has_quantity, \
@@ -40,15 +40,23 @@ from validation.bookings import check_booking_is_usable, \
     check_email_and_offer_id_for_anonymous_user, \
     check_booking_is_cancellable, \
     check_stock_venue_is_validated, \
-    check_rights_to_get_bookings_csv,\
+    check_rights_to_get_bookings_csv, \
     check_booking_is_not_already_cancelled, \
-    check_booking_is_not_used
+    check_booking_is_not_used, check_if_activation_booking_is_keepable, check_booking_token_is_keepable
+
+check_rights_to_get_bookings_csv, \
+    check_booking_token_is_keepable, \
 from validation.users_authentifications import check_user_is_logged_in_or_email_is_provided, \
     login_or_api_key_required_v2
 from validation.users_authorizations import check_user_can_validate_bookings, \
     check_user_can_validate_activation_offer, \
     check_api_key_allows_to_validate_booking, \
-    check_user_can_validate_bookings_v2, check_api_key_allows_to_cancel_booking
+    check_user_can_validate_bookings_v2, \
+    check_api_key_allows_to_cancel_booking, \
+    check_rights_for_activation_offer, check_can_book_free_offer
+
+check_user_can_validate_bookings_v2, \
+    check_rights_for_activation_offer, \
 
 
 @app.route('/bookings/csv', methods=['GET'])
@@ -142,8 +150,7 @@ def create_booking():
     try:
         check_has_stock_id(stock_id)
         check_existing_stock(stock)
-        user_bookings = booking_queries.find_for_stock_and_user(
-            stock, current_user)
+        user_bookings = booking_queries.find_for_stock_and_user(stock, current_user)
         check_already_booked(user_bookings)
         check_has_quantity(quantity)
         check_booking_quantity_limit(quantity, is_duo)
@@ -200,6 +207,7 @@ def patch_booking(booking_id):
 
     is_user_cancellation = booking.user == current_user
     check_booking_is_cancellable(booking, is_user_cancellation)
+
     booking_offerer = booking.stock.resolvedOffer.venue.managingOffererId
     is_offerer_cancellation = current_user.hasRights(
         RightsType.editor, booking_offerer)
@@ -281,7 +289,7 @@ def patch_booking_by_token(token):
 
     check_booking_is_usable(booking)
 
-    if check_is_activation_booking(booking):
+    if is_activation_booking(booking):
         _activate_user(booking.user)
         send_activation_notification_email(booking.user, send_raw_email)
 
@@ -290,6 +298,7 @@ def patch_booking_by_token(token):
     PcObject.save(booking)
 
     return '', 204
+
 
 
 @app.route('/v2/bookings/use/token/<token>', methods=["PATCH"])
@@ -309,7 +318,7 @@ def patch_booking_use_by_token(token):
     if valid_api_key:
         check_api_key_allows_to_validate_booking(valid_api_key, offerer_id)
 
-    if check_is_activation_booking(booking):
+    if is_activation_booking(booking):
         _activate_user(booking.user)
         send_activation_notification_email(booking.user, send_raw_email)
 
@@ -348,11 +357,42 @@ def patch_cancel_booking_by_token(token):
     return '', 204
 
 
+@app.route('/v2/bookings/keep/token/<token>', methods=["PATCH"])
+@login_or_api_key_required_v2
+def patch_booking_keep_by_token(token):
+    booking_token_upper_case = token.upper()
+    booking = booking_queries.find_by(
+        booking_token_upper_case)
+
+    offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
+
+    valid_api_key =  _get_api_key_from_header(request)
+
+    if current_user.is_authenticated:
+        check_user_can_validate_bookings_v2(current_user, offerer_id)
+
+    if valid_api_key:
+        check_api_key_allows_to_validate_booking(valid_api_key, offerer_id)
+
+    if is_activation_booking(booking):
+        check_if_activation_booking_is_keepable()
+
+    check_booking_token_is_keepable(booking)
+
+    booking.isUsed = False
+    booking.dateUsed = None
+
+    PcObject.save(booking)
+
+    return '', 204
+
+
 def _activate_user(user_to_activate):
-    check_user_can_validate_activation_offer(current_user)
+    check_rights_for_activation_offer(current_user)
     user_to_activate.canBookFreeOffers = True
     deposit = create_initial_deposit(user_to_activate)
     PcObject.save(deposit)
+
 
 def _extract_api_key_from_request(received_request):
     authorization_header = received_request.headers.get('Authorization', None)
@@ -375,6 +415,7 @@ def _get_api_key_from_header(request):
 
     valid_api_key = find_api_key_by_value(app_authorization_api_key)
     return valid_api_key
+
 
 def _create_response_to_get_booking_by_token(booking):
     offer_name = booking.stock.resolvedOffer.product.name

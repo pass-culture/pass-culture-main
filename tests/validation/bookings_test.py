@@ -14,8 +14,12 @@ from validation.bookings import check_expenses_limits, \
     check_booking_is_cancellable, \
     check_booking_quantity_limit, \
     check_booking_is_usable, \
-    check_rights_to_get_bookings_csv, check_booking_is_not_already_cancelled, check_booking_is_not_used
+    check_rights_to_get_bookings_csv, \
+    check_booking_is_not_already_cancelled, \
+    check_booking_is_not_used, check_if_activation_booking_is_keepable
 
+check_rights_to_get_bookings_csv, \
+    check_if_activation_booking_is_keepable
 
 class CheckExpenseLimitsTest:
     def test_raises_an_error_when_physical_limit_is_reached(self):
@@ -351,7 +355,6 @@ class CheckBookingQuantityLimitTest:
             # then
             pytest.fail('Booking for duo offers must not raise any exceptions')
 
-
 class CheckBookingIsNotAlreadyCancelledTest:
     def test_raise_resource_gone_error_when_booking_is_already_cancelled(self):
         # Given
@@ -402,3 +405,12 @@ class CheckBookingIsNotUsedTest:
         except ResourceGoneError:
             # Then
             pytest.fail('Non used booking should pass the test')
+
+class CheckIfActivationBookingCanBeKept:
+    def test_raise_error(self):
+        # when
+        with pytest.raises(ApiErrors) as api_errors:
+            check_if_activation_booking_is_keepable()
+
+        # then
+        assert api_errors.value.errors['booking'] == ["Seuls les administrateurs du pass Culture peuvent annuler des offres d'activation."]

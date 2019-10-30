@@ -934,4 +934,5 @@ def create_api_key(offerer, value):
     offererApiKey.offererId = offerer.id
 
     PcObject.save(offererApiKey)
+
     return offererApiKey

@@ -44,3 +44,15 @@ def check_user_can_validate_activation_offer(user):
             "Vous n'avez pas les droits suffisants pour valider cette contremarque."
         )
         raise forbidden_error
+
+
+def check_rights_for_activation_offer(user):
+    if not user.isAdmin:
+        raise ForbiddenError
+
+
+def check_can_book_free_offer(stock, user):
+    if not user.canBookFreeOffers and stock.price == 0:
+        api_errors = ApiErrors()
+        api_errors.add_error('cannotBookFreeOffers', 'Votre compte ne vous permet pas de faire de réservation.')
+        raise api_errors
