@@ -15,7 +15,6 @@
     "final-form-calculate": "^1.3.1",
     "history": "^4.10.1",
     "la-sass-vy": "^1.0.1",
-    "lodash.clonedeep": "^4.5.0",
     "lodash.get": "^4.4.2",
     "lodash.isequal": "^4.5.0",
     "lodash.pick": "^4.4.0",
@@ -106,7 +105,6 @@
     "raf": "^3.4.1",
     "redux-mock-store": "^1.5.3",
     "sass-loader": "^8.0.0",
-    "source-map-explorer": "^2.1.0",
     "style-loader": "^1.0.0",
     "stylelint": "^11.1.1",
     "stylelint-config-standard": "^19.0.0",
@@ -121,7 +119,6 @@
     "whatwg-fetch": "^3.0.0"
   },
   "scripts": {
-    "analyze": "source-map-explorer build/static/js/main.*",
     "build": "node scripts/build.js && ./scripts/build_redirects.sh",
     "coveralls": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls",
     "fontello": "./scripts/fontello.sh",
@@ -129,14 +126,10 @@
     "licenses": "node_modules/.bin/license-reporter save --json licenses.json",
     "lint:js": "eslint '{src,testcafe}/**/*.{js,jsx}'",
     "lint:js:fix": "yarn lint:js --fix",
-    "ngrok": "ngrok start -config=./ngrok.yml --all",
-    "pgbuild": "yarn build && node scripts/pgbuild.js",
-    "pgbuild-prod": "yarn build && PG_ENV=production node scripts/pgbuild.js",
     "prebuild": "yarn fontello",
     "start": "node scripts/start.js",
     "test:cafe": "testcafe --assertion-timeout 8000 --selector-timeout 20000 -S -s testcafe_screenshots 'chrome:headless' testcafe",
-    "test:unit": "jest --env=jsdom",
-    "test:visual": "./scripts/tests/visual.sh"
+    "test:unit": "jest --env=jsdom"
   },
   "husky": {
     "hooks": {
