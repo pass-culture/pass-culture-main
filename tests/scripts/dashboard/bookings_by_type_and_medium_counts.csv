@@ -3,6 +3,8 @@ Catégorie,Support,Nombre de réservations
 "Musique - supports physique ou en ligne",Numérique, 1
 "Audiovisuel - films sur supports physiques et VOD",Numérique, 0
 "Audiovisuel - films sur supports physiques et VOD",Physique, 0
+"Autres",Numérique, 0
+"Autres",Physique, 0
 "Cinéma - cartes d'abonnement",Physique, 0
 "Cinéma - projections et autres évènements",Physique, 0
 "Conférences, rencontres et découverte des métiers",Physique, 0
@@ -24,6 +26,5 @@ Catégorie,Support,Nombre de réservations
 "Presse en ligne - abonnements",Numérique, 0
 "Spectacle vivant",Physique, 0
 "Spectacle vivant - cartes d'abonnement",Physique, 0
-"Vente d'œuvres d'art",Numérique, 0
 "Vente d'œuvres d'art",Physique, 0
 "Vente et location d’instruments de musique",Physique, 0

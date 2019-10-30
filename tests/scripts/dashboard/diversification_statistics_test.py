@@ -1150,9 +1150,38 @@ class GetCountsByTypeAndDigitalCountsTest:
         bookings_by_type_and_digital_counts = get_offer_counts_grouped_by_type_and_medium(
             query_get_booking_counts_grouped_by_type_and_medium, 'Nombre de réservations')
 
-        dataframe__all = bookings_by_type_and_digital_counts.eq(expected_dataframe).all(axis=1)
-        print(bookings_by_type_and_digital_counts[~dataframe__all])
-        print(expected_dataframe[~dataframe__all])
+        # Then
+        assert bookings_by_type_and_digital_counts.equals(expected_dataframe)
+
+    @clean_database
+    def test_returns_bookings_ordered_by_counts_then_type_name_then_support_with_non_standard_offer_types(self, app):
+        # Given
+        offerer = create_offerer()
+        user = create_user()
+        user_booking = create_user(email='booking@test.com')
+        user_offerer = create_user_offerer(user, offerer)
+        virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
+        physical_venue = create_venue(offerer, is_virtual=False)
+        offer_musique_digital = create_offer_with_thing_product(virtual_venue, url='http://url.test',
+                                                                thing_type="pizza")
+        offer_pizza_digital = create_offer_with_thing_product(virtual_venue, url='http://url.test',
+                                                                thing_type="lili's")
+        offer_musique_physical = create_offer_with_thing_product(physical_venue, thing_type="sport")
+        stock_pizza_digital = create_stock(offer=offer_pizza_digital, price=0)
+        stock_musique_digital = create_stock(offer=offer_musique_digital, price=0)
+        stock_musique_physical = create_stock(offer=offer_musique_physical, price=0)
+        booking_pizza_digital = create_booking(user_booking, stock_pizza_digital)
+        booking_musique_physical1 = create_booking(user_booking, stock_musique_physical)
+        booking_musique_physical2 = create_booking(user_booking, stock_musique_physical, quantity=2)
+        booking_musique_digital = create_booking(user_booking, stock_musique_digital)
+        PcObject.save(booking_pizza_digital, booking_musique_physical1, booking_musique_physical2,
+                      booking_musique_digital, user_offerer)
+
+        expected_dataframe = pandas.read_csv('tests/scripts/dashboard/bookings_by_type_and_medium_counts_with_non_standard_offer_types.csv')
+
+        # When
+        bookings_by_type_and_digital_counts = get_offer_counts_grouped_by_type_and_medium(
+            query_get_booking_counts_grouped_by_type_and_medium, 'Nombre de réservations')
 
         # Then
         assert bookings_by_type_and_digital_counts.equals(expected_dataframe)

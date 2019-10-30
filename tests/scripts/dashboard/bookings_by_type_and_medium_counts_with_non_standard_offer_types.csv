@@ -1,12 +1,10 @@
-Catégorie,Support,Nombre d'offres
-"Cinéma - projections et autres évènements",Physique, 2
-"Musique - supports physique ou en ligne",Numérique, 1
-"Musique - supports physique ou en ligne",Physique, 1
+Catégorie,Support,Nombre de réservations
+"Autres",Physique, 3
+"Autres",Numérique, 2
 "Audiovisuel - films sur supports physiques et VOD",Numérique, 0
 "Audiovisuel - films sur supports physiques et VOD",Physique, 0
-"Autres",Numérique, 0
-"Autres",Physique, 0
 "Cinéma - cartes d'abonnement",Physique, 0
+"Cinéma - projections et autres évènements",Physique, 0
 "Conférences, rencontres et découverte des métiers",Physique, 0
 "Jeux (support physique)",Physique, 0
 "Jeux - abonnements",Numérique, 0
@@ -17,6 +15,8 @@ Catégorie,Support,Nombre d'offres
 "Livres papier ou numérique, abonnements lecture",Physique, 0
 "Musique - cartes d'abonnement concerts",Physique, 0
 "Musique - concerts, festivals",Physique, 0
+"Musique - supports physique ou en ligne",Numérique, 0
+"Musique - supports physique ou en ligne",Physique, 0
 "Musées, galeries, patrimoine - entrées libres, abonnements",Physique, 0
 "Musées, galeries, patrimoine - visites ponctuelles, visites guidées, activités spécifiques",Physique, 0
 "Pass Culture : activation en ligne",Numérique, 0

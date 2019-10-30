@@ -120,17 +120,32 @@ def get_offer_counts_grouped_by_type_and_medium(query_get_counts_per_type_and_di
     offer_counts_per_type_and_digital = query_get_counts_per_type_and_digital()
 
     offers_by_type_and_digital_table[counts_column_name] = 0
+    counts_for_other_offers = pandas.DataFrame({
+        'Catégorie': ['Autres', 'Autres'],
+        'Support': ['Numérique', 'Physique'],
+        counts_column_name: [0, 0]
+    })
+
     for offer_counts in offer_counts_per_type_and_digital:
         offer_type = offer_counts[0]
         is_digital = offer_counts[1]
         counts = offer_counts[2]
         support = 'Numérique' if is_digital else 'Physique'
-        offers_by_type_and_digital_table.loc[
-            (offers_by_type_and_digital_table['type'] == offer_type) & (
-                offers_by_type_and_digital_table['Support'] == support),
-            counts_column_name] = counts
+
+        row_matching_type_and_medium = (offers_by_type_and_digital_table['type'] == offer_type) & (
+                    offers_by_type_and_digital_table['Support'] == support)
+        has_matching_row = row_matching_type_and_medium.any()
+
+        if has_matching_row:
+            offers_by_type_and_digital_table.loc[
+                row_matching_type_and_medium,
+                counts_column_name] = counts
+
+        else:
+            counts_for_other_offers.loc[counts_for_other_offers['Support'] == support, counts_column_name] += counts
 
     offers_by_type_and_digital_table.drop('type', axis=1, inplace=True)
+    offers_by_type_and_digital_table = offers_by_type_and_digital_table.append(counts_for_other_offers, ignore_index=True)
     offers_by_type_and_digital_table.sort_values(by=[counts_column_name, 'Catégorie', 'Support'],
                                                  ascending=[False, True, True], inplace=True)
 
