@@ -9123,13 +9123,6 @@ performance-now@^2.1.0:
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
   integrity sha1-Ywn04OX6kT7BxpMHrjZLSzd8nns=
 
-phonegap-build-api@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/phonegap-build-api/-/phonegap-build-api-1.0.0.tgz#46087de79be46c4b81872380bf10d97b1306b398"
-  integrity sha512-99TWVTz+GYXg0I35c49C27g9RJSMdypHYHb82wbySkIo0MMttDT1lJKKsnVBMciMiulzUoDAHXpuCuZPEZz6Mw==
-  dependencies:
-    request "^2.88.0"
-
 picomatch@^2.0.5:
   version "2.0.7"
   resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-2.0.7.tgz#514169d8c7cd0bdbeecc8a2609e34a7163de69f6"
