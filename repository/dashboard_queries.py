@@ -25,7 +25,7 @@ def get_beneficiary_users_details():
         get_activation_dates(connection),
         get_typeform_filling_dates(connection),
         get_first_connection_dates(connection),
-        get_date_of_first_bookings(connection),
+        get_user_date_of_first_bookings(connection),
         get_date_of_second_bookings(connection),
         get_date_of_bookings_on_third_product_type(connection),
         get_last_recommendation_dates(connection),
@@ -144,7 +144,7 @@ def get_first_connection_dates(connection):
     return pandas.read_sql(query, connection, index_col='user_id')
 
 
-def get_date_of_first_bookings(connection):
+def get_user_date_of_first_bookings(connection):
     query = '''
     WITH bookings_grouped_by_user AS (
     SELECT
@@ -299,3 +299,94 @@ def get_number_of_non_cancelled_bookings(connection):
     WHERE "user"."canBookFreeOffers"
     '''
     return pandas.read_sql(query, connection, index_col='user_id')
+
+
+def get_offerers_details():
+    connection = db.engine.connect()
+
+    offerers_details = pandas.concat(
+        [get_offerer_creation_dates(connection),
+        get_first_stock_creation_dates(connection),
+        get_offerer_first_booking_creation_dates(connection),
+        get_number_of_offers(connection),
+        get_number_of_bookings_not_cancelled(connection)],
+        axis=1
+    )
+
+    return offerers_details
+
+
+def get_offerer_creation_dates(connection):
+    query = '''
+    SELECT
+     id AS offerer_id,
+     "dateCreated" AS "Date de création"
+    FROM offerer
+    '''
+    return pandas.read_sql(query, connection, index_col="offerer_id")
+
+
+def get_first_stock_creation_dates(connection):
+    query = '''
+    SELECT 
+     offerer.id AS offerer_id, 
+     MIN(activity.issued_at) AS "Date de création du premier stock"
+    FROM offerer 
+    LEFT JOIN venue ON venue."managingOffererId" = offerer.id 
+    LEFT JOIN offer ON offer."venueId" = venue.id 
+    LEFT JOIN stock ON stock."offerId" = offer.id 
+    LEFT JOIN activity ON (
+     activity.changed_data->>'id'=stock.id::text
+     AND activity.table_name='stock' 
+     AND verb='insert'
+    ) 
+    GROUP BY offerer_id
+    '''
+
+    return pandas.read_sql(query, connection, index_col='offerer_id')
+
+
+def get_offerer_first_booking_creation_dates(connection):
+    query = '''
+    SELECT 
+     offerer.id AS offerer_id, 
+     MIN(booking."dateCreated") AS "Date de première réservation"
+    FROM offerer    
+    LEFT JOIN venue ON venue."managingOffererId" = offerer.id 
+    LEFT JOIN offer ON offer."venueId" = venue.id 
+    LEFT JOIN stock ON stock."offerId" = offer.id 
+    LEFT JOIN booking ON booking."stockId" = stock.id 
+    GROUP BY offerer_id
+    '''
+
+    return pandas.read_sql(query, connection, index_col='offerer_id')
+
+
+def get_number_of_offers(connection):
+    query = '''
+    SELECT 
+     offerer.id AS offerer_id, 
+     COUNT(offer.id) AS "Nombre d’offres"
+    FROM offerer    
+    LEFT JOIN venue ON venue."managingOffererId" = offerer.id 
+    LEFT JOIN offer ON offer."venueId" = venue.id 
+    GROUP BY offerer_id
+    '''
+
+    return pandas.read_sql(query, connection, index_col='offerer_id')
+
+
+def get_number_of_bookings_not_cancelled(connection):
+    query = '''
+    SELECT 
+     offerer.id AS offerer_id, 
+     COUNT(booking.id) AS "Nombre de réservations non annulées"
+    FROM offerer 
+    LEFT JOIN venue ON venue."managingOffererId" = offerer.id 
+    LEFT JOIN offer ON offer."venueId" = venue.id 
+    LEFT JOIN stock ON stock."offerId" = offer.id 
+    LEFT JOIN booking ON booking."stockId" = stock.id AND booking."isCancelled" IS FALSE
+    GROUP BY offerer_id
+    '''
+
+    return pandas.read_sql(query, connection, index_col='offerer_id')
