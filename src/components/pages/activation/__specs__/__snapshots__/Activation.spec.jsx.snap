@@ -34,7 +34,6 @@ ShallowWrapper {
           path="/activation/:token"
         />
         <Redirect
-          push={false}
           to="/activation/error"
         />
       </Switch>,
@@ -62,7 +61,6 @@ ShallowWrapper {
             path="/activation/:token"
           />,
           <Redirect
-            push={false}
             to="/activation/error"
           />,
         ],
@@ -110,9 +108,8 @@ ShallowWrapper {
         Object {
           "instance": null,
           "key": undefined,
-          "nodeType": "class",
+          "nodeType": "function",
           "props": Object {
-            "push": false,
             "to": "/activation/error",
           },
           "ref": null,
@@ -146,7 +143,6 @@ ShallowWrapper {
             path="/activation/:token"
           />
           <Redirect
-            push={false}
             to="/activation/error"
           />
         </Switch>,
@@ -174,7 +170,6 @@ ShallowWrapper {
               path="/activation/:token"
             />,
             <Redirect
-              push={false}
               to="/activation/error"
             />,
           ],
@@ -222,9 +217,8 @@ ShallowWrapper {
           Object {
             "instance": null,
             "key": undefined,
-            "nodeType": "class",
+            "nodeType": "function",
             "props": Object {
-              "push": false,
               "to": "/activation/error",
             },
             "ref": null,

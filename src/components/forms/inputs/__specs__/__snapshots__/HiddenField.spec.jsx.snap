@@ -4,8 +4,8 @@ exports[`src | components | forms | inputs | HiddenField should match the snapsh
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <HiddenField
-    name="the-input-name"
-    validator={[Function]}
+    name="input-name"
+    validator={[MockFunction]}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -19,13 +19,11 @@ ShallowWrapper {
   Symbol(enzyme.__node__): Object {
     "instance": null,
     "key": undefined,
-    "nodeType": "class",
+    "nodeType": "function",
     "props": Object {
-      "format": [Function],
-      "name": "the-input-name",
-      "parse": [Function],
+      "name": "input-name",
       "render": [Function],
-      "validate": [Function],
+      "validate": [MockFunction],
     },
     "ref": null,
     "rendered": null,
@@ -35,13 +33,11 @@ ShallowWrapper {
     Object {
       "instance": null,
       "key": undefined,
-      "nodeType": "class",
+      "nodeType": "function",
       "props": Object {
-        "format": [Function],
-        "name": "the-input-name",
-        "parse": [Function],
+        "name": "input-name",
         "render": [Function],
-        "validate": [Function],
+        "validate": [MockFunction],
       },
       "ref": null,
       "rendered": null,

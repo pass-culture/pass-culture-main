@@ -21,13 +21,12 @@ ShallowWrapper {
     "nodeType": "function",
     "props": Object {
       "children": Array [
-        <Link
+        <ForwardRef
           className="teaser-link-offers"
-          replace={false}
           to="/decouverte"
         >
           Lancez-vous
-        </Link>,
+        </ForwardRef>,
         <p
           className="teaser-text"
         >
@@ -42,16 +41,26 @@ ShallowWrapper {
       Object {
         "instance": null,
         "key": undefined,
-        "nodeType": "class",
+        "nodeType": "function",
         "props": Object {
           "children": "Lancez-vous",
           "className": "teaser-link-offers",
-          "replace": false,
           "to": "/decouverte",
         },
         "ref": null,
         "rendered": "Lancez-vous",
-        "type": [Function],
+        "type": Object {
+          "$$typeof": Symbol(react.forward_ref),
+          "displayName": "Link",
+          "propTypes": Object {
+            "innerRef": [Function],
+            "onClick": [Function],
+            "replace": [Function],
+            "target": [Function],
+            "to": [Function],
+          },
+          "render": [Function],
+        },
       },
       Object {
         "instance": null,
@@ -91,13 +100,12 @@ ShallowWrapper {
       "nodeType": "function",
       "props": Object {
         "children": Array [
-          <Link
+          <ForwardRef
             className="teaser-link-offers"
-            replace={false}
             to="/decouverte"
           >
             Lancez-vous
-          </Link>,
+          </ForwardRef>,
           <p
             className="teaser-text"
           >
@@ -112,16 +120,26 @@ ShallowWrapper {
         Object {
           "instance": null,
           "key": undefined,
-          "nodeType": "class",
+          "nodeType": "function",
           "props": Object {
             "children": "Lancez-vous",
             "className": "teaser-link-offers",
-            "replace": false,
             "to": "/decouverte",
           },
           "ref": null,
           "rendered": "Lancez-vous",
-          "type": [Function],
+          "type": Object {
+            "$$typeof": Symbol(react.forward_ref),
+            "displayName": "Link",
+            "propTypes": Object {
+              "innerRef": [Function],
+              "onClick": [Function],
+              "replace": [Function],
+              "target": [Function],
+              "to": [Function],
+            },
+            "render": [Function],
+          },
         },
         Object {
           "instance": null,

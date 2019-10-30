@@ -4,8 +4,6 @@ import { Field } from 'react-final-form'
 
 import FormError from '../FormError'
 
-const noop = () => {}
-
 class HiddenField extends Component {
   renderField = ({ input, meta }) => {
     const { ...inputProps } = this.props
@@ -34,7 +32,7 @@ class HiddenField extends Component {
 }
 
 HiddenField.defaultProps = {
-  validator: noop,
+  validator: () => {},
 }
 
 HiddenField.propTypes = {

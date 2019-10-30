@@ -23,11 +23,9 @@ ShallowWrapper {
   Symbol(enzyme.__node__): Object {
     "instance": null,
     "key": undefined,
-    "nodeType": "class",
+    "nodeType": "function",
     "props": Object {
-      "format": [Function],
       "name": "the-input-name",
-      "parse": [Function],
       "render": [Function],
       "type": "checkbox",
       "validate": [Function],
@@ -40,11 +38,9 @@ ShallowWrapper {
     Object {
       "instance": null,
       "key": undefined,
-      "nodeType": "class",
+      "nodeType": "function",
       "props": Object {
-        "format": [Function],
         "name": "the-input-name",
-        "parse": [Function],
         "render": [Function],
         "type": "checkbox",
         "validate": [Function],

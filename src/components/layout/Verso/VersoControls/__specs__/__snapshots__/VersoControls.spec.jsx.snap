@@ -24,7 +24,7 @@ ShallowWrapper {
         className="verso-controls"
       >
         <li>
-          <Connect(Wallet) />
+          <UNDEFINED />
         </li>
         <li>
           <withRouter(Connect(Favorite)) />
@@ -45,7 +45,7 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <li>
-            <Connect(Wallet) />
+            <UNDEFINED />
           </li>,
           <li>
             <withRouter(Connect(Favorite)) />
@@ -66,17 +66,24 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": <Connect(Wallet) />,
+            "children": <UNDEFINED />,
           },
           "ref": null,
           "rendered": Object {
             "instance": null,
             "key": undefined,
-            "nodeType": "class",
+            "nodeType": "function",
             "props": Object {},
             "ref": null,
             "rendered": null,
-            "type": [Function],
+            "type": Object {
+              "$$typeof": Symbol(react.memo),
+              "WrappedComponent": [Function],
+              "compare": null,
+              "displayName": "Connect(Wallet)",
+              "type": [Function],
+              Symbol(Symbol.hasInstance): [Function],
+            },
           },
           "type": "li",
         },
@@ -152,7 +159,7 @@ ShallowWrapper {
           className="verso-controls"
         >
           <li>
-            <Connect(Wallet) />
+            <UNDEFINED />
           </li>
           <li>
             <withRouter(Connect(Favorite)) />
@@ -173,7 +180,7 @@ ShallowWrapper {
         "props": Object {
           "children": Array [
             <li>
-              <Connect(Wallet) />
+              <UNDEFINED />
             </li>,
             <li>
               <withRouter(Connect(Favorite)) />
@@ -194,17 +201,24 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": <Connect(Wallet) />,
+              "children": <UNDEFINED />,
             },
             "ref": null,
             "rendered": Object {
               "instance": null,
               "key": undefined,
-              "nodeType": "class",
+              "nodeType": "function",
               "props": Object {},
               "ref": null,
               "rendered": null,
-              "type": [Function],
+              "type": Object {
+                "$$typeof": Symbol(react.memo),
+                "WrappedComponent": [Function],
+                "compare": null,
+                "displayName": "Connect(Wallet)",
+                "type": [Function],
+                Symbol(Symbol.hasInstance): [Function],
+              },
             },
             "type": "li",
           },
@@ -324,7 +338,7 @@ ShallowWrapper {
         className="verso-controls"
       >
         <li>
-          <Connect(Wallet) />
+          <UNDEFINED />
         </li>
         <li>
           <withRouter(Connect(Favorite)) />
@@ -345,7 +359,7 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <li>
-            <Connect(Wallet) />
+            <UNDEFINED />
           </li>,
           <li>
             <withRouter(Connect(Favorite)) />
@@ -366,17 +380,24 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": <Connect(Wallet) />,
+            "children": <UNDEFINED />,
           },
           "ref": null,
           "rendered": Object {
             "instance": null,
             "key": undefined,
-            "nodeType": "class",
+            "nodeType": "function",
             "props": Object {},
             "ref": null,
             "rendered": null,
-            "type": [Function],
+            "type": Object {
+              "$$typeof": Symbol(react.memo),
+              "WrappedComponent": [Function],
+              "compare": null,
+              "displayName": "Connect(Wallet)",
+              "type": [Function],
+              Symbol(Symbol.hasInstance): [Function],
+            },
           },
           "type": "li",
         },
@@ -452,7 +473,7 @@ ShallowWrapper {
           className="verso-controls"
         >
           <li>
-            <Connect(Wallet) />
+            <UNDEFINED />
           </li>
           <li>
             <withRouter(Connect(Favorite)) />
@@ -473,7 +494,7 @@ ShallowWrapper {
         "props": Object {
           "children": Array [
             <li>
-              <Connect(Wallet) />
+              <UNDEFINED />
             </li>,
             <li>
               <withRouter(Connect(Favorite)) />
@@ -494,17 +515,24 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": <Connect(Wallet) />,
+              "children": <UNDEFINED />,
             },
             "ref": null,
             "rendered": Object {
               "instance": null,
               "key": undefined,
-              "nodeType": "class",
+              "nodeType": "function",
               "props": Object {},
               "ref": null,
               "rendered": null,
-              "type": [Function],
+              "type": Object {
+                "$$typeof": Symbol(react.memo),
+                "WrappedComponent": [Function],
+                "compare": null,
+                "displayName": "Connect(Wallet)",
+                "type": [Function],
+                Symbol(Symbol.hasInstance): [Function],
+              },
             },
             "type": "li",
           },

@@ -96,8 +96,7 @@ ShallowWrapper {
               className="is-block"
             >
               l’offre dans la rubrique 
-              <Link
-                replace={false}
+              <ForwardRef
                 to="/reservations"
               >
                 <b
@@ -105,7 +104,7 @@ ShallowWrapper {
                 >
                   Mes Réservations
                 </b>
-              </Link>
+              </ForwardRef>
             </span>
             <span
               className="is-block"
@@ -342,8 +341,7 @@ ShallowWrapper {
                 className="is-block"
               >
                 l’offre dans la rubrique 
-                <Link
-                  replace={false}
+                <ForwardRef
                   to="/reservations"
                 >
                   <b
@@ -351,7 +349,7 @@ ShallowWrapper {
                   >
                     Mes Réservations
                   </b>
-                </Link>
+                </ForwardRef>
               </span>
               <span
                 className="is-block"
@@ -379,8 +377,7 @@ ShallowWrapper {
                   className="is-block"
                 >
                   l’offre dans la rubrique 
-                  <Link
-                    replace={false}
+                  <ForwardRef
                     to="/reservations"
                   >
                     <b
@@ -388,7 +385,7 @@ ShallowWrapper {
                     >
                       Mes Réservations
                     </b>
-                  </Link>
+                  </ForwardRef>
                 </span>,
                 <span
                   className="is-block"
@@ -418,8 +415,7 @@ ShallowWrapper {
                 "props": Object {
                   "children": Array [
                     "l’offre dans la rubrique ",
-                    <Link
-                      replace={false}
+                    <ForwardRef
                       to="/reservations"
                     >
                       <b
@@ -427,7 +423,7 @@ ShallowWrapper {
                       >
                         Mes Réservations
                       </b>
-                    </Link>,
+                    </ForwardRef>,
                   ],
                   "className": "is-block",
                 },
@@ -437,14 +433,13 @@ ShallowWrapper {
                   Object {
                     "instance": null,
                     "key": undefined,
-                    "nodeType": "class",
+                    "nodeType": "function",
                     "props": Object {
                       "children": <b
                         className="is-primary-text"
                       >
                         Mes Réservations
                       </b>,
-                      "replace": false,
                       "to": "/reservations",
                     },
                     "ref": null,
@@ -460,7 +455,18 @@ ShallowWrapper {
                       "rendered": "Mes Réservations",
                       "type": "b",
                     },
-                    "type": [Function],
+                    "type": Object {
+                      "$$typeof": Symbol(react.forward_ref),
+                      "displayName": "Link",
+                      "propTypes": Object {
+                        "innerRef": [Function],
+                        "onClick": [Function],
+                        "replace": [Function],
+                        "target": [Function],
+                        "to": [Function],
+                      },
+                      "render": [Function],
+                    },
                   },
                 ],
                 "type": "span",
@@ -558,8 +564,7 @@ ShallowWrapper {
                 className="is-block"
               >
                 l’offre dans la rubrique 
-                <Link
-                  replace={false}
+                <ForwardRef
                   to="/reservations"
                 >
                   <b
@@ -567,7 +572,7 @@ ShallowWrapper {
                   >
                     Mes Réservations
                   </b>
-                </Link>
+                </ForwardRef>
               </span>
               <span
                 className="is-block"
@@ -804,8 +809,7 @@ ShallowWrapper {
                   className="is-block"
                 >
                   l’offre dans la rubrique 
-                  <Link
-                    replace={false}
+                  <ForwardRef
                     to="/reservations"
                   >
                     <b
@@ -813,7 +817,7 @@ ShallowWrapper {
                     >
                       Mes Réservations
                     </b>
-                  </Link>
+                  </ForwardRef>
                 </span>
                 <span
                   className="is-block"
@@ -841,8 +845,7 @@ ShallowWrapper {
                     className="is-block"
                   >
                     l’offre dans la rubrique 
-                    <Link
-                      replace={false}
+                    <ForwardRef
                       to="/reservations"
                     >
                       <b
@@ -850,7 +853,7 @@ ShallowWrapper {
                       >
                         Mes Réservations
                       </b>
-                    </Link>
+                    </ForwardRef>
                   </span>,
                   <span
                     className="is-block"
@@ -880,8 +883,7 @@ ShallowWrapper {
                   "props": Object {
                     "children": Array [
                       "l’offre dans la rubrique ",
-                      <Link
-                        replace={false}
+                      <ForwardRef
                         to="/reservations"
                       >
                         <b
@@ -889,7 +891,7 @@ ShallowWrapper {
                         >
                           Mes Réservations
                         </b>
-                      </Link>,
+                      </ForwardRef>,
                     ],
                     "className": "is-block",
                   },
@@ -899,14 +901,13 @@ ShallowWrapper {
                     Object {
                       "instance": null,
                       "key": undefined,
-                      "nodeType": "class",
+                      "nodeType": "function",
                       "props": Object {
                         "children": <b
                           className="is-primary-text"
                         >
                           Mes Réservations
                         </b>,
-                        "replace": false,
                         "to": "/reservations",
                       },
                       "ref": null,
@@ -922,7 +923,18 @@ ShallowWrapper {
                         "rendered": "Mes Réservations",
                         "type": "b",
                       },
-                      "type": [Function],
+                      "type": Object {
+                        "$$typeof": Symbol(react.forward_ref),
+                        "displayName": "Link",
+                        "propTypes": Object {
+                          "innerRef": [Function],
+                          "onClick": [Function],
+                          "replace": [Function],
+                          "target": [Function],
+                          "to": [Function],
+                        },
+                        "render": [Function],
+                      },
                     },
                   ],
                   "type": "span",
@@ -1081,8 +1093,7 @@ ShallowWrapper {
               className="is-block"
             >
               l’offre dans la rubrique 
-              <Link
-                replace={false}
+              <ForwardRef
                 to="/reservations"
               >
                 <b
@@ -1090,7 +1101,7 @@ ShallowWrapper {
                 >
                   Mes Réservations
                 </b>
-              </Link>
+              </ForwardRef>
             </span>
             <span
               className="is-block"
@@ -1379,8 +1390,7 @@ ShallowWrapper {
                 className="is-block"
               >
                 l’offre dans la rubrique 
-                <Link
-                  replace={false}
+                <ForwardRef
                   to="/reservations"
                 >
                   <b
@@ -1388,7 +1398,7 @@ ShallowWrapper {
                   >
                     Mes Réservations
                   </b>
-                </Link>
+                </ForwardRef>
               </span>
               <span
                 className="is-block"
@@ -1416,8 +1426,7 @@ ShallowWrapper {
                   className="is-block"
                 >
                   l’offre dans la rubrique 
-                  <Link
-                    replace={false}
+                  <ForwardRef
                     to="/reservations"
                   >
                     <b
@@ -1425,7 +1434,7 @@ ShallowWrapper {
                     >
                       Mes Réservations
                     </b>
-                  </Link>
+                  </ForwardRef>
                 </span>,
                 <span
                   className="is-block"
@@ -1455,8 +1464,7 @@ ShallowWrapper {
                 "props": Object {
                   "children": Array [
                     "l’offre dans la rubrique ",
-                    <Link
-                      replace={false}
+                    <ForwardRef
                       to="/reservations"
                     >
                       <b
@@ -1464,7 +1472,7 @@ ShallowWrapper {
                       >
                         Mes Réservations
                       </b>
-                    </Link>,
+                    </ForwardRef>,
                   ],
                   "className": "is-block",
                 },
@@ -1474,14 +1482,13 @@ ShallowWrapper {
                   Object {
                     "instance": null,
                     "key": undefined,
-                    "nodeType": "class",
+                    "nodeType": "function",
                     "props": Object {
                       "children": <b
                         className="is-primary-text"
                       >
                         Mes Réservations
                       </b>,
-                      "replace": false,
                       "to": "/reservations",
                     },
                     "ref": null,
@@ -1497,7 +1504,18 @@ ShallowWrapper {
                       "rendered": "Mes Réservations",
                       "type": "b",
                     },
-                    "type": [Function],
+                    "type": Object {
+                      "$$typeof": Symbol(react.forward_ref),
+                      "displayName": "Link",
+                      "propTypes": Object {
+                        "innerRef": [Function],
+                        "onClick": [Function],
+                        "replace": [Function],
+                        "target": [Function],
+                        "to": [Function],
+                      },
+                      "render": [Function],
+                    },
                   },
                 ],
                 "type": "span",
@@ -1602,8 +1620,7 @@ ShallowWrapper {
                 className="is-block"
               >
                 l’offre dans la rubrique 
-                <Link
-                  replace={false}
+                <ForwardRef
                   to="/reservations"
                 >
                   <b
@@ -1611,7 +1628,7 @@ ShallowWrapper {
                   >
                     Mes Réservations
                   </b>
-                </Link>
+                </ForwardRef>
               </span>
               <span
                 className="is-block"
@@ -1900,8 +1917,7 @@ ShallowWrapper {
                   className="is-block"
                 >
                   l’offre dans la rubrique 
-                  <Link
-                    replace={false}
+                  <ForwardRef
                     to="/reservations"
                   >
                     <b
@@ -1909,7 +1925,7 @@ ShallowWrapper {
                     >
                       Mes Réservations
                     </b>
-                  </Link>
+                  </ForwardRef>
                 </span>
                 <span
                   className="is-block"
@@ -1937,8 +1953,7 @@ ShallowWrapper {
                     className="is-block"
                   >
                     l’offre dans la rubrique 
-                    <Link
-                      replace={false}
+                    <ForwardRef
                       to="/reservations"
                     >
                       <b
@@ -1946,7 +1961,7 @@ ShallowWrapper {
                       >
                         Mes Réservations
                       </b>
-                    </Link>
+                    </ForwardRef>
                   </span>,
                   <span
                     className="is-block"
@@ -1976,8 +1991,7 @@ ShallowWrapper {
                   "props": Object {
                     "children": Array [
                       "l’offre dans la rubrique ",
-                      <Link
-                        replace={false}
+                      <ForwardRef
                         to="/reservations"
                       >
                         <b
@@ -1985,7 +1999,7 @@ ShallowWrapper {
                         >
                           Mes Réservations
                         </b>
-                      </Link>,
+                      </ForwardRef>,
                     ],
                     "className": "is-block",
                   },
@@ -1995,14 +2009,13 @@ ShallowWrapper {
                     Object {
                       "instance": null,
                       "key": undefined,
-                      "nodeType": "class",
+                      "nodeType": "function",
                       "props": Object {
                         "children": <b
                           className="is-primary-text"
                         >
                           Mes Réservations
                         </b>,
-                        "replace": false,
                         "to": "/reservations",
                       },
                       "ref": null,
@@ -2018,7 +2031,18 @@ ShallowWrapper {
                         "rendered": "Mes Réservations",
                         "type": "b",
                       },
-                      "type": [Function],
+                      "type": Object {
+                        "$$typeof": Symbol(react.forward_ref),
+                        "displayName": "Link",
+                        "propTypes": Object {
+                          "innerRef": [Function],
+                          "onClick": [Function],
+                          "replace": [Function],
+                          "target": [Function],
+                          "to": [Function],
+                        },
+                        "render": [Function],
+                      },
                     },
                   ],
                   "type": "span",
@@ -2167,8 +2191,7 @@ ShallowWrapper {
               className="is-block"
             >
               l’offre dans la rubrique 
-              <Link
-                replace={false}
+              <ForwardRef
                 to="/reservations"
               >
                 <b
@@ -2176,7 +2199,7 @@ ShallowWrapper {
                 >
                   Mes Réservations
                 </b>
-              </Link>
+              </ForwardRef>
             </span>
             <span
               className="is-block"
@@ -2398,8 +2421,7 @@ ShallowWrapper {
                 className="is-block"
               >
                 l’offre dans la rubrique 
-                <Link
-                  replace={false}
+                <ForwardRef
                   to="/reservations"
                 >
                   <b
@@ -2407,7 +2429,7 @@ ShallowWrapper {
                   >
                     Mes Réservations
                   </b>
-                </Link>
+                </ForwardRef>
               </span>
               <span
                 className="is-block"
@@ -2435,8 +2457,7 @@ ShallowWrapper {
                   className="is-block"
                 >
                   l’offre dans la rubrique 
-                  <Link
-                    replace={false}
+                  <ForwardRef
                     to="/reservations"
                   >
                     <b
@@ -2444,7 +2465,7 @@ ShallowWrapper {
                     >
                       Mes Réservations
                     </b>
-                  </Link>
+                  </ForwardRef>
                 </span>,
                 <span
                   className="is-block"
@@ -2474,8 +2495,7 @@ ShallowWrapper {
                 "props": Object {
                   "children": Array [
                     "l’offre dans la rubrique ",
-                    <Link
-                      replace={false}
+                    <ForwardRef
                       to="/reservations"
                     >
                       <b
@@ -2483,7 +2503,7 @@ ShallowWrapper {
                       >
                         Mes Réservations
                       </b>
-                    </Link>,
+                    </ForwardRef>,
                   ],
                   "className": "is-block",
                 },
@@ -2493,14 +2513,13 @@ ShallowWrapper {
                   Object {
                     "instance": null,
                     "key": undefined,
-                    "nodeType": "class",
+                    "nodeType": "function",
                     "props": Object {
                       "children": <b
                         className="is-primary-text"
                       >
                         Mes Réservations
                       </b>,
-                      "replace": false,
                       "to": "/reservations",
                     },
                     "ref": null,
@@ -2516,7 +2535,18 @@ ShallowWrapper {
                       "rendered": "Mes Réservations",
                       "type": "b",
                     },
-                    "type": [Function],
+                    "type": Object {
+                      "$$typeof": Symbol(react.forward_ref),
+                      "displayName": "Link",
+                      "propTypes": Object {
+                        "innerRef": [Function],
+                        "onClick": [Function],
+                        "replace": [Function],
+                        "target": [Function],
+                        "to": [Function],
+                      },
+                      "render": [Function],
+                    },
                   },
                 ],
                 "type": "span",
@@ -2611,8 +2641,7 @@ ShallowWrapper {
                 className="is-block"
               >
                 l’offre dans la rubrique 
-                <Link
-                  replace={false}
+                <ForwardRef
                   to="/reservations"
                 >
                   <b
@@ -2620,7 +2649,7 @@ ShallowWrapper {
                   >
                     Mes Réservations
                   </b>
-                </Link>
+                </ForwardRef>
               </span>
               <span
                 className="is-block"
@@ -2842,8 +2871,7 @@ ShallowWrapper {
                   className="is-block"
                 >
                   l’offre dans la rubrique 
-                  <Link
-                    replace={false}
+                  <ForwardRef
                     to="/reservations"
                   >
                     <b
@@ -2851,7 +2879,7 @@ ShallowWrapper {
                     >
                       Mes Réservations
                     </b>
-                  </Link>
+                  </ForwardRef>
                 </span>
                 <span
                   className="is-block"
@@ -2879,8 +2907,7 @@ ShallowWrapper {
                     className="is-block"
                   >
                     l’offre dans la rubrique 
-                    <Link
-                      replace={false}
+                    <ForwardRef
                       to="/reservations"
                     >
                       <b
@@ -2888,7 +2915,7 @@ ShallowWrapper {
                       >
                         Mes Réservations
                       </b>
-                    </Link>
+                    </ForwardRef>
                   </span>,
                   <span
                     className="is-block"
@@ -2918,8 +2945,7 @@ ShallowWrapper {
                   "props": Object {
                     "children": Array [
                       "l’offre dans la rubrique ",
-                      <Link
-                        replace={false}
+                      <ForwardRef
                         to="/reservations"
                       >
                         <b
@@ -2927,7 +2953,7 @@ ShallowWrapper {
                         >
                           Mes Réservations
                         </b>
-                      </Link>,
+                      </ForwardRef>,
                     ],
                     "className": "is-block",
                   },
@@ -2937,14 +2963,13 @@ ShallowWrapper {
                     Object {
                       "instance": null,
                       "key": undefined,
-                      "nodeType": "class",
+                      "nodeType": "function",
                       "props": Object {
                         "children": <b
                           className="is-primary-text"
                         >
                           Mes Réservations
                         </b>,
-                        "replace": false,
                         "to": "/reservations",
                       },
                       "ref": null,
@@ -2960,7 +2985,18 @@ ShallowWrapper {
                         "rendered": "Mes Réservations",
                         "type": "b",
                       },
-                      "type": [Function],
+                      "type": Object {
+                        "$$typeof": Symbol(react.forward_ref),
+                        "displayName": "Link",
+                        "propTypes": Object {
+                          "innerRef": [Function],
+                          "onClick": [Function],
+                          "replace": [Function],
+                          "target": [Function],
+                          "to": [Function],
+                        },
+                        "render": [Function],
+                      },
                     },
                   ],
                   "type": "span",

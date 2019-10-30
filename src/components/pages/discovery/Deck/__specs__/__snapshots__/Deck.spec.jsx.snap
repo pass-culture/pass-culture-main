@@ -113,7 +113,7 @@ ShallowWrapper {
             <div
               className="inner is-relative"
             >
-              <withSizes(withRouter(Connect(Card)))
+              <WithSizes
                 position="current"
               />
             </div>
@@ -154,7 +154,7 @@ ShallowWrapper {
             <div
               className="inner is-relative"
             >
-              <withSizes(withRouter(Connect(Card)))
+              <WithSizes
                 position="current"
               />
             </div>
@@ -193,7 +193,7 @@ ShallowWrapper {
             "children": <div
               className="inner is-relative"
             >
-              <withSizes(withRouter(Connect(Card)))
+              <WithSizes
                 position="current"
               />
             </div>,
@@ -207,7 +207,7 @@ ShallowWrapper {
             "props": Object {
               "children": Array [
                 null,
-                <withSizes(withRouter(Connect(Card)))
+                <WithSizes
                   position="current"
                 />,
                 null,
@@ -220,7 +220,7 @@ ShallowWrapper {
               Object {
                 "instance": null,
                 "key": undefined,
-                "nodeType": "class",
+                "nodeType": "function",
                 "props": Object {
                   "position": "current",
                 },
@@ -311,7 +311,7 @@ ShallowWrapper {
               <div
                 className="inner is-relative"
               >
-                <withSizes(withRouter(Connect(Card)))
+                <WithSizes
                   position="current"
                 />
               </div>
@@ -352,7 +352,7 @@ ShallowWrapper {
               <div
                 className="inner is-relative"
               >
-                <withSizes(withRouter(Connect(Card)))
+                <WithSizes
                   position="current"
                 />
               </div>
@@ -391,7 +391,7 @@ ShallowWrapper {
               "children": <div
                 className="inner is-relative"
               >
-                <withSizes(withRouter(Connect(Card)))
+                <WithSizes
                   position="current"
                 />
               </div>,
@@ -405,7 +405,7 @@ ShallowWrapper {
               "props": Object {
                 "children": Array [
                   null,
-                  <withSizes(withRouter(Connect(Card)))
+                  <WithSizes
                     position="current"
                   />,
                   null,
@@ -418,7 +418,7 @@ ShallowWrapper {
                 Object {
                   "instance": null,
                   "key": undefined,
-                  "nodeType": "class",
+                  "nodeType": "function",
                   "props": Object {
                     "position": "current",
                   },

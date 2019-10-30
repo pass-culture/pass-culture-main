@@ -20,7 +20,7 @@ ShallowWrapper {
   Symbol(enzyme.__node__): Object {
     "instance": null,
     "key": undefined,
-    "nodeType": "class",
+    "nodeType": "function",
     "props": Object {
       "children": <Icon
         alt="fake close title"
@@ -30,7 +30,6 @@ ShallowWrapper {
       />,
       "className": "close-link",
       "onClick": null,
-      "replace": false,
       "to": "/fake-url",
     },
     "ref": null,
@@ -48,13 +47,24 @@ ShallowWrapper {
       "rendered": null,
       "type": [Function],
     },
-    "type": [Function],
+    "type": Object {
+      "$$typeof": Symbol(react.forward_ref),
+      "displayName": "Link",
+      "propTypes": Object {
+        "innerRef": [Function],
+        "onClick": [Function],
+        "replace": [Function],
+        "target": [Function],
+        "to": [Function],
+      },
+      "render": [Function],
+    },
   },
   Symbol(enzyme.__nodes__): Array [
     Object {
       "instance": null,
       "key": undefined,
-      "nodeType": "class",
+      "nodeType": "function",
       "props": Object {
         "children": <Icon
           alt="fake close title"
@@ -64,7 +74,6 @@ ShallowWrapper {
         />,
         "className": "close-link",
         "onClick": null,
-        "replace": false,
         "to": "/fake-url",
       },
       "ref": null,
@@ -82,7 +91,18 @@ ShallowWrapper {
         "rendered": null,
         "type": [Function],
       },
-      "type": [Function],
+      "type": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "displayName": "Link",
+        "propTypes": Object {
+          "innerRef": [Function],
+          "onClick": [Function],
+          "replace": [Function],
+          "target": [Function],
+          "to": [Function],
+        },
+        "render": [Function],
+      },
     },
   ],
   Symbol(enzyme.__options__): Object {

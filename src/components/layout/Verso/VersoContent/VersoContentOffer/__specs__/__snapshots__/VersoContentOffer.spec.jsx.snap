@@ -81,7 +81,7 @@ ShallowWrapper {
           <div>
             Genre : Rap / Contenders
           </div>
-          <Connect(DuoOffer)
+          <UNDEFINED
             label="Vous pouvez réserver deux places."
             offerId="X9"
           />
@@ -172,7 +172,7 @@ ShallowWrapper {
             undefined,
             undefined,
             undefined,
-            <Connect(DuoOffer)
+            <UNDEFINED
               label="Vous pouvez réserver deux places."
               offerId="X9"
             />,
@@ -243,14 +243,21 @@ ShallowWrapper {
           Object {
             "instance": null,
             "key": undefined,
-            "nodeType": "class",
+            "nodeType": "function",
             "props": Object {
               "label": "Vous pouvez réserver deux places.",
               "offerId": "X9",
             },
             "ref": null,
             "rendered": null,
-            "type": [Function],
+            "type": Object {
+              "$$typeof": Symbol(react.memo),
+              "WrappedComponent": [Function],
+              "compare": null,
+              "displayName": "Connect(DuoOffer)",
+              "type": [Function],
+              Symbol(Symbol.hasInstance): [Function],
+            },
           },
         ],
         "type": Symbol(react.fragment),
@@ -602,7 +609,7 @@ ShallowWrapper {
             <div>
               Genre : Rap / Contenders
             </div>
-            <Connect(DuoOffer)
+            <UNDEFINED
               label="Vous pouvez réserver deux places."
               offerId="X9"
             />
@@ -693,7 +700,7 @@ ShallowWrapper {
               undefined,
               undefined,
               undefined,
-              <Connect(DuoOffer)
+              <UNDEFINED
                 label="Vous pouvez réserver deux places."
                 offerId="X9"
               />,
@@ -764,14 +771,21 @@ ShallowWrapper {
             Object {
               "instance": null,
               "key": undefined,
-              "nodeType": "class",
+              "nodeType": "function",
               "props": Object {
                 "label": "Vous pouvez réserver deux places.",
                 "offerId": "X9",
               },
               "ref": null,
               "rendered": null,
-              "type": [Function],
+              "type": Object {
+                "$$typeof": Symbol(react.memo),
+                "WrappedComponent": [Function],
+                "compare": null,
+                "displayName": "Connect(DuoOffer)",
+                "type": [Function],
+                Symbol(Symbol.hasInstance): [Function],
+              },
             },
           ],
           "type": Symbol(react.fragment),

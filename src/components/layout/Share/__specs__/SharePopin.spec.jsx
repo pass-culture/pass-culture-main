@@ -1,15 +1,16 @@
 import React from 'react'
-import { shallow } from 'enzyme'
+import { mount, shallow } from 'enzyme'
 
 import SharePopin from '../SharePopin'
 
-const dispatchMock = jest.fn()
-
 describe('src | components | share | SharePopin', () => {
-  it('should match the snapshot', () => {
-    // given
-    const props = {
-      dispatch: dispatchMock,
+  let dispatch
+  let props
+
+  beforeEach(() => {
+    dispatch = jest.fn()
+    props = {
+      dispatch,
       options: {
         text: 'Fake Test',
         title: 'Fake Title',
@@ -17,7 +18,9 @@ describe('src | components | share | SharePopin', () => {
       },
       visible: true,
     }
+  })
 
+  it('should match the snapshot', () => {
     // when
     const wrapper = shallow(<SharePopin {...props} />)
 
@@ -27,30 +30,18 @@ describe('src | components | share | SharePopin', () => {
 
   describe('functions', () => {
     describe('closeHandler', () => {
-      describe('when options are true', () => {
-        it('should call dispatch with good action parameters', () => {
-          // given
-          const props = {
-            dispatch: dispatchMock,
-            email: 'fake@email.com',
-            options: {
-              text: 'Fake Test',
-              title: 'Fake Title',
-              url: 'fake@url.com',
-            },
-            visible: true,
-          }
+      it('should call dispatch with good action parameters', () => {
+        // given
+        const wrapper = mount(<SharePopin {...props} />)
+        const button = wrapper.find('button')
 
-          // when
-          const wrapper = shallow(<SharePopin {...props} />).dive()
-          wrapper.find('button').simulate('click')
-          const expected = {
-            options: null,
-            type: 'TOGGLE_SHARE_POPIN',
-          }
+        // when
+        button.simulate('click')
 
-          // then
-          expect(dispatchMock).toHaveBeenCalledWith(expected)
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          options: null,
+          type: 'TOGGLE_SHARE_POPIN',
         })
       })
     })

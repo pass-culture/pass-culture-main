@@ -4,12 +4,16 @@ import { shallow } from 'enzyme'
 import HiddenField from '../HiddenField'
 
 describe('src | components | forms | inputs | HiddenField', () => {
-  it('should match the snapshot', () => {
-    // given
-    const props = {
-      name: 'the-input-name',
-    }
+  let props
 
+  beforeEach(() => {
+    props = {
+      name: 'input-name',
+      validator: jest.fn(),
+    }
+  })
+
+  it('should match the snapshot', () => {
     // when
     const wrapper = shallow(<HiddenField {...props} />)
 
@@ -17,19 +21,12 @@ describe('src | components | forms | inputs | HiddenField', () => {
     expect(wrapper).toMatchSnapshot()
   })
 
-  it('should render an input of type hidden', () => {
-    // given
-    const props = {
-      name: 'the-input-name',
-    }
-
+  it('should render a Field with the right props', () => {
     // when
-    const wrapper = shallow(<HiddenField {...props} />).dive()
-    const inputElement = wrapper.find('input')
+    const wrapper = shallow(<HiddenField {...props} />)
 
     // then
-    expect(inputElement).toHaveLength(1)
-    expect(inputElement.prop('name')).toStrictEqual('the-input-name')
-    expect(inputElement.prop('validator')).toStrictEqual(expect.any(Function))
+    expect(wrapper.prop('name')).toStrictEqual('input-name')
+    expect(wrapper.prop('validate')).toStrictEqual(props.validator)
   })
 })

@@ -36,7 +36,7 @@ ShallowWrapper {
         <div
           className="verso-wrapper"
         >
-          <withRouter(withSizes(VersoHeader))
+          <withRouter(WithSizes)
             backgroundColor="#ACE539"
             subtitle="Offer subtitle"
             title="Offer title"
@@ -72,7 +72,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            <withRouter(withSizes(VersoHeader))
+            <withRouter(WithSizes)
               backgroundColor="#ACE539"
               subtitle="Offer subtitle"
               title="Offer title"
@@ -174,7 +174,7 @@ ShallowWrapper {
           <div
             className="verso-wrapper"
           >
-            <withRouter(withSizes(VersoHeader))
+            <withRouter(WithSizes)
               backgroundColor="#ACE539"
               subtitle="Offer subtitle"
               title="Offer title"
@@ -210,7 +210,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              <withRouter(withSizes(VersoHeader))
+              <withRouter(WithSizes)
                 backgroundColor="#ACE539"
                 subtitle="Offer subtitle"
                 title="Offer title"

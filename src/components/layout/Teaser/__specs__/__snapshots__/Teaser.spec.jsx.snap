@@ -37,10 +37,9 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "host",
     "props": Object {
-      "children": <Link
+      "children": <ForwardRef
         className="teaser-link"
         onClick={[MockFunction]}
-        replace={false}
         to="fake/url"
       >
         <React.Fragment>
@@ -96,14 +95,14 @@ ShallowWrapper {
             />
           </div>
         </React.Fragment>
-      </Link>,
+      </ForwardRef>,
       "className": "teaser-item",
     },
     "ref": null,
     "rendered": Object {
       "instance": null,
       "key": undefined,
-      "nodeType": "class",
+      "nodeType": "function",
       "props": Object {
         "children": <React.Fragment>
           <div
@@ -160,7 +159,6 @@ ShallowWrapper {
         </React.Fragment>,
         "className": "teaser-link",
         "onClick": [MockFunction],
-        "replace": false,
         "to": "fake/url",
       },
       "ref": null,
@@ -413,7 +411,18 @@ ShallowWrapper {
         ],
         "type": Symbol(react.fragment),
       },
-      "type": [Function],
+      "type": Object {
+        "$$typeof": Symbol(react.forward_ref),
+        "displayName": "Link",
+        "propTypes": Object {
+          "innerRef": [Function],
+          "onClick": [Function],
+          "replace": [Function],
+          "target": [Function],
+          "to": [Function],
+        },
+        "render": [Function],
+      },
     },
     "type": "li",
   },
@@ -423,10 +432,9 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "host",
       "props": Object {
-        "children": <Link
+        "children": <ForwardRef
           className="teaser-link"
           onClick={[MockFunction]}
-          replace={false}
           to="fake/url"
         >
           <React.Fragment>
@@ -482,14 +490,14 @@ ShallowWrapper {
               />
             </div>
           </React.Fragment>
-        </Link>,
+        </ForwardRef>,
         "className": "teaser-item",
       },
       "ref": null,
       "rendered": Object {
         "instance": null,
         "key": undefined,
-        "nodeType": "class",
+        "nodeType": "function",
         "props": Object {
           "children": <React.Fragment>
             <div
@@ -546,7 +554,6 @@ ShallowWrapper {
           </React.Fragment>,
           "className": "teaser-link",
           "onClick": [MockFunction],
-          "replace": false,
           "to": "fake/url",
         },
         "ref": null,
@@ -799,7 +806,18 @@ ShallowWrapper {
           ],
           "type": Symbol(react.fragment),
         },
-        "type": [Function],
+        "type": Object {
+          "$$typeof": Symbol(react.forward_ref),
+          "displayName": "Link",
+          "propTypes": Object {
+            "innerRef": [Function],
+            "onClick": [Function],
+            "replace": [Function],
+            "target": [Function],
+            "to": [Function],
+          },
+          "render": [Function],
+        },
       },
       "type": "li",
     },
