@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   postgres:
-    image: postgres:10.4-alpine
+    image: postgres:10.10-alpine
     container_name: pc-postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -14,23 +14,8 @@ services:
       - 5434:5432
     command: postgres -c logging_collector=on -c log_destination=stderr -c log_min_duration_statement=0 -c log_statement=all -c log_duration=on
 
-  postgres-metabase:
-    image: postgres:10.4-alpine
-    container_name: pc-postgres-metabase
-    volumes:
-      - postgres_data_metabase:/var/lib/postgresql-metabase/data
-    environment:
-      - POSTGRES_DB=pass_culture
-      - POSTGRES_USER=metabase
-      - POSTGRES_PASSWORD=metabase
-    networks:
-      - db_nw
-    ports:
-      - 5435:5432
-    command: postgres -c logging_collector=on -c log_destination=stderr -c log_min_duration_statement=0 -c log_statement=all -c log_duration=on
-
   postgres-test:
-    image: postgres:10.4-alpine
+    image: postgres:10.10-alpine
     container_name: pc-postgres-pytest
     volumes:
       - postgres_data_test:/var/lib/postgresql-test/data
@@ -109,26 +94,6 @@ services:
     depends_on:
       - flask
 
-  metabase-app:
-    image: metabase/metabase
-    ports:
-      - 3002:3000
-    volumes:
-      - metabase_data:/metabase-data
-    environment:
-      MB_DB_TYPE: postgres
-      MB_DB_DBNAME: pass_culture
-      MB_DB_PORT: 5432
-      MB_DB_USER: metabase
-      MB_DB_PASS: metabase
-      MB_DB_HOST: pc-postgres-metabase
-    depends_on:
-      - postgres-metabase
-    links:
-      - postgres-metabase
-    networks:
-      - db_nw
-
 networks:
   db_nw:
     driver: bridge
@@ -137,6 +102,4 @@ networks:
 
 volumes:
   postgres_data:
-  postgres_data_metabase:
   postgres_data_test:
-  metabase_data:
