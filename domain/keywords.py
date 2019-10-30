@@ -7,8 +7,9 @@ from utils.string_processing import remove_single_letters_for_search, tokenize_f
 
 
 LANGUAGE = 'french'
+CUSTOM_STOPWORDS = ['où']
 STOP_WORDS = set(stopwords.words(LANGUAGE))
-
+STOP_WORDS.update(CUSTOM_STOPWORDS)
 
 def create_fts_index(name, ts_vector):
     return Index(name,

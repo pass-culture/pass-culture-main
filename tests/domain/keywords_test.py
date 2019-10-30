@@ -56,6 +56,17 @@ def test_get_ts_queries_from_keywords_url_parses_keywords_string_ignoring_specia
     assert keywords_result == ['http:*', 'www:*', 'test:*', 'com:*']
 
 
+def test_get_ts_queries_from_keywords_url_parses_keywords_string_ignoring_ou_with_accent():
+    # given
+    keywords_string = "yolo bonjour où va"
+
+    # when
+    keywords_result = get_ts_queries_from_keywords_string(keywords_string)
+
+    # then
+    assert keywords_result == ['yolo:*', 'bonjour:*', 'va:*']
+
+
 def test_get_ts_queries_from_keywords_string_with_coma_parses_keywords_string_ignoring_words_with_less_than_one_char():
     # given
     keywords_string = "Læetitia a mangé's'"
