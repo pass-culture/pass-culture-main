@@ -189,12 +189,15 @@ jobs:
           command: |
             SCALINGO_APP_NAME=$(./scripts/compute_app_name.sh ${CIRCLE_BRANCH})
             cd api
-            git remote add scalingo git@scalingo.com:${SCALINGO_APP_NAME}.git
-            git push -f scalingo HEAD:master
+#            git remote add scalingo git@scalingo.com:${SCALINGO_APP_NAME}.git
+            git remote add scalingo_outscale git@ssh.agora-fr1.scalingo.com:${SCALINGO_APP_NAME}.git
+#            git push -f scalingo HEAD:master
+            git push -f scalingo_outscale HEAD:master
       - run:
           name: Check deployed version
           command: |
-            COMPONENT_URL="https://backend.$(./scripts/compute_component_partial_url.sh ${CIRCLE_BRANCH})"
+#            COMPONENT_URL="https://backend.$(./scripts/compute_component_partial_url.sh ${CIRCLE_BRANCH})"
+            COMPONENT_URL="https://pass-culture-api-staging.osc-fr1.scalingo.io"
             ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
       - run:
           name: Send failure notification
