@@ -8,10 +8,8 @@ export const mapStateToProps = (state, ownProps) => {
   const { features } = state.data
   const { featureName } = ownProps
 
-  const isFeatureFlipped = ownProps.hasOwnProperty('featureName')
-
   let isRouteDisabled
-  if (!isFeatureFlipped) {
+  if (!featureName) {
     isRouteDisabled = false
   } else {
     isRouteDisabled = selectIsFeatureDisabled(state, featureName)

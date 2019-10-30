@@ -116,8 +116,8 @@ class Results extends PureComponent {
             element="ul"
             getScrollParent={this.getScrollParent}
             hasMore={hasMore}
-            loadMore={this.loadMore}
             loader={<Spinner key="loader" />}
+            loadMore={this.loadMore}
             pageStart={parseInt(queryParams.page || 1, ITEMS_PER_PAGE)}
             threshold={threshold}
             useWindow={false}

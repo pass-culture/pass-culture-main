@@ -1,6 +1,6 @@
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
-import React, { Component, Fragment } from 'react'
+import React, { PureComponent, Fragment } from 'react'
 import { Field } from 'react-final-form'
 
 import getCalendarProvider from '../../utils/getCalendarProvider'
@@ -10,7 +10,7 @@ import SelectField from '../../../../forms/inputs/SelectField'
 import DatePickerField from '../../../../forms/inputs/DatePickerField/DatePickerField'
 import DuoOfferContainer from '../../../../layout/DuoOffer/DuoOfferContainer'
 
-class BookingFormContent extends Component {
+class BookingFormContent extends PureComponent {
   componentDidMount() {
     const { invalid, onChange, values } = this.props
     const { price, stockId } = values

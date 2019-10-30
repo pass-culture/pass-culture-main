@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import queryString from 'query-string'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { Switch, Route } from 'react-router-dom'
 
 import NotMatch from '../not-match/NotMatch'
@@ -8,8 +8,8 @@ import RequestEmailForm from './RequestEmailForm'
 import ResetThePasswordForm from './ResetThePasswordForm'
 import SuccessView from './SuccessView'
 
-class ForgotPasswordPage extends Component {
-  renderforgotPasswordSuccessViewRoute = token => routeProps => (
+class ForgotPasswordPage extends PureComponent {
+  renderForgotPasswordSuccessViewRoute = token => routeProps => (
     // si token -> affiche le form success pour le confirm
     // sinon -> affiche le form success pour le request
     <SuccessView
@@ -18,7 +18,7 @@ class ForgotPasswordPage extends Component {
     />
   )
 
-  renderforgotPasswordFormViewRoute = token => routeProps => {
+  renderForgotPasswordFormViewRoute = token => routeProps => {
     const initialValues = { token }
     const FormComponent = !token ? RequestEmailForm : ResetThePasswordForm
     return (<FormComponent
@@ -44,13 +44,13 @@ class ForgotPasswordPage extends Component {
             exact
             key="forgot-password-success-view"
             path="/mot-de-passe-perdu/success"
-            render={this.renderforgotPasswordSuccessViewRoute(token)}
+            render={this.renderForgotPasswordSuccessViewRoute(token)}
           />
           <Route
             exact
             key="forgot-password-form-view"
             path="/mot-de-passe-perdu"
-            render={this.renderforgotPasswordFormViewRoute(token)}
+            render={this.renderForgotPasswordFormViewRoute(token)}
           />
           <Route component={this.renderDefaultRoute} />
         </Switch>

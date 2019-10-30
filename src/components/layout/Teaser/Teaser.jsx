@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types'
-import React, { Component, Fragment } from 'react'
+import React, { PureComponent, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import Icon from '../Icon/Icon'
 import { DEFAULT_THUMB_URL } from '../../../utils/thumb'
 
-class Teaser extends Component {
+class Teaser extends PureComponent {
   renderTeaser = () => {
     const {
       date,

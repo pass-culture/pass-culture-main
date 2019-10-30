@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 
 import BackLink from './BackLink/BackLink'
@@ -6,7 +6,7 @@ import CloseLink from './CloseLink/CloseLink'
 import SubmitButton from './SubmitButton/SubmitButton'
 import getIsTransitionDetailsUrl from '../../../helpers/getIsTransitionDetailsUrl'
 
-class Header extends Component {
+class Header extends PureComponent {
   componentDidMount() {
     const { history, match } = this.props
 

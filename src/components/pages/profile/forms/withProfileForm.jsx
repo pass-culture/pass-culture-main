@@ -13,9 +13,9 @@ const withProfileForm = (
   validator = noop
 ) => props => (
   <ProfilFormContainer
-    WrappedComponent={WrappedComponent}
     config={config}
     validator={validator}
+    WrappedComponent={WrappedComponent}
     {...props}
   />
 )

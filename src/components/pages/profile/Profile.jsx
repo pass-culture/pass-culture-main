@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router-dom'
 
 import { config } from './config'
@@ -8,7 +8,7 @@ import ProfileUpdateSuccess from './ProfileUpdateSuccess'
 import NotMatch from '../not-match/NotMatch'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
 
-class Profile extends Component {
+class Profile extends PureComponent {
   parseRoutesWithComponent = () => {
     const components = config.filter(o => o.component)
     const routes = components.reduce((acc, o) => ({ ...acc, [o.routeName]: o }), {})

@@ -80,8 +80,8 @@ class VersoContentOffer extends PureComponent {
           <li key={bookable.id}>
             {capitalize(bookable.humanBeginningDate)}
             {!bookable.userHasCancelledThisDate &&
-              bookable.userHasAlreadyBookedThisDate &&
-              ' (réservé)'}
+            bookable.userHasAlreadyBookedThisDate &&
+            ' (réservé)'}
           </li>
         ))}
         {hasMoreBookables && <li>{'Cliquez sur "j’y vais" pour voir plus de dates.'}</li>}
@@ -94,9 +94,7 @@ class VersoContentOffer extends PureComponent {
     const limitDatetime = get(bookables, '[0].bookinglimitDatetime')
 
     return (
-      <Fragment>
-        <li>{`Dès maintenant${limitDatetime ? ` et jusqu’au ${limitDatetime}` : ''}`}</li>
-      </Fragment>
+      <li>{`Dès maintenant${limitDatetime ? ` et jusqu’au ${limitDatetime}` : ''}`}</li>
     )
   }
 

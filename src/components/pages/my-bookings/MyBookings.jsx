@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 
 import MyBookingsListsContainer from './MyBookingsLists/MyBookingsListsContainer'
 import MyBookingDetailsContainer from './MyBookingDetails/MyBookingDetailsContainer'
@@ -8,7 +8,7 @@ import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import { Route, Switch } from 'react-router'
 import QrCodeContainer from './MyBookingsLists/BookingsList/QrCode/QrCodeContainer'
 
-class MyBookings extends Component {
+class MyBookings extends PureComponent {
   constructor(props) {
     super(props)
 

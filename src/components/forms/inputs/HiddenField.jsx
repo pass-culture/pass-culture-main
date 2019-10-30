@@ -1,10 +1,11 @@
-import React, { Component, Fragment } from 'react'
+import React, { PureComponent, Fragment } from 'react'
 import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
 
 import FormError from '../FormError'
 
-class HiddenField extends Component {
+
+class HiddenField extends PureComponent {
   renderField = ({ input, meta }) => {
     const { ...inputProps } = this.props
 

@@ -1,6 +1,6 @@
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import Draggable from 'react-draggable'
 
 import CardContainer from './Card/CardContainer'
@@ -10,7 +10,7 @@ import isDetailsView from '../../../../helpers/isDetailsView'
 import getUrlWithoutDetailsPart from '../../../../helpers/getUrlWithoutDetailsPart'
 import getIsTransitionDetailsUrl from '../../../../helpers/getIsTransitionDetailsUrl'
 
-class Deck extends Component {
+class Deck extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {

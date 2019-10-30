@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { toast } from 'react-toastify'
 
 import MyFavoriteDetailsContainer from './MyFavoriteDetails/MyFavoriteDetailsContainer'
@@ -13,7 +13,7 @@ const showFailModal = () => {
   toast('La suppression d’un favori a échoué, veuillez ré-essayer plus tard.')
 }
 
-class MyFavorites extends Component {
+class MyFavorites extends PureComponent {
   constructor(props) {
     super(props)
 

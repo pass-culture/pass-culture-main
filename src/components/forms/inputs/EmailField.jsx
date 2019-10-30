@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
 
@@ -14,7 +14,7 @@ const validateRequiredField = value => {
   return DEFAULT_REQUIRED_ERROR
 }
 
-class EmailField extends Component {
+class EmailField extends PureComponent {
   renderField = ({ input, meta }) => {
     const { autoComplete, disabled, id, label, name, placeholder, required, sublabel } = this.props
 

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import Draggable from 'react-draggable'
 
 import getUrlWithoutDetailsPart from '../../../../helpers/getUrlWithoutDetailsPart'
@@ -13,7 +13,7 @@ const toRectoDraggableBounds = {
   top: 0,
 }
 
-class VersoHeader extends Component {
+class VersoHeader extends PureComponent {
   handleStopDrag = event => {
     const { height, history, location, match, verticalSlideRatio } = this.props
     const shiftedDistance = -(height / 2) + getPageY(event)

@@ -1,10 +1,10 @@
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 
 import Icon from '../Icon/Icon'
 
-class Spinner extends Component {
+class Spinner extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {

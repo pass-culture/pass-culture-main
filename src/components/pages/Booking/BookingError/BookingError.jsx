@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 
 import flattenErrors from '../utils/flattenErrors'
 import Icon from '../../../layout/Icon/Icon'
 
-class BookingError extends Component {
+class BookingError extends PureComponent {
   // NOTE: hack pour contourner le no-array-index-key
   // lire plus -> https://reactjs.org/docs/lists-and-keys.html#keys
   getArrayIndex = index => `error_${index}`

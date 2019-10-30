@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { Component, Fragment } from 'react'
+import React, { PureComponent, Fragment } from 'react'
 
 import FormFooter from '../../forms/FormFooter'
 
@@ -17,7 +17,7 @@ const submitOptions = {
   url: '/connexion',
 }
 
-class SuccessView extends Component {
+class SuccessView extends PureComponent {
   renderRequestSuccessMessage = () => (
     <Fragment>
       <p className="is-medium">
