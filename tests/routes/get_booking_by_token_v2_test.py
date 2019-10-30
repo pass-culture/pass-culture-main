@@ -298,6 +298,27 @@ class Get:
 
     class Returns404:
         @clean_database
+        def when_booking_is_not_provided_at_all(self, app):
+            # Given
+            user = create_user(email='user@email.fr')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_offer_with_event_product(venue, event_name='Event Name')
+            event_occurrence = create_event_occurrence(offer)
+            stock = create_stock_from_event_occurrence(event_occurrence, price=0)
+            booking = create_booking(user, stock, venue=venue)
+
+            PcObject.save(booking)
+
+            url = '/v2/bookings/token/'
+
+            # When
+            response = TestClient(app.test_client()).get(url)
+
+            # Then
+            assert response.status_code == 404
+
+        @clean_database
         def when_token_user_has_rights_but_token_not_found(self, app):
             # Given
             admin_user = create_user(email='admin@email.fr')
