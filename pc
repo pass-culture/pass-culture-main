@@ -227,9 +227,8 @@ elif [[ "$CMD" == "psql-file" ]]; then
 
 # Restart API after removing the database and files
 elif [[ "$CMD" == "restart-backend" ]]; then
-  RUN='sudo rm -rf $ROOT_PATH/api/static/object_store_data;
-    docker-compose down --volumes;
-    cd $ROOT_PATH && docker-compose pull && docker-compose up --force-recreate'
+  source "$INFRA_SCRIPTS_PATH"start_backend.sh
+  restart_backend
 
 # Clear all data in postgresql database
 elif [[ "$CMD" == "reset-all-db" ]]; then
@@ -276,7 +275,8 @@ elif [[ "$CMD" == "set-backend" ]]; then
 
 # Start API server with database and nginx server
 elif [[ "$CMD" == "start-backend" ]]; then
-  RUN='cd $ROOT_PATH && docker-compose pull flask && docker-compose up'
+    source "$INFRA_SCRIPTS_PATH"start_backend.sh
+    start_backend
 
 # Start webapp or pro application
 elif [[ "$CMD" == "start-webapp" ]] || [[ "$CMD" == "start-pro" ]]; then
@@ -304,15 +304,8 @@ elif [[ "$CMD" == "shared" ]]; then
 # Run tests for API
 # Need start-backend to be successful and delete all data
 elif [[ "$CMD" == "test-backend" ]]; then
-  if [[ $# == 0 ]]; then
-    PYTEST_ARGS="tests"
-  else
-    PYTEST_ARGS=$*
-  fi
-  RUN='docker stop pc-postgres-pytest;
-    docker rm pc-postgres-pytest;
-    docker-compose up -d postgres-test;
-    docker exec pc-flask bash -c "cd /opt/services/flaskapp/src/ && rm -rf static/object_store_data/thumbs/* && PYTHONPATH=. pytest --color=yes -rsx -v $PYTEST_ARGS"'
+  source "$INFRA_SCRIPTS_PATH"test_backend.sh
+  test_backend $*
 
 # Run only local providers tests for API
 elif [[ "$CMD" == "test-backend-provider" ]]; then
@@ -338,6 +331,17 @@ elif [[ "$CMD" == "test-cafe-webapp" ]] || [[ "$CMD" == "test-cafe-pro" ]]; then
   else
     RUN='cd $APP_PATH && ./scripts/manager.js testcafe '"$*"
   fi
+
+# Start Metabase container with sandbox data
+elif [[ "$CMD" == "start-metabase" ]]; then
+  source "$INFRA_SCRIPTS_PATH"start-metabase.sh
+  start_metabase
+
+# Restart volumes and start Metabase container with sandbox data
+elif [[ "$CMD" == "restart-metabase" ]]; then
+  source "$INFRA_SCRIPTS_PATH"start-metabase.sh
+  restart_metabase
+
 
 # =============================================
 # Deploy commands
@@ -584,17 +588,8 @@ elif [[ "$CMD" == "api-licenses" ]]; then
 
 # Display logs from API
 elif [[ "$CMD" == "logs" ]]; then
-  if [[ "$ENV" == "development" ]]; then
-    docker-compose logs
-    exit
-  else
-    if [[ $# -gt 0 ]]; then
-      scalingo -a "$SCALINGO_APP" logs "$@"
-    else
-      scalingo -a "$SCALINGO_APP" logs -n 100
-    fi
-    exit
-  fi
+  source "$INFRA_SCRIPTS_PATH"logs.sh
+  logs $*
 
 # Display logs from Database
 elif [[ "$CMD" == "access-db-logs" ]]; then

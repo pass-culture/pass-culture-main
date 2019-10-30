@@ -1,0 +1,108 @@
+version: "3.7"
+
+services:
+  flask-metabase:
+    image: passcultureapp/api-flask:latest
+    container_name: pc-flask-metabase
+    command: >
+      bash -c "set -x;
+               cd /opt/services/flaskapp/src;
+               pip install -r ./requirements.txt;
+               python -m nltk.downloader punkt stopwords;
+               PYTHONPATH=. python scripts/pc.py install_data_for_metabase;
+               PYTHONPATH=. python scripts/pc.py sandbox -n industrial"
+    volumes:
+      - ./api:/opt/services/flaskapp/src
+    environment:
+      - DATABASE_URL=postgresql://pass_culture:passq@postgres-product-metabase/pass_culture
+      - ENV=${ENV:-development}
+      - EXPORT_TOKEN=$EXPORT_TOKEN
+      - MAILJET_API_KEY=$MAILJET_API_KEY
+      - MAILJET_API_SECRET=$MAILJET_API_SECRET
+      - OVH_BUCKET_NAME=$OVH_BUCKET_NAME
+      - OVH_TENANT_NAME=$OVH_TENANT_NAME
+      - OVH_PASSWORD=$OVH_PASSWORD
+      - OVH_USER=$OVH_USER
+      - PASS_CULTURE_IBAN=$PASS_CULTURE_IBAN
+      - PASS_CULTURE_BIC=$PASS_CULTURE_BIC
+      - PASS_CULTURE_REMITTANCE_CODE=$PASS_CULTURE_REMITTANCE_CODE
+      - PAYMENTS_DETAILS_RECIPIENTS=$PAYMENTS_DETAILS_RECIPIENTS
+      - PROFILE_REQUESTS=$PROFILE_REQUESTS
+      - WALLET_BALANCES_RECIPIENTS=$WALLET_BALANCES_RECIPIENTS
+      - TRANSACTIONS_RECIPIENTS=$TRANSACTIONS_RECIPIENTS
+      - PAYMENTS_REPORT_RECIPIENTS=$PAYMENTS_REPORT_RECIPIENTS
+      - ACTIVATION_USER_RECIPIENTS=$ACTIVATION_USER_RECIPIENTS
+      - OBJECT_STORAGE_URL=$OBJECT_STORAGE_URL
+      - DEMARCHES_SIMPLIFIEES_RIB_PROCEDURE_ID=$DEMARCHES_SIMPLIFIEES_RIB_PROCEDURE_ID
+      - DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID=$DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID
+      - DEMARCHES_SIMPLIFIEES_TOKEN=$DEMARCHES_SIMPLIFIEES_TOKEN
+      - CRON_RETRIEVE_OFFERERS_BANK_INFORMATION=$CRON_RETRIEVE_OFFERERS_BANK_INFORMATION
+      - SUPPORT_EMAIL_ADDRESS=$SUPPORT_EMAIL_ADDRESS
+      - ADMINISTRATION_EMAIL_ADDRESS=$ADMINISTRATION_EMAIL_ADDRESS
+      - DEV_EMAIL_ADDRESS=$DEV_EMAIL_ADDRESS
+      - CRON_BENEFICIARIES_ENROLLMENT=$CRON_BENEFICIARIES_ENROLLMENT
+      - PC_GOOGLE_KEY=$PC_GOOGLE_KEY
+      - DASHBOARD_GSHEET_NAME=$DASHBOARD_GSHEET_NAME
+    networks:
+      - db_nw
+    depends_on:
+      - postgres-product-metabase
+
+  postgres-product-metabase:
+    image: postgres:10.10-alpine
+    container_name: pc-postgres-product-metabase
+    volumes:
+      - postgres_data_product:/var/lib/postgresql/data
+    env_file:
+      - env_file
+    networks:
+      - db_nw
+    ports:
+      - 5435:5432
+    command: postgres -c logging_collector=on -c log_destination=stderr -c log_min_duration_statement=0 -c log_statement=all -c log_duration=on
+
+  postgres-data-metabase:
+    image: postgres:10.10-alpine
+    container_name: pc-postgres-data-metabase
+    volumes:
+      - postgres_data_metabase:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=pass_culture
+      - POSTGRES_USER=metabase
+      - POSTGRES_PASSWORD=metabase
+    networks:
+      - db_nw
+    ports:
+      - 5436:5432
+    command: postgres -c logging_collector=on -c log_destination=stderr -c log_min_duration_statement=0 -c log_statement=all -c log_duration=on
+
+
+  metabase-app:
+    container_name: pc-metabase-app
+    image: metabase/metabase
+    ports:
+      - 3002:3000
+    volumes:
+      - metabase_data:/metabase-data
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: pass_culture
+      MB_DB_PORT: 5432
+      MB_DB_USER: metabase
+      MB_DB_PASS: metabase
+      MB_DB_HOST: postgres-data-metabase
+    depends_on:
+      - postgres-data-metabase
+    links:
+      - postgres-data-metabase
+    networks:
+      - db_nw
+
+networks:
+  db_nw:
+    driver: bridge
+
+volumes:
+  postgres_data_product:
+  postgres_data_metabase:
+  metabase_data:
