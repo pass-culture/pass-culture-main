@@ -36,7 +36,7 @@ from models import ApiKey, \
     UserOfferer, \
     Venue, \
     VenueProvider
-    
+
 from models.beneficiary_import import BeneficiaryImport
 from models.beneficiary_import_status import ImportStatus, BeneficiaryImportStatus
 from models.db import db, Model

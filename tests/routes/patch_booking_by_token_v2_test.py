@@ -139,6 +139,7 @@ class Patch:
                 assert user.canBookFreeOffers is True
                 assert user.deposits[0].amount == 500
 
+
     class Returns400:
         @clean_database
         def when_there_is_not_enough_available_stock_to_validate_a_booking(self, app):
@@ -162,6 +163,7 @@ class Patch:
             # Then
             assert response.status_code == 400
             assert response.json['global'] == ["la quantité disponible pour cette offre est atteinte"]
+
 
     class Returns401:
         @clean_database
@@ -292,7 +294,7 @@ class Patch:
 
                 # Then
                 assert response.status_code == 403
-            
+
 
     class Returns404:
         class WithApiKeyAuthTest:

@@ -248,11 +248,11 @@ class Get:
 
             PcObject.save(admin_user, booking, user_offerer, offerer2)
 
-            offererApiKey = create_api_key(offerer, API_KEY_VALUE)
+            offerer2ApiKey = create_api_key(offerer2, API_KEY_VALUE)
 
-            PcObject.save(offererApiKey)
+            PcObject.save(offerer2ApiKey)
 
-            user2ApiKey = 'Bearer ' + offererApiKey.value
+            user2ApiKey = 'Bearer ' + offerer2ApiKey.value
             url = '/v2/bookings/token/{}'.format(booking.token)
 
             # When

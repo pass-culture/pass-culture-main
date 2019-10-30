@@ -295,7 +295,6 @@ def patch_booking_by_token_v2(token):
     booking_token_upper_case = token.upper()
     booking = booking_queries.find_by(
         booking_token_upper_case)
-    check_booking_is_usable(booking)
 
     offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
 
@@ -310,6 +309,8 @@ def patch_booking_by_token_v2(token):
     if check_is_activation_booking(booking):
         _activate_user(booking.user)
         send_activation_notification_email(booking.user, send_raw_email)
+
+    check_booking_is_usable(booking)
 
     booking.isUsed = True
     booking.dateUsed = datetime.utcnow()
