@@ -121,5 +121,34 @@ describe('src | components | pages | search | selectors | selectRecommendationsB
       // then
       expect(recommendations).toStrictEqual(currentSearchRecommendations)
     })
+
+    it('should retrieve recommendation with "?" in search', () => {
+      // given
+      const state = {
+        data: {
+          recommendations: [
+            {
+              id: 'AE',
+              search: 'keywords_string=MENSCH ! SONT LES HOMMES ?&page=1',
+            },
+          ],
+        },
+      }
+
+      const location = {
+        search: 'mots-cles=MENSCH ! SONT LES HOMMES %3F&page=1',
+      }
+
+      // when
+      const recommendations = selectRecommendationsBySearchQuery(state, location)
+
+      // then
+      expect(recommendations).toStrictEqual([
+        {
+          id: 'AE',
+          search: 'keywords_string=MENSCH ! SONT LES HOMMES ?&page=1',
+        },
+      ])
+    })
   })
 })

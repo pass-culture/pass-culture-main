@@ -117,7 +117,8 @@ const selectRecommendationsBySearchQuery = createSelector(
         return false
       }
       const searchRecommendationWithoutPage = recommendation.search.replace(PAGE_REGEXP, '')
-      return searchRecommendationWithoutPage === searchQuery
+
+      return searchRecommendationWithoutPage === decodeURIComponent(searchQuery)
     })
 
     return filteredRecommendations
