@@ -18,12 +18,7 @@ END_FILE_IDENTIFIER = '_p.txt'
 
 
 class TiteLiveThingDescriptions(LocalProvider):
-    help = ""
-    identifier_description = "Pas d'identifiant nécessaire" \
-                            + "(on synchronise tout)"
-    identifier_regexp = None
     name = "TiteLive (Epagine / Place des libraires.com) Descriptions"
-    object_type = Product
     can_create = False
 
     def __init__(self):

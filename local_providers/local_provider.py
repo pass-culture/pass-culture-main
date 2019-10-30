@@ -39,11 +39,6 @@ class LocalProvider(Iterator):
     def can_create(self):
         pass
 
-    @property
-    @abstractmethod
-    def help(self):
-        pass
-
     def getDeactivatedObjectIds(self):
         return []
 
@@ -65,22 +60,7 @@ class LocalProvider(Iterator):
 
     @property
     @abstractmethod
-    def identifier_description(self):
-        pass
-
-    @property
-    @abstractmethod
-    def identifier_regexp(self):
-        pass
-
-    @property
-    @abstractmethod
     def name(self):
-        pass
-
-    @property
-    @abstractmethod
-    def object_type(self):
         pass
 
     def save_thumb_from_thumb_count_to_index(self, index: int, obj: Model, thumb: BytesIO):

@@ -24,11 +24,7 @@ class NoVenueFoundException(Exception):
 
 
 class VenueWithoutSIRETBankInformationProvider(LocalProvider):
-    help = ""
-    identifier_description = ""
-    identifier_regexp = None
     name = "Demarches simplifiees / IBAN for venue without SIRET"
-    object_type = BankInformation
     can_create = True
 
     def __init__(self):

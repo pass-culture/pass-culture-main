@@ -19,11 +19,7 @@ class UnknownRibAffiliation(Exception):
 
 
 class BankInformationProvider(LocalProvider):
-    help = ""
-    identifier_description = "siren / siret"
-    identifier_regexp = None
     name = "Demarches simplifiees / Bank Information"
-    object_type = BankInformation
     can_create = True
 
     def __init__(self):

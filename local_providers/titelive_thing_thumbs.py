@@ -20,12 +20,7 @@ SYNCHONISABLE_FILE_EXTENSION = '_75.jpg'
 
 
 class TiteLiveThingThumbs(LocalProvider):
-    help = ""
-    identifier_description = "Pas d'identifiant nécessaire" \
-                            + "(on synchronise tout)"
-    identifier_regexp = None
     name = "TiteLive (Epagine / Place des libraires.com) Thumbs"
-    object_type = Product
     can_create = False
 
     def __init__(self):
