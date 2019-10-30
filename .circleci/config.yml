@@ -95,7 +95,7 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             nvm use "$NODE_VERSION"
             yarn install
-            ./scripts/build_with_fontello.sh "${CIRCLE_BRANCH}"
+            set -a; source config/run_envs/"${CIRCLE_BRANCH}" && ./scripts/build_with_fontello.sh "${CIRCLE_BRANCH}"
       - run:
           name: Deploy Webapp
           command: |
