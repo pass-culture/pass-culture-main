@@ -19,7 +19,7 @@
 				"tags": ["bookings/token"],
 				"summary": "Webservice permettant de consulter la validité d’une réservation,",
 				"description": "Le code “contremarque” ou token  est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation. <br/> Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et est transmis à cette occasion à l’utilisateur ",
-				"operationId": "findBookingsByToken",
+				"operationId": "getBookingsByToken",
 				"produces": ["application/json"],
 				"parameters": [{
 					"name": "token",
@@ -75,6 +75,49 @@
           			"410" : {
             			"description" : "La contremarque n’est plus valide car elle a déjà été validée ou a été annulée"
           			}
+				},
+				"security": [{
+					"api_key": []
+				}]
+			}
+		},
+		"/bookings/use/token/{token}": {
+			"patch": {
+				"tags": ["bookings/token"],
+				"summary": "Webservice permettant de valider une réservation.",
+				"description": "Le code “contremarque” ou token  est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation. <br/> Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et est transmis à cette occasion à l’utilisateur ",
+				"operationId": "useBookingsByToken",
+				"produces": ["application/json"],
+				"parameters": [{
+					"name": "token",
+					"in": "path",
+					"description": "Code contremarque de la réservation",
+					"required": true,
+					"style" : "simple",
+          			"explode" : false,
+					"schema" : {
+            		"type" : "string"
+          			}
+				}],
+				"responses": {
+					"204": {
+						"description": "La contremarque a bien été validée."
+					},
+					"400": {
+						"description": "La quantité disponible pour cette offre est atteinte"
+					},
+					"401" : {
+						"description" : "Authentification nécessaire"
+					},
+    			"403" : {
+      			"description" : "Vous n'avez pas les droits suffisants pour éditer cette contremarque."
+    			},
+    			"404" : {
+						"description" : "La contremarque n’existe pas"
+					},
+    			"410" : {
+      			"description" : "La contremarque n’est plus valide car elle a déjà été validée ou a été annulée"
+    			}
 				},
 				"security": [{
 					"api_key": []
