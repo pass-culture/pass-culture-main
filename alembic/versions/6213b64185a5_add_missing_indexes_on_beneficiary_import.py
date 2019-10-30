@@ -27,8 +27,8 @@ def upgrade():
 def downgrade():
     op.execute(
         '''
-        DROP INDEX IF EXISTS idx_beneficiary_import_status_beneficiaryImportId;
-        DROP INDEX IF EXISTS idx_beneficiary_import_status_authorId;
-        DROP INDEX IF EXISTS idx_beneficiary_import_beneficiaryId;
+        DROP INDEX IF EXISTS "idx_beneficiary_import_status_beneficiaryImportId";
+        DROP INDEX IF EXISTS "idx_beneficiary_import_status_authorId";
+        DROP INDEX IF EXISTS "idx_beneficiary_import_beneficiaryId";
         '''
     )
