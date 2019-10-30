@@ -115,6 +115,10 @@
     #booking-close-button {
       font-weight: 400;
     }
+
+    button + button {
+      border-left: 1px dotted $white;
+    }
   }
 
   .select-field {
