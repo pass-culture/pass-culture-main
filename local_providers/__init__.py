@@ -5,6 +5,7 @@ from local_providers.titelive_things import TiteLiveThings
 from local_providers.titelive_thing_descriptions import TiteLiveThingDescriptions
 from local_providers.titelive_thing_thumbs import TiteLiveThingThumbs
 from local_providers.demarches_simplifiees_bank_information import BankInformationProvider
+from local_providers.allocine_stocks import AllocineStocks
 
 __all__ = (
     'TiteLiveStocks',
@@ -12,5 +13,6 @@ __all__ = (
     'TiteLiveThingDescriptions',
     'TiteLiveThingThumbs',
     'BankInformationProvider',
-    'VenueWithoutSIRETBankInformationProvider'
+    'VenueWithoutSIRETBankInformationProvider',
+    'AllocineStocks'
 )

@@ -346,10 +346,11 @@ def create_product_with_thing_type(
 
 def create_product_with_event_type(
         event_name='Test event',
-        event_type=EventType.SPECTACLE_VIVANT,
+        event_type=EventType.CINEMA,
         description=None,
         dominant_color=None,
         duration_minutes=60,
+        id_at_providers= None,
         is_national=False,
         is_duo=False,
         thumb_count=0,
@@ -359,6 +360,7 @@ def create_product_with_event_type(
     product.description = description
     product.durationMinutes = duration_minutes
     product.thumbCount = thumb_count
+    product.idAtProviders = id_at_providers
     product.isNational = is_national
     product.isDuo = is_duo
     product.type = str(event_type)
@@ -911,6 +913,7 @@ def create_provider(local_class: str, is_active: bool = True, is_enable_for_pro:
     provider.name = 'My Test Provider'
     provider.enabledForPro = is_enable_for_pro
     return provider
+
 
 def create_providable_info(model_name: Model = Product,
                            id_at_providers: str = '1',
