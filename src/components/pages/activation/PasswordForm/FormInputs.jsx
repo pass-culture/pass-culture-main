@@ -17,12 +17,20 @@ const FormInputs = ({ formValues, formErrors, isLoading }) => {
   return (
     <div>
       <div className="logout-form-header">
-        <div className="logout-form-title">{'Pour commencer, choisissez votre mot de passe.'}</div>
-        <div className="logout-form-mandatory-label">{'* Champs obligatoires'}</div>
+        <div className="logout-form-title">
+          {'Pour commencer, choisissez votre mot de passe.'}
+        </div>
+        <div className="logout-form-mandatory-label">
+          {'* Champs obligatoires'}
+        </div>
       </div>
       <div className="logout-form-header">
-        <div className="activation-email-label">{'Adresse e-mail :'}</div>
-        <div className="activation-email">{email}</div>
+        <div className="activation-email-label">
+          {'Adresse e-mail :'}
+        </div>
+        <div className="activation-email">
+          {email}
+        </div>
       </div>
       <PasswordField
         disabled={isLoading}

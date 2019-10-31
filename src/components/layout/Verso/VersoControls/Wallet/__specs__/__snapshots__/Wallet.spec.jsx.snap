@@ -30,7 +30,6 @@ ShallowWrapper {
           className="verso-wallet-amount"
         >
           10
-           
           €
         </div>,
       ],
@@ -57,7 +56,6 @@ ShallowWrapper {
         "props": Object {
           "children": Array [
             10,
-            " ",
             "€",
           ],
           "className": "verso-wallet-amount",
@@ -65,7 +63,6 @@ ShallowWrapper {
         "ref": null,
         "rendered": Array [
           10,
-          " ",
           "€",
         ],
         "type": "div",
@@ -89,7 +86,6 @@ ShallowWrapper {
             className="verso-wallet-amount"
           >
             10
-             
             €
           </div>,
         ],
@@ -116,7 +112,6 @@ ShallowWrapper {
           "props": Object {
             "children": Array [
               10,
-              " ",
               "€",
             ],
             "className": "verso-wallet-amount",
@@ -124,7 +119,6 @@ ShallowWrapper {
           "ref": null,
           "rendered": Array [
             10,
-            " ",
             "€",
           ],
           "type": "div",

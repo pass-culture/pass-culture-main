@@ -7,10 +7,14 @@ const BookingHeader = ({ offer }) => {
   return (
     <header className="flex-0">
       <h1 className="title">
-        <span>{title}</span>
+        <span>
+          {title}
+        </span>
       </h1>
       <h2 className="subtitle">
-        <span>{subtitle}</span>
+        <span>
+          {subtitle}
+        </span>
       </h2>
     </header>
   )

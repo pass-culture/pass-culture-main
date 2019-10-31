@@ -28,7 +28,9 @@ class FormFooter extends PureComponent {
       id: linkOptions.id,
       to: linkOptions.url,
     }
-    return <Link {...attributes}>{linkOptions.label}</Link>
+    return (<Link {...attributes}>
+      {linkOptions.label}
+    </Link>)
   }
 
   renderExternalLink = linkOptions => {
@@ -38,7 +40,9 @@ class FormFooter extends PureComponent {
       id: linkOptions.id,
       target: linkOptions.target,
     }
-    return <a {...attributes}>{linkOptions.label}</a>
+    return (<a {...attributes}>
+      {linkOptions.label}
+    </a>)
   }
 
   render() {

@@ -1,7 +1,4 @@
-import {
-  isDiscoveryStartupUrl,
-  MINIMUM_DELAY_BEFORE_RELOAD_RECOMMENDATION_3_HOURS,
-} from '../utils'
+import { isDiscoveryStartupUrl, MINIMUM_DELAY_BEFORE_RELOAD_RECOMMENDATION_3_HOURS } from '../utils'
 
 describe('src | components | pages | discovery | tests | helpers', () => {
   describe('handle MINIMUM_DELAY_BEFORE_RELOAD_RECOMMENDATION_3_HOURS', () => {

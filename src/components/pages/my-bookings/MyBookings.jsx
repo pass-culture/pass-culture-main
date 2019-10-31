@@ -57,21 +57,19 @@ class MyBookings extends PureComponent {
         <Switch>
           <Route
             exact
-            path={'/reservations'}
+            path="/reservations"
           >
             <MyBookingsListsContainer isEmpty={hasNoBookings} />
           </Route>
           <Route
             exact
-            path={
-              '/reservations/:details(details|transition)/:bookingId([A-Z0-9]+)/:booking(reservation)?/:cancellation(annulation)?/:confirmation(confirmation)?'
-            }
+            path="/reservations/:details(details|transition)/:bookingId([A-Z0-9]+)/:booking(reservation)?/:cancellation(annulation)?/:confirmation(confirmation)?"
           >
             <MyBookingDetailsContainer bookingPath="/reservations/:details(details|transition)/:bookingId([A-Z0-9]+)/:booking(reservation)/:cancellation(annulation)?/:confirmation(confirmation)?" />
           </Route>
           <Route
             exact
-            path={'/reservations/:details(details)/:bookingId([A-Z0-9]+)/:qrcode(qrcode)'}
+            path="/reservations/:details(details)/:bookingId([A-Z0-9]+)/:qrcode(qrcode)"
           >
             {!isQrCodeFeatureDisabled && <QrCodeContainer />}
           </Route>

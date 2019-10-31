@@ -45,7 +45,9 @@ class SuccessView extends PureComponent {
 
     return (
       <div className="logout-form-container">
-        <div className="is-italic fs22">{renderSuccessMessage()}</div>
+        <div className="is-italic fs22">
+          {renderSuccessMessage()}
+        </div>
         <FormFooter
           cancel={(!token && cancelOptions) || null}
           submit={submitOptions}

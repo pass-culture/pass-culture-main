@@ -181,7 +181,9 @@ class FilterControls extends PureComponent {
                   onClick={this.handleOnClickFilterButton}
                   type="submit"
                 >
-                  <span className="is-bold">{'Filtrer'}</span>
+                  <span className="is-bold">
+                    {'Filtrer'}
+                  </span>
                 </button>
               </div>
             </div>

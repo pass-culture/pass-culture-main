@@ -28,7 +28,7 @@ fixture('En étant sur la recherche,').beforeEach(async t => {
   await t.useRole(userRole).navigateTo(baseUrl)
 })
 
-test("Je peux chercher une offre par titre (mot-clé) et j'obtiens des résultats", async t => {
+test("je peux chercher une offre par titre (mot-clé) et j'obtiens des résultats", async t => {
   // given
   const keyword = 'ravage'
   const keywordUpper = keyword.toLocaleUpperCase()
@@ -44,7 +44,7 @@ test("Je peux chercher une offre par titre (mot-clé) et j'obtiens des résultat
   await t.expect(resultsTitle.innerText).match(expected)
 })
 
-test('Je peux cliquer sur une icône chevron pour accéder au détail', async t => {
+test('je peux cliquer sur une icône chevron pour accéder au détail', async t => {
   // given
   const keyword = 'ravage'
 
@@ -64,7 +64,7 @@ test('Je peux cliquer sur une icône chevron pour accéder au détail', async t 
     .ok()
 })
 
-test('Je peux revenir en arrière en cliquant sur le bouton retour', async t => {
+test('je peux revenir en arrière en cliquant sur le bouton retour', async t => {
   // given
   const keyword = 'ravage'
 

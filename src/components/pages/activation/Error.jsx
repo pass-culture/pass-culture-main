@@ -11,14 +11,18 @@ const Error = () => {
   return (
     <div className="logout-form-container error">
       <div>
-        <p className="fs20 mb28">{'Il semblerait que le lien cliqué soit incorrect.'}</p>
+        <p className="fs20 mb28">
+          {'Il semblerait que le lien cliqué soit incorrect.'}
+        </p>
         <MailToLink
           className="no-background border-all rd4 py12 px18 is-inline-block is-white-text text-center fs16"
           email={SUPPORT_EMAIL}
           headers={emailHeaders}
           obfuscate
         >
-          <span>{'Contactez-nous'}</span>
+          <span>
+            {'Contactez-nous'}
+          </span>
         </MailToLink>
       </div>
     </div>

@@ -30,15 +30,21 @@ const ProfileUpdateSuccess = ({ config, match }) => {
             className="icon-legacy-check-circled big-success-icon"
             title=""
           />
-          <span className="is-block mt24">{`${item.title} a bien été modifié`}</span>
+          <span className="is-block mt24">
+            {`${item.title} a bien été modifié`}
+          </span>
         </h2>
-        <div className="mt12">{'Pensez à l’utiliser lors de votre prochaine connexion'}</div>
+        <div className="mt12">
+          {'Pensez à l’utiliser lors de votre prochaine connexion'}
+        </div>
         <div className="mt24 is-bold fs16">
           <Link
             className="is-red-text"
             to="/profil"
           >
-            <span>{'Retourner sur mon compte'}</span>
+            <span>
+              {'Retourner sur mon compte'}
+            </span>
           </Link>
         </div>
       </main>

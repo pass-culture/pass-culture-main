@@ -29,7 +29,9 @@ const MonPassCulture = ({ currentUser }) => {
         >
           {`Il reste ${allWallet} €`}
         </b>
-        <span className="is-block fs14">{'sur votre pass Culture'}</span>
+        <span className="is-block fs14">
+          {'sur votre pass Culture'}
+        </span>
       </div>
       <div className="text-containers mt12 py12 mr8">
         <div
@@ -37,7 +39,9 @@ const MonPassCulture = ({ currentUser }) => {
           id="profile-physical-wallet-value"
         >
           {'Jusqu’à '}
-          <b>{`${physicalAvailable} €`}</b>
+          <b>
+            {`${physicalAvailable} €`}
+          </b>
           {' pour les biens culturels'}
         </div>
         <div
@@ -45,7 +49,9 @@ const MonPassCulture = ({ currentUser }) => {
           id="profile-digital-wallet-value"
         >
           {'Jusqu’à '}
-          <b>{`${digitalAvailable} €`}</b>
+          <b>
+            {`${digitalAvailable} €`}
+          </b>
           {' pour les offres numériques'}
         </div>
         {endValidityDate && (

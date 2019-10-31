@@ -7,12 +7,20 @@ const QrCode = ({ humanizedBeginningDatetime, offerName, qrCode, token, venueNam
   <div className="qr-code">
     <div className="qr-code-white-card">
       <div className="qr-code-header">
-        <div className="qr-code-offer-name">{offerName}</div>
-        <div className="qr-code-offer-beginning-datetime">{humanizedBeginningDatetime}</div>
-        <div className="qr-code-venue-name">{venueName}</div>
+        <div className="qr-code-offer-name">
+          {offerName}
+        </div>
+        <div className="qr-code-offer-beginning-datetime">
+          {humanizedBeginningDatetime}
+        </div>
+        <div className="qr-code-venue-name">
+          {venueName}
+        </div>
       </div>
 
-      <div className="qr-code-token">{token.toLowerCase()}</div>
+      <div className="qr-code-token">
+        {token.toLowerCase()}
+      </div>
       <div className="qr-code-image">
         <img
           alt=""

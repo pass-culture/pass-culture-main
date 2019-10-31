@@ -16,7 +16,7 @@ const baseURL = `${ROOT_PATH}connexion`
 
 fixture("En étant déconnecté de l'application")
 
-test('Je clique sur "mot de passe oublié", je remplis le formulaire avec une adresse email et je suis redirigé·e vers la page de confirmation', async t => {
+test('je clique sur "mot de passe oublié", je remplis le formulaire avec une adresse email et je suis redirigé·e vers la page de confirmation', async t => {
   // given
   const { user } = await fetchSandbox(
     'webapp_09_lost_password',
@@ -42,7 +42,7 @@ test('Je clique sur "mot de passe oublié", je remplis le formulaire avec une ad
   await t.expect(location.pathname).eql('/mot-de-passe-perdu/success')
 })
 
-test('Je clique sur le lien reçu par email, je saisis mon nouveau mot de passe, et je suis redirigé·e vers la page de confirmation', async t => {
+test('je clique sur le lien reçu par email, je saisis mon nouveau mot de passe, et je suis redirigé·e vers la page de confirmation', async t => {
   // given
   const { user } = await fetchSandbox(
     'webapp_09_lost_password',

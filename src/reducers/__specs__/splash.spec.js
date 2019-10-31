@@ -1,6 +1,6 @@
 import splash, { closeSplash, showSplash, SHOW_SPLASH, CLOSE_SPLASH } from '../splash'
 
-describe('src | reducers | splash  ', () => {
+describe('src | reducers | splash', () => {
   it('should return the initial state by default', () => {
     // given
     const initialState = {
@@ -15,7 +15,7 @@ describe('src | reducers | splash  ', () => {
     // then
     expect(updatedState).toStrictEqual(initialState)
   })
-  it('should set state when action is CLOSE_SPLASH ', () => {
+  it('should set state when action is CLOSE_SPLASH', () => {
     // given
     const state = {}
     const action = { type: CLOSE_SPLASH }
@@ -28,7 +28,7 @@ describe('src | reducers | splash  ', () => {
     expect(updatedState).toStrictEqual(expected)
   })
 
-  it('should set state when action is SHOW_SPLASH ', () => {
+  it('should set state when action is SHOW_SPLASH', () => {
     // given
     const state = {}
     const action = { type: SHOW_SPLASH }

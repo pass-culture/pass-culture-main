@@ -35,7 +35,7 @@ describe('src | selectors | selectFavoriteByOfferId', () => {
     const result = selectFavoriteByOfferId(state, offerId)
 
     // then
-    expect(result).toStrictEqual(undefined)
+    expect(result).toBeUndefined()
   })
 
   it('should return favorites that have offerId', () => {

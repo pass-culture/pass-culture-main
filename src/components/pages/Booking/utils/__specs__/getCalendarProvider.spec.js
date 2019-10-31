@@ -4,46 +4,62 @@ import getCalendarProvider from '../getCalendarProvider'
 
 describe('src | components | booking | utils', () => {
   it('return empty array if invalid args', () => {
-    const expected = []
     let value = false
     let result = getCalendarProvider(value)
-    expect(result).toStrictEqual(expected)
+    expect(result).toStrictEqual([])
+
     value = true
     result = getCalendarProvider(value)
-    expect(result).toStrictEqual(expected)
+    expect(result).toStrictEqual([])
+
     value = {}
     result = getCalendarProvider(value)
-    expect(result).toStrictEqual(expected)
+    expect(result).toStrictEqual([])
+
     value = null
     result = getCalendarProvider(value)
-    expect(result).toStrictEqual(expected)
+    expect(result).toStrictEqual([])
+
     value = undefined
     result = getCalendarProvider(value)
-    expect(result).toStrictEqual(expected)
+    expect(result).toStrictEqual([])
+
     value = 'a string'
     result = getCalendarProvider(value)
-    expect(result).toStrictEqual(expected)
+    expect(result).toStrictEqual([])
   })
+
   it('return empty array if args is missing bookables', () => {
-    const expected = []
     const value = {}
+
+    // when
     const result = getCalendarProvider(value)
-    expect(result).toStrictEqual(expected)
+
+    // then
+    expect(result).toStrictEqual([])
   })
+
   it('return empty array if bookables is empty array', () => {
-    const expected = []
     const value = { bookables: [] }
+
+    // when
     const result = getCalendarProvider(value)
-    expect(result).toStrictEqual(expected)
+
+    // then
+    expect(result).toStrictEqual([])
   })
+
   it('return empty array if bookables has no { beginningDatetime }', () => {
-    const expected = []
     const value = { bookables: [undefined, null, false, {}, []] }
+
+    // when
     const result = getCalendarProvider(value)
-    expect(result).toStrictEqual(expected)
+
+    // then
+    expect(result).toStrictEqual([])
   })
+
   it('return empty array if beginningDatetime not a moment object', () => {
-    const expected = []
     const value = {
       bookables: [
         { beginningDatetime: {} },
@@ -54,17 +70,25 @@ describe('src | components | booking | utils', () => {
         { beginningDatetime: new Date().toISOString() },
       ],
     }
+
+    // when
     const result = getCalendarProvider(value)
-    expect(result).toStrictEqual(expected)
+
+    // then
+    expect(result).toStrictEqual([])
   })
+
   it('return filtered array with beginningDatetime', () => {
     const mom = moment()
     const mom2 = moment()
-    const expected = [mom2, mom]
     const value = {
       bookables: [{ beginningDatetime: mom2 }, { beginningDatetime: mom }],
     }
+
+    // when
     const result = getCalendarProvider(value)
-    expect(result).toStrictEqual(expected)
+
+    // then
+    expect(result).toStrictEqual([mom2, mom])
   })
 })

@@ -36,7 +36,7 @@ class VersoHeader extends PureComponent {
         style={{ backgroundColor }}
       >
         {type && <img
-          alt={''}
+          alt=""
           id="verso-offer-type-picto"
           src={offerPictoPath}
                  />}

@@ -61,7 +61,7 @@ describe('src | components | pages | search | FilterControls | FilterByDates', (
       expect(wrapper.state(['pickedDate'])).toBe(pickedDate)
     })
 
-    it('should remove the input date ', () => {
+    it('should remove the input date', () => {
       // given
       const wrapper = shallow(<FilterByDates {...props} />)
 
@@ -120,7 +120,7 @@ describe('src | components | pages | search | FilterControls | FilterByDates', (
         expect(props.filterActions.remove).toHaveBeenCalledWith('jours', day, undefined)
       })
 
-      it('shoud add another day not added yet to query with callback undefined ', () => {
+      it('shoud add another day not added yet to query with callback undefined', () => {
         // given
         const day = '0-1'
         const callback = undefined

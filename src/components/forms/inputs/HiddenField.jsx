@@ -4,7 +4,6 @@ import { Field } from 'react-final-form'
 
 import FormError from '../FormError'
 
-
 class HiddenField extends PureComponent {
   renderField = ({ input, meta }) => {
     const { ...inputProps } = this.props

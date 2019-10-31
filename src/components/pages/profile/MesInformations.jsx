@@ -28,7 +28,9 @@ class MesInformations extends React.PureComponent {
             <span className="pc-label pb3 is-block is-grey-text is-uppercase fs13 is-medium">
               {label}
             </span>
-            {value && <span className="is-block is-black-text fs18 is-bold">{value}</span>}
+            {value && <span className="is-block is-black-text fs18 is-bold">
+              {value}
+            </span>}
             {!value && (
               <span className="is-block is-grey-text fs18">
                 {mainPlaceholder || EMPTY_FIELD_PLACEHOLDER}
@@ -59,8 +61,12 @@ class MesInformations extends React.PureComponent {
         <h3 className="dotted-bottom-primary is-primary-text is-uppercase pb6 px12 fs15 is-italic fs15 is-normal">
           {'Mes Informations'}
         </h3>
-        <div className="px12 pc-list">{fields.map(this.renderInformation)}</div>
-        <div className="app-version">{`v${version}`}</div>
+        <div className="px12 pc-list">
+          {fields.map(this.renderInformation)}
+        </div>
+        <div className="app-version">
+          {`v${version}`}
+        </div>
       </div>
     )
   }

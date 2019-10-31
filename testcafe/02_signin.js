@@ -20,7 +20,7 @@ fixture("Suite à l'activation de mon compte,")
     )
   })
 
-test("Je me connecte et j'accède à la page découverte", async t => {
+test("je me connecte et j'accède à la page découverte", async t => {
   // given
   const { user } = t.ctx.sandbox
   const { email, password } = user

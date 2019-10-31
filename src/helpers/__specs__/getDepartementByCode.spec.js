@@ -1,6 +1,6 @@
 import getDepartementByCode from '../getDepartementByCode'
 
-describe('getDepartementByCode ', () => {
+describe('getDepartementByCode', () => {
   it('should return Finistère name', () => {
     expect(getDepartementByCode('29')).toBe('Finistère')
   })

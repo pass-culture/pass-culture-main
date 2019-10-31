@@ -1,6 +1,6 @@
 import parseSubmitErrors from '../parseSubmitErrors'
 
-describe('src | components | forms | utils | parseSubmitErrors ', () => {
+describe('src | components | forms | utils | parseSubmitErrors', () => {
   it('tODO Remplire ce test', () => {
     // given
     const errors = {

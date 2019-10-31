@@ -2,7 +2,7 @@ import strings from '../strings'
 import validateMatchingFields from '../validateMatchingFields'
 
 describe('src | components | forms | validators | validateMatchingFields', () => {
-  it('it expect to return undefined - mainvalue is falsey', () => {
+  it('expect to return undefined - mainvalue is falsey', () => {
     // given
     const value = ''
     const mainvalue = ''
@@ -13,7 +13,7 @@ describe('src | components | forms | validators | validateMatchingFields', () =>
     expect(result).toStrictEqual(expected)
   })
 
-  it('it expect to return default error - main value is a password, value is not valid', () => {
+  it('expect to return default error - main value is a password, value is not valid', () => {
     // given
     const mainvalue = '#1234Hello12'
     const value = ''
@@ -24,7 +24,7 @@ describe('src | components | forms | validators | validateMatchingFields', () =>
     expect(result).toStrictEqual(expected)
   })
 
-  it('it expect to return default error - main value is a password, value is not valid (changer le titre du test)', () => {
+  it('expect to return default error - main value is a password, value is not valid (changer le titre du test)', () => {
     // given
     const mainvalue = '#1234Hello12'
     const value = '      '
@@ -35,7 +35,7 @@ describe('src | components | forms | validators | validateMatchingFields', () =>
     expect(result).toStrictEqual(expected)
   })
 
-  it('it expect to return undefined - values are passwords and equals', () => {
+  it('expect to return undefined - values are passwords and equals', () => {
     // given
     const value = '#1234Hello12'
     const mainvalue = '#1234Hello12'
@@ -46,7 +46,7 @@ describe('src | components | forms | validators | validateMatchingFields', () =>
     expect(result).toStrictEqual(expected)
   })
 
-  it('it expect to return not matching error - values are passwords but are not equals', () => {
+  it('expect to return not matching error - values are passwords but are not equals', () => {
     // given
     const value = '#1234Hello12'
     const mainvalue = '#1234Hello43'

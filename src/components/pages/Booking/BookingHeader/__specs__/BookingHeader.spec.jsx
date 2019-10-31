@@ -3,7 +3,7 @@ import { shallow } from 'enzyme'
 
 import BookingHeader from '../BookingHeader'
 
-describe('src | components | layout | Booking | BookingHeader ', () => {
+describe('src | components | layout | Booking | BookingHeader', () => {
   let props
 
   beforeEach(() => {

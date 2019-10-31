@@ -22,7 +22,7 @@ fixture('Sur la page découverte,').beforeEach(async t => {
   await t.useRole(userRole)
 })
 
-test('Je peux parcourir les offres de gauche à droite et de droite à gauche', async t => {
+test('je peux parcourir les offres de gauche à droite et de droite à gauche', async t => {
   await t.navigateTo(`${ROOT_PATH}decouverte`)
   await t.expect(nextButton.visible).ok()
 
@@ -35,14 +35,14 @@ test('Je peux parcourir les offres de gauche à droite et de droite à gauche', 
   await t.expect(getPageUrl()).notEql(urlAtStart)
 })
 
-test('Je peux afficher le verso des cartes en cliquant sur le bouton "haut"', async t => {
+test('je peux afficher le verso des cartes en cliquant sur le bouton "haut"', async t => {
   await t.click(showVerso)
   await t.expect(versoDiv.hasClass('flipped')).ok()
   await t.click(closeVersoLink)
   await t.expect(versoDiv.hasClass('flipped')).notOk()
 })
 
-test('Je peux afficher/cacher le verso des cartes en glissant vers le haut/bas', async t => {
+test('je peux afficher/cacher le verso des cartes en glissant vers le haut/bas', async t => {
   await t.drag(currentCard, 0, -100)
   await t.expect(versoDiv.hasClass('flipped')).ok()
 

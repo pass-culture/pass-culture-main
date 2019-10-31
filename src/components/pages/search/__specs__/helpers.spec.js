@@ -250,8 +250,8 @@ describe('src | components | pages | search | utils', () => {
     })
   })
 
-  describe('translateBrowserUrlToApiUrl ', () => {
-    describe('src | utils | translateBrowserUrlToApiUrl ', () => {
+  describe('translateBrowserUrlToApiUrl', () => {
+    describe('src | utils | translateBrowserUrlToApiUrl', () => {
       it('should return object with french key', () => {
         const queryString = {
           categories: 'Applaudir',

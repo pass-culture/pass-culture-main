@@ -54,7 +54,7 @@ class BookingFormContent extends PureComponent {
         name="date"
         onChange={this.handleChangeAndRemoveCalendar(input)}
         readOnly={calendarDates.length === 1}
-        selected={value}
+        selected={value === '' ? null : value}
       />
     )
   }
@@ -117,8 +117,12 @@ class BookingFormContent extends PureComponent {
 
         {displayPriceWarning && (
           <p className="text-center fs22">
-            <span className="is-block">{'Vous êtes sur le point de réserver'}</span>
-            <span className="is-block">{`cette offre pour ${computedPrice} €.`}</span>
+            <span className="is-block">
+              {'Vous êtes sur le point de réserver'}
+            </span>
+            <span className="is-block">
+              {`cette offre pour ${computedPrice} €.`}
+            </span>
           </p>
         )}
       </form>

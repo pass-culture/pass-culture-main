@@ -6,7 +6,7 @@ import geolocation, {
 } from '../geolocation'
 
 // geolocation = reducer
-describe('src | reducers | geolocation  ', () => {
+describe('src | reducers | geolocation', () => {
   it('should return the initial state by default', () => {
     // given
     const action = {}
@@ -23,7 +23,7 @@ describe('src | reducers | geolocation  ', () => {
     expect(updatedState).toStrictEqual(expected)
   })
 
-  it('should set state when action is SET_GEOLOCATION_POSITION ', () => {
+  it('should set state when action is SET_GEOLOCATION_POSITION', () => {
     // given
     const state = {}
     const action = {
@@ -43,7 +43,7 @@ describe('src | reducers | geolocation  ', () => {
     expect(updatedState).toStrictEqual(expected)
   })
 
-  it('should set state when action is SET_GEOLOCATION_WATCH_ID ', () => {
+  it('should set state when action is SET_GEOLOCATION_WATCH_ID', () => {
     // given
     const state = {}
     const action = {

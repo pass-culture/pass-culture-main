@@ -74,12 +74,7 @@ ShallowWrapper {
             onStart={[Function]}
             onStop={[Function]}
             position={null}
-            speed={
-              Object {
-                "x": 1,
-                "y": 1,
-              }
-            }
+            scale={1}
             transform={null}
           >
             <div
@@ -177,12 +172,7 @@ ShallowWrapper {
               onStart={[Function]}
               onStop={[Function]}
               position={null}
-              speed={
-                Object {
-                  "x": 1,
-                  "y": 1,
-                }
-              }
+              scale={1}
               transform={null}
             >
               <div
@@ -285,12 +275,7 @@ ShallowWrapper {
               onStart={[Function]}
               onStop={[Function]}
               position={null}
-              speed={
-                Object {
-                  "x": 1,
-                  "y": 1,
-                }
-              }
+              scale={1}
               transform={null}
             >
               <div
@@ -416,10 +401,7 @@ ShallowWrapper {
               "onStart": [Function],
               "onStop": [Function],
               "position": null,
-              "speed": Object {
-                "x": 1,
-                "y": 1,
-              },
+              "scale": 1,
               "transform": null,
             },
             "ref": null,
@@ -674,12 +656,7 @@ ShallowWrapper {
               onStart={[Function]}
               onStop={[Function]}
               position={null}
-              speed={
-                Object {
-                  "x": 1,
-                  "y": 1,
-                }
-              }
+              scale={1}
               transform={null}
             >
               <div
@@ -777,12 +754,7 @@ ShallowWrapper {
                 onStart={[Function]}
                 onStop={[Function]}
                 position={null}
-                speed={
-                  Object {
-                    "x": 1,
-                    "y": 1,
-                  }
-                }
+                scale={1}
                 transform={null}
               >
                 <div
@@ -885,12 +857,7 @@ ShallowWrapper {
                 onStart={[Function]}
                 onStop={[Function]}
                 position={null}
-                speed={
-                  Object {
-                    "x": 1,
-                    "y": 1,
-                  }
-                }
+                scale={1}
                 transform={null}
               >
                 <div
@@ -1016,10 +983,7 @@ ShallowWrapper {
                 "onStart": [Function],
                 "onStop": [Function],
                 "position": null,
-                "speed": Object {
-                  "x": 1,
-                  "y": 1,
-                },
+                "scale": 1,
                 "transform": null,
               },
               "ref": null,

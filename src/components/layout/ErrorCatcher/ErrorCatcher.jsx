@@ -36,14 +36,18 @@ class ErrorCatcher extends PureComponent {
     return (
       <div id="error-catcher">
         <div className="flex-1 flex-rows flex-center">
-          <h2 className="fs20 is-normal">{'Une erreur est survenue.'}</h2>
+          <h2 className="fs20 is-normal">
+            {'Une erreur est survenue.'}
+          </h2>
           <p className="mt12">
             <button
               className="no-background border-all rd4 py12 px18 is-inline-block is-white-text text-center fs16"
               onClick={this.handleOnClick}
               type="button"
             >
-              <span>{'Retour aux offres'}</span>
+              <span>
+                {'Retour aux offres'}
+              </span>
             </button>
           </p>
         </div>

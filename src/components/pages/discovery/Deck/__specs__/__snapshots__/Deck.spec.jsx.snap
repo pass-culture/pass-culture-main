@@ -100,6 +100,7 @@ ShallowWrapper {
               "y": 0,
             }
           }
+          scale={1}
           speed={
             Object {
               "x": 5,
@@ -179,6 +180,7 @@ ShallowWrapper {
             "x": NaN,
             "y": 0,
           },
+          "scale": 1,
           "speed": Object {
             "x": 5,
           },
@@ -298,6 +300,7 @@ ShallowWrapper {
                 "y": 0,
               }
             }
+            scale={1}
             speed={
               Object {
                 "x": 5,
@@ -377,6 +380,7 @@ ShallowWrapper {
               "x": NaN,
               "y": 0,
             },
+            "scale": 1,
             "speed": Object {
               "x": 5,
             },

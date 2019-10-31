@@ -34,5 +34,4 @@ Overlay.propTypes = {
   isVisible: PropTypes.bool.isRequired,
 }
 
-
 export default Overlay

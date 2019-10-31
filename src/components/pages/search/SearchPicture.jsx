@@ -9,7 +9,9 @@ const SearchPicture = ({ category }) => (
       alt={`Rechercher des offres de type ${category}`}
       src={`${ROOT_PATH}/icons/img-${category}.png`}
     />
-    <span className="is-absolute text-left fs15">{category}</span>
+    <span className="is-absolute text-left fs15">
+      {category}
+    </span>
   </div>
 )
 

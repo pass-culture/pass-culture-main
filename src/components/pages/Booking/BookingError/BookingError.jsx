@@ -41,7 +41,9 @@ class BookingError extends PureComponent {
           className="fs20"
           id="booking-error-reasons"
         >
-          <p className="mb36">{'Aïe, il y a un petit problème...'}</p>
+          <p className="mb36">
+            {'Aïe, il y a un petit problème...'}
+          </p>
           {entries && entries.map(this.renderErrorReason)}
         </div>
       </div>

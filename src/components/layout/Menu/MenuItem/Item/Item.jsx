@@ -11,7 +11,9 @@ const Item = ({ icon, title }) => (
         svg={`ico-${icon}`}
       />
     </span>
-    <span className="flex-1 is-medium">{title}</span>
+    <span className="flex-1 is-medium">
+      {title}
+    </span>
   </Fragment>
 )
 

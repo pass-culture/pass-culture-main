@@ -130,8 +130,7 @@ ShallowWrapper {
               target="_blank"
             >
               <span>
-                1
-                 
+                1 
               </span>
               <Icon
                 alt="Géolocalisation dans Open Street Map"
@@ -395,8 +394,7 @@ ShallowWrapper {
                 target="_blank"
               >
                 <span>
-                  1
-                   
+                  1 
                 </span>
                 <Icon
                   alt="Géolocalisation dans Open Street Map"
@@ -443,8 +441,7 @@ ShallowWrapper {
                   target="_blank"
                 >
                   <span>
-                    1
-                     
+                    1 
                   </span>
                   <Icon
                     alt="Géolocalisation dans Open Street Map"
@@ -526,8 +523,7 @@ ShallowWrapper {
                 "props": Object {
                   "children": Array [
                     <span>
-                      1
-                       
+                      1 
                     </span>,
                     <Icon
                       alt="Géolocalisation dans Open Street Map"
@@ -548,16 +544,10 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "host",
                     "props": Object {
-                      "children": Array [
-                        "1",
-                        " ",
-                      ],
+                      "children": "1 ",
                     },
                     "ref": null,
-                    "rendered": Array [
-                      "1",
-                      " ",
-                    ],
+                    "rendered": "1 ",
                     "type": "span",
                   },
                   Object {
@@ -658,8 +648,7 @@ ShallowWrapper {
                 target="_blank"
               >
                 <span>
-                  1
-                   
+                  1 
                 </span>
                 <Icon
                   alt="Géolocalisation dans Open Street Map"
@@ -923,8 +912,7 @@ ShallowWrapper {
                   target="_blank"
                 >
                   <span>
-                    1
-                     
+                    1 
                   </span>
                   <Icon
                     alt="Géolocalisation dans Open Street Map"
@@ -971,8 +959,7 @@ ShallowWrapper {
                     target="_blank"
                   >
                     <span>
-                      1
-                       
+                      1 
                     </span>
                     <Icon
                       alt="Géolocalisation dans Open Street Map"
@@ -1054,8 +1041,7 @@ ShallowWrapper {
                   "props": Object {
                     "children": Array [
                       <span>
-                        1
-                         
+                        1 
                       </span>,
                       <Icon
                         alt="Géolocalisation dans Open Street Map"
@@ -1076,16 +1062,10 @@ ShallowWrapper {
                       "key": undefined,
                       "nodeType": "host",
                       "props": Object {
-                        "children": Array [
-                          "1",
-                          " ",
-                        ],
+                        "children": "1 ",
                       },
                       "ref": null,
-                      "rendered": Array [
-                        "1",
-                        " ",
-                      ],
+                      "rendered": "1 ",
                       "type": "span",
                     },
                     Object {

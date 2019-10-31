@@ -4,7 +4,7 @@ import {
 } from '../helpers'
 
 describe('src | hocs | with-login | helpers', () => {
-  describe('getRedirectToCurrentLocationOrDiscovery', () => {
+  describe('getRedirectToCurrentLocationOrTypeform', () => {
     it('should return undefined when user has filled the Typeform', () => {
       // given
       const props = {
@@ -19,7 +19,7 @@ describe('src | hocs | with-login | helpers', () => {
       const result = getRedirectToCurrentLocationOrTypeform(props)
 
       // when
-      expect(result).toEqual(undefined)
+      expect(result).toBeUndefined()
     })
 
     it('should return typeform location when user has not filled the Typeform', () => {
@@ -39,6 +39,7 @@ describe('src | hocs | with-login | helpers', () => {
       expect(result).toStrictEqual('/typeform')
     })
   })
+
   describe('getRedirectToCurrentLocationOrDiscovery', () => {
     it('should return discovery location when user has filled the Typeform', () => {
       // given
@@ -71,7 +72,7 @@ describe('src | hocs | with-login | helpers', () => {
       const result = getRedirectToCurrentLocationOrDiscovery(props)
 
       // when
-      expect(result).toEqual(undefined)
+      expect(result).toBeUndefined()
     })
   })
 })

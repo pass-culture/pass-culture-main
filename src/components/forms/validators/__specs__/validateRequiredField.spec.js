@@ -2,7 +2,7 @@ import strings from '../strings'
 import validateRequiredField from '../validateRequiredField'
 
 describe('src | components | forms | validators | validateRequiredField', () => {
-  it('it expect to return default error with a string value', () => {
+  it('expect to return default error with a string value', () => {
     // given
     const expected = strings.DEFAULT_REQUIRED_ERROR
     let value = ''
@@ -50,7 +50,7 @@ describe('src | components | forms | validators | validateRequiredField', () => 
     expect(result).toStrictEqual(expected)
   })
 
-  it('it expect to return OK (undefined) with not a string', () => {
+  it('expect to return OK (undefined) with not a string', () => {
     // given
     const expected = undefined
     let value = []
@@ -107,7 +107,7 @@ describe('src | components | forms | validators | validateRequiredField', () => 
     expect(result).toStrictEqual(expected)
   })
 
-  it('it expect to return OK (undefined) with a string', () => {
+  it('expect to return OK (undefined) with a string', () => {
     // given
     const expected = undefined
     let value = 'a string from a text input'

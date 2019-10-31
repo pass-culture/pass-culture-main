@@ -3,9 +3,12 @@ import PropTypes from 'prop-types'
 
 const Wallet = ({ value }) => (
   <div className="verso-wallet">
-    <div className="verso-wallet-label">{'Mon pass'}</div>
+    <div className="verso-wallet-label">
+      {'Mon pass'}
+    </div>
     <div className="verso-wallet-amount">
-      {value}&nbsp;{'€'}
+      {value}
+      {'€'}
     </div>
   </div>
 )

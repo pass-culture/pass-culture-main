@@ -49,7 +49,7 @@ describe('src | helpers | getPriceRangeFromStocks', () => {
     })
   })
 
-  describe('when stocks contains price 0 and unlimited stock or no stock ', () => {
+  describe('when stocks contains price 0 and unlimited stock or no stock', () => {
     it('should return an array with the price', () => {
       // given
       const stocks = [

@@ -73,9 +73,13 @@ class Details extends PureComponent {
   }
 }
 
+Details.defaultProps = {
+  isConfirmingCancelling: false,
+}
+
 Details.propTypes = {
   bookingPath: PropTypes.string.isRequired,
-  isConfirmingCancelling: PropTypes.bool.isRequired,
+  isConfirmingCancelling: PropTypes.bool,
   match: PropTypes.shape({
     params: PropTypes.shape({
       details: PropTypes.string,

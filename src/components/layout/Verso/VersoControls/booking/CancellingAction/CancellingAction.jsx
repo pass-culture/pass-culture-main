@@ -50,7 +50,9 @@ class CancellingAction extends PureComponent {
           />
           <i className="icon-ico-check ticket-reserved-icon" />
         </span>
-        <span className="ticket-label">{'Annuler'}</span>
+        <span className="ticket-label">
+          {'Annuler'}
+        </span>
       </button>
     )
   }

@@ -25,7 +25,9 @@ export const RawRequestEmailForm = ({ canSubmit, isLoading, formErrors }) => (
         <div className="logout-form-title">
           {'Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.'}
         </div>
-        <div className="logout-form-mandatory-label">{'* Champs obligatoires'}</div>
+        <div className="logout-form-mandatory-label">
+          {'* Champs obligatoires'}
+        </div>
       </div>
       <div>
         <InputField

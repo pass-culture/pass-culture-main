@@ -53,13 +53,17 @@ const BookingItem = ({
         </div>
         <div className="teaser-wrapper">
           <div className="mb-heading">
-            <div className="teaser-title-booking">{offerName}</div>
+            <div className="teaser-title-booking">
+              {offerName}
+            </div>
             <div className="teaser-sub-title">
               {isDuo && <DuoOfferContainer offerId={offerId} />}
               {humanizedDate || 'Permanent'}
             </div>
           </div>
-          {isQrCodeFeatureDisabled && <div className="mb-token">{token.toLowerCase()}</div>}
+          {isQrCodeFeatureDisabled && <div className="mb-token">
+            {token.toLowerCase()}
+          </div>}
         </div>
         <div className="teaser-arrow">
           {ribbon && <Ribbon

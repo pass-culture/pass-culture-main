@@ -27,9 +27,15 @@ class Teaser extends PureComponent {
           />
         </div>
         <div className="teaser-wrapper">
-          <div className="teaser-title">{name}</div>
-          <div className="teaser-sub-title">{offerTypeLabel}</div>
-          {date && <div className="teaser-date">{date}</div>}
+          <div className="teaser-title">
+            {name}
+          </div>
+          <div className="teaser-sub-title">
+            {offerTypeLabel}
+          </div>
+          {date && <div className="teaser-date">
+            {date}
+          </div>}
           <div className="teaser-infos">
             {statuses.length > 0 &&
               statuses.map(status => (
@@ -40,7 +46,9 @@ class Teaser extends PureComponent {
                   {status.label}
                 </span>
               ))}
-            <span className="teaser-distance">{humanizeRelativeDistance}</span>
+            <span className="teaser-distance">
+              {humanizeRelativeDistance}
+            </span>
           </div>
         </div>
         <div className="teaser-arrow">
@@ -69,7 +77,9 @@ class Teaser extends PureComponent {
     return (
       <li className="teaser-item">
         {isEditMode ? (
-          <div className="teaser-link">{this.renderTeaser()}</div>
+          <div className="teaser-link">
+            {this.renderTeaser()}
+          </div>
         ) : (
           <Link
             className="teaser-link"

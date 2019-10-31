@@ -28,7 +28,9 @@ class FilterByDistance extends PureComponent {
           className="distance-filter-options"
           id="filter-by-distance"
         >
-          <h2 className="distance-filter-title">{'Où'}</h2>
+          <h2 className="distance-filter-title">
+            {'Où'}
+          </h2>
           {!geolocationActive && (
             <div className="geoloc-warning">
               {'Activez votre géolocalisation pour utiliser ce filtre.'}

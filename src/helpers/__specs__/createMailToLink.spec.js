@@ -1,6 +1,6 @@
 import createMailToLink from '../createMailToLink'
 
-describe('src | helpers | createMailToLink ', () => {
+describe('src | helpers | createMailToLink', () => {
   it('should create a new link for window location href', () => {
     // given
     const email = 'email@fake.url'

@@ -12,8 +12,6 @@ class SelectField extends PureComponent {
     this.popupContainer = null
   }
 
-  getPopupContainer = () => () => this.popupContainer
-
   setContainerRef = ref => {
     this.popupContainer = ref
   }
@@ -34,7 +32,6 @@ class SelectField extends PureComponent {
           {...moreProps}
           className="content"
           disabled={isDisabled}
-          getPopupContainer={this.getPopupContainer()}
           onBlur={onChange}
           onChange={onChange}
           placeholder={placeholder}

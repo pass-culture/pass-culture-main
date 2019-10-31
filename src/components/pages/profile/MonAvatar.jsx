@@ -14,7 +14,9 @@ const MonAvatar = ({ currentUser }) => (
         colored="colored"
         style={{ height: 80, minHeight: 80, minWidth: 80, width: 80 }}
       />
-      <span className="flex-1 ml12 is-medium fs18">{currentUser.publicName}</span>
+      <span className="flex-1 ml12 is-medium fs18">
+        {currentUser.publicName}
+      </span>
     </div>
   </div>
 )

@@ -74,10 +74,18 @@ class Signin extends PureComponent {
       >
         <div>
           <div className="logout-form-header">
-            <div className="logout-form-header-sup">{'Bonjour !'}</div>
-            <div className="logout-form-title">{'Identifiez-vous'}</div>
-            <div className="logout-form-title">{'pour accéder aux offres.'}</div>
-            <div className="logout-form-mandatory-label">{'* Champs obligatoires'}</div>
+            <div className="logout-form-header-sup">
+              {'Bonjour !'}
+            </div>
+            <div className="logout-form-title">
+              {'Identifiez-vous'}
+            </div>
+            <div className="logout-form-title">
+              {'pour accéder aux offres.'}
+            </div>
+            <div className="logout-form-mandatory-label">
+              {'* Champs obligatoires'}
+            </div>
           </div>
           <EmailField
             id="user-identifier"

@@ -68,7 +68,9 @@ class FilterByDates extends PureComponent {
         className="pt18"
         id="filter-by-dates"
       >
-        <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">{'Quand'}</h2>
+        <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">
+          {'Quand'}
+        </h2>
         <div className="pc-scroll-horizontal is-relative pb18">
           <div className="pc-list flex-columns">
             {DAYS_CHECKBOXES.map(({ label, value }, index) => {
@@ -88,7 +90,9 @@ class FilterByDates extends PureComponent {
                     type="checkbox"
                     value={value}
                   />
-                  <span className="fs19 flex-1">{label}</span>
+                  <span className="fs19 flex-1">
+                    {label}
+                  </span>
                 </label>
               )
             })}

@@ -69,13 +69,19 @@ class SharePopin extends React.PureComponent {
                 >
                   <div className="ml24 mr48 mt20 mb32">
                     <h3>
-                      <span className="is-bold">{title}</span>
+                      <span className="is-bold">
+                        {title}
+                      </span>
                     </h3>
                     <p className="mt18">
-                      <span>{text}</span>
+                      <span>
+                        {text}
+                      </span>
                     </p>
                   </div>
-                  <div className="dotted-top-white flex-columns flex-around">{buttons}</div>
+                  <div className="dotted-top-white flex-columns flex-around">
+                    {buttons}
+                  </div>
                 </div>
               </div>
             )}

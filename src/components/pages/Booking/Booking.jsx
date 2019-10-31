@@ -108,7 +108,9 @@ class Booking extends PureComponent {
             onClick={this.handleReturnToDetails}
             type="reset"
           >
-            <span>{'Annuler'}</span>
+            <span>
+              {'Annuler'}
+            </span>
           </button>
         )}
 
@@ -119,7 +121,9 @@ class Booking extends PureComponent {
             onClick={externalSubmitForm(BOOKING_FORM_ID)}
             type="submit"
           >
-            <b>{'Valider'}</b>
+            <b>
+              {'Valider'}
+            </b>
           </button>
         )}
 
@@ -130,7 +134,9 @@ class Booking extends PureComponent {
             onClick={this.handleReturnToDetails}
             type="button"
           >
-            <b>{'OK'}</b>
+            <b>
+              {'OK'}
+            </b>
           </button>
         )}
       </Fragment>

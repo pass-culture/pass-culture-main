@@ -3,7 +3,9 @@ import PropTypes from 'prop-types'
 
 const Ribbon = ({ label, placement, type }) => (
   <div className={`ribbon ribbon-${type} ribbon-${placement}`}>
-    <span>{label}</span>
+    <span>
+      {label}
+    </span>
   </div>
 )
 

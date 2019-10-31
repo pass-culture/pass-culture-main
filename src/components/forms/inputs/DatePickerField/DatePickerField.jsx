@@ -41,6 +41,8 @@ const DatePickerField = ({
 
   const isClearable = !readOnly && clearable
   const inputName = id || name
+  moreProps.value = {}
+
   return (
     <div className={`${className}`}>
       <label

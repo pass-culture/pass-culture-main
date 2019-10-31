@@ -11,7 +11,9 @@ const VersoActionsBar = ({ url }) => (
       target="_blank"
     >
       <i className="icon icon-ico-linkexternal fs30" />
-      <span className="fs16">{'Accéder'}</span>
+      <span className="fs16">
+        {'Accéder'}
+      </span>
     </a>
   </nav>
 )

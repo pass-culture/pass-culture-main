@@ -2,7 +2,7 @@ import strings from '../strings'
 import validatePasswordField from '../validatePasswordField'
 
 describe('src | components | forms | validators | validatePasswordField', () => {
-  it('it expect to return default error - not a string', () => {
+  it('expect to return default error - not a string', () => {
     // given
     const expected = strings.PASSWORD_ERROR_MESSAGE
     let value = false
@@ -68,7 +68,7 @@ describe('src | components | forms | validators | validatePasswordField', () => 
     expect(result).toStrictEqual(expected)
   })
 
-  it('it expect to return default error - not a valid string', () => {
+  it('expect to return default error - not a valid string', () => {
     // given
     const expected = strings.PASSWORD_ERROR_MESSAGE
     let value = ''
@@ -133,7 +133,7 @@ describe('src | components | forms | validators | validatePasswordField', () => 
     // then
     expect(result).toStrictEqual(expected)
   })
-  it('it expect to undefined - valid string', () => {
+  it('expect to undefined - valid string', () => {
     // given
     const expected = undefined
     let value = '#1234Hello12'

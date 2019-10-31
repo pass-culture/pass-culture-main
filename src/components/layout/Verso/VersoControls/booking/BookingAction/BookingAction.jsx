@@ -25,7 +25,9 @@ class BookingAction extends PureComponent {
           free="Gratuit"
           value={priceRange}
         />
-        <span className="ticket-label">{'J’y vais !'}</span>
+        <span className="ticket-label">
+          {'J’y vais !'}
+        </span>
       </button>
     )
   }

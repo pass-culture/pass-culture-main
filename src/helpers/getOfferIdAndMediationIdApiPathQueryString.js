@@ -4,10 +4,7 @@ export const getOfferIdAndMediationIdApiPathQueryString = (match, currentRecomme
   const isValid = match && typeof match === 'object' && !Array.isArray(match)
   if (!isValid) return ''
 
-  const {
-    mediationId: pMediationId,
-    offerId: pOfferId
-  } = match.params || match || {}
+  const { mediationId: pMediationId, offerId: pOfferId } = match.params || match || {}
 
   // offerId
   const offerId =

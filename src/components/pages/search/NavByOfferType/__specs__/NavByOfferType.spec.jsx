@@ -50,7 +50,7 @@ describe('src | components | search | searchByType | NavByOfferType', () => {
         categories.first().simulate('click')
 
         // then
-        expect(props.resetSearchStore).toHaveBeenCalled()
+        expect(props.resetSearchStore).toHaveBeenCalledWith()
       })
 
       it('should update the search parameter of the query', () => {

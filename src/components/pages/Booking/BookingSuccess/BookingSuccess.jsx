@@ -21,22 +21,31 @@ const BookingSuccess = ({ bookedPayload, isEvent }) => {
         </span>
         <span className="is-block mb36">
           {isEvent && 'Votre réservation '}
-          {isEvent && isDuo && <i>{'duo '}</i>}
+          {isEvent && isDuo && <i>
+            {'duo '}
+          </i>}
           {isEvent && 'est validée.'}
           {!isEvent && (
             <Fragment>
-              <span className="is-block">{'Votre pouvez accéder à cette offre'}</span>
-              <span className="is-block">{'à tout moment.'}</span>
+              <span className="is-block">
+                {'Votre pouvez accéder à cette offre'}
+              </span>
+              <span className="is-block">
+                {'à tout moment.'}
+              </span>
             </Fragment>
           )}
         </span>
       </h3>
       <p>
         <span className="is-block">
-          {getDisplayPrice(price * quantity)} {'ont été déduits de votre pass.'}
+          {getDisplayPrice(price * quantity)}
+          {' ont été déduits de votre pass.'}
         </span>
         {!completedUrl && (
-          <span className="is-block">{'Présentez le code suivant sur place :'}</span>
+          <span className="is-block">
+            {'Présentez le code suivant sur place :'}
+          </span>
         )}
       </p>
       <p className="my28">
@@ -58,18 +67,24 @@ const BookingSuccess = ({ bookedPayload, isEvent }) => {
             rel="noopener noreferrer"
             target="_blank"
           >
-            <b>{'Accéder à l’offre numérique'}</b>
+            <b>
+              {'Accéder à l’offre numérique'}
+            </b>
           </a>
         )}
       </p>
       <p>
         {!completedUrl && (
           <Fragment>
-            <span className="is-block">{'Retrouvez ce code et les détails de l’offre dans'}</span>
+            <span className="is-block">
+              {'Retrouvez ce code et les détails de l’offre dans'}
+            </span>
             <span className="is-block">
               {'la rubrique '}
               <Link to="/reservations">
-                <b className="is-primary-text">{'Mes Réservations'}</b>
+                <b className="is-primary-text">
+                  {'Mes Réservations'}
+                </b>
               </Link>
               {' de votre compte'}
             </span>
@@ -77,14 +92,20 @@ const BookingSuccess = ({ bookedPayload, isEvent }) => {
         )}
         {completedUrl && (
           <Fragment>
-            <span className="is-block">{'Retrouvez l’adresse Internet et les détails de'}</span>
+            <span className="is-block">
+              {'Retrouvez l’adresse Internet et les détails de'}
+            </span>
             <span className="is-block">
               {'l’offre dans la rubrique '}
               <Link to="/reservations">
-                <b className="is-primary-text">{'Mes Réservations'}</b>
+                <b className="is-primary-text">
+                  {'Mes Réservations'}
+                </b>
               </Link>
             </span>
-            <span className="is-block">{' de votre compte'}</span>
+            <span className="is-block">
+              {' de votre compte'}
+            </span>
           </Fragment>
         )}
       </p>

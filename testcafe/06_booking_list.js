@@ -17,7 +17,7 @@ let userRole
 
 fixture('En consultant la liste de mes réservations, pour chaque "tuile"')
 
-test("Je vois la date et l'heure", async t => {
+test("je vois la date et l'heure", async t => {
   userRole = await createUserRoleFromUserSandbox(
     'webapp_06_booking_list',
     'get_existing_webapp_user_with_bookings'
@@ -31,7 +31,7 @@ test("Je vois la date et l'heure", async t => {
     .match(dateTimeRegexMatcher)
 })
 
-test('Je vois le lieu sur le verso', async t => {
+test('je vois le lieu sur le verso', async t => {
   userRole = await createUserRoleFromUserSandbox(
     'webapp_06_booking_list',
     'get_existing_webapp_user_with_bookings'
@@ -47,7 +47,7 @@ test('Je vois le lieu sur le verso', async t => {
     .ok()
 })
 
-test('Je peux accéder à la contremarque en cliquant sur le lien "Accéder à ma contremarque"', async t => {
+test('je peux accéder à la contremarque en cliquant sur le lien "Accéder à ma contremarque"', async t => {
   // given
   const token = Selector('.qr-code-token')
   userRole = await createUserRoleFromUserSandbox(

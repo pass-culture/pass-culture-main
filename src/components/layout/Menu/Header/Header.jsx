@@ -20,16 +20,24 @@ const Header = ({ currentUser }) => (
         className="px5 is-hyphens"
         id="main-menu-header-username"
       >
-        <span className="fs16 is-medium">{currentUser && currentUser.publicName}</span>
+        <span className="fs16 is-medium">
+          {currentUser && currentUser.publicName}
+        </span>
       </div>
     </div>
     <div className="column-account flex-1 flex-rows flex-center px18">
       <div className="fs30">
-        <span>{'Mon pass'}</span>
+        <span>
+          {'Mon pass'}
+        </span>
       </div>
       <div id="main-menu-header-wallet-value">
-        <span className="fs44 is-semi-bold wallet-value">{getWalletValue(currentUser)}</span>
-        <span className="fs30 currency">&nbsp;{'€'}</span>
+        <span className="fs44 is-semi-bold wallet-value">
+          {getWalletValue(currentUser)}
+        </span>
+        <span className="fs30 currency">
+          {'\u00A0€'}
+        </span>
       </div>
     </div>
   </div>

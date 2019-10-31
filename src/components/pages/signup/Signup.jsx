@@ -79,8 +79,11 @@ class Signup extends PureComponent {
               {'Une minute pour créer un compte, et puis c’est tout !'}
             </div>
             <div className="logout-form-mandatory-label">
-              <span className="asterisk">{'*'}</span>
-              &nbsp;{'Champs obligatoires'}
+              <span className="asterisk">
+                {'*'}
+              </span>
+              &nbsp;
+              {'Champs obligatoires'}
             </div>
           </div>
           <InputField
@@ -117,7 +120,9 @@ class Signup extends PureComponent {
               >
                 {'pass Culture'}
               </a>
-              <span className="asterisk">{'*'}</span>
+              <span className="asterisk">
+                {'*'}
+              </span>
             </span>
           </CheckBoxField>
         </div>

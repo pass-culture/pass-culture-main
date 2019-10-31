@@ -21,7 +21,7 @@ describe('src | components | layout | Verso | VersoContentOffer | VersoActionsBa
     expect(link.prop('className')).toStrictEqual(
       'is-red-text is-bold flex-columns items-center flex-center'
     )
-    expect(link.prop('href')).toStrictEqual(null)
+    expect(link.prop('href')).toBeNull()
     expect(link.prop('id')).toStrictEqual('verso-online-booked-button')
     expect(link.prop('rel')).toStrictEqual('noopener noreferrer')
     expect(link.prop('target')).toStrictEqual('_blank')

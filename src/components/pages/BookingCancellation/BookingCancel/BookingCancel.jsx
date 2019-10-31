@@ -18,12 +18,18 @@ const BookingCancel = ({ isEvent, booking }) => {
         >
           <Icon svg="picto-validation" />
         </span>
-        <span className="is-block fs22">{'Votre réservation est annulée.'}</span>
+        <span className="is-block fs22">
+          {'Votre réservation est annulée.'}
+        </span>
       </div>
 
       <p className="mt40">
-        <span className="is-block">{`${price} vont être recrédités sur votre pass.`}</span>
-        <span className="is-block">{'Vous allez recevoir un e-mail de confirmation.'}</span>
+        <span className="is-block">
+          {`${price} vont être recrédités sur votre pass.`}
+        </span>
+        <span className="is-block">
+          {'Vous allez recevoir un e-mail de confirmation.'}
+        </span>
       </p>
     </div>
   )

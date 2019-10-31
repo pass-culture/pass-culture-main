@@ -39,7 +39,7 @@ describe('src | components | pages | discovery | Deck | Card | CardContainer', (
       const {
         data: { readRecommendations },
       } = store.getState()
-      expect(readRecommendations.length).toStrictEqual(1)
+      expect(readRecommendations).toHaveLength(1)
       expect(readRecommendations[0].id).toStrictEqual('AE')
       expect(moment(readRecommendations[0].dateRead).isSame(moment.utc(), 'minutes')).toStrictEqual(
         true

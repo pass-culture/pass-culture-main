@@ -15,11 +15,7 @@ describe('src | selectors | searchSelectors', () => {
     // when
     const offerId = undefined
     const mediationId = undefined
-    const result = selectRecommendationByOfferIdAndMediationId(
-      state,
-      offerId,
-      mediationId
-    )
+    const result = selectRecommendationByOfferIdAndMediationId(state, offerId, mediationId)
 
     // then
     expect(result).toBeUndefined()
@@ -39,11 +35,7 @@ describe('src | selectors | searchSelectors', () => {
     // when
     const offerId = 'ZZZZ'
     const mediationId = '0000'
-    const result = selectRecommendationByOfferIdAndMediationId(
-      state,
-      offerId,
-      mediationId
-    )
+    const result = selectRecommendationByOfferIdAndMediationId(state, offerId, mediationId)
 
     // then
     expect(result).toBeUndefined()
@@ -60,11 +52,7 @@ describe('src | selectors | searchSelectors', () => {
     // when
     const offerId = 'AAAA'
     const mediationId = '1234'
-    const result = selectRecommendationByOfferIdAndMediationId(
-      state,
-      offerId,
-      mediationId
-    )
+    const result = selectRecommendationByOfferIdAndMediationId(state, offerId, mediationId)
 
     // then
     expect(result).toBeUndefined()
@@ -84,11 +72,7 @@ describe('src | selectors | searchSelectors', () => {
     // when
     const offerId = 'AAAA'
     const mediationId = '5678'
-    const result = selectRecommendationByOfferIdAndMediationId(
-      state,
-      offerId,
-      mediationId
-    )
+    const result = selectRecommendationByOfferIdAndMediationId(state, offerId, mediationId)
 
     // then
     expect(result.mediationId).toStrictEqual('1234')
@@ -108,11 +92,7 @@ describe('src | selectors | searchSelectors', () => {
     // when
     const offerId = 'AAAA'
     const mediationId = '5678'
-    const result = selectRecommendationByOfferIdAndMediationId(
-      state,
-      offerId,
-      mediationId
-    )
+    const result = selectRecommendationByOfferIdAndMediationId(state, offerId, mediationId)
 
     // then
     expect(result.mediationId).toStrictEqual('1234')

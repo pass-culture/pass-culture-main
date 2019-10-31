@@ -72,7 +72,9 @@ class Header extends PureComponent {
             />
           </div>
         )}
-        <h1 className="header-title">{title}</h1>
+        <h1 className="header-title">
+          {title}
+        </h1>
         {closeTo && (
           <div className="header-end">
             <CloseLink

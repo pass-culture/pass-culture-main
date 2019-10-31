@@ -19,7 +19,7 @@ fixture('En ouvrant le menu').beforeEach(async t => {
     .wait(100)
 })
 
-test('Je peux naviguer vers mes offres', async t => {
+test('je peux naviguer vers mes offres', async t => {
   const menuOffres = Selector('.navlink').withText('Les offres')
   await t
     .expect(menuOffres.exists)
@@ -30,7 +30,7 @@ test('Je peux naviguer vers mes offres', async t => {
   await t.expect(location.pathname).contains('decouverte')
 })
 
-test('Je peux naviguer vers la recherche', async t => {
+test('je peux naviguer vers la recherche', async t => {
   const menuRecherche = Selector('.navlink').withText('Recherche')
   await t
     .expect(menuRecherche.exists)
@@ -41,7 +41,7 @@ test('Je peux naviguer vers la recherche', async t => {
   await t.expect(location.pathname).eql('/recherche')
 })
 
-test('Je peux naviguer vers mes réservations', async t => {
+test('je peux naviguer vers mes réservations', async t => {
   const menuReservations = Selector('.navlink').withText('Mes réservations')
   await t
     .expect(menuReservations.exists)
@@ -52,7 +52,7 @@ test('Je peux naviguer vers mes réservations', async t => {
   await t.expect(location.pathname).eql('/reservations')
 })
 
-test('Je peux naviguer vers les favoris', async t => {
+test('je peux naviguer vers les favoris', async t => {
   const menuFavoris = Selector('.navlink').withText('Mes favoris')
   await t
     .expect(menuFavoris.exists)
@@ -63,7 +63,7 @@ test('Je peux naviguer vers les favoris', async t => {
   await t.expect(location.pathname).eql('/favoris')
 })
 
-test("Je peux naviguer vers l'aide", async t => {
+test("je peux naviguer vers l'aide", async t => {
   const expected = `https://aide.passculture.app/fr/category/18-ans-1dnil5r/`
   const menuContact = Selector('.navlink').withText('Aide')
   await t.expect(menuContact.exists).ok()

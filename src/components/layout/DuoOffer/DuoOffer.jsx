@@ -4,8 +4,12 @@ import React from 'react'
 const DuoOffer = ({ isDuoOffer, label }) =>
   isDuoOffer && (
     <div className="duo">
-      <span className="duo-logo">{'duo'}</span>
-      {label && <span className="duo-label">{label}</span>}
+      <span className="duo-logo">
+        {'duo'}
+      </span>
+      {label && <span className="duo-label">
+        {label}
+      </span>}
     </div>
   )
 

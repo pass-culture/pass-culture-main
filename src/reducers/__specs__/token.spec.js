@@ -1,6 +1,6 @@
 import tokenReducer, { setTokenStatus } from '../token'
 
-describe('src | reducers | token  ', () => {
+describe('src | reducers | token', () => {
   describe('actions', () => {
     it('should return an action of type SET_TOKEN_STATUS', () => {
       // given

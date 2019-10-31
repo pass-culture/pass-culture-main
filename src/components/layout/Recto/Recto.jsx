@@ -4,13 +4,7 @@ import React from 'react'
 
 import Thumb from './Thumb'
 
-const Recto = ({
-  areDetailsVisible,
-  extraClassName,
-  frontText,
-  thumbUrl,
-  withMediation
-}) => (
+const Recto = ({ areDetailsVisible, extraClassName, frontText, thumbUrl, withMediation }) => (
   <div className={classnames('recto', extraClassName)}>
     {thumbUrl && (
       <Thumb
@@ -19,7 +13,9 @@ const Recto = ({
         withMediation={withMediation}
       />
     )}
-    {frontText && <div className="mediation-front-text fs20">{frontText}</div>}
+    {frontText && <div className="mediation-front-text fs20">
+      {frontText}
+    </div>}
   </div>
 )
 
@@ -27,7 +23,7 @@ Recto.defaultProps = {
   extraClassName: null,
   frontText: null,
   thumbUrl: null,
-  withMediation: null
+  withMediation: null,
 }
 
 Recto.propTypes = {
@@ -35,7 +31,7 @@ Recto.propTypes = {
   extraClassName: PropTypes.string,
   frontText: PropTypes.string,
   thumbUrl: PropTypes.string,
-  withMediation: PropTypes.bool
+  withMediation: PropTypes.bool,
 }
 
 export default Recto

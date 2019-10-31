@@ -32,7 +32,7 @@ describe('src | components | layout | Header | CloseLink', () => {
       const link = wrapper.find(Link)
       expect(link).toHaveLength(1)
       expect(link.prop('className')).toBe('close-link')
-      expect(link.prop('onClick')).toStrictEqual(null)
+      expect(link.prop('onClick')).toBeNull()
       expect(link.prop('to')).toBe('/fake-url')
     })
 

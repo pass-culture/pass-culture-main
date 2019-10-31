@@ -20,7 +20,9 @@ const VersoControls = ({ isBooked }) => (
       <li>
         <ShareButtonContainer />
       </li>
-      <li>{isBooked ? <CancellingActionContainer /> : <BookingActionContainer />}</li>
+      <li>
+        {isBooked ? <CancellingActionContainer /> : <BookingActionContainer />}
+      </li>
     </ul>
   </FinishableContainer>
 )

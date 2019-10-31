@@ -1,7 +1,7 @@
 import get from 'lodash.get'
 
 import logger from './logger'
-import { randomHash } from './random'
+import randomHash from './random'
 
 const LOG_LENGTH = 100
 

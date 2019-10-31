@@ -24,8 +24,12 @@ export const ResetThePasswordForm = ({ canSubmit, formErrors, isLoading }) => (
     <div>
       <div className="fs22">
         <h2 className="is-italic is-medium">
-          <span className="is-block">{'Saisissez ci-dessous'}</span>
-          <span className="is-block">{'votre nouveau mot de passe.'}</span>
+          <span className="is-block">
+            {'Saisissez ci-dessous'}
+          </span>
+          <span className="is-block">
+            {'votre nouveau mot de passe.'}
+          </span>
         </h2>
         <p className="mt12 fs16">
           {
@@ -33,8 +37,11 @@ export const ResetThePasswordForm = ({ canSubmit, formErrors, isLoading }) => (
           }
         </p>
         <p className="is-block is-regular fs13 mt18">
-          <span>{'*'}</span>
-          &nbsp;{'Champs obligatoires'}
+          <span>
+            {'*'}
+          </span>
+          &nbsp;
+          {'Champs obligatoires'}
         </p>
       </div>
       <div>

@@ -16,8 +16,12 @@ const NavResultsHeader = ({ category, description }) => {
       title={imgDescription}
     >
       <div id="category-description">
-        <h2 className="nav-result-title">{category}</h2>
-        <span className="nav-result-description">{description}</span>
+        <h2 className="nav-result-title">
+          {category}
+        </h2>
+        <span className="nav-result-description">
+          {description}
+        </span>
       </div>
     </div>
   )

@@ -1,6 +1,6 @@
 import share, { closeSharePopin, openSharePopin } from '../share'
 
-describe('src | reducers | share  ', () => {
+describe('src | reducers | share', () => {
   it('should return the initial state by default', () => {
     // given
     const action = {}

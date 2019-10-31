@@ -16,7 +16,7 @@ describe('filterRoutes', () => {
       { exact: true, path: '/toto/:menu(menu)?' },
       { exact: true, path: '/toto/:vars?/:menu(menu)?' },
       { exact: true, path: '/toto/:vars?/vars2?/:menu(menu)?' },
-      { exact: false, path: '/toto/:vars?/:vars2?/:vars3?/:menu(menu)?' }
+      { exact: false, path: '/toto/:vars?/:vars2?/:vars3?/:menu(menu)?' },
     ]
     expect(browserRoutes).toStrictEqual(expected)
   })

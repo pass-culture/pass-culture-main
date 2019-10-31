@@ -35,7 +35,7 @@ let currentBookedToken = null
 
 fixture("Etant sur le verso d'une offre,")
 
-test("Je peux réserver l'offre", async t => {
+test("je peux réserver l'offre", async t => {
   // given
   userRole = await createUserRoleFromUserSandbox(
     'webapp_08_booking',
@@ -58,7 +58,7 @@ test("Je peux réserver l'offre", async t => {
     .ok()
 })
 
-test("Parcours complet de réservation d'une offre thing", async t => {
+test("parcours complet de réservation d'une offre thing", async t => {
   // given
   userRole = await createUserRoleFromUserSandbox(
     'webapp_08_booking',
@@ -128,7 +128,7 @@ test("Parcours complet de réservation d'une offre thing", async t => {
     .ok()
 })
 
-test("Parcours complet de réservation d'une offre event à date unique", async t => {
+test("parcours complet de réservation d'une offre event à date unique", async t => {
   // given
   userRole = await createUserRoleFromUserSandbox(
     'webapp_08_booking',

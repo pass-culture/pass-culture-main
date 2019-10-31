@@ -1,6 +1,6 @@
 import menu, { toggleMainMenu } from '../menu'
 
-describe('src | reducers | menu  ', () => {
+describe('src | reducers | menu', () => {
   it('should return the initial state by default', () => {
     // given
     const action = {}

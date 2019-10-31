@@ -5,7 +5,9 @@ import MailToLink from '../MailToLink'
 
 const children = (
   <header>
-    <h1>{'Fake children'}</h1>
+    <h1>
+      {'Fake children'}
+    </h1>
   </header>
 )
 
@@ -55,7 +57,7 @@ describe('src | components | share | MailToLink', () => {
         obfuscate: true,
       }
 
-      it('should render Obfuscated Link ', () => {
+      it('should render Obfuscated Link', () => {
         // when
         const wrapper = shallow(<MailToLink {...props} />)
 

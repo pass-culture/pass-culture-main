@@ -11,7 +11,9 @@ describe('src | components | layout | ErrorCatcher', () => {
   it('should match the snapshot and render the children as is', () => {
     // given
     const props = { ...routerProps }
-    const Children = () => <span>{'any child component'}</span>
+    const Children = () => (<span>
+      {'any child component'}
+    </span>)
 
     // when
     const wrapper = shallow(

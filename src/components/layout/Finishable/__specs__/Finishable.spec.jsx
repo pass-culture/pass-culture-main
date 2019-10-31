@@ -8,7 +8,9 @@ describe('src | components | layout | Finishable | Finishable', () => {
 
   beforeEach(() => {
     props = {
-      children: <p>{'Cette offre n’est pas terminée'}</p>,
+      children: <p>
+        {'Cette offre n’est pas terminée'}
+      </p>,
     }
   })
 

@@ -34,9 +34,9 @@ describe('src | components | pages | Thumb', () => {
 
         // then
         expect(backgroundDiv.style.backgroundImage).toStrictEqual("url('http://fake.url')")
-        expect(backgroundDiv.style.backgroundSize).toStrictEqual(null)
+        expect(backgroundDiv.style.backgroundSize).toBeNull()
         expect(thumbDiv.style.backgroundImage).toStrictEqual("url('http://fake.url')")
-        expect(thumbDiv.style.backgroundSize).toStrictEqual(null)
+        expect(thumbDiv.style.backgroundSize).toBeNull()
         expect(thumbDiv.className).toStrictEqual('image translatable')
       })
     })

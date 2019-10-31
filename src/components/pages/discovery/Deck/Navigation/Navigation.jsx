@@ -127,8 +127,12 @@ class Navigation extends React.PureComponent {
                         value={priceRange}
                       />
                       {offerId && <DuoOfferContainer offerId={offerId} />}
-                      <div className="separator">{separator}</div>
-                      <div>{distanceClue}</div>
+                      <div className="separator">
+                        {separator}
+                      </div>
+                      <div>
+                        {distanceClue}
+                      </div>
                     </FinishableContainer>
                   </div>
                 </div>

@@ -91,7 +91,9 @@ class Loader extends React.PureComponent {
                 draggable={false}
                 svg="ico-loading-card"
                             />}
-              <h2 className="fs20 is-normal">{this.renderMessage()}</h2>
+              <h2 className="fs20 is-normal">
+                {this.renderMessage()}
+              </h2>
             </div>
             {showFooter && (
               <RelativeFooterContainer

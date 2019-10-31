@@ -19,7 +19,9 @@ const MyBookingsLists = ({
 
       {!isEmpty && bookingsOfTheWeek.length > 0 && (
         <section className="mb-section">
-          <header className="mb-header">{'Cette semaine'}</header>
+          <header className="mb-header">
+            {'Cette semaine'}
+          </header>
           <BookingsList bookings={bookingsOfTheWeek} />
         </section>
       )}
@@ -42,14 +44,18 @@ const MyBookingsLists = ({
 
       {!isEmpty && upComingBookings.length > 0 && (
         <section className="mb-section">
-          <header className="mb-header">{'À venir'}</header>
+          <header className="mb-header">
+            {'À venir'}
+          </header>
           <BookingsList bookings={upComingBookings} />
         </section>
       )}
 
       {!isEmpty && finishedAndUsedAndCancelledBookings.length > 0 && (
         <section className="mb-section">
-          <header className="mb-header">{'Terminées'}</header>
+          <header className="mb-header">
+            {'Terminées'}
+          </header>
           <BookingsList bookings={finishedAndUsedAndCancelledBookings} />
         </section>
       )}
