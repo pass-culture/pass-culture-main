@@ -2,7 +2,7 @@ import ftplib
 
 import os
 from io import BytesIO
-from typing import Pattern
+from typing import Pattern, List
 from zipfile import ZipFile
 
 from domain.titelive import put_today_file_at_end_of_list
@@ -37,7 +37,7 @@ def get_zip_file_from_ftp(zip_file_name: str, folder_name: str):
     return ZipFile(data_file, 'r')
 
 
-def get_files_to_process_from_titelive_ftp(titelive_folder_name: str, date_regexp: Pattern[str]):
+def get_files_to_process_from_titelive_ftp(titelive_folder_name: str, date_regexp: Pattern[str]) -> List[str]:
     ftp_titelive = connect_to_titelive_ftp()
     files_list = ftp_titelive.nlst(titelive_folder_name)
 

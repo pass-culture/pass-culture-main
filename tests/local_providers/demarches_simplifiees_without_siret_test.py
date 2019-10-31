@@ -1,13 +1,11 @@
-""" local providers BankInformation test """
 import os
 from datetime import datetime
 from unittest.mock import patch, call
 
-import pytest
-
 from local_providers.demarches_simplifiees_bank_information_without_siret import \
-    VenueWithoutSIRETBankInformationProvider, DemarchesSimplifieesMapper, NoOffererFoundException, NoVenueFoundException
+    VenueWithoutSIRETBankInformationProvider, DemarchesSimplifieesMapper
 from models import BankInformation, PcObject, LocalProviderEvent
+from models.local_provider_event import LocalProviderEventType
 from tests.conftest import clean_database
 from tests.test_utils import create_offerer, create_venue, provider_test, create_bank_information, activate_provider
 from utils.human_ids import dehumanize, humanize
@@ -205,13 +203,17 @@ class VenueWithoutSIRETBankInformationProviderTest:
         get_all_application_ids_for_procedure.return_value = [self.APPLICATION_ID]
         get_application_details.return_value = _create_detail_response(self.APPLICATION_ID, self.OFFERER_ID,
                                                                        self.VENUE_ID)
-
-        # when
         activate_provider('VenueWithoutSIRETBankInformationProvider')
         venue_without_siret_bank_information_provider = VenueWithoutSIRETBankInformationProvider()
 
-        with pytest.raises(NoOffererFoundException):
-            venue_without_siret_bank_information_provider.updateObjects()
+        # when
+        venue_without_siret_bank_information_provider.updateObjects()
+
+        # Then
+        local_provider_event = LocalProviderEvent.query \
+            .filter(LocalProviderEvent.type == LocalProviderEventType.SyncError) \
+            .one()
+        assert local_provider_event.payload == f"unknown offerer for id {self.OFFERER_ID}"
 
     @patch('os.environ', return_value={
         'DEMARCHES_SIMPLIFIEES_VENUE_WITHOUT_SIRET_PROCEDURE_ID': '5636727',
@@ -239,12 +241,17 @@ class VenueWithoutSIRETBankInformationProviderTest:
         get_application_details.return_value = _create_detail_response(self.APPLICATION_ID, self.OFFERER_ID,
                                                                        self.VENUE_ID)
 
-        # when
         activate_provider('VenueWithoutSIRETBankInformationProvider')
         venue_without_siret_bank_information_provider = VenueWithoutSIRETBankInformationProvider()
 
-        with pytest.raises(NoVenueFoundException):
-            venue_without_siret_bank_information_provider.updateObjects()
+        # When
+        venue_without_siret_bank_information_provider.updateObjects()
+
+        # Then
+        local_provider_event = LocalProviderEvent.query \
+            .filter(LocalProviderEvent.type == LocalProviderEventType.SyncError) \
+            .one()
+        assert local_provider_event.payload == f"unknown venue for id {self.VENUE_ID}"
 
     @patch('os.environ', return_value={
         'DEMARCHES_SIMPLIFIEES_VENUE_WITHOUT_SIRET_PROCEDURE_ID': '5636727',

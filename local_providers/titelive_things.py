@@ -9,7 +9,6 @@ from local_providers.providable_info import ProvidableInfo
 from models import Product, ThingType, BookFormat
 from models.local_provider_event import LocalProviderEventType
 from repository import local_provider_event_queries
-from utils.logger import logger
 from utils.string_processing import trim_with_elipsis
 
 DATE_REGEXP = re.compile('([a-zA-Z]+)(\d+).tit')
@@ -30,17 +29,6 @@ class TiteLiveThings(LocalProvider):
         self.data_lines = None
         self.thing_file = None
 
-    def open_next_file(self):
-        if self.thing_file:
-            self.log_provider_event(LocalProviderEventType.SyncPartEnd,
-                                    get_date_from_filename(self.thing_file, DATE_REGEXP))
-        self.thing_file = next(self.thing_files)
-        logger.info("  Importing things from file %s" % self.thing_file)
-        self.log_provider_event(LocalProviderEventType.SyncPartStart,
-                                get_date_from_filename(self.thing_file, DATE_REGEXP))
-
-        self.data_lines = get_lines_from_thing_file(str(self.thing_file))
-
     def __next__(self) -> Optional[List[ProvidableInfo]]:
         if self.data_lines is None:
             self.open_next_file()
@@ -53,27 +41,25 @@ class TiteLiveThings(LocalProvider):
             elements = next(self.data_lines).split('~')
 
         if len(elements) != NUMBER_OF_ELEMENTS_PER_LINE:
-            logger.debug("Did not find 45 elements as expected in titelive"
-                         + " line. Skipping line")
-            return None
+            self.log_provider_event(LocalProviderEventType.SyncError,
+                                    "number of elements mismatch")
+            return []
 
         self.infos = get_infos_from_data_line(elements)
 
         if self.infos['is_scolaire'] == '1':
-            return None
+            return []
 
         self.extraData = {}
-
         self.thing_type, self.extraData['bookFormat'] = get_thing_type_and_extra_data_from_titelive_type(
             self.infos['code_support'])
 
-        if self.thing_type is None:
-            return None
+        if not self.thing_type:
+            return []
 
-        providable_info = ProvidableInfo()
-        providable_info.type = Product
-        providable_info.id_at_providers = self.infos['ean13']
-        providable_info.date_modified_at_provider = read_things_date(self.infos['date_updated'])
+        providable_info = self.create_providable_info(Product,
+                                                      self.infos['ean13'],
+                                                      read_things_date(self.infos['date_updated']))
         return [providable_info]
 
     def fill_object_attributes(self, product: Product):
@@ -91,7 +77,17 @@ class TiteLiveThings(LocalProvider):
 
             product.mediaUrls.append(self.infos['url_extrait_pdf'])
 
-    def get_remaining_files_to_check(self, ordered_thing_files: list):
+    def open_next_file(self):
+        if self.thing_file:
+            self.log_provider_event(LocalProviderEventType.SyncPartEnd,
+                                    get_date_from_filename(self.thing_file, DATE_REGEXP))
+        self.thing_file = next(self.thing_files)
+        self.log_provider_event(LocalProviderEventType.SyncPartStart,
+                                get_date_from_filename(self.thing_file, DATE_REGEXP))
+
+        self.data_lines = get_lines_from_thing_file(str(self.thing_file))
+
+    def get_remaining_files_to_check(self, ordered_thing_files: list) -> iter:
         latest_sync_part_end_event = local_provider_event_queries.find_latest_sync_part_end_event(self.provider)
         if latest_sync_part_end_event is None:
             return iter(ordered_thing_files)
@@ -169,7 +165,6 @@ def get_thing_type_and_extra_data_from_titelive_type(titelive_type):
     elif titelive_type == 'TR':
         return None, None
     else:
-        logger.debug(" WARNING: Unknown titelive_type: " + titelive_type)
         return None, None
 
 

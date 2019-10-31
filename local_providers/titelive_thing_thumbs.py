@@ -8,11 +8,9 @@ from connectors.ftp_titelive import get_files_to_process_from_titelive_ftp, get_
 from domain.titelive import get_date_from_filename
 from local_providers.local_provider import LocalProvider
 from local_providers.providable_info import ProvidableInfo
-from models.local_provider_event import LocalProviderEventType
 from models import Product
-
+from models.local_provider_event import LocalProviderEventType
 from repository import local_provider_event_queries
-from utils.logger import logger
 
 DATE_REGEXP = re.compile('livres_tl(\d+).zip')
 THUMB_FOLDER_NAME_TITELIVE = 'Atoo'
@@ -32,21 +30,6 @@ class TiteLiveThingThumbs(LocalProvider):
         self.thumb_zipinfos = None
         self.zip = None
 
-    def open_next_file(self):
-        if self.zip:
-            self.log_provider_event(LocalProviderEventType.SyncPartEnd,
-                                    get_date_from_filename(self.zip, DATE_REGEXP))
-        next_zip_file_name = str(next(self.zips))
-        self.zip = get_zip_file_from_ftp(next_zip_file_name, THUMB_FOLDER_NAME_TITELIVE)
-
-        logger.info("  Importing thumbs from file " + str(self.zip))
-        self.log_provider_event(LocalProviderEventType.SyncPartStart,
-                                get_date_from_filename(self.zip, DATE_REGEXP))
-
-        self.thumb_zipinfos = iter(filter(lambda f: f.filename.lower().endswith(SYNCHONISABLE_FILE_EXTENSION),
-                                          sorted(self.zip.infolist(),
-                                                 key=lambda f: f.filename)))
-
     def __next__(self) -> List[ProvidableInfo]:
         if self.thumb_zipinfos is None:
             self.open_next_file()
@@ -59,13 +42,26 @@ class TiteLiveThingThumbs(LocalProvider):
 
         path = PurePath(self.thumb_zipinfo.filename)
 
-        providable_info = ProvidableInfo()
-        providable_info.type = Product
-        providable_info.date_modified_at_provider = datetime(*self.thumb_zipinfo.date_time)
-        providable_info.id_at_providers = path.name.split('_', 1)[0]
-        self.thingId = providable_info.id_at_providers
+        product_providable_info = self.create_providable_info(Product,
+                                                              path.name.split('_', 1)[0],
+                                                              datetime(*self.thumb_zipinfo.date_time))
+        self.thingId = product_providable_info.id_at_providers
 
-        return [providable_info]
+        return [product_providable_info]
+
+    def open_next_file(self):
+        if self.zip:
+            self.log_provider_event(LocalProviderEventType.SyncPartEnd,
+                                    get_date_from_filename(self.zip, DATE_REGEXP))
+        next_zip_file_name = str(next(self.zips))
+        self.zip = get_zip_file_from_ftp(next_zip_file_name, THUMB_FOLDER_NAME_TITELIVE)
+
+        self.log_provider_event(LocalProviderEventType.SyncPartStart,
+                                get_date_from_filename(self.zip, DATE_REGEXP))
+
+        self.thumb_zipinfos = iter(filter(lambda f: f.filename.lower().endswith(SYNCHONISABLE_FILE_EXTENSION),
+                                          sorted(self.zip.infolist(),
+                                                 key=lambda f: f.filename)))
 
     def get_object_thumb_index(self) -> int:
         return extract_thumb_index(self.thumb_zipinfo.filename)
@@ -99,4 +95,4 @@ def extract_thumb_index(filename: str) -> int:
     split_filename = filename.split('_')
     if len(split_filename) > 2:
         return int(split_filename[-2]) - 1
-    return None
+    return -1

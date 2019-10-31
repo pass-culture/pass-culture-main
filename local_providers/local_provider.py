@@ -46,6 +46,16 @@ class LocalProvider(Iterator):
     def fill_object_attributes(self, obj):
         pass
 
+    def create_providable_info(self,
+                               pc_object: Model,
+                               id_at_providers: str,
+                               date_modified_at_provider: datetime) -> ProvidableInfo:
+        providable_info = ProvidableInfo()
+        providable_info.type = pc_object
+        providable_info.id_at_providers = id_at_providers
+        providable_info.date_modified_at_provider = date_modified_at_provider
+        return providable_info
+
     def getObjectThumb(self, obj, index):
         return None
 
@@ -176,7 +186,8 @@ class LocalProvider(Iterator):
             if objects_limit_reached:
                 break
 
-            if providable_infos is None:
+            no_providables_info_returned = len(providable_infos) == 0
+            if no_providables_info_returned:
                 self.checkedObjects += 1
                 continue
 

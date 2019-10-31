@@ -14,10 +14,6 @@ from repository.bank_information_queries import get_last_update_from_bank_inform
 from utils.date import DATE_ISO_FORMAT
 
 
-class UnknownRibAffiliation(Exception):
-    pass
-
-
 class BankInformationProvider(LocalProvider):
     name = "Demarches simplifiees / Bank Information"
     can_create = True
@@ -40,10 +36,16 @@ class BankInformationProvider(LocalProvider):
 
         self.bank_information_dict = self.retrieve_bank_information(self.application_details)
 
-        if self.bank_information_dict is None:
-            return None
+        if not self.bank_information_dict:
+            return []
 
-        return self.retrieve_providable_info()
+        bank_information_providable_info = self.create_providable_info(BankInformation,
+                                                                       self.bank_information_dict['idAtProviders'],
+                                                                       datetime.strptime(
+                                                                           self.application_details['dossier'][
+                                                                               'updated_at'],
+                                                                           DATE_ISO_FORMAT))
+        return [bank_information_providable_info]
 
     def fill_object_attributes(self, bank_information: BankInformation):
         bank_information.iban = format_raw_iban_or_bic(self.bank_information_dict['iban'])
@@ -51,14 +53,6 @@ class BankInformationProvider(LocalProvider):
         bank_information.applicationId = self.bank_information_dict['applicationId']
         bank_information.offererId = self.bank_information_dict.get('offererId', None)
         bank_information.venueId = self.bank_information_dict.get('venueId', None)
-
-    def retrieve_providable_info(self) -> List[ProvidableInfo]:
-        providable_info = ProvidableInfo()
-        providable_info.id_at_providers = self.bank_information_dict['idAtProviders']
-        providable_info.type = BankInformation
-        providable_info.date_modified_at_provider = datetime.strptime(self.application_details['dossier']['updated_at'],
-                                                                      DATE_ISO_FORMAT)
-        return [providable_info]
 
     def retrieve_bank_information(self, application_details: dict) -> Optional[dict]:
         bank_information_dict = dict()
@@ -82,12 +76,12 @@ class BankInformationProvider(LocalProvider):
         else:
             self.log_provider_event(LocalProviderEventType.SyncError,
                                     f'unknown RIB affiliation for application id {self.application_id}')
-            return None
+            return {}
 
         if 'idAtProviders' not in bank_information_dict:
             self.log_provider_event(LocalProviderEventType.SyncError,
                                     f'unknown siret or siren for application id {self.application_id}')
-            return None
+            return {}
 
         return bank_information_dict
 

@@ -22,9 +22,9 @@ class LocalProviderTest:
             PcObject.save(provider_test)
 
             next_function.side_effect = [
-                None,
-                None,
-                None
+                [],
+                [],
+                []
             ]
 
             provider = TestLocalProvider()
@@ -43,8 +43,8 @@ class LocalProviderTest:
             PcObject.save(provider_test)
 
             next_function.side_effect = [
-                None,
-                None
+                [],
+                []
             ]
 
             provider = TestLocalProvider()

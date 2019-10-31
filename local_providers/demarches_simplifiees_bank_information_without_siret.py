@@ -8,19 +8,12 @@ from domain.demarches_simplifiees import get_all_application_ids_for_procedure
 from local_providers.providable_info import ProvidableInfo
 from models import BankInformation
 from local_providers.local_provider import LocalProvider
+from models.local_provider_event import LocalProviderEventType
 from repository import offerer_queries
 from repository.local_provider_event_queries import find_latest_sync_end_event
 from repository import venue_queries
 from utils.date import DATE_ISO_FORMAT
 from utils.human_ids import dehumanize
-
-
-class NoOffererFoundException(Exception):
-    pass
-
-
-class NoVenueFoundException(Exception):
-    pass
 
 
 class VenueWithoutSIRETBankInformationProvider(LocalProvider):
@@ -52,23 +45,22 @@ class VenueWithoutSIRETBankInformationProvider(LocalProvider):
         offerer = offerer_queries.find_by_id(self.application_details['structureId'])
 
         if offerer is None:
-            raise NoOffererFoundException
+            self.log_provider_event(LocalProviderEventType.SyncError,
+                                    f"unknown offerer for id {self.application_details['structureId']}")
+            return []
 
         venue = venue_queries.find_by_id(self.application_details['venueId'])
 
         if venue is None:
-            raise NoVenueFoundException
+            self.log_provider_event(LocalProviderEventType.SyncError,
+                                    f"unknown venue for id {self.application_details['venueId']}")
+            return []
 
-        return self.retrieve_providable_info()
-
-    def retrieve_providable_info(self) -> List[ProvidableInfo]:
-        providable_info = ProvidableInfo()
-        providable_info.id_at_providers = \
-            f"{self.application_details['structureId']}|{self.application_details['venueId']}"
-
-        providable_info.type = BankInformation
-        providable_info.date_modified_at_provider = self.application_details['updated_at']
-        return [providable_info]
+        id_at_providers = f"{self.application_details['structureId']}|{self.application_details['venueId']}"
+        bank_information_providable_info = self.create_providable_info(BankInformation,
+                                                                       id_at_providers,
+                                                                       self.application_details['updated_at'])
+        return [bank_information_providable_info]
 
     def fill_object_attributes(self, bank_information: BankInformation):
         bank_information.iban = format_raw_iban_or_bic(self.application_details['IBAN'])

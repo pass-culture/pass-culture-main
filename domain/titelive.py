@@ -1,9 +1,20 @@
 from datetime import datetime
+from typing import Callable
 from zipfile import ZipFile
+
+from connectors.api_titelive_stocks import get_titelive_stocks
 
 TITELIVE_THINGS_DATE_FORMAT = "%d/%m/%Y"
 TITELIVE_DESCRIPTION_DATE_FORMAT = "%y%m%d"
 TITELIVE_STOCK_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+
+
+def get_stocks_information(siret: str,
+                           last_processed_isbn: str,
+                           get_titelive_stocks_from_api: Callable = get_titelive_stocks) -> iter:
+    api_response = get_titelive_stocks_from_api(siret, last_processed_isbn)
+    stocks_information = api_response['stocks']
+    return iter(stocks_information)
 
 
 def read_description_date(date):

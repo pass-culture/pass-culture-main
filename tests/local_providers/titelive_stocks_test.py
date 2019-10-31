@@ -5,7 +5,7 @@ import pytest
 import requests
 
 from local_providers import TiteLiveStocks
-from models import Offer, Stock
+from models import Offer, Stock, Product
 from models.pc_object import PcObject
 from models.venue_provider import VenueProvider
 from repository.provider_queries import get_provider_by_local_class
@@ -25,21 +25,19 @@ def check_titelive_epagine_is_down():
 
 
 @clean_database
-@patch('local_providers.titelive_stocks.get_data')
-def test_titelive_stock_provider_create_1_stock_and_1_offer_with_wanted_attributes(get_data, app):
+@patch('local_providers.titelive_stocks.get_stocks_information')
+def test_titelive_stock_provider_create_1_stock_and_1_offer_with_wanted_attributes(get_stocks_information, app):
     # given
-    get_data.return_value = {
-        'total': 'null',
-        'limit': 5000,
-        'stocks': [
+    get_stocks_information.side_effect = [
+        iter([
             {
                 "ref": "0002730757438",
                 "available": 10,
                 "price": 4500,
                 "validUntil": "2019-10-31T15:10:27Z"
             }
-        ]
-    }
+        ])
+    ]
 
     offerer = create_offerer(siren='775671464')
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
@@ -86,21 +84,19 @@ def test_titelive_stock_provider_create_1_stock_and_1_offer_with_wanted_attribut
 
 
 @clean_database
-@patch('local_providers.titelive_stocks.get_data')
-def test_titelive_stock_provider_update_1_stock_and_1_offer(get_data, app):
+@patch('local_providers.titelive_stocks.get_stocks_information')
+def test_titelive_stock_provider_update_1_stock_and_1_offer(get_stocks_information, app):
     # given
-    get_data.return_value = {
-        'total': 'null',
-        'limit': 5000,
-        'stocks': [
+    get_stocks_information.side_effect = [
+        iter([
             {
                 "ref": "0002730757438",
                 "available": 10,
                 "price": 4500,
                 "validUntil": "2019-10-31T15:10:27Z"
             }
-        ]
-    }
+        ])
+    ]
 
     offerer = create_offerer(siren='987654321')
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
@@ -135,21 +131,19 @@ def test_titelive_stock_provider_update_1_stock_and_1_offer(get_data, app):
 
 
 @clean_database
-@patch('local_providers.titelive_stocks.get_data')
-def test_titelive_stock_provider_create_1_stock_and_update_1_existing_offer(get_data, app):
+@patch('local_providers.titelive_stocks.get_stocks_information')
+def test_titelive_stock_provider_create_1_stock_and_update_1_existing_offer(get_stocks_information, app):
     # given
-    get_data.return_value = {
-        'total': 'null',
-        'limit': 5000,
-        'stocks': [
+    get_stocks_information.side_effect = [
+        iter([
             {
                 "ref": "0002730757438",
                 "available": 10,
                 "price": 4500,
                 "validUntil": "2019-10-31T15:10:27Z"
             }
-        ]
-    }
+        ])
+    ]
 
     offerer = create_offerer(siren='987654321')
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
@@ -184,13 +178,12 @@ def test_titelive_stock_provider_create_1_stock_and_update_1_existing_offer(get_
 
 
 @clean_database
-@patch('local_providers.titelive_stocks.get_data')
-def test_titelive_stock_provider_create_2_stock_and_2_offer_even_if_existing_offer_on_same_product(get_data, app):
+@patch('local_providers.titelive_stocks.get_stocks_information')
+def test_titelive_stock_provider_create_2_stock_and_2_offer_even_if_existing_offer_on_same_product(
+        get_stocks_information, app):
     # given
-    get_data.return_value = {
-        'total': 'null',
-        'limit': 5000,
-        'stocks': [
+    get_stocks_information.side_effect = [
+        iter([
             {
                 "ref": "0002730757438",
                 "available": 10,
@@ -203,8 +196,8 @@ def test_titelive_stock_provider_create_2_stock_and_2_offer_even_if_existing_off
                 "price": 100,
                 "validUntil": "2019-10-31T15:10:27Z"
             }
-        ]
-    }
+        ])
+    ]
 
     offerer = create_offerer(siren='987654321')
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
@@ -241,9 +234,12 @@ def test_titelive_stock_provider_create_2_stock_and_2_offer_even_if_existing_off
 
 
 @clean_database
-@pytest.mark.skipif(check_titelive_epagine_is_down(), reason="Titelive Epagine API is down")
-def test_titelive_stock_provider_create_nothing_if_siret_is_not_in_titelive_database(app):
+@patch('local_providers.titelive_stocks.get_stocks_information')
+def test_titelive_stock_provider_create_nothing_if_titelive_api_returns_no_results(get_stocks_information, app):
     # given
+    get_stocks_information.side_effect = [
+        iter([])
+    ]
     offerer = create_offerer(siren='987654321')
     venue = create_venue(offerer, name='Librairie Titelive', siret='12345678912345')
     PcObject.save(venue)
@@ -277,21 +273,19 @@ def test_titelive_stock_provider_create_nothing_if_siret_is_not_in_titelive_data
 
 
 @clean_database
-@patch('local_providers.titelive_stocks.get_data')
-def test_titelive_stock_provider_deactivate_offer_if_stock_available_equals_0(get_data, app):
+@patch('local_providers.titelive_stocks.get_stocks_information')
+def test_titelive_stock_provider_deactivate_offer_if_stock_available_equals_0(get_stocks_information, app):
     # given
-    get_data.return_value = {
-        'total': 'null',
-        'limit': 5000,
-        'stocks': [
+    get_stocks_information.side_effect = [
+        iter([
             {
                 "ref": "0002730757438",
                 "available": 0,
                 "price": 4500,
                 "validUntil": "2019-10-31T15:10:27Z"
             }
-        ]
-    }
+        ])
+    ]
 
     offerer = create_offerer(siren='775671464')
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
@@ -326,3 +320,61 @@ def test_titelive_stock_provider_deactivate_offer_if_stock_available_equals_0(ge
 
     offer = Offer.query.one()
     assert offer.isActive is False
+
+
+@clean_database
+@patch('local_providers.titelive_stocks.get_stocks_information')
+def test_titelive_stock_provider_iterate_over_pagination(get_stocks_information, app):
+    # given
+    get_stocks_information.side_effect = [
+        iter([
+            {
+                "ref": "0002730757438",
+                "available": 0,
+                "price": 4500,
+                "validUntil": "2019-10-31T15:10:27Z"
+            }
+        ]),
+        iter([
+            {
+                "ref": "0002736409898",
+                "available": 2,
+                "price": 100,
+                "validUntil": "2019-10-31T15:10:27Z"
+            }
+        ])
+    ]
+
+    offerer = create_offerer(siren='775671464')
+    venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
+    PcObject.save(venue)
+
+    tite_live_things_provider = get_provider_by_local_class('TiteLiveThings')
+    venue_provider = VenueProvider()
+    venue_provider.venue = venue
+    venue_provider.provider = tite_live_things_provider
+    venue_provider.isActive = True
+    venue_provider.venueIdAtOfferProvider = '77567146400110'
+    PcObject.save(venue_provider)
+
+    product1 = create_product_with_thing_type(id_at_providers='0002730757438')
+    product2 = create_product_with_thing_type(id_at_providers='0002736409898')
+    PcObject.save(product1, product2)
+
+    # When
+    provider_test(app,
+                  TiteLiveStocks,
+                  venue_provider,
+                  checkedObjects=4,
+                  createdObjects=4,
+                  updatedObjects=0,
+                  erroredObjects=0,
+                  checkedThumbs=0,
+                  createdThumbs=0,
+                  updatedThumbs=0,
+                  erroredThumbs=0
+                  )
+
+    # Then
+    assert Offer.query.count() == 2
+    assert Product.query.count() == 2

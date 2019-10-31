@@ -5,7 +5,6 @@ from unittest.mock import patch, ANY
 import pytest
 
 from local_providers import BankInformationProvider
-from local_providers.demarches_simplifiees_bank_information import UnknownRibAffiliation
 from models import BankInformation, PcObject, LocalProviderEvent
 from models.local_provider_event import LocalProviderEventType
 from tests.conftest import clean_database
