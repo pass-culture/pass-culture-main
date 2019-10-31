@@ -294,6 +294,8 @@ class Patch:
 
                 # Then
                 assert response.status_code == 403
+                assert response.json['global'] == [
+                    "Vous n'avez pas les droits suffisants pour éditer cette contremarque."]
 
 
     class Returns404:
