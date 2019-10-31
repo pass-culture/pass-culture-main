@@ -225,8 +225,9 @@ jobs:
             git remote add nonono git@scalingo.com:${SCALINGO_APP_NAME}.git
             git remote add scalingo_outscale git@ssh.agora-fr1.scalingo.com:${SCALINGO_APP_NAME}.git
             git remote -v
+            echo $env_remote_origin
             echo ${!env_remote_origin:-scalingo_agora}
-#            git push -f ${!env_remote_origin:-scalingo_agora} HEAD:master
+            git push -f ${!env_remote_origin:-scalingo_agora} HEAD:master
       - run:
           name: Check deployed version
           command: |
@@ -394,7 +395,7 @@ workflows:
           filters:
             branches:
               only:
-                - PC-2478-migration-envs-vers-outscale
+                - PC_2478_migration_envs_vers_outscale
       - deploy-api-datalake:
           filters:
             branches:
