@@ -53,9 +53,9 @@ ShallowWrapper {
           <span
             className="is-block mb36"
           >
-            Votre réservation
+            Votre réservation 
             <i>
-               duo 
+              duo 
             </i>
             est validée.
           </span>
@@ -144,9 +144,9 @@ ShallowWrapper {
             <span
               className="is-block mb36"
             >
-              Votre réservation
+              Votre réservation 
               <i>
-                 duo 
+                duo 
               </i>
               est validée.
             </span>,
@@ -195,9 +195,9 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": Array [
-                "Votre réservation",
+                "Votre réservation ",
                 <i>
-                   duo 
+                  duo 
                 </i>,
                 "est validée.",
                 false,
@@ -206,16 +206,16 @@ ShallowWrapper {
             },
             "ref": null,
             "rendered": Array [
-              "Votre réservation",
+              "Votre réservation ",
               Object {
                 "instance": null,
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": " duo ",
+                  "children": "duo ",
                 },
                 "ref": null,
-                "rendered": " duo ",
+                "rendered": "duo ",
                 "type": "i",
               },
               "est validée.",
@@ -515,9 +515,9 @@ ShallowWrapper {
             <span
               className="is-block mb36"
             >
-              Votre réservation
+              Votre réservation 
               <i>
-                 duo 
+                duo 
               </i>
               est validée.
             </span>
@@ -606,9 +606,9 @@ ShallowWrapper {
               <span
                 className="is-block mb36"
               >
-                Votre réservation
+                Votre réservation 
                 <i>
-                   duo 
+                  duo 
                 </i>
                 est validée.
               </span>,
@@ -657,9 +657,9 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  "Votre réservation",
+                  "Votre réservation ",
                   <i>
-                     duo 
+                    duo 
                   </i>,
                   "est validée.",
                   false,
@@ -668,16 +668,16 @@ ShallowWrapper {
               },
               "ref": null,
               "rendered": Array [
-                "Votre réservation",
+                "Votre réservation ",
                 Object {
                   "instance": null,
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": " duo ",
+                    "children": "duo ",
                   },
                   "ref": null,
-                  "rendered": " duo ",
+                  "rendered": "duo ",
                   "type": "i",
                 },
                 "est validée.",
@@ -2127,7 +2127,7 @@ ShallowWrapper {
           <span
             className="is-block mb36"
           >
-            Votre réservation
+            Votre réservation 
             est validée.
           </span>
         </h3>,
@@ -2215,7 +2215,7 @@ ShallowWrapper {
             <span
               className="is-block mb36"
             >
-              Votre réservation
+              Votre réservation 
               est validée.
             </span>,
           ],
@@ -2263,7 +2263,7 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": Array [
-                "Votre réservation",
+                "Votre réservation ",
                 false,
                 "est validée.",
                 false,
@@ -2272,7 +2272,7 @@ ShallowWrapper {
             },
             "ref": null,
             "rendered": Array [
-              "Votre réservation",
+              "Votre réservation ",
               false,
               "est validée.",
               false,
@@ -2571,7 +2571,7 @@ ShallowWrapper {
             <span
               className="is-block mb36"
             >
-              Votre réservation
+              Votre réservation 
               est validée.
             </span>
           </h3>,
@@ -2659,7 +2659,7 @@ ShallowWrapper {
               <span
                 className="is-block mb36"
               >
-                Votre réservation
+                Votre réservation 
                 est validée.
               </span>,
             ],
@@ -2707,7 +2707,7 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  "Votre réservation",
+                  "Votre réservation ",
                   false,
                   "est validée.",
                   false,
@@ -2716,7 +2716,7 @@ ShallowWrapper {
               },
               "ref": null,
               "rendered": Array [
-                "Votre réservation",
+                "Votre réservation ",
                 false,
                 "est validée.",
                 false,

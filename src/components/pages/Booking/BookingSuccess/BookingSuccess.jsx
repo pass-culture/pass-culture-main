@@ -20,8 +20,8 @@ const BookingSuccess = ({ bookedPayload, isEvent }) => {
           <Icon svg="picto-validation" />
         </span>
         <span className="is-block mb36">
-          {isEvent && 'Votre réservation'}
-          {isEvent && isDuo && <i>{' duo '}</i>}
+          {isEvent && 'Votre réservation '}
+          {isEvent && isDuo && <i>{'duo '}</i>}
           {isEvent && 'est validée.'}
           {!isEvent && (
             <Fragment>
