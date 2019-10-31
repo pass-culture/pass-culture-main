@@ -894,7 +894,7 @@ def create_venue_provider(venue, provider, venue_id_at_offer_provider='775671464
     return venue_provider
 
 
-def activate_provider(provider_classname):
+def activate_provider(provider_classname: str) -> Provider:
     provider = get_provider_by_local_class(provider_classname)
     provider.isActive = True
     provider.enabledForPro = True

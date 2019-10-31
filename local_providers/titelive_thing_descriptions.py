@@ -58,7 +58,6 @@ class TiteLiveThingDescriptions(LocalProvider):
         next_zip_file_name = str(next(self.zips))
         self.zip_file = get_zip_file_from_ftp(next_zip_file_name, DESCRIPTION_FOLDER_NAME_TITELIVE)
 
-        logger.info("  Importing descriptions from file " + str(self.zip_file))
         self.log_provider_event(LocalProviderEventType.SyncPartStart,
                                 get_date_from_filename(self.zip_file, DATE_REGEXP))
 

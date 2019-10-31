@@ -14,6 +14,12 @@ from utils.string_processing import trim_with_elipsis
 DATE_REGEXP = re.compile('([a-zA-Z]+)(\d+).tit')
 THINGS_FOLDER_NAME_TITELIVE = 'livre3_11'
 NUMBER_OF_ELEMENTS_PER_LINE = 46  # (45 elements from line + \n)
+SCHOOL_RELATED_CSR_CODE = [
+    '2700', '2701', '2702', '2703', '2704', '2800', '2801', '2802', '2803', '2804', '2900', '2901',
+    '2902', '2903', '2904', '2905', '2906', '2907', '3000', '3001', '3002', '3003', '3004', '3005',
+    '3006', '3007', '3008', '3302', '3303', '3304', '3511', '3611', '4001', '4002', '4800', '4803',
+    '4806', '4807', '5512', '9620', '9621', '9622', '9623', '9800', '9811', '9812', '9814'
+]
 
 
 class TiteLiveThings(LocalProvider):
@@ -47,7 +53,9 @@ class TiteLiveThings(LocalProvider):
 
         self.infos = get_infos_from_data_line(elements)
 
-        if self.infos['is_scolaire'] == '1':
+        school_related_product = self.infos['is_scolaire'] == '1' \
+                                 or self.infos['code_csr'] in SCHOOL_RELATED_CSR_CODE
+        if school_related_product:
             return []
 
         self.extraData = {}
