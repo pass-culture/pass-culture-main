@@ -38,8 +38,8 @@ class GetFirstStockCreationDatesTest:
         stock_1 = create_stock(offer=offer, price=0)
         date_before_first_save = datetime.utcnow()
         PcObject.save(stock_1)
-        date_before_second_save = datetime.utcnow()
         stock_2 = create_stock(offer=offer, price=0)
+        date_before_second_save = datetime.utcnow()
         PcObject.save(stock_2)
         connection = db.engine.connect()
 
