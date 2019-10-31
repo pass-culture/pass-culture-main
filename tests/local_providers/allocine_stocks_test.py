@@ -659,3 +659,13 @@ class AllocineStocksTest:
             assert "visa" not in movie_parsed_information
             assert "stageDirector" not in movie_parsed_information
             assert movie_parsed_information['duration'] == 110
+
+        def test_should_return_empty_dict_when_there_are_no_movies(self):
+            # Given
+            movie_information = {}
+
+            # When
+            movie_parsed_information = retrieve_movie_information(movie_information)
+
+            # Then
+            assert len(movie_parsed_information) == 0

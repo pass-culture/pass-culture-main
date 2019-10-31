@@ -88,23 +88,28 @@ class AllocineStocks(LocalProvider):
 
 def retrieve_movie_information(movie_json_information: dict) -> dict:
     movie_parsed_information = {}
-    movie_information = movie_json_information['node']['movie']
-    movie_parsed_information['id'] = movie_information['id']
-    movie_parsed_information['description'] = _build_description_information(movie_information)
-    movie_parsed_information['duration'] = _parse_movie_duration(movie_information['runtime'])
-    movie_parsed_information['title'] = movie_information['title']
+    try :
+        movie_information = movie_json_information['node']['movie']
+        movie_parsed_information['id'] = movie_information['id']
+        movie_parsed_information['description'] = _build_description_information(movie_information)
+        movie_parsed_information['duration'] = _parse_movie_duration(movie_information['runtime'])
+        movie_parsed_information['title'] = movie_information['title']
 
-    stage_director_info_available = len(movie_information['credits']['edges']) > 0
+        stage_director_info_available = len(movie_information['credits']['edges']) > 0
 
-    if stage_director_info_available:
-        movie_parsed_information['stageDirector'] = _build_stage_director_information(movie_information)
+        if stage_director_info_available:
+            movie_parsed_information['stageDirector'] = _build_stage_director_information(movie_information)
 
-    visa_number_available = len(movie_information['releases']) > 0
+        visa_number_available = len(movie_information['releases']) > 0
 
-    if visa_number_available:
-        movie_parsed_information['visa'] = _build_visa_information(movie_information)
+        if visa_number_available:
+            movie_parsed_information['visa'] = _build_visa_information(movie_information)
 
-    return movie_parsed_information
+        return movie_parsed_information
+
+    except :
+        return {}
+
 
 
 def _build_description_information(movie_info: dict) -> str:

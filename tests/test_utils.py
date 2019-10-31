@@ -346,7 +346,7 @@ def create_product_with_thing_type(
 
 def create_product_with_event_type(
         event_name='Test event',
-        event_type=EventType.CINEMA,
+        event_type=EventType.SPECTACLE_VIVANT,
         description=None,
         dominant_color=None,
         duration_minutes=60,
