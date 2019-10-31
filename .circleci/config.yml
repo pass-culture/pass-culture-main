@@ -189,21 +189,54 @@ jobs:
           command: |
             SCALINGO_APP_NAME=$(./scripts/compute_app_name.sh ${CIRCLE_BRANCH})
             cd api
-#            git remote add scalingo git@scalingo.com:${SCALINGO_APP_NAME}.git
-            git remote add scalingo_outscale git@ssh.agora-fr1.scalingo.com:${SCALINGO_APP_NAME}.git
-#            git push -f scalingo HEAD:master
-            git push -f scalingo_outscale HEAD:master
+            git remote add scalingo git@scalingo.com:${SCALINGO_APP_NAME}.git
+            git push -f scalingo HEAD:master
       - run:
           name: Check deployed version
           command: |
-#            COMPONENT_URL="https://backend.$(./scripts/compute_component_partial_url.sh ${CIRCLE_BRANCH})"
-            COMPONENT_URL="https://pass-culture-api-staging.osc-fr1.scalingo.io"
+            COMPONENT_URL="https://backend.$(./scripts/compute_component_partial_url.sh ${CIRCLE_BRANCH})"
             ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
       - run:
           name: Send failure notification
           command: |
             VERSION_TO_DEPLOY=$(git describe --contains)
             BOT_MESSAGE="*"$CIRCLE_BRANCH"* : *API* deployment *"$VERSION_TO_DEPLOY"* seems to have *FAILED* "$'\U00026C5'""
+            curl -d text="$BOT_MESSAGE" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown"
+            curl --request POST "http://$LOGSTASH_USER:$LOGSTASH_PASSWORD@pc-logstash.scalingo.io?Application=Api&Environment=$CIRCLE_BRANCH&deployed=false&version=$VERSION_TO_DEPLOY"
+          when: on_fail
+
+  deploy-api-new-region:
+    machine:
+      image: circleci/classic:latest
+    working_directory: ~/pass-culture
+    steps:
+      - checkout
+      - run: pyenv global 3.5.2
+#      - run: pip install requests
+#      - run: python scripts/check_ci_status.py $CIRCLE_SHA1 $(git describe --contains)
+      - run: git submodule sync
+      - run: git submodule update --init
+      - run:
+          name: Deploy API
+          command: |
+            env_remote_origin="$CIRCLE_BRANCH"_remote_origin
+            SCALINGO_APP_NAME=$(./scripts/compute_app_name.sh ${CIRCLE_BRANCH})
+            cd api
+            git remote add nonono git@scalingo.com:${SCALINGO_APP_NAME}.git
+            git remote add scalingo_outscale git@ssh.agora-fr1.scalingo.com:${SCALINGO_APP_NAME}.git
+            git remote -v
+            echo ${!env_remote_origin:-scalingo_agora}
+#            git push -f ${!env_remote_origin:-scalingo_agora} HEAD:master
+      - run:
+          name: Check deployed version
+          command: |
+            COMPONENT_URL="https://pass-culture-api-staging.osc-fr1.scalingo.io"
+            ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
+      - run:
+          name: Send failure notification
+          command: |
+            VERSION_TO_DEPLOY=$(git describe --contains)
+            BOT_MESSAGE="NEW REGION : *"$CIRCLE_BRANCH"* : *API* deployment *"$VERSION_TO_DEPLOY"* seems to have *FAILED* "$'\U00026C5'""
             curl -d text="$BOT_MESSAGE" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown"
             curl --request POST "http://$LOGSTASH_USER:$LOGSTASH_PASSWORD@pc-logstash.scalingo.io?Application=Api&Environment=$CIRCLE_BRANCH&deployed=false&version=$VERSION_TO_DEPLOY"
           when: on_fail
@@ -357,6 +390,11 @@ workflows:
               - staging
               - integration
               - demo
+      - deploy-api-new-region:
+          filters:
+            branches:
+              only:
+                - PC-2478-migration-envs-vers-outscale
       - deploy-api-datalake:
           filters:
             branches:
