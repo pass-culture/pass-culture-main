@@ -13,6 +13,7 @@ import externalSubmitForm from '../../forms/utils/externalSubmitForm'
 import { priceIsDefined } from '../../../helpers/getDisplayPrice'
 import getIsBooking from '../../../helpers/getIsBooking'
 import { ROOT_PATH } from '../../../utils/config'
+import handleRedirect from './utils/handleRedirect'
 
 const BOOKING_FORM_ID = 'form-create-booking'
 
@@ -86,10 +87,10 @@ class Booking extends PureComponent {
   }
 
   handleReturnToDetails = () => {
-    const { match, history } = this.props
-    const { url } = match
-    const detailsUrl = url.split(/\/reservation(\/|$|\/$)/)[0]
-    history.replace(detailsUrl)
+    const { history, match } = this.props
+    const { bookedPayload } = this.state
+    const nextUrl = handleRedirect(bookedPayload, match)
+    history.replace(nextUrl)
   }
 
   renderFormControls = () => {
