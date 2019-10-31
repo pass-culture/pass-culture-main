@@ -66,11 +66,11 @@ describe('src | components | layout | Verso | VersoControls | booking | Cancelli
   })
 
   describe('mapStateToProps', () => {
-    it('should return an object with booking, cancelling link, offer and price when offer is not duo', () => {
+    it('should return an object with booking, cancelling link, offer and price when offer is not duo and booking quantity is 1', () => {
       // given
       const state = {
         data: {
-          bookings: [{ id: 'AE' }],
+          bookings: [{ id: 'AE', quantity: 1 }],
           offers: [{ id: 'BF', isDuo: false }],
           stocks: [{ offerId: 'BF', price: 20 }],
         },
@@ -92,18 +92,18 @@ describe('src | components | layout | Verso | VersoControls | booking | Cancelli
 
       // then
       expect(props).toStrictEqual({
-        booking: { id: 'AE' },
+        booking: { id: 'AE', quantity: 1 },
         cancellingUrl: '/reservations/details/GM/reservation/annulation',
         offer: { id: 'BF', isDuo: false },
         price: 20,
       })
     })
 
-    it('should return an object with booking, cancelling link, offer and price when offer is duo', () => {
+    it('should return an object with booking, cancelling link, offer and price when offer is duo and booking quantity is 2', () => {
       // given
       const state = {
         data: {
-          bookings: [{ id: 'AE' }],
+          bookings: [{ id: 'AE', quantity: 2 }],
           offers: [{ id: 'BF', isDuo: true }],
           stocks: [{ offerId: 'BF', price: 20 }],
         },
@@ -125,7 +125,7 @@ describe('src | components | layout | Verso | VersoControls | booking | Cancelli
 
       // then
       expect(props).toStrictEqual({
-        booking: { id: 'AE' },
+        booking: { id: 'AE', quantity: 2 },
         cancellingUrl: '/reservations/details/GM/reservation/annulation',
         offer: { id: 'BF', isDuo: true },
         price: 40,

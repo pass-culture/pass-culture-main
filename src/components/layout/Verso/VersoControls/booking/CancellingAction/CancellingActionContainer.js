@@ -31,7 +31,7 @@ export const mapStateToProps = (state, ownProps) => {
   const cancellingUrl = getCancellingUrl(booking.id, match.params, pathname, search)
   const offer = selectOfferByRouterMatch(state, match)
   const stock = selectStockById(state, booking.stockId)
-  const price = offer.isDuo ? stock.price * 2 : stock.price
+  const price = booking.quantity === 2 ? stock.price * 2 : stock.price
 
   return { booking, cancellingUrl, offer, price }
 }
