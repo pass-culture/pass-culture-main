@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Union, List
+from typing import Union, List, Optional
 
 import requests
 from sqlalchemy import Sequence
@@ -59,7 +59,7 @@ class TiteLiveStocks(LocalProvider):
         self.product = None
         self.offer_id = None
 
-    def __next__(self) -> List[ProvidableInfo]:
+    def __next__(self) -> Optional[List[ProvidableInfo]]:
         self.index = self.index + 1
 
         if self.data is None \
@@ -88,7 +88,7 @@ class TiteLiveStocks(LocalProvider):
             self.product = thing_queries.find_thing_product_by_isbn_only_for_type_book(self.titelive_stock['ref'])
 
         if self.product is None:
-            return None, None
+            return None
 
         providable_info_stock = self.create_providable_info(Stock)
         providable_info_offer = self.create_providable_info(Offer)

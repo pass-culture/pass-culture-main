@@ -1,6 +1,6 @@
 import re
 from io import TextIOWrapper, BytesIO
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from connectors.ftp_titelive import get_files_to_process_from_titelive_ftp, connect_to_titelive_ftp
 from domain.titelive import get_date_from_filename, read_things_date
@@ -46,7 +46,7 @@ class TiteLiveThings(LocalProvider):
 
         self.data_lines = get_lines_from_thing_file(str(self.thing_file))
 
-    def __next__(self) -> List[ProvidableInfo]:
+    def __next__(self) -> Optional[List[ProvidableInfo]]:
         if self.data_lines is None:
             self.open_next_file()
 
