@@ -54,22 +54,4 @@ describe('src | components | booking | utils | handleRedirect', () => {
       expect(result).toBe('/decouverte/AUVQ/AQ7A/details')
     })
   })
-
-  describe('when navigating from search', () => {
-    it('should redirect to last search view', () => {
-      // given
-      const booking = {
-        id: 'ABC1',
-      }
-      const match = {
-        url: '/decouverte/AUVQ/AQ7A/details/reservation',
-      }
-
-      // when
-      const result = handleRedirect(booking, match)
-
-      // then
-      expect(result).toBe('/decouverte/AUVQ/AQ7A/details')
-    })
-  })
 })

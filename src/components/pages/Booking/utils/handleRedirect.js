@@ -4,7 +4,7 @@ const handleRedirect = (booking, match) => {
 
   if (url.includes('reservations')) {
     if (booking) {
-      nextUrl = '/reservations/details/' + booking.id
+      nextUrl = `/reservations/details/${booking.id}`
     }
   }
   return nextUrl
