@@ -3,7 +3,7 @@ import React from 'react'
 import { getCancellingUrl, mapDispatchToProps, mapStateToProps } from '../CancellingActionContainer'
 
 describe('src | components | layout | Verso | VersoControls | booking | CancellingAction | CancellingActionContainer', () => {
-  describe('getcancellingUrl', () => {
+  describe('getCancellingUrl', () => {
     describe('when I am in reservations page', () => {
       it('should return a URL without booking id', () => {
         // given
@@ -66,12 +66,12 @@ describe('src | components | layout | Verso | VersoControls | booking | Cancelli
   })
 
   describe('mapStateToProps', () => {
-    it('should return an object with booking, cancelling link, offer and price', () => {
+    it('should return an object with booking, cancelling link, offer and price when offer is not duo', () => {
       // given
       const state = {
         data: {
           bookings: [{ id: 'AE' }],
-          offers: [{ id: 'BF' }],
+          offers: [{ id: 'BF', isDuo: false }],
           stocks: [{ offerId: 'BF', price: 20 }],
         },
       }
@@ -94,8 +94,41 @@ describe('src | components | layout | Verso | VersoControls | booking | Cancelli
       expect(props).toStrictEqual({
         booking: { id: 'AE' },
         cancellingUrl: '/reservations/details/GM/reservation/annulation',
-        offer: { id: 'BF' },
+        offer: { id: 'BF', isDuo: false },
         price: 20,
+      })
+    })
+
+    it('should return an object with booking, cancelling link, offer and price when offer is duo', () => {
+      // given
+      const state = {
+        data: {
+          bookings: [{ id: 'AE' }],
+          offers: [{ id: 'BF', isDuo: true }],
+          stocks: [{ offerId: 'BF', price: 20 }],
+        },
+      }
+      const ownProps = {
+        location: {
+          pathname: '/reservations/details/GM',
+          search: '',
+        },
+        match: {
+          params: {
+            bookingId: 'AE',
+          },
+        },
+      }
+
+      // when
+      const props = mapStateToProps(state, ownProps)
+
+      // then
+      expect(props).toStrictEqual({
+        booking: { id: 'AE' },
+        cancellingUrl: '/reservations/details/GM/reservation/annulation',
+        offer: { id: 'BF', isDuo: true },
+        price: 40,
       })
     })
   })
