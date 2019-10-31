@@ -3,8 +3,3 @@ export const PROVIDER_ICONS = {
   AllocineStocks: 'logo-allocine',
   OpenAgendaEvents: 'logo-openAgenda',
 }
-
-export const PROVIDER_NAMES = {
-  TiteLive: 'titelive',
-  Allocine: 'allociné',
-}

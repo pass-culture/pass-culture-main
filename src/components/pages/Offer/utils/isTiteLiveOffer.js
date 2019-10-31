@@ -1,5 +1,3 @@
-import { PROVIDER_NAMES } from '../../../utils/providers'
-
 const isTiteLiveOffer = offer => {
   if (offer == null) {
     return false
@@ -10,9 +8,7 @@ const isTiteLiveOffer = offer => {
     return false
   }
 
-  const { name: lastProviderName } = lastProvider
-  const lastProviderNameAsLowerCase = lastProviderName.toLowerCase()
-  return lastProviderNameAsLowerCase.includes(PROVIDER_NAMES['TiteLive'])
+  return lastProvider.name.toLowerCase().includes('titelive')
 }
 
 export default isTiteLiveOffer
