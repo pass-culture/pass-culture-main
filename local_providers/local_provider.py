@@ -83,7 +83,6 @@ class LocalProvider(Iterator):
             existing_thumb_date = obj.thumb_date(new_thumb_index)
             if existing_thumb_date is None \
                     or existing_thumb_date < new_thumb_date:
-
                 new_thumb = self.getObjectThumb(obj, new_thumb_index)
                 if new_thumb is None:
                     return
