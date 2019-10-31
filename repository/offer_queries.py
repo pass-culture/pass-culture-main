@@ -290,14 +290,10 @@ def find_offers_with_filter_parameters(
     return query
 
 
-def _build_has_remaining_stock_predicate():
-    stock_has_undefined_available = Stock.available == None
-    booked_stock_quantity = Booking.query.filter(
-        (Booking.stockId == Stock.id) & \
-        (Booking.isCancelled == False)
-    ).statement.with_only_columns([func.coalesce(func.sum(Booking.quantity), 0)])
-    still_more_available_than_booked_stock = Stock.available > booked_stock_quantity
-    return stock_has_undefined_available | still_more_available_than_booked_stock
+def _has_remaining_stock():
+    is_unlimited_stock = Stock.available == None
+    has_remaining_stock = Stock.remainingQuantity > 0
+    return is_unlimited_stock | has_remaining_stock
 
 
 def find_searchable_offer(offer_id):
@@ -317,7 +313,7 @@ def _offer_has_bookable_stocks():
         .filter(Stock.isSoftDeleted == False) \
         .filter(stock_can_still_be_booked) \
         .filter(event_has_not_began_yet | offer_is_on_a_thing) \
-        .filter(_build_has_remaining_stock_predicate()) \
+        .filter(_has_remaining_stock()) \
         .exists()
 
 
@@ -357,7 +353,7 @@ def _filter_bookable_stocks_for_discovery(stocks_query):
                                           | has_no_beginning_date_predicate)
                                        & (booking_limit_date_is_in_the_future_predicate
                                           | has_no_booking_limit_date_predicate)
-                                       & _build_has_remaining_stock_predicate())
+                                       & _has_remaining_stock())
     return stocks_query
 
 
