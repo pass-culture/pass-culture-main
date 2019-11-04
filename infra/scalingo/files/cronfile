@@ -16,9 +16,9 @@
 
 # Restore dump functions
 # ------------------
-0 2 * * 1 . $HOME/.profile; restore_prod_to_env.sh -a pass-culture-api-staging -l -h > /var/log/restore/restore_staging.log
+30 2 * * 1 . $HOME/.profile; restore_prod_to_env_new_region.sh -a pass-culture-api-staging -l -h > /var/log/restore/restore_staging.log
 
-30 1 * * 1 . $HOME/.profile; restore_prod_to_env.sh -a pass-culture-api-dev -l -z -h > /var/log/restore/restore_dev.log
+30 1 * * 1 . $HOME/.profile; restore_prod_to_env_new_region.sh -a pass-culture-api-dev -l -z -h > /var/log/restore/restore_dev.log
 
 30 0 * * * . $HOME/.profile; restore_prod_to_env.sh -a pass-culture-datalake -l -z -h > /var/log/restore/restore_datalake.log
 
