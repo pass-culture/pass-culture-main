@@ -50,16 +50,9 @@ class TiteliveThingThumbsTest:
         product1 = create_product_with_thing_type(id_at_providers='9780847858903', thumb_count=0)
         product2 = create_product_with_thing_type(id_at_providers='9782016261903', thumb_count=0)
         PcObject.save(product1, product2)
-
-        # mock TiteliveThingThumb
-        files = get_ordered_zip_thumbs_files_from_sandbox_files()
-        get_ordered_thumbs_zip_files.return_value = files
-
-        zip_files = []
-        for file in files:
-            zip_file = get_zip_file_from_sandbox(file)
-            zip_files.append(zip_file)
-        get_thumbs_zip_file_from_ftp.side_effect = zip_files
+        zip_thumb_file = get_zip_thumb_file_for_test_compute_first_thumb_color_dominant()
+        get_ordered_thumbs_zip_files.return_value = [zip_thumb_file]
+        get_thumbs_zip_file_from_ftp.side_effect = [get_zip_file_from_sandbox(zip_thumb_file)]
 
         # Import thumbs for existing things
         provider_test(app,
@@ -86,32 +79,32 @@ class TiteliveThingThumbsTest:
         # Given
         product1 = create_product_with_thing_type(id_at_providers='9780847858903', thumb_count=0)
         PcObject.save(product1)
-        # mock TiteliveThingThumb
-        files = get_ordered_zip_thumbs_files_from_sandbox_files()
-        get_ordered_thumbs_zip_files.return_value = files
+        zip_thumb_file = get_zip_thumb_file_for_test_updates_thumb_count_for_product()
+        get_ordered_thumbs_zip_files.return_value = [zip_thumb_file]
+        get_thumbs_zip_file_from_ftp.side_effect = [get_zip_file_from_sandbox(zip_thumb_file)]
 
-        zip_files = []
-        for file in files:
-            zip_file = get_zip_file_from_sandbox(file)
-            zip_files.append(zip_file)
-        get_thumbs_zip_file_from_ftp.side_effect = zip_files
-
-        # When
         provider_object = TiteLiveThingThumbs()
         provider_object.provider.isActive = True
         PcObject.save(provider_object.provider)
+
+        # When
         provider_object.updateObjects()
 
+        # Then
         new_product = Product.query.one()
         assert new_product.name == 'Test Book'
         assert new_product.thumbCount == 1
 
-def get_ordered_zip_thumbs_files_from_sandbox_files():
+def get_zip_thumb_file_for_test_compute_first_thumb_color_dominant():
+    return get_zip_thumbs_file_from_named_sandbox_file('test_livres_tl20190505.zip')
+
+def get_zip_thumb_file_for_test_updates_thumb_count_for_product():
+    return get_zip_thumbs_file_from_named_sandbox_file('test_livres_tl20191104.zip')
+
+def get_zip_thumbs_file_from_named_sandbox_file(file_name):
     data_root_path = Path(os.path.dirname(os.path.realpath(__file__))) \
                      / '..' / '..' / 'sandboxes' / 'providers' / 'titelive_works'
-    data_thumbs_path = data_root_path / THUMB_FOLDER_NAME_TITELIVE
-    all_zips = list(sorted(data_thumbs_path.glob('test_livres_tl*.zip')))
-    return all_zips
+    return data_root_path / THUMB_FOLDER_NAME_TITELIVE / file_name
 
 
 def get_zip_file_from_sandbox(file):
