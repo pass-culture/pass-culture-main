@@ -6,8 +6,8 @@ from models import Product, BookFormat
 from models.pc_object import PcObject
 from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
-from tests.test_utils import create_offerer, create_venue, provider_test, create_product_with_thing_type, \
-    create_provider, activate_provider
+from tests.test_utils import create_offerer, create_venue, create_product_with_thing_type, \
+    activate_provider
 
 
 class TiteliveThingsTest:
@@ -73,22 +73,13 @@ class TiteliveThingsTest:
 
         offerer = create_offerer(siren='775671464')
         venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-        PcObject.save(venue)
+        titelive_provider = activate_provider('TiteLiveThings')
+        PcObject.save(venue, titelive_provider)
+
+        titelive_things = TiteLiveThings()
 
         # When
-        provider_test(app,
-                      TiteLiveThings,
-                      None,
-                      checkedObjects=1,
-                      createdObjects=1,
-                      updatedObjects=0,
-                      erroredObjects=0,
-                      checkedThumbs=0,
-                      createdThumbs=0,
-                      updatedThumbs=0,
-                      erroredThumbs=0,
-                      Product=1
-                      )
+        titelive_things.updateObjects()
 
         # Then
         product = Product.query.one()
@@ -158,22 +149,16 @@ class TiteliveThingsTest:
 
         offerer = create_offerer(siren='775671464')
         venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-        PcObject.save(venue)
+        titelive_provider = activate_provider('TiteLiveThings')
+        PcObject.save(venue, titelive_provider)
 
-        # When / Then
-        provider_test(app,
-                      TiteLiveThings,
-                      None,
-                      checkedObjects=1,
-                      createdObjects=0,
-                      updatedObjects=0,
-                      erroredObjects=0,
-                      checkedThumbs=0,
-                      createdThumbs=0,
-                      updatedThumbs=0,
-                      erroredThumbs=0,
-                      Product=0
-                      )
+        titelive_things = TiteLiveThings()
+
+        # When
+        titelive_things.updateObjects()
+
+        # Then
+        assert Product.query.count() == 0
 
     @clean_database
     @patch('local_providers.titelive_things.get_files_to_process_from_titelive_ftp')
@@ -245,21 +230,13 @@ class TiteliveThingsTest:
                                                  thing_name='Toto à la playa',
                                                  date_modified_at_last_provider=datetime(2001, 1, 1),
                                                  last_provider_id=titelive_things_provider.id)
-        PcObject.save(venue, product)
+        titelive_provider = activate_provider('TiteLiveThings')
+        PcObject.save(venue, product, titelive_provider)
+
+        titelive_things = TiteLiveThings()
 
         # When
-        provider_test(app,
-                      TiteLiveThings,
-                      None,
-                      checkedObjects=1,
-                      createdObjects=0,
-                      updatedObjects=1,
-                      erroredObjects=0,
-                      checkedThumbs=0,
-                      createdThumbs=0,
-                      updatedThumbs=0,
-                      erroredThumbs=0,
-                      )
+        titelive_things.updateObjects()
 
         # Then
         updated_product = Product.query.first()
@@ -277,22 +254,16 @@ class TiteliveThingsTest:
 
         offerer = create_offerer(siren='775671464')
         venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-        PcObject.save(venue)
+        titelive_provider = activate_provider('TiteLiveThings')
+        PcObject.save(venue, titelive_provider)
 
-        # When / Then
-        provider_test(app,
-                      TiteLiveThings,
-                      None,
-                      checkedObjects=0,
-                      createdObjects=0,
-                      updatedObjects=0,
-                      erroredObjects=0,
-                      checkedThumbs=0,
-                      createdThumbs=0,
-                      updatedThumbs=0,
-                      erroredThumbs=0,
-                      Product=0
-                      )
+        titelive_things = TiteLiveThings()
+
+        # When
+        titelive_things.updateObjects()
+
+        # Then
+        assert Product.query.count() == 0
 
     @clean_database
     @patch('local_providers.titelive_things.get_files_to_process_from_titelive_ftp')
@@ -313,22 +284,16 @@ class TiteliveThingsTest:
 
         offerer = create_offerer(siren='775671464')
         venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-        PcObject.save(venue)
+        titelive_provider = activate_provider('TiteLiveThings')
+        PcObject.save(venue, titelive_provider)
 
-        # When / Then
-        provider_test(app,
-                      TiteLiveThings,
-                      None,
-                      checkedObjects=1,
-                      createdObjects=0,
-                      updatedObjects=0,
-                      erroredObjects=0,
-                      checkedThumbs=0,
-                      createdThumbs=0,
-                      updatedThumbs=0,
-                      erroredThumbs=0,
-                      Product=0
-                      )
+        titelive_things = TiteLiveThings()
+
+        # When
+        titelive_things.updateObjects()
+
+        # Then
+        assert Product.query.count() == 0
 
     @clean_database
     @patch('local_providers.titelive_things.get_files_to_process_from_titelive_ftp')
@@ -397,22 +362,16 @@ class TiteliveThingsTest:
 
         offerer = create_offerer(siren='775671464')
         venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-        PcObject.save(venue)
+        titelive_provider = activate_provider('TiteLiveThings')
+        PcObject.save(venue, titelive_provider)
 
-        # When / Then
-        provider_test(app,
-                      TiteLiveThings,
-                      None,
-                      checkedObjects=1,
-                      createdObjects=0,
-                      updatedObjects=0,
-                      erroredObjects=0,
-                      checkedThumbs=0,
-                      createdThumbs=0,
-                      updatedThumbs=0,
-                      erroredThumbs=0,
-                      Product=0
-                      )
+        titelive_things = TiteLiveThings()
+
+        # When
+        titelive_things.updateObjects()
+
+        # Then
+        assert Product.query.count() == 0
 
     @clean_database
     @patch('local_providers.titelive_things.get_files_to_process_from_titelive_ftp')
@@ -477,13 +436,12 @@ class TiteliveThingsTest:
 
         offerer = create_offerer(siren='775671464')
         venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-        PcObject.save(venue)
-
-        # When
         titelive_provider = activate_provider('TiteLiveThings')
-        PcObject.save(titelive_provider)
+        PcObject.save(venue, titelive_provider)
 
         titelive_things = TiteLiveThings()
+
+        # When
         titelive_things.updateObjects()
 
         # Then
