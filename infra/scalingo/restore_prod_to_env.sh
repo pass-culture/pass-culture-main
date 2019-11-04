@@ -19,7 +19,7 @@ fi
 
 DUMP_DIRECTORY=/data/
 
-echo "-------- $(date) ---------"
+echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Start restore DB script"
 
 # GET APPLICATION NAME
 if [[ $# -gt 1 ]] && [[ "$1" == "-a" ]]; then
@@ -99,7 +99,6 @@ echo tunnel has to be terminated $DB_TUNNEL_HAS_TO_BE_TERMINATED
 if [ "$DB_TUNNEL_HAS_TO_BE_TERMINATED" = true ]; then
   echo terminating tunnel
   kill -9 "$DB_TUNNEL_PID"
-echo toto
 fi
 
 if grep -q 'ERROR' /var/log/restore/"$APP_NAME"_error.log; then
