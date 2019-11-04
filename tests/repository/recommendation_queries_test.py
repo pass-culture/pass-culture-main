@@ -7,7 +7,7 @@ from repository.recommendation_queries import keep_only_bookable_stocks, \
 from tests.conftest import clean_database
 from tests.test_utils import create_recommendation, create_offer_with_event_product, create_offerer, \
     create_venue, create_user, create_stock_from_event_occurrence, create_event_occurrence, create_stock_from_offer, \
-    create_offer_with_thing_product, create_mediation
+    create_offer_with_thing_product, create_mediation, create_booking, create_stock_with_thing_offer
 from utils.human_ids import humanize
 
 
@@ -211,4 +211,25 @@ class DeleteAllUnreadRecommendationsOlderThanOneWeekTest:
         recommendations = Recommendation.query.all()
         assert not_read_new_recommendation in recommendations
         assert read_new_recommendation in recommendations
+
+    @clean_database
+    def test_doesnt_delete_booked_recommendations(self, app):
+        # Given
+        today = datetime.utcnow()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        product_with_thing_type = create_offer_with_thing_product(venue)
+        stock = create_stock_with_thing_offer(offerer, venue, product_with_thing_type, price=0)
+        user = create_user()
+        booked_recommendation = create_recommendation(offer, user, date_created=today - timedelta(days=9), date_read=None)
+        booking = create_booking(user, stock=stock,  venue=venue, recommendation=booked_recommendation)
+        PcObject.save(booking)
+
+        # When
+        delete_all_unread_recommendations_older_than_one_week()
+
+        # Then
+        recommendations = Recommendation.query.all()
+        assert booked_recommendation in recommendations
 
