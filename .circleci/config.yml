@@ -222,12 +222,12 @@ jobs:
             env_remote_origin="$CIRCLE_BRANCH"_remote_origin
             SCALINGO_APP_NAME=$(./scripts/compute_app_name.sh ${CIRCLE_BRANCH})
             cd api
-            git remote add nonono git@scalingo.com:${SCALINGO_APP_NAME}.git
-            git remote add scalingo_outscale git@ssh.agora-fr1.scalingo.com:${SCALINGO_APP_NAME}.git
+            git remote add nonono git@ssh.agora-fr1.scalingo.com:${SCALINGO_APP_NAME}.git
+            git remote add scalingo_outscale git@ssh.osc-fr1.scalingo.com:${SCALINGO_APP_NAME}.git
             git remote -v
             echo $env_remote_origin
             echo ${!env_remote_origin:-scalingo_agora}
-            git push -f ${!env_remote_origin:-scalingo_agora} HEAD:master
+            git push -f ${!env_remote_origin:-toto} HEAD:master
       - run:
           name: Check deployed version
           command: |

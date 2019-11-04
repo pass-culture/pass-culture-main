@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if [[ "$1" == "PC-2478-migration-envs-vers-outscale" ]]; then
-	echo "staging"
+if [[ "$1" == "PC_2478_migration_envs_vers_outscale" ]]; then
+	echo "pass-culture-api-staging"
 elif [[ "$1" == "production" ]]; then
 	echo "pass-culture-api"
 elif [[ "$1" == "master" ]]; then
