@@ -6,9 +6,9 @@ function logs {
         exit
     else
         if [[ $# -gt 0 ]]; then
-            scalingo -a "$SCALINGO_APP" logs "$@"
+            scalingo -a "$SCALINGO_APP" --region osc-fr1 logs "$@"
         else
-            scalingo -a "$SCALINGO_APP" logs -n 100
+            scalingo -a "$SCALINGO_APP" --region osc-fr1 logs -n 100
         fi
         exit
     fi
