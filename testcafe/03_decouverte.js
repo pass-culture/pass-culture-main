@@ -27,11 +27,11 @@ test('je peux parcourir les offres de gauche à droite et de droite à gauche', 
   await t.expect(nextButton.visible).ok()
 
   const urlAtStart = getPageUrl()
-  await t.drag(currentCard, -100, 0)
+  await t.drag(currentCard, -200, 0)
   await t.expect(getPageUrl()).notEql(urlAtStart)
   await t.expect(previousButton.visible).ok()
 
-  await t.drag(currentCard, 100, 0)
+  await t.drag(currentCard, 200, 0)
   await t.expect(getPageUrl()).notEql(urlAtStart)
 })
 

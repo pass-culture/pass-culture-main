@@ -7,13 +7,8 @@ import selectIsFeatureDisabled from './selectors/selectIsFeatureDisabled'
 export const mapStateToProps = (state, ownProps) => {
   const { features } = state.data
   const { featureName } = ownProps
-
-  let isRouteDisabled
-  if (!featureName) {
-    isRouteDisabled = false
-  } else {
-    isRouteDisabled = selectIsFeatureDisabled(state, featureName)
-  }
+  const isFeatureFlipped = featureName !== undefined
+  const isRouteDisabled = !isFeatureFlipped ? false : selectIsFeatureDisabled(state, featureName)
 
   return {
     areFeaturesLoaded: features.length > 0,

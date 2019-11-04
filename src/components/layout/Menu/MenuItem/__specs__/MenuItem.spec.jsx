@@ -10,7 +10,7 @@ describe('src | components | menu | MenuItem', () => {
 
   beforeEach(() => {
     props = {
-      disabled: false,
+      isDisabled: false,
       item: {
         icon: 'offres-w',
         path: '/plop',

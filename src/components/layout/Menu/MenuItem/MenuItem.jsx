@@ -3,14 +3,14 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import Item from './Item/Item'
 
-const MenuItem = ({ disabled, item }) => {
+const MenuItem = ({ isDisabled, item }) => {
   const { icon, href, path, target, title } = item
 
   if (href) {
     return (
       <a
         className="navlink mx12 flex-columns"
-        disabled={disabled}
+        disabled={isDisabled}
         href={href}
         key={href}
         rel={(target === '_blank' && 'noopener noreferer') || null}
@@ -27,10 +27,10 @@ const MenuItem = ({ disabled, item }) => {
   return (
     <Link
       className="flex-columns mx12 navlink"
-      disabled={disabled}
+      disabled={isDisabled}
       key={path}
       role="menuitem"
-      to={disabled ? '#' : path}
+      to={isDisabled ? '#' : path}
     >
       <Item
         icon={icon}
@@ -40,8 +40,12 @@ const MenuItem = ({ disabled, item }) => {
   )
 }
 
+MenuItem.defaultProps = {
+  isDisabled: false,
+}
+
 MenuItem.propTypes = {
-  disabled: PropTypes.bool.isRequired,
+  isDisabled: PropTypes.bool,
   item: PropTypes.shape({
     href: PropTypes.string,
     icon: PropTypes.string.isRequired,

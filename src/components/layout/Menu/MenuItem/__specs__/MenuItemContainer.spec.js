@@ -24,7 +24,7 @@ describe('src | components | menu | MenuItemContainer', () => {
 
       // then
       expect(result).toStrictEqual({
-        disabled: true,
+        isDisabled: true,
       })
     })
 
@@ -38,7 +38,7 @@ describe('src | components | menu | MenuItemContainer', () => {
 
       // then
       expect(result).toStrictEqual({
-        disabled: false,
+        isDisabled: false,
       })
     })
 
@@ -48,7 +48,7 @@ describe('src | components | menu | MenuItemContainer', () => {
 
       // then
       expect(result).toStrictEqual({
-        disabled: true,
+        isDisabled: true,
       })
     })
 
@@ -61,7 +61,7 @@ describe('src | components | menu | MenuItemContainer', () => {
 
       // then
       expect(result).toStrictEqual({
-        disabled: false,
+        isDisabled: false,
       })
     })
 
@@ -74,7 +74,7 @@ describe('src | components | menu | MenuItemContainer', () => {
 
       // then
       expect(result).toStrictEqual({
-        disabled: true,
+        isDisabled: true,
       })
     })
   })

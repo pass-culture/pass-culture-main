@@ -6,9 +6,9 @@ const getCalendarProvider = formValues => {
   if (!isvalid) return []
 
   return formValues.bookables
-    .filter(o => o && o.beginningDatetime)
-    .filter(o => moment.isMoment(o.beginningDatetime))
-    .map(o => o.beginningDatetime)
+    .filter(bookable => bookable && bookable.beginningDatetime)
+    .filter(bookable => moment.isMoment(bookable.beginningDatetime))
+    .map(bookable => bookable.beginningDatetime)
 }
 
 export default getCalendarProvider

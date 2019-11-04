@@ -66,7 +66,7 @@ ShallowWrapper {
         false,
         <Draggable
           allowAnyClick={false}
-          axis="exclude"
+          axis="both"
           bounds={
             Object {
               "bottom": 0,
@@ -141,7 +141,7 @@ ShallowWrapper {
         "nodeType": "class",
         "props": Object {
           "allowAnyClick": false,
-          "axis": "exclude",
+          "axis": "both",
           "bounds": Object {
             "bottom": 0,
             "left": NaN,
@@ -266,7 +266,7 @@ ShallowWrapper {
           false,
           <Draggable
             allowAnyClick={false}
-            axis="exclude"
+            axis="both"
             bounds={
               Object {
                 "bottom": 0,
@@ -341,7 +341,7 @@ ShallowWrapper {
           "nodeType": "class",
           "props": Object {
             "allowAnyClick": false,
-            "axis": "exclude",
+            "axis": "both",
             "bounds": Object {
               "bottom": 0,
               "left": NaN,

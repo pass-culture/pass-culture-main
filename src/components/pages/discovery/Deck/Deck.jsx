@@ -142,7 +142,7 @@ class Deck extends PureComponent {
 
     return (
       <Draggable
-        axis={isDetailsView(match) ? 'none' : 'exclude'}
+        axis={isDetailsView(match) ? 'none' : 'both'}
         bounds={draggableBounds}
         enableUserSelectHack={false}
         key={refreshKey}
