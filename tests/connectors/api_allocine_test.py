@@ -2,7 +2,7 @@ from unittest.mock import patch, MagicMock
 
 import pytest
 
-from connectors.api_allocine import get_movies_showtimes_list, AllocineException
+from connectors.api_allocine import get_movies_showtimes_from_allocine, AllocineException
 
 
 class GetMovieShowtimeListTest:
@@ -17,7 +17,7 @@ class GetMovieShowtimeListTest:
         request_get.return_value = response_return_value
 
         # When
-        api_response = get_movies_showtimes_list(token, theater_id)
+        api_response = get_movies_showtimes_from_allocine(token, theater_id)
 
         # Then
         request_get.assert_called_once_with(f"https://graph-api-proxy.allocine.fr/api/query/movieShowtimeList?"
@@ -35,7 +35,7 @@ class GetMovieShowtimeListTest:
 
         # When
         with pytest.raises(AllocineException) as exception:
-            get_movies_showtimes_list(token, theater_id)
+            get_movies_showtimes_from_allocine(token, theater_id)
 
         # Then
         assert str(
