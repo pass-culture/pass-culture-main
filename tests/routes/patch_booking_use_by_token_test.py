@@ -1,13 +1,10 @@
-from urllib.parse import urlencode
-
-
-from models import PcObject, EventType, ThingType, Deposit, Booking, User
+from models import PcObject, EventType, Deposit, Booking, User
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_deposit, create_venue, create_offerer, \
     create_user, create_booking, create_offer_with_event_product, \
-    create_event_occurrence, create_stock_from_event_occurrence, create_user_offerer
+    create_user_offerer, create_stock, \
+    create_offer_with_thing_product
 from tests.test_utils import create_api_key, create_stock_with_event_offer
-from utils.human_ids import humanize
 from utils.token import random_token
 
 API_KEY_VALUE = random_token(64)
@@ -32,9 +29,8 @@ class Patch:
                 booking_id = booking.id
                 user2ApiKey = 'Bearer ' + offererApiKey.value
 
-                url = '/v2/bookings/use/token/{}'.format(booking.token)
-
                 # When
+                url = '/v2/bookings/use/token/{}'.format(booking.token)
                 response = TestClient(app.test_client()).patch(
                     url,
                     headers={
@@ -60,9 +56,9 @@ class Patch:
                 booking = create_booking(user, stock, venue=venue)
                 PcObject.save(booking, user_offerer)
                 booking_id = booking.id
-                url = '/v2/bookings/use/token/{}'.format(booking.token)
 
                 # When
+                url = '/v2/bookings/use/token/{}'.format(booking.token)
                 response = TestClient(app.test_client()).with_auth('admin@email.fr').patch(url)
 
                 # Then
@@ -82,9 +78,9 @@ class Patch:
                 PcObject.save(booking, user_offerer)
                 booking_id = booking.id
                 booking_token = booking.token.lower()
-                url = '/v2/bookings/use/token/{}'.format(booking_token)
 
                 # When
+                url = '/v2/bookings/use/token/{}'.format(booking_token)
                 response = TestClient(app.test_client()).with_auth('admin@email.fr').patch(url)
 
                 # Then
@@ -103,9 +99,9 @@ class Patch:
                 booking = create_booking(user, stock, venue=venue)
                 PcObject.save(booking, user_offerer)
                 booking_id = booking.id
-                url = '/v2/bookings/use/token/{}'.format(booking.token)
 
                 # When
+                url = '/v2/bookings/use/token/{}'.format(booking.token)
                 response = TestClient(app.test_client()) \
                     .with_auth('admin@email.fr') \
                     .patch(url, headers={'origin': 'http://random_header.fr'})
@@ -122,15 +118,13 @@ class Patch:
                 offerer = create_offerer()
                 user_offerer = create_user_offerer(pro_user, offerer)
                 venue = create_venue(offerer)
-                activation_offer = create_offer_with_event_product(venue, event_type=ThingType.ACTIVATION)
-                activation_event_occurrence = create_event_occurrence(activation_offer)
-                stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0)
+                stock = create_stock_with_event_offer(offerer, venue, price=0, event_type=EventType.ACTIVATION)
                 booking = create_booking(user, stock, venue=venue)
                 PcObject.save(booking, user_offerer)
                 user_id = user.id
-                url = '/v2/bookings/use/token/{}'.format(booking.token)
 
                 # When
+                url = '/v2/bookings/use/token/{}'.format(booking.token)
                 response = TestClient(app.test_client()).with_auth('pro@email.fr').patch(url)
 
                 # Then
@@ -152,12 +146,12 @@ class Patch:
             stock = create_stock_with_event_offer(offerer, venue, price=0)
             booking = create_booking(user, stock, venue=venue)
             PcObject.save(booking, user_offerer)
-            url = '/v2/bookings/use/token/{}'.format(booking.token)
 
             stock.available = 0
             PcObject.save(stock)
 
             # When
+            url = '/v2/bookings/use/token/{}'.format(booking.token)
             response = TestClient(app.test_client()).with_auth('pro@email.fr').patch(url)
 
             # Then
@@ -172,16 +166,15 @@ class Patch:
             user = create_user(email='user@email.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event_name='Event Name')
-            event_occurrence = create_event_occurrence(offer)
-            stock = create_stock_from_event_occurrence(event_occurrence, price=0)
+            stock = create_stock_with_event_offer(offerer, venue, price=0)
+
             booking = create_booking(user, stock, venue=venue)
 
             PcObject.save(booking)
 
-            url = '/v2/bookings/use/token/{}'.format(booking.token)
 
             # When
+            url = '/v2/bookings/use/token/{}'.format(booking.token)
             response = TestClient(app.test_client()).patch(url)
 
             # Then
@@ -194,16 +187,15 @@ class Patch:
             admin_user = create_user(email='admin@email.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event_name='Event Name')
-            event_occurrence = create_event_occurrence(offer)
-            stock = create_stock_from_event_occurrence(event_occurrence, price=0)
+            offer = create_offer_with_thing_product(venue)
+            stock = create_stock(offer=offer, price=0)
             booking = create_booking(user, stock, venue=venue)
 
             PcObject.save(admin_user, booking)
 
-            url = '/v2/bookings/use/token/{}'.format(booking.token)
 
             # When
+            url = '/v2/bookings/use/token/{}'.format(booking.token)
             response = TestClient(app.test_client()).patch(url, headers={
                     'Authorization': 'Bearer WrongApiKey1234567',
                     'Origin': 'http://localhost'})
@@ -223,9 +215,7 @@ class Patch:
                 offerer2 = create_offerer(siren='987654321')
                 user_offerer = create_user_offerer(pro_user, offerer)
                 venue = create_venue(offerer)
-                offer = create_offer_with_event_product(venue, event_name='Event Name')
-                event_occurrence = create_event_occurrence(offer)
-                stock = create_stock_from_event_occurrence(event_occurrence, price=0)
+                stock = create_stock_with_event_offer(offerer, venue, price=0, event_type=EventType.ACTIVATION)
                 booking = create_booking(user, stock, venue=venue)
 
                 PcObject.save(pro_user, booking, user_offerer, offerer2)
@@ -234,9 +224,9 @@ class Patch:
                 PcObject.save(offererApiKey)
 
                 user2ApiKey = 'Bearer ' + offererApiKey.value
-                url = '/v2/bookings/use/token/{}'.format(booking.token)
 
                 # When
+                url = '/v2/bookings/use/token/{}'.format(booking.token)
                 response = TestClient(app.test_client()).patch(
                     url,
                     headers={
@@ -282,17 +272,15 @@ class Patch:
                 offerer = create_offerer()
                 user_offerer = create_user_offerer(pro_user, offerer)
                 venue = create_venue(offerer)
-                activation_offer = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
-                activation_event_occurrence = create_event_occurrence(activation_offer)
-                stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0)
+                stock = create_stock_with_event_offer(offerer, venue, price=0, event_type=EventType.ACTIVATION)
                 booking = create_booking(user, stock, venue=venue)
                 PcObject.save(booking, user_offerer)
-                url = '/v2/bookings/use/token/{}'.format(booking.token)
 
                 # When
                 response = TestClient(app.test_client()).with_auth('pro@email.fr').patch(url)
 
                 # Then
+                url = '/v2/bookings/use/token/{}'.format(booking.token)
                 assert response.status_code == 403
                 assert response.json['global'] == [
                     "Vous n'avez pas les droits suffisants pour éditer cette contremarque."]
@@ -305,16 +293,14 @@ class Patch:
             user = create_user(email='user@email.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event_name='Event Name')
-            event_occurrence = create_event_occurrence(offer)
-            stock = create_stock_from_event_occurrence(event_occurrence, price=0)
+            stock = create_stock_with_event_offer(offerer, venue, price=0)
             booking = create_booking(user, stock, venue=venue)
 
             PcObject.save(booking)
 
-            url = '/v2/bookings/use/token/'
 
             # When
+            url = '/v2/bookings/use/token/'
             response = TestClient(app.test_client()).patch(url)
 
             # Then
@@ -335,10 +321,10 @@ class Patch:
                 offererApiKey = create_api_key(offerer, API_KEY_VALUE)
                 PcObject.save(offererApiKey)
 
-                url = '/v2/bookings/use/token/{}'.format('456789')
                 user2ApiKey = 'Bearer ' + offererApiKey.value
 
                 # When
+                url = '/v2/bookings/use/token/{}'.format('456789')
                 response = TestClient(app.test_client()).patch(
                     url,
                     headers={
@@ -363,9 +349,9 @@ class Patch:
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
                 booking = create_booking(user, stock, venue=venue)
                 PcObject.save(booking, user_offerer)
-                url = '/v2/bookings/use/token/{}'.format('123456')
 
                 # When
+                url = '/v2/bookings/use/token/{}'.format('123456')
                 response = TestClient(app.test_client()).with_auth('admin@email.fr').patch(url)
 
                 # Then
@@ -383,16 +369,14 @@ class Patch:
                 offerer = create_offerer()
                 user_offerer = create_user_offerer(pro_user, offerer)
                 venue = create_venue(offerer)
-                activation_offer = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
-                activation_event_occurrence = create_event_occurrence(activation_offer)
-                stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0)
+                stock = create_stock_with_event_offer(offerer, venue, price=0, event_type=EventType.ACTIVATION)
                 booking = create_booking(user, stock, venue=venue)
                 deposit = create_deposit(user, amount=500)
                 PcObject.save(booking, user_offerer, deposit)
                 user_id = user.id
-                url = '/v2/bookings/use/token/{}'.format(booking.token)
 
                 # When
+                url = '/v2/bookings/use/token/{}'.format(booking.token)
                 response = TestClient(app.test_client()).with_auth('pro@email.fr').patch(url)
 
                 # Then
@@ -417,9 +401,9 @@ class Patch:
                 booking.isCancelled = True
                 PcObject.save(booking, user_offerer)
                 booking_id = booking.id
-                url = '/v2/bookings/use/token/{}'.format(booking.token)
 
                 # When
+                url = '/v2/bookings/use/token/{}'.format(booking.token)
                 response = TestClient(app.test_client()).with_auth('admin@email.fr').patch(url)
 
                 # Then
@@ -440,9 +424,9 @@ class Patch:
                 booking.isUsed = True
                 PcObject.save(booking, user_offerer)
                 booking_id = booking.id
-                url = '/v2/bookings/use/token/{}'.format(booking.token)
 
                 # When
+                url = '/v2/bookings/use/token/{}'.format(booking.token)
                 response = TestClient(app.test_client()).with_auth('admin@email.fr').patch(url)
 
                 # Then
@@ -465,9 +449,9 @@ class Patch:
                 booking.isCancelled = True
                 PcObject.save(booking, user_offerer)
                 booking_id = booking.id
-                url = '/v2/bookings/use/token/{}'.format(booking.token)
 
                 # When
+                url = '/v2/bookings/use/token/{}'.format(booking.token)
                 response = TestClient(app.test_client()).with_auth('admin@email.fr').patch(url)
 
                 # Then
@@ -488,9 +472,9 @@ class Patch:
                 booking.isUsed = True
                 PcObject.save(booking, user_offerer)
                 booking_id = booking.id
-                url = '/v2/bookings/use/token/{}'.format(booking.token)
 
                 # When
+                url = '/v2/bookings/use/token/{}'.format(booking.token)
                 response = TestClient(app.test_client()).with_auth('admin@email.fr').patch(url)
 
                 # Then

@@ -291,7 +291,7 @@ def patch_booking_by_token(token):
 
 @app.route('/v2/bookings/use/token/<token>', methods=["PATCH"])
 @login_or_api_key_required_v2
-def patch_booking_by_token_v2(token):
+def patch_booking_use_by_token(token):
     booking_token_upper_case = token.upper()
     booking = booking_queries.find_by(
         booking_token_upper_case)
