@@ -103,8 +103,8 @@ def get_zip_thumb_file_for_test_updates_thumb_count_for_product():
 
 def get_zip_thumbs_file_from_named_sandbox_file(file_name):
     data_root_path = Path(os.path.dirname(os.path.realpath(__file__))) \
-                     / '..' / '..' / 'sandboxes' / 'providers' / 'titelive_works'
-    return data_root_path / THUMB_FOLDER_NAME_TITELIVE / file_name
+                     / '..' / '..' / 'sandboxes' / 'providers' / 'titelive_mocks'
+    return data_root_path / file_name
 
 
 def get_zip_file_from_sandbox(file):
