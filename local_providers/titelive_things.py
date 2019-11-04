@@ -2,6 +2,8 @@ import re
 from io import TextIOWrapper, BytesIO
 from typing import Dict, List, Optional
 
+from sqlalchemy.exc import IntegrityError
+
 from connectors.ftp_titelive import get_files_to_process_from_titelive_ftp, connect_to_titelive_ftp
 from domain.titelive import get_date_from_filename, read_things_date
 from local_providers.local_provider import LocalProvider
@@ -9,6 +11,8 @@ from local_providers.providable_info import ProvidableInfo
 from models import Product, ThingType, BookFormat
 from models.local_provider_event import LocalProviderEventType
 from repository import local_provider_event_queries
+from repository import product_queries
+from repository.product_queries import ProductWithBookingsException
 from utils.string_processing import trim_with_elipsis
 
 DATE_REGEXP = re.compile('([a-zA-Z]+)(\d+).tit')
@@ -52,17 +56,27 @@ class TiteLiveThings(LocalProvider):
             return []
 
         self.infos = get_infos_from_data_line(elements)
-
         school_related_product = self.infos['is_scolaire'] == '1' \
                                  or self.infos['code_csr'] in SCHOOL_RELATED_CSR_CODE
+
         if school_related_product:
+            try:
+                product_queries.delete_unwanted_existing_product(self.infos['ean13'])
+            except ProductWithBookingsException:
+                self.log_provider_event(LocalProviderEventType.SyncError,
+                                        f"Error deleting product with ISBN: {self.infos['ean13']}")
             return []
 
         self.extraData = {}
-        self.thing_type, self.extraData['bookFormat'] = get_thing_type_and_extra_data_from_titelive_type(
+        self.valid_product_type, self.extraData['bookFormat'] = get_thing_type_and_extra_data_from_titelive_type(
             self.infos['code_support'])
 
-        if not self.thing_type:
+        if not self.valid_product_type:
+            try:
+                product_queries.delete_unwanted_existing_product(self.infos['ean13'])
+            except ProductWithBookingsException:
+                self.log_provider_event(LocalProviderEventType.SyncError,
+                                        f"Error deleting product with ISBN: {self.infos['ean13']}")
             return []
 
         providable_info = self.create_providable_info(Product,
@@ -71,11 +85,9 @@ class TiteLiveThings(LocalProvider):
         return [providable_info]
 
     def fill_object_attributes(self, product: Product):
-        assert product.idAtProviders == self.infos['ean13']
-
         product.name = trim_with_elipsis(self.infos['titre'], 140)
         product.datePublished = read_things_date(self.infos['date_parution'])
-        product.type = self.thing_type
+        product.type = self.valid_product_type
         product.extraData = self.extraData.copy()
         product.extraData.update(get_extra_data_from_infos(self.infos))
 

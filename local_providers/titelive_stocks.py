@@ -7,9 +7,9 @@ from domain.titelive import get_stocks_information
 from local_providers.local_provider import LocalProvider
 from local_providers.providable_info import ProvidableInfo
 from models import Offer, VenueProvider
-from models.db import db, Model
+from models.db import db
 from models.stock import Stock
-from repository import thing_queries
+from repository import product_queries
 
 PRICE_DIVIDER_TO_EURO = 100
 
@@ -35,11 +35,9 @@ class TiteLiveStocks(LocalProvider):
             self.data = get_stocks_information(self.venue_provider.venueIdAtOfferProvider,
                                                self.last_seen_isbn)
             self.titelive_stock = next(self.data)
-
             self.last_seen_isbn = str(self.titelive_stock['ref'])
 
-        with db.session.no_autoflush:
-            self.product = thing_queries.find_thing_product_by_isbn_only_for_type_book(self.titelive_stock['ref'])
+        self.product = product_queries.find_thing_product_by_isbn_only_for_type_book(self.titelive_stock['ref'])
 
         if not self.product:
             return []

@@ -240,6 +240,12 @@ class PcObject:
         db.session.commit()
 
     @staticmethod
+    def delete_all(models: List[Model]):
+        for model in models:
+            db.session.delete(model)
+        db.session.commit()
+
+    @staticmethod
     def _get_keys_to_populate(columns: Iterable[str], data: dict, skipped_keys: Iterable[str]) -> Set[str]:
         requested_columns_to_update = set(data.keys())
         forbidden_columns = set(['id', 'deleted'] + skipped_keys)
@@ -303,4 +309,5 @@ def _deserialize_datetime(key, value):
 
 def _is_human_id_column(column: Column) -> bool:
     if column is not None:
-        return (column.key == 'id' or column.key.endswith('Id')) and (isinstance(column.type, BigInteger) or isinstance(column.type, Integer))
+        return (column.key == 'id' or column.key.endswith('Id')) and (
+                    isinstance(column.type, BigInteger) or isinstance(column.type, Integer))
