@@ -40,11 +40,11 @@ from validation.bookings import check_booking_is_usable, \
     check_email_and_offer_id_for_anonymous_user, \
     check_booking_is_cancellable, \
     check_stock_venue_is_validated, \
-    check_rights_for_activation_offer, \
     check_rights_to_get_bookings_csv
 from validation.users_authentifications import check_user_is_logged_in_or_email_is_provided, \
     login_or_api_key_required_v2
 from validation.users_authorizations import check_user_can_validate_bookings, \
+    check_user_can_validate_activation_offer, \
     check_api_key_allows_to_validate_booking, \
     check_user_can_validate_bookings_v2
 
@@ -320,7 +320,7 @@ def patch_booking_use_by_token(token):
 
 
 def _activate_user(user_to_activate):
-    check_rights_for_activation_offer(current_user)
+    check_user_can_validate_activation_offer(current_user)
     user_to_activate.canBookFreeOffers = True
     deposit = create_initial_deposit(user_to_activate)
     PcObject.save(deposit)

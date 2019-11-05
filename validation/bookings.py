@@ -162,11 +162,6 @@ def check_email_and_offer_id_for_anonymous_user(email, offer_id):
         raise api_errors
 
 
-def check_rights_for_activation_offer(user):
-    if not user.isAdmin:
-        raise ForbiddenError
-
-
 def check_rights_to_get_bookings_csv(user, venue_id=None, offer_id=None):
     if user.isAdmin:
         api_errors = ApiErrors()

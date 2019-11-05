@@ -6,7 +6,7 @@ from tests.conftest import clean_database
 from tests.test_utils import create_offerer, create_user, create_user_offerer
 from validation.users_authorizations import check_user_can_validate_bookings, \
     check_user_can_validate_bookings_v2, \
-    check_api_key_allows_to_validate_booking
+    check_api_key_allows_to_validate_booking, check_user_can_validate_activation_offer
 from utils.token import random_token
 
 class CheckUserCanValidateBookingTest:
@@ -81,7 +81,7 @@ class CheckUserCanValidateBookingTestv2:
             check_user_can_validate_bookings_v2(user, None)
 
         # Then
-        assert errors.value.errors['user'] == ["Vous n'avez pas les droits suffisants pour éditer cette contremarque."]
+        assert errors.value.errors['user'] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
 
 
 class CheckApiKeyAllowsToValidateBookingTest:
@@ -121,4 +121,32 @@ class CheckApiKeyAllowsToValidateBookingTest:
             check_api_key_allows_to_validate_booking(validApiKey, None)
 
         # Then
-        assert errors.value.errors['user'] == ["Vous n'avez pas les droits suffisants pour éditer cette contremarque."]
+        assert errors.value.errors['user'] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
+
+class CheckUserCanValidateActivationOfferTest:
+    @clean_database
+    def test_does_not_raise_error_when_user_is_admin(
+            self, app):
+        # Given
+        admin_user = create_user(is_admin=True)
+
+        # When
+        try:
+            check_user_can_validate_activation_offer(admin_user)
+
+        # Then
+        except:
+            assert False
+
+    def test_raises_exception_when_user_is_not_admin(
+            self, app):
+        # Given
+        user = create_user()
+
+        # When
+        with pytest.raises(ApiErrors) as errors:
+            check_user_can_validate_activation_offer(user)
+
+        # Then
+        assert errors.value.errors['user'] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
+

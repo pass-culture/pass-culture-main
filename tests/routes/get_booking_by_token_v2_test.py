@@ -229,7 +229,7 @@ class Get:
 
             # Then
             assert response.status_code == 403
-            assert response.json['user'] == ["Vous n'avez pas les droits suffisants pour éditer cette contremarque."]
+            assert response.json['user'] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
 
         @clean_database
         def when_api_key_given_not_related_to_booking_offerer(self, app):
@@ -265,7 +265,7 @@ class Get:
 
             # Then
             assert response.status_code == 403
-            assert response.json['user'] == ["Vous n'avez pas les droits suffisants pour éditer cette contremarque."]
+            assert response.json['user'] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
 
 
         @clean_database
