@@ -7,10 +7,17 @@ STOCK_DELETION_DELAY = timedelta(hours=48)
 
 
 def delete_stock_and_cancel_bookings(stock: Stock) -> List[Booking]:
+    unused_bookings = []
+
     if _is_thing(stock):
         stock.isSoftDeleted = True
         _cancel_unused_bookings(stock)
-        return stock.bookings
+
+        for booking in stock.bookings:
+            if not booking.isUsed:
+                unused_bookings.append(booking)
+
+        return unused_bookings
 
     limit_date_for_stock_deletion = stock.endDatetime + STOCK_DELETION_DELAY
     now = datetime.utcnow()

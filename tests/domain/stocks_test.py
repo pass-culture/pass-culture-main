@@ -23,7 +23,7 @@ class DeleteStockAndCancelBookingsTest:
             # then
             assert self.stock.isSoftDeleted
 
-        def test_unused_bookings_are_cancelled(self):
+        def test_only_unused_bookings_are_cancelled_and_returned(self):
             # given
             self.stock.bookings = [
                 create_booking(user1, is_used=True, is_cancelled=False),
@@ -34,22 +34,8 @@ class DeleteStockAndCancelBookingsTest:
             bookings = delete_stock_and_cancel_bookings(self.stock)
 
             # then
-            unused_bookings = filter(lambda b: not b.isUsed, bookings)
-            assert all(map(lambda b: b.isCancelled, unused_bookings))
+            assert all(map(lambda b: b.isCancelled, bookings))
 
-        def test_used_bookings_are_not_cancelled(self):
-            # given
-            self.stock.bookings = [
-                create_booking(user1, is_used=True, is_cancelled=False),
-                create_booking(user2, is_used=False, is_cancelled=False)
-            ]
-
-            # when
-            bookings = delete_stock_and_cancel_bookings(self.stock)
-
-            # then
-            used_bookings = filter(lambda b: b.isUsed, bookings)
-            assert all(map(lambda b: not b.isCancelled, used_bookings))
 
     class WhenProductIsAnEvent:
         class WhenLessThan48HoursAfterItEnds:
