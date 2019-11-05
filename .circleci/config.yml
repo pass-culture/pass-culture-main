@@ -39,8 +39,8 @@ jobs:
       - run:
           name: Run API server
           command: |
-            cd ~/pass-culture-main
-            docker-compose up
+           cd ~/pass-culture-main
+           ./pc start-backend
           background: true
       - run:
           name: Running Frontend
