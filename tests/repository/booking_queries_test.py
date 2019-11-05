@@ -878,7 +878,7 @@ class SaveBookingTest:
 
         # Then
         assert e.value.errors['global'] == [
-            'la quantité disponible pour cette offre est atteinte']
+            'La quantité disponible pour cette offre est atteinte.']
 
 
 class CountNonCancelledBookingsTest:

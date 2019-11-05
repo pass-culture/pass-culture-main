@@ -66,7 +66,7 @@ def test_raises_error_on_booking_when_existing_booking_is_used_and_booking_date_
         PcObject.save(booking2)
 
     # Then
-    assert e.value.errors['global'] == ['la quantité disponible pour cette offre est atteinte']
+    assert e.value.errors['global'] == ['La quantité disponible pour cette offre est atteinte.']
 
 
 @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')

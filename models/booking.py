@@ -105,7 +105,7 @@ class Booking(PcObject, Model, VersionedMixin):
     @staticmethod
     def restize_internal_error(ie):
         if 'tooManyBookings' in str(ie.orig):
-            return ['global', 'la quantité disponible pour cette offre est atteinte']
+            return ['global', 'La quantité disponible pour cette offre est atteinte.']
         elif 'insufficientFunds' in str(ie.orig):
             return ['insufficientFunds',
                     "Le solde de votre pass est insuffisant pour réserver cette offre."]

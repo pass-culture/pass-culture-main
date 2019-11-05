@@ -1,3 +1,5 @@
+from sandboxes.scripts.creators.industrial.create_industrial_activation_offers import \
+    create_industrial_activation_offers
 from sandboxes.scripts.creators.industrial.create_industrial_admin_users import *
 from sandboxes.scripts.creators.industrial.create_industrial_bookings import *
 from sandboxes.scripts.creators.industrial.create_industrial_criterion import create_industrial_criteria, \
@@ -85,3 +87,9 @@ def save_industrial_sandbox():
     create_industrial_payments()
 
     create_industrial_pro_users_api_keys(offerers_by_name)
+
+    create_industrial_activation_offers()
+
+
+
+

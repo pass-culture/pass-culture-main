@@ -1,4 +1,4 @@
-from unittest.mock import patch, Mock, call
+from unittest.mock import patch, Mock
 
 from domain.user_emails import send_activation_notification_email
 from models import PcObject, EventType, Deposit, Booking, User
@@ -74,6 +74,7 @@ class Patch:
                 # Then
                 assert response.status_code == 204
                 assert Booking.query.get(booking_id).isUsed is True
+
 
         class WithBasicAuthTest:
             @clean_database
@@ -198,7 +199,7 @@ class Patch:
 
             # Then
             assert response.status_code == 400
-            assert response.json['global'] == ["la quantité disponible pour cette offre est atteinte"]
+            assert response.json['global'] == ["La quantité disponible pour cette offre est atteinte."]
 
 
     class Returns401:
@@ -334,7 +335,6 @@ class Patch:
             booking = create_booking(user, stock, venue=venue)
 
             PcObject.save(booking)
-
 
             # When
             url = '/v2/bookings/use/token/'

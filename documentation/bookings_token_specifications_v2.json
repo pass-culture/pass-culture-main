@@ -104,13 +104,13 @@
 						"description": "La contremarque a bien été validée."
 					},
 					"400": {
-						"description": "La quantité disponible pour cette offre est atteinte"
+						"description": "La quantité disponible pour cette offre est atteinte."
 					},
 					"401" : {
 						"description" : "Authentification nécessaire"
 					},
     			"403" : {
-      			"description" : "Vous n'avez pas les droits suffisants pour éditer cette contremarque."
+      			"description" : "Vous n'avez pas les droits suffisants pour utiliser cette contremarque."
     			},
     			"404" : {
 						"description" : "La contremarque n’existe pas"

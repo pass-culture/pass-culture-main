@@ -11,7 +11,8 @@ Flasgger est un outil de visualisation de la doc, utilisant Swagger.
 - Nous suivons la specification [OpenAPI 2](https://github.com/OAI/OpenAPI-Specification/) pour construire nos fichiers .json 
 (en attendant une mise à jour de flasgger qui sera totalement compatible avec la spec openAPI 3)
 
-- [Un example](https://github.com/flasgger/flasgger/blob/master/examples/example_app.py)
+- [Un example avec flasgger](https://github.com/flasgger/flasgger/blob/master/examples/example_app.py)
+- [Le json example de swagger](https://petstore.swagger.io/#/)
 
 ## Visualiser la documentation
 
