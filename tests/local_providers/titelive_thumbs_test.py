@@ -50,7 +50,7 @@ class TiteliveThingThumbsTest:
         product1 = create_product_with_thing_type(id_at_providers='9780847858903', thumb_count=0)
         product2 = create_product_with_thing_type(id_at_providers='9782016261903', thumb_count=0)
         PcObject.save(product1, product2)
-        zip_thumb_file = get_zip_thumb_file_for_test_compute_first_thumb_color_dominant()
+        zip_thumb_file = get_zip_with_2_usable_thumb_files()
         get_ordered_thumbs_zip_files.return_value = [zip_thumb_file]
         get_thumbs_zip_file_from_ftp.side_effect = [get_zip_file_from_sandbox(zip_thumb_file)]
 
@@ -79,7 +79,7 @@ class TiteliveThingThumbsTest:
         # Given
         product1 = create_product_with_thing_type(id_at_providers='9780847858903', thumb_count=0)
         PcObject.save(product1)
-        zip_thumb_file = get_zip_thumb_file_for_test_updates_thumb_count_for_product()
+        zip_thumb_file = get_zip_with_1_usable_thumb_file()
         get_ordered_thumbs_zip_files.return_value = [zip_thumb_file]
         get_thumbs_zip_file_from_ftp.side_effect = [get_zip_file_from_sandbox(zip_thumb_file)]
 
@@ -95,10 +95,10 @@ class TiteliveThingThumbsTest:
         assert new_product.name == 'Test Book'
         assert new_product.thumbCount == 1
 
-def get_zip_thumb_file_for_test_compute_first_thumb_color_dominant():
+def get_zip_with_2_usable_thumb_files():
     return get_zip_thumbs_file_from_named_sandbox_file('test_livres_tl20190505.zip')
 
-def get_zip_thumb_file_for_test_updates_thumb_count_for_product():
+def get_zip_with_1_usable_thumb_file():
     return get_zip_thumbs_file_from_named_sandbox_file('test_livres_tl20191104.zip')
 
 def get_zip_thumbs_file_from_named_sandbox_file(file_name):
