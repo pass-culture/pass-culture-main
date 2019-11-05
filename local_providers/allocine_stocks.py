@@ -119,7 +119,7 @@ def _get_operating_visa(movie_info: dict) -> Optional[str]:
     return movie_info['releases'][0]['data']['visa_number']
 
 
-def _build_stage_director_full_name(movie_info: dict) -> Optional[str]:
+def _build_stage_director_full_name(movie_info: dict) -> str:
     stage_director_first_name = movie_info['credits']['edges'][0]['node']['person']['firstName']
     stage_director_last_name = movie_info['credits']['edges'][0]['node']['person']['lastName']
     return f"{stage_director_first_name} {stage_director_last_name}"

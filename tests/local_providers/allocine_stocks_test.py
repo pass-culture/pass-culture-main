@@ -382,7 +382,9 @@ class AllocineStocksTest:
         @patch('local_providers.allocine_stocks.get_movies_showtimes')
         @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
         @clean_database
-        def test_should_update_existing_product_duration_and_create_new_offer(self, mock_call_allocine_api, app):
+        def test_should_update_existing_product_duration_and_create_new_offer_when_no_offer_exists(self,
+                                                                                                   mock_call_allocine_api,
+                                                                                                   app):
             # Given
             theater_token = 'test'
             mock_call_allocine_api.return_value = iter([
@@ -489,195 +491,197 @@ class AllocineStocksTest:
             assert created_offer.type == str(EventType.CINEMA)
             assert created_offer.name == 'Les Contes de la mère poule'
 
-    class ParseMovieDurationTest:
-        def test_should_convert_duration_string_to_minutes(self):
-            # Given
-            movie_runtime = "PT1H50M0S"
 
-            # When
-            duration_in_minutes = _parse_movie_duration(movie_runtime)
+class ParseMovieDurationTest:
+    def test_should_convert_duration_string_to_minutes(self):
+        # Given
+        movie_runtime = "PT1H50M0S"
 
-            # Then
-            assert duration_in_minutes == 110
+        # When
+        duration_in_minutes = _parse_movie_duration(movie_runtime)
 
-        def test_should_only_parse_hours_and_minutes(self):
-            # Given
-            movie_runtime = "PT11H0M15S"
+        # Then
+        assert duration_in_minutes == 110
 
-            # When
-            duration_in_minutes = _parse_movie_duration(movie_runtime)
+    def test_should_only_parse_hours_and_minutes(self):
+        # Given
+        movie_runtime = "PT11H0M15S"
 
-            # Then
-            assert duration_in_minutes == 660
+        # When
+        duration_in_minutes = _parse_movie_duration(movie_runtime)
 
-    class RetrieveMovieInformationTest:
-        def test_should_retrieve_info_from_wanted_json_nodes(self):
-            # Given
-            movie_information = {
-                "node": {
-                    "movie": {
-                        "id": "TW92aWU6Mzc4MzI=",
-                        "internalId": 37832,
-                        "backlink": {
-                            "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                            "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9"
-                        },
-                        "data": {
-                            "eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E",
-                            "productionYear": 2001
-                        },
-                        "title": "Les Contes de la m\u00e8re poule",
-                        "originalTitle": "Les Contes de la m\u00e8re poule",
-                        "runtime": "PT1H50M0S",
-                        "poster": {
-                            "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
-                        },
-                        "synopsis": "synopsis du film",
-                        "releases": [
-                            {
-                                "name": "Released",
-                                "releaseDate": {
-                                    "date": "2001-10-03"
-                                },
-                                "data": {
-                                    "visa_number": "2009993528"
-                                }
+        # Then
+        assert duration_in_minutes == 660
+
+
+class RetrieveMovieInformationTest:
+    def test_should_retrieve_information_from_wanted_json_nodes(self):
+        # Given
+        movie_information = {
+            "node": {
+                "movie": {
+                    "id": "TW92aWU6Mzc4MzI=",
+                    "internalId": 37832,
+                    "backlink": {
+                        "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
+                        "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9"
+                    },
+                    "data": {
+                        "eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E",
+                        "productionYear": 2001
+                    },
+                    "title": "Les Contes de la m\u00e8re poule",
+                    "originalTitle": "Les Contes de la m\u00e8re poule",
+                    "runtime": "PT1H50M0S",
+                    "poster": {
+                        "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
+                    },
+                    "synopsis": "synopsis du film",
+                    "releases": [
+                        {
+                            "name": "Released",
+                            "releaseDate": {
+                                "date": "2001-10-03"
+                            },
+                            "data": {
+                                "visa_number": "2009993528"
                             }
-                        ],
-                        "credits": {
-                            "edges": [
-                                {
-                                    "node": {
-                                        "person": {
-                                            "firstName": "Farkhondeh",
-                                            "lastName": "Torabi"
-                                        },
-                                        "position": {
-                                            "name": "DIRECTOR"
-                                        }
+                        }
+                    ],
+                    "credits": {
+                        "edges": [
+                            {
+                                "node": {
+                                    "person": {
+                                        "firstName": "Farkhondeh",
+                                        "lastName": "Torabi"
+                                    },
+                                    "position": {
+                                        "name": "DIRECTOR"
                                     }
                                 }
-                            ]
-                        },
-                        "cast": {
-                            "backlink": {
-                                "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                                "label": "Casting complet du film sur AlloCin\u00e9"
-                            },
-                            "edges": []
-                        },
-                        "countries": [
-                            {
-                                "name": "Iran",
-                                "alpha3": "IRN"
                             }
-                        ],
-                        "genres": [
-                            "ANIMATION",
-                            "FAMILY"
-                        ],
-                        "companies": []
+                        ]
                     },
-                    "showtimes": [
-                        {
-                            "startsAt": "2019-10-29T10:30:00",
-                            "diffusionVersion": "DUBBED"
-                        }
-                    ]
-                }
-            }
-
-            # When
-            movie_parsed_information = retrieve_movie_information(movie_information['node']['movie'])
-
-            # Then
-            assert movie_parsed_information['title'] == "Les Contes de la mère poule"
-            assert movie_parsed_information[
-                       'description'] == "synopsis du film\nhttp://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html"
-            assert movie_parsed_information["visa"] == "2009993528"
-            assert movie_parsed_information["stageDirector"] == "Farkhondeh Torabi"
-            assert movie_parsed_information['duration'] == 110
-
-        def test_should_not_add_operating_visa_and_stageDirector_keys_when_nodes_are_missing(self):
-            # Given
-            movie_information = {
-                "node": {
-                    "movie": {
-                        "id": "TW92aWU6Mzc4MzI=",
-                        "internalId": 37832,
+                    "cast": {
                         "backlink": {
-                            "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                            "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9"
+                            "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
+                            "label": "Casting complet du film sur AlloCin\u00e9"
                         },
-                        "data": {
-                            "eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E",
-                            "productionYear": 2001
-                        },
-                        "title": "Les Contes de la m\u00e8re poule",
-                        "originalTitle": "Les Contes de la m\u00e8re poule",
-                        "runtime": "PT1H50M0S",
-                        "poster": {
-                            "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
-                        },
-                        "synopsis": "synopsis du film",
-                        "releases": [],
-                        "credits": {
-                            "edges": []
-                        },
-                        "cast": {
-                            "backlink": {
-                                "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                                "label": "Casting complet du film sur AlloCin\u00e9"
-                            },
-                            "edges": []
-                        },
-                        "countries": [
-                            {
-                                "name": "Iran",
-                                "alpha3": "IRN"
-                            }
-                        ],
-                        "genres": [
-                            "ANIMATION",
-                            "FAMILY"
-                        ],
-                        "companies": []
+                        "edges": []
                     },
-                    "showtimes": [
+                    "countries": [
                         {
-                            "startsAt": "2019-10-29T10:30:00",
-                            "diffusionVersion": "DUBBED"
+                            "name": "Iran",
+                            "alpha3": "IRN"
                         }
-                    ]
-                }
-            }
-
-            # When
-            movie_parsed_information = retrieve_movie_information(movie_information['node']['movie'])
-
-            # Then
-            assert movie_parsed_information['title'] == "Les Contes de la mère poule"
-            assert movie_parsed_information[
-                       'description'] == "synopsis du film\nhttp://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html"
-            assert "visa" not in movie_parsed_information
-            assert "stageDirector" not in movie_parsed_information
-            assert movie_parsed_information['duration'] == 110
-
-        def test_should_raise_key_error_exception_when_missing_keys_in_movie_information(self):
-            # Given
-            movie_information = {
-                'node': {
-                    'movie': {
-                        "id": "TW92aWU6Mzc4MzI=",
-                        "backlink": {
-                            "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                            "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9"
-                        },
-                        "title": "Les Contes de la m\u00e8re poule",
+                    ],
+                    "genres": [
+                        "ANIMATION",
+                        "FAMILY"
+                    ],
+                    "companies": []
+                },
+                "showtimes": [
+                    {
+                        "startsAt": "2019-10-29T10:30:00",
+                        "diffusionVersion": "DUBBED"
                     }
+                ]
+            }
+        }
+
+        # When
+        movie_parsed_information = retrieve_movie_information(movie_information['node']['movie'])
+
+        # Then
+        assert movie_parsed_information['title'] == "Les Contes de la mère poule"
+        assert movie_parsed_information[
+                   'description'] == "synopsis du film\nhttp://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html"
+        assert movie_parsed_information["visa"] == "2009993528"
+        assert movie_parsed_information["stageDirector"] == "Farkhondeh Torabi"
+        assert movie_parsed_information['duration'] == 110
+
+    def test_should_not_add_operating_visa_and_stageDirector_keys_when_nodes_are_missing(self):
+        # Given
+        movie_information = {
+            "node": {
+                "movie": {
+                    "id": "TW92aWU6Mzc4MzI=",
+                    "internalId": 37832,
+                    "backlink": {
+                        "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
+                        "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9"
+                    },
+                    "data": {
+                        "eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E",
+                        "productionYear": 2001
+                    },
+                    "title": "Les Contes de la m\u00e8re poule",
+                    "originalTitle": "Les Contes de la m\u00e8re poule",
+                    "runtime": "PT1H50M0S",
+                    "poster": {
+                        "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
+                    },
+                    "synopsis": "synopsis du film",
+                    "releases": [],
+                    "credits": {
+                        "edges": []
+                    },
+                    "cast": {
+                        "backlink": {
+                            "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
+                            "label": "Casting complet du film sur AlloCin\u00e9"
+                        },
+                        "edges": []
+                    },
+                    "countries": [
+                        {
+                            "name": "Iran",
+                            "alpha3": "IRN"
+                        }
+                    ],
+                    "genres": [
+                        "ANIMATION",
+                        "FAMILY"
+                    ],
+                    "companies": []
+                },
+                "showtimes": [
+                    {
+                        "startsAt": "2019-10-29T10:30:00",
+                        "diffusionVersion": "DUBBED"
+                    }
+                ]
+            }
+        }
+
+        # When
+        movie_parsed_information = retrieve_movie_information(movie_information['node']['movie'])
+
+        # Then
+        assert movie_parsed_information['title'] == "Les Contes de la mère poule"
+        assert movie_parsed_information[
+                   'description'] == "synopsis du film\nhttp://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html"
+        assert "visa" not in movie_parsed_information
+        assert "stageDirector" not in movie_parsed_information
+        assert movie_parsed_information['duration'] == 110
+
+    def test_should_raise_key_error_exception_when_missing_keys_in_movie_information(self):
+        # Given
+        movie_information = {
+            'node': {
+                'movie': {
+                    "id": "TW92aWU6Mzc4MzI=",
+                    "backlink": {
+                        "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
+                        "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9"
+                    },
+                    "title": "Les Contes de la m\u00e8re poule",
                 }
             }
+        }
 
-            # When
-            with pytest.raises(KeyError):
-                retrieve_movie_information(movie_information['node']['movie'])
+        # When
+        with pytest.raises(KeyError):
+            retrieve_movie_information(movie_information['node']['movie'])

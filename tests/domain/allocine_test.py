@@ -7,7 +7,7 @@ class GetMovieShowtimeListFromAllocineTest:
     def setup_method(self):
         self.theater_id = '123456789'
         self.token = 'AZERTY123/@.,!é'
-        self.mock_get_movie_showtime_list = Mock()
+        self.mock_get_movies_showtimes = Mock()
 
     def test_should_retrieve_result_from_api_connector_with_token_and_theater_id_parameter(self):
         # Given
@@ -22,20 +22,20 @@ class GetMovieShowtimeListFromAllocineTest:
                 }
             }
         ]
-        self.mock_get_movie_showtime_list.return_value = {
+        self.mock_get_movies_showtimes.return_value = {
             "movieShowtimeList": {
-                "totalCount": 5,
+                "totalCount": 1,
                 "edges": movies_list}}
 
         # When
         get_movies_showtimes(self.token, self.theater_id,
-                             get_movies_showtimes_from_api=self.mock_get_movie_showtime_list)
+                             get_movies_showtimes_from_api=self.mock_get_movies_showtimes)
         # Then
-        self.mock_get_movie_showtime_list.assert_called_once_with(self.token, self.theater_id)
+        self.mock_get_movies_showtimes.assert_called_once_with(self.token, self.theater_id)
 
     def test_should_extract_movies_from_api_result(self):
         # Given
-        movies_list = [
+        expected_movies = [
             {
                 "node": {
                     "movie": {
@@ -56,15 +56,15 @@ class GetMovieShowtimeListFromAllocineTest:
             }
 
         ]
-        self.mock_get_movie_showtime_list.return_value = {
+        self.mock_get_movies_showtimes.return_value = {
             "movieShowtimeList": {
-                "totalCount": 5,
-                "edges": movies_list
+                "totalCount": 2,
+                "edges": expected_movies
             }
         }
 
         # When
-        expected_result = get_movies_showtimes(self.token, self.theater_id,
-                                               get_movies_showtimes_from_api=self.mock_get_movie_showtime_list)
+        movies = get_movies_showtimes(self.token, self.theater_id,
+                                      get_movies_showtimes_from_api=self.mock_get_movies_showtimes)
         # Then
-        assert any(movie == next(expected_result) for movie in movies_list)
+        assert any(expected_movie == next(movies) for expected_movie in expected_movies)

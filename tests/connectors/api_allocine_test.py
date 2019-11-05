@@ -25,7 +25,7 @@ class GetMovieShowtimeListTest:
         assert api_response == expected_result
 
     @patch('connectors.api_allocine.requests.get')
-    def test_should_raise_exception_when_api_call_fail(self, request_get):
+    def test_should_raise_exception_when_api_call_fails(self, request_get):
         # Given
         token = 'test'
         theater_id = 'test_id'
