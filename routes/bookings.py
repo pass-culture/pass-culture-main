@@ -1,6 +1,5 @@
 from datetime import datetime
 from itertools import chain
-from pprint import pprint
 
 import dateutil
 from flask import current_app as app, jsonify, request
