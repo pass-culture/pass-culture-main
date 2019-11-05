@@ -8,13 +8,13 @@ from models import ApiErrors, Booking, Stock, Offer, ThingType, PcObject
 from models.api_errors import ResourceGoneError, ForbiddenError
 from tests.conftest import clean_database
 from tests.test_utils import create_booking_for_thing, create_product_with_thing_type, create_user, create_deposit, \
-    create_venue, create_offerer, create_offer_with_event_product, create_user_offerer
+    create_venue, create_offerer, create_offer_with_event_product, create_user_offerer, create_booking
 from utils.human_ids import humanize
 from validation.bookings import check_expenses_limits, \
     check_booking_is_cancellable, \
     check_booking_quantity_limit, \
     check_booking_is_usable, \
-    check_rights_to_get_bookings_csv
+    check_rights_to_get_bookings_csv, check_booking_is_not_already_cancelled, check_booking_is_not_used
 
 
 class CheckExpenseLimitsTest:
@@ -350,3 +350,55 @@ class CheckBookingQuantityLimitTest:
         except ApiErrors:
             # then
             pytest.fail('Booking for duo offers must not raise any exceptions')
+
+
+class CheckBookingIsNotAlreadyCancelledTest:
+    def test_raise_resource_gone_error_when_booking_is_already_cancelled(self):
+        # Given
+        user = create_user(postal_code=None)
+        booking = create_booking(is_cancelled=True, user=user)
+
+        # When
+        with pytest.raises(ResourceGoneError) as api_errors:
+            check_booking_is_not_already_cancelled(booking)
+
+        # Then
+        assert api_errors.value.errors['global'] == ["Cette contremarque a déjà été annulée"]
+
+    def test_does_not_raise_when_the_booking_is_not_already_cancelled(self):
+        # Given
+        user = create_user(postal_code=None)
+        booking = create_booking(is_cancelled=False, user=user)
+
+        # When
+        try:
+            check_booking_is_not_already_cancelled(booking)
+        except ResourceGoneError:
+            # Then
+            pytest.fail('Non cancelled booking should not raise errors')
+
+
+class CheckBookingIsNotUsedTest:
+    def test_raise_forbidden_error_when_booking_is_already_used(self):
+        # Given
+        user = create_user(postal_code=None)
+        booking = create_booking(is_used=True, user=user)
+
+        # When
+        with pytest.raises(ForbiddenError) as api_errors:
+            check_booking_is_not_used(booking)
+
+        # Then
+        assert api_errors.value.errors['global'] == ["Impossible d\'annuler une réservation consommée"]
+
+    def test_does_not_raise_when_the_booking_is_not_used(self):
+        # Given
+        user = create_user(postal_code=None)
+        booking = create_booking(is_used=False, user=user)
+
+        # When
+        try:
+            check_booking_is_not_used(booking)
+        except ResourceGoneError:
+            # Then
+            pytest.fail('Non used booking should pass the test')

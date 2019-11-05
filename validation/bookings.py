@@ -186,3 +186,23 @@ def check_rights_to_get_bookings_csv(user, venue_id=None, offer_id=None):
             api_errors.add_error('offerId', "Cette offre n'existe pas.")
             raise api_errors
         ensure_current_user_has_rights(user=user, rights=RightsType.editor, offerer_id=venue.managingOffererId)
+
+
+def check_booking_is_not_already_cancelled(booking: Booking):
+    if booking.isCancelled:
+        api_errors = ResourceGoneError()
+        api_errors.add_error(
+            'global',
+            "Cette contremarque a déjà été annulée"
+        )
+        raise api_errors
+
+
+def check_booking_is_not_used(booking: Booking):
+    if booking.isUsed:
+        api_errors = ForbiddenError()
+        api_errors.add_error(
+            'global',
+            "Impossible d\'annuler une réservation consommée"
+        )
+        raise api_errors
