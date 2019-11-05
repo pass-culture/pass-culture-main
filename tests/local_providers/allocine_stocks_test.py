@@ -491,6 +491,99 @@ class AllocineStocksTest:
             assert created_offer.type == str(EventType.CINEMA)
             assert created_offer.name == 'Les Contes de la mère poule'
 
+        @patch('local_providers.allocine_stocks.get_movies_showtimes')
+        @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
+        @clean_database
+        def test_should_create_product_and_new_offer_with_missing_visa_and_stage_director(self,
+                                                                                          mock_call_allocine_api,
+                                                                                          app):
+            # Given
+            theater_token = 'test'
+            mock_call_allocine_api.return_value = iter([
+                {
+                    "node": {
+                        "movie": {
+                            "id": "TW92aWU6Mzc4MzI=",
+                            "internalId": 37832,
+                            "backlink": {
+                                "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
+                                "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9"
+                            },
+                            "data": {
+                                "eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E",
+                                "productionYear": 2001
+                            },
+                            "title": "Les Contes de la m\u00e8re poule",
+                            "originalTitle": "Les Contes de la m\u00e8re poule",
+                            "runtime": "PT1H50M0S",
+                            "poster": {
+                                "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
+                            },
+                            "synopsis": "synopsis du film",
+                            "releases": [
+                                {
+                                    "name": "Released",
+                                    "releaseDate": {
+                                        "date": "2001-10-03"
+                                    },
+                                    "data": []
+                                }
+                            ],
+                            "credits": {
+                                "edges": []
+                            },
+                            "cast": {
+                                "backlink": {
+                                    "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
+                                    "label": "Casting complet du film sur AlloCin\u00e9"
+                                },
+                                "edges": []
+                            },
+                            "countries": [
+                                {
+                                    "name": "Iran",
+                                    "alpha3": "IRN"
+                                }
+                            ],
+                            "genres": [
+                                "ANIMATION",
+                                "FAMILY"
+                            ],
+                            "companies": []
+                        },
+                        "showtimes": [
+                            {
+                                "startsAt": "2019-10-29T10:30:00",
+                                "diffusionVersion": "DUBBED"
+                            }
+                        ]
+                    }
+                }])
+
+            offerer = create_offerer(siren='775671464')
+            venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@toto.com')
+            PcObject.save(venue)
+
+            allocine_provider = get_provider_by_local_class('AllocineStocks')
+            allocine_provider.isActive = True
+            venue_provider = create_venue_provider(venue, allocine_provider, venue_id_at_offer_provider=theater_token)
+            PcObject.save(venue_provider)
+
+            allocine_stocks_provider = AllocineStocks(venue_provider)
+
+            # When
+            allocine_stocks_provider.updateObjects()
+
+            # Then
+            created_offer = Offer.query.one()
+            created_product = Product.query.one()
+
+            assert created_product.durationMinutes == 110
+            assert created_product.extraData == {}
+            assert created_offer.extraData == {}
+            assert created_offer.type == str(EventType.CINEMA)
+            assert created_offer.name == 'Les Contes de la mère poule'
+
 
 class ParseMovieDurationTest:
     def test_should_convert_duration_string_to_minutes(self):
@@ -512,6 +605,16 @@ class ParseMovieDurationTest:
 
         # Then
         assert duration_in_minutes == 660
+
+    def test_should_return_None_when_null_value_given(self):
+        # Given
+        movie_runtime = None
+
+        # When
+        duration_in_minutes = _parse_movie_duration(movie_runtime)
+
+        # Then
+        assert not duration_in_minutes
 
 
 class RetrieveMovieInformationTest:
@@ -624,7 +727,15 @@ class RetrieveMovieInformationTest:
                         "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
                     },
                     "synopsis": "synopsis du film",
-                    "releases": [],
+                    "releases": [
+                        {
+                            "name": "Released",
+                            "releaseDate": {
+                                "date": "2019-11-20"
+                            },
+                            "data": []
+                        }
+                    ],
                     "credits": {
                         "edges": []
                     },

@@ -52,8 +52,10 @@ class AllocineStocks(LocalProvider):
         allocine_product.durationMinutes = self.movie_information['duration']
         if not allocine_product.extraData:
             allocine_product.extraData = {}
-        allocine_product.extraData["visa"] = self.movie_information['visa']
-        allocine_product.extraData["stageDirector"] = self.movie_information['stageDirector']
+        if 'visa' in self.movie_information:
+            allocine_product.extraData["visa"] = self.movie_information['visa']
+        if 'stageDirector' in self.movie_information:
+            allocine_product.extraData["stageDirector"] = self.movie_information['stageDirector']
         allocine_product.name = self.movie_information['title']
         allocine_product.type = str(EventType.CINEMA)
         is_new_product_to_insert = allocine_product.id is None
@@ -102,7 +104,8 @@ def retrieve_movie_information(raw_movie_information: dict) -> dict:
     if is_stage_director_info_available:
         parsed_movie_information['stageDirector'] = _build_stage_director_full_name(raw_movie_information)
 
-    is_operating_visa_available = len(raw_movie_information['releases']) > 0
+    is_operating_visa_available = len(raw_movie_information['releases']) > 0 \
+                                  and len(raw_movie_information['releases'][0]['data']) > 0
 
     if is_operating_visa_available:
         parsed_movie_information['visa'] = _get_operating_visa(raw_movie_information)
@@ -125,7 +128,9 @@ def _build_stage_director_full_name(movie_info: dict) -> str:
     return f"{stage_director_first_name} {stage_director_last_name}"
 
 
-def _parse_movie_duration(duration: str) -> int:
+def _parse_movie_duration(duration: str) -> Optional[int]:
+    if not duration:
+        return None
     hours_minutes = "([0-9]+)H([0-9]+)"
     duration_regex = re.compile(hours_minutes)
     match = duration_regex.search(duration)
