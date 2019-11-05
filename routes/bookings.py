@@ -338,6 +338,10 @@ def patch_cancel_booking_by_token(token):
 
     booking = booking_queries.find_by(token)
 
+    if current_user.is_authenticated:
+        ensure_current_user_has_rights(
+            RightsType.editor, booking.stock.resolvedOffer.venue.managingOffererId)
+
     if valid_api_key:
         offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
         check_api_key_allows_to_validate_booking(valid_api_key, offerer_id)

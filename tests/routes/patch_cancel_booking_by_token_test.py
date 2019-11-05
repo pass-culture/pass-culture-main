@@ -160,7 +160,40 @@ class Patch:
 
             # Then
             assert response.status_code == 403
-            assert response.json['user'] == ["Vous n'avez pas les droits suffisants pour éditer cette contremarque."]
+            assert response.json['global'] == ["Vous n'avez pas les droits suffisants pour éditer cette contremarque."]
+
+        @clean_database
+        def when_the_logged_user_has_not_rights_on_offerer(self, app):
+            # Given
+            pro_with_user = create_user(public_name='Mr Books', email='mr.book@example.net')
+            library = create_offerer(siren='793875030')
+            user_offerer = create_user_offerer(pro_with_user, library)
+            bookshop = create_venue(library)
+            book_offer = create_offer_with_event_product(bookshop)
+            stock = create_stock(offer=book_offer)
+
+            user = create_user(public_name='J.F', email='j.f@example.net')
+            deposit = create_deposit(user)
+            booking = create_booking(user, stock, venue=bookshop)
+
+            PcObject.save(booking, user_offerer)
+
+            offerer_with_api_key = create_offerer()
+            PcObject.save(offerer_with_api_key)
+
+            api_key = random_token(64)
+            offerer_api_key = create_api_key_for_offerer(offerer_with_api_key, api_key)
+
+            PcObject.save(offerer_api_key)
+
+            # When
+            response = TestClient(app.test_client())\
+                .with_auth('j.f@example.net')\
+                .patch('/v2/bookings/cancel/token/{}'.format(booking.token))
+
+            # Then
+            assert response.status_code == 403
+            assert response.json['global'] == ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
 
         class WhenTheBookingIsUsed:
             @clean_database

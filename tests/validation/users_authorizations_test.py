@@ -149,4 +149,3 @@ class CheckUserCanValidateActivationOfferTest:
 
         # Then
         assert errors.value.errors['user'] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
-
