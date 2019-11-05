@@ -62,7 +62,7 @@ def _get_endpoint_exceptions():
             'get_all_offerers_with_venue', 'get_pending_validation',
             'get_export_venues', 'get_export_offerers', 'get_bookings_csv',
             'list_features', 'show_dashboard_page', 'get_users_stats', ''
-            'patch_booking_by_token_v2', 'get_booking_by_token_v2']
+            'patch_booking_use_by_token', 'get_booking_by_token_v2']
 
 
 def _get_origin_header_whitelist_for_non_dev_environments(api_url):
