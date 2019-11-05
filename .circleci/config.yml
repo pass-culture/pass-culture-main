@@ -42,12 +42,6 @@ jobs:
       - run:
           name: Running API server
           command: |
-            export PC_GPG_PRIVATE=$PASS_PRIVATE
-            cd ~/pass-culture-main/api
-            rm -rf private
-            gpg --passphrase $PC_GPG_PRIVATE --batch --output private.tar.gz -d private.tar.gz.gpg
-            tar xf private.tar.gz
-            rm private.tar.gz
             cd ~/pass-culture-main
             ./pc start-backend
           background: true
