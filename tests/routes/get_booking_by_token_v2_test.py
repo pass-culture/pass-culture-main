@@ -267,7 +267,6 @@ class Get:
             assert response.status_code == 403
             assert response.json['user'] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
 
-
         @clean_database
         def when_booking_is_on_stock_with_beginning_datetime_in_more_than_72_hours(self, app):
             # Given
