@@ -1,4 +1,4 @@
-from flask import Flask, json, jsonify, request
+from flask import Flask
 from flasgger import Swagger
 
 swagger_config = {
@@ -10,6 +10,7 @@ swagger_config = {
             "endpoint": 'v2_spec',
             "description": 'This is the version 2 of our API',
             "route": '/v2/bookings/token/',
+            "swagger_ui_css": '/static/swagger-ui.css',
         }
     ],
     "static_url_path": "/flasgger_static",
@@ -25,10 +26,6 @@ app.config["SWAGGER"]= {
     }
 
 swag = Swagger(app, template_file='bookings_token_specifications_v2.json', config=swagger_config)
-
-@app.route('/v2/bookings/token/<token>', methods=['GET'])
-def get_bookings_token_by_token():
-    return jsonify(request.json), HTTPStatus.OK
 
 if __name__ == '__main__':
     app.run(debug=True)
