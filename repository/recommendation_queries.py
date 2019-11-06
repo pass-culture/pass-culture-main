@@ -7,7 +7,8 @@ from sqlalchemy.sql.expression import literal
 from models import Offer, PcObject, \
     Recommendation, \
     Stock, \
-    Booking
+    Booking, \
+    Favorite
 from models.api_errors import ResourceNotFoundError
 from models.db import db
 from models.mediation import Mediation
@@ -94,15 +95,27 @@ def find_recommendation_already_created_on_discovery(offer_id: int, mediation_id
     return query.first()
 
 
-def delete_all_unread_recommendations_older_than_one_week():
+def delete_all_unread_recommendations_older_than_one_week(per_page=1000):
+    favorite_offer_ids = db.session.query(Favorite.offerId).subquery()
+    not_favorite_predicate = ~Offer.id.in_(favorite_offer_ids)
     is_unread = Recommendation.dateRead == None
     is_older_than_one_week = Recommendation.dateCreated < datetime.utcnow() - timedelta(days=8)
-    has_no_booking = Booking.recommendation == None
+    has_no_booking = Booking.recommendationId == None
 
-    query = Recommendation.query.outerjoin(Booking).filter(has_no_booking & is_unread & is_older_than_one_week)
+    query = Recommendation.query \
+        .outerjoin(Booking) \
+        .filter(has_no_booking & is_unread & is_older_than_one_week) \
+        .filter(not_favorite_predicate) \
+        .join(Offer, Offer.id == Recommendation.offerId) \
 
-    for q in query.all():
-        PcObject.delete(q)
+    has_next = True
+    while has_next:
+        recommendations = query.paginate(1, per_page=per_page, error_out=False).items
+        PcObject.delete_all(recommendations)
+
+        if len(recommendations) < 10:
+            has_next = False
+
 
 
 def get_recommendations_for_offers(offer_ids: List[int]) -> List[Recommendation]:

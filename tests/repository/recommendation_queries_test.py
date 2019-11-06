@@ -6,7 +6,8 @@ from repository.recommendation_queries import keep_only_bookable_stocks, \
 from tests.conftest import clean_database
 from tests.test_utils import create_recommendation, create_offer_with_event_product, create_offerer, \
     create_venue, create_user, create_stock_from_event_occurrence, create_event_occurrence, create_stock_from_offer, \
-    create_offer_with_thing_product, create_booking, create_stock_with_thing_offer
+    create_offer_with_thing_product, create_mediation, create_booking, create_stock_with_thing_offer, create_favorite
+
 from utils.human_ids import humanize
 
 
@@ -139,6 +140,33 @@ class DeleteAllUnreadRecommendationsOlderThanOneWeekTest:
         assert old_recommendation not in recommendations
 
     @clean_database
+    def test_deletes_unread_recommendations_older_than_one_week_with_pagination(self, app):
+        # Given
+        today = datetime.utcnow()
+        old_date = today - timedelta(days=17)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        user = create_user()
+        to_delete_recommendations = []
+        i = 0
+        while i < 100:
+            to_delete_recommendations.append(create_recommendation(offer,
+                                                                   user,
+                                                                   date_created=old_date,
+                                                                   date_read=None))
+            i += 1
+        PcObject.save(*to_delete_recommendations)
+
+        # When
+        delete_all_unread_recommendations_older_than_one_week(per_page=17)
+
+        # Then
+        recommendations = Recommendation.query.all()
+        assert len(recommendations) == 0
+
+
+    @clean_database
     def test_doesnt_delete_read_recommendations_older_than_one_week(self, app):
         # Given
         today = datetime.utcnow()
@@ -159,6 +187,7 @@ class DeleteAllUnreadRecommendationsOlderThanOneWeekTest:
         assert not_read_old_recommendation not in recommendations
         assert read_old_recommendation in recommendations
 
+
     @clean_database
     def test_doesnt_delete_new_recommendations(self, app):
         # Given
@@ -170,7 +199,8 @@ class DeleteAllUnreadRecommendationsOlderThanOneWeekTest:
         not_read_new_recommendation = create_recommendation(offer, user, date_created=today - timedelta(days=7),
                                                             date_read=None)
         read_new_recommendation = create_recommendation(offer, user, date_created=today, date_read=today)
-        PcObject.save(not_read_new_recommendation, read_new_recommendation)
+        recommendation_to_delete = create_recommendation(offer, user, date_created=today - timedelta(days=9), date_read=None)
+        PcObject.save(not_read_new_recommendation, read_new_recommendation, recommendation_to_delete)
 
         # When
         delete_all_unread_recommendations_older_than_one_week()
@@ -179,6 +209,7 @@ class DeleteAllUnreadRecommendationsOlderThanOneWeekTest:
         recommendations = Recommendation.query.all()
         assert not_read_new_recommendation in recommendations
         assert read_new_recommendation in recommendations
+        assert recommendation_to_delete not in recommendations
 
     @clean_database
     def test_doesnt_delete_booked_recommendations(self, app):
@@ -190,10 +221,10 @@ class DeleteAllUnreadRecommendationsOlderThanOneWeekTest:
         product_with_thing_type = create_offer_with_thing_product(venue)
         stock = create_stock_with_thing_offer(offerer, venue, product_with_thing_type, price=0)
         user = create_user()
-        booked_recommendation = create_recommendation(offer, user, date_created=today - timedelta(days=9),
-                                                      date_read=None)
-        booking = create_booking(user, stock=stock, venue=venue, recommendation=booked_recommendation)
-        PcObject.save(booking)
+        booked_recommendation = create_recommendation(offer, user, date_created=today - timedelta(days=9), date_read=None)
+        booking = create_booking(user, stock=stock,  venue=venue, recommendation=booked_recommendation)
+        recommendation_to_delete = create_recommendation(offer, user, date_created=today - timedelta(days=9), date_read=None)
+        PcObject.save(booking, recommendation_to_delete)
 
         # When
         delete_all_unread_recommendations_older_than_one_week()
@@ -201,3 +232,29 @@ class DeleteAllUnreadRecommendationsOlderThanOneWeekTest:
         # Then
         recommendations = Recommendation.query.all()
         assert booked_recommendation in recommendations
+        assert recommendation_to_delete not in recommendations
+
+
+    @clean_database
+    def test_doesnt_delete_recommendations_linked_to_favorite_offer(self, app):
+        # Given
+        today = datetime.utcnow()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        favorite_offer = create_offer_with_thing_product(venue)
+        offer = create_offer_with_thing_product(venue)
+        user = create_user()
+        mediation = create_mediation(favorite_offer)
+        favorite = create_favorite(mediation, favorite_offer, user)
+        recommendation = create_recommendation(favorite_offer, user, date_created=today - timedelta(days=9), date_read=None)
+        recommendation_to_delete = create_recommendation(offer, user, date_created=today - timedelta(days=9), date_read=None)
+        PcObject.save(recommendation, recommendation_to_delete, favorite)
+
+        # When
+        delete_all_unread_recommendations_older_than_one_week()
+
+        # Then
+        recommendations = Recommendation.query.all()
+        assert recommendation in recommendations
+        assert recommendation_to_delete not in recommendations
+

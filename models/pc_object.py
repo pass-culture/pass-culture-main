@@ -246,6 +246,12 @@ class PcObject:
         db.session.commit()
 
     @staticmethod
+    def delete_all(models: List[Model]):
+        for model in models:
+            db.session.delete(model)
+        db.session.commit()
+
+    @staticmethod
     def _get_keys_to_populate(columns: Iterable[str], data: dict, skipped_keys: Iterable[str]) -> Set[str]:
         requested_columns_to_update = set(data.keys())
         forbidden_columns = set(['id', 'deleted'] + skipped_keys)
