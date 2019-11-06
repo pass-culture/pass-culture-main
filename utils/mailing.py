@@ -123,7 +123,6 @@ def make_offerer_booking_recap_email_with_mailjet_template(booking, recipients):
     offer_type = offer.type
     is_event = int(offer.isEvent)
 
-    # minute
     mailjet_json = {
         'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
         'FromName': 'pass Culture pro',
@@ -183,6 +182,7 @@ def _create_email_recipients(recipients):
         recipients_string = ", ".join(recipients)
     else:
         recipients_string = recipients
+
     if feature_send_mail_to_users_enabled():
         email_to = recipients_string
     else:
