@@ -357,7 +357,6 @@ class CheckBookingQuantityLimitTest:
             # then
             pytest.fail('Booking for duo offers must not raise any exceptions')
 
-<<<<<<< HEAD
 class CheckBookingIsNotAlreadyCancelledTest:
     def test_raise_resource_gone_error_when_booking_is_already_cancelled(self):
         # Given

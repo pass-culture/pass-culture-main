@@ -268,7 +268,7 @@ class Patch:
                 # Then
                 assert response.status_code == 403
                 assert response.json['user'] == [
-                    "Vous n'avez pas les droits suffisants pour éditer cette contremarque."]
+                    "Vous n'avez pas les droits suffisants pour valider cette contremarque."]
 
         class WithBasicAuthTest:
             @clean_database
@@ -290,7 +290,7 @@ class Patch:
                 # Then
                 assert response.status_code == 403
                 assert response.json['user'] == [
-                    "Vous n'avez pas les droits suffisants pour éditer cette contremarque."]
+                    "Vous n'avez pas les droits suffisants pour valider cette contremarque."]
                 assert Booking.query.get(booking.id).isUsed is False
 
             @clean_database

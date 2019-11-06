@@ -49,11 +49,10 @@ from validation.users_authentifications import check_user_is_logged_in_or_email_
     login_or_api_key_required_v2
 from validation.users_authorizations import check_user_can_validate_bookings, \
     check_user_can_validate_activation_offer, \
-    check_api_key_allows_to_validate_booking, \
-    check_user_can_validate_bookings_v2, \
+    check_user_can_validate_bookings_v2,\
     check_api_key_allows_to_cancel_booking, \
+    check_api_key_allows_to_validate_booking, \
     check_can_book_free_offer
-    check_user_can_validate_bookings_v2
 
 
 @app.route('/bookings/csv', methods=['GET'])
