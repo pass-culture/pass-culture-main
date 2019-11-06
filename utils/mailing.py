@@ -12,7 +12,7 @@ from domain.user_activation import generate_set_password_url
 from models import Offer, Email, PcObject, Offerer
 from models import RightsType, User
 from models.email import EmailStatus
-from models.offer_type import ProductType, ThingType
+from models.offer_type import ProductType
 from repository import email_queries
 from repository import booking_queries
 from repository.feature_queries import feature_send_mail_to_users_enabled
@@ -111,7 +111,74 @@ def make_final_recap_email_for_stock_with_event(stock):
     }
 
 
-def create_recipients(recipients):
+def make_offerer_booking_recap_email_with_mailjet_template(booking, recipients):
+    offer = booking.stock.resolvedOffer
+    venue_name = offer.venue.name
+    offer_name = offer.product.name
+    price = _format_price_for_email(booking)
+    quantity = booking.quantity
+    user_email = booking.user.email
+    user_firstname = booking.user.firstName
+    user_lastname = booking.user.lastName
+    offer_type = offer.type
+    is_event = int(offer.isEvent)
+
+    # minute
+    mailjet_json = {
+        'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
+        'FromName': 'pass Culture pro',
+        'Subject': f'Nouvelle réservation pour {offer_name}',
+        'MJ-TemplateID': '779969',
+        'MJ-TemplateLanguage': 'true',
+        'Recipients': [
+            {
+                "Email": _create_email_recipients(recipients),
+            }
+        ],
+        'Vars': {
+            'nom_offre': offer_name,
+            'nom_lieu': venue_name,
+            'prix': price,
+            'is_event': is_event,
+            'ISBN': "",
+            'offer_type': offer_type,
+            'lien_offre_pcpro': "",
+            'departement': ""
+        },
+    }
+
+    mailjet_json_variables = mailjet_json['Vars']
+
+    offer_is_a_book = offer_type == 'ThingType.LIVRE_EDITION'
+    if offer_is_a_book:
+        isbn = offer.extraData['isbn']
+        mailjet_json_variables['ISBN'] = isbn
+
+    offer_is_an_event = is_event == 1
+    if offer_is_an_event:
+        mailjet_json_variables['date'], mailjet_json_variables['heure'] = _format_date_and_hour_for_email(booking)
+        mailjet_json_variables['quantity'] = int(quantity)
+
+    mailjet_json_variables['user_firstName'] = user_firstname
+    mailjet_json_variables['user_lastName'] = user_lastname
+    mailjet_json_variables['user_email'] = user_email
+
+    return mailjet_json
+
+
+def _format_price_for_email(booking):
+    offer = booking.stock.resolvedOffer
+    is_duo = offer.isDuo
+    price = int(booking.stock.price)
+    if price == 0:
+        return "Gratuit"
+    if is_duo:
+        return 2 * price
+
+    return price
+
+
+def _create_email_recipients(recipients):
     if isinstance(recipients, list):
         recipients_string = ", ".join(recipients)
     else:
@@ -121,65 +188,56 @@ def create_recipients(recipients):
     else:
         email_to = DEV_EMAIL_ADDRESS
 
-    return DEV_EMAIL_ADDRESS
+    return email_to
+
+
+def _format_date_and_hour_for_email(booking):
+    date_in_tz = _get_event_datetime(booking.stock)
+    offer_date = date_in_tz.strftime("%d-%b-%Y")
+    event_hour = date_in_tz.hour
+    event_minute = date_in_tz.minute
+    offer_hour = f'{event_hour}h' if event_minute == 0 else f'{event_hour}h'
+
+    return offer_date, offer_hour
 
 
 def make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=False):
-    offer = booking.stock.resolvedOffer
-    venue = offer.venue
+    venue = booking.stock.resolvedOffer.venue
     user = booking.user
-    product = offer.product
-    offer_name = offer.product.name
-    price = booking.stock.price
-    quantity = booking.quantity
-    user_email = booking.user.email
-    user_firstname = booking.user.firstName
-    user_lastname = booking.user.lastName
-    offer_type = offer.type
-    is_event = offer.isEvent
-    isbn = None
-    if offer_type == ThingType.LIVRE_EDITION:
-        isbn = offer.extraData['isbn']
-
-    if is_event:
-        date_in_tz = _get_event_datetime(booking.stock)
-        formatted_datetime = format_datetime(date_in_tz)
-    else:
-        formatted_datetime = None
+    stock_bookings = booking_queries.find_ongoing_bookings_by_stock(
+        booking.stock)
+    product = booking.stock.resolvedOffer.product
+    human_offer_id = humanize(booking.stock.resolvedOffer.id)
+    booking_is_on_event = booking.stock.beginningDatetime is not None
 
     if is_cancellation:
         email_subject = f'[Réservations] Annulation de réservation pour {product.name}'
     else:
         email_subject = f'[Réservations {venue.departementCode}] Nouvelle réservation pour {product.name}'
 
-    email_to = create_recipients('')
+    if booking_is_on_event:
+        date_in_tz = _get_event_datetime(booking.stock)
+        formatted_datetime = format_datetime(date_in_tz)
+        email_subject += f' - {formatted_datetime}'
+    else:
+        formatted_datetime = None
+    email_html = render_template('mails/offerer_recap_email_after_user_action.html',
+                                 is_cancellation=is_cancellation,
+                                 booking_is_on_event=booking_is_on_event,
+                                 number_of_bookings=len(stock_bookings),
+                                 event_or_thing=product,
+                                 stock_date_time=formatted_datetime,
+                                 venue=venue,
+                                 stock_bookings=stock_bookings,
+                                 user=user,
+                                 pro_url=PRO_URL,
+                                 human_offer_id=human_offer_id)
 
-    # "Name": user.publicName #A vérifier
     return {
-        'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
-        'FromName': 'pass Culture pro',
+        'FromName': 'Pass Culture',
+        'FromEmail': SUPPORT_EMAIL_ADDRESS,
         'Subject': email_subject,
-        'MJ-TemplateID': '778329',
-        'MJ-TemplateLanguage': 'true',
-        'Recipients': [
-            {
-                "Email": email_to,
-            }
-        ],
-        'Vars': {
-            'nom_offre': offer_name,
-            'prix': int(price),
-            'ISBN': 'isbn',
-            'date': 'formatted_datetime',
-            'heure': "1h",
-            'quantity': int(quantity),
-            'user_firstname': user_firstname,
-            'user_lastname': user_lastname,
-            'user_email': user_email,
-            'offer_type': offer_type,
-            'is_event': is_event
-
-        },
+        'Html-part': email_html,
     }
 
 

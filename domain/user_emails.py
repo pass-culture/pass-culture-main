@@ -12,7 +12,8 @@ from utils.mailing import make_user_booking_recap_email, \
     make_user_validation_email, \
     make_pro_user_waiting_for_validation_by_admin_email, \
     make_venue_validation_confirmation_email, compute_email_html_part_and_recipients, \
-    make_activation_notification_email, ADMINISTRATION_EMAIL_ADDRESS
+    make_activation_notification_email, ADMINISTRATION_EMAIL_ADDRESS, \
+    make_offerer_booking_recap_email_with_mailjet_template
 
 
 def send_final_booking_recap_email(stock: Stock, send_email: Callable[..., bool]) -> bool:
@@ -37,12 +38,10 @@ def send_final_booking_recap_email(stock: Stock, send_email: Callable[..., bool]
 
 def send_booking_recap_emails(booking: Booking, send_email: Callable[..., bool]) -> bool:
     recipients = [ADMINISTRATION_EMAIL_ADDRESS]
-
     if booking.stock.resolvedOffer.bookingEmail:
         recipients.append(booking.stock.resolvedOffer.bookingEmail)
 
-    email = make_offerer_booking_recap_email_after_user_action(booking)
-
+    email = make_offerer_booking_recap_email_with_mailjet_template(booking,recipients)
     return send_email(data=email)
 
 
@@ -68,17 +67,16 @@ def send_user_driven_cancellation_email_to_user(booking: Booking, send_email: Ca
 
 
 def send_user_driven_cancellation_email_to_offerer(booking: Booking, send_email: Callable[..., bool]) -> bool:
-    # email = make_offerer_booking_recap_email_after_user_action(
-    #     booking, is_cancellation=True)
-    # recipients = []
-    # offerer_booking_email = booking.stock.resolvedOffer.bookingEmail
-    # if offerer_booking_email:
-    #     recipients.append(offerer_booking_email)
-    # recipients.append(ADMINISTRATION_EMAIL_ADDRESS)
-    # email['Html-part'], email['To'] = compute_email_html_part_and_recipients(
-    #     email['Html-part'], recipients)
-    #return send_email(data=email)
-   return
+    email = make_offerer_booking_recap_email_after_user_action(
+        booking, is_cancellation=True)
+    recipients = []
+    offerer_booking_email = booking.stock.resolvedOffer.bookingEmail
+    if offerer_booking_email:
+        recipients.append(offerer_booking_email)
+    recipients.append(ADMINISTRATION_EMAIL_ADDRESS)
+    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(
+        email['Html-part'], recipients)
+    return send_email(data=email)
 
 
 def send_offerer_driven_cancellation_email_to_user(booking: Booking, send_email: Callable[..., bool]) -> bool:

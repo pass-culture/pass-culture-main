@@ -260,10 +260,11 @@ class SendBookingRecapEmailsTest:
             # when
             send_booking_recap_emails(booking, mocked_send_email)
 
-            # then
-            mocked_send_email.assert_called_once()
+        # then
+        mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'dev@passculture.app'
+        data = args[1]['data']
+        assert data['Recipients'][0]['Email'] == 'dev@passculture.app'
 
     def when_feature_send_mail_to_users_enabled_and_offer_booking_email_sends_to_offerer_and_administration(self, app):
         # given
@@ -286,8 +287,10 @@ class SendBookingRecapEmailsTest:
         # then
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
-        assert 'offer.booking.email@test.com' in args[1]['data']['To']
-        assert 'administration@passculture.app' in args[1]['data']['To']
+        data = args[1]['data']
+        assert 'offer.booking.email@test.com' in data['Recipients'][0]['Email']
+        assert 'administration@passculture.app' in data['Recipients'][0]['Email']
+
 
     def when_feature_send_mail_to_users_enabled_and_not_offer_booking_email_sends_only_to_administration(
             self, app):
@@ -311,7 +314,8 @@ class SendBookingRecapEmailsTest:
         # then
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'administration@passculture.app'
+        data = args[1]['data']
+        assert data['Recipients'][0]['Email'] == 'administration@passculture.app'
 
 
 class SendFinalBookingRecapEmailTest:
