@@ -35,6 +35,7 @@ class DeleteStockAndCancelBookingsTest:
 
             # then
             assert all(map(lambda b: b.isCancelled, bookings))
+            assert all(map(lambda b: not b.isUsed, bookings))
 
 
     class WhenProductIsAnEvent:
