@@ -26,8 +26,7 @@ from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, \
     expect_json_data
 from utils.token import random_token
-from validation.bookings import check_booking_is_usable, \
-    check_existing_stock, \
+from validation.bookings import check_existing_stock, \
     check_expenses_limits, \
     check_has_quantity, \
     check_has_stock_id, \
@@ -42,10 +41,10 @@ from validation.bookings import check_booking_is_usable, \
     check_stock_venue_is_validated, \
     check_rights_to_get_bookings_csv, \
     check_booking_is_not_already_cancelled, \
-    check_booking_is_not_used, check_if_activation_booking_is_keepable, check_booking_token_is_keepable
-
-check_rights_to_get_bookings_csv, \
+    check_booking_is_not_used, \
     check_booking_token_is_keepable, \
+    check_booking_token_is_usable, \
+    check_activation_booking_is_keepable
 from validation.users_authentifications import check_user_is_logged_in_or_email_is_provided, \
     login_or_api_key_required_v2
 from validation.users_authorizations import check_user_can_validate_bookings, \
@@ -53,10 +52,8 @@ from validation.users_authorizations import check_user_can_validate_bookings, \
     check_api_key_allows_to_validate_booking, \
     check_user_can_validate_bookings_v2, \
     check_api_key_allows_to_cancel_booking, \
-    check_rights_for_activation_offer, check_can_book_free_offer
-
-check_user_can_validate_bookings_v2, \
-    check_rights_for_activation_offer, \
+    check_can_book_free_offer
+    check_user_can_validate_bookings_v2
 
 
 @app.route('/bookings/csv', methods=['GET'])
@@ -237,7 +234,7 @@ def get_booking_by_token(token):
     booking_token_upper_case = token.upper()
     booking = booking_queries.find_by(
         booking_token_upper_case, email, offer_id)
-    check_booking_is_usable(booking)
+    check_booking_token_is_usable(booking)
 
     offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
 
@@ -257,7 +254,6 @@ def get_booking_by_token_v2(token):
 
     booking_token_upper_case = token.upper()
     booking = booking_queries.find_by(booking_token_upper_case)
-
     offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
 
     if current_user.is_authenticated:
@@ -267,7 +263,7 @@ def get_booking_by_token_v2(token):
     if valid_api_key:
         check_api_key_allows_to_validate_booking(valid_api_key, offerer_id)
 
-    check_booking_is_usable(booking)
+    check_booking_token_is_usable(booking)
 
     response = _create_response_to_get_booking_by_token(booking)
     return jsonify(response), 200
@@ -287,7 +283,7 @@ def patch_booking_by_token(token):
     else:
         check_email_and_offer_id_for_anonymous_user(email, offer_id)
 
-    check_booking_is_usable(booking)
+    check_booking_token_is_usable(booking)
 
     if is_activation_booking(booking):
         _activate_user(booking.user)
@@ -298,7 +294,6 @@ def patch_booking_by_token(token):
     PcObject.save(booking)
 
     return '', 204
-
 
 
 @app.route('/v2/bookings/use/token/<token>', methods=["PATCH"])
@@ -322,7 +317,7 @@ def patch_booking_use_by_token(token):
         _activate_user(booking.user)
         send_activation_notification_email(booking.user, send_raw_email)
 
-    check_booking_is_usable(booking)
+    check_booking_token_is_usable(booking)
 
     booking.isUsed = True
     booking.dateUsed = datetime.utcnow()
@@ -366,7 +361,7 @@ def patch_booking_keep_by_token(token):
 
     offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
 
-    valid_api_key =  _get_api_key_from_header(request)
+    valid_api_key = _get_api_key_from_header(request)
 
     if current_user.is_authenticated:
         check_user_can_validate_bookings_v2(current_user, offerer_id)
@@ -375,7 +370,7 @@ def patch_booking_keep_by_token(token):
         check_api_key_allows_to_validate_booking(valid_api_key, offerer_id)
 
     if is_activation_booking(booking):
-        check_if_activation_booking_is_keepable()
+        check_activation_booking_is_keepable()
 
     check_booking_token_is_keepable(booking)
 
@@ -388,7 +383,7 @@ def patch_booking_keep_by_token(token):
 
 
 def _activate_user(user_to_activate):
-    check_rights_for_activation_offer(current_user)
+    check_user_can_validate_activation_offer(current_user)
     user_to_activate.canBookFreeOffers = True
     deposit = create_initial_deposit(user_to_activate)
     PcObject.save(deposit)

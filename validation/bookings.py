@@ -4,6 +4,7 @@ from domain.expenses import is_eligible_to_physical_products_capping, is_eligibl
 from domain.bookings import BOOKING_CANCELLATION_DELAY
 from models import ApiErrors, Booking, RightsType
 from models.api_errors import ResourceGoneError, ForbiddenError
+from repository.payment_queries import get_payment_by_booking_id
 from repository.stock_queries import find_stock_by_id
 from utils.rest import ensure_current_user_has_rights
 from repository.venue_queries import find_by_id, find_by_offer_id
@@ -113,7 +114,7 @@ def check_expenses_limits(expenses: dict, booking: Booking, find_stock=find_stoc
             )
 
 
-def check_booking_is_usable(booking: Booking):
+def check_booking_token_is_usable(booking: Booking):
     resource_gone_error = ResourceGoneError()
     if booking.isUsed:
         resource_gone_error.add_error('booking', 'Cette réservation a déjà été validée')
@@ -129,11 +130,19 @@ def check_booking_is_usable(booking: Booking):
                         'Vous ne pouvez pas valider cette contremarque plus de 72h avant le début de l\'évènement')
         raise errors
 
+
 def check_booking_token_is_keepable(booking: Booking):
     resource_gone_error = ResourceGoneError()
+    booking_payment = get_payment_by_booking_id(booking.id)
+
+    if booking_payment is not None:
+        resource_gone_error.add_error('payment', "Le remboursement est en cours de traitement")
+        raise resource_gone_error
+
     if not booking.isUsed:
         resource_gone_error.add_error('booking', "Cette réservation n'a encore été validée")
         raise resource_gone_error
+
     if booking.isCancelled:
         resource_gone_error.add_error('booking', 'Cette réservation a été annulée')
         raise resource_gone_error
@@ -153,6 +162,12 @@ def check_booking_is_cancellable(booking, is_user_cancellation):
             raise api_errors
 
 
+def check_activation_booking_is_keepable():
+    error = ForbiddenError()
+    error.add_error('booking', "Seuls les administrateurs du pass Culture peuvent annuler des offres d'activation.")
+    raise error
+
+
 def check_email_and_offer_id_for_anonymous_user(email, offer_id):
     api_errors = ApiErrors()
     if not email:
@@ -162,11 +177,6 @@ def check_email_and_offer_id_for_anonymous_user(email, offer_id):
         api_errors.add_error('offer_id', "L'id de l'offre réservée est obligatoire dans l'URL [?offer_id=<id>]")
     if api_errors.errors:
         raise api_errors
-
-def check_if_activation_booking_is_keepable():
-    error = ForbiddenError()
-    error.add_error('booking', "Seuls les administrateurs du pass Culture peuvent annuler des offres d'activation.")
-    raise error
 
 def check_rights_to_get_bookings_csv(user, venue_id=None, offer_id=None):
     if user.isAdmin:

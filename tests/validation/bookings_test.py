@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from decimal import Decimal
 from unittest.mock import Mock
 
 import pytest
@@ -7,19 +8,20 @@ from domain.expenses import SUBVENTION_PHYSICAL_THINGS, SUBVENTION_DIGITAL_THING
 from models import ApiErrors, Booking, Stock, Offer, ThingType, PcObject
 from models.api_errors import ResourceGoneError, ForbiddenError
 from tests.conftest import clean_database
-from tests.test_utils import create_booking_for_thing, create_product_with_thing_type, create_user, create_deposit, \
-    create_venue, create_offerer, create_offer_with_event_product, create_user_offerer, create_booking
+from tests.test_utils import create_booking_for_thing, create_product_with_thing_type, create_user, \
+    create_venue, create_offerer, create_offer_with_event_product, create_user_offerer, create_payment, \
+    create_stock_from_offer, create_offer_with_thing_product, create_booking
 from utils.human_ids import humanize
 from validation.bookings import check_expenses_limits, \
     check_booking_is_cancellable, \
     check_booking_quantity_limit, \
-    check_booking_is_usable, \
     check_rights_to_get_bookings_csv, \
     check_booking_is_not_already_cancelled, \
-    check_booking_is_not_used, check_if_activation_booking_is_keepable
+    check_booking_is_not_used, \
+    check_booking_token_is_usable, \
+    check_booking_token_is_keepable, \
+    check_activation_booking_is_keepable
 
-check_rights_to_get_bookings_csv, \
-    check_if_activation_booking_is_keepable
 
 class CheckExpenseLimitsTest:
     def test_raises_an_error_when_physical_limit_is_reached(self):
@@ -153,7 +155,7 @@ class CheckBookingIsUsableTest:
 
         # When
         with pytest.raises(ResourceGoneError) as e:
-            check_booking_is_usable(booking)
+            check_booking_token_is_usable(booking)
         assert e.value.errors['booking'] == [
             'Cette réservation a déjà été validée']
 
@@ -166,7 +168,7 @@ class CheckBookingIsUsableTest:
 
         # When
         with pytest.raises(ResourceGoneError) as e:
-            check_booking_is_usable(booking)
+            check_booking_token_is_usable(booking)
         assert e.value.errors['booking'] == [
             'Cette réservation a été annulée']
 
@@ -181,7 +183,7 @@ class CheckBookingIsUsableTest:
 
         # When
         with pytest.raises(ForbiddenError) as e:
-            check_booking_is_usable(booking)
+            check_booking_token_is_usable(booking)
         assert e.value.errors['beginningDatetime'] == [
             'Vous ne pouvez pas valider cette contremarque plus de 72h avant le début de l\'évènement']
 
@@ -195,7 +197,7 @@ class CheckBookingIsUsableTest:
 
         # When
         try:
-            check_booking_is_usable(booking)
+            check_booking_token_is_usable(booking)
         except ApiErrors:
             pytest.fail(
                 'Bookings which are not used nor cancelled and do not have a beginning datetime should be usable')
@@ -211,7 +213,7 @@ class CheckBookingIsUsableTest:
 
         # When
         try:
-            check_booking_is_usable(booking)
+            check_booking_token_is_usable(booking)
         except ApiErrors:
             pytest.fail(
                 'Bookings which are not used nor cancelled and do not have a beginning datetime should be usable')
@@ -355,6 +357,7 @@ class CheckBookingQuantityLimitTest:
             # then
             pytest.fail('Booking for duo offers must not raise any exceptions')
 
+<<<<<<< HEAD
 class CheckBookingIsNotAlreadyCancelledTest:
     def test_raise_resource_gone_error_when_booking_is_already_cancelled(self):
         # Given
@@ -406,11 +409,107 @@ class CheckBookingIsNotUsedTest:
             # Then
             pytest.fail('Non used booking should pass the test')
 
-class CheckIfActivationBookingCanBeKept:
+
+class CheckActivationBookingCanBeKeptTest:
     def test_raise_error(self):
         # when
         with pytest.raises(ApiErrors) as api_errors:
-            check_if_activation_booking_is_keepable()
+            check_activation_booking_is_keepable()
 
         # then
         assert api_errors.value.errors['booking'] == ["Seuls les administrateurs du pass Culture peuvent annuler des offres d'activation."]
+
+
+class CheckBookingIsKeepableTest:
+    def test_raises_resource_gone_error_if_not_used(self, app):
+        # Given
+        booking = Booking()
+        booking.isUsed = False
+        booking.stock = Stock()
+
+        # When
+        with pytest.raises(ResourceGoneError) as e:
+            check_booking_token_is_keepable(booking)
+        assert e.value.errors['booking'] == [
+            "Cette réservation n'a encore été validée"]
+
+    def test_raises_resource_gone_error_if_validated_and_cancelled(self, app):
+        # Given
+        booking = Booking()
+        booking.isUsed = True
+        booking.isCancelled = True
+        booking.stock = Stock()
+
+        # When
+        with pytest.raises(ResourceGoneError) as e:
+            check_booking_token_is_keepable(booking)
+        assert e.value.errors['booking'] == [
+            'Cette réservation a été annulée']
+
+    def test_raises_resource_gone_error_if_payement_exists(self, app):
+        # Given
+        offerer = create_offerer()
+        user = create_user()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue, )
+        stock = create_stock_from_offer(offer, price=0)
+
+        booking = create_booking(user, stock)
+
+        payment = create_payment(booking, offerer, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+        PcObject.save(payment)
+
+        # When
+        with pytest.raises(ResourceGoneError) as e:
+            check_booking_token_is_keepable(booking)
+        assert e.value.errors['payment'] == [
+            'Le remboursement est en cours de traitement']
+
+    def test_does_not_raise_error_if_stock_beginning_datetime_in_more_than_72_hours_after_validating(self, app):
+        # Given
+        in_four_days = datetime.utcnow() + timedelta(days=4)
+        booking = Booking()
+        booking.isUsed = True
+        booking.isCancelled = False
+        booking.stock = Stock()
+        booking.stock.beginningDatetime = in_four_days
+
+        # When
+        try:
+            check_booking_token_is_keepable(booking)
+        except ApiErrors:
+            pytest.fail(
+                'Bookings token which are used and not cancelled and  have a beginning datetime in more than 72 hours should be keepable')
+
+
+    def test_does_not_raise_error_if_not_cancelled_Used_and_no_beginning_datetime(self, app):
+            # Given
+            booking = Booking()
+            booking.isUsed = True
+            booking.isCancelled = False
+            booking.stock = Stock()
+            booking.stock.beginningDatetime = None
+
+            # When
+            try:
+                check_booking_token_is_keepable(booking)
+            except ApiErrors:
+                pytest.fail(
+                    'Bookings token which are used nor cancelled and do not have a beginning datetime should be keepable')
+
+    def test_does_not_raise_error_if_not_cancelled_Used_and_beginning_datetime_in_less_than_72_hours(self, app):
+        # Given
+        in_two_days = datetime.utcnow() + timedelta(days=2)
+        booking = Booking()
+        booking.isUsed = True
+        booking.isCancelled = False
+        booking.stock = Stock()
+        booking.stock.beginningDatetime = in_two_days
+
+        # When
+        try:
+            check_booking_token_is_keepable(booking)
+        except ApiErrors:
+            pytest.fail(
+                'Bookings token which are used and no cancelled and do not have a beginning datetime should be keepable')
+

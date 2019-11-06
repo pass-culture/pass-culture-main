@@ -43,6 +43,11 @@ def get_payments_by_message_id(payment_message_id: str) -> List[Payment]:
     return payment_query.all()
 
 
+def get_payment_by_booking_id(id: str) -> List[Payment]:
+    payment_query = Payment.query.filter_by(bookingId=id).first()
+    return payment_query
+
+
 def find_not_processable_with_bank_information():
     most_recent_payment_status = PaymentStatus.query\
         .with_entities(PaymentStatus.id)\
