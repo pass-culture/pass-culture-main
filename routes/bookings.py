@@ -40,14 +40,15 @@ from validation.bookings import check_booking_is_usable, \
     check_email_and_offer_id_for_anonymous_user, \
     check_booking_is_cancellable, \
     check_stock_venue_is_validated, \
-    check_rights_for_activation_offer, \
-    check_rights_to_get_bookings_csv, check_booking_is_not_already_cancelled, check_booking_is_not_used
+    check_rights_to_get_bookings_csv,\
+    check_booking_is_not_already_cancelled, \
+    check_booking_is_not_used
 from validation.users_authentifications import check_user_is_logged_in_or_email_is_provided, \
     login_or_api_key_required_v2
 from validation.users_authorizations import check_user_can_validate_bookings, \
     check_user_can_validate_activation_offer, \
     check_api_key_allows_to_validate_booking, \
-    check_user_can_validate_bookings_v2
+    check_user_can_validate_bookings_v2, check_api_key_allows_to_cancel_booking
 
 
 @app.route('/bookings/csv', methods=['GET'])
@@ -243,7 +244,7 @@ def get_booking_by_token(token):
 @app.route('/v2/bookings/token/<token>', methods=["GET"])
 @login_or_api_key_required_v2
 def get_booking_by_token_v2(token):
-    app_authorization_api_key = extract_api_key_from_request(request)
+    app_authorization_api_key = _extract_api_key_from_request(request)
     valid_api_key = find_api_key_by_value(app_authorization_api_key)
 
     booking_token_upper_case = token.upper()
@@ -262,18 +263,6 @@ def get_booking_by_token_v2(token):
 
     response = _create_response_to_get_booking_by_token(booking)
     return jsonify(response), 200
-
-
-def extract_api_key_from_request(received_request):
-    authorization_header = received_request.headers.get('Authorization', None)
-    headers_contains_api_key_authorization = authorization_header and 'Bearer' in authorization_header
-    if headers_contains_api_key_authorization:
-
-        app_authorization_api_key = authorization_header.replace("Bearer ", "")
-    else:
-        app_authorization_api_key = None
-
-    return app_authorization_api_key
 
 
 @app.route('/bookings/token/<token>', methods=["PATCH"])
@@ -303,7 +292,6 @@ def patch_booking_by_token(token):
     return '', 204
 
 
-<<<<<<< HEAD
 @app.route('/v2/bookings/use/token/<token>', methods=["PATCH"])
 @login_or_api_key_required_v2
 def patch_booking_use_by_token(token):
@@ -313,13 +301,13 @@ def patch_booking_use_by_token(token):
 
     offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
 
-    valid_api_key =  _get_api_key_from_header(request)
+    valid_api_key = _get_api_key_from_header(request)
 
     if current_user.is_authenticated:
         check_user_can_validate_bookings_v2(current_user, offerer_id)
 
     if valid_api_key:
-        check_api_key_allows_to_validate_booking(valid_api_key, offerer_id)
+        check_api_key_allows_to_cancel_booking(valid_api_key, offerer_id)
 
     if check_is_activation_booking(booking):
         _activate_user(booking.user)
@@ -329,22 +317,27 @@ def patch_booking_use_by_token(token):
 
     booking.isUsed = True
     booking.dateUsed = datetime.utcnow()
-=======
+
+    PcObject.save(booking)
+
+    return '', 204
+
+
 @app.route('/v2/bookings/cancel/token/<token>', methods=["PATCH"])
 @login_or_api_key_required_v2
 def patch_cancel_booking_by_token(token):
-    app_authorization_api_key = extract_api_key_from_request(request)
+    app_authorization_api_key = _extract_api_key_from_request(request)
     valid_api_key = find_api_key_by_value(app_authorization_api_key)
 
     booking = booking_queries.find_by(token)
+    offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
 
     if current_user.is_authenticated:
         ensure_current_user_has_rights(
-            RightsType.editor, booking.stock.resolvedOffer.venue.managingOffererId)
+            RightsType.editor, offerer_id)
 
     if valid_api_key:
-        offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
-        check_api_key_allows_to_validate_booking(valid_api_key, offerer_id)
+        check_api_key_allows_to_cancel_booking(valid_api_key, offerer_id)
 
     check_booking_is_not_already_cancelled(booking)
     check_booking_is_not_used(booking)
@@ -360,6 +353,16 @@ def _activate_user(user_to_activate):
     user_to_activate.canBookFreeOffers = True
     deposit = create_initial_deposit(user_to_activate)
     PcObject.save(deposit)
+
+def _extract_api_key_from_request(received_request):
+    authorization_header = received_request.headers.get('Authorization', None)
+    headers_contains_api_key_authorization = authorization_header and 'Bearer' in authorization_header
+    if headers_contains_api_key_authorization:
+        app_authorization_api_key = authorization_header.replace("Bearer ", "")
+    else:
+        app_authorization_api_key = None
+
+    return app_authorization_api_key
 
 
 def _get_api_key_from_header(request):

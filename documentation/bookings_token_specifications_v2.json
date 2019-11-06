@@ -121,7 +121,7 @@
 			}
 		},
 		"/bookings/cancel/token/{token}": {
-			"get": {
+			"patch": {
 				"tags": ["bookings/token"],
 				"summary": "Webservice permettant d'annuler une réservation au moyen de la contremarque associée.",
 				"description": "Le code “contremarque” ou token  est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation. <br/> Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et est transmis à cette occasion à l’utilisateur ",
