@@ -8,8 +8,8 @@ if [ -z ${1:-} ] || [ "$1" == "-h" ]; then
 where:
     -h  show this help text
     -a  Scalingo app name (required)
-    -b  path to backup file (required)
-    -l  get last prod backup (only work on OVH server)
+    -b  path to backup file (required if -l is not provided)
+    -l  get last prod backup (only works on OVH server)
     -z  anonymize the backup
     -h  upgrade head"
     exit 0
