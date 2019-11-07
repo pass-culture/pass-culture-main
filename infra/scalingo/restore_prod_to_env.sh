@@ -94,8 +94,6 @@ if [[ $# -gt 0 ]] && [[ "$1" == "-z" ]]; then
   shift 1
 fi
 
-echo tunnel has to be terminated $DB_TUNNEL_HAS_TO_BE_TERMINATED
-
 if [ "$DB_TUNNEL_HAS_TO_BE_TERMINATED" = true ]; then
   echo terminating tunnel
   kill -9 "$DB_TUNNEL_PID"
