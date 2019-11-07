@@ -66,7 +66,9 @@ def _get_endpoint_exceptions():
             'get_booking_by_token_v2',
             'patch_booking_keep_by_token',
             'api_documentation',
-            'json_documentation']
+            'json_documentation',
+            'api_documentation_index'
+            ]
 
 
 def _get_origin_header_whitelist_for_non_dev_environments(api_url):

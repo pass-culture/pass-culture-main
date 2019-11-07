@@ -7,7 +7,6 @@ colorthief==0.2.1
 coveralls==1.6.0
 dateparser==0.7.0
 freezegun==0.3.11
-flasgger==0.9.3
 Flask==1.0.2
 flask_cors==3.0.7
 flask-login==0.4.1

@@ -1,0 +1,12 @@
+@charset "UTF-8";
+.swagger-ui html {
+  box-sizing: border-box
+}
+
+.swagger-container {
+    margin: 20px;
+}
+
+.topbar {
+    display: none;
+}

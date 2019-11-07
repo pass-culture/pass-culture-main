@@ -1,7 +1,7 @@
 {
 	"swagger": "2.0",
 	"info": {
-		"description": "Vous pouvez utiliser l'api key <i>Bearer MAX98A9UTUVQEQ3MS9ZY2A5924CMBMZQ5EFM3AA4RUPYTUB99YFA4AF4RU6EJYXM/i> pour tester",
+		"description": "",
 		"version": "0.0.1",
 		"title": "DOCUMENTATION API PASS CULTURE",
 		"termsOfService": "https://docs.passculture.app/textes-normatifs"
@@ -12,7 +12,7 @@
 		"name": "bookings/token",
 		"description": "<h1>CONTREMARQUE</h1></br> La validation d’une réservation a pour effet de prouver la réalisation du service proposé et engendre un remboursement selon les conditions prévues dans les CGU de la plateforme pass Culture.</li></ul>"
 	}],
-	"schemes": ["http"],
+	"schemes": ["https"],
 	"paths": {
 		"/bookings/token/{token}": {
 			"get": {
@@ -283,7 +283,7 @@
 		}
 	},
 	"externalDocs": {
-		"description": "Find out more about Swagger",
-		"url": "http://swagger.io"
+		"description": "Découvrir le pass Culture",
+		"url": "https://pass.culture.fr/"
 	}
 }
