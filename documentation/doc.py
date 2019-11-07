@@ -4,4 +4,7 @@ from flask import current_app as app
 
 @app.route('/api/doc/<path:path>')
 def api_documentation(path):
+    if '.json' in path:
+        return send_from_directory('documentation', path)
+
     return send_from_directory('static/documentation', path)
