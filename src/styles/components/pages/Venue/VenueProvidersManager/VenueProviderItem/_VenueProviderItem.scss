@@ -6,22 +6,23 @@
   .provider-name-container {
     @extend .has-text-weight-bold;
     @extend .fs14;
+
     flex: 2;
     font-size: medium;
   }
 
   .venue-id-at-offer-provider-container-with-message {
     @extend .fs14;
-    flex: 4;
 
     display: inline;
+    flex: 4;
   }
 
   .venue-id-at-offer-provider-container {
     @extend .fs14;
-    flex: 4;
 
     display: flex;
+    flex: 4;
     flex-direction: row;
 
     .venue-id-at-offer-provider{
@@ -31,21 +32,21 @@
     }
 
     .offers-container-counter {
-      padding-top: 8px;
       flex: 1;
       justify-content: flex-end;
+      padding-top: rem(8px);
 
       .number-of-offers-label {
         display: inline-block;
-        padding-left: 5px;
+        padding-left: rem(5px);
         vertical-align: top;
       }
     }
   }
 
   .offers-container-message {
-    padding-top: 8px;
     flex: 1.5;
     justify-content: flex-end;
+    padding-top: rem(8px);
   }
 }
