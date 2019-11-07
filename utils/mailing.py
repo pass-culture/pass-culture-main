@@ -166,14 +166,9 @@ def make_offerer_booking_recap_email_with_mailjet_template(booking, recipients):
 
 
 def _format_price_for_email(booking):
-    offer = booking.stock.resolvedOffer
-    is_duo = offer.isDuo
     price = int(booking.stock.price)
     if price == 0:
         return "Gratuit"
-    if is_duo:
-        return 2 * price
-
     return price
 
 
