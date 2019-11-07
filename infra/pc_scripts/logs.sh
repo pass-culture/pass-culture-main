@@ -2,7 +2,7 @@
 
 function logs {
     if [[ "$ENV" == "development" ]]; then
-        docker-compose -f docker-compose-app.yml logs
+        docker-compose -f "$ROOT_PATH"/docker-compose-app.yml logs
         exit
     else
         if [[ $# -gt 0 ]]; then
