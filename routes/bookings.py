@@ -332,6 +332,7 @@ def patch_cancel_booking_by_token(token):
     app_authorization_api_key = _extract_api_key_from_request(request)
     valid_api_key = find_api_key_by_value(app_authorization_api_key)
 
+    token = token.upper()
     booking = booking_queries.find_by(token)
     offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
 

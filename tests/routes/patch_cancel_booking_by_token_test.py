@@ -48,6 +48,39 @@ class Patch:
             updated_booking = Booking.query.first()
             assert updated_booking.isCancelled
 
+        @clean_database
+        def test_should_returns_204_with_lowercase_token(self, app):
+            # Given
+            pro_user = create_user(public_name='Mr Books', email='Mr Books@example.net')
+            offerer = create_offerer(siren='793875030')
+            user_offerer = create_user_offerer(pro_user, offerer)
+            venue = create_venue(offerer)
+            book_offer = create_offer_with_event_product(venue)
+            stock = create_stock(offer=book_offer)
+
+            user = create_user(public_name='J.F', email='j.f@example.net')
+            create_deposit(user)
+            booking = create_booking(user, stock, venue=venue)
+
+            PcObject.save(booking, user_offerer)
+            api_key = random_token(64)
+            offerer_api_key = create_api_key_for_offerer(offerer, api_key)
+            PcObject.save(offerer_api_key)
+
+            # When
+            token = booking.token.lower()
+            response = TestClient(app.test_client()).patch(
+                '/v2/bookings/cancel/token/{}'.format(token),
+                headers={
+                    'Authorization': 'Bearer ' + api_key,
+                    'Origin': 'http://localhost'
+                })
+
+            # Then
+            assert response.status_code == 204
+            updated_booking = Booking.query.first()
+            assert updated_booking.isCancelled
+
     class Returns401:
         @clean_database
         def when_not_authenticated_used_api_key_or_login(self, app):
