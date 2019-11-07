@@ -1,7 +1,6 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 import { Icon } from 'pass-culture-shared'
-import { NavLink } from 'react-router-dom'
 import VenueProviderItem from '../VenueProviderItem'
 
 describe('src | components | pages | Venue | VenueProvidersManager | VenueProviderItem', () => {
@@ -72,8 +71,8 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       const wrapper = shallow(<VenueProviderItem {...props} />)
 
       // then
-      const venueIdAtOfferProvider = wrapper.find('strong.has-text-weight-bold')
-      expect(venueIdAtOfferProvider.text()).toBe('fake id')
+      const venueIdAtOfferProvider = wrapper.find('.venue-id-at-offer-provider')
+      expect(venueIdAtOfferProvider.text()).toBe('Compte : fake id')
     })
 
     it('should render the number of offers when data of provider were already synced and offers are provided', () => {
@@ -81,12 +80,10 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       const wrapper = shallow(<VenueProviderItem {...props} />)
 
       // then
-      const navLink = wrapper.find(NavLink)
-      expect(navLink.prop('to')).toBe('/offres?lieu=1')
-      expect(navLink.prop('className')).toBe('has-text-primary')
-      const icon = navLink.find(Icon)
+      const offerContainer = wrapper.find('.offers-container-counter')
+      const icon = offerContainer.find(Icon)
       expect(icon.prop('svg')).toBe('ico-offres-r')
-      const numberOfOffersLabel = navLink.find('.number-of-offers-label')
+      const numberOfOffersLabel = offerContainer.find('.number-of-offers-label')
       expect(numberOfOffersLabel).toHaveLength(1)
       expect(numberOfOffersLabel.text()).toBe('1 offre')
     })
@@ -99,7 +96,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       const wrapper = shallow(<VenueProviderItem {...props} />)
 
       // then
-      const numberOfOffersLabel = wrapper.find('.offers-container .number-of-offers-label')
+      const numberOfOffersLabel = wrapper.find('.offers-container-counter .number-of-offers-label')
       expect(numberOfOffersLabel).toHaveLength(1)
       expect(numberOfOffersLabel.text()).toBe('0 offre')
     })

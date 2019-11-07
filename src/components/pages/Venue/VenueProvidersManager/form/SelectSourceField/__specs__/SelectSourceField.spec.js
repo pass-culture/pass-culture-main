@@ -36,6 +36,6 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Sele
     expect(options.at(2).prop('value')).toStrictEqual(
       '{"id":"B","name":"B","requireProviderIdentifier":true}'
     )
-    expect(options.at(2).prop('disabled')).toStrictEqual(false)
+    expect(options.at(2).prop('disabled')).toBe(true)
   })
 })

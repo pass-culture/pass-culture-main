@@ -78,18 +78,6 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       })
     })
 
-    it('should contain a block with information regarding importation process', () => {
-      // when
-      const wrapper = shallow(<VenueProvidersManager {...props} />)
-
-      // then
-      const title = wrapper.find('h2')
-      const span = title.find('span')
-      expect(span.text()).toBe(
-        'Si vous avez plusieurs comptes auprès de la même source, ajoutez-les successivement.'
-      )
-    })
-
     it('should display 2 VenueProviderItemContainer when there are 2 venue providers', () => {
       // when
       const wrapper = shallow(<VenueProvidersManager {...props} />)
@@ -110,7 +98,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       shallow(<VenueProvidersManager {...props} />)
 
       // then
-      expect(loadProvidersAndVenueProviders).toHaveBeenCalled()
+      expect(loadProvidersAndVenueProviders).toHaveBeenCalledWith()
     })
 
     it('should update current URL when clicking on add venue provider button', () => {

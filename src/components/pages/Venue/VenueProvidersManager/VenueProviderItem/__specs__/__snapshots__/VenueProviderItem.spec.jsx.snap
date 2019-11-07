@@ -35,33 +35,28 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <Icon
+          height="64px"
           svg="logo-openAgenda"
+          width="64px"
         />,
         <div
-          className="has-text-weight-bold fs14 provider-name-container"
+          className="provider-name-container"
         >
           fake local class
         </div>,
         <div
-          className="fs14 venue-id-at-offer-provider-container"
+          className="venue-id-at-offer-provider-container"
         >
-          <div>
+          <div
+            className="venue-id-at-offer-provider"
+          >
             Compte : 
-            <strong
-              className="fs14 has-text-weight-bold"
-            >
+            <strong>
               fake id
             </strong>
           </div>
-        </div>,
-        <div
-          className="offers-container"
-        >
-          <NavLink
-            activeClassName="active"
-            aria-current="page"
-            className="has-text-primary"
-            to="/offres?lieu=1"
+          <div
+            className="offers-container-counter"
           >
             <Icon
               height="22px"
@@ -73,7 +68,7 @@ ShallowWrapper {
             >
               1 offre
             </div>
-          </NavLink>
+          </div>
         </div>,
       ],
       "className": "venue-provider-row",
@@ -85,7 +80,9 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
+          "height": "64px",
           "svg": "logo-openAgenda",
+          "width": "64px",
         },
         "ref": null,
         "rendered": null,
@@ -97,7 +94,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": "fake local class",
-          "className": "has-text-weight-bold fs14 provider-name-container",
+          "className": "provider-name-container",
         },
         "ref": null,
         "rendered": "fake local class",
@@ -108,170 +105,17 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": <div>
-            Compte : 
-            <strong
-              className="fs14 has-text-weight-bold"
-            >
-              fake id
-            </strong>
-          </div>,
-          "className": "fs14 venue-id-at-offer-provider-container",
-        },
-        "ref": null,
-        "rendered": Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": Array [
-              "Compte : ",
-              <strong
-                className="fs14 has-text-weight-bold"
-              >
-                fake id
-              </strong>,
-              false,
-            ],
-          },
-          "ref": null,
-          "rendered": Array [
-            "Compte : ",
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": "fake id",
-                "className": "fs14 has-text-weight-bold",
-              },
-              "ref": null,
-              "rendered": "fake id",
-              "type": "strong",
-            },
-            false,
-          ],
-          "type": "div",
-        },
-        "type": "div",
-      },
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": <NavLink
-            activeClassName="active"
-            aria-current="page"
-            className="has-text-primary"
-            to="/offres?lieu=1"
-          >
-            <Icon
-              height="22px"
-              svg="ico-offres-r"
-              width="22px"
-            />
+          "children": Array [
             <div
-              className="number-of-offers-label"
+              className="venue-id-at-offer-provider"
             >
-              1 offre
-            </div>
-          </NavLink>,
-          "className": "offers-container",
-        },
-        "ref": null,
-        "rendered": Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "function",
-          "props": Object {
-            "activeClassName": "active",
-            "aria-current": "page",
-            "children": Array [
-              <Icon
-                height="22px"
-                svg="ico-offres-r"
-                width="22px"
-              />,
-              <div
-                className="number-of-offers-label"
-              >
-                1 offre
-              </div>,
-            ],
-            "className": "has-text-primary",
-            "to": "/offres?lieu=1",
-          },
-          "ref": null,
-          "rendered": Array [
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "function",
-              "props": Object {
-                "height": "22px",
-                "svg": "ico-offres-r",
-                "width": "22px",
-              },
-              "ref": null,
-              "rendered": null,
-              "type": [Function],
-            },
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": "1 offre",
-                "className": "number-of-offers-label",
-              },
-              "ref": null,
-              "rendered": "1 offre",
-              "type": "div",
-            },
-          ],
-          "type": [Function],
-        },
-        "type": "div",
-      },
-    ],
-    "type": "li",
-  },
-  Symbol(enzyme.__nodes__): Array [
-    Object {
-      "instance": null,
-      "key": undefined,
-      "nodeType": "host",
-      "props": Object {
-        "children": Array [
-          <Icon
-            svg="logo-openAgenda"
-          />,
-          <div
-            className="has-text-weight-bold fs14 provider-name-container"
-          >
-            fake local class
-          </div>,
-          <div
-            className="fs14 venue-id-at-offer-provider-container"
-          >
-            <div>
               Compte : 
-              <strong
-                className="fs14 has-text-weight-bold"
-              >
+              <strong>
                 fake id
               </strong>
-            </div>
-          </div>,
-          <div
-            className="offers-container"
-          >
-            <NavLink
-              activeClassName="active"
-              aria-current="page"
-              className="has-text-primary"
-              to="/offres?lieu=1"
+            </div>,
+            <div
+              className="offers-container-counter"
             >
               <Icon
                 height="22px"
@@ -283,66 +127,24 @@ ShallowWrapper {
               >
                 1 offre
               </div>
-            </NavLink>
-          </div>,
-        ],
-        "className": "venue-provider-row",
-      },
-      "ref": null,
-      "rendered": Array [
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "function",
-          "props": Object {
-            "svg": "logo-openAgenda",
-          },
-          "ref": null,
-          "rendered": null,
-          "type": [Function],
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": "fake local class",
-            "className": "has-text-weight-bold fs14 provider-name-container",
-          },
-          "ref": null,
-          "rendered": "fake local class",
-          "type": "div",
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": <div>
-              Compte : 
-              <strong
-                className="fs14 has-text-weight-bold"
-              >
-                fake id
-              </strong>
             </div>,
-            "className": "fs14 venue-id-at-offer-provider-container",
-          },
-          "ref": null,
-          "rendered": Object {
+          ],
+          "className": "venue-id-at-offer-provider-container",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
             "instance": null,
             "key": undefined,
             "nodeType": "host",
             "props": Object {
               "children": Array [
                 "Compte : ",
-                <strong
-                  className="fs14 has-text-weight-bold"
-                >
+                <strong>
                   fake id
                 </strong>,
-                false,
               ],
+              "className": "venue-id-at-offer-provider",
             },
             "ref": null,
             "rendered": Array [
@@ -353,50 +155,19 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "children": "fake id",
-                  "className": "fs14 has-text-weight-bold",
                 },
                 "ref": null,
                 "rendered": "fake id",
                 "type": "strong",
               },
-              false,
             ],
             "type": "div",
           },
-          "type": "div",
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": <NavLink
-              activeClassName="active"
-              aria-current="page"
-              className="has-text-primary"
-              to="/offres?lieu=1"
-            >
-              <Icon
-                height="22px"
-                svg="ico-offres-r"
-                width="22px"
-              />
-              <div
-                className="number-of-offers-label"
-              >
-                1 offre
-              </div>
-            </NavLink>,
-            "className": "offers-container",
-          },
-          "ref": null,
-          "rendered": Object {
+          Object {
             "instance": null,
             "key": undefined,
-            "nodeType": "function",
+            "nodeType": "host",
             "props": Object {
-              "activeClassName": "active",
-              "aria-current": "page",
               "children": Array [
                 <Icon
                   height="22px"
@@ -409,8 +180,7 @@ ShallowWrapper {
                   1 offre
                 </div>,
               ],
-              "className": "has-text-primary",
-              "to": "/offres?lieu=1",
+              "className": "offers-container-counter",
             },
             "ref": null,
             "rendered": Array [
@@ -440,8 +210,200 @@ ShallowWrapper {
                 "type": "div",
               },
             ],
-            "type": [Function],
+            "type": "div",
           },
+        ],
+        "type": "div",
+      },
+    ],
+    "type": "li",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <Icon
+            height="64px"
+            svg="logo-openAgenda"
+            width="64px"
+          />,
+          <div
+            className="provider-name-container"
+          >
+            fake local class
+          </div>,
+          <div
+            className="venue-id-at-offer-provider-container"
+          >
+            <div
+              className="venue-id-at-offer-provider"
+            >
+              Compte : 
+              <strong>
+                fake id
+              </strong>
+            </div>
+            <div
+              className="offers-container-counter"
+            >
+              <Icon
+                height="22px"
+                svg="ico-offres-r"
+                width="22px"
+              />
+              <div
+                className="number-of-offers-label"
+              >
+                1 offre
+              </div>
+            </div>
+          </div>,
+        ],
+        "className": "venue-provider-row",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "height": "64px",
+            "svg": "logo-openAgenda",
+            "width": "64px",
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "fake local class",
+            "className": "provider-name-container",
+          },
+          "ref": null,
+          "rendered": "fake local class",
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <div
+                className="venue-id-at-offer-provider"
+              >
+                Compte : 
+                <strong>
+                  fake id
+                </strong>
+              </div>,
+              <div
+                className="offers-container-counter"
+              >
+                <Icon
+                  height="22px"
+                  svg="ico-offres-r"
+                  width="22px"
+                />
+                <div
+                  className="number-of-offers-label"
+                >
+                  1 offre
+                </div>
+              </div>,
+            ],
+            "className": "venue-id-at-offer-provider-container",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  "Compte : ",
+                  <strong>
+                    fake id
+                  </strong>,
+                ],
+                "className": "venue-id-at-offer-provider",
+              },
+              "ref": null,
+              "rendered": Array [
+                "Compte : ",
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "fake id",
+                  },
+                  "ref": null,
+                  "rendered": "fake id",
+                  "type": "strong",
+                },
+              ],
+              "type": "div",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <Icon
+                    height="22px"
+                    svg="ico-offres-r"
+                    width="22px"
+                  />,
+                  <div
+                    className="number-of-offers-label"
+                  >
+                    1 offre
+                  </div>,
+                ],
+                "className": "offers-container-counter",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "function",
+                  "props": Object {
+                    "height": "22px",
+                    "svg": "ico-offres-r",
+                    "width": "22px",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": [Function],
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "1 offre",
+                    "className": "number-of-offers-label",
+                  },
+                  "ref": null,
+                  "rendered": "1 offre",
+                  "type": "div",
+                },
+              ],
+              "type": "div",
+            },
+          ],
           "type": "div",
         },
       ],

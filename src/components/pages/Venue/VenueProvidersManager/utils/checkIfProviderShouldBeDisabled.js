@@ -3,7 +3,7 @@ const checkIfProviderShouldBeDisabled = (venueProviders, provider) => {
     venueProvider => venueProvider.providerId === provider.id
   )
 
-  return (matchingVenueProvider && provider.requireProviderIdentifier === false) === true
+  return matchingVenueProvider !== undefined
 }
 
 export default checkIfProviderShouldBeDisabled

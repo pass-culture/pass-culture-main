@@ -80,11 +80,6 @@ ShallowWrapper {
           className="main-list-title"
         >
           Importation d’offres
-          <span
-            className="is-pulled-right is-size-7 has-text-grey"
-          >
-            Si vous avez plusieurs comptes auprès de la même source, ajoutez-les successivement.
-          </span>
         </h2>,
         <ul
           className="main-list"
@@ -127,32 +122,11 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": Array [
-            "Importation d’offres",
-            <span
-              className="is-pulled-right is-size-7 has-text-grey"
-            >
-              Si vous avez plusieurs comptes auprès de la même source, ajoutez-les successivement.
-            </span>,
-          ],
+          "children": "Importation d’offres",
           "className": "main-list-title",
         },
         "ref": null,
-        "rendered": Array [
-          "Importation d’offres",
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": "Si vous avez plusieurs comptes auprès de la même source, ajoutez-les successivement.",
-              "className": "is-pulled-right is-size-7 has-text-grey",
-            },
-            "ref": null,
-            "rendered": "Si vous avez plusieurs comptes auprès de la même source, ajoutez-les successivement.",
-            "type": "span",
-          },
-        ],
+        "rendered": "Importation d’offres",
         "type": "h2",
       },
       Object {
@@ -262,11 +236,6 @@ ShallowWrapper {
             className="main-list-title"
           >
             Importation d’offres
-            <span
-              className="is-pulled-right is-size-7 has-text-grey"
-            >
-              Si vous avez plusieurs comptes auprès de la même source, ajoutez-les successivement.
-            </span>
           </h2>,
           <ul
             className="main-list"
@@ -309,32 +278,11 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": Array [
-              "Importation d’offres",
-              <span
-                className="is-pulled-right is-size-7 has-text-grey"
-              >
-                Si vous avez plusieurs comptes auprès de la même source, ajoutez-les successivement.
-              </span>,
-            ],
+            "children": "Importation d’offres",
             "className": "main-list-title",
           },
           "ref": null,
-          "rendered": Array [
-            "Importation d’offres",
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": "Si vous avez plusieurs comptes auprès de la même source, ajoutez-les successivement.",
-                "className": "is-pulled-right is-size-7 has-text-grey",
-              },
-              "ref": null,
-              "rendered": "Si vous avez plusieurs comptes auprès de la même source, ajoutez-les successivement.",
-              "type": "span",
-            },
-          ],
+          "rendered": "Importation d’offres",
           "type": "h2",
         },
         Object {
