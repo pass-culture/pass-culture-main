@@ -10,7 +10,6 @@ swagger_config = {
             "endpoint": 'v2_spec',
             "description": 'This is the version 2 of our API',
             "route": '/v2/bookings/token/',
-            "swagger_ui_css": '/static/swagger-ui.css',
         }
     ],
     "static_url_path": "/flasgger_static",

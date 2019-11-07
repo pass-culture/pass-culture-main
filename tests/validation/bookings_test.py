@@ -481,7 +481,7 @@ class CheckBookingIsKeepableTest:
                 'Bookings token which are used and not cancelled and  have a beginning datetime in more than 72 hours should be keepable')
 
 
-    def test_does_not_raise_error_if_not_cancelled_Used_and_no_beginning_datetime(self, app):
+    def test_does_not_raise_error_if_not_cancelled_but_used_and_no_beginning_datetime(self, app):
             # Given
             booking = Booking()
             booking.isUsed = True
@@ -496,7 +496,7 @@ class CheckBookingIsKeepableTest:
                 pytest.fail(
                     'Bookings token which are used nor cancelled and do not have a beginning datetime should be keepable')
 
-    def test_does_not_raise_error_if_not_cancelled_Used_and_beginning_datetime_in_less_than_72_hours(self, app):
+    def test_does_not_raise_error_if_neither_cancelled_but_used_and_beginning_datetime_in_less_than_72_hours(self, app):
         # Given
         in_two_days = datetime.utcnow() + timedelta(days=2)
         booking = Booking()

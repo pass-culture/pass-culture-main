@@ -152,7 +152,7 @@ def test_is_valid_header_when_not_staging_not_dev_and_header_is_pro_passculture_
     is_valid_header = check_origin_header_validity(header_origin, endpoint, '/')
 
     # Then
-    assert is_valid_header\
+    assert is_valid_header
 
 
 @patch('validation.headers.ENV', 'production')

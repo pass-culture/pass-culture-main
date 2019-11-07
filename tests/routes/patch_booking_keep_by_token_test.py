@@ -17,7 +17,7 @@ class Patch:
     class Returns204:
         class WithApiKeyAuthTest:
             @clean_database
-            def when_api_key_is_provided_and_rights_and_regular_offer(self, app):
+            def when_api_key_provided_is_related_to_regular_offer_with_rights(self, app):
                 # Given
                 user = create_user()
                 offerer = create_offerer()
@@ -161,6 +161,7 @@ class Patch:
                 # Then
                 assert response.status_code == 204
                 assert Booking.query.get(booking.id).dateUsed is None
+                assert Booking.query.get(booking.id).isUsed is False
 
     class Returns400:
         @clean_database
@@ -212,7 +213,7 @@ class Patch:
             assert response.status_code == 401
 
         @clean_database
-        def when_user_not_logged_in_and_not_existing_api_key_given(self, app):
+        def when_user_not_logged_in_and_given_api_key_that_does_not_exists(self, app):
             # Given
             user = create_user(email='user@email.fr')
             offerer = create_offerer()
@@ -225,9 +226,10 @@ class Patch:
             PcObject.save(booking)
 
             # When
+            wrong_api_key = 'Bearer WrongApiKey1234567'
             url = '/v2/bookings/keep/token/{}'.format(booking.token)
             response = TestClient(app.test_client()).patch(url, headers={
-                    'Authorization': 'Bearer WrongApiKey1234567',
+                    'Authorization': wrong_api_key,
                     'Origin': 'http://localhost'})
 
             # Then
@@ -236,7 +238,7 @@ class Patch:
     class Returns403:
         class WithApiKeyAuthTest:
             @clean_database
-            def when_api_key_given_not_related_to_booking_offerer(self, app):
+            def when_the_api_key_is_not_linked_to_the_right_offerer(self, app):
                 # Given
                 user = create_user(email='user@email.fr')
                 pro_user = create_user(email='pro@email.fr')
@@ -408,7 +410,7 @@ class Patch:
                 assert response.json['global'] == ["Cette contremarque n'a pas été trouvée"]
 
             @clean_database
-            def when_user_is_logged_in_and_booking_toke_is_null(self, app):
+            def when_user_is_logged_in_and_booking_token_is_null(self, app):
                 # Given
                 user = create_user()
                 pro_user = create_user(email='pro@email.fr')
