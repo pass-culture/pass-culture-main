@@ -307,7 +307,7 @@ def patch_booking_use_by_token(token):
         check_user_can_validate_bookings_v2(current_user, offerer_id)
 
     if valid_api_key:
-        check_api_key_allows_to_cancel_booking(valid_api_key, offerer_id)
+        check_api_key_allows_to_validate_booking(valid_api_key, offerer_id)
 
     if check_is_activation_booking(booking):
         _activate_user(booking.user)
