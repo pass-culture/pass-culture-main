@@ -8,6 +8,7 @@ from flask_login import LoginManager
 from mailjet_rest import Client
 from werkzeug.middleware.profiler import ProfilerMiddleware
 from admin.install import install_admin_views
+from documentation import install_documentation
 from repository.feature_queries import feature_request_profiling_enabled
 from utils.tutorials import upsert_tuto_mediations
 from local_providers.install import install_local_providers
@@ -74,6 +75,7 @@ with app.app_context():
     import utils.login_manager
 
     install_routes()
+    install_documentation()
     install_admin_views(admin, db.session)
 
     app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
