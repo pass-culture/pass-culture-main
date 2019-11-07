@@ -902,6 +902,54 @@ def test_should_write_email_with_right_data_when_offer_is_duo(app):
     assert email == expected
 
 
+@clean_database
+def test_should_write_email_with_right_data_when_offer_is_duo(app):
+    # Given
+    user = create_user(email="test@email.com")
+    offerer = create_offerer()
+    venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None)
+    event_offer = create_offer_with_event_product(venue, is_duo=True)
+    beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
+    stock = create_stock_from_offer(event_offer, beginning_datetime=beginning_datetime, price=5, available=10)
+    booking = create_booking(user, stock, venue)
+    recipient = 'dev@passculture.app'
+
+    # When
+    email = make_offerer_booking_recap_email_with_mailjet_template(booking, recipient)
+    expected = {
+        'FromEmail': 'dev@passculture.app',
+        'FromName': 'pass Culture pro',
+        'Subject': 'Nouvelle réservation pour Test event',
+        'MJ-TemplateID': '779969',
+        'MJ-TemplateLanguage': 'true',
+        'Recipients': [
+            {
+                'Email': 'dev@passculture.app',
+            }
+        ],
+        'Vars':
+            {
+                'nom_offre': 'Test event',
+                'nom_lieu': 'Test offerer',
+                'prix': 5,
+                'date': '06-Nov-2019',
+                'heure': '14h',
+                'quantity': 1,
+                'user_firstName': 'John',
+                'user_lastName': 'Doe',
+                'user_email': 'test@email.com',
+                "is_event": 1,
+                "ISBN": "",
+                "offer_type": 'EventType.SPECTACLE_VIVANT',
+                "lien_offre_pcpro": "",
+                "departement": ""
+            }
+    }
+
+    # Then
+    assert email == expected
+
+
 @mocked_mail
 @clean_database
 def test_write_object_validation_email_should_have_some_specific_information(app):
