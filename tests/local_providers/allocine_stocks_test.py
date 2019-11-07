@@ -248,7 +248,8 @@ class AllocineStocksTest:
             created_product = Product.query.one()
 
             assert created_offer.bookingEmail == 'toto@toto.com'
-            assert created_offer.description == "synopsis du film\nhttp://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html"
+            assert created_offer.description == "synopsis du film\nTous les détails du film sur AlloCiné:" \
+                                                " http://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html"
             assert created_offer.durationMinutes == 46
             assert created_offer.extraData["visa"] == "2009993528"
             assert created_offer.extraData["stageDirector"] == "Farkhondeh Torabi"
@@ -257,7 +258,8 @@ class AllocineStocksTest:
             assert created_offer.product == created_product
             assert created_offer.type == str(EventType.CINEMA)
 
-            assert created_product.description == "synopsis du film\nhttp://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html"
+            assert created_product.description == "synopsis du film\nTous les détails du film sur AlloCiné:" \
+                                                  " http://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html"
             assert created_product.durationMinutes == 46
             assert created_product.extraData["visa"] == "2009993528"
             assert created_product.extraData["stageDirector"] == "Farkhondeh Torabi"
@@ -700,7 +702,8 @@ class RetrieveMovieInformationTest:
         # Then
         assert movie_parsed_information['title'] == "Les Contes de la mère poule"
         assert movie_parsed_information[
-                   'description'] == "synopsis du film\nhttp://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html"
+                   'description'] == "synopsis du film\nTous les détails du film sur AlloCiné:" \
+                                     " http://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html"
         assert movie_parsed_information["visa"] == "2009993528"
         assert movie_parsed_information["stageDirector"] == "Farkhondeh Torabi"
         assert movie_parsed_information['duration'] == 110
@@ -773,7 +776,8 @@ class RetrieveMovieInformationTest:
         # Then
         assert movie_parsed_information['title'] == "Les Contes de la mère poule"
         assert movie_parsed_information[
-                   'description'] == "synopsis du film\nhttp://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html"
+                   'description'] == "synopsis du film\nTous les détails du film sur AlloCiné:" \
+                                     " http://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html"
         assert "visa" not in movie_parsed_information
         assert "stageDirector" not in movie_parsed_information
         assert movie_parsed_information['duration'] == 110

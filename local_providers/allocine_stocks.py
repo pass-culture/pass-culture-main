@@ -115,7 +115,7 @@ def retrieve_movie_information(raw_movie_information: dict) -> dict:
 
 def _build_description(movie_info: dict) -> str:
     allocine_movie_url = movie_info['backlink']['url'].replace("\\", "")
-    return f"{movie_info['synopsis']}\n{allocine_movie_url}"
+    return f"{movie_info['synopsis']}\n{movie_info['backlink']['label']}: {allocine_movie_url}"
 
 
 def _get_operating_visa(movie_info: dict) -> Optional[str]:

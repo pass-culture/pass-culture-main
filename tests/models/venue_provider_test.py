@@ -1,7 +1,9 @@
-from models import PcObject, Provider
+import pytest
+
+from models import PcObject, Provider, ApiErrors
 from tests.conftest import clean_database
 from tests.test_utils import create_offerer, create_venue, create_offer_with_thing_product, \
-    create_offer_with_event_product, create_venue_provider, create_provider
+    create_offer_with_event_product, create_venue_provider, create_provider, activate_provider
 
 
 @clean_database
@@ -50,3 +52,21 @@ def test_nOffers_with_two_venue_providers_from_different_providers(app):
     # then
     assert n_offers_for_venue_provider1 == 3
     assert n_offers_for_venue_provider2 == 1
+
+
+@clean_database
+def test_raise_errors_if_venue_provider_already_exists(app):
+    # given
+    provider = activate_provider('TiteLiveStocks')
+    offerer = create_offerer()
+    venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
+    venue_provider = create_venue_provider(venue, provider, venue_id_at_offer_provider="775671464")
+    PcObject.save(venue_provider)
+
+    venue_provider2 = create_venue_provider(venue, provider, venue_id_at_offer_provider="775671464")
+    # when
+    with pytest.raises(ApiErrors) as errors:
+        PcObject.save(venue_provider2)
+
+    # then
+    assert errors.value.errors['global'] == ["Votre lieu est déjà lié à cette source"]

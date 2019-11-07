@@ -143,28 +143,3 @@ class ValidateNewVenueProviderInformationTest:
         # then
         assert errors.value.status_code == 400
         assert errors.value.errors['provider'] == ["Cette source n'est pas disponible"]
-
-    @clean_database
-    def test_raise_errors_if_venue_provider_already_exists(self, app):
-        # given
-        provider = create_provider('OpenAgenda')
-        offerer = create_offerer()
-        user = create_user()
-        user_offerer = create_user_offerer(user, offerer, is_admin=True)
-        venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-        venue_provider = create_venue_provider(venue, provider, venue_id_at_offer_provider="775671464")
-        PcObject.save(provider, user_offerer, venue, venue_provider)
-
-        payload = {
-            'providerId': humanize(provider.id),
-            'venueId': humanize(venue.id),
-            'venueIdAtOfferProvider': '775671464'
-        }
-
-        # when
-        with pytest.raises(ApiErrors) as errors:
-            validate_new_venue_provider_information(payload)
-
-        # then
-        assert errors.value.status_code == 400
-        assert errors.value.errors['venueProvider'] == ["Votre lieu est déjà lié à cette source"]
