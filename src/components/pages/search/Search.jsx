@@ -119,7 +119,7 @@ class Search extends PureComponent {
     }
     const recommendationsAlreadyExist = this.isRecommendationFound()
     if (!recommendationsAlreadyExist) {
-      getRecommendations(apiPath, this.handleDataSuccess)
+      getRecommendations(decodeURIComponent(apiPath), this.handleDataSuccess)
     } else {
       this.setState({ isLoading: false })
     }

@@ -85,8 +85,8 @@ export const getRecommendationSearch = (search, types) => {
   }
 
   if (searchParams.categories) {
-    const matchingEventTypes = getMatchingEventTypes(types, searchParams.categories)
-    const matchingThingTypes = getMatchingThingTypes(types, searchParams.categories)
+    const matchingEventTypes = getMatchingEventTypes(types, decodeURIComponent(searchParams.categories))
+    const matchingThingTypes = getMatchingThingTypes(types, decodeURIComponent(searchParams.categories))
     const matchingTypes = [...matchingEventTypes, ...matchingThingTypes]
     recommendationSearch['type_values'] = getStringifiedTypeValues(matchingTypes)
   }

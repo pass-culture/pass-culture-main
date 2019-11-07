@@ -42,6 +42,19 @@ describe('src | components | pages | search | selectors | selectRecommendationsB
       )
     })
 
+    it('should return categories Écouter', () => {
+      // given
+      const search = 'categories=%25C3%2589couter'
+
+      // when
+      const recommendationSearch = getRecommendationSearch(search, types)
+
+      // then
+      expect(recommendationSearch).toBe(
+        "type_values=['EventType.MUSIQUE', 'ThingType.MUSIQUE_ABO', 'ThingType.MUSIQUE']"
+      )
+    })
+
     it('should return date', () => {
       // given
       const search = 'date=2019-09-05T15%3A12%3A57.008Z&jours=1-5%2C5-100000'
