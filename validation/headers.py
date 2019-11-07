@@ -66,8 +66,7 @@ def _get_endpoint_exceptions():
             'get_booking_by_token_v2',
             'patch_booking_keep_by_token',
             'api_documentation',
-            'json_documentation',
-            'api_documentation_index'
+            'static_files'
             ]
 
 

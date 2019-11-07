@@ -1,289 +1,232 @@
 {
-	"swagger": "2.0",
-	"info": {
-		"description": "",
-		"version": "0.0.1",
-		"title": "DOCUMENTATION API PASS CULTURE",
-		"termsOfService": "https://docs.passculture.app/textes-normatifs"
-	},
-	"host": "localhost",
-	"basePath": "/v2",
-	"tags": [{
-		"name": "bookings/token",
-		"description": "<h1>CONTREMARQUE</h1></br> La validation d’une réservation a pour effet de prouver la réalisation du service proposé et engendre un remboursement selon les conditions prévues dans les CGU de la plateforme pass Culture.</li></ul>"
-	}],
-	"schemes": ["https"],
-	"paths": {
-		"/bookings/token/{token}": {
-			"get": {
-				"tags": ["bookings/token"],
-				"summary": "Webservice permettant de consulter la validité d’une réservation,",
-				"description": "Le code “contremarque” ou token  est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation. <br/> Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et est transmis à cette occasion à l’utilisateur ",
-				"operationId": "getBookingsByToken",
-				"produces": ["application/json"],
-				"parameters": [{
-					"name": "token",
-					"in": "path",
-					"description": "Code contremarque de la réservation",
-					"required": true,
-					"type" : "string"
-				}],
-				"responses": {
-					"200": {
-						"description": "La contremarque existe et n’est pas validée",
-						"schema": {
-								"type": "object",
-								"properties": {
-									"bookingId": {
-										"type": "string"
-									},
-									"date": {
-										"type": "string"
-									},
-									"email": {
-										"type": "string"
-									},
-									"isUsed": {
-										"type": "boolean"
-									},
-									"offerName": {
-										"type": "string"
-									},
-									"userName": {
-										"type": "string",
-										"description": "le user name"
-									},
-									"venueDepartementCode": {
-										"type": "string"
-								}
-							}
-						}
-					},
-					"401" : {
-						"description" : "L’API_KEY n’a pas été fournie dans la requête HTTP"
-					},
-          			"403" : {
-            			"description" : "Vous n'avez pas les droits nécessaires pour voir cette contremarque ou l'offre a lieu dans plus de 72 heures (voir CGU)"
-          			},
-          			"404" : {
-						"description" : "La contremarque n’existe pas"
-					},
-          			"410" : {
-            			"description" : "La contremarque n’est plus valide car elle a déjà été validée ou a été annulée"
-          			}
-				},
-				"security": [{
-					"api_key": []
-				}]
-			}
-		},
-		"/bookings/use/token/{token}": {
-			"patch": {
-				"tags": ["bookings/token"],
-				"summary": "Webservice permettant de valider une réservation.",
-				"description": "Le code “contremarque” ou token  est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation. <br/> Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et est transmis à cette occasion à l’utilisateur ",
-				"operationId": "useBookingsByToken",
-				"produces": ["application/json"],
-				"parameters": [{
-					"name": "token",
-					"in": "path",
-					"description": "Code contremarque de la réservation",
-					"required": true,
-					"style" : "simple",
-          			"explode" : false,
-					"schema" : {
-            		"type" : "string"
-          			}
-				}],
-				"responses": {
-					"204": {
-						"description": "La contremarque a bien été validée."
-					},
-					"400": {
-						"description": "La quantité disponible pour cette offre est atteinte."
-					},
-					"401" : {
-						"description" : "Authentification nécessaire"
-					},
-    			"403" : {
-      			"description" : "Vous n'avez pas les droits suffisants pour utiliser cette contremarque."
-    			},
-    			"404" : {
-						"description" : "La contremarque n’existe pas"
-					},
-    			"410" : {
-      			"description" : "La contremarque n’est plus valide car elle a déjà été validée ou a été annulée"
-    			}
-				},
-				"security": [{
-					"api_key": []
-				}]
-			}
-		},
-      		"/bookings/keep/token/{token}": {
-			"patch": {
-				"tags": ["bookings/token"],
-				"summary": "Webservice permettant d'annuler une validation de contremarque.",
-				"description": "",
-				"operationId": "keepBookingsByToken",
-				"produces": ["application/json"],
-				"parameters": [{
-					"name": "token",
-					"in": "path",
-					"description": "Code contremarque de la réservation",
-					"required": true,
-					"type": "string"
-				}],
-				"responses": {
-					"204": {
-						"description": "L'annulation de la validation de la contremarque a bien été effectuée."
-					},
-					"401" : {
-						"description" : "Authentification nécessaire"
-					},
-					"403" : {
-						"description" : "Vous n'avez pas les droits suffisants pour éditer cette contremarque."
-					},
-					"404" : {
-						"description" : "La contremarque n’existe pas"
-					},
-					"410" : {
-					"description" : "La contremarque ne peut pas être invalidée car elle a déjà été validée ou la réservarion a été annulée"
-					}
-				},
-				"security": [{
-					"api_key": []
-				}]
-			}
-		},
-		"/bookings/cancel/token/{token}": {
-			"patch": {
-				"tags": ["bookings/token"],
-				"summary": "Webservice permettant d'annuler une réservation au moyen de la contremarque associée.",
-				"description": "Le code “contremarque” ou token  est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation. <br/> Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et est transmis à cette occasion à l’utilisateur ",
-				"operationId": "patch_cancel_booking_by_token",
-				"produces": ["application/json"],
-				"parameters": [{
-					"name": "token",
-					"in": "path",
-					"description": "Code contremarque de la réservation",
-					"required": true,
-					"type" : "string"
-				}],
-				"responses": {
-					"204": {
-						"description": "La réservation a été annulée avec succès"
-					},
-					"401" : {
-						"description" : "L’API_KEY n’a pas été fournie dans la requête HTTP"
-					},
-          			"403" : {
-            			"description" : "Vous n'avez pas les droits nécessaires pour annuler cette contremarque ou la réservation a déjà été consommée"
-          			},
-          			"404" : {
-						"description" : "La réservation associée a cette contremarque n’existe pas"
-					},
-          			"410" : {
-            			"description" : "La contremarque a été annulée"
-          			}
-				},
-				"security": [{
-					"api_key": []
-				}]
-			}
-		}
-	},
-		"/bookings/keep/token/{token}": {
-			"patch": {
-				"tags": ["bookings/token"],
-				"summary": "Webservice permettant d'annuler la validation d'une réservation.",
-				"description": "Le code “contremarque” ou token  est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation. <br/> Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et est transmis à cette occasion à l’utilisateur ",
-				"operationId": "useBookingsByToken",
-				"produces": ["application/json"],
-				"parameters": [{
-					"name": "token",
-					"in": "path",
-					"description": "Code contremarque de la réservation",
-					"required": true,
-					"style" : "simple",
-								"explode" : false,
-					"schema" : {
-								"type" : "string"
-								}
-				}],
-				"responses": {
-					"204": {
-						"description": "La contremarque a bien été invalidée."
-					},
-					"400": {
-						"description": "La quantité disponible pour cette offre est atteinte."
-					},
-					"401" : {
-						"description" : "Authentification nécessaire"
-					},
-					"403" : {
-						"description" : "Vous n'avez pas les droits suffisants pour utiliser cette contremarque."
-					},
-					"404" : {
-						"description" : "La contremarque n’existe pas"
-					},
-					"410" : {
-						"description" : "La contremarque n'a pas encore été validée"
-			},
-			"security": [{
-				"api_key": []
-			}]
-		},
-		"/bookings/keep/token/{token}": {
-			"patch": {
-				"tags": ["bookings/token"],
-				"summary": "Webservice permettant d'annuler une validation de contremarque.",
-				"description": "",
-				"operationId": "keepBookingsByToken",
-				"produces": ["application/json"],
-				"parameters": [{
-					"name": "token",
-					"in": "path",
-					"description": "Code contremarque de la réservation",
-					"required": true,
-					"style" : "simple",
-          			"explode" : false,
-					"schema" : {
-            		"type" : "string"
-          			}
-				}],
-				"responses": {
-					"204": {
-						"description": "L'annulation de la validation de la contremarque a bien été effectuée."
-					},
-					"401" : {
-						"description" : "Authentification nécessaire"
-					},
-					"403" : {
-							"description" : "Vous n'avez pas les droits suffisants pour éditer cette contremarque."
-					},
-					"404" : {
-					"description" : "La contremarque n’existe pas"
-				},
-					"410" : {
-						"description" : "La contremarque ne peut pas être invalidée car elle a déjà été validée ou la réservarion a été annulée"
-					}
-				},
-				"security": [{
-					"api_key": []
-				}]
-			}
-		}
-	},
-	"securityDefinitions": {
-		"api_key": {
-			"type": "apiKey",
-			"name": "Authorization",
-			"in": "header"
-		}
-	},
-	"externalDocs": {
-		"description": "Découvrir le pass Culture",
-		"url": "https://pass.culture.fr/"
-	}
+  "swagger": "2.0",
+  "info": {
+    "description": "",
+    "version": "0.0.1",
+    "title": "DOCUMENTATION API PASS CULTURE",
+    "termsOfService": "https://docs.passculture.app/textes-normatifs"
+  },
+  "host": "localhost",
+  "basePath": "/v2",
+  "tags": [
+    {
+      "name": "bookings/token",
+      "description": "<h1>CONTREMARQUE</h1></br> La validation d’une réservation a pour effet de prouver la réalisation du service proposé et engendre un remboursement selon les conditions prévues dans les CGU de la plateforme pass Culture.</li></ul>"
+    }
+  ],
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/bookings/token/{token}": {
+      "get": {
+        "tags": [
+          "bookings/token"
+        ],
+        "summary": "Webservice permettant de consulter la validité d’une réservation,",
+        "description": "Le code “contremarque” ou token  est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation. <br/> Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et est transmis à cette occasion à l’utilisateur ",
+        "operationId": "getBookingsByToken",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "Code contremarque de la réservation",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "La contremarque existe et n’est pas validée",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "bookingId": {
+                  "type": "string"
+                },
+                "date": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "isUsed": {
+                  "type": "boolean"
+                },
+                "offerName": {
+                  "type": "string"
+                },
+                "userName": {
+                  "type": "string",
+                  "description": "le user name"
+                },
+                "venueDepartementCode": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "L’API_KEY n’a pas été fournie dans la requête HTTP"
+          },
+          "403": {
+            "description": "Vous n'avez pas les droits nécessaires pour voir cette contremarque ou l'offre a lieu dans plus de 72 heures (voir CGU)"
+          },
+          "404": {
+            "description": "La contremarque n’existe pas"
+          },
+          "410": {
+            "description": "La contremarque n’est plus valide car elle a déjà été validée ou a été annulée"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/bookings/use/token/{token}": {
+      "patch": {
+        "tags": [
+          "bookings/token"
+        ],
+        "summary": "Webservice permettant de valider une réservation.",
+        "description": "Le code “contremarque” ou token  est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation. <br/> Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et est transmis à cette occasion à l’utilisateur ",
+        "operationId": "useBookingsByToken",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "Code contremarque de la réservation",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "La contremarque a bien été validée."
+          },
+          "400": {
+            "description": "La quantité disponible pour cette offre est atteinte."
+          },
+          "401": {
+            "description": "Authentification nécessaire"
+          },
+          "403": {
+            "description": "Vous n'avez pas les droits suffisants pour utiliser cette contremarque."
+          },
+          "404": {
+            "description": "La contremarque n’existe pas"
+          },
+          "410": {
+            "description": "La contremarque n’est plus valide car elle a déjà été validée ou a été annulée"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/bookings/keep/token/{token}": {
+      "patch": {
+        "tags": [
+          "bookings/token"
+        ],
+        "summary": "Webservice permettant d'annuler une validation de contremarque.",
+        "description": "",
+        "operationId": "keepBookingsByToken",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "Code contremarque de la réservation",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "L'annulation de la validation de la contremarque a bien été effectuée."
+          },
+          "401": {
+            "description": "Authentification nécessaire"
+          },
+          "403": {
+            "description": "Vous n'avez pas les droits suffisants pour éditer cette contremarque."
+          },
+          "404": {
+            "description": "La contremarque n’existe pas"
+          },
+          "410": {
+            "description": "La contremarque ne peut pas être invalidée car elle a déjà été validée ou la réservarion a été annulée"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/bookings/cancel/token/{token}": {
+      "patch": {
+        "tags": [
+          "bookings/token"
+        ],
+        "summary": "Webservice permettant d'annuler une réservation au moyen de la contremarque associée.",
+        "description": "Le code “contremarque” ou token  est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation. <br/> Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et est transmis à cette occasion à l’utilisateur ",
+        "operationId": "patch_cancel_booking_by_token",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "Code contremarque de la réservation",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "La réservation a été annulée avec succès"
+          },
+          "401": {
+            "description": "L’API_KEY n’a pas été fournie dans la requête HTTP"
+          },
+          "403": {
+            "description": "Vous n'avez pas les droits nécessaires pour annuler cette contremarque ou la réservation a déjà été consommée"
+          },
+          "404": {
+            "description": "La réservation associée a cette contremarque n’existe pas"
+          },
+          "410": {
+            "description": "La contremarque a été annulée"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    }
+  }
 }

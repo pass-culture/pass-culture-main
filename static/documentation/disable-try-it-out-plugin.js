@@ -1,11 +1,9 @@
-const DisableTryItOutPlugin = function() {
-  return {
-    statePlugins: {
-      spec: {
-        wrapSelectors: {
-          allowTryItOutFor: () => () => false
-        }
+const DisableTryItOutPlugin = () => ({
+  statePlugins: {
+    spec: {
+      wrapSelectors: {
+        allowTryItOutFor: () => () => false
       }
     }
   }
-}
+})
