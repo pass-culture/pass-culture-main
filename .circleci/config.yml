@@ -91,7 +91,7 @@ jobs: # a collection of steps
     working_directory: ~/
     steps: # a collection of executable commands
       - run:
-          name: Init env
+          name: Initialize environment
           command: |
             git clone https://github.com/betagouv/pass-culture-main.git
             cd pass-culture-main
@@ -127,7 +127,7 @@ jobs: # a collection of steps
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             nvm use v8.15.1
             cd ~/pass-culture-main/webapp
-            git checkout "${CIRCLE_BRANCH}"
+            git checkout master
             yarn install
             yarn start
           background: true
@@ -138,13 +138,14 @@ jobs: # a collection of steps
             dockerize -wait http://localhost/health -timeout 5m -wait-retry-interval 5s
             ./pc sandbox --name=industrial
       - run:
-          name: Running tests Webapp
+          name: Running end2end tests WEBAPP
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             nvm use v8.15.1
             cd ~/pass-culture-main/webapp
             yarn fontello
+            dockerize -wait http://localhost:3000 -timeout 5m -wait-retry-interval 5s
             yarn test:cafe
       - store_artifacts:
           path: ~/pass-culture-main/webapp/testcafe_screenshots
@@ -197,7 +198,7 @@ jobs: # a collection of steps
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             nvm use v8.15.1
             cd ~/pass-culture-main/pro
-            git checkout "${CIRCLE_BRANCH}"
+            git checkout master
             yarn install
             yarn start
           background: true
@@ -208,12 +209,13 @@ jobs: # a collection of steps
             dockerize -wait http://localhost/health -timeout 5m -wait-retry-interval 5s
             ./pc sandbox --name=industrial
       - run:
-          name: Running tests Pro
+          name: Running end2end tests PRO
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             nvm use v8.15.1
             cd ~/pass-culture-main/pro
+            dockerize -wait http://localhost:3001 -timeout 5m -wait-retry-interval 5s
             yarn test:cafe
       - store_artifacts:
          path: ~/pass-culture-main/pro/testcafe_screenshots
@@ -238,7 +240,6 @@ workflows:
             branches:
               only:
                 - master
-
   nightly:
     triggers:
       - schedule:
