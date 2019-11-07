@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from typing import List
 
 from flask_sqlalchemy import BaseQuery
-from sqlalchemy import desc, func, or_
+from sqlalchemy import desc, func, or_, text
 from sqlalchemy.orm import aliased, joinedload
 from sqlalchemy.orm.query import Query
 from sqlalchemy.sql.elements import BinaryExpression
@@ -18,8 +18,8 @@ from models import EventType, \
     Stock, \
     ThingType, \
     Venue, \
-    Product
-from models.db import Model
+    Product, Favorite
+from models.db import Model, db
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from utils.distance import get_sql_geo_distance_in_kilometers
 from utils.logger import logger
@@ -79,12 +79,10 @@ def _order_by_occurs_soon_or_is_thing_then_randomize():
 
 
 def get_active_offers(departement_codes=None, offer_id=None, limit=None,
-                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize):
-    active_offer_ids = get_active_offers_ids_query(departement_codes, offer_id)
+                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize, seed=None, user=None):
+    active_offer_ids = get_active_offers_ids_query(departement_codes, offer_id, user=user)
 
     query = Offer.query.filter(Offer.id.in_(active_offer_ids))
-
-    query = query.order_by(desc(_build_has_active_mediation_predicate()))
 
     query = query.order_by(_round_robin_by_type_onlineness_and_criteria(order_by))
 
@@ -97,7 +95,7 @@ def get_active_offers(departement_codes=None, offer_id=None, limit=None,
     return query.all()
 
 
-def get_active_offers_ids_query(departement_codes=['00'], offer_id=None):
+def get_active_offers_ids_query(departement_codes=['00'], offer_id=None, user=None):
     active_offers_query = Offer.query.distinct(Offer.id) \
         .order_by(Offer.id)
     if offer_id is not None:
@@ -119,8 +117,21 @@ def get_active_offers_ids_query(departement_codes=['00'], offer_id=None):
     logger.debug(lambda: '(reco) active and validated {}'.format(active_offers_query.count()))
     active_offers_query = _not_activation_offers(active_offers_query)
     logger.debug(lambda: '(reco) not_currently_recommended and not_activation {}'.format(active_offers_query.count()))
+    if user:
+        active_offers_query = _exclude_booked_and_favorite(active_offers_query, user)
     active_offer_ids = active_offers_query.with_entities(Offer.id).subquery()
     return active_offer_ids
+
+
+def _exclude_booked_and_favorite(active_offers_query, user):
+    booked_offer_ids = Booking.query.filter_by(userId=user.id).join(Stock).with_entities('stock."offerId"').subquery()
+    favorite_offer_ids = Favorite.query.filter_by(userId=user.id).with_entities('"offerId"').subquery()
+    not_booked_predicate = ~Offer.id.in_(booked_offer_ids)
+    not_favorite_predicate = ~Offer.id.in_(favorite_offer_ids)
+    
+    active_offers_query = active_offers_query.filter(not_booked_predicate & not_favorite_predicate)
+    
+    return active_offers_query
 
 
 def _round_robin_by_type_onlineness_and_criteria(order_by: List):

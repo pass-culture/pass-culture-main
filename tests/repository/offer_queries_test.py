@@ -1,19 +1,22 @@
 from datetime import datetime, timedelta
 import random
+from functools import partial
 
 import pytest
 from freezegun import freeze_time
+from sqlalchemy import text
 
 from models import Offer, PcObject, Stock, Product
+from models.db import db
 from models.offer_type import EventType, ThingType
 from repository.offer_queries import department_or_national_offers, \
     find_activation_offers, \
     find_offers_with_filter_parameters, \
     get_offers_for_recommendations_search, \
     get_active_offers, \
-    _has_remaining_stock,\
+    _has_remaining_stock, \
     find_offers_by_venue_id, \
-    order_by_with_criteria
+    order_by_with_criteria, _order_by_occurs_soon_or_is_thing_then_randomize
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, \
     create_criterion, \
@@ -30,7 +33,7 @@ from tests.test_utils import create_booking, \
     create_stock_with_thing_offer, \
     create_user_offerer, \
     create_user, \
-    create_venue
+    create_venue, create_favorite
 
 REFERENCE_DATE = '2017-10-15 09:21:34'
 
@@ -597,7 +600,7 @@ class GetActiveOffersTest:
         PcObject.save(user, stock1, stock2, mediation)
 
         # When
-        offers = get_active_offers(user=user, departement_codes=['93'])
+        offers = get_active_offers(departement_codes=['93'])
         # Then
         assert len(offers) == 2
 
@@ -618,7 +621,7 @@ class GetActiveOffersTest:
         PcObject.save(user, stock_93, stock_activation_93)
 
         # When
-        offers = get_active_offers(user=user, departement_codes=['00'], offer_id=None)
+        offers = get_active_offers(departement_codes=['00'], offer_id=None)
 
         # Then
         assert offer_93 in offers
@@ -638,7 +641,7 @@ class GetActiveOffersTest:
         PcObject.save(user, stock_93, stock_activation_93)
 
         # When
-        offers = get_active_offers(user=user, departement_codes=['00'], offer_id=None)
+        offers = get_active_offers(departement_codes=['00'], offer_id=None)
 
         # Then
         assert thing_93 in offers
@@ -656,7 +659,7 @@ class GetActiveOffersTest:
         PcObject.save(booking)
 
         # When
-        offers = get_active_offers(user=create_user(email="plop@plop.com"), departement_codes=['00'], offer_id=None)
+        offers = get_active_offers(departement_codes=['00'], offer_id=None)
 
         # Then
         assert len(offers) == 1
@@ -677,9 +680,7 @@ class GetActiveOffersTest:
         PcObject.save(stock1)
 
         # When
-        offers = get_active_offers(user=create_user(email="plop@plop.com"),
-                                   departement_codes=['00'],
-                                   offer_id=None)
+        offers = get_active_offers(departement_codes=['00'], offer_id=None)
 
         # Then
         assert len(offers) == 2
@@ -712,9 +713,7 @@ class GetActiveOffersTest:
         PcObject.save(stock1)
 
         # When
-        offers = get_active_offers(user=create_user(email="plop@plop.com"),
-                                   departement_codes=['00'],
-                                   offer_id=None)
+        offers = get_active_offers(departement_codes=['00'], offer_id=None)
 
         # Then
         assert len(offers) == 3
@@ -746,9 +745,7 @@ class GetActiveOffersTest:
                             for o in offers[:4]])) == 4
 
         # When
-        offers = get_active_offers(user=create_user(email="plop@plop.com"),
-                                   departement_codes=['00'],
-                                   offer_id=None)
+        offers = get_active_offers(departement_codes=['00'], offer_id=None)
 
         # Then
         assert len(offers) == 6
@@ -769,7 +766,7 @@ class GetActiveOffersTest:
         PcObject.save(booking1, booking2)
 
         # When
-        offers = get_active_offers(user=create_user(email="plop@plop.com"), departement_codes=['00'], offer_id=None)
+        offers = get_active_offers(departement_codes=['00'], offer_id=None)
 
         # Then
         assert len(offers) == 0
@@ -1143,7 +1140,7 @@ class BaseScoreTest:
 @pytest.mark.standalone
 class GetActiveOffersTest:
     @clean_database
-    def test_get_active_offers_with_no_order_by_should_return_same_number_of_recos(self, app):
+    def test_with_no_order_by_should_return_same_number_of_recos(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
@@ -1160,14 +1157,13 @@ class GetActiveOffersTest:
         PcObject.save(stock1, stock2, stock3, stock4)
 
         # When
-        offers = get_active_offers(departement_codes=['00'],
-                                   offer_id=None)
+        offers = get_active_offers(departement_codes=['00'], offer_id=None)
 
         # Then
         assert len(offers) == 4
 
     @clean_database
-    def test_get_active_offers_with_criteria_should_return_offer_with_highest_base_score_first(self, app):
+    def test_with_criteria_should_return_offer_with_highest_base_score_first(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
@@ -1186,15 +1182,13 @@ class GetActiveOffersTest:
         PcObject.save(stock1, stock2)
 
         # When
-        offers = get_active_offers(departement_codes=['00'],
-                                   offer_id=None,
-                                   order_by=order_by_with_criteria)
+        offers = get_active_offers(departement_codes=['00'], offer_id=None, order_by=order_by_with_criteria)
 
         # Then
         assert offers == [offer2, offer1]
 
     @clean_database
-    def test_get_active_offers_with_criteria_should_return_offer_with_highest_base_score_first_bust_keep_the_partition(self, app):
+    def test_with_criteria_should_return_offer_with_highest_base_score_first_bust_keep_the_partition(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
@@ -1218,12 +1212,92 @@ class GetActiveOffersTest:
         PcObject.save(stock1, stock2, stock3)
 
         # When
-        offers = get_active_offers(departement_codes=['00'],
-                                   offer_id=None,
-                                   order_by=order_by_with_criteria)
+        offers = get_active_offers(departement_codes=['00'], offer_id=None, order_by=order_by_with_criteria)
 
         # Then
         assert offers == [offer2, offer3, offer1]
+
+    @clean_database
+    def test_should_return_offers_in_the_same_order_given_the_same_seed(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer, postal_code='34000', departement_code='34')
+
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
+        stock1 = create_stock_from_offer(offer1, price=0)
+
+        offer2 = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
+        stock2 = create_stock_from_offer(offer2, price=0)
+
+        offer3 = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
+        stock3 = create_stock_from_offer(offer3, price=0)
+        
+        offer4 = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
+        stock4 = create_stock_from_offer(offer4, price=0)
+    
+
+        create_mediation(stock1.offer)
+        create_mediation(stock2.offer)
+        create_mediation(stock3.offer)
+        create_mediation(stock4.offer)
+
+        PcObject.save(stock1, stock2, stock3, stock4)
+        
+        seed = 0.5
+        offers_1 = get_active_offers(departement_codes=['00'], offer_id=None,
+                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize, seed=seed)
+
+        # When
+        offers_2 = get_active_offers(departement_codes=['00'], offer_id=None,
+                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize, seed=seed)
+
+        # Then
+        assert offers_1 == offers_2
+
+    @clean_database
+    def test_should_not_return_booked_offers(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer, postal_code='34000', departement_code='34')
+
+        offer = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
+        stock = create_stock_from_offer(offer, price=0)
+        user = create_user()
+        booking = create_booking(user, stock)
+
+        create_mediation(stock.offer)
+
+        PcObject.save(booking)
+        
+
+        # When
+        offers = get_active_offers(departement_codes=['00'], offer_id=None,
+                                   order_by=_order_by_occurs_soon_or_is_thing_then_randomize, user=user)
+
+        # Then
+        assert offers == []
+
+    @clean_database
+    def test_should_not_return_favorite_offers(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer, postal_code='34000', departement_code='34')
+
+        offer = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
+        stock = create_stock_from_offer(offer, price=0)
+        user = create_user()
+        mediation = create_mediation(stock.offer)
+        favorite = create_favorite(mediation, offer, user)
+
+        PcObject.save(favorite)
+        
+
+        # When
+        offers = get_active_offers(departement_codes=['00'], offer_id=None,
+                                   order_by=_order_by_occurs_soon_or_is_thing_then_randomize, user=user)
+
+        # Then
+        assert offers == []
 
 
 def _create_event_stock_and_offer_for_date(venue, date):
@@ -1232,3 +1306,4 @@ def _create_event_stock_and_offer_for_date(venue, date):
     event_occurrence = create_event_occurrence(offer, beginning_datetime=date, end_datetime=date + timedelta(hours=1))
     stock = create_stock_from_event_occurrence(event_occurrence, booking_limit_date=date)
     return stock
+

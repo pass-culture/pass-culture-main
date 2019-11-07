@@ -13,9 +13,7 @@ def get_offers_for_recommendations_discovery(limit=3, user=None) -> List[Offer]:
 
     departement_codes = get_departement_codes_from_user(user)
 
-    offers = get_active_offers(departement_codes=departement_codes,
-                               limit=limit,
-                               order_by=order_by_with_criteria)
+    offers = get_active_offers(departement_codes=departement_codes, limit=limit, order_by=order_by_with_criteria)
 
     logger.debug(lambda: '(reco) final offers (events + things) count (%i)',
                  len(offers))
