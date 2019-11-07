@@ -99,6 +99,8 @@
         src: connect_to_database.service
         dest: /etc/systemd/system/connect_to_database.service
         owner: "{{ systemd_service_user }}"
+      notify: Reload daemon
+      tags: 'copy-service'
 
     - name: Start connection to database service
       systemd:
@@ -111,3 +113,9 @@
       shell: |
         tljh-config reload
         tljh-config reload proxy
+
+    - name: Reload daemon
+      systemd:
+        state: restarted
+        daemon_reload: yes
+        name: connect_to_database.service
