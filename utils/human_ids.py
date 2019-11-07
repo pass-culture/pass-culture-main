@@ -6,20 +6,21 @@ from base64 import b32encode, b32decode
 # length and being usable by humans
 # We use base32, but replace O and I, which can be mistaken for 0 and 1
 # by 8 and 9
+from typing import Optional
+
 
 class NonDehumanizableId(Exception):
     pass
 
 
-def dehumanize(publicId):
-    """ Get back an integer from a human-compatible ID """
-    if publicId is None:
+def dehumanize(public_id: str) -> Optional[int]:
+    if public_id is None:
         return None
-    missing_padding = len(publicId) % 8
+    missing_padding = len(public_id) % 8
     if missing_padding != 0:
-        publicId += '=' * (8 - missing_padding)
+        public_id += '=' * (8 - missing_padding)
     try:
-        xbytes = b32decode(publicId.replace('8', 'O').replace('9', 'I'))
+        xbytes = b32decode(public_id.replace('8', 'O').replace('9', 'I'))
     except binascii.Error:
         raise NonDehumanizableId('id non dehumanizable')
     return int_from_bytes(xbytes)

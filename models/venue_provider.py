@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String
+from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from models import Offer
@@ -33,6 +33,20 @@ class VenueProvider(PcObject,
 
     lastSyncDate = Column(DateTime,
                           nullable=True)
+
+    __table_args__ = (
+        UniqueConstraint(
+            'venueId',
+            'providerId',
+            name='unique_venue_provider',
+        ),
+    )
+
+    @staticmethod
+    def restize_integrity_error(internal_error):
+        if 'unique_venue_provider' in str(internal_error.orig):
+            return ['global', 'Votre lieu est déjà lié à cette source']
+        return PcObject.restize_integrity_error(internal_error)
 
     @property
     def nOffers(self):

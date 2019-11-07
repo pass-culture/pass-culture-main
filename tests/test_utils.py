@@ -20,13 +20,13 @@ from models import ApiKey, \
     Criterion, \
     Deposit, \
     EventType, \
-    Favorite,\
+    Favorite, \
     Mediation, \
     Offer, \
     Offerer, \
     Payment, \
-    PaymentMessage,\
-    Product,\
+    PaymentMessage, \
+    Product, \
     Provider, \
     Recommendation, \
     RightsType, \
@@ -351,7 +351,7 @@ def create_product_with_event_type(
         description=None,
         dominant_color=None,
         duration_minutes=60,
-        id_at_providers= None,
+        id_at_providers=None,
         is_national=False,
         is_duo=False,
         thumb_count=0,
@@ -907,6 +907,7 @@ def deactivate_feature(feature_toggle: FeatureToggle):
     feature.isActive = False
     PcObject.save(feature)
 
+
 def create_provider(local_class: str, is_active: bool = True, is_enable_for_pro: bool = True) -> Provider:
     provider = Provider()
     provider.localClass = local_class
@@ -927,6 +928,7 @@ def create_providable_info(model_name: Model = Product,
     else:
         providable_info.date_modified_at_provider = datetime.utcnow()
     return providable_info
+
 
 def create_api_key(offerer, value):
     offererApiKey = ApiKey()
