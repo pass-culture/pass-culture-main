@@ -5,16 +5,6 @@ from repository.provider_queries import find_provider_by_id
 from utils.human_ids import dehumanize
 
 
-def _validate_existing_provider(provider_id: int):
-    provider = find_provider_by_id(provider_id)
-    is_provider_available_for_pro_usage = provider and provider.isActive and provider.enabledForPro
-    if not is_provider_available_for_pro_usage:
-        errors = ApiErrors()
-        errors.status_code = 400
-        errors.add_error('provider', "Cette source n'est pas disponible")
-        raise errors
-
-
 def validate_new_venue_provider_information(payload: json):
     errors = ApiErrors()
     errors.status_code = 400
@@ -31,3 +21,13 @@ def validate_new_venue_provider_information(payload: json):
     provider_id = dehumanize(payload.get('providerId'))
 
     _validate_existing_provider(provider_id)
+
+
+def _validate_existing_provider(provider_id: int):
+    provider = find_provider_by_id(provider_id)
+    is_provider_available_for_pro_usage = provider and provider.isActive and provider.enabledForPro
+    if not is_provider_available_for_pro_usage:
+        errors = ApiErrors()
+        errors.status_code = 400
+        errors.add_error('provider', "Cette source n'est pas disponible")
+        raise errors

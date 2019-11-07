@@ -213,7 +213,8 @@ class PcObject:
             db.session.rollback()
             raise api_errors
         except IntegrityError as ie:
-            api_errors.add_error(*obj.restize_integrity_error(ie))
+            for obj in objects:
+                api_errors.add_error(*obj.restize_integrity_error(ie))
             db.session.rollback()
             raise api_errors
         except InternalError as ie:
