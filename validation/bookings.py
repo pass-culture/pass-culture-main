@@ -2,6 +2,7 @@ from datetime import datetime
 
 from domain.expenses import is_eligible_to_physical_products_capping, is_eligible_to_digital_products_capping
 from domain.bookings import BOOKING_CANCELLATION_DELAY
+from domain.user_activation import is_activation_booking
 from models import ApiErrors, Booking, RightsType
 from models.api_errors import ResourceGoneError, ForbiddenError
 from repository.payment_queries import get_payment_by_booking_id
@@ -162,10 +163,11 @@ def check_booking_is_cancellable(booking, is_user_cancellation):
             raise api_errors
 
 
-def check_activation_booking_is_keepable():
-    error = ForbiddenError()
-    error.add_error('booking', "Seuls les administrateurs du pass Culture peuvent annuler des offres d'activation.")
-    raise error
+def check_activation_booking_is_keepable(booking):
+    if is_activation_booking(booking):
+        error = ForbiddenError()
+        error.add_error('booking', "Impossible d'annuler une offre d'activation")
+        raise error
 
 
 def check_email_and_offer_id_for_anonymous_user(email, offer_id):

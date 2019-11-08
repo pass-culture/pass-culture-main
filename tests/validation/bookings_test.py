@@ -5,12 +5,13 @@ from unittest.mock import Mock
 import pytest
 
 from domain.expenses import SUBVENTION_PHYSICAL_THINGS, SUBVENTION_DIGITAL_THINGS
-from models import ApiErrors, Booking, Stock, Offer, ThingType, PcObject
+from models import ApiErrors, Booking, Stock, Offer, ThingType, PcObject, User, EventType
 from models.api_errors import ResourceGoneError, ForbiddenError
 from tests.conftest import clean_database
 from tests.test_utils import create_booking_for_thing, create_product_with_thing_type, create_user, \
     create_venue, create_offerer, create_offer_with_event_product, create_user_offerer, create_payment, \
-    create_stock_from_offer, create_offer_with_thing_product, create_booking
+    create_stock_from_offer, create_offer_with_thing_product, create_booking, create_product_with_event_type, \
+    create_stock
 from utils.human_ids import humanize
 from validation.bookings import check_expenses_limits, \
     check_booking_is_cancellable, \
@@ -410,13 +411,46 @@ class CheckBookingIsNotUsedTest:
 
 
 class CheckActivationBookingCanBeKeptTest:
-    def test_raise_error(self):
+    def test_should_raise_an_error_when_booking_has_an_activation_type(self):
+        # Given
+        product = create_product_with_event_type(event_type=EventType.ACTIVATION)
+        offer = create_offer_with_event_product(product=product)
+        stock = create_stock(offer=offer)
+        booking = create_booking(stock=stock, user=User())
+
         # when
         with pytest.raises(ApiErrors) as api_errors:
-            check_activation_booking_is_keepable()
+            check_activation_booking_is_keepable(booking)
 
         # then
-        assert api_errors.value.errors['booking'] == ["Seuls les administrateurs du pass Culture peuvent annuler des offres d'activation."]
+        assert api_errors.value.errors['booking'] == ["Impossible d'annuler une offre d'activation"]
+
+    def test_should_raise_an_error_when_booking_has_a_thing_activation_type(self):
+        # Given
+        product = create_product_with_event_type(event_type=ThingType.ACTIVATION)
+        offer = create_offer_with_event_product(product=product)
+        stock = create_stock(offer=offer)
+        booking = create_booking(stock=stock, user=User())
+
+        # when
+        with pytest.raises(ApiErrors) as api_errors:
+            check_activation_booking_is_keepable(booking)
+
+        # then
+        assert api_errors.value.errors['booking'] == ["Impossible d'annuler une offre d'activation"]
+
+    def test_should_not_raise_when_booking_is_not_an_activation(self):
+        # Given
+        product = create_product_with_event_type(event_type=EventType.JEUX)
+        offer = create_offer_with_event_product(product=product)
+        stock = create_stock(offer=offer)
+        booking = create_booking(stock=stock, user=User())
+
+        # when
+        try:
+            check_activation_booking_is_keepable(booking)
+        except:
+            assert False
 
 
 class CheckBookingIsKeepableTest:

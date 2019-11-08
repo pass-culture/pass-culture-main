@@ -44,7 +44,7 @@ def generate_set_password_url(app_domain: str, user: User) -> str:
 
 
 def is_activation_booking(booking):
-    return booking.stock.offer.product.type in [str(EventType.ACTIVATION), str(ThingType.ACTIVATION)]
+    return booking.stock.offer.type in [str(EventType.ACTIVATION), str(ThingType.ACTIVATION)]
 
 
 def create_beneficiary_from_application(application_detail: dict) -> User:

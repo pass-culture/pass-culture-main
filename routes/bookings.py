@@ -369,8 +369,7 @@ def patch_booking_keep_by_token(token):
     if valid_api_key:
         check_api_key_allows_to_validate_booking(valid_api_key, offerer_id)
 
-    if is_activation_booking(booking):
-        check_activation_booking_is_keepable()
+    check_activation_booking_is_keepable(booking)
 
     check_booking_token_is_keepable(booking)
 

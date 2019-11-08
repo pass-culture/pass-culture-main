@@ -3,13 +3,13 @@ from decimal import Decimal
 
 import pytest
 
-from domain.user_activation import generate_activation_users_csv, is_import_status_change_allowed
-from models import ImportStatus
+from domain.user_activation import generate_activation_users_csv, is_import_status_change_allowed, is_activation_booking
+from models import ImportStatus, EventType, User
 from models import ThingType
-from models.booking import ActivationUser
+from models.booking import ActivationUser, Booking
 from scripts.beneficiary.remote_import import create_beneficiary_from_application
 from tests.test_utils import create_booking, create_stock, create_offer_with_thing_product, create_venue, \
-    create_offerer
+    create_offerer, create_offer_with_event_product, create_product_with_event_type
 from tests.test_utils import create_user
 
 
@@ -136,3 +136,26 @@ class CreateBeneficiaryFromApplicationTest:
         assert len(beneficiary.deposits) == 1
         assert beneficiary.deposits[0].amount == Decimal(500)
         assert beneficiary.deposits[0].source == 'démarches simplifiées dossier [123]'
+
+
+class IsActivationBookingTest:
+    def test_should_return_true_when_offer_is_event_type_activation(self):
+        # Given
+        product = create_product_with_event_type(event_type=EventType.ACTIVATION)
+        offer = create_offer_with_event_product(product=product)
+        stock = create_stock(offer=offer)
+        booking = create_booking(stock=stock, user=User())
+
+        # Then
+        assert is_activation_booking(booking)
+
+    def test_should_return_false_when_offer_is_activation_by_product_is_not(self):
+        # Given
+        product = create_product_with_event_type(event_type=EventType.SPECTACLE_VIVANT)
+        offer = create_offer_with_event_product(product=product)
+        offer.type = 'EventType.ACTIVATION'
+        stock = create_stock(offer=offer)
+        booking = create_booking(stock=stock, user=User())
+
+        # Then
+        assert is_activation_booking(booking)
