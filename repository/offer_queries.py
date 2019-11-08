@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from functools import partial
 from typing import List
 
 from flask_sqlalchemy import BaseQuery
@@ -74,18 +75,18 @@ def order_by_with_criteria():
 
 
 def _order_by_occurs_soon_or_is_thing_then_randomize():
-    return [desc(_build_occurs_soon_or_is_thing_predicate()),
-            func.random()]
+    return [desc(_build_occurs_soon_or_is_thing_predicate()), func.random()]
 
 
 def get_active_offers(departement_codes=None, offer_id=None, limit=None,
-                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize, seed=None, user=None):
+                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize, seed_number=None, user=None):
+    if seed_number:
+        sql = text(f'SET SEED TO {seed_number}')
+        db.session.execute(sql)
+
     active_offer_ids = get_active_offers_ids_query(departement_codes, offer_id, user=user)
-
     query = Offer.query.filter(Offer.id.in_(active_offer_ids))
-
     query = query.order_by(_round_robin_by_type_onlineness_and_criteria(order_by))
-
     query = query.options(joinedload('mediations'),
                           joinedload('product'))
 
@@ -128,15 +129,15 @@ def _exclude_booked_and_favorite(active_offers_query, user):
     favorite_offer_ids = Favorite.query.filter_by(userId=user.id).with_entities('"offerId"').subquery()
     not_booked_predicate = ~Offer.id.in_(booked_offer_ids)
     not_favorite_predicate = ~Offer.id.in_(favorite_offer_ids)
-    
+
     active_offers_query = active_offers_query.filter(not_booked_predicate & not_favorite_predicate)
-    
+
     return active_offers_query
 
 
 def _round_robin_by_type_onlineness_and_criteria(order_by: List):
     return func.row_number() \
-        .over(partition_by=[Offer.type, Offer.url == None],
+        .over(partition_by=[Offer.type, Offer.url is None],
               order_by=order_by())
 
 

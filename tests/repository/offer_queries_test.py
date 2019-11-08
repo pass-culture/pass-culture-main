@@ -1,13 +1,10 @@
-from datetime import datetime, timedelta
 import random
-from functools import partial
+from datetime import datetime, timedelta
 
 import pytest
 from freezegun import freeze_time
-from sqlalchemy import text
 
 from models import Offer, PcObject, Stock, Product
-from models.db import db
 from models.offer_type import EventType, ThingType
 from repository.offer_queries import department_or_national_offers, \
     find_activation_offers, \
@@ -247,7 +244,8 @@ class GetOffersForRecommendationsSearchTest:
         assert ko_stock_after.resolvedOffer not in search_result_offers
 
     @clean_database
-    def test_should_return_things_and_events_with_name_containing_keywords_when_searching_with_several_partial_keywords(self, app):
+    def test_should_return_things_and_events_with_name_containing_keywords_when_searching_with_several_partial_keywords(
+            self, app):
         # Given
         thing_ok = create_product_with_thing_type(thing_name='Rencontre de michel')
         thing_product = create_product_with_thing_type(thing_name='Rencontre avec jean-luc')
@@ -374,7 +372,6 @@ class GetOffersForRecommendationsSearchTest:
         # Then
         assert offer in search_result_offers
 
-
     @clean_database
     def test_should_not_return_duplicate_when_searching(self, app):
         # Given
@@ -392,11 +389,11 @@ class GetOffersForRecommendationsSearchTest:
 
         # When
         search_result_offers = get_offers_for_recommendations_search(page=1, keywords_string='snif')
-        search_result_offers = search_result_offers + get_offers_for_recommendations_search(page=2, keywords_string='snif')
+        search_result_offers = search_result_offers + get_offers_for_recommendations_search(page=2,
+                                                                                            keywords_string='snif')
 
         # Then
         assert len(search_result_offers) == len(set(search_result_offers))
-
 
     @clean_database
     def test_should_not_return_deactivated_offer_when_searching(self, app):
@@ -415,7 +412,6 @@ class GetOffersForRecommendationsSearchTest:
         # Then
         assert offer not in search_result_offers
 
-
     @clean_database
     def test_should_not_return_offers_with_not_validated_offerer_when_searching(self, app):
         # Given
@@ -432,7 +428,6 @@ class GetOffersForRecommendationsSearchTest:
 
         # Then
         assert offer not in search_result_offers
-
 
     @clean_database
     def test_should_not_return_offers_with_deactivated_offerer_when_searching(self, app):
@@ -468,7 +463,6 @@ class GetOffersForRecommendationsSearchTest:
         # Then
         assert offer not in search_result_offers
 
-
     @clean_database
     def test_should_not_return_offers_with_not_bookable_soft_deleted_stock_when_searching(self, app):
         # Given
@@ -486,15 +480,15 @@ class GetOffersForRecommendationsSearchTest:
         # Then
         assert offer_with_soft_deleted_stock not in search_result_offers
 
-
     @clean_database
     def test_should_not_return_offers_with_past_booking_limit_datetime_when_searching(self, app):
         # Given
         thing = create_product_with_thing_type()
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer_with_passed_booking_limit_datetime =  create_offer_with_thing_product(venue, thing)
-        thing_stock = create_stock_from_offer(offer_with_passed_booking_limit_datetime, booking_limit_datetime=datetime(2010, 1, 6, 12, 30))
+        offer_with_passed_booking_limit_datetime = create_offer_with_thing_product(venue, thing)
+        thing_stock = create_stock_from_offer(offer_with_passed_booking_limit_datetime,
+                                              booking_limit_datetime=datetime(2010, 1, 6, 12, 30))
 
         PcObject.save(thing_stock)
 
@@ -503,7 +497,6 @@ class GetOffersForRecommendationsSearchTest:
 
         # Then
         assert offer_with_passed_booking_limit_datetime not in search_result_offers
-
 
     @clean_database
     def test_should_not_return_offer_in_past_when_searching(self, app):
@@ -519,7 +512,6 @@ class GetOffersForRecommendationsSearchTest:
 
         # Then
         assert offer_in_past not in search_result_offers
-
 
     @clean_database
     def test_should_not_return_offers_with_not_available_stock_when_searching(self, app):
@@ -537,7 +529,6 @@ class GetOffersForRecommendationsSearchTest:
 
         # Then
         assert offer_with_not_available_stock not in search_result_offers
-
 
     @clean_database
     def test_should_not_return_offers_with_no_stock_when_searching(self, app):
@@ -934,7 +925,6 @@ def test_find_offers_with_filter_parameters_with_partial_keywords_and_filter_by_
     assert ko_offer4.id not in offers_id
 
 
-
 class hasRemainingStockTest:
     @clean_database
     def test_should_return_0_offer_when_there_is_no_stock(self, app):
@@ -953,7 +943,6 @@ class hasRemainingStockTest:
 
         # Then
         assert offers_count == 0
-
 
     @clean_database
     def test_should_return_1_offer_when_all_available_stock_is_not_booked(self, app):
@@ -977,7 +966,6 @@ class hasRemainingStockTest:
         # Then
         assert offers_count == 1
 
-
     @clean_database
     def test_should_return_0_offer_when_all_available_stock_is_booked(self, app):
         # Given
@@ -999,7 +987,6 @@ class hasRemainingStockTest:
 
         # Then
         assert offers_count == 0
-
 
     @clean_database
     def test_should_return_1_offer_when_stock_was_updated_after_booking_was_used(self, app):
@@ -1023,7 +1010,6 @@ class hasRemainingStockTest:
         # Then
         assert offers_count == 1
 
-
     @clean_database
     def test_should_return_1_offer_when_booking_was_cancelled(app):
         # Given
@@ -1043,7 +1029,6 @@ class hasRemainingStockTest:
 
         # Then
         assert offers_count == 1
-
 
     @clean_database
     def test_should_return_0_offer_when_there_is_no_remaining_stock(app):
@@ -1066,7 +1051,6 @@ class hasRemainingStockTest:
 
         # Then
         assert offers_count == 0
-
 
     @clean_database
     def test_should_return_1_offer_when_there_are_one_full_stock_and_one_empty_stock(app):
@@ -1231,10 +1215,9 @@ class GetActiveOffersTest:
 
         offer3 = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
         stock3 = create_stock_from_offer(offer3, price=0)
-        
+
         offer4 = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
         stock4 = create_stock_from_offer(offer4, price=0)
-    
 
         create_mediation(stock1.offer)
         create_mediation(stock2.offer)
@@ -1242,17 +1225,68 @@ class GetActiveOffersTest:
         create_mediation(stock4.offer)
 
         PcObject.save(stock1, stock2, stock3, stock4)
-        
-        seed = 0.5
+
+        seed_number = 0.5
         offers_1 = get_active_offers(departement_codes=['00'], offer_id=None,
-                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize, seed=seed)
+                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
+                                     seed_number=seed_number)
+
+        offers_2 = get_active_offers(departement_codes=['00'], offer_id=None,
+                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
+                                     seed_number=seed_number)
+
+        offers_3 = get_active_offers(departement_codes=['00'], offer_id=None,
+                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
+                                     seed_number=seed_number)
 
         # When
-        offers_2 = get_active_offers(departement_codes=['00'], offer_id=None,
-                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize, seed=seed)
+        offers_4 = get_active_offers(departement_codes=['00'], offer_id=None,
+                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
+                                     seed_number=seed_number)
 
         # Then
-        assert offers_1 == offers_2
+        assert offers_1 == offers_4
+        assert offers_2 == offers_4
+        assert offers_3 == offers_4
+
+    @clean_database
+    def test_should_return_offers_not_in_the_same_order_given_different_seeds(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer, postal_code='34000', departement_code='34')
+
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
+        stock1 = create_stock_from_offer(offer1, price=0)
+
+        offer2 = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
+        stock2 = create_stock_from_offer(offer2, price=0)
+
+        offer3 = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
+        stock3 = create_stock_from_offer(offer3, price=0)
+
+        offer4 = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
+        stock4 = create_stock_from_offer(offer4, price=0)
+
+        create_mediation(stock1.offer)
+        create_mediation(stock2.offer)
+        create_mediation(stock3.offer)
+        create_mediation(stock4.offer)
+
+        PcObject.save(stock1, stock2, stock3, stock4)
+
+        seed_number1 = 0.9
+        offers_1 = get_active_offers(departement_codes=['00'], offer_id=None,
+                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
+                                     seed_number=seed_number1)
+
+        seed_number2 = -0.8
+        # When
+        offers_2 = get_active_offers(departement_codes=['00'], offer_id=None,
+                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
+                                     seed_number=seed_number2)
+
+        # Then
+        assert offers_1 != offers_2
 
     @clean_database
     def test_should_not_return_booked_offers(self, app):
@@ -1268,7 +1302,6 @@ class GetActiveOffersTest:
         create_mediation(stock.offer)
 
         PcObject.save(booking)
-        
 
         # When
         offers = get_active_offers(departement_codes=['00'], offer_id=None,
@@ -1290,7 +1323,6 @@ class GetActiveOffersTest:
         favorite = create_favorite(mediation, offer, user)
 
         PcObject.save(favorite)
-        
 
         # When
         offers = get_active_offers(departement_codes=['00'], offer_id=None,
@@ -1306,4 +1338,3 @@ def _create_event_stock_and_offer_for_date(venue, date):
     event_occurrence = create_event_occurrence(offer, beginning_datetime=date, end_datetime=date + timedelta(hours=1))
     stock = create_stock_from_event_occurrence(event_occurrence, booking_limit_date=date)
     return stock
-
