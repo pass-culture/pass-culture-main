@@ -2,7 +2,7 @@ from flask import send_from_directory
 from flask import current_app as app
 
 
-@app.route('/api/doc/')
+@app.route('/api/doc', strict_slashes=False)
 def api_documentation():
     return send_from_directory('static/documentation', 'index.html')
 
