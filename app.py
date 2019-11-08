@@ -65,8 +65,8 @@ cors = CORS(app,
 app.url_map.strict_slashes = False
 
 with app.app_context():
-    install_database_extensions()
     if IS_DEV:
+        install_database_extensions()
         install_models()
         upsert_tuto_mediations()
         install_local_providers()

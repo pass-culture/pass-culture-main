@@ -15,7 +15,8 @@ def create_text_search_configuration_if_not_exists():
     if french_unaccent_configuration_query.fetchone() is None:
         db.engine.execute("CREATE TEXT SEARCH CONFIGURATION french_unaccent ( COPY = french );")
         db.engine.execute(
-            "ALTER TEXT SEARCH CONFIGURATION french_unaccent ALTER MAPPING FOR hword, hword_part, word WITH unaccent, french_stem;")
+            "ALTER TEXT SEARCH CONFIGURATION french_unaccent"
+            " ALTER MAPPING FOR hword, hword_part, word WITH unaccent, french_stem;")
 
 
 def create_versionning_tables():
