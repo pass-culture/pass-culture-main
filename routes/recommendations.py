@@ -93,7 +93,7 @@ def put_recommendations():
     logger.debug(lambda: '(special) requested_recommendation %s' %
                          requested_recommendation)
 
-    created_recommendations = create_recommendations_for_discovery(BLOB_SIZE, user=current_user)
+    created_recommendations = create_recommendations_for_discovery(limit=BLOB_SIZE, user=current_user)
     logger.debug(lambda: '(new recos)' + str([(reco, reco.mediation, reco.dateRead)
                                               for reco in created_recommendations]))
     logger.debug(lambda: '(new reco) count %i', len(created_recommendations))

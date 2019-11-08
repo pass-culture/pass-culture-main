@@ -79,8 +79,9 @@ def _order_by_occurs_soon_or_is_thing_then_randomize():
 
 
 def get_active_offers(departement_codes=None, offer_id=None, limit=None,
-                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize, seed_number=None, user=None,
-                      pagination_params=None):
+                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize, user=None, pagination_params=None):
+    seed_number = pagination_params.get('seed') if pagination_params else None
+    page = pagination_params.get('page') if pagination_params else None
     if seed_number:
         sql = text(f'SET SEED TO {seed_number}')
         db.session.execute(sql)
@@ -92,7 +93,11 @@ def get_active_offers(departement_codes=None, offer_id=None, limit=None,
                           joinedload('product'))
 
     if limit:
-        query = query.limit(limit)
+        if page:
+            query = query\
+                .offset((page - 1) * limit)
+        query = query \
+            .limit(limit)
 
     return query.all()
 

@@ -1197,19 +1197,23 @@ class GetActiveOffersTest:
 
         PcObject.save(stock1, stock2, stock3, stock4)
 
-        seed_number = 0.5
+        pagination_params = {'seed': 0.5, 'page': 1}
         offers_1 = get_active_offers(departement_codes=['00'], offer_id=None,
-                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize, seed_number=seed_number)
+                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
+                                     pagination_params=pagination_params)
 
         offers_2 = get_active_offers(departement_codes=['00'], offer_id=None,
-                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize, seed_number=seed_number)
+                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
+                                     pagination_params=pagination_params)
 
         offers_3 = get_active_offers(departement_codes=['00'], offer_id=None,
-                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize, seed_number=seed_number)
+                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
+                                     pagination_params=pagination_params)
 
         # When
         offers_4 = get_active_offers(departement_codes=['00'], offer_id=None,
-                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize, seed_number=seed_number)
+                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
+                                     pagination_params=pagination_params)
 
         # Then
         assert offers_1 == offers_4
@@ -1243,14 +1247,12 @@ class GetActiveOffersTest:
 
         seed_number1 = 0.9
         offers_1 = get_active_offers(departement_codes=['00'], offer_id=None,
-                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
-                                     seed_number=seed_number1)
+                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize)
 
         seed_number2 = -0.8
         # When
         offers_2 = get_active_offers(departement_codes=['00'], offer_id=None,
-                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
-                                     seed_number=seed_number2)
+                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize)
 
         # Then
         assert offers_1 != offers_2
@@ -1297,6 +1299,93 @@ class GetActiveOffersTest:
 
         # Then
         assert offers == []
+
+    @clean_database
+    def test_should_return_offers_paginated_from_page_1_when_pagination_params_are_provided(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue)
+        offer2 = create_offer_with_thing_product(venue)
+        offer3 = create_offer_with_thing_product(venue)
+        offer4 = create_offer_with_thing_product(venue)
+        stock1 = create_stock_from_offer(offer1)
+        stock2 = create_stock_from_offer(offer2)
+        stock3 = create_stock_from_offer(offer3)
+        stock4 = create_stock_from_offer(offer4)
+        create_mediation(offer1)
+        create_mediation(offer2)
+        create_mediation(offer3)
+        create_mediation(offer4)
+        PcObject.save(stock1, stock2, stock3, stock4)
+
+        # When
+        offers = get_active_offers(departement_codes=['00'], limit=2, pagination_params={'page': 1, 'seed': 0.5})
+
+        # Then
+        assert len(offers) == 2
+        assert offer1 not in offers
+        assert offer2 in offers
+        assert offer3 not in offers
+        assert offer4 in offers
+
+    @clean_database
+    def test_should_return_offers_paginated_from_page_2_when_pagination_params_are_provided(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue)
+        offer2 = create_offer_with_thing_product(venue)
+        offer3 = create_offer_with_thing_product(venue)
+        offer4 = create_offer_with_thing_product(venue)
+        stock1 = create_stock_from_offer(offer1)
+        stock2 = create_stock_from_offer(offer2)
+        stock3 = create_stock_from_offer(offer3)
+        stock4 = create_stock_from_offer(offer4)
+        create_mediation(offer1)
+        create_mediation(offer2)
+        create_mediation(offer3)
+        create_mediation(offer4)
+        PcObject.save(stock1, stock2, stock3, stock4)
+
+        # When
+        offers = get_active_offers(departement_codes=['00'], limit=2, pagination_params={'page': 2, 'seed': 0.5})
+
+        # Then
+        assert len(offers) == 2
+        assert offer1 in offers
+        assert offer2 not in offers
+        assert offer3 in offers
+        assert offer4 not in offers
+
+    @clean_database
+    def test_should_return_offers_not_paginated_when_pagination_params_are_not_provided(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue)
+        offer2 = create_offer_with_thing_product(venue)
+        offer3 = create_offer_with_thing_product(venue)
+        offer4 = create_offer_with_thing_product(venue)
+        stock1 = create_stock_from_offer(offer1)
+        stock2 = create_stock_from_offer(offer2)
+        stock3 = create_stock_from_offer(offer3)
+        stock4 = create_stock_from_offer(offer4)
+        create_mediation(offer1)
+        create_mediation(offer2)
+        create_mediation(offer3)
+        create_mediation(offer4)
+        PcObject.save(stock1, stock2, stock3, stock4)
+
+        # When
+        offers = get_active_offers(departement_codes=['00'], limit=4, pagination_params=None)
+
+        # Then
+        assert len(offers) == 4
+        assert offer1 in offers
+        assert offer2 in offers
+        assert offer3 in offers
+        assert offer4 in offers
 
 
 def _create_event_stock_and_offer_for_date(venue, date):
