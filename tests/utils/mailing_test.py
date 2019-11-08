@@ -332,7 +332,7 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         email_html = remove_whitespaces(recap_email['Html-part'])
         recap_email_soup = BeautifulSoup(email_html, 'html.parser')
         mail_greeting = recap_email_soup.find('p', {'id': 'mail-greeting'}).text
-        action =  recap_email_soup.find('p', {'id': 'action'}).text
+        action = recap_email_soup.find('p', {'id': 'action'}).text
         recap_table = recap_email_soup.find('table', {'id': 'recap-table'}).text
         recap = recap_email_soup.find('p', {'id': 'recap'}).text
         assert 'Cher partenaire pass Culture,' in mail_greeting
@@ -378,10 +378,9 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         assert 'Si vous souhaitez modifier l’adresse de contact cliquez ici : être notifié des réservations à une autre adresse e-mail.' in unsubscribe_option
         assert 'Si vous ne souhaitez plus recevoir de notifications de réservations par e-mail, cliquez ici : ne plus recevoir les notifications de réservations.' in unsubscribe_option
         assert 'mailto:support@passculture.app?subject=Changer%20l%27adresse%20e-mail%20de%20notification%20des%20r%C3%A9servations' == \
-            change_email
+               change_email
         assert 'mailto:support@passculture.app?subject=Ne%20plus%20recevoir%20les%20notifications%20de%20r%C3%A9servations' == \
-            remove_email
-
+               remove_email
 
     @mocked_mail
     @clean_database
@@ -842,7 +841,10 @@ def test_should_write_email_with_right_data_when_offer_is_a_book(app):
                 'user_lastName': 'Doe',
                 'user_email': 'test@email.com',
                 "is_event": 0,
-                "offer_type": 'ThingType.LIVRE_EDITION',
+                "date": "",
+                "heure": "",
+                "quantity": "",
+                "offer_type": 'book',
                 "lien_offre_pcpro": "",
                 "departement": ""
             }

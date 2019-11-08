@@ -137,10 +137,12 @@ def make_offerer_booking_recap_email_with_mailjet_template(booking, recipients):
         'Vars': {
             'nom_offre': offer_name,
             'nom_lieu': venue_name,
-            'prix': price,
             'is_event': is_event,
             'ISBN': "",
-            'offer_type': offer_type,
+            'offer_type': "",
+            'date': "",
+            'heure': "",
+            'quantity': "",
             'lien_offre_pcpro': "",
             'departement': ""
         },
@@ -148,16 +150,18 @@ def make_offerer_booking_recap_email_with_mailjet_template(booking, recipients):
 
     mailjet_json_variables = mailjet_json['Vars']
 
-    offer_is_a_book = offer_type == 'ThingType.LIVRE_EDITION'
-    if offer_is_a_book:
-        isbn = offer.extraData['isbn']
-        mailjet_json_variables['ISBN'] = isbn
+    if offer_type == 'ThingType.LIVRE_EDITION':
+        mailjet_json_variables['offer_type'] = "book"
+        mailjet_json_variables['ISBN'] = offer.extraData['isbn']
+    else:
+        mailjet_json_variables['offer_type'] = offer_type
 
     offer_is_an_event = is_event == 1
     if offer_is_an_event:
         mailjet_json_variables['date'], mailjet_json_variables['heure'] = _format_date_and_hour_for_email(booking)
         mailjet_json_variables['quantity'] = int(quantity)
 
+    mailjet_json_variables['prix'] = price
     mailjet_json_variables['user_firstName'] = user_firstname
     mailjet_json_variables['user_lastName'] = user_lastname
     mailjet_json_variables['user_email'] = user_email
