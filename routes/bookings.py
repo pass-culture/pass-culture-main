@@ -44,7 +44,7 @@ from validation.bookings import check_existing_stock, \
     check_booking_is_not_used, \
     check_booking_token_is_keepable, \
     check_booking_token_is_usable, \
-    check_activation_booking_is_keepable
+    check_is_not_activation_booking
 from validation.users_authentifications import check_user_is_logged_in_or_email_is_provided, \
     login_or_api_key_required_v2
 from validation.users_authorizations import check_user_can_validate_bookings, \
@@ -369,8 +369,7 @@ def patch_booking_keep_by_token(token):
     if valid_api_key:
         check_api_key_allows_to_validate_booking(valid_api_key, offerer_id)
 
-    check_activation_booking_is_keepable(booking)
-
+    check_is_not_activation_booking(booking)
     check_booking_token_is_keepable(booking)
 
     booking.isUsed = False

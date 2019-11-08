@@ -139,7 +139,7 @@ class CreateBeneficiaryFromApplicationTest:
 
 
 class IsActivationBookingTest:
-    def test_should_return_true_when_offer_is_event_type_activation(self):
+    def test_returns_true_when_offer_is_event_type_activation(self):
         # Given
         product = create_product_with_event_type(event_type=EventType.ACTIVATION)
         offer = create_offer_with_event_product(product=product)
@@ -149,13 +149,23 @@ class IsActivationBookingTest:
         # Then
         assert is_activation_booking(booking)
 
-    def test_should_return_false_when_offer_is_activation_by_product_is_not(self):
+    def test_returns_true_when_offer_is_thing_type_activation(self):
         # Given
-        product = create_product_with_event_type(event_type=EventType.SPECTACLE_VIVANT)
+        product = create_product_with_event_type(event_type=ThingType.ACTIVATION)
         offer = create_offer_with_event_product(product=product)
-        offer.type = 'EventType.ACTIVATION'
         stock = create_stock(offer=offer)
         booking = create_booking(stock=stock, user=User())
 
         # Then
         assert is_activation_booking(booking)
+
+    def test_returns_false_with_type_of_offer_is_not_an_activation(self):
+        # Given
+        product = create_product_with_event_type(event_type=EventType.SPECTACLE_VIVANT)
+        offer = create_offer_with_event_product(product=product)
+        offer.type = 'EventType.SPECTACLE_VIVANT'
+        stock = create_stock(offer=offer)
+        booking = create_booking(stock=stock, user=User())
+
+        # Then
+        assert is_activation_booking(booking) is False

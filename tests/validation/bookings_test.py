@@ -21,7 +21,7 @@ from validation.bookings import check_expenses_limits, \
     check_booking_is_not_used, \
     check_booking_token_is_usable, \
     check_booking_token_is_keepable, \
-    check_activation_booking_is_keepable
+    check_is_not_activation_booking
 
 
 class CheckExpenseLimitsTest:
@@ -358,6 +358,7 @@ class CheckBookingQuantityLimitTest:
             # then
             pytest.fail('Booking for duo offers must not raise any exceptions')
 
+
 class CheckBookingIsNotAlreadyCancelledTest:
     def test_raise_resource_gone_error_when_booking_is_already_cancelled(self):
         # Given
@@ -411,7 +412,7 @@ class CheckBookingIsNotUsedTest:
 
 
 class CheckActivationBookingCanBeKeptTest:
-    def test_should_raise_an_error_when_booking_has_an_activation_type(self):
+    def test_should_raise_an_error_when_booking_has_an_event_activation_type(self):
         # Given
         product = create_product_with_event_type(event_type=EventType.ACTIVATION)
         offer = create_offer_with_event_product(product=product)
@@ -420,7 +421,7 @@ class CheckActivationBookingCanBeKeptTest:
 
         # when
         with pytest.raises(ApiErrors) as api_errors:
-            check_activation_booking_is_keepable(booking)
+            check_is_not_activation_booking(booking)
 
         # then
         assert api_errors.value.errors['booking'] == ["Impossible d'annuler une offre d'activation"]
@@ -434,7 +435,7 @@ class CheckActivationBookingCanBeKeptTest:
 
         # when
         with pytest.raises(ApiErrors) as api_errors:
-            check_activation_booking_is_keepable(booking)
+            check_is_not_activation_booking(booking)
 
         # then
         assert api_errors.value.errors['booking'] == ["Impossible d'annuler une offre d'activation"]
@@ -448,7 +449,7 @@ class CheckActivationBookingCanBeKeptTest:
 
         # when
         try:
-            check_activation_booking_is_keepable(booking)
+            check_is_not_activation_booking(booking)
         except:
             assert False
 

@@ -163,7 +163,7 @@ def check_booking_is_cancellable(booking, is_user_cancellation):
             raise api_errors
 
 
-def check_activation_booking_is_keepable(booking):
+def check_is_not_activation_booking(booking: Booking):
     if is_activation_booking(booking):
         error = ForbiddenError()
         error.add_error('booking', "Impossible d'annuler une offre d'activation")
