@@ -45,3 +45,25 @@ class ProductTypeTest:
 
             # Then
             assert is_event is False
+
+    class IsBookTest:
+        def test_if_type_is_empty_return_False(self):
+            # When
+            is_event = ProductType.is_book('')
+
+            # Then
+            assert is_event is False
+
+        def test_if_type_is_livre_edition_return_True(self):
+            # When
+            is_event = ProductType.is_book(str(ThingType.LIVRE_EDITION))
+
+            # Then
+            assert is_event is True
+
+        def test_if_type_is_livre_audio_return_False(self):
+            # When
+            is_event = ProductType.is_book(str(ThingType.LIVRE_AUDIO))
+
+            # Then
+            assert is_event is False

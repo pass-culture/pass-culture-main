@@ -2,7 +2,7 @@
 import base64
 import os
 from datetime import datetime
-from pprint import pformat
+from pprint import pformat, pprint
 from typing import Dict, List
 
 from flask import current_app as app, render_template
@@ -12,7 +12,7 @@ from domain.user_activation import generate_set_password_url
 from models import Offer, Email, PcObject, Offerer
 from models import RightsType, User
 from models.email import EmailStatus
-from models.offer_type import ProductType
+from models.offer_type import ProductType, ThingType
 from repository import email_queries
 from repository import booking_queries
 from repository.feature_queries import feature_send_mail_to_users_enabled
@@ -150,7 +150,9 @@ def make_offerer_booking_recap_email_with_mailjet_template(booking, recipients):
 
     mailjet_json_variables = mailjet_json['Vars']
 
-    if offer_type == 'ThingType.LIVRE_EDITION':
+    offer_is_a_book = ProductType.is_book(offer_type)
+
+    if offer_is_a_book:
         mailjet_json_variables['offer_type'] = "book"
         mailjet_json_variables['ISBN'] = offer.extraData['isbn']
     else:
@@ -159,8 +161,8 @@ def make_offerer_booking_recap_email_with_mailjet_template(booking, recipients):
     offer_is_an_event = is_event == 1
     if offer_is_an_event:
         mailjet_json_variables['date'], mailjet_json_variables['heure'] = _format_date_and_hour_for_email(booking)
-        mailjet_json_variables['quantity'] = int(quantity)
 
+    mailjet_json_variables['quantity'] = int(quantity)
     mailjet_json_variables['prix'] = price
     mailjet_json_variables['user_firstName'] = user_firstname
     mailjet_json_variables['user_lastName'] = user_lastname

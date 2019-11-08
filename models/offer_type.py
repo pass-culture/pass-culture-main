@@ -287,6 +287,10 @@ class ProductType:
         return False
 
     @classmethod
+    def is_book(cls, type: str):
+        return type == str(ThingType.LIVRE_EDITION)
+
+    @classmethod
     def is_event(cls, name: str) -> object:
         for possible_type in list(EventType):
             if str(possible_type) == name:
