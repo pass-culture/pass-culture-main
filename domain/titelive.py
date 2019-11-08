@@ -13,8 +13,7 @@ def get_stocks_information(siret: str,
                            last_processed_isbn: str,
                            get_titelive_stocks_from_api: Callable = get_titelive_stocks) -> iter:
     api_response = get_titelive_stocks_from_api(siret, last_processed_isbn)
-    stocks_information = api_response['stocks']
-    return iter(stocks_information)
+    return iter(api_response['stocks'])
 
 
 def read_description_date(date):

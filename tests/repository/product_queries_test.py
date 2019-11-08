@@ -92,6 +92,31 @@ class DeleteUnwantedExistingProductTest:
         assert Product.query.one() == product
 
     @clean_database
+    def test_should_delete_product_when_related_offer_has_mediation(self, app):
+        # Given
+        isbn = '1111111111111'
+        user = create_user()
+        offerer = create_offerer(siren='775671464')
+        venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
+        product = create_product_with_thing_type(id_at_providers=isbn)
+        offer = create_offer_with_thing_product(venue, product=product)
+        stock = create_stock(offer=offer, price=0)
+        mediation = create_mediation(offer=offer)
+        recommendation = create_recommendation(offer=offer, user=user, mediation=mediation)
+
+        PcObject.save(venue, product, offer, stock, user, mediation, recommendation)
+
+        # When
+        delete_unwanted_existing_product('1111111111111')
+
+        # Then
+        assert Product.query.count() == 0
+        assert Offer.query.count() == 0
+        assert Stock.query.count() == 0
+        assert Recommendation.query.count() == 0
+        assert Mediation.query.count() == 0
+
+    @clean_database
     def test_should_delete_product_when_related_offer_is_on_user_favorite_list(self, app):
         # Given
         isbn = '1111111111111'

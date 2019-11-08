@@ -11,8 +11,7 @@ from domain.departments import ILE_DE_FRANCE_DEPT_CODES
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
     create_get_filter_matching_ts_query_in_any_model, \
     get_first_matching_keywords_string_at_column
-from models import Booking, \
-    EventType, \
+from models import EventType, \
     Mediation, \
     Offer, \
     Offerer, \
@@ -380,4 +379,10 @@ def get_offer_by_id(offer_id):
 def find_offers_by_venue_id(venue_id: int) -> List[Offer]:
     return Offer.query \
         .filter_by(venueId=venue_id) \
+        .all()
+
+
+def get_offers_by_productId(product_id: int) -> List[Offer]:
+    return Offer.query \
+        .filter_by(productId=product_id) \
         .all()

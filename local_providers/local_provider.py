@@ -186,8 +186,8 @@ class LocalProvider(Iterator):
             if objects_limit_reached:
                 break
 
-            no_providables_info_returned = len(providable_infos) == 0
-            if no_providables_info_returned:
+            has_no_providables_info = len(providable_infos) == 0
+            if has_no_providables_info:
                 self.checkedObjects += 1
                 continue
 

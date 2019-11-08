@@ -15,3 +15,9 @@ def find_all_favorites_by_user_id(user_id: int) -> List[Favorite]:
     return Favorite.query \
         .filter(Favorite.userId == user_id) \
         .all()
+
+
+def get_favorites_for_offers(offer_ids: List[int]) -> List[Favorite]:
+    return Favorite.query \
+        .filter(Favorite.offerId.in_(offer_ids)) \
+        .all()

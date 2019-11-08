@@ -21,9 +21,10 @@ class ChangeOfferStatusTest:
             venue = create_venue(offerer)
             offers = [create_offer_with_event_product(venue, is_active=True),
                       create_offer_with_event_product(venue, is_active=False)]
+            status = True
 
             # when
-            updated_offers = update_is_active_status(offers, True)
+            updated_offers = update_is_active_status(offers, status)
 
             # then
             for updated_offer in updated_offers:
@@ -36,9 +37,10 @@ class ChangeOfferStatusTest:
             venue = create_venue(offerer)
             offers = [create_offer_with_event_product(venue, is_active=True),
                       create_offer_with_event_product(venue, is_active=False)]
+            status = False
 
             # when
-            updated_offers = update_is_active_status(offers, False)
+            updated_offers = update_is_active_status(offers, status)
 
             # then
             for updated_offer in updated_offers:
@@ -54,9 +56,10 @@ class ChangeOfferStatusTest:
             stock = create_stock(offer=existing_offer)
             booking = create_booking(stock=stock, user=user)
             offers = [existing_offer]
+            status = False
 
             # when
-            updated_offers = update_is_active_status(offers, False)
+            updated_offers = update_is_active_status(offers, status)
 
             # then
             assert any(not updated_offer.isActive for updated_offer in updated_offers)

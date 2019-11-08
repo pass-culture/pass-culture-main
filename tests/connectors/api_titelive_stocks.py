@@ -10,7 +10,6 @@ class GetTiteLiveStocksTest:
     def test_should_call_titelive_api_with_siret_parameter(self, requests_get):
         # Given
         siret = '123456789123'
-        last_processed_isbn = ''
 
         response_return_value = MagicMock(status_code=200, text='')
         response_return_value.json = MagicMock()
@@ -29,7 +28,7 @@ class GetTiteLiveStocksTest:
         requests_get.return_value = response_return_value
 
         # When
-        get_titelive_stocks(siret, last_processed_isbn)
+        get_titelive_stocks(siret)
 
         # Then
         requests_get.assert_called_once_with('https://stock.epagine.fr/stocks/123456789123')

@@ -8,6 +8,7 @@ from hashlib import sha256
 from inspect import isclass
 from unittest.mock import Mock
 
+import pytest
 import requests
 from postgresql_audit.flask import versioning_manager
 from simplejson import JSONDecodeError
@@ -938,3 +939,8 @@ def create_api_key(offerer, value):
     PcObject.save(offererApiKey)
 
     return offererApiKey
+
+
+def assert_iterator_is_empty(custom_iterator: iter):
+    with pytest.raises(StopIteration):
+        next(custom_iterator)

@@ -2,8 +2,6 @@ import re
 from io import TextIOWrapper, BytesIO
 from typing import Dict, List, Optional
 
-from sqlalchemy.exc import IntegrityError
-
 from connectors.ftp_titelive import get_files_to_process_from_titelive_ftp, connect_to_titelive_ftp
 from domain.titelive import get_date_from_filename, read_things_date
 from local_providers.local_provider import LocalProvider

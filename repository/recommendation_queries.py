@@ -1,13 +1,13 @@
 from datetime import datetime, timedelta
+from typing import List
 
 from sqlalchemy import func, or_, and_
-from sqlalchemy.sql.expression import literal, delete
+from sqlalchemy.sql.expression import literal
 
 from models import Offer, PcObject, \
     Recommendation, \
     Stock, \
     Booking
-
 from models.api_errors import ResourceNotFoundError
 from models.db import db
 from models.mediation import Mediation
@@ -29,12 +29,12 @@ def find_unseen_tutorials_for_user(seen_recommendation_ids, user):
 
 
 def count_read_recommendations_for_user(user, limit=None):
-    query =  Recommendation.query.filter((Recommendation.user == user)
-                                         & (Recommendation.dateRead != None))
+    query = Recommendation.query.filter((Recommendation.user == user)
+                                        & (Recommendation.dateRead != None))
     if limit:
         query = query.with_entities(literal(1)) \
-                     .limit(limit) \
-                     .from_self()
+            .limit(limit) \
+            .from_self()
     return query.count()
 
 
@@ -88,7 +88,7 @@ def keep_only_bookable_stocks():
         .join(Offer) \
         .join(Stock) \
         .filter(and_(stock_is_not_soft_deleted,
-         stock_is_still_bookable))
+                     stock_is_still_bookable))
 
 
 def filter_unseen_valid_recommendations_for_user(query, user, seen_recommendation_ids):
@@ -122,8 +122,10 @@ def invalidate_recommendations(offer: Offer):
         .update({'validUntilDate': datetime.utcnow()})
     db.session.commit()
 
+
 def _has_no_mediation_or_mediation_does_not_match_offer(mediation: Mediation, offer_id: int) -> bool:
     return mediation is None or (offer_id and (mediation.offerId != offer_id))
+
 
 def find_recommendation_already_created_on_discovery(offer_id: int, mediation_id: int, user_id: int) -> Recommendation:
     logger.debug(lambda: 'Requested Recommendation with offer_id=%s mediation_id=%s' % (
@@ -139,7 +141,7 @@ def find_recommendation_already_created_on_discovery(offer_id: int, mediation_id
     if mediation_id:
         if _has_no_mediation_or_mediation_does_not_match_offer(mediation, offer_id):
             logger.debug(lambda: 'Mediation not found or found but not matching offer for offer_id=%s mediation_id=%s'
-                        % (offer_id, mediation_id))
+                                 % (offer_id, mediation_id))
             raise ResourceNotFoundError()
 
         query = query.filter(Recommendation.mediationId == mediation_id)
@@ -164,3 +166,8 @@ def delete_all_unread_recommendations_older_than_one_week():
     for q in query.all():
         PcObject.delete(q)
 
+
+def get_recommendations_for_offers(offer_ids: List[int]) -> List[Recommendation]:
+    return Recommendation.query \
+        .filter(Recommendation.offerId.in_(offer_ids)) \
+        .all()

@@ -5,7 +5,10 @@ class ApiDemarchesSimplifieesException(Exception):
     pass
 
 
-def get_all_applications_for_procedure(procedure_id: int, token: str, page=1, results_per_page=100) -> dict:
+def get_all_applications_for_procedure(procedure_id: int,
+                                       token: str,
+                                       page: int = 1,
+                                       results_per_page: int = 100) -> dict:
     response = requests.get(
         f"https://www.demarches-simplifiees.fr/api/v1/procedures/{procedure_id}/dossiers?token={token}&page={page}&resultats_par_page={results_per_page}")
 
@@ -16,7 +19,7 @@ def get_all_applications_for_procedure(procedure_id: int, token: str, page=1, re
     return response.json()
 
 
-def get_application_details(application_id: int, procedure_id: str, token: str) -> dict:
+def get_application_details(application_id: int, procedure_id: int, token: str) -> dict:
     response = requests.get(
         f"https://www.demarches-simplifiees.fr/api/v1/procedures/{procedure_id}/dossiers/{application_id}?token={token}")
 

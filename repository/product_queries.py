@@ -1,6 +1,9 @@
-from typing import List
-
-from models import Product, ThingType, Offer, Stock, Booking, Favorite, Recommendation, Mediation, PcObject
+from models import Product, ThingType, Offer, Stock, Booking, PcObject
+from repository.favorite_queries import get_favorites_for_offers
+from repository.mediation_queries import get_mediations_for_offers
+from repository.offer_queries import get_offers_by_productId
+from repository.recommendation_queries import get_recommendations_for_offers
+from repository.stock_queries import get_stocks_for_offers
 
 
 class ProductWithBookingsException(Exception):
@@ -39,36 +42,6 @@ def delete_unwanted_existing_product(isbn: str):
                     objects_to_delete.append(*favorites)
                 objects_to_delete.append(*recommendations)
         PcObject.delete_all(objects_to_delete)
-
-
-def get_favorites_for_offers(offer_ids: List[int]) -> List[Favorite]:
-    return Favorite.query \
-        .filter(Favorite.offerId.in_(offer_ids)) \
-        .all()
-
-
-def get_mediations_for_offers(offer_ids: List[int]) -> List[Mediation]:
-    return Mediation.query \
-        .filter(Mediation.offerId.in_(offer_ids)) \
-        .all()
-
-
-def get_recommendations_for_offers(offer_ids: List[int]) -> List[Recommendation]:
-    return Recommendation.query \
-        .filter(Recommendation.offerId.in_(offer_ids)) \
-        .all()
-
-
-def get_stocks_for_offers(offer_ids: List[int]) -> List[Stock]:
-    return Stock.query \
-        .filter(Stock.offerId.in_(offer_ids)) \
-        .all()
-
-
-def get_offers_by_productId(product_id: int) -> List[Offer]:
-    return Offer.query \
-        .filter_by(productId=product_id) \
-        .all()
 
 
 def find_by_id(product_id: int) -> Product:

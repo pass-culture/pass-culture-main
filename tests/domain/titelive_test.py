@@ -1,8 +1,7 @@
 from unittest.mock import Mock
 
-import pytest
-
 from domain.titelive import get_stocks_information
+from tests.test_utils import assert_iterator_is_empty
 
 
 class GetStocksInformation():
@@ -28,8 +27,7 @@ class GetStocksInformation():
 
         # Then
         self.mock_get_titelive_stocks.assert_called_once_with(siret, last_processed_isbn)
-        with pytest.raises(StopIteration):
-            next(stocks_information)
+        assert_iterator_is_empty(stocks_information)
 
     def test_should_return_iterator_with_2_elements(self):
         # Given

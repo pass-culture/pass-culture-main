@@ -377,4 +377,4 @@ def test_titelive_stock_provider_iterate_over_pagination(get_stocks_information,
 
     # Then
     assert Offer.query.count() == 2
-    assert Product.query.count() == 2
+    assert Stock.query.count() == 2

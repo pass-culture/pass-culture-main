@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 
 from models import Stock, Offerer, User, PcObject, Offer, ThingType, Venue, Product
 from utils.human_ids import dehumanize
@@ -44,3 +45,9 @@ def _check_offerer_user(query, user):
     return query.filter(
         Offerer.users.any(User.id == user.id)
     ).first_or_404()
+
+
+def get_stocks_for_offers(offer_ids: List[int]) -> List[Stock]:
+    return Stock.query \
+        .filter(Stock.offerId.in_(offer_ids)) \
+        .all()

@@ -26,21 +26,21 @@ class TiteLiveThingDescriptions(LocalProvider):
         all_zips = get_files_to_process_from_titelive_ftp(DESCRIPTION_FOLDER_NAME_TITELIVE, DATE_REGEXP)
 
         self.zips = self.get_remaining_files_to_check(all_zips)
-        self.description_zipinfos = None
+        self.description_zip_infos = None
         self.zip_file = None
         self.date_modified = None
 
     def __next__(self) -> List[ProvidableInfo]:
-        if self.description_zipinfos is None:
+        if self.description_zip_infos is None:
             self.open_next_file()
 
         try:
-            self.description_zipinfo = next(self.description_zipinfos)
+            self.description_zip_info = next(self.description_zip_infos)
         except StopIteration:
             self.open_next_file()
-            self.description_zipinfo = next(self.description_zipinfos)
+            self.description_zip_info = next(self.description_zip_infos)
 
-        path = PurePath(self.description_zipinfo.filename)
+        path = PurePath(self.description_zip_info.filename)
         product_providable_info = self.create_providable_info(Product,
                                                               path.name.split('_', 1)[0],
                                                               self.date_modified)
@@ -48,7 +48,7 @@ class TiteLiveThingDescriptions(LocalProvider):
         return [product_providable_info]
 
     def fill_object_attributes(self, product: Product):
-        with self.zip_file.open(self.description_zipinfo) as f:
+        with self.zip_file.open(self.description_zip_info) as f:
             product.description = f.read().decode('iso-8859-1')
 
     def open_next_file(self):
@@ -61,7 +61,7 @@ class TiteLiveThingDescriptions(LocalProvider):
         self.log_provider_event(LocalProviderEventType.SyncPartStart,
                                 get_date_from_filename(self.zip_file, DATE_REGEXP))
 
-        self.description_zipinfos = self.get_description_files_from_zip_info()
+        self.description_zip_infos = self.get_description_files_from_zip_info()
 
         self.date_modified = read_description_date(str(get_date_from_filename(self.zip_file, DATE_REGEXP)))
 
