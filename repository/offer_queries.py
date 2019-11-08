@@ -79,7 +79,8 @@ def _order_by_occurs_soon_or_is_thing_then_randomize():
 
 
 def get_active_offers(departement_codes=None, offer_id=None, limit=None,
-                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize, seed_number=None, user=None):
+                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize, seed_number=None, user=None,
+                      pagination_params=None):
     if seed_number:
         sql = text(f'SET SEED TO {seed_number}')
         db.session.execute(sql)

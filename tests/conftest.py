@@ -71,7 +71,7 @@ def mocked_mail(f):
     return decorated_function
 
 
-def clean_database(f):
+def clean_database(f: object) -> object:
     @wraps(f)
     def decorated_function(*args, **kwargs):
         db.session.rollback()

@@ -19,6 +19,7 @@ from validation.recommendations import check_distance_is_digit, \
 
 MAX_OF_MAX_DISTANCE = "20000"
 
+
 def give_requested_recommendation_to_user(user, offer_id, mediation_id):
     recommendation = None
 
@@ -34,7 +35,7 @@ def give_requested_recommendation_to_user(user, offer_id, mediation_id):
     return recommendation
 
 
-def create_recommendations_for_discovery(limit=3, user=None):
+def create_recommendations_for_discovery(limit=3, user=None, pagination_params=None):
     recommendations = []
     tuto_mediations_by_index = {}
 
@@ -47,17 +48,14 @@ def create_recommendations_for_discovery(limit=3, user=None):
                                                                      limit=max_tuto_index)
 
     inserted_tuto_mediations = 0
-    offers = get_offers_for_recommendations_discovery(
-        limit,
-        user=user
-    )
+    offers = get_offers_for_recommendations_discovery(limit=limit, user=user, pagination_params=pagination_params)
 
     for (index, offer) in enumerate(offers):
         while read_recommendations_count + index + inserted_tuto_mediations \
                 in tuto_mediations_by_index:
             tuto_mediation_index = read_recommendations_count \
-                + index \
-                + inserted_tuto_mediations
+                                   + index \
+                                   + inserted_tuto_mediations
             _create_tuto_mediation_if_non_existent_for_user(
                 user,
                 tuto_mediations_by_index[tuto_mediation_index]
@@ -69,9 +67,8 @@ def create_recommendations_for_discovery(limit=3, user=None):
 
 
 def _create_tuto_mediation_if_non_existent_for_user(user: User, tuto_mediation: Mediation):
-
-    already_existing_tuto_recommendation = Recommendation.query\
-        .filter_by(mediation=tuto_mediation, user=user)\
+    already_existing_tuto_recommendation = Recommendation.query \
+        .filter_by(mediation=tuto_mediation, user=user) \
         .first()
     if already_existing_tuto_recommendation:
         return
@@ -82,9 +79,10 @@ def _create_tuto_mediation_if_non_existent_for_user(user: User, tuto_mediation: 
     recommendation.validUntilDate = datetime.utcnow() + timedelta(weeks=2)
     PcObject.save(recommendation)
 
+
 def _create_recommendation_from_ids(user, offer_id, mediation_id=None):
     mediation = None
-#    offer = None
+    #    offer = None
 
     if mediation_id:
         mediation = mediation_queries.find_by_id(mediation_id)

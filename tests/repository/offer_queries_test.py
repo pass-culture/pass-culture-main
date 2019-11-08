@@ -1199,21 +1199,17 @@ class GetActiveOffersTest:
 
         seed_number = 0.5
         offers_1 = get_active_offers(departement_codes=['00'], offer_id=None,
-                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
-                                     seed_number=seed_number)
+                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize, seed_number=seed_number)
 
         offers_2 = get_active_offers(departement_codes=['00'], offer_id=None,
-                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
-                                     seed_number=seed_number)
+                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize, seed_number=seed_number)
 
         offers_3 = get_active_offers(departement_codes=['00'], offer_id=None,
-                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
-                                     seed_number=seed_number)
+                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize, seed_number=seed_number)
 
         # When
         offers_4 = get_active_offers(departement_codes=['00'], offer_id=None,
-                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
-                                     seed_number=seed_number)
+                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize, seed_number=seed_number)
 
         # Then
         assert offers_1 == offers_4
