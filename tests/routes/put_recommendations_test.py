@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from unittest.mock import patch
 
 from models import PcObject
 from models.db import db
@@ -967,7 +968,8 @@ class Put:
             assert recommendation_response['bookings'][0]['id'] == humanize(booking_id)
 
         @clean_database
-        def when_user_arrives_for_the_first_time(self, app):
+        @patch('routes.recommendations.create_recommendations_for_discovery')
+        def when_offers_are_paginated(self, create_recommendations_for_discovery, app):
             # given
             user = create_user(departement_code='93', can_book_free_offers=True, is_admin=False)
             offerer = create_offerer()
@@ -977,14 +979,12 @@ class Put:
             booking = create_booking(user, stock, venue)
             create_mediation(offer)
             PcObject.save(booking)
-            booking_id = booking.id
 
             # when
-            response = TestClient(app.test_client()).with_auth(user.email) \
-                .put(RECOMMENDATION_URL, json={'readRecommendations': []})
+            TestClient(app.test_client()).with_auth(user.email) \
+                .put(RECOMMENDATION_URL + '?page=1&seed=0.5', json={'readRecommendations': []})
 
             # then
-            assert response.status_code == 200
-            recommendation_response = response.json[0]
-            assert 'bookings' in recommendation_response
-            assert recommendation_response['bookings'][0]['id'] == humanize(booking_id)
+            args = create_recommendations_for_discovery.call_args
+            assert args[1]['limit'] == 30
+            assert args[1]['pagination_params'] == {'page': 1, 'seed': 0.5}

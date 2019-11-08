@@ -89,11 +89,15 @@ def put_recommendations():
         offer_id,
         mediation_id
     )
-
     logger.debug(lambda: '(special) requested_recommendation %s' %
                          requested_recommendation)
 
-    created_recommendations = create_recommendations_for_discovery(limit=BLOB_SIZE, user=current_user)
+    page = int(request.args.get('page')) if 'page' in request.args else None
+    seed = float(request.args.get('seed')) if 'seed' in request.args else None
+    pagination_params = {'page': page, 'seed': seed}
+    created_recommendations = create_recommendations_for_discovery(limit=BLOB_SIZE,
+                                                                   user=current_user,
+                                                                   pagination_params=pagination_params)
     logger.debug(lambda: '(new recos)' + str([(reco, reco.mediation, reco.dateRead)
                                               for reco in created_recommendations]))
     logger.debug(lambda: '(new reco) count %i', len(created_recommendations))

@@ -95,7 +95,7 @@ def get_active_offers(departement_codes=None, offer_id=None, limit=None,
     if limit:
         if page:
             query = query\
-                .offset((page - 1) * limit)
+                .offset((int(page) - 1) * limit)
         query = query \
             .limit(limit)
 
