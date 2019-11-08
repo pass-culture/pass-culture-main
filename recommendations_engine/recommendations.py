@@ -1,22 +1,21 @@
-from datetime import datetime, timedelta
 import random
+from datetime import datetime, timedelta
 
 import dateutil.parser
-from sqlalchemy import func
 
 from domain.types import get_active_product_type_values_from_sublabels
-from models import ApiErrors, Recommendation, Offer, Mediation, PcObject, User
+from models import Recommendation, Mediation, PcObject, User
 from models.db import db
 from recommendations_engine import get_offers_for_recommendations_discovery
 from repository import mediation_queries
 from repository.mediation_queries import get_all_tuto_mediations
 from repository.offer_queries import get_offers_for_recommendations_search, find_searchable_offer
 from repository.recommendation_queries import count_read_recommendations_for_user, \
-                                              find_recommendation_already_created_on_discovery
-from validation.recommendations import check_distance_is_digit, \
-                                       check_latitude_is_defined, \
-                                       check_longitude_is_defined
+    find_recommendation_already_created_on_discovery
 from utils.logger import logger
+from validation.recommendations import check_distance_is_digit, \
+    check_latitude_is_defined, \
+    check_longitude_is_defined
 
 MAX_OF_MAX_DISTANCE = "20000"
 

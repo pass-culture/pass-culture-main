@@ -97,8 +97,8 @@ def get_active_offers(departement_codes=None, offer_id=None, limit=None,
 
 
 def get_active_offers_ids_query(departement_codes=['00'], offer_id=None, user=None):
-    active_offers_query = Offer.query.distinct(Offer.id) \
-        .order_by(Offer.id)
+    active_offers_query = Offer.query.distinct(Offer.id)
+
     if offer_id is not None:
         active_offers_query = active_offers_query.filter(Offer.id == offer_id)
     logger.debug(lambda: '(reco) all offers count {}'.format(active_offers_query.count()))
@@ -230,7 +230,6 @@ def _offer_has_stocks_compatible_with_days_intervals(days_intervals):
 
 
 def get_offers_for_recommendations_search(
-        date=None,
         page=1,
         page_size=10,
         keywords_string=None,

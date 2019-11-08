@@ -1,7 +1,6 @@
 import random
 from datetime import datetime, timedelta
 
-import pytest
 from freezegun import freeze_time
 
 from models import Offer, PcObject, Stock, Product
@@ -547,385 +546,184 @@ class GetOffersForRecommendationsSearchTest:
         assert offer_with_no_stock not in search_result_offers
 
 
-class GetActiveOffersTest:
+class FindActivationOffersTest:
     @clean_database
-    def test_when_departement_code_00(app):
-        # Given
+    def test_find_activation_offers_returns_activation_offers_in_given_department(self, app):
+        # given
         offerer = create_offerer()
-        venue_34 = create_venue(offerer, postal_code='34000', departement_code='34', siret=offerer.siren + '11111')
-        venue_93 = create_venue(offerer, postal_code='93000', departement_code='93', siret=offerer.siren + '22222')
-        venue_75 = create_venue(offerer, postal_code='75000', departement_code='75', siret=offerer.siren + '33333')
-        offer_34 = create_offer_with_thing_product(venue_34)
-        offer_93 = create_offer_with_thing_product(venue_93)
-        offer_75 = create_offer_with_thing_product(venue_75)
-        stock_34 = create_stock_from_offer(offer_34)
-        stock_93 = create_stock_from_offer(offer_93)
-        stock_75 = create_stock_from_offer(offer_75)
-        user = create_user(departement_code='00')
+        venue1 = create_venue(offerer, siret=offerer.siren + '12345', postal_code='34000', departement_code='34')
+        venue2 = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
+        offer1 = create_offer_with_event_product(venue1, event_type=EventType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue1, event_type=EventType.SPECTACLE_VIVANT)
+        offer3 = create_offer_with_event_product(venue2, event_type=EventType.ACTIVATION)
+        stock1 = create_stock_from_offer(offer1)
+        stock2 = create_stock_from_offer(offer2)
+        stock3 = create_stock_from_offer(offer3)
+        PcObject.save(stock1, stock2, stock3)
 
-        PcObject.save(user, stock_34, stock_93, stock_75)
+        # when
+        offers = find_activation_offers('34').all()
 
-        # When
-        offers = get_active_offers(departement_codes=['00'], offer_id=None)
-
-        # Then
-        assert offer_34 in offers
-        assert offer_93 in offers
-        assert offer_75 in offers
-
-    @clean_database
-    def test_only_returns_both_EventType_and_ThingType(app):
-        # Given
-        user = create_user(departement_code='93')
-        offerer = create_offerer()
-        venue = create_venue(offerer, departement_code='93')
-        offer1 = create_offer_with_thing_product(venue, thumb_count=1)
-        offer2 = create_offer_with_event_product(venue, thumb_count=1)
-        now = datetime.utcnow()
-        event_occurrence = create_event_occurrence(offer2, beginning_datetime=now + timedelta(hours=72),
-                                                   end_datetime=now + timedelta(hours=74))
-        mediation = create_mediation(offer2)
-        stock1 = create_stock_from_offer(offer1, price=0)
-        stock2 = create_stock_from_event_occurrence(event_occurrence, price=0, available=10,
-                                                    booking_limit_date=now + timedelta(days=2))
-        PcObject.save(user, stock1, stock2, mediation)
-
-        # When
-        offers = get_active_offers(departement_codes=['93'])
-        # Then
-        assert len(offers) == 2
-
-    @clean_database
-    def test_should_not_return_activation_event(app):
-        # Given
-        offerer = create_offerer()
-        venue_93 = create_venue(offerer, postal_code='93000', departement_code='93', siret=offerer.siren + '33333')
-        offer_93 = create_offer_with_event_product(venue_93, thumb_count=1)
-        offer_activation_93 = create_offer_with_event_product(venue_93, event_type=EventType.ACTIVATION,
-                                                              thumb_count=1)
-        event_occurrence_93 = create_event_occurrence(offer_93)
-        event_occurrence_activation_93 = create_event_occurrence(offer_activation_93)
-        stock_93 = create_stock_from_event_occurrence(event_occurrence_93)
-        stock_activation_93 = create_stock_from_event_occurrence(event_occurrence_activation_93)
-        user = create_user(departement_code='00')
-
-        PcObject.save(user, stock_93, stock_activation_93)
-
-        # When
-        offers = get_active_offers(departement_codes=['00'], offer_id=None)
-
-        # Then
-        assert offer_93 in offers
-        assert offer_activation_93 not in offers
-
-    @clean_database
-    def test_should_not_return_activation_thing(app):
-        # Given
-        offerer = create_offerer()
-        venue_93 = create_venue(offerer, postal_code='93000', departement_code='93', siret=offerer.siren + '33333')
-        thing_93 = create_offer_with_thing_product(venue_93)
-        thing_activation_93 = create_offer_with_thing_product(venue_93, thing_type=ThingType.ACTIVATION)
-        stock_93 = create_stock_from_offer(thing_93)
-        stock_activation_93 = create_stock_from_offer(thing_activation_93)
-        user = create_user(departement_code='00')
-
-        PcObject.save(user, stock_93, stock_activation_93)
-
-        # When
-        offers = get_active_offers(departement_codes=['00'], offer_id=None)
-
-        # Then
-        assert thing_93 in offers
-        assert thing_activation_93 not in offers
-
-    @clean_database
-    def test_should_return_offers_with_stock(app):
-        # Given
-        product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
-        offerer = create_offerer()
-        venue = create_venue(offerer, postal_code='34000', departement_code='34')
-        offer = create_offer_with_thing_product(venue, product)
-        stock = create_stock_from_offer(offer, available=2)
-        booking = create_booking(create_user(), stock, venue=venue, quantity=2, is_cancelled=True)
-        PcObject.save(booking)
-
-        # When
-        offers = get_active_offers(departement_codes=['00'], offer_id=None)
-
-        # Then
+        # then
         assert len(offers) == 1
 
     @clean_database
-    @pytest.mark.standalone
-    def test_should_return_offers_with_mediations_first(app):
-        # Given
+    def test_find_activation_offers_returns_activation_offers_if_offer_is_national(self, app):
+        # given
         offerer = create_offerer()
-        venue = create_venue(offerer, postal_code='34000', departement_code='34')
+        venue1 = create_venue(offerer, siret=offerer.siren + '12345', postal_code='34000', departement_code='34')
+        venue2 = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
+        offer1 = create_offer_with_event_product(venue1, event_type=EventType.ACTIVATION)
+        offer2 = create_offer_with_thing_product(venue1, thing_type=ThingType.AUDIOVISUEL)
+        offer3 = create_offer_with_event_product(venue2, event_type=EventType.ACTIVATION, is_national=True)
+        offer4 = create_offer_with_event_product(venue2, event_type=EventType.ACTIVATION, is_national=True)
+        stock1 = create_stock_from_offer(offer1)
+        stock2 = create_stock_from_offer(offer2)
+        stock3 = create_stock_from_offer(offer3)
+        stock4 = create_stock_from_offer(offer4)
+        PcObject.save(stock1, stock2, stock3, stock4)
 
-        stock1 = create_stock_with_thing_offer(offerer, venue, name='thing_with_mediation')
-        mediation = create_mediation(stock1.offer)
+        # when
+        offers = find_activation_offers('34').all()
 
-        stock2 = create_stock_with_thing_offer(offerer, venue, name='thing_without_mediation')
-
-        PcObject.save(stock2, mediation)
-        PcObject.save(stock1)
-
-        # When
-        offers = get_active_offers(departement_codes=['00'], offer_id=None)
-
-        # Then
-        assert len(offers) == 2
-        assert offers[0].name == 'thing_with_mediation'
-        assert offers[1].name == 'thing_without_mediation'
-
-    @clean_database
-    @pytest.mark.standalone
-    def test_should_return_offers_that_occur_in_less_than_10_days_and_things_first(app):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer, postal_code='34000', departement_code='34')
-
-        stock1 = create_stock_with_thing_offer(offerer, venue, name='thing')
-        stock2 = create_stock_with_event_offer(offerer,
-                                               venue,
-                                               beginning_datetime=datetime.utcnow() + timedelta(days=4),
-                                               end_datetime=datetime.utcnow() + timedelta(days=4, hours=2),
-                                               name='event_occurs_soon',
-                                               thumb_count=1)
-        stock3 = create_stock_with_event_offer(offerer,
-                                               venue,
-                                               beginning_datetime=datetime.utcnow() + timedelta(days=11),
-                                               end_datetime=datetime.utcnow() + timedelta(days=11, hours=2),
-                                               name='event_occurs_later',
-                                               thumb_count=1)
-
-        PcObject.save(stock3)
-        PcObject.save(stock2)
-        PcObject.save(stock1)
-
-        # When
-        offers = get_active_offers(departement_codes=['00'], offer_id=None)
-
-        # Then
+        # then
         assert len(offers) == 3
-        assert (offers[0].name == 'event_occurs_soon'
-                and offers[1].name == 'thing') \
-               or (offers[1].name == 'event_occurs_soon'
-                   and offers[0].name == 'thing')
-        assert offers[2].name == 'event_occurs_later'
 
     @clean_database
-    @pytest.mark.standalone
-    def test_should_return_offers_with_varying_types(app):
-        # Given
+    def test_find_activation_offers_returns_activation_offers_in_all_ile_de_france_if_department_is_93(self, app):
+        # given
         offerer = create_offerer()
-        venue = create_venue(offerer, postal_code='34000', departement_code='34')
+        venue1 = create_venue(offerer, siret=offerer.siren + '12345', postal_code='34000', departement_code='34')
+        venue2 = create_venue(offerer, siret=offerer.siren + '67890', postal_code='75000', departement_code='75')
+        venue3 = create_venue(offerer, siret=offerer.siren + '54321', postal_code='78000', departement_code='78')
+        offer1 = create_offer_with_event_product(venue1, event_type=EventType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue2, event_type=EventType.ACTIVATION)
+        offer3 = create_offer_with_event_product(venue3, event_type=EventType.ACTIVATION)
+        stock1 = create_stock_from_offer(offer1)
+        stock2 = create_stock_from_offer(offer2)
+        stock3 = create_stock_from_offer(offer3)
+        PcObject.save(stock1, stock2, stock3)
 
-        stock1 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
-        stock2 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO,
-                                               url='http://example.com')
-        stock3 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
-        stock4 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
-        stock5 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.AUDIOVISUEL)
-        stock6 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX)
+        # when
+        offers = find_activation_offers('93').all()
 
-        PcObject.save(stock1, stock2, stock3, stock4, stock5, stock6)
-
-        def first_four_offers_have_different_type_and_onlineness(offers):
-            return len(set([o.type + (o.url or '')
-                            for o in offers[:4]])) == 4
-
-        # When
-        offers = get_active_offers(departement_codes=['00'], offer_id=None)
-
-        # Then
-        assert len(offers) == 6
-        assert first_four_offers_have_different_type_and_onlineness(offers)
+        # then
+        assert len(offers) == 2
 
     @clean_database
-    @pytest.mark.standalone
-    def test_should_not_return_offers_with_no_stock(app):
+    def test_find_activation_offers_returns_activation_offers_with_available_stocks(self, app):
+        # given
+        offerer = create_offerer()
+        venue1 = create_venue(offerer, siret=offerer.siren + '12345', postal_code='93000', departement_code='93')
+        venue2 = create_venue(offerer, siret=offerer.siren + '67890', postal_code='93000', departement_code='93')
+        venue3 = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
+        offer1 = create_offer_with_event_product(venue1, event_type=EventType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue2, event_type=EventType.ACTIVATION)
+        offer3 = create_offer_with_event_product(venue3, event_type=EventType.ACTIVATION)
+        offer4 = create_offer_with_event_product(venue3, event_type=EventType.ACTIVATION)
+        stock1 = create_stock_from_offer(offer1, price=0, available=0)
+        stock2 = create_stock_from_offer(offer2, price=0, available=10)
+        stock3 = create_stock_from_offer(offer3, price=0, available=1)
+        booking = create_booking(create_user(), stock3, venue=venue3, quantity=1)
+        PcObject.save(stock1, stock2, stock3, booking, offer4)
+
+        # when
+        offers = find_activation_offers('93').all()
+
+        # then
+        assert len(offers) == 1
+
+    @clean_database
+    def test_find_activation_offers_returns_activation_offers_with_future_booking_limit_datetime(self, app):
+        # given
+        now = datetime.utcnow()
+        five_days_ago = now - timedelta(days=5)
+        next_week = now + timedelta(days=7)
+        offerer = create_offerer()
+        venue1 = create_venue(offerer, siret=offerer.siren + '12345', postal_code='93000', departement_code='93')
+        venue2 = create_venue(offerer, siret=offerer.siren + '67890', postal_code='93000', departement_code='93')
+        venue3 = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
+        offer1 = create_offer_with_event_product(venue1, event_type=EventType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue2, event_type=EventType.ACTIVATION)
+        offer3 = create_offer_with_event_product(venue3, event_type=EventType.ACTIVATION)
+        stock1 = create_stock_from_offer(offer1, price=0, booking_limit_datetime=five_days_ago)
+        stock2 = create_stock_from_offer(offer2, price=0, booking_limit_datetime=next_week)
+        stock3 = create_stock_from_offer(offer3, price=0, booking_limit_datetime=None)
+        PcObject.save(stock1, stock2, stock3)
+
+        # when
+        offers = find_activation_offers('93').all()
+
+        # then
+        assert offer1 not in offers
+        assert offer2 in offers
+        assert offer3 in offers
+
+
+class FindOffersTest:
+    @clean_database
+    def test_find_offers_with_filter_parameters_with_partial_keywords_and_filter_by_venue(self, app):
+        user = create_user(email='offerer@email.com')
+        offerer1 = create_offerer(siren='123456789')
+        offerer2 = create_offerer(siren='987654321')
+        ko_offerer3 = create_offerer(siren='123456780')
+        user_offerer1 = create_user_offerer(user, offerer1)
+        user_offerer2 = create_user_offerer(user, offerer2)
+
+        ok_product_event = create_product_with_event_type(event_name='Rencontre avec Jacques Martin')
+        ok_product_thing = create_product_with_thing_type(thing_name='Rencontrez Jacques Chirac')
+        event_product2 = create_product_with_event_type(event_name='Concert de contrebasse')
+        thing1_product = create_product_with_thing_type(thing_name='Jacques la fripouille')
+        thing2_product = create_product_with_thing_type(thing_name='Belle du Seigneur')
+        offerer = create_offerer()
+        venue1 = create_venue(offerer1, name='Bataclan', city='Paris', siret=offerer.siren + '12345')
+        venue2 = create_venue(offerer2, name='Librairie la Rencontre', city='Saint Denis',
+                              siret=offerer.siren + '54321')
+        ko_venue3 = create_venue(ko_offerer3, name='Une librairie du méchant concurrent gripsou', city='Saint Denis',
+                                 siret=ko_offerer3.siren + '54321')
+        ok_offer1 = create_offer_with_event_product(venue1, ok_product_event)
+        ok_offer2 = create_offer_with_thing_product(venue1, ok_product_thing)
+        ko_offer2 = create_offer_with_event_product(venue1, event_product2)
+        ko_offer3 = create_offer_with_thing_product(ko_venue3, thing1_product)
+        ko_offer4 = create_offer_with_thing_product(venue2, thing2_product)
+        PcObject.save(
+            user_offerer1, user_offerer2, ko_offerer3,
+            ok_offer1, ko_offer2, ko_offer3, ko_offer4
+        )
+
+        # when
+        offers = find_offers_with_filter_parameters(
+            user,
+            venue_id=venue1.id,
+            keywords_string='Jacq Rencon'
+        ).all()
+
+        # then
+        offers_id = [offer.id for offer in offers]
+        assert ok_offer1.id in offers_id
+        assert ok_offer2.id in offers_id
+        assert ko_offer2.id not in offers_id
+        assert ko_offer3.id not in offers_id
+        assert ko_offer4.id not in offers_id
+
+    @clean_database
+    def test_find_offers_by_venue_id_return_offers_matching_venue_id(self, app):
         # Given
         product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
         offer = create_offer_with_thing_product(venue, product)
-        stock = create_stock_from_offer(offer, available=2, price=0)
-        user = create_user()
-        booking1 = create_booking(user, stock, venue=venue, quantity=2, is_cancelled=True)
-        booking2 = create_booking(user, stock, venue=venue, quantity=2)
-        PcObject.save(booking1, booking2)
+        PcObject.save(offer)
 
         # When
-        offers = get_active_offers(departement_codes=['00'], offer_id=None)
+        offers = find_offers_by_venue_id(venue.id)
 
         # Then
-        assert len(offers) == 0
+        assert len(offers) == 1
+        assert offers[0].venueId == venue.id
 
 
-@clean_database
-def test_find_activation_offers_returns_activation_offers_in_given_departement(app):
-    # given
-    offerer = create_offerer()
-    venue1 = create_venue(offerer, siret=offerer.siren + '12345', postal_code='34000', departement_code='34')
-    venue2 = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
-    offer1 = create_offer_with_event_product(venue1, event_type=EventType.ACTIVATION)
-    offer2 = create_offer_with_event_product(venue1, event_type=EventType.SPECTACLE_VIVANT)
-    offer3 = create_offer_with_event_product(venue2, event_type=EventType.ACTIVATION)
-    stock1 = create_stock_from_offer(offer1)
-    stock2 = create_stock_from_offer(offer2)
-    stock3 = create_stock_from_offer(offer3)
-    PcObject.save(stock1, stock2, stock3)
-
-    # when
-    offers = find_activation_offers('34').all()
-
-    # then
-    assert len(offers) == 1
-
-
-@clean_database
-def test_find_activation_offers_returns_activation_offers_if_offer_is_national(app):
-    # given
-    offerer = create_offerer()
-    venue1 = create_venue(offerer, siret=offerer.siren + '12345', postal_code='34000', departement_code='34')
-    venue2 = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
-    offer1 = create_offer_with_event_product(venue1, event_type=EventType.ACTIVATION)
-    offer2 = create_offer_with_thing_product(venue1, thing_type=ThingType.AUDIOVISUEL)
-    offer3 = create_offer_with_event_product(venue2, event_type=EventType.ACTIVATION, is_national=True)
-    offer4 = create_offer_with_event_product(venue2, event_type=EventType.ACTIVATION, is_national=True)
-    stock1 = create_stock_from_offer(offer1)
-    stock2 = create_stock_from_offer(offer2)
-    stock3 = create_stock_from_offer(offer3)
-    stock4 = create_stock_from_offer(offer4)
-    PcObject.save(stock1, stock2, stock3, stock4)
-
-    # when
-    offers = find_activation_offers('34').all()
-
-    # then
-    assert len(offers) == 3
-
-
-@clean_database
-def test_find_activation_offers_returns_activation_offers_in_all_ile_de_france_if_departement_is_93(app):
-    # given
-    offerer = create_offerer()
-    venue1 = create_venue(offerer, siret=offerer.siren + '12345', postal_code='34000', departement_code='34')
-    venue2 = create_venue(offerer, siret=offerer.siren + '67890', postal_code='75000', departement_code='75')
-    venue3 = create_venue(offerer, siret=offerer.siren + '54321', postal_code='78000', departement_code='78')
-    offer1 = create_offer_with_event_product(venue1, event_type=EventType.ACTIVATION)
-    offer2 = create_offer_with_event_product(venue2, event_type=EventType.ACTIVATION)
-    offer3 = create_offer_with_event_product(venue3, event_type=EventType.ACTIVATION)
-    stock1 = create_stock_from_offer(offer1)
-    stock2 = create_stock_from_offer(offer2)
-    stock3 = create_stock_from_offer(offer3)
-    PcObject.save(stock1, stock2, stock3)
-
-    # when
-    offers = find_activation_offers('93').all()
-
-    # then
-    assert len(offers) == 2
-
-
-@clean_database
-def test_find_activation_offers_returns_activation_offers_with_available_stocks(app):
-    # given
-    offerer = create_offerer()
-    venue1 = create_venue(offerer, siret=offerer.siren + '12345', postal_code='93000', departement_code='93')
-    venue2 = create_venue(offerer, siret=offerer.siren + '67890', postal_code='93000', departement_code='93')
-    venue3 = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
-    offer1 = create_offer_with_event_product(venue1, event_type=EventType.ACTIVATION)
-    offer2 = create_offer_with_event_product(venue2, event_type=EventType.ACTIVATION)
-    offer3 = create_offer_with_event_product(venue3, event_type=EventType.ACTIVATION)
-    offer4 = create_offer_with_event_product(venue3, event_type=EventType.ACTIVATION)
-    stock1 = create_stock_from_offer(offer1, price=0, available=0)
-    stock2 = create_stock_from_offer(offer2, price=0, available=10)
-    stock3 = create_stock_from_offer(offer3, price=0, available=1)
-    booking = create_booking(create_user(), stock3, venue=venue3, quantity=1)
-    PcObject.save(stock1, stock2, stock3, booking, offer4)
-
-    # when
-    offers = find_activation_offers('93').all()
-
-    # then
-    assert len(offers) == 1
-
-
-@clean_database
-def test_find_activation_offers_returns_activation_offers_with_future_booking_limit_datetime(app):
-    # given
-    now = datetime.utcnow()
-    five_days_ago = now - timedelta(days=5)
-    next_week = now + timedelta(days=7)
-    offerer = create_offerer()
-    venue1 = create_venue(offerer, siret=offerer.siren + '12345', postal_code='93000', departement_code='93')
-    venue2 = create_venue(offerer, siret=offerer.siren + '67890', postal_code='93000', departement_code='93')
-    venue3 = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
-    offer1 = create_offer_with_event_product(venue1, event_type=EventType.ACTIVATION)
-    offer2 = create_offer_with_event_product(venue2, event_type=EventType.ACTIVATION)
-    offer3 = create_offer_with_event_product(venue3, event_type=EventType.ACTIVATION)
-    stock1 = create_stock_from_offer(offer1, price=0, booking_limit_datetime=five_days_ago)
-    stock2 = create_stock_from_offer(offer2, price=0, booking_limit_datetime=next_week)
-    stock3 = create_stock_from_offer(offer3, price=0, booking_limit_datetime=None)
-    PcObject.save(stock1, stock2, stock3)
-
-    # when
-    offers = find_activation_offers('93').all()
-
-    # then
-    assert offer1 not in offers
-    assert offer2 in offers
-    assert offer3 in offers
-
-
-@clean_database
-def test_find_offers_with_filter_parameters_with_partial_keywords_and_filter_by_venue(app):
-    user = create_user(email='offerer@email.com')
-    offerer1 = create_offerer(siren='123456789')
-    offerer2 = create_offerer(siren='987654321')
-    ko_offerer3 = create_offerer(siren='123456780')
-    user_offerer1 = create_user_offerer(user, offerer1)
-    user_offerer2 = create_user_offerer(user, offerer2)
-
-    ok_product_event = create_product_with_event_type(event_name='Rencontre avec Jacques Martin')
-    ok_product_thing = create_product_with_thing_type(thing_name='Rencontrez Jacques Chirac')
-    event_product2 = create_product_with_event_type(event_name='Concert de contrebasse')
-    thing1_product = create_product_with_thing_type(thing_name='Jacques la fripouille')
-    thing2_product = create_product_with_thing_type(thing_name='Belle du Seigneur')
-    offerer = create_offerer()
-    venue1 = create_venue(offerer1, name='Bataclan', city='Paris', siret=offerer.siren + '12345')
-    venue2 = create_venue(offerer2, name='Librairie la Rencontre', city='Saint Denis', siret=offerer.siren + '54321')
-    ko_venue3 = create_venue(ko_offerer3, name='Une librairie du méchant concurrent gripsou', city='Saint Denis',
-                             siret=ko_offerer3.siren + '54321')
-    ok_offer1 = create_offer_with_event_product(venue1, ok_product_event)
-    ok_offer2 = create_offer_with_thing_product(venue1, ok_product_thing)
-    ko_offer2 = create_offer_with_event_product(venue1, event_product2)
-    ko_offer3 = create_offer_with_thing_product(ko_venue3, thing1_product)
-    ko_offer4 = create_offer_with_thing_product(venue2, thing2_product)
-    PcObject.save(
-        user_offerer1, user_offerer2, ko_offerer3,
-        ok_offer1, ko_offer2, ko_offer3, ko_offer4
-    )
-
-    # when
-    offers = find_offers_with_filter_parameters(
-        user,
-        venue_id=venue1.id,
-        keywords_string='Jacq Rencon'
-    ).all()
-
-    # then
-    offers_id = [offer.id for offer in offers]
-    assert ok_offer1.id in offers_id
-    assert ok_offer2.id in offers_id
-    assert ko_offer2.id not in offers_id
-    assert ko_offer3.id not in offers_id
-    assert ko_offer4.id not in offers_id
-
-
-class hasRemainingStockTest:
+class HasRemainingStockTest:
     @clean_database
     def test_should_return_0_offer_when_there_is_no_stock(self, app):
         # Given
@@ -1075,24 +873,6 @@ class hasRemainingStockTest:
         assert offers_count == 1
 
 
-@clean_database
-def test_find_offers_by_venue_id_return_offers_matching_venue_id(app):
-    # Given
-    product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
-    offerer = create_offerer()
-    venue = create_venue(offerer, postal_code='34000', departement_code='34')
-    offer = create_offer_with_thing_product(venue, product)
-    PcObject.save(offer)
-
-    # When
-    offers = find_offers_by_venue_id(venue.id)
-
-    # Then
-    assert len(offers) == 1
-    assert offers[0].venueId == venue.id
-
-
-@pytest.mark.standalone
 class BaseScoreTest:
 
     @clean_database
@@ -1121,10 +901,201 @@ class BaseScoreTest:
         assert offers == [offer2, offer1]
 
 
-@pytest.mark.standalone
 class GetActiveOffersTest:
     @clean_database
-    def test_with_no_order_by_should_return_same_number_of_recos(self, app):
+    def test_when_department_code_00(self, app):
+        # Given
+        offerer = create_offerer()
+        venue_34 = create_venue(offerer, postal_code='34000', departement_code='34', siret=offerer.siren + '11111')
+        venue_93 = create_venue(offerer, postal_code='93000', departement_code='93', siret=offerer.siren + '22222')
+        venue_75 = create_venue(offerer, postal_code='75000', departement_code='75', siret=offerer.siren + '33333')
+        offer_34 = create_offer_with_thing_product(venue_34)
+        offer_93 = create_offer_with_thing_product(venue_93)
+        offer_75 = create_offer_with_thing_product(venue_75)
+        stock_34 = create_stock_from_offer(offer_34)
+        stock_93 = create_stock_from_offer(offer_93)
+        stock_75 = create_stock_from_offer(offer_75)
+        create_mediation(stock_34.offer)
+        create_mediation(stock_93.offer)
+        create_mediation(stock_75.offer)
+
+        PcObject.save(stock_34, stock_93, stock_75)
+
+        # When
+        offers = get_active_offers(departement_codes=['00'], offer_id=None)
+
+        # Then
+        assert offer_34 in offers
+        assert offer_93 in offers
+        assert offer_75 in offers
+
+    @clean_database
+    def test_should_not_return_activation_event(self, app):
+        # Given
+        offerer = create_offerer()
+        venue_93 = create_venue(offerer, postal_code='93000', departement_code='93', siret=offerer.siren + '33333')
+        offer_93 = create_offer_with_event_product(venue_93, thumb_count=1)
+        offer_activation_93 = create_offer_with_event_product(venue_93, event_type=EventType.ACTIVATION,
+                                                              thumb_count=1)
+        stock_93 = create_stock_from_offer(offer_93)
+        stock_activation_93 = create_stock_from_offer(offer_activation_93)
+        create_mediation(stock_93.offer)
+        create_mediation(stock_activation_93.offer)
+
+        PcObject.save(stock_93, stock_activation_93)
+
+        # When
+        offers = get_active_offers(departement_codes=['00'], offer_id=None)
+
+        # Then
+        assert offer_93 in offers
+        assert offer_activation_93 not in offers
+
+    @clean_database
+    def test_should_not_return_activation_thing(self, app):
+        # Given
+        offerer = create_offerer()
+        venue_93 = create_venue(offerer, postal_code='93000', departement_code='93', siret=offerer.siren + '33333')
+        offer_93 = create_offer_with_thing_product(venue_93, thumb_count=1)
+        offer_activation_93 = create_offer_with_thing_product(venue_93, thing_type=ThingType.ACTIVATION,
+                                                              thumb_count=1)
+        stock_93 = create_stock_from_offer(offer_93)
+        stock_activation_93 = create_stock_from_offer(offer_activation_93)
+        create_mediation(stock_93.offer)
+        create_mediation(stock_activation_93.offer)
+
+        PcObject.save(stock_93, stock_activation_93)
+
+        # When
+        offers = get_active_offers(departement_codes=['00'], offer_id=None)
+
+        # Then
+        assert offer_93 in offers
+        assert offer_activation_93 not in offers
+
+    @clean_database
+    def test_should_return_offers_with_stock(self, app):
+        # Given
+        product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
+        offerer = create_offerer()
+        venue = create_venue(offerer, postal_code='34000', departement_code='34')
+        offer = create_offer_with_thing_product(venue, product)
+        stock = create_stock_from_offer(offer, available=2)
+        create_mediation(stock.offer)
+        PcObject.save(stock)
+
+        # When
+        offers = get_active_offers(departement_codes=['00'], offer_id=None)
+
+        # Then
+        assert len(offers) == 1
+
+    @clean_database
+    def test_should_return_offers_with_mediation_only(app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer, postal_code='34000', departement_code='34')
+        stock1 = create_stock_with_thing_offer(offerer, venue, name='thing_with_mediation')
+        stock2 = create_stock_with_thing_offer(offerer, venue, name='thing_without_mediation')
+        create_mediation(stock1.offer)
+        PcObject.save(stock1, stock2)
+
+        # When
+        offers = get_active_offers(departement_codes=['00'], offer_id=None)
+
+        # Then
+        assert len(offers) == 1
+        assert offers[0].name == 'thing_with_mediation'
+
+    @clean_database
+    def test_should_return_offers_that_occur_in_less_than_10_days_and_things_first(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer, postal_code='34000', departement_code='34')
+
+        stock1 = create_stock_with_thing_offer(offerer, venue, name='thing')
+        stock2 = create_stock_with_event_offer(offerer,
+                                               venue,
+                                               beginning_datetime=datetime.utcnow() + timedelta(days=4),
+                                               end_datetime=datetime.utcnow() + timedelta(days=4, hours=2),
+                                               name='event_occurs_soon',
+                                               thumb_count=1)
+        stock3 = create_stock_with_event_offer(offerer,
+                                               venue,
+                                               beginning_datetime=datetime.utcnow() + timedelta(days=11),
+                                               end_datetime=datetime.utcnow() + timedelta(days=11, hours=2),
+                                               name='event_occurs_later',
+                                               thumb_count=1)
+        create_mediation(stock1.offer)
+        create_mediation(stock2.offer)
+        create_mediation(stock3.offer)
+        PcObject.save(stock1, stock2, stock3)
+
+        # When
+        offers = get_active_offers(departement_codes=['00'], offer_id=None)
+
+        # Then
+        assert len(offers) == 3
+        assert (offers[0].name == 'event_occurs_soon'
+                and offers[1].name == 'thing') \
+               or (offers[1].name == 'event_occurs_soon'
+                   and offers[0].name == 'thing')
+        assert offers[2].name == 'event_occurs_later'
+
+    @clean_database
+    def test_should_return_offers_with_varying_types(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer, postal_code='34000', departement_code='34')
+        stock1 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
+        stock2 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.CINEMA_ABO,
+                                               url='http://example.com')
+        stock3 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
+        stock4 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
+        stock5 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.AUDIOVISUEL)
+        stock6 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX)
+        create_mediation(stock1.offer)
+        create_mediation(stock2.offer)
+        create_mediation(stock3.offer)
+        create_mediation(stock4.offer)
+        create_mediation(stock5.offer)
+        create_mediation(stock6.offer)
+        PcObject.save(stock1, stock2, stock3, stock4, stock5, stock6)
+
+        def first_four_offers_have_different_type_and_onlineness(offers):
+            return len(set([o.type + (o.url or '')
+                            for o in offers[:4]])) == 4
+
+        # When
+        offers = get_active_offers(departement_codes=['00'], offer_id=None)
+        print(offers)
+
+        # Then
+        assert len(offers) == 6
+        assert first_four_offers_have_different_type_and_onlineness(offers)
+
+    @clean_database
+    def test_should_not_return_offers_with_no_stock(self, app):
+        # Given
+        product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
+        offerer = create_offerer()
+        venue = create_venue(offerer, postal_code='34000', departement_code='34')
+        offer = create_offer_with_thing_product(venue, product)
+        stock = create_stock_from_offer(offer, available=2, price=0)
+        user = create_user()
+        booking1 = create_booking(user, stock, venue=venue, quantity=2, is_cancelled=True)
+        booking2 = create_booking(user, stock, venue=venue, quantity=2)
+        create_mediation(stock.offer)
+        PcObject.save(booking1, booking2)
+
+        # When
+        offers = get_active_offers(departement_codes=['00'], offer_id=None)
+
+        # Then
+        assert len(offers) == 0
+
+    @clean_database
+    def test_with_no_order_by_should_return_same_number_of_recommendation(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
