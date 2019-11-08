@@ -16,7 +16,7 @@ depends_on = None
 
 def upgrade():
     op.create_unique_constraint(
-        'unique_venue_provider', 'venue_provider', ['venueId', 'providerId']
+        'unique_venue_provider', 'venue_provider', ['venueId', 'providerId', 'venueIdAtOfferProvider']
     )
 
 

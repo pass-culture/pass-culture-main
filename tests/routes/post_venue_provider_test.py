@@ -85,7 +85,7 @@ class Post:
             venue_provider_data = {
                 'providerId': humanize(provider.id),
                 'venueId': humanize(venue.id),
-                'venueIdAtOfferProvider': '0987654321'
+                'venueIdAtOfferProvider': '1234567'
             }
 
             # when

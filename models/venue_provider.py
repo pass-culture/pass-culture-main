@@ -38,6 +38,7 @@ class VenueProvider(PcObject,
         UniqueConstraint(
             'venueId',
             'providerId',
+            'venueIdAtOfferProvider',
             name='unique_venue_provider',
         ),
     )

@@ -55,7 +55,7 @@ def test_nOffers_with_two_venue_providers_from_different_providers(app):
 
 
 @clean_database
-def test_raise_errors_if_venue_provider_already_exists(app):
+def test_raise_errors_if_venue_provider_already_exists_with_same_information(app):
     # given
     provider = activate_provider('TiteLiveStocks')
     offerer = create_offerer()
