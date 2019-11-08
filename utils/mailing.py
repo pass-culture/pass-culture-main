@@ -172,10 +172,10 @@ def make_offerer_booking_recap_email_with_mailjet_template(booking, recipients):
 
 
 def _format_price_for_email(booking):
-    price = int(booking.stock.price)
+    price = booking.stock.price
     if price == 0:
         return "Gratuit"
-    return price
+    return str(price)
 
 
 def _create_email_recipients(recipients):
