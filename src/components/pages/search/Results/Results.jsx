@@ -74,7 +74,6 @@ class Results extends PureComponent {
   loadMore = page => {
     const { query } = this.props
     const { isLoading } = this.state
-
     if (isLoading) return
 
     this.setState({ isLoading: true }, () => {

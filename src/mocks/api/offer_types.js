@@ -78,6 +78,17 @@ const offerTypes = [
   },
   {
     description:
+      'Suivre un g\u00e9ant de 12 m\u00e8tres dans la ville ? Rire aux \u00e9clats devant un stand up ? R\u00eaver le temps d\u2019un op\u00e9ra ou d\u2019un spectacle de danse ? Assister \u00e0 une pi\u00e8ce de th\u00e9\u00e2tre, ou se laisser conter une histoire ?',
+    label: 'Abonnement Spectacle',
+    offlineOnly: true,
+    onlineOnly: false,
+    sublabel: 'Applaudir',
+    type: 'Thing',
+    value: 'ThingType.SPECTACLE_VIVANT_ABO',
+    isActive: true,
+  },
+  {
+    description:
       'Action, science-fiction, documentaire ou com\u00e9die sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c\u2019\u00e9tait plut\u00f4t cette exposition qui allait faire son cin\u00e9ma ?',
     label: 'Audiovisuel (Films sur supports physiques et VOD)',
     offlineOnly: false,
@@ -129,6 +140,17 @@ const offerTypes = [
     sublabel: 'Lire',
     type: 'Thing',
     value: 'ThingType.LIVRE_EDITION',
+    isActive: true,
+  },
+  {
+    description:
+      'S\u2019abonner \u00e0 un quotidien d\u2019actualit\u00e9 ? \u00c0 un hebdomadaire humoristique ? \u00c0 un mensuel d\u00e9di\u00e9 \u00e0 la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?',
+    label: 'Livre \u2014 \u00c9dition',
+    offlineOnly: false,
+    onlineOnly: true,
+    sublabel: 'Lire',
+    type: 'Thing',
+    value: 'ThingType.LIVRE_AUDIO',
     isActive: true,
   },
   {

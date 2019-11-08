@@ -29,7 +29,7 @@ export const DAYS_CHECKBOXES = [
   },
 ]
 
-const DEFAULT_MAX_DISTANCE = '20000'
+export const DEFAULT_MAX_DISTANCE = '20000'
 const hiddenFilterParams = ['date', 'latitude', 'longitude', 'mots-cles', 'page']
 const isVisibleKey = key => !hiddenFilterParams.includes(key)
 const isEmptyParam = (key, value) => {

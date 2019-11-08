@@ -1,8 +1,7 @@
 import moment from 'moment'
 import { parse, stringify } from 'query-string'
 import { createSelector } from 'reselect'
-
-const PAGE_REGEXP = new RegExp(/&?page=\d+&?/)
+import { DEFAULT_MAX_DISTANCE } from '../helpers'
 
 const getMatchingEventTypes = (types, categories) => {
   const eventTypes = types.filter(type => type.type === 'Event')
@@ -79,14 +78,22 @@ export const getRecommendationSearch = (search, types) => {
   }
 
   if (searchParams.distance) {
-    recommendationSearch['max_distance'] = `${searchParams.distance}.0`
-    recommendationSearch['latitude'] = searchParams.latitude
-    recommendationSearch['longitude'] = searchParams.longitude
+    if (searchParams.distance !== DEFAULT_MAX_DISTANCE) {
+      recommendationSearch['max_distance'] = `${searchParams.distance}.0`
+      recommendationSearch['latitude'] = searchParams.latitude
+      recommendationSearch['longitude'] = searchParams.longitude
+    }
   }
 
   if (searchParams.categories) {
-    const matchingEventTypes = getMatchingEventTypes(types, decodeURIComponent(searchParams.categories))
-    const matchingThingTypes = getMatchingThingTypes(types, decodeURIComponent(searchParams.categories))
+    const matchingEventTypes = getMatchingEventTypes(
+      types,
+      decodeURIComponent(searchParams.categories)
+    )
+    const matchingThingTypes = getMatchingThingTypes(
+      types,
+      decodeURIComponent(searchParams.categories)
+    )
     const matchingTypes = [...matchingEventTypes, ...matchingThingTypes]
     recommendationSearch['type_values'] = getStringifiedTypeValues(matchingTypes)
   }
@@ -105,22 +112,26 @@ export const getRecommendationSearch = (search, types) => {
   return getStringifiedRecommendationSearch(recommendationSearch)
 }
 
+export const removePageFromSearchString = searchString =>
+  searchString
+    .split('&')
+    .filter(element => !element.includes('page='))
+    .join('&')
+
 const selectRecommendationsBySearchQuery = createSelector(
   state => state.data.recommendations,
   state => state.data.types,
-  (state, location) => location.search.replace(PAGE_REGEXP, ''),
-
+  (state, location) => removePageFromSearchString(location.search),
   (recommendations, types, searchWithoutPage) => {
     const searchQuery = getRecommendationSearch(searchWithoutPage, types)
     let filteredRecommendations = recommendations.filter(recommendation => {
       if (recommendation.search === null) {
         return false
       }
-      const searchRecommendationWithoutPage = recommendation.search.replace(PAGE_REGEXP, '')
 
+      const searchRecommendationWithoutPage = removePageFromSearchString(recommendation.search)
       return searchRecommendationWithoutPage === decodeURIComponent(searchQuery)
     })
-
     return filteredRecommendations
   }
 )
