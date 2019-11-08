@@ -62,7 +62,6 @@ class Stock(PcObject,
                    nullable=False)
 
     available = Column(Integer,
-                       index=True,
                        nullable=True)
 
     remainingQuantity = column_property(

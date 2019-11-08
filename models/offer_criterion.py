@@ -17,7 +17,6 @@ class OfferCriterion(PcObject, Model):
 
     criterionId = Column(BigInteger,
                          ForeignKey('criterion.id'),
-                         index=True,
                          nullable=False)
 
     criterion = relationship('Criterion',

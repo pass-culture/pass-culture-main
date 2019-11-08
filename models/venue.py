@@ -60,7 +60,7 @@ class Venue(PcObject,
 
     siret = Column(String(14), nullable=True, unique=True)
 
-    departementCode = Column(String(3), nullable=True, index=True)
+    departementCode = Column(String(3), nullable=True)
 
     latitude = Column(Numeric(8, 5), nullable=True)
 

@@ -43,7 +43,6 @@ class Product(PcObject,
 
     type = Column(String(50),
                   CheckConstraint("type != 'None'"),
-                  index=True,
                   nullable=False)
 
     name = Column(String(140), nullable=False)
@@ -91,12 +90,15 @@ class Product(PcObject,
         return self.url is not None and self.url != ''
 
     def _type_can_only_be_offline(self):
-        offline_only_products = filter(lambda product_type: product_type.value['offlineOnly'], ThingType)
-        offline_only_types_for_products = map(lambda x: x.__str__(), offline_only_products)
+        offline_only_products = filter(
+            lambda product_type: product_type.value['offlineOnly'], ThingType)
+        offline_only_types_for_products = map(
+            lambda x: x.__str__(), offline_only_products)
         return self.type in offline_only_types_for_products
 
     def _get_label_from_type_string(self):
-        matching_type_product = next(filter(lambda product_type: product_type.__str__() == self.type, ThingType))
+        matching_type_product = next(
+            filter(lambda product_type: product_type.__str__() == self.type, ThingType))
         return matching_type_product.value['proLabel']
 
     def errors(self):
@@ -105,12 +107,3 @@ class Product(PcObject,
             api_errors.add_error('url', 'Une offre de type {} ne peut pas être numérique'.format(
                 self._get_label_from_type_string()))
         return api_errors
-
-
-ts_indexes = [('idx_product_fts_name', Product.name),
-              ('idx_product_fts_description', Product.description),
-              ('idx_product_fts_author', Product.extraData['author'].cast(TEXT)),
-              ('idx_product_fts_byArtist', Product.extraData['byArtist'].cast(TEXT))]
-
-
-(Product.__ts_vectors__, Product.__table_args__) = create_ts_vector_and_table_args(ts_indexes)

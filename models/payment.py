@@ -57,7 +57,6 @@ class Payment(PcObject, Model):
 
     paymentMessageId = Column(BigInteger,
                               ForeignKey('payment_message.id'),
-                              index=True,
                               nullable=True)
 
     paymentMessage = relationship('PaymentMessage',
@@ -74,7 +73,8 @@ class Payment(PcObject, Model):
 
     @hybrid_property
     def currentStatus(self):
-        statuses_by_date_desc = sorted(self.statuses, key=lambda x: x.date, reverse=True)
+        statuses_by_date_desc = sorted(
+            self.statuses, key=lambda x: x.date, reverse=True)
         return statuses_by_date_desc[0]
 
     @currentStatus.expression

@@ -41,7 +41,6 @@ class BeneficiaryImportStatus(PcObject, Model):
 
     authorId = Column(BigInteger,
                       ForeignKey("user.id"),
-                      index=True,
                       nullable=True)
 
     author = relationship('User',

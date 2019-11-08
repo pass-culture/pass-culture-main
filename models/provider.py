@@ -18,6 +18,7 @@ class Provider(PcObject, Model, DeactivableMixin):
                 primary_key=True)
 
     name = Column(String(90),
+                  index=True,
                   nullable=False)
 
     localClass = Column(String(60),

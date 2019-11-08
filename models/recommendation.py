@@ -62,8 +62,7 @@ class Recommendation(PcObject, Model):
                          default=datetime.utcnow)
 
     dateRead = Column(DateTime,
-                      nullable=True,
-                      index=True)
+                      nullable=True)
 
     validUntilDate = Column(DateTime,
                             nullable=True,

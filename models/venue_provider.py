@@ -14,8 +14,7 @@ class VenueProvider(PcObject,
                     DeactivableMixin):
     venueId = Column(BigInteger,
                      ForeignKey('venue.id'),
-                     nullable=False,
-                     index=True)
+                     nullable=False)
 
     venue = relationship('Venue',
                          back_populates="venueProviders",
@@ -23,6 +22,7 @@ class VenueProvider(PcObject,
 
     providerId = Column(BigInteger,
                         ForeignKey('provider.id'),
+                        index=True,
                         nullable=False)
 
     provider = relationship('Provider',
