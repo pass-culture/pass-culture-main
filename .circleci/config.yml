@@ -1,10 +1,9 @@
-# Python CircleCI 2.0 configuration file
 version: 2
-jobs: # a collection of steps
-  build: # runs not using Workflows must have a `build` job as entry point
+jobs:
+  build:
     working_directory: ~/pass-culture-api-ci
     docker:
-      - image: circleci/python:3.6.6 # ...with this image as the primary container; this is where all `steps` will run        environment:
+      - image: circleci/python:3.6.6
         environment:
           DATABASE_URL_TEST: postgresql://pytest:pytest@localhost:5432/pass_culture
       - image: circleci/postgres:9.6.2
@@ -13,16 +12,16 @@ jobs: # a collection of steps
           POSTGRES_PASSWORD: pytest
           POSTGRES_DB: pass_culture
     steps:
-      - checkout # special step to check out source code to the working directory
-      - restore_cache: # restores saved dependency cache if the Branch key template or requirements.txt files have not changed since the previous run
+      - checkout
+      - restore_cache:
           key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
-      - run: # install and activate virtual environment with pip
+      - run:
           name: Install requirements
           command: |
             python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt
-      - save_cache: # special step to save dependency cache
+      - save_cache:
           key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
           paths:
             - "venv"
@@ -33,7 +32,7 @@ jobs: # a collection of steps
             . venv/bin/activate
             python -m nltk.downloader punkt stopwords &> /dev/null
             if [ ! -z "$(PYTHONPATH=. alembic branches)" ]; then echo "Multiple alembic heads found"; exit 1; fi
-      - run: # run tests
+      - run:
           name: Running tests
           command: |
             gpg --passphrase $PASS_PRIVATE --batch --output private.tar.gz -d private.tar.gz.gpg
@@ -59,37 +58,11 @@ jobs: # a collection of steps
             docker login -u passcultureapp -p $DOCKERHUB_PASSWORD
             docker push passcultureapp/api-flask:latest
 
-  check-dependencies:
-    working_directory: ~/pass-culture-api-ci # directory where steps will run
-    docker: # run the steps with Docker
-      - image: circleci/python:3.6.6
-    steps: # a collection of executable commands
-      - checkout # special step to check out source code to the working directory
-      - restore_cache: # restores saved dependency cache if the Branch key template or requirements.txt files have not changed since the previous run
-          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
-      - run: # install and activate virtual environment with pip
-          name: Install requirements
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install -r requirements.txt
-      - run:
-          name: Check outdated dependencies
-          command: |
-            . venv/bin/activate
-            ./scripts/check-pip-dependencies.sh
-      - run:
-          name: Notify PC Ops Bot
-          when: on_fail
-          command: |
-            export BOT_MESSAGE="Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL"
-            curl -d text="$BOT_MESSAGE" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown"
-
   functional-tests-webapp:
     machine:
       image: circleci/classic:latest
     working_directory: ~/
-    steps: # a collection of executable commands
+    steps:
       - run:
           name: Initialize environment
           command: |
@@ -160,7 +133,7 @@ jobs: # a collection of steps
     machine:
       image: circleci/classic:latest
     working_directory: ~/
-    steps: # a collection of executable commands
+    steps:
       - run:
           name: Init env
           command: |
@@ -251,13 +224,3 @@ workflows:
     jobs:
       - functional-tests-webapp
       - functional-tests-pro
-  weekly:
-    triggers: #use the triggers key to indicate a scheduled build
-      - schedule:
-          cron: "0 1 * * 1" # run every monday at 1 am !!!! UTC TIME !!!!
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      - check-dependencies
