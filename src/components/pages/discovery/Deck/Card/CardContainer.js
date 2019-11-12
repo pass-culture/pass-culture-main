@@ -22,14 +22,12 @@ export const mapStateToProps = (state, ownProps) => {
 
 export const mapDispatchToProps = dispatch => ({
   handleClickRecommendation: recommendation => {
-    const config = {
+    dispatch(requestData({
       apiPath: `recommendations/${recommendation.id}`,
       body: { isClicked: true },
       method: 'PATCH',
       normalizer: recommendationNormalizer,
-    }
-
-    dispatch(requestData(config))
+    }))
   },
 
   handleReadRecommendation: recommendation => {
@@ -47,7 +45,7 @@ export const mapDispatchToProps = dispatch => ({
 
 const mapSizeToProps = ({ width, height }) => ({
   height,
-  width: Math.min(width, 500), // body{max-width: 500px;}
+  width: Math.min(width, 500)
 })
 
 export default compose(

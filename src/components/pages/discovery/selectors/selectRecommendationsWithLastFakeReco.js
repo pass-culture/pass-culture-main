@@ -3,7 +3,7 @@ import { createSelector } from 'reselect'
 
 import { ROOT_PATH } from '../../../../utils/config'
 
-export const makeFakeLastRecommendation = index => ({
+export const fakeLastRecommendation = index => ({
   productOrTutoIdentifier: 'tuto_-1',
   index,
   mediation: {
@@ -21,8 +21,6 @@ export const makeFakeLastRecommendation = index => ({
 const selectUniqAndIndexifiedRecommendations = createSelector(
   state => state.data.recommendations,
   recommendations => {
-    // RECOMMENDATION MUST HAVE MEDIATION AND/OR OFFER CHILDREN
-    // AND THAT IS A CRITERION TO MAKE THEM UNIQ
     let filteredRecommendations = recommendations.filter(
       recommendation => recommendation.productOrTutoIdentifier
     )
@@ -31,13 +29,11 @@ const selectUniqAndIndexifiedRecommendations = createSelector(
       recommendation => recommendation.productOrTutoIdentifier
     )
 
-    // NOW WE CAN GIVE OTHER PROPERTIES TO THE GOOD SHAPED RECO
     filteredRecommendations = filteredRecommendations.map((recommendation, index) =>
       Object.assign({ index }, recommendation)
     )
 
-    filteredRecommendations.push(makeFakeLastRecommendation(filteredRecommendations.length))
-
+    filteredRecommendations.push(fakeLastRecommendation(filteredRecommendations.length))
     return filteredRecommendations
   }
 )

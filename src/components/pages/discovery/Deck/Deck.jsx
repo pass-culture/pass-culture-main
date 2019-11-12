@@ -56,6 +56,7 @@ class Deck extends PureComponent {
 
     const index = get(currentRecommendation, 'index', 0)
     const offset = (data.x + width * index) / width
+
     if (data.y > height * verticalSlideRatio) {
       this.onHandleCloseCardDetails()
     } else if (data.y < -height * verticalSlideRatio) {
@@ -69,26 +70,32 @@ class Deck extends PureComponent {
 
   handleGoNext = () => {
     const { history, match, nextRecommendation } = this.props
-    if (!nextRecommendation || isDetailsView(match)) return
+    if (!nextRecommendation || isDetailsView(match)) {
+      return
+    }
+
     const { offerId, mediationId } = nextRecommendation
-    const nextUrl = `/decouverte/${offerId || 'tuto'}${`/${mediationId || 'vide'}`}`
-    history.push(nextUrl)
+    history.push(`/decouverte/${offerId || 'tuto'}/${mediationId || 'vide'}`)
     this.handleRefreshNext()
   }
 
   handleGoPrevious = () => {
     const { history, match, previousRecommendation } = this.props
-    if (!previousRecommendation || isDetailsView(match)) return
+    if (!previousRecommendation || isDetailsView(match)) {
+      return
+    }
+
     const { offerId, mediationId } = previousRecommendation
-    const previousUrl = `/decouverte/${offerId || 'tuto'}${`/${mediationId || 'vide'}`}`
-    history.push(previousUrl)
+    history.push(`/decouverte/${offerId || 'tuto'}/${mediationId || 'vide'}`)
   }
 
   handleRefreshNext = () => {
     const { currentRecommendation, handleRequestPutRecommendations, nextLimit } = this.props
-    const shouldRequest = nextLimit && currentRecommendation.index === nextLimit
-    if (!shouldRequest) return
-    handleRequestPutRecommendations()
+    const hasReachedLimitBeforeFetchingRecommendations = nextLimit && currentRecommendation.index === nextLimit
+
+    if (hasReachedLimitBeforeFetchingRecommendations) {
+      handleRequestPutRecommendations()
+    }
   }
 
   handleRefreshedDraggableKey = () => {
@@ -100,9 +107,10 @@ class Deck extends PureComponent {
   handleShowCardDetails = () => {
     const { isFlipDisabled, history, location, match } = this.props
     const { pathname, search } = location
-    if (isDetailsView(match) || isFlipDisabled) return
-    const detailsUrl = `${pathname}/details${search}`
-    history.push(detailsUrl)
+    if (isDetailsView(match) || isFlipDisabled) {
+      return
+    }
+    history.push(`${pathname}/details${search}`)
   }
 
   onHandleCloseCardDetails = () => {
@@ -171,19 +179,24 @@ class Deck extends PureComponent {
       previousRecommendation,
       recommendations,
     } = this.props
-    const showNavigation = !isDetailsView(match) || isFlipDisabled
+    const detailView = isDetailsView(match)
+    const showNavigation = !detailView || isFlipDisabled
+    const nbRecommendations = recommendations.length
 
     return (
       <div
         className="is-clipped is-relative"
-        data-nb-recos={recommendations.length}
+        data-nb-recos={nbRecommendations}
         id="deck"
       >
-        {isDetailsView(match) && <CloseLink
+        {detailView &&
+        <CloseLink
           closeTitle="Fermer"
           closeTo={this.buildCloseToUrl()}
-                                 />}
+        />}
+
         {this.renderDraggableCards()}
+
         {showNavigation && currentRecommendation && (
           <NavigationContainer
             flipHandler={(!isFlipDisabled && this.handleShowCardDetails) || null}

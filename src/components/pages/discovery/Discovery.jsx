@@ -8,6 +8,7 @@ import BookingCancellationContainer from '../BookingCancellation/BookingCancella
 import AbsoluteFooterContainer from '../../layout/AbsoluteFooter/AbsoluteFooterContainer'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import isDetailsView from '../../../helpers/isDetailsView'
+import isCancelView from '../../../helpers/isCancelView'
 
 class Discovery extends PureComponent {
   constructor(props) {
@@ -23,15 +24,14 @@ class Discovery extends PureComponent {
   componentDidMount() {
     const {
       recommendations,
-      saveLoadRecommendationsTimestamp,
       redirectToFirstRecommendationIfNeeded,
+      saveLastRecommendationsRequestTimestamp,
       shouldReloadRecommendations,
-      showPasswordChangedPopin,
     } = this.props
-    showPasswordChangedPopin()
+
     if (shouldReloadRecommendations) {
-      this.onRequestPutRecommendations()
-      saveLoadRecommendationsTimestamp()
+      this.updateRecommendations()
+      saveLastRecommendationsRequestTimestamp()
     } else {
       redirectToFirstRecommendationIfNeeded(recommendations)
     }
@@ -40,25 +40,30 @@ class Discovery extends PureComponent {
   componentDidUpdate(prevProps) {
     const { location, recommendations, redirectToFirstRecommendationIfNeeded } = this.props
     const { location: prevLocation } = prevProps
+
     if (prevLocation.pathname !== location.pathname && location.pathname === '/decouverte') {
       redirectToFirstRecommendationIfNeeded(recommendations)
     }
   }
 
   componentWillUnmount() {
-    const { deleteTutos, tutos } = this.props
-    if (tutos.length > 0) {
-      deleteTutos(tutos)
+    const { deleteTutorials, tutorials } = this.props
+
+    if (tutorials.length > 0) {
+      deleteTutorials(tutorials)
     }
   }
 
-  handleRequestFail = () => {
-    const { onRequestFailRedirectToHome } = this.props
-    const nextState = { hasError: true, isLoading: true }
-    this.setState(nextState, onRequestFailRedirectToHome)
+  handleFail = () => {
+    const { redirectHome } = this.props
+
+    this.setState(
+      { hasError: true, isLoading: true },
+      redirectHome
+    )
   }
 
-  handleRequestSuccess = (state, action) => {
+  handleSuccess = (state, action) => {
     const {
       recommendations,
       resetReadRecommendations,
@@ -66,75 +71,69 @@ class Discovery extends PureComponent {
     } = this.props
 
     const { data: loadedRecommendations } = (action && action.payload) || []
-    const loadedRecommendationsLength = loadedRecommendations.length
-
-    const isLoading = false
-    const atWorldsEnd = loadedRecommendationsLength === 0
+    const atWorldsEnd = loadedRecommendations.length === 0
     const isEmpty = (!recommendations || !recommendations.length) && atWorldsEnd
-    const nextState = { atWorldsEnd, isEmpty, isLoading }
 
-    this.setState(nextState, () => {
-      resetReadRecommendations()
-      redirectToFirstRecommendationIfNeeded(loadedRecommendations)
-    })
+    this.setState({ atWorldsEnd, isEmpty, isLoading: false },
+      () => {
+        resetReadRecommendations()
+        redirectToFirstRecommendationIfNeeded(loadedRecommendations)
+      })
   }
 
-  onRequestPutRecommendations = () => {
+  updateRecommendations = () => {
     const {
       currentRecommendation,
-      recommendations,
-      readRecommendations,
       loadRecommendations,
+      page,
+      readRecommendations,
+      recommendations,
+      seed,
       shouldReloadRecommendations,
     } = this.props
 
     const { atWorldsEnd, isLoading } = this.state
-    const shouldNotLoadRecommendations = atWorldsEnd || isLoading
-    if (shouldNotLoadRecommendations) return
+    if (atWorldsEnd || isLoading) {
+      return
+    }
 
-    const nextState = { isLoading: true }
-    this.setState(nextState, () => {
+    this.setState({ isLoading: true }, () => {
       loadRecommendations(
-        this.handleRequestSuccess,
-        this.handleRequestFail,
+        this.handleSuccess,
+        this.handleFail,
         currentRecommendation,
+        page,
         recommendations,
         readRecommendations,
+        seed,
         shouldReloadRecommendations
       )
     })
   }
 
-  renderBookingOrCancellation = route => {
-    const { isConfirmingCancelling } = this.props
-
-    return isConfirmingCancelling
-      ? this.renderBookingCancellation(route)
-      : this.renderBooking(route)
-  }
-
-  renderBookingCancellation = route => {
-    return <BookingCancellationContainer {...route} />
-  }
-
-  renderBooking = route => {
+  renderBooking = () => {
     const { currentRecommendation } = this.props
-    return (<BookingContainer
-      {...route}
-      recommendation={currentRecommendation}
-            />)
+    return (
+      <BookingContainer
+        recommendation={currentRecommendation}
+      />
+    )
   }
 
-  renderDeck = route => (
+  renderBookingCancellation = () => (
+    <BookingCancellationContainer />
+  )
+
+  renderDeck = () => (
     <DeckContainer
-      {...route}
-      handleRequestPutRecommendations={this.onRequestPutRecommendations}
+      handleRequestPutRecommendations={this.updateRecommendations}
     />
   )
 
   render() {
     const { match } = this.props
     const { hasError, isEmpty, isLoading } = this.state
+    const cancelView = isCancelView(match)
 
     return (
       <Fragment>
@@ -143,13 +142,15 @@ class Discovery extends PureComponent {
             <Fragment>
               <Route
                 key="route-discovery-deck"
-                path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId(creation|[A-Z0-9]+)?/:cancellation(annulation)?/:menu(menu)?"
+                path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?"
                 render={this.renderDeck}
               />
               <Route
                 key="route-discovery-booking"
-                path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId(creation|[A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?/:menu(menu)?"
-                render={this.renderBookingOrCancellation}
+                path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
+                render={cancelView
+                  ? this.renderBookingCancellation
+                  : this.renderBooking}
               />
             </Fragment>
           )}
@@ -177,8 +178,7 @@ Discovery.defaultProps = {
 
 Discovery.propTypes = {
   currentRecommendation: PropTypes.shape(),
-  deleteTutos: PropTypes.func.isRequired,
-  isConfirmingCancelling: PropTypes.bool.isRequired,
+  deleteTutorials: PropTypes.func.isRequired,
   loadRecommendations: PropTypes.func.isRequired,
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired,
@@ -188,15 +188,16 @@ Discovery.propTypes = {
       view: PropTypes.string,
     }),
   }).isRequired,
-  onRequestFailRedirectToHome: PropTypes.func.isRequired,
+  page: PropTypes.number.isRequired,
   readRecommendations: PropTypes.arrayOf(PropTypes.shape()),
   recommendations: PropTypes.arrayOf(PropTypes.shape()),
+  redirectHome: PropTypes.func.isRequired,
   redirectToFirstRecommendationIfNeeded: PropTypes.func.isRequired,
   resetReadRecommendations: PropTypes.func.isRequired,
-  saveLoadRecommendationsTimestamp: PropTypes.func.isRequired,
+  saveLastRecommendationsRequestTimestamp: PropTypes.func.isRequired,
+  seed: PropTypes.number.isRequired,
   shouldReloadRecommendations: PropTypes.bool.isRequired,
-  showPasswordChangedPopin: PropTypes.func.isRequired,
-  tutos: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  tutorials: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
 
 export default Discovery

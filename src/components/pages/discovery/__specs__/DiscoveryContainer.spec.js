@@ -1,11 +1,10 @@
-import { mapStateToProps, mapDispatchToProps } from '../DiscoveryContainer'
+import { mapDispatchToProps, mapStateToProps } from '../DiscoveryContainer'
 import { recommendationNormalizer } from '../../../../utils/normalizers'
 
 jest.mock('redux-thunk-data', () => {
   const { assignData, createDataReducer, deleteData, requestData } = jest.requireActual(
     'fetch-normalize-data'
   )
-
   return {
     assignData,
     createDataReducer,
@@ -13,7 +12,6 @@ jest.mock('redux-thunk-data', () => {
     requestData,
   }
 })
-
 jest.useFakeTimers()
 
 describe('src | components | pages | discovery | DiscoveryContainer', () => {
@@ -37,6 +35,8 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
       query: {
         parse: () => ({}),
       },
+      page: 1,
+      seed: 0.5
     }
   })
 
@@ -47,6 +47,10 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         data: {
           recommendations: [],
         },
+        pagination: {
+          page: 1,
+          seed: 0.5
+        }
       }
 
       const ownProps = {
@@ -74,40 +78,45 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
           productOrTutoIdentifier: 'tuto_-1',
           thumbUrl: 'http://localhost/splash-finReco@2x.png',
         },
-        isConfirmingCancelling: false,
+        page: 1,
         readRecommendations: undefined,
         recommendations: [],
+        seed: 0.5,
         shouldReloadRecommendations: true,
-        tutos: [],
+        tutorials: [],
       })
     })
   })
 
   describe('mapDispatchToProps()', () => {
     describe('when mapping loadRecommendations', () => {
-      it('should load the recommendations with the right configuration', () => {
+      it('should load the recommendations with page equals 1 when no current recommendation', () => {
         // given
         const handleRequestSuccess = jest.fn()
         const handleRequestFail = jest.fn()
-        const currentRecommendation = {}
+        const currentRecommendation = null
         const recommendations = []
         const readRecommendations = null
         const shouldReloadRecommendations = false
+        const functions = mapDispatchToProps(dispatch, props)
+        const { loadRecommendations } = functions
 
         // when
-        mapDispatchToProps(dispatch, props).loadRecommendations(
+        loadRecommendations(
           handleRequestSuccess,
           handleRequestFail,
           currentRecommendation,
+          props.page,
           recommendations,
           readRecommendations,
+          props.seed,
           shouldReloadRecommendations
         )
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
           config: {
-            apiPath: `/recommendations?`,
+            apiPath: `/recommendations?&page=1&seed=0.5`,
             body: {
               readRecommendations: null,
               seenRecommendationIds: [],
@@ -117,15 +126,55 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
             method: 'PUT',
             normalizer: recommendationNormalizer,
           },
-          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS?',
+          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS?&PAGE=1&SEED=0.5',
+        })
+      })
+
+      it('should load the recommendations with page equals 2 when current recommendation', () => {
+        // given
+        const handleRequestSuccess = jest.fn()
+        const handleRequestFail = jest.fn()
+        const currentRecommendation = { index: 5 }
+        const recommendations = []
+        const readRecommendations = null
+        const shouldReloadRecommendations = false
+        const functions = mapDispatchToProps(dispatch, props)
+        const { loadRecommendations } = functions
+
+        // when
+        loadRecommendations(
+          handleRequestSuccess,
+          handleRequestFail,
+          currentRecommendation,
+          props.page,
+          recommendations,
+          readRecommendations,
+          props.seed,
+          shouldReloadRecommendations
+        )
+
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          config: {
+            apiPath: `/recommendations?&page=1&seed=0.5`,
+            body: {
+              readRecommendations: null,
+              seenRecommendationIds: [],
+            },
+            handleFail: handleRequestFail,
+            handleSuccess: handleRequestSuccess,
+            method: 'PUT',
+            normalizer: recommendationNormalizer,
+          },
+          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS?&PAGE=1&SEED=0.5',
         })
       })
     })
 
-    describe('when mapping onRequestFailRedirectToHome', () => {
+    describe('when mapping redirectHome', () => {
       it('should call setTimout 2000 times', () => {
         // when
-        mapDispatchToProps(dispatch, props).onRequestFailRedirectToHome()
+        mapDispatchToProps(dispatch, props).redirectHome()
 
         // then
         expect(setTimeout).toHaveBeenCalledTimes(1)
@@ -137,7 +186,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         jest.useFakeTimers()
 
         // when
-        mapDispatchToProps(dispatch, props).onRequestFailRedirectToHome()
+        mapDispatchToProps(dispatch, props).redirectHome()
         jest.runAllTimers()
 
         // then
@@ -234,7 +283,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
           }
 
           // when
-          mapDispatchToProps(dispatch, null).deleteTutos(tutos)
+          mapDispatchToProps(dispatch, null).deleteTutorials(tutos)
 
           // then
           expect(dispatch).toHaveBeenCalledWith({
@@ -263,25 +312,15 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
       })
     })
 
-    describe('when mapping saveLoadRecommendationsTimestamp', () => {
+    describe('when mapping saveLastRecommendationsRequestTimestamp', () => {
       it('should save recommendations loaded timestamp with the right configuration', () => {
         // when
-        mapDispatchToProps(dispatch, props).saveLoadRecommendationsTimestamp()
+        mapDispatchToProps(dispatch, props).saveLastRecommendationsRequestTimestamp()
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
           type: 'SAVE_RECOMMENDATIONS_REQUEST_TIMESTAMP',
         })
-      })
-    })
-
-    describe('when mapping showPasswordChangedPopin', () => {
-      it('should return undefined when there is no password', () => {
-        // when
-        const popin = mapDispatchToProps(dispatch, props).showPasswordChangedPopin()
-
-        // then
-        expect(popin).toBeUndefined()
       })
     })
   })

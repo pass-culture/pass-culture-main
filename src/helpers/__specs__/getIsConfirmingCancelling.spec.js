@@ -1,6 +1,6 @@
-import getIsConfirmingCancelling from '../getIsConfirmingCancelling'
+import isCancelView from '../isCancelView'
 
-describe('src | helpers | getIsConfirmingCancelling', () => {
+describe('src | helpers | isCancelView', () => {
   describe('when we just clicked on annuler', () => {
     it('should return false', () => {
       // given
@@ -12,7 +12,7 @@ describe('src | helpers | getIsConfirmingCancelling', () => {
       }
 
       // when
-      const isConfirmingCancelling = getIsConfirmingCancelling(match)
+      const isConfirmingCancelling = isCancelView(match)
 
       //then
       expect(isConfirmingCancelling).toBe(false)
@@ -31,7 +31,7 @@ describe('src | helpers | getIsConfirmingCancelling', () => {
       }
 
       // when
-      const isConfirmingCancelling = getIsConfirmingCancelling(match)
+      const isConfirmingCancelling = isCancelView(match)
 
       //then
       expect(isConfirmingCancelling).toBe(true)

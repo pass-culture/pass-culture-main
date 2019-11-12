@@ -8,7 +8,7 @@ import selectTypeSublabels, {
   selectTypes,
   selectTypeSublabelsAndDescription,
 } from '../../../selectors/data/typesSelector'
-import selectRecommendationsBySearchQuery from '../../../selectors/data/recommendationsSelector'
+import { selectRecommendationsBySearchQuery } from '../../../selectors/data/recommendationsSelectors'
 import { recommendationNormalizer } from '../../../utils/normalizers'
 
 export const mapStateToProps = (state, ownProps) => {

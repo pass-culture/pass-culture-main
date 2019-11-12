@@ -51,6 +51,7 @@ class Card extends PureComponent {
     const headerColor = getHeaderColor(firstThumbDominantColor)
     const isCurrent = position === 'current'
     const translateTo = index * width
+
     return (
       <div
         className={`card ${isCurrent ? 'current' : ''}`}

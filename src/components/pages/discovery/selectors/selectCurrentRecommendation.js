@@ -1,10 +1,9 @@
+import selectRecommendationsWithLastFakeReco from './selectRecommendationsWithLastFakeReco'
 import createCachedSelector from 're-reselect'
-
 import mapArgsToCacheKey from './mapArgsToCacheKey'
-import selectUniqAndIndexifiedRecommendations from './selectUniqAndIndexifiedRecommendations'
 
 const selectCurrentRecommendation = createCachedSelector(
-  selectUniqAndIndexifiedRecommendations,
+  selectRecommendationsWithLastFakeReco,
   (state, offerId) => offerId,
   (state, offerId, mediationId) => mediationId,
   (recommendations, offerId, mediationId) =>

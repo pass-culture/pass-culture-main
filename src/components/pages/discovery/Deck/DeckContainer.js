@@ -1,4 +1,3 @@
-import get from 'lodash.get'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import withSizes from 'react-sizes'
@@ -8,10 +7,9 @@ import Deck from './Deck'
 import selectCurrentRecommendation from '../selectors/selectCurrentRecommendation'
 import selectNextRecommendation from '../selectors/selectNextRecommendation'
 import selectPreviousRecommendation from '../selectors/selectPreviousRecommendation'
-import selectUniqAndIndexifiedRecommendations from '../selectors/selectUniqAndIndexifiedRecommendations'
+import selectRecommendationsWithLastFakeReco from '../selectors/selectRecommendationsWithLastFakeReco'
 import selectMediationById from '../../../../selectors/selectMediationById'
-
-const NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD = 5
+import { getNextLimit } from './utils/limits'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
@@ -21,35 +19,22 @@ export const mapStateToProps = (state, ownProps) => {
   const currentRecommendation = selectCurrentRecommendation(state, offerId, mediationId)
   const { mediationId: currentMediationId } = currentRecommendation || {}
   const currentMediation = selectMediationById(state, currentMediationId)
+  const recommendations = selectRecommendationsWithLastFakeReco(state)
+  const nextRecommendation = selectNextRecommendation(state, offerId, mediationId)
+  const previousRecommendation = selectPreviousRecommendation(state, offerId, mediationId)
+
   const { thumbCount, tutoIndex } = currentMediation || {}
-
-  const recommendations = selectUniqAndIndexifiedRecommendations(state)
-  const nbRecos = recommendations ? recommendations.length : 0
-
+  const nbRecommendations = recommendations ? recommendations.length : 0
   const isTutoWithOnlyOneThumb = typeof tutoIndex === 'number' && thumbCount <= 1
-  const isLastTuto = currentMediationId === 'fin'
-  const hasNoVerso = !currentRecommendation || isTutoWithOnlyOneThumb || isLastTuto
-
-  const nextLimit =
-    nbRecos > 0 &&
-    (NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD >= nbRecos - 1
-      ? nbRecos - 1
-      : nbRecos - 1 - NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD)
-
-  const previousLimit =
-    nbRecos > 0 &&
-    (NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD < nbRecos - 1
-      ? NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD + 1
-      : 0)
+  const hasNoVerso = !currentRecommendation || isTutoWithOnlyOneThumb || currentMediationId === 'fin'
+  const nextLimit = getNextLimit(nbRecommendations)
 
   return {
     currentRecommendation,
-    isEmpty: get(state, 'loading.config.isEmpty'),
     isFlipDisabled: hasNoVerso,
     nextLimit,
-    nextRecommendation: selectNextRecommendation(state, offerId, mediationId),
-    previousLimit,
-    previousRecommendation: selectPreviousRecommendation(state, offerId, mediationId),
+    nextRecommendation,
+    previousRecommendation,
     recommendations,
   }
 }

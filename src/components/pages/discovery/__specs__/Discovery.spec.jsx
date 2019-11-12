@@ -8,8 +8,8 @@ describe('src | components | pages | discovery | Discovery', () => {
 
   beforeEach(() => {
     props = {
-      deleteTutos: jest.fn(),
-      isConfirmingCancelling: true,
+      currentRecommendation: {},
+      deleteTutorials: jest.fn(),
       loadRecommendations: jest.fn(),
       location: {
         pathname: '',
@@ -18,18 +18,17 @@ describe('src | components | pages | discovery | Discovery', () => {
       match: {
         params: {},
       },
-      onRequestFailRedirectToHome: jest.fn(),
+      redirectHome: jest.fn(),
       readRecommendations: [],
       recommendations: [],
       redirectToFirstRecommendationIfNeeded: jest.fn(),
       resetReadRecommendations: jest.fn(),
       resetRecommendations: jest.fn(),
       resetRecommendationsAndBookings: jest.fn(),
-      saveLoadRecommendationsTimestamp: jest.fn(),
+      saveLastRecommendationsRequestTimestamp: jest.fn(),
       shouldReloadRecommendations: false,
-      showPasswordChangedPopin: jest.fn(),
-      tutos: [],
-      withBackButton: false,
+      showPasswordChangedPopIn: jest.fn(),
+      tutorials: [],
     }
   })
 
@@ -58,9 +57,9 @@ describe('src | components | pages | discovery | Discovery', () => {
   })
 
   describe('when unmount Discovery', () => {
-    it('should delete tutos for new user', () => {
+    it('should delete tutorials for new user', () => {
       // given
-      props.tutos = [
+      props.tutorials = [
         {
           id: 'hello',
           productOrTutoIdentifier: 'tuto_0',
@@ -72,7 +71,7 @@ describe('src | components | pages | discovery | Discovery', () => {
       wrapper.unmount()
 
       // then
-      expect(props.deleteTutos).toHaveBeenCalledWith([
+      expect(props.deleteTutorials).toHaveBeenCalledWith([
         {
           id: 'hello',
           productOrTutoIdentifier: 'tuto_0',
@@ -80,16 +79,16 @@ describe('src | components | pages | discovery | Discovery', () => {
       ])
     })
 
-    it('should not delete tutos for old user', () => {
+    it('should not delete tutorials for old user', () => {
       // given
-      props.tutos = []
+      props.tutorials = []
       const wrapper = shallow(<Discovery {...props} />)
 
       // when
       wrapper.unmount()
 
       // then
-      expect(props.deleteTutos).toHaveLength(0)
+      expect(props.deleteTutorials).toHaveLength(0)
     })
   })
 })

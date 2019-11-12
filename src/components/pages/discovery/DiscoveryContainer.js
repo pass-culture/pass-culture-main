@@ -1,117 +1,116 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { toast } from 'react-toastify'
 import { assignData, deleteData, requestData } from 'redux-thunk-data'
 
 import Discovery from './Discovery'
-import {
-  checkIfShouldReloadRecommendationsBecauseOfLongTime,
-  isDiscoveryStartupUrl,
-} from './utils/utils'
-import getIsConfirmingCancelling from '../../../helpers/getIsConfirmingCancelling'
+import { checkIfShouldReloadRecommendationsBecauseOfLongTime, isDiscoveryStartupUrl, } from './utils/utils'
 import selectCurrentRecommendation from './selectors/selectCurrentRecommendation'
-import selectTutos from './selectors/selectTutos'
+import selectTutorials from './selectors/selectTutorials'
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
 import getOfferIdAndMediationIdApiPathQueryString from '../../../helpers/getOfferIdAndMediationIdApiPathQueryString'
 import { saveLastRecommendationsRequestTimestamp } from '../../../reducers/data'
 import { recommendationNormalizer } from '../../../utils/normalizers'
+import { selectRecommendations } from '../../../selectors/data/recommendationsSelectors'
+import { selectReadRecommendations } from '../../../selectors/data/readRecommendationsSelectors'
+import { selectPage, selectSeed } from '../../../selectors/pagination/paginationSelector'
+import { updatePage } from '../../../reducers/pagination'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
   const { params } = match
   const { mediationId, offerId } = params
   const currentRecommendation = selectCurrentRecommendation(state, offerId, mediationId)
-  const isConfirmingCancelling = getIsConfirmingCancelling(match)
-  const tutos = selectTutos(state)
-  const { readRecommendations, recommendations } = (state && state.data) || {}
+  const tutorials = selectTutorials(state)
+  const recommendations = selectRecommendations(state)
+  const readRecommendations = selectReadRecommendations(state)
+  const page = selectPage(state)
+  const seed = selectSeed(state)
+  const hasNoRecommendations = recommendations && recommendations.length === 0
   const shouldReloadRecommendations =
     checkIfShouldReloadRecommendationsBecauseOfLongTime(state) ||
-    (recommendations && recommendations.length <= 0)
+    hasNoRecommendations
+
   return {
     currentRecommendation,
-    isConfirmingCancelling,
+    page,
     readRecommendations,
     recommendations,
+    seed,
     shouldReloadRecommendations,
-    tutos,
+    tutorials,
   }
 }
 
-export const mapDispatchToProps = (dispatch, props) => ({
-  deleteTutos: recommendations => {
+export const mapDispatchToProps = (dispatch, prevProps) => ({
+  deleteTutorials: recommendations => {
     dispatch(deleteData({ recommendations }))
   },
-
   loadRecommendations: (
-    handleRequestSuccess,
-    handleRequestFail,
+    handleSuccess,
+    handleFail,
     currentRecommendation,
+    page,
     recommendations,
     readRecommendations,
+    seed,
     shouldReloadRecommendations
   ) => {
-    const { match } = props
-    const queryString = getOfferIdAndMediationIdApiPathQueryString(match, currentRecommendation)
-    const apiPath = `/recommendations?${queryString}`
-    const seenRecommendationIds =
-      (shouldReloadRecommendations && []) || (recommendations && recommendations.map(r => r.id))
+    const { match } = prevProps
+    const seenRecommendationIds = (shouldReloadRecommendations && []) || (recommendations && recommendations.map(reco => reco.id))
+    let queryParams = getOfferIdAndMediationIdApiPathQueryString(match, currentRecommendation)
+
+    let newPage
+    if (page === 1) {
+      newPage = page
+    } else {
+      newPage = page + 1
+    }
+    let paginationParams = `&page=${newPage}&seed=${seed}`
+
     dispatch(
       requestData({
-        apiPath,
-        body: { readRecommendations, seenRecommendationIds },
-        handleFail: handleRequestFail,
-        handleSuccess: handleRequestSuccess,
+        apiPath: `/recommendations?${queryParams}${paginationParams}`,
+        body: {
+          readRecommendations,
+          seenRecommendationIds,
+        },
+        handleFail: handleFail,
+        handleSuccess: handleSuccess,
         method: 'PUT',
         normalizer: recommendationNormalizer,
       })
     )
+    dispatch(
+      updatePage(newPage)
+    )
   },
-
-  onRequestFailRedirectToHome: () => {
-    const { history } = props
-    const delayBeforeRedirect = 2000
-    setTimeout(() => history.replace('/connexion'), delayBeforeRedirect)
+  redirectHome: () => {
+    const { history } = prevProps
+    setTimeout(
+      () => history.replace('/connexion'),
+      2000
+    )
   },
-
   redirectToFirstRecommendationIfNeeded: loadedRecommendations => {
-    const { match, history } = props
+    const { match, history } = prevProps
 
     if (!loadedRecommendations) {
       return
     }
 
-    const shouldRedirectToFirstRecommendationUrl =
-      loadedRecommendations.length > 0 && isDiscoveryStartupUrl(match)
-
-    if (!shouldRedirectToFirstRecommendationUrl) return
-
+    const shouldRedirectToFirstRecommendationUrl = loadedRecommendations.length > 0 && isDiscoveryStartupUrl(match)
+    if (!shouldRedirectToFirstRecommendationUrl) {
+      return
+    }
     const firstOfferId = loadedRecommendations[0].offerId || 'tuto'
     const firstMediationId = loadedRecommendations[0].mediationId || 'vide'
-
-    // replace pluto qu'un push permet de recharger les données
-    // quand on fait back dans le navigateur et qu'on revient
-    // à l'URL /decouverte
     history.replace(`/decouverte/${firstOfferId}/${firstMediationId}`)
   },
-
   resetReadRecommendations: () => {
     dispatch(assignData({ readRecommendations: [] }))
   },
-
-  saveLoadRecommendationsTimestamp: () => {
+  saveLastRecommendationsRequestTimestamp: () => {
     dispatch(saveLastRecommendationsRequestTimestamp())
-  },
-
-  showPasswordChangedPopin: () => {
-    const { query } = props
-    const queryParams = query.parse()
-    const { from } = queryParams
-    const fromPassword = from === 'password'
-    if (!fromPassword) return
-    const delay = 1000
-    const autoClose = 3000
-    const message = 'Votre mot de passe a bien été enregistré.'
-    setTimeout(() => toast(message, { autoClose }), delay)
   },
 })
 

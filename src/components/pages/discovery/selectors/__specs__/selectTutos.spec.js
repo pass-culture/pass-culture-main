@@ -1,6 +1,6 @@
-import selectTutos from '../selectTutos'
+import selectTutorials from '../selectTutorials'
 
-describe('src | components | pages | discovery | selectors | selectTutos', () => {
+describe('src | components | pages | discovery | selectors | selectTutorials', () => {
   describe('when there are tutos in recommendation', () => {
     it('should select the tutos', () => {
       // given
@@ -24,7 +24,7 @@ describe('src | components | pages | discovery | selectors | selectTutos', () =>
       }
 
       // when
-      const result = selectTutos(state)
+      const result = selectTutorials(state)
 
       // then
       expect(result).toStrictEqual([

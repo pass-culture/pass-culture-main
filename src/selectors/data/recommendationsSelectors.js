@@ -2,7 +2,9 @@ import { createSelector } from 'reselect'
 import { getRecommendationSearch } from '../../helpers/getRecommendationSearch'
 import removePageFromSearchString from '../../helpers/removePageFromSearchString'
 
-const selectRecommendationsBySearchQuery = createSelector(
+export const selectRecommendations = state => state.data.recommendations
+
+export const selectRecommendationsBySearchQuery = createSelector(
   state => state.data.recommendations,
   state => state.data.types,
   (state, location) => removePageFromSearchString(location.search),
@@ -19,5 +21,3 @@ const selectRecommendationsBySearchQuery = createSelector(
     return filteredRecommendations
   }
 )
-
-export default selectRecommendationsBySearchQuery

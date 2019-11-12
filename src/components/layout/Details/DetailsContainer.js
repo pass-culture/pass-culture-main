@@ -2,12 +2,12 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 
-import getIsConfirmingCancelling from '../../../helpers/getIsConfirmingCancelling'
+import isCancelView from '../../../helpers/isCancelView'
 import Details from './Details'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
-  const isConfirmingCancelling = getIsConfirmingCancelling(match)
+  const isConfirmingCancelling = isCancelView(match)
 
   return {
     isConfirmingCancelling,

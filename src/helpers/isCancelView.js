@@ -1,7 +1,7 @@
-const getIsConfirmingCancelling = match => {
+const isCancelView = match => {
   const { params } = match
   const { booking, confirmation } = params
   return typeof booking !== 'undefined' && typeof confirmation !== 'undefined'
 }
 
-export default getIsConfirmingCancelling
+export default isCancelView

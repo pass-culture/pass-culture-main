@@ -1,6 +1,6 @@
-import selectUniqAndIndexifiedRecommendations from '../selectUniqAndIndexifiedRecommendations'
+import selectRecommendationsWithLastFakeReco from '../selectRecommendationsWithLastFakeReco'
 
-describe('src | components | pages | discovery | selectors | selectUniqAndIndexifiedRecommendations', () => {
+describe('src | components | pages | discovery | selectors | selectRecommendationsWithLastFakeReco', () => {
   it('should return an array of object having an `uniqId` property', () => {
     // given
     const state = {
@@ -18,7 +18,7 @@ describe('src | components | pages | discovery | selectors | selectUniqAndIndexi
     }
 
     // when
-    const results = selectUniqAndIndexifiedRecommendations(state)
+    const results = selectRecommendationsWithLastFakeReco(state)
 
     // then
     expect(results).not.toHaveLength(0)
@@ -41,7 +41,7 @@ describe('src | components | pages | discovery | selectors | selectUniqAndIndexi
     }
 
     // when
-    const result = selectUniqAndIndexifiedRecommendations(state)
+    const result = selectRecommendationsWithLastFakeReco(state)
 
     // then
     expect(result).toStrictEqual([
@@ -94,7 +94,7 @@ describe('src | components | pages | discovery | selectors | selectUniqAndIndexi
     }
 
     // when
-    const result = selectUniqAndIndexifiedRecommendations(state)
+    const result = selectRecommendationsWithLastFakeReco(state)
 
     // then
     expect(result[0]).toStrictEqual(recommendation)
