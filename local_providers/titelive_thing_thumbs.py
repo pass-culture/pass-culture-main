@@ -42,22 +42,25 @@ class TiteLiveThingThumbs(LocalProvider):
 
         path = PurePath(self.thumb_zipinfo.filename)
 
+        file_identifier = path.name.split('_', 1)[0]
+        file_date = datetime(*self.thumb_zipinfo.date_time)
         product_providable_info = self.create_providable_info(Product,
-                                                              path.name.split('_', 1)[0],
-                                                              datetime(*self.thumb_zipinfo.date_time))
+                                                              file_identifier,
+                                                              file_date)
         self.thingId = product_providable_info.id_at_providers
 
         return [product_providable_info]
 
     def open_next_file(self):
         if self.zip:
-            self.log_provider_event(LocalProviderEventType.SyncPartEnd,
-                                    get_date_from_filename(self.zip, DATE_REGEXP))
-        next_zip_file_name = str(next(self.zips))
-        self.zip = get_zip_file_from_ftp(next_zip_file_name, THUMB_FOLDER_NAME_TITELIVE)
+            file_date = get_date_from_filename(self.zip, DATE_REGEXP)
+            self.log_provider_event(LocalProviderEventType.SyncPartEnd, file_date)
 
-        self.log_provider_event(LocalProviderEventType.SyncPartStart,
-                                get_date_from_filename(self.zip, DATE_REGEXP))
+        next_zip_file_name = str(next(self.zips))
+        file_date = get_date_from_filename(next_zip_file_name, DATE_REGEXP)
+
+        self.zip = get_zip_file_from_ftp(next_zip_file_name, THUMB_FOLDER_NAME_TITELIVE)
+        self.log_provider_event(LocalProviderEventType.SyncPartStart, file_date)
 
         self.thumb_zipinfos = iter(filter(lambda f: f.filename.lower().endswith(SYNCHONISABLE_FILE_EXTENSION),
                                           sorted(self.zip.infolist(),

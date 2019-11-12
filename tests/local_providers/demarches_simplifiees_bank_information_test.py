@@ -1091,6 +1091,7 @@ class RetrieveBankInformationTest:
             "dossier":
                 {
                     "id": 1,
+                    "updated_at": "2019-01-21T18:55:03.387Z",
                     "entreprise":
                         {
                             "siren": "793875019",
@@ -1148,6 +1149,7 @@ class RetrieveBankInformationTest:
             "dossier":
                 {
                     "id": 1,
+                    "updated_at": "2019-01-21T18:55:03.387Z",
                     "entreprise":
                         {
                             "siren": "793875019",

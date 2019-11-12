@@ -269,10 +269,10 @@ class TiteliveThingsTest:
     @clean_database
     @patch('local_providers.titelive_things.get_files_to_process_from_titelive_ftp')
     @patch('local_providers.titelive_things.get_lines_from_thing_file')
-    def test_does_not_create_thing_when_too_few_elements_in_data_line(self,
-                                                                      get_lines_from_thing_file,
-                                                                      get_files_to_process_from_titelive_ftp,
-                                                                      app):
+    def test_does_not_create_thing_when_missing_columns_in_data_line(self,
+                                                                     get_lines_from_thing_file,
+                                                                     get_files_to_process_from_titelive_ftp,
+                                                                     app):
         # Given
         files_list = list()
         files_list.append('Quotidien30.tit')
@@ -299,7 +299,7 @@ class TiteliveThingsTest:
     @clean_database
     @patch('local_providers.titelive_things.get_files_to_process_from_titelive_ftp')
     @patch('local_providers.titelive_things.get_lines_from_thing_file')
-    def test_does_not_create_thing_when_too_many_elements_in_data_line(self,
+    def test_does_not_create_thing_when_too_many_columns_in_data_line(self,
                                                                        get_lines_from_thing_file,
                                                                        get_files_to_process_from_titelive_ftp,
                                                                        app):

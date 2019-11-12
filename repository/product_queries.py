@@ -26,21 +26,16 @@ def delete_unwanted_existing_product(isbn: str):
     if product:
         objects_to_delete.append(product)
         offers = get_offers_by_productId(product.id)
-        if len(offers) > 0:
-            offer_ids = [offer.id for offer in offers]
-            objects_to_delete.append(*offers)
-            stocks = get_stocks_for_offers(offer_ids)
-            if len(stocks) > 0:
-                objects_to_delete.append(*stocks)
-            recommendations = get_recommendations_for_offers(offer_ids)
-            if len(recommendations) > 0:
-                mediations = get_mediations_for_offers(offer_ids)
-                if len(mediations) > 0:
-                    objects_to_delete.append(*mediations)
-                favorites = get_favorites_for_offers(offer_ids)
-                if len(favorites) > 0:
-                    objects_to_delete.append(*favorites)
-                objects_to_delete.append(*recommendations)
+        offer_ids = [offer.id for offer in offers]
+        objects_to_delete = objects_to_delete + offers
+        stocks = get_stocks_for_offers(offer_ids)
+        objects_to_delete = objects_to_delete + stocks
+        recommendations = get_recommendations_for_offers(offer_ids)
+        mediations = get_mediations_for_offers(offer_ids)
+        objects_to_delete = objects_to_delete + mediations
+        favorites = get_favorites_for_offers(offer_ids)
+        objects_to_delete = objects_to_delete + favorites
+        objects_to_delete = objects_to_delete + recommendations
         PcObject.delete_all(objects_to_delete)
 
 

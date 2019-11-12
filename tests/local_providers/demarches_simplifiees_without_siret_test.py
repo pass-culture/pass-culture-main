@@ -80,7 +80,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
                                                                                find_latest_sync_end_event,
                                                                                get_all_application_ids_for_procedure,
                                                                                app):
-        # given
+        # Given
         last_provider_sync = LocalProviderEvent()
         last_provider_sync.date = datetime(2020, 1, 2)
         find_latest_sync_end_event.return_value = last_provider_sync
@@ -88,14 +88,14 @@ class VenueWithoutSIRETBankInformationProviderTest:
         PROCEDURE_ID_VENUE_WITHOUT_SIRET = '5636727'
         TOKEN = '4872'
 
-        # when
+        # When
         with patch.dict(os.environ, {
             'DEMARCHES_SIMPLIFIEES_VENUE_WITHOUT_SIRET_PROCEDURE_ID': PROCEDURE_ID_VENUE_WITHOUT_SIRET,
             'DEMARCHES_SIMPLIFIEES_TOKEN': TOKEN
         }, clear=True):
             VenueWithoutSIRETBankInformationProvider()
 
-        # then
+        # Then
         get_all_application_ids_for_procedure.assert_called_with(
             PROCEDURE_ID_VENUE_WITHOUT_SIRET, TOKEN, datetime(2020, 1, 2)
         )
@@ -108,20 +108,20 @@ class VenueWithoutSIRETBankInformationProviderTest:
                                                                                      find_latest_sync_end_event,
                                                                                      get_all_application_ids_for_procedure,
                                                                                      app):
-        # given
+        # Given
         find_latest_sync_end_event.return_value = None
         get_all_application_ids_for_procedure.return_value = []
         PROCEDURE_ID_VENUE_WITHOUT_SIRET = '5636727'
         TOKEN = '4872'
 
-        # when
+        # When
         with patch.dict(os.environ, {
             'DEMARCHES_SIMPLIFIEES_VENUE_WITHOUT_SIRET_PROCEDURE_ID': PROCEDURE_ID_VENUE_WITHOUT_SIRET,
             'DEMARCHES_SIMPLIFIEES_TOKEN': TOKEN
         }, clear=True):
             VenueWithoutSIRETBankInformationProvider()
 
-        # then
+        # Then
         get_all_application_ids_for_procedure.assert_called_with(
             PROCEDURE_ID_VENUE_WITHOUT_SIRET, TOKEN, datetime(1970, 1, 1)
         )
@@ -136,7 +136,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
                                                               get_application_details,
                                                               get_all_application_ids_for_procedure,
                                                               app):
-        # given
+        # Given
         APPLICATION_ID_2 = 2
 
         last_provider_sync = LocalProviderEvent()
@@ -156,7 +156,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
         venue = create_venue(offerer=offerer, idx=self.VENUE_ID)
         PcObject.save(venue)
 
-        # when
+        # When
         with patch.dict(os.environ, {
             'DEMARCHES_SIMPLIFIEES_VENUE_WITHOUT_SIRET_PROCEDURE_ID': PROCEDURE_ID_VENUE_WITHOUT_SIRET,
             'DEMARCHES_SIMPLIFIEES_TOKEN': TOKEN
@@ -174,7 +174,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
                           erroredThumbs=0,
                           BankInformation=0)
 
-        # then
+        # Then
         assert get_application_details.call_count == 2
         assert get_application_details.call_args_list == [
             call(self.APPLICATION_ID, PROCEDURE_ID_VENUE_WITHOUT_SIRET, TOKEN),
@@ -196,7 +196,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
                                                                         get_all_application_ids_for_procedure,
                                                                         environment,
                                                                         app):
-        # given
+        # Given
         last_provider_sync = LocalProviderEvent()
         last_provider_sync.date = datetime(2020, 1, 2)
         find_latest_sync_end_event.return_value = last_provider_sync
@@ -206,7 +206,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
         activate_provider('VenueWithoutSIRETBankInformationProvider')
         venue_without_siret_bank_information_provider = VenueWithoutSIRETBankInformationProvider()
 
-        # when
+        # When
         venue_without_siret_bank_information_provider.updateObjects()
 
         # Then
@@ -230,7 +230,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
                                                                       get_all_application_ids_for_procedure,
                                                                       environment,
                                                                       app):
-        # given
+        # Given
         last_provider_sync = LocalProviderEvent()
         last_provider_sync.date = datetime(2020, 1, 2)
         find_latest_sync_end_event.return_value = last_provider_sync
@@ -268,7 +268,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
                                                                               get_all_application_ids_for_procedure,
                                                                               environment,
                                                                               app):
-        # given
+        # Given
         IBAN = 'FR7630006000011234567890189'
         BIC = 'BDFEFR2LCCB'
         offerer = create_offerer(siren='793875030', idx=self.OFFERER_ID)
@@ -282,7 +282,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
             self.APPLICATION_ID, self.OFFERER_ID, self.VENUE_ID, iban=IBAN, bic=BIC
         )
 
-        # when
+        # When
         provider_test(app,
                       VenueWithoutSIRETBankInformationProvider,
                       None,
@@ -296,7 +296,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
                       erroredThumbs=0,
                       BankInformation=1)
 
-        # then
+        # Then
         bank_information = BankInformation.query.first()
         assert bank_information.iban == IBAN
         assert bank_information.bic == BIC
@@ -317,7 +317,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
                                                                                               get_all_application_ids_for_procedure,
                                                                                               environment,
                                                                                               app):
-        # given
+        # Given
         offerer = create_offerer(siren='793875030', idx=self.OFFERER_ID)
         venue = create_venue(offerer=offerer, idx=self.VENUE_ID)
         bank_information = create_bank_information(
@@ -339,7 +339,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
             self.APPLICATION_ID, self.OFFERER_ID, self.VENUE_ID, iban=NEW_IBAN, bic=NEW_BIC
         )
 
-        # when
+        # When
         provider_test(app,
                       VenueWithoutSIRETBankInformationProvider,
                       None,
@@ -352,7 +352,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
                       updatedThumbs=0,
                       erroredThumbs=0)
 
-        # then
+        # Then
         bank_information = BankInformation.query.all()
         assert len(bank_information) == 1
 
@@ -366,7 +366,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
 class DemarchesSimplifieesMapperTest:
     class fromVenueWithoutSIRETApplicationTest:
         def test_returns_dict_with_application_details(self):
-            # given
+            # Given
             simplified_response = {
                 "dossier": {
                     "id": 451574,
@@ -426,10 +426,10 @@ class DemarchesSimplifieesMapperTest:
                 }
             }
 
-            # when
+            # When
             extracted_dict = DemarchesSimplifieesMapper.from_venue_without_SIRET_application(simplified_response)
 
-            # then
+            # Then
             assert extracted_dict['BIC'] == 'TRPUFRP1'
             assert extracted_dict['IBAN'] == 'FR7610271490201000200481837'
             assert extracted_dict['applicationId'] == 451574

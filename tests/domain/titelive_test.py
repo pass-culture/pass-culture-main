@@ -8,7 +8,7 @@ class GetStocksInformation():
     def setup_method(self):
         self.mock_get_titelive_stocks = Mock()
 
-    def test_should_return_no_stock_information_when_api_return_no_result(self):
+    def test_should_return_no_stock_information_when_api_returns_no_result(self):
         # Given
         self.mock_get_titelive_stocks.side_effect = [
             {

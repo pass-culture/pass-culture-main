@@ -34,7 +34,8 @@ class GetTiteLiveStocksTest:
         requests_get.assert_called_once_with('https://stock.epagine.fr/stocks/123456789123')
 
     @patch('connectors.api_titelive_stocks.requests.get')
-    def test_should_call_titelive_api_with_siret_and_last_processed_isbn_parameters(self, requests_get):
+    def test_should_call_titelive_api_with_siret_and_last_processed_isbn_to_call_next_api_page(self,
+                                                                                               requests_get):
         # Given
         siret = '123456789123'
         last_processed_isbn = '9876543214567'

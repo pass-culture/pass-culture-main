@@ -54,38 +54,40 @@ class TiteLiveThings(LocalProvider):
             return []
 
         self.infos = get_infos_from_data_line(elements)
-        school_related_product = self.infos['is_scolaire'] == '1' \
-                                 or self.infos['code_csr'] in SCHOOL_RELATED_CSR_CODE
+        is_school_related_product = self.infos['is_scolaire'] == '1' \
+                                    or self.infos['code_csr'] in SCHOOL_RELATED_CSR_CODE
 
-        if school_related_product:
+        book_unique_identifier = self.infos['ean13']
+        if is_school_related_product:
             try:
-                product_queries.delete_unwanted_existing_product(self.infos['ean13'])
+                product_queries.delete_unwanted_existing_product(book_unique_identifier)
             except ProductWithBookingsException:
                 self.log_provider_event(LocalProviderEventType.SyncError,
                                         f"Error deleting product with ISBN: {self.infos['ean13']}")
             return []
 
         self.extraData = {}
-        self.valid_product_type, self.extraData['bookFormat'] = get_thing_type_and_extra_data_from_titelive_type(
+        self.product_type, self.extraData['bookFormat'] = get_thing_type_and_extra_data_from_titelive_type(
             self.infos['code_support'])
 
-        if not self.valid_product_type:
+        if not self.product_type:
             try:
-                product_queries.delete_unwanted_existing_product(self.infos['ean13'])
+                product_queries.delete_unwanted_existing_product(book_unique_identifier)
             except ProductWithBookingsException:
                 self.log_provider_event(LocalProviderEventType.SyncError,
                                         f"Error deleting product with ISBN: {self.infos['ean13']}")
             return []
 
+        book_information_last_update = read_things_date(self.infos['date_updated'])
         providable_info = self.create_providable_info(Product,
-                                                      self.infos['ean13'],
-                                                      read_things_date(self.infos['date_updated']))
+                                                      book_unique_identifier,
+                                                      book_information_last_update)
         return [providable_info]
 
     def fill_object_attributes(self, product: Product):
         product.name = trim_with_elipsis(self.infos['titre'], 140)
         product.datePublished = read_things_date(self.infos['date_parution'])
-        product.type = self.valid_product_type
+        product.type = self.product_type
         product.extraData = self.extraData.copy()
         product.extraData.update(get_extra_data_from_infos(self.infos))
 
@@ -97,11 +99,13 @@ class TiteLiveThings(LocalProvider):
 
     def open_next_file(self):
         if self.thing_file:
+            file_date = get_date_from_filename(self.thing_file, DATE_REGEXP)
             self.log_provider_event(LocalProviderEventType.SyncPartEnd,
-                                    get_date_from_filename(self.thing_file, DATE_REGEXP))
+                                    file_date)
         self.thing_file = next(self.thing_files)
+        file_date = get_date_from_filename(self.thing_file, DATE_REGEXP)
         self.log_provider_event(LocalProviderEventType.SyncPartStart,
-                                get_date_from_filename(self.thing_file, DATE_REGEXP))
+                                file_date)
 
         self.data_lines = get_lines_from_thing_file(str(self.thing_file))
 

@@ -36,23 +36,6 @@ class DeleteUnwantedExistingProductTest:
         assert Product.query.count() == 1
 
     @clean_database
-    def test_should_delete_product_when_it_has_offers_but_no_stocks_and_no_booking(self, app):
-        # Given
-        isbn = '1111111111111'
-        offerer = create_offerer(siren='775671464')
-        venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-        product = create_product_with_thing_type(id_at_providers=isbn)
-        offer = create_offer_with_thing_product(venue, product=product)
-        PcObject.save(venue, product, offer)
-
-        # When
-        delete_unwanted_existing_product('1111111111111')
-
-        # Then
-        assert Product.query.count() == 0
-        assert Offer.query.count() == 0
-
-    @clean_database
     def test_should_delete_product_when_it_has_offer_and_stock_but_not_booked(self, app):
         # Given
         isbn = '1111111111111'
@@ -81,7 +64,7 @@ class DeleteUnwantedExistingProductTest:
         product = create_product_with_thing_type(id_at_providers=isbn)
         offer = create_offer_with_thing_product(venue, product=product)
         stock = create_stock(offer=offer, price=0)
-        booking = create_booking(user=user, stock=stock)
+        booking = create_booking(user=user, stock=stock, is_cancelled=True)
         PcObject.save(venue, product, offer, stock, booking, user)
 
         # When

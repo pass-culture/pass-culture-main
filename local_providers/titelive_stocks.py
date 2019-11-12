@@ -23,8 +23,7 @@ class TiteLiveStocks(LocalProvider):
         self.venue = self.venue_provider.venue
 
         self.last_seen_isbn = ''
-        self.data = get_stocks_information(self.venue_provider.venueIdAtOfferProvider,
-                                           self.last_seen_isbn)
+        self.data = iter([])
         self.product = None
         self.offer_id = None
 
@@ -69,8 +68,8 @@ class TiteLiveStocks(LocalProvider):
         offer.venueId = self.venue.id
         offer.productId = self.product.id
 
-        new_offer_to_create = not offer.id
-        if new_offer_to_create:
+        is_new_offer_to_create = not offer.id
+        if is_new_offer_to_create:
             next_id = self.get_next_offer_id_from_sequence()
             offer.id = next_id
 

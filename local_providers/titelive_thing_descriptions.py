@@ -41,8 +41,9 @@ class TiteLiveThingDescriptions(LocalProvider):
             self.description_zip_info = next(self.description_zip_infos)
 
         path = PurePath(self.description_zip_info.filename)
+        date_from_filename = path.name.split('_', 1)[0]
         product_providable_info = self.create_providable_info(Product,
-                                                              path.name.split('_', 1)[0],
+                                                              date_from_filename,
                                                               self.date_modified)
         self.thingId = product_providable_info.id_at_providers
         return [product_providable_info]
@@ -52,18 +53,19 @@ class TiteLiveThingDescriptions(LocalProvider):
             product.description = f.read().decode('iso-8859-1')
 
     def open_next_file(self):
+        file_date = get_date_from_filename(self.zip_file, DATE_REGEXP)
         if self.zip_file:
             self.log_provider_event(LocalProviderEventType.SyncPartEnd,
-                                    get_date_from_filename(self.zip_file, DATE_REGEXP))
+                                    file_date)
         next_zip_file_name = str(next(self.zips))
         self.zip_file = get_zip_file_from_ftp(next_zip_file_name, DESCRIPTION_FOLDER_NAME_TITELIVE)
 
         self.log_provider_event(LocalProviderEventType.SyncPartStart,
-                                get_date_from_filename(self.zip_file, DATE_REGEXP))
+                                file_date)
 
         self.description_zip_infos = self.get_description_files_from_zip_info()
 
-        self.date_modified = read_description_date(str(get_date_from_filename(self.zip_file, DATE_REGEXP)))
+        self.date_modified = read_description_date(str(file_date))
 
     def get_remaining_files_to_check(self, all_zips) -> iter:
         latest_sync_part_end_event = local_provider_event_queries.find_latest_sync_part_end_event(self.provider)

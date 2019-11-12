@@ -1,11 +1,7 @@
-""" local providers test """
 from unittest.mock import patch
 
-import pytest
-import requests
-
 from local_providers import TiteLiveStocks
-from models import Offer, Stock, Product
+from models import Offer, Stock
 from models.pc_object import PcObject
 from models.venue_provider import VenueProvider
 from repository.provider_queries import get_provider_by_local_class
@@ -16,28 +12,18 @@ from tests.test_utils import create_offerer, create_venue, create_product_with_t
 savedCounts = {}
 
 
-def check_titelive_epagine_is_down():
-    response = requests.get('https://stock.epagine.fr')
-    response_text = str(response.content)
-    successful_request = "running" in response_text
-    status_code_not_200 = (response.status_code != 200)
-    return not successful_request or status_code_not_200
-
-
 @clean_database
 @patch('local_providers.titelive_stocks.get_stocks_information')
 def test_titelive_stock_provider_create_1_stock_and_1_offer_with_wanted_attributes(get_stocks_information, app):
     # given
-    get_stocks_information.side_effect = [
-        iter([
-            {
-                "ref": "0002730757438",
-                "available": 10,
-                "price": 4500,
-                "validUntil": "2019-10-31T15:10:27Z"
-            }
-        ])
-    ]
+    get_stocks_information.return_value = iter([
+        {
+            "ref": "0002730757438",
+            "available": 10,
+            "price": 4500,
+            "validUntil": "2019-10-31T15:10:27Z"
+        }
+    ])
 
     offerer = create_offerer(siren='775671464')
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
@@ -87,16 +73,14 @@ def test_titelive_stock_provider_create_1_stock_and_1_offer_with_wanted_attribut
 @patch('local_providers.titelive_stocks.get_stocks_information')
 def test_titelive_stock_provider_update_1_stock_and_1_offer(get_stocks_information, app):
     # given
-    get_stocks_information.side_effect = [
-        iter([
-            {
-                "ref": "0002730757438",
-                "available": 10,
-                "price": 4500,
-                "validUntil": "2019-10-31T15:10:27Z"
-            }
-        ])
-    ]
+    get_stocks_information.return_value = iter([
+        {
+            "ref": "0002730757438",
+            "available": 10,
+            "price": 4500,
+            "validUntil": "2019-10-31T15:10:27Z"
+        }
+    ])
 
     offerer = create_offerer(siren='987654321')
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
@@ -134,16 +118,14 @@ def test_titelive_stock_provider_update_1_stock_and_1_offer(get_stocks_informati
 @patch('local_providers.titelive_stocks.get_stocks_information')
 def test_titelive_stock_provider_create_1_stock_and_update_1_existing_offer(get_stocks_information, app):
     # given
-    get_stocks_information.side_effect = [
-        iter([
-            {
-                "ref": "0002730757438",
-                "available": 10,
-                "price": 4500,
-                "validUntil": "2019-10-31T15:10:27Z"
-            }
-        ])
-    ]
+    get_stocks_information.return_value = iter([
+        {
+            "ref": "0002730757438",
+            "available": 10,
+            "price": 4500,
+            "validUntil": "2019-10-31T15:10:27Z"
+        }
+    ])
 
     offerer = create_offerer(siren='987654321')
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
@@ -237,9 +219,7 @@ def test_titelive_stock_provider_create_2_stock_and_2_offer_even_if_existing_off
 @patch('local_providers.titelive_stocks.get_stocks_information')
 def test_titelive_stock_provider_create_nothing_if_titelive_api_returns_no_results(get_stocks_information, app):
     # given
-    get_stocks_information.side_effect = [
-        iter([])
-    ]
+    get_stocks_information.return_value = iter([])
     offerer = create_offerer(siren='987654321')
     venue = create_venue(offerer, name='Librairie Titelive', siret='12345678912345')
     PcObject.save(venue)
@@ -276,16 +256,14 @@ def test_titelive_stock_provider_create_nothing_if_titelive_api_returns_no_resul
 @patch('local_providers.titelive_stocks.get_stocks_information')
 def test_titelive_stock_provider_deactivate_offer_if_stock_available_equals_0(get_stocks_information, app):
     # given
-    get_stocks_information.side_effect = [
-        iter([
-            {
-                "ref": "0002730757438",
-                "available": 0,
-                "price": 4500,
-                "validUntil": "2019-10-31T15:10:27Z"
-            }
-        ])
-    ]
+    get_stocks_information.return_value = iter([
+        {
+            "ref": "0002730757438",
+            "available": 0,
+            "price": 4500,
+            "validUntil": "2019-10-31T15:10:27Z"
+        }
+    ])
 
     offerer = create_offerer(siren='775671464')
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
@@ -324,7 +302,7 @@ def test_titelive_stock_provider_deactivate_offer_if_stock_available_equals_0(ge
 
 @clean_database
 @patch('local_providers.titelive_stocks.get_stocks_information')
-def test_titelive_stock_provider_iterate_over_pagination(get_stocks_information, app):
+def test_titelive_stock_provider_iterates_over_pagination(get_stocks_information, app):
     # given
     get_stocks_information.side_effect = [
         iter([
