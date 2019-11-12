@@ -2,7 +2,7 @@ import pick from 'lodash.pick'
 import uniq from 'lodash.uniq'
 import { createSelector } from 'reselect'
 
-import arrayOfObjects, { removeDuplicatesObjects } from '../../../../utils/arrayOfObjects'
+import arrayOfObjects, { removeDuplicatesObjects } from '../../utils/arrayOfObjects'
 
 export const selectTypes = state => state.data.types
 

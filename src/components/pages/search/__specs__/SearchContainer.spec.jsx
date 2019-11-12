@@ -44,14 +44,15 @@ describe('src | components | pages | SearchContainer', () => {
         // given
         const dispatch = jest.fn()
         const props = {}
+        const apiPath = 'Applaudir'
 
         // when
-        mapDispatchToProps(dispatch, props).getRecommendations()
+        mapDispatchToProps(dispatch, props).getRecommendations(apiPath)
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
           config: {
-            apiPath: undefined,
+            apiPath: 'Applaudir',
             handleSuccess: undefined,
             method: 'GET',
             normalizer: {
@@ -71,8 +72,43 @@ describe('src | components | pages | SearchContainer', () => {
               },
             },
           },
-          type: 'REQUEST_DATA_GET_UNDEFINED',
+          type: 'REQUEST_DATA_GET_APPLAUDIR',
         })
+      })
+    })
+
+    it('should decode apiPath', () => {
+      // given
+      const dispatch = jest.fn()
+      const props = {}
+      const apiPath = '%C3%89couter'
+      // when
+      mapDispatchToProps(dispatch, props).getRecommendations(apiPath)
+
+      // then
+      expect(dispatch).toHaveBeenCalledWith({
+        config: {
+          apiPath: 'Écouter',
+          handleSuccess: undefined,
+          method: 'GET',
+          normalizer: {
+            bookings: {
+              normalizer: {
+                stock: 'stocks',
+              },
+              stateKey: 'bookings',
+            },
+            mediation: 'mediations',
+            offer: {
+              normalizer: {
+                favorites: 'favorites',
+                stocks: 'stocks',
+              },
+              stateKey: 'offers',
+            },
+          },
+        },
+        type: 'REQUEST_DATA_GET_ÉCOUTER',
       })
     })
 

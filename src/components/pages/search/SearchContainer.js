@@ -7,8 +7,8 @@ import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
 import selectTypeSublabels, {
   selectTypes,
   selectTypeSublabelsAndDescription,
-} from './selectors/selectTypes'
-import selectRecommendationsBySearchQuery from './selectors/selectRecommendationsBySearchQuery'
+} from '../../../selectors/data/typesSelector'
+import selectRecommendationsBySearchQuery from '../../../selectors/data/recommendationsSelector'
 import { recommendationNormalizer } from '../../../utils/normalizers'
 
 export const mapStateToProps = (state, ownProps) => {
@@ -29,6 +29,7 @@ export const mapStateToProps = (state, ownProps) => {
 
 export const mapDispatchToProps = dispatch => ({
   getRecommendations: (apiPath, handleSuccess) => {
+    apiPath = decodeURIComponent(apiPath)
     dispatch(
       requestData({
         apiPath,

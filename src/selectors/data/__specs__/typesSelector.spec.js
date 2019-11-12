@@ -1,5 +1,5 @@
-import selectTypeSublabelsSelector, { selectTypeSublabelsAndDescription } from '../selectTypes'
-import state from '../../../../../mocks/state'
+import selectTypeSublabelsSelector, { selectTypeSublabelsAndDescription } from '../typesSelector'
+import state from '../../../mocks/state'
 
 describe('selectTypeSublabels', () => {
   it('should select the global state', () => {
@@ -14,6 +14,7 @@ describe('selectTypeSublabels', () => {
     ])
   })
 })
+
 describe('selectTypeSublabelsAndDescription', () => {
   it('should select the global state', () => {
     const expected = [

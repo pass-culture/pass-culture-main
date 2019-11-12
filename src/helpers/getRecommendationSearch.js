@@ -1,7 +1,7 @@
 import moment from 'moment'
 import { parse, stringify } from 'query-string'
-import { createSelector } from 'reselect'
-import { DEFAULT_MAX_DISTANCE } from '../helpers'
+
+import { DEFAULT_MAX_DISTANCE } from '../components/pages/search/helpers'
 
 const getMatchingEventTypes = (types, categories) => {
   const eventTypes = types.filter(type => type.type === 'Event')
@@ -11,6 +11,12 @@ const getMatchingEventTypes = (types, categories) => {
 const getMatchingThingTypes = (types, categories) => {
   const thingTypes = types.filter(type => type.type === 'Thing')
   return thingTypes.filter(thingType => categories.includes(thingType.sublabel))
+}
+
+const getMatchingTypes = (categories, types) => {
+  const matchingEventTypes = getMatchingEventTypes(types, categories)
+  const matchingThingTypes = getMatchingThingTypes(types, categories)
+  return [...matchingEventTypes, ...matchingThingTypes]
 }
 
 const getStringifiedTypeValues = types => `[${types.map(type => `'${type.value}'`).join(', ')}]`
@@ -77,24 +83,15 @@ export const getRecommendationSearch = (search, types) => {
     recommendationSearch['keywords_string'] = searchParams['mots-cles']
   }
 
-  if (searchParams.distance) {
-    if (searchParams.distance !== DEFAULT_MAX_DISTANCE) {
-      recommendationSearch['max_distance'] = `${searchParams.distance}.0`
-      recommendationSearch['latitude'] = searchParams.latitude
-      recommendationSearch['longitude'] = searchParams.longitude
-    }
+  if (searchParams.distance && searchParams.distance !== DEFAULT_MAX_DISTANCE) {
+    recommendationSearch['max_distance'] = `${searchParams.distance}.0`
+    recommendationSearch['latitude'] = searchParams.latitude
+    recommendationSearch['longitude'] = searchParams.longitude
   }
 
   if (searchParams.categories) {
-    const matchingEventTypes = getMatchingEventTypes(
-      types,
-      decodeURIComponent(searchParams.categories)
-    )
-    const matchingThingTypes = getMatchingThingTypes(
-      types,
-      decodeURIComponent(searchParams.categories)
-    )
-    const matchingTypes = [...matchingEventTypes, ...matchingThingTypes]
+    const decodedCategoriesString = decodeURIComponent(searchParams.categories)
+    const matchingTypes = getMatchingTypes(decodedCategoriesString, types)
     recommendationSearch['type_values'] = getStringifiedTypeValues(matchingTypes)
   }
 
@@ -111,29 +108,3 @@ export const getRecommendationSearch = (search, types) => {
 
   return getStringifiedRecommendationSearch(recommendationSearch)
 }
-
-export const removePageFromSearchString = searchString =>
-  searchString
-    .split('&')
-    .filter(element => !element.includes('page='))
-    .join('&')
-
-const selectRecommendationsBySearchQuery = createSelector(
-  state => state.data.recommendations,
-  state => state.data.types,
-  (state, location) => removePageFromSearchString(location.search),
-  (recommendations, types, searchWithoutPage) => {
-    const searchQuery = getRecommendationSearch(searchWithoutPage, types)
-    let filteredRecommendations = recommendations.filter(recommendation => {
-      if (recommendation.search === null) {
-        return false
-      }
-
-      const searchRecommendationWithoutPage = removePageFromSearchString(recommendation.search)
-      return searchRecommendationWithoutPage === decodeURIComponent(searchQuery)
-    })
-    return filteredRecommendations
-  }
-)
-
-export default selectRecommendationsBySearchQuery

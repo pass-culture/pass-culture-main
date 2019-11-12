@@ -1177,31 +1177,6 @@ describe('src | components | pages | Search', () => {
         expect(props.getRecommendations).not.toHaveBeenCalled()
         expect(wrapper.state('isLoading')).toBe(false)
       })
-
-      it('should decode apiPath when requesting result', () => {
-        // given
-        props.recommendations = [
-          {
-            id: 'ABCD',
-          },
-        ]
-        props.query.parse = () => ({
-          'mots-cles': 'yolo',
-          categories: 'Écouter',
-        })
-
-        const wrapper = shallow(<Search {...props} />)
-        const wrapperInstance = wrapper.instance()
-
-        // when
-        wrapperInstance.handleRecommendationsRequest()
-
-        // then
-        expect(props.getRecommendations).toHaveBeenCalledWith(
-          '/recommendations?categories=Écouter&keywords=yolo',
-          expect.any(Function)
-        )
-      })
     })
 
     describe('isRecommendationFound', () => {

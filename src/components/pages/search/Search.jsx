@@ -16,7 +16,7 @@ import {
   translateBrowserUrlToApiUrl,
 } from './helpers'
 import HeaderContainer from '../../layout/Header/HeaderContainer'
-import { getRecommendationSearch } from './selectors/selectRecommendationsBySearchQuery'
+import { getRecommendationSearch } from '../../../helpers/getRecommendationSearch'
 import Icon from '../../layout/Icon/Icon'
 import Spinner from '../../layout/Spinner/Spinner'
 import RelativeFooterContainer from '../../layout/RelativeFooter/RelativeFooterContainer'
@@ -119,7 +119,7 @@ class Search extends PureComponent {
     }
     const recommendationsAlreadyExist = this.isRecommendationFound()
     if (!recommendationsAlreadyExist) {
-      getRecommendations(decodeURIComponent(apiPath), this.handleDataSuccess)
+      getRecommendations(apiPath, this.handleDataSuccess)
     } else {
       this.setState({ isLoading: false })
     }
