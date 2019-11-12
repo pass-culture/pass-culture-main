@@ -7,33 +7,9 @@ from models.db import db
 from models.feature import FeatureToggle, Feature
 
 
-def create_text_search_configuration_if_not_exists():
-    db.engine.execute("CREATE EXTENSION IF NOT EXISTS unaccent;")
-
-    french_unaccent_configuration_query = db.engine.execute(
-        "SELECT * FROM pg_ts_config WHERE cfgname='french_unaccent';")
-    if french_unaccent_configuration_query.fetchone() is None:
-        db.engine.execute("CREATE TEXT SEARCH CONFIGURATION french_unaccent ( COPY = french );")
-        db.engine.execute(
-            "ALTER TEXT SEARCH CONFIGURATION french_unaccent"
-            " ALTER MAPPING FOR hword, hword_part, word WITH unaccent, french_stem;")
-
-
-def create_versionning_tables():
-    # FIXME: This is seriously ugly... (based on https://github.com/kvesteri/postgresql-audit/issues/21)
-    try:
-        versioning_manager.transaction_cls.__table__.create(db.session.get_bind())
-    except ProgrammingError:
-        pass
-    try:
-        versioning_manager.activity_cls.__table__.create(db.session.get_bind())
-    except ProgrammingError:
-        pass
-
-
 def install_database_extensions():
     create_text_search_configuration_if_not_exists()
-    db.engine.execute("CREATE EXTENSION IF NOT EXISTS btree_gist;")
+    create_index_btree_gist_extension()
 
 
 def install_models():
@@ -59,3 +35,31 @@ def install_features():
         )
         features.append(feature)
     PcObject.save(*features)
+
+
+def create_text_search_configuration_if_not_exists():
+    db.engine.execute("CREATE EXTENSION IF NOT EXISTS unaccent;")
+
+    french_unaccent_configuration_query = db.engine.execute(
+        "SELECT * FROM pg_ts_config WHERE cfgname='french_unaccent';")
+    if french_unaccent_configuration_query.fetchone() is None:
+        db.engine.execute("CREATE TEXT SEARCH CONFIGURATION french_unaccent ( COPY = french );")
+        db.engine.execute(
+            "ALTER TEXT SEARCH CONFIGURATION french_unaccent"
+            " ALTER MAPPING FOR hword, hword_part, word WITH unaccent, french_stem;")
+
+
+def create_versionning_tables():
+    # FIXME: This is seriously ugly... (based on https://github.com/kvesteri/postgresql-audit/issues/21)
+    try:
+        versioning_manager.transaction_cls.__table__.create(db.session.get_bind())
+    except ProgrammingError:
+        pass
+    try:
+        versioning_manager.activity_cls.__table__.create(db.session.get_bind())
+    except ProgrammingError:
+        pass
+
+
+def create_index_btree_gist_extension():
+    db.engine.execute("CREATE EXTENSION IF NOT EXISTS btree_gist;")

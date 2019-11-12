@@ -11,6 +11,7 @@ class FindLatestSyncEndEventTest:
     def test_return_none_when_no_event_happended(self, app):
         # Given
         provider = create_provider('Provider Test')
+        PcObject.save(provider)
 
         # When
         last_event = find_latest_sync_end_event(provider)
