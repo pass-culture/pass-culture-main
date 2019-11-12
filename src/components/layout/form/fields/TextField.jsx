@@ -1,5 +1,5 @@
 import classnames from 'classnames'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
 import { composeValidators, createParseNumberValue } from 'react-final-form-utils'
@@ -17,7 +17,7 @@ function getInputValue(inputType, value) {
   return value
 }
 
-class TextField extends Component {
+class TextField extends PureComponent {
   componentDidMount() {
     const { type } = this.props
 

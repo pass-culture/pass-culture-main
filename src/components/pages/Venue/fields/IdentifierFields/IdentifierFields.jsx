@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { Component, Fragment } from 'react'
+import React, { Fragment, PureComponent } from 'react'
 
 import siretValidate from './validators/siretValidate'
 import Icon from '../../../../layout/Icon'
@@ -11,7 +11,7 @@ import ReactTooltip from 'react-tooltip'
 
 const getIsCommentRequired = formSiret => !formSiret || formSiret.length !== 14
 
-class IdentifierFields extends Component {
+class IdentifierFields extends PureComponent {
   componentDidUpdate() {
     ReactTooltip.rebuild()
   }

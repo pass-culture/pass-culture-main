@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
 import { getCanSubmit, parseSubmitErrors, removeWhitespaces } from 'react-final-form-utils'
 import { NavLink } from 'react-router-dom'
@@ -21,7 +21,7 @@ import Main from '../../layout/Main'
 
 const noop = () => {}
 
-class Venue extends Component {
+class Venue extends PureComponent {
   constructor() {
     super()
     this.state = { isRequestPending: false }
@@ -265,7 +265,6 @@ Venue.propTypes = {
   handleSubmitRequestFail: PropTypes.func.isRequired,
   handleSubmitRequestSuccess: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
-  match: PropTypes.shape().isRequired,
   offerer: PropTypes.shape().isRequired,
   query: PropTypes.shape().isRequired,
   trackCreateVenue: PropTypes.func.isRequired,
