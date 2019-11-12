@@ -15,7 +15,6 @@ class Results extends PureComponent {
 
     this.state = {
       hasMore: false,
-      hasReceivedFirstSuccessData: false,
       isLoading: false,
     }
   }
@@ -24,7 +23,6 @@ class Results extends PureComponent {
     const { items } = this.props
     if (items.length) {
       this.handleSetHasMore(items.length)
-      this.handleSetHasReceivedFirstSuccessData()
     }
   }
 
@@ -36,15 +34,10 @@ class Results extends PureComponent {
       const newBatchOfItemsLength = items.length - prevProps.items.length
       this.handleSetHasMore(newBatchOfItemsLength)
       this.handleShouldCancelLoading()
-      const previousItemsWasEmpty = prevProps.items.length === 0
-      if (previousItemsWasEmpty) {
-        this.handleSetHasReceivedFirstSuccessData()
-      }
       return
     }
 
     if (items !== prevProps.items) {
-      this.handleSetHasReceivedFirstSuccessData()
       const newBatchOfItemsLength = items.length - prevProps.items.length
       this.handleSetHasMore(newBatchOfItemsLength)
     }
@@ -53,14 +46,6 @@ class Results extends PureComponent {
   handleSetHasMore = newBatchOfItemsLength => {
     const hasMore = newBatchOfItemsLength === ITEMS_PER_PAGE
     this.setState({ hasMore })
-  }
-
-  handleSetHasReceivedFirstSuccessData = () => {
-    const { hasReceivedFirstSuccessData } = this.state
-
-    if (!hasReceivedFirstSuccessData) {
-      this.setState({ hasReceivedFirstSuccessData: true })
-    }
   }
 
   handleShouldCancelLoading = () => {

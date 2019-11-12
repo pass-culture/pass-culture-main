@@ -3,21 +3,8 @@ import { parse, stringify } from 'query-string'
 
 import { DEFAULT_MAX_DISTANCE } from '../components/pages/search/helpers'
 
-const getMatchingEventTypes = (types, categories) => {
-  const eventTypes = types.filter(type => type.type === 'Event')
-  return eventTypes.filter(eventType => categories.includes(eventType.sublabel))
-}
-
-const getMatchingThingTypes = (types, categories) => {
-  const thingTypes = types.filter(type => type.type === 'Thing')
-  return thingTypes.filter(thingType => categories.includes(thingType.sublabel))
-}
-
-const getMatchingTypes = (categories, types) => {
-  const matchingEventTypes = getMatchingEventTypes(types, categories)
-  const matchingThingTypes = getMatchingThingTypes(types, categories)
-  return [...matchingEventTypes, ...matchingThingTypes]
-}
+const getMatchingTypes = (categories, types) =>
+  types.filter(type => categories.includes(type.sublabel))
 
 const getStringifiedTypeValues = types => `[${types.map(type => `'${type.value}'`).join(', ')}]`
 
@@ -89,7 +76,7 @@ export const getRecommendationSearch = (search, types) => {
     recommendationSearch['longitude'] = searchParams.longitude
   }
 
-  if (searchParams.categories) {
+  if (searchParams.categories && types) {
     const decodedCategoriesString = decodeURIComponent(searchParams.categories)
     const matchingTypes = getMatchingTypes(decodedCategoriesString, types)
     recommendationSearch['type_values'] = getStringifiedTypeValues(matchingTypes)

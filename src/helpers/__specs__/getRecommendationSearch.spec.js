@@ -89,7 +89,7 @@ describe('src | helpers | getRecommendationSearch', () => {
       expect(recommendationSearch).toBe('keywords_string=yo&page=666')
     })
 
-    it('should return something when type is null', () => {
+    it('should return nothing when type is null', () => {
       // given
       const search = 'categories=Applaudir,Jouer'
 
@@ -97,9 +97,7 @@ describe('src | helpers | getRecommendationSearch', () => {
       const recommendationSearch = getRecommendationSearch(search, null)
 
       // then
-      expect(recommendationSearch).toBe(
-        "type_values=['EventType.JEUX', 'EventType.SPECTACLE_VIVANT', 'ThingType.SPECTACLE_VIVANT_ABO', 'ThingType.JEUX_ABO', 'ThingType.JEUX_VIDEO']"
-      )
+      expect(recommendationSearch).toBe('')
     })
   })
 })

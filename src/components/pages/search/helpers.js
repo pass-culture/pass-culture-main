@@ -54,15 +54,7 @@ export const isInitialQueryWithoutFilters = (initialParams, filterParams) =>
       filterParams[key] === ''
   )
 
-export const searchResultsTitle = (
-  keywords = '',
-  items,
-  cameFromOfferTypesPage = false,
-  hasReceivedFirstSuccessData
-) => {
-  if (!hasReceivedFirstSuccessData) {
-    return ''
-  }
+export const searchResultsTitle = (keywords = '', items, cameFromOfferTypesPage = false) => {
   let resultTitle
   if (cameFromOfferTypesPage) {
     resultTitle =

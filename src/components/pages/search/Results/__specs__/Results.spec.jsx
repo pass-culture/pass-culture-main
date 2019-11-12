@@ -26,7 +26,7 @@ describe('src | components | pages | search | Results', () => {
     }
   })
 
-  it('should match the snapshot', () => {
+  it('should match the snapshot with no result', () => {
     // given
     props.cameFromOfferTypesPage = false
 
@@ -37,32 +37,23 @@ describe('src | components | pages | search | Results', () => {
     expect(wrapper).toMatchSnapshot()
   })
 
-  describe('handleSetHasReceivedFirstSuccessData()', () => {
-    it('should return hasReceivedFirstSuccessData = true if there are data', () => {
-      // given
-      const wrapper = shallow(<Results {...props} />)
-      wrapper.setState({ hasReceivedFirstSuccessData: false })
+  it('should match the snapshot with results', () => {
+    // given
+    props.items = [
+      {
+        id: 'ABCD',
+      },
+      {
+        id: 'EFG',
+      },
+    ]
+    props.cameFromOfferTypesPage = false
 
-      // when
-      wrapper.instance().handleSetHasReceivedFirstSuccessData()
+    // when
+    const wrapper = shallow(<Results {...props} />)
 
-      // then
-      expect(wrapper.state(['hasReceivedFirstSuccessData'])).toBe(true)
-    })
-
-    it('should return undefined if there are no data', () => {
-      // given
-      const wrapper = shallow(<Results {...props} />)
-
-      // when
-      wrapper.setState({ hasReceivedFirstSuccessData: true })
-      const handleSetHasReceivedFirstSuccessData = wrapper
-        .instance()
-        .handleSetHasReceivedFirstSuccessData()
-
-      // then
-      expect(handleSetHasReceivedFirstSuccessData).toBeUndefined()
-    })
+    // then
+    expect(wrapper).toMatchSnapshot()
   })
 
   describe('handleSetHasMore', () => {

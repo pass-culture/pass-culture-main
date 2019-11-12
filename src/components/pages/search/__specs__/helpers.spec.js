@@ -95,7 +95,6 @@ describe('src | components | pages | search | utils', () => {
           it('should return number of results occurences with resultatS in plural and keyword searched', () => {
             // given
             cameFromOfferTypesPage = false
-            hasReceivedFirstSuccessData = true
             items = [{}, {}, {}, {}]
             keywords = 'keyword'
 
@@ -115,7 +114,6 @@ describe('src | components | pages | search | utils', () => {
           it('should return number of results with resultat in singular and keyword searched', () => {
             // given
             cameFromOfferTypesPage = false
-            hasReceivedFirstSuccessData = true
             items = [{}]
             keywords = 'keyword'
 
@@ -137,7 +135,6 @@ describe('src | components | pages | search | utils', () => {
           it('should return should 0 with resultat in singular and keyword searched', () => {
             // given
             cameFromOfferTypesPage = false
-            hasReceivedFirstSuccessData = true
             items = []
             keywords = 'keyword'
 
@@ -161,17 +158,11 @@ describe('src | components | pages | search | utils', () => {
           it('should return a title for search results', () => {
             // given
             cameFromOfferTypesPage = false
-            hasReceivedFirstSuccessData = true
             items = [{}, {}, {}, {}]
             keywords = 'keyword'
 
             // when
-            result = searchResultsTitle(
-              keywords,
-              items,
-              cameFromOfferTypesPage,
-              hasReceivedFirstSuccessData
-            )
+            result = searchResultsTitle(keywords, items, cameFromOfferTypesPage)
 
             // then
             expected = '"keyword" : 4 résultats'
@@ -183,17 +174,11 @@ describe('src | components | pages | search | utils', () => {
           it('should return a title for search results', () => {
             // given
             cameFromOfferTypesPage = false
-            hasReceivedFirstSuccessData = true
             items = []
             keywords = 'keyword'
 
             // when
-            result = searchResultsTitle(
-              keywords,
-              items,
-              cameFromOfferTypesPage,
-              hasReceivedFirstSuccessData
-            )
+            result = searchResultsTitle(keywords, items, cameFromOfferTypesPage)
 
             // then
             expected = '"keyword" : 0 résultat'
@@ -214,12 +199,7 @@ describe('src | components | pages | search | utils', () => {
           items = [{}]
 
           // when
-          result = searchResultsTitle(
-            keywords,
-            items,
-            cameFromOfferTypesPage,
-            hasReceivedFirstSuccessData
-          )
+          result = searchResultsTitle(keywords, items, cameFromOfferTypesPage)
 
           // then
           expected = ''
@@ -235,12 +215,7 @@ describe('src | components | pages | search | utils', () => {
           items = []
 
           // when
-          result = searchResultsTitle(
-            keywords,
-            items,
-            cameFromOfferTypesPage,
-            hasReceivedFirstSuccessData
-          )
+          result = searchResultsTitle(keywords, items, cameFromOfferTypesPage)
 
           // then
           expected = 'Il n’y a pas d’offres dans cette catégorie pour le moment.'

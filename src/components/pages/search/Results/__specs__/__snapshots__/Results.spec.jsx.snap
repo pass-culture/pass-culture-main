@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | search | Results should match the snapshot 1`] = `
+exports[`src | components | pages | search | Results should match the snapshot with no result 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Results
@@ -38,14 +38,31 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": Array [
-        "",
+        <h2
+          className="search-results-title"
+          id="results-title"
+        >
+          "fakeKeywords" : 0 résultat
+        </h2>,
         false,
       ],
       "className": "search-results",
     },
     "ref": null,
     "rendered": Array [
-      "",
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "\\"fakeKeywords\\" : 0 résultat",
+          "className": "search-results-title",
+          "id": "results-title",
+        },
+        "ref": null,
+        "rendered": "\\"fakeKeywords\\" : 0 résultat",
+        "type": "h2",
+      },
       false,
     ],
     "type": "div",
@@ -57,15 +74,387 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": Array [
-          "",
+          <h2
+            className="search-results-title"
+            id="results-title"
+          >
+            "fakeKeywords" : 0 résultat
+          </h2>,
           false,
         ],
         "className": "search-results",
       },
       "ref": null,
       "rendered": Array [
-        "",
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "\\"fakeKeywords\\" : 0 résultat",
+            "className": "search-results-title",
+            "id": "results-title",
+          },
+          "ref": null,
+          "rendered": "\\"fakeKeywords\\" : 0 résultat",
+          "type": "h2",
+        },
         false,
+      ],
+      "type": "div",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+    Symbol(enzyme.__providerValues__): undefined,
+  },
+  Symbol(enzyme.__providerValues__): Map {},
+  Symbol(enzyme.__childContext__): null,
+}
+`;
+
+exports[`src | components | pages | search | Results should match the snapshot with results 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <Results
+    cameFromOfferTypesPage={false}
+    hasMore={false}
+    history={
+      Object {
+        "replace": [MockFunction],
+      }
+    }
+    items={
+      Array [
+        Object {
+          "id": "ABCD",
+        },
+        Object {
+          "id": "EFG",
+        },
+      ]
+    }
+    keywords="fakeKeywords"
+    query={
+      Object {
+        "add": [MockFunction],
+        "change": [MockFunction],
+        "clear": [MockFunction],
+        "parse": [Function],
+        "remove": [MockFunction],
+      }
+    }
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <h2
+          className="search-results-title"
+          id="results-title"
+        >
+          "fakeKeywords" : 2 résultats
+        </h2>,
+        <InfiniteScroll
+          element="ul"
+          getScrollParent={[Function]}
+          hasMore={false}
+          initialLoad={true}
+          isReverse={false}
+          loadMore={[Function]}
+          loader={
+            <Spinner
+              Tag="div"
+              className={null}
+              dotFrequency={500}
+              label="Chargement"
+              style={null}
+            />
+          }
+          pageStart={1}
+          ref={null}
+          threshold={-10}
+          useCapture={false}
+          useWindow={false}
+        >
+          <withRouter(WithTracking(Connect(Teaser)))
+            item={
+              Object {
+                "id": "ABCD",
+              }
+            }
+          />
+          <withRouter(WithTracking(Connect(Teaser)))
+            item={
+              Object {
+                "id": "EFG",
+              }
+            }
+          />
+        </InfiniteScroll>,
+      ],
+      "className": "search-results",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "\\"fakeKeywords\\" : 2 résultats",
+          "className": "search-results-title",
+          "id": "results-title",
+        },
+        "ref": null,
+        "rendered": "\\"fakeKeywords\\" : 2 résultats",
+        "type": "h2",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "class",
+        "props": Object {
+          "children": Array [
+            <withRouter(WithTracking(Connect(Teaser)))
+              item={
+                Object {
+                  "id": "ABCD",
+                }
+              }
+            />,
+            <withRouter(WithTracking(Connect(Teaser)))
+              item={
+                Object {
+                  "id": "EFG",
+                }
+              }
+            />,
+          ],
+          "element": "ul",
+          "getScrollParent": [Function],
+          "hasMore": false,
+          "initialLoad": true,
+          "isReverse": false,
+          "loadMore": [Function],
+          "loader": <Spinner
+            Tag="div"
+            className={null}
+            dotFrequency={500}
+            label="Chargement"
+            style={null}
+          />,
+          "pageStart": 1,
+          "ref": null,
+          "threshold": -10,
+          "useCapture": false,
+          "useWindow": false,
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": "ABCD",
+            "nodeType": "function",
+            "props": Object {
+              "item": Object {
+                "id": "ABCD",
+              },
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          Object {
+            "instance": null,
+            "key": "EFG",
+            "nodeType": "function",
+            "props": Object {
+              "item": Object {
+                "id": "EFG",
+              },
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+        ],
+        "type": [Function],
+      },
+    ],
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <h2
+            className="search-results-title"
+            id="results-title"
+          >
+            "fakeKeywords" : 2 résultats
+          </h2>,
+          <InfiniteScroll
+            element="ul"
+            getScrollParent={[Function]}
+            hasMore={false}
+            initialLoad={true}
+            isReverse={false}
+            loadMore={[Function]}
+            loader={
+              <Spinner
+                Tag="div"
+                className={null}
+                dotFrequency={500}
+                label="Chargement"
+                style={null}
+              />
+            }
+            pageStart={1}
+            ref={null}
+            threshold={-10}
+            useCapture={false}
+            useWindow={false}
+          >
+            <withRouter(WithTracking(Connect(Teaser)))
+              item={
+                Object {
+                  "id": "ABCD",
+                }
+              }
+            />
+            <withRouter(WithTracking(Connect(Teaser)))
+              item={
+                Object {
+                  "id": "EFG",
+                }
+              }
+            />
+          </InfiniteScroll>,
+        ],
+        "className": "search-results",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "\\"fakeKeywords\\" : 2 résultats",
+            "className": "search-results-title",
+            "id": "results-title",
+          },
+          "ref": null,
+          "rendered": "\\"fakeKeywords\\" : 2 résultats",
+          "type": "h2",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "class",
+          "props": Object {
+            "children": Array [
+              <withRouter(WithTracking(Connect(Teaser)))
+                item={
+                  Object {
+                    "id": "ABCD",
+                  }
+                }
+              />,
+              <withRouter(WithTracking(Connect(Teaser)))
+                item={
+                  Object {
+                    "id": "EFG",
+                  }
+                }
+              />,
+            ],
+            "element": "ul",
+            "getScrollParent": [Function],
+            "hasMore": false,
+            "initialLoad": true,
+            "isReverse": false,
+            "loadMore": [Function],
+            "loader": <Spinner
+              Tag="div"
+              className={null}
+              dotFrequency={500}
+              label="Chargement"
+              style={null}
+            />,
+            "pageStart": 1,
+            "ref": null,
+            "threshold": -10,
+            "useCapture": false,
+            "useWindow": false,
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": "ABCD",
+              "nodeType": "function",
+              "props": Object {
+                "item": Object {
+                  "id": "ABCD",
+                },
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            Object {
+              "instance": null,
+              "key": "EFG",
+              "nodeType": "function",
+              "props": Object {
+                "item": Object {
+                  "id": "EFG",
+                },
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+          ],
+          "type": [Function],
+        },
       ],
       "type": "div",
     },
