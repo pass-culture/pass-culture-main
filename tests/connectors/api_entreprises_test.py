@@ -22,7 +22,7 @@ class GetByOffererTest:
             get_by_offerer(offerer)
 
         # Then
-        assert 'Error getting API entreprise DATA for SIREN' in str(error)
+        assert 'Error getting API entreprise DATA for SIREN' in str(error.value)
 
     @patch('connectors.api_entreprises.requests.get')
     def test_returns_api_response_when_sirene_api_responds(self, requests_get):
@@ -57,7 +57,7 @@ class GetBySiretTest:
             get_by_siret(siret)
 
         # Then
-        assert 'Error getting API entreprise DATA for SIRET' in str(error)
+        assert 'Error getting API entreprise DATA for SIRET' in str(error.value)
 
     @patch('connectors.api_entreprises.requests.get')
     def test_returns_api_response_when_sirene_api_responds(self, requests_get):

@@ -1435,6 +1435,7 @@ def test_make_wallet_balances_email():
 
 @freeze_time('2018-10-15 09:21:34')
 class MakePaymentsReportEmailTest:
+    @classmethod
     def setup_class(self):
         self.grouped_payments = {
             'ERROR': [Mock(), Mock()],
@@ -1670,6 +1671,7 @@ class ParseEmailAddressesTest:
 
 
 class MakeOfferCreationNotificationEmailTest:
+    @classmethod
     def setup_class(self):
         self.offerer = create_offerer(siren='123456789', postal_code='93100', name='Cinéma de Montreuil')
 

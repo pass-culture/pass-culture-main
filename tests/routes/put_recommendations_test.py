@@ -232,12 +232,9 @@ class Put:
             # then
             assert response.status_code == 200
 
-            assert recommendation1.dateRead is None
-            assert recommendation2.dateRead is None
-            assert recommendation3.dateRead is None
-
-            unread_recos = Recommendation.query.filter(Recommendation.dateRead != None).all()
-            assert len(unread_recos) == 3
+            assert recommendation1.dateRead == datetime.strptime("2018-12-17T15:59:11.689000Z", "%Y-%m-%dT%H:%M:%S.%fZ")
+            assert recommendation2.dateRead == datetime.strptime("2018-12-17T15:59:15.689000Z", "%Y-%m-%dT%H:%M:%S.%fZ")
+            assert recommendation3.dateRead == datetime.strptime("2018-12-17T15:59:21.689000Z", "%Y-%m-%dT%H:%M:%S.%fZ")
 
         @clean_database
         def when_user_has_no_offer_in_his_department(self, app):

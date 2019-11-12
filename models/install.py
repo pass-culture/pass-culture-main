@@ -33,6 +33,7 @@ def create_versionning_tables():
 
 def install_database_extensions():
     create_text_search_configuration_if_not_exists()
+    db.engine.execute("CREATE EXTENSION IF NOT EXISTS btree_gist;")
 
 
 def install_models():

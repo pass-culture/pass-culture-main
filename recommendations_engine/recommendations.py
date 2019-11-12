@@ -132,7 +132,6 @@ def create_recommendations_for_search(user, **kwargs):
 
 def get_recommendation_search_params(request_args: dict) -> dict:
     search_params = {}
-    api_errors = ApiErrors()
 
     if 'date' in request_args and request_args['date']:
         date = dateutil.parser.parse(request_args['date'])

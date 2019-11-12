@@ -64,14 +64,13 @@ class GiveRequestedRecommendationToUserTest:
         assert result_reco.userId == user2.id
 
 
-@freeze_time('2019-01-31 12:00:00')
 class GetRecommendationSearchParamsTest:
-    def setup_class(self):
-        self.now = datetime.utcnow()
-
-    def test_when_days_0_1_and_date_today_returns_dictionary_with_days_intervals_today_and_in_one_day(self, app):
+    def test_when_days_0_1_returns_days_intervals_between_date_and_date_in_one_day(self, app):
         # Given
-        request_args = {'days': '0-1', 'date': strftime(self.now)}
+        request_args = {
+            'days': '0-1',
+            'date': '2019-01-31T12:00:00+00:00'
+        }
 
         # When
         search_params = get_recommendation_search_params(request_args)
@@ -80,9 +79,12 @@ class GetRecommendationSearchParamsTest:
         assert search_params == {'days_intervals': [
             [datetime(2019, 1, 31, 12, 0, tzinfo=tzutc()), datetime(2019, 2, 1, 12, 0, tzinfo=tzutc())]]}
 
-    def test_when_days_1_5_and_date_today_returns_dictionary_with_days_intervals_in_one_day_and_in_five_days(self, app):
+    def test_when_days_1_5_returns_days_intervals_between_date_in_one_day_and_date_in_five_days(self, app):
         # Given
-        request_args = {'days': '1-5', 'date': strftime(self.now)}
+        request_args = {
+            'days': '1-5',
+            'date': '2019-01-31T12:00:00+00:00'
+        }
 
         # When
         search_params = get_recommendation_search_params(request_args)
@@ -91,10 +93,13 @@ class GetRecommendationSearchParamsTest:
         assert search_params == {'days_intervals': [
             [datetime(2019, 2, 1, 12, 0, tzinfo=tzutc()), datetime(2019, 2, 5, 12, 0, tzinfo=tzutc())]]}
 
-    def test_when_days_more_than_5_and_date_today_returns_dictionary_with_days_intervals_in_five_days_and_100000_days(
+    def test_when_days_more_than_5_returns_days_intervals_between_date_with_days_and_date_in_100000_days(
             self, app):
         # Given
-        request_args = {'days': '5-100000', 'date': strftime(self.now)}
+        request_args = {
+            'days': '5-100000',
+            'date': '2019-01-31T12:00:00+00:00'
+        }
 
         # When
         search_params = get_recommendation_search_params(request_args)
