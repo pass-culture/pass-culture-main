@@ -175,10 +175,8 @@ def _format_price_for_email(booking):
 
 
 def _create_email_recipients(recipients):
-    emails = [ { "Email": email } for email in recipients]
-
     if feature_send_mail_to_users_enabled():
-        email_to = emails
+        email_to = [{"Email": email} for email in recipients]
     else:
         email_to = [{ "Email": DEV_EMAIL_ADDRESS }]
 

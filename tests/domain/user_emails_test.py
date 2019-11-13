@@ -1,4 +1,3 @@
-from pprint import pprint
 from unittest.mock import patch, Mock, call
 
 from domain.user_emails import send_user_driven_cancellation_email_to_user, \
@@ -247,7 +246,7 @@ class SendBookingRecapEmailsTest:
         user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, booking_email='offer.booking.email@test.com')
+        offer = create_offer_with_thing_product(venue, booking_email='offer.booking.email@example.net')
         stock = create_stock_with_thing_offer(offerer, venue, offer)
         booking = create_booking(user, stock)
         mocked_send_email = Mock()
@@ -271,8 +270,8 @@ class SendBookingRecapEmailsTest:
         user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, booking_email='offer.booking.email@test.com')
-        stock = create_stock_with_thing_offer(offerer, venue, offer)
+        offer = create_offer_with_thing_product(venue, booking_email='offer.booking.email@example.net')
+        stock = create_stock_with_thing_offer(offerer, venue, offer, booking_email='offer.booking.email@example.net')
         booking = create_booking(user, stock)
         mocked_send_email = Mock()
         return_value = Mock()
@@ -289,7 +288,7 @@ class SendBookingRecapEmailsTest:
         args = mocked_send_email.call_args
         data = args[1]['data']
         assert 'administration@passculture.app' == data['Recipients'][0]['Email']
-        assert 'offer.booking.email@test.com' == data['Recipients'][1]['Email']
+        assert 'offer.booking.email@example.net' == data['Recipients'][1]['Email']
 
 
     def when_feature_send_mail_to_users_enabled_and_not_offer_booking_email_sends_only_to_administration(
@@ -323,7 +322,7 @@ class SendFinalBookingRecapEmailTest:
         # given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        stock = create_stock_with_event_offer(offerer, venue, booking_email='offer.booking.email@test.com')
+        stock = create_stock_with_event_offer(offerer, venue, booking_email='offer.booking.email@example.net')
         mocked_send_email = Mock()
         return_value = Mock()
         return_value.status_code = 200
@@ -345,7 +344,7 @@ class SendFinalBookingRecapEmailTest:
         # given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        stock = create_stock_with_event_offer(offerer, venue, booking_email='offer.booking.email@test.com')
+        stock = create_stock_with_event_offer(offerer, venue, booking_email='offer.booking.email@example.net')
         mocked_send_email = Mock()
         return_value = Mock()
         return_value.status_code = 200
@@ -360,7 +359,7 @@ class SendFinalBookingRecapEmailTest:
         # then
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
-        assert 'offer.booking.email@test.com' in args[1]['data']['To']
+        assert 'offer.booking.email@example.net' in args[1]['data']['To']
         assert 'administration@passculture.app' in args[1]['data']['To']
         set_booking_recap_sent_and_save.assert_called_once_with(stock)
 
@@ -631,7 +630,7 @@ class SendUserWaitingForValidationByAdminEmailTest:
 class SendResetPasswordEmailTest:
     def when_feature_send_emails_enabled_sends_a_reset_password_email_to_user(self, app):
         # given
-        user = create_user(public_name='bobby', email='bobby@test.com', reset_password_token='AZ45KNB99H')
+        user = create_user(public_name='bobby', email='bobby@example.net', reset_password_token='AZ45KNB99H')
         mocked_send_email = Mock()
         return_value = Mock()
         return_value.status_code = 200
@@ -648,11 +647,11 @@ class SendResetPasswordEmailTest:
         assert data['FromName'] == 'Pass Culture'
         assert data['FromEmail'] == 'support@passculture.app'
         assert data['Subject'] == 'Réinitialisation de votre mot de passe'
-        assert data['To'] == 'bobby@test.com'
+        assert data['To'] == 'bobby@example.net'
 
     def when_feature_send_emails_disabled_sends_email_to_pass_culture_dev(self, app):
         # given
-        user = create_user(public_name='bobby', email='bobby@test.com', reset_password_token='AZ45KNB99H')
+        user = create_user(public_name='bobby', email='bobby@example.net', reset_password_token='AZ45KNB99H')
         mocked_send_email = Mock()
         return_value = Mock()
         return_value.status_code = 200
@@ -673,7 +672,7 @@ class SendResetPasswordEmailTest:
 class SendActivationNotificationEmailTest:
     def test_sends_a_mail_to_user_to_notify_that_its_account_is_activated_when_send_emails_enabled(self, app):
         # given
-        user = create_user(public_name='bobby', email='bobby@test.com', reset_password_token='AZ45KNB99H')
+        user = create_user(public_name='bobby', email='bobby@example.net', reset_password_token='AZ45KNB99H')
         mocked_send_email = Mock()
         return_value = Mock()
         return_value.status_code = 200
@@ -687,11 +686,11 @@ class SendActivationNotificationEmailTest:
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
         data = args[1]['data']
-        assert data['To'] == 'bobby@test.com'
+        assert data['To'] == 'bobby@example.net'
 
     def test_sends_to_the_pass_culture_dev_when_send_emails_disabled(self, app):
         # given
-        user = create_user(public_name='bobby', email='bobby@test.com', reset_password_token='AZ45KNB99H')
+        user = create_user(public_name='bobby', email='bobby@example.net', reset_password_token='AZ45KNB99H')
         mocked_send_email = Mock()
         return_value = Mock()
         return_value.status_code = 200
