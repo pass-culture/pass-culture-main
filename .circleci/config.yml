@@ -170,8 +170,13 @@ jobs:
       - image: passcultureapp/artillery:0.2
     steps:
       - checkout
+      - run: pyenv global 3.5.2
+      - run: pip install requests
       - run: sed -i 's/$/'$USER_PASSWORD_PERF_ENV'/' /root/project/infra/artillery/user_list
-      - run: artillery run /root/project/infra/artillery/scenario.yml
+      - run: artillery run /root/project/infra/artillery/scenario.yml -o /tmp/artillery-report.json
+      - run: python pass-culture/scripts/analyze_report.py /tmp/artillery-report.json
+      - store_artifacts:
+          path: /tmp/artillery-report.json
 
   deploy-api:
     machine:
@@ -353,6 +358,7 @@ workflows:
             branches:
               only:
                 - staging
+                - PC-2492-migration-outil-perf
       - deploy-api:
           filters:
             branches:
