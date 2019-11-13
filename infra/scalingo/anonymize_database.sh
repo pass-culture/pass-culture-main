@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 # GET ANONYMIZE PWD
 if [[ $# -gt 1 ]] && [[ "$1" == "-p" ]]; then
   DATABASE_ANONYMIZED_PWD=$2
@@ -20,6 +19,11 @@ else
   exit 1
 fi
 
+if [[ -z "$TUNNEL_PORT" ]]; then
+  echo "You must provide the TUNNEL_PORT variable."
+  exit 1
+fi
+
 PRG="$BASH_SOURCE"
 
 while [ -h "$PRG" ] ; do
@@ -33,7 +37,6 @@ while [ -h "$PRG" ] ; do
 done
 
 ROOT_PATH=$(realpath "$(dirname "$PRG")")
-echo "$ROOT_PATH"
 
 cat "$ROOT_PATH"/anonymize.sql | sed -e "s/##PASSWORD##/$password/" > /tmp/anonymize_tmp.sql
 
@@ -43,7 +46,7 @@ if [[ -z "$APP_NAME" ]]; then
 else
   echo "Connect to env database"
   PGPASSWORD="$TARGET_PASSWORD" psql --host 127.0.0.1 \
-                               --port 10000 \
+                               --port "$TUNNEL_PORT" \
                                --username "$TARGET_USER" \
                                --dbname "$TARGET_USER" \
                                -a -f /tmp/anonymize_tmp.sql
