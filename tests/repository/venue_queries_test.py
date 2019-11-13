@@ -63,15 +63,18 @@ def test_find_filtered_venues_with_dpts_param_return_filtered_venues(app):
                             siret='12345678912346')
     venue_34 = create_venue(offerer, departement_code='34', postal_code='34000',
                             siret='12345678912347')
+    venue_971 = create_venue(offerer, postal_code='97100', siret='12345678912348')
+
     venue_virtual = create_venue(offerer, is_virtual=True, siret=None, postal_code=None)
-    PcObject.save(venue_93, venue_67, venue_34, venue_virtual)
+    PcObject.save(venue_93, venue_67, venue_34, venue_971, venue_virtual)
 
     # When
-    query_with_dpts = find_filtered_venues(dpts=['93', '67'])
+    query_with_dpts = find_filtered_venues(dpts=['93', '67', '971'])
 
     # Then
     assert venue_93 in query_with_dpts
     assert venue_67 in query_with_dpts
+    assert venue_971 in query_with_dpts
     assert venue_34 not in query_with_dpts
     assert venue_virtual not in query_with_dpts
 

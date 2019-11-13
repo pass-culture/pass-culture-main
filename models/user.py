@@ -7,8 +7,7 @@ from sqlalchemy import Binary, \
     Column, \
     func, \
     DateTime, \
-    String, \
-    BigInteger
+    String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import relationship

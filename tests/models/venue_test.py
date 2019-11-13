@@ -215,6 +215,19 @@ def test_nOffers(app):
     # then
     assert n_offers == 4
 
+class DepartementCodeTest:
+    @clean_database
+    def test_venue_in_overseas_departemenet_has_a_three_digit_departement_code(self, app):
+        # Given
+        offerer = create_offerer('123456789', '1 rue Test', 'Test city', '93000', 'Test offerer')
+        venue = create_venue(offerer, siret='12345678912345', name='Venue_name', booking_email='booking@email.com', address='1 test address', postal_code='97300', city='Cayenne', is_virtual=False)
+        PcObject.save(venue)
+
+        # When
+        departementCode = venue.departementCode
+
+        # Then
+        assert departementCode == '973'
 
 class VenueBankInformationTest:
     @clean_database

@@ -66,21 +66,6 @@ def find_all_read_recommendations(user, seen_recommendation_ids, limit=BLOB_SIZE
     return query.all()
 
 
-def find_recommendations_for_user_matching_offers_and_search(user_id=None, offer_ids=None, search=None):
-    query = Recommendation.query
-
-    if user_id is not None:
-        query = query.filter(Recommendation.userId == user_id)
-
-    if offer_ids is not None:
-        query = query.filter(Recommendation.offerId.in_(offer_ids))
-
-    if search is not None:
-        query = query.filter(Recommendation.search == search)
-
-    return query.all()
-
-
 def keep_only_bookable_stocks():
     stock_is_still_bookable = or_(Stock.bookingLimitDatetime > datetime.utcnow(), Stock.bookingLimitDatetime == None)
     stock_is_not_soft_deleted = Stock.isSoftDeleted == False

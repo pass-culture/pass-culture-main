@@ -36,7 +36,7 @@ class CreateRecommendationsForDiscoveryTest:
     @clean_database
     def test_returns_offers_from_any_departement_for_user_from_00(self, app):
         # given
-        departements_ok = ['97', '01', '93', '06', '78']
+        departements_ok = ['973', '01', '93', '06', '78']
 
         user = create_user(departement_code='00')
         offerer_ok = create_offerer()

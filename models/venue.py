@@ -8,6 +8,7 @@ from sqlalchemy.event import listens_for
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import relationship
 
+from domain.departments import OVERSEAS_DEPT_CODES
 from domain.keywords import create_ts_vector_and_table_args
 from models.db import Model
 from models.has_address_mixin import HasAddressMixin
@@ -107,7 +108,11 @@ class Venue(PcObject,
     # open thursday 9 to 18, closed the rest of the week
 
     def store_departement_code(self):
-        self.departementCode = self.postalCode[:-3]
+        venue_dept_code = self.postalCode[:2]
+        venue_overseas_dept_code = self.postalCode[:3]
+
+        self.departementCode = venue_overseas_dept_code if venue_overseas_dept_code in OVERSEAS_DEPT_CODES \
+            else venue_dept_code
 
     def errors(self):
         api_errors = super(Venue, self).errors()
