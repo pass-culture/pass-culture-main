@@ -1,10 +1,9 @@
+import os
 from pathlib import Path
 from unittest.mock import patch
 
-import os
-
 from models import Product, PcObject
-from scripts.remove_non_book_after_import import remove_non_book_after_import, read_isbn_from_file
+from scripts.remove_non_book_after_import import delete_product_from_isbn_file, read_isbn_from_file
 from tests.conftest import clean_database
 from tests.test_utils import create_product_with_thing_type, create_user, create_offerer, create_venue, \
     create_offer_with_thing_product, create_stock, create_booking
@@ -28,7 +27,7 @@ def test_remove_only_unwanted_book(read_isbn_from_file_mock, app):
     PcObject.save(product1, product2)
 
     # When
-    remove_non_book_after_import('mon_fichier_isbns.txt')
+    delete_product_from_isbn_file('mon_fichier_isbns.txt')
 
     # Then
     assert Product.query.count() == 1
@@ -57,7 +56,7 @@ def test_should_not_delete_product_with_bookings(read_isbn_from_file_mock, app):
     PcObject.save(product)
 
     # When
-    remove_non_book_after_import('mon_fichier_isbns.txt')
+    delete_product_from_isbn_file('mon_fichier_isbns.txt')
 
     # Then
     assert Product.query.count() == 1
