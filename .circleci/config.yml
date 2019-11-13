@@ -167,14 +167,14 @@ jobs:
   tests-perf:
     working_directory: ~
     docker:
-      - image: passcultureapp/artillery:0.2
+      - image: passcultureapp/artillery:0.3
     steps:
       - checkout
-      - run: pyenv global 3.5.2
-      - run: pip install requests
+      - run: pwd
+      - run: ls
       - run: sed -i 's/$/'$USER_PASSWORD_PERF_ENV'/' /root/project/infra/artillery/user_list
       - run: artillery run /root/project/infra/artillery/scenario.yml -o /tmp/artillery-report.json
-      - run: python pass-culture/scripts/analyze_report.py /tmp/artillery-report.json
+      - run: python3 pass-culture/scripts/analyze_report.py /tmp/artillery-report.json
       - store_artifacts:
           path: /tmp/artillery-report.json
 
