@@ -11,12 +11,14 @@
       loop:
         - check_disk_space.sh
         - restore_prod_to_env.sh
+        - restore_prod_to_env_new_region.sh
         - backup_prod.sh
         - anonymize.sql
         - anonymize_database.sh
         - clean_old_backup.sh
         - clean_elasticsearch_indices.sh
         - clean_database.sql
+      tags: scripts
 
     - name: Create /var/lib/scalingo directory
       file:
