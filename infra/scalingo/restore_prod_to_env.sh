@@ -89,7 +89,7 @@ PGPASSWORD="$PG_PASSWORD" pg_restore --host 127.0.0.1 \
 
 if [[ $# -gt 0 ]] && [[ "$1" == "-z" ]]; then
   echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Start anonymization"
-  TARGET_USER=$PG_USER TARGET_PASSWORD=$PG_PASSWORD bash /usr/local/bin/anonymize_database.sh -a "$APP_NAME"
+  TUNNEL_PORT=$TUNNEL_PORT TARGET_USER=$PG_USER TARGET_PASSWORD=$PG_PASSWORD bash /usr/local/bin/anonymize_database.sh -a "$APP_NAME"
   echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Anonymization success."
   shift 1
 fi
