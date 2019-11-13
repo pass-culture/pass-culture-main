@@ -288,8 +288,8 @@ class SendBookingRecapEmailsTest:
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
         data = args[1]['data']
-        assert 'offer.booking.email@test.com' in data['Recipients'][0]['Email']
-        assert 'administration@passculture.app' in data['Recipients'][0]['Email']
+        assert 'administration@passculture.app' == data['Recipients'][0]['Email']
+        assert 'offer.booking.email@test.com' == data['Recipients'][1]['Email']
 
 
     def when_feature_send_mail_to_users_enabled_and_not_offer_booking_email_sends_only_to_administration(

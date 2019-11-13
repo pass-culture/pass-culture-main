@@ -129,11 +129,7 @@ def make_offerer_booking_recap_email_with_mailjet_template(booking, recipients):
         'Subject': f'Nouvelle réservation pour {offer_name}',
         'MJ-TemplateID': '779969',
         'MJ-TemplateLanguage': 'true',
-        'Recipients': [
-            {
-                "Email": _create_email_recipients(recipients),
-            }
-        ],
+        'Recipients': _create_email_recipients(recipients),
         'Vars': {
             'nom_offre': offer_name,
             'nom_lieu': venue_name,
@@ -179,15 +175,13 @@ def _format_price_for_email(booking):
 
 
 def _create_email_recipients(recipients):
-    if isinstance(recipients, list):
-        recipients_string = ", ".join(recipients)
-    else:
-        recipients_string = recipients
+    emails = [ { "Email": email } for email in recipients]
 
     if feature_send_mail_to_users_enabled():
-        email_to = recipients_string
+        email_to = emails
     else:
-        email_to = DEV_EMAIL_ADDRESS
+        email_to = [{ "Email": DEV_EMAIL_ADDRESS }]
+
 
     return email_to
 
