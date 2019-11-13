@@ -42,6 +42,8 @@ Pillow==6.2.1
 pip==19.3.1
 pip-licenses==1.15.2
 PostgreSQL-Audit==0.10.0
+psycopg2==2.7.7
+psycopg2-binary==2.7.6.1
 pygsheets
 PyMemoize==1.0.3
 pyparsing==2.4.5
