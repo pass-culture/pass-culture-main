@@ -22,7 +22,7 @@ config:
 #      name: "Cool down the application"
   target: "https://pass-culture-api-perf.osc-fr1.scalingo.io"
   payload:
-    - path: "user_list_with_password"  # Needs to contains valid users
+    - path: "user_list"  # Needs to contains valid users
       fields:
         - "id"
         - "lastName"
