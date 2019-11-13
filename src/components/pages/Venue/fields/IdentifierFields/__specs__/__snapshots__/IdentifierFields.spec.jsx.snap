@@ -137,9 +137,9 @@ ShallowWrapper {
             name="comment"
             placeholder=""
             readOnly={true}
-            required={true}
+            required={false}
             rows={1}
-            validate={null}
+            validate={[Function]}
             validating={false}
           />
         </div>,
@@ -275,9 +275,9 @@ ShallowWrapper {
               name="comment"
               placeholder=""
               readOnly={true}
-              required={true}
+              required={false}
               rows={1}
-              validate={null}
+              validate={[Function]}
               validating={false}
             />,
           ],
@@ -541,9 +541,9 @@ ShallowWrapper {
               "name": "comment",
               "placeholder": "",
               "readOnly": true,
-              "required": true,
+              "required": false,
               "rows": 1,
-              "validate": null,
+              "validate": [Function],
               "validating": false,
             },
             "ref": null,
@@ -674,9 +674,9 @@ ShallowWrapper {
               name="comment"
               placeholder=""
               readOnly={true}
-              required={true}
+              required={false}
               rows={1}
-              validate={null}
+              validate={[Function]}
               validating={false}
             />
           </div>,
@@ -812,9 +812,9 @@ ShallowWrapper {
                 name="comment"
                 placeholder=""
                 readOnly={true}
-                required={true}
+                required={false}
                 rows={1}
-                validate={null}
+                validate={[Function]}
                 validating={false}
               />,
             ],
@@ -1078,9 +1078,9 @@ ShallowWrapper {
                 "name": "comment",
                 "placeholder": "",
                 "readOnly": true,
-                "required": true,
+                "required": false,
                 "rows": 1,
-                "validate": null,
+                "validate": [Function],
                 "validating": false,
               },
               "ref": null,

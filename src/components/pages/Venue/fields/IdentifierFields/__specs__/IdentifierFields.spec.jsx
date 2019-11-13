@@ -300,7 +300,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         expect(textareaField.at(0).prop('readOnly')).toBe(true)
       })
 
-      it('should set comment field to required when no siret have been provided', () => {
+      it('should not validate comment field when no siret have been provided', () => {
         // given
         props.formSiret = null
 
@@ -309,10 +309,10 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
 
         // then
         const commentField = wrapper.find(TextareaField)
-        expect(commentField.prop('required')).toBe(true)
+        expect(commentField.prop('validate')()).toBe("Ce champ est obligatoire")
       })
 
-      it('should set comment field to required when siret length does not match 14 characters', () => {
+      it('should not validate empty comment field when siret length does not match 14 characters', () => {
         // given
         props.formSiret = 'AAA'
 
@@ -321,10 +321,10 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
 
         // then
         const commentField = wrapper.find(TextareaField)
-        expect(commentField.prop('required')).toBe(true)
+        expect(commentField.prop('validate')()).toBe("Ce champ est obligatoire")
       })
 
-      it('should set comment field to not required when siret is provided and valid', () => {
+      it('should validate empty comment field when siret is provided and valid', () => {
         // given
         props.formSiret = '41816609600068'
 
@@ -333,7 +333,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
 
         // then
         const commentField = wrapper.find(TextareaField)
-        expect(commentField.prop('required')).toBe(false)
+        expect(commentField.prop('validate')).toBeNull()
       })
     })
   })

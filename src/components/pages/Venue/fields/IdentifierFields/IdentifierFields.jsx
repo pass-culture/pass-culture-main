@@ -9,7 +9,6 @@ import TextField from '../../../../layout/form/fields/TextField'
 import { formatSirenOrSiret } from '../../../../../utils/siren'
 import ReactTooltip from 'react-tooltip'
 
-const getIsCommentRequired = formSiret => !formSiret || formSiret.length !== 14
 
 class IdentifierFields extends PureComponent {
   componentDidUpdate() {
@@ -59,6 +58,12 @@ class IdentifierFields extends PureComponent {
         <Icon svg="picto-info" />
       </span>
     )
+  }
+
+   commentValidate = comment => {
+    if (comment === undefined || comment === "") {
+      return 'Ce champ est obligatoire'
+    }
   }
 
   render() {
@@ -138,8 +143,8 @@ class IdentifierFields extends PureComponent {
             label="Commentaire (si pas de SIRET) : "
             name="comment"
             readOnly={readOnly}
-            required={getIsCommentRequired(formSiret)}
             rows={1}
+            {...(formSiret && formSiret.length === 14 ? {} : { validate: this.commentValidate })}
           />
         </div>
       </div>
