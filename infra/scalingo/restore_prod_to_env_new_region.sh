@@ -56,7 +56,7 @@ DB_TUNNEL_HAS_TO_BE_TERMINATED=false
 if [ -z "$DB_TUNNEL_PID" ]
 then
   # OPEN TUNNEL TO DATABASE
-  /usr/local/bin/scalingo -a "$APP_NAME" db-tunnel postgres://"$POSTGRESQL_URL" &
+  /usr/local/bin/scalingo -a "$APP_NAME" --region osc-fr1 db-tunnel postgres://"$POSTGRESQL_URL" &
   sleep 3
   DB_TUNNEL_PID=$!
   DB_TUNNEL_HAS_TO_BE_TERMINATED=true
