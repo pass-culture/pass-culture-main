@@ -8154,14 +8154,6 @@ normalize-url@1.9.1:
     query-string "^4.1.0"
     sort-keys "^1.0.0"
 
-normalized-data-state@0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/normalized-data-state/-/normalized-data-state-0.2.0.tgz#4d923eb7af0e337bc8eab48637a497697db8c2a0"
-  integrity sha512-8zoQxQd1lPSLOGIoobRgN4+dCgJb8s+92wfDZpOejYF10I6CrddEK57JPIEu7MeTdq6RGlBdy56YMwoTc1AJLw==
-  dependencies:
-    eslint "^5.8.0"
-    lodash.uniqby "^4.7.0"
-
 npm-bundled@^1.0.1:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/npm-bundled/-/npm-bundled-1.0.6.tgz#e7ba9aadcef962bb61248f91721cd932b3fe6bdd"
@@ -8664,10 +8656,10 @@ pascalcase@^0.1.1:
   resolved "https://registry.yarnpkg.com/pascalcase/-/pascalcase-0.1.1.tgz#b363e55e8006ca6fe21784d2db22bd15d7917f14"
   integrity sha1-s2PlXoAGym/iF4TS2yK9FdeRfxQ=
 
-pass-culture-shared@0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/pass-culture-shared/-/pass-culture-shared-0.2.0.tgz#599e902ff6a42aa0e5eb942dab9565bf86eb522f"
-  integrity sha512-0CPnjVAvgwcJE8e19rXWnLEDbvxS32rxtQ52l1fA4xaxYrn/myy9j3wKLp6ORUrxT5WPQjW4iKljp9gV0H/hhw==
+pass-culture-shared@0.1.7:
+  version "0.1.7"
+  resolved "https://registry.yarnpkg.com/pass-culture-shared/-/pass-culture-shared-0.1.7.tgz#45f5ba539b59d5f74855446ce7ced03a7d36ec21"
+  integrity sha512-krdFIwTzhJ0WDHgBFbTsa4QA5/01h2MxjYlW6MNb5C90C69RSMmw8VQ3rL0+/CcqoNLZH8MIr3eZDxGz7v50fQ==
   dependencies:
     classnames "2.2.5"
     eslint "^5.8.0"
@@ -8690,7 +8682,7 @@ pass-culture-shared@0.2.0:
     react-router-dom "^4.3.1"
     react-time-input "^0.0.19"
     redux "^4.0.0"
-    redux-saga-data "^1.8.0"
+    redux-saga-data "3.2.0"
     reselect "^3.0.1"
     uuid "^3.3.2"
 
@@ -9985,24 +9977,6 @@ redux-saga-data@3.2.0:
   dependencies:
     fetch-normalize-data "1.8.4"
     redux-saga "^1.1.1"
-
-redux-saga-data@^1.8.0:
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/redux-saga-data/-/redux-saga-data-1.8.0.tgz#282fb029cf2cb811124e11a4426a0016f597694d"
-  integrity sha512-wpRvdyJc8JHAD66DIXPrfbinva0geCyPn2WgIZTqcaQdE+RR4el4XHQt/jmuCCvGRKW4DTXXfNovXzTIX8iOAw==
-  dependencies:
-    eslint "^5.8.0"
-    lodash.uniqby "^4.7.0"
-    normalized-data-state "0.2.0"
-    prop-types "^15.6.2"
-    redux "^4.0.0"
-    redux-saga "^0.15.3"
-    uuid "^3.3.2"
-
-redux-saga@^0.15.3:
-  version "0.15.6"
-  resolved "https://registry.yarnpkg.com/redux-saga/-/redux-saga-0.15.6.tgz#8638dc522de6c6c0a496fe8b2b5466287ac2dc4d"
-  integrity sha1-hjjcUi3mxsCklv6LK1RmKHrC3E0=
 
 redux-saga@^1.1.1:
   version "1.1.1"
