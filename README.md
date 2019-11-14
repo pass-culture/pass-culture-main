@@ -526,7 +526,7 @@ Ensuite, lancer le script d'import des utilisateurs avec une liste d'utilisateur
 On passe en paramètre un faux email qui ne sera pas utilisé.
 
 ``` bash
-scalingo -a pass-culture-api-perf --region osc-fr1 run 'ACTIVATION_USER_RECIPIENTS=epe@octo.com python /tmp/uploads/import_users.py user_list' -f scalingo/import_users.py -f user_list```
+scalingo -a pass-culture-api-perf --region osc-fr1 run 'ACTIVATION_USER_RECIPIENTS=<email> python /tmp/uploads/import_users.py user_list' -f scalingo/import_users.py -f user_list```
 ```
 
 Un exemple de csv utilisateur `user_list` :
