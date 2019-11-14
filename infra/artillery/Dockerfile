@@ -5,4 +5,6 @@ RUN yarn global add artillery -r -o -o -t && yarn global add artillery-plugin-st
 
 RUN mkdir /usr/local/share/.config/yarn/global/node_modules/artillery-plugin-metrics-by-endpoint
 
-COPY files/artillery-plugin-metrics-by-endpoint/index.js  /usr/local/share/.config/yarn/global/node_modules/artillery-plugin-metrics-by-endpoint/index.js
+COPY files/artillery-plugin-metrics-by-endpoint  /tmp/artillery-plugin-metrics-by-endpoint
+
+RUN yarn global add file:/tmp/artillery-plugin-metrics-by-endpoint

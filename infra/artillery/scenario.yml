@@ -2,8 +2,6 @@
 config:
   plugins:
     metrics-by-endpoint: {}
-#    expect: {}
-    artillery-plugin-elasticsearch: {}
   defaults:
     headers:
       Origin: "https://localhost"
@@ -13,9 +11,9 @@ config:
       arrivalRate: 0
       rampTo: 1
       name: "Warm up the application"
-#    - duration: 300
-#      arrivalRate: 15
-#      name: "Sustained max load"
+    - duration: 10
+      arrivalRate: 1
+      name: "Sustained max load"
 #    - duration: 60
 #      arrivalRate: 15
 #      rampTo: 0
