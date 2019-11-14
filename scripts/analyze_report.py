@@ -1,7 +1,12 @@
 import simplejson as json
-import numpy as np
 import os, sys
 import requests
+import math
+
+def _percentile(data, percentile):
+    data = sorted(data)
+    size = len(data)
+    return sorted(data)[int(math.ceil((size * percentile) / 100)) - 1]
 
 def _get_recommendation_keywords_stats():
     recommendation_keywords = []
@@ -13,11 +18,11 @@ def _get_recommendation_keywords_stats():
                 recommendation_keyword_max['value'] = data['aggregate']['customStats'][key]['max']
                 recommendation_keyword_max['keyword'] = key
 
-    recommendation_keywords = {'endpoint_name': '/recommendations?keyword',
-                            'median': np.percentile(recommendation_keywords, 50),
-                            'p99': np.percentile(recommendation_keywords, 99)}
+    recommendation_keywords_stats = {'endpoint_name': '/recommendations?keyword',
+                            'median': _percentile(recommendation_keywords, 50),
+                            'p99': _percentile(recommendation_keywords, 99)}
 
-    return recommendation_keywords
+    return recommendation_keywords_stats
 
 if len(sys.argv) < 2:
     print('You need to pass at least one argument: report path')
@@ -78,6 +83,6 @@ with open(report_path) as json_file:
             print('Endpoint\'s P99 over maximum :', endpoint['endpoint_name'])
             endpoints_over_limit = True
 
-    _send_to_ops_bot()
+    # _send_to_ops_bot()
 
 sys.exit(endpoints_over_limit)
