@@ -60,16 +60,23 @@ class IdentifierFields extends PureComponent {
     )
   }
 
-   commentValidate = comment => {
-    if (comment === undefined || comment === "") {
+  commentValidate = comment => {
+    const {
+      formSiret,
+    } = this.props
+
+    if (formSiret && formSiret.length === 14) {
+      return ''
+    }
+    if (comment === undefined || comment === '') {
       return 'Ce champ est obligatoire'
     }
+    return ''
   }
 
   render() {
     const {
       fieldReadOnlyBecauseFrozenFormSiret,
-      formSiret,
       initialSiret,
       isCreatedEntity,
       readOnly,
@@ -144,7 +151,7 @@ class IdentifierFields extends PureComponent {
             name="comment"
             readOnly={readOnly}
             rows={1}
-            {...(formSiret && formSiret.length === 14 ? {} : { validate: this.commentValidate })}
+            validate={this.commentValidate}
           />
         </div>
       </div>
