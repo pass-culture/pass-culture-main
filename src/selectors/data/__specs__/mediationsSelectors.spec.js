@@ -1,4 +1,4 @@
-import selectMediationsByOfferId from '../selectMediationsByOfferId'
+import { selectMediationsByOfferId } from '../mediationsSelectors'
 
 describe('selectMediationsByOfferId', () => {
   describe('when there is no mediations in state and no offerId provided', () => {

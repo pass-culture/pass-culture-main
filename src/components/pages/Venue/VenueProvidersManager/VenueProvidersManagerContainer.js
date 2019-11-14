@@ -6,7 +6,7 @@ import { requestData } from 'redux-saga-data'
 
 import VenueProvidersManager from './VenueProvidersManager'
 import selectVenueProvidersByVenueId from './selectors/selectVenueProvidersByVenueId'
-import selectProviders from '../../../../selectors/selectProviders'
+import { selectProviders } from '../../../../selectors/data/providersSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const { venue } = ownProps

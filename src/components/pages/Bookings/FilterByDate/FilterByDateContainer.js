@@ -3,8 +3,8 @@ import { connect } from 'react-redux'
 import { withFrenchQueryRouter } from '../../../hocs'
 
 import FilterByDate from './FilterByDate'
-import selectStocksByOfferId from '../../../../selectors/selectStocksByOfferId'
-import selectOfferById from '../../../../selectors/selectOfferById'
+import { selectStocksByOfferId } from '../../../../selectors/data/stocksSelectors'
+import { selectOfferById } from '../../../../selectors/data/offersSelectors'
 
 export const mapDispatchToProps = dispatch => ({
   updateBookingsFrom: date => {

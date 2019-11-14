@@ -7,7 +7,7 @@
   },
   "data": {
     "bookings": [],
-      "offerers": [
+    "offerers": [
         {
           "id": "4Q",
           "address": "RUE DES SAPOTILLES",
@@ -27,7 +27,26 @@
           "postalCode": "97300",
           "siren": "222222233",
           "thumbCount": 0
-        }],
+      }],
+    "offers": [
+      {
+        "id": "AXBQ",
+        "bookingEmail": null,
+        "dateCreated": "2018-11-13T09:54:56.103080Z",
+        "dateModifiedAtLastProvider": "2018-11-13T09:54:56.103073Z",
+        "isEvent": false,
+        "idAtProviders": null,
+        "isActive": true,
+        "lastProviderId": null,
+        "modelName": "Offer",
+        "productId": "V4",
+        "isThing": true,
+        "venueId": "AYJA",
+        "eventOccurrencesIds": [],
+        "mediationsIds": [],
+        "stocksIds": ["DCRA"]
+      }
+    ],
     "readRecommendations": [
       {
         "id": "AY9A",

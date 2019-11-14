@@ -1,10 +1,10 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
-import selectOfferById from '../../../../selectors/selectOfferById'
 import TiteLiveInformation from './TiteLiveInformation'
 import withFrenchQueryRouter from '../../../hocs/withFrenchQueryRouter'
-import {getProductById} from '../../../../selectors/data/productsSelectors'
+import { selectProductById } from '../../../../selectors/data/productsSelectors'
+import { selectOfferById } from '../../../../selectors/data/offersSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const {
@@ -15,7 +15,7 @@ export const mapStateToProps = (state, ownProps) => {
   } = ownProps
 
   const offer = selectOfferById(state, offerId)
-  const product = getProductById(state, offer.productId)
+  const product = selectProductById(state, offer.productId)
   const { venueId } = offer
   const { name: offerName } = offer
   const { thumbUrl } = product

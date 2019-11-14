@@ -4,11 +4,9 @@ import { compose } from 'redux'
 
 import { closeNotification, showNotification } from 'pass-culture-shared'
 
-
 import MediationsManager from './MediationsManager'
-import selectMediationsByOfferId from '../../../../selectors/selectMediationsByOfferId'
-import selectOfferById from '../../../../selectors/selectOfferById'
-
+import { selectMediationsByOfferId } from '../../../../selectors/data/mediationsSelectors'
+import { selectOfferById } from '../../../../selectors/data/offersSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const {

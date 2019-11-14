@@ -1,20 +1,18 @@
 import { createSelector } from 'reselect'
 
-const selectTypesByIsVenueVirtual = createSelector(
+export const selectTypesByIsVenueVirtual = createSelector(
   state => state.data.types,
   (state, isVenueVirtual) => isVenueVirtual,
   (types, isVenueVirtual) => {
-    let filteredTypes = [...types]
+    let filteredTypes = [ ...types ]
     if (typeof isVenueVirtual !== 'undefined') {
       if (isVenueVirtual) {
-        filteredTypes = filteredTypes.filter(t => !t.offlineOnly)
+        filteredTypes = filteredTypes.filter(type => !type.offlineOnly)
       } else {
-        filteredTypes = filteredTypes.filter(t => !t.onlineOnly)
+        filteredTypes = filteredTypes.filter(type => !type.onlineOnly)
       }
     }
     filteredTypes.sort((t1, t2) => t1.proLabel.localeCompare(t2.proLabel))
     return filteredTypes
   }
 )
-
-export default selectTypesByIsVenueVirtual

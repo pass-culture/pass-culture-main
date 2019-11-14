@@ -1,7 +1,7 @@
 import { Icon, resolveIsNew } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import { stringify } from 'query-string'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
 import { NavLink } from 'react-router-dom'
 
@@ -11,9 +11,9 @@ import Main from '../../layout/Main'
 
 import { mapApiToBrowser, translateQueryParamsToApiParams } from '../../../utils/translate'
 import OfferItemContainer from './OfferItem/OfferItemContainer'
-import selectOffersByOffererIdAndVenueId from '../../../selectors/selectOffersByOffererIdAndVenueId'
+import { selectOffersByOffererIdAndVenueId } from '../../../selectors/data/offersSelectors'
 
-class Offers extends Component {
+class Offers extends PureComponent {
   constructor(props) {
     super(props)
 

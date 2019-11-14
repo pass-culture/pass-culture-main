@@ -5,11 +5,13 @@ import { withRouter } from 'react-router'
 
 import OfferItem from './OfferItem'
 
-import selectAggregatedStockByOfferId from '../../../../selectors/selectAggregatedStockByOfferId'
-import selectMaxDateByOfferId from '../../../../selectors/selectMaxDateByOfferId'
-import selectMediationsByOfferId from '../../../../selectors/selectMediationsByOfferId'
-import selectProductById from '../../../../selectors/selectProductById'
-import selectStocksByOfferId from '../../../../selectors/selectStocksByOfferId'
+import {
+  selectAggregatedStockByOfferId,
+  selectLatestDateByOfferId,
+  selectStocksByOfferId,
+} from '../../../../selectors/data/stocksSelectors'
+import { selectMediationsByOfferId } from '../../../../selectors/data/mediationsSelectors'
+import { selectProductById } from '../../../../selectors/data/productsSelectors'
 import { selectVenueById } from '../../../../selectors/data/venuesSelectors'
 import { selectOffererById } from '../../../../selectors/data/offerersSelectors'
 import { getOfferTypeLabel } from '../../../../utils/offerItem'
@@ -45,7 +47,7 @@ export const mapStateToProps = (state, ownProps) => {
 
   return {
     aggregatedStock: selectAggregatedStockByOfferId(state, offerId),
-    maxDate: selectMaxDateByOfferId(state, offerId),
+    maxDate: selectLatestDateByOfferId(state, offerId),
     mediations: selectMediationsByOfferId(state, offerId),
     product,
     stocks: selectStocksByOfferId(state, offerId),

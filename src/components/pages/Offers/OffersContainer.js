@@ -6,10 +6,10 @@ import { assignData, requestData } from 'redux-saga-data'
 import Offers from './Offers'
 import { withRequiredLogin } from '../../hocs'
 import { selectOffererById } from '../../../selectors/data/offerersSelectors'
-import selectOffersByOffererIdAndVenueId from '../../../selectors/selectOffersByOffererIdAndVenueId'
 import { selectVenueById } from '../../../selectors/data/venuesSelectors'
 import { offerNormalizer } from '../../../utils/normalizers'
 import { translateQueryParamsToApiParams } from '../../../utils/translate'
+import { selectOffersByOffererIdAndVenueId } from '../../../selectors/data/offersSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const { query } = ownProps

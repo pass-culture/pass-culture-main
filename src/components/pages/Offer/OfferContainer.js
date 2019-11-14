@@ -7,15 +7,12 @@ import { withRequiredLogin } from '../../hocs'
 import withTracking from '../../hocs/withTracking'
 
 import selectFormInitialValuesByProductAndOfferAndOffererAndVenue from './utils/selectFormInitialValuesByProductAndOfferAndOffererAndVenue'
-import selectOfferById from '../../../selectors/selectOfferById'
 import { selectOffererById } from '../../../selectors/data/offerersSelectors'
-import selectProductById from '../../../selectors/selectProductById'
-import selectProviders from '../../../selectors/selectProviders'
-import selectMusicSubOptionsByMusicType from '../../../selectors/selectMusicSubOptionsByMusicType'
-import selectShowSubOptionsByShowType from '../../../selectors/selectShowSubOptionsByShowType'
-import selectStocksByOfferId from '../../../selectors/selectStocksByOfferId'
-import selectTypesByIsVenueVirtual from '../../../selectors/selectTypesByIsVenueVirtual'
-import selectTypeByIsVenueVirtualAndOfferTypeValue from '../../../selectors/selectTypeByIsVenueVirtualAndOfferTypeValue'
+import { selectProductById } from '../../../selectors/data/productsSelectors'
+import { selectMusicSubOptionsByMusicType } from '../../../utils/selectMusicSubOptionsByMusicType'
+import selectShowSubOptionsByShowType from '../../../utils/selectShowSubOptionsByShowType'
+import { selectTypesByIsVenueVirtual } from '../../../selectors/data/typesSelectors'
+import selectTypeByIsVenueVirtualAndOfferTypeValue from './selectTypeByIsVenueVirtualAndOfferTypeValue'
 import {
   selectVenueById,
   selectVenuesByOffererIdAndOfferType,
@@ -23,6 +20,9 @@ import {
 import { selectOfferers } from '../../../selectors/data/offerersSelectors'
 import selectIsFeatureActive from '../../router/selectors/selectIsFeatureActive'
 import { mergeForm } from 'pass-culture-shared'
+import { selectStocksByOfferId } from '../../../selectors/data/stocksSelectors'
+import { selectProviders } from '../../../selectors/data/providersSelectors'
+import { selectOfferById } from '../../../selectors/data/offersSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const {
@@ -115,13 +115,13 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 }
 
 export const mapDispatchToProps = dispatch => ({
-    updateFormSetIsDuo : (isDuo) => {
-      dispatch(
-        mergeForm('offer', {
-          isDuo: isDuo,
-        })
-      )
-    }
+  updateFormSetIsDuo: isDuo => {
+    dispatch(
+      mergeForm('offer', {
+        isDuo: isDuo,
+      })
+    )
+  },
 })
 
 export default compose(

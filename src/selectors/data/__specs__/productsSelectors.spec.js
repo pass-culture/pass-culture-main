@@ -1,7 +1,7 @@
-import { getProductById } from '../productsSelectors'
+import { selectProductById } from '../productsSelectors'
 
 describe('src | selectors | data | productsSelectors', () => {
-  describe('getProductById', () => {
+  describe('selectProductById', () => {
     describe('when product exists in products', () => {
       it('should return it', () => {
         // given
@@ -17,7 +17,7 @@ describe('src | selectors | data | productsSelectors', () => {
         const productId = 'AGKD'
 
         // when
-        const product = getProductById(store, productId)
+        const product = selectProductById(store, productId)
 
         // then
         expect(product).toStrictEqual({
@@ -37,7 +37,7 @@ describe('src | selectors | data | productsSelectors', () => {
         const productId = 'AGKD'
 
         // when
-        const product = getProductById(store, productId)
+        const product = selectProductById(store, productId)
 
         // then
         expect(product).toStrictEqual()

@@ -1,3 +1,4 @@
+import createCachedSelector from 're-reselect'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
@@ -5,11 +6,34 @@ import StockItem from './StockItem'
 import withFrenchQueryRouter from '../../../../hocs/withFrenchQueryRouter'
 import selectFormInitialValuesByStockAndOfferIdAndOffererIdAndTimezone from './selectors/selectFormInitialValuesByStockAndOfferIdAndOffererId'
 import { translateQueryParamsToApiParams } from '../../../../../utils/translate'
-import selectOfferById from '../../../../../selectors/selectOfferById'
-import selectProductById from '../../../../../selectors/selectProductById'
+import { selectProductById } from '../../../../../selectors/data/productsSelectors'
 import { selectVenueById } from '../../../../../selectors/data/venuesSelectors'
 import { selectOffererById } from '../../../../../selectors/data/offerersSelectors'
-import selectTimezoneByVenueIdAndOffererId from '../../../../../selectors/selectTimezoneByVenueIdAndOffererId'
+import { selectOfferById } from '../../../../../selectors/data/offersSelectors'
+
+const getTimezoneFromDepartementCode = departementCode => {
+  switch (departementCode) {
+    case '97':
+    case '973':
+      return 'America/Cayenne'
+    default:
+      return 'Europe/Paris'
+  }
+}
+
+export const selectTimezoneByVenueIdAndOffererId = createCachedSelector(
+  selectVenueById,
+  (state, venueId, offererId) => selectOffererById(state, offererId),
+  (venue, offerer) => {
+    if (!venue) return
+
+    if (!venue.isVirtual) return getTimezoneFromDepartementCode(venue.departementCode)
+
+    if (!offerer) return
+
+    return getTimezoneFromDepartementCode(offerer.postalCode.slice(0, 2))
+  }
+)((state, venueId = '', offererId = '') => `${venueId}${offererId}`)
 
 export const mapStateToProps = (state, ownProps) => {
   const {

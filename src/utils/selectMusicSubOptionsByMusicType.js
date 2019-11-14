@@ -3,9 +3,7 @@ import createCachedSelector from 're-reselect'
 
 import { musicOptions } from '../utils/edd'
 
-const mapArgsToCacheKey = musicType => musicType || ' '
-
-const selectMusicOptionsByMusicType = createCachedSelector(
+export const selectMusicSubOptionsByMusicType = createCachedSelector(
   musicType => musicType,
   musicType => {
     if (!musicType) {
@@ -15,6 +13,4 @@ const selectMusicOptionsByMusicType = createCachedSelector(
     const option = musicOptions.find(option => option.code === parentCode)
     return get(option, 'children')
   }
-)(mapArgsToCacheKey)
-
-export default selectMusicOptionsByMusicType
+)((musicType = ' ') => musicType)

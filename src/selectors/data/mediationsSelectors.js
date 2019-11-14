@@ -1,11 +1,13 @@
 import moment from 'moment'
 import createCachedSelector from 're-reselect'
 
-function mapArgsToCacheKey(state, offerId) {
-  return offerId || ''
-}
+export const selectMediationById = createCachedSelector(
+  state => state.data.mediations,
+  (state, mediationId) => mediationId,
+  (mediations, mediationId) => mediations.find(m => m.id === mediationId)
+)((state, mediationId) => mediationId || '')
 
-const selectMediationsByOfferId = createCachedSelector(
+export const selectMediationsByOfferId = createCachedSelector(
   state => state.data.mediations,
   (state, offerId) => offerId,
   (mediations, offerId) => {
@@ -21,6 +23,4 @@ const selectMediationsByOfferId = createCachedSelector(
     // return
     return selectedMediations
   }
-)(mapArgsToCacheKey)
-
-export default selectMediationsByOfferId
+)((state, offerId) => offerId || '')

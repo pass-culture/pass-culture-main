@@ -6,12 +6,12 @@ import { showNotification } from 'pass-culture-shared'
 
 import Mediation from './Mediation'
 import { withRequiredLogin } from '../../hocs'
-import selectMediationById from '../../../selectors/selectMediationById'
-import selectOfferById from '../../../selectors/selectOfferById'
+import { selectMediationById } from '../../../selectors/data/mediationsSelectors'
 import { selectOffererById } from '../../../selectors/data/offerersSelectors'
 import { selectVenueById } from '../../../selectors/data/venuesSelectors'
 
 import { mediationNormalizer, offerNormalizer } from '../../../utils/normalizers'
+import { selectOfferById } from '../../../selectors/data/offersSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const {

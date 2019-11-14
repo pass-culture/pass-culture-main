@@ -1,4 +1,4 @@
-import selectStocksByOfferId from '../selectStocksByOfferId'
+import { selectStocksByOfferId } from '../stocksSelectors'
 
 describe('src | selectors | selectStocksByOfferId', () => {
   it('should return an empty array when there is no stock related to the offer id', () => {

@@ -1,4 +1,4 @@
-import selectTimezoneByVenueIdAndOffererId from '../selectTimezoneByVenueIdAndOffererId'
+import { selectTimezoneByVenueIdAndOffererId } from '../StockItemContainer'
 
 const offererWithPhysicalVenue = {
   id: 'AE',
@@ -21,8 +21,8 @@ const virtualVenue = {
 
 const state = {
   data: {
-    offerers: [offererWithVirtualVenue, offererWithPhysicalVenue],
-    venues: [physicalVenue, virtualVenue],
+    offerers: [ offererWithVirtualVenue, offererWithPhysicalVenue ],
+    venues: [ physicalVenue, virtualVenue ],
   },
 }
 

@@ -1,3 +1,4 @@
+import createCachedSelector from 're-reselect'
 import { createSelector } from 'reselect'
 
 const removedLocalClasses = [
@@ -13,7 +14,7 @@ const removedLocalClasses = [
   'TiteLiveBookDescriptions',
 ]
 
-const selectProviders = createSelector(
+export const selectProviders = createSelector(
   state => state.data.providers,
   providers =>
     providers
@@ -21,4 +22,8 @@ const selectProviders = createSelector(
       .sort((p1, p2) => p1.localClass - p2.localClass)
 )
 
-export default selectProviders
+export const selectProviderById = createCachedSelector(
+  selectProviders,
+  (state, providerId) => providerId,
+  (providers, providerId) => providers.find(provider => provider.id === providerId)
+)((state, providerId = '') => providerId)

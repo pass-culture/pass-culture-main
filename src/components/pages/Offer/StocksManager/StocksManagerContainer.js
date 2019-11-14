@@ -4,10 +4,10 @@ import get from 'lodash.get'
 
 import StocksManager from './StocksManager'
 import withFrenchQueryRouter from '../../../hocs/withFrenchQueryRouter'
-import selectOfferById from '../../../../selectors/selectOfferById'
-import selectProductById from '../../../../selectors/selectProductById'
-import selectProviderById from '../../../../selectors/selectProviderById'
-import selectStocksByOfferId from '../../../../selectors/selectStocksByOfferId'
+import { selectProductById } from '../../../../selectors/data/productsSelectors'
+import { selectStocksByOfferId } from '../../../../selectors/data/stocksSelectors'
+import { selectProviderById } from '../../../../selectors/data/providersSelectors'
+import { selectOfferById } from '../../../../selectors/data/offersSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const {
