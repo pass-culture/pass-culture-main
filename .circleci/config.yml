@@ -167,7 +167,7 @@ jobs:
   tests-perf:
     working_directory: ~
     docker:
-      - image: passcultureapp/artillery:0.5
+      - image: passcultureapp/artillery:0.6
     steps:
       - checkout
       - run: sed -i 's/$/'$USER_PASSWORD_PERF_ENV'/' /root/project/infra/artillery/user_list
@@ -356,7 +356,6 @@ workflows:
             branches:
               only:
                 - staging
-                - PC-2492-migration-outil-perf
       - deploy-api:
           filters:
             branches:
