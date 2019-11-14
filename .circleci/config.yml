@@ -167,11 +167,9 @@ jobs:
   tests-perf:
     working_directory: ~
     docker:
-      - image: passcultureapp/artillery:0.4
+      - image: passcultureapp/artillery:0.5
     steps:
       - checkout
-      - run: pwd
-      - run: ls
       - run: sed -i 's/$/'$USER_PASSWORD_PERF_ENV'/' /root/project/infra/artillery/user_list
       - run: artillery run /root/project/infra/artillery/scenario.yml -o /tmp/artillery-report.json
       - run: python3 scripts/analyze_report.py /tmp/artillery-report.json
