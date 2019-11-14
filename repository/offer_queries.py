@@ -19,7 +19,7 @@ from models import EventType, \
     Stock, \
     ThingType, \
     Venue, \
-    Product, Favorite
+    Product, Favorite, Booking
 from models.db import Model, db
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from utils.distance import get_sql_geo_distance_in_kilometers

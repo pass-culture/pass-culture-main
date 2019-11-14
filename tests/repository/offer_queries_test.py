@@ -1245,14 +1245,14 @@ class GetActiveOffersTest:
 
         PcObject.save(stock1, stock2, stock3, stock4)
 
-        seed_number1 = 0.9
         offers_1 = get_active_offers(departement_codes=['00'], offer_id=None,
-                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize)
+                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
+                                     pagination_params={'seed': 0.9, 'page': 1})
 
-        seed_number2 = -0.8
         # When
         offers_2 = get_active_offers(departement_codes=['00'], offer_id=None,
-                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize)
+                                     order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
+                                     pagination_params={'seed': -0.8, 'page': 1})
 
         # Then
         assert offers_1 != offers_2
@@ -1262,14 +1262,11 @@ class GetActiveOffersTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
-
         offer = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
         stock = create_stock_from_offer(offer, price=0)
         user = create_user()
         booking = create_booking(user, stock)
-
         create_mediation(stock.offer)
-
         PcObject.save(booking)
 
         # When
@@ -1305,10 +1302,10 @@ class GetActiveOffersTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer1 = create_offer_with_thing_product(venue)
-        offer2 = create_offer_with_thing_product(venue)
-        offer3 = create_offer_with_thing_product(venue)
-        offer4 = create_offer_with_thing_product(venue)
+        offer1 = create_offer_with_thing_product(idx=1, venue=venue)
+        offer2 = create_offer_with_thing_product(idx=2, venue=venue)
+        offer3 = create_offer_with_thing_product(idx=3, venue=venue)
+        offer4 = create_offer_with_thing_product(idx=4, venue=venue)
         stock1 = create_stock_from_offer(offer1)
         stock2 = create_stock_from_offer(offer2)
         stock3 = create_stock_from_offer(offer3)
@@ -1320,24 +1317,20 @@ class GetActiveOffersTest:
         PcObject.save(stock1, stock2, stock3, stock4)
 
         # When
-        offers = get_active_offers(departement_codes=['00'], limit=2, pagination_params={'page': 1, 'seed': 0.5})
+        offers = get_active_offers(departement_codes=['00'], limit=2, pagination_params={'page': 1, 'seed': 1})
 
         # Then
         assert len(offers) == 2
-        assert offer1 not in offers
-        assert offer2 in offers
-        assert offer3 not in offers
-        assert offer4 in offers
 
     @clean_database
     def test_should_return_offers_paginated_from_page_2_when_pagination_params_are_provided(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer1 = create_offer_with_thing_product(venue)
-        offer2 = create_offer_with_thing_product(venue)
-        offer3 = create_offer_with_thing_product(venue)
-        offer4 = create_offer_with_thing_product(venue)
+        offer1 = create_offer_with_thing_product(idx=1, venue=venue)
+        offer2 = create_offer_with_thing_product(idx=2, venue=venue)
+        offer3 = create_offer_with_thing_product(idx=3, venue=venue)
+        offer4 = create_offer_with_thing_product(idx=4, venue=venue)
         stock1 = create_stock_from_offer(offer1)
         stock2 = create_stock_from_offer(offer2)
         stock3 = create_stock_from_offer(offer3)
@@ -1349,14 +1342,35 @@ class GetActiveOffersTest:
         PcObject.save(stock1, stock2, stock3, stock4)
 
         # When
-        offers = get_active_offers(departement_codes=['00'], limit=2, pagination_params={'page': 2, 'seed': 0.5})
+        offers = get_active_offers(departement_codes=['00'], limit=2, pagination_params={'page': 2, 'seed': 1})
 
         # Then
         assert len(offers) == 2
-        assert offer1 in offers
-        assert offer2 not in offers
-        assert offer3 in offers
-        assert offer4 not in offers
+
+    @clean_database
+    def test_should_not_return_offers_paginated_from_page_3_when_pagination_params_are_provided_and_no_offers(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(idx=1, venue=venue)
+        offer2 = create_offer_with_thing_product(idx=2, venue=venue)
+        offer3 = create_offer_with_thing_product(idx=3, venue=venue)
+        offer4 = create_offer_with_thing_product(idx=4, venue=venue)
+        stock1 = create_stock_from_offer(offer1)
+        stock2 = create_stock_from_offer(offer2)
+        stock3 = create_stock_from_offer(offer3)
+        stock4 = create_stock_from_offer(offer4)
+        create_mediation(offer1)
+        create_mediation(offer2)
+        create_mediation(offer3)
+        create_mediation(offer4)
+        PcObject.save(stock1, stock2, stock3, stock4)
+
+        # When
+        offers = get_active_offers(departement_codes=['00'], limit=2, pagination_params={'page': 3, 'seed': 1})
+
+        # Then
+        assert len(offers) == 0
 
     @clean_database
     def test_should_return_offers_not_paginated_when_pagination_params_are_not_provided(self, app):
