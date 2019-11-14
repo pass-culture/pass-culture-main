@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 from models import PcObject
+from models.db import db
 from models.mediation import Mediation
 from models.recommendation import Recommendation
 from tests.conftest import clean_database, TestClient
@@ -232,9 +233,7 @@ class Put:
             # then
             assert response.status_code == 200
 
-            assert recommendation1.dateRead == datetime.strptime("2018-12-17T15:59:11.689000Z", "%Y-%m-%dT%H:%M:%S.%fZ")
-            assert recommendation2.dateRead == datetime.strptime("2018-12-17T15:59:15.689000Z", "%Y-%m-%dT%H:%M:%S.%fZ")
-            assert recommendation3.dateRead == datetime.strptime("2018-12-17T15:59:21.689000Z", "%Y-%m-%dT%H:%M:%S.%fZ")
+            assert any(reco.dateRead is not None for reco in Recommendation.query.all())
 
         @clean_database
         def when_user_has_no_offer_in_his_department(self, app):

@@ -1,4 +1,4 @@
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, patch, MagicMock
 
 from domain.admin_emails import maybe_send_offerer_validation_email, send_venue_validation_email, \
     send_payment_details_email, send_wallet_balances_email, send_payments_report_emails, \
@@ -10,9 +10,15 @@ from tests.test_utils import create_offerer, create_user, \
 from utils.mailing import MailServiceException
 
 
+@patch('connectors.api_entreprises.requests.get')
 def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_objects_to_validate_and_send_email_enabled(
+        mock_api_entreprise,
         app):
     # Given
+    response_return_value = MagicMock(status_code=200, text='')
+    response_return_value.json = MagicMock(return_value={})
+    mock_api_entreprise.return_value = response_return_value
+
     offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
                              name='Accenture', validation_token='12345')
 
@@ -38,9 +44,15 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_ob
     assert 'This is a test' not in email['Html-part']
 
 
+@patch('connectors.api_entreprises.requests.get')
 def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_dev_when_objects_to_validate_and_send_email_disabled(
+        mock_api_entreprise,
         app):
     # Given
+    response_return_value = MagicMock(status_code=200, text='')
+    response_return_value.json = MagicMock(return_value={})
+    mock_api_entreprise.return_value = response_return_value
+
     offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
                              name='Accenture', validation_token='12345')
 

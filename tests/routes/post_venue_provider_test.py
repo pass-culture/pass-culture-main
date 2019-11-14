@@ -1,18 +1,15 @@
 from unittest.mock import patch
 
-import pytest
-
 from models import PcObject, ApiErrors
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_offerer, create_venue, create_user, activate_provider, \
-    check_titelive_stocks_api_is_down, create_product_with_thing_type, create_venue_provider
+    create_product_with_thing_type, create_venue_provider
 from utils.human_ids import humanize
 
 
 class Post:
     class Returns201:
         @clean_database
-        @pytest.mark.skipif(check_titelive_stocks_api_is_down(), reason="TiteLiveStocks API is down")
         def when_venue_provider_exists(self, app):
             # given
             offerer = create_offerer(siren='775671464')

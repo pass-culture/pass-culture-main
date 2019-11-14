@@ -9,9 +9,7 @@ from inspect import isclass
 from unittest.mock import Mock
 
 import pytest
-import requests
 from postgresql_audit.flask import versioning_manager
-from simplejson import JSONDecodeError
 
 import models
 from local_providers.providable_info import ProvidableInfo
@@ -37,7 +35,6 @@ from models import ApiKey, \
     UserOfferer, \
     Venue, \
     VenueProvider
-
 from models.beneficiary_import import BeneficiaryImport
 from models.beneficiary_import_status import ImportStatus, BeneficiaryImportStatus
 from models.db import db, Model
@@ -851,24 +848,6 @@ def save_all_activities(*objects):
     for obj in objects:
         db.session.add(obj)
     db.session.commit()
-
-
-def check_open_agenda_api_is_down():
-    response = requests.get('https://openagenda.com/agendas/86585975/events.json?limit=1')
-    try:
-        response_json = response.json()
-    except JSONDecodeError:
-        print("Error contacting openagenda API")
-        return True
-    unsuccessful_request = ('success' in response_json) and not response_json['success']
-    status_code_not_200 = (response.status_code != 200)
-    return unsuccessful_request or status_code_not_200
-
-
-def check_titelive_stocks_api_is_down():
-    response = requests.get('https://stock.epagine.fr/stocks/77567146400110')
-    status_code_not_200 = (response.status_code != 200)
-    return status_code_not_200
 
 
 def get_occurrence_short_name(concatened_names_with_a_date):

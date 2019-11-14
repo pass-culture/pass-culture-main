@@ -1,7 +1,7 @@
 import os
 from io import BytesIO
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 from models import PcObject
 from tests.conftest import clean_database, TestClient
@@ -78,9 +78,16 @@ class Post:
             assert response.status_code == 201
 
     class Returns400:
+        @patch('connectors.thumb_storage.requests.get')
         @clean_database
-        def when_mediation_is_created_with_thumb_url_pointing_to_not_an_image(self, app):
+        def when_mediation_is_created_with_thumb_url_pointing_to_not_an_image(self, mock_thumb_storage_request, app):
             # given
+            api_response = {}
+            response_return_value = MagicMock(status_code=200, text='')
+            response_return_value.headers = MagicMock(return_value={'Content-type': 'image/jpeg'})
+            response_return_value.json = MagicMock(return_value=api_response)
+            mock_thumb_storage_request.return_value = response_return_value
+
             user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)

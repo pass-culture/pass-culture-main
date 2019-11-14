@@ -24,9 +24,9 @@ BASE_DATA = {
 
 class Post:
     class Returns201:
-        @clean_database
         @freeze_time('2019-01-01 01:00:00')
         @patch('routes.signup.get_authorized_emails_and_dept_codes')
+        @clean_database
         def when_data_is_accurate(self, get_authorized_emails_and_dept_codes, app):
             # Given
             data = BASE_DATA.copy()
@@ -59,9 +59,13 @@ class Post:
             for key in other_expected_keys:
                 assert key in json
 
+        @patch('routes.signup.get_authorized_emails_and_dept_codes')
         @clean_database
-        def test_created_user_does_not_have_validation_token_and_cannot_book_free_offers(self, app):
+        def test_created_user_does_not_have_validation_token_and_cannot_book_free_offers(self,
+                                                                                         get_authorized_emails_and_dept_codes,
+                                                                                         app):
             data = BASE_DATA.copy()
+            get_authorized_emails_and_dept_codes.return_value = (['toto@btmx.fr'], ['93'])
 
             # When
             response = TestClient(app.test_client()) \
@@ -75,8 +79,11 @@ class Post:
             assert created_user.validationToken is None
             assert not created_user.canBookFreeOffers
 
+        @patch('routes.signup.get_authorized_emails_and_dept_codes')
         @clean_database
-        def test_does_not_allow_the_creation_of_admins(self, app):
+        def test_does_not_allow_the_creation_of_admins(self,
+                                                       get_authorized_emails_and_dept_codes,
+                                                       app):
             # Given
             user_json = {
                 'email': 'pctest.isAdmin.canBook@btmx.fr',
@@ -89,6 +96,7 @@ class Post:
                 'isAdmin': True,
                 'canBookFreeOffers': True
             }
+            get_authorized_emails_and_dept_codes.return_value = (['pctest.isAdmin.canBook@btmx.fr'], ['93'])
 
             # When
             response = TestClient(app.test_client()) \
@@ -100,9 +108,14 @@ class Post:
             created_user = User.query.filter_by(email='pctest.isAdmin.canBook@btmx.fr').one()
             assert not created_user.isAdmin
 
+        @patch('routes.signup.get_authorized_emails_and_dept_codes')
         @clean_database
-        def test_created_user_does_not_have_validation_token_and_cannot_book_free_offers(self, app):
+        def test_created_user_does_not_have_validation_token_and_cannot_book_free_offers(self,
+                                                                                         get_authorized_emails_and_dept_codes,
+                                                                                         app):
+            # Given
             data = BASE_DATA.copy()
+            get_authorized_emails_and_dept_codes.return_value = (['toto@btmx.fr'], ['93'])
 
             # When
             response = TestClient(app.test_client()) \
@@ -115,10 +128,14 @@ class Post:
             created_user = User.query.filter_by(email='toto@btmx.fr').first()
             assert created_user.needsToFillCulturalSurvey == True
 
+        @patch('routes.signup.get_authorized_emails_and_dept_codes')
         @clean_database
-        def when_calling_old_route(self, app):
+        def when_calling_old_route(self,
+                                   get_authorized_emails_and_dept_codes,
+                                   app):
             # Given
             data = BASE_DATA.copy()
+            get_authorized_emails_and_dept_codes.return_value = (['toto@btmx.fr'], ['93'])
 
             # When
             response = TestClient(app.test_client()) \
@@ -146,9 +163,11 @@ class Post:
             error = response.json
             assert 'email' in error
 
+        @patch('routes.signup.get_authorized_emails_and_dept_codes')
         @clean_database
-        def when_email_with_invalid_format(self, app):
+        def when_email_with_invalid_format(self, get_authorized_emails_and_dept_codes, app):
             # Given
+            get_authorized_emails_and_dept_codes.return_value = (['toto@btmx.fr'], ['93'])
             data = BASE_DATA.copy()
             data['email'] = 'toto'
 
@@ -162,8 +181,12 @@ class Post:
             error = response.json
             assert 'email' in error
 
+        @patch('routes.signup.get_authorized_emails_and_dept_codes')
         @clean_database
-        def when_email_is_already_used(self, app):
+        def when_email_is_already_used(self, get_authorized_emails_and_dept_codes, app):
+            # Given
+            get_authorized_emails_and_dept_codes.return_value = (['toto@btmx.fr'], ['93'])
+
             TestClient(app.test_client()) \
                 .post('/users/signup/webapp',
                       json=BASE_DATA, headers={'origin': 'http://localhost:3000'})
@@ -178,9 +201,11 @@ class Post:
             error = response.json
             assert 'email' in error
 
+        @patch('routes.signup.get_authorized_emails_and_dept_codes')
         @clean_database
-        def when_public_name_is_missing(self, app):
+        def when_public_name_is_missing(self, get_authorized_emails_and_dept_codes, app):
             # Given
+            get_authorized_emails_and_dept_codes.return_value = (['toto@btmx.fr'], ['93'])
             data = BASE_DATA.copy()
             del (data['publicName'])
 
@@ -194,9 +219,11 @@ class Post:
             error = response.json
             assert 'publicName' in error
 
+        @patch('routes.signup.get_authorized_emails_and_dept_codes')
         @clean_database
-        def when_public_name_is_too_short(self, app):
+        def when_public_name_is_too_short(self, get_authorized_emails_and_dept_codes, app):
             # Given
+            get_authorized_emails_and_dept_codes.return_value = (['toto@btmx.fr'], ['93'])
             data = BASE_DATA.copy()
             data['publicName'] = 't'
 
@@ -210,9 +237,11 @@ class Post:
             error = response.json
             assert 'publicName' in error
 
+        @patch('routes.signup.get_authorized_emails_and_dept_codes')
         @clean_database
-        def when_public_name_is_too_long(self, app):
+        def when_public_name_is_too_long(self, get_authorized_emails_and_dept_codes, app):
             # Given
+            get_authorized_emails_and_dept_codes.return_value = (['toto@btmx.fr'], ['93'])
             data = BASE_DATA.copy()
             data['publicName'] = 'x' * 300
 
@@ -289,7 +318,7 @@ class Post:
             assert 'contact_ok' in error
 
         @clean_database
-        @patch('connectors.google_spreadsheet.get_authorized_emails_and_dept_codes')
+        @patch('routes.signup.get_authorized_emails_and_dept_codes')
         def when_user_not_in_exp_spreadsheet(self, get_authorized_emails_and_dept_codes, app):
             # Given
             get_authorized_emails_and_dept_codes.return_value = (['toto@email.com', 'other@email.com'], ['93', '93'])

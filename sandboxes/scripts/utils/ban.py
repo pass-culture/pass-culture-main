@@ -1,5 +1,6 @@
 import requests
 
+
 def get_locations_from_postal_code(postal_code):
     url = 'https://api-adresse.data.gouv.fr/search/?q=postcode={}'.format(postal_code)
     result = requests.get(url)

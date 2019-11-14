@@ -21,6 +21,7 @@ from validation.users import check_valid_signup_webapp, check_valid_signup_pro
 def signup_old():
     return redirect("/users/signup/webapp", code=308)
 
+
 @app.route("/users/signup/webapp", methods=["POST"])
 @feature_required(FeatureToggle.WEBAPP_SIGNUP)
 def signup_webapp():
