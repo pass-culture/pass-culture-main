@@ -3,10 +3,12 @@ import os, sys
 import requests
 import math
 
+
 def _percentile(data, percentile):
     data = sorted(data)
     size = len(data)
     return sorted(data)[int(math.ceil((size * percentile) / 100)) - 1]
+
 
 def _get_recommendation_keywords_stats():
     recommendation_keywords = []
@@ -23,6 +25,7 @@ def _get_recommendation_keywords_stats():
                             'p99': _percentile(recommendation_keywords, 99)}
 
     return recommendation_keywords_stats
+
 
 if len(sys.argv) < 2:
     print('You need to pass at least one argument: report path')
@@ -54,9 +57,6 @@ with open(report_path) as json_file:
     for key in data['aggregate']['codes'].keys():
         error_codes.append(key + ': '+ str(data['aggregate']['codes'][key]))
 
-    print(", ".join(error_codes))
-
-
     endpoints_latency = []
 
     endpoints_latency.append({'endpoint_name': 'Global', 'median': data['aggregate']['latency']['median'],
@@ -83,6 +83,6 @@ with open(report_path) as json_file:
             print('Endpoint\'s P99 over maximum :', endpoint['endpoint_name'])
             endpoints_over_limit = True
 
-    # _send_to_ops_bot()
+    _send_to_ops_bot()
 
 sys.exit(endpoints_over_limit)
