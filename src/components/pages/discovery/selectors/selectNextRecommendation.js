@@ -1,8 +1,9 @@
 import selectCurrentRecommendation from './selectCurrentRecommendation'
 import selectRecommendationsWithLastFakeReco from './selectRecommendationsWithLastFakeReco'
-import { createSelector } from 'reselect'
+import createCachedSelector from 're-reselect'
+import mapArgsToCacheKey from './mapArgsToCacheKey'
 
-const selectNextRecommendation = createSelector(
+const selectNextRecommendation = createCachedSelector(
   selectRecommendationsWithLastFakeReco,
   selectCurrentRecommendation,
   (recommendations, currentRecommendation) => {
@@ -12,12 +13,12 @@ const selectNextRecommendation = createSelector(
 
     const nextRecommendation = recommendations.find(recommendation => recommendation.index === currentRecommendation.index + 1)
     if (!nextRecommendation) {
-      return undefined
+      return null
     }
     const { mediationId, offerId } = nextRecommendation
     const path = `/decouverte/${offerId}/${mediationId || ''}`
     return Object.assign({ path }, nextRecommendation)
   }
-)
+)(mapArgsToCacheKey)
 
 export default selectNextRecommendation

@@ -18,6 +18,7 @@ describe('src | components | pages | discovery | Discovery', () => {
       match: {
         params: {},
       },
+      page: 1,
       redirectHome: jest.fn(),
       readRecommendations: [],
       recommendations: [],
@@ -26,8 +27,8 @@ describe('src | components | pages | discovery | Discovery', () => {
       resetRecommendations: jest.fn(),
       resetRecommendationsAndBookings: jest.fn(),
       saveLastRecommendationsRequestTimestamp: jest.fn(),
+      seed: 0.5,
       shouldReloadRecommendations: false,
-      showPasswordChangedPopIn: jest.fn(),
       tutorials: [],
     }
   })
@@ -41,45 +42,76 @@ describe('src | components | pages | discovery | Discovery', () => {
   })
 
   describe('constructor', () => {
-    it('should initialize state correctly', () => {
+    it('should initialize state with default values', () => {
       // given
       const wrapper = shallow(<Discovery {...props} />)
 
       // then
-      const expected = {
+      expect(wrapper.state()).toStrictEqual({
         atWorldsEnd: false,
         hasError: false,
         isEmpty: null,
         isLoading: false,
-      }
-      expect(wrapper.state()).toStrictEqual(expected)
+      })
     })
   })
 
-  describe('when unmount Discovery', () => {
-    it('should delete tutorials for new user', () => {
+  describe('when mount', () => {
+    it('should load recommendations when it is required to fetch recommendations', () => {
       // given
-      props.tutorials = [
-        {
-          id: 'hello',
-          productOrTutoIdentifier: 'tuto_0',
-        },
-      ]
+      props.shouldReloadRecommendations = true
+
+      // when
+      shallow(<Discovery {...props} />)
+
+      // then
+      expect(props.loadRecommendations).toHaveBeenCalledWith(
+        expect.any(Function),
+        expect.any(Function),
+        props.currentRecommendation,
+        props.page,
+        props.recommendations,
+        props.readRecommendations,
+        props.seed,
+        props.shouldReloadRecommendations
+      )
+      expect(props.saveLastRecommendationsRequestTimestamp).toHaveBeenCalledWith()
+    })
+
+    it('should redirect to first recommendation when it is not required to fetch recommendations', () => {
+      // given
+      props.shouldReloadRecommendations = false
+
+      // when
+      shallow(<Discovery {...props} />)
+
+      // then
+      expect(props.loadRecommendations).not.toHaveBeenCalledWith()
+      expect(props.saveLastRecommendationsRequestTimestamp).not.toHaveBeenCalledWith()
+      expect(props.redirectToFirstRecommendationIfNeeded).toHaveBeenCalledWith(props.recommendations)
+    })
+  })
+
+  describe('when unmount', () => {
+    it('should delete tutorials for current user', () => {
+      // given
+      props.tutorials = [{
+        id: 'hello',
+        productOrTutoIdentifier: 'tuto_0',
+      }]
       const wrapper = shallow(<Discovery {...props} />)
 
       // when
       wrapper.unmount()
 
       // then
-      expect(props.deleteTutorials).toHaveBeenCalledWith([
-        {
-          id: 'hello',
-          productOrTutoIdentifier: 'tuto_0',
-        },
-      ])
+      expect(props.deleteTutorials).toHaveBeenCalledWith([{
+        id: 'hello',
+        productOrTutoIdentifier: 'tuto_0',
+      }])
     })
 
-    it('should not delete tutorials for old user', () => {
+    it('should not delete tutorials for current user', () => {
       // given
       props.tutorials = []
       const wrapper = shallow(<Discovery {...props} />)
@@ -88,7 +120,112 @@ describe('src | components | pages | discovery | Discovery', () => {
       wrapper.unmount()
 
       // then
-      expect(props.deleteTutorials).toHaveLength(0)
+      expect(props.deleteTutorials).not.toHaveBeenCalledWith()
+    })
+  })
+
+  describe('functions', () => {
+    describe('handleSuccess', () => {
+      it('should reset read recommendations', () => {
+        // given
+        const action = {
+          payload: {
+            data: [{ id: 'ABC1' }]
+          }
+        }
+        const wrapper = shallow(<Discovery {...props} />)
+
+        // when
+        wrapper.instance().handleSuccess({}, action)
+
+        // then
+        expect(props.resetReadRecommendations).toHaveBeenCalledWith()
+      })
+
+      it('should set atWorldsEnd state to true when no recommendations have been fetched', () => {
+        // given
+        const action = {
+          payload: {
+            data: []
+          }
+        }
+        props.recommendations = [{ id: 'ABC1' }]
+        const wrapper = shallow(<Discovery {...props} />)
+
+        // when
+        wrapper.instance().handleSuccess({}, action)
+
+        // then
+        expect(wrapper.state()).toStrictEqual({
+          atWorldsEnd: true,
+          hasError: false,
+          isEmpty: false,
+          isLoading: false
+        })
+      })
+
+      it('should set atWorldsEnd state to false when recommendations have been fetched', () => {
+        // given
+        const action = {
+          payload: {
+            data: [{ id: 'DEF2' }]
+          }
+        }
+        props.recommendations = [{ id: 'ABC1' }]
+        const wrapper = shallow(<Discovery {...props} />)
+
+        // when
+        wrapper.instance().handleSuccess({}, action)
+
+        // then
+        expect(wrapper.state()).toStrictEqual({
+          atWorldsEnd: false,
+          hasError: false,
+          isEmpty: false,
+          isLoading: false
+        })
+      })
+
+      it('should set isEmpty state to true when no recommendations have been fetched and no recommendations are already loaded', () => {
+        // given
+        const action = {
+          payload: {
+            data: []
+          }
+        }
+        props.recommendations = []
+        const wrapper = shallow(<Discovery {...props} />)
+
+        // when
+        wrapper.instance().handleSuccess({}, action)
+
+        // then
+        expect(wrapper.state()).toStrictEqual({
+          atWorldsEnd: true,
+          hasError: false,
+          isEmpty: true,
+          isLoading: false
+        })
+      })
+    })
+
+    describe('handleFail', () => {
+      it('should redirect home when fetch failed', () => {
+        // given
+        const wrapper = shallow(<Discovery {...props} />)
+
+        // when
+        wrapper.instance().handleFail()
+
+        // then
+        expect(props.redirectHome).toHaveBeenCalledWith()
+        expect(wrapper.state()).toStrictEqual({
+          atWorldsEnd: false,
+          hasError: true,
+          isEmpty: null,
+          isLoading: true
+        })
+      })
     })
   })
 })

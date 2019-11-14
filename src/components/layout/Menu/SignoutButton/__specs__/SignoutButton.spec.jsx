@@ -9,7 +9,7 @@ describe('src | components | menu | SignoutButton', () => {
 
   beforeEach(() => {
     props = {
-      onSignoutClick: jest.fn(),
+      onSignOutClick: jest.fn(),
     }
   })
 

@@ -4,15 +4,12 @@ exports[`src | components | pages | discovery | Deck | Deck should match the sna
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Deck
-    backButton={true}
     currentRecommendation={
       Object {
         "bookingsIds": Array [],
         "offerId": "ABCD",
       }
     }
-    dispatch={[MockFunction]}
-    draggable={true}
     handleRequestPutRecommendations={[MockFunction]}
     height={947}
     history={
@@ -36,8 +33,7 @@ ShallowWrapper {
     }
     nextLimit={50}
     nextRecommendation={null}
-    noDataTimeout={20000}
-    previousLimit={40}
+    noDataTimeout={2000}
     previousRecommendation={null}
     readTimeout={2000}
     recommendations={

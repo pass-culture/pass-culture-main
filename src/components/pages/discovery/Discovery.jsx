@@ -70,15 +70,17 @@ class Discovery extends PureComponent {
       redirectToFirstRecommendationIfNeeded,
     } = this.props
 
-    const { data: loadedRecommendations } = (action && action.payload) || []
+    const { data: loadedRecommendations = [] } = (action && action.payload)
     const atWorldsEnd = loadedRecommendations.length === 0
     const isEmpty = (!recommendations || !recommendations.length) && atWorldsEnd
 
-    this.setState({ atWorldsEnd, isEmpty, isLoading: false },
+    this.setState(
+      { atWorldsEnd, isEmpty, isLoading: false },
       () => {
         resetReadRecommendations()
         redirectToFirstRecommendationIfNeeded(loadedRecommendations)
-      })
+      }
+    )
   }
 
   updateRecommendations = () => {

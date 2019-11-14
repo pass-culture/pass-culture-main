@@ -9,13 +9,10 @@ describe('src | components | pages | discovery | Deck | Deck', () => {
 
   beforeEach(() => {
     props = {
-      backButton: true,
       currentRecommendation: {
         bookingsIds: [],
         offerId: 'ABCD',
       },
-      dispatch: jest.fn(),
-      draggable: true,
       handleRequestPutRecommendations: jest.fn(),
       height: 947,
       history: {
@@ -31,8 +28,11 @@ describe('src | components | pages | discovery | Deck | Deck', () => {
         params: {},
       },
       nextLimit: 50,
-      previousLimit: 40,
+      nextRecommendation: null,
+      noDataTimeout: 2000,
+      readTimeout: 2000,
       recommendations: [{}],
+      verticalSlideRatio: 0.1,
       width: 500,
     }
   })

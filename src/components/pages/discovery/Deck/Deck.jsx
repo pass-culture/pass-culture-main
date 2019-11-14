@@ -23,7 +23,9 @@ class Deck extends PureComponent {
     const isStateWithoutRecommendationsOrCurrentRecommendation =
       !recommendations || recommendations.length === 0 || !currentRecommendation
 
-    if (!isStateWithoutRecommendationsOrCurrentRecommendation) return
+    if (!isStateWithoutRecommendationsOrCurrentRecommendation) {
+      return
+    }
     this.handleRefreshedDraggableKey()
   }
 

@@ -96,7 +96,7 @@ describe('src | components | pages | profile | forms | ProfileForm', () => {
     })
   })
 
-  describe('handleSuccess()', () => {
+  describe('handleRequestSuccess()', () => {
     it('should redirect to success page when updating username', () => {
       // given
       const wrapper = shallow(<ProfileForm {...props} />)
@@ -112,7 +112,7 @@ describe('src | components | pages | profile | forms | ProfileForm', () => {
     })
   })
 
-  describe('handleFail()', () => {
+  describe('handleRequestFail()', () => {
     it('should display errors in form', () => {
       // given
       const wrapper = shallow(<ProfileForm {...props} />)

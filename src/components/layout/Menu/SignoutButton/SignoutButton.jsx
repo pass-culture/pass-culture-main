@@ -3,11 +3,11 @@ import React from 'react'
 
 import Icon from '../../Icon/Icon'
 
-const SignoutButton = ({ onSignoutClick, ...props }) => (
+const SignoutButton = ({ onSignOutClick, ...props }) => (
   <button
     className="pc-text-button flex-columns text-left px16 py8 fs16"
     id="main-menu-logout-button"
-    onClick={onSignoutClick(props)}
+    onClick={onSignOutClick(props)}
     type="button"
   >
     <span className="menu-icon mr16 text-center">
@@ -23,7 +23,7 @@ const SignoutButton = ({ onSignoutClick, ...props }) => (
 )
 
 SignoutButton.propTypes = {
-  onSignoutClick: PropTypes.func.isRequired,
+  onSignOutClick: PropTypes.func.isRequired,
 }
 
 export default SignoutButton

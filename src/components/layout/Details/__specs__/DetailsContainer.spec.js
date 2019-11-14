@@ -22,7 +22,7 @@ describe('src | components | layout | Details | DetailsContainer', () => {
 
       // then
       expect(props).toStrictEqual({
-        isConfirmingCancelling: true,
+        cancelView: true,
       })
     })
 
@@ -35,7 +35,7 @@ describe('src | components | layout | Details | DetailsContainer', () => {
 
       // then
       expect(props).toStrictEqual({
-        isConfirmingCancelling: false,
+        cancelView: false,
       })
     })
   })

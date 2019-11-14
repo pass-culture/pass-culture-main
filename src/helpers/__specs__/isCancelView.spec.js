@@ -12,10 +12,10 @@ describe('src | helpers | isCancelView', () => {
       }
 
       // when
-      const isConfirmingCancelling = isCancelView(match)
+      const result = isCancelView(match)
 
       //then
-      expect(isConfirmingCancelling).toBe(false)
+      expect(result).toBe(false)
     })
   })
 
@@ -31,10 +31,10 @@ describe('src | helpers | isCancelView', () => {
       }
 
       // when
-      const isConfirmingCancelling = isCancelView(match)
+      const result = isCancelView(match)
 
       //then
-      expect(isConfirmingCancelling).toBe(true)
+      expect(result).toBe(true)
     })
   })
 })

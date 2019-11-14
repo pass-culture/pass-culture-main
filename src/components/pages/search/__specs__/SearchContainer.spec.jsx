@@ -1,4 +1,4 @@
-import { mapStateToProps, mapDispatchToProps } from '../SearchContainer'
+import { mapDispatchToProps, mapStateToProps } from '../SearchContainer'
 
 jest.mock('redux-thunk-data', () => {
   const { requestData } = jest.requireActual('fetch-normalize-data')
@@ -50,7 +50,7 @@ describe('src | components | pages | SearchContainer', () => {
         mapDispatchToProps(dispatch, props).getRecommendations(apiPath)
 
         // then
-        expect(dispatch).toHaveBeenCalledWith({
+        expect(dispatch.mock.calls[0][0]).toStrictEqual({
           config: {
             apiPath: 'Applaudir',
             handleSuccess: undefined,
@@ -73,6 +73,10 @@ describe('src | components | pages | SearchContainer', () => {
             },
           },
           type: 'REQUEST_DATA_GET_APPLAUDIR',
+        })
+        expect(dispatch.mock.calls[1][0]).toStrictEqual({
+          page: 1,
+          type: 'UPDATE_PAGE'
         })
       })
     })

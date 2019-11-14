@@ -32,10 +32,10 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
       match: {
         params: {},
       },
+      page: 1,
       query: {
         parse: () => ({}),
       },
-      page: 1,
       seed: 0.5
     }
   })
@@ -94,7 +94,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         // given
         const handleRequestSuccess = jest.fn()
         const handleRequestFail = jest.fn()
-        const currentRecommendation = null
+        const currentRecommendation = {}
         const recommendations = []
         const readRecommendations = null
         const shouldReloadRecommendations = false
@@ -114,7 +114,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         )
 
         // then
-        expect(dispatch).toHaveBeenCalledWith({
+        expect(dispatch.mock.calls[0][0]).toStrictEqual({
           config: {
             apiPath: `/recommendations?&page=1&seed=0.5`,
             body: {
@@ -128,13 +128,17 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
           },
           type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS?&PAGE=1&SEED=0.5',
         })
+        expect(dispatch.mock.calls[1][0]).toStrictEqual({
+          page: 1,
+          type: 'UPDATE_PAGE'
+        })
       })
 
-      it('should load the recommendations with page equals 2 when current recommendation', () => {
+      it('should load the recommendations with page equals 1 when current recommendation is a tuto', () => {
         // given
         const handleRequestSuccess = jest.fn()
         const handleRequestFail = jest.fn()
-        const currentRecommendation = { index: 5 }
+        const currentRecommendation = { mediationId: 'tuto'}
         const recommendations = []
         const readRecommendations = null
         const shouldReloadRecommendations = false
@@ -154,7 +158,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         )
 
         // then
-        expect(dispatch).toHaveBeenCalledWith({
+        expect(dispatch.mock.calls[0][0]).toStrictEqual({
           config: {
             apiPath: `/recommendations?&page=1&seed=0.5`,
             body: {
@@ -167,6 +171,146 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
             normalizer: recommendationNormalizer,
           },
           type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS?&PAGE=1&SEED=0.5',
+        })
+        expect(dispatch.mock.calls[1][0]).toStrictEqual({
+          page: 1,
+          type: 'UPDATE_PAGE'
+        })
+      })
+
+      it('should load the recommendations with page equals 1 when current recommendation is the final card', () => {
+        // given
+        const handleRequestSuccess = jest.fn()
+        const handleRequestFail = jest.fn()
+        const currentRecommendation = { mediationId: 'fin'}
+        const recommendations = []
+        const readRecommendations = null
+        const shouldReloadRecommendations = false
+        const functions = mapDispatchToProps(dispatch, props)
+        const { loadRecommendations } = functions
+
+        // when
+        loadRecommendations(
+          handleRequestSuccess,
+          handleRequestFail,
+          currentRecommendation,
+          props.page,
+          recommendations,
+          readRecommendations,
+          props.seed,
+          shouldReloadRecommendations
+        )
+
+        // then
+        expect(dispatch.mock.calls[0][0]).toStrictEqual({
+          config: {
+            apiPath: `/recommendations?&page=1&seed=0.5`,
+            body: {
+              readRecommendations: null,
+              seenRecommendationIds: [],
+            },
+            handleFail: handleRequestFail,
+            handleSuccess: handleRequestSuccess,
+            method: 'PUT',
+            normalizer: recommendationNormalizer,
+          },
+          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS?&PAGE=1&SEED=0.5',
+        })
+        expect(dispatch.mock.calls[1][0]).toStrictEqual({
+          page: 1,
+          type: 'UPDATE_PAGE'
+        })
+      })
+
+      it('should load the recommendations with page equals 1 when current recommendation has an empty mediation', () => {
+        // given
+        const handleRequestSuccess = jest.fn()
+        const handleRequestFail = jest.fn()
+        const currentRecommendation = { mediationId: 'vide'}
+        const recommendations = []
+        const readRecommendations = null
+        const shouldReloadRecommendations = false
+        const functions = mapDispatchToProps(dispatch, props)
+        const { loadRecommendations } = functions
+
+        // when
+        loadRecommendations(
+          handleRequestSuccess,
+          handleRequestFail,
+          currentRecommendation,
+          props.page,
+          recommendations,
+          readRecommendations,
+          props.seed,
+          shouldReloadRecommendations
+        )
+
+        // then
+        expect(dispatch.mock.calls[0][0]).toStrictEqual({
+          config: {
+            apiPath: `/recommendations?&page=1&seed=0.5`,
+            body: {
+              readRecommendations: null,
+              seenRecommendationIds: [],
+            },
+            handleFail: handleRequestFail,
+            handleSuccess: handleRequestSuccess,
+            method: 'PUT',
+            normalizer: recommendationNormalizer,
+          },
+          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS?&PAGE=1&SEED=0.5',
+        })
+        expect(dispatch.mock.calls[1][0]).toStrictEqual({
+          page: 1,
+          type: 'UPDATE_PAGE'
+        })
+      })
+
+      it('should load the recommendations with page equals 2 when current recommendation is a valid one attached to an offer', () => {
+        // given
+        const handleRequestSuccess = jest.fn()
+        const handleRequestFail = jest.fn()
+        const currentRecommendation = {
+          id: 'ABC3',
+          index: 1,
+          offerId: 'ABC2'
+        }
+        const recommendations = [{id: 'AE3', index : 3}]
+        const readRecommendations = null
+        const shouldReloadRecommendations = false
+        const functions = mapDispatchToProps(dispatch, props)
+        const { loadRecommendations } = functions
+
+        // when
+        loadRecommendations(
+          handleRequestSuccess,
+          handleRequestFail,
+          currentRecommendation,
+          props.page,
+          recommendations,
+          readRecommendations,
+          props.seed,
+          shouldReloadRecommendations
+        )
+
+        // then
+        expect(dispatch.mock.calls[0][0]).toStrictEqual({
+          config: {
+            apiPath: `/recommendations?&page=2&seed=0.5`,
+            body: {
+              readRecommendations: null,
+              seenRecommendationIds: ['AE3'],
+            },
+            handleFail: handleRequestFail,
+            handleSuccess: handleRequestSuccess,
+            method: 'PUT',
+            normalizer: recommendationNormalizer,
+          },
+          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS?&PAGE=2&SEED=0.5',
+        })
+        expect(dispatch.mock.calls[1][0]).toStrictEqual({
+          page: 2,
+          type: 'UPDATE_PAGE'
         })
       })
     })

@@ -3,11 +3,12 @@ import { requestData, reinitializeData } from 'redux-thunk-data'
 
 import SignoutButton from './SignoutButton'
 import { toggleMainMenu } from '../../../../reducers/menu'
+import { updatePage, updateSeed } from '../../../../reducers/pagination'
 
 export const mapDispatchToProps = dispatch => ({
-  onSignoutClick: ({ history, readRecommendations }) => () => {
+  onSignOutClick: ({ history, readRecommendations }) => () => {
     const handleRequestSignout = () => {
-      const handleSuccessAfterSignout = () => {
+      const handleSuccessAfterSignOut = () => {
         history.push('/connexion')
         dispatch(toggleMainMenu())
         dispatch(reinitializeData({ excludes: ['features'] }))
@@ -15,8 +16,14 @@ export const mapDispatchToProps = dispatch => ({
       dispatch(
         requestData({
           apiPath: '/users/signout',
-          handleSuccess: handleSuccessAfterSignout,
+          handleSuccess: handleSuccessAfterSignOut,
         })
+      )
+      dispatch(
+        updatePage(1)
+      )
+      dispatch(
+        updateSeed(Math.random())
       )
     }
 

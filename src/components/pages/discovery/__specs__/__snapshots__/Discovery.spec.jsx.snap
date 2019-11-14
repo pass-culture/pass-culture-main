@@ -18,6 +18,7 @@ ShallowWrapper {
         "params": Object {},
       }
     }
+    page={1}
     readRecommendations={Array []}
     recommendations={Array []}
     redirectHome={[MockFunction]}
@@ -40,8 +41,8 @@ ShallowWrapper {
     resetRecommendations={[MockFunction]}
     resetRecommendationsAndBookings={[MockFunction]}
     saveLastRecommendationsRequestTimestamp={[MockFunction]}
+    seed={0.5}
     shouldReloadRecommendations={false}
-    showPasswordChangedPopIn={[MockFunction]}
     tutorials={Array []}
   />,
   Symbol(enzyme.__renderer__): Object {

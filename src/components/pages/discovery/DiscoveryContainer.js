@@ -1,13 +1,14 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { assignData, deleteData, requestData } from 'redux-thunk-data'
+import isEmpty from 'lodash.isempty'
 
 import Discovery from './Discovery'
 import { checkIfShouldReloadRecommendationsBecauseOfLongTime, isDiscoveryStartupUrl, } from './utils/utils'
 import selectCurrentRecommendation from './selectors/selectCurrentRecommendation'
 import selectTutorials from './selectors/selectTutorials'
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
-import getOfferIdAndMediationIdApiPathQueryString from '../../../helpers/getOfferIdAndMediationIdApiPathQueryString'
+import getOfferIdAndMediationIdApiPathQueryString, { DEFAULT_VIEW_IDENTIFIERS } from '../../../helpers/getOfferIdAndMediationIdApiPathQueryString'
 import { saveLastRecommendationsRequestTimestamp } from '../../../reducers/data'
 import { recommendationNormalizer } from '../../../utils/normalizers'
 import { selectRecommendations } from '../../../selectors/data/recommendationsSelectors'
@@ -59,11 +60,11 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
     const seenRecommendationIds = (shouldReloadRecommendations && []) || (recommendations && recommendations.map(reco => reco.id))
     let queryParams = getOfferIdAndMediationIdApiPathQueryString(match, currentRecommendation)
 
-    let newPage
-    if (page === 1) {
-      newPage = page
-    } else {
-      newPage = page + 1
+    let newPage = page
+    if (!isEmpty(currentRecommendation)) {
+      if (!DEFAULT_VIEW_IDENTIFIERS.includes(currentRecommendation.mediationId)) {
+        newPage = page + 1
+      }
     }
     let paginationParams = `&page=${newPage}&seed=${seed}`
 

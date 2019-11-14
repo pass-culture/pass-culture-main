@@ -10,6 +10,7 @@ import selectTypeSublabels, {
 } from '../../../selectors/data/typesSelector'
 import { selectRecommendationsBySearchQuery } from '../../../selectors/data/recommendationsSelectors'
 import { recommendationNormalizer } from '../../../utils/normalizers'
+import { updatePage } from '../../../reducers/pagination'
 
 export const mapStateToProps = (state, ownProps) => {
   const recommendations = selectRecommendationsBySearchQuery(state, ownProps.location)
@@ -36,6 +37,9 @@ export const mapDispatchToProps = dispatch => ({
         handleSuccess,
         normalizer: recommendationNormalizer,
       })
+    )
+    dispatch(
+      updatePage(1)
     )
   },
 

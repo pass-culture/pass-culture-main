@@ -34,9 +34,9 @@ class Details extends PureComponent {
   }
 
   renderBookingOrCancellation = route => {
-    const { isConfirmingCancelling } = this.props
+    const { cancelView } = this.props
 
-    return isConfirmingCancelling
+    return cancelView
       ? this.renderBookingCancellation(route)
       : this.renderBooking(route)
   }
@@ -74,12 +74,12 @@ class Details extends PureComponent {
 }
 
 Details.defaultProps = {
-  isConfirmingCancelling: false,
+  cancelView: false,
 }
 
 Details.propTypes = {
   bookingPath: PropTypes.string.isRequired,
-  isConfirmingCancelling: PropTypes.bool,
+  cancelView: PropTypes.bool,
   match: PropTypes.shape({
     params: PropTypes.shape({
       details: PropTypes.string,

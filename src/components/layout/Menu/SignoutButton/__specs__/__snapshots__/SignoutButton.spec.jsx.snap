@@ -4,7 +4,7 @@ exports[`src | components | menu | SignoutButton should match the snapshot 1`] =
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <SignoutButton
-    onSignoutClick={
+    onSignOutClick={
       [MockFunction] {
         "calls": Array [
           Array [

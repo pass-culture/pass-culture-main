@@ -7,10 +7,10 @@ import Details from './Details'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
-  const isConfirmingCancelling = isCancelView(match)
+  const cancelView = isCancelView(match)
 
   return {
-    isConfirmingCancelling,
+    cancelView,
   }
 }
 
