@@ -7,7 +7,7 @@ from connectors.api_demarches_simplifiees import get_application_details
 from domain.admin_emails import send_remote_beneficiaries_import_report_email
 from domain.demarches_simplifiees import get_all_application_ids_for_procedure
 from domain.user_activation import create_beneficiary_from_application
-from domain.user_emails import send_activation_notification_email
+from domain.user_emails import send_activation_email
 from models import ImportStatus
 from models import User, ApiErrors, PcObject
 from repository.beneficiary_import_queries import is_already_imported, save_beneficiary_import_with_status, \
@@ -121,7 +121,7 @@ def _process_creation(error_messages, information, new_beneficiaries):
             user=new_beneficiary
         )
         new_beneficiaries.append(new_beneficiary)
-        send_activation_notification_email(new_beneficiary, send_raw_email)
+        send_activation_email(new_beneficiary, send_raw_email)
 
 
 def _process_duplication(duplicate_users, error_messages, information):

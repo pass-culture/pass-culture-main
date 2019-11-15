@@ -1,6 +1,6 @@
 from unittest.mock import patch, Mock
 
-from domain.user_emails import send_activation_notification_email
+from domain.user_emails import send_activation_email
 from models import PcObject, EventType, Deposit, Booking, User
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_deposit, create_venue, create_offerer, \
@@ -11,6 +11,7 @@ from tests.test_utils import create_api_key, create_stock_with_event_offer
 from utils.token import random_token
 
 API_KEY_VALUE = random_token(64)
+
 
 class Patch:
     class Returns204:
@@ -75,7 +76,6 @@ class Patch:
                 assert response.status_code == 204
                 assert Booking.query.get(booking_id).isUsed is True
 
-
         class WithBasicAuthTest:
             @clean_database
             def when_user_is_logged_in_and_regular_offer(self, app):
@@ -92,7 +92,8 @@ class Patch:
 
                 # When
                 url = '/v2/bookings/use/token/{}'.format(booking.token)
-                response = TestClient(app.test_client()).with_auth('pro@email.fr').patch(url)
+                response = TestClient(app.test_client()).with_auth(
+                    'pro@email.fr').patch(url)
 
                 # Then
                 assert response.status_code == 204
@@ -114,7 +115,8 @@ class Patch:
 
                 # When
                 url = '/v2/bookings/use/token/{}'.format(booking_token)
-                response = TestClient(app.test_client()).with_auth('pro@email.fr').patch(url)
+                response = TestClient(app.test_client()).with_auth(
+                    'pro@email.fr').patch(url)
 
                 # Then
                 assert response.status_code == 204
@@ -124,18 +126,21 @@ class Patch:
             def when_admin_user_is_logged_in_expect_activation_booking_to_be_used_and_linked_user_to_be_able_to_book(self, app):
                 # Given
                 user = create_user(can_book_free_offers=False, is_admin=False)
-                admin_user = create_user(email='pro@email.fr', can_book_free_offers=False, is_admin=True)
+                admin_user = create_user(
+                    email='pro@email.fr', can_book_free_offers=False, is_admin=True)
                 offerer = create_offerer()
                 user_offerer = create_user_offerer(admin_user, offerer)
                 venue = create_venue(offerer)
-                stock = create_stock_with_event_offer(offerer, venue, price=0, event_type=EventType.ACTIVATION)
+                stock = create_stock_with_event_offer(
+                    offerer, venue, price=0, event_type=EventType.ACTIVATION)
                 booking = create_booking(user, stock, venue=venue)
                 PcObject.save(booking, user_offerer)
                 user_id = user.id
 
                 # When
                 url = '/v2/bookings/use/token/{}'.format(booking.token)
-                response = TestClient(app.test_client()).with_auth('pro@email.fr').patch(url)
+                response = TestClient(app.test_client()).with_auth(
+                    'pro@email.fr').patch(url)
 
                 # Then
                 user = User.query.get(user_id)
@@ -147,11 +152,13 @@ class Patch:
             def when_admin_user_is_logged_in_expect_to_send_notification_email(self, app):
                 # Given
                 user = create_user(email='user@email.fr')
-                admin_user = create_user(email='pro@email.fr', can_book_free_offers=False, is_admin=True)
+                admin_user = create_user(
+                    email='pro@email.fr', can_book_free_offers=False, is_admin=True)
                 offerer = create_offerer()
                 user_offerer = create_user_offerer(admin_user, offerer)
                 venue = create_venue(offerer)
-                stock = create_stock_with_event_offer(offerer, venue, price=0, event_type=EventType.ACTIVATION)
+                stock = create_stock_with_event_offer(
+                    offerer, venue, price=0, event_type=EventType.ACTIVATION)
                 booking = create_booking(user, stock, venue=venue)
                 PcObject.save(booking, user_offerer)
                 user_id = user.id
@@ -163,8 +170,9 @@ class Patch:
                 # When
                 url = '/v2/bookings/use/token/{}'.format(booking.token)
                 with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
-                    send_activation_notification_email(user, mocked_send_email)
-                response = TestClient(app.test_client()).with_auth('pro@email.fr').patch(url)
+                    send_activation_email(user, mocked_send_email)
+                response = TestClient(app.test_client()).with_auth(
+                    'pro@email.fr').patch(url)
 
                 # Then
                 user = User.query.get(user_id)
@@ -173,9 +181,6 @@ class Patch:
                 assert user.deposits[0].amount == 500
                 mocked_send_email.assert_called_once()
                 args = mocked_send_email.call_args
-                data = args[1]['data']
-                assert data['To'] == 'user@email.fr'
-
 
     class Returns400:
         @clean_database
@@ -195,12 +200,13 @@ class Patch:
 
             # When
             url = '/v2/bookings/use/token/{}'.format(booking.token)
-            response = TestClient(app.test_client()).with_auth('pro@email.fr').patch(url)
+            response = TestClient(app.test_client()).with_auth(
+                'pro@email.fr').patch(url)
 
             # Then
             assert response.status_code == 400
-            assert response.json['global'] == ["La quantité disponible pour cette offre est atteinte."]
-
+            assert response.json['global'] == [
+                "La quantité disponible pour cette offre est atteinte."]
 
     class Returns401:
         @clean_database
@@ -237,12 +243,11 @@ class Patch:
             # When
             url = '/v2/bookings/use/token/{}'.format(booking.token)
             response = TestClient(app.test_client()).patch(url, headers={
-                    'Authorization': 'Bearer WrongApiKey1234567',
-                    'Origin': 'http://localhost'})
+                'Authorization': 'Bearer WrongApiKey1234567',
+                'Origin': 'http://localhost'})
 
             # Then
             assert response.status_code == 401
-
 
     class Returns403:
         class WithApiKeyAuthTest:
@@ -255,7 +260,8 @@ class Patch:
                 offerer2 = create_offerer(siren='987654321')
                 user_offerer = create_user_offerer(pro_user, offerer)
                 venue = create_venue(offerer)
-                stock = create_stock_with_event_offer(offerer, venue, price=0, event_type=EventType.ACTIVATION)
+                stock = create_stock_with_event_offer(
+                    offerer, venue, price=0, event_type=EventType.ACTIVATION)
                 booking = create_booking(user, stock, venue=venue)
 
                 PcObject.save(pro_user, booking, user_offerer, offerer2)
@@ -291,10 +297,12 @@ class Patch:
                 booking = create_booking(user, stock, venue=venue)
                 PcObject.save(booking, pro_user)
                 booking_id = booking.id
-                url = '/v2/bookings/use/token/{}'.format(booking.token, user.email)
+                url = '/v2/bookings/use/token/{}'.format(
+                    booking.token, user.email)
 
                 # When
-                response = TestClient(app.test_client()).with_auth('pro@email.fr').patch(url)
+                response = TestClient(app.test_client()).with_auth(
+                    'pro@email.fr').patch(url)
 
                 # Then
                 assert response.status_code == 403
@@ -310,19 +318,20 @@ class Patch:
                 offerer = create_offerer()
                 user_offerer = create_user_offerer(pro_user, offerer)
                 venue = create_venue(offerer)
-                stock = create_stock_with_event_offer(offerer, venue, price=0, event_type=EventType.ACTIVATION)
+                stock = create_stock_with_event_offer(
+                    offerer, venue, price=0, event_type=EventType.ACTIVATION)
                 booking = create_booking(user, stock, venue=venue)
                 PcObject.save(booking, user_offerer)
 
                 # When
                 url = '/v2/bookings/use/token/{}'.format(booking.token)
-                response = TestClient(app.test_client()).with_auth('pro@email.fr').patch(url)
+                response = TestClient(app.test_client()).with_auth(
+                    'pro@email.fr').patch(url)
 
                 # Then
                 assert response.status_code == 403
                 assert response.json['user'] == [
                     "Vous n'avez pas les droits suffisants pour valider cette contremarque."]
-
 
     class Returns404:
         @clean_database
@@ -342,7 +351,6 @@ class Patch:
 
             # Then
             assert response.status_code == 404
-
 
         class WithApiKeyAuthTest:
             @clean_database
@@ -372,7 +380,8 @@ class Patch:
 
                 # Then
                 assert response.status_code == 404
-                assert response.json['global'] == ["Cette contremarque n'a pas été trouvée"]
+                assert response.json['global'] == [
+                    "Cette contremarque n'a pas été trouvée"]
 
         class WithBasicAuthTest:
             @clean_database
@@ -389,29 +398,34 @@ class Patch:
 
                 # When
                 url = '/v2/bookings/use/token/{}'.format('123456')
-                response = TestClient(app.test_client()).with_auth('pro@email.fr').patch(url)
+                response = TestClient(app.test_client()).with_auth(
+                    'pro@email.fr').patch(url)
 
                 # Then
                 assert response.status_code == 404
-                assert response.json['global'] == ["Cette contremarque n'a pas été trouvée"]
-
+                assert response.json['global'] == [
+                    "Cette contremarque n'a pas été trouvée"]
 
     class Returns405:
         class WhenLoggedUserIsAdmin:
             @clean_database
             def expect_no_new_deposits_when_the_linked_user_has_been_already_activated(self, app):
                 # Given
-                user = create_user(email='user@email.fr', can_book_free_offers=False)
+                user = create_user(email='user@email.fr',
+                                   can_book_free_offers=False)
                 deposit = create_deposit(user, amount=0)
 
-                admin_user = create_user(email='admin@email.fr', can_book_free_offers=False, is_admin=True)
+                admin_user = create_user(
+                    email='admin@email.fr', can_book_free_offers=False, is_admin=True)
 
                 offerer = create_offerer()
                 admin_user_offerer = create_user_offerer(admin_user, offerer)
                 venue = create_venue(offerer)
-                activation_offer_stock = create_stock_with_event_offer(offerer, venue, price=0, event_type=EventType.ACTIVATION)
+                activation_offer_stock = create_stock_with_event_offer(
+                    offerer, venue, price=0, event_type=EventType.ACTIVATION)
 
-                booking = create_booking(user, activation_offer_stock, venue=venue)
+                booking = create_booking(
+                    user, activation_offer_stock, venue=venue)
 
                 PcObject.save(booking, admin_user_offerer, deposit)
 
@@ -420,15 +434,17 @@ class Patch:
                 # When
 
                 url = '/v2/bookings/use/token/{}'.format(booking.token)
-                response = TestClient(app.test_client()).with_auth('admin@email.fr').patch(url)
+                response = TestClient(app.test_client()).with_auth(
+                    'admin@email.fr').patch(url)
 
                 # Then
-                deposits_for_user = Deposit.query.filter_by(userId=user_id).all()
+                deposits_for_user = Deposit.query.filter_by(
+                    userId=user_id).all()
                 assert response.status_code == 405
-                assert response.json['user'] == ["Cet utilisateur a déjà crédité son pass Culture"]
+                assert response.json['user'] == [
+                    "Cet utilisateur a déjà crédité son pass Culture"]
                 assert len(deposits_for_user) == 1
                 assert deposits_for_user[0].amount == 0
-
 
     class Returns410:
         class WithBasicAuthTest:
@@ -448,11 +464,13 @@ class Patch:
 
                 # When
                 url = '/v2/bookings/use/token/{}'.format(booking.token)
-                response = TestClient(app.test_client()).with_auth('pro@email.fr').patch(url)
+                response = TestClient(app.test_client()).with_auth(
+                    'pro@email.fr').patch(url)
 
                 # Then
                 assert response.status_code == 410
-                assert response.json['booking'] == ['Cette réservation a été annulée']
+                assert response.json['booking'] == [
+                    'Cette réservation a été annulée']
                 assert Booking.query.get(booking_id).isUsed is False
 
             @clean_database
@@ -471,13 +489,14 @@ class Patch:
 
                 # When
                 url = '/v2/bookings/use/token/{}'.format(booking.token)
-                response = TestClient(app.test_client()).with_auth('pro@email.fr').patch(url)
+                response = TestClient(app.test_client()).with_auth(
+                    'pro@email.fr').patch(url)
 
                 # Then
                 assert response.status_code == 410
-                assert response.json['booking'] == ['Cette réservation a déjà été validée']
+                assert response.json['booking'] == [
+                    'Cette réservation a déjà été validée']
                 assert Booking.query.get(booking_id).isUsed is True
-
 
         class WithApiKeyAuthTest:
             @clean_database
@@ -496,11 +515,13 @@ class Patch:
 
                 # When
                 url = '/v2/bookings/use/token/{}'.format(booking.token)
-                response = TestClient(app.test_client()).with_auth('pro@email.fr').patch(url)
+                response = TestClient(app.test_client()).with_auth(
+                    'pro@email.fr').patch(url)
 
                 # Then
                 assert response.status_code == 410
-                assert response.json['booking'] == ['Cette réservation a été annulée']
+                assert response.json['booking'] == [
+                    'Cette réservation a été annulée']
                 assert Booking.query.get(booking_id).isUsed is False
 
             @clean_database
@@ -519,9 +540,11 @@ class Patch:
 
                 # When
                 url = '/v2/bookings/use/token/{}'.format(booking.token)
-                response = TestClient(app.test_client()).with_auth('pro@email.fr').patch(url)
+                response = TestClient(app.test_client()).with_auth(
+                    'pro@email.fr').patch(url)
 
                 # Then
                 assert response.status_code == 410
-                assert response.json['booking'] == ['Cette réservation a déjà été validée']
+                assert response.json['booking'] == [
+                    'Cette réservation a déjà été validée']
                 assert Booking.query.get(booking_id).isUsed is True

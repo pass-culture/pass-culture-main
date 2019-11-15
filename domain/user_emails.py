@@ -12,7 +12,7 @@ from utils.mailing import make_user_booking_recap_email, \
     make_user_validation_email, \
     make_pro_user_waiting_for_validation_by_admin_email, \
     make_venue_validation_confirmation_email, compute_email_html_part_and_recipients, \
-    make_activation_notification_email, ADMINISTRATION_EMAIL_ADDRESS, \
+    get_activation_email_data, ADMINISTRATION_EMAIL_ADDRESS, \
     make_offerer_booking_recap_email_with_mailjet_template, make_reset_password_email_data
 
 
@@ -41,7 +41,8 @@ def send_booking_recap_emails(booking: Booking, send_email: Callable[..., bool])
     if booking.stock.resolvedOffer.bookingEmail:
         recipients.append(booking.stock.resolvedOffer.bookingEmail)
 
-    email = make_offerer_booking_recap_email_with_mailjet_template(booking, recipients)
+    email = make_offerer_booking_recap_email_with_mailjet_template(
+        booking, recipients)
     return send_email(data=email)
 
 
@@ -162,11 +163,10 @@ def send_pro_user_waiting_for_validation_by_admin_email(user: User, send_email: 
     return send_email(data=email)
 
 
-def send_activation_notification_email(user: User, send_email: Callable) -> bool:
-    email = make_activation_notification_email(user)
-    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(
-        email['Html-part'], [user.email])
-    return send_email(data=email)
+def send_activation_email(user: User, send_email: Callable[..., bool]) -> bool:
+    activation_email_data = get_activation_email_data(user)
+
+    return send_email(activation_email_data)
 
 
 def _get_offerer_id(offerer, user_offerer):

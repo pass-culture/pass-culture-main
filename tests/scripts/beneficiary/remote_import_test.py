@@ -89,7 +89,8 @@ class RunTest:
         get_all_application_ids = Mock(return_value=[123])
         find_applications_ids_to_retry = Mock(return_value=[])
 
-        get_details = Mock(side_effect=[make_application_detail(123, 'closed')])
+        get_details = Mock(
+            side_effect=[make_application_detail(123, 'closed')])
         has_already_been_imported = Mock(return_value=False)
         has_already_been_created = Mock(return_value=False)
 
@@ -119,7 +120,8 @@ class RunTest:
         get_all_application_ids = Mock(return_value=[123])
         find_applications_ids_to_retry = Mock(return_value=[])
 
-        get_details = Mock(side_effect=[make_application_detail(123, 'closed')])
+        get_details = Mock(
+            side_effect=[make_application_detail(123, 'closed')])
         has_already_been_imported = Mock(return_value=False)
         has_already_been_created = Mock(return_value=False)
         parse_beneficiary_information.side_effect = [Exception()]
@@ -260,9 +262,9 @@ class ProcessBeneficiaryApplicationTest:
 
     @patch('scripts.beneficiary.remote_import.create_beneficiary_from_application')
     @patch('scripts.beneficiary.remote_import.PcObject')
-    @patch('scripts.beneficiary.remote_import.send_activation_notification_email')
+    @patch('scripts.beneficiary.remote_import.send_activation_email')
     @clean_database
-    def test_account_activation_email_is_sent(self, send_activation_notification_email, PcObject,
+    def test_account_activation_email_is_sent(self, send_activation_email, PcObject,
                                               create_beneficiary_from_application, app):
         # given
         information = {
@@ -284,14 +286,14 @@ class ProcessBeneficiaryApplicationTest:
         remote_import.process_beneficiary_application(information, [], [], [])
 
         # then
-        send_activation_notification_email.assert_called()
+        send_activation_email.assert_called()
 
     @patch('scripts.beneficiary.remote_import.create_beneficiary_from_application')
     @patch('scripts.beneficiary.remote_import.PcObject')
-    @patch('scripts.beneficiary.remote_import.send_activation_notification_email')
+    @patch('scripts.beneficiary.remote_import.send_activation_email')
     @clean_database
     def test_error_is_collected_if_beneficiary_could_not_be_saved(self,
-                                                                  send_activation_notification_email, PcObject,
+                                                                  send_activation_email, PcObject,
                                                                   create_beneficiary_from_application, app):
         # given
         information = {
@@ -307,22 +309,25 @@ class ProcessBeneficiaryApplicationTest:
             'activity': 'Étudiant'
         }
         create_beneficiary_from_application.side_effect = [User()]
-        PcObject.save.side_effect = [ApiErrors({'postalCode': ['baaaaad value']})]
+        PcObject.save.side_effect = [
+            ApiErrors({'postalCode': ['baaaaad value']})]
         new_beneficiaries = []
         error_messages = []
 
         # when
-        remote_import.process_beneficiary_application(information, error_messages, new_beneficiaries, [])
+        remote_import.process_beneficiary_application(
+            information, error_messages, new_beneficiaries, [])
 
         # then
-        send_activation_notification_email.assert_not_called()
-        assert error_messages == ['{\n  "postalCode": [\n    "baaaaad value"\n  ]\n}']
+        send_activation_email.assert_not_called()
+        assert error_messages == [
+            '{\n  "postalCode": [\n    "baaaaad value"\n  ]\n}']
         assert not new_beneficiaries
 
     @patch('scripts.beneficiary.remote_import.PcObject')
-    @patch('scripts.beneficiary.remote_import.send_activation_notification_email')
+    @patch('scripts.beneficiary.remote_import.send_activation_email')
     @clean_database
-    def test_beneficiary_is_not_created_if_duplicates_are_found(self, send_activation_notification_email, PcObject,
+    def test_beneficiary_is_not_created_if_duplicates_are_found(self, send_activation_email, PcObject,
                                                                 app):
         # given
         information = {
@@ -337,23 +342,26 @@ class ProcessBeneficiaryApplicationTest:
             'civility': 'Mme',
             'activity': 'Étudiant'
         }
-        existing_user = create_user(first_name='Jane', last_name='Doe', date_of_birth=datetime(2000, 5, 1))
+        existing_user = create_user(
+            first_name='Jane', last_name='Doe', date_of_birth=datetime(2000, 5, 1))
         PcObject.save(existing_user)
         mock = Mock(return_value=[existing_user])
 
         # when
-        remote_import.process_beneficiary_application(information, [], [], [], find_duplicate_users=mock)
+        remote_import.process_beneficiary_application(
+            information, [], [], [], find_duplicate_users=mock)
 
         # then
-        send_activation_notification_email.assert_not_called()
+        send_activation_email.assert_not_called()
         PcObject.assert_not_called()
-        beneficiary_import = BeneficiaryImport.query.filter_by(demarcheSimplifieeApplicationId=123).first()
+        beneficiary_import = BeneficiaryImport.query.filter_by(
+            demarcheSimplifieeApplicationId=123).first()
         assert beneficiary_import.currentStatus == ImportStatus.DUPLICATE
 
-    @patch('scripts.beneficiary.remote_import.send_activation_notification_email')
+    @patch('scripts.beneficiary.remote_import.send_activation_email')
     @clean_database
     def test_beneficiary_is_created_if_duplicates_are_found_but_id_is_in_retry_list(
-            self, send_activation_notification_email, app):
+            self, send_activation_email, app):
         # given
         information = {
             'department': '67',
@@ -367,17 +375,20 @@ class ProcessBeneficiaryApplicationTest:
             'civility': 'Mme',
             'activity': 'Étudiant'
         }
-        existing_user = create_user(first_name='Jane', last_name='Doe', date_of_birth=datetime(2000, 5, 1))
+        existing_user = create_user(
+            first_name='Jane', last_name='Doe', date_of_birth=datetime(2000, 5, 1))
         PcObject.save(existing_user)
         mock = Mock(return_value=[existing_user])
         retry_ids = [123]
 
         # when
-        remote_import.process_beneficiary_application(information, [], [], retry_ids, find_duplicate_users=mock)
+        remote_import.process_beneficiary_application(
+            information, [], [], retry_ids, find_duplicate_users=mock)
 
         # then
-        send_activation_notification_email.assert_called()
-        beneficiary_import = BeneficiaryImport.query.filter_by(demarcheSimplifieeApplicationId=123).first()
+        send_activation_email.assert_called()
+        beneficiary_import = BeneficiaryImport.query.filter_by(
+            demarcheSimplifieeApplicationId=123).first()
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
 
     @clean_database
@@ -395,10 +406,12 @@ class ProcessBeneficiaryApplicationTest:
             'civility': 'Mme',
             'activity': 'Étudiant'
         }
-        mocked_query = Mock(return_value=[create_user(idx=11), create_user(idx=22)])
+        mocked_query = Mock(
+            return_value=[create_user(idx=11), create_user(idx=22)])
 
         # when
-        remote_import.process_beneficiary_application(information, [], [], [], find_duplicate_users=mocked_query)
+        remote_import.process_beneficiary_application(
+            information, [], [], [], find_duplicate_users=mocked_query)
 
         # then
         beneficiary_import = BeneficiaryImport.query.first()
@@ -410,7 +423,8 @@ class ProcessBeneficiaryApplicationTest:
 class ParseBeneficiaryInformationTest:
     def test_personal_information_of_beneficiary_are_parsed_from_application_detail(self):
         # when
-        information = parse_beneficiary_information(APPLICATION_DETAIL_STANDARD_RESPONSE)
+        information = parse_beneficiary_information(
+            APPLICATION_DETAIL_STANDARD_RESPONSE)
 
         # then
         assert information['last_name'] == 'Doe'
@@ -424,7 +438,8 @@ class ParseBeneficiaryInformationTest:
 
     def test_handles_two_digits_department_code(self):
         # given
-        application_detail = make_application_detail(1, 'closed', department_code='67 - Bas-Rhin')
+        application_detail = make_application_detail(
+            1, 'closed', department_code='67 - Bas-Rhin')
 
         # when
         information = parse_beneficiary_information(application_detail)
@@ -434,7 +449,8 @@ class ParseBeneficiaryInformationTest:
 
     def test_handles_three_digits_department_code(self):
         # given
-        application_detail = make_application_detail(1, 'closed', department_code='973 - Guyane')
+        application_detail = make_application_detail(
+            1, 'closed', department_code='973 - Guyane')
 
         # when
         information = parse_beneficiary_information(application_detail)
@@ -444,7 +460,8 @@ class ParseBeneficiaryInformationTest:
 
     def test_handles_uppercased_mixed_digits_and_letter_department_code(self):
         # given
-        application_detail = make_application_detail(1, 'closed', department_code='2B - Haute-Corse')
+        application_detail = make_application_detail(
+            1, 'closed', department_code='2B - Haute-Corse')
 
         # when
         information = parse_beneficiary_information(application_detail)
@@ -454,7 +471,8 @@ class ParseBeneficiaryInformationTest:
 
     def test_handles_lowercased_mixed_digits_and_letter_department_code(self):
         # given
-        application_detail = make_application_detail(1, 'closed', department_code='2a - Haute-Corse')
+        application_detail = make_application_detail(
+            1, 'closed', department_code='2a - Haute-Corse')
 
         # when
         information = parse_beneficiary_information(application_detail)
@@ -464,7 +482,8 @@ class ParseBeneficiaryInformationTest:
 
     def test_handles_department_code_with_another_label(self):
         # given
-        application_detail = make_application_detail(1, 'closed', department_code='67 - Bas-Rhin')
+        application_detail = make_application_detail(
+            1, 'closed', department_code='67 - Bas-Rhin')
         for field in application_detail['dossier']['champs']:
             label = field['type_de_champ']['libelle']
             if label == 'Veuillez indiquer votre département':
@@ -478,7 +497,8 @@ class ParseBeneficiaryInformationTest:
 
     def test_handles_postal_codes_wrapped_with_spaces(self):
         # given
-        application_detail = make_application_detail(1, 'closed', postal_code='  67200  ')
+        application_detail = make_application_detail(
+            1, 'closed', postal_code='  67200  ')
 
         # when
         information = parse_beneficiary_information(application_detail)
@@ -488,7 +508,8 @@ class ParseBeneficiaryInformationTest:
 
     def test_handles_postal_codes_containing_spaces(self):
         # given
-        application_detail = make_application_detail(1, 'closed', postal_code='67 200')
+        application_detail = make_application_detail(
+            1, 'closed', postal_code='67 200')
 
         # when
         information = parse_beneficiary_information(application_detail)
@@ -498,7 +519,8 @@ class ParseBeneficiaryInformationTest:
 
     def test_handles_postal_codes_containing_city_name(self):
         # given
-        application_detail = make_application_detail(1, 'closed', postal_code='67 200 Strasbourg ')
+        application_detail = make_application_detail(
+            1, 'closed', postal_code='67 200 Strasbourg ')
 
         # when
         information = parse_beneficiary_information(application_detail)
@@ -508,7 +530,8 @@ class ParseBeneficiaryInformationTest:
 
     def test_handles_civility_parsing(self):
         # given
-        application_detail = make_application_detail(1, 'closed', civility='M.')
+        application_detail = make_application_detail(
+            1, 'closed', civility='M.')
 
         # when
         information = parse_beneficiary_information(application_detail)
@@ -528,7 +551,8 @@ class ParseBeneficiaryInformationTest:
 
     def test_handles_activity_even_if_activity_is_not_filled(self):
         # given
-        application_detail = make_application_detail(1, 'closed', activity=None)
+        application_detail = make_application_detail(
+            1, 'closed', activity=None)
 
         # when
         information = parse_beneficiary_information(application_detail)

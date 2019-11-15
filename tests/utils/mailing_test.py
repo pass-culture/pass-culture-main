@@ -17,7 +17,7 @@ from tests.test_utils import create_stock_with_event_offer, create_stock_with_th
     create_stock_from_offer, \
     create_stock_from_event_occurrence, create_event_occurrence, create_product_with_thing_type, create_mocked_bookings, \
     create_email
-from utils.mailing import make_activation_notification_email, make_batch_cancellation_email, \
+from utils.mailing import get_activation_email_data, make_batch_cancellation_email, \
     make_beneficiaries_import_email, \
     make_final_recap_email_for_stock_with_event, \
     make_offer_creation_notification_email, \
@@ -892,27 +892,6 @@ def test_make_venue_validation_email(app):
     assert 'Commentaire de la structure : "Ceci est mon commentaire".' in html_validation
     assert 'localhost/validate/venue?token={}'.format(venue.validationToken) in html_validation
     assert 'localhost/validate/venue?token={}'.format(venue.validationToken) in html_validation_link
-
-
-@patch('utils.mailing.get_storage_base_url', return_value='http://localhost/storage')
-def test_make_activation_notification_email(get_storage_base_url, app):
-    # Given
-    user = create_user(first_name='ISIDORE', reset_password_token='ABCD123')
-
-    # When
-    email = make_activation_notification_email(user)
-
-    # Then
-    assert email["FromEmail"] == 'support@passculture.app'
-    assert email["FromName"] == 'Équipe pass Culture'
-    assert email["Subject"] == 'Votre pass Culture est disponible'
-    assert email["Text-Part"] is not None
-    parsed_email = BeautifulSoup(email['Html-part'], 'html.parser')
-    assert parsed_email.find('strong', {'id': 'user-first-name'}).text == 'Bonjour Isidore,'
-    assert parsed_email.find('a', {'id': 'set-password-link'}).get('href') == \
-           'http://localhost:3000/activation/ABCD123?email=john.doe%40test.com'
-    assert parsed_email.find('a', {'id': 'installation-how-to'}).img.get('src') == \
-           'http://localhost/storage/mailing/header.jpg'
 
 
 def test_make_venue_validation_confirmation_email(app):
@@ -2033,6 +2012,47 @@ class MakeResetPasswordEmailDataTest:
                     'token': 'ABCDEFG',
                     'env': ''
                 }
+        }
+
+
+class GetActivationEmailTest:
+    @patch('utils.mailing.IS_PROD', True)
+    def test_should_return_dict_when_environment_is_production(self):
+        # Given
+        user = create_user(first_name='Fabien', email='fabien@example.net', reset_password_token='ABCD123')
+
+        # When
+        activation_email_data = get_activation_email_data(user)
+
+        # Then
+        assert activation_email_data == {
+            'FromEmail': 'support@passculture.app',
+            'Mj-TemplateID': 994771,
+            'Mj-TemplateLanguage': True,
+            'To': 'fabien@example.net',
+            'Vars': {
+                'prenom_user': 'Fabien',
+                'token': 'ABCD123',
+                'email': 'fabien@example.net',
+                'env': ''
+            },
+        }
+
+
+    @patch('utils.mailing.IS_PROD', False)
+    def test_should_return_dict_when_environment_is_development(self):
+        # Given
+        user = create_user(first_name='Fabien', email='fabien@example.net', reset_password_token='ABCD123')
+
+        # When
+        activation_email_data = get_activation_email_data(user)
+
+        # Then
+        assert activation_email_data['Vars'] == {
+            'prenom_user': 'Fabien',
+            'token': 'ABCD123',
+            'email': 'fabien@example.net',
+            'env': '-development'
         }
 
 

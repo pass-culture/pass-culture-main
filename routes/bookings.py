@@ -11,7 +11,7 @@ from domain.user_activation import create_initial_deposit, \
     is_activation_booking
 from domain.user_emails import send_booking_recap_emails, \
     send_booking_confirmation_email_to_user, send_cancellation_emails_to_user_and_offerer, \
-    send_activation_notification_email
+    send_activation_email
 from models import ApiErrors, Booking, PcObject, Stock, RightsType, EventType, Offerer
 from models.feature import FeatureToggle
 from models.offer_type import ProductType
@@ -286,7 +286,7 @@ def patch_booking_by_token(token):
 
     if is_activation_booking(booking):
         _activate_user(booking.user)
-        send_activation_notification_email(booking.user, send_raw_email)
+        send_activation_email(booking.user, send_raw_email)
 
     booking.isUsed = True
     booking.dateUsed = datetime.utcnow()
@@ -314,7 +314,7 @@ def patch_booking_use_by_token(token):
 
     if is_activation_booking(booking):
         _activate_user(booking.user)
-        send_activation_notification_email(booking.user, send_raw_email)
+        send_activation_email(booking.user, send_raw_email)
 
     check_booking_token_is_usable(booking)
 
