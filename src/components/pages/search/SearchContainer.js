@@ -4,10 +4,11 @@ import { requestData } from 'redux-thunk-data'
 
 import Search from './Search'
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
-import selectTypeSublabels, {
+import {
   selectTypes,
+  selectTypeSublabels,
   selectTypeSublabelsAndDescription,
-} from '../../../selectors/data/typesSelector'
+} from '../../../selectors/data/typesSelectors'
 import { selectRecommendationsBySearchQuery } from '../../../selectors/data/recommendationsSelectors'
 import { recommendationNormalizer } from '../../../utils/normalizers'
 import { updatePage } from '../../../reducers/pagination'

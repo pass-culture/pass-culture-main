@@ -8,9 +8,9 @@ import CancellingAction from './CancellingAction'
 import PopinButton from './PopinButton'
 import { bookingNormalizer } from '../../../../../../utils/normalizers'
 import { closeSharePopin, openSharePopin } from '../../../../../../reducers/share'
-import { selectBookingByRouterMatch } from '../../../../../../selectors/data/bookingsSelector'
-import { selectOfferByRouterMatch } from '../../../../../../selectors/data/offersSelector'
-import selectStockById from '../../../../../../selectors/selectStockById'
+import { selectBookingByRouterMatch } from '../../../../../../selectors/data/bookingsSelectors'
+import { selectOfferByRouterMatch } from '../../../../../../selectors/data/offersSelectors'
+import { selectStockById } from '../../../../../../selectors/data/stocksSelectors'
 
 export const getCancellingUrl = (bookingId, params, pathname, search) => {
   let bookingUrl = pathname

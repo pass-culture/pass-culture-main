@@ -1,4 +1,4 @@
-import { selectIsEnoughStockForOfferDuo, selectIsStockDuo } from '../stocksSelector'
+import { selectIsEnoughStockForOfferDuo, selectIsStockDuo } from '../stocksSelectors'
 
 describe('selectIsEnoughStockForOfferDuo', () => {
   it('should return true when there is stock with more than two available', () => {

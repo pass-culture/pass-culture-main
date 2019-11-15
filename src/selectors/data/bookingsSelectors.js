@@ -2,13 +2,8 @@ import createCachedSelector from 're-reselect'
 import moment from 'moment'
 import { createSelector } from 'reselect'
 
-import selectBookingById from '../selectBookingById'
-import selectFirstMatchingBookingByOfferId from '../selectFirstMatchingBookingByOfferId'
-import selectStockById from '../selectStockById'
-import selectStocksByOfferId from '../selectStocksByOfferId'
-import selectOfferById from '../selectOfferById'
-import { selectOffers } from './offersSelector'
-import { selectStocks } from './stocksSelector'
+import { selectStockById, selectStocksByOfferId } from './stocksSelectors'
+import { selectOfferById } from './offersSelectors'
 import { dateStringPlusTimeZone } from '../../utils/date/date'
 
 const SLIDING_DAYS = 8
@@ -16,8 +11,8 @@ const SLIDING_DAYS = 8
 export const selectBookings = state => state.data.bookings
 
 export const selectBookingsOrderedByBeginningDateTimeAsc = createSelector(
-  selectStocks,
-  selectOffers,
+  state => state.data.stocks,
+  state => state.data.offers,
   (state, bookings) => bookings,
   (stocks, offers, bookings) => {
     return bookings.sort((booking1, booking2) => {
@@ -52,8 +47,8 @@ export const selectBookingsOrderedByBeginningDateTimeAsc = createSelector(
 
 export const selectBookingsOfTheWeek = createSelector(
   selectBookings,
-  selectOffers,
-  selectStocks,
+  state => state.data.offers,
+  state => state.data.stocks,
   (bookings, offers, stocks) => {
     const now = moment()
     const sevenDaysFromNow = now.clone().add(SLIDING_DAYS, 'days')
@@ -78,8 +73,8 @@ export const selectBookingsOfTheWeek = createSelector(
 
 export const selectUpComingBookings = createSelector(
   selectBookings,
-  selectOffers,
-  selectStocks,
+  state => state.data.offers,
+  state => state.data.stocks,
   (bookings, offers, stocks) => {
     const sevenDaysFromNow = moment()
       .clone()
@@ -104,8 +99,8 @@ export const selectUpComingBookings = createSelector(
 
 export const selectFinishedBookings = createSelector(
   selectBookings,
-  selectOffers,
-  selectStocks,
+  state => state.data.offers,
+  state => state.data.stocks,
   (bookings, offers, stocks) =>
     bookings.filter(booking => {
       const filteredStock = selectStockById({ data: { stocks } }, booking.stockId)
@@ -125,11 +120,44 @@ export const selectUsedBookings = createSelector(
   bookings => bookings.filter(booking => booking.isUsed)
 )
 
-function mapArgsToCacheKeyForSelectBookingByRouterMatch(state, match) {
-  const { params } = match
-  const { bookingId, mediationId, offerId } = params
-  return `${bookingId || ' '}${mediationId || ' '}${offerId || ' '}`
-}
+export const selectFirstMatchingBookingByOfferId = createCachedSelector(
+  state => state.data.bookings,
+  state => state.data.stocks,
+  (state, offerId) => offerId,
+  (bookings, stocks, offerId) => {
+    if (stocks.length === 0) {
+      return null
+    }
+
+    stocks.sort((s1, s2) => {
+      return moment(s1.beginningDatetime).diff(moment(s2.beginningDatetime))
+    })
+
+    for (let i in stocks) {
+      let stock = stocks[i]
+
+      if (stock.offerId !== offerId || moment(stock.beginningDatetime).isBefore(moment())) {
+        continue
+      }
+
+      for (let j in bookings) {
+        let booking = bookings[j]
+
+        if (booking.stockId === stock.id && !booking.isCancelled) {
+          return booking
+        }
+      }
+    }
+
+    return null
+  }
+)((state, offerId = '') => offerId)
+
+export const selectBookingById = createCachedSelector(
+  state => state.data.bookings,
+  (state, bookingId) => bookingId,
+  (bookings, bookingId) => bookings.find(booking => booking.id === bookingId)
+)((state, bookingId = '') => bookingId)
 
 export const selectBookingByRouterMatch = createCachedSelector(
   state => state.data.bookings,
@@ -151,4 +179,8 @@ export const selectBookingByRouterMatch = createCachedSelector(
       return firstMatchingBooking
     }
   }
-)(mapArgsToCacheKeyForSelectBookingByRouterMatch)
+)((state, match) => {
+  const { params } = match
+  const { bookingId, mediationId, offerId } = params
+  return `${bookingId || ' '}${mediationId || ' '}${offerId || ' '}`
+})

@@ -2,8 +2,8 @@ import { connect } from 'react-redux'
 
 import DuoOffer from './DuoOffer'
 import selectIsFeatureDisabled from '../../router/selectors/selectIsFeatureDisabled'
-import { selectIsEnoughStockForOfferDuo } from '../../../selectors/data/stocksSelector'
-import selectOfferById from '../../../selectors/selectOfferById'
+import { selectIsEnoughStockForOfferDuo } from '../../../selectors/data/stocksSelectors'
+import { selectOfferById } from '../../../selectors/data/offersSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const { offerId } = ownProps

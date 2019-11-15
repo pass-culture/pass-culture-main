@@ -8,7 +8,7 @@ import selectCurrentRecommendation from '../selectors/selectCurrentRecommendatio
 import selectNextRecommendation from '../selectors/selectNextRecommendation'
 import selectPreviousRecommendation from '../selectors/selectPreviousRecommendation'
 import selectRecommendationsWithLastFakeReco from '../selectors/selectRecommendationsWithLastFakeRecommendation'
-import selectMediationById from '../../../../selectors/selectMediationById'
+import { selectMediationById } from '../../../../selectors/data/mediationSelectors'
 import { getNextLimit } from './utils/limits'
 
 export const mapStateToProps = (state, ownProps) => {

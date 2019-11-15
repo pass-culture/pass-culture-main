@@ -4,11 +4,11 @@ import { requestData } from 'redux-thunk-data'
 import { compose } from 'redux'
 
 import Favorite from './Favorite'
-import selectFavoriteByOfferId from '../../../../../selectors/selectFavoriteByOfferId'
-import selectMediationByRouterMatch from '../../../../../selectors/selectMediationByRouterMatch'
-import { selectOfferByRouterMatch } from '../../../../../selectors/data/offersSelector'
+import { selectOfferByRouterMatch } from '../../../../../selectors/data/offersSelectors'
 import selectIsFeatureDisabled from '../../../../router/selectors/selectIsFeatureDisabled'
 import { favoriteNormalizer } from '../../../../../utils/normalizers'
+import { selectFavoriteByOfferId } from '../../../../../selectors/data/favoritesSelectors'
+import { selectMediationByRouterMatch } from '../../../../../selectors/data/mediationSelectors'
 
 const API_PATH_TO_FAVORITES_ENDPOINT = '/favorites'
 

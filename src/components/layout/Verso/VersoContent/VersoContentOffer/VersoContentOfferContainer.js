@@ -5,11 +5,13 @@ import { requestData } from 'redux-thunk-data'
 
 import VersoContentOffer from './VersoContentOffer'
 import getStyle from './utils/getStyle'
-import selectBookables from '../../../../../selectors/selectBookables'
-import { selectBookingByRouterMatch } from '../../../../../selectors/data/bookingsSelector'
-import selectDistanceByRouterMatch from '../../../../../selectors/selectDistanceByRouterMatch'
-import selectIsNotBookableByRouterMatch from '../../../../../selectors/selectIsNotBookableByRouterMatch'
-import { selectOfferByRouterMatch } from '../../../../../selectors/data/offersSelector'
+import { selectBookingByRouterMatch } from '../../../../../selectors/data/bookingsSelectors'
+import { selectOfferByRouterMatch } from '../../../../../selectors/data/offersSelectors'
+import { selectDistanceByRouterMatch } from '../../../../../selectors/geolocationSelectors'
+import {
+  selectBookables,
+  selectIsNotBookableByRouterMatch,
+} from '../../../../../selectors/data/bookablesSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps

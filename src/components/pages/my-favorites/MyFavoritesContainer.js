@@ -4,7 +4,7 @@ import { requestData } from 'redux-thunk-data'
 
 import MyFavorites from './MyFavorites'
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
-import selectFavorites from '../../../selectors/selectFavorites'
+import { selectFavorites } from '../../../selectors/data/favoritesSelectors'
 import { favoriteNormalizer } from '../../../utils/normalizers'
 
 export const mapStateToProps = state => ({

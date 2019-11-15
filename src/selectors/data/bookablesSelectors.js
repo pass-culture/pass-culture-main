@@ -1,13 +1,16 @@
-import get from 'lodash.get'
 import moment from 'moment'
+import isString from '../../utils/strings/isString'
+import isEmpty from '../../utils/strings/isEmpty'
 import createCachedSelector from 're-reselect'
-
-import { pipe } from '../utils/functionnals'
-import filterAvailableStocks from '../helpers/filterAvailableStocks'
-import { getTimezone } from '../utils/timezone'
-import isEmpty from '../utils/strings/isEmpty'
-import isString from '../utils/strings/isString'
-import selectStocksByOfferId from './selectStocksByOfferId'
+import { selectStocksByOfferId } from './stocksSelectors'
+import get from 'lodash.get'
+import { getTimezone } from '../../utils/timezone'
+import { pipe } from '../../utils/functionnals'
+import filterAvailableStocks from '../../helpers/filterAvailableStocks'
+import { selectOfferByRouterMatch } from './offersSelectors'
+import { selectMediationByRouterMatch } from './mediationSelectors'
+import { selectBookingByRouterMatch } from './bookingsSelectors'
+import getIsNotBookable from '../../helpers/getIsNotBookable'
 
 const MODIFIER_STRING_ID = 'selectBookables'
 
@@ -27,7 +30,6 @@ export const addModifierString = () => items =>
     ...obj,
     __modifiers__: (obj.__modifiers__ || []).concat([MODIFIER_STRING_ID]),
   }))
-
 export const setTimezoneOnBeginningDatetime = timezone => stocks =>
   stocks.map(stock => {
     let extend = {}
@@ -37,7 +39,6 @@ export const setTimezoneOnBeginningDatetime = timezone => stocks =>
     }
     return Object.assign({}, stock, extend)
   })
-
 export const humanizeBeginningDate = () => items => {
   const format = 'dddd DD/MM/YYYY à HH:mm'
   return items.map(obj => {
@@ -52,7 +53,6 @@ export const humanizeBeginningDate = () => items => {
     return Object.assign({}, obj, { humanBeginningDate })
   })
 }
-
 export const markAsBooked = bookings => {
   const bookingsStockIds = bookings.map(({ stockId }) => stockId)
   return items =>
@@ -63,7 +63,6 @@ export const markAsBooked = bookings => {
       })
     })
 }
-
 export const markAsCancelled = bookings => items =>
   items.map(item => {
     const sortedMatchingBookings = bookings
@@ -73,7 +72,6 @@ export const markAsCancelled = bookings => items =>
       (sortedMatchingBookings && sortedMatchingBookings.isCancelled) || false
     return { ...item, userHasCancelledThisDate }
   })
-
 export const sortByDate = () => items =>
   items.sort((a, b) => {
     const datea = a.beginningDatetime
@@ -83,13 +81,7 @@ export const sortByDate = () => items =>
     if (datea.isBefore(dateb)) return -1
     return 0
   })
-
-function mapArgsToCacheKey(state, offer) {
-  const key = (offer && offer.id) || ' '
-  return key
-}
-
-const selectBookables = createCachedSelector(
+export const selectBookables = createCachedSelector(
   state => state.data.bookings,
   state => state.data.stocks,
   (state, offer) => offer,
@@ -111,6 +103,18 @@ const selectBookables = createCachedSelector(
       sortByDate()
     )(stocks)
   }
-)(mapArgsToCacheKey)
+)((state, offer) => {
+  const key = (offer && offer.id) || ' '
+  return key
+})
 
-export default selectBookables
+export const selectIsNotBookableByRouterMatch = createCachedSelector(
+  selectOfferByRouterMatch,
+  selectMediationByRouterMatch,
+  selectBookingByRouterMatch,
+  getIsNotBookable
+)((state, match) => {
+  const { params } = match
+  const { bookingId, favoriteId, mediationId, offerId } = params
+  return `${bookingId || ' '}${favoriteId || ' '}${mediationId || ' '}${offerId || ' '}`
+})

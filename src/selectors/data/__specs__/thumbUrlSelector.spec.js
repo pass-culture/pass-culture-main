@@ -1,6 +1,6 @@
-import selectThumbUrlByRouterMatch from '../selectThumbUrlByRouterMatch'
+import { selectThumbUrlByRouterMatch } from '../thumbUrlSelector'
 
-describe('src | selectors | selectThumbUrlByRouterMatch', () => {
+describe('selectThumbUrlByRouterMatch', () => {
   let booking
   let bookingId
   let mediation

@@ -5,10 +5,10 @@ import { requestData } from 'redux-thunk-data'
 
 import withTracking from '../../hocs/withTracking'
 import Booking from './Booking'
-import selectBookables from '../../../selectors/selectBookables'
-import { selectOfferByRouterMatch } from '../../../selectors/data/offersSelector'
-import selectRecommendationByRouterMatch from '../../../selectors/selectRecommendationByRouterMatch'
+import { selectOfferByRouterMatch } from '../../../selectors/data/offersSelectors'
 import { bookingNormalizer } from '../../../utils/normalizers'
+import { selectRecommendationByRouterMatch } from '../../../selectors/data/recommendationsSelectors'
+import { selectBookables } from '../../../selectors/data/bookablesSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps

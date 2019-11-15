@@ -3,9 +3,9 @@ import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
 import Finishable from './Finishable'
-import selectIsNotBookableByRouterMatch from '../../../selectors/selectIsNotBookableByRouterMatch'
-import { selectBookingByRouterMatch } from '../../../selectors/data/bookingsSelector'
+import { selectBookingByRouterMatch } from '../../../selectors/data/bookingsSelectors'
 import getIsBooked from '../../../helpers/getIsBooked'
+import { selectIsNotBookableByRouterMatch } from '../../../selectors/data/bookablesSelectors'
 
 const mapStateToProps = (state, { match }) => {
   const booking = selectBookingByRouterMatch(state, match)

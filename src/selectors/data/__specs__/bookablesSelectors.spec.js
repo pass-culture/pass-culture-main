@@ -1,17 +1,16 @@
 import moment from 'moment'
 import 'moment-timezone'
-
 import {
   addModifierString,
   humanizeBeginningDate,
   markAsCancelled,
+  selectIsNotBookableByRouterMatch,
   setTimezoneOnBeginningDatetime,
-} from '../selectBookables'
-import { stockWithDates, stockWithoutDates } from './data/selectBookables'
+} from '../bookablesSelectors'
 
 const format = 'dddd DD/MM/YYYY à HH:mm'
 
-describe('src | selectors| selectBookables', () => {
+describe('selectBookables', () => {
   describe('addModifierString', () => {
     it('add property named __modifiers__ to array of objects', () => {
       let value = []
@@ -70,8 +69,19 @@ describe('src | selectors| selectBookables', () => {
   describe('setTimezoneOnBeginningDatetime', () => {
     it('does nothing if stock as no beginning', () => {
       // given
-      const timezone = 'Europe/Paris'
+      const stockWithoutDates = {
+        available: 10,
+        beginningDatetime: null,
+        bookingLimitDatetime: null,
+        endDatetime: null,
+        id: 'C3LA',
+        isSoftDeleted: false,
+        modelName: 'Stock',
+        offerId: 'ATRQ',
+        price: 25.0,
+      }
       const items = [stockWithoutDates]
+      const timezone = 'Europe/Paris'
 
       // when
       const results = setTimezoneOnBeginningDatetime(timezone)(items)
@@ -83,8 +93,19 @@ describe('src | selectors| selectBookables', () => {
     })
     it('sets timezones to beginningDatetime', () => {
       // given
+      const stockWithDate = {
+        available: 10,
+        beginningDatetime: '2019-04-19T18:30:00Z',
+        bookingLimitDatetime: null,
+        endDatetime: '2019-04-20T20:00:00Z',
+        id: 'C3LA',
+        isSoftDeleted: false,
+        modelName: 'Stock',
+        offerId: 'BYAQ',
+        price: 25.0,
+      }
+      const items = [stockWithDate]
       const timezone = 'Europe/Paris'
-      const items = [stockWithDates]
 
       // when
       const results = setTimezoneOnBeginningDatetime(timezone)(items)
@@ -141,3 +162,98 @@ describe('src | selectors| selectBookables', () => {
     })
   })
 })
+
+describe('selectIsNotBookableByRouterMatch', () => {
+  let offer
+
+  beforeEach(() => {
+    offer = {
+      id: 'AE',
+      isNotBookable: false,
+    }
+  })
+
+  it('should return false when offerId in match', () => {
+    // given
+    const state = {
+      data: {
+        bookings: [],
+        favorites: [],
+        mediations: [],
+        offers: [offer],
+        recommendations: [],
+        stocks: [],
+      },
+    }
+    const match = {
+      params: {
+        offerId: 'AE',
+      },
+    }
+
+    // when
+    const result = selectIsNotBookableByRouterMatch(state, match)
+
+    // then
+    expect(result).toBe(false)
+  })
+
+  it('should return false when bookingId in match resolves booking', () => {
+    // given
+    const bookingId = 'BF'
+    const booking = {
+      id: bookingId,
+      stock: { offerId: 'AE' },
+      stockId: 'AA',
+    }
+    const state = {
+      data: {
+        bookings: [booking],
+        favorites: [],
+        mediations: [],
+        offers: [offer],
+        recommendations: [],
+        stocks: [{ id: 'AA' }],
+      },
+    }
+    const match = {
+      params: {
+        bookingId,
+      },
+    }
+
+    // when
+    const result = selectIsNotBookableByRouterMatch(state, match)
+
+    // then
+    expect(result).toBe(false)
+  })
+
+  it('should return false when favoriteId in match resolves offer', () => {
+    // given
+    const favoriteId = 'BF'
+    const favorite = { id: favoriteId, offerId: 'AE' }
+    const state = {
+      data: {
+        bookings: [],
+        favorites: [favorite],
+        mediations: [],
+        offers: [offer],
+        recommendations: [],
+        stocks: [],
+      },
+    }
+    const match = {
+      params: {
+        favoriteId,
+      },
+    }
+
+    // when
+    const result = selectIsNotBookableByRouterMatch(state, match)
+
+    // then
+    expect(result).toBe(false)
+  })
+})
+

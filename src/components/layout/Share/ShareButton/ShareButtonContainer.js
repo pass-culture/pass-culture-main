@@ -6,9 +6,9 @@ import { selectCurrentUser } from 'with-react-redux-login'
 import withTracking from '../../../hocs/withTracking'
 import ShareButton from './ShareButton'
 import getShareURL from '../../../../helpers/getShareURL'
-import selectMediationByRouterMatch from '../../../../selectors/selectMediationByRouterMatch'
-import { selectOfferByRouterMatch } from '../../../../selectors/data/offersSelector'
+import { selectOfferByRouterMatch } from '../../../../selectors/data/offersSelectors'
 import { openSharePopin, closeSharePopin } from '../../../../reducers/share'
+import { selectMediationByRouterMatch } from '../../../../selectors/data/mediationSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps

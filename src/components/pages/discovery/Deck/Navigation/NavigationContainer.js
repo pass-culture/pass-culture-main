@@ -8,9 +8,9 @@ import Navigation from './Navigation'
 import { getHeaderColor } from '../../../../../utils/colors'
 import getPriceRangeFromStocks from '../../../../../helpers/getPriceRangeFromStocks'
 import selectCurrentRecommendation from '../../selectors/selectCurrentRecommendation'
-import selectDistanceByOfferId from '../../../../../selectors/selectDistanceByOfferId'
-import selectOfferById from '../../../../../selectors/selectOfferById'
-import selectStocksByOfferId from '../../../../../selectors/selectStocksByOfferId'
+import { selectOfferById } from '../../../../../selectors/data/offersSelectors'
+import { selectDistanceByOfferId } from '../../../../../selectors/geolocationSelectors'
+import { selectStocksByOfferId } from '../../../../../selectors/data/stocksSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match: { params: { mediationId, offerId } = {} } = {} } = ownProps

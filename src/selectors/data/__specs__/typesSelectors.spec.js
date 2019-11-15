@@ -1,9 +1,9 @@
-import selectTypeSublabelsSelector, { selectTypeSublabelsAndDescription } from '../typesSelector'
+import { selectTypeSublabels, selectTypeSublabelsAndDescription } from '../typesSelectors'
 import state from '../../../mocks/state'
 
 describe('selectTypeSublabels', () => {
   it('should select the global state', () => {
-    expect(selectTypeSublabelsSelector(state)).toStrictEqual([
+    expect(selectTypeSublabels(state)).toStrictEqual([
       'Applaudir',
       'Jouer',
       'Lire',

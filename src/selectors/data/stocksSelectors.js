@@ -1,11 +1,21 @@
 import createCachedSelector from 're-reselect'
 
-import selectOfferById from '../selectOfferById'
-import selectStocksByOfferId from '../selectStocksByOfferId'
-import selectStockById from '../selectStockById'
 import selectIsFeatureDisabled from '../../components/router/selectors/selectIsFeatureDisabled'
+import { selectOfferById } from './offersSelectors'
 
-export const selectStocks = state => state.data.stocks
+const selectStocks = state => state.data.stocks
+
+export const selectStockById = createCachedSelector(
+  selectStocks,
+  (state, stockId) => stockId,
+  (stocks, stockId) => stocks.find(stock => stock.id === stockId)
+)((state, stockId = '') => stockId)
+
+export const selectStocksByOfferId = createCachedSelector(
+  selectStocks,
+  (state, offerId) => offerId,
+  (stocks, offerId) => stocks.filter(stock => stock.offerId === offerId)
+)((state, offerId = '') => offerId)
 
 export const selectIsEnoughStockForOfferDuo = createCachedSelector(
   (state, offerId) => offerId,
@@ -14,7 +24,7 @@ export const selectIsEnoughStockForOfferDuo = createCachedSelector(
     const stocksAvailableForOfferDuo = stocks.filter(
       stock => stock.available === null || stock.available >= 2
     )
-    return stocksAvailableForOfferDuo.length > 0 ? true : false
+    return stocksAvailableForOfferDuo.length > 0
   }
 )((state, offerId) => offerId || '')
 

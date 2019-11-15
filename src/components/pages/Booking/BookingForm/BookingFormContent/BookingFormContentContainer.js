@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 
 import BookingFormContent from './BookingFormContent'
-import { selectIsStockDuo } from '../../../../../selectors/data/stocksSelector'
+import { selectIsStockDuo } from '../../../../../selectors/data/stocksSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const { offerId, values } = ownProps

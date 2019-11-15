@@ -1,6 +1,39 @@
-import selectMediationByRouterMatch from '../selectMediationByRouterMatch'
+import { selectMediationById, selectMediationByRouterMatch } from '../mediationSelectors'
 
-describe('src | selectors | selectMediationByRouterMatch', () => {
+describe('selectMediationById', () => {
+  it('should return undefined when no match', () => {
+    // given
+    const state = {
+      data: {
+        mediations: [{ id: 'AE' }],
+      },
+    }
+
+    // when
+    const result = selectMediationById(state, 'wrong')
+
+    // then
+    expect(result).toBeUndefined()
+  })
+
+  it('should return mediation matching id', () => {
+    // given
+    const state = {
+      data: {
+        mediations: [{ id: 'foo' }, { id: 'bar' }, { id: 'baz' }],
+      },
+    }
+
+    // when
+    const result = selectMediationById(state, 'bar')
+
+    // then
+    expect(result).toStrictEqual({ id: 'bar' })
+    expect(result).toBe(state.data.mediations[1])
+  })
+})
+
+describe('selectMediationByRouterMatch', () => {
   it('should return mediation when mediationId in match', () => {
     // given
     const state = {

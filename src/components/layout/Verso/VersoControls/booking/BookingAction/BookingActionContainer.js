@@ -4,9 +4,9 @@ import { compose } from 'redux'
 
 import BookingAction from './BookingAction'
 import getPriceRangeFromStocks from '../../../../../../helpers/getPriceRangeFromStocks'
-import selectIsNotBookableByRouterMatch from '../../../../../../selectors/selectIsNotBookableByRouterMatch'
-import { selectOfferByRouterMatch } from '../../../../../../selectors/data/offersSelector'
-import selectStocksByOfferId from '../../../../../../selectors/selectStocksByOfferId'
+import { selectOfferByRouterMatch } from '../../../../../../selectors/data/offersSelectors'
+import { selectStocksByOfferId } from '../../../../../../selectors/data/stocksSelectors'
+import { selectIsNotBookableByRouterMatch } from '../../../../../../selectors/data/bookablesSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match, location } = ownProps

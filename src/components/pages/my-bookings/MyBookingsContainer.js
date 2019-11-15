@@ -3,7 +3,7 @@ import { compose } from 'redux'
 import { requestData } from 'redux-thunk-data'
 
 import MyBookings from './MyBookings'
-import { selectBookings } from '../../../selectors/data/bookingsSelector'
+import { selectBookings } from '../../../selectors/data/bookingsSelectors'
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
 import { myBookingsNormalizer } from '../../../utils/normalizers'
 import selectIsFeatureDisabled from '../../router/selectors/selectIsFeatureDisabled'

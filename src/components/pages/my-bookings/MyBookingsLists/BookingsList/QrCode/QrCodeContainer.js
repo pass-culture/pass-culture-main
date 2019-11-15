@@ -3,11 +3,11 @@ import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 
 import QrCode from './QrCode'
-import { selectBookingByRouterMatch } from '../../../../../../selectors/data/bookingsSelector'
-import { selectStockById } from '../../../../../../selectors/selectStockById'
-import { selectOfferById } from '../../../../../../selectors/selectOfferById'
+import { selectBookingByRouterMatch } from '../../../../../../selectors/data/bookingsSelectors'
 import { getTimezone } from '../../../../../../utils/timezone'
 import { humanizeDate } from '../../../../../../utils/date/date'
+import { selectOfferById } from '../../../../../../selectors/data/offersSelectors'
+import { selectStockById } from '../../../../../../selectors/data/stocksSelectors'
 
 export const mapStateToProps = (state, props) => {
   const { match } = props

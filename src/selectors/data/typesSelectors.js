@@ -6,7 +6,7 @@ import arrayOfObjects, { removeDuplicatesObjects } from '../../utils/arrayOfObje
 
 export const selectTypes = state => state.data.types
 
-const selectTypeSublabels = createSelector(
+export const selectTypeSublabels = createSelector(
   selectTypes,
   types => {
     const sublabelTypes = uniq(types.map(type => type.sublabel))
@@ -25,5 +25,3 @@ export const selectTypeSublabelsAndDescription = createSelector(
     return sublabelTypesAndDescriptionFiltred.sort(arrayOfObjects('sublabel'))
   }
 )
-
-export default selectTypeSublabels

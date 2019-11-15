@@ -5,12 +5,12 @@ import { compose } from 'redux'
 import withTracking from '../../../../../hocs/withTracking'
 import BookingItem from './BookingItem'
 
-import selectMediationById from '../../../../../../selectors/selectMediationById'
-import selectStockById from '../../../../../../selectors/selectStockById'
-import selectOfferById from '../../../../../../selectors/selectOfferById'
-import selectRecommendationById from '../../../../../../selectors/selectRecommendationById'
+import { selectRecommendationById } from '../../../../../../selectors/data/recommendationsSelectors'
 import getHumanizeRelativeDate from '../../../../../../utils/date/getHumanizeRelativeDate'
 import selectIsFeatureDisabled from '../../../../../router/selectors/selectIsFeatureDisabled'
+import { selectOfferById } from '../../../../../../selectors/data/offersSelectors'
+import { selectMediationById } from '../../../../../../selectors/data/mediationSelectors'
+import { selectStockById } from '../../../../../../selectors/data/stocksSelectors'
 
 export const ribbonLabelAndType = (
   isUsed,

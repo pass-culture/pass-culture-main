@@ -3,9 +3,11 @@ import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
 import Recto from './Recto'
-import selectMediationById from '../../../selectors/selectMediationById'
-import selectMediationByRouterMatch from '../../../selectors/selectMediationByRouterMatch'
-import selectThumbUrlByRouterMatch from '../../../selectors/selectThumbUrlByRouterMatch'
+import {
+  selectMediationById,
+  selectMediationByRouterMatch,
+} from '../../../selectors/data/mediationSelectors'
+import { selectThumbUrlByRouterMatch } from '../../../selectors/data/thumbUrlSelector'
 
 const mapStateToProps = (state, ownProps) => {
   const { match, recommendation } = ownProps

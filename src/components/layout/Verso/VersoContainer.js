@@ -4,9 +4,9 @@ import { compose } from 'redux'
 
 import Verso from './Verso'
 import getHeaderColor from '../../../utils/colors'
-import selectMediationByRouterMatch from '../../../selectors/selectMediationByRouterMatch'
-import { selectOfferByRouterMatch } from '../../../selectors/data/offersSelector'
+import { selectOfferByRouterMatch } from '../../../selectors/data/offersSelectors'
 import { ROOT_PATH } from '../../../utils/config'
+import { selectMediationByRouterMatch } from '../../../selectors/data/mediationSelectors'
 
 const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`
 
