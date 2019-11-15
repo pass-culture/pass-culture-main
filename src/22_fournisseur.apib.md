@@ -2,8 +2,6 @@
 
 Ceci décrit l'API à implémenter par les partenaires techniques de Pass Culture qui souhaitent fournir des évènements ou des stocks de manière automatisée. Les trois sections de cet API (/things, /events et /stocks) sont indépendantes et ne sont donc pas nécessairement toutes à implémenter.
 
-En cible, Pass Culture pourra s'identifier auprès des partenaires techniques qui le souhaintent via un certificat client SSL. La clé publique sera publiée sur le site Pass Culture, et les partenaires seronnt prévenus à l'avance en cas de changement de clé via notre liste de diffusion email "partenaires techniques".
-
 #### Les évènements [/events/{siret}]
 
 **Statut actuel : brouillon**
