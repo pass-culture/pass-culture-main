@@ -338,18 +338,16 @@ def make_user_booking_recap_email(booking, is_cancellation=False):
     }
 
 
-def make_reset_password_email_with_mailjet_template(user):
+def make_reset_password_email_data(user):
     user_first_name = user.firstName
     user_email = user.email
     user_reset_password_token = user.resetPasswordToken
-    env = f'-{ENV}' if not IS_PROD else ''
+    env = '' if IS_PROD else f'-{ENV}'
 
-    mailjet_json = {
-        'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
-        'FromName': 'Pass Culture',
-        'Subject': 'Réinitialisation de votre mot de passe',
-        'MJ-TemplateID': '912168',
-        'MJ-TemplateLanguage': 'true',
+    return {
+        'FromEmail': SUPPORT_EMAIL_ADDRESS,
+        'MJ-TemplateID': 912168,
+        'MJ-TemplateLanguage': True,
         'To': user_email if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
         'Vars':
             {
@@ -358,7 +356,6 @@ def make_reset_password_email_with_mailjet_template(user):
                 'env': env
             }
     }
-    return mailjet_json
 
 
 def make_validation_confirmation_email(user_offerer, offerer):

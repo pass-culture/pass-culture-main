@@ -13,7 +13,7 @@ from utils.mailing import make_user_booking_recap_email, \
     make_pro_user_waiting_for_validation_by_admin_email, \
     make_venue_validation_confirmation_email, compute_email_html_part_and_recipients, \
     make_activation_notification_email, ADMINISTRATION_EMAIL_ADDRESS, \
-    make_offerer_booking_recap_email_with_mailjet_template, make_reset_password_email_with_mailjet_template
+    make_offerer_booking_recap_email_with_mailjet_template, make_reset_password_email_data
 
 
 def send_final_booking_recap_email(stock: Stock, send_email: Callable[..., bool]) -> bool:
@@ -100,7 +100,7 @@ def send_offerer_driven_cancellation_email_to_offerer(booking: Booking, send_ema
 
 
 def send_reset_password_email_with_mailjet_template(user: User, send_email: Callable[..., bool]) -> bool:
-    email = make_reset_password_email_with_mailjet_template(user)
+    email = make_reset_password_email_data(user)
     return send_email(data=email)
 
 

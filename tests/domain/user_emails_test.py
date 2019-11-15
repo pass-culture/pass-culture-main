@@ -645,9 +645,7 @@ class SendResetPasswordEmailWithMailjetTemplateTest:
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
         data = args[1]['data']
-        assert data['FromName'] == 'Pass Culture'
         assert data['FromEmail'] == 'support@passculture.app'
-        assert data['Subject'] == 'Réinitialisation de votre mot de passe'
         assert data['To'] == 'bobby@example.net'
 
     def when_feature_send_emails_disabled_sends_email_to_pass_culture_dev(self, app):

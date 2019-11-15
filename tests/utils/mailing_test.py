@@ -1,5 +1,4 @@
 import re
-import re
 import secrets
 from datetime import datetime, timezone, timedelta
 from unittest.mock import MagicMock, patch, Mock
@@ -38,7 +37,7 @@ from utils.mailing import make_activation_notification_email, make_batch_cancell
     parse_email_addresses, \
     send_raw_email, resend_email, \
     write_object_validation_email, compute_email_html_part_and_recipients, \
-    make_offerer_booking_recap_email_with_mailjet_template, make_reset_password_email_with_mailjet_template
+    make_offerer_booking_recap_email_with_mailjet_template, make_reset_password_email_data
 
 SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL = \
     'Confirmation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
@@ -1938,28 +1937,23 @@ class UserValidationEmailsTest:
         assert email == expected
 
 
-class MakeResetPasswordEmailWithMailjetTemplateTest:
-    @clean_database
+class MakeResetPasswordEmailDataTest:
     @patch('utils.mailing.ENV', 'testing')
     @patch('utils.mailing.IS_PROD', False)
-    @patch('utils.mailing.SUPPORT_EMAIL_ADDRESS', 'john.doe@support.com')
-    @patch('utils.mailing.feature_send_mail_to_users_enabled')
-    def test_should_write_email_with_right_data_when_not_prod_environment(self, feature_send_mail_to_users_enabled,
-                                                                          app):
+    @patch('utils.mailing.SUPPORT_EMAIL_ADDRESS', 'john.doe@example.com')
+    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False)
+    def test_should_write_email_with_right_data_when_not_production_environment(self, app):
         # Given
-        feature_send_mail_to_users_enabled.return_value = False
-        user = create_user(email="test@email.com", first_name="Johnny", reset_password_token='ABCDEFG')
-        PcObject.save(user)
+        user = create_user(email="johnny.wick@example.com", first_name="Johnny", reset_password_token='ABCDEFG')
 
         # When
-        email = make_reset_password_email_with_mailjet_template(user=user)
+        reset_password_email_data = make_reset_password_email_data(user=user)
 
-        expected = {
-            'FromEmail': 'dev@passculture.app',
-            'FromName': 'Pass Culture',
-            'Subject': 'Réinitialisation de votre mot de passe',
-            'MJ-TemplateID': '912168',
-            'MJ-TemplateLanguage': 'true',
+        # Then
+        assert reset_password_email_data == {
+            'FromEmail': 'john.doe@example.com',
+            'MJ-TemplateID': 912168,
+            'MJ-TemplateLanguage': True,
             'To': 'dev@passculture.app',
             'Vars':
                 {
@@ -1969,30 +1963,23 @@ class MakeResetPasswordEmailWithMailjetTemplateTest:
                 }
         }
 
-        # Then
-        assert email == expected
-
-    @clean_database
     @patch('utils.mailing.ENV', 'production')
     @patch('utils.mailing.IS_PROD', True)
-    @patch('utils.mailing.SUPPORT_EMAIL_ADDRESS', 'john.doe@support.com')
-    @patch('utils.mailing.feature_send_mail_to_users_enabled')
-    def test_should_write_email_with_right_data_when_prod_environment(self, feature_send_mail_to_users_enabled, app):
+    @patch('utils.mailing.SUPPORT_EMAIL_ADDRESS', 'john.doe@example.com')
+    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
+    def test_should_write_email_with_right_data_when_production_environment(self, app):
         # Given
-        feature_send_mail_to_users_enabled.return_value = True
-        user = create_user(email="test@email.com", first_name="Johnny", reset_password_token='ABCDEFG')
-        PcObject.save(user)
+        user = create_user(email="johnny.wick@example.com", first_name="Johnny", reset_password_token='ABCDEFG')
 
         # When
-        email = make_reset_password_email_with_mailjet_template(user=user)
+        reset_password_email_data = make_reset_password_email_data(user=user)
 
-        expected = {
-            'FromEmail': 'john.doe@support.com',
-            'FromName': 'Pass Culture',
-            'Subject': 'Réinitialisation de votre mot de passe',
-            'MJ-TemplateID': '912168',
-            'MJ-TemplateLanguage': 'true',
-            'To': 'test@email.com',
+        # Then
+        assert reset_password_email_data == {
+            'FromEmail': 'john.doe@example.com',
+            'MJ-TemplateID': 912168,
+            'MJ-TemplateLanguage': True,
+            'To': 'johnny.wick@example.com',
             'Vars':
                 {
                     'prenom_user': 'Johnny',
@@ -2000,9 +1987,6 @@ class MakeResetPasswordEmailWithMailjetTemplateTest:
                     'env': ''
                 }
         }
-
-        # Then
-        assert email == expected
 
 
 def _remove_whitespaces(text):
