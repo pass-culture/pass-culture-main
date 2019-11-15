@@ -1,8 +1,7 @@
-""" mailing """
 import base64
 import os
 from datetime import datetime
-from pprint import pformat, pprint
+from pprint import pformat
 from typing import Dict, List
 
 from flask import current_app as app, render_template
@@ -12,13 +11,13 @@ from domain.user_activation import generate_set_password_url
 from models import Offer, Email, PcObject, Offerer
 from models import RightsType, User
 from models.email import EmailStatus
-from models.offer_type import ProductType, ThingType
-from repository import email_queries
+from models.offer_type import ProductType
 from repository import booking_queries
+from repository import email_queries
 from repository.feature_queries import feature_send_mail_to_users_enabled
 from repository.user_offerer_queries import find_user_offerer_email
 from utils import logger
-from utils.config import API_URL, ENV, WEBAPP_URL, PRO_URL
+from utils.config import API_URL, WEBAPP_URL, PRO_URL, ENV, IS_PROD
 from utils.date import format_datetime, utc_datetime_to_dept_timezone
 from utils.human_ids import humanize
 from utils.object_storage import get_storage_base_url
@@ -178,8 +177,7 @@ def _create_email_recipients(recipients):
     if feature_send_mail_to_users_enabled():
         email_to = [{"Email": email} for email in recipients]
     else:
-        email_to = [{ "Email": DEV_EMAIL_ADDRESS }]
-
+        email_to = [{"Email": DEV_EMAIL_ADDRESS}]
 
     return email_to
 
@@ -340,19 +338,27 @@ def make_user_booking_recap_email(booking, is_cancellation=False):
     }
 
 
-def make_reset_password_email(user, app_origin_url):
-    email_html = render_template(
-        'mails/user_reset_password_email.html',
-        user=user,
-        app_origin_url=app_origin_url
-    )
+def make_reset_password_email_with_mailjet_template(user):
+    user_first_name = user.firstName
+    user_email = user.email
+    user_reset_password_token = user.resetPasswordToken
+    env = f'-{ENV}' if not IS_PROD else ''
 
-    return {
+    mailjet_json = {
+        'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
         'FromName': 'Pass Culture',
-        'FromEmail': SUPPORT_EMAIL_ADDRESS,
         'Subject': 'Réinitialisation de votre mot de passe',
-        'Html-part': email_html,
+        'MJ-TemplateID': '912168',
+        'MJ-TemplateLanguage': 'true',
+        'To': user_email if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
+        'Vars':
+            {
+                'prenom_user': user_first_name,
+                'token': user_reset_password_token,
+                'env': env
+            }
     }
+    return mailjet_json
 
 
 def make_validation_confirmation_email(user_offerer, offerer):

@@ -8,12 +8,12 @@ from utils.logger import logger
 from utils.mailing import make_user_booking_recap_email, \
     make_offerer_booking_recap_email_after_user_action, make_offerer_driven_cancellation_email_for_user, \
     make_offerer_driven_cancellation_email_for_offerer, make_final_recap_email_for_stock_with_event, \
-    make_reset_password_email, make_validation_confirmation_email, make_batch_cancellation_email, \
+    make_validation_confirmation_email, make_batch_cancellation_email, \
     make_user_validation_email, \
     make_pro_user_waiting_for_validation_by_admin_email, \
     make_venue_validation_confirmation_email, compute_email_html_part_and_recipients, \
     make_activation_notification_email, ADMINISTRATION_EMAIL_ADDRESS, \
-    make_offerer_booking_recap_email_with_mailjet_template
+    make_offerer_booking_recap_email_with_mailjet_template, make_reset_password_email_with_mailjet_template
 
 
 def send_final_booking_recap_email(stock: Stock, send_email: Callable[..., bool]) -> bool:
@@ -41,7 +41,7 @@ def send_booking_recap_emails(booking: Booking, send_email: Callable[..., bool])
     if booking.stock.resolvedOffer.bookingEmail:
         recipients.append(booking.stock.resolvedOffer.bookingEmail)
 
-    email = make_offerer_booking_recap_email_with_mailjet_template(booking,recipients)
+    email = make_offerer_booking_recap_email_with_mailjet_template(booking, recipients)
     return send_email(data=email)
 
 
@@ -99,11 +99,8 @@ def send_offerer_driven_cancellation_email_to_offerer(booking: Booking, send_ema
     return send_email(data=email)
 
 
-def send_reset_password_email(user: User, send_email: Callable[..., bool], app_origin_url: str) -> bool:
-    email = make_reset_password_email(user, app_origin_url)
-    recipients = [user.email]
-    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(
-        email['Html-part'], recipients)
+def send_reset_password_email_with_mailjet_template(user: User, send_email: Callable[..., bool]) -> bool:
+    email = make_reset_password_email_with_mailjet_template(user)
     return send_email(data=email)
 
 
