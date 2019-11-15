@@ -963,8 +963,10 @@ def test_returns_empty_ISBN_when_no_extra_data(app):
 
     # When
     thing_offer.extraData = None
-    email = make_offerer_booking_recap_email_with_mailjet_template(booking, recipient)
-    expected = {
+    email_data_template = make_offerer_booking_recap_email_with_mailjet_template(booking, recipient)
+
+    # Then
+    assert email_data_template == {
         'FromEmail': 'dev@passculture.app',
         'FromName': 'pass Culture pro',
         'Subject': 'Nouvelle réservation pour Test Book',
@@ -993,9 +995,6 @@ def test_returns_empty_ISBN_when_no_extra_data(app):
                 "departement": ""
             }
     }
-
-    # Then
-    assert email == expected
 
 
 @mocked_mail
