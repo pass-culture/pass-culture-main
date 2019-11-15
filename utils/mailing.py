@@ -150,7 +150,7 @@ def make_offerer_booking_recap_email_with_mailjet_template(booking, recipients):
 
     if offer_is_a_book:
         mailjet_json_variables['offer_type'] = "book"
-        mailjet_json_variables['ISBN'] = offer.extraData['isbn']
+        mailjet_json_variables['ISBN'] = offer.extraData['isbn'] if offer.extraData is not None else ''
     else:
         mailjet_json_variables['offer_type'] = offer_type
 
