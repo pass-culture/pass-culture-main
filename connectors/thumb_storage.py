@@ -70,6 +70,19 @@ def save_thumb(
         PcObject.save(model_with_thumb)
 
 
+def save_provider_thumb(thumb_storage_id,
+                        thumb,
+                        store_thumb: Callable = store_public_object
+                        ):
+    resized_image = standardize_image(thumb, DO_NOT_CROP)
+    store_thumb(
+        'thumbs',
+        thumb_storage_id,
+        resized_image,
+        'image/jpeg'
+    )
+
+
 def _fetch_image(thumb_url: str) -> bytes:
     if not thumb_url[0:4] == 'http':
         raise ValueError('Invalid thumb URL : %s' % thumb_url)

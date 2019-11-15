@@ -1,9 +1,8 @@
-""" utils thumb """
 import os
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
-from unittest.mock import patch
 from werkzeug.datastructures import FileStorage
 
 from connectors.thumb_storage import read_thumb
@@ -31,7 +30,6 @@ def test_read_thumb_returns_api_error_when_no_extension_in_filename():
     ]
 
 
-
 @patch('connectors.thumb_storage.requests.get')
 def test_read_thumb_returns_request_content_when_url_is_fine(mocked_requests_get):
     # given
@@ -40,6 +38,7 @@ def test_read_thumb_returns_request_content_when_url_is_fine(mocked_requests_get
             self.content = "it works !"
             self.status_code = 200
             self.headers = {'Content-type': 'image/kikou'}
+
     form = {
         'thumbUrl': 'https://my-image-url.jpg'
     }
@@ -50,6 +49,7 @@ def test_read_thumb_returns_request_content_when_url_is_fine(mocked_requests_get
 
     # then
     assert result == "it works !"
+
 
 @patch('connectors.thumb_storage.requests.get', side_effect=Exception)
 def test_read_thumb_returns_api_error_when_request_raise_ssl_error(mocked_requests_get):

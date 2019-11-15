@@ -1,6 +1,5 @@
 import re
 from datetime import datetime
-from io import BytesIO
 from pathlib import PurePath
 from typing import List
 
@@ -9,6 +8,7 @@ from domain.titelive import get_date_from_filename
 from local_providers.local_provider import LocalProvider
 from local_providers.providable_info import ProvidableInfo
 from models import Product
+from models.db import Model
 from models.local_provider_event import LocalProviderEventType
 from repository import local_provider_event_queries
 
@@ -69,14 +69,11 @@ class TiteLiveThingThumbs(LocalProvider):
     def get_object_thumb_index(self) -> int:
         return extract_thumb_index(self.thumb_zipinfo.filename)
 
-    def get_object_thumb_date(self, thing: Product) -> datetime:
+    def get_object_thumb_date(self) -> datetime:
         thumbs_batch_datetime = self.thumb_zipinfo.date_time
         return datetime(*thumbs_batch_datetime)
 
-    def getObjectThumb(self, thing: Product, index: int) -> BytesIO:
-        assert thing.idAtProviders == self.thingId
-        expected_index = extract_thumb_index(self.thumb_zipinfo.filename)
-        assert index == expected_index
+    def get_object_thumb(self) -> bytes:
         with self.zip.open(self.thumb_zipinfo) as f:
             return f.read()
 
@@ -97,5 +94,5 @@ class TiteLiveThingThumbs(LocalProvider):
 def extract_thumb_index(filename: str) -> int:
     split_filename = filename.split('_')
     if len(split_filename) > 2:
-        return int(split_filename[-2]) - 1
+        return int(split_filename[-2])
     return -1

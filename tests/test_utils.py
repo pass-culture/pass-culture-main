@@ -334,7 +334,7 @@ def create_product_with_thing_type(
     product.url = url
     product.owningOfferer = owning_offerer
 
-    if thumb_count > 0:
+    if thumb_count is not None and thumb_count > 0:
         if dominant_color is None:
             product.firstThumbDominantColor = b'\x00\x00\x00'
         else:

@@ -1,5 +1,7 @@
 import os
 import re
+import requests
+
 from datetime import datetime
 from typing import List, Optional
 
@@ -48,6 +50,7 @@ class AllocineStocks(LocalProvider):
             self.fill_offer_attributes(pc_object)
 
     def fill_product_attributes(self, allocine_product: Product):
+        allocine_product.thumbCount = 0
         allocine_product.description = self.movie_information['description']
         allocine_product.durationMinutes = self.movie_information['duration']
         if not allocine_product.extraData:
@@ -57,6 +60,7 @@ class AllocineStocks(LocalProvider):
         if 'stageDirector' in self.movie_information:
             allocine_product.extraData["stageDirector"] = self.movie_information['stageDirector']
         allocine_product.name = self.movie_information['title']
+
         allocine_product.type = str(EventType.CINEMA)
         is_new_product_to_insert = allocine_product.id is None
 
@@ -91,14 +95,25 @@ class AllocineStocks(LocalProvider):
         providable_info.date_modified_at_provider = datetime.utcnow()
         return providable_info
 
+    def get_object_thumb(self) -> bytes:
+        image_url = self.movie_information['poster_url']
+        response = requests.get(image_url)
+        return response.content
+
+    def get_object_thumb_index(self) -> int:
+        return 1
+
+    def get_object_thumb_date(self) -> datetime:
+        return datetime.utcnow()
+
 
 def retrieve_movie_information(raw_movie_information: dict) -> dict:
-    parsed_movie_information = {}
+    parsed_movie_information = dict()
     parsed_movie_information['id'] = raw_movie_information['id']
     parsed_movie_information['description'] = _build_description(raw_movie_information)
     parsed_movie_information['duration'] = _parse_movie_duration(raw_movie_information['runtime'])
     parsed_movie_information['title'] = raw_movie_information['title']
-
+    parsed_movie_information['poster_url'] = _format_poster_url(raw_movie_information['poster']['url'])
     is_stage_director_info_available = len(raw_movie_information['credits']['edges']) > 0
 
     if is_stage_director_info_available:
@@ -116,6 +131,10 @@ def retrieve_movie_information(raw_movie_information: dict) -> dict:
 def _build_description(movie_info: dict) -> str:
     allocine_movie_url = movie_info['backlink']['url'].replace("\\", "")
     return f"{movie_info['synopsis']}\n{movie_info['backlink']['label']}: {allocine_movie_url}"
+
+
+def _format_poster_url(url: str) -> str:
+    return url.replace("\/", "/")
 
 
 def _get_operating_visa(movie_info: dict) -> Optional[str]:

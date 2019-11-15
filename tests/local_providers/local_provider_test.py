@@ -3,11 +3,12 @@ from unittest.mock import patch
 
 import pytest
 
+from local_providers.local_provider import save_thumb_from_thumb_count_to_index
 from models import Product, PcObject, ThingType, VenueProvider, ApiErrors, LocalProviderEvent
 from models.local_provider_event import LocalProviderEventType
 from tests.conftest import clean_database
 from tests.local_providers.provider_test_utils import TestLocalProvider, TestLocalProviderWithApiErrors, \
-    TestLocalProviderNoCreation
+    TestLocalProviderNoCreation, TestLocalProviderWithThumb, TestLocalProviderWithThumbIndexAt4
 from tests.test_utils import create_product_with_thing_type, create_venue, create_offerer, create_providable_info, \
     create_provider
 
@@ -343,3 +344,172 @@ class LocalProviderTest:
                        'url'] == ['Une offre de type Jeux (support physique) ne peut pas être numérique']
             provider_event = LocalProviderEvent.query.one()
             assert provider_event.type == LocalProviderEventType.SyncError
+
+    class HandleThumbTest:
+        @clean_database
+        def test_call_save_thumb_should_increase_thumbCount_by_1(self, app):
+            # Given
+            provider_test = create_provider('TestLocalProviderWithThumb')
+            PcObject.save(provider_test)
+
+            providable_info = create_providable_info()
+
+            provider = TestLocalProviderWithThumb()
+
+            existing_product = create_product_with_thing_type(thing_name='Old product name',
+                                                              thing_type=ThingType.INSTRUMENT,
+                                                              id_at_providers=providable_info.id_at_providers,
+                                                              last_provider_id=provider_test.id,
+                                                              date_modified_at_last_provider=datetime(2000, 1, 1),
+                                                              thumb_count=0)
+            PcObject.save(existing_product)
+
+            # When
+            provider.handle_thumb(existing_product)
+
+            # Then
+            assert provider.checkedThumbs == 1
+            assert provider.updatedThumbs == 0
+            assert provider.createdThumbs == 1
+            assert existing_product.thumbCount == 1
+
+        @patch('local_providers.local_provider.save_thumb_from_thumb_count_to_index')
+        @clean_database
+        def test_call_save_thumb_once_when_thumb_count_is_0(self, mock_save_thumb, app):
+            # Given
+            provider_test = create_provider('TestLocalProviderWithThumb')
+            PcObject.save(provider_test)
+
+            providable_info = create_providable_info()
+
+            provider = TestLocalProviderWithThumb()
+
+            existing_product = create_product_with_thing_type(thing_name='Old product name',
+                                                              thing_type=ThingType.INSTRUMENT,
+                                                              id_at_providers=providable_info.id_at_providers,
+                                                              last_provider_id=provider_test.id,
+                                                              date_modified_at_last_provider=datetime(2000, 1, 1),
+                                                              thumb_count=0)
+            # When
+            provider.handle_thumb(existing_product)
+
+            # Then
+            assert mock_save_thumb.call_count == 1
+            assert provider.checkedThumbs == 1
+            assert provider.updatedThumbs == 0
+            assert provider.createdThumbs == 1
+
+        @patch('local_providers.local_provider.save_provider_thumb')
+        @patch('utils.object_storage.build_thumb_path')
+        @clean_database
+        def test_create_several_thumbs_when_thumb_index_is_4_and_current_thumbCount_is_0(self,
+                                                                                         mock_get_thumb_storage_id,
+                                                                                         mock_save_thumb, app):
+            # Given
+            provider_test = create_provider('TestLocalProviderWithThumbIndexAt4')
+            PcObject.save(provider_test)
+
+            providable_info = create_providable_info()
+
+            provider = TestLocalProviderWithThumbIndexAt4()
+
+            existing_product = create_product_with_thing_type(thing_name='Old product name',
+                                                              thing_type=ThingType.INSTRUMENT,
+                                                              id_at_providers=providable_info.id_at_providers,
+                                                              last_provider_id=provider_test.id,
+                                                              date_modified_at_last_provider=datetime(2000, 1, 1),
+                                                              thumb_count=0)
+            existing_product.id = 5
+
+            mock_get_thumb_storage_id.return_value = 'products/AAERT'
+
+            # When
+            provider.handle_thumb(existing_product)
+
+            # Then
+            assert mock_save_thumb.call_count == 4
+            assert provider.checkedThumbs == 1
+            assert provider.updatedThumbs == 0
+            assert provider.createdThumbs == 4
+
+    class SaveThumbFromThumbCountToIndexTest:
+        @clean_database
+        def test_should_iterate_from_current_thumbCount_to_thumbIndex_when_thumbCount_is_0(self, app):
+            # Given
+            provider_test = create_provider('TestLocalProviderWithThumb')
+            PcObject.save(provider_test)
+
+            providable_info = create_providable_info()
+
+            provider = TestLocalProviderWithThumb()
+
+            product = create_product_with_thing_type(thing_name='Old product name',
+                                                     thing_type=ThingType.INSTRUMENT,
+                                                     id_at_providers=providable_info.id_at_providers,
+                                                     last_provider_id=provider_test.id,
+                                                     date_modified_at_last_provider=datetime(2000, 1, 1),
+                                                     thumb_count=0)
+            PcObject.save(product)
+
+            # When
+            thumb_index = 4
+            thumb = provider.get_object_thumb()
+            save_thumb_from_thumb_count_to_index(product, thumb_index, thumb)
+
+            # Then
+            assert product.thumbCount == 4
+
+        @clean_database
+        def test_should_iterate_from_current_thumbCount_to_thumbIndex_when_thumbCount_is_None(self, app):
+            # Given
+            provider_test = create_provider('TestLocalProviderWithThumb')
+            PcObject.save(provider_test)
+
+            providable_info = create_providable_info()
+
+            provider = TestLocalProviderWithThumb()
+
+            product = create_product_with_thing_type(thing_name='Old product name',
+                                                     thing_type=ThingType.INSTRUMENT,
+                                                     id_at_providers=providable_info.id_at_providers,
+                                                     last_provider_id=provider_test.id,
+                                                     date_modified_at_last_provider=datetime(2000, 1, 1),
+                                                     thumb_count=None)
+            PcObject.save(product)
+
+            # When
+            thumb_index = 4
+            thumb = provider.get_object_thumb()
+            save_thumb_from_thumb_count_to_index(product, thumb_index, thumb)
+
+            # Then
+            assert product.thumbCount == 4
+
+        @patch('local_providers.local_provider.add_new_thumb')
+        @clean_database
+        def test_should_iterate_from_current_thumbCount_to_thumbIndex_when_thumbCount_is_4(self, mock_add_new_thumb,
+                                                                                           app):
+            # Given
+            provider_test = create_provider('TestLocalProviderWithThumb')
+            PcObject.save(provider_test)
+
+            providable_info = create_providable_info()
+
+            provider = TestLocalProviderWithThumb()
+
+            product = create_product_with_thing_type(thing_name='Old product name',
+                                                     thing_type=ThingType.INSTRUMENT,
+                                                     id_at_providers=providable_info.id_at_providers,
+                                                     last_provider_id=provider_test.id,
+                                                     date_modified_at_last_provider=datetime(2000, 1, 1),
+                                                     thumb_count=4)
+            PcObject.save(product)
+
+            # When
+            thumb_index = 1
+            thumb = provider.get_object_thumb()
+            save_thumb_from_thumb_count_to_index(product, thumb_index, thumb)
+
+            # Then
+            assert mock_add_new_thumb.call_count == 1
+            assert product.thumbCount == 4

@@ -1,21 +1,17 @@
 """ local providers test """
-from datetime import datetime
-
-from pathlib import Path
-from unittest.mock import patch
 
 import os
+from pathlib import Path
+from unittest.mock import patch
 from zipfile import ZipFile
 
 from local_providers import TiteLiveThingThumbs
-from local_providers.titelive_thing_thumbs import THUMB_FOLDER_NAME_TITELIVE, extract_thumb_index
-from models import PcObject, ThingType, Product
+from local_providers.titelive_thing_thumbs import extract_thumb_index
+from models import PcObject, Product
 from tests.conftest import clean_database
 from tests.test_utils import provider_test, \
-    create_product_with_thing_type, \
-    create_provider, \
-    create_providable_info
-from tests.local_providers.provider_test_utils import TestLocalProvider
+    create_product_with_thing_type
+
 
 class TiteliveThingThumbsTest:
     class ExtractThumbIndexTest:
@@ -27,7 +23,7 @@ class TiteliveThingThumbsTest:
             thumb_index = extract_thumb_index(filename)
 
             # Then
-            assert thumb_index == 0
+            assert thumb_index == 1
 
         def test_return_3_for_filename_with_4(self):
             # Given
@@ -37,7 +33,7 @@ class TiteliveThingThumbsTest:
             thumb_index = extract_thumb_index(filename)
 
             # Then
-            assert thumb_index == 3
+            assert thumb_index == 4
 
     @clean_database
     @patch('local_providers.titelive_thing_thumbs.get_files_to_process_from_titelive_ftp')
@@ -73,9 +69,9 @@ class TiteliveThingThumbsTest:
     @patch('local_providers.titelive_thing_thumbs.get_files_to_process_from_titelive_ftp')
     @patch('local_providers.titelive_thing_thumbs.get_zip_file_from_ftp')
     def test_updates_thumb_count_for_product_when_new_thumbs_added(self,
-                                                                       get_thumbs_zip_file_from_ftp,
-                                                                       get_ordered_thumbs_zip_files,
-                                                                       app):
+                                                                   get_thumbs_zip_file_from_ftp,
+                                                                   get_ordered_thumbs_zip_files,
+                                                                   app):
         # Given
         product1 = create_product_with_thing_type(id_at_providers='9780847858903', thumb_count=0)
         PcObject.save(product1)
@@ -95,11 +91,14 @@ class TiteliveThingThumbsTest:
         assert new_product.name == 'Test Book'
         assert new_product.thumbCount == 1
 
+
 def get_zip_with_2_usable_thumb_files():
     return get_zip_thumbs_file_from_named_sandbox_file('test_livres_tl20190505.zip')
 
+
 def get_zip_with_1_usable_thumb_file():
     return get_zip_thumbs_file_from_named_sandbox_file('test_livres_tl20191104.zip')
+
 
 def get_zip_thumbs_file_from_named_sandbox_file(file_name):
     data_root_path = Path(os.path.dirname(os.path.realpath(__file__))) \

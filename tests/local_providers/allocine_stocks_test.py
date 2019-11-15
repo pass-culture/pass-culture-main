@@ -3,9 +3,10 @@ from unittest.mock import patch
 
 import pytest
 from freezegun import freeze_time
+from pytest import mark
 
 from local_providers import AllocineStocks
-from local_providers.allocine_stocks import retrieve_movie_information, _parse_movie_duration
+from local_providers.allocine_stocks import retrieve_movie_information, _parse_movie_duration, _format_poster_url
 from models import PcObject, Offer, EventType, Product
 from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
@@ -586,6 +587,220 @@ class AllocineStocksTest:
             assert created_offer.type == str(EventType.CINEMA)
             assert created_offer.name == 'Les Contes de la mère poule'
 
+        @patch('local_providers.allocine_stocks.get_movies_showtimes')
+        @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
+        @mark.skip
+        @clean_database
+        def test_should_create_product_with_correct_thumb_and_create_matching_offer_with_same_thumb(self,
+                                                                                                    mock_call_allocine_api,
+                                                                                                    app):
+            # Given
+            theater_token = 'test'
+            mock_call_allocine_api.return_value = iter([
+                {
+                    "node": {
+                        "movie": {
+                            "id": "TW92aWU6Mzc4MzI=",
+                            "internalId": 37832,
+                            "backlink": {
+                                "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
+                                "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9"
+                            },
+                            "data": {
+                                "eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E",
+                                "productionYear": 2001
+                            },
+                            "title": "Zombieland: Double Tap",
+                            "originalTitle": "Zombieland: Double Tap",
+                            "runtime": "PT1H50M0S",
+                            "poster": {
+                                "url": r"https:\/\/fr.web.img5.acsta.net\/pictures\/19\/08\/14\/10\/54\/4737391.jpg"
+                            },
+                            "synopsis": "synopsis du film",
+                            "releases": [
+                                {
+                                    "name": "Released",
+                                    "releaseDate": {
+                                        "date": "2001-10-03"
+                                    },
+                                    "data": []
+                                }
+                            ],
+                            "credits": {
+                                "edges": []
+                            },
+                            "cast": {
+                                "backlink": {
+                                    "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
+                                    "label": "Casting complet du film sur AlloCin\u00e9"
+                                },
+                                "edges": []
+                            },
+                            "countries": [
+                                {
+                                    "name": "Iran",
+                                    "alpha3": "IRN"
+                                }
+                            ],
+                            "genres": [
+                                "ANIMATION",
+                                "FAMILY"
+                            ],
+                            "companies": []
+                        },
+                        "showtimes": [
+                            {
+                                "startsAt": "2019-10-29T10:30:00",
+                                "diffusionVersion": "DUBBED"
+                            }
+                        ]
+                    }
+                }])
+
+            product = create_product_with_event_type(
+                event_name='Test event',
+                event_type=EventType.CINEMA,
+                duration_minutes=60,
+                id_at_providers="TW92aWU6Mzc4MzI=",
+                thumb_count=0
+            )
+
+            offerer = create_offerer(siren='775671464')
+            venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@toto.com')
+            PcObject.save(venue, product)
+
+            allocine_provider = get_provider_by_local_class('AllocineStocks')
+            allocine_provider.isActive = True
+            venue_provider = create_venue_provider(venue, allocine_provider, venue_id_at_offer_provider=theater_token)
+            PcObject.save(venue_provider)
+
+            allocine_stocks_provider = AllocineStocks(venue_provider)
+
+            # When
+            allocine_stocks_provider.updateObjects()
+
+            # Then
+            created_offer = Offer.query.one()
+            existing_product = Product.query.one()
+
+            assert existing_product.thumbUrl == "http://localhost/storage/thumbs/products/AU"
+            assert existing_product.thumbCount == 1
+            assert created_offer.product.thumbCount == 1
+            assert created_offer.product.thumbUrl == "http://localhost/storage/thumbs/products/AU"
+
+        @patch('local_providers.allocine_stocks.get_movies_showtimes')
+        @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
+        @mark.skip
+        @clean_database
+        def test_should_update_product_and_offer_thumbCount_when_product_has_already_one_thumb(self,
+                                                                                               mock_call_allocine_api,
+                                                                                               app):
+            # Given
+            theater_token = 'test'
+            mock_call_allocine_api.return_value = iter([
+                {
+                    "node": {
+                        "movie": {
+                            "id": "TW92aWU6Mzc4MzI=",
+                            "internalId": 37832,
+                            "backlink": {
+                                "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
+                                "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9"
+                            },
+                            "data": {
+                                "eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E",
+                                "productionYear": 2001
+                            },
+                            "title": "Zombieland: Double Tap",
+                            "originalTitle": "Zombieland: Double Tap",
+                            "runtime": "PT1H50M0S",
+                            "poster": {
+                                "url": r"https:\/\/fr.web.img5.acsta.net\/pictures\/19\/08\/14\/10\/54\/4737391.jpg"
+                            },
+                            "synopsis": "synopsis du film",
+                            "releases": [
+                                {
+                                    "name": "Released",
+                                    "releaseDate": {
+                                        "date": "2001-10-03"
+                                    },
+                                    "data": {
+                                        "visa_number": "2009993528"
+                                    }
+                                }
+                            ],
+                            "credits": {
+                                "edges": [
+                                    {
+                                        "node": {
+                                            "person": {
+                                                "firstName": "Farkhondeh",
+                                                "lastName": "Torabi"
+                                            },
+                                            "position": {
+                                                "name": "DIRECTOR"
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "cast": {
+                                "backlink": {
+                                    "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
+                                    "label": "Casting complet du film sur AlloCin\u00e9"
+                                },
+                                "edges": []
+                            },
+                            "countries": [
+                                {
+                                    "name": "Iran",
+                                    "alpha3": "IRN"
+                                }
+                            ],
+                            "genres": [
+                                "ANIMATION",
+                                "FAMILY"
+                            ],
+                            "companies": []
+                        },
+                        "showtimes": [
+                            {
+                                "startsAt": "2019-10-29T10:30:00",
+                                "diffusionVersion": "DUBBED"
+                            }
+                        ]
+                    }
+                }])
+
+            product = create_product_with_event_type(
+                event_name='Test event',
+                event_type=EventType.CINEMA,
+                duration_minutes=60,
+                id_at_providers="TW92aWU6Mzc4MzI=",
+                thumb_count=3
+            )
+
+            offerer = create_offerer(siren='775671464')
+            venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@toto.com')
+            PcObject.save(venue, product)
+
+            allocine_provider = get_provider_by_local_class('AllocineStocks')
+            allocine_provider.isActive = True
+            venue_provider = create_venue_provider(venue, allocine_provider, venue_id_at_offer_provider=theater_token)
+            PcObject.save(venue_provider)
+
+            allocine_stocks_provider = AllocineStocks(venue_provider)
+
+            # When
+            allocine_stocks_provider.updateObjects()
+
+            # Then
+            created_offer = Offer.query.one()
+            existing_product = Product.query.one()
+
+            assert existing_product.thumbCount == 4
+            assert created_offer.product.thumbCount == 4
+
 
 class ParseMovieDurationTest:
     def test_should_convert_duration_string_to_minutes(self):
@@ -707,6 +922,8 @@ class RetrieveMovieInformationTest:
         assert movie_parsed_information["visa"] == "2009993528"
         assert movie_parsed_information["stageDirector"] == "Farkhondeh Torabi"
         assert movie_parsed_information['duration'] == 110
+        assert movie_parsed_information[
+                   'poster_url'] == "https://fr.web.img6.acsta.net/medias/nmedia/00/02/32/64/69215979_af.jpg"
 
     def test_should_not_add_operating_visa_and_stageDirector_keys_when_nodes_are_missing(self):
         # Given
@@ -800,3 +1017,15 @@ class RetrieveMovieInformationTest:
         # When
         with pytest.raises(KeyError):
             retrieve_movie_information(movie_information['node']['movie'])
+
+
+class FormatPosterUrlTest:
+    def test_should_return_url_in_correct_format(self):
+        # Given
+        url = "https:\/\/fr.web.img4.acsta.net\/pictures\/19\/07\/23\/15\/55\/2940058.jpg"
+
+        # When
+        formatted_url = _format_poster_url(url)
+
+        # Then
+        assert formatted_url == "https://fr.web.img4.acsta.net/pictures/19/07/23/15/55/2940058.jpg"

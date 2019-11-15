@@ -4,7 +4,10 @@ from pathlib import Path, PurePath
 
 import swiftclient
 
+from models.db import Model
 from utils.config import IS_DEV
+from utils.human_ids import humanize
+from utils.inflect_engine import inflect_engine
 
 
 def get_storage_base_url():
@@ -82,3 +85,10 @@ def get_public_object_date(bucket, id):
     if not os.path.isfile(lpath):
         return None
     return datetime.fromtimestamp(os.path.getmtime(lpath))
+
+
+def build_thumb_path(pc_object: Model, index: int) -> str:
+    return inflect_engine.plural(pc_object.__class__.__name__.lower()) \
+           + "/" \
+           + humanize(pc_object.id) \
+           + (('_' + str(index)) if index > 0 else '')

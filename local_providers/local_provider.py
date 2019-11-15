@@ -2,10 +2,10 @@ import traceback
 from abc import abstractmethod
 from collections import Iterator
 from datetime import datetime
-from io import BytesIO
 from pprint import pprint
 
-from connectors.thumb_storage import save_thumb
+from connectors.thumb_storage import save_provider_thumb
+from domain.mediations import BLACK
 from local_providers.chunk_manager import get_existing_pc_obj, save_chunks
 from local_providers.providable_info import ProvidableInfo
 from models import ApiErrors
@@ -16,6 +16,7 @@ from models.pc_object import PcObject
 from repository.providable_queries import get_last_update_for_provider
 from repository.provider_queries import get_provider_by_local_class
 from utils.logger import logger
+from utils.object_storage import build_thumb_path
 
 CHUNK_MAX_SIZE = 1000
 
@@ -56,62 +57,35 @@ class LocalProvider(Iterator):
         providable_info.date_modified_at_provider = date_modified_at_provider
         return providable_info
 
-    def getObjectThumb(self, obj, index):
-        return None
+    def get_object_thumb(self) -> bytes:
+        return bytes()
 
     def get_object_thumb_index(self) -> int:
-        return None
+        return 0
 
-    def get_object_thumb_date(self, obj: PcObject) -> datetime:
-        return None
-
-    def getObjectThumbDates(self, obj):
-        return []
+    def get_object_thumb_date(self) -> datetime:
+        return datetime.utcnow()
 
     @property
     @abstractmethod
     def name(self):
         pass
 
-    def save_thumb_from_thumb_count_to_index(self, index: int, obj: Model, thumb: BytesIO):
-        counter = obj.thumbCount
-        while obj.thumbCount <= index:
-            save_thumb(obj, thumb, counter, need_save=False)
-            counter += 1
-
-    def handle_thumb(self, obj):
-        if not hasattr(obj, 'thumbCount'):
+    def handle_thumb(self, pc_object: Model):
+        new_thumb_index = self.get_object_thumb_index()
+        new_thumb_date = self.get_object_thumb_date()
+        if new_thumb_index is None \
+                or new_thumb_date is None:
             return
-        try:
-            new_thumb_index = self.get_object_thumb_index()
-            new_thumb_date = self.get_object_thumb_date(obj)
-            if new_thumb_index is None \
-                    or new_thumb_date is None:
-                return
+        self.checkedThumbs += 1
 
-            self.checkedThumbs += 1
-            existing_thumb_date = obj.thumb_date(new_thumb_index)
-            if existing_thumb_date is None \
-                    or existing_thumb_date < new_thumb_date:
-                new_thumb = self.getObjectThumb(obj, new_thumb_index)
-                if new_thumb is None:
-                    return
+        new_thumb = self.get_object_thumb()
+        if not new_thumb:
+            return
 
-                self.save_thumb_from_thumb_count_to_index(new_thumb_index, obj, new_thumb)
-
-                if existing_thumb_date:
-                    logger.debug("    Updating thumb #" + str(new_thumb_index) + " for " + str(obj))
-                    self.updatedThumbs += new_thumb_index + 1
-                else:
-                    logger.debug("    Creating thumb #" + str(new_thumb_index) + " for " + str(obj))
-                    self.createdThumbs += new_thumb_index + 1
-
-        except Exception as e:
-            self.log_provider_event(LocalProviderEventType.SyncError, e.__class__.__name__)
-            self.erroredThumbs += 1
-            logger.info('ERROR during handle thumb: ' + e.__class__.__name__ + ' ' + str(e))
-            traceback.print_tb(e.__traceback__)
-            pprint(vars(e))
+        save_thumb_from_thumb_count_to_index(pc_object, new_thumb_index, new_thumb)
+        logger.debug("Creating thumb #" + str(new_thumb_index) + " for " + str(pc_object))
+        self.createdThumbs += new_thumb_index
 
     def create_object(self, providable_info: ProvidableInfo) -> Model:
         pc_object = providable_info.type()
@@ -221,8 +195,14 @@ class LocalProvider(Iterator):
 
                 if isinstance(pc_object, HasThumbMixin):
                     initial_thumb_count = pc_object.thumbCount
-                    self.handle_thumb(pc_object)
-
+                    try:
+                        self.handle_thumb(pc_object)
+                    except Exception as e:
+                        self.log_provider_event(LocalProviderEventType.SyncError, e.__class__.__name__)
+                        self.erroredThumbs += 1
+                        logger.info('ERROR during handle thumb: ' + e.__class__.__name__ + ' ' + str(e))
+                        traceback.print_tb(e.__traceback__)
+                        pprint(vars(e))
                     pc_object_has_new_thumbs = pc_object.thumbCount != initial_thumb_count
                     if pc_object_has_new_thumbs:
                         errors = pc_object.errors()
@@ -248,3 +228,20 @@ class LocalProvider(Iterator):
         if self.venue_provider is not None:
             self.venue_provider.lastSyncDate = datetime.utcnow()
             PcObject.save(self.venue_provider)
+
+
+def save_thumb_from_thumb_count_to_index(pc_object: Model, thumb_index: int, image_as_bytes: bytes):
+    thumb_counter = pc_object.thumbCount if pc_object.thumbCount else 0
+    if thumb_index <= thumb_counter:
+        add_new_thumb(pc_object, thumb_index, image_as_bytes)
+    else:
+        while thumb_counter < thumb_index:
+            add_new_thumb(pc_object, thumb_counter, image_as_bytes)
+            thumb_counter += 1
+
+
+def add_new_thumb(pc_object: Model, thumb_index: int, image_as_bytes: bytes):
+    thumb_destination_storage_id = build_thumb_path(pc_object, thumb_index)
+    save_provider_thumb(thumb_destination_storage_id, image_as_bytes)
+    pc_object.thumbCount = pc_object.thumbCount + 1
+    pc_object.firstThumbDominantColor = BLACK
