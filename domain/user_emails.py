@@ -115,7 +115,7 @@ def send_validation_confirmation_email(user_offerer: UserOfferer, offerer: Offer
     return send_email(data=email)
 
 
-def send_batch_cancellation_emails_to_users(bookings: List[Booking], send_email: Callable[..., bool]):
+def send_batch_cancellation_emails_to_users(bookings: List[Booking], send_email: Callable[..., bool]) -> None:
     for booking in bookings:
         send_offerer_driven_cancellation_email_to_user(booking, send_email)
 
@@ -169,7 +169,7 @@ def send_activation_email(user: User, send_email: Callable[..., bool]) -> bool:
     return send_email(activation_email_data)
 
 
-def _get_offerer_id(offerer, user_offerer):
+def _get_offerer_id(offerer: Offerer, user_offerer: UserOfferer) -> int:
     if offerer is None:
         offerer_id = user_offerer.offerer.id
     else:

@@ -2,14 +2,13 @@ import base64
 import os
 from datetime import datetime
 from pprint import pformat
-from typing import Dict, List
+from typing import Dict, List, Union
 
 from flask import current_app as app, render_template
 
 from connectors import api_entreprises
 from domain.user_activation import generate_set_password_url
-from models import Offer, Email, PcObject, Offerer
-from models import RightsType, User
+from models import Booking, Offer, Email, PcObject, Offerer, RightsType, Stock, User, UserOfferer, Venue
 from models.email import EmailStatus
 from models.offer_type import ProductType
 from repository import booking_queries
@@ -49,7 +48,7 @@ class MailServiceException(Exception):
     pass
 
 
-def send_raw_email(data: dict) -> bool:
+def send_raw_email(data: Dict) -> bool:
     response = app.mailjet_client.send.create(data=data)
     successfully_sent_email = response.status_code == 200
     status = EmailStatus.SENT if successfully_sent_email else EmailStatus.ERROR
@@ -72,7 +71,7 @@ def resend_email(email: Email) -> bool:
     return False
 
 
-def make_batch_cancellation_email(bookings, cancellation_case):
+def make_batch_cancellation_email(bookings: List[Booking], cancellation_case) -> Dict:
     booking = next(iter(bookings))
     offer_name = booking.stock.resolvedOffer.product.name
     email_html = render_template('mails/offerer_batch_cancellation_email.html',
@@ -86,7 +85,7 @@ def make_batch_cancellation_email(bookings, cancellation_case):
     }
 
 
-def make_final_recap_email_for_stock_with_event(stock):
+def make_final_recap_email_for_stock_with_event(stock: Stock) -> Dict:
     booking_is_on_event = stock.beginningDatetime is not None
     venue = stock.resolvedOffer.venue
     date_in_tz = _get_event_datetime(stock)
@@ -110,7 +109,7 @@ def make_final_recap_email_for_stock_with_event(stock):
     }
 
 
-def make_offerer_booking_recap_email_with_mailjet_template(booking, recipients):
+def make_offerer_booking_recap_email_with_mailjet_template(booking: Booking, recipients: Union[List[str], str]) -> Dict:
     offer = booking.stock.resolvedOffer
     venue_name = offer.venue.name
     offer_name = offer.product.name
@@ -167,14 +166,14 @@ def make_offerer_booking_recap_email_with_mailjet_template(booking, recipients):
     return mailjet_json
 
 
-def _format_price_for_email(booking):
+def _format_price_for_email(booking: Booking) -> str:
     price = booking.stock.price
     if price == 0:
         return "Gratuit"
     return str(price)
 
 
-def _create_email_recipients(recipients):
+def _create_email_recipients(recipients: Union[List[str], str]) -> str:
     if feature_send_mail_to_users_enabled():
         email_to = [{"Email": email} for email in recipients]
     else:
@@ -183,7 +182,7 @@ def _create_email_recipients(recipients):
     return email_to
 
 
-def _format_date_and_hour_for_email(booking):
+def _format_date_and_hour_for_email(booking: Booking) -> (datetime, str):
     date_in_tz = _get_event_datetime(booking.stock)
     offer_date = date_in_tz.strftime("%d-%b-%Y")
     event_hour = date_in_tz.hour
@@ -193,7 +192,7 @@ def _format_date_and_hour_for_email(booking):
     return offer_date, offer_hour
 
 
-def make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=False):
+def make_offerer_booking_recap_email_after_user_action(booking: Booking, is_cancellation=False) -> Dict:
     venue = booking.stock.resolvedOffer.venue
     user = booking.user
     stock_bookings = booking_queries.find_ongoing_bookings_by_stock(
@@ -233,7 +232,7 @@ def make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=
     }
 
 
-def write_object_validation_email(offerer, user_offerer, get_by_siren=api_entreprises.get_by_offerer):
+def write_object_validation_email(offerer: Offerer, user_offerer: UserOfferer, get_by_siren=api_entreprises.get_by_offerer) -> Dict:
     vars_obj_user = vars(user_offerer.user)
     vars_obj_user.pop('clearTextPassword', None)
     api_entreprise = get_by_siren(offerer).json()
@@ -257,7 +256,7 @@ def write_object_validation_email(offerer, user_offerer, get_by_siren=api_entrep
     }
 
 
-def make_offerer_driven_cancellation_email_for_user(booking):
+def make_offerer_driven_cancellation_email_for_user(booking: Booking) -> Dict:
     offer_name = booking.stock.resolvedOffer.product.name
     offerer_name = booking.stock.resolvedOffer.venue.managingOfferer.name
     booking_value = booking.amount * booking.quantity
@@ -288,7 +287,7 @@ def make_offerer_driven_cancellation_email_for_user(booking):
     }
 
 
-def make_offerer_driven_cancellation_email_for_offerer(booking):
+def make_offerer_driven_cancellation_email_for_offerer(booking: Booking) -> Dict:
     stock_name = booking.stock.resolvedOffer.product.name
     venue = booking.stock.resolvedOffer.venue
     user_name = booking.user.publicName
@@ -321,7 +320,7 @@ def make_offerer_driven_cancellation_email_for_offerer(booking):
     }
 
 
-def make_user_booking_recap_email(booking, is_cancellation=False):
+def make_user_booking_recap_email(booking: Booking, is_cancellation=False) -> Dict:
     stock = booking.stock
     user = booking.user
     if is_cancellation:
@@ -339,7 +338,7 @@ def make_user_booking_recap_email(booking, is_cancellation=False):
     }
 
 
-def make_reset_password_email_data(user):
+def make_reset_password_email_data(user: User) -> Dict:
     user_first_name = user.firstName
     user_email = user.email
     user_reset_password_token = user.resetPasswordToken
@@ -355,11 +354,11 @@ def make_reset_password_email_data(user):
                 'prenom_user': user_first_name,
                 'token': user_reset_password_token,
                 'env': env
-            }
+        }
     }
 
 
-def make_validation_confirmation_email(user_offerer, offerer):
+def make_validation_confirmation_email(user_offerer: UserOfferer, offerer: Offerer) -> Dict:
     user_offerer_email = None
     user_offerer_rights = None
     if user_offerer is not None:
@@ -390,7 +389,7 @@ def make_validation_confirmation_email(user_offerer, offerer):
     }
 
 
-def make_venue_validation_email(venue):
+def make_venue_validation_email(venue: Venue) -> Dict:
     html = render_template(
         'mails/venue_validation_email.html', venue=venue, api_url=API_URL)
     return {
@@ -401,7 +400,7 @@ def make_venue_validation_email(venue):
     }
 
 
-def get_activation_email_data(user: User) -> dict:
+def get_activation_email_data(user: User) -> Dict:
     first_name = user.firstName.capitalize()
     email = user.email
     token = user.resetPasswordToken
@@ -421,7 +420,7 @@ def get_activation_email_data(user: User) -> dict:
     }
 
 
-def make_user_validation_email(user: User, app_origin_url: str, is_webapp: bool) -> dict:
+def make_user_validation_email(user: User, app_origin_url: str, is_webapp: bool) -> Dict:
     if is_webapp:
         data = make_webapp_user_validation_email(user, app_origin_url)
     else:
@@ -429,17 +428,17 @@ def make_user_validation_email(user: User, app_origin_url: str, is_webapp: bool)
     return data
 
 
-def make_pro_user_waiting_for_validation_by_admin_email(user: User, offerer: Offerer) -> dict:
+def make_pro_user_waiting_for_validation_by_admin_email(user: User, offerer: Offerer) -> Dict:
     data = _pro_user_waiting_for_validation_by_admin_email(user, offerer)
     return data
 
 
-def get_contact(user):
+def get_contact(user: User) -> Union[str, None]:
     mailjet_json_response = app.mailjet_client.contact.get(user.email).json()
     return mailjet_json_response['Data'][0] if 'Data' in mailjet_json_response else None
 
 
-def subscribe_newsletter(user):
+def subscribe_newsletter(user: User):
     if not feature_send_mail_to_users_enabled():
         logger.logger.info("Subscription in DEV or STAGING mode is disabled")
         return
@@ -474,7 +473,7 @@ def subscribe_newsletter(user):
     ).json()
 
 
-def make_payment_message_email(xml: str, checksum: bytes) -> dict:
+def make_payment_message_email(xml: str, checksum: bytes) -> Dict:
     now = datetime.utcnow()
     xml_b64encode = base64.b64encode(xml.encode('utf-8')).decode()
     file_name = "message_banque_de_france_{}.xml".format(
@@ -491,7 +490,7 @@ def make_payment_message_email(xml: str, checksum: bytes) -> dict:
     }
 
 
-def make_payment_details_email(csv: str) -> dict:
+def make_payment_details_email(csv: str) -> Dict:
     now = datetime.utcnow()
     csv_b64encode = base64.b64encode(csv.encode('utf-8')).decode()
     return {
@@ -542,7 +541,7 @@ def make_payments_report_email(not_processable_csv: str, error_csv: str, grouped
     }
 
 
-def make_wallet_balances_email(csv: str) -> dict:
+def make_wallet_balances_email(csv: str) -> Dict:
     now = datetime.utcnow()
     csv_b64encode = base64.b64encode(csv.encode('utf-8')).decode()
     return {
@@ -556,7 +555,7 @@ def make_wallet_balances_email(csv: str) -> dict:
     }
 
 
-def make_activation_users_email(csv: str) -> dict:
+def make_activation_users_email(csv: str) -> Dict:
     now = datetime.utcnow()
     csv_b64encode = base64.b64encode(csv.encode('utf-8')).decode()
     return {
@@ -571,7 +570,7 @@ def make_activation_users_email(csv: str) -> dict:
     }
 
 
-def make_venue_validation_confirmation_email(venue):
+def make_venue_validation_confirmation_email(venue: Venue) -> Dict:
     html = render_template(
         'mails/venue_validation_confirmation_email.html', venue=venue)
     return {
@@ -583,7 +582,7 @@ def make_venue_validation_confirmation_email(venue):
     }
 
 
-def compute_email_html_part_and_recipients(email_html_part, recipients):
+def compute_email_html_part_and_recipients(email_html_part, recipients: Union[List[str], str]) -> (str, str):
     if isinstance(recipients, list):
         recipients_string = ", ".join(recipients)
     else:
@@ -610,7 +609,7 @@ def parse_email_addresses(addresses: str) -> List[str]:
     return [a for a in addresses if a]
 
 
-def make_offer_creation_notification_email(offer: Offer, author: User, pro_origin_url: str) -> dict:
+def make_offer_creation_notification_email(offer: Offer, author: User, pro_origin_url: str) -> Dict:
     humanized_offer_id = humanize(offer.id)
     link_to_offer = f'{pro_origin_url}/offres/{humanized_offer_id}'
     html = render_template('mails/offer_creation_notification_email.html', offer=offer, author=author,
@@ -623,7 +622,7 @@ def make_offer_creation_notification_email(offer: Offer, author: User, pro_origi
             'Subject': f'[Création d’offre - {location_information}] {offer.product.name}'}
 
 
-def make_beneficiaries_import_email(new_beneficiaries: List[User], error_messages: List[str]) -> dict:
+def make_beneficiaries_import_email(new_beneficiaries: List[User], error_messages: List[str]) -> Dict:
     date_import = datetime.utcnow().strftime('%Y-%m-%d')
 
     html = render_template(
@@ -641,7 +640,7 @@ def make_beneficiaries_import_email(new_beneficiaries: List[User], error_message
     }
 
 
-def _generate_reservation_email_html_subject(booking):
+def _generate_reservation_email_html_subject(booking: Booking) -> (str, str):
     stock = booking.stock
     user = booking.user
     venue = stock.resolvedOffer.venue
@@ -673,7 +672,7 @@ def _generate_reservation_email_html_subject(booking):
     return email_html, email_subject
 
 
-def _generate_user_driven_cancellation_email_for_user(user, stock):
+def _generate_user_driven_cancellation_email_for_user(user: User, stock: Stock) -> (str, str):
     venue = stock.resolvedOffer.venue
     if stock.beginningDatetime is None:
         email_subject = 'Annulation de votre commande pour {}'.format(
@@ -698,7 +697,7 @@ def _generate_user_driven_cancellation_email_for_user(user, stock):
     return email_html, email_subject
 
 
-def _get_event_datetime(stock):
+def _get_event_datetime(stock: Stock) -> datetime:
     if stock.offer.venue.departementCode is not None:
         date_in_utc = stock.beginningDatetime
         date_in_tz = utc_datetime_to_dept_timezone(date_in_utc,
@@ -709,7 +708,7 @@ def _get_event_datetime(stock):
     return date_in_tz
 
 
-def _get_stock_description(stock):
+def _get_stock_description(stock: Stock) -> str:
     if stock.beginningDatetime:
         date_in_tz = _get_event_datetime(stock)
         description = '{} le {}'.format(stock.offer.product.name,
@@ -720,7 +719,7 @@ def _get_stock_description(stock):
     return description
 
 
-def make_webapp_user_validation_email(user: User, app_origin_url: str) -> dict:
+def make_webapp_user_validation_email(user: User, app_origin_url: str) -> Dict:
     template = 'mails/webapp_user_validation_email.html'
     from_name = 'pass Culture'
     email_html = render_template(
@@ -732,7 +731,7 @@ def make_webapp_user_validation_email(user: User, app_origin_url: str) -> dict:
             'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS}
 
 
-def make_pro_user_validation_email(user: User, app_origin_url: str) -> dict:
+def make_pro_user_validation_email(user: User, app_origin_url: str) -> Dict:
     from_name = 'pass Culture pro'
     return {
         'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
@@ -753,7 +752,7 @@ def make_pro_user_validation_email(user: User, app_origin_url: str) -> dict:
     }
 
 
-def _pro_user_waiting_for_validation_by_admin_email(user: User, offerer: Offerer):
+def _pro_user_waiting_for_validation_by_admin_email(user: User, offerer: Offerer) -> Dict:
     from_name = 'pass Culture pro'
     offerer_name = offerer.name
     return {
