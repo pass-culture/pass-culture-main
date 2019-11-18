@@ -101,7 +101,7 @@ def get_active_offers(pagination_params, departement_codes=None, offer_id=None, 
     return query.all()
 
 
-def get_active_offers_ids_query(user, departement_codes=['00'], offer_id=None):
+def get_active_offers_ids_query(user=None, departement_codes=['00'], offer_id=None):
     active_offers_query = Offer.query.distinct(Offer.id)
 
     if offer_id is not None:

@@ -118,6 +118,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
     def test_returns_0_if_only_offerer_with_inactive_offer(self, app):
         # Given
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, is_active=False)
         mediation = create_mediation(offer)
@@ -125,7 +126,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         PcObject.save(stock)
 
         # When
-        number_of_offerers = get_offerers_with_offer_available_on_discovery_count()
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count(user=user)
 
         # Then
         assert number_of_offerers == 0
@@ -134,13 +135,14 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
     def test_returns_0_if_only_offerer_with_offer_without_stock(self, app):
         # Given
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, is_active=True)
         mediation = create_mediation(offer)
         PcObject.save(offer)
 
         # When
-        number_of_offerers = get_offerers_with_offer_available_on_discovery_count()
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count(user=user)
 
         # Then
         assert number_of_offerers == 0
@@ -149,6 +151,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
     def test_returns_0_if_only_offerer_with_unvalidated_venue(self, app):
         # Given
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer, validation_token='XDFCGHVJBK')
         offer = create_offer_with_thing_product(venue, is_active=True)
         stock = create_stock(offer=offer)
@@ -156,7 +159,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         PcObject.save(stock)
 
         # When
-        number_of_offerers = get_offerers_with_offer_available_on_discovery_count()
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count(user=user)
 
         # Then
         assert number_of_offerers == 0
@@ -165,13 +168,14 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
     def test_returns_0_if_only_offerer_without_mediation(self, app):
         # Given
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer, validation_token='XDFCGHVJBK')
         offer = create_offer_with_thing_product(venue, is_active=True)
         stock = create_stock(offer=offer)
         PcObject.save(stock)
 
         # When
-        number_of_offerers = get_offerers_with_offer_available_on_discovery_count()
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count(user=user)
 
         # Then
         assert number_of_offerers == 0
@@ -181,13 +185,14 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         # Given
         yesterday = datetime.utcnow() - timedelta(days=1)
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer, validation_token='XDFCGHVJBK')
         offer = create_offer_with_event_product(venue, is_active=True)
         stock = create_stock(offer=offer, beginning_datetime=yesterday)
         PcObject.save(stock)
 
         # When
-        number_of_offerers = get_offerers_with_offer_available_on_discovery_count()
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count(user=user)
 
         # Then
         assert number_of_offerers == 0
@@ -196,13 +201,14 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
     def test_returns_0_if_offerer_not_active(self, app):
         # Given
         offerer = create_offerer(is_active=False)
+        user = create_user()
         venue = create_venue(offerer, validation_token='XDFCGHVJBK')
         offer = create_offer_with_event_product(venue, is_active=True)
         stock = create_stock(offer=offer)
         PcObject.save(stock)
 
         # When
-        number_of_offerers = get_offerers_with_offer_available_on_discovery_count()
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count(user=user)
 
         # Then
         assert number_of_offerers == 0
@@ -211,13 +217,14 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
     def test_returns_0_if_offerer_not_validated(self, app):
         # Given
         offerer = create_offerer(validation_token='XDFCGHVJBKNL')
+        user = create_user()
         venue = create_venue(offerer, validation_token='XDFCGHVJBK')
         offer = create_offer_with_event_product(venue, is_active=True)
         stock = create_stock(offer=offer)
         PcObject.save(stock)
 
         # When
-        number_of_offerers = get_offerers_with_offer_available_on_discovery_count()
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count(user=user)
 
         # Then
         assert number_of_offerers == 0
@@ -226,13 +233,14 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
     def test_returns_0_if_only_offerer_with_activation_offer(self, app):
         # Given
         offerer = create_offerer(validation_token='XDFCGHVJBKNL')
+        user = create_user()
         venue = create_venue(offerer, validation_token='XDFCGHVJBK')
         offer = create_offer_with_thing_product(venue, is_active=True, thing_type='ThingType.ACTIVATION')
         stock = create_stock(offer=offer)
         PcObject.save(stock)
 
         # When
-        number_of_offerers = get_offerers_with_offer_available_on_discovery_count()
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count(user=user)
 
         # Then
         assert number_of_offerers == 0
@@ -241,6 +249,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
     def test_returns_1_if_offerer_with_offer_returned_by_get_active_offers(self, app):
         # Given
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, is_active=True)
         stock = create_stock(offer=offer)
@@ -248,7 +257,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         PcObject.save(stock)
 
         # When
-        number_of_offerers = get_offerers_with_offer_available_on_discovery_count()
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count(user=user)
 
         # Then
         assert number_of_offerers == 1
@@ -257,6 +266,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
     def test_returns_1_if_offerer_with_2_offers_returned_by_get_active_offers(self, app):
         # Given
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer)
         offer1 = create_offer_with_thing_product(venue, is_active=True)
         offer2 = create_offer_with_thing_product(venue, is_active=True)
@@ -267,13 +277,13 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         PcObject.save(stock1, stock2, offer2)
 
         # When
-        number_of_offerers = get_offerers_with_offer_available_on_discovery_count()
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count(user=user)
 
         # Then
         assert number_of_offerers == 1
 
     @clean_database
-    def test_counts_only_offeres_with_venues_in_the_departement_when_filtered_by_departement_code(self, app):
+    def test_counts_only_offerers_with_venues_in_the_departement_when_filtered_by_departement_code(self, app):
         # Given
         first_user = create_user(email='first@example.net')
         first_offerer = create_offerer(siren='111111111')
@@ -294,7 +304,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         PcObject.save(first_offerer, first_venue, second_offerer, second_venue)
 
         # When
-        number_of_offerers = get_offerers_with_offer_available_on_discovery_count('76')
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count(user=first_user, departement_code='76')
 
         # Then
         assert number_of_offerers == 1
@@ -680,6 +690,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
     def test_returns_0_if_only_offerer_with_inactive_offer(self, app):
         # Given
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, is_active=False)
         mediation = create_mediation(offer)
@@ -687,7 +698,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         PcObject.save(stock)
 
         # When
-        number_of_offers = get_offers_available_on_discovery_count()
+        number_of_offers = get_offers_available_on_discovery_count(user=user)
 
         # Then
         assert number_of_offers == 0
@@ -696,13 +707,14 @@ class GetOffersAvailableOnDiscoveryCountTest:
     def test_returns_0_if_only_offerer_with_offer_without_stock(self, app):
         # Given
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, is_active=True)
         mediation = create_mediation(offer)
         PcObject.save(offer)
 
         # When
-        number_of_offers = get_offers_available_on_discovery_count()
+        number_of_offers = get_offers_available_on_discovery_count(user=user)
 
         # Then
         assert number_of_offers == 0
@@ -711,6 +723,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
     def test_returns_0_if_only_offerer_with_unvalidated_venue(self, app):
         # Given
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer, validation_token='XDFCGHVJBK')
         offer = create_offer_with_thing_product(venue, is_active=True)
         stock = create_stock(offer=offer)
@@ -718,7 +731,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         PcObject.save(stock)
 
         # When
-        number_of_offers = get_offers_available_on_discovery_count()
+        number_of_offers = get_offers_available_on_discovery_count(user=user)
 
         # Then
         assert number_of_offers == 0
@@ -727,13 +740,14 @@ class GetOffersAvailableOnDiscoveryCountTest:
     def test_returns_0_if_only_offerer_without_mediation(self, app):
         # Given
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, is_active=True)
         stock = create_stock(offer=offer)
         PcObject.save(stock)
 
         # When
-        number_of_offers = get_offers_available_on_discovery_count()
+        number_of_offers = get_offers_available_on_discovery_count(user=user)
 
         # Then
         assert number_of_offers == 0
@@ -742,13 +756,14 @@ class GetOffersAvailableOnDiscoveryCountTest:
     def test_returns_0_if_only_offerer_without_mediation_and_thumb_count(self, app):
         # Given
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, is_active=True, thumb_count=0)
         stock = create_stock(offer=offer)
         PcObject.save(stock)
 
         # When
-        number_of_offers = get_offers_available_on_discovery_count()
+        number_of_offers = get_offers_available_on_discovery_count(user=user)
 
         # Then
         assert number_of_offers == 0
@@ -758,13 +773,14 @@ class GetOffersAvailableOnDiscoveryCountTest:
         # Given
         yesterday = datetime.utcnow() - timedelta(days=1)
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue, is_active=True)
         stock = create_stock(offer=offer, beginning_datetime=yesterday)
         PcObject.save(stock)
 
         # When
-        number_of_offers = get_offers_available_on_discovery_count()
+        number_of_offers = get_offers_available_on_discovery_count(user=user)
 
         # Then
         assert number_of_offers == 0
@@ -773,13 +789,14 @@ class GetOffersAvailableOnDiscoveryCountTest:
     def test_returns_0_if_offerer_not_active(self, app):
         # Given
         offerer = create_offerer(is_active=False)
+        user = create_user()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue, is_active=True)
         stock = create_stock(offer=offer)
         PcObject.save(stock)
 
         # When
-        number_of_offers = get_offers_available_on_discovery_count()
+        number_of_offers = get_offers_available_on_discovery_count(user=user)
 
         # Then
         assert number_of_offers == 0
@@ -788,13 +805,14 @@ class GetOffersAvailableOnDiscoveryCountTest:
     def test_returns_0_if_offerer_not_validated(self, app):
         # Given
         offerer = create_offerer(validation_token='XDFCGHVJBKNL')
+        user = create_user()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue, is_active=True)
         stock = create_stock(offer=offer)
         PcObject.save(stock)
 
         # When
-        number_of_offers = get_offers_available_on_discovery_count()
+        number_of_offers = get_offers_available_on_discovery_count(user=user)
 
         # Then
         assert number_of_offers == 0
@@ -803,13 +821,14 @@ class GetOffersAvailableOnDiscoveryCountTest:
     def test_returns_0_if_only_offerer_with_activation_offer(self, app):
         # Given
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, is_active=True, thing_type=str(ThingType.ACTIVATION))
         stock = create_stock(offer=offer)
         PcObject.save(stock)
 
         # When
-        number_of_offers = get_offers_available_on_discovery_count()
+        number_of_offers = get_offers_available_on_discovery_count(user=user)
 
         # Then
         assert number_of_offers == 0
@@ -818,6 +837,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
     def test_returns_1_if_offerer_with_offer_returned_by_get_active_offers(self, app):
         # Given
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, is_active=True)
         stock = create_stock(offer=offer)
@@ -825,7 +845,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         PcObject.save(stock)
 
         # When
-        number_of_offers = get_offers_available_on_discovery_count()
+        number_of_offers = get_offers_available_on_discovery_count(user=user)
 
         # Then
         assert number_of_offers == 1
@@ -834,6 +854,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
     def test_returns_2_if_2_offers_returned_by_get_active_offers(self, app):
         # Given
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer)
         offer1 = create_offer_with_thing_product(venue, is_active=True)
         offer2 = create_offer_with_thing_product(venue, is_active=True)
@@ -844,7 +865,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         PcObject.save(stock1, stock2)
 
         # When
-        number_of_offers = get_offers_available_on_discovery_count()
+        number_of_offers = get_offers_available_on_discovery_count(user=user)
 
         # Then
         assert number_of_offers == 2
@@ -871,7 +892,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         PcObject.save(first_stock, second_stock)
 
         # When
-        number_of_offers = get_offers_available_on_discovery_count('41')
+        number_of_offers = get_offers_available_on_discovery_count(user=first_user, departement_code='41')
 
         # Then
         assert number_of_offers == 1
@@ -882,6 +903,7 @@ class GetOffersAvailableOnSearchCountTest:
     def test_returns_0_when_only_inactive_offer(self, app):
         # Given
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, is_active=False)
         stock = create_stock(offer=offer)
@@ -927,6 +949,7 @@ class GetOffersAvailableOnSearchCountTest:
     def test_returns_0_when_only_offer_with_unvalidated_venue(self, app):
         # Given
         offerer = create_offerer()
+
         venue = create_venue(offerer, validation_token='AZERTY')
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer)
@@ -942,6 +965,7 @@ class GetOffersAvailableOnSearchCountTest:
     def test_returns_0_when_only_offer_with_no_stocks(self, app):
         # Given
         offerer = create_offerer()
+
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         PcObject.save(offer)
@@ -956,6 +980,7 @@ class GetOffersAvailableOnSearchCountTest:
     def test_returns_2_when_two_offers_recommendable_for_search(self, app):
         # Given
         offerer = create_offerer()
+
         venue = create_venue(offerer)
         offer1 = create_offer_with_thing_product(venue)
         offer2 = create_offer_with_thing_product(venue)
