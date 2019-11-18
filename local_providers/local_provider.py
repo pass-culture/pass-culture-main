@@ -100,17 +100,16 @@ class LocalProvider(Iterator):
                 self.save_thumb_from_thumb_count_to_index(new_thumb_index, obj, new_thumb)
 
                 if existing_thumb_date:
-                    logger.info("    Updating thumb #" + str(new_thumb_index) + " for " + str(obj))
+                    logger.debug("    Updating thumb #" + str(new_thumb_index) + " for " + str(obj))
                     self.updatedThumbs += new_thumb_index + 1
                 else:
-                    logger.info("    Creating thumb #" + str(new_thumb_index) + " for " + str(obj))
+                    logger.debug("    Creating thumb #" + str(new_thumb_index) + " for " + str(obj))
                     self.createdThumbs += new_thumb_index + 1
 
         except Exception as e:
             self.log_provider_event(LocalProviderEventType.SyncError, e.__class__.__name__)
             self.erroredThumbs += 1
-            logger.info('ERROR during handle thumb: '
-                        + e.__class__.__name__ + ' ' + str(e))
+            logger.info('ERROR during handle thumb: ' + e.__class__.__name__ + ' ' + str(e))
             traceback.print_tb(e.__traceback__)
             pprint(vars(e))
 
