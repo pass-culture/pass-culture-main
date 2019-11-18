@@ -1,4 +1,4 @@
-import selectRecommendationsWithLastFakeReco from '../selectRecommendationsWithLastFakeReco'
+import selectRecommendationsWithLastFakeReco from '../selectRecommendationsWithLastFakeRecommendation'
 
 describe('src | components | pages | discovery | selectors | selectRecommendationsWithLastFakeReco', () => {
   it('should return an array of object having an `uniqId` property', () => {

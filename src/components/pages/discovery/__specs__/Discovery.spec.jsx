@@ -186,7 +186,7 @@ describe('src | components | pages | discovery | Discovery', () => {
         })
       })
 
-      it('should set isEmpty state to true when no recommendations have been fetched and no recommendations are already loaded', () => {
+      it('should set isEmpty state to true when no recommendations have been fetched and no recommendations are loaded', () => {
         // given
         const action = {
           payload: {

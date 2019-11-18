@@ -7,7 +7,7 @@ import Deck from './Deck'
 import selectCurrentRecommendation from '../selectors/selectCurrentRecommendation'
 import selectNextRecommendation from '../selectors/selectNextRecommendation'
 import selectPreviousRecommendation from '../selectors/selectPreviousRecommendation'
-import selectRecommendationsWithLastFakeReco from '../selectors/selectRecommendationsWithLastFakeReco'
+import selectRecommendationsWithLastFakeReco from '../selectors/selectRecommendationsWithLastFakeRecommendation'
 import selectMediationById from '../../../../selectors/selectMediationById'
 import { getNextLimit } from './utils/limits'
 
