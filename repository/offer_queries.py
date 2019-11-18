@@ -78,13 +78,12 @@ def _order_by_occurs_soon_or_is_thing_then_randomize():
     return [desc(_build_occurs_soon_or_is_thing_predicate()), func.random()]
 
 
-def get_active_offers(departement_codes=None, offer_id=None, limit=None,
-                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize, user=None, pagination_params=None):
-    seed_number = pagination_params.get('seed') if pagination_params else None
-    page = pagination_params.get('page') if pagination_params else None
-    if seed_number:
-        sql = text(f'SET SEED TO {seed_number}')
-        db.session.execute(sql)
+def get_active_offers(pagination_params, departement_codes=None, offer_id=None, limit=None,
+                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize, user=None):
+    seed_number = pagination_params.get('seed')
+    page = pagination_params.get('page')
+    sql = text(f'SET SEED TO {seed_number}')
+    db.session.execute(sql)
 
     active_offer_ids = get_active_offers_ids_query(departement_codes, offer_id, user=user)
     query = Offer.query.filter(Offer.id.in_(active_offer_ids))
@@ -143,7 +142,7 @@ def _exclude_booked_and_favorite(active_offers_query, user):
 
 def _round_robin_by_type_onlineness_and_criteria(order_by: List):
     return func.row_number() \
-        .over(partition_by=[Offer.type, Offer.url is None],
+        .over(partition_by=[Offer.type, Offer.url == None],
               order_by=order_by())
 
 

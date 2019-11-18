@@ -92,9 +92,11 @@ def put_recommendations():
     logger.debug(lambda: '(special) requested_recommendation %s' %
                          requested_recommendation)
 
-    page = int(request.args.get('page')) if 'page' in request.args else None
-    seed = float(request.args.get('seed')) if 'seed' in request.args else None
-    pagination_params = {'page': page, 'seed': seed}
+    print(request.args)
+    pagination_params = {
+        'page': int(request.args.get('page')),
+        'seed': float(request.args.get('seed'))
+    }
     created_recommendations = create_recommendations_for_discovery(limit=BLOB_SIZE,
                                                                    user=current_user,
                                                                    pagination_params=pagination_params)

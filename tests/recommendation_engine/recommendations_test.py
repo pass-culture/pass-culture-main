@@ -128,7 +128,7 @@ class CreateRecommendationsForDiscoveryTest:
         PcObject.save(user, stock1, mediation1, stock2, mediation2, mediation3)
 
         # When
-        recommendations = create_recommendations_for_discovery(user=user)
+        recommendations = create_recommendations_for_discovery(pagination_params={'page': 1, 'seed': 0.5}, user=user)
 
         # Then
         mediations = list(map(lambda x: x.mediationId, recommendations))
@@ -157,7 +157,7 @@ class CreateRecommendationsForDiscoveryTest:
         db.session.refresh(offer2)
 
         # When
-        recommendations = create_recommendations_for_discovery(user=user)
+        recommendations = create_recommendations_for_discovery(pagination_params={'page': 1, 'seed': 0.5}, user=user)
 
         # Then
         assert len(recommendations) == 2
@@ -166,12 +166,14 @@ class CreateRecommendationsForDiscoveryTest:
     def test_should_get_offers_using_pagination_when_query_params_provided(self,
                                                                            get_offers_for_recommendations_discovery,
                                                                            app):
+        # Given
+        user = create_user()
+
         # When
-        pagination_params = {'page': 1, 'seed': 0.5}
-        create_recommendations_for_discovery(pagination_params=pagination_params)
+        create_recommendations_for_discovery(user=user, pagination_params={'page': 1, 'seed': 0.5})
 
         # Then
-        get_offers_for_recommendations_discovery.assert_called_once_with(limit=3, user=None,
+        get_offers_for_recommendations_discovery.assert_called_once_with(limit=3, user=user,
                                                                          pagination_params={'page': 1, 'seed': 0.5})
 
     @clean_database
@@ -192,7 +194,7 @@ class CreateRecommendationsForDiscoveryTest:
         offer_ids_in_adjacent_department = set([stock.offerId for stock in expected_stocks_recommended])
 
         #  when
-        recommendations = create_recommendations_for_discovery(limit=10, user=user)
+        recommendations = create_recommendations_for_discovery(pagination_params={'page': 1, 'seed': 0.5}, limit=10, user=user)
 
         # then
         recommended_offer_ids = set([recommendation.offerId for recommendation in recommendations])
@@ -210,23 +212,23 @@ class CreateRecommendationsForDiscoveryTest:
                                                                                          departements_ok)
         PcObject.save(user)
         PcObject.save(*expected_stocks_recommended)
-        offer_ids_in_adjacent_department = set([stock.offerId for stock in expected_stocks_recommended])
+        offer_ids_in_all_department = set([stock.offerId for stock in expected_stocks_recommended])
 
         #  when
-        recommendations = create_recommendations_for_discovery(limit=10, user=user)
+        recommendations = create_recommendations_for_discovery(pagination_params={'page': 1, 'seed': 0.5}, limit=10, user=user)
 
         # then
         recommended_offer_ids = set([recommendation.offerId for recommendation in recommendations])
         assert len(recommendations) == 5
-        assert recommended_offer_ids == offer_ids_in_adjacent_department
+        assert recommended_offer_ids == offer_ids_in_all_department
 
 
 def _create_and_save_stock_for_offerer_in_departements(offerer: Offerer, departement_codes: List[str]) -> List[Stock]:
     stock_list = []
 
-    for i, departement_code in enumerate(departement_codes):
-        siret = f'{offerer.siren}{99999 - i}'
-        venue = create_venue(offerer, postal_code="{:<5}".format(departement_code), siret=siret)
+    for index, departement_code in enumerate(departement_codes):
+        siret = f'{offerer.siren}{99999 - index}'
+        venue = create_venue(offerer, postal_code="{:5}".format(departement_code), siret=siret)
         offer = create_offer_with_thing_product(venue)
         mediation = create_mediation(offer)
         PcObject.save(mediation)

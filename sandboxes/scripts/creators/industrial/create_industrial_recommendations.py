@@ -1,13 +1,11 @@
 from models.mediation import Mediation
-
-from models.offer_type import EventType, ProductType
 from models.pc_object import PcObject
 from recommendations_engine.offers import get_departement_codes_from_user
 from repository.offer_queries import get_active_offers
 from sandboxes.scripts.utils.select import remove_every
 from sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
-from utils.logger import logger
 from tests.test_utils import create_recommendation
+from utils.logger import logger
 
 ACTIVE_OFFERS_WITH_RECOMMENDATION_PER_USER_REMOVE_MODULO = 2
 
@@ -56,7 +54,8 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
         departement_codes = get_departement_codes_from_user(user)
 
         active_offer_ids = [
-            o.id for o in get_active_offers(departement_codes=departement_codes)
+            o.id for o in
+            get_active_offers(pagination_params={'page': 1, 'seed': 0.5}, departement_codes=departement_codes)
         ]
         active_offer_ids.sort()
 

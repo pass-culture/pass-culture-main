@@ -35,7 +35,7 @@ def give_requested_recommendation_to_user(user, offer_id, mediation_id):
     return recommendation
 
 
-def create_recommendations_for_discovery(limit=3, user=None, pagination_params=None):
+def create_recommendations_for_discovery(pagination_params, limit=3, user=None):
     recommendations = []
     tuto_mediations_by_index = {}
 
@@ -82,7 +82,6 @@ def _create_tuto_mediation_if_non_existent_for_user(user: User, tuto_mediation: 
 
 def _create_recommendation_from_ids(user, offer_id, mediation_id=None):
     mediation = None
-    #    offer = None
 
     if mediation_id:
         mediation = mediation_queries.find_by_id(mediation_id)

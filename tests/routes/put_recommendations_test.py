@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 from unittest.mock import patch
 
 from models import PcObject
-from models.db import db
 from models.mediation import Mediation
 from models.recommendation import Recommendation
 from tests.conftest import clean_database, TestClient
@@ -53,10 +52,9 @@ class Put:
 
             # when
             response = auth_request.put(RECOMMENDATION_URL +
-                                        "?offerId=" +
-                                        humanize(offer_thing_1.id) +
-                                        "?mediationId=" +
-                                        humanize(mediation_2.id), json={'seenRecommendationIds': []})
+                                        "?offerId=" + humanize(offer_thing_1.id) +
+                                        "?mediationId=" + humanize(mediation_2.id),
+                                        json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 404
@@ -75,10 +73,11 @@ class Put:
 
             # when
             response = auth_request.put(RECOMMENDATION_URL +
-                                        "?offerId=" +
-                                        "ABCDE" +
-                                        "?mediationId=" +
-                                        humanize(mediation.id), json={'seenRecommendationIds': []})
+                                        "?offerId=ABCDE" +
+                                        "&mediationId=" + humanize(mediation.id) +
+                                        "&page=1" +
+                                        "&seed=0.5",
+                                        json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 404
@@ -92,7 +91,9 @@ class Put:
 
             # when
             response = auth_request.put(RECOMMENDATION_URL +
-                                        "?mediationId=ABCDE",
+                                        "?mediationId=ABCDE" +
+                                        "&page=1" +
+                                        "&seed=0.5",
                                         json={'seenRecommendationIds': []})
 
             # then
@@ -112,10 +113,11 @@ class Put:
 
             # when
             response = auth_request.put(RECOMMENDATION_URL +
-                                        "?offerId=" +
-                                        humanize(offer_thing.id) +
-                                        "?mediationId=" +
-                                        "ABCDE", json={'seenRecommendationIds': []})
+                                        "?offerId=" + humanize(offer_thing.id) +
+                                        "&mediationId=ABCDE" +
+                                        '&page=1' +
+                                        '&seed=0.5',
+                                        json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 404
@@ -129,10 +131,11 @@ class Put:
 
             # when
             response = auth_request.put(RECOMMENDATION_URL +
-                                        "?offerId=" +
-                                        "ABCDE" +
-                                        "?mediationId=" +
-                                        "ABCDE", json={'seenRecommendationIds': []})
+                                        "?offerId=ABCDE" +
+                                        "&mediationId=ABCDE" +
+                                        '&page=1' +
+                                        '&seed=0.5',
+                                        json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 404
@@ -151,7 +154,11 @@ class Put:
 
             data = {'seenRecommendationIds': []}
             # when
-            response = auth_request.put(RECOMMENDATION_URL + '?offerId=%s' % humanize(offer1.id), json=data)
+            response = auth_request.put(RECOMMENDATION_URL +
+                                        '?offerId=%s' % humanize(offer1.id) +
+                                        '&page=1' +
+                                        '&seed=0.5',
+                                        json=data)
 
             # then
             assert response.status_code == 404
@@ -229,7 +236,10 @@ class Put:
             ]
             data = {'readRecommendations': reads}
             # when
-            response = auth_request.put(RECOMMENDATION_URL, json=data)
+            response = auth_request.put(RECOMMENDATION_URL +
+                                        "?page=1" +
+                                        "&seed=0.5",
+                                        json=data)
 
             # then
             assert response.status_code == 200
@@ -257,7 +267,10 @@ class Put:
 
             # when
             response = TestClient(app.test_client()).with_auth(user.email) \
-                .put(RECOMMENDATION_URL, json={'readRecommendations': []})
+                .put(RECOMMENDATION_URL +
+                     "?page=1" +
+                     "&seed=0.5",
+                     json={'readRecommendations': []})
 
             # then
             assert response.status_code == 200
@@ -280,7 +293,9 @@ class Put:
 
             # when
             response = TestClient(app.test_client()).with_auth(user.email) \
-                .put(RECOMMENDATION_URL, json={'readRecommendations': []})
+                .put(RECOMMENDATION_URL +
+                     "?page=1"
+                     "&seed=0.5", json={'readRecommendations': []})
 
             # then
             assert response.status_code == 200
@@ -325,7 +340,9 @@ class Put:
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email) \
-                .put(RECOMMENDATION_URL, json={})
+                .put(RECOMMENDATION_URL +
+                     "?page=1"
+                     "&seed=0.5", json={})
 
             # Then
             recommendations = response.json
@@ -345,7 +362,9 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL +
+                                        "?page=1"
+                                        "&seed=0.5", json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
@@ -363,7 +382,9 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL +
+                                        "?page=1"
+                                        "&seed=0.5", json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
@@ -381,7 +402,9 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL +
+                                        "?page=1"
+                                        "&seed=0.5", json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
@@ -401,7 +424,9 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL +
+                                        "?page=1"
+                                        "&seed=0.5", json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
@@ -428,7 +453,9 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL +
+                                        "?page=1"
+                                        "&seed=0.5", json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
@@ -457,7 +484,9 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL +
+                                        "?page=1"
+                                        "&seed=0.5", json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
@@ -485,7 +514,9 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL +
+                                        "?page=1"
+                                        "&seed=0.5", json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
@@ -511,7 +542,9 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL +
+                                        "?page=1"
+                                        "&seed=0.5", json={'seenRecommendationIds': []})
 
             # Then
             assert response.status_code == 200
@@ -540,7 +573,9 @@ class Put:
             mediation1_id = mediation1.id
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL +
+                                        "?page=1"
+                                        "&seed=0.5", json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
@@ -581,7 +616,10 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL + '?offerId=%s' % humanize(offer1.id),
+            response = auth_request.put(RECOMMENDATION_URL +
+                                        "?offerId=" + humanize(offer1.id) +
+                                        "&page=1" +
+                                        "&seed=0.5",
                                         json={'seenRecommendationIds': []})
 
             # then
@@ -619,7 +657,9 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL +
+                                        "?page=1"
+                                        "&seed=0.5", json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
@@ -646,7 +686,9 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # When
-            recommendations_req = auth_request.put(RECOMMENDATION_URL, json={})
+            recommendations_req = auth_request.put(RECOMMENDATION_URL +
+                                                   "?page=1"
+                                                   "&seed=0.5", json={})
 
             # Then
             assert recommendations_req.status_code == 200
@@ -668,10 +710,10 @@ class Put:
 
             # when
             response = auth_request.put(RECOMMENDATION_URL +
-                                        "?offerId=" +
-                                        humanize(offer_thing.id) +
-                                        "&mediationId=" +
-                                        humanize(mediation.id), json={'seenRecommendationIds': []})
+                                        "?offerId=" + humanize(offer_thing.id) +
+                                        "&mediationId=" + humanize(mediation.id) +
+                                        "&page=1" +
+                                        "&seed=0.5", json={'seenRecommendationIds': []})
             # then
             assert response.status_code == 200
             recos = response.json
@@ -692,8 +734,9 @@ class Put:
 
             # when
             response = auth_request.put(RECOMMENDATION_URL +
-                                        "?offerId=" +
-                                        humanize(offer_thing.id), json={'seenRecommendationIds': []})
+                                        "?offerId=" + humanize(offer_thing.id) +
+                                        "&page=1" +
+                                        "&seed=0.5", json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
@@ -715,8 +758,10 @@ class Put:
 
             # when
             response = auth_request.put(RECOMMENDATION_URL +
-                                        "?mediationId=" +
-                                        humanize(mediation.id), json={'seenRecommendationIds': []})
+                                        "?mediationId=" + humanize(mediation.id) +
+                                        "&page=1" +
+                                        "&seed=0.5",
+                                        json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
@@ -744,7 +789,9 @@ class Put:
             data = {'seenRecommendationIds': []}
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL, json=data)
+            response = auth_request.put(RECOMMENDATION_URL +
+                                        "?page=1" +
+                                        "&seed=0.5", json=data)
 
             # then
             assert response.status_code == 200
@@ -775,7 +822,9 @@ class Put:
 
             # when
             auth_request = TestClient(app.test_client()).with_auth(user.email)
-            response = auth_request.put(RECOMMENDATION_URL, json={})
+            response = auth_request.put(RECOMMENDATION_URL +
+                                        "?page=1" +
+                                        "&seed=0.5", json={})
 
             # then
             assert response.status_code == 200
@@ -821,7 +870,9 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL, json=data)
+            response = auth_request.put(RECOMMENDATION_URL +
+                                        "?page=1" +
+                                        "&seed=0.5", json=data)
 
             # then
             assert response.status_code == 200
@@ -845,8 +896,11 @@ class Put:
             PcObject.save(stock, recommendation)
 
             # When
-            recommendations = TestClient(app.test_client()).with_auth(user.email).put(RECOMMENDATION_URL,
-                                                                                      json={})
+            recommendations = TestClient(app.test_client()).with_auth(user.email) \
+                .put(RECOMMENDATION_URL +
+                     "?page=1" +
+                     "&seed=0.5",
+                     json={})
 
             # Then
             assert recommendations.status_code == 200
@@ -866,7 +920,9 @@ class Put:
 
             # when
             response = TestClient(app.test_client()).with_auth(user.email) \
-                .put(RECOMMENDATION_URL, json={'seenRecommendationIds': [humanize(recommendation.id)]})
+                .put(RECOMMENDATION_URL +
+                     "?page=1" +
+                     "&seed=0.5", json={'seenRecommendationIds': [humanize(recommendation.id)]})
 
             # then
             assert response.status_code == 200
@@ -900,8 +956,12 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            recommendations1 = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
-            recommendations2 = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
+            recommendations1 = auth_request.put(RECOMMENDATION_URL +
+                                                "?page=1" +
+                                                "&seed=0.5", json={'seenRecommendationIds': []})
+            recommendations2 = auth_request.put(RECOMMENDATION_URL +
+                                                "?page=1" +
+                                                "&seed=0.5", json={'seenRecommendationIds': []})
 
             # then
             assert recommendations1.status_code == 200
@@ -932,7 +992,9 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # When
-            recommendations_req = auth_request.put(RECOMMENDATION_URL, json={})
+            recommendations_req = auth_request.put(RECOMMENDATION_URL +
+                                                   "?page=1" +
+                                                   "&seed=0.5", json={})
 
             # Then
             assert recommendations_req.status_code == 200
@@ -959,7 +1021,9 @@ class Put:
 
             # when
             response = TestClient(app.test_client()).with_auth(user.email) \
-                .put(RECOMMENDATION_URL, json={'readRecommendations': []})
+                .put(RECOMMENDATION_URL +
+                     "?page=1" +
+                     "&seed=0.5", json={'readRecommendations': []})
 
             # then
             assert response.status_code == 200
@@ -982,7 +1046,9 @@ class Put:
 
             # when
             TestClient(app.test_client()).with_auth(user.email) \
-                .put(RECOMMENDATION_URL + '?page=1&seed=0.5', json={'readRecommendations': []})
+                .put(RECOMMENDATION_URL +
+                     "?page=1" +
+                     "&seed=0.5", json={'readRecommendations': []})
 
             # then
             args = create_recommendations_for_discovery.call_args
