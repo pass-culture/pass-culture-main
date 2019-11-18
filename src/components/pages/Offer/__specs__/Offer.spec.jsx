@@ -5,7 +5,7 @@ import { Field, Form } from 'pass-culture-shared'
 import Offer from '../Offer'
 import MediationsManager from '../MediationsManager/MediationsManagerContainer'
 import HeroSection from '../../../layout/HeroSection/HeroSection'
-import TiteLiveInformation from '../TiteLiveInformation/TiteLiveInformationContainer'
+import LocalProviderInformation from '../LocalProviderInformation/LocalProviderInformationContainer'
 
 describe('src | components | pages | Offer | Offer ', () => {
   let dispatch
@@ -509,7 +509,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         expect(modifyOfferButton.prop('disabled')).toStrictEqual('disabled')
       })
 
-      it('should display TiteLiveInformation if offer was generated from TiteLive provider', () => {
+      it('should display LocalProviderInformation if offer was generated from local provider', () => {
         // given
         props.query.context = () => ({
           isCreatedEntity: false,
@@ -542,9 +542,11 @@ describe('src | components | pages | Offer | Offer ', () => {
         const wrapper = shallow(<Offer {...props} />)
 
         // then
-        const titeLiveInformationComponent = wrapper.find(TiteLiveInformation)
-        expect(titeLiveInformationComponent).toHaveLength(1)
-        expect(titeLiveInformationComponent.prop('offererId')).toBe('AZERT')
+        const localProviderInformationComponent = wrapper.find(LocalProviderInformation)
+        expect(localProviderInformationComponent).toHaveLength(1)
+        expect(localProviderInformationComponent.prop('offererId')).toBe('AZERT')
+        expect(localProviderInformationComponent.prop('isTiteLive')).toBe(true)
+        expect(localProviderInformationComponent.prop('isAllocine')).toBe(false)
       })
     })
 

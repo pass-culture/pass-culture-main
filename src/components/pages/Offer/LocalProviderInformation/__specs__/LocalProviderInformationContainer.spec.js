@@ -1,6 +1,6 @@
-import { mapStateToProps } from '../TiteLiveInformationContainer'
+import { mapStateToProps } from '../LocalProviderInformationContainer'
 
-describe('src | components | pages | Offer | TiteLiveInformation | TiteLiveInformationContainer', () => {
+describe('src | components | pages | Offer | LocalProviderInformation | LocalProviderInformationContainer', () => {
   let state
   let props
 
@@ -35,6 +35,7 @@ describe('src | components | pages | Offer | TiteLiveInformation | TiteLiveInfor
       expect(result).toStrictEqual({
         offererId: 'ABCD',
         offerName: 'Super Livre',
+        providerInfo: {icon: 'logo-titeLive', name: 'Tite Live'},
         thumbUrl: 'http://localhost/storage/thumbs/products/AERTR',
         venueId: 'EFGH',
       })

@@ -3,16 +3,14 @@ import Thumb from '../../../layout/Thumb'
 import Icon from '../../../layout/Icon'
 import ReactTooltip from 'react-tooltip'
 import PropTypes from 'prop-types'
-import { PROVIDER_ICONS } from '../../../utils/providers'
 
-class TiteLiveInformation extends PureComponent {
+class LocalProviderInformation extends PureComponent {
   componentDidMount() {
     ReactTooltip.rebuild()
   }
 
   render() {
-    const { offererId, offerName, thumbUrl, venueId } = this.props
-    const providerIcon = PROVIDER_ICONS['TiteLiveStocks']
+    const { offerName, offererId, providerInfo, thumbUrl, venueId } = this.props
 
     const thumbAltDescription = 'couverture du livre ' + offerName
     const tooltip =
@@ -29,19 +27,19 @@ class TiteLiveInformation extends PureComponent {
 
     return (
       <Fragment>
-        <div className="titelive-information">
-          <div className="titelive-thumb">
+        <div className="provider-information">
+          <div className="provider-thumb">
             <Thumb
               alt={thumbAltDescription}
               src={thumbUrl}
             />
           </div>
-          <div className="titelive-details">
-            <div className="titelive-header">
-              <Icon svg={providerIcon} />
-              <div className="titelive-title">
+          <div className="provider-details">
+            <div className="provider-header">
+              <Icon svg={providerInfo.icon} />
+              <div className="provider-title">
                 <h3>
-                  {'Offre synchronisée avec Tite Live'}
+                  {`Offre synchronisée avec ${providerInfo.name}`}
                 </h3>
                 <span
                   className="button"
@@ -53,10 +51,10 @@ class TiteLiveInformation extends PureComponent {
                 </span>
               </div>
             </div>
-            <div className="titelive-explanation">
+            <div className="provider-explanation">
               <p>
                 {'Le visuel par défaut, les informations et le stock de cette offre sont synchronisés' +
-                  ' avec les données Tite Live tous les soirs. De ce fait, seuls sa description et son titre sont modifiables,' +
+                  ` avec les données ${providerInfo.name} tous les soirs. De ce fait, seuls sa description et son titre sont modifiables,` +
                   " pour vos besoins d'éditorialisation pour le pass Culture."}
               </p>
             </div>
@@ -67,15 +65,16 @@ class TiteLiveInformation extends PureComponent {
   }
 }
 
-TiteLiveInformation.defaultProps = {
+LocalProviderInformation.defaultProps = {
   thumbUrl: null,
 }
 
-TiteLiveInformation.propTypes = {
-  offererId: PropTypes.string.isRequired,
+LocalProviderInformation.propTypes = {
   offerName: PropTypes.string.isRequired,
+  offererId: PropTypes.string.isRequired,
+  providerInfo: PropTypes.shape().isRequired,
   thumbUrl: PropTypes.string,
   venueId: PropTypes.string.isRequired,
 }
 
-export default TiteLiveInformation
+export default LocalProviderInformation

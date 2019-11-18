@@ -1,15 +1,19 @@
 import React from 'react'
 import { shallow } from 'enzyme'
-import TiteLiveInformation from '../TiteLiveInformation'
+import LocalProviderInformation from '../LocalProviderInformation'
 import Thumb from '../../../../layout/Thumb'
 
-describe('src | components | pages | Offer | TiteLiveInformation | TiteLiveInformation', () => {
+describe('src | components | pages | Offer | LocalProviderInformationContainer | LocalProviderInformationContainer', () => {
   let props
 
   beforeEach(() => {
     props = {
       offererId: 'ABCD',
       offerName: 'Super Livre',
+      providerInfo: {
+        icon: 'TiteliveStocks',
+        name: 'Tite live'
+      },
       thumbUrl: 'http://localhost/storage/thumbs/products/AERTR',
       venueId: 'EARZ',
     }
@@ -17,7 +21,7 @@ describe('src | components | pages | Offer | TiteLiveInformation | TiteLiveInfor
 
   it('should match snapshot', () => {
     // when
-    const wrapper = shallow(<TiteLiveInformation {...props} />)
+    const wrapper = shallow(<LocalProviderInformation {...props} />)
 
     // then
     expect(wrapper).toMatchSnapshot()
@@ -26,7 +30,7 @@ describe('src | components | pages | Offer | TiteLiveInformation | TiteLiveInfor
   describe('render', () => {
     it('should render a link to venue page', () => {
       // when
-      const wrapper = shallow(<TiteLiveInformation {...props} />)
+      const wrapper = shallow(<LocalProviderInformation {...props} />)
 
       // then
       const link = wrapper.find('span')
@@ -37,7 +41,7 @@ describe('src | components | pages | Offer | TiteLiveInformation | TiteLiveInfor
 
     it('should render thumb alternate description with product name', () => {
       // when
-      const wrapper = shallow(<TiteLiveInformation {...props} />)
+      const wrapper = shallow(<LocalProviderInformation {...props} />)
 
       // then
       const link = wrapper.find(Thumb)

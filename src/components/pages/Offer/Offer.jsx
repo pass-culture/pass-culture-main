@@ -28,7 +28,8 @@ import { getDurationInHours, getDurationInMinutes } from './utils/duration'
 import { OFFERERS_API_PATH } from '../../../config/apiPaths'
 import { buildWebappDiscoveryUrl } from '../../layout/OfferPreviewLink/buildWebappDiscoveryUrl'
 import isTiteLiveOffer from './utils/isTiteLiveOffer'
-import TiteLiveInformation from './TiteLiveInformation/TiteLiveInformationContainer'
+import isAllocineOffer from './utils/isAllocineOffer'
+import LocalProviderInformation from './LocalProviderInformation/LocalProviderInformationContainer'
 import OfferPreviewLink from '../../layout/OfferPreviewLink/OfferPreviewLink'
 
 const DURATION_LIMIT_TIME = 100
@@ -346,6 +347,8 @@ class Offer extends PureComponent {
     const mediationId = get(get(offer, 'activeMediation'), 'id')
 
     const offerFromTiteLive = isTiteLiveOffer(offer)
+    const offerFromAllocine = isAllocineOffer(offer)
+    const offerFromLocalProvider = offerFromTiteLive || offerFromAllocine
 
     const offerWebappUrl = buildWebappDiscoveryUrl(offerId, mediationId)
     const offererId = get(offerer, 'id')
@@ -353,8 +356,8 @@ class Offer extends PureComponent {
     const showAllForm = selectedOfferType || !isCreatedEntity
     const venueId = get(venue, 'id')
     const isOfferActive = get(offer, 'isActive')
-    const isOffererSelectReadOnly = typeof offererId !== 'undefined' || offerFromTiteLive
-    const isVenueSelectReadOnly = typeof venueId !== 'undefined' || offerFromTiteLive
+    const isOffererSelectReadOnly = typeof offererId !== 'undefined' || offerFromLocalProvider
+    const isVenueSelectReadOnly = typeof venueId !== 'undefined' || offerFromLocalProvider
     const isVenueVirtual = get(venue, 'isVirtual')
 
     const formApiPath = isCreatedEntity ? '/offers' : `/offers/${offerId}`
@@ -528,7 +531,7 @@ class Offer extends PureComponent {
                     </span>
                     <button
                       className="button is-primary is-outlined is-small manage-stock"
-                      disabled={isEditableOffer && !offerFromTiteLive ? '' : 'disabled'}
+                      disabled={isEditableOffer && !offerFromLocalProvider ? '' : 'disabled'}
                       id="manage-stocks"
                       onClick={this.handleOnClick(query)}
                       type="button"
@@ -545,9 +548,11 @@ class Offer extends PureComponent {
               </div>
             )}
           </div>
-          {offerFromTiteLive && <TiteLiveInformation
+          {offerFromLocalProvider && <LocalProviderInformation
+            isAllocine={offerFromAllocine}
+            isTiteLive={offerFromTiteLive}
             offererId={offererId}
-                                />}
+                                     />}
           {!isCreatedEntity && offer && <MediationsManager />}
           {showAllForm && (
             <div>
@@ -596,7 +601,7 @@ class Offer extends PureComponent {
                     isExpanded
                     label="URL"
                     name="url"
-                    readOnly={offerFromTiteLive}
+                    readOnly={offerFromLocalProvider}
                     required
                     sublabel={
                       !readOnly &&
@@ -609,7 +614,7 @@ class Offer extends PureComponent {
                   <Field
                     label="Rayonnement national"
                     name="isNational"
-                    readOnly={offerFromTiteLive}
+                    readOnly={offerFromLocalProvider}
                     type="checkbox"
                   />
                 )}
@@ -656,7 +661,7 @@ class Offer extends PureComponent {
                 <Field
                   label="Email auquel envoyer les réservations"
                   name="bookingEmail"
-                  readOnly={offerFromTiteLive}
+                  readOnly={offerFromLocalProvider}
                   sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations"
                   type="email"
                 />
@@ -679,7 +684,7 @@ class Offer extends PureComponent {
                   <Field
                     label="Intervenant"
                     name="speaker"
-                    readOnly={offerFromTiteLive}
+                    readOnly={offerFromLocalProvider}
                     setKey="extraData"
                     type="text"
                   />
@@ -689,7 +694,7 @@ class Offer extends PureComponent {
                   <Field
                     label="Auteur"
                     name="author"
-                    readOnly={offerFromTiteLive}
+                    readOnly={offerFromLocalProvider}
                     setKey="extraData"
                     type="text"
                   />
@@ -700,7 +705,7 @@ class Offer extends PureComponent {
                     isExpanded
                     label="Visa d’exploitation"
                     name="visa"
-                    readOnly={offerFromTiteLive}
+                    readOnly={offerFromLocalProvider}
                     setKey="extraData"
                     sublabel="(obligatoire si applicable)"
                     type="text"
@@ -712,7 +717,7 @@ class Offer extends PureComponent {
                     isExpanded
                     label="ISBN"
                     name="isbn"
-                    readOnly={offerFromTiteLive}
+                    readOnly={offerFromLocalProvider}
                     setKey="extraData"
                     sublabel="(obligatoire si applicable)"
                     type="text"
@@ -724,7 +729,7 @@ class Offer extends PureComponent {
                     isExpanded
                     label="Metteur en scène"
                     name="stageDirector"
-                    readOnly={offerFromTiteLive}
+                    readOnly={offerFromLocalProvider}
                     setKey="extraData"
                   />
                 )}
@@ -734,7 +739,7 @@ class Offer extends PureComponent {
                     isExpanded
                     label="Interprète"
                     name="performer"
-                    readOnly={offerFromTiteLive}
+                    readOnly={offerFromLocalProvider}
                     setKey="extraData"
                   />
                 )}
