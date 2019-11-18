@@ -54,7 +54,8 @@ def process_product_thumb(uri: str, get_product_thumb: Callable = _get_product_t
 def process_file(file_path: str, _process_product_thumb: Callable = process_product_thumb):
     file = open(file_path, mode='r')
     for line in file:
-        _process_product_thumb(uri=line)
+        uri = line.strip()
+        _process_product_thumb(uri=uri)
 
 
 def _compute_product_id_from_uri(uri: str) -> int:
