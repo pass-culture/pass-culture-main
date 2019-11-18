@@ -697,6 +697,53 @@ def test_make_validation_confirmation_email_user_offerer_editor(app):
     assert email['FromName'] == 'pass Culture pro'
     assert email['Subject'] == 'Validation de compte éditeur rattaché à votre structure'
 
+@clean_database
+def test_returns_empty_ISBN_when_extra_data_has_no_key_isbn(app):
+    # Given
+    user = create_user(email="test@email.com")
+    offerer = create_offerer()
+    venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None)
+    thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION)
+    beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
+    stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=5.8656, available=10)
+    booking = create_booking(user, stock, venue)
+    recipient = 'dev@passculture.app'
+
+    # When
+    thing_offer.extraData = {}
+    email_data_template = make_offerer_booking_recap_email_with_mailjet_template(booking, recipient)
+
+    # Then
+    assert email_data_template == {
+        'FromEmail': 'dev@passculture.app',
+        'FromName': 'pass Culture pro',
+        'Subject': 'Nouvelle réservation pour Test Book',
+        'MJ-TemplateID': '779969',
+        'MJ-TemplateLanguage': 'true',
+        'Recipients': [
+            {
+                'Email': 'dev@passculture.app',
+            }
+        ],
+        'Vars':
+            {
+                'nom_offre': 'Test Book',
+                'nom_lieu': 'Test offerer',
+                'prix': '5.8656',
+                'date': '',
+                'heure': '',
+                'quantity': 1,
+                'user_firstName': 'John',
+                'user_lastName': 'Doe',
+                'user_email': 'test@email.com',
+                "is_event": 0,
+                "ISBN": "",
+                "offer_type": 'book',
+                "lien_offre_pcpro": "",
+                "departement": ""
+            }
+    }
+
 
 @clean_database
 def test_make_validation_confirmation_email_offerer(app):
