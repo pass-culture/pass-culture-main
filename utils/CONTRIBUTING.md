@@ -17,4 +17,12 @@ with app.app_context():
     send_activation_email(user, send_raw_email)
 ```
 
-Changer `send_activation_email()` par la fonction que vous voulez tester.
+```python
+from utils.mailing import send_raw_email
+from repository.booking_queries import find_by
+from domain.user_emails import send_booking_recap_emails
+
+booking = find_by(token='VU6MMM')
+with app.app_context():
+    send_booking_recap_emails(booking, send_raw_email)
+```

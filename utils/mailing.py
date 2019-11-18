@@ -109,77 +109,62 @@ def make_final_recap_email_for_stock_with_event(stock: Stock) -> Dict:
     }
 
 
-def make_offerer_booking_recap_email_with_mailjet_template(booking: Booking, recipients: Union[List[str], str]) -> Dict:
+def get_offerer_booking_recap_email_data(booking: Booking, recipients: List[str]) -> Dict:
     offer = booking.stock.resolvedOffer
     venue_name = offer.venue.name
     offer_name = offer.product.name
-    price = _format_price_for_email(booking)
+    price = 'Gratuit' if booking.stock.price == 0 else str(booking.stock.price)
     quantity = booking.quantity
     user_email = booking.user.email
     user_firstname = booking.user.firstName
     user_lastname = booking.user.lastName
+    departement_code = booking.user.departementCode
     offer_type = offer.type
     is_event = int(offer.isEvent)
 
     mailjet_json = {
-        'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
-        'FromName': 'pass Culture pro',
-        'Subject': f'Nouvelle réservation pour {offer_name}',
-        'MJ-TemplateID': '779969',
-        'MJ-TemplateLanguage': 'true',
-        'Recipients': _create_email_recipients(recipients),
+        'FromEmail': SUPPORT_EMAIL_ADDRESS,
+        'MJ-TemplateID': 779969,
+        'MJ-TemplateLanguage': True,
+        'To': _create_email_recipients(recipients),
         'Vars': {
             'nom_offre': offer_name,
             'nom_lieu': venue_name,
             'is_event': is_event,
-            'ISBN': "",
-            'offer_type': "",
-            'date': "",
-            'heure': "",
-            'quantity': "",
-            'lien_offre_pcpro': "",
-            'departement': ""
+            'ISBN': '',
+            'offer_type': 'book',
+            'date': '',
+            'heure': '',
+            'quantity': quantity,
+            'lien_offre_pcpro': '',
+            'departement': departement_code,
+            'prix': price,
+            'user_firstName': user_firstname,
+            'user_lastName': user_lastname,
+            'user_email': user_email
         },
     }
-
-    mailjet_json_variables = mailjet_json['Vars']
 
     offer_is_a_book = ProductType.is_book(offer_type)
 
     if offer_is_a_book:
-        mailjet_json_variables['offer_type'] = "book"
         mailjet_json_variables['ISBN'] = offer.extraData['isbn'] if offer.extraData is not None and 'isbn' in offer.extraData else ''
     else:
-        mailjet_json_variables['offer_type'] = offer_type
+        mailjet_json['Vars']['offer_type'] = offer_type
 
     offer_is_an_event = is_event == 1
     if offer_is_an_event:
-        mailjet_json_variables['date'], mailjet_json_variables['heure'] = _format_date_and_hour_for_email(
+        mailjet_json['Vars']['date'], mailjet_json['Vars']['heure'] = _format_date_and_hour_for_email(
             booking)
-
-    mailjet_json_variables['quantity'] = int(quantity)
-    mailjet_json_variables['prix'] = price
-    mailjet_json_variables['user_firstName'] = user_firstname
-    mailjet_json_variables['user_lastName'] = user_lastname
-    mailjet_json_variables['user_email'] = user_email
 
     return mailjet_json
 
 
-def _format_price_for_email(booking: Booking) -> str:
-    price = booking.stock.price
-    if price == 0:
-        return "Gratuit"
-    return str(price)
-
-
-def _create_email_recipients(recipients: Union[List[str], str]) -> str:
+def _create_email_recipients(recipients: List[str]) -> str:
     if feature_send_mail_to_users_enabled():
-        email_to = [{"Email": email} for email in recipients]
+        return ', '.join(recipients)
     else:
-        email_to = [{"Email": DEV_EMAIL_ADDRESS}]
-
-    return email_to
+        return DEV_EMAIL_ADDRESS
 
 
 def _format_date_and_hour_for_email(booking: Booking) -> (datetime, str):
@@ -495,12 +480,12 @@ def make_payment_details_email(csv: str) -> Dict:
     csv_b64encode = base64.b64encode(csv.encode('utf-8')).decode()
     return {
         'FromEmail': SUPPORT_EMAIL_ADDRESS,
-        'FromName': "pass Culture Pro",
-        'Subject': "Détails des paiements pass Culture Pro - {}".format(datetime.strftime(now, "%Y-%m-%d")),
+        'FromName': 'pass Culture Pro',
+        'Subject': 'Détails des paiements pass Culture Pro - {}'.format(datetime.strftime(now, "%Y-%m-%d")),
         'Attachments': [{"ContentType": "text/csv",
                          "Filename": "details_des_paiements_{}.csv".format(datetime.strftime(now, "%Y%m%d")),
                          "Content": csv_b64encode}],
-        'Html-part': ""
+        'Html-part': ''
     }
 
 
@@ -517,9 +502,9 @@ def make_payments_report_email(not_processable_csv: str, error_csv: str, grouped
         map(number_of_payments_for_one_status, grouped_payments.items()))
 
     return {
-        'Subject': "Récapitulatif des paiements pass Culture Pro - {}".format(formatted_date),
-        "FromEmail": SUPPORT_EMAIL_ADDRESS,
-        "FromName": "pass Culture Pro",
+        'Subject': 'Récapitulatif des paiements pass Culture Pro - {}'.format(formatted_date),
+        'FromEmail': SUPPORT_EMAIL_ADDRESS,
+        'FromName': 'pass Culture Pro',
         'Attachments': [
             {
                 "ContentType": "text/csv",
@@ -615,11 +600,13 @@ def make_offer_creation_notification_email(offer: Offer, author: User, pro_origi
     html = render_template('mails/offer_creation_notification_email.html', offer=offer, author=author,
                            link_to_offer=link_to_offer)
     location_information = offer.venue.departementCode or 'numérique'
-    return {'Html-part': html,
-            'To': [ADMINISTRATION_EMAIL_ADDRESS],
-            'FromEmail': SUPPORT_EMAIL_ADDRESS,
-            'FromName': 'pass Culture',
-            'Subject': f'[Création d’offre - {location_information}] {offer.product.name}'}
+    return {
+        'Html-part': html,
+        'To': [ADMINISTRATION_EMAIL_ADDRESS],
+        'FromEmail': SUPPORT_EMAIL_ADDRESS,
+        'FromName': 'pass Culture',
+        'Subject': f'[Création d’offre - {location_information}] {offer.product.name}'
+    }
 
 
 def make_beneficiaries_import_email(new_beneficiaries: List[User], error_messages: List[str]) -> Dict:
@@ -694,6 +681,7 @@ def _generate_user_driven_cancellation_email_for_user(user: User, stock: Stock) 
             stock.offer.product.name,
             formatted_date_time
         )
+
     return email_html, email_subject
 
 
@@ -702,9 +690,9 @@ def _get_event_datetime(stock: Stock) -> datetime:
         date_in_utc = stock.beginningDatetime
         date_in_tz = utc_datetime_to_dept_timezone(date_in_utc,
                                                    stock.offer.venue.departementCode)
-
     else:
         date_in_tz = stock.beginningDatetime
+
     return date_in_tz
 
 
@@ -721,24 +709,24 @@ def _get_stock_description(stock: Stock) -> str:
 
 def make_webapp_user_validation_email(user: User, app_origin_url: str) -> Dict:
     template = 'mails/webapp_user_validation_email.html'
-    from_name = 'pass Culture'
     email_html = render_template(
         template, user=user, api_url=API_URL, app_origin_url=app_origin_url)
-    return {'Html-part': email_html,
-            'To': user.email,
-            'Subject': 'Validation de votre adresse email pour le pass Culture',
-            'FromName': from_name,
-            'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS}
+    return {
+        'Html-part': email_html,
+        'To': user.email,
+        'Subject': 'Validation de votre adresse email pour le pass Culture',
+        'FromName': 'pass Culture',
+        'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS
+    }
 
 
 def make_pro_user_validation_email(user: User, app_origin_url: str) -> Dict:
-    from_name = 'pass Culture pro'
     return {
         'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
-        'FromName': from_name,
-        'Subject': "[pass Culture pro] Validation de votre adresse email pour le pass Culture",
-        'MJ-TemplateID': '778688',
-        'MJ-TemplateLanguage': 'true',
+        'FromName': 'pass Culture pro',
+        'Subject': '[pass Culture pro] Validation de votre adresse email pour le pass Culture',
+        'MJ-TemplateID': 778688,
+        'MJ-TemplateLanguage': True,
         'Recipients': [
             {
                 "Email": user.email,
@@ -753,14 +741,13 @@ def make_pro_user_validation_email(user: User, app_origin_url: str) -> Dict:
 
 
 def _pro_user_waiting_for_validation_by_admin_email(user: User, offerer: Offerer) -> Dict:
-    from_name = 'pass Culture pro'
     offerer_name = offerer.name
     return {
         'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
-        'FromName': from_name,
+        'FromName': 'pass Culture pro',
         'Subject': f'[pass Culture pro] Votre structure {offerer_name} est en cours de validation',
-        'MJ-TemplateID': '778329',
-        'MJ-TemplateLanguage': 'true',
+        'MJ-TemplateID': 778329,
+        'MJ-TemplateLanguage': True,
         'Recipients': [
             {
                 "Email": user.email,
