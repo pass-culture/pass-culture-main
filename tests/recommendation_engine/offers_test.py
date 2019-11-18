@@ -46,5 +46,5 @@ class GetOffersForRecommendationsDiscoveryTest:
 
         # Then
         get_active_offers.assert_called_once_with(departement_codes=['54'], limit=5, order_by=order_by_with_criteria,
-                                                  pagination_params=pagination_params)
+                                                  pagination_params=pagination_params, user=authenticated_user)
         assert offers == [offer]

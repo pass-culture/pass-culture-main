@@ -92,7 +92,6 @@ def put_recommendations():
     logger.debug(lambda: '(special) requested_recommendation %s' %
                          requested_recommendation)
 
-    print(request.args)
     pagination_params = {
         'page': int(request.args.get('page')),
         'seed': float(request.args.get('seed'))

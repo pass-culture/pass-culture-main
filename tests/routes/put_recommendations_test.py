@@ -1027,9 +1027,7 @@ class Put:
 
             # then
             assert response.status_code == 200
-            recommendation_response = response.json[0]
-            assert 'bookings' in recommendation_response
-            assert recommendation_response['bookings'][0]['id'] == humanize(booking_id)
+            assert response.json == []
 
         @clean_database
         @patch('routes.recommendations.create_recommendations_for_discovery')

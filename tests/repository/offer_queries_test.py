@@ -906,6 +906,7 @@ class GetActiveOffersTest:
     def test_when_department_code_00(self, app):
         # Given
         offerer = create_offerer()
+        user = create_user()
         venue_34 = create_venue(offerer, postal_code='34000', departement_code='34', siret=offerer.siren + '11111')
         venue_93 = create_venue(offerer, postal_code='93000', departement_code='93', siret=offerer.siren + '22222')
         venue_75 = create_venue(offerer, postal_code='75000', departement_code='75', siret=offerer.siren + '33333')
@@ -922,7 +923,8 @@ class GetActiveOffersTest:
         PcObject.save(stock_34, stock_93, stock_75)
 
         # When
-        offers = get_active_offers(pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'], offer_id=None)
+        offers = get_active_offers(user=user, pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'],
+                                   offer_id=None)
 
         # Then
         assert offer_34 in offers
@@ -933,6 +935,7 @@ class GetActiveOffersTest:
     def test_should_not_return_activation_event(self, app):
         # Given
         offerer = create_offerer()
+        user = create_user()
         venue_93 = create_venue(offerer, postal_code='93000', departement_code='93', siret=offerer.siren + '33333')
         offer_93 = create_offer_with_event_product(venue_93, thumb_count=1)
         offer_activation_93 = create_offer_with_event_product(venue_93, event_type=EventType.ACTIVATION,
@@ -945,7 +948,8 @@ class GetActiveOffersTest:
         PcObject.save(stock_93, stock_activation_93)
 
         # When
-        offers = get_active_offers(pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'], offer_id=None)
+        offers = get_active_offers(user=user, pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'],
+                                   offer_id=None)
 
         # Then
         assert offer_93 in offers
@@ -955,6 +959,7 @@ class GetActiveOffersTest:
     def test_should_not_return_activation_thing(self, app):
         # Given
         offerer = create_offerer()
+        user = create_user()
         venue_93 = create_venue(offerer, postal_code='93000', departement_code='93', siret=offerer.siren + '33333')
         offer_93 = create_offer_with_thing_product(venue_93, thumb_count=1)
         offer_activation_93 = create_offer_with_thing_product(venue_93, thing_type=ThingType.ACTIVATION,
@@ -967,7 +972,8 @@ class GetActiveOffersTest:
         PcObject.save(stock_93, stock_activation_93)
 
         # When
-        offers = get_active_offers(pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'], offer_id=None)
+        offers = get_active_offers(user=user, pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'],
+                                   offer_id=None)
 
         # Then
         assert offer_93 in offers
@@ -978,6 +984,7 @@ class GetActiveOffersTest:
         # Given
         product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
         offer = create_offer_with_thing_product(venue, product)
         stock = create_stock_from_offer(offer, available=2)
@@ -985,7 +992,8 @@ class GetActiveOffersTest:
         PcObject.save(stock)
 
         # When
-        offers = get_active_offers(pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'], offer_id=None)
+        offers = get_active_offers(user=user, pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'],
+                                   offer_id=None)
 
         # Then
         assert len(offers) == 1
@@ -994,6 +1002,7 @@ class GetActiveOffersTest:
     def test_should_return_offers_with_mediation_only(app):
         # Given
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
         stock1 = create_stock_with_thing_offer(offerer, venue, name='thing_with_mediation')
         stock2 = create_stock_with_thing_offer(offerer, venue, name='thing_without_mediation')
@@ -1001,7 +1010,8 @@ class GetActiveOffersTest:
         PcObject.save(stock1, stock2)
 
         # When
-        offers = get_active_offers(pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'], offer_id=None)
+        offers = get_active_offers(user=user, pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'],
+                                   offer_id=None)
 
         # Then
         assert len(offers) == 1
@@ -1011,6 +1021,7 @@ class GetActiveOffersTest:
     def test_should_return_offers_that_occur_in_less_than_10_days_and_things_first(self, app):
         # Given
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
 
         stock1 = create_stock_with_thing_offer(offerer, venue, name='thing')
@@ -1032,7 +1043,8 @@ class GetActiveOffersTest:
         PcObject.save(stock1, stock2, stock3)
 
         # When
-        offers = get_active_offers(pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'], offer_id=None)
+        offers = get_active_offers(user=user, pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'],
+                                   offer_id=None)
 
         # Then
         assert len(offers) == 3
@@ -1046,6 +1058,7 @@ class GetActiveOffersTest:
     def test_should_return_offers_with_varying_types(self, app):
         # Given
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
         stock1 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
         stock2 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.CINEMA_ABO,
@@ -1067,7 +1080,8 @@ class GetActiveOffersTest:
                             for o in offers[:4]])) == 4
 
         # When
-        offers = get_active_offers(pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'], offer_id=None)
+        offers = get_active_offers(user=user, pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'],
+                                   offer_id=None)
         print(offers)
 
         # Then
@@ -1079,6 +1093,7 @@ class GetActiveOffersTest:
         # Given
         product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
         offer = create_offer_with_thing_product(venue, product)
         stock = create_stock_from_offer(offer, available=2, price=0)
@@ -1089,7 +1104,8 @@ class GetActiveOffersTest:
         PcObject.save(booking1, booking2)
 
         # When
-        offers = get_active_offers(pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'], offer_id=None)
+        offers = get_active_offers(user=user, pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'],
+                                   offer_id=None)
 
         # Then
         assert len(offers) == 0
@@ -1098,6 +1114,7 @@ class GetActiveOffersTest:
     def test_with_no_order_by_should_return_same_number_of_recommendation(self, app):
         # Given
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
 
         stock1 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
@@ -1112,7 +1129,8 @@ class GetActiveOffersTest:
         PcObject.save(stock1, stock2, stock3, stock4)
 
         # When
-        offers = get_active_offers(pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'], offer_id=None)
+        offers = get_active_offers(user=user, pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'],
+                                   offer_id=None)
 
         # Then
         assert len(offers) == 4
@@ -1121,6 +1139,7 @@ class GetActiveOffersTest:
     def test_with_criteria_should_return_offer_with_highest_base_score_first(self, app):
         # Given
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
 
         offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.JEUX_VIDEO, thumb_count=1)
@@ -1137,7 +1156,8 @@ class GetActiveOffersTest:
         PcObject.save(stock1, stock2)
 
         # When
-        offers = get_active_offers(pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'], offer_id=None,
+        offers = get_active_offers(user=user, pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'],
+                                   offer_id=None,
                                    order_by=order_by_with_criteria)
 
         # Then
@@ -1147,6 +1167,7 @@ class GetActiveOffersTest:
     def test_with_criteria_should_return_offer_with_highest_base_score_first_bust_keep_the_partition(self, app):
         # Given
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
 
         offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO, thumb_count=1)
@@ -1168,7 +1189,8 @@ class GetActiveOffersTest:
         PcObject.save(stock1, stock2, stock3)
 
         # When
-        offers = get_active_offers(pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'], offer_id=None,
+        offers = get_active_offers(user=user, pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'],
+                                   offer_id=None,
                                    order_by=order_by_with_criteria)
 
         # Then
@@ -1178,6 +1200,7 @@ class GetActiveOffersTest:
     def test_should_return_offers_in_the_same_order_given_the_same_seed(self, app):
         # Given
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
 
         offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
@@ -1200,20 +1223,24 @@ class GetActiveOffersTest:
         PcObject.save(stock1, stock2, stock3, stock4)
 
         pagination_params = {'seed': 0.5, 'page': 1}
-        offers_1 = get_active_offers(departement_codes=['00'], offer_id=None,
+        offers_1 = get_active_offers(user=user,
+                                     departement_codes=['00'], offer_id=None,
                                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
                                      pagination_params=pagination_params)
 
-        offers_2 = get_active_offers(departement_codes=['00'], offer_id=None,
+        offers_2 = get_active_offers(user=user,
+                                     departement_codes=['00'], offer_id=None,
                                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
                                      pagination_params=pagination_params)
 
-        offers_3 = get_active_offers(departement_codes=['00'], offer_id=None,
+        offers_3 = get_active_offers(user=user,
+                                     departement_codes=['00'], offer_id=None,
                                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
                                      pagination_params=pagination_params)
 
         # When
-        offers_4 = get_active_offers(departement_codes=['00'], offer_id=None,
+        offers_4 = get_active_offers(user=user,
+                                     departement_codes=['00'], offer_id=None,
                                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
                                      pagination_params=pagination_params)
 
@@ -1226,6 +1253,7 @@ class GetActiveOffersTest:
     def test_should_return_offers_not_in_the_same_order_given_different_seeds(self, app):
         # Given
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
 
         offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
@@ -1247,12 +1275,14 @@ class GetActiveOffersTest:
 
         PcObject.save(stock1, stock2, stock3, stock4)
 
-        offers_1 = get_active_offers(departement_codes=['00'], offer_id=None,
+        offers_1 = get_active_offers(user=user,
+                                     departement_codes=['00'], offer_id=None,
                                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
                                      pagination_params={'seed': 0.9, 'page': 1})
 
         # When
-        offers_2 = get_active_offers(departement_codes=['00'], offer_id=None,
+        offers_2 = get_active_offers(user=user,
+                                     departement_codes=['00'], offer_id=None,
                                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
                                      pagination_params={'seed': -0.8, 'page': 1})
 
@@ -1272,9 +1302,10 @@ class GetActiveOffersTest:
         PcObject.save(booking)
 
         # When
-        offers = get_active_offers(pagination_params={'seed': 0.9, 'page': 1},
+        offers = get_active_offers(user=user,
+                                   pagination_params={'seed': 0.9, 'page': 1},
                                    departement_codes=['00'], offer_id=None,
-                                   order_by=_order_by_occurs_soon_or_is_thing_then_randomize, user=user)
+                                   order_by=_order_by_occurs_soon_or_is_thing_then_randomize)
 
         # Then
         assert offers == []
@@ -1283,6 +1314,7 @@ class GetActiveOffersTest:
     def test_should_not_return_favorite_offers(self, app):
         # Given
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
 
         offer = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
@@ -1294,9 +1326,10 @@ class GetActiveOffersTest:
         PcObject.save(favorite)
 
         # When
-        offers = get_active_offers(pagination_params={'seed': 0.9, 'page': 1},
+        offers = get_active_offers(user=user,
+                                   pagination_params={'seed': 0.9, 'page': 1},
                                    departement_codes=['00'], offer_id=None,
-                                   order_by=_order_by_occurs_soon_or_is_thing_then_randomize, user=user)
+                                   order_by=_order_by_occurs_soon_or_is_thing_then_randomize)
 
         # Then
         assert offers == []
@@ -1305,6 +1338,7 @@ class GetActiveOffersTest:
     def test_should_return_different_offers_when_different_page_and_same_seed(self, app):
         # Given
         offerer = create_offerer()
+        user = create_user()
         venue = create_venue(offerer)
         offer1 = create_offer_with_thing_product(idx=1, venue=venue)
         offer2 = create_offer_with_thing_product(idx=2, venue=venue)
@@ -1321,9 +1355,9 @@ class GetActiveOffersTest:
         PcObject.save(stock1, stock2, stock3, stock4)
 
         # When
-        offers1 = get_active_offers(departement_codes=['00'], limit=2, pagination_params={'page': 1, 'seed': 1})
-        offers2 = get_active_offers(departement_codes=['00'], limit=2, pagination_params={'page': 2, 'seed': 1})
-        offers3 = get_active_offers(departement_codes=['00'], limit=2, pagination_params={'page': 3, 'seed': 1})
+        offers1 = get_active_offers(user=user, departement_codes=['00'], limit=2, pagination_params={'page': 1, 'seed': 1})
+        offers2 = get_active_offers(user=user, departement_codes=['00'], limit=2, pagination_params={'page': 2, 'seed': 1})
+        offers3 = get_active_offers(user=user, departement_codes=['00'], limit=2, pagination_params={'page': 3, 'seed': 1})
 
         # Then
         assert len(offers1) == 2

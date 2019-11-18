@@ -10,7 +10,7 @@ def get_offers_for_recommendations_discovery(limit=3, user=None, pagination_para
     departement_codes = get_departement_codes_from_user(user)
 
     offers = get_active_offers(departement_codes=departement_codes, limit=limit, order_by=order_by_with_criteria,
-                               pagination_params=pagination_params)
+                               pagination_params=pagination_params, user=user)
 
     logger.debug(lambda: '(reco) final offers (events + things) count (%i)',
                  len(offers))

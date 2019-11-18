@@ -85,7 +85,7 @@ def get_active_offers(pagination_params, departement_codes=None, offer_id=None, 
     sql = text(f'SET SEED TO {seed_number}')
     db.session.execute(sql)
 
-    active_offer_ids = get_active_offers_ids_query(departement_codes, offer_id, user=user)
+    active_offer_ids = get_active_offers_ids_query(user, departement_codes, offer_id)
     query = Offer.query.filter(Offer.id.in_(active_offer_ids))
     query = query.order_by(_round_robin_by_type_onlineness_and_criteria(order_by))
     query = query.options(joinedload('mediations'),
@@ -101,7 +101,7 @@ def get_active_offers(pagination_params, departement_codes=None, offer_id=None, 
     return query.all()
 
 
-def get_active_offers_ids_query(departement_codes=['00'], offer_id=None, user=None):
+def get_active_offers_ids_query(user, departement_codes=['00'], offer_id=None):
     active_offers_query = Offer.query.distinct(Offer.id)
 
     if offer_id is not None:
@@ -123,8 +123,7 @@ def get_active_offers_ids_query(departement_codes=['00'], offer_id=None, user=No
     logger.debug(lambda: '(reco) active and validated {}'.format(active_offers_query.count()))
     active_offers_query = _not_activation_offers(active_offers_query)
     logger.debug(lambda: '(reco) not_currently_recommended and not_activation {}'.format(active_offers_query.count()))
-    if user:
-        active_offers_query = _exclude_booked_and_favorite(active_offers_query, user)
+    active_offers_query = _exclude_booked_and_favorite(active_offers_query, user)
     active_offer_ids = active_offers_query.with_entities(Offer.id).subquery()
     return active_offer_ids
 
