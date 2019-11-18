@@ -42,6 +42,7 @@ ShallowWrapper {
       }
     }
     ribbon={null}
+    shouldDisplayToken={true}
     stock={
       Object {
         "beginningDatetime": "2030-08-21T20:00:00Z",
@@ -82,6 +83,12 @@ ShallowWrapper {
             className="teaser-wrapper"
           >
             <div
+              className="mb-corner bottom left"
+            />
+            <div
+              className="mb-corner bottom right"
+            />
+            <div
               className="mb-heading"
             >
               <div
@@ -95,11 +102,6 @@ ShallowWrapper {
                 Mercredi 21/08/2030 à 22:00
               </div>
             </div>
-            <div
-              className="mb-token"
-            >
-              g9g9g9
-            </div>
           </div>
           <div
             className="teaser-arrow"
@@ -112,7 +114,30 @@ ShallowWrapper {
             />
           </div>
         </ForwardRef>,
-        false,
+        <div
+          className="mb-token-container"
+        >
+          <div
+            className="mb-corner top left"
+          />
+          <div
+            className="mb-corner top right"
+          />
+          <div
+            className="mb-token-title"
+          >
+            Votre contremarque
+          </div>
+          <div
+            className="mb-token-contremarque-container"
+          >
+            <div
+              className="mb-token-flipped"
+            >
+              g9g9g9
+            </div>
+          </div>
+        </div>,
       ],
       "className": "mb-my-booking",
       "data-token": "g9g9g9",
@@ -137,6 +162,12 @@ ShallowWrapper {
               className="teaser-wrapper"
             >
               <div
+                className="mb-corner bottom left"
+              />
+              <div
+                className="mb-corner bottom right"
+              />
+              <div
                 className="mb-heading"
               >
                 <div
@@ -150,11 +181,6 @@ ShallowWrapper {
                   Mercredi 21/08/2030 à 22:00
                 </div>
               </div>
-              <div
-                className="mb-token"
-              >
-                g9g9g9
-              </div>
             </div>,
             <div
               className="teaser-arrow"
@@ -166,6 +192,7 @@ ShallowWrapper {
                 svg="ico-next-S"
               />
             </div>,
+            null,
           ],
           "className": "teaser-link",
           "onClick": [MockFunction],
@@ -206,6 +233,12 @@ ShallowWrapper {
             "props": Object {
               "children": Array [
                 <div
+                  className="mb-corner bottom left"
+                />,
+                <div
+                  className="mb-corner bottom right"
+                />,
+                <div
                   className="mb-heading"
                 >
                   <div
@@ -219,16 +252,33 @@ ShallowWrapper {
                     Mercredi 21/08/2030 à 22:00
                   </div>
                 </div>,
-                <div
-                  className="mb-token"
-                >
-                  g9g9g9
-                </div>,
               ],
               "className": "teaser-wrapper",
             },
             "ref": null,
             "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "className": "mb-corner bottom left",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": "div",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "className": "mb-corner bottom right",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": "div",
+              },
               Object {
                 "instance": null,
                 "key": undefined,
@@ -283,18 +333,6 @@ ShallowWrapper {
                 ],
                 "type": "div",
               },
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "g9g9g9",
-                  "className": "mb-token",
-                },
-                "ref": null,
-                "rendered": "g9g9g9",
-                "type": "div",
-              },
             ],
             "type": "div",
           },
@@ -303,37 +341,32 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": Array [
-                null,
-                <Icon
-                  alt={null}
-                  className="teaser-arrow-img"
-                  src={null}
-                  svg="ico-next-S"
-                />,
-              ],
+              "children": <Icon
+                alt={null}
+                className="teaser-arrow-img"
+                src={null}
+                svg="ico-next-S"
+              />,
               "className": "teaser-arrow",
             },
             "ref": null,
-            "rendered": Array [
-              null,
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "function",
-                "props": Object {
-                  "alt": null,
-                  "className": "teaser-arrow-img",
-                  "src": null,
-                  "svg": "ico-next-S",
-                },
-                "ref": null,
-                "rendered": null,
-                "type": [Function],
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "alt": null,
+                "className": "teaser-arrow-img",
+                "src": null,
+                "svg": "ico-next-S",
               },
-            ],
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
             "type": "div",
           },
+          null,
         ],
         "type": Object {
           "$$typeof": Symbol(react.forward_ref),
@@ -348,7 +381,103 @@ ShallowWrapper {
           "render": [Function],
         },
       },
-      false,
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <div
+              className="mb-corner top left"
+            />,
+            <div
+              className="mb-corner top right"
+            />,
+            <div
+              className="mb-token-title"
+            >
+              Votre contremarque
+            </div>,
+            <div
+              className="mb-token-contremarque-container"
+            >
+              <div
+                className="mb-token-flipped"
+              >
+                g9g9g9
+              </div>
+            </div>,
+            false,
+          ],
+          "className": "mb-token-container",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "className": "mb-corner top left",
+            },
+            "ref": null,
+            "rendered": null,
+            "type": "div",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "className": "mb-corner top right",
+            },
+            "ref": null,
+            "rendered": null,
+            "type": "div",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Votre contremarque",
+              "className": "mb-token-title",
+            },
+            "ref": null,
+            "rendered": "Votre contremarque",
+            "type": "div",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <div
+                className="mb-token-flipped"
+              >
+                g9g9g9
+              </div>,
+              "className": "mb-token-contremarque-container",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "g9g9g9",
+                "className": "mb-token-flipped",
+              },
+              "ref": null,
+              "rendered": "g9g9g9",
+              "type": "div",
+            },
+            "type": "div",
+          },
+          false,
+        ],
+        "type": "div",
+      },
     ],
     "type": "li",
   },
@@ -376,6 +505,12 @@ ShallowWrapper {
               className="teaser-wrapper"
             >
               <div
+                className="mb-corner bottom left"
+              />
+              <div
+                className="mb-corner bottom right"
+              />
+              <div
                 className="mb-heading"
               >
                 <div
@@ -389,11 +524,6 @@ ShallowWrapper {
                   Mercredi 21/08/2030 à 22:00
                 </div>
               </div>
-              <div
-                className="mb-token"
-              >
-                g9g9g9
-              </div>
             </div>
             <div
               className="teaser-arrow"
@@ -406,7 +536,30 @@ ShallowWrapper {
               />
             </div>
           </ForwardRef>,
-          false,
+          <div
+            className="mb-token-container"
+          >
+            <div
+              className="mb-corner top left"
+            />
+            <div
+              className="mb-corner top right"
+            />
+            <div
+              className="mb-token-title"
+            >
+              Votre contremarque
+            </div>
+            <div
+              className="mb-token-contremarque-container"
+            >
+              <div
+                className="mb-token-flipped"
+              >
+                g9g9g9
+              </div>
+            </div>
+          </div>,
         ],
         "className": "mb-my-booking",
         "data-token": "g9g9g9",
@@ -431,6 +584,12 @@ ShallowWrapper {
                 className="teaser-wrapper"
               >
                 <div
+                  className="mb-corner bottom left"
+                />
+                <div
+                  className="mb-corner bottom right"
+                />
+                <div
                   className="mb-heading"
                 >
                   <div
@@ -444,11 +603,6 @@ ShallowWrapper {
                     Mercredi 21/08/2030 à 22:00
                   </div>
                 </div>
-                <div
-                  className="mb-token"
-                >
-                  g9g9g9
-                </div>
               </div>,
               <div
                 className="teaser-arrow"
@@ -460,6 +614,7 @@ ShallowWrapper {
                   svg="ico-next-S"
                 />
               </div>,
+              null,
             ],
             "className": "teaser-link",
             "onClick": [MockFunction],
@@ -500,6 +655,12 @@ ShallowWrapper {
               "props": Object {
                 "children": Array [
                   <div
+                    className="mb-corner bottom left"
+                  />,
+                  <div
+                    className="mb-corner bottom right"
+                  />,
+                  <div
                     className="mb-heading"
                   >
                     <div
@@ -513,16 +674,33 @@ ShallowWrapper {
                       Mercredi 21/08/2030 à 22:00
                     </div>
                   </div>,
-                  <div
-                    className="mb-token"
-                  >
-                    g9g9g9
-                  </div>,
                 ],
                 "className": "teaser-wrapper",
               },
               "ref": null,
               "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "className": "mb-corner bottom left",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": "div",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "className": "mb-corner bottom right",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": "div",
+                },
                 Object {
                   "instance": null,
                   "key": undefined,
@@ -577,18 +755,6 @@ ShallowWrapper {
                   ],
                   "type": "div",
                 },
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "g9g9g9",
-                    "className": "mb-token",
-                  },
-                  "ref": null,
-                  "rendered": "g9g9g9",
-                  "type": "div",
-                },
               ],
               "type": "div",
             },
@@ -597,37 +763,32 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": Array [
-                  null,
-                  <Icon
-                    alt={null}
-                    className="teaser-arrow-img"
-                    src={null}
-                    svg="ico-next-S"
-                  />,
-                ],
+                "children": <Icon
+                  alt={null}
+                  className="teaser-arrow-img"
+                  src={null}
+                  svg="ico-next-S"
+                />,
                 "className": "teaser-arrow",
               },
               "ref": null,
-              "rendered": Array [
-                null,
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "function",
-                  "props": Object {
-                    "alt": null,
-                    "className": "teaser-arrow-img",
-                    "src": null,
-                    "svg": "ico-next-S",
-                  },
-                  "ref": null,
-                  "rendered": null,
-                  "type": [Function],
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {
+                  "alt": null,
+                  "className": "teaser-arrow-img",
+                  "src": null,
+                  "svg": "ico-next-S",
                 },
-              ],
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
               "type": "div",
             },
+            null,
           ],
           "type": Object {
             "$$typeof": Symbol(react.forward_ref),
@@ -642,7 +803,103 @@ ShallowWrapper {
             "render": [Function],
           },
         },
-        false,
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <div
+                className="mb-corner top left"
+              />,
+              <div
+                className="mb-corner top right"
+              />,
+              <div
+                className="mb-token-title"
+              >
+                Votre contremarque
+              </div>,
+              <div
+                className="mb-token-contremarque-container"
+              >
+                <div
+                  className="mb-token-flipped"
+                >
+                  g9g9g9
+                </div>
+              </div>,
+              false,
+            ],
+            "className": "mb-token-container",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "className": "mb-corner top left",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": "div",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "className": "mb-corner top right",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": "div",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Votre contremarque",
+                "className": "mb-token-title",
+              },
+              "ref": null,
+              "rendered": "Votre contremarque",
+              "type": "div",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": <div
+                  className="mb-token-flipped"
+                >
+                  g9g9g9
+                </div>,
+                "className": "mb-token-contremarque-container",
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "g9g9g9",
+                  "className": "mb-token-flipped",
+                },
+                "ref": null,
+                "rendered": "g9g9g9",
+                "type": "div",
+              },
+              "type": "div",
+            },
+            false,
+          ],
+          "type": "div",
+        },
       ],
       "type": "li",
     },

@@ -66,7 +66,7 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
     const bookingThumb = wrapper.find('.teaser-thumb').find('img')
     const bookingName = wrapper.find('.teaser-title-booking')
     const bookingDate = wrapper.find('.teaser-sub-title')
-    const bookingToken = wrapper.find('.mb-token')
+    const bookingToken = wrapper.find('.mb-token-flipped')
     const arrowIcon = wrapper.find('.teaser-arrow').find(Icon)
     const ribbon = wrapper.find('.teaser-arrow').find(Ribbon)
 
@@ -95,7 +95,7 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
     const bookingThumb = wrapper.find('.teaser-thumb').find('img')
     const bookingName = wrapper.find('.teaser-title-booking')
     const bookingDate = wrapper.find('.teaser-sub-title')
-    const bookingToken = wrapper.find('.mb-token')
+    const bookingToken = wrapper.find('.mb-token-flipped')
     const arrowIcon = wrapper.find('.teaser-arrow').find(Icon)
     const ribbon = wrapper.find('.teaser-arrow').find(Ribbon)
 
@@ -186,7 +186,7 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
     const wrapper = shallow(<BookingItem {...props} />)
 
     // then
-    const bookingTokenLink = wrapper.find('.mb-token-link-container').find(Link)
+    const bookingTokenLink = wrapper.find('.mb-token-container').find(Link)
     expect(bookingTokenLink).toHaveLength(1)
     expect(bookingTokenLink.prop('to')).toBe('/reservations/details/AE?/qrcode')
   })
@@ -200,7 +200,7 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
     const wrapper = shallow(<BookingItem {...props} />)
 
     // then
-    const bookingTokenLink = wrapper.find('.mb-token-link-container').find(Link)
+    const bookingTokenLink = wrapper.find('.mb-token-container').find(Link)
     expect(bookingTokenLink).toHaveLength(0)
   })
 
@@ -213,7 +213,7 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
     const wrapper = shallow(<BookingItem {...props} />)
 
     // then
-    const bookingTokenLink = wrapper.find('.mb-token-link-container').find(Link)
+    const bookingTokenLink = wrapper.find('.mb-token-container').find(Link)
     expect(bookingTokenLink).toHaveLength(0)
   })
 
@@ -226,7 +226,31 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
     const wrapper = shallow(<BookingItem {...props} />)
 
     // then
-    const bookingTokenLink = wrapper.find('.mb-token-link-container').find(Link)
+    const bookingTokenLink = wrapper.find('.mb-token-container').find(Link)
     expect(bookingTokenLink).toHaveLength(0)
+  })
+
+  it('should render a token container when offer is not used, finished nor cancelled', () => {
+    // given
+    props.shouldDisplayToken = true
+
+    // when
+    const wrapper = shallow(<BookingItem {...props} />)
+
+    // then
+    const tokenContainer = wrapper.find('.mb-token-container')
+    expect(tokenContainer).toHaveLength(1)
+  })
+
+  it('should not render a token container when offer is used, finished or cancelled', () => {
+    // given
+    props.shouldDisplayToken = false
+
+    // when
+    const wrapper = shallow(<BookingItem {...props} />)
+
+    // then
+    const tokenContainer = wrapper.find('.mb-token-container')
+    expect(tokenContainer).toHaveLength(0)
   })
 })

@@ -1,4 +1,105 @@
+.mb-my-booking {
+  background-color: $white;
+  border-radius: rem(4px);
+  margin-bottom: rem(16px);
+
+  .isDuo {
+    padding-top: rem(20px);
+  }
+
+  .duo-logo {
+    border-radius: rem(8px);
+    color: $primary;
+    font-size: rem(12px);
+    font-weight: 700;
+    line-height: 1.3rem;
+    margin-right: rem(4px);
+    padding-bottom: rem(1px);
+    padding-left: rem(1px);
+    padding-right: rem(2px);
+  }
+
+  .teaser-arrow-img {
+    margin: 0;
+  }
+
+  .teaser-link {
+    height: rem(93px);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .teaser-thumb {
+    width: rem(68px);
+  }
+
+  .teaser-wrapper {
+    width: 65%;
+    background-image: none;
+  }
+
+  @media (min-width: $tablet) {
+    .teaser-arrow {
+      width: 15%;
+    }
+
+    .teaser-thumb {
+      width: 20%;
+    }
+
+    .teaser-wrapper {
+      width: 65%;
+      background-image: none;
+    }
+  }
+}
+
+.mb-token-container {
+  @include dotted($primary, top);
+
+  overflow: hidden;
+  position: relative;
+
+  hr {
+    border: 1px solid $grey-border-mb;
+    display: inline-block;
+    height: rem(33px);
+    margin-top: rem(6px);
+    width: rem(1px);
+  }
+}
+
+.mb-corner {
+  border-radius: 100%;
+  height: rem(20px);
+  position: absolute;
+  width: rem(20px);
+
+  &.bottom {
+    bottom: rem(-10px);
+  }
+
+  &.left {
+    background-color: $left-mb-corner;
+    left: rem(-10px);
+  }
+
+  &.top {
+    top: rem(-10px);
+  }
+
+  &.right {
+    background-color: $right-mb-corner;
+    right: rem(-10px);
+  }
+}
+
 .mb-heading {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: rem(8px) rem(16px);
+
   .teaser-title-booking {
     margin-bottom: rem(5px);
   }
@@ -8,4 +109,57 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
   }
+}
+
+.mb-infos {
+  color: $white;
+}
+
+.mb-info-picto {
+  margin-bottom: rem(6px);
+  text-align: center;
+
+  img {
+    width: rem(44px);
+  }
+}
+
+.mb-token {
+  color: $primary;
+  font-size: rem(32px);
+  font-weight: 300;
+  text-align: center;
+  width: 50%;
+}
+
+.mb-token-contremarque-container {
+  align-items: center;
+  display: flex;
+  padding-bottom: rem(8px);
+}
+
+.mb-token-flipped {
+  color: $primary;
+  font-size: rem(32px);
+  font-weight: 300;
+  text-align: center;
+  width: 100%;
+}
+
+.mb-token-link-container {
+  text-align: center;
+  width: 50%;
+}
+
+.mb-token-link {
+  color: $primary;
+  font-weight: 700;
+  font-size: rem(18px);
+}
+
+.mb-token-title {
+  font-weight: 500;
+  font-size: rem(13px);
+  padding-top: rem(12px);
+  text-align: center;
 }

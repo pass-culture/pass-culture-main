@@ -56,7 +56,10 @@ const MyBookingsLists = ({
           <header className="mb-header">
             {'Terminées'}
           </header>
-          <BookingsList bookings={finishedAndUsedAndCancelledBookings} />
+          <BookingsList
+            bookings={finishedAndUsedAndCancelledBookings}
+            shouldDisplayToken={false}
+          />
         </section>
       )}
     </main>

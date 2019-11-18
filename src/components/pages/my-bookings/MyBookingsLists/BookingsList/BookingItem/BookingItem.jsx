@@ -23,6 +23,7 @@ const BookingItem = ({
   offer,
   ribbon,
   stock,
+  shouldDisplayToken,
   trackConsultOffer,
 }) => {
   const { id: bookingId, qrCode, quantity, token, thumbUrl } = booking
@@ -52,6 +53,8 @@ const BookingItem = ({
           />
         </div>
         <div className="teaser-wrapper">
+          <div className="mb-corner bottom left" />
+          <div className="mb-corner bottom right" />
           <div className="mb-heading">
             <div className="teaser-title-booking">
               {offerName}
@@ -61,30 +64,48 @@ const BookingItem = ({
               {humanizedDate || 'Permanent'}
             </div>
           </div>
-          {isQrCodeFeatureDisabled && <div className="mb-token">
-            {token.toLowerCase()}
-          </div>}
         </div>
         <div className="teaser-arrow">
-          {ribbon && <Ribbon
-            label={label}
-            type={type}
-                     />}
           <Icon
             className="teaser-arrow-img"
             svg="ico-next-S"
           />
         </div>
+        {ribbon && <Ribbon
+          label={label}
+          type={type}
+                   />}
       </Link>
-      {!isQrCodeFeatureDisabled && qrCode && (
-        <div className="mb-token-link-container">
-          <Icon svg="ico-qrcode" />
-          <Link
-            className="mb-token-link"
-            to={getQrCodeUrl(detailsUrl)}
-          >
-            {'Accéder à ma contremarque'}
-          </Link>
+      {shouldDisplayToken && (
+        <div className="mb-token-container">
+          <div className="mb-corner top left" />
+          <div className="mb-corner top right" />
+          <div className="mb-token-title">
+            {'Votre contremarque'}
+          </div>
+          {isQrCodeFeatureDisabled && (
+            <div className="mb-token-contremarque-container">
+              <div className="mb-token-flipped">
+                {token.toLowerCase()}
+              </div>
+            </div>
+          )}
+          {!isQrCodeFeatureDisabled && qrCode && (
+            <div className="mb-token-contremarque-container">
+              <div className="mb-token">
+                {token.toLowerCase()}
+              </div>
+              <hr />
+              <div className="mb-token-link-container">
+                <Link
+                  className="mb-token-link"
+                  to={getQrCodeUrl(detailsUrl)}
+                >
+                  {'Voir le QR code'}
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </li>
@@ -93,6 +114,7 @@ const BookingItem = ({
 
 BookingItem.defaultProps = {
   ribbon: null,
+  shouldDisplayToken: true,
 }
 
 BookingItem.propTypes = {
@@ -122,6 +144,7 @@ BookingItem.propTypes = {
     label: PropTypes.string,
     type: PropTypes.string,
   }),
+  shouldDisplayToken: PropTypes.bool,
   stock: PropTypes.shape({
     beginningDatetime: PropTypes.string,
   }).isRequired,
