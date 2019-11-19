@@ -35,7 +35,7 @@ def give_requested_recommendation_to_user(user, offer_id, mediation_id):
     return recommendation
 
 
-def create_recommendations_for_discovery(pagination_params, limit=3, user=None):
+def create_recommendations_for_discovery(user, pagination_params, limit=3):
     recommendations = []
     tuto_mediations_by_index = {}
 
@@ -48,7 +48,11 @@ def create_recommendations_for_discovery(pagination_params, limit=3, user=None):
                                                                      limit=max_tuto_index)
 
     inserted_tuto_mediations = 0
-    offers = get_offers_for_recommendations_discovery(limit=limit, pagination_params=pagination_params, user=user)
+    offers = get_offers_for_recommendations_discovery(
+        limit=limit,
+        pagination_params=pagination_params,
+        user=user
+    )
 
     for (index, offer) in enumerate(offers):
         while read_recommendations_count + index + inserted_tuto_mediations \

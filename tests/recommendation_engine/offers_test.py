@@ -23,8 +23,9 @@ class GetOffersForRecommendationsDiscoveryTest:
         offer_ids_in_adjacent_department = set([stock.offerId for stock in expected_stocks_recommended])
 
         #  when
-        recommendations = create_recommendations_for_discovery(user=user, limit=10,
-                                                               pagination_params={'page': 1, 'seed': 0.5})
+        recommendations = create_recommendations_for_discovery(limit=10,
+                                                               pagination_params={'page': 1, 'seed': 0.5},
+                                                               user=user)
 
         # then
         recommended_offer_ids = set([recommendation.offerId for recommendation in recommendations])
@@ -42,10 +43,14 @@ class GetOffersForRecommendationsDiscoveryTest:
         get_active_offers.return_value = [offer]
 
         # When
-        offers = get_offers_for_recommendations_discovery(limit=5, user=authenticated_user,
-                                                          pagination_params=pagination_params)
+        offers = get_offers_for_recommendations_discovery(limit=5,
+                                                          pagination_params=pagination_params,
+                                                          user=authenticated_user)
 
         # Then
-        get_active_offers.assert_called_once_with(departement_codes=['54'], limit=5, order_by=order_by_with_criteria,
-                                                  pagination_params=pagination_params, user=authenticated_user)
+        get_active_offers.assert_called_once_with(departement_codes=['54'],
+                                                  limit=5,
+                                                  order_by=order_by_with_criteria,
+                                                  pagination_params=pagination_params,
+                                                  user=authenticated_user)
         assert offers == [offer]

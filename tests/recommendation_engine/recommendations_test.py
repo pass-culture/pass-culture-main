@@ -3,7 +3,6 @@ from typing import List
 from unittest.mock import patch
 
 from dateutil.tz import tzutc
-from freezegun import freeze_time
 
 from models import PcObject, Offerer, Stock
 from models.db import db
@@ -18,7 +17,6 @@ from tests.test_utils import create_mediation, \
     create_offer_with_thing_product, \
     create_user, \
     create_venue, create_stock
-from utils.date import strftime
 from utils.human_ids import humanize
 
 
@@ -173,8 +171,9 @@ class CreateRecommendationsForDiscoveryTest:
         create_recommendations_for_discovery(user=user, pagination_params={'page': 1, 'seed': 0.5})
 
         # Then
-        get_offers_for_recommendations_discovery.assert_called_once_with(limit=3, user=user,
-                                                                         pagination_params={'page': 1, 'seed': 0.5})
+        get_offers_for_recommendations_discovery.assert_called_once_with(limit=3,
+                                                                         pagination_params={'page': 1, 'seed': 0.5},
+                                                                         user=user)
 
     @clean_database
     def test_returns_offer_in_all_ile_de_france_for_user_from_93(self, app):
@@ -194,7 +193,8 @@ class CreateRecommendationsForDiscoveryTest:
         offer_ids_in_adjacent_department = set([stock.offerId for stock in expected_stocks_recommended])
 
         #  when
-        recommendations = create_recommendations_for_discovery(pagination_params={'page': 1, 'seed': 0.5}, limit=10, user=user)
+        recommendations = create_recommendations_for_discovery(pagination_params={'page': 1, 'seed': 0.5}, limit=10,
+                                                               user=user)
 
         # then
         recommended_offer_ids = set([recommendation.offerId for recommendation in recommendations])
@@ -215,7 +215,9 @@ class CreateRecommendationsForDiscoveryTest:
         offer_ids_in_all_department = set([stock.offerId for stock in expected_stocks_recommended])
 
         #  when
-        recommendations = create_recommendations_for_discovery(pagination_params={'page': 1, 'seed': 0.5}, limit=10, user=user)
+        recommendations = create_recommendations_for_discovery(limit=10,
+                                                               pagination_params={'page': 1, 'seed': 0.5},
+                                                               user=user)
 
         # then
         recommended_offer_ids = set([recommendation.offerId for recommendation in recommendations])

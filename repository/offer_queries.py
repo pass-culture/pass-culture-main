@@ -3,7 +3,7 @@ from typing import List
 
 from flask_sqlalchemy import BaseQuery
 from sqlalchemy import desc, func, or_, text
-from sqlalchemy.orm import aliased
+from sqlalchemy.orm import aliased, joinedload
 from sqlalchemy.orm.query import Query
 from sqlalchemy.sql.elements import BinaryExpression
 
@@ -87,6 +87,8 @@ def get_active_offers(user, pagination_params, departement_codes=None, offer_id=
     active_offer_ids = get_active_offers_ids_query(user, departement_codes, offer_id)
     query = Offer.query.filter(Offer.id.in_(active_offer_ids))
     query = query.order_by(_round_robin_by_type_onlineness_and_criteria(order_by))
+    query = query.options(joinedload('mediations'),
+                          joinedload('product'))
 
     if limit:
         query = _get_paginated_active_offers(limit, page, query)

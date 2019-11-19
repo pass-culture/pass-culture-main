@@ -923,8 +923,10 @@ class GetActiveOffersTest:
         PcObject.save(stock_34, stock_93, stock_75)
 
         # When
-        offers = get_active_offers(user=user, pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'],
-                                   offer_id=None)
+        offers = get_active_offers(departement_codes=['00'],
+                                   offer_id=None,
+                                   pagination_params={'seed': 0.9, 'page': 1},
+                                   user=user)
 
         # Then
         assert offer_34 in offers
@@ -948,8 +950,10 @@ class GetActiveOffersTest:
         PcObject.save(stock_93, stock_activation_93)
 
         # When
-        offers = get_active_offers(user=user, pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'],
-                                   offer_id=None)
+        offers = get_active_offers(departement_codes=['00'],
+                                   offer_id=None,
+                                   pagination_params={'seed': 0.9, 'page': 1},
+                                   user=user)
 
         # Then
         assert offer_93 in offers
@@ -972,8 +976,10 @@ class GetActiveOffersTest:
         PcObject.save(stock_93, stock_activation_93)
 
         # When
-        offers = get_active_offers(user=user, pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'],
-                                   offer_id=None)
+        offers = get_active_offers(departement_codes=['00'],
+                                   offer_id=None,
+                                   pagination_params={'seed': 0.9, 'page': 1},
+                                   user=user)
 
         # Then
         assert offer_93 in offers
@@ -992,8 +998,10 @@ class GetActiveOffersTest:
         PcObject.save(stock)
 
         # When
-        offers = get_active_offers(user=user, pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'],
-                                   offer_id=None)
+        offers = get_active_offers(departement_codes=['00'],
+                                   offer_id=None,
+                                   pagination_params={'seed': 0.9, 'page': 1},
+                                   user=user)
 
         # Then
         assert len(offers) == 1
@@ -1010,8 +1018,10 @@ class GetActiveOffersTest:
         PcObject.save(stock1, stock2)
 
         # When
-        offers = get_active_offers(user=user, pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'],
-                                   offer_id=None)
+        offers = get_active_offers(departement_codes=['00'],
+                                   offer_id=None,
+                                   pagination_params={'seed': 0.9, 'page': 1},
+                                   user=user)
 
         # Then
         assert len(offers) == 1
@@ -1043,8 +1053,10 @@ class GetActiveOffersTest:
         PcObject.save(stock1, stock2, stock3)
 
         # When
-        offers = get_active_offers(user=user, pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'],
-                                   offer_id=None)
+        offers = get_active_offers(departement_codes=['00'],
+                                   offer_id=None,
+                                   pagination_params={'seed': 0.9, 'page': 1},
+                                   user=user)
 
         # Then
         assert len(offers) == 3
@@ -1080,9 +1092,10 @@ class GetActiveOffersTest:
                             for o in offers[:4]])) == 4
 
         # When
-        offers = get_active_offers(user=user, pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'],
-                                   offer_id=None)
-        print(offers)
+        offers = get_active_offers(departement_codes=['00'],
+                                   offer_id=None,
+                                   pagination_params={'seed': 0.9, 'page': 1},
+                                   user=user)
 
         # Then
         assert len(offers) == 6
@@ -1103,8 +1116,10 @@ class GetActiveOffersTest:
         PcObject.save(booking1, booking2)
 
         # When
-        offers = get_active_offers(user=user, pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'],
-                                   offer_id=None)
+        offers = get_active_offers(departement_codes=['00'],
+                                   offer_id=None,
+                                   pagination_params={'seed': 0.9, 'page': 1},
+                                   user=user)
 
         # Then
         assert len(offers) == 0
@@ -1128,8 +1143,10 @@ class GetActiveOffersTest:
         PcObject.save(stock1, stock2, stock3, stock4)
 
         # When
-        offers = get_active_offers(user=user, pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'],
-                                   offer_id=None)
+        offers = get_active_offers(departement_codes=['00'],
+                                   offer_id=None,
+                                   pagination_params={'seed': 0.9, 'page': 1},
+                                   user=user)
 
         # Then
         assert len(offers) == 4
@@ -1155,9 +1172,11 @@ class GetActiveOffersTest:
         PcObject.save(stock1, stock2)
 
         # When
-        offers = get_active_offers(user=user, pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'],
+        offers = get_active_offers(departement_codes=['00'],
                                    offer_id=None,
-                                   order_by=order_by_with_criteria)
+                                   order_by=order_by_with_criteria,
+                                   pagination_params={'seed': 0.9, 'page': 1},
+                                   user=user)
 
         # Then
         assert offers == [offer2, offer1]
@@ -1188,9 +1207,11 @@ class GetActiveOffersTest:
         PcObject.save(stock1, stock2, stock3)
 
         # When
-        offers = get_active_offers(user=user, pagination_params={'seed': 0.9, 'page': 1}, departement_codes=['00'],
+        offers = get_active_offers(departement_codes=['00'],
                                    offer_id=None,
-                                   order_by=order_by_with_criteria)
+                                   order_by=order_by_with_criteria,
+                                   pagination_params={'seed': 0.9, 'page': 1},
+                                   user=user)
 
         # Then
         assert offers == [offer2, offer3, offer1]
@@ -1222,26 +1243,30 @@ class GetActiveOffersTest:
         PcObject.save(stock1, stock2, stock3, stock4)
 
         pagination_params = {'seed': 0.5, 'page': 1}
-        offers_1 = get_active_offers(user=user,
-                                     departement_codes=['00'], offer_id=None,
+        offers_1 = get_active_offers(departement_codes=['00'],
+                                     offer_id=None,
                                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
-                                     pagination_params=pagination_params)
+                                     pagination_params=pagination_params,
+                                     user=user)
 
-        offers_2 = get_active_offers(user=user,
-                                     departement_codes=['00'], offer_id=None,
+        offers_2 = get_active_offers(departement_codes=['00'],
+                                     offer_id=None,
                                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
-                                     pagination_params=pagination_params)
+                                     pagination_params=pagination_params,
+                                     user=user)
 
-        offers_3 = get_active_offers(user=user,
-                                     departement_codes=['00'], offer_id=None,
+        offers_3 = get_active_offers(departement_codes=['00'],
+                                     offer_id=None,
                                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
-                                     pagination_params=pagination_params)
+                                     pagination_params=pagination_params,
+                                     user=user)
 
         # When
-        offers_4 = get_active_offers(user=user,
-                                     departement_codes=['00'], offer_id=None,
+        offers_4 = get_active_offers(departement_codes=['00'],
+                                     offer_id=None,
                                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
-                                     pagination_params=pagination_params)
+                                     pagination_params=pagination_params,
+                                     user=user)
 
         # Then
         assert offers_1 == offers_4
@@ -1274,16 +1299,18 @@ class GetActiveOffersTest:
 
         PcObject.save(stock1, stock2, stock3, stock4)
 
-        offers_1 = get_active_offers(user=user,
-                                     departement_codes=['00'], offer_id=None,
+        offers_1 = get_active_offers(departement_codes=['00'],
+                                     offer_id=None,
                                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
-                                     pagination_params={'seed': 0.9, 'page': 1})
+                                     pagination_params={'seed': 0.9, 'page': 1},
+                                     user=user)
 
         # When
-        offers_2 = get_active_offers(user=user,
-                                     departement_codes=['00'], offer_id=None,
+        offers_2 = get_active_offers(departement_codes=['00'],
+                                     offer_id=None,
                                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
-                                     pagination_params={'seed': -0.8, 'page': 1})
+                                     pagination_params={'seed': -0.8, 'page': 1},
+                                     user=user)
 
         # Then
         assert offers_1 != offers_2
@@ -1301,10 +1328,11 @@ class GetActiveOffersTest:
         PcObject.save(booking)
 
         # When
-        offers = get_active_offers(user=user,
+        offers = get_active_offers(departement_codes=['00'],
+                                   offer_id=None,
+                                   order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
                                    pagination_params={'seed': 0.9, 'page': 1},
-                                   departement_codes=['00'], offer_id=None,
-                                   order_by=_order_by_occurs_soon_or_is_thing_then_randomize)
+                                   user=user)
 
         # Then
         assert offers == []
@@ -1324,10 +1352,11 @@ class GetActiveOffersTest:
         PcObject.save(favorite)
 
         # When
-        offers = get_active_offers(user=user,
+        offers = get_active_offers(departement_codes=['00'],
                                    pagination_params={'seed': 0.9, 'page': 1},
-                                   departement_codes=['00'], offer_id=None,
-                                   order_by=_order_by_occurs_soon_or_is_thing_then_randomize)
+                                   offer_id=None,
+                                   order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
+                                   user=user)
 
         # Then
         assert offers == []
@@ -1353,9 +1382,18 @@ class GetActiveOffersTest:
         PcObject.save(stock1, stock2, stock3, stock4)
 
         # When
-        offers1 = get_active_offers(user=user, departement_codes=['00'], limit=2, pagination_params={'page': 1, 'seed': 1})
-        offers2 = get_active_offers(user=user, departement_codes=['00'], limit=2, pagination_params={'page': 2, 'seed': 1})
-        offers3 = get_active_offers(user=user, departement_codes=['00'], limit=2, pagination_params={'page': 3, 'seed': 1})
+        offers1 = get_active_offers(departement_codes=['00'],
+                                    limit=2,
+                                    pagination_params={'page': 1, 'seed': 1},
+                                    user=user)
+        offers2 = get_active_offers(departement_codes=['00'],
+                                    limit=2,
+                                    pagination_params={'page': 2, 'seed': 1},
+                                    user=user)
+        offers3 = get_active_offers(departement_codes=['00'],
+                                    limit=2,
+                                    pagination_params={'page': 3, 'seed': 1},
+                                    user=user)
 
         # Then
         assert len(offers1) == 2
