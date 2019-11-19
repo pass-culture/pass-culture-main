@@ -270,7 +270,6 @@ def create_stock(price=10, available=10, booking_limit_datetime=None, offer=None
     stock.available = available
     stock.bookingLimitDatetime = booking_limit_datetime
     stock.offer = offer
-    stock.offerId = offer.id
     stock.beginningDatetime = beginning_datetime
     stock.endDatetime = end_datetime
     stock.isSoftDeleted = is_soft_deleted
@@ -402,7 +401,6 @@ def create_offer_with_thing_product(venue, product=None, date_created=datetime.u
         offer.isNational = is_national
         offer.description = description
     offer.venue = venue
-    offer.venueId = venue.id
     offer.dateCreated = date_created
     offer.bookingEmail = booking_email
     offer.isActive = is_active

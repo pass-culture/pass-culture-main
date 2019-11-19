@@ -7,7 +7,6 @@ import models
 from models.db import db, Model
 from utils.date import read_json_date
 from utils.human_ids import humanize
-from utils.logger import logger
 
 
 def insert_chunk(chunk_to_insert: Dict):
@@ -16,14 +15,16 @@ def insert_chunk(chunk_to_insert: Dict):
 
 
 def update_chunk(chunk_to_update: Dict):
-    for chunk_key, chunk_object in chunk_to_update.items():
-        statement = _build_statement_for_update(chunk_key,
-                                                chunk_object)
-        try:
-            connection = db.engine.connect()
-            connection.execute(statement)
-        except ValueError as e:
-            logger.error('ERROR during object update: ' + e.__class__.__name__ + ' ' + str(e))
+    models_in_chunk = set(key.split('|')[1] for key in chunk_to_update.keys())
+
+    for model_in_chunk in models_in_chunk:
+        matching_tuples_in_chunk = list(
+            filter(lambda item: item[0].split('|')[1] == model_in_chunk, chunk_to_update.items()))
+        matching_pc_object_in_chunk = list(
+            _build_dict_to_update(pc_object[1]) for pc_object in matching_tuples_in_chunk)
+        model_to_update = getattr(models, model_in_chunk)
+        db.session.bulk_update_mappings(model_to_update, matching_pc_object_in_chunk)
+    db.session.commit()
 
 
 def get_existing_object(model_type: Model, id_at_providers: str) -> Optional[Dict]:
@@ -53,16 +54,6 @@ def _dict_to_object(object_dict: Dict, model_object: Model) -> Model:
     pc_obj = model_object(from_dict=pc_object)
     pc_obj.id = pc_object['id']
     return pc_obj
-
-
-def _build_statement_for_update(chunk_key: str, chunk_object: Model):
-    model_name = chunk_key.split('|')[1]
-    model_object = getattr(models, model_name)
-    dict_to_update = _build_dict_to_update(chunk_object)
-    statement = model_object.__table__.update(). \
-        where(model_object.id == dict_to_update['id']). \
-        values(dict_to_update)
-    return statement
 
 
 def _build_dict_to_update(object_to_update: Model) -> Dict:
