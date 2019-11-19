@@ -949,7 +949,6 @@ class GetOffersAvailableOnSearchCountTest:
     def test_returns_0_when_only_offer_with_unvalidated_venue(self, app):
         # Given
         offerer = create_offerer()
-
         venue = create_venue(offerer, validation_token='AZERTY')
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer)
@@ -965,7 +964,6 @@ class GetOffersAvailableOnSearchCountTest:
     def test_returns_0_when_only_offer_with_no_stocks(self, app):
         # Given
         offerer = create_offerer()
-
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         PcObject.save(offer)
@@ -980,7 +978,6 @@ class GetOffersAvailableOnSearchCountTest:
     def test_returns_2_when_two_offers_recommendable_for_search(self, app):
         # Given
         offerer = create_offerer()
-
         venue = create_venue(offerer)
         offer1 = create_offer_with_thing_product(venue)
         offer2 = create_offer_with_thing_product(venue)

@@ -48,7 +48,7 @@ def create_recommendations_for_discovery(pagination_params, limit=3, user=None):
                                                                      limit=max_tuto_index)
 
     inserted_tuto_mediations = 0
-    offers = get_offers_for_recommendations_discovery(limit=limit, user=user, pagination_params=pagination_params)
+    offers = get_offers_for_recommendations_discovery(limit=limit, pagination_params=pagination_params, user=user)
 
     for (index, offer) in enumerate(offers):
         while read_recommendations_count + index + inserted_tuto_mediations \

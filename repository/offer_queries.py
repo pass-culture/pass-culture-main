@@ -3,7 +3,7 @@ from typing import List
 
 from flask_sqlalchemy import BaseQuery
 from sqlalchemy import desc, func, or_, text
-from sqlalchemy.orm import aliased, joinedload
+from sqlalchemy.orm import aliased
 from sqlalchemy.orm.query import Query
 from sqlalchemy.sql.elements import BinaryExpression
 
@@ -77,8 +77,8 @@ def _order_by_occurs_soon_or_is_thing_then_randomize():
     return [desc(_build_occurs_soon_or_is_thing_predicate()), func.random()]
 
 
-def get_active_offers(pagination_params, departement_codes=None, offer_id=None, limit=None,
-                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize, user=None):
+def get_active_offers(user, pagination_params, departement_codes=None, offer_id=None, limit=None,
+                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize):
     seed_number = pagination_params.get('seed')
     page = pagination_params.get('page')
     sql = text(f'SET SEED TO {seed_number}')
@@ -102,7 +102,7 @@ def _get_paginated_active_offers(limit, page, query):
     return query
 
 
-def get_active_offers_ids_query(user=None, departement_codes=['00'], offer_id=None):
+def get_active_offers_ids_query(user, departement_codes=['00'], offer_id=None):
     active_offers_query = Offer.query.distinct(Offer.id)
 
     if offer_id is not None:
