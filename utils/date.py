@@ -64,7 +64,7 @@ def format_duration(dr):
 
 def get_dept_timezone(departementCode):
     assert isinstance(departementCode, str)
-    if departementCode == '973' or departementCode == '97':
+    if departementCode in ['973', '97']:
         tz_name = 'America/Cayenne'
     else:
         tz_name = 'Europe/Paris'
