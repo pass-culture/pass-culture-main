@@ -3,6 +3,7 @@ import selectNextRecommendation from '../selectors/selectNextRecommendation'
 import selectPreviousRecommendation from '../selectors/selectPreviousRecommendation'
 
 export const MINIMUM_DELAY_BEFORE_RELOAD_RECOMMENDATION_3_HOURS = 3 * 60 * 60 * 1000
+export const MINIMUM_DELAY_BEFORE_UPDATING_SEED_3_HOURS = 3 * 60 * 60 * 1000
 
 export const isDiscoveryStartupUrl = match => {
   const { params, url } = match

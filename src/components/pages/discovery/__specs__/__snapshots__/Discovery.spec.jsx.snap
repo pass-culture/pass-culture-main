@@ -42,8 +42,10 @@ ShallowWrapper {
     resetRecommendationsAndBookings={[MockFunction]}
     saveLastRecommendationsRequestTimestamp={[MockFunction]}
     seed={0.5}
+    seedLastRequestTimestamp={1574236357670}
     shouldReloadRecommendations={false}
     tutorials={Array []}
+    updateSeedAndLastRequestTimestamp={[MockFunction]}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],

@@ -18,7 +18,8 @@ describe('src | components | layout | Menu | SignoutButton | SignoutButtonContai
         // given
         const initialPagination = {
           page: 4,
-          seed: 0.1
+          seed: 0.1,
+          seedLastRequestTimestamp: 11111111112,
         }
         const { store } = configureStore({
           data: {
@@ -66,6 +67,7 @@ describe('src | components | layout | Menu | SignoutButton | SignoutButtonContai
         expect(history.location.pathname).toBe('/connexion')
         expect(pagination.page).toBe(1)
         expect(pagination.seed).not.toStrictEqual(initialPagination.seed)
+        expect(pagination.seedLastRequestTimestamp).not.toStrictEqual(initialPagination.seedLastRequestTimestamp)
       })
     })
   })

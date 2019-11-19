@@ -13,8 +13,12 @@ import { saveLastRecommendationsRequestTimestamp } from '../../../reducers/data'
 import { recommendationNormalizer } from '../../../utils/normalizers'
 import { selectRecommendations } from '../../../selectors/data/recommendationsSelectors'
 import { selectReadRecommendations } from '../../../selectors/data/readRecommendationsSelectors'
-import { selectPage, selectSeed } from '../../../selectors/pagination/paginationSelector'
-import { updatePage } from '../../../reducers/pagination'
+import {
+  selectPage,
+  selectSeed,
+  selectSeedLastRequestTimestamp
+} from '../../../selectors/pagination/paginationSelector'
+import { updatePage, updateSeed, updateSeedLastRequestTimestamp } from '../../../reducers/pagination'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
@@ -30,6 +34,7 @@ export const mapStateToProps = (state, ownProps) => {
   const shouldReloadRecommendations =
     checkIfShouldReloadRecommendationsBecauseOfLongTime(state) ||
     hasNoRecommendations
+  const seedLastRequestTimestamp = selectSeedLastRequestTimestamp(state)
 
   return {
     currentRecommendation,
@@ -37,6 +42,7 @@ export const mapStateToProps = (state, ownProps) => {
     readRecommendations,
     recommendations,
     seed,
+    seedLastRequestTimestamp,
     shouldReloadRecommendations,
     tutorials,
   }
@@ -113,6 +119,17 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
   saveLastRecommendationsRequestTimestamp: () => {
     dispatch(saveLastRecommendationsRequestTimestamp())
   },
+  updatePageAndSeedAndLastRequestTimestamp: () => {
+    dispatch(
+      updateSeedLastRequestTimestamp(Date.now())
+    )
+    dispatch(
+      updateSeed(Math.random())
+    )
+    dispatch(
+      updatePage(1)
+    )
+  }
 })
 
 export default compose(

@@ -3,7 +3,7 @@ import { requestData, reinitializeData } from 'redux-thunk-data'
 
 import SignoutButton from './SignoutButton'
 import { toggleMainMenu } from '../../../../reducers/menu'
-import { updatePage, updateSeed } from '../../../../reducers/pagination'
+import { updatePage, updateSeed, updateSeedLastRequestTimestamp } from '../../../../reducers/pagination'
 
 export const mapDispatchToProps = dispatch => ({
   onSignOutClick: ({ history, readRecommendations }) => () => {
@@ -24,6 +24,9 @@ export const mapDispatchToProps = dispatch => ({
       )
       dispatch(
         updateSeed(Math.random())
+      )
+      dispatch(
+        updateSeedLastRequestTimestamp(Date.now())
       )
     }
 

@@ -9,6 +9,7 @@ import AbsoluteFooterContainer from '../../layout/AbsoluteFooter/AbsoluteFooterC
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import isDetailsView from '../../../helpers/isDetailsView'
 import isCancelView from '../../../helpers/isCancelView'
+import { MINIMUM_DELAY_BEFORE_UPDATING_SEED_3_HOURS } from './utils/utils'
 
 class Discovery extends PureComponent {
   constructor(props) {
@@ -38,11 +39,21 @@ class Discovery extends PureComponent {
   }
 
   componentDidUpdate(prevProps) {
-    const { location, recommendations, redirectToFirstRecommendationIfNeeded } = this.props
+    const {
+      location,
+      recommendations,
+      redirectToFirstRecommendationIfNeeded,
+      seedLastRequestTimestamp,
+      updateSeedAndLastRequestTimestamp
+    } = this.props
     const { location: prevLocation } = prevProps
 
     if (prevLocation.pathname !== location.pathname && location.pathname === '/decouverte') {
       redirectToFirstRecommendationIfNeeded(recommendations)
+    }
+
+    if (Date.now() > seedLastRequestTimestamp + MINIMUM_DELAY_BEFORE_UPDATING_SEED_3_HOURS) {
+      updateSeedAndLastRequestTimestamp()
     }
   }
 
@@ -198,8 +209,10 @@ Discovery.propTypes = {
   resetReadRecommendations: PropTypes.func.isRequired,
   saveLastRecommendationsRequestTimestamp: PropTypes.func.isRequired,
   seed: PropTypes.number.isRequired,
+  seedLastRequestTimestamp: PropTypes.number.isRequired,
   shouldReloadRecommendations: PropTypes.bool.isRequired,
   tutorials: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  updateSeedAndLastRequestTimestamp: PropTypes.func.isRequired,
 }
 
 export default Discovery

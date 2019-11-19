@@ -18,6 +18,8 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
   let dispatch
   let replace
   let props
+  const page = 1
+  const seed = 0.5
 
   beforeEach(() => {
     dispatch = jest.fn()
@@ -32,11 +34,9 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
       match: {
         params: {},
       },
-      page: 1,
       query: {
         parse: () => ({}),
       },
-      seed: 0.5
     }
   })
 
@@ -49,7 +49,8 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         },
         pagination: {
           page: 1,
-          seed: 0.5
+          seed: 0.5,
+          seedLastRequestTimestamp: 11111111112
         }
       }
 
@@ -82,6 +83,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         readRecommendations: undefined,
         recommendations: [],
         seed: 0.5,
+        seedLastRequestTimestamp: 11111111112,
         shouldReloadRecommendations: true,
         tutorials: [],
       })
@@ -106,10 +108,10 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
           handleRequestSuccess,
           handleRequestFail,
           currentRecommendation,
-          props.page,
+          page,
           recommendations,
           readRecommendations,
-          props.seed,
+          seed,
           shouldReloadRecommendations
         )
 
@@ -138,7 +140,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         // given
         const handleRequestSuccess = jest.fn()
         const handleRequestFail = jest.fn()
-        const currentRecommendation = { mediationId: 'tuto'}
+        const currentRecommendation = { mediationId: 'tuto' }
         const recommendations = []
         const readRecommendations = null
         const shouldReloadRecommendations = false
@@ -150,10 +152,10 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
           handleRequestSuccess,
           handleRequestFail,
           currentRecommendation,
-          props.page,
+          page,
           recommendations,
           readRecommendations,
-          props.seed,
+          seed,
           shouldReloadRecommendations
         )
 
@@ -182,7 +184,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         // given
         const handleRequestSuccess = jest.fn()
         const handleRequestFail = jest.fn()
-        const currentRecommendation = { mediationId: 'fin'}
+        const currentRecommendation = { mediationId: 'fin' }
         const recommendations = []
         const readRecommendations = null
         const shouldReloadRecommendations = false
@@ -194,10 +196,10 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
           handleRequestSuccess,
           handleRequestFail,
           currentRecommendation,
-          props.page,
+          page,
           recommendations,
           readRecommendations,
-          props.seed,
+          seed,
           shouldReloadRecommendations
         )
 
@@ -226,7 +228,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         // given
         const handleRequestSuccess = jest.fn()
         const handleRequestFail = jest.fn()
-        const currentRecommendation = { mediationId: 'vide'}
+        const currentRecommendation = { mediationId: 'vide' }
         const recommendations = []
         const readRecommendations = null
         const shouldReloadRecommendations = false
@@ -238,10 +240,10 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
           handleRequestSuccess,
           handleRequestFail,
           currentRecommendation,
-          props.page,
+          page,
           recommendations,
           readRecommendations,
-          props.seed,
+          seed,
           shouldReloadRecommendations
         )
 
@@ -275,7 +277,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
           index: 1,
           offerId: 'ABC2'
         }
-        const recommendations = [{id: 'AE3', index : 3}]
+        const recommendations = [{ id: 'AE3', index: 3 }]
         const readRecommendations = null
         const shouldReloadRecommendations = false
         const functions = mapDispatchToProps(dispatch, props)
@@ -286,10 +288,10 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
           handleRequestSuccess,
           handleRequestFail,
           currentRecommendation,
-          props.page,
+          page,
           recommendations,
           readRecommendations,
-          props.seed,
+          seed,
           shouldReloadRecommendations
         )
 
@@ -464,6 +466,27 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         // then
         expect(dispatch).toHaveBeenCalledWith({
           type: 'SAVE_RECOMMENDATIONS_REQUEST_TIMESTAMP',
+        })
+      })
+    })
+
+    describe('when mapping updatePageAndSeedAndLastRequestTimestamp', () => {
+      it('should save update last seed request timestamp', () => {
+        // when
+        mapDispatchToProps(dispatch, props).updatePageAndSeedAndLastRequestTimestamp()
+
+        // then
+        expect(dispatch.mock.calls[0][0]).toStrictEqual({
+          seedLastRequestTimestamp: expect.any(Number),
+          type: 'UPDATE_SEED_LAST_REQUEST_TIMESTAMP',
+        })
+        expect(dispatch.mock.calls[1][0]).toStrictEqual({
+          seed: expect.any(Number),
+          type: 'UPDATE_SEED',
+        })
+        expect(dispatch.mock.calls[2][0]).toStrictEqual({
+          page: 1,
+          type: 'UPDATE_PAGE',
         })
       })
     })

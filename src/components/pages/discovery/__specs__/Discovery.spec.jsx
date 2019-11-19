@@ -28,8 +28,10 @@ describe('src | components | pages | discovery | Discovery', () => {
       resetRecommendationsAndBookings: jest.fn(),
       saveLastRecommendationsRequestTimestamp: jest.fn(),
       seed: 0.5,
+      seedLastRequestTimestamp: 1574236357670,
       shouldReloadRecommendations: false,
       tutorials: [],
+      updateSeedAndLastRequestTimestamp: jest.fn(),
     }
   })
 
@@ -226,6 +228,42 @@ describe('src | components | pages | discovery | Discovery', () => {
           isLoading: true
         })
       })
+    })
+  })
+
+  describe('when update', () => {
+    it('should update seed and seed last request timestamp when date is posterior to limit', () => {
+      // given
+      jest
+        .spyOn(global.Date, 'now')
+        .mockImplementationOnce(() =>
+          new Date('2019-11-20T13:00:00.000Z').valueOf()
+        )
+
+      // when
+      const wrapper = shallow(<Discovery {...props} />)
+      props.seed = 1
+      wrapper.setProps(props)
+
+      // then
+      expect(props.updateSeedAndLastRequestTimestamp).toHaveBeenCalledWith()
+    })
+
+    it('should not update seed and seed last request timestamp when date is anterior to limit', () => {
+      // given
+      jest
+        .spyOn(global.Date, 'now')
+        .mockImplementationOnce(() =>
+          new Date('2019-11-20T00:00:00.000Z').valueOf()
+        )
+
+      // when
+      const wrapper = shallow(<Discovery {...props} />)
+      props.seed = 1
+      wrapper.setProps(props)
+
+      // then
+      expect(props.updateSeedAndLastRequestTimestamp).not.toHaveBeenCalledWith()
     })
   })
 })
