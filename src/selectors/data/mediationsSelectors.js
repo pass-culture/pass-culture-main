@@ -1,4 +1,5 @@
 import createCachedSelector from 're-reselect'
+
 import { selectBookingById } from '../data/bookingsSelectors'
 import { selectFavoriteById } from './favoritesSelectors'
 

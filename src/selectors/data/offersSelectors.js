@@ -1,7 +1,7 @@
 import createCachedSelector from 're-reselect'
 
-import { selectStockById } from './stocksSelectors'
 import { selectBookingById } from './bookingsSelectors'
+import { selectStockById } from './stocksSelectors'
 
 const selectOffers = state => state.data.offers
 

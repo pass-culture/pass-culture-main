@@ -12,6 +12,7 @@ describe('selectThumbUrlByRouterMatch', () => {
   const bookingThumbUrl = 'http://foo/mediations/AE'
   const productThumbUrl = 'http://foo/products/AE'
   const mediationThumbUrl = 'http://foo/mediations/AE'
+
   beforeEach(() => {
     bookingId = 'AB'
     mediationId = 'AE'

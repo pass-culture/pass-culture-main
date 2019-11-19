@@ -2,10 +2,10 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import Finishable from './Finishable'
-import { selectBookingByRouterMatch } from '../../../selectors/data/bookingsSelectors'
 import getIsBooked from '../../../helpers/getIsBooked'
-import { selectIsNotBookableByRouterMatch } from '../../../selectors/data/bookablesSelectors'
+import { selectBookingByRouterMatch } from '../../../selectors/data/bookingsSelectors'
+import { selectIsNotBookableByRouterMatch } from '../../../selectors/isNotBookableSelector'
+import Finishable from './Finishable'
 
 const mapStateToProps = (state, { match }) => {
   const booking = selectBookingByRouterMatch(state, match)

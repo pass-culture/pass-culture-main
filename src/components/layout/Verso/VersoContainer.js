@@ -6,7 +6,7 @@ import Verso from './Verso'
 import getHeaderColor from '../../../utils/colors'
 import { selectOfferByRouterMatch } from '../../../selectors/data/offersSelectors'
 import { ROOT_PATH } from '../../../utils/config'
-import { selectMediationByRouterMatch } from '../../../selectors/data/mediationSelectors'
+import { selectMediationByRouterMatch } from '../../../selectors/data/mediationsSelectors'
 
 const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`
 

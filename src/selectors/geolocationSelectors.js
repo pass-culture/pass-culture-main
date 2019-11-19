@@ -1,6 +1,7 @@
 import createCachedSelector from 're-reselect'
-import { selectOfferById, selectOfferByRouterMatch } from './data/offersSelectors'
+
 import { getHumanizeRelativeDistance } from '../utils/geolocation'
+import { selectOfferById, selectOfferByRouterMatch } from './data/offersSelectors'
 
 export const selectDistanceByOfferId = createCachedSelector(
   selectOfferById,

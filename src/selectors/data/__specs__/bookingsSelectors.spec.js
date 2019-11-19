@@ -788,4 +788,3 @@ describe('selectBookingByRouterMatch', () => {
     expect(result).toStrictEqual({ id: 'AE', stockId: 'CG' })
   })
 })
-

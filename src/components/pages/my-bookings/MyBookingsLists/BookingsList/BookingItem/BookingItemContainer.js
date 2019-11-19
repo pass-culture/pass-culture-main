@@ -2,15 +2,14 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import withTracking from '../../../../../hocs/withTracking'
-import BookingItem from './BookingItem'
-
-import { selectRecommendationById } from '../../../../../../selectors/data/recommendationsSelectors'
-import getHumanizeRelativeDate from '../../../../../../utils/date/getHumanizeRelativeDate'
-import selectIsFeatureDisabled from '../../../../../router/selectors/selectIsFeatureDisabled'
+import { selectMediationById } from '../../../../../../selectors/data/mediationsSelectors'
 import { selectOfferById } from '../../../../../../selectors/data/offersSelectors'
-import { selectMediationById } from '../../../../../../selectors/data/mediationSelectors'
+import { selectRecommendationById } from '../../../../../../selectors/data/recommendationsSelectors'
 import { selectStockById } from '../../../../../../selectors/data/stocksSelectors'
+import getHumanizeRelativeDate from '../../../../../../utils/date/getHumanizeRelativeDate'
+import withTracking from '../../../../../hocs/withTracking'
+import selectIsFeatureDisabled from '../../../../../router/selectors/selectIsFeatureDisabled'
+import BookingItem from './BookingItem'
 
 export const ribbonLabelAndType = (
   isUsed,

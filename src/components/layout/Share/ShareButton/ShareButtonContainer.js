@@ -8,7 +8,7 @@ import ShareButton from './ShareButton'
 import getShareURL from '../../../../helpers/getShareURL'
 import { selectOfferByRouterMatch } from '../../../../selectors/data/offersSelectors'
 import { openSharePopin, closeSharePopin } from '../../../../reducers/share'
-import { selectMediationByRouterMatch } from '../../../../selectors/data/mediationSelectors'
+import { selectMediationByRouterMatch } from '../../../../selectors/data/mediationsSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps

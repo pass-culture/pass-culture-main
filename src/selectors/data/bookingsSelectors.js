@@ -1,10 +1,19 @@
-import createCachedSelector from 're-reselect'
+import get from 'lodash.get'
 import moment from 'moment'
+import createCachedSelector from 're-reselect'
 import { createSelector } from 'reselect'
 
-import { selectStockById, selectStocksByOfferId } from './stocksSelectors'
-import { selectOfferById } from './offersSelectors'
+import filterAvailableStocks from '../../helpers/filterAvailableStocks'
+import { markAsCancelled } from '../../helpers/markAsCancelled'
+import { markAsBooked } from '../../helpers/markBookingsAsBooked'
+import { addModifierString } from '../../utils/addModifierString'
 import { dateStringPlusTimeZone } from '../../utils/date/date'
+import { humanizeBeginningDateTime } from '../../utils/date/humanizeBeginningDateTime'
+import { sortByDateChronologically } from '../../utils/date/sortByDateChronologically'
+import { pipe } from '../../utils/functionnals'
+import { getTimezone, setTimezoneOnBeginningDatetime } from '../../utils/timezone'
+import { selectOfferById } from './offersSelectors'
+import { selectStockById, selectStocksByOfferId } from './stocksSelectors'
 
 const SLIDING_DAYS = 8
 
@@ -183,4 +192,31 @@ export const selectBookingByRouterMatch = createCachedSelector(
   const { params } = match
   const { bookingId, mediationId, offerId } = params
   return `${bookingId || ' '}${mediationId || ' '}${offerId || ' '}`
+})
+
+export const selectBookables = createCachedSelector(
+  state => state.data.bookings,
+  state => state.data.stocks,
+  (state, offer) => offer,
+  (bookings, allStocks, offer) => {
+    let { venue } = offer || {}
+    const stocks = selectStocksByOfferId({ data: { stocks: allStocks } }, get(offer, 'id'))
+    const { departementCode } = venue || {}
+    const tz = getTimezone(departementCode)
+
+    if (!stocks || !stocks.length) return []
+
+    return pipe(
+      filterAvailableStocks,
+      setTimezoneOnBeginningDatetime(tz),
+      humanizeBeginningDateTime(),
+      markAsBooked(bookings),
+      markAsCancelled(bookings),
+      addModifierString(),
+      sortByDateChronologically()
+    )(stocks)
+  }
+)((state, offer) => {
+  const key = (offer && offer.id) || ' '
+  return key
 })

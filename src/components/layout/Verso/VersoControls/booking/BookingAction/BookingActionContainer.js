@@ -2,11 +2,11 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import BookingAction from './BookingAction'
 import getPriceRangeFromStocks from '../../../../../../helpers/getPriceRangeFromStocks'
 import { selectOfferByRouterMatch } from '../../../../../../selectors/data/offersSelectors'
 import { selectStocksByOfferId } from '../../../../../../selectors/data/stocksSelectors'
-import { selectIsNotBookableByRouterMatch } from '../../../../../../selectors/data/bookablesSelectors'
+import { selectIsNotBookableByRouterMatch } from '../../../../../../selectors/isNotBookableSelector'
+import BookingAction from './BookingAction'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match, location } = ownProps

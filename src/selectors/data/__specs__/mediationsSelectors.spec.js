@@ -1,4 +1,4 @@
-import { selectMediationById, selectMediationByRouterMatch } from '../mediationSelectors'
+import { selectMediationById, selectMediationByRouterMatch } from '../mediationsSelectors'
 
 describe('selectMediationById', () => {
   it('should return undefined when no match', () => {

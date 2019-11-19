@@ -1,3 +1,5 @@
+import moment from 'moment-timezone'
+
 export function getTimezone(departementCode) {
   switch (departementCode) {
     case '97':
@@ -8,5 +10,15 @@ export function getTimezone(departementCode) {
       return 'Europe/Paris'
   }
 }
+
+export const setTimezoneOnBeginningDatetime = timezone => stocks =>
+  stocks.map(stock => {
+    let extend = {}
+    if (stock.beginningDatetime) {
+      const dateWithTimezone = moment(stock.beginningDatetime).tz(timezone)
+      extend = { beginningDatetime: dateWithTimezone }
+    }
+    return Object.assign({}, stock, extend)
+  })
 
 export default getTimezone

@@ -8,7 +8,7 @@ import { selectOfferByRouterMatch } from '../../../../../selectors/data/offersSe
 import selectIsFeatureDisabled from '../../../../router/selectors/selectIsFeatureDisabled'
 import { favoriteNormalizer } from '../../../../../utils/normalizers'
 import { selectFavoriteByOfferId } from '../../../../../selectors/data/favoritesSelectors'
-import { selectMediationByRouterMatch } from '../../../../../selectors/data/mediationSelectors'
+import { selectMediationByRouterMatch } from '../../../../../selectors/data/mediationsSelectors'
 
 const API_PATH_TO_FAVORITES_ENDPOINT = '/favorites'
 

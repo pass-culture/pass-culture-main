@@ -6,7 +6,7 @@ import Recto from './Recto'
 import {
   selectMediationById,
   selectMediationByRouterMatch,
-} from '../../../selectors/data/mediationSelectors'
+} from '../../../selectors/data/mediationsSelectors'
 import { selectThumbUrlByRouterMatch } from '../../../selectors/data/thumbUrlSelector'
 
 const mapStateToProps = (state, ownProps) => {

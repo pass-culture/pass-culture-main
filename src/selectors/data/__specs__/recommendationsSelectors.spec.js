@@ -1,8 +1,31 @@
 import { DEFAULT_MAX_DISTANCE } from '../../../components/pages/search/helpers'
 import state from '../../../mocks/state'
-import { selectRecommendationById, selectRecommendationsBySearchQuery } from '../recommendationsSelectors'
+import {
+  selectRecommendationById,
+  selectRecommendationByOfferIdAndMediationId,
+  selectRecommendationByRouterMatch,
+  selectRecommendations,
+  selectRecommendationsBySearchQuery,
+} from '../recommendationsSelectors'
 
 const types = state.data.types
+
+describe('selectRecommendations', () => {
+  it('should return recommendations', () => {
+    // given
+    const state = {
+      data: {
+        recommendations: [{ id: 'AEY1' }],
+      },
+    }
+
+    // when
+    const result = selectRecommendations(state)
+
+    // then
+    expect(result).toStrictEqual([{ id: 'AEY1' }])
+  })
+})
 
 describe('selectRecommendationById', () => {
   it('should return undefined when no match', () => {
@@ -99,13 +122,13 @@ describe('selectRecommendationsBySearchQuery', () => {
         id: 'AE',
         productOrTutoIdentifier: 'product_GU',
         search:
-          'keywords_string=narval&page=1&type_values=[\'EventType.MUSIQUE\', \'ThingType.MUSIQUE_ABO\', \'ThingType.MUSIQUE\']',
+          "keywords_string=narval&page=1&type_values=['EventType.MUSIQUE', 'ThingType.MUSIQUE_ABO', 'ThingType.MUSIQUE']",
       },
       {
         id: 'BF',
         productOrTutoIdentifier: 'product_GV',
         search:
-          'keywords_string=narval&page=12&type_values=[\'EventType.MUSIQUE\', \'ThingType.MUSIQUE_ABO\', \'ThingType.MUSIQUE\']',
+          "keywords_string=narval&page=12&type_values=['EventType.MUSIQUE', 'ThingType.MUSIQUE_ABO', 'ThingType.MUSIQUE']",
       },
     ]
     const state = {
@@ -132,19 +155,19 @@ describe('selectRecommendationsBySearchQuery', () => {
         id: 'AE',
         productOrTutoIdentifier: 'product_GU',
         search:
-          'page=2&type_values=[\'ThingType.LIVRE_EDITION\', \'ThingType.LIVRE_AUDIO\', \'ThingType.PRESSE_ABO\']',
+          "page=2&type_values=['ThingType.LIVRE_EDITION', 'ThingType.LIVRE_AUDIO', 'ThingType.PRESSE_ABO']",
       },
       {
         id: 'BF',
         productOrTutoIdentifier: 'product_GV',
         search:
-          'page=251&type_values=[\'ThingType.LIVRE_EDITION\', \'ThingType.LIVRE_AUDIO\', \'ThingType.PRESSE_ABO\']',
+          "page=251&type_values=['ThingType.LIVRE_EDITION', 'ThingType.LIVRE_AUDIO', 'ThingType.PRESSE_ABO']",
       },
       {
         id: 'BF',
         productOrTutoIdentifier: 'product_GT',
         search:
-          'type_values=[\'ThingType.LIVRE_EDITION\', \'ThingType.LIVRE_AUDIO\', \'ThingType.PRESSE_ABO\']',
+          "type_values=['ThingType.LIVRE_EDITION', 'ThingType.LIVRE_AUDIO', 'ThingType.PRESSE_ABO']",
       },
     ]
 
@@ -173,13 +196,13 @@ describe('selectRecommendationsBySearchQuery', () => {
         id: 'AE',
         productOrTutoIdentifier: 'product_GU',
         search:
-          'latitude=48.86&longitude=2.34&max_distance=50.0&page=1&type_values=[\'EventType.SPECTACLE_VIVANT\', \'ThingType.SPECTACLE_VIVANT_ABO\']',
+          "latitude=48.86&longitude=2.34&max_distance=50.0&page=1&type_values=['EventType.SPECTACLE_VIVANT', 'ThingType.SPECTACLE_VIVANT_ABO']",
       },
       {
         id: 'BF',
         productOrTutoIdentifier: 'product_GV',
         search:
-          'latitude=48.86&longitude=2.34&max_distance=50.0&type_values=[\'EventType.SPECTACLE_VIVANT\', \'ThingType.SPECTACLE_VIVANT_ABO\']',
+          "latitude=48.86&longitude=2.34&max_distance=50.0&type_values=['EventType.SPECTACLE_VIVANT', 'ThingType.SPECTACLE_VIVANT_ABO']",
       },
     ]
 
@@ -208,12 +231,12 @@ describe('selectRecommendationsBySearchQuery', () => {
         id: 'AE',
         productOrTutoIdentifier: 'product_GU',
         search:
-          'page=1&type_values=[\'EventType.SPECTACLE_VIVANT\', \'ThingType.SPECTACLE_VIVANT_ABO\']',
+          "page=1&type_values=['EventType.SPECTACLE_VIVANT', 'ThingType.SPECTACLE_VIVANT_ABO']",
       },
       {
         id: 'BF',
         productOrTutoIdentifier: 'product_GV',
-        search: 'type_values=[\'EventType.SPECTACLE_VIVANT\', \'ThingType.SPECTACLE_VIVANT_ABO\']',
+        search: "type_values=['EventType.SPECTACLE_VIVANT', 'ThingType.SPECTACLE_VIVANT_ABO']",
       },
     ]
 
@@ -264,26 +287,6 @@ describe('selectRecommendationsBySearchQuery', () => {
     ])
   })
 })
-
-describe('selectRecommendations', () => {
-  it('should return recommendations', () => {
-    // given
-    const state = {
-      data: {
-        recommendations: [{ id: 'AEY1' }]
-      }
-    }
-
-    // when
-    const result = selectRecommendations(state)
-
-    // then
-    expect(result).toStrictEqual([{ id: 'AEY1' }])
-  })
-})
-
-
-
 
 describe('selectRecommendationByOfferIdAndMediationId', () => {
   it('return undefined when mediationId and offerId are not defined', () => {
