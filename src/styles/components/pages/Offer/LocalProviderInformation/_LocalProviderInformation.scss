@@ -1,22 +1,22 @@
-.titelive-information {
+.provider-information {
   display: flex;
   margin-bottom: 1.5rem;
 }
 
-.titelive-thumb {
+.provider-thumb {
   display: flex;
 }
 
-.titelive-details {
+.provider-details {
   padding-left: 1rem;
   display: block;
 }
 
-.titelive-header {
+.provider-header {
   display: flex;
   align-items: center;
 
-  .titelive-title {
+  .provider-title {
     padding-left: 0.75rem;
 
     h3 {
@@ -33,7 +33,7 @@
   }
 }
 
-.titelive-explanation {
+.provider-explanation {
   @extend .small-text;
 
   text-align: justify;

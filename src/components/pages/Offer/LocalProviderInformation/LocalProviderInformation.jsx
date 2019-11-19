@@ -36,7 +36,11 @@ class LocalProviderInformation extends PureComponent {
           </div>
           <div className="provider-details">
             <div className="provider-header">
-              <Icon svg={providerInfo.icon} />
+              <Icon
+                height="64px"
+                svg={providerInfo.icon}
+                width="64px"
+              />
               <div className="provider-title">
                 <h3>
                   {`Offre synchronisée avec ${providerInfo.name}`}
