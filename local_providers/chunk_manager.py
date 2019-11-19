@@ -1,7 +1,6 @@
 from typing import Dict, Optional
 
 from local_providers.providable_info import ProvidableInfo
-from models import ProvidableMixin
 from models.db import Model
 from repository.providable_queries import get_existing_object, insert_chunk, update_chunk
 
@@ -31,10 +30,10 @@ def get_object_from_current_chunks(providable_info: ProvidableInfo,
     return None
 
 
-def save_chunks(chunk_to_insert: Dict[str, ProvidableMixin], chunk_to_update: Dict[str, ProvidableMixin],
-                providable_info: ProvidableInfo):
+def save_chunks(chunk_to_insert: Dict[str, Model],
+                chunk_to_update: Dict[str, Model]):
     if len(chunk_to_insert) > 0:
         insert_chunk(chunk_to_insert)
 
     if len(chunk_to_update) > 0:
-        update_chunk(chunk_to_update, providable_info)
+        update_chunk(chunk_to_update)

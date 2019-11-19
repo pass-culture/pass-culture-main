@@ -56,7 +56,7 @@ class VenueWithoutSIRETBankInformationProvider(LocalProvider):
                                     f"unknown venue for id {self.application_details['venueId']}")
             return []
 
-        id_at_providers = f"{self.application_details['structureId']}|{self.application_details['venueId']}"
+        id_at_providers = f"{self.application_details['structureId']}%{self.application_details['venueId']}"
         bank_information_providable_info = self.create_providable_info(BankInformation,
                                                                        id_at_providers,
                                                                        self.application_details['updated_at'])

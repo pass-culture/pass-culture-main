@@ -4,7 +4,6 @@ from typing import Dict, Optional
 from sqlalchemy import select
 
 import models
-from local_providers.providable_info import ProvidableInfo
 from models.db import db, Model
 from utils.date import read_json_date
 from utils.human_ids import humanize
@@ -12,21 +11,19 @@ from utils.logger import logger
 
 
 def insert_chunk(chunk_to_insert: Dict):
-    db.session.bulk_save_objects(chunk_to_insert.values())
+    db.session.bulk_save_objects(chunk_to_insert.values(), return_defaults=False)
     db.session.commit()
 
 
-def update_chunk(chunk_to_update: Dict, providable_info: ProvidableInfo):
+def update_chunk(chunk_to_update: Dict):
     for chunk_key, chunk_object in chunk_to_update.items():
         statement = _build_statement_for_update(chunk_key,
-                                                chunk_object,
-                                                providable_info.type)
+                                                chunk_object)
         try:
             connection = db.engine.connect()
             connection.execute(statement)
         except ValueError as e:
-            logger.error('ERROR during object update: '
-                         + e.__class__.__name__ + ' ' + str(e))
+            logger.error('ERROR during object update: ' + e.__class__.__name__ + ' ' + str(e))
 
 
 def get_existing_object(model_type: Model, id_at_providers: str) -> Optional[Dict]:
@@ -58,12 +55,9 @@ def _dict_to_object(object_dict: Dict, model_object: Model) -> Model:
     return pc_obj
 
 
-def _build_statement_for_update(chunk_key: str, chunk_object: Model, model_to_update: Model):
-    try:
-        model_name = chunk_key.split('|')[1]
-        model_object = getattr(models, model_name)
-    except AttributeError:
-        model_object = model_to_update
+def _build_statement_for_update(chunk_key: str, chunk_object: Model):
+    model_name = chunk_key.split('|')[1]
+    model_object = getattr(models, model_name)
     dict_to_update = _build_dict_to_update(chunk_object)
     statement = model_object.__table__.update(). \
         where(model_object.id == dict_to_update['id']). \
@@ -83,4 +77,8 @@ def _build_dict_to_update(object_to_update: Model) -> Dict:
         del dict_to_update['offer']
     if 'stocks' in dict_to_update:
         del dict_to_update['stocks']
+    if 'baseScore' in dict_to_update:
+        del dict_to_update['baseScore']
+    if 'remainingQuantity' in dict_to_update:
+        del dict_to_update['remainingQuantity']
     return dict_to_update

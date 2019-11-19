@@ -326,7 +326,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
             iban="FR1420041010050500013M02606",
             offerer=offerer,
             venue=venue,
-            id_at_providers=f"{self.OFFERER_ID}|{self.VENUE_ID}"
+            id_at_providers=f"{self.OFFERER_ID}%{self.VENUE_ID}"
         )
         PcObject.save(venue, bank_information)
         last_provider_sync = LocalProviderEvent()

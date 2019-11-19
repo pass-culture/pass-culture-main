@@ -147,7 +147,6 @@ class LocalProvider(Iterator):
 
         chunk_to_insert = {}
         chunk_to_update = {}
-        last_defined_providable_info = None
 
         for providable_infos in self:
             objects_limit_reached = limit and self.checkedObjects >= limit
@@ -159,28 +158,28 @@ class LocalProvider(Iterator):
                 self.checkedObjects += 1
                 continue
 
-            for last_defined_providable_info in providable_infos:
-                chunk_key = last_defined_providable_info.id_at_providers + '|' + str(
-                    last_defined_providable_info.type.__name__)
-                pc_object = get_existing_pc_obj(last_defined_providable_info, chunk_to_insert, chunk_to_update)
+            for providable_info in providable_infos:
+                chunk_key = providable_info.id_at_providers + '|' + str(
+                    providable_info.type.__name__)
+                pc_object = get_existing_pc_obj(providable_info, chunk_to_insert, chunk_to_update)
 
                 if pc_object is None:
                     if not self.can_create:
                         continue
 
                     try:
-                        pc_object = self.create_object(last_defined_providable_info)
+                        pc_object = self.create_object(providable_info)
                         chunk_to_insert[chunk_key] = pc_object
                     except ApiErrors:
                         continue
                 else:
                     last_update_for_current_provider = get_last_update_for_provider(self.provider.id, pc_object)
                     object_need_update = last_update_for_current_provider is None \
-                                         or last_update_for_current_provider < last_defined_providable_info.date_modified_at_provider
+                                         or last_update_for_current_provider < providable_info.date_modified_at_provider
 
                     if object_need_update:
                         try:
-                            self.handle_update(pc_object, last_defined_providable_info)
+                            self.handle_update(pc_object, providable_info)
                             if chunk_key in chunk_to_insert:
                                 chunk_to_insert[chunk_key] = pc_object
                             else:
@@ -210,12 +209,12 @@ class LocalProvider(Iterator):
                 self.checkedObjects += 1
 
                 if len(chunk_to_insert) + len(chunk_to_update) >= CHUNK_MAX_SIZE:
-                    save_chunks(chunk_to_insert, chunk_to_update, last_defined_providable_info)
+                    save_chunks(chunk_to_insert, chunk_to_update)
                     chunk_to_insert = {}
                     chunk_to_update = {}
 
         if len(chunk_to_insert) + len(chunk_to_update) > 0:
-            save_chunks(chunk_to_insert, chunk_to_update, last_defined_providable_info)
+            save_chunks(chunk_to_insert, chunk_to_update)
 
         self.print_objects_summary()
         self.log_provider_event(LocalProviderEventType.SyncEnd)
