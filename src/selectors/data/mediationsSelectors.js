@@ -5,7 +5,7 @@ export const selectMediationById = createCachedSelector(
   state => state.data.mediations,
   (state, mediationId) => mediationId,
   (mediations, mediationId) => mediations.find(m => m.id === mediationId)
-)((state, mediationId) => mediationId || '')
+)((state, mediationId = '') => mediationId)
 
 export const selectMediationsByOfferId = createCachedSelector(
   state => state.data.mediations,
@@ -20,7 +20,6 @@ export const selectMediationsByOfferId = createCachedSelector(
     selectedMediations &&
       selectedMediations.sort((m1, m2) => moment(m1.dateCreated) - moment(m2.dateCreated))
 
-    // return
     return selectedMediations
   }
-)((state, offerId) => offerId || '')
+)((state, offerId = '') => offerId)

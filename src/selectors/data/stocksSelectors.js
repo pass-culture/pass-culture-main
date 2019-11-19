@@ -20,7 +20,7 @@ export const selectStocksByOfferId = createCachedSelector(
 
     return filteredStocks
   }
-)((state, offerId) => offerId || '')
+)((state, offerId = '') => offerId)
 
 export const selectAggregatedStockByOfferId = createCachedSelector(selectStocksByOfferId, stocks =>
   stocks.reduce(
