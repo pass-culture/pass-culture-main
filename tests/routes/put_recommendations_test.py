@@ -1031,7 +1031,7 @@ class Put:
 
         @clean_database
         @patch('routes.recommendations.create_recommendations_for_discovery')
-        def when_offers_are_paginated(self, create_recommendations_for_discovery, app):
+        def test_should_create_recommendations_using_pagination_params(self, create_recommendations_for_discovery, app):
             # given
             user = create_user(departement_code='93', can_book_free_offers=True, is_admin=False)
             offerer = create_offerer()

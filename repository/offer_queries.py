@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from functools import partial
 from typing import List
 
 from flask_sqlalchemy import BaseQuery
@@ -88,17 +87,19 @@ def get_active_offers(pagination_params, departement_codes=None, offer_id=None, 
     active_offer_ids = get_active_offers_ids_query(user, departement_codes, offer_id)
     query = Offer.query.filter(Offer.id.in_(active_offer_ids))
     query = query.order_by(_round_robin_by_type_onlineness_and_criteria(order_by))
-    query = query.options(joinedload('mediations'),
-                          joinedload('product'))
 
     if limit:
-        if page:
-            query = query\
-                .offset((int(page) - 1) * limit)
-        query = query \
-            .limit(limit)
-
+        query = _get_paginated_active_offers(limit, page, query)
     return query.all()
+
+
+def _get_paginated_active_offers(limit, page, query):
+    if page:
+        query = query \
+            .offset((int(page) - 1) * limit)
+    query = query \
+        .limit(limit)
+    return query
 
 
 def get_active_offers_ids_query(user=None, departement_codes=['00'], offer_id=None):

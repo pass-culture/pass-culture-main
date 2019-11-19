@@ -24,7 +24,7 @@ def list_recommendations():
         current_user,
         **search_params
     )
-    return jsonify(serialize_recommendations(recommendations, current_user)), 200
+    return jsonify(serialize_recommendations(recommendations)), 200
 
 
 @app.route('/recommendations/offers/<offer_id>', methods=['GET'])
@@ -36,7 +36,7 @@ def get_recommendation(offer_id):
         dehumanize(request.args.get('mediationId'))
     )
 
-    return jsonify(serialize_recommendation(recommendation, current_user)), 200
+    return jsonify(serialize_recommendation(recommendation)), 200
 
 
 @app.route('/recommendations/<recommendation_id>', methods=['PATCH'])
@@ -47,7 +47,7 @@ def patch_recommendation(recommendation_id):
     recommendation = query.first_or_404()
     recommendation.populate_from_dict(request.json)
     PcObject.save(recommendation)
-    return jsonify(serialize_recommendation(recommendation, current_user)), 200
+    return jsonify(serialize_recommendation(recommendation)), 200
 
 
 @app.route('/recommendations/read', methods=['PUT'])
@@ -61,7 +61,7 @@ def put_read_recommendations():
         Recommendation.id.in_(read_recommendation_ids)
     ).all()
 
-    return jsonify(serialize_recommendations(read_recommendations, current_user)), 200
+    return jsonify(serialize_recommendations(read_recommendations)), 200
 
 
 @app.route('/recommendations', methods=['PUT'])
@@ -115,4 +115,4 @@ def put_recommendations():
                                 for reco in recommendations])
                          + str(len(recommendations)))
 
-    return jsonify(serialize_recommendations(recommendations, current_user)), 200
+    return jsonify(serialize_recommendations(recommendations)), 200

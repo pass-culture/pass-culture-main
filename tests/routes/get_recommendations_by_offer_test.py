@@ -61,7 +61,7 @@ class Get:
             assert response.json['id'] == humanize(recommendation1.id)
             assert response.json['offerId'] == humanize(offer.id)
             assert response.json['mediationId'] == humanize(mediation1.id)
-            assert response.json['offer']['product']['offerType']['proLabel'] == 'Spectacle vivant'
+            assert response.json['offer']['offerType']['proLabel'] == 'Spectacle vivant'
 
     class Returns404:
         @clean_database

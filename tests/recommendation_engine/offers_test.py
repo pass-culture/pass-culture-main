@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from models import PcObject
-from recommendations_engine import get_offers_for_recommendations_discovery, create_recommendations_for_discovery
+from recommendations_engine import create_recommendations_for_discovery, get_offers_for_recommendations_discovery
 from repository.offer_queries import order_by_with_criteria
 from tests.conftest import clean_database
 from tests.recommendation_engine.recommendations_test import _create_and_save_stock_for_offerer_in_departements
@@ -23,7 +23,8 @@ class GetOffersForRecommendationsDiscoveryTest:
         offer_ids_in_adjacent_department = set([stock.offerId for stock in expected_stocks_recommended])
 
         #  when
-        recommendations = create_recommendations_for_discovery(user=user, limit=10, pagination_params={'page': 1, 'seed': 0.5})
+        recommendations = create_recommendations_for_discovery(user=user, limit=10,
+                                                               pagination_params={'page': 1, 'seed': 0.5})
 
         # then
         recommended_offer_ids = set([recommendation.offerId for recommendation in recommendations])

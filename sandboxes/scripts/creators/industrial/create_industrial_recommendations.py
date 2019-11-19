@@ -55,7 +55,7 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
 
         active_offer_ids = [
             offer.id for offer in
-            get_active_offers(user=user, pagination_params={'page': 1, 'seed': 0.5}, departement_codes=departement_codes)
+            get_active_offers(user=user, limit=None, pagination_params={'page': 1, 'seed': 0.5}, departement_codes=departement_codes)
         ]
         active_offer_ids.sort()
 

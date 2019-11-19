@@ -1097,7 +1097,6 @@ class GetActiveOffersTest:
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
         offer = create_offer_with_thing_product(venue, product)
         stock = create_stock_from_offer(offer, available=2, price=0)
-        user = create_user()
         booking1 = create_booking(user, stock, venue=venue, quantity=2, is_cancelled=True)
         booking2 = create_booking(user, stock, venue=venue, quantity=2)
         create_mediation(stock.offer)
@@ -1111,7 +1110,7 @@ class GetActiveOffersTest:
         assert len(offers) == 0
 
     @clean_database
-    def test_with_no_order_by_should_return_same_number_of_recommendation(self, app):
+    def test_should_return_same_number_of_recommendation(self, app):
         # Given
         offerer = create_offerer()
         user = create_user()
@@ -1319,7 +1318,6 @@ class GetActiveOffersTest:
 
         offer = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
         stock = create_stock_from_offer(offer, price=0)
-        user = create_user()
         mediation = create_mediation(stock.offer)
         favorite = create_favorite(mediation, offer, user)
 
