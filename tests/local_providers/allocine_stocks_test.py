@@ -1,9 +1,10 @@
+import os
 from datetime import datetime
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 from freezegun import freeze_time
-from pytest import mark
 
 from local_providers import AllocineStocks
 from local_providers.allocine_stocks import retrieve_movie_information, _parse_movie_duration, _format_poster_url
@@ -12,6 +13,7 @@ from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
 from tests.test_utils import create_offerer, create_venue, create_venue_provider, create_product_with_event_type, \
     create_offer_with_event_product
+from utils.human_ids import humanize
 
 
 class AllocineStocksTest:
@@ -588,12 +590,13 @@ class AllocineStocksTest:
             assert created_offer.name == 'Les Contes de la mère poule'
 
         @patch('local_providers.allocine_stocks.get_movies_showtimes')
+        @patch('local_providers.allocine_stocks.AllocineStocks.get_object_thumb')
         @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
-        @mark.skip
         @clean_database
-        def test_should_create_product_with_correct_thumb_and_create_matching_offer_with_same_thumb(self,
-                                                                                                    mock_call_allocine_api,
-                                                                                                    app):
+        def test_should_create_product_with_correct_thumb_and_increase_thumbCount_by_1(self,
+                                                                                       mock_get_object_thumb,
+                                                                                       mock_call_allocine_api,
+                                                                                       app):
             # Given
             theater_token = 'test'
             mock_call_allocine_api.return_value = iter([
@@ -656,6 +659,9 @@ class AllocineStocksTest:
                         ]
                     }
                 }])
+            file_path = Path(os.path.dirname(os.path.realpath(__file__))) \
+                        / '..' / '..' / 'sandboxes' / 'providers' / 'titelive_mocks' / 'provider_thumb.jpeg'
+            mock_get_object_thumb.return_value = open(file_path, "rb").read()
 
             product = create_product_with_event_type(
                 event_name='Test event',
@@ -680,21 +686,19 @@ class AllocineStocksTest:
             allocine_stocks_provider.updateObjects()
 
             # Then
-            created_offer = Offer.query.one()
             existing_product = Product.query.one()
 
-            assert existing_product.thumbUrl == "http://localhost/storage/thumbs/products/AU"
+            assert existing_product.thumbUrl == f"http://localhost/storage/thumbs/products/{humanize(existing_product.id)}"
             assert existing_product.thumbCount == 1
-            assert created_offer.product.thumbCount == 1
-            assert created_offer.product.thumbUrl == "http://localhost/storage/thumbs/products/AU"
 
         @patch('local_providers.allocine_stocks.get_movies_showtimes')
+        @patch('local_providers.allocine_stocks.AllocineStocks.get_object_thumb')
         @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
-        @mark.skip
         @clean_database
-        def test_should_update_product_and_offer_thumbCount_when_product_has_already_one_thumb(self,
-                                                                                               mock_call_allocine_api,
-                                                                                               app):
+        def test_should_replace_product_thumb_when_product_has_already_one_thumb(self,
+                                                                                 mock_get_object_thumb,
+                                                                                 mock_call_allocine_api,
+                                                                                 app):
             # Given
             theater_token = 'test'
             mock_call_allocine_api.return_value = iter([
@@ -771,13 +775,16 @@ class AllocineStocksTest:
                         ]
                     }
                 }])
+            file_path = Path(os.path.dirname(os.path.realpath(__file__))) \
+                        / '..' / '..' / 'sandboxes' / 'providers' / 'titelive_mocks' / 'provider_thumb.jpeg'
+            mock_get_object_thumb.return_value = open(file_path, "rb").read()
 
             product = create_product_with_event_type(
                 event_name='Test event',
                 event_type=EventType.CINEMA,
                 duration_minutes=60,
                 id_at_providers="TW92aWU6Mzc4MzI=",
-                thumb_count=3
+                thumb_count=1
             )
 
             offerer = create_offerer(siren='775671464')
@@ -795,11 +802,9 @@ class AllocineStocksTest:
             allocine_stocks_provider.updateObjects()
 
             # Then
-            created_offer = Offer.query.one()
             existing_product = Product.query.one()
-
-            assert existing_product.thumbCount == 4
-            assert created_offer.product.thumbCount == 4
+            assert existing_product.thumbUrl == f"http://localhost/storage/thumbs/products/{humanize(existing_product.id)}"
+            assert existing_product.thumbCount == 1
 
 
 class ParseMovieDurationTest:

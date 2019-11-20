@@ -7,7 +7,7 @@ from typing import List, Optional
 
 from sqlalchemy import Sequence
 
-from domain.allocine import get_movies_showtimes
+from domain.allocine import get_movies_showtimes, get_movie_poster
 from local_providers.local_provider import LocalProvider
 from local_providers.providable_info import ProvidableInfo
 from models import VenueProvider, Offer, Product, EventType
@@ -37,8 +37,12 @@ class AllocineStocks(LocalProvider):
                                     f"Error parsing information for movie: {raw_movie_information['node']['movie']}")
             return []
 
-        offer_providable_information = self.create_providable_info(Offer)
-        product_providable_information = self.create_providable_info(Product)
+        offer_providable_information = self.create_providable_info(Offer,
+                                                                   self.movie_information['id'],
+                                                                   datetime.utcnow())
+        product_providable_information = self.create_providable_info(Product,
+                                                                     self.movie_information['id'],
+                                                                     datetime.utcnow())
 
         return [product_providable_information, offer_providable_information]
 
@@ -88,17 +92,9 @@ class AllocineStocks(LocalProvider):
         sequence = Sequence('product_id_seq')
         return db.session.execute(sequence)
 
-    def create_providable_info(self, object_type: Model) -> ProvidableInfo:
-        providable_info = ProvidableInfo()
-        providable_info.id_at_providers = self.movie_information['id']
-        providable_info.type = object_type
-        providable_info.date_modified_at_provider = datetime.utcnow()
-        return providable_info
-
     def get_object_thumb(self) -> bytes:
         image_url = self.movie_information['poster_url']
-        response = requests.get(image_url)
-        return response.content
+        return get_movie_poster(image_url)
 
     def get_object_thumb_index(self) -> int:
         return 1

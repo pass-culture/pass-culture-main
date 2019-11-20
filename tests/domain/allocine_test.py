@@ -1,6 +1,6 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, MagicMock
 
-from domain.allocine import get_movies_showtimes
+from domain.allocine import get_movies_showtimes, get_movie_poster
 
 
 class GetMovieShowtimeListFromAllocineTest:
@@ -68,3 +68,16 @@ class GetMovieShowtimeListFromAllocineTest:
                                       get_movies_showtimes_from_api=self.mock_get_movies_showtimes)
         # Then
         assert any(expected_movie == next(movies) for expected_movie in expected_movies)
+
+
+class GetMoviePosterTest:
+    def test_should_return_image_content_from_api_result(self):
+        # Given
+        poster_url = ''
+        mock_get_movie_poster_from_allocine = MagicMock(return_value=bytes())
+
+        # When
+        movie_poster = get_movie_poster(poster_url, get_movie_poster_from_api=mock_get_movie_poster_from_allocine)
+
+        # Then
+        assert movie_poster == bytes()
