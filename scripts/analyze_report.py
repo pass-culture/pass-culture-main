@@ -14,17 +14,17 @@ def main():
     with open(report_path) as json_file:
         data = json.load(json_file)
 
-        endpoints_latency = _get_endpoint_latencies(data)
+    endpoints_latency = _get_endpoint_latencies(data)
 
-        search_endpoint_stats, recommendation_keyword_max = _get_search_endpoint_stats(data)
+    search_endpoint_stats, recommendation_keyword_max = _get_search_endpoint_stats(data)
 
-        endpoints_latency.append(search_endpoint_stats)
+    endpoints_latency.append(search_endpoint_stats)
 
-        endpoints_over_limit, endpoints_summary = _verify_latency_is_not_over_limit(endpoints_latency)
+    endpoints_over_limit, endpoints_summary = _verify_latency_is_not_over_limit(endpoints_latency)
 
-        error_codes = _get_error_codes(data)
+    error_codes = _get_error_codes(data)
 
-        _send_to_ops_bot(endpoints_summary, recommendation_keyword_max, error_codes)
+    _send_to_ops_bot(endpoints_summary, recommendation_keyword_max, error_codes)
 
     sys.exit(endpoints_over_limit)
 
