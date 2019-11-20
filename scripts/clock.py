@@ -247,9 +247,12 @@ if __name__ == '__main__':
         scheduler.add_job(pc_update_booking_used, 'cron', id='pc_update_booking_used', day='*', hour='0')
 
     if feature_delete_all_unread_recommendations_older_than_one_week_enabled():
+        day = os.environ.get('CRON_CLEAN_OLD_UNREAD_RECOMMENDATIONS_DAY', 'mon')
+        hour = os.environ.get('CRON_CLEAN_OLD_UNREAD_RECOMMENDATIONS_HOUR', '23')
+        minute = os.environ.get('CRON_CLEAN_OLD_UNREAD_RECOMMENDATIONS_MINUTE', '00')
         scheduler.add_job(pc_delete_all_unread_recommendations_older_than_one_week,
                           'cron',
                           id='pc_delete_all_unread_recommendations_older_than_one_week',
-                          day_of_week='mon', hour='23')
+                          day_of_week=day, hour=hour, minute=minute)
 
     scheduler.start()
