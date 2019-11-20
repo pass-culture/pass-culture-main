@@ -52,7 +52,8 @@ class UserAdminView(BaseAdminView):
         resetPasswordToken='Jeton d\'activation et réinitialisation de mot de passe',
         validationToken='Jeton de validation d\'adresse email'
     )
-    column_searchable_list = ['id', 'publicName', 'email', 'firstName', 'lastName']
+    column_searchable_list = ['id', 'publicName',
+                              'email', 'firstName', 'lastName']
     column_filters = ['postalCode', 'canBookFreeOffers']
     form_columns = ['email', 'firstName', 'lastName',
                     'publicName', 'dateOfBirth', 'departementCode', 'postalCode']
@@ -109,8 +110,10 @@ class BeneficiaryImportView(BaseAdminView):
             statuses = TextAreaField('Status précédents', default=obj.history,
                                      render_kw={'readonly': True, 'rows': len(obj.statuses)})
             detail = StringField('Raison du changement de statut')
-            status = SelectField('Nouveau statut', choices=[
-                                 (s.name, s.value) for s in ImportStatus])
+            status = SelectField('Nouveau statut',
+                                 choices=[(status.name, status.value)
+                                          for status in ImportStatus],
+                                 default=obj.currentStatus.value)
 
         return _NewStatusForm(get_form_data())
 
