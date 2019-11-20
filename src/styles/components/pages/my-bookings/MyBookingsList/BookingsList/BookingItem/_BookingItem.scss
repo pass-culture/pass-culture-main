@@ -29,6 +29,10 @@
     position: relative;
   }
 
+  .teaser-sub-title {
+    color: $black-light;
+  }
+
   .teaser-thumb {
     width: rem(68px);
   }
@@ -55,7 +59,7 @@
 }
 
 .mb-token-container {
-  @include dotted($primary, top);
+  @include dotted($primary, top, 'long');
 
   overflow: hidden;
   position: relative;
@@ -162,4 +166,5 @@
   font-size: rem(13px);
   padding-top: rem(12px);
   text-align: center;
+  color: $grey;
 }

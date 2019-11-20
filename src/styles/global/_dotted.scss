@@ -15,6 +15,14 @@
     );
   }
 
+  @if $size == 'long' {
+    background-size: if(
+      $position == top or $position == bottom,
+      8px 2px,
+      2px 8px
+    );
+  }
+
   @else {
     background-size: if(
       $position == top or $position == bottom,
@@ -30,6 +38,14 @@
       $position == top or $position == bottom,
       linear-gradient(to left, $color 35%, rgba($white, 0) 0%),
       linear-gradient($color 35%, rgba($white, 0) 0%)
+    );
+  }
+
+  @if $size == 'long' {
+    background-image: if(
+      $position == top or $position == bottom,
+      linear-gradient(to left, $color 50%, rgba($white, 0) 0%),
+      linear-gradient($color 50%, rgba($white, 0) 0%)
     );
   }
 
