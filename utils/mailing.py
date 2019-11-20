@@ -148,7 +148,7 @@ def get_offerer_booking_recap_email_data(booking: Booking, recipients: List[str]
     offer_is_a_book = ProductType.is_book(offer_type)
 
     if offer_is_a_book:
-        mailjet_json_variables['ISBN'] = offer.extraData['isbn'] if offer.extraData is not None and 'isbn' in offer.extraData else ''
+        mailjet_json['Vars']['ISBN'] = offer.extraData['isbn'] if offer.extraData is not None and 'isbn' in offer.extraData else ''
     else:
         mailjet_json['Vars']['offer_type'] = offer_type
 

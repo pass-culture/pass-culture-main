@@ -19,16 +19,14 @@ from utils.mailing import make_user_booking_recap_email, \
 def send_final_booking_recap_email(stock: Stock, send_email: Callable[..., bool]) -> bool:
     stock_bookings = booking_queries.find_ongoing_bookings_by_stock(stock)
     if len(stock_bookings) == 0:
-        logger.info("Not sending recap for  " +
-                    str(stock) + " as it has no bookings")
+        logger.info("Not sending recap for  " + str(stock) + " as it has no bookings")
     email = make_final_recap_email_for_stock_with_event(stock)
 
     recipients = [ADMINISTRATION_EMAIL_ADDRESS]
     if stock.resolvedOffer.bookingEmail:
         recipients.append(stock.resolvedOffer.bookingEmail)
 
-    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(
-        email['Html-part'], recipients)
+    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
 
     successfully_sent = send_email(data=email)
 
@@ -41,8 +39,7 @@ def send_booking_recap_emails(booking: Booking, send_email: Callable[..., bool])
     if booking.stock.resolvedOffer.bookingEmail:
         recipients.append(booking.stock.resolvedOffer.bookingEmail)
 
-    email = get_offerer_booking_recap_email_data(
-        booking, recipients)
+    email = get_offerer_booking_recap_email_data(booking, recipients)
     return send_email(data=email)
 
 
@@ -51,8 +48,7 @@ def send_booking_confirmation_email_to_user(booking: Booking, send_email: Callab
     email = make_user_booking_recap_email(booking, is_cancellation)
     recipients = [booking.user.email]
 
-    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(
-        email['Html-part'], recipients)
+    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
 
     return send_email(data=email)
 
@@ -61,30 +57,26 @@ def send_user_driven_cancellation_email_to_user(booking: Booking, send_email: Ca
     email = make_user_booking_recap_email(booking, is_cancellation=True)
     recipients = [booking.user.email]
 
-    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(
-        email['Html-part'], recipients)
+    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
 
     return send_email(data=email)
 
 
 def send_user_driven_cancellation_email_to_offerer(booking: Booking, send_email: Callable[..., bool]) -> bool:
-    email = make_offerer_booking_recap_email_after_user_action(
-        booking, is_cancellation=True)
+    email = make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=True)
     recipients = []
     offerer_booking_email = booking.stock.resolvedOffer.bookingEmail
     if offerer_booking_email:
         recipients.append(offerer_booking_email)
     recipients.append(ADMINISTRATION_EMAIL_ADDRESS)
-    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(
-        email['Html-part'], recipients)
+    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     return send_email(data=email)
 
 
 def send_offerer_driven_cancellation_email_to_user(booking: Booking, send_email: Callable[..., bool]) -> bool:
     email = make_offerer_driven_cancellation_email_for_user(booking)
     recipients = [booking.user.email]
-    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(
-        email['Html-part'], recipients)
+    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     return send_email(data=email)
 
 
@@ -95,8 +87,7 @@ def send_offerer_driven_cancellation_email_to_offerer(booking: Booking, send_ema
         recipients.append(offerer_email)
     recipients.append(ADMINISTRATION_EMAIL_ADDRESS)
     email = make_offerer_driven_cancellation_email_for_offerer(booking)
-    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(
-        email['Html-part'], recipients)
+    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     return send_email(data=email)
 
 
@@ -110,8 +101,7 @@ def send_validation_confirmation_email(user_offerer: UserOfferer, offerer: Offer
     offerer_id = _get_offerer_id(offerer, user_offerer)
     recipients = find_all_emails_of_user_offerers_admins(offerer_id)
     email = make_validation_confirmation_email(user_offerer, offerer)
-    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(
-        email['Html-part'], recipients)
+    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     return send_email(data=email)
 
 
@@ -129,8 +119,7 @@ def send_batch_cancellation_email_to_offerer(bookings: List[Booking], cancellati
         recipients.append(offerer_email)
     recipients.append(ADMINISTRATION_EMAIL_ADDRESS)
     email = make_batch_cancellation_email(bookings, cancellation_case)
-    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(
-        email['Html-part'], recipients)
+    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     return send_email(data=email)
 
 
@@ -145,11 +134,9 @@ def send_cancellation_emails_to_user_and_offerer(booking: Booking, is_offerer_ca
 
 
 def send_venue_validation_confirmation_email(venue: Venue, send_email: Callable[..., bool]) -> bool:
-    recipients = find_all_emails_of_user_offerers_admins(
-        venue.managingOffererId)
+    recipients = find_all_emails_of_user_offerers_admins(venue.managingOffererId)
     email = make_venue_validation_confirmation_email(venue)
-    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(
-        email['Html-part'], recipients)
+    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     return send_email(data=email)
 
 
