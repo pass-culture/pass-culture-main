@@ -110,11 +110,11 @@ def delete_all_unread_recommendations_older_than_one_week(per_page=1000):
 
     has_next = True
     while has_next:
-        recommendations = query.paginate(1, per_page=per_page, error_out=False).items
+        paginate_query = query.paginate(1, per_page=per_page, error_out=False)
+        recommendations = paginate_query.items
         PcObject.delete_all(recommendations)
 
-        if len(recommendations) < 10:
-            has_next = False
+        has_next = paginate_query.has_next
 
 
 
