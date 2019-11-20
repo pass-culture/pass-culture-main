@@ -1,6 +1,6 @@
 import createDecorator from 'final-form-calculate'
 
-import { getSirenOrSiretInfo, SIRET } from '../../../../../../utils/siren'
+import {getSiretInformations} from "../../../siret/siretInformations";
 
 const emptyValues = {
   address: null,
@@ -11,14 +11,14 @@ const emptyValues = {
   postalCode: null,
 }
 
-const bindGetSiretInfoToSiret = createDecorator({
+const bindGetSiretInformationToSiret = createDecorator({
   field: 'siret',
   updates: async siret => {
-    const siretInfo = await getSirenOrSiretInfo(siret, SIRET)
+    const siretInfo = await getSiretInformations(siret)
     if (!siretInfo) return {}
     if (siretInfo.error) return emptyValues
     return siretInfo.values
   },
 })
 
-export default bindGetSiretInfoToSiret
+export default bindGetSiretInformationToSiret

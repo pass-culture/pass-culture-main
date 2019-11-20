@@ -11,7 +11,7 @@ import bindGetSuggestionsToLatitude from './fields/LocationFields/decorators/bin
 import bindGetSuggestionsToLongitude from './fields/LocationFields/decorators/bindGetSuggestionsToLongitude'
 import { FRANCE_POSITION } from './fields/LocationFields/utils/positions'
 import IdentifierFields from './fields/IdentifierFields/IdentifierFields'
-import bindGetSiretInfoToSiret from './fields/IdentifierFields/decorators/bindGetSiretInfoToSiret'
+import bindGetSiretInformationToSiret from './fields/IdentifierFields/decorators/bindGetSiretInformationToSiret'
 import ModifyOrCancelControl from './controls/ModifyOrCancelControl/ModifyOrCancelControl'
 import ReturnOrSubmitControl from './controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
 import VenueProvidersManagerContainer from './VenueProvidersManager/VenueProvidersManagerContainer'
@@ -206,7 +206,7 @@ class Venue extends PureComponent {
 
     const decorators = [bindGetSuggestionsToLatitude, bindGetSuggestionsToLongitude]
     if (isCreatedEntity || !initialSiret) {
-      decorators.push(bindGetSiretInfoToSiret)
+      decorators.push(bindGetSiretInformationToSiret)
     }
 
     const showForm = !initialIsVirtual && typeof offerer !== 'undefined'

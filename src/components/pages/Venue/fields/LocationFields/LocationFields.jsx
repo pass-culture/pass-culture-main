@@ -15,7 +15,6 @@ const LocationFields = ({
   readOnly,
 }) => {
   const fieldIsFrozen = readOnly || formIsLocationFrozen || fieldReadOnlyBecauseFrozenFormSiret
-
   return (
     <div className="section">
       <h2 className="main-list-title">

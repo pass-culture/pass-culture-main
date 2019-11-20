@@ -6,7 +6,7 @@ import Icon from '../../../../layout/Icon'
 import HiddenField from '../../../../layout/form/fields/HiddenField'
 import TextareaField from '../../../../layout/form/fields/TextareaField'
 import TextField from '../../../../layout/form/fields/TextField'
-import { formatSirenOrSiret } from '../../../../../utils/siren'
+import { formatSiret } from '../../siret/siretInformations'
 import ReactTooltip from 'react-tooltip'
 
 
@@ -118,7 +118,7 @@ class IdentifierFields extends PureComponent {
               )}
             </label>
             <TextField
-              format={formatSirenOrSiret}
+              format={formatSiret}
               name="siret"
               readOnly={readOnly || initialSiret !== null}
               renderValue={this.handleRenderValue(fieldReadOnlyBecauseFrozenFormSiret, readOnly)}
