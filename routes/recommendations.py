@@ -1,3 +1,5 @@
+import random
+
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
@@ -14,6 +16,8 @@ from utils.config import BLOB_SIZE
 from utils.human_ids import dehumanize
 from utils.logger import logger
 from utils.rest import expect_json_data
+
+DEFAULT_PAGE = 1
 
 
 @app.route('/recommendations', methods=['GET'])
@@ -92,10 +96,13 @@ def put_recommendations():
     logger.debug(lambda: '(special) requested_recommendation %s' %
                          requested_recommendation)
 
+    request_page = request.args.get('page')
+    request_seed = request.args.get('seed')
     pagination_params = {
-        'page': int(request.args.get('page')),
-        'seed': float(request.args.get('seed'))
+        'page': DEFAULT_PAGE if request_page is None else int(request_page),
+        'seed': random.random() if request_seed is None else float(request_seed)
     }
+
     created_recommendations = create_recommendations_for_discovery(limit=BLOB_SIZE,
                                                                    user=current_user,
                                                                    pagination_params=pagination_params)

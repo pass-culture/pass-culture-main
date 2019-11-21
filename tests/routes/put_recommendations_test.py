@@ -1052,3 +1052,30 @@ class Put:
             args = create_recommendations_for_discovery.call_args
             assert args[1]['limit'] == 30
             assert args[1]['pagination_params'] == {'page': 1, 'seed': 0.5}
+
+        @clean_database
+        @patch('routes.recommendations.create_recommendations_for_discovery')
+        @patch('routes.recommendations.random.random', return_value=0.5)
+        def test_should_create_recommendations_using_default_pagination_params_when_not_provided(self,
+                                                                                                 mock_random,
+                                                                                                 create_recommendations_for_discovery,
+                                                                                                 app):
+            # given
+            user = create_user(departement_code='93', can_book_free_offers=True, is_admin=False)
+            offerer = create_offerer()
+            venue = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
+            offer = create_offer_with_thing_product(venue, thing_name='thing 93', url=None, is_national=False)
+            stock = create_stock_from_offer(offer, price=0)
+            booking = create_booking(user, stock, venue)
+            create_mediation(offer)
+            PcObject.save(booking)
+
+            # when
+            TestClient(app.test_client()).with_auth(user.email) \
+                .put(RECOMMENDATION_URL, json={'readRecommendations': []})
+
+            # then
+            args = create_recommendations_for_discovery.call_args
+            print(args[1])
+            assert args[1]['limit'] == 30
+            assert args[1]['pagination_params'] == {'page': 1, 'seed': 0.5}
