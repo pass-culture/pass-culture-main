@@ -95,7 +95,7 @@ def find_recommendation_already_created_on_discovery(offer_id: int, mediation_id
     return query.first()
 
 
-def delete_all_unread_recommendations_older_than_one_week(per_page=1000):
+def delete_all_unread_recommendations_older_than_one_week(limit=1000):
     favorite_offer_ids = db.session.query(Favorite.offerId).subquery()
     not_favorite_predicate = ~Offer.id.in_(favorite_offer_ids)
     is_unread = Recommendation.dateRead == None
@@ -106,16 +106,16 @@ def delete_all_unread_recommendations_older_than_one_week(per_page=1000):
         .outerjoin(Booking) \
         .filter(has_no_booking & is_unread & is_older_than_one_week) \
         .filter(not_favorite_predicate) \
-        .join(Offer, Offer.id == Recommendation.offerId) \
+        .join(Offer, Offer.id == Recommendation.offerId)
 
     has_next = True
     while has_next:
-        paginate_query = query.paginate(1, per_page=per_page, error_out=False)
-        recommendations = paginate_query.items
+        recommendation_query = query.limit(limit)
+        recommendations = recommendation_query.all()
+
         PcObject.delete_all(recommendations)
-
-        has_next = paginate_query.has_next
-
+        if recommendation_query.count() < limit:
+            has_next = False
 
 
 def get_recommendations_for_offers(offer_ids: List[int]) -> List[Recommendation]:

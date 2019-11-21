@@ -159,7 +159,7 @@ class DeleteAllUnreadRecommendationsOlderThanOneWeekTest:
         PcObject.save(*recommendations_to_delete)
 
         # When
-        delete_all_unread_recommendations_older_than_one_week(per_page=10)
+        delete_all_unread_recommendations_older_than_one_week(limit=10)
 
         # Then
         recommendations = Recommendation.query.all()
