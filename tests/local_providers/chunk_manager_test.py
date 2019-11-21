@@ -95,7 +95,7 @@ class SaveChunksTest:
         assert Offer.query.count() == 1
 
     @clean_database
-    def test_save_chunks_update_1_offer_and_1_stock_in_chunk(self, app):
+    def test_save_chunks_update_2_offers_and_1_stock_in_chunk(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)

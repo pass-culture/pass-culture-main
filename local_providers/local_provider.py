@@ -51,6 +51,8 @@ class LocalProvider(Iterator):
                                pc_object: Model,
                                id_at_providers: str,
                                date_modified_at_provider: datetime) -> ProvidableInfo:
+        if '|' in id_at_providers:
+            raise Exception('Invalid character in idAtProviders field')
         providable_info = ProvidableInfo()
         providable_info.type = pc_object
         providable_info.id_at_providers = id_at_providers
