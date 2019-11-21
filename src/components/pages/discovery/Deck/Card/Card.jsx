@@ -1,10 +1,9 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
+import isDetailsView from '../../../../../helpers/isDetailsView'
 import RectoContainer from '../../../../layout/Recto/RectoContainer'
 import VersoContainer from '../../../../layout/Verso/VersoContainer'
-import isDetailsView from '../../../../../helpers/isDetailsView'
-import { getHeaderColor } from '../../../../../utils/colors'
 
 class Card extends PureComponent {
   componentDidMount() {
@@ -46,9 +45,8 @@ class Card extends PureComponent {
 
   render() {
     const { match, position, recommendation, width } = this.props
-    const { firstThumbDominantColor, index } = recommendation || {}
+    const { index } = recommendation || {}
     const areDetails = isDetailsView(match)
-    const headerColor = getHeaderColor(firstThumbDominantColor)
     const isCurrent = position === 'current'
     const translateTo = index * width
 
@@ -56,7 +54,7 @@ class Card extends PureComponent {
       <div
         className={`card ${isCurrent ? 'current' : ''}`}
         style={{
-          backgroundColor: headerColor || '#000',
+          backgroundColor: 'black',
           transform: `translate(${translateTo}px, 0)`,
         }}
       >

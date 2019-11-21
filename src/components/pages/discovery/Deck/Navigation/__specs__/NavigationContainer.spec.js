@@ -113,35 +113,6 @@ describe('src | components | pages | discovery | Deck | Navigation | NavigationC
       })
     })
 
-    it('should map headerColor', () => {
-      // given
-      const state = {
-        data: {
-          recommendations: [{ offerId: 'AE', mediationId: 'FG' }],
-          offers: [{ id: 'AE' }],
-          stocks: [{ offerId: 'AE' }],
-        },
-        geolocation: {
-          latitude: '',
-          longitude: '',
-        },
-      }
-      const ownProps = {
-        match: {
-          params: {
-            mediationId: 'FG',
-            offerId: 'AE',
-          },
-        },
-      }
-
-      // when
-      const result = mapStateToProps(state, ownProps)
-
-      // then
-      expect(result.headerColor).toBe('black')
-    })
-
     it('should map priceRange', () => {
       // given
       const state = {

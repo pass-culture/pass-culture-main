@@ -50,8 +50,8 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         pagination: {
           page: 1,
           seed: 0.5,
-          seedLastRequestTimestamp: 11111111112
-        }
+          seedLastRequestTimestamp: 11111111112,
+        },
       }
 
       const ownProps = {
@@ -68,7 +68,6 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         currentRecommendation: {
           index: 0,
           mediation: {
-            firstThumbDominantColor: [205, 54, 70],
             frontText:
               'Vous avez parcouru toutes les offres. Revenez bientôt pour découvrir les nouveautés.',
             id: 'fin',
@@ -132,7 +131,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         })
         expect(dispatch.mock.calls[1][0]).toStrictEqual({
           page: 1,
-          type: 'UPDATE_PAGE'
+          type: 'UPDATE_PAGE',
         })
       })
 
@@ -176,7 +175,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         })
         expect(dispatch.mock.calls[1][0]).toStrictEqual({
           page: 1,
-          type: 'UPDATE_PAGE'
+          type: 'UPDATE_PAGE',
         })
       })
 
@@ -220,7 +219,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         })
         expect(dispatch.mock.calls[1][0]).toStrictEqual({
           page: 1,
-          type: 'UPDATE_PAGE'
+          type: 'UPDATE_PAGE',
         })
       })
 
@@ -264,7 +263,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         })
         expect(dispatch.mock.calls[1][0]).toStrictEqual({
           page: 1,
-          type: 'UPDATE_PAGE'
+          type: 'UPDATE_PAGE',
         })
       })
 
@@ -275,7 +274,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         const currentRecommendation = {
           id: 'ABC3',
           index: 1,
-          offerId: 'ABC2'
+          offerId: 'ABC2',
         }
         const recommendations = [{ id: 'AE3', index: 3 }]
         const readRecommendations = null
@@ -312,7 +311,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         })
         expect(dispatch.mock.calls[1][0]).toStrictEqual({
           page: 2,
-          type: 'UPDATE_PAGE'
+          type: 'UPDATE_PAGE',
         })
       })
     })

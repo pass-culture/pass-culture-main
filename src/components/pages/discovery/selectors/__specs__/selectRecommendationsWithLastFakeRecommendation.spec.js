@@ -49,7 +49,6 @@ describe('src | components | pages | discovery | selectors | selectRecommendatio
         productOrTutoIdentifier: 'tuto_-1',
         index: 0,
         mediation: {
-          firstThumbDominantColor: [205, 54, 70],
           frontText:
             'Vous avez parcouru toutes les offres. Revenez bientôt pour découvrir les nouveautés.',
           id: 'fin',
@@ -71,7 +70,6 @@ describe('src | components | pages | discovery | selectors | selectRecommendatio
       dateUpdated: '2018-10-10T14:19:27.410609Z',
       productOrTutoIdentifier: 'product_0',
       distance: '5444 km',
-      firstThumbDominantColor: [237, 235, 231],
       id: 'AEWPS',
       index: 0,
       isClicked: true,

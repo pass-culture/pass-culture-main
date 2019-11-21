@@ -11,7 +11,6 @@ describe('src | components | pages | discovery | deck | DeckContainer', () => {
   beforeEach(() => {
     mediationId = 1
     mediation = {
-      firstThumbDominantColor: null,
       frontText: null,
       id: mediationId,
       offerId,

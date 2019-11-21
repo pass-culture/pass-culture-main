@@ -7,7 +7,6 @@ export const fakeLastRecommendation = index => ({
   productOrTutoIdentifier: 'tuto_-1',
   index,
   mediation: {
-    firstThumbDominantColor: [205, 54, 70],
     frontText:
       'Vous avez parcouru toutes les offres. Revenez bientôt pour découvrir les nouveautés.',
     id: 'fin',
