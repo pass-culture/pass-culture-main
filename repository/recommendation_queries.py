@@ -110,13 +110,13 @@ def delete_all_unread_recommendations_older_than_one_week(limit=1000):
 
     has_next = True
     while has_next:
-        recommendation_query = query.limit(limit)
-        recommendations = recommendation_query.all()
+        recommendations = query.limit(limit).all()
 
         PcObject.delete_all(recommendations)
-        if recommendation_query.count() < limit:
-            has_next = False
 
+        logger.info(f'[BATCH] Cron delete_all_unread_recommendations_older_than_one_week: len(recommendations) : {len(recommendations)}')
+        if len(recommendations) < limit:
+            has_next = False
 
 def get_recommendations_for_offers(offer_ids: List[int]) -> List[Recommendation]:
     return Recommendation.query \
