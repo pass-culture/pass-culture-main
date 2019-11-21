@@ -1,7 +1,5 @@
 import os
 import re
-import requests
-
 from datetime import datetime
 from typing import List, Optional
 
@@ -98,9 +96,6 @@ class AllocineStocks(LocalProvider):
 
     def get_object_thumb_index(self) -> int:
         return 1
-
-    def get_object_thumb_date(self) -> datetime:
-        return datetime.utcnow()
 
 
 def retrieve_movie_information(raw_movie_information: dict) -> dict:

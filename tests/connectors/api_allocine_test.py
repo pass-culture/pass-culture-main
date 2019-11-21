@@ -44,7 +44,7 @@ class GetMovieShowtimeListTest:
 
 class GetMoviePosterFromAllocineTest:
     @patch('connectors.api_allocine.requests.get')
-    def test_should_return_poster_content_from_api(self, request_get):
+    def test_should_return_poster_content_from_allocine_api(self, request_get):
         # Given
         poster_url = 'https://fr.web.img6.acsta.net/pictures/19/10/23/15/11/3506165.jpg'
         response_return_value = MagicMock(status_code=200, text='')
@@ -59,7 +59,7 @@ class GetMoviePosterFromAllocineTest:
         assert api_response == bytes()
 
     @patch('connectors.api_allocine.requests.get')
-    def test_should_raise_exception_when_api_call_fails(self, request_get):
+    def test_should_raise_exception_when_allocine_api_call_fails(self, request_get):
         # Given
         poster_url = 'https://fr.web.img6.acsta.net/pictures/19/10/23/15/11/3506165.jpg'
         response_return_value = MagicMock(status_code=400, text='')
@@ -72,4 +72,5 @@ class GetMoviePosterFromAllocineTest:
 
         # Then
         assert str(exception.value) == "Error getting API Allocine movie poster" \
-                                       " https://fr.web.img6.acsta.net/pictures/19/10/23/15/11/3506165.jpg"
+                                       " https://fr.web.img6.acsta.net/pictures/19/10/23/15/11/3506165.jpg" \
+                                       " with code 400"

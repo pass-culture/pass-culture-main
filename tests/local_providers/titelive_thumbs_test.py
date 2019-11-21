@@ -25,7 +25,7 @@ class TiteliveThingThumbsTest:
             # Then
             assert thumb_index == 1
 
-        def test_return_3_for_filename_with_4(self):
+        def test_return_4_for_filename_with_4(self):
             # Given
             filename = "9780847858903_4_75.jpg"
 

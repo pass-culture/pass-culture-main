@@ -8,7 +8,6 @@ from domain.titelive import get_date_from_filename
 from local_providers.local_provider import LocalProvider
 from local_providers.providable_info import ProvidableInfo
 from models import Product
-from models.db import Model
 from models.local_provider_event import LocalProviderEventType
 from repository import local_provider_event_queries
 
@@ -68,10 +67,6 @@ class TiteLiveThingThumbs(LocalProvider):
 
     def get_object_thumb_index(self) -> int:
         return extract_thumb_index(self.thumb_zipinfo.filename)
-
-    def get_object_thumb_date(self) -> datetime:
-        thumbs_batch_datetime = self.thumb_zipinfo.date_time
-        return datetime(*thumbs_batch_datetime)
 
     def get_object_thumb(self) -> bytes:
         with self.zip.open(self.thumb_zipinfo) as f:

@@ -71,13 +71,15 @@ class GetMovieShowtimeListFromAllocineTest:
 
 
 class GetMoviePosterTest:
-    def test_should_return_image_content_from_api_result(self):
+    def test_should_call_api_with_correct_poster_url(self):
         # Given
-        poster_url = ''
+        poster_url = 'http://url.com'
         mock_get_movie_poster_from_allocine = MagicMock(return_value=bytes())
 
         # When
-        movie_poster = get_movie_poster(poster_url, get_movie_poster_from_api=mock_get_movie_poster_from_allocine)
+        movie_poster = get_movie_poster(poster_url,
+                                        get_movie_poster_from_api=mock_get_movie_poster_from_allocine)
 
         # Then
+        mock_get_movie_poster_from_allocine.assert_called_once_with('http://url.com')
         assert movie_poster == bytes()

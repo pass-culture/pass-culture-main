@@ -63,9 +63,6 @@ class LocalProvider(Iterator):
     def get_object_thumb_index(self) -> int:
         return 0
 
-    def get_object_thumb_date(self) -> datetime:
-        return datetime.utcnow()
-
     @property
     @abstractmethod
     def name(self):
@@ -73,9 +70,7 @@ class LocalProvider(Iterator):
 
     def handle_thumb(self, pc_object: Model):
         new_thumb_index = self.get_object_thumb_index()
-        new_thumb_date = self.get_object_thumb_date()
-        if new_thumb_index is None \
-                or new_thumb_date is None:
+        if new_thumb_index == 0:
             return
         self.checkedThumbs += 1
 
@@ -83,7 +78,7 @@ class LocalProvider(Iterator):
         if not new_thumb:
             return
 
-        save_thumb_from_thumb_count_to_index(pc_object, new_thumb_index, new_thumb)
+        save_same_thumb_from_thumb_count_to_index(pc_object, new_thumb_index, new_thumb)
         logger.debug("Creating thumb #" + str(new_thumb_index) + " for " + str(pc_object))
         self.createdThumbs += new_thumb_index
 
@@ -230,7 +225,7 @@ class LocalProvider(Iterator):
             PcObject.save(self.venue_provider)
 
 
-def save_thumb_from_thumb_count_to_index(pc_object: Model, thumb_index: int, image_as_bytes: bytes):
+def save_same_thumb_from_thumb_count_to_index(pc_object: Model, thumb_index: int, image_as_bytes: bytes):
     thumb_counter = pc_object.thumbCount if pc_object.thumbCount else 0
     if thumb_index <= thumb_counter:
         add_new_thumb(pc_object, thumb_index, image_as_bytes)

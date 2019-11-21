@@ -19,6 +19,7 @@ def get_movie_poster_from_allocine(poster_url: str) -> bytes:
     api_response = requests.get(poster_url)
 
     if api_response.status_code != 200:
-        raise AllocineException(f'Error getting API Allocine movie poster {poster_url}')
+        raise AllocineException(f'Error getting API Allocine movie poster {poster_url}'
+                                f' with code {api_response.status_code}')
 
     return api_response.content

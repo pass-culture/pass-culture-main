@@ -1,7 +1,5 @@
-from datetime import datetime
-from pathlib import Path
-
 import os
+from pathlib import Path
 
 from local_providers.local_provider import LocalProvider
 from models import VenueProvider, ThingType
@@ -70,9 +68,6 @@ class TestLocalProviderWithThumb(LocalProvider):
                     / '..' / '..' / 'sandboxes' / 'providers' / 'titelive_mocks' / 'provider_thumb.jpeg'
         return open(file_path, "rb").read()
 
-    def get_object_thumb_date(self) -> datetime:
-        return datetime.utcnow()
-
     def get_object_thumb_index(self) -> int:
         return 1
 
@@ -82,6 +77,7 @@ class TestLocalProviderWithThumb(LocalProvider):
 
     def __next__(self):
         pass
+
 
 class TestLocalProviderWithThumbIndexAt4(LocalProvider):
     name = "LocalProvider Test With ThumbIndex at 4th position"
@@ -95,9 +91,6 @@ class TestLocalProviderWithThumbIndexAt4(LocalProvider):
         file_path = Path(os.path.dirname(os.path.realpath(__file__))) \
                     / '..' / '..' / 'sandboxes' / 'providers' / 'titelive_mocks' / 'provider_thumb.jpeg'
         return open(file_path, "rb").read()
-
-    def get_object_thumb_date(self) -> datetime:
-        return datetime.utcnow()
 
     def get_object_thumb_index(self) -> int:
         return 4
