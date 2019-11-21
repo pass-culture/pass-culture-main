@@ -61,7 +61,6 @@ describe('src | components | pages | OfferItemContainer', () => {
         credit: null,
         dateCreated: '2019-03-07T10:39:23.560464Z',
         dateModifiedAtLastProvider: '2019-03-07T10:40:08.324689Z',
-        firstThumbDominantColor: [0, 0, 0],
         frontText: 'Some front text',
         id: 'H4',
         idAtProviders: null,
@@ -82,11 +81,11 @@ describe('src | components | pages | OfferItemContainer', () => {
       const result = mapStateToProps(state, ownProps)
       const expected = {
         dateModifiedAtLastProvider: '2019-03-07T10:40:03.865368Z',
-        description: 'Ainsi la personne avec qui elle avait confessé qu’elle allait goûter, avec qui elle vous avait supplié de la laisser goûter, cette personne, raison avouée par la nécessité, ce n’était pas elle, c’était une autre, c’était encore autre chose ! Autre chose, quoi ? Une autre, qui ?',
+        description:
+          'Ainsi la personne avec qui elle avait confessé qu’elle allait goûter, avec qui elle vous avait supplié de la laisser goûter, cette personne, raison avouée par la nécessité, ce n’était pas elle, c’était une autre, c’était encore autre chose ! Autre chose, quoi ? Une autre, qui ?',
         extraData: {
           author: 'Eloise Jomenrency',
         },
-        firstThumbDominantColor: [0, 0, 0],
         id: 'LY',
         idAtProviders: '1297',
         isNational: true,
@@ -131,7 +130,6 @@ describe('src | components | pages | OfferItemContainer', () => {
         city: 'Cayenne',
         dateCreated: '2019-03-07T10:39:23.560414Z',
         dateModifiedAtLastProvider: '2019-03-07T10:39:57.823508Z',
-        firstThumbDominantColor: null,
         iban: 'FR7630001007941234567890185',
         id: 'BA',
         idAtProviders: null,
@@ -179,7 +177,6 @@ describe('src | components | pages | OfferItemContainer', () => {
         comment: null,
         dateModifiedAtLastProvider: '2019-03-07T10:40:03.234016Z',
         departementCode: null,
-        firstThumbDominantColor: null,
         id: 'DA',
         idAtProviders: null,
         isValidated: true,

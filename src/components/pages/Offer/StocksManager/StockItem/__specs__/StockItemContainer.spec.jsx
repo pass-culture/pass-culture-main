@@ -126,7 +126,6 @@ describe('mount', () => {
             comment: null,
             dateModifiedAtLastProvider: '2019-03-07T10:40:03.234016Z',
             departementCode: null,
-            firstThumbDominantColor: null,
             id: 'DA',
             idAtProviders: null,
             isValidated: true,

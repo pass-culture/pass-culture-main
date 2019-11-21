@@ -70,7 +70,6 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
           city: 'Cayenne',
           dateCreated: '2019-03-07T10:39:23.560414Z',
           dateModifiedAtLastProvider: '2019-03-07T10:39:57.823508Z',
-          firstThumbDominantColor: null,
           iban: 'FR7630001007941234567890185',
           id: 'BA',
           idAtProviders: null,
@@ -92,7 +91,6 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
             city: 'Cayenne',
             dateCreated: '2019-03-07T10:39:23.560414Z',
             dateModifiedAtLastProvider: '2019-03-07T10:39:57.823508Z',
-            firstThumbDominantColor: null,
             iban: 'FR7630001007941234567890185',
             id: 'BA',
             idAtProviders: null,
@@ -112,7 +110,6 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
             city: 'Cayenne',
             dateCreated: '2019-03-07T10:39:23.560414Z',
             dateModifiedAtLastProvider: '2019-03-07T10:39:57.843884Z',
-            firstThumbDominantColor: null,
             id: 'CA',
             idAtProviders: null,
             isActive: true,
@@ -241,7 +238,6 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
           comment: null,
           dateModifiedAtLastProvider: '2019-03-07T10:40:03.234016Z',
           departementCode: null,
-          firstThumbDominantColor: null,
           id: 'DA',
           idAtProviders: null,
           isValidated: true,
@@ -265,7 +261,6 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
             comment: null,
             dateModifiedAtLastProvider: '2019-03-07T10:40:03.234016Z',
             departementCode: null,
-            firstThumbDominantColor: null,
             id: 'DA',
             idAtProviders: null,
             isValidated: true,
@@ -367,14 +362,13 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
         // then
         expect(dispatch).toHaveBeenCalledWith({
           config: undefined,
-          name: "offer",
+          name: 'offer',
           patch: {
-            "isDuo": true,
+            isDuo: true,
           },
           type: 'MERGE_FORM_OFFER_ISDUO',
         })
       })
     })
   })
-
 })

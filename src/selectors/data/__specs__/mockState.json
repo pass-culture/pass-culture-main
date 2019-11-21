@@ -15,7 +15,6 @@
           "city": "Cayenne",
           "dateCreated": "2019-05-06T09:12:46.278743Z",
           "dateModifiedAtLastProvider": "2019-05-06T09:13:08.458343Z",
-          "firstThumbDominantColor": null,
           "iban": "FR7630001007941234567890185",
           "idAtProviders": null,
           "isActive": true,
@@ -76,11 +75,6 @@
           "credit": "undefined",
           "dateCreated": "2019-05-06T09:40:00.408589Z",
           "dateModifiedAtLastProvider": "2019-05-06T09:40:00.408532Z",
-          "firstThumbDominantColor": [
-            97,
-            116,
-            131
-          ],
           "frontText": null,
           "id": "AMCQ",
           "idAtProviders": null,
@@ -135,7 +129,6 @@
               "stageDirector": "Laurne Valik",
               "visa": "5454VCJGFDJRT"
             },
-            "firstThumbDominantColor": null,
             "id": "BAUQ",
             "idAtProviders": null,
             "isNational": true,
@@ -196,7 +189,6 @@
             "comment": null,
             "dateModifiedAtLastProvider": "2019-05-06T09:13:13.134271Z",
             "departementCode": "93",
-            "firstThumbDominantColor": null,
             "id": "AFCA",
             "idAtProviders": null,
             "isVirtual": false,
@@ -208,7 +200,6 @@
               "city": "Drancy",
               "dateCreated": "2019-05-06T09:12:46.278743Z",
               "dateModifiedAtLastProvider": "2019-05-06T09:13:08.463068Z",
-              "firstThumbDominantColor": null,
               "id": "4Y",
               "idAtProviders": null,
               "isActive": true,

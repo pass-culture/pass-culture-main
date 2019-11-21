@@ -57,7 +57,6 @@ describe('src | selectors | data | offerersSelectors', () => {
         city: 'Cayenne',
         dateCreated: '2019-05-06T09:12:46.278743Z',
         dateModifiedAtLastProvider: '2019-05-06T09:13:08.458343Z',
-        firstThumbDominantColor: null,
         iban: 'FR7630001007941234567890185',
         id: '4Q',
         idAtProviders: null,
