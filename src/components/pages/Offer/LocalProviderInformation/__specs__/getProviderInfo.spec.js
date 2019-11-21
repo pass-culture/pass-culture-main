@@ -8,10 +8,13 @@ describe('src | components | pages | Offer | LocalProviderInformation | getProvi
       const isTiteLive = true
       const isAllocine = false
 
-      // when then
-      expect(getProviderInfo(isTiteLive, isAllocine)).toStrictEqual({
+      // when
+      const providerInfo = getProviderInfo(isTiteLive, isAllocine)
+
+      // then
+      expect(providerInfo).toStrictEqual({
         icon: PROVIDER_ICONS['TiteLiveStocks'],
-        name: 'Tite Live'
+        name: 'Tite Live',
       })
     })
   })
@@ -22,10 +25,13 @@ describe('src | components | pages | Offer | LocalProviderInformation | getProvi
       const isTiteLive = false
       const isAllocine = true
 
-      // when then
-      expect(getProviderInfo(isTiteLive, isAllocine)).toStrictEqual({
+      // when
+      const providerInfo = getProviderInfo(isTiteLive, isAllocine)
+
+      // then
+      expect(providerInfo).toStrictEqual({
         icon: PROVIDER_ICONS['AllocineStocks'],
-        name: 'Allociné'
+        name: 'Allociné',
       })
     })
   })

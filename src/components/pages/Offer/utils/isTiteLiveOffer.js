@@ -1,5 +1,5 @@
-const isTiteLiveOffer = offer => {
-  if (offer == null) {
+const isTiteLiveOffer = (offer = null) => {
+  if (offer === null) {
     return false
   }
 
