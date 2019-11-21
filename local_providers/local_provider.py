@@ -240,4 +240,3 @@ def add_new_thumb(pc_object: Model, thumb_index: int, image_as_bytes: bytes):
     thumb_destination_storage_id = build_thumb_path(pc_object, thumb_index)
     save_provider_thumb(thumb_destination_storage_id, image_as_bytes)
     pc_object.thumbCount = pc_object.thumbCount + 1
-    pc_object.firstThumbDominantColor = BLACK

@@ -29,7 +29,6 @@ def store_public_object_from_sandbox_assets(folder, obj, product_type, index=0):
                 obj,
                 thumb_file.read(),
                 index,
-                dominant_color=b'\x00\x00\x00',
                 convert=False,
                 symlink_path=thumb_path
             )

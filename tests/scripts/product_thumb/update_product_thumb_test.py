@@ -91,7 +91,7 @@ class ProcessProductThumbTest:
     @patch('scripts.product_thumb.update_product_thumb.logger.info')
     def test_should_increase_product_thumb_count_by_one_and_set_first_thumb_dominant_color_when_thumb_is_main(self, logger_info, app):
         # Given
-        product = create_product_with_thing_type(thumb_count=0, dominant_color=None)
+        product = create_product_with_thing_type(thumb_count=0)
         PcObject.save(product)
         human_product_id = humanize(product.id)
         uri = f'thumbs/products/{human_product_id}'
@@ -104,7 +104,6 @@ class ProcessProductThumbTest:
         # Then
         db.session.refresh(product)
         assert product.thumbCount == 1
-        assert product.firstThumbDominantColor == main_thumb_dominant_color
         assert success
         logger_info.assert_called_once_with(
             f'[BATCH][PRODUCT THUMB UPDATE] Product with id: "{product.id}" / uri: "{uri}" processed successfully')
@@ -114,7 +113,7 @@ class ProcessProductThumbTest:
             self, app):
         # Given
         main_thumb_dominant_color = b'\xcc\x80'
-        product = create_product_with_thing_type(thumb_count=1, dominant_color=main_thumb_dominant_color)
+        product = create_product_with_thing_type(thumb_count=1)
         PcObject.save(product)
         human_product_id = humanize(product.id)
         uri = f'thumbs/products/{human_product_id}_1'
@@ -126,7 +125,6 @@ class ProcessProductThumbTest:
         # Then
         db.session.refresh(product)
         assert product.thumbCount == 2
-        assert product.firstThumbDominantColor == main_thumb_dominant_color
 
     @patch('scripts.product_thumb.update_product_thumb._compute_product_id_from_uri')
     def test_should_not_compute_product_id_for_uri_when_product_thumb_is_not_found(self, compute_product_id):
@@ -179,7 +177,7 @@ class ProcessProductThumbTest:
     @patch('scripts.product_thumb.update_product_thumb.logger.info')
     def test_should_not_fetch_product_thumb_when_is_not_main(self, logger_info, app):
         # Given
-        product = create_product_with_thing_type(thumb_count=1, dominant_color=b'\xcc\x80')
+        product = create_product_with_thing_type(thumb_count=1)
         PcObject.save(product)
         human_product_id = humanize(product.id)
         uri = f'thumbs/products/{human_product_id}_1'

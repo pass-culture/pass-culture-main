@@ -358,7 +358,6 @@ VENUE_PROVIDER_INCLUDES = [
 
 OFFERER_FOR_PENDING_VALIDATION_INCLUDES = [
     "validationToken",
-    "-firstThumbDominantColor",
     "-thumbCount",
     "-idAtProviders",
     {
@@ -388,7 +387,6 @@ OFFERER_FOR_PENDING_VALIDATION_INCLUDES = [
             '-latitude',
             '-longitude',
             '-dateModifiedAtLastProvider',
-            '-firstThumbDominantColor'
         ]
     }
 ]

@@ -11,7 +11,7 @@ def test_model_thumbUrl_should_use_mediation_first_as_thumbUrl(get_storage_base_
     user = create_user(email='user@test.com')
     offerer = create_offerer()
     venue = create_venue(offerer)
-    product = create_product_with_event_type(dominant_color=b'\x00\x00\x00', thumb_count=1)
+    product = create_product_with_event_type(thumb_count=1)
     offer = create_offer_with_event_product(product=product, venue=venue)
     mediation = create_mediation(offer)
     mediation.id = 1
@@ -28,7 +28,7 @@ def test_model_thumbUrl_should_use_mediation_first_as_thumbUrl(get_storage_base_
 def test_model_thumbUrl_should_have_thumbUrl_using_productId_when_no_mediation(get_storage_base_url):
     # given
     user = create_user(email='user@booking.com')
-    product = create_product_with_thing_type(dominant_color=None, thumb_count=0)
+    product = create_product_with_thing_type(thumb_count=0)
     product.id = 1
     offerer = create_offerer()
     venue = create_venue(offerer=offerer)

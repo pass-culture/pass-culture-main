@@ -41,8 +41,8 @@ class Put:
             user = create_user(email='user1@user.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer_thing_1 = create_offer_with_thing_product(venue, thumb_count=1, dominant_color=b'123')
-            offer_thing_2 = create_offer_with_thing_product(venue, thumb_count=1, dominant_color=b'123')
+            offer_thing_1 = create_offer_with_thing_product(venue, thumb_count=1)
+            offer_thing_2 = create_offer_with_thing_product(venue, thumb_count=1)
             stock_thing_1 = create_stock_with_thing_offer(offerer, venue, offer_thing_1, price=0)
             stock_thing_2 = create_stock_with_thing_offer(offerer, venue, offer_thing_2, price=0)
             mediation_1 = create_mediation(offer_thing_1)
@@ -65,7 +65,7 @@ class Put:
             user = create_user(email='user1@user.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer_with_thing = create_offer_with_thing_product(venue, thumb_count=1, dominant_color=b'123')
+            offer_with_thing = create_offer_with_thing_product(venue, thumb_count=1)
             stock_with_thing = create_stock_with_thing_offer(offerer, venue, offer_with_thing, price=0)
             mediation = create_mediation(offer_with_thing)
             PcObject.save(user, stock_with_thing, mediation)
@@ -105,7 +105,7 @@ class Put:
             user = create_user(email='user1@user.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer_thing = create_offer_with_thing_product(venue, thumb_count=1, dominant_color=b'123')
+            offer_thing = create_offer_with_thing_product(venue, thumb_count=1)
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
             mediation = create_mediation(offer_thing)
             PcObject.save(user, stock_thing, mediation)
@@ -503,7 +503,7 @@ class Put:
             user = create_user(email='weird.bug@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, thumb_count=1, dominant_color=b'123')
+            offer = create_offer_with_event_product(venue, thumb_count=1)
             event_occurrence = create_event_occurrence(
                 offer,
                 beginning_datetime=four_days_from_now,
@@ -702,7 +702,7 @@ class Put:
             user = create_user(email='user1@user.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer_thing = create_offer_with_thing_product(venue, thumb_count=1, dominant_color=b'123')
+            offer_thing = create_offer_with_thing_product(venue, thumb_count=1)
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
             mediation = create_mediation(offer_thing)
             PcObject.save(user, stock_thing, mediation)
@@ -725,7 +725,7 @@ class Put:
             user = create_user(email='user1@user.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer_thing = create_offer_with_thing_product(venue, thumb_count=1, dominant_color=b'123')
+            offer_thing = create_offer_with_thing_product(venue, thumb_count=1)
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
             mediation = create_mediation(offer_thing)
             PcObject.save(user, stock_thing, mediation)
@@ -749,7 +749,7 @@ class Put:
             user = create_user(email='user1@user.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer_thing = create_offer_with_thing_product(venue, thumb_count=1, dominant_color=b'123')
+            offer_thing = create_offer_with_thing_product(venue, thumb_count=1)
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
             mediation = create_mediation(offer_thing)
             PcObject.save(user, stock_thing, mediation)
@@ -940,7 +940,7 @@ class Put:
             PcObject.save(user)
 
             for i in range(0, 10):
-                offer_event = create_offer_with_event_product(venue, thumb_count=1, dominant_color=b'123')
+                offer_event = create_offer_with_event_product(venue, thumb_count=1)
                 event_occurrence = create_event_occurrence(
                     offer_event,
                     beginning_datetime=four_days_from_now,

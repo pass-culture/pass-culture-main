@@ -236,7 +236,7 @@ class Patch:
 
             PcObject.save(offer, user, user_offerer)
 
-            forbidden_keys = ['idAtProviders', 'dateModifiedAtLastProvider', 'thumbCount', 'firstThumbDominantColor',
+            forbidden_keys = ['idAtProviders', 'dateModifiedAtLastProvider', 'thumbCount',
                               'owningOffererId', 'id', 'lastProviderId', 'dateCreated']
 
             json = {
@@ -246,8 +246,7 @@ class Patch:
                 'owningOffererId': 'AA',
                 'idAtProviders': 1,
                 'dateModifiedAtLastProvider': serialize(datetime(2019, 1, 1)),
-                'thumbCount': 2,
-                'firstThumbDominantColor': ''
+                'thumbCount': 2
             }
 
             # When

@@ -1,7 +1,6 @@
-from sqlalchemy import Binary, CheckConstraint, Column, Integer
+from sqlalchemy import Column, Integer
 
 from utils.human_ids import humanize
-
 from utils.object_storage import delete_public_object, \
     get_public_object_date, \
     get_storage_base_url, \
@@ -11,11 +10,6 @@ from utils.string_processing import get_model_plural_name
 
 class HasThumbMixin(object):
     thumbCount = Column(Integer(), nullable=False, default=0)
-
-    firstThumbDominantColor = Column(Binary(3),
-                                     CheckConstraint('"thumbCount"=0 OR "firstThumbDominantColor" IS NOT NULL',
-                                                     name='check_thumb_has_dominant_color'),
-                                     nullable=True)
 
     def delete_thumb(self, index):
         delete_public_object("thumbs", self.get_thumb_storage_id(index))

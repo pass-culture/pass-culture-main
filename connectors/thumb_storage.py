@@ -37,7 +37,6 @@ def save_thumb(
         thumb,
         image_index,
         image_type=None,
-        dominant_color=None,
         convert=True,
         crop=None,
         symlink_path=None,
@@ -49,12 +48,6 @@ def save_thumb(
     if convert:
         crop_params = crop if crop is not None else DO_NOT_CROP
         new_thumb = standardize_image(thumb, crop_params)
-
-    if image_index == 0:
-        if dominant_color:
-            model_with_thumb.firstThumbDominantColor = dominant_color
-        else:
-            model_with_thumb.firstThumbDominantColor = BLACK
 
     store_thumb(
         'thumbs',

@@ -75,7 +75,7 @@ def test_model_thumbUrl_should_use_mediation_first_as_thumbUrl(get_storage_base_
     user = create_user(email='user@test.com')
     offerer = create_offerer()
     venue = create_venue(offerer)
-    product = create_product_with_event_type(dominant_color=b'\x00\x00\x00', thumb_count=1)
+    product = create_product_with_event_type(thumb_count=1)
     offer = create_offer_with_event_product(product=product, venue=venue)
     mediation = create_mediation(offer=offer)
     mediation.id = 1
@@ -96,7 +96,7 @@ def test_model_thumbUrl_should_have_thumbUrl_using_productId_when_no_mediation(g
     user = create_user(email='user@test.com')
     offerer = create_offerer()
     venue = create_venue(offerer)
-    product = create_product_with_event_type(dominant_color=None, thumb_count=0)
+    product = create_product_with_event_type(thumb_count=0)
     product.id = 2
     offer = create_offer_with_event_product(product=product, venue=venue)
     stock = create_stock(price=12, available=1, offer=offer)
@@ -113,7 +113,7 @@ def test_model_qrCode_should_return_qrCode_as_base64_string_when_booking_is_not_
     user = create_user(email='user@test.com')
     offerer = create_offerer()
     venue = create_venue(offerer)
-    product = create_product_with_event_type(dominant_color=None, thumb_count=0)
+    product = create_product_with_event_type(thumb_count=0)
     product.id = 2
     offer = create_offer_with_event_product(product=product, venue=venue)
     stock = create_stock(price=12, available=1, offer=offer)
@@ -132,7 +132,7 @@ def test_model_qrCode_should_return_qrCode_as_None_when_booking_is_used_and_canc
     user = create_user(email='user@test.com')
     offerer = create_offerer()
     venue = create_venue(offerer)
-    product = create_product_with_event_type(dominant_color=None, thumb_count=0)
+    product = create_product_with_event_type(thumb_count=0)
     product.id = 2
     offer = create_offer_with_event_product(product=product, venue=venue)
     stock = create_stock(price=12, available=1, offer=offer)
@@ -149,7 +149,7 @@ def test_model_qrCode_should_return_qrCode_as_None_when_booking_is_used_and_not_
     user = create_user(email='user@test.com')
     offerer = create_offerer()
     venue = create_venue(offerer)
-    product = create_product_with_event_type(dominant_color=None, thumb_count=0)
+    product = create_product_with_event_type(thumb_count=0)
     product.id = 2
     offer = create_offer_with_event_product(product=product, venue=venue)
     stock = create_stock(price=12, available=1, offer=offer)
@@ -166,7 +166,7 @@ def test_model_qrCode_should_return_qrCode_as_None_when_booking_is_not_used_and_
     user = create_user(email='user@test.com')
     offerer = create_offerer()
     venue = create_venue(offerer)
-    product = create_product_with_event_type(dominant_color=None, thumb_count=0)
+    product = create_product_with_event_type(thumb_count=0)
     product.id = 2
     offer = create_offer_with_event_product(product=product, venue=venue)
     stock = create_stock(price=12, available=1, offer=offer)

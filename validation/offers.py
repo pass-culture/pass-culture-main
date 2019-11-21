@@ -33,7 +33,7 @@ def check_venue_exists_when_requested(venue, venue_id):
 
 
 def check_valid_edition(payload: dict):
-    forbidden_keys = {'idAtProviders', 'dateModifiedAtLastProvider', 'thumbCount', 'firstThumbDominantColor',
+    forbidden_keys = {'idAtProviders', 'dateModifiedAtLastProvider', 'thumbCount',
                       'owningOffererId', 'id', 'lastProviderId', 'dateCreated'}
     all_keys = payload.keys()
     keys_in_error = forbidden_keys.intersection(all_keys)

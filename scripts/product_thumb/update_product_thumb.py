@@ -26,7 +26,6 @@ def _get_product_thumb(uri: str) -> Optional[bytes]:
 def process_product_thumb(uri: str, get_product_thumb: Callable = _get_product_thumb) -> Optional[bool]:
     is_main_thumb = '_' not in uri
 
-    product_thumb = None
     if is_main_thumb:
         product_thumb = get_product_thumb(uri)
         if not product_thumb:
@@ -42,7 +41,7 @@ def process_product_thumb(uri: str, get_product_thumb: Callable = _get_product_t
                          f'thumb was not processed for product with id: "{product.id}" / uri: "{uri}"')
             return
 
-        _update_product_thumb(product, product_thumb)
+        _update_product_thumb(product)
         logger.info(
             f'[BATCH][PRODUCT THUMB UPDATE] Product with id: "{product.id}" / uri: "{uri}" processed successfully')
         return True
@@ -65,8 +64,6 @@ def _compute_product_id_from_uri(uri: str) -> int:
     return dehumanize(human_id)
 
 
-def _update_product_thumb(product: Product, product_thumb: bytes):
+def _update_product_thumb(product: Product):
     product.thumbCount += 1
-    if product_thumb:
-        product.firstThumbDominantColor = BLACK
     PcObject.save(product)

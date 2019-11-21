@@ -12,7 +12,6 @@ def reset_thumb_count():
             .paginate(page=page_index, per_page=page_size, error_out=False).items
         for product in products:
             product.thumbCount = 0
-            product.firstThumbDominantColor = None
         PcObject.save(*products)
         page_index += 1
         print(f"Page: {page_index}")
