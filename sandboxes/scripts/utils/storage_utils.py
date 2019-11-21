@@ -14,14 +14,14 @@ MIMES_BY_FOLDER = {
     "zips": "application/zip"
 }
 
-def store_public_object_from_sandbox_assets(folder, obj, product_type, index=0):
+def store_public_object_from_sandbox_assets(folder, obj, offer_type, index=0):
     dir_path = Path(os.path.dirname(os.path.realpath(__file__)))
     plural_model_name = get_model_plural_name(obj)
     thumb_id = humanize(obj.id)
 
     thumb_path = dir_path\
                  / '..' / '..' / folder / plural_model_name\
-                 / str(product_type)
+                 / str(offer_type)
 
     with open(thumb_path, mode='rb') as thumb_file:
         if folder == "thumbs":

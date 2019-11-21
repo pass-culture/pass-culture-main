@@ -1,8 +1,8 @@
 from decimal import Decimal
-from typing import List, Union
+from typing import List
 
+# from models.offer import Offer
 from models.booking import Booking
-from models.product import Product
 from models.offer_type import ThingType
 
 PHYSICAL_EXPENSES_CAPPED_TYPES = [
@@ -49,8 +49,8 @@ def _compute_booking_expenses(bookings: List[Booking], get_bookings=lambda b: b)
 def _get_bookings_of_digital_things(bookings: List[Booking]) -> List[Booking]:
     match = []
     for booking in bookings:
-        product = booking.stock.resolvedOffer.product
-        if is_eligible_to_digital_products_capping(product):
+        offer = booking.stock.resolvedOffer
+        if is_eligible_to_digital_offers_capping(offer):
             match.append(booking)
 
     return match
@@ -59,22 +59,22 @@ def _get_bookings_of_digital_things(bookings: List[Booking]) -> List[Booking]:
 def _get_bookings_of_physical_things(bookings: List[Booking]) -> List[Booking]:
     match = []
     for booking in bookings:
-        product = booking.stock.resolvedOffer.product
-        if is_eligible_to_physical_products_capping(product):
+        offer = booking.stock.resolvedOffer
+        if is_eligible_to_physical_offers_capping(offer):
             match.append(booking)
 
     return match
 
 
-def is_eligible_to_digital_products_capping(product: Product) -> bool:
-    if product.isDigital and product.type in map(str, DIGITAL_EXPENSES_CAPPED_TYPES):
+def is_eligible_to_digital_offers_capping(offer) -> bool:
+    if offer.isDigital and offer.type in map(str, DIGITAL_EXPENSES_CAPPED_TYPES):
         return True
 
     return False
 
 
-def is_eligible_to_physical_products_capping(product: Product) -> bool:
-    if not product.isDigital and product.type in map(str, PHYSICAL_EXPENSES_CAPPED_TYPES):
+def is_eligible_to_physical_offers_capping(offer) -> bool:
+    if not offer.isDigital and offer.type in map(str, PHYSICAL_EXPENSES_CAPPED_TYPES):
         return True
 
     return False

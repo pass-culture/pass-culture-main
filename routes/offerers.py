@@ -114,14 +114,3 @@ def patch_offerer(offererId):
     PcObject.save(offerer)
     return jsonify(get_dict_offerer(offerer)), 200
 
-
-def _generate_orderby_criterium(order, order_by_key):
-    allowed_columns_for_order = {'booking_id': 'booking.id', 'venue_name': 'venue.name',
-                                 'date': 'booking."dateCreated"', 'category': 'product.type',
-                                 'amount': 'booking.amount'}
-    if order_by_key and order:
-        column = allowed_columns_for_order[order_by_key]
-        order_by = '{} {}'.format(column, order)
-    else:
-        order_by = None
-    return order_by

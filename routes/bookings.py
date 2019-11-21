@@ -413,11 +413,11 @@ def _get_api_key_from_header(request):
 def _create_response_to_get_booking_by_token(booking):
     offer_name = booking.stock.resolvedOffer.product.name
     date = None
-    product = booking.stock.resolvedOffer.product
-    is_event = ProductType.is_event(product.type)
+    offer = booking.stock.resolvedOffer
+    is_event = ProductType.is_event(offer.type)
     if is_event:
         date = serialize(booking.stock.beginningDatetime)
-    venue_departement_code = booking.stock.resolvedOffer.venue.departementCode
+    venue_departement_code = offer.venue.departementCode
     response = {
         'bookingId': humanize(booking.id),
         'date': date,
@@ -427,32 +427,9 @@ def _create_response_to_get_booking_by_token(booking):
         'userName': booking.user.publicName,
         'venueDepartementCode': venue_departement_code,
     }
-    if product.type == str(EventType.ACTIVATION):
+    if offer.type == str(EventType.ACTIVATION):
         response.update({'phoneNumber': booking.user.phoneNumber,
                          'dateOfBirth': serialize(booking.user.dateOfBirth)})
 
     return response
 
-
-def _create_response_to_get_booking_by_token_v2(booking):
-    offer_name = booking.stock.resolvedOffer.product.name
-    date = None
-    product = booking.stock.resolvedOffer.product
-    is_event = ProductType.is_event(product.type)
-    if is_event:
-        date = serialize(booking.stock.beginningDatetime)
-    venue_departement_code = booking.stock.resolvedOffer.venue.departementCode
-    response = {
-        'bookingId': humanize(booking.id),
-        'date': date,
-        'email': booking.user.email,
-        'isUsed': booking.isUsed,
-        'offerName': offer_name,
-        'userName': booking.user.publicName,
-        'venueDepartementCode': venue_departement_code,
-    }
-    if product.type == str(EventType.ACTIVATION):
-        response.update({'phoneNumber': booking.user.phoneNumber,
-                         'dateOfBirth': serialize(booking.user.dateOfBirth)})
-
-    return response

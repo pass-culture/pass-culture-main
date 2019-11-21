@@ -1,4 +1,4 @@
-from models import Offer, Stock, EventType, ThingType, Mediation, Product
+from models import Offer, Stock, EventType, ThingType, Mediation, Offer
 from models.user import User
 from repository.offer_queries import _filter_bookable_stocks_for_discovery
 from repository.user_queries import keep_only_webapp_users
@@ -16,13 +16,13 @@ def get_query_join_on_thing(query):
   query = query.join(Stock, join_on_offer_id)
   return query
 
-def get_non_free_offers_query_by_type(type):
+def get_non_free_offers_query_by_type():
   filter_not_free_price = (Stock.price > 0)
   filter_not_an_activation_offer = \
-      (Product.type != str(EventType.ACTIVATION)) \
-      | (Product.type != str(ThingType.ACTIVATION))
+      (Offer.type != str(EventType.ACTIVATION)) \
+      | (Offer.type != str(ThingType.ACTIVATION))
 
-  query = Offer.query.outerjoin(type)
+  query = Offer.query
   query = get_query_join_on_thing(query)
   query = _filter_bookable_stocks_for_discovery(query)
   query = query \
@@ -31,18 +31,18 @@ def get_non_free_offers_query_by_type(type):
   return query
 
 def get_non_free_digital_offer():
-  query = get_non_free_offers_query_by_type(Product)
+  query = get_non_free_offers_query_by_type()
   offer = query \
-      .filter(Product.url != None) \
+      .filter(Offer.url != None) \
       .first()
   return {
       "offer": get_offer_helper(offer)
   }
 
 def get_non_free_thing_offer_with_active_mediation():
-  query = get_non_free_offers_query_by_type(Product)
+  query = get_non_free_offers_query_by_type()
   offer = query \
-      .filter(Product.url == None) \
+      .filter(Offer.url == None) \
       .filter(Stock.beginningDatetime == None) \
       .filter(Offer.mediations.any(Mediation.isActive == True)) \
       .first()
@@ -52,7 +52,7 @@ def get_non_free_thing_offer_with_active_mediation():
   }
 
 def get_non_free_event_offer():
-  query = get_non_free_offers_query_by_type(Product)
+  query = get_non_free_offers_query_by_type()
   offer = query.first()
   return {
       "offer": get_offer_helper(offer)

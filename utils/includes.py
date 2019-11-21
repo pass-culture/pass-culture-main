@@ -65,7 +65,6 @@ OFFER_INCLUDES = [
         "key": "product",
         "includes": [
             'thumbUrl',
-            'offerType',
             '-type'
         ]
     },
@@ -111,7 +110,7 @@ FAVORITE_INCLUDES = [
             "offerType",
             {
                 "key": "product",
-                "includes": ["thumbUrl", "offerType"]
+                "includes": ["thumbUrl"]
             },
             {
                 "key": "stocks",
@@ -143,7 +142,7 @@ RECOMMENDATION_INCLUDES = [
             "offerType",
             {
                 "key": "product",
-                "includes": ["thumbUrl", "offerType"]
+                "includes": ["thumbUrl"]
             },
             {
                 "key": "stocks",
@@ -310,7 +309,7 @@ PRO_BOOKING_INCLUDES = [
                         'isFullyBooked',
                         {
                             "key": "product",
-                            "includes": ["offerType", "thumbUrl"]
+                            "includes": ["thumbUrl"]
                         },
                     ]
                 }

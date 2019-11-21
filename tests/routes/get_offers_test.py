@@ -187,58 +187,6 @@ class Get:
             assert humanize(offer2.productId) in event_ids
             assert humanize(offer3.productId) in event_ids
 
-
-        @clean_database
-        def test_returns_list_of_offers_with_thing_or_event_with_type_details(self, app):
-            # given
-            user = create_user(can_book_free_offers=False, is_admin=True)
-            offerer = create_offerer()
-            venue = create_venue(offerer, siret=offerer.siren + '12345', postal_code='93000', departement_code='93')
-            event_offer = create_offer_with_event_product(venue, event_type=EventType.SPECTACLE_VIVANT)
-            thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION)
-            stock_event = create_stock_from_offer(event_offer, price=0)
-            stock_thing = create_stock_from_offer(thing_offer, price=0)
-            PcObject.save(user, stock_event, stock_thing)
-
-            expected_thing_type = {
-                'conditionalFields': ["author", "isbn"],
-                'proLabel': "Livres papier ou numérique, abonnements lecture",
-                'appLabel': 'Livre ou carte lecture',
-                'offlineOnly': False,
-                'onlineOnly': False,
-                'sublabel': "Lire",
-                'description': "S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?",
-                'type': 'Thing',
-                'value': 'ThingType.LIVRE_EDITION',
-                'isActive': True
-            }
-            expected_event_type = {
-                'conditionalFields': ["author", "showType", "stageDirector", "performer"],
-                'proLabel': "Spectacle vivant",
-                'appLabel': "Spectacle",
-                'offlineOnly': True,
-                'onlineOnly': False,
-                'sublabel': "Applaudir",
-                'description': "Suivre un géant de 12 mètres dans la ville ? Rire aux éclats devant un stand up ? Rêver le temps d’un opéra ou d’un spectacle de danse ? Assister à une pièce de théâtre, ou se laisser conter une histoire ?",
-                'type': 'Event',
-                'value': 'EventType.SPECTACLE_VIVANT',
-                'isActive': True
-            }
-
-            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
-
-            # when
-            response = auth_request.get('/offers')
-
-            # then
-            json = response.json
-            types = list(map(lambda x: x['product']['offerType'], json))
-            thing_or_event_keys = list(map(lambda x: x['product'].keys(), json))
-            assert response.status_code == 200
-            assert expected_thing_type in types
-            assert expected_event_type in types
-            assert "type" not in thing_or_event_keys
-
         @clean_database
         def test_does_not_show_anything_to_user_offerer_when_not_validated(self, app):
             # given

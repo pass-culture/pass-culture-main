@@ -101,7 +101,7 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
                 store_public_object_from_sandbox_assets(
                     "thumbs",
                     offer.product,
-                    offer.product.type
+                    offer.type
                 )
 
     logger.info('created {} recommendations'.format(

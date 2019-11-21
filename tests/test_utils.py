@@ -107,7 +107,7 @@ def create_booking_for_thing(
         date_created=datetime.utcnow()
 ):
     product = Product(from_dict={'url': url, 'type': str(product_type)})
-    offer = Offer(from_dict={'type': str(product_type)})
+    offer = Offer(from_dict={'url': url, 'type': str(product_type)})
     stock = Stock()
     booking = Booking(from_dict={'amount': amount})
     offer.product = product

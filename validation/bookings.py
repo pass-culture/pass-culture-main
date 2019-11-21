@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from domain.expenses import is_eligible_to_physical_products_capping, is_eligible_to_digital_products_capping
+from domain.expenses import is_eligible_to_physical_offers_capping, is_eligible_to_digital_offers_capping
 from domain.bookings import BOOKING_CANCELLATION_DELAY
 from domain.user_activation import is_activation_booking
 from models import ApiErrors, Booking, RightsType
@@ -98,16 +98,16 @@ def check_offer_date(stock):
 
 def check_expenses_limits(expenses: dict, booking: Booking, find_stock=find_stock_by_id):
     stock = find_stock(booking.stockId)
-    product = stock.resolvedOffer.product
+    offer = stock.resolvedOffer
 
-    if is_eligible_to_physical_products_capping(product):
+    if is_eligible_to_physical_offers_capping(offer):
         if (expenses['physical']['actual'] + booking.value) > expenses['physical']['max']:
             raise ApiErrors(
                 {'global': ['Le plafond de %s € pour les biens culturels ne vous permet pas ' \
                             'de réserver cette offre.' % expenses['physical']['max']]}
             )
 
-    if is_eligible_to_digital_products_capping(product):
+    if is_eligible_to_digital_offers_capping(offer):
         if (expenses['digital']['actual'] + booking.value) > expenses['digital']['max']:
             raise ApiErrors(
                 {'global': ['Le plafond de %s € pour les offres numériques ne vous permet pas ' \

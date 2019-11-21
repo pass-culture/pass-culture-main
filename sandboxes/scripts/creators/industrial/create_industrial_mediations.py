@@ -24,7 +24,7 @@ def create_industrial_mediations(offers_by_name):
         store_public_object_from_sandbox_assets(
             "thumbs",
             mediation,
-            mediation.offer.product.type
+            mediation.offer.type
         )
 
     return mediations_by_name

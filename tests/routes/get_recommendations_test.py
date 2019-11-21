@@ -151,7 +151,6 @@ class Get:
             assert 'offerType' in recommendation['offer']
             assert 'product' in recommendation['offer']
             assert 'thumbUrl' in recommendation['offer']['product']
-            assert 'offerType' in recommendation['offer']['product']
             assert 'stocks' in recommendation['offer']
             assert 'isBookable' in recommendation['offer']['stocks'][0]
             assert 'venue' in recommendation['offer']

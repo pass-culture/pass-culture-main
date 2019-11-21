@@ -79,6 +79,6 @@ def test_find_online_activation_stock(app):
 
     # then
     assert stock.offer.venue.isVirtual == True
-    assert stock.offer.product.type == 'ThingType.ACTIVATION'
+    assert stock.offer.type == 'ThingType.ACTIVATION'
     assert stock.available == 200
     assert stock.price == 0
