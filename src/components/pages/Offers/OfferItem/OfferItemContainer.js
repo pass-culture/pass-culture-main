@@ -12,9 +12,9 @@ import {
 } from '../../../../selectors/data/stocksSelectors'
 import { selectMediationsByOfferId } from '../../../../selectors/data/mediationsSelectors'
 import { selectProductById } from '../../../../selectors/data/productsSelectors'
+import { selectTypeValueByOffer } from '../../../../selectors/data/typesSelectors'
 import { selectVenueById } from '../../../../selectors/data/venuesSelectors'
 import { selectOffererById } from '../../../../selectors/data/offerersSelectors'
-import { getOfferTypeLabel } from '../../../../utils/offerItem'
 import { offerNormalizer } from '../../../../utils/normalizers'
 import withTracking from '../../../hocs/withTracking'
 
@@ -52,7 +52,7 @@ export const mapStateToProps = (state, ownProps) => {
     product,
     stocks: selectStocksByOfferId(state, offerId),
     offerer,
-    offerTypeLabel: getOfferTypeLabel(product),
+    offerTypeLabel: selectTypeValueByOffer(state, offer),
     stockAlertMessage,
     venue,
   }

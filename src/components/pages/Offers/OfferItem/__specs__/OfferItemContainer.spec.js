@@ -21,6 +21,7 @@ describe('src | components | pages | OfferItemContainer', () => {
           productId: 'LY',
           stockAlertMessage: 'encore 10 en stock',
           venueId: 'DA',
+          type: 'ThingType.JEUX_VIDEO'
         },
         stocks: [{}],
       }

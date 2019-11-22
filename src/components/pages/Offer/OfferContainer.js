@@ -43,7 +43,7 @@ export const mapStateToProps = (state, ownProps) => {
   const venue = selectVenueById(state, venueId)
   const isVenueVirtual = get(venue, 'isVirtual')
   const types = selectTypesByIsVenueVirtual(state, isVenueVirtual)
-  const offerTypeValue = get(state, 'form.offer.type') || get(product, 'offerType.value')
+  const offerTypeValue = get(state, 'form.offer.type') || get(offer, 'type')
   const selectedOfferType = selectTypeByIsVenueVirtualAndOfferTypeValue(
     state,
     isVenueVirtual,
@@ -58,7 +58,7 @@ export const mapStateToProps = (state, ownProps) => {
   const offerers = selectOfferers(state)
   const offerer = selectOffererById(state, offererId)
   const stocks = selectStocksByOfferId(state, offerId)
-  const url = get(state, 'form.offer.url') || get(product, 'url')
+  const url = get(state, 'form.offer.url') || get(offer, 'url')
 
   // should return value object
   const formInitialValues = selectFormInitialValuesByProductAndOfferAndOffererAndVenue(

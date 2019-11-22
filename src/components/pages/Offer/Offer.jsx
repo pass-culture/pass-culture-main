@@ -813,7 +813,7 @@ Offer.propTypes = {
   isFeatureActive: PropTypes.bool,
   location: PropTypes.shape().isRequired,
   query: PropTypes.shape().isRequired,
-  selectedOfferType: PropTypes.arrayOf().isRequired,
+  selectedOfferType: PropTypes.shape().isRequired,
   trackCreateOffer: PropTypes.func.isRequired,
   trackModifyOffer: PropTypes.func.isRequired,
   venues: PropTypes.arrayOf(PropTypes.shape()),

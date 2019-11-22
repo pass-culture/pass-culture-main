@@ -6,7 +6,6 @@ import StockItem from './StockItem'
 import withFrenchQueryRouter from '../../../../hocs/withFrenchQueryRouter'
 import selectFormInitialValuesByStockAndOfferIdAndOffererIdAndTimezone from './selectors/selectFormInitialValuesByStockAndOfferIdAndOffererId'
 import { translateQueryParamsToApiParams } from '../../../../../utils/translate'
-import { selectProductById } from '../../../../../selectors/data/productsSelectors'
 import { selectVenueById } from '../../../../../selectors/data/venuesSelectors'
 import { selectOffererById } from '../../../../../selectors/data/offerersSelectors'
 import { selectOfferById } from '../../../../../selectors/data/offersSelectors'
@@ -45,9 +44,7 @@ export const mapStateToProps = (state, ownProps) => {
 
   const offerId = params.offerId
   const offer = selectOfferById(state, offerId)
-  const { productId, venueId } = offer || {}
-
-  const product = selectProductById(state, productId)
+  const { venueId } = offer || {}
 
   const venue = selectVenueById(state, venueId)
   const managingOffererId = venue && venue.managingOffererId
@@ -69,8 +66,6 @@ export const mapStateToProps = (state, ownProps) => {
   return {
     hasIban,
     offer,
-    product,
-    productId,
     stockPatch,
     stockIdOrNew,
     timezone,
