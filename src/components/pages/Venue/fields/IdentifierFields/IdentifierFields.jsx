@@ -6,7 +6,7 @@ import Icon from '../../../../layout/Icon'
 import HiddenField from '../../../../layout/form/fields/HiddenField'
 import TextareaField from '../../../../layout/form/fields/TextareaField'
 import TextField from '../../../../layout/form/fields/TextField'
-import { formatSiret } from '../../siret/siretInformations'
+import { formatSiret } from '../../siret/selectSiretInformations'
 import ReactTooltip from 'react-tooltip'
 
 

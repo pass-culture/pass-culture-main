@@ -3,9 +3,9 @@ import {
   getLocationInformationsFromSiret,
   getSiretInformations,
   validateSiretSize
-} from '../siretInformations'
+} from '../selectSiretInformations'
 
-describe('src | components | pages | Venue | siret  ', () => {
+describe('src | components | pages | Venue | siret | selectSiretInformations', () => {
 
   beforeEach(() => {
     fetch.resetMocks()
