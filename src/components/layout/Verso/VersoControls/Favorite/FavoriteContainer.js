@@ -23,7 +23,7 @@ export const mapStateToProps = (state, ownProps) => {
   const isFeatureDisabled = selectIsFeatureDisabled(state, 'FAVORITE_OFFER')
   const mediation = selectMediationByRouterMatch(state, match) || {}
   const { id: mediationId } = mediation
-  const offer = selectOfferByRouterMatch(state, match) || {}
+  const offer = selectOfferByRouterMatch(state, match) || { id: '' }
   const { id: offerId } = offer
   const favorite = selectFavoriteByOfferId(state, offerId)
   const isFavorite = favorite !== undefined

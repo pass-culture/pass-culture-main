@@ -115,9 +115,9 @@ const BookingSuccess = ({ bookedPayload, isEvent }) => {
 
 BookingSuccess.propTypes = {
   bookedPayload: PropTypes.shape({
-    completedUrl: PropTypes.string.isRequired,
+    completedUrl: PropTypes.string,
     stock: PropTypes.shape({
-      price: PropTypes.string.isRequired,
+      price: PropTypes.number.isRequired,
     }).isRequired,
     token: PropTypes.string.isRequired,
   }).isRequired,
