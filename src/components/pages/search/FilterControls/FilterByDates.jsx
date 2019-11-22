@@ -51,11 +51,18 @@ class FilterByDates extends PureComponent {
 
   handleOnChangePickedDate = (date = null) => {
     const { filterActions } = this.props
-    const formatedDate = (date && date.toISOString()) || null
 
-    filterActions.change({ date: formatedDate, jours: null })
+    const formattedDate =
+      (date &&
+        date
+          .utcOffset(0)
+          .add(100, 'milliseconds')
+          .toISOString()) ||
+      null
+    filterActions.change({ date: formattedDate, jours: '0-0' })
 
-    this.setPickedDate(date)
+    const pickedDate = (date && date.utcOffset(100)) || null
+    this.setPickedDate(pickedDate)
   }
 
   render() {

@@ -1,4 +1,5 @@
 import { shallow } from 'enzyme'
+import moment from 'moment'
 import React from 'react'
 
 import FilterByDates from '../FilterByDates'
@@ -47,7 +48,7 @@ describe('src | components | pages | search | FilterControls | FilterByDates', (
   describe('handleOnChangePickedDate()', () => {
     it('should change the input date with the new date', () => {
       // given
-      const pickedDate = new Date('12/12/2034')
+      const pickedDate = moment()
       const wrapper = shallow(<FilterByDates {...props} />)
 
       // when
@@ -56,7 +57,7 @@ describe('src | components | pages | search | FilterControls | FilterByDates', (
       // then
       expect(props.filterActions.change).toHaveBeenCalledWith({
         date: pickedDate.toISOString(),
-        jours: null,
+        jours: '0-0',
       })
       expect(wrapper.state(['pickedDate'])).toBe(pickedDate)
     })
@@ -71,7 +72,7 @@ describe('src | components | pages | search | FilterControls | FilterByDates', (
       // then
       expect(props.filterActions.change).toHaveBeenCalledWith({
         date: null,
-        jours: null,
+        jours: '0-0',
       })
       expect(wrapper.state(['pickedDate'])).toBeNull()
     })

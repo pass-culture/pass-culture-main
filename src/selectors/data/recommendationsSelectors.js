@@ -21,7 +21,7 @@ export const selectRecommendationsBySearchQuery = createSelector(
   (state, location) => removePageFromSearchString(location.search),
   (recommendations, types, searchWithoutPage) => {
     const searchQuery = getRecommendationSearch(searchWithoutPage, types)
-    let filteredRecommendations = recommendations.filter(recommendation => {
+    return recommendations.filter(recommendation => {
       if (recommendation.search === null) {
         return false
       }
@@ -29,7 +29,6 @@ export const selectRecommendationsBySearchQuery = createSelector(
       const searchRecommendationWithoutPage = removePageFromSearchString(recommendation.search)
       return searchRecommendationWithoutPage === decodeURIComponent(searchQuery)
     })
-    return filteredRecommendations
   }
 )
 
