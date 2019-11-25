@@ -223,7 +223,7 @@ def patch_booking(booking_id):
     return jsonify(as_dict(booking, includes=WEBAPP_PATCH_POST_BOOKING_INCLUDES)), 200
 
 
-@app.route('/bookings/token/<token>', methods=["GET"])
+@app.route('/bookings/token/<token>', methods=['GET'])
 def get_booking_by_token(token):
     email = request.args.get('email', None)
     offer_id = dehumanize(request.args.get('offer_id', None))
@@ -231,8 +231,7 @@ def get_booking_by_token(token):
     check_user_is_logged_in_or_email_is_provided(current_user, email)
 
     booking_token_upper_case = token.upper()
-    booking = booking_queries.find_by(
-        booking_token_upper_case, email, offer_id)
+    booking = booking_queries.find_by(booking_token_upper_case, email, offer_id)
     check_booking_token_is_usable(booking)
 
     offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
