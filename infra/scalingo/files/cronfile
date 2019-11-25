@@ -7,7 +7,9 @@
 # Storage functions
 # ------------------
 #0 23 * * * . $HOME/.profile; cd ~/pass-culture-main/api && source venv/bin/activate && PYTHONPATH=. python scalingo/backup_prod_storage.py >> /var/log/restore/backup_storage_prod.log
+
 #0 3 * * 1 . $HOME/.profile; cd ~/pass-culture-main/api && source venv/bin/activate && PYTHONPATH=. python scalingo/copy_prod_storage.py >> /var/log/restore/copy_storage_to_env.log
+
 10 6 * * * . $HOME/.profile; check_disk_space.sh
 
 # Backup functions
@@ -25,6 +27,7 @@
 30 23 * * * . $HOME/.profile; restore_prod_to_env.sh -a pass-culture-metabase-product -l -z -h > /var/log/restore/restore_metabase.log && scalingo -a pass-culture-metabase-produit run python /app/create_enriched_data_tables.py
 
 0 4 * * 1 . $HOME/.profile; scalingo -a pass-culture-api-dev run -f /var/lib/scalingo/data_testing.csv -f /var/lib/scalingo/import_users.py python /tmp/uploads/import_users.py data_testing.csv
+
 15 4 * * 1 . $HOME/.profile; scalingo -a pass-culture-api-staging run -f /var/lib/scalingo/data_staging.csv -f /var/lib/scalingo/import_users.py python /tmp/uploads/import_users.py data_staging.csv
 
 30 3 * * 1 . $HOME/.profile; cd ~/pass-culture-main && ./pc -e testing sandbox --name=testing --clean=false
@@ -33,4 +36,5 @@
 # Monitoring functions
 # ------------------
 0 1 * * 1 . $HOME/.profile; clean_elasticsearch_indices.sh -a pc-logstash > /var/log/clean_indices.log
+
 30 1 * * * . $HOME/.profile; clean_old_backup.sh -b /data
