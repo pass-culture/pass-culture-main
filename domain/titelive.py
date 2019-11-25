@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Callable
+from typing import Callable, Pattern
 from zipfile import ZipFile
 
 from connectors.api_titelive_stocks import get_titelive_stocks
@@ -37,7 +37,7 @@ def put_today_file_at_end_of_list(ordered_files_list, date_regexp):
     return files_after_today + files_before_today
 
 
-def get_date_from_filename(filename, date_regexp):
+def get_date_from_filename(filename: str, date_regexp: Pattern) -> int:
     if isinstance(filename, ZipFile):
         real_filename = filename.filename
     else:

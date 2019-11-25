@@ -28,7 +28,7 @@ def connect_to_titelive_ftp():
     return ftp_titelive
 
 
-def get_zip_file_from_ftp(zip_file_name: str, folder_name: str):
+def get_zip_file_from_ftp(zip_file_name: str, folder_name: str) -> ZipFile:
     data_file = BytesIO()
     data_file.name = zip_file_name
     file_path = 'RETR ' + folder_name + '/' + zip_file_name

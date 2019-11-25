@@ -9,7 +9,6 @@ from local_providers.providable_info import ProvidableInfo
 from models import Product
 from models.local_provider_event import LocalProviderEventType
 from repository import local_provider_event_queries
-from utils.logger import logger
 
 DATE_REGEXP = re.compile('Resume(\d{6}).zip')
 DESCRIPTION_FOLDER_NAME_TITELIVE = 'ResumesLivres'
@@ -53,19 +52,20 @@ class TiteLiveThingDescriptions(LocalProvider):
             product.description = f.read().decode('iso-8859-1')
 
     def open_next_file(self):
-        file_date = get_date_from_filename(self.zip_file, DATE_REGEXP)
         if self.zip_file:
+            current_file_date = get_date_from_filename(self.zip_file, DATE_REGEXP)
             self.log_provider_event(LocalProviderEventType.SyncPartEnd,
-                                    file_date)
+                                    current_file_date)
         next_zip_file_name = str(next(self.zips))
         self.zip_file = get_zip_file_from_ftp(next_zip_file_name, DESCRIPTION_FOLDER_NAME_TITELIVE)
+        new_file_date = get_date_from_filename(self.zip_file, DATE_REGEXP)
 
         self.log_provider_event(LocalProviderEventType.SyncPartStart,
-                                file_date)
+                                new_file_date)
 
         self.description_zip_infos = self.get_description_files_from_zip_info()
 
-        self.date_modified = read_description_date(str(file_date))
+        self.date_modified = read_description_date(str(new_file_date))
 
     def get_remaining_files_to_check(self, all_zips) -> iter:
         latest_sync_part_end_event = local_provider_event_queries.find_latest_sync_part_end_event(self.provider)

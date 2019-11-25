@@ -1,10 +1,13 @@
+import re
 from unittest.mock import Mock
 
-from domain.titelive import get_stocks_information
+import pytest
+
+from domain.titelive import get_stocks_information, get_date_from_filename
 from tests.test_utils import assert_iterator_is_empty
 
 
-class GetStocksInformation():
+class GetStocksInformation:
     def setup_method(self):
         self.mock_get_titelive_stocks = Mock()
 
@@ -65,3 +68,25 @@ class GetStocksInformation():
         for stock_info in stocks_information:
             number_of_stock_info += 1
         assert number_of_stock_info == 2
+
+
+class GetDateFromFilenameTest:
+    def test_should_return_matching_pattern_in_filename(self):
+        # Given
+        filename = 'Resume191012.zip'
+        date_regexp = re.compile('Resume(\d{6}).zip')
+
+        # When
+        extracted_date = get_date_from_filename(filename, date_regexp)
+
+        # Then
+        assert extracted_date == 191012
+
+    def test_should_raises_error_if_no_match_in_filename(self):
+        # Given
+        filename = None
+        date_regexp = re.compile('Resume(\d{6}).zip')
+
+        # When / Then
+        with pytest.raises(ValueError):
+            get_date_from_filename(filename, date_regexp)
