@@ -244,7 +244,7 @@ def get_booking_by_token(token):
     return '', 204
 
 
-@app.route('/v2/bookings/token/<token>', methods=["GET"])
+@app.route('/v2/bookings/token/<token>', methods=['GET'])
 @login_or_api_key_required_v2
 def get_booking_by_token_v2(token):
     app_authorization_api_key = _extract_api_key_from_request(request)
