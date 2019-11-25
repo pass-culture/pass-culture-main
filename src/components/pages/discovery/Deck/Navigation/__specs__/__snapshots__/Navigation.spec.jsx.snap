@@ -4,7 +4,6 @@ exports[`src | components | pages | discovery | Deck | Navigation snapshot shoul
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Navigation
-    backgroundGradient="black"
     distanceClue=""
     flipHandler={[MockFunction]}
     handleGoNext={null}
@@ -126,9 +125,6 @@ ShallowWrapper {
         <span />
       </div>,
       "id": "deck-navigation",
-      "style": Object {
-        "background": "black",
-      },
     },
     "ref": null,
     "rendered": Object {
@@ -708,9 +704,6 @@ ShallowWrapper {
           <span />
         </div>,
         "id": "deck-navigation",
-        "style": Object {
-          "background": "black",
-        },
       },
       "ref": null,
       "rendered": Object {

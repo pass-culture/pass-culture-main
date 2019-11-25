@@ -2,37 +2,6 @@ import { mapStateToProps, mergeProps } from '../NavigationContainer'
 
 describe('src | components | pages | discovery | Deck | Navigation | NavigationContainer', () => {
   describe('mapStateToProps', () => {
-    it('should map backgroundGradient', () => {
-      // given
-      const state = {
-        data: {
-          recommendations: [{ offerId: 'AE', mediationId: 'FG' }],
-          offers: [{ id: 'AE' }],
-          stocks: [{ offerId: 'AE' }],
-        },
-        geolocation: {
-          latitude: '',
-          longitude: '',
-        },
-      }
-      const ownProps = {
-        match: {
-          params: {
-            mediationId: 'FG',
-            offerId: 'AE',
-          },
-        },
-      }
-
-      // when
-      const result = mapStateToProps(state, ownProps)
-
-      // then
-      expect(result.backgroundGradient).toBe(
-        'linear-gradient(to bottom, rgba(0,0,0,0) 0%,black 30%,black 100%)'
-      )
-    })
-
     describe('when mapping distanceClue', () => {
       describe('when venue is virtual', () => {
         it('should return "offre en ligne"', () => {

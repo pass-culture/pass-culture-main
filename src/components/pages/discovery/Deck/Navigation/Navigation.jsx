@@ -77,7 +77,6 @@ class Navigation extends React.PureComponent {
 
   render() {
     const {
-      backgroundGradient,
       distanceClue,
       flipHandler,
       offerId,
@@ -86,10 +85,7 @@ class Navigation extends React.PureComponent {
       transitionTimeout,
     } = this.props
     return (
-      <div
-        id="deck-navigation"
-        style={{ background: backgroundGradient }}
-      >
+      <div id="deck-navigation">
         <div
           className="controls flex-columns items-end wrap-3"
           style={{ backgroundImage: `url('${ROOT_PATH}/mosaic-w@2x.png')` }}
@@ -147,7 +143,6 @@ class Navigation extends React.PureComponent {
 }
 
 Navigation.defaultProps = {
-  backgroundGradient: null,
   distanceClue: null,
   flipHandler: null,
   handleGoNext: null,
@@ -159,7 +154,6 @@ Navigation.defaultProps = {
 }
 
 Navigation.propTypes = {
-  backgroundGradient: PropTypes.string,
   distanceClue: PropTypes.string,
   flipHandler: PropTypes.func,
   handleGoNext: PropTypes.func,

@@ -16,14 +16,11 @@ export const mapStateToProps = (state, ownProps) => {
   const stocks = selectStocksByOfferId(state, offerId)
   const { isVirtual } = venue || {}
 
-  const headerColor = 'black'
-  const backgroundGradient = `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${headerColor} 30%,${headerColor} 100%)`
   const distanceClue =
     venue && isVirtual ? 'offre numérique' : selectDistanceByOfferId(state, offerId)
   const priceRange = getPriceRangeFromStocks(stocks)
   const separator = offer ? '\u00B7' : ' '
   return {
-    backgroundGradient,
     distanceClue,
     priceRange,
     separator,

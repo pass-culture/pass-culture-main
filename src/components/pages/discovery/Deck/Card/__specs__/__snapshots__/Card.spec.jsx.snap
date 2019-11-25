@@ -35,7 +35,6 @@ ShallowWrapper {
       ],
       "className": "card ",
       "style": Object {
-        "backgroundColor": "black",
         "transform": "translate(NaNpx, 0)",
       },
     },
@@ -58,7 +57,6 @@ ShallowWrapper {
         ],
         "className": "card ",
         "style": Object {
-          "backgroundColor": "black",
           "transform": "translate(NaNpx, 0)",
         },
       },

@@ -5,6 +5,7 @@
   height: 240px;
   bottom: 0;
   position: absolute;
+  background: linear-gradient(to bottom, $transparent 0%, $black 30%);
 
   #dragButton {
     width: 100%;

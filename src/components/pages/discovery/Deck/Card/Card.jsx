@@ -53,10 +53,7 @@ class Card extends PureComponent {
     return (
       <div
         className={`card ${isCurrent ? 'current' : ''}`}
-        style={{
-          backgroundColor: 'black',
-          transform: `translate(${translateTo}px, 0)`,
-        }}
+        style={{ transform: `translate(${translateTo}px, 0)` }}
       >
         {recommendation && isCurrent && <VersoContainer areDetailsVisible={areDetails} />}
         {recommendation && (
