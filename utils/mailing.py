@@ -7,7 +7,6 @@ from typing import Dict, List, Union
 from flask import current_app as app, render_template
 
 from connectors import api_entreprises
-from domain.user_activation import generate_set_password_url
 from models import Booking, Offer, Email, PcObject, Offerer, RightsType, Stock, User, UserOfferer, Venue
 from models.email import EmailStatus
 from models.offer_type import ProductType
@@ -16,10 +15,9 @@ from repository import email_queries
 from repository.feature_queries import feature_send_mail_to_users_enabled
 from repository.user_offerer_queries import find_user_offerer_email
 from utils import logger
-from utils.config import API_URL, WEBAPP_URL, PRO_URL, ENV, IS_PROD
+from utils.config import API_URL, PRO_URL, ENV, IS_PROD
 from utils.date import format_datetime, utc_datetime_to_dept_timezone
 from utils.human_ids import humanize
-from utils.object_storage import get_storage_base_url
 
 MAILJET_API_KEY = os.environ.get('MAILJET_API_KEY')
 MAILJET_API_SECRET = os.environ.get('MAILJET_API_SECRET')
@@ -121,43 +119,61 @@ def get_offerer_booking_recap_email_data(booking: Booking, recipients: List[str]
     departement_code = booking.user.departementCode
     offer_type = offer.type
     is_event = int(offer.isEvent)
+    stock_bookings = booking_queries.find_ongoing_bookings_by_stock(
+        booking.stock)
+
+    offer_link = f'{PRO_URL}/offres/{humanize(offer.id)}?lieu={humanize(offer.venueId)}&structure={humanize(offer.venue.managingOffererId)}'
+    environment = '' if IS_PROD else f'-{ENV}'
 
     mailjet_json = {
         'FromEmail': SUPPORT_EMAIL_ADDRESS,
-        'MJ-TemplateID': 779969,
+        'MJ-TemplateID': 1095029,
         'MJ-TemplateLanguage': True,
         'To': _create_email_recipients(recipients),
         'Vars': {
             'nom_offre': offer_name,
             'nom_lieu': venue_name,
             'is_event': is_event,
+            'nombre_resa': len(stock_bookings),
             'ISBN': '',
             'offer_type': 'book',
             'date': '',
             'heure': '',
             'quantity': quantity,
-            'lien_offre_pcpro': '',
-            'departement': departement_code,
+            'contremarque': booking.token,
             'prix': price,
+            'users': _get_users_information_from_stock_bookings(stock_bookings),
             'user_firstName': user_firstname,
             'user_lastName': user_lastname,
-            'user_email': user_email
+            'user_email': user_email,
+            'lien_offre_pcpro': offer_link,
+            'departement': departement_code,
+            'env': environment
         },
     }
 
     offer_is_a_book = ProductType.is_book(offer_type)
 
     if offer_is_a_book:
-        mailjet_json['Vars']['ISBN'] = offer.extraData['isbn'] if offer.extraData is not None and 'isbn' in offer.extraData else ''
+        mailjet_json['Vars']['ISBN'] = offer.extraData[
+            'isbn'] if offer.extraData is not None and 'isbn' in offer.extraData else ''
     else:
         mailjet_json['Vars']['offer_type'] = offer_type
 
     offer_is_an_event = is_event == 1
     if offer_is_an_event:
-        mailjet_json['Vars']['date'], mailjet_json['Vars']['heure'] = _format_date_and_hour_for_email(
-            booking)
+        mailjet_json['Vars']['date'], mailjet_json['Vars']['heure'] = _format_date_and_hour_for_email(booking)
 
     return mailjet_json
+
+
+def _get_users_information_from_stock_bookings(stock_bookings: List[Booking]) -> List[dict]:
+    users_keys = ('firstName', 'lastName', 'email', 'contremarque')
+    users_properties = [[booking.user.firstName, booking.user.lastName, booking.user.email, booking.token] for booking
+                        in stock_bookings]
+    users = [dict(zip(users_keys, user_property)) for user_property in users_properties]
+
+    return users
 
 
 def _create_email_recipients(recipients: List[str]) -> str:
@@ -217,7 +233,8 @@ def make_offerer_booking_recap_email_after_user_action(booking: Booking, is_canc
     }
 
 
-def write_object_validation_email(offerer: Offerer, user_offerer: UserOfferer, get_by_siren=api_entreprises.get_by_offerer) -> Dict:
+def write_object_validation_email(offerer: Offerer, user_offerer: UserOfferer,
+                                  get_by_siren=api_entreprises.get_by_offerer) -> Dict:
     vars_obj_user = vars(user_offerer.user)
     vars_obj_user.pop('clearTextPassword', None)
     api_entreprise = get_by_siren(offerer).json()
@@ -339,7 +356,7 @@ def make_reset_password_email_data(user: User) -> Dict:
                 'prenom_user': user_first_name,
                 'token': user_reset_password_token,
                 'env': env
-        }
+            }
     }
 
 

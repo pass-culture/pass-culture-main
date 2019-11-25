@@ -16,7 +16,7 @@ from tests.test_utils import create_stock_with_event_offer, create_stock_with_th
     create_offerer, create_venue, create_offer_with_thing_product, create_offer_with_event_product, \
     create_stock_from_offer, \
     create_stock_from_event_occurrence, create_event_occurrence, create_product_with_thing_type, create_mocked_bookings, \
-    create_email
+    create_email, create_deposit
 from utils.mailing import get_activation_email_data, make_batch_cancellation_email, \
     make_beneficiaries_import_email, \
     make_final_recap_email_for_stock_with_event, \
@@ -38,7 +38,7 @@ from utils.mailing import get_activation_email_data, make_batch_cancellation_ema
     send_raw_email, resend_email, \
     write_object_validation_email, compute_email_html_part_and_recipients, \
     get_offerer_booking_recap_email_data, make_reset_password_email_data, \
-    ADMINISTRATION_EMAIL_ADDRESS
+    ADMINISTRATION_EMAIL_ADDRESS, _get_users_information_from_stock_bookings
 
 SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL = \
     'Confirmation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
@@ -251,7 +251,8 @@ def test_offerer_recap_email_does_not_send_cancelled_or_used_booking(app):
     venue = create_venue(Offerer(), 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     stock = create_stock_with_event_offer(offerer=Offerer(), venue=venue)
 
-    user1 = create_user('Test1', first_name='Lucie', last_name='Dubois', departement_code='93', email='test@example.com',
+    user1 = create_user('Test1', first_name='Lucie', last_name='Dubois', departement_code='93',
+                        email='test@example.com',
                         can_book_free_offers=True)
     booking1 = create_booking(user1, stock)
 
@@ -632,6 +633,7 @@ def test_make_validation_confirmation_email_offerer_user_offerer_editor(app):
     assert email['FromName'] == 'pass Culture pro'
     assert email['Subject'] == 'Validation de votre structure et de compte éditeur rattaché'
 
+
 @clean_database
 def test_make_validation_confirmation_email_user_offerer_editor(app):
     # Given
@@ -649,47 +651,6 @@ def test_make_validation_confirmation_email_user_offerer_editor(app):
     assert 'en tant qu\'éditeur' in html_validation_details
     assert email['FromName'] == 'pass Culture pro'
     assert email['Subject'] == 'Validation de compte éditeur rattaché à votre structure'
-
-@clean_database
-def test_returns_empty_ISBN_when_extra_data_has_no_key_isbn(app):
-    # Given
-    user = create_user(email="test@example.com")
-    offerer = create_offerer()
-    venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None)
-    thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION)
-    beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-    stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=5.8656, available=10)
-    booking = create_booking(user, stock, venue)
-    recipient = 'dev@passculture.app'
-
-    # When
-    thing_offer.extraData = {}
-    email_data_template = get_offerer_booking_recap_email_data(booking, recipient)
-
-    # Then
-    assert email_data_template == {
-        'FromEmail': 'support@passculture.app',
-        'MJ-TemplateID': 779969,
-        'MJ-TemplateLanguage': True,
-        'To': 'dev@passculture.app',
-        'Vars':
-            {
-                'nom_offre': 'Test Book',
-                'nom_lieu': 'Test offerer',
-                'prix': '5.8656',
-                'date': '',
-                'heure': '',
-                'quantity': 1,
-                'user_firstName': 'John',
-                'user_lastName': 'Doe',
-                'user_email': 'test@example.com',
-                'is_event': 0,
-                'ISBN': '',
-                'offer_type': 'book',
-                'lien_offre_pcpro': '',
-                'departement': '93'
-            }
-    }
 
 
 @clean_database
@@ -1142,7 +1103,8 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
                              '93')
         stock = create_stock_with_event_offer(offerer=None, venue=venue)
-        user_1 = create_user('Test', first_name='John', last_name='Doe', departement_code='93', email='test@example.com',
+        user_1 = create_user('Test', first_name='John', last_name='Doe', departement_code='93',
+                             email='test@example.com',
                              can_book_free_offers=True)
         user_2 = create_user('Test 2', first_name='Jane', last_name='Doe', departement_code='93',
                              email='test@example.com',
@@ -1477,255 +1439,6 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         assert '56789' not in recap_table_html
 
 
-class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
-    def test_should_write_email_with_right_data_when_offer_is_an_event(self, app):
-        # Given
-        user = create_user(email='test@example.com')
-        offerer = create_offerer()
-        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None)
-        event_offer = create_offer_with_event_product(venue)
-        beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock = create_stock_from_offer(event_offer, beginning_datetime=beginning_datetime, price=0, available=10)
-        booking = create_booking(user, stock, venue)
-        recipient = 'dev@passculture.app'
-
-        # When
-        email = get_offerer_booking_recap_email_data(booking, recipient)
-        expected = {
-            'FromEmail': 'support@passculture.app',
-            'MJ-TemplateID': 779969,
-            'MJ-TemplateLanguage': True,
-            'To': 'dev@passculture.app',
-            'Vars':
-                {
-                    'nom_offre': 'Test event',
-                    'nom_lieu': 'Test offerer',
-                    'prix': 'Gratuit',
-                    'date': '06-Nov-2019',
-                    'heure': '14h',
-                    'quantity': 1,
-                    'user_firstName': 'John',
-                    'user_lastName': 'Doe',
-                    'user_email': 'test@example.com',
-                    'is_event': 1,
-                    'ISBN': '',
-                    'offer_type': 'EventType.SPECTACLE_VIVANT',
-                    'lien_offre_pcpro': '',
-                    'departement': '93'
-                }
-        }
-
-        # Then
-        assert email == expected
-
-
-    def test_should_write_email_with_right_data_when_offer_is_a_book(self, app):
-        # Given
-        user = create_user(email='test@example.com')
-        offerer = create_offerer()
-        extra_data = {'isbn': '123456789'}
-        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None)
-        thing_product = create_product_with_thing_type(thing_name='Le récit de voyage', extra_data=extra_data)
-        event_offer = create_offer_with_thing_product(venue, thing_product)
-        stock = create_stock_from_offer(event_offer, price=0)
-        booking = create_booking(user, stock, venue, quantity=3)
-        recipient = 'dev@passculture.app'
-
-        # When
-        email = get_offerer_booking_recap_email_data(booking, recipient)
-        expected = {
-            'FromEmail': 'support@passculture.app',
-            'MJ-TemplateID': 779969,
-            'MJ-TemplateLanguage': True,
-            'To': 'dev@passculture.app',
-            'Vars':
-                {
-                    'nom_offre': 'Le récit de voyage',
-                    'nom_lieu': 'Test offerer',
-                    'prix': 'Gratuit',
-                    'ISBN': '123456789',
-                    'user_firstName': 'John',
-                    'user_lastName': 'Doe',
-                    'user_email': 'test@example.com',
-                    'is_event': 0,
-                    'date': '',
-                    'heure': '',
-                    'quantity': 3,
-                    'offer_type': 'book',
-                    'lien_offre_pcpro': '',
-                    'departement': '93'
-                }
-        }
-
-        # Then
-        assert email == expected
-
-
-    def test_should_write_email_with_right_data_when_offer_is_duo(self, app):
-        # Given
-        user = create_user(email='test@example.com')
-        offerer = create_offerer()
-        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None)
-        event_offer = create_offer_with_event_product(venue, is_duo=True)
-        beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock = create_stock_from_offer(event_offer, beginning_datetime=beginning_datetime, price=5, available=10)
-        booking = create_booking(user, stock, venue)
-        recipient = 'dev@passculture.app'
-
-        # When
-        email = get_offerer_booking_recap_email_data(booking, recipient)
-        expected = {
-            'FromEmail': 'support@passculture.app',
-            'MJ-TemplateID': 779969,
-            'MJ-TemplateLanguage': True,
-            'To': 'dev@passculture.app',
-            'Vars':
-                {
-                    'nom_offre': 'Test event',
-                    'nom_lieu': 'Test offerer',
-                    'prix': '5',
-                    'date': '06-Nov-2019',
-                    'heure': '14h',
-                    'quantity': 1,
-                    'user_firstName': 'John',
-                    'user_lastName': 'Doe',
-                    'user_email': 'test@example.com',
-                    'is_event': 1,
-                    'ISBN': '',
-                    'offer_type': 'EventType.SPECTACLE_VIVANT',
-                    'lien_offre_pcpro': '',
-                    'departement': '93'
-                }
-        }
-
-        # Then
-        assert email == expected
-
-
-    def test_should_not_truncate_price(self, app):
-        # Given
-        user = create_user(email='test@example.com')
-        offerer = create_offerer()
-        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None)
-        event_offer = create_offer_with_event_product(venue, is_duo=True)
-        beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock = create_stock_from_offer(event_offer, beginning_datetime=beginning_datetime, price=5.8656, available=10)
-        booking = create_booking(user, stock, venue)
-        recipient = 'dev@passculture.app'
-
-        # When
-        email = get_offerer_booking_recap_email_data(booking, recipient)
-        expected = {
-            'FromEmail': 'support@passculture.app',
-            'MJ-TemplateID': 779969,
-            'MJ-TemplateLanguage': True,
-            'To': 'dev@passculture.app',
-            'Vars':
-                {
-                    'nom_offre': 'Test event',
-                    'nom_lieu': 'Test offerer',
-                    'prix': '5.8656',
-                    'date': '06-Nov-2019',
-                    'heure': '14h',
-                    'quantity': 1,
-                    'user_firstName': 'John',
-                    'user_lastName': 'Doe',
-                    'user_email': 'test@example.com',
-                    'is_event': 1,
-                    'ISBN': '',
-                    'offer_type': 'EventType.SPECTACLE_VIVANT',
-                    'lien_offre_pcpro': '',
-                    'departement': '93'
-                }
-        }
-
-        # Then
-        assert email == expected
-
-
-    def test_returns_empty_ISBN_when_no_extra_data(app):
-        # Given
-        user = create_user(email='test@example.com')
-        offerer = create_offerer()
-        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None)
-        thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION)
-        beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=5.8656, available=10)
-        booking = create_booking(user, stock, venue)
-        recipient = 'dev@passculture.app'
-
-        # When
-        thing_offer.extraData = None
-        email_data_template = get_offerer_booking_recap_email_data(booking, recipient)
-
-        # Then
-        assert email_data_template == {
-            'FromEmail': 'support@passculture.app',
-            'MJ-TemplateID': 779969,
-            'MJ-TemplateLanguage': True,
-            'To': 'dev@passculture.app',
-            'Vars':
-                {
-                    'nom_offre': 'Test Book',
-                    'nom_lieu': 'Test offerer',
-                    'prix': '5.8656',
-                    'date': '',
-                    'heure': '',
-                    'quantity': 1,
-                    'user_firstName': 'John',
-                    'user_lastName': 'Doe',
-                    'user_email': 'test@example.com',
-                    'is_event': 0,
-                    'ISBN': '',
-                    'offer_type': 'book',
-                    'lien_offre_pcpro': '',
-                    'departement': '93'
-                }
-        }
-
-
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
-    def test_returns_multiple_offer_email_when_production_environment(self, app):
-        # Given
-        user = create_user(email='test@example.com')
-        offerer = create_offerer()
-        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None)
-        thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, booking_email='dev@passculture.app')
-        beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=5.8656, available=10)
-        booking = create_booking(user, stock, venue)
-        recipient = ['dev@passculture.app', ADMINISTRATION_EMAIL_ADDRESS]
-
-        # When
-        thing_offer.extraData = None
-        email_data_template = get_offerer_booking_recap_email_data(booking, recipient)
-
-        # Then
-        assert email_data_template == {
-            'FromEmail': 'support@passculture.app',
-            'MJ-TemplateID': 779969,
-            'MJ-TemplateLanguage': True,
-            'To': f'dev@passculture.app, {ADMINISTRATION_EMAIL_ADDRESS}',
-            'Vars':
-                {
-                    'nom_offre': 'Test Book',
-                    'nom_lieu': 'Test offerer',
-                    'prix': '5.8656',
-                    'date': '',
-                    'heure': '',
-                    'quantity': 1,
-                    'user_firstName': 'John',
-                    'user_lastName': 'Doe',
-                    'user_email': 'test@example.com',
-                    'is_event': 0,
-                    'ISBN': '',
-                    'offer_type': 'book',
-                    'lien_offre_pcpro': '',
-                    'departement': '93'
-                }
-        }
-
-
 class ParseEmailAddressesTest:
     def test_returns_an_empty_list(self):
         assert parse_email_addresses('') == []
@@ -1745,6 +1458,443 @@ class ParseEmailAddressesTest:
         assert parse_email_addresses('one@test.com;two@test.com') == ['one@test.com', 'two@test.com']
         assert parse_email_addresses('one@test.com; two@test.com') == ['one@test.com', 'two@test.com']
         assert parse_email_addresses('  one@test.com  ; two@test.com   ') == ['one@test.com', 'two@test.com']
+
+
+class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
+    @clean_database
+    def test_should_write_email_with_right_data_when_offer_is_an_event(self, app):
+        # Given
+        user = create_user(email='test@example.com')
+        offerer = create_offerer(idx=1)
+        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None, idx=1)
+        event_offer = create_offer_with_event_product(venue, idx=1)
+        beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
+        stock = create_stock_from_offer(event_offer, beginning_datetime=beginning_datetime, price=0, available=10)
+        booking = create_booking(user, stock, venue, token='ABC123')
+        recipient = ['dev@passculture.app']
+        stock.bookings = [booking]
+
+        PcObject.save(booking, stock)
+
+        # When
+        email = get_offerer_booking_recap_email_data(booking, recipient)
+        expected = {
+            'FromEmail': 'support@passculture.app',
+            'MJ-TemplateID': 1095029,
+            'MJ-TemplateLanguage': True,
+            'To': 'dev@passculture.app',
+            'Vars':
+                {
+                    'nom_offre': 'Test event',
+                    'nom_lieu': 'Test offerer',
+                    'prix': 'Gratuit',
+                    'date': '06-Nov-2019',
+                    'heure': '14h',
+                    'quantity': 1,
+                    'user_firstName': 'John',
+                    'user_lastName': 'Doe',
+                    'user_email': 'test@example.com',
+                    'is_event': 1,
+                    'nombre_resa': 1,
+                    'contremarque': 'ABC123',
+                    'env': '-development',
+                    'ISBN': '',
+                    'lien_offre_pcpro': 'http://localhost:3001/offres/AE?lieu=AE&structure=AE',
+                    'offer_type': 'EventType.SPECTACLE_VIVANT',
+                    'departement': '93',
+                    'users': [{"firstName": "John",
+                               "lastName": "Doe",
+                               "email": "test@example.com",
+                               "contremarque": "ABC123"}]
+                }
+        }
+
+        # Then
+        assert email == expected
+
+    @clean_database
+    def test_should_write_email_with_right_data_when_offer_is_a_book(self, app):
+        # Given
+        user = create_user(email='test@example.com')
+        offerer = create_offerer(idx=1)
+        extra_data = {'isbn': '123456789'}
+        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None, idx=1)
+
+        thing_product = create_product_with_thing_type(thing_name='Le récit de voyage', extra_data=extra_data)
+        event_offer = create_offer_with_thing_product(venue, thing_product, idx=1)
+        stock = create_stock_from_offer(event_offer, price=0)
+        booking = create_booking(user, stock, venue, quantity=3, token='ABC123')
+        recipient = ['dev@passculture.app']
+        stock.bookings = [booking]
+
+        PcObject.save(booking, stock)
+
+        # When
+        email = get_offerer_booking_recap_email_data(booking, recipient)
+        expected = {
+            'FromEmail': 'support@passculture.app',
+            'MJ-TemplateID': 1095029,
+            'MJ-TemplateLanguage': True,
+            'To': 'dev@passculture.app',
+            'Vars':
+                {
+                    'nom_offre': 'Le récit de voyage',
+                    'nom_lieu': 'Test offerer',
+                    'prix': 'Gratuit',
+                    'ISBN': '123456789',
+                    'nombre_resa': 1,
+                    'contremarque': 'ABC123',
+                    'env': '-development',
+                    'lien_offre_pcpro': 'http://localhost:3001/offres/AE?lieu=AE&structure=AE',
+
+                    'user_firstName': 'John',
+                    'user_lastName': 'Doe',
+                    'user_email': 'test@example.com',
+                    'is_event': 0,
+                    'date': '',
+                    'heure': '',
+                    'quantity': 3,
+                    'offer_type': 'book',
+                    'departement': '93',
+                    'users': [{"firstName": "John",
+                               "lastName": "Doe",
+                               "email": "test@example.com",
+                               "contremarque": "ABC123"}]
+                }
+        }
+
+        # Then
+        assert email == expected
+
+    @clean_database
+    def test_should_not_truncate_price(self, app):
+        # Given
+        user = create_user(email='test@example.com')
+        offerer = create_offerer(idx=1)
+        deposit = create_deposit(user, amount=50, source='public')
+        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None, idx=1)
+        event_offer = create_offer_with_event_product(venue, is_duo=True, idx=1)
+        beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
+        stock = create_stock_from_offer(event_offer, beginning_datetime=beginning_datetime, price=5.86, available=10)
+        booking = create_booking(user, stock, venue, token='ABC123')
+        stock.bookings = [booking]
+        recipient = ['dev@passculture.app']
+
+        PcObject.save(deposit, booking, stock)
+
+        # When
+        email = get_offerer_booking_recap_email_data(booking, recipient)
+        expected = {
+            'FromEmail': 'support@passculture.app',
+            'MJ-TemplateID': 1095029,
+            'MJ-TemplateLanguage': True,
+            'To': 'dev@passculture.app',
+            'Vars':
+                {
+                    'nom_offre': 'Test event',
+                    'nom_lieu': 'Test offerer',
+                    'prix': '5.86',
+                    'date': '06-Nov-2019',
+                    'heure': '14h',
+                    'quantity': 1,
+                    'user_firstName': 'John',
+                    'user_lastName': 'Doe',
+                    'user_email': 'test@example.com',
+                    'is_event': 1,
+                    'ISBN': '',
+                    'offer_type': 'EventType.SPECTACLE_VIVANT',
+                    'departement': '93',
+                    'nombre_resa': 1,
+                    'contremarque': 'ABC123',
+                    'env': '-development',
+                    'lien_offre_pcpro': 'http://localhost:3001/offres/AE?lieu=AE&structure=AE',
+                    'users': [{"firstName": "John",
+                               "lastName": "Doe",
+                               "email": "test@example.com",
+                               "contremarque": "ABC123"}]
+                }
+        }
+
+        # Then
+        assert email == expected
+
+    @clean_database
+    def test_returns_empty_ISBN_when_no_extra_data(self, app):
+        # Given
+        user = create_user(email='test@example.com')
+        offerer = create_offerer(idx=1)
+        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None, idx=1)
+        thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=1)
+        beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
+        stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0, available=10)
+        booking = create_booking(user, stock, venue, token='ABC123')
+        recipient = ['dev@passculture.app']
+        stock.bookings = [booking]
+
+        PcObject.save(booking, stock)
+
+        # When
+        thing_offer.extraData = None
+        email_data_template = get_offerer_booking_recap_email_data(booking, recipient)
+
+        # Then
+        assert email_data_template == {
+            'FromEmail': 'support@passculture.app',
+            'MJ-TemplateID': 1095029,
+            'MJ-TemplateLanguage': True,
+            'To': 'dev@passculture.app',
+            'Vars':
+                {
+                    'nom_offre': 'Test Book',
+                    'nom_lieu': 'Test offerer',
+                    'prix': 'Gratuit',
+                    'date': '',
+                    'heure': '',
+                    'quantity': 1,
+                    'user_firstName': 'John',
+                    'user_lastName': 'Doe',
+                    'user_email': 'test@example.com',
+                    'is_event': 0,
+                    'ISBN': '',
+                    'offer_type': 'book',
+                    'departement': '93',
+                    'nombre_resa': 1,
+                    'contremarque': 'ABC123',
+                    'env': '-development',
+                    'lien_offre_pcpro': 'http://localhost:3001/offres/AE?lieu=AE&structure=AE',
+                    'users': [{"firstName": "John",
+                               "lastName": "Doe",
+                               "email": "test@example.com",
+                               "contremarque": "ABC123"}]
+                }
+        }
+
+    @clean_database
+    def test_returns_empty_ISBN_when_extra_data_has_no_key_isbn(app):
+        # Given
+        user = create_user(email="test@example.com")
+        offerer = create_offerer(idx=1)
+        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None, idx=1)
+        thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=1)
+        beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
+        stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0, available=10)
+        booking = create_booking(user, stock, venue, token='ABC123')
+        stock.bookings = [booking]
+        recipient = ['dev@passculture.app']
+
+        PcObject.save(booking, stock)
+
+        # When
+        thing_offer.extraData = {}
+        email_data_template = get_offerer_booking_recap_email_data(booking, recipient)
+
+        # Then
+        assert email_data_template == {
+            'FromEmail': 'support@passculture.app',
+            'MJ-TemplateID': 1095029,
+            'MJ-TemplateLanguage': True,
+            'To': 'dev@passculture.app',
+            'Vars':
+                {
+                    'nom_offre': 'Test Book',
+                    'nom_lieu': 'Test offerer',
+                    'prix': 'Gratuit',
+                    'date': '',
+                    'heure': '',
+                    'quantity': 1,
+                    'user_firstName': 'John',
+                    'user_lastName': 'Doe',
+                    'user_email': 'test@example.com',
+                    'is_event': 0,
+                    'ISBN': '',
+                    'departement': '93',
+                    'offer_type': 'book',
+                    'lien_offre_pcpro': 'http://localhost:3001/offres/AE?lieu=AE&structure=AE',
+                    'nombre_resa': 1,
+                    'env': '-development',
+                    'contremarque': 'ABC123',
+                    'users': [{"firstName": "John",
+                               "lastName": "Doe",
+                               "email": "test@example.com",
+                               "contremarque": "ABC123"}]
+                }
+        }
+
+    @clean_database
+    def test_returns_multiple_offer_email_when_production_environment(self, app):
+        # Given
+        user = create_user(email='test@example.com')
+        offerer = create_offerer(idx=1)
+        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None, idx=1)
+        thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION,
+                                                      booking_email='dev@passculture.app', idx=1)
+        beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
+        stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0, available=10)
+        booking = create_booking(user, stock, venue, token='ABC123')
+        stock.bookings = [booking]
+        recipient = ['dev@passculture.app', ADMINISTRATION_EMAIL_ADDRESS]
+
+        PcObject.save(booking, stock)
+
+        # When
+        thing_offer.extraData = None
+        with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
+            email_data_template = get_offerer_booking_recap_email_data(booking, recipient)
+
+        # Then
+        assert email_data_template == {
+            'FromEmail': 'support@passculture.app',
+            'MJ-TemplateID': 1095029,
+            'MJ-TemplateLanguage': True,
+            'To': f'dev@passculture.app, {ADMINISTRATION_EMAIL_ADDRESS}',
+            'Vars':
+                {
+                    'nom_offre': 'Test Book',
+                    'nom_lieu': 'Test offerer',
+                    'prix': 'Gratuit',
+                    'date': '',
+                    'heure': '',
+                    'quantity': 1,
+                    'user_firstName': 'John',
+                    'user_lastName': 'Doe',
+                    'user_email': 'test@example.com',
+                    'is_event': 0,
+                    'ISBN': '',
+                    'offer_type': 'book',
+                    'departement': '93',
+                    'nombre_resa': 1,
+                    'contremarque': 'ABC123',
+                    'env': '-development',
+                    'lien_offre_pcpro': 'http://localhost:3001/offres/AE?lieu=AE&structure=AE',
+                    'users': [{"firstName": "John",
+                               "lastName": "Doe",
+                               "email": "test@example.com",
+                               "contremarque": "ABC123"}]
+                }
+        }
+
+    @clean_database
+    def test_returns_email_with_correct_data_when_two_users_made_reservations_on_same_offer(self, app):
+        # Given
+        user_1 = create_user('Test', first_name='Jean', last_name='Dupont', departement_code='93',
+                             email='test@example.com',
+                             can_book_free_offers=True)
+        user_2 = create_user('Test', first_name='Jaja', last_name='Dudu', departement_code='93',
+                             email='mail@example.com',
+                             can_book_free_offers=True)
+        offerer = create_offerer(idx=1)
+        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None, idx=1)
+        thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION,
+                                                      booking_email='dev@passculture.app', idx=1)
+        beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
+        stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0, available=10)
+        booking_1 = create_booking(user_1, stock, venue, token='ACVSDC')
+        booking_2 = create_booking(user_2, stock, venue, token='TEST95')
+        stock.bookings = [booking_1, booking_2]
+        recipient = ['dev@passculture.app', ADMINISTRATION_EMAIL_ADDRESS]
+
+        PcObject.save(booking_1, booking_2, stock)
+
+        # When
+        thing_offer.extraData = None
+
+        with patch('utils.mailing.IS_PROD', False):
+            with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
+                email_data_template = get_offerer_booking_recap_email_data(booking_1, recipient)
+
+        # Then
+        assert email_data_template == {
+            'FromEmail': 'support@passculture.app',
+            'MJ-TemplateID': 1095029,
+            'MJ-TemplateLanguage': True,
+            'To': f'dev@passculture.app, {ADMINISTRATION_EMAIL_ADDRESS}',
+            'Vars':
+                {
+                    'nom_offre': 'Test Book',
+                    'nom_lieu': 'Test offerer',
+                    'prix': 'Gratuit',
+                    'date': '',
+                    'heure': '',
+                    'quantity': 1,
+                    'user_firstName': 'Jean',
+                    'user_lastName': 'Dupont',
+                    'user_email': 'test@example.com',
+                    'is_event': 0,
+                    'ISBN': '',
+                    'offer_type': 'book',
+                    'lien_offre_pcpro': 'http://localhost:3001/offres/AE?lieu=AE&structure=AE',
+                    'departement': '93',
+                    'nombre_resa': 2,
+                    'env': '-development',
+                    'contremarque': 'ACVSDC',
+                    'users': [{"firstName": "Jean",
+                               "lastName": "Dupont",
+                               "email": "test@example.com",
+                               "contremarque": "ACVSDC"},
+                              {"firstName": "Jaja",
+                               "lastName": "Dudu",
+                               "email": "mail@example.com",
+                               "contremarque": "TEST95"}
+                              ]
+                }
+        }
+
+    @clean_database
+    def test_returns_right_email_with_correct_link_to_the_corresponding_offer(self, app):
+        # Given
+        user = create_user('Test', first_name='Jean', last_name='Dupont', departement_code='93',
+                           email='test@example.com',
+                           can_book_free_offers=True)
+
+        offerer = create_offerer(idx=1)
+        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None, idx=2)
+        thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION,
+                                                      booking_email='dev@passculture.app', idx=3)
+        beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
+        stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0, available=10)
+        booking = create_booking(user, stock, venue, token='ACVSDC')
+        stock.bookings = [booking]
+        recipient = ['dev@passculture.app', ADMINISTRATION_EMAIL_ADDRESS]
+
+        PcObject.save(booking, stock)
+
+        # When
+        thing_offer.extraData = None
+
+        with patch('utils.mailing.IS_PROD', True):
+            email_data_template = get_offerer_booking_recap_email_data(booking, recipient)
+
+        # Then
+        assert email_data_template == {
+            'FromEmail': 'support@passculture.app',
+            'MJ-TemplateID': 1095029,
+            'MJ-TemplateLanguage': True,
+            'To': f'dev@passculture.app',
+            'Vars':
+                {
+                    'nom_offre': 'Test Book',
+                    'nom_lieu': 'Test offerer',
+                    'prix': 'Gratuit',
+                    'date': '',
+                    'heure': '',
+                    'quantity': 1,
+                    'user_firstName': 'Jean',
+                    'user_lastName': 'Dupont',
+                    'user_email': 'test@example.com',
+                    'is_event': 0,
+                    'ISBN': '',
+                    'offer_type': 'book',
+                    'lien_offre_pcpro': 'http://localhost:3001/offres/AM?lieu=A9&structure=AE',
+                    'departement': '93',
+                    'nombre_resa': 1,
+                    'env': '',
+                    'contremarque': 'ACVSDC',
+                    'users': [{"firstName": "Jean",
+                               "lastName": "Dupont",
+                               "email": "test@example.com",
+                               "contremarque": "ACVSDC"}]
+                }
+        }
 
 
 class MakeOfferCreationNotificationEmailTest:
@@ -2041,7 +2191,6 @@ class GetActivationEmailTest:
             },
         }
 
-
     @patch('utils.mailing.IS_PROD', False)
     def test_should_return_dict_when_environment_is_development(self):
         # Given
@@ -2057,6 +2206,51 @@ class GetActivationEmailTest:
             'email': 'fabien@example.net',
             'env': '-development'
         }
+
+
+class GetUsersInformationFromStockBookingsTest:
+    def test_returns_correct_users_information_from_bookings_stock(self):
+        # Given
+        user_1 = create_user('Test', first_name='Jean', last_name='Dupont', departement_code='93',
+                             email='test@example.com',
+                             can_book_free_offers=True)
+        user_2 = create_user('Test', first_name='Jaja', last_name='Dudu', departement_code='93',
+                             email='mail@example.com',
+                             can_book_free_offers=True)
+        user_3 = create_user('Test', first_name='Toto', last_name='Titi', departement_code='93',
+                             email='mail@example.com',
+                             can_book_free_offers=True)
+        offerer = create_offerer()
+        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None)
+        thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION,
+                                                      booking_email='dev@passculture.app')
+        beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
+        stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0, available=10)
+        booking_1 = create_booking(user_1, stock, venue)
+        booking_2 = create_booking(user_2, stock, venue)
+        booking_3 = create_booking(user_3, stock, venue)
+        booking_1.token = 'HELLO0'
+        booking_2.token = 'HELLO1'
+        booking_3.token = 'HELLO2'
+        stock.bookings = [booking_1, booking_2, booking_3]
+
+        # When
+        users_informations = _get_users_information_from_stock_bookings(stock.bookings)
+
+        # Then
+        assert users_informations == [{"firstName": "Jean",
+                                       "lastName": "Dupont",
+                                       "email": "test@example.com",
+                                       "contremarque": "HELLO0"},
+                                      {"firstName": "Jaja",
+                                       "lastName": "Dudu",
+                                       "email": "mail@example.com",
+                                       "contremarque": "HELLO1"},
+                                      {"firstName": "Toto",
+                                       "lastName": "Titi",
+                                       "email": "mail@example.com",
+                                       "contremarque": "HELLO2"}
+                                      ]
 
 
 def _remove_whitespaces(text):
