@@ -1,5 +1,5 @@
 .qr-code {
-  background-image: linear-gradient(90deg, $purple-blue 0%, $primary 100%);
+  background-image: linear-gradient(to bottom right, $primary, $purple-blue);
   height: 100%;
   overflow-y: scroll;
 
@@ -14,27 +14,27 @@
   display: flex;
   flex-direction: column;
   margin-bottom: rem(10px);
-  padding: rem(18px);
+  padding: rem(18px) rem(18px) 0 rem(18px);
 }
 
 .qr-code-offer-name {
   font-size: rem(18px);
   font-weight: bold;
   line-height: 21px;
+  margin-bottom: rem(6px);
 }
 
 .qr-code-offer-beginning-datetime {
   color: $grey-dark;
   font-size: rem(13px);
   line-height: rem(16px);
-  margin-bottom: rem(10px);
 }
 
 .qr-code-venue-name {
   color: $grey-dark;
   font-size: rem(13px);
   line-height: rem(16px);
-  text-align: right;
+  margin-bottom: rem(16px);
 }
 
 .qr-code-token {
@@ -42,7 +42,7 @@
   font-size: rem(48px);
   font-weight: 300;
   line-height: 58px;
-  margin-bottom: rem(10px);
+  margin-bottom: rem(20px);
   text-align: center;
 }
 

@@ -10,12 +10,12 @@ const QrCode = ({ humanizedBeginningDatetime, offerName, qrCode, token, venueNam
         <div className="qr-code-offer-name">
           {offerName}
         </div>
-        <div className="qr-code-offer-beginning-datetime">
+        <p className="qr-code-offer-beginning-datetime">
           {humanizedBeginningDatetime}
-        </div>
-        <div className="qr-code-venue-name">
+        </p>
+        <p className="qr-code-venue-name">
           {venueName}
-        </div>
+        </p>
       </div>
 
       <div className="qr-code-token">
