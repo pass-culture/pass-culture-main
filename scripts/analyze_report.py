@@ -16,15 +16,17 @@ def main():
 
     endpoints_latency = _get_endpoint_latencies(data)
 
-    search_endpoint_stats, recommendation_keyword_max = _get_search_endpoint_stats(data)
+    recommendation = _get_search_endpoint_stats(data)
 
-    endpoints_latency.append(search_endpoint_stats)
+    endpoints_latency.append(recommendation['keywords_stats'])
 
-    endpoints_over_limit, endpoints_summary = _verify_latency_is_not_over_limit(endpoints_latency)
+    endpoints_over_limit = _verify_latency_is_not_over_limit(endpoints_latency)
+
+    endpoints_summary = _get_endpoint_summary(endpoints_latency)
 
     error_codes = _get_error_codes(data)
 
-    _send_to_ops_bot(endpoints_summary, recommendation_keyword_max, error_codes)
+    _send_to_ops_bot(endpoints_summary, recommendation['keyword_max'], error_codes)
 
     sys.exit(endpoints_over_limit)
 
@@ -56,19 +58,24 @@ def _verify_latency_is_not_over_limit(endpoints_latency):
     maximum_median_authorized_duration = os.environ.get('MAXIMUM_MEDIAN_AUTHORIZED_DURATION', 60000)
     maximum_p99_authorized_duration = os.environ.get('MAXIMUM_P99_AUTHORIZED_DURATION', 60000)
 
-    endpoints_summary = ''
     endpoints_over_limit = False
 
     for endpoint in endpoints_latency:
-        endpoints_summary += '\\n *' + endpoint['endpoint_name'] + '* _Median_ : ' + str(
-            endpoint['median']) + ' -  P99_ : ' + str(endpoint['p99'])
         if endpoint['median'] > float(maximum_median_authorized_duration):
             print('Endpoint\'s median over maximum :', endpoint['endpoint_name'])
             endpoints_over_limit = True
         if endpoint['p99'] > float(maximum_p99_authorized_duration):
             print('Endpoint\'s P99 over maximum :', endpoint['endpoint_name'])
             endpoints_over_limit = True
-    return endpoints_over_limit, endpoints_summary
+    return endpoints_over_limit
+
+
+def _get_endpoint_summary(endpoints_latency):
+    endpoints_summary = ''
+    for endpoint in endpoints_latency:
+        endpoints_summary += '\\n *' + endpoint['endpoint_name'] + '* _Median_ : ' + str(
+            endpoint['median']) + ' -  P99_ : ' + str(endpoint['p99'])
+    return endpoints_summary
 
 
 def _percentile(data, percentile):
@@ -78,23 +85,23 @@ def _percentile(data, percentile):
 
 
 def _get_search_endpoint_stats(data):
-    recommendation_keywords = []
-    recommendation_keyword_max = {'keyword': '', 'value': 0}
+    recommendation_keyword = []
+    recommendation = {'keywords_stats': {}, 'keyword_max': {'keyword': '', 'value': 0}}
     data_custom_stats = data['aggregate']['customStats']
 
     for key in data_custom_stats.keys():
         if '/recommendations?keywords=' in key:
-            recommendation_keywords.append(data_custom_stats[key]['max'])
+            recommendation_keyword.append(data_custom_stats[key]['max'])
 
-            if data_custom_stats[key]['max'] > recommendation_keyword_max['value']:
-                recommendation_keyword_max['value'] = data_custom_stats[key]['max']
-                recommendation_keyword_max['keyword'] = key
+            if data_custom_stats[key]['max'] > recommendation['keyword_max']['value']:
+                recommendation['keyword_max']['value'] = data_custom_stats[key]['max']
+                recommendation['keyword_max']['keyword'] = key
 
-    recommendation_keywords_stats = {'endpoint_name': '/recommendations?keyword',
-                                     'median': _percentile(recommendation_keywords, 50),
-                                     'p99': _percentile(recommendation_keywords, 99)}
+    recommendation['keywords_stats'] = {'endpoint_name': '/recommendations?keyword',
+                                     'median': _percentile(recommendation_keyword, 50),
+                                     'p99': _percentile(recommendation_keyword, 99)}
 
-    return recommendation_keywords_stats, recommendation_keyword_max
+    return recommendation
 
 
 def _send_to_ops_bot(endpoints_summary, recommendation_keyword_max, error_codes):
