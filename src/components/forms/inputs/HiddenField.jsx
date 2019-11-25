@@ -11,9 +11,9 @@ class HiddenField extends PureComponent {
     return (
       <Fragment>
         <input
-          type="hidden"
           {...input}
           {...inputProps}
+          type="hidden"
         />
         <FormError meta={meta} />
       </Fragment>
