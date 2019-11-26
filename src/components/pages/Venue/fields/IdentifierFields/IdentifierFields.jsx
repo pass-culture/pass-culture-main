@@ -8,6 +8,7 @@ import TextareaField from '../../../../layout/form/fields/TextareaField'
 import TextField from '../../../../layout/form/fields/TextField'
 import { formatSiret } from '../../siret/formatSiret'
 import ReactTooltip from 'react-tooltip'
+import { removeWhitespaces } from 'react-final-form-utils'
 
 
 class IdentifierFields extends PureComponent {
@@ -65,7 +66,9 @@ class IdentifierFields extends PureComponent {
       formSiret,
     } = this.props
 
-    if (formSiret && formSiret.length === 14) {
+    const siretWithoutWhiteSpaces = removeWhitespaces(formSiret)
+
+    if (siretWithoutWhiteSpaces && siretWithoutWhiteSpaces.length === 14) {
       return ''
     }
     if (comment === undefined || comment === '') {
