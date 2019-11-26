@@ -1,4 +1,4 @@
-import formatDecimals from '../../../utils/numbers/formatDecimals'
+import formatDecimals from '../../../../utils/numbers/formatDecimals'
 
 const getAvailableBalanceByType = walletBalance => ({ actual, max }) => {
   const maximumAvailableByType = max - actual

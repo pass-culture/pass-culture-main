@@ -1,12 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import { ROOT_PATH } from '../../../utils/config'
-import RelativeFooterContainer from '../../layout/RelativeFooter/RelativeFooterContainer'
-import HeaderContainer from '../../layout/Header/HeaderContainer'
-import MesInformations from './MesInformations'
-import MonAvatar from './MonAvatar'
-import MonPassCulture from './MonPassCulture'
+import { ROOT_PATH } from '../../../../utils/config'
+import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
+import HeaderContainer from '../../../layout/Header/HeaderContainer'
+import MesInformations from '../MesInformations/MesInformations'
+import MonAvatar from '../MonAvatar/MonAvatar'
+import MonPassCulture from '../MonPassCulture/MonPassCulture'
 
 const BACKGROUND_IMAGE = `url('${ROOT_PATH}/mosaic-k.png')`
 

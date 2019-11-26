@@ -1,5 +1,5 @@
 import React from 'react'
-import ProfilFormContainer from './ProfileFormContainer'
+import ProfilFormContainer from '../ProfileFormContainer'
 
 const noop = () => {}
 

@@ -2,9 +2,9 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
-import { ROOT_PATH } from '../../../utils/config'
-import Header from '../../layout/Header/Header'
-import RelativeFooterContainer from '../../layout/RelativeFooter/RelativeFooterContainer'
+import { ROOT_PATH } from '../../../../utils/config'
+import Header from '../../../layout/Header/Header'
+import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
 
 const BACKGROUND_IMAGE = `url('${ROOT_PATH}/mosaic-k.png')`
 

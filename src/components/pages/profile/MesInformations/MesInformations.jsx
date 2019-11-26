@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { NavLink } from 'react-router-dom'
 
-import { version } from '../../../../package.json'
+import { version } from '../../../../../package.json'
 
 const EMPTY_FIELD_PLACEHOLDER = 'Non renseigné'
 

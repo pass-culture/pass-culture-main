@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import InputField from '../../../../forms/inputs/InputField'
-import withProfileForm from '../withProfileForm'
+import withProfileForm from '../hocs/withProfileForm'
 
 export const UserIdentifierField = ({ isLoading }) => (
   <InputField
