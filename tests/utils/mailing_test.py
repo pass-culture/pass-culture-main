@@ -38,7 +38,7 @@ from utils.mailing import get_activation_email_data, make_batch_cancellation_ema
     send_raw_email, resend_email, \
     write_object_validation_email, compute_email_html_part_and_recipients, \
     get_offerer_booking_recap_email_data, make_reset_password_email_data, \
-    ADMINISTRATION_EMAIL_ADDRESS, _get_users_information_from_stock_bookings
+    ADMINISTRATION_EMAIL_ADDRESS, _get_users_information_from_bookings
 
 SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL = \
     'Confirmation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
@@ -1466,7 +1466,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         # Given
         user = create_user(email='test@example.com')
         offerer = create_offerer(idx=1)
-        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None, idx=1)
+        venue = create_venue(offerer, 'Test offerer', 'reservations@example.com', is_virtual=True, siret=None, idx=1)
         event_offer = create_offer_with_event_product(venue, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
         stock = create_stock_from_offer(event_offer, beginning_datetime=beginning_datetime, price=0, available=10)
@@ -1474,11 +1474,13 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         recipient = ['dev@passculture.app']
         stock.bookings = [booking]
 
-        PcObject.save(booking, stock)
+        PcObject.save(stock)
 
         # When
         email = get_offerer_booking_recap_email_data(booking, recipient)
-        expected = {
+
+        # Then
+        assert email == {
             'FromEmail': 'support@passculture.app',
             'MJ-TemplateID': 1095029,
             'MJ-TemplateLanguage': True,
@@ -1502,15 +1504,12 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'lien_offre_pcpro': 'http://localhost:3001/offres/AE?lieu=AE&structure=AE',
                     'offer_type': 'EventType.SPECTACLE_VIVANT',
                     'departement': '93',
-                    'users': [{"firstName": "John",
-                               "lastName": "Doe",
-                               "email": "test@example.com",
-                               "contremarque": "ABC123"}]
+                    'users': [{'firstName': 'John',
+                               'lastName': 'Doe',
+                               'email': 'test@example.com',
+                               'contremarque': 'ABC123'}]
                 }
         }
-
-        # Then
-        assert email == expected
 
     @clean_database
     def test_should_write_email_with_right_data_when_offer_is_a_book(self, app):
@@ -1518,7 +1517,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         user = create_user(email='test@example.com')
         offerer = create_offerer(idx=1)
         extra_data = {'isbn': '123456789'}
-        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None, idx=1)
+        venue = create_venue(offerer, 'Test offerer', 'reservations@example.com', is_virtual=True, siret=None, idx=1)
 
         thing_product = create_product_with_thing_type(thing_name='Le récit de voyage', extra_data=extra_data)
         event_offer = create_offer_with_thing_product(venue, thing_product, idx=1)
@@ -1527,11 +1526,13 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         recipient = ['dev@passculture.app']
         stock.bookings = [booking]
 
-        PcObject.save(booking, stock)
+        PcObject.save(stock)
 
         # When
         email = get_offerer_booking_recap_email_data(booking, recipient)
-        expected = {
+
+        # Then
+        assert email == {
             'FromEmail': 'support@passculture.app',
             'MJ-TemplateID': 1095029,
             'MJ-TemplateLanguage': True,
@@ -1556,15 +1557,12 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'quantity': 3,
                     'offer_type': 'book',
                     'departement': '93',
-                    'users': [{"firstName": "John",
-                               "lastName": "Doe",
-                               "email": "test@example.com",
-                               "contremarque": "ABC123"}]
+                    'users': [{'firstName': 'John',
+                               'lastName': 'Doe',
+                               'email': 'test@example.com',
+                               'contremarque': 'ABC123'}]
                 }
         }
-
-        # Then
-        assert email == expected
 
     @clean_database
     def test_should_not_truncate_price(self, app):
@@ -1572,7 +1570,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         user = create_user(email='test@example.com')
         offerer = create_offerer(idx=1)
         deposit = create_deposit(user, amount=50, source='public')
-        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None, idx=1)
+        venue = create_venue(offerer, 'Test offerer', 'reservations@example.com', is_virtual=True, siret=None, idx=1)
         event_offer = create_offer_with_event_product(venue, is_duo=True, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
         stock = create_stock_from_offer(event_offer, beginning_datetime=beginning_datetime, price=5.86, available=10)
@@ -1580,11 +1578,13 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         stock.bookings = [booking]
         recipient = ['dev@passculture.app']
 
-        PcObject.save(deposit, booking, stock)
+        PcObject.save(deposit, stock)
 
         # When
         email = get_offerer_booking_recap_email_data(booking, recipient)
-        expected = {
+
+        # Then
+        assert email ==  {
             'FromEmail': 'support@passculture.app',
             'MJ-TemplateID': 1095029,
             'MJ-TemplateLanguage': True,
@@ -1608,22 +1608,19 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'contremarque': 'ABC123',
                     'env': '-development',
                     'lien_offre_pcpro': 'http://localhost:3001/offres/AE?lieu=AE&structure=AE',
-                    'users': [{"firstName": "John",
-                               "lastName": "Doe",
-                               "email": "test@example.com",
-                               "contremarque": "ABC123"}]
+                    'users': [{'firstName': 'John',
+                               'lastName': 'Doe',
+                               'email': 'test@example.com',
+                               'contremarque': 'ABC123'}]
                 }
         }
-
-        # Then
-        assert email == expected
 
     @clean_database
     def test_returns_empty_ISBN_when_no_extra_data(self, app):
         # Given
         user = create_user(email='test@example.com')
         offerer = create_offerer(idx=1)
-        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None, idx=1)
+        venue = create_venue(offerer, 'Test offerer', 'reservations@example.com', is_virtual=True, siret=None, idx=1)
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
         stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0, available=10)
@@ -1631,7 +1628,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         recipient = ['dev@passculture.app']
         stock.bookings = [booking]
 
-        PcObject.save(booking, stock)
+        PcObject.save(stock)
 
         # When
         thing_offer.extraData = None
@@ -1662,19 +1659,19 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'contremarque': 'ABC123',
                     'env': '-development',
                     'lien_offre_pcpro': 'http://localhost:3001/offres/AE?lieu=AE&structure=AE',
-                    'users': [{"firstName": "John",
-                               "lastName": "Doe",
-                               "email": "test@example.com",
-                               "contremarque": "ABC123"}]
+                    'users': [{'firstName': 'John',
+                               'lastName': 'Doe',
+                               'email': 'test@example.com',
+                               'contremarque': 'ABC123'}]
                 }
         }
 
     @clean_database
-    def test_returns_empty_ISBN_when_extra_data_has_no_key_isbn(app):
+    def test_returns_empty_ISBN_when_extra_data_has_no_key_isbn(self, app):
         # Given
         user = create_user(email="test@example.com")
         offerer = create_offerer(idx=1)
-        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None, idx=1)
+        venue = create_venue(offerer, 'Test offerer', 'reservations@example.com', is_virtual=True, siret=None, idx=1)
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
         stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0, available=10)
@@ -1682,7 +1679,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         stock.bookings = [booking]
         recipient = ['dev@passculture.app']
 
-        PcObject.save(booking, stock)
+        PcObject.save(stock)
 
         # When
         thing_offer.extraData = {}
@@ -1713,19 +1710,20 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'nombre_resa': 1,
                     'env': '-development',
                     'contremarque': 'ABC123',
-                    'users': [{"firstName": "John",
-                               "lastName": "Doe",
-                               "email": "test@example.com",
-                               "contremarque": "ABC123"}]
+                    'users': [{'firstName': 'John',
+                               'lastName': 'Doe',
+                               'email': 'test@example.com',
+                               'contremarque': 'ABC123'}]
                 }
         }
 
+    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
     @clean_database
     def test_returns_multiple_offer_email_when_production_environment(self, app):
         # Given
         user = create_user(email='test@example.com')
         offerer = create_offerer(idx=1)
-        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None, idx=1)
+        venue = create_venue(offerer, 'Test offerer', 'reservations@texample.com', is_virtual=True, siret=None, idx=1)
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION,
                                                       booking_email='dev@passculture.app', idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
@@ -1734,12 +1732,12 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         stock.bookings = [booking]
         recipient = ['dev@passculture.app', ADMINISTRATION_EMAIL_ADDRESS]
 
-        PcObject.save(booking, stock)
+        PcObject.save(stock)
 
         # When
         thing_offer.extraData = None
-        with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
-            email_data_template = get_offerer_booking_recap_email_data(booking, recipient)
+
+        email_data_template = get_offerer_booking_recap_email_data(booking, recipient)
 
         # Then
         assert email_data_template == {
@@ -1766,13 +1764,15 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'contremarque': 'ABC123',
                     'env': '-development',
                     'lien_offre_pcpro': 'http://localhost:3001/offres/AE?lieu=AE&structure=AE',
-                    'users': [{"firstName": "John",
-                               "lastName": "Doe",
-                               "email": "test@example.com",
-                               "contremarque": "ABC123"}]
+                    'users': [{'firstName': 'John',
+                               'lastName': 'Doe',
+                               'email': 'test@example.com',
+                               'contremarque': 'ABC123'}]
                 }
         }
 
+    @patch('utils.mailing.IS_PROD', False)
+    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
     @clean_database
     def test_returns_email_with_correct_data_when_two_users_made_reservations_on_same_offer(self, app):
         # Given
@@ -1783,7 +1783,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                              email='mail@example.com',
                              can_book_free_offers=True)
         offerer = create_offerer(idx=1)
-        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None, idx=1)
+        venue = create_venue(offerer, 'Test offerer', 'reservations@example.com', is_virtual=True, siret=None, idx=1)
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION,
                                                       booking_email='dev@passculture.app', idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
@@ -1793,14 +1793,12 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         stock.bookings = [booking_1, booking_2]
         recipient = ['dev@passculture.app', ADMINISTRATION_EMAIL_ADDRESS]
 
-        PcObject.save(booking_1, booking_2, stock)
+        PcObject.save(stock)
 
         # When
         thing_offer.extraData = None
 
-        with patch('utils.mailing.IS_PROD', False):
-            with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
-                email_data_template = get_offerer_booking_recap_email_data(booking_1, recipient)
+        email_data_template = get_offerer_booking_recap_email_data(booking_1, recipient)
 
         # Then
         assert email_data_template == {
@@ -1827,18 +1825,19 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'nombre_resa': 2,
                     'env': '-development',
                     'contremarque': 'ACVSDC',
-                    'users': [{"firstName": "Jean",
-                               "lastName": "Dupont",
-                               "email": "test@example.com",
-                               "contremarque": "ACVSDC"},
-                              {"firstName": "Jaja",
-                               "lastName": "Dudu",
-                               "email": "mail@example.com",
-                               "contremarque": "TEST95"}
+                    'users': [{'firstName': 'Jean',
+                               'lastName': 'Dupont',
+                               'email': 'test@example.com',
+                               'contremarque': 'ACVSDC'},
+                              {'firstName': 'Jaja',
+                               'lastName': 'Dudu',
+                               'email': 'mail@example.com',
+                               'contremarque': 'TEST95'}
                               ]
                 }
         }
 
+    @patch('utils.mailing.IS_PROD', True)
     @clean_database
     def test_returns_right_email_with_correct_link_to_the_corresponding_offer(self, app):
         # Given
@@ -1847,7 +1846,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                            can_book_free_offers=True)
 
         offerer = create_offerer(idx=1)
-        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None, idx=2)
+        venue = create_venue(offerer, 'Test offerer', 'reservations@example.com', is_virtual=True, siret=None, idx=2)
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION,
                                                       booking_email='dev@passculture.app', idx=3)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
@@ -1856,13 +1855,12 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         stock.bookings = [booking]
         recipient = ['dev@passculture.app', ADMINISTRATION_EMAIL_ADDRESS]
 
-        PcObject.save(booking, stock)
+        PcObject.save(stock)
 
         # When
         thing_offer.extraData = None
 
-        with patch('utils.mailing.IS_PROD', True):
-            email_data_template = get_offerer_booking_recap_email_data(booking, recipient)
+        email_data_template = get_offerer_booking_recap_email_data(booking, recipient)
 
         # Then
         assert email_data_template == {
@@ -1889,10 +1887,10 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'nombre_resa': 1,
                     'env': '',
                     'contremarque': 'ACVSDC',
-                    'users': [{"firstName": "Jean",
-                               "lastName": "Dupont",
-                               "email": "test@example.com",
-                               "contremarque": "ACVSDC"}]
+                    'users': [{'firstName': 'Jean',
+                               'lastName': 'Dupont',
+                               'email': 'test@example.com',
+                               'contremarque': 'ACVSDC'}]
                 }
         }
 
@@ -2226,31 +2224,21 @@ class GetUsersInformationFromStockBookingsTest:
                                                       booking_email='dev@passculture.app')
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
         stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0, available=10)
-        booking_1 = create_booking(user_1, stock, venue)
-        booking_2 = create_booking(user_2, stock, venue)
-        booking_3 = create_booking(user_3, stock, venue)
-        booking_1.token = 'HELLO0'
-        booking_2.token = 'HELLO1'
-        booking_3.token = 'HELLO2'
+        booking_1 = create_booking(user_1, stock, venue, token='HELLO0')
+        booking_2 = create_booking(user_2, stock, venue, token='HELLO1')
+        booking_3 = create_booking(user_3, stock, venue, token='HELLO2')
+
         stock.bookings = [booking_1, booking_2, booking_3]
 
         # When
-        users_informations = _get_users_information_from_stock_bookings(stock.bookings)
+        users_informations = _get_users_information_from_bookings(stock.bookings)
 
         # Then
-        assert users_informations == [{"firstName": "Jean",
-                                       "lastName": "Dupont",
-                                       "email": "test@example.com",
-                                       "contremarque": "HELLO0"},
-                                      {"firstName": "Jaja",
-                                       "lastName": "Dudu",
-                                       "email": "mail@example.com",
-                                       "contremarque": "HELLO1"},
-                                      {"firstName": "Toto",
-                                       "lastName": "Titi",
-                                       "email": "mail@example.com",
-                                       "contremarque": "HELLO2"}
-                                      ]
+        assert users_informations == [
+            {'firstName': 'Jean', 'lastName': 'Dupont', 'email': 'test@example.com', 'contremarque': 'HELLO0'},
+            {'firstName': 'Jaja', 'lastName': 'Dudu', 'email': 'mail@example.com', 'contremarque': 'HELLO1'},
+            {'firstName': 'Toto', 'lastName': 'Titi', 'email': 'mail@example.com', 'contremarque': 'HELLO2'}
+        ]
 
 
 def _remove_whitespaces(text):

@@ -119,7 +119,7 @@ def get_offerer_booking_recap_email_data(booking: Booking, recipients: List[str]
     departement_code = booking.user.departementCode
     offer_type = offer.type
     is_event = int(offer.isEvent)
-    stock_bookings = booking_queries.find_ongoing_bookings_by_stock(
+    bookings = booking_queries.find_ongoing_bookings_by_stock(
         booking.stock)
 
     offer_link = f'{PRO_URL}/offres/{humanize(offer.id)}?lieu={humanize(offer.venueId)}&structure={humanize(offer.venue.managingOffererId)}'
@@ -134,7 +134,7 @@ def get_offerer_booking_recap_email_data(booking: Booking, recipients: List[str]
             'nom_offre': offer_name,
             'nom_lieu': venue_name,
             'is_event': is_event,
-            'nombre_resa': len(stock_bookings),
+            'nombre_resa': len(bookings),
             'ISBN': '',
             'offer_type': 'book',
             'date': '',
@@ -142,7 +142,7 @@ def get_offerer_booking_recap_email_data(booking: Booking, recipients: List[str]
             'quantity': quantity,
             'contremarque': booking.token,
             'prix': price,
-            'users': _get_users_information_from_stock_bookings(stock_bookings),
+            'users': _get_users_information_from_bookings(bookings),
             'user_firstName': user_firstname,
             'user_lastName': user_lastname,
             'user_email': user_email,
@@ -155,8 +155,8 @@ def get_offerer_booking_recap_email_data(booking: Booking, recipients: List[str]
     offer_is_a_book = ProductType.is_book(offer_type)
 
     if offer_is_a_book:
-        mailjet_json['Vars']['ISBN'] = offer.extraData[
-            'isbn'] if offer.extraData is not None and 'isbn' in offer.extraData else ''
+        mailjet_json['Vars']['ISBN'] = offer.extraData['isbn'] if offer.extraData is not None \
+                                                                  and 'isbn' in offer.extraData else ''
     else:
         mailjet_json['Vars']['offer_type'] = offer_type
 
@@ -167,13 +167,12 @@ def get_offerer_booking_recap_email_data(booking: Booking, recipients: List[str]
     return mailjet_json
 
 
-def _get_users_information_from_stock_bookings(stock_bookings: List[Booking]) -> List[dict]:
+def _get_users_information_from_bookings(bookings: List[Booking]) -> List[dict]:
     users_keys = ('firstName', 'lastName', 'email', 'contremarque')
     users_properties = [[booking.user.firstName, booking.user.lastName, booking.user.email, booking.token] for booking
-                        in stock_bookings]
-    users = [dict(zip(users_keys, user_property)) for user_property in users_properties]
+                        in bookings]
 
-    return users
+    return [dict(zip(users_keys, user_property)) for user_property in users_properties]
 
 
 def _create_email_recipients(recipients: List[str]) -> str:
