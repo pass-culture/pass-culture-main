@@ -11,6 +11,7 @@
   padding: rem(8px) rem(12px);
 
   @media screen and (max-width: $iphone6) {
+    font-size: rem(14px);
     padding: rem(6px);
   }
 }
