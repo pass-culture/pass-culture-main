@@ -2,8 +2,8 @@ import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { Route } from 'react-router-dom'
 
-import BookingContainer from '../../pages/Booking/BookingContainer'
-import BookingCancellationContainer from '../../pages/BookingCancellation/BookingCancellationContainer'
+import BookingContainer from '../../layout/Booking/BookingContainer'
+import BookingCancellationContainer from '../../layout/BookingCancellation/BookingCancellationContainer'
 import isDetailsView from '../../../helpers/isDetailsView'
 
 import RectoContainer from '../Recto/RectoContainer'
