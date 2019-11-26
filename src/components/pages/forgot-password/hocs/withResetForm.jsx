@@ -59,14 +59,14 @@ const withPasswordForm = (WrappedComponent, validator, routePath, routeMethod) =
     }
 
     renderFinalForm = ({
-                         // https://github.com/final-form/final-form#formstate
-                         dirtySinceLastSubmit,
-                         error: preSubmitError,
-                         handleSubmit,
-                         hasSubmitErrors,
-                         hasValidationErrors,
-                         pristine,
-                       }) => {
+       // https://github.com/final-form/final-form#formstate
+       dirtySinceLastSubmit,
+       error: preSubmitError,
+       handleSubmit,
+       hasSubmitErrors,
+       hasValidationErrors,
+       pristine,
+     }) => {
       const { isloading } = this.state
       const canSubmit =
         (!pristine && !hasSubmitErrors && !hasValidationErrors && !isloading) ||
