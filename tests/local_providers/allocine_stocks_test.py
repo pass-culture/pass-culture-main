@@ -125,11 +125,10 @@ class AllocineStocksTest:
 
             offerer = create_offerer(siren='775671464')
             venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@example.com')
-            PcObject.save(venue)
 
             allocine_provider = get_provider_by_local_class('AllocineStocks')
             venue_provider = create_venue_provider(venue, allocine_provider, venue_id_at_offer_provider=theater_token)
-            PcObject.save(venue_provider)
+            PcObject.save(venue, venue_provider)
 
             allocine_stocks_provider = AllocineStocks(venue_provider)
 
@@ -234,12 +233,11 @@ class AllocineStocksTest:
 
             offerer = create_offerer(siren='775671464')
             venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@example.com')
-            PcObject.save(venue)
 
             allocine_provider = get_provider_by_local_class('AllocineStocks')
             allocine_provider.isActive = True
             venue_provider = create_venue_provider(venue, allocine_provider, venue_id_at_offer_provider=theater_token)
-            PcObject.save(venue_provider)
+            PcObject.save(venue, venue_provider)
 
             allocine_stocks_provider = AllocineStocks(venue_provider)
 
@@ -365,13 +363,12 @@ class AllocineStocksTest:
                 offerer = create_offerer(siren='775671464')
                 venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110',
                                      booking_email='toto@example.com')
-                PcObject.save(venue)
 
                 allocine_provider = get_provider_by_local_class('AllocineStocks')
                 allocine_provider.isActive = True
                 venue_provider = create_venue_provider(venue, allocine_provider,
                                                        venue_id_at_offer_provider=theater_token)
-                PcObject.save(venue_provider)
+                PcObject.save(venue, venue_provider)
 
                 allocine_stocks_provider = AllocineStocks(venue_provider)
 
@@ -520,12 +517,11 @@ class AllocineStocksTest:
                                                     event_type=EventType.CINEMA,
                                                     duration_minutes=60,
                                                     id_at_providers="TW92aWU6Mzc4MzI=-VF", venue=venue)
-            PcObject.save(venue, product, offer_vo, offer_vf)
 
             allocine_provider = get_provider_by_local_class('AllocineStocks')
             allocine_provider.isActive = True
             venue_provider = create_venue_provider(venue, allocine_provider, venue_id_at_offer_provider=theater_token)
-            PcObject.save(venue_provider)
+            PcObject.save(venue, product, offer_vo, offer_vf, venue_provider)
 
             allocine_stocks_provider = AllocineStocks(venue_provider)
 
@@ -633,12 +629,11 @@ class AllocineStocksTest:
 
             offerer = create_offerer(siren='775671464')
             venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@example.com')
-            PcObject.save(venue, product)
 
             allocine_provider = get_provider_by_local_class('AllocineStocks')
             allocine_provider.isActive = True
             venue_provider = create_venue_provider(venue, allocine_provider, venue_id_at_offer_provider=theater_token)
-            PcObject.save(venue_provider)
+            PcObject.save(venue, product, venue_provider)
 
             allocine_stocks_provider = AllocineStocks(venue_provider)
 
@@ -724,12 +719,11 @@ class AllocineStocksTest:
 
             offerer = create_offerer(siren='775671464')
             venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@example.com')
-            PcObject.save(venue)
 
             allocine_provider = get_provider_by_local_class('AllocineStocks')
             allocine_provider.isActive = True
             venue_provider = create_venue_provider(venue, allocine_provider, venue_id_at_offer_provider=theater_token)
-            PcObject.save(venue_provider)
+            PcObject.save(venue, venue_provider)
 
             allocine_stocks_provider = AllocineStocks(venue_provider)
 
@@ -830,12 +824,11 @@ class AllocineStocksTest:
 
             offerer = create_offerer(siren='775671464')
             venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@example.com')
-            PcObject.save(venue, product)
 
             allocine_provider = get_provider_by_local_class('AllocineStocks')
             allocine_provider.isActive = True
             venue_provider = create_venue_provider(venue, allocine_provider, venue_id_at_offer_provider=theater_token)
-            PcObject.save(venue_provider)
+            PcObject.save(venue, product, venue_provider)
 
             allocine_stocks_provider = AllocineStocks(venue_provider)
 
@@ -946,12 +939,11 @@ class AllocineStocksTest:
 
             offerer = create_offerer(siren='775671464')
             venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@example.com')
-            PcObject.save(venue, product)
 
             allocine_provider = get_provider_by_local_class('AllocineStocks')
             allocine_provider.isActive = True
             venue_provider = create_venue_provider(venue, allocine_provider, venue_id_at_offer_provider=theater_token)
-            PcObject.save(venue_provider)
+            PcObject.save(venue, product, venue_provider)
 
             allocine_stocks_provider = AllocineStocks(venue_provider)
 
