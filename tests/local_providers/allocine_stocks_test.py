@@ -124,7 +124,7 @@ class AllocineStocksTest:
             ])
 
             offerer = create_offerer(siren='775671464')
-            venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@toto.com')
+            venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@example.com')
             PcObject.save(venue)
 
             allocine_provider = get_provider_by_local_class('AllocineStocks')
@@ -233,7 +233,7 @@ class AllocineStocksTest:
                 }])
 
             offerer = create_offerer(siren='775671464')
-            venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@toto.com')
+            venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@example.com')
             PcObject.save(venue)
 
             allocine_provider = get_provider_by_local_class('AllocineStocks')
@@ -250,7 +250,7 @@ class AllocineStocksTest:
             created_offer = Offer.query.one()
             created_product = Product.query.one()
 
-            assert created_offer.bookingEmail == 'toto@toto.com'
+            assert created_offer.bookingEmail == 'toto@example.com'
             assert created_offer.description == "synopsis du film\nTous les détails du film sur AlloCiné:" \
                                                 " http://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html"
             assert created_offer.durationMinutes == 46
@@ -364,7 +364,7 @@ class AllocineStocksTest:
 
                 offerer = create_offerer(siren='775671464')
                 venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110',
-                                     booking_email='toto@toto.com')
+                                     booking_email='toto@example.com')
                 PcObject.save(venue)
 
                 allocine_provider = get_provider_by_local_class('AllocineStocks')
@@ -385,7 +385,7 @@ class AllocineStocksTest:
                 assert len(created_offers) == 2
 
                 original_version_offer = created_offers[0]
-                assert original_version_offer.bookingEmail == 'toto@toto.com'
+                assert original_version_offer.bookingEmail == 'toto@example.com'
                 assert original_version_offer.description == "synopsis du film\nTous les détails du film sur AlloCiné:" \
                                                     " http://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html"
                 assert original_version_offer.durationMinutes == 46
@@ -397,7 +397,7 @@ class AllocineStocksTest:
                 assert original_version_offer.type == str(EventType.CINEMA)
 
                 dubbed_version_offer = created_offers[1]
-                assert dubbed_version_offer.bookingEmail == 'toto@toto.com'
+                assert dubbed_version_offer.bookingEmail == 'toto@example.com'
                 assert dubbed_version_offer.description == "synopsis du film\nTous les détails du film sur AlloCiné:" \
                                                              " http://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html"
                 assert dubbed_version_offer.durationMinutes == 46
@@ -510,7 +510,7 @@ class AllocineStocksTest:
             )
 
             offerer = create_offerer(siren='775671464')
-            venue = create_venue(offerer, name='Cinéma Allociné', siret='77567146400110', booking_email='toto@toto.com')
+            venue = create_venue(offerer, name='Cinéma Allociné', siret='77567146400110', booking_email='toto@example.com')
 
             offer_vo = create_offer_with_event_product(product=product, event_name='Test event',
                                                     event_type=EventType.CINEMA,
@@ -632,7 +632,7 @@ class AllocineStocksTest:
             )
 
             offerer = create_offerer(siren='775671464')
-            venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@toto.com')
+            venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@example.com')
             PcObject.save(venue, product)
 
             allocine_provider = get_provider_by_local_class('AllocineStocks')
@@ -723,7 +723,7 @@ class AllocineStocksTest:
                 }])
 
             offerer = create_offerer(siren='775671464')
-            venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@toto.com')
+            venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@example.com')
             PcObject.save(venue)
 
             allocine_provider = get_provider_by_local_class('AllocineStocks')
@@ -829,7 +829,7 @@ class AllocineStocksTest:
             )
 
             offerer = create_offerer(siren='775671464')
-            venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@toto.com')
+            venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@example.com')
             PcObject.save(venue, product)
 
             allocine_provider = get_provider_by_local_class('AllocineStocks')
@@ -945,7 +945,7 @@ class AllocineStocksTest:
             )
 
             offerer = create_offerer(siren='775671464')
-            venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@toto.com')
+            venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@example.com')
             PcObject.save(venue, product)
 
             allocine_provider = get_provider_by_local_class('AllocineStocks')

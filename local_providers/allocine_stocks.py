@@ -12,6 +12,12 @@ from models import VenueProvider, Offer, Product, EventType
 from models.db import Model, db
 from models.local_provider_event import LocalProviderEventType
 
+DUBBED_VERSION = 'DUBBED'
+LOCAL_VERSION = 'LOCAL'
+ORIGINAL_VERSION = 'ORIGINAL'
+FRENCH_VERSION_SUFFIX = 'VF'
+ORIGINAL_VERSION_SUFFIX = 'VO'
+
 
 class AllocineStocks(LocalProvider):
     name = "Allociné"
@@ -36,24 +42,25 @@ class AllocineStocks(LocalProvider):
                                     f"Error parsing information for movie: {raw_movie_information['node']['movie']}")
             return []
 
-        product_providable_information = self.create_providable_info(Product,
-                                                                     self.movie_information['id'],
-                                                                     datetime.utcnow())
-        providable_information_objects = [product_providable_information]
-
-        if _product_has_original_version(self.movie_showtimes):
+        providable_information_list = [self.create_providable_info(Product,
+                                                                   self.movie_information['id'],
+                                                                   datetime.utcnow())]
+        print(providable_information_list)
+        if _has_original_version_product(self.movie_showtimes):
+            print('has original')
             offer_vo_providable_information = self.create_providable_info(Offer,
-                                                                          f"{self.movie_information['id']}-VO",
+                                                                          f"{self.movie_information['id']}-{ORIGINAL_VERSION_SUFFIX}",
                                                                           datetime.utcnow())
-            providable_information_objects.append(offer_vo_providable_information)
+            providable_information_list.append(offer_vo_providable_information)
 
-        if _product_has_french_version(self.movie_showtimes):
+        if _has_french_version_product(self.movie_showtimes):
+            print('has french')
             offer_vf_providable_information = self.create_providable_info(Offer,
-                                                                          f"{self.movie_information['id']}-VF",
+                                                                          f"{self.movie_information['id']}-{FRENCH_VERSION_SUFFIX}",
                                                                           datetime.utcnow())
-            providable_information_objects.append(offer_vf_providable_information)
-
-        return providable_information_objects
+            providable_information_list.append(offer_vf_providable_information)
+        print(providable_information_list)
+        return providable_information_list
 
 
     def fill_object_attributes(self, pc_object: Model):
@@ -95,7 +102,7 @@ class AllocineStocks(LocalProvider):
             allocine_offer.extraData["stageDirector"] = self.movie_information['stageDirector']
         allocine_offer.isDuo = True
 
-        movie_version = 'VO' if _offer_is_original_version(allocine_offer.idAtProviders) is True else 'VF'
+        movie_version = ORIGINAL_VERSION_SUFFIX if _is_original_version_offer(allocine_offer.idAtProviders) is True else FRENCH_VERSION_SUFFIX
 
         allocine_offer.name = f"{self.movie_information['title']} - {movie_version}"
         allocine_offer.type = str(EventType.CINEMA)
@@ -163,14 +170,12 @@ def _parse_movie_duration(duration: str) -> Optional[int]:
     movie_duration_minutes = int(match.groups()[1])
     return movie_duration_hours * 60 + movie_duration_minutes
 
-def _product_has_original_version(movies_showtimes):
-    array = list(map(lambda x: x['diffusionVersion'], movies_showtimes))
-    return 'ORIGINAL' in array
+def _has_original_version_product(movies_showtimes: List[dict]) -> bool:
+    return ORIGINAL_VERSION in list(map(lambda movie: movie['diffusionVersion'], movies_showtimes))
 
-def _product_has_french_version(movies_showtimes):
-    array = list(map(lambda x: x['diffusionVersion'], movies_showtimes))
-    return 'LOCAL' or 'DUBBED' in array
+def _has_french_version_product(movies_showtimes: List[dict]) -> bool:
+    return LOCAL_VERSION or DUBBED_VERSION in list(map(lambda movie: movie['diffusionVersion'], movies_showtimes))
 
-def _offer_is_original_version(idAtProviders):
-    return idAtProviders[-3:] == '-VO'
+def _is_original_version_offer(idAtProviders: str) -> bool:
+    return idAtProviders[-3:] == f"-{ORIGINAL_VERSION_SUFFIX}"
 
