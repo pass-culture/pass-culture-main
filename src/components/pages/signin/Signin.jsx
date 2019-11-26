@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import validateRequiredField from '../../forms/validators/validateRequiredField'
 import EmailField from '../../forms/inputs/EmailField'
 import PasswordField from '../../forms/inputs/PasswordField'
-import canSubmitForm from './canSubmitForm'
+import canSubmitForm from './utils/canSubmitForm'
 import FormFooter from '../../forms/FormFooter'
 import parseSubmitErrors from '../../forms/utils/parseSubmitErrors'
 

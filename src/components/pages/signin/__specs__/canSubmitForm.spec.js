@@ -1,4 +1,4 @@
-import canSubmitForm from '../canSubmitForm'
+import canSubmitForm from '../utils/canSubmitForm'
 
 describe('src | components | pages | signin | canSubmitForm', () => {
   describe('when missing arguments', () => {

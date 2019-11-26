@@ -8,9 +8,9 @@ import CheckBoxField from '../../forms/inputs/CheckBoxField'
 import EmailField from '../../forms/inputs/EmailField'
 import InputField from '../../forms/inputs/InputField'
 import PasswordField from '../../forms/inputs/PasswordField'
-import FormFooter from './FormFooter'
+import FormFooter from './FormFooter/FormFooter'
 
-class Signup extends PureComponent {
+class SignUp extends PureComponent {
   constructor(props) {
     super(props)
     this.state = { isFormLoading: false }
@@ -147,9 +147,9 @@ class Signup extends PureComponent {
   }
 }
 
-Signup.propTypes = {
+SignUp.propTypes = {
   dispatch: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
 }
 
-export default Signup
+export default SignUp

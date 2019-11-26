@@ -1,5 +1,5 @@
 import withNotRequiredLogin from '../../hocs/with-login/withNotRequiredLogin'
 
-import Signup from './Signup'
+import SignUp from './SignUp'
 
-export default withNotRequiredLogin(Signup)
+export default withNotRequiredLogin(SignUp)
