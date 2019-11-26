@@ -19,3 +19,18 @@ def test_reset_thumb_count_before_processing_files(app):
     # Then
     products = Product.query.all()
     assert any(product.thumbCount == 0 for product in products)
+
+
+@clean_database
+def test_reset_thumb_count_process_all_products(app):
+    # Given
+    for index in range(10):
+        product = create_product_with_thing_type(thumb_count=5)
+        PcObject.save(product)
+
+    # When
+    reset_thumb_count(page_size=1)
+
+    # Then
+    products = Product.query.all()
+    assert any(product.thumbCount == 0 for product in products)
