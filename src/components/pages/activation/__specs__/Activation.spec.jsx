@@ -3,8 +3,8 @@ import { shallow } from 'enzyme'
 import { Redirect, Route } from 'react-router'
 
 import PasswordFormContainer from '../PasswordForm/PasswordFormContainer'
-import Error from '../Error'
-import InvalidLink from '../InvalidLink'
+import Error from '../Error/Error'
+import InvalidLink from '../InvalidLink/InvalidLink'
 
 import Activation from '../Activation'
 

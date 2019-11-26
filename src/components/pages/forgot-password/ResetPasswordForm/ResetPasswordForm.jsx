@@ -1,11 +1,11 @@
 import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 
-import FormError from '../../forms/FormError'
-import FormFooter from '../../forms/FormFooter'
-import HiddenField from '../../forms/inputs/HiddenField'
-import PasswordField from '../../forms/inputs/PasswordField'
-import withResetForm from './withResetForm'
+import FormError from '../../../forms/FormError'
+import FormFooter from '../../../forms/FormFooter'
+import HiddenField from '../../../forms/inputs/HiddenField'
+import PasswordField from '../../../forms/inputs/PasswordField'
+import withResetForm from '../hocs/withResetForm'
 
 const cancelOptions = {
   className: 'is-white-text',
@@ -19,7 +19,7 @@ const submitOptions = {
   label: 'OK',
 }
 
-export const ResetThePasswordForm = ({ canSubmit, formErrors, isLoading }) => (
+export const ResetPasswordForm = ({ canSubmit, formErrors, isLoading }) => (
   <Fragment>
     <div>
       <div className="fs22">
@@ -70,14 +70,14 @@ export const ResetThePasswordForm = ({ canSubmit, formErrors, isLoading }) => (
   </Fragment>
 )
 
-ResetThePasswordForm.defaultProps = {
+ResetPasswordForm.defaultProps = {
   formErrors: false,
 }
 
-ResetThePasswordForm.propTypes = {
+ResetPasswordForm.propTypes = {
   canSubmit: PropTypes.bool.isRequired,
   formErrors: PropTypes.oneOfType([PropTypes.array, PropTypes.bool, PropTypes.string]),
   isLoading: PropTypes.bool.isRequired,
 }
 
-export default withResetForm(ResetThePasswordForm, null, '/users/new-password', 'POST')
+export default withResetForm(ResetPasswordForm, null, '/users/new-password', 'POST')

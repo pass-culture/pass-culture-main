@@ -4,14 +4,12 @@ import React, { PureComponent } from 'react'
 import { Switch, Route } from 'react-router-dom'
 
 import NotMatch from '../not-match/NotMatch'
-import RequestEmailForm from './RequestEmailForm'
-import ResetThePasswordForm from './ResetThePasswordForm'
-import SuccessView from './SuccessView'
+import RequestEmailForm from './RequestEmailForm/RequestEmailForm'
+import ResetThePasswordForm from './ResetPasswordForm/ResetPasswordForm'
+import SuccessView from './SuccessView/SuccessView'
 
-class ForgotPasswordPage extends PureComponent {
+class ForgotPassword extends PureComponent {
   renderForgotPasswordSuccessViewRoute = token => routeProps => (
-    // si token -> affiche le form success pour le confirm
-    // sinon -> affiche le form success pour le request
     <SuccessView
       {...routeProps}
       token={token}
@@ -59,8 +57,8 @@ class ForgotPasswordPage extends PureComponent {
   }
 }
 
-ForgotPasswordPage.propTypes = {
+ForgotPassword.propTypes = {
   location: PropTypes.shape().isRequired,
 }
 
-export default ForgotPasswordPage
+export default ForgotPassword

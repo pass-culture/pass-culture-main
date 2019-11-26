@@ -1,10 +1,10 @@
 import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 
-import FormError from '../../forms/FormError'
-import FormFooter from '../../forms/FormFooter'
-import InputField from '../../forms/inputs/InputField'
-import withResetForm from './withResetForm'
+import FormError from '../../../forms/FormError'
+import FormFooter from '../../../forms/FormFooter'
+import InputField from '../../../forms/inputs/InputField'
+import withResetForm from '../hocs/withResetForm'
 
 const cancelOptions = {
   className: 'is-white-text',
@@ -18,7 +18,7 @@ const submitOptions = {
   label: 'OK',
 }
 
-export const RawRequestEmailForm = ({ canSubmit, isLoading, formErrors }) => (
+export const RequestEmailForm = ({ canSubmit, isLoading, formErrors }) => (
   <Fragment>
     <div>
       <div className="logout-form-header">
@@ -48,14 +48,14 @@ export const RawRequestEmailForm = ({ canSubmit, isLoading, formErrors }) => (
   </Fragment>
 )
 
-RawRequestEmailForm.defaultProps = {
+RequestEmailForm.defaultProps = {
   formErrors: false,
 }
 
-RawRequestEmailForm.propTypes = {
+RequestEmailForm.propTypes = {
   canSubmit: PropTypes.bool.isRequired,
   formErrors: PropTypes.oneOfType([PropTypes.array, PropTypes.bool, PropTypes.string]),
   isLoading: PropTypes.bool.isRequired,
 }
 
-export default withResetForm(RawRequestEmailForm, null, '/users/reset-password', 'POST')
+export default withResetForm(RequestEmailForm, null, '/users/reset-password', 'POST')

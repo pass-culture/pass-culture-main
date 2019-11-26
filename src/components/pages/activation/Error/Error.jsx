@@ -1,7 +1,7 @@
 import React from 'react'
 
-import MailToLink from '../../layout/MailToLink/MailToLink'
-import { SUPPORT_EMAIL, SUPPORT_EMAIL_SUBJECT } from '../../../utils/config'
+import MailToLink from '../../../layout/MailToLink/MailToLink'
+import { SUPPORT_EMAIL, SUPPORT_EMAIL_SUBJECT } from '../../../../utils/config'
 
 const Error = () => {
   const emailHeaders = {

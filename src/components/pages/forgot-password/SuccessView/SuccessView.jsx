@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent, Fragment } from 'react'
 
-import FormFooter from '../../forms/FormFooter'
+import FormFooter from '../../../forms/FormFooter'
 
 const cancelOptions = {
   className: 'is-white-text',

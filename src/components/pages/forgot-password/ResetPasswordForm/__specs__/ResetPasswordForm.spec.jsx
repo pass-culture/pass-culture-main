@@ -1,14 +1,14 @@
 import React from 'react'
 import { shallow } from 'enzyme'
-import { RawRequestEmailForm } from '../RequestEmailForm'
+import { ResetPasswordForm } from '../ResetPasswordForm'
 
-describe('src | components | pages | forgot-password | RawRequestEmailForm', () => {
+describe('src | components | pages | forgot-password | ResetPasswordForm', () => {
   it('should match the snapshot', () => {
     // given
     const props = { canSubmit: true, isLoading: false }
 
     // when
-    const wrapper = shallow(<RawRequestEmailForm {...props} />)
+    const wrapper = shallow(<ResetPasswordForm {...props} />)
 
     // then
     expect(wrapper).toMatchSnapshot()

@@ -6,7 +6,7 @@ import BetaPageContainer from '../pages/beta-page/BetaPageContainer'
 import MyBookingsContainer from '../pages/my-bookings/MyBookingsContainer'
 import DiscoveryContainer from '../pages/discovery/DiscoveryContainer'
 import MyFavoritesContainer from '../pages/my-favorites/MyFavoritesContainer'
-import ForgotPasswordPage from '../pages/forgot-password/ForgotPasswordPage'
+import ForgotPassword from '../pages/forgot-password/ForgotPassword'
 import ProfileContainer from '../pages/profile/ProfileContainer'
 import TypeFormPage from '../pages/typeform/TypeFormContainer'
 import SearchContainer from '../pages/search/SearchContainer'
@@ -45,7 +45,7 @@ const routes = [
     title: 'Inscription',
   },
   {
-    component: ForgotPasswordPage,
+    component: ForgotPassword,
     path: '/mot-de-passe-perdu/:view?',
     title: 'Mot de passe perdu',
   },

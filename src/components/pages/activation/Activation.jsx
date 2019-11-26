@@ -1,8 +1,8 @@
 import React from 'react'
 import { Redirect, Route, Switch } from 'react-router-dom'
 
-import Error from './Error'
-import InvalidLink from './InvalidLink'
+import Error from './Error/Error'
+import InvalidLink from './InvalidLink/InvalidLink'
 import PasswordFormContainer from './PasswordForm/PasswordFormContainer'
 
 const Activation = () => (
