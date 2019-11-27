@@ -47,38 +47,34 @@
                 "bookingId": {
                   "type": "string"
                 },
+                "dateOfBirth": {
+                  "type": "string"
+                },
+                "datetime": {
+                  "type": "string"
+                },
+                "ean13": {
+                  "type": "string"
+                },
                 "email": {
-                  "type": "string"
-                },
-                "isUsed": {
-                  "type": "boolean"
-                },
-                "offerName": {
-                  "type": "string"
-                },
-                "userName": {
-                  "type": "string",
-                  "description": "le user name"
-                },
-                "venueDepartementCode": {
-                  "type": "string"
-                },
-                "offerId": {
-                  "type": "integer"
-                },
-                "venueName": {
-                  "type": "string"
-                },
-                "venueAddress": {
-                  "type": "string"
-                },
-                "offerType": {
                   "type": "string"
                 },
                 "formula": {
                   "type": "string"
                 },
-                "datetime": {
+                "isUsed": {
+                  "type": "boolean"
+                },
+                "offerId": {
+                  "type": "integer"
+                },
+                "offerName": {
+                  "type": "string"
+                },
+                "offerType": {
+                  "type": "string"
+                },
+                "phoneNumber": {
                   "type": "string"
                 },
                 "price": {
@@ -87,13 +83,17 @@
                 "quantity": {
                   "type": "integer"
                 },
-                "ean13": {
+                "userName": {
+                  "type": "string",
+                  "description": "le user name"
+                },
+                "venueAddress": {
                   "type": "string"
                 },
-                "phoneNumber": {
+                "venueDepartementCode": {
                   "type": "string"
                 },
-                "dateOfBirth": {
+                "venueName": {
                   "type": "string"
                 }
               }

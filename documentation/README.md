@@ -8,8 +8,8 @@ Flasgger est un outil de visualisation de la doc, utilisant Swagger.
 ## Comment ajouter une nouvelle route ?
 
 - Nous utilisons l'outil de visualisation de documentation [Swagger](https://swagger.io/docs/specification/2-0/basic-structure/) ;
-- Nous suivons la spécification [OpenAPI 2](https://github.com/OAI/OpenAPI-Specification/) pour construire nos fichiers `.json` ;
-(en attendant une mise à jour de flasgger qui sera totalement compatible avec la spec openAPI 3)
+- Nous suivons la spécification [OpenAPI 2](https://github.com/OAI/OpenAPI-Specification/) pour construire nos fichiers `.json`
+(en attendant une mise à jour de flasgger qui sera totalement compatible avec la spec OpenAPI 3) ;
 
 - [Un exemple avec Flasgger](https://github.com/flasgger/flasgger/blob/master/examples/example_app.py) ;
 - [Le json exemple de Swagger](https://petstore.swagger.io/#/).
@@ -33,13 +33,13 @@ Cliquer sur **TRY IT OUT**  en haut à droite.
 
 Entrer l'une des contremarques ci-dessous puis cliquer sur **Execute** pour faire l'appel API.
 
-### Réponses attendues avec l'utilsateur spécifié plus haut et des token (contremarques)
+### Réponses attendues avec l'utilisateur spécifié plus haut et des token (contremarques)
 
 - Réponse 200 avec le token 100003 ;
 - Réponse 410 avec le token 100005 ;
 - Réponse 403 avec le token 100002.
 
-## Généreration de nouvelles clé API
+## Génération de nouvelles clé API
 
 - Ouvrir un terminal
 - Utiliser cette fonction :

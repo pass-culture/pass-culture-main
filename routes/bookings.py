@@ -19,7 +19,7 @@ from models.offer_type import ProductType
 from repository import booking_queries, feature_queries
 from repository.api_key_queries import find_api_key_by_value
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
-from routes.serialization import serialize, as_dict
+from routes.serialization import serialize, as_dict, serialize_booking
 from utils.human_ids import dehumanize, humanize
 from utils.includes import WEBAPP_GET_BOOKING_INCLUDES, WEBAPP_PATCH_POST_BOOKING_INCLUDES, \
     WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES
@@ -54,7 +54,6 @@ from validation.users_authorizations import check_user_can_validate_bookings, \
     check_api_key_allows_to_cancel_booking, \
     check_api_key_allows_to_validate_booking, \
     check_can_book_free_offer
-
 
 @app.route('/bookings/csv', methods=['GET'])
 @login_required
@@ -264,7 +263,7 @@ def get_booking_by_token_v2(token):
 
     check_booking_token_is_usable(booking)
 
-    response = _create_response_to_get_booking_by_token_v2(booking)
+    response = serialize_booking(booking)
     return jsonify(response), 200
 
 
@@ -428,55 +427,6 @@ def _create_response_to_get_booking_by_token(booking):
         'venueDepartementCode': venue_departement_code,
     }
     if offer.type == str(EventType.ACTIVATION):
-        response.update({'phoneNumber': booking.user.phoneNumber,
-                         'dateOfBirth': serialize(booking.user.dateOfBirth)})
-
-    return response
-
-
-def _create_response_to_get_booking_by_token_v2(booking: Booking) -> Dict:
-    booking_id = humanize(booking.id)
-    user_email = booking.user.email
-    is_used = booking.isUsed
-    offer_name = booking.stock.resolvedOffer.product.name
-    user_name = booking.user.publicName
-    venue_departement_code = booking.stock.resolvedOffer.venue.departementCode
-    offer_id = booking.stock.offer.id
-    venue_name = booking.stock.resolvedOffer.venue.name
-    venue_address = booking.stock.resolvedOffer.venue.address
-    offer_type = 'EVENEMENT' if booking.stock.offer.isEvent else 'BIEN'
-    offer_formula = ''
-    if booking.stock.offer.type == str(EventType.CINEMA):
-        offer_formula = 'PLACE'
-    elif booking.stock.offer.type == str(ThingType.CINEMA_ABO):
-        offer_formula = 'ABO'
-    offer_date_time = serialize(booking.stock.beginningDatetime) if booking.stock.beginningDatetime else ''
-    price = booking.stock.price
-    quantity = booking.quantity
-    offer_extra_data = booking.stock.offer.extraData
-    product_isbn = ''
-    if offer_extra_data and 'isbn' in offer_extra_data:
-        product_isbn = offer_extra_data['isbn']
-
-    response = {
-        'bookingId': booking_id,
-        'email': user_email,
-        'isUsed': is_used,
-        'offerName': offer_name,
-        'userName': user_name,
-        'venueDepartementCode': venue_departement_code,
-        'offerId': offer_id,
-        'venueName': venue_name,
-        'venueAddress': venue_address,
-        'offerType': offer_type,
-        'formula': offer_formula,
-        'datetime': offer_date_time,
-        'price': price,
-        'quantity': quantity,
-        'ean13': product_isbn
-    }
-
-    if booking.stock.resolvedOffer.product.type == str(EventType.ACTIVATION):
         response.update({'phoneNumber': booking.user.phoneNumber,
                          'dateOfBirth': serialize(booking.user.dateOfBirth)})
 
