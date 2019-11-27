@@ -17,12 +17,6 @@ fi
 
 echo "--------"
 echo $(date)
-echo "Checking old scalingo process"
-pkill -x 'scalingo'
-if [[ $? == 1 ]]; then
-    echo "A Scalingo tunnel was left opened, we are killing the old process before starting."
-    echo "Safety first !"
-fi
 
 # GET APPLICATION NAME
 if [[ $# -gt 1 ]] && [[ "$1" == "-a" ]]; then
@@ -48,6 +42,7 @@ if [[ $# -gt 2 ]] && [[ "$1" == "-d" ]]; then
   shift 2
 elif [[ "$SCALINGO_POSTGRESQL_URL_PROD" =~ "postgres://" ]]; then
   POSTGRESQL_URL="$SCALINGO_POSTGRESQL_URL_PROD"
+  echo postgresql url : $POSTGRESQL_URL
 else
   echo "You must provide the SCALINGO_POSTGRESQL_URL you want to access."
   exit 1
@@ -75,24 +70,39 @@ else
   exit 1
 fi
 
-echo "Building tunnel to Scalingo."
-/usr/local/bin/scalingo -a "$APP_NAME" db-tunnel "$POSTGRESQL_URL" > /dev/null 2>&1 &
-sleep 3
-DB_TUNNEL_PID=$!
-echo "Waiting for connection to be up"
-is_connection_ready=1
-while [ "$is_connection_ready" != 0 ]
-do
-  pg_isready -h localhost -p 10000 > /dev/null 2>&1
-  is_connection_ready=$?
-  sleep 1
-done
+DB_TUNNEL_PID="$(pgrep -f $(echo $POSTGRESQL_URL | cut -d '?' -f1) |tail -1)"
+DB_TUNNEL_HAS_TO_BE_TERMINATED=false
+
+if [ -z "$DB_TUNNEL_PID" ]
+then
+  # OPEN TUNNEL TO DATABASE
+  /usr/local/bin/scalingo -a "$APP_NAME" db-tunnel "$POSTGRESQL_URL" &
+  sleep 3
+  DB_TUNNEL_PID=$!
+  DB_TUNNEL_HAS_TO_BE_TERMINATED=true
+  TUNNEL_PORT="$(lsof -Pan -p "$DB_TUNNEL_PID" -iTCP -sTCP:LISTEN -Fn |grep n |sed 's/n127.0.0.1://g')"
+  echo "Waiting for connection to be up"
+  is_connection_ready=1
+  while [ "$is_connection_ready" != 0 ]
+  do
+    pg_isready -h localhost -p $TUNNEL_PORT > /dev/null 2>&1
+    is_connection_ready=$?
+    sleep 1
+  done
+fi
+
+TUNNEL_PORT="$(lsof -Pan -p "$DB_TUNNEL_PID" -iTCP -sTCP:LISTEN -Fn |grep n |sed 's/n127.0.0.1://g')"
 
 echo "Connection up !"
-echo "Current db-tunnel PID : $DB_TUNNEL_PID"
+echo "Current db-tunnel PID : $DB_TUNNEL_PID, tunnel port : $TUNNEL_PORT"
+
+exit 1
 
 echo "Start backup process."
 mkdir -p "$BACKUP_PATH"
-PGPASSWORD="$PG_PASSWORD" pg_dump --host 127.0.0.1 --port 10000 --username "$PG_USER" --dbname "$PG_USER" -F c > "$BACKUP_PATH"/`date +%Y%m%d_%H%M%S`.pgdump
-echo "$DB_TUNNEL_PID"
-sudo kill -9 "$DB_TUNNEL_PID"
+PGPASSWORD="$PG_PASSWORD" pg_dump --host 127.0.0.1 --port $TUNNEL_PORT --username "$PG_USER" --dbname "$PG_USER" -F c > "$BACKUP_PATH"/`date +%Y%m%d_%H%M%S`.pgdump
+
+if [ "$DB_TUNNEL_HAS_TO_BE_TERMINATED" = true ]; then
+  echo terminating tunnel
+  kill -9 "$DB_TUNNEL_PID"
+fi
