@@ -1466,7 +1466,8 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         # Given
         user = create_user(email='test@example.com')
         offerer = create_offerer(idx=1)
-        venue = create_venue(offerer, 'Test offerer', 'reservations@example.com', is_virtual=True, siret=None, idx=1)
+        venue = create_venue(offerer, 'Test offerer', 'reservations@example.com', siret='89765389057043', idx=1,
+                             departement_code='75', postal_code='75000')
         event_offer = create_offer_with_event_product(venue, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 59, 5, tzinfo=timezone.utc)
         stock = create_stock_from_offer(event_offer, beginning_datetime=beginning_datetime, price=0, available=10)
@@ -1491,7 +1492,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'nom_lieu': 'Test offerer',
                     'prix': 'Gratuit',
                     'date': '06-Nov-2019',
-                    'heure': '14h59',
+                    'heure': '15h59',
                     'quantity': 1,
                     'user_firstName': 'John',
                     'user_lastName': 'Doe',
@@ -1503,7 +1504,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'ISBN': '',
                     'lien_offre_pcpro': 'http://localhost:3001/offres/AE?lieu=AE&structure=AE',
                     'offer_type': 'EventType.SPECTACLE_VIVANT',
-                    'departement': '93',
+                    'departement': '75',
                     'users': [{'firstName': 'John',
                                'lastName': 'Doe',
                                'email': 'test@example.com',
@@ -1556,7 +1557,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'heure': '',
                     'quantity': 3,
                     'offer_type': 'book',
-                    'departement': '93',
+                    'departement': 'numérique',
                     'users': [{'firstName': 'John',
                                'lastName': 'Doe',
                                'email': 'test@example.com',
@@ -1570,7 +1571,8 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         user = create_user(email='test@example.com')
         offerer = create_offerer(idx=1)
         deposit = create_deposit(user, amount=50, source='public')
-        venue = create_venue(offerer, 'Test offerer', 'reservations@example.com', is_virtual=True, siret=None, idx=1)
+        venue = create_venue(offerer, 'Test offerer', 'reservations@example.com', siret='89765389057043', idx=1,
+                             departement_code='75', postal_code='75000')
         event_offer = create_offer_with_event_product(venue, is_duo=True, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
         stock = create_stock_from_offer(event_offer, beginning_datetime=beginning_datetime, price=5.86, available=10)
@@ -1584,7 +1586,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         email = get_offerer_booking_recap_email_data(booking, recipient)
 
         # Then
-        assert email ==  {
+        assert email == {
             'FromEmail': 'support@passculture.app',
             'MJ-TemplateID': 1095029,
             'MJ-TemplateLanguage': True,
@@ -1595,7 +1597,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'nom_lieu': 'Test offerer',
                     'prix': '5.86',
                     'date': '06-Nov-2019',
-                    'heure': '14h',
+                    'heure': '15h',
                     'quantity': 1,
                     'user_firstName': 'John',
                     'user_lastName': 'Doe',
@@ -1603,7 +1605,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'is_event': 1,
                     'ISBN': '',
                     'offer_type': 'EventType.SPECTACLE_VIVANT',
-                    'departement': '93',
+                    'departement': '75',
                     'nombre_resa': 1,
                     'contremarque': 'ABC123',
                     'env': '-development',
@@ -1654,7 +1656,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'is_event': 0,
                     'ISBN': '',
                     'offer_type': 'book',
-                    'departement': '93',
+                    'departement': 'numérique',
                     'nombre_resa': 1,
                     'contremarque': 'ABC123',
                     'env': '-development',
@@ -1704,7 +1706,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'user_email': 'test@example.com',
                     'is_event': 0,
                     'ISBN': '',
-                    'departement': '93',
+                    'departement': 'numérique',
                     'offer_type': 'book',
                     'lien_offre_pcpro': 'http://localhost:3001/offres/AE?lieu=AE&structure=AE',
                     'nombre_resa': 1,
@@ -1723,7 +1725,8 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         # Given
         user = create_user(email='test@example.com')
         offerer = create_offerer(idx=1)
-        venue = create_venue(offerer, 'Test offerer', 'reservations@texample.com', is_virtual=True, siret=None, idx=1)
+        venue = create_venue(offerer, 'Test offerer', 'reservations@example.com', siret='89765389057043', idx=1,
+                     departement_code='75', postal_code='75000')
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION,
                                                       booking_email='dev@passculture.app', idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
@@ -1759,7 +1762,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'is_event': 0,
                     'ISBN': '',
                     'offer_type': 'book',
-                    'departement': '93',
+                    'departement': '75',
                     'nombre_resa': 1,
                     'contremarque': 'ABC123',
                     'env': '-development',
@@ -1783,7 +1786,8 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                              email='mail@example.com',
                              can_book_free_offers=True)
         offerer = create_offerer(idx=1)
-        venue = create_venue(offerer, 'Test offerer', 'reservations@example.com', is_virtual=True, siret=None, idx=1)
+        venue = create_venue(offerer, 'Test offerer', 'reservations@example.com', siret='89765389057043', idx=1,
+                     departement_code='75', postal_code='75000')
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION,
                                                       booking_email='dev@passculture.app', idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
@@ -1821,7 +1825,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'ISBN': '',
                     'offer_type': 'book',
                     'lien_offre_pcpro': 'http://localhost:3001/offres/AE?lieu=AE&structure=AE',
-                    'departement': '93',
+                    'departement': '75',
                     'nombre_resa': 2,
                     'env': '-development',
                     'contremarque': 'ACVSDC',
@@ -1846,7 +1850,8 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                            can_book_free_offers=True)
 
         offerer = create_offerer(idx=1)
-        venue = create_venue(offerer, 'Test offerer', 'reservations@example.com', is_virtual=True, siret=None, idx=2)
+        venue = create_venue(offerer, 'Test offerer', 'reservations@example.com', siret='89765389057043', idx=1,
+                             departement_code='75', postal_code='75000')
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION,
                                                       booking_email='dev@passculture.app', idx=3)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
@@ -1882,8 +1887,8 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'is_event': 0,
                     'ISBN': '',
                     'offer_type': 'book',
-                    'lien_offre_pcpro': 'http://localhost:3001/offres/AM?lieu=A9&structure=AE',
-                    'departement': '93',
+                    'lien_offre_pcpro': 'http://localhost:3001/offres/AM?lieu=AE&structure=AE',
+                    'departement': '75',
                     'nombre_resa': 1,
                     'env': '',
                     'contremarque': 'ACVSDC',

@@ -116,7 +116,7 @@ def get_offerer_booking_recap_email_data(booking: Booking, recipients: List[str]
     user_email = booking.user.email
     user_firstname = booking.user.firstName
     user_lastname = booking.user.lastName
-    departement_code = booking.user.departementCode
+    departement_code = offer.venue.departementCode or 'numérique'
     offer_type = offer.type
     is_event = int(offer.isEvent)
     bookings = booking_queries.find_ongoing_bookings_by_stock(
