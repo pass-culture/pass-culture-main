@@ -1,12 +1,14 @@
 from datetime import datetime, timedelta
 
-from models import ApiKey, PcObject, EventType
+from models import ApiKey, PcObject, EventType, ThingType
+from routes.serialization import serialize
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_stock_with_thing_offer, \
     create_venue, create_offerer, \
     create_user, create_booking, create_offer_with_event_product, \
     create_event_occurrence, create_stock_from_event_occurrence, create_user_offerer, create_stock_with_event_offer, \
-    create_api_key
+    create_api_key, create_deposit, create_product_with_thing_type, create_offer_with_thing_product, create_stock
+from utils.human_ids import humanize
 from utils.token import random_token
 
 API_KEY_VALUE = random_token(64)
@@ -14,18 +16,19 @@ API_KEY_VALUE = random_token(64)
 class Get:
     class Returns200:
         @clean_database
-        def when_user_has_rights_and_regular_offer(self, app):
+        def when_user_has_rights_and_booked_an_event(self, app):
             # Given
             user = create_user(public_name='John Doe', email='user@example.com')
+            deposit = create_deposit(user)
             admin_user = create_user(email='admin@example.com')
             offerer = create_offerer()
             user_offerer = create_user_offerer(admin_user, offerer)
-            venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event_name='Event Name', event_type=EventType.CINEMA)
-            event_occurrence = create_event_occurrence(offer)
-            stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-            booking = create_booking(user, stock, venue=venue)
-            PcObject.save(user_offerer, booking)
+            venue = create_venue(offerer, name='Venue name', address='Venue address')
+            offer = create_offer_with_event_product(venue=venue, event_name='Event Name', event_type=EventType.CINEMA)
+            event_occurrence = create_event_occurrence(offer, beginning_datetime='2019-11-26 18:29:20.891028')
+            stock = create_stock_from_event_occurrence(event_occurrence, price=12)
+            booking = create_booking(user, stock=stock, venue=venue, quantity=3)
+            PcObject.save(booking)
             url = f'/v2/bookings/token/{booking.token}'
 
             # When
@@ -36,6 +39,109 @@ class Get:
             # Then
             assert response.headers['Content-type'] == 'application/json'
             assert response.status_code == 200
+            assert response.json == {
+                'bookingId': humanize(booking.id),
+                'email': 'user@example.com',
+                'isUsed': False,
+                'offerName': 'Event Name',
+                'userName': 'John Doe',
+                'venueDepartementCode': '93',
+                'offerId': offer.id,
+                'venueName': 'Venue name',
+                'venueAddress': 'Venue address',
+                'offerType': 'EVENEMENT',
+                'formula': 'PLACE',
+                'datetime': '2019-11-26T18:29:20.891028Z',
+                'price': 12.0,
+                'quantity': 3,
+                'ean13': ''
+            }
+
+        @clean_database
+        def when_user_has_rights_and_booked_an_activation_event_type(self, app):
+            # Given
+            user = create_user(public_name='John Doe', email='user@example.com', phone_number='0612345678', date_of_birth=datetime(2001, 1, 1))
+            deposit = create_deposit(user)
+            admin_user = create_user(email='admin@example.com')
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(admin_user, offerer)
+            venue = create_venue(offerer, name='Venue name', address='Venue address')
+            offer = create_offer_with_event_product(venue=venue, event_name='Event Name', event_type=EventType.ACTIVATION)
+            event_occurrence = create_event_occurrence(offer, beginning_datetime='2019-11-26 18:29:20.891028')
+            stock = create_stock_from_event_occurrence(event_occurrence, price=12)
+            booking = create_booking(user, stock=stock, venue=venue, quantity=3)
+            PcObject.save(booking)
+            url = f'/v2/bookings/token/{booking.token}'
+
+            # When
+            response = TestClient(app.test_client()) \
+                .with_auth('admin@example.com') \
+                .get(url)
+
+            # Then
+            assert response.headers['Content-type'] == 'application/json'
+            assert response.status_code == 200
+            assert response.json == {
+                'bookingId': humanize(booking.id),
+                'email': 'user@example.com',
+                'isUsed': False,
+                'offerName': 'Event Name',
+                'userName': 'John Doe',
+                'venueDepartementCode': '93',
+                'offerId': offer.id,
+                'venueName': 'Venue name',
+                'venueAddress': 'Venue address',
+                'offerType': 'EVENEMENT',
+                'formula': '',
+                'datetime': '2019-11-26T18:29:20.891028Z',
+                'price': 12.0,
+                'quantity': 3,
+                'ean13': '',
+                'phoneNumber': '0612345678',
+                'dateOfBirth': '2001-01-01T00:00:00Z'
+            }
+
+        @clean_database
+        def when_user_has_rights_and_booked_a_thing(self, app):
+            # Given
+            user = create_user(public_name='John Doe', email='user@example.com')
+            deposit = create_deposit(user)
+            admin_user = create_user(email='admin@example.com')
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(admin_user, offerer)
+            venue = create_venue(offerer, name='Venue name', address='Venue address')
+            product = create_product_with_thing_type(thing_name='Event Name', thing_type=ThingType.CINEMA_ABO, extra_data={'isbn': '123456789'})
+            offer = create_offer_with_thing_product(venue, product=product, idx=999)
+            stock = create_stock(price=12, offer=offer)
+            booking = create_booking(user, stock=stock, venue=venue, quantity=3)
+            PcObject.save(booking)
+            url = f'/v2/bookings/token/{booking.token}'
+
+            # When
+            response = TestClient(app.test_client()) \
+                .with_auth('admin@example.com') \
+                .get(url)
+
+            # Then
+            assert response.headers['Content-type'] == 'application/json'
+            assert response.status_code == 200
+            assert response.json == {
+                'bookingId': humanize(booking.id),
+                'email': 'user@example.com',
+                'isUsed': False,
+                'offerName': 'Event Name',
+                'userName': 'John Doe',
+                'venueDepartementCode': '93',
+                'offerId': 999,
+                'venueName': 'Venue name',
+                'venueAddress': 'Venue address',
+                'offerType': 'BIEN',
+                'formula': 'ABO',
+                'datetime': '',
+                'price': 12,
+                'quantity': 3,
+                'ean13': '123456789'
+            }
 
         @clean_database
         def when_api_key_is_provided_and_rights_and_regular_offer(self, app):

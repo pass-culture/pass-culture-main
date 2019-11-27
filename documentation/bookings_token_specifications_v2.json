@@ -47,9 +47,6 @@
                 "bookingId": {
                   "type": "string"
                 },
-                "date": {
-                  "type": "string"
-                },
                 "email": {
                   "type": "string"
                 },
@@ -64,6 +61,39 @@
                   "description": "le user name"
                 },
                 "venueDepartementCode": {
+                  "type": "string"
+                },
+                "offerId": {
+                  "type": "integer"
+                },
+                "venueName": {
+                  "type": "string"
+                },
+                "venueAddress": {
+                  "type": "string"
+                },
+                "offerType": {
+                  "type": "string"
+                },
+                "formula": {
+                  "type": "string"
+                },
+                "datetime": {
+                  "type": "string"
+                },
+                "price": {
+                  "type": "number"
+                },
+                "quantity": {
+                  "type": "integer"
+                },
+                "ean13": {
+                  "type": "string"
+                },
+                "phoneNumber": {
+                  "type": "string"
+                },
+                "dateOfBirth": {
                   "type": "string"
                 }
               }

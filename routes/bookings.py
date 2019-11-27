@@ -1,5 +1,6 @@
 from datetime import datetime
 from itertools import chain
+from typing import Dict
 
 import dateutil
 from flask import current_app as app, jsonify, request
@@ -12,7 +13,7 @@ from domain.user_activation import create_initial_deposit, \
 from domain.user_emails import send_booking_recap_emails, \
     send_booking_confirmation_email_to_user, send_cancellation_emails_to_user_and_offerer, \
     send_activation_email
-from models import ApiErrors, Booking, PcObject, Stock, RightsType, EventType, Offerer
+from models import ApiErrors, Booking, PcObject, Stock, RightsType, EventType, ThingType, Offerer
 from models.feature import FeatureToggle
 from models.offer_type import ProductType
 from repository import booking_queries, feature_queries
@@ -263,7 +264,7 @@ def get_booking_by_token_v2(token):
 
     check_booking_token_is_usable(booking)
 
-    response = _create_response_to_get_booking_by_token(booking)
+    response = _create_response_to_get_booking_by_token_v2(booking)
     return jsonify(response), 200
 
 
@@ -432,3 +433,51 @@ def _create_response_to_get_booking_by_token(booking):
 
     return response
 
+
+def _create_response_to_get_booking_by_token_v2(booking: Booking) -> Dict:
+    booking_id = humanize(booking.id)
+    user_email = booking.user.email
+    is_used = booking.isUsed
+    offer_name = booking.stock.resolvedOffer.product.name
+    user_name = booking.user.publicName
+    venue_departement_code = booking.stock.resolvedOffer.venue.departementCode
+    offer_id = booking.stock.offer.id
+    venue_name = booking.stock.resolvedOffer.venue.name
+    venue_address = booking.stock.resolvedOffer.venue.address
+    offer_type = 'EVENEMENT' if booking.stock.offer.isEvent else 'BIEN'
+    offer_formula = ''
+    if booking.stock.offer.type == str(EventType.CINEMA):
+        offer_formula = 'PLACE'
+    elif booking.stock.offer.type == str(ThingType.CINEMA_ABO):
+        offer_formula = 'ABO'
+    offer_date_time = serialize(booking.stock.beginningDatetime) if booking.stock.beginningDatetime else ''
+    price = booking.stock.price
+    quantity = booking.quantity
+    offer_extra_data = booking.stock.offer.extraData
+    product_isbn = ''
+    if offer_extra_data and 'isbn' in offer_extra_data:
+        product_isbn = offer_extra_data['isbn']
+
+    response = {
+        'bookingId': booking_id,
+        'email': user_email,
+        'isUsed': is_used,
+        'offerName': offer_name,
+        'userName': user_name,
+        'venueDepartementCode': venue_departement_code,
+        'offerId': offer_id,
+        'venueName': venue_name,
+        'venueAddress': venue_address,
+        'offerType': offer_type,
+        'formula': offer_formula,
+        'datetime': offer_date_time,
+        'price': price,
+        'quantity': quantity,
+        'ean13': product_isbn
+    }
+
+    if booking.stock.resolvedOffer.product.type == str(EventType.ACTIVATION):
+        response.update({'phoneNumber': booking.user.phoneNumber,
+                         'dateOfBirth': serialize(booking.user.dateOfBirth)})
+
+    return response
