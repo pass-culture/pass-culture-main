@@ -36,7 +36,7 @@ class AllocineStocks(LocalProvider):
         raw_movie_information = next(self.movies_showtimes)
         try:
             self.movie_information = retrieve_movie_information(raw_movie_information['node']['movie'])
-            self.movie_showtimes = raw_movie_information['node']['showtimes']
+            self.raw_movie_showtimes = raw_movie_information['node']['showtimes']
         except KeyError:
             self.log_provider_event(LocalProviderEventType.SyncError,
                                     f"Error parsing information for movie: {raw_movie_information['node']['movie']}")
@@ -45,21 +45,17 @@ class AllocineStocks(LocalProvider):
         providable_information_list = [self.create_providable_info(Product,
                                                                    self.movie_information['id'],
                                                                    datetime.utcnow())]
-        print(providable_information_list)
-        if _has_original_version_product(self.movie_showtimes):
-            print('has original')
-            offer_vo_providable_information = self.create_providable_info(Offer,
+        if _has_original_version_product(self.raw_movie_showtimes):
+            original_version_offer_providable_information = self.create_providable_info(Offer,
                                                                           f"{self.movie_information['id']}-{ORIGINAL_VERSION_SUFFIX}",
                                                                           datetime.utcnow())
-            providable_information_list.append(offer_vo_providable_information)
+            providable_information_list.append(original_version_offer_providable_information)
 
-        if _has_french_version_product(self.movie_showtimes):
-            print('has french')
-            offer_vf_providable_information = self.create_providable_info(Offer,
+        if _has_french_version_product(self.raw_movie_showtimes):
+            french_version_offer_providable_information = self.create_providable_info(Offer,
                                                                           f"{self.movie_information['id']}-{FRENCH_VERSION_SUFFIX}",
                                                                           datetime.utcnow())
-            providable_information_list.append(offer_vf_providable_information)
-        print(providable_information_list)
+            providable_information_list.append(french_version_offer_providable_information)
         return providable_information_list
 
 
@@ -102,7 +98,7 @@ class AllocineStocks(LocalProvider):
             allocine_offer.extraData["stageDirector"] = self.movie_information['stageDirector']
         allocine_offer.isDuo = True
 
-        movie_version = ORIGINAL_VERSION_SUFFIX if _is_original_version_offer(allocine_offer.idAtProviders) is True else FRENCH_VERSION_SUFFIX
+        movie_version = ORIGINAL_VERSION_SUFFIX if _is_original_version_offer(allocine_offer.idAtProviders) else FRENCH_VERSION_SUFFIX
 
         allocine_offer.name = f"{self.movie_information['title']} - {movie_version}"
         allocine_offer.type = str(EventType.CINEMA)
@@ -176,6 +172,6 @@ def _has_original_version_product(movies_showtimes: List[dict]) -> bool:
 def _has_french_version_product(movies_showtimes: List[dict]) -> bool:
     return LOCAL_VERSION or DUBBED_VERSION in list(map(lambda movie: movie['diffusionVersion'], movies_showtimes))
 
-def _is_original_version_offer(idAtProviders: str) -> bool:
-    return idAtProviders[-3:] == f"-{ORIGINAL_VERSION_SUFFIX}"
+def _is_original_version_offer(id_at_providers: str) -> bool:
+    return id_at_providers[-3:] == f"-{ORIGINAL_VERSION_SUFFIX}"
 

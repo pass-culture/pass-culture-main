@@ -377,9 +377,10 @@ class AllocineStocksTest:
 
                 # Then
                 created_offers = Offer.query.all()
-                created_product = Product.query.one()
+                created_products = Product.query.all()
 
                 assert len(created_offers) == 2
+                assert len(created_products) == 1
 
                 original_version_offer = created_offers[0]
                 assert original_version_offer.bookingEmail == 'toto@example.com'
@@ -390,7 +391,7 @@ class AllocineStocksTest:
                 assert original_version_offer.extraData["stageDirector"] == "Farkhondeh Torabi"
                 assert original_version_offer.isDuo
                 assert original_version_offer.name == "Les Contes de la mère poule - VO"
-                assert original_version_offer.product == created_product
+                assert original_version_offer.product == created_products[0]
                 assert original_version_offer.type == str(EventType.CINEMA)
 
                 dubbed_version_offer = created_offers[1]
@@ -402,16 +403,8 @@ class AllocineStocksTest:
                 assert dubbed_version_offer.extraData["stageDirector"] == "Farkhondeh Torabi"
                 assert dubbed_version_offer.isDuo
                 assert dubbed_version_offer.name == "Les Contes de la mère poule - VF"
-                assert dubbed_version_offer.product == created_product
+                assert dubbed_version_offer.product == created_products[0]
                 assert dubbed_version_offer.type == str(EventType.CINEMA)
-
-                assert created_product.description == "synopsis du film\nTous les détails du film sur AlloCiné:" \
-                                                      " http://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html"
-                assert created_product.durationMinutes == 46
-                assert created_product.extraData["visa"] == "2009993528"
-                assert created_product.extraData["stageDirector"] == "Farkhondeh Torabi"
-                assert created_product.name == "Les Contes de la mère poule"
-                assert created_product.type == str(EventType.CINEMA)
 
 
         @patch('local_providers.allocine_stocks.get_movies_showtimes')
