@@ -9,8 +9,7 @@ from sqlalchemy.sql.elements import BinaryExpression
 
 from domain.departments import ILE_DE_FRANCE_DEPT_CODES
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
-    create_get_filter_matching_ts_query_in_any_model, \
-    get_first_matching_keywords_string_at_column
+    create_get_filter_matching_ts_query_in_any_model
 from models import EventType, \
     Mediation, \
     Offer, \
@@ -212,16 +211,6 @@ def _order_by_offer_name_containing_keyword_string(keywords_string: str, query: 
         ),
         desc(Offer.id)
     )
-
-
-def get_is_offer_selected_by_keywords_string_at_column(offer, keywords_string, column):
-    query = build_offer_search_base_query().filter_by(id=offer.id)
-
-    return get_first_matching_keywords_string_at_column(
-        query,
-        keywords_string,
-        column
-    ) is not None
 
 
 def _offer_has_stocks_compatible_with_days_intervals(days_intervals):

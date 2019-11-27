@@ -5,11 +5,11 @@ from sqlalchemy.sql.functions import coalesce
 
 from utils.string_processing import remove_single_letters_for_search, tokenize_for_search
 
-
 LANGUAGE = 'french'
 CUSTOM_STOPWORDS = ['où']
 STOP_WORDS = set(stopwords.words(LANGUAGE))
 STOP_WORDS.update(CUSTOM_STOPWORDS)
+
 
 def create_fts_index(name, ts_vector):
     return Index(name,
@@ -33,7 +33,7 @@ def create_tsvector(*args):
     exp = args[0]
     for e in args[1:]:
         exp += ' ' + e
-    return func.to_tsvector(LANGUAGE+'_unaccent', exp)
+    return func.to_tsvector(LANGUAGE + '_unaccent', exp)
 
 
 def get_ts_queries_from_keywords_string(keywords_string):
@@ -55,15 +55,11 @@ def get_first_matching_any_ts_queries_at_column(query, ts_queries, column):
     ts_vector = func.to_tsvector(cast(coalesce(column, ''), TEXT))
     ts_queries_filter = or_(
         *[
-            ts_vector.match(ts_query, postgresql_regconfig=LANGUAGE+'_unaccent')
+            ts_vector.match(ts_query, postgresql_regconfig=LANGUAGE + '_unaccent')
             for ts_query in ts_queries
         ]
     )
     return query.filter(ts_queries_filter).first()
-
-def get_first_matching_keywords_string_at_column(query, keywords_string, column):
-    ts_queries = get_ts_queries_from_keywords_string(keywords_string)
-    return get_first_matching_any_ts_queries_at_column(query, ts_queries, column)
 
 
 def create_get_filter_matching_ts_query_in_any_model(*models):
@@ -72,12 +68,13 @@ def create_get_filter_matching_ts_query_in_any_model(*models):
             *[
                 ts_vector.match(
                     ts_query,
-                    postgresql_regconfig=LANGUAGE+'_unaccent'
+                    postgresql_regconfig=LANGUAGE + '_unaccent'
                 )
                 for model in models
                 for ts_vector in model.__ts_vectors__
             ]
         )
+
     return get_filter_matching_ts_query_in_any_model
 
 
