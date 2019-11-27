@@ -4,8 +4,8 @@ from typing import Callable, Optional
 
 import requests
 
-from domain.mediations import BLACK
-from models import Product, PcObject
+from models import Product
+from scripts.performance_toolkit import bulk_update_pc_objects, get_pc_object_by_id_in_database, CHUNK_SIZE
 from utils.human_ids import dehumanize
 from utils.logger import logger
 
@@ -32,29 +32,55 @@ def process_product_thumb(uri: str, get_product_thumb: Callable = _get_product_t
             return
 
     product_id = _compute_product_id_from_uri(uri)
-    product = Product.query.filter_by(id=product_id).first()
+    product = get_pc_object_by_id_in_database(product_id, Product)
 
     if product:
         main_thumb_was_not_processed = product.thumbCount == 0 and (not is_main_thumb)
         if main_thumb_was_not_processed:
-            logger.error(f'[BATCH][PRODUCT THUMB UPDATE] Trying to process secondary thumb when main '
+            logger.debug(f'[BATCH][PRODUCT THUMB UPDATE] Trying to process secondary thumb when main '
                          f'thumb was not processed for product with id: "{product.id}" / uri: "{uri}"')
             return
 
-        _update_product_thumb(product)
-        logger.info(
+        product.thumbCount += 1
+        logger.debug(
             f'[BATCH][PRODUCT THUMB UPDATE] Product with id: "{product.id}" / uri: "{uri}" processed successfully')
-        return True
+        return product
 
     else:
-        logger.error(f'[BATCH][PRODUCT THUMB UPDATE] Product not found for id: "{product_id}" / uri: "{uri}"')
+        logger.debug(f'[BATCH][PRODUCT THUMB UPDATE] Product not found for id: "{product_id}" / uri: "{uri}"')
+        return None
 
 
 def process_file(file_path: str, _process_product_thumb: Callable = process_product_thumb):
+    lines_count = _count_lines_in_file(file_path)
+    logger.info(f'[BATCH][PRODUCT THUMB UPDATE] Thumbs to process {lines_count}')
+
     file = open(file_path, mode='r')
+    products_to_save = []
+    lines_progress = 0
     for line in file:
+        lines_progress += 1
         uri = line.strip()
-        _process_product_thumb(uri=uri)
+        product_to_save = _process_product_thumb(uri=uri)
+        if product_to_save:
+            products_to_save.append(product_to_save)
+
+        if len(products_to_save) % CHUNK_SIZE == 0:
+            bulk_update_pc_objects(products_to_save, Product)
+            logger.info(f'[BATCH][PRODUCT THUMB UPDATE] Progress {round(lines_progress / lines_count * 100, 3)}')
+            products_to_save = []
+
+    if len(products_to_save) > 0:
+        bulk_update_pc_objects(products_to_save, Product)
+    logger.info(f'[BATCH][PRODUCT THUMB UPDATE] END')
+
+
+def _count_lines_in_file(file_path: str) -> int:
+    lines_count = 0
+    with open(file_path, mode='r') as file_lines:
+        for file_line in file_lines:
+            lines_count += 1
+    return lines_count
 
 
 def _compute_product_id_from_uri(uri: str) -> int:
@@ -62,8 +88,3 @@ def _compute_product_id_from_uri(uri: str) -> int:
     characters_after_underscore = r'_[^_]+$'
     human_id = re.sub(characters_after_underscore, '', last_uri_chunk)
     return dehumanize(human_id)
-
-
-def _update_product_thumb(product: Product):
-    product.thumbCount += 1
-    PcObject.save(product)

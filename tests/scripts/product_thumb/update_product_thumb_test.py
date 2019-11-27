@@ -2,7 +2,6 @@ import os
 from unittest.mock import MagicMock, patch
 
 from models import PcObject
-from models.db import db
 from scripts.product_thumb.update_product_thumb import process_product_thumb, _compute_product_id_from_uri, \
     _get_product_thumb, \
     OBJECT_STORAGE_URL, process_file
@@ -88,31 +87,29 @@ class ProcessProductThumbTest:
         get_product_thumb.assert_called_once_with('thumbs/products/A6UQA')
 
     @clean_database
-    @patch('scripts.product_thumb.update_product_thumb.logger.info')
-    def test_should_increase_product_thumb_count_by_one_and_set_first_thumb_dominant_color_when_thumb_is_main(self, logger_info, app):
+    @patch('scripts.product_thumb.update_product_thumb.logger.debug')
+    def test_should_increase_product_thumb_count_by_one_and_set_first_thumb_dominant_color_when_thumb_is_main(self,
+                                                                                                              logger_debug,
+                                                                                                              app):
         # Given
         product = create_product_with_thing_type(thumb_count=0)
         PcObject.save(product)
         human_product_id = humanize(product.id)
         uri = f'thumbs/products/{human_product_id}'
         get_product_thumb = MagicMock(return_value=IMAGE_AS_BYTES)
-        main_thumb_dominant_color = b'\x00\x00\x00'
 
         # When
-        success = process_product_thumb(uri, get_product_thumb)
+        updated_product = process_product_thumb(uri, get_product_thumb)
 
         # Then
-        db.session.refresh(product)
-        assert product.thumbCount == 1
-        assert success
-        logger_info.assert_called_once_with(
+        assert updated_product.thumbCount == 1
+        logger_debug.assert_called_once_with(
             f'[BATCH][PRODUCT THUMB UPDATE] Product with id: "{product.id}" / uri: "{uri}" processed successfully')
 
     @clean_database
     def test_should_increase_product_thumb_count_by_one_and_not_set_first_thumb_dominant_color_when_thumb_is_not_main(
             self, app):
         # Given
-        main_thumb_dominant_color = b'\xcc\x80'
         product = create_product_with_thing_type(thumb_count=1)
         PcObject.save(product)
         human_product_id = humanize(product.id)
@@ -120,11 +117,10 @@ class ProcessProductThumbTest:
         get_product_thumb = MagicMock(return_value=IMAGE_AS_BYTES)
 
         # When
-        process_product_thumb(uri, get_product_thumb)
+        updated_product = process_product_thumb(uri, get_product_thumb)
 
         # Then
-        db.session.refresh(product)
-        assert product.thumbCount == 2
+        assert updated_product.thumbCount == 2
 
     @patch('scripts.product_thumb.update_product_thumb._compute_product_id_from_uri')
     def test_should_not_compute_product_id_for_uri_when_product_thumb_is_not_found(self, compute_product_id):
@@ -140,8 +136,8 @@ class ProcessProductThumbTest:
         assert not success
 
     @clean_database
-    @patch('scripts.product_thumb.update_product_thumb.logger.error')
-    def test_should_log_error_when_product_does_not_exist_in_database(self, logger_error, app):
+    @patch('scripts.product_thumb.update_product_thumb.logger.debug')
+    def test_should_log_error_when_product_does_not_exist_in_database(self, logger_debug, app):
         # Given
         uri = 'thumbs/products/AE'
         get_product_thumb = MagicMock(return_value=IMAGE_AS_BYTES)
@@ -150,13 +146,13 @@ class ProcessProductThumbTest:
         success = process_product_thumb(uri, get_product_thumb)
 
         # Then
-        logger_error.assert_called_once_with(
+        logger_debug.assert_called_once_with(
             f'[BATCH][PRODUCT THUMB UPDATE] Product not found for id: "1" / uri: "thumbs/products/AE"')
         assert not success
 
     @clean_database
-    @patch('scripts.product_thumb.update_product_thumb.logger.error')
-    def test_should_log_error_when_product_thumb_count_is_zero_and_current_thumb_is_not_main(self, logger_error, app):
+    @patch('scripts.product_thumb.update_product_thumb.logger.debug')
+    def test_should_log_error_when_product_thumb_count_is_zero_and_current_thumb_is_not_main(self, logger_debug, app):
         # Given
         product = create_product_with_thing_type(thumb_count=0)
         PcObject.save(product)
@@ -168,14 +164,14 @@ class ProcessProductThumbTest:
         success = process_product_thumb(uri, get_product_thumb)
 
         # Then
-        logger_error.assert_called_once_with(
+        logger_debug.assert_called_once_with(
             f'[BATCH][PRODUCT THUMB UPDATE] Trying to process secondary thumb when main '
             f'thumb was not processed for product with id: "{product.id}" / uri: "{uri}"')
         assert not success
 
     @clean_database
-    @patch('scripts.product_thumb.update_product_thumb.logger.info')
-    def test_should_not_fetch_product_thumb_when_is_not_main(self, logger_info, app):
+    @patch('scripts.product_thumb.update_product_thumb.logger.debug')
+    def test_should_not_fetch_product_thumb_when_is_not_main(self, logger_debug, app):
         # Given
         product = create_product_with_thing_type(thumb_count=1)
         PcObject.save(product)
@@ -189,8 +185,9 @@ class ProcessProductThumbTest:
         # Then
         get_product_thumb.assert_not_called()
         assert success
-        logger_info.assert_called_once_with(
+        logger_debug.assert_called_once_with(
             f'[BATCH][PRODUCT THUMB UPDATE] Product with id: "{product.id}" / uri: "{uri}" processed successfully')
+
 
 class ProcessFileTest:
     def test_should_iterate_through_file_containing_product_thumbs_uris(self):
