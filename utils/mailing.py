@@ -187,7 +187,7 @@ def _format_date_and_hour_for_email(booking: Booking) -> (datetime, str):
     offer_date = date_in_tz.strftime("%d-%b-%Y")
     event_hour = date_in_tz.hour
     event_minute = date_in_tz.minute
-    offer_hour = f'{event_hour}h' if event_minute == 0 else f'{event_hour}h'
+    offer_hour = f'{event_hour}h' if event_minute == 0 else f'{event_hour}h{event_minute}'
 
     return offer_date, offer_hour
 
