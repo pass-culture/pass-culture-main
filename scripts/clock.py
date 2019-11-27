@@ -25,7 +25,7 @@ from repository.feature_queries import feature_cron_send_final_booking_recaps_en
     feature_cron_synchronize_titelive_thumbs, \
     feature_cron_synchronize_titelive_stocks
 from repository.provider_queries import get_provider_by_local_class
-from repository.recommendation_queries import delete_all_unread_recommendations_older_than_one_week
+from repository.recommendation_queries import delete_useless_recommendations
 from repository.user_queries import find_most_recent_beneficiary_creation_date
 from scripts.beneficiary import remote_import
 from scripts.cron_logger.cron_logger import build_cron_log_message
@@ -191,9 +191,9 @@ def pc_write_dashboard():
 
 
 @log_cron
-def pc_delete_all_unread_recommendations_older_than_one_week():
+def pc_delete_useless_recommendations():
     with app.app_context():
-        delete_all_unread_recommendations_older_than_one_week()
+        delete_useless_recommendations()
 
 
 if __name__ == '__main__':
@@ -247,12 +247,9 @@ if __name__ == '__main__':
         scheduler.add_job(pc_update_booking_used, 'cron', id='pc_update_booking_used', day='*', hour='0')
 
     if feature_delete_all_unread_recommendations_older_than_one_week_enabled():
-        day = os.environ.get('CRON_CLEAN_OLD_UNREAD_RECOMMENDATIONS_DAY', 'mon')
-        hour = os.environ.get('CRON_CLEAN_OLD_UNREAD_RECOMMENDATIONS_HOUR', '23')
-        minute = os.environ.get('CRON_CLEAN_OLD_UNREAD_RECOMMENDATIONS_MINUTE', '00')
-        scheduler.add_job(pc_delete_all_unread_recommendations_older_than_one_week,
+        scheduler.add_job(pc_delete_useless_recommendations,
                           'cron',
-                          id='pc_delete_all_unread_recommendations_older_than_one_week',
-                          day_of_week=day, hour=hour, minute=minute)
+                          id='pc_delete_useless_recommendations',
+                          day_of_week='mon', hour='23')
 
     scheduler.start()
