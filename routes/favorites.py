@@ -12,7 +12,7 @@ from routes.serialization import as_dict
 from utils.feature import feature_required
 from utils.human_ids import dehumanize
 from utils.includes import FAVORITE_INCLUDES, \
-    WEBAPP_GET_BOOKING_INCLUDES
+    WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES
 from utils.rest import load_or_404
 from validation.offers import check_offer_id_is_present_in_request
 
@@ -78,6 +78,6 @@ def _serialize_favorite(favorite: Favorite) -> dict:
     booking = find_first_matching_booking_from_favorite(favorite, current_user)
     if booking:
         dict_favorite['firstMatchingBooking'] = as_dict(
-            booking, includes=WEBAPP_GET_BOOKING_INCLUDES)
+            booking, includes=WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES)
 
     return dict_favorite
