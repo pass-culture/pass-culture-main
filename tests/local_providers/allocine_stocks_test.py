@@ -4,11 +4,13 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+from dateutil.parser import parse
 from freezegun import freeze_time
 
 from local_providers import AllocineStocks
-from local_providers.allocine_stocks import retrieve_movie_information, _parse_movie_duration, _format_poster_url
-from models import PcObject, Offer, EventType, Product
+from local_providers.allocine_stocks import retrieve_movie_information, _parse_movie_duration, _format_poster_url, \
+    _get_stock_number_from_stock_id, _filter_only_digital_and_non_experience_showtimes, retrieve_showtime_information
+from models import PcObject, Offer, EventType, Product, Stock
 from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
 from tests.test_utils import create_offerer, create_venue, create_venue_provider, create_product_with_event_type, \
@@ -116,7 +118,11 @@ class AllocineStocksTest:
                         "showtimes": [
                             {
                                 "startsAt": "2019-10-29T10:30:00",
-                                "diffusionVersion": "DUBBED"
+                                "diffusionVersion": "DUBBED",
+                                "projection": [
+                                    "DIGITAL"
+                                ],
+                                "experience": None
                             }
                         ]
                     }
@@ -136,10 +142,11 @@ class AllocineStocksTest:
             allocine_providable_infos = next(allocine_stocks_provider)
 
             # Then
-            assert len(allocine_providable_infos) == 2
+            assert len(allocine_providable_infos) == 3
 
             product_providable_info = allocine_providable_infos[0]
             offer_providable_info = allocine_providable_infos[1]
+            stock_providable_info = allocine_providable_infos[2]
 
             assert product_providable_info.type == Product
             assert product_providable_info.id_at_providers == 'TW92aWU6Mzc4MzI='
@@ -149,11 +156,17 @@ class AllocineStocksTest:
             assert offer_providable_info.id_at_providers == 'TW92aWU6Mzc4MzI=-VF'
             assert offer_providable_info.date_modified_at_provider == datetime(year=2019, month=10, day=15, hour=9)
 
-    class UpdateObjectsTest:
+            assert stock_providable_info.type == Stock
+            assert stock_providable_info.id_at_providers == 'TW92aWU6Mzc4MzI=-0'
+            assert stock_providable_info.date_modified_at_provider == datetime(year=2019, month=10, day=15, hour=9)
+
+
+class UpdateObjectsTest:
         @patch('local_providers.allocine_stocks.get_movies_showtimes')
         @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
         @clean_database
-        def test_should_create_one_product_and_one_local_version_offer_with_movie_info(self, mock_call_allocine_api, app):
+        def test_should_create_one_product_and_one_local_version_offer_with_movie_info(self, mock_call_allocine_api,
+                                                                                       app):
             # Given
             theater_token = 'test'
             mock_call_allocine_api.return_value = iter([
@@ -225,7 +238,11 @@ class AllocineStocksTest:
                         "showtimes": [
                             {
                                 "startsAt": "2019-10-29T10:30:00",
-                                "diffusionVersion": "LOCAL"
+                                "diffusionVersion": "LOCAL",
+                                "projection": [
+                                    "DIGITAL"
+                                ],
+                                "experience": None
                             }
                         ]
                     }
@@ -270,7 +287,8 @@ class AllocineStocksTest:
         @patch('local_providers.allocine_stocks.get_movies_showtimes')
         @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
         @clean_database
-        def test_should_create_one_product_and_one_original_version_offer_and_one_dubbed_version_offer_with_movie_info(self, mock_call_allocine_api, app):
+        def test_should_create_one_product_and_one_original_version_offer_and_one_dubbed_version_offer_with_movie_info(
+                self, mock_call_allocine_api, app):
                 # Given
                 theater_token = 'test'
                 mock_call_allocine_api.return_value = iter([
@@ -342,19 +360,35 @@ class AllocineStocksTest:
                             "showtimes": [
                                 {
                                     "startsAt": "2019-10-29T10:30:00",
-                                    "diffusionVersion": "ORIGINAL"
+                                    "diffusionVersion": "ORIGINAL",
+                                    "projection": [
+                                        "DIGITAL"
+                                    ],
+                                    "experience": None
                                 },
                                 {
                                     "startsAt": "2019-10-29T10:30:00",
-                                    "diffusionVersion": "DUBBED"
+                                    "diffusionVersion": "DUBBED",
+                                    "projection": [
+                                        "DIGITAL"
+                                    ],
+                                    "experience": None
                                 },
                                 {
                                     "startsAt": "2019-10-29T14:30:00",
-                                    "diffusionVersion": "ORIGINAL"
+                                    "diffusionVersion": "ORIGINAL",
+                                    "projection": [
+                                        "DIGITAL"
+                                    ],
+                                    "experience": None
                                 },
                                 {
                                     "startsAt": "2019-10-29T14:30:00",
-                                    "diffusionVersion": "DUBBED"
+                                    "diffusionVersion": "DUBBED",
+                                    "projection": [
+                                        "DIGITAL"
+                                    ],
+                                    "experience": None
                                 }
                             ]
                         }
@@ -515,7 +549,8 @@ class AllocineStocksTest:
         @patch('local_providers.allocine_stocks.get_movies_showtimes')
         @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
         @clean_database
-        def test_should_update_existing_product_duration_and_update_matching_offers(self, mock_call_allocine_api, app):
+        def test_should_update_existing_product_duration_and_update_matching_offers(self, mock_call_allocine_api,
+                                                                                    app):
             # Given
             theater_token = 'test'
             mock_call_allocine_api.return_value = iter([
@@ -587,11 +622,19 @@ class AllocineStocksTest:
                         "showtimes": [
                             {
                                 "startsAt": "2019-10-29T10:30:00",
-                                "diffusionVersion": "DUBBED"
+                                "diffusionVersion": "DUBBED",
+                                "projection": [
+                                    "DIGITAL"
+                                ],
+                                "experience": None
                             },
                             {
                                 "startsAt": "2019-10-29T10:30:00",
-                                "diffusionVersion": "ORIGINAL"
+                                "diffusionVersion": "ORIGINAL",
+                                "projection": [
+                                    "DIGITAL"
+                                ],
+                                "experience": None
                             }
                         ]
                     }
@@ -712,7 +755,11 @@ class AllocineStocksTest:
                         "showtimes": [
                             {
                                 "startsAt": "2019-10-29T10:30:00",
-                                "diffusionVersion": "DUBBED"
+                                "diffusionVersion": "DUBBED",
+                                "projection": [
+                                    "DIGITAL"
+                                ],
+                                "experience": None
                             }
                         ]
                     }
@@ -809,7 +856,11 @@ class AllocineStocksTest:
                         "showtimes": [
                             {
                                 "startsAt": "2019-10-29T10:30:00",
-                                "diffusionVersion": "DUBBED"
+                                "diffusionVersion": "DUBBED",
+                                "projection": [
+                                    "DIGITAL"
+                                ],
+                                "experience": None
                             }
                         ]
                     }
@@ -903,7 +954,11 @@ class AllocineStocksTest:
                         "showtimes": [
                             {
                                 "startsAt": "2019-10-29T10:30:00",
-                                "diffusionVersion": "DUBBED"
+                                "diffusionVersion": "DUBBED",
+                                "projection": [
+                                    "DIGITAL"
+                                ],
+                                "experience": None
                             }
                         ]
                     }
@@ -1018,7 +1073,11 @@ class AllocineStocksTest:
                         "showtimes": [
                             {
                                 "startsAt": "2019-10-29T10:30:00",
-                                "diffusionVersion": "DUBBED"
+                                "diffusionVersion": "DUBBED",
+                                "projection": [
+                                    "DIGITAL"
+                                ],
+                                "experience": None
                             }
                         ]
                     }
@@ -1052,6 +1111,324 @@ class AllocineStocksTest:
             existing_product = Product.query.one()
             assert existing_product.thumbUrl == f"http://localhost/storage/thumbs/products/{humanize(existing_product.id)}"
             assert existing_product.thumbCount == 1
+
+        @patch('local_providers.allocine_stocks.get_movies_showtimes')
+        @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
+        @clean_database
+        def test_should_create_one_product_and_one_offer_and_associated_stocks(self,mock_call_allocine_api, app):
+            # Given
+            theater_token = 'test'
+            mock_call_allocine_api.return_value = iter([
+                {
+                    "node": {
+                        "movie": {
+                            "id": "TW92aWU6Mzc4MzI=",
+                            "internalId": 37832,
+                            "backlink": {
+                                "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
+                                "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9"
+                            },
+                            "data": {
+                                "eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E",
+                                "productionYear": 2001
+                            },
+                            "title": "Les Contes de la m\u00e8re poule",
+                            "originalTitle": "Les Contes de la m\u00e8re poule",
+                            "runtime": None,
+                            "poster": {
+                                "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
+                            },
+                            "synopsis": "synopsis du film",
+                            "releases": [
+                                {
+                                    "name": "Released",
+                                    "releaseDate": {
+                                        "date": "2001-10-03"
+                                    },
+                                    "data": {
+                                        "visa_number": "2009993528"
+                                    }
+                                }
+                            ],
+                            "credits": {
+                                "edges": [
+                                    {
+                                        "node": {
+                                            "person": {
+                                                "firstName": "Farkhondeh",
+                                                "lastName": "Torabi"
+                                            },
+                                            "position": {
+                                                "name": "DIRECTOR"
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "cast": {
+                                "backlink": {
+                                    "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
+                                    "label": "Casting complet du film sur AlloCin\u00e9"
+                                },
+                                "edges": []
+                            },
+                            "countries": [
+                                {
+                                    "name": "Iran",
+                                    "alpha3": "IRN"
+                                }
+                            ],
+                            "genres": [
+                                "ANIMATION",
+                                "FAMILY"
+                            ],
+                            "companies": []
+                        },
+                        "showtimes": [
+                            {
+                                "startsAt": "2019-12-03T10:00:00",
+                                "diffusionVersion": "LOCAL",
+                                "projection": [
+                                    "DIGITAL"
+                                ],
+                                "experience": None
+                            },
+                            {
+                                "startsAt": "2019-12-03T18:00:00",
+                                "diffusionVersion": "LOCAL",
+                                "projection": [
+                                    "DIGITAL"
+                                ],
+                                "experience": None
+                            },
+                            {
+                                "startsAt": "2019-12-03T20:00:00",
+                                "diffusionVersion": "LOCAL",
+                                "projection": [
+                                    "DIGITAL"
+                                ],
+                                "experience": 'experience'
+                            }
+                        ]
+                    }
+                }])
+
+            offerer = create_offerer(siren='775671464')
+            venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@toto.com')
+            PcObject.save(venue)
+
+            allocine_provider = get_provider_by_local_class('AllocineStocks')
+            allocine_provider.isActive = True
+            venue_provider = create_venue_provider(venue, allocine_provider, venue_id_at_offer_provider=theater_token)
+            PcObject.save(venue_provider)
+
+            allocine_stocks_provider = AllocineStocks(venue_provider)
+
+            # When
+            allocine_stocks_provider.updateObjects()
+
+            # Then
+            created_product = Product.query.all()
+            created_offer = Offer.query.all()
+            created_stock = Stock.query.all()
+
+            vf_offer = created_offer[0]
+
+            first_stock = created_stock[0]
+            second_stock = created_stock[1]
+
+            assert len(created_product) == 1
+            assert len(created_offer) == 1
+            assert len(created_stock) == 2
+
+            assert vf_offer.name == 'Les Contes de la mère poule - VF'
+
+            assert first_stock.offerId == vf_offer.id
+            assert first_stock.available is None
+            assert first_stock.price == 0
+            assert first_stock.beginningDatetime == datetime(2019, 12, 3, 10, 00)
+            assert first_stock.endDatetime is None
+            assert first_stock.bookingLimitDatetime == datetime(2019, 12, 3, 10, 00)
+
+            assert second_stock.offerId == vf_offer.id
+            assert second_stock.available is None
+            assert second_stock.price == 0
+            assert second_stock.beginningDatetime == datetime(2019, 12, 3, 18, 00)
+            assert second_stock.endDatetime is None
+            assert second_stock.bookingLimitDatetime == datetime(2019, 12, 3, 18, 00)
+
+        @patch('local_providers.allocine_stocks.get_movies_showtimes')
+        @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
+        @clean_database
+        def test_should_create_one_product_and_two_offers_and_associated_stocks(self, mock_call_allocine_api, app):
+            # Given
+            theater_token = 'test'
+            mock_call_allocine_api.return_value = iter([
+                {
+                    "node": {
+                        "movie": {
+                            "id": "TW92aWU6Mzc4MzI=",
+                            "internalId": 37832,
+                            "backlink": {
+                                "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
+                                "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9"
+                            },
+                            "data": {
+                                "eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E",
+                                "productionYear": 2001
+                            },
+                            "title": "Les Contes de la m\u00e8re poule",
+                            "originalTitle": "Les Contes de la m\u00e8re poule",
+                            "runtime": "PT1H50M0S",
+                            "poster": {
+                                "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
+                            },
+                            "synopsis": "synopsis du film",
+                            "releases": [
+                                {
+                                    "name": "Released",
+                                    "releaseDate": {
+                                        "date": "2001-10-03"
+                                    },
+                                    "data": {
+                                        "visa_number": "2009993528"
+                                    }
+                                }
+                            ],
+                            "credits": {
+                                "edges": [
+                                    {
+                                        "node": {
+                                            "person": {
+                                                "firstName": "Farkhondeh",
+                                                "lastName": "Torabi"
+                                            },
+                                            "position": {
+                                                "name": "DIRECTOR"
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "cast": {
+                                "backlink": {
+                                    "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
+                                    "label": "Casting complet du film sur AlloCin\u00e9"
+                                },
+                                "edges": []
+                            },
+                            "countries": [
+                                {
+                                    "name": "Iran",
+                                    "alpha3": "IRN"
+                                }
+                            ],
+                            "genres": [
+                                "ANIMATION",
+                                "FAMILY"
+                            ],
+                            "companies": []
+                        },
+                        "showtimes": [
+                            {
+                                "startsAt": "2019-12-03T10:00:00",
+                                "diffusionVersion": "LOCAL",
+                                "projection": [
+                                    "DIGITAL"
+                                ],
+                                "experience": None
+                            },
+                            {
+                                "startsAt": "2019-12-03T18:00:00",
+                                "diffusionVersion": "ORIGINAL",
+                                "projection": [
+                                    "DIGITAL"
+                                ],
+                                "experience": None
+                            },
+                            {
+                                "startsAt": "2019-12-03T20:00:00",
+                                "diffusionVersion": "LOCAL",
+                                "projection": [
+                                    "DIGITAL"
+                                ],
+                                "experience": None
+                            },
+                            {
+                                "startsAt": "2019-12-03T20:00:00",
+                                "diffusionVersion": "LOCAL",
+                                "projection": [
+                                    "DIGITAL"
+                                ],
+                                "experience": 'experience'
+                            },
+                            {
+                                "startsAt": "2019-12-03T20:00:00",
+                                "diffusionVersion": "LOCAL",
+                                "projection": [
+                                    "NON DIGITAL"
+                                ],
+                                "experience": None
+                            }
+                        ]
+                    }
+                }])
+
+            offerer = create_offerer(siren='775671464')
+            venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@toto.com')
+            PcObject.save(venue)
+
+            allocine_provider = get_provider_by_local_class('AllocineStocks')
+            allocine_provider.isActive = True
+            venue_provider = create_venue_provider(venue, allocine_provider, venue_id_at_offer_provider=theater_token)
+            PcObject.save(venue_provider)
+
+            allocine_stocks_provider = AllocineStocks(venue_provider)
+
+            # When
+            allocine_stocks_provider.updateObjects()
+
+            # Then
+            created_product = Product.query.all()
+            created_offer = Offer.query.all()
+            created_stock = Stock.query.all()
+
+            vo_offer = created_offer[0]
+            vf_offer = created_offer[1]
+
+            first_stock = created_stock[0]
+            second_stock = created_stock[1]
+            third_stock = created_stock[2]
+
+            assert len(created_product) == 1
+            assert len(created_offer) == 2
+            assert len(created_stock) == 3
+
+            assert vo_offer.name == 'Les Contes de la mère poule - VO'
+            assert vf_offer.name == 'Les Contes de la mère poule - VF'
+
+            assert vo_offer.durationMinutes == 110
+
+            assert first_stock.offerId == vf_offer.id
+            assert first_stock.available is None
+            assert first_stock.price == 0
+            assert first_stock.beginningDatetime == datetime(2019, 12, 3, 10, 0)
+            assert first_stock.endDatetime == datetime(2019, 12, 3, 11, 50)
+            assert first_stock.bookingLimitDatetime == datetime(2019, 12, 3, 10, 0)
+
+            assert second_stock.offerId == vo_offer.id
+            assert second_stock.available is None
+            assert second_stock.price == 0
+            assert second_stock.beginningDatetime == datetime(2019, 12, 3, 18, 0)
+            assert second_stock.endDatetime == datetime(2019, 12, 3, 19, 50)
+            assert second_stock.bookingLimitDatetime == datetime(2019, 12, 3, 18, 0)
+
+            assert third_stock.offerId == vf_offer.id
+            assert third_stock.available is None
+            assert third_stock.price == 0
+            assert third_stock.beginningDatetime == datetime(2019, 12, 3, 20, 0)
+            assert third_stock.endDatetime == datetime(2019, 12, 3, 21, 50)
+            assert third_stock.bookingLimitDatetime == datetime(2019, 12, 3, 20, 0)
 
 
 class ParseMovieDurationTest:
@@ -1157,7 +1534,11 @@ class RetrieveMovieInformationTest:
                 "showtimes": [
                     {
                         "startsAt": "2019-10-29T10:30:00",
-                        "diffusionVersion": "DUBBED"
+                        "diffusionVersion": "DUBBED",
+                        "projection": [
+                            "DIGITAL"
+                        ],
+                        "experience": None
                     }
                 ]
             }
@@ -1233,7 +1614,11 @@ class RetrieveMovieInformationTest:
                 "showtimes": [
                     {
                         "startsAt": "2019-10-29T10:30:00",
-                        "diffusionVersion": "DUBBED"
+                        "diffusionVersion": "DUBBED",
+                        "projection": [
+                            "DIGITAL"
+                        ],
+                        "experience": None
                     }
                 ]
             }
@@ -1271,6 +1656,28 @@ class RetrieveMovieInformationTest:
             retrieve_movie_information(movie_information['node']['movie'])
 
 
+class RetrieveShowtimeInformationTest:
+    def test_should_retrieve_showtime_information_from_allocine_json_response(self):
+        # Given
+        movie_showtime = {"startsAt": "2019-12-03T20:00:00", "diffusionVersion": "LOCAL", "projection": ["NON DIGITAL"],
+                          "experience": None}
+
+        # When
+        parsed_movie_showtime = retrieve_showtime_information(movie_showtime)
+
+        # Then
+        assert parsed_movie_showtime == {"startsAt": datetime(2019, 12, 3, 20, 0), "diffusionVersion": "LOCAL", "projection": "NON DIGITAL",
+                                         "experience": None}
+
+    def test_should_raise_key_error_exception_when_missing_keys_in_showtime_information(self):
+        # Given
+        movie_showtime = {"startsAt": "2019-12-03T20:00:00", "diffusionVersion": "LOCAL", "experience": None}
+
+        # When
+        with pytest.raises(KeyError):
+            retrieve_showtime_information(movie_showtime)
+
+
 class FormatPosterUrlTest:
     def test_should_return_url_in_correct_format(self):
         # Given
@@ -1281,3 +1688,43 @@ class FormatPosterUrlTest:
 
         # Then
         assert formatted_url == "https://fr.web.img4.acsta.net/pictures/19/07/23/15/55/2940058.jpg"
+
+
+class GetStockNumberFromStockIdTest:
+    def test_should_return_the_right_stock_number(self):
+        # Given
+        id_at_provider = 'TW92aWU6Mzc4MzI=-12'
+
+        # When
+        stock_number = _get_stock_number_from_stock_id(id_at_provider)
+
+        # Then
+        assert stock_number == 12
+
+
+class FilterOnlyDigitalAndNonExperiencedShowtimesTest:
+    def test_should_filter_only_digital_and_non_experience_showtimes(self):
+        # Given
+        movie_information = [
+            {"startsAt": "2019-12-03T10:00:00", "diffusionVersion": "LOCAL", "projection": ["DIGITAL"],
+             "experience": None},
+            {"startsAt": "2019-12-03T18:00:00", "diffusionVersion": "ORIGINAL", "projection": ["NON DIGITALE"],
+             "experience": 'experience'},
+            {"startsAt": "2019-12-03T20:00:00", "diffusionVersion": "LOCAL", "projection": ["DIGITAL"],
+             "experience": None},
+            {"startsAt": "2019-12-03T20:00:00", "diffusionVersion": "LOCAL", "projection": ["DIGITAL"],
+             "experience": 'experience'},
+            {"startsAt": "2019-12-03T20:00:00", "diffusionVersion": "LOCAL", "projection": ["NON DIGITAL"],
+             "experience": None}
+        ]
+
+        # When
+        filtered_movie_showtimes = _filter_only_digital_and_non_experience_showtimes(movie_information)
+
+        # Then
+        assert filtered_movie_showtimes == [
+            {"startsAt": "2019-12-03T10:00:00", "diffusionVersion": "LOCAL", "projection": ["DIGITAL"],
+             "experience": None},
+            {"startsAt": "2019-12-03T20:00:00", "diffusionVersion": "LOCAL", "projection": ["DIGITAL"],
+             "experience": None},
+            ]
