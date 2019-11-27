@@ -49,7 +49,7 @@ class Get:
             assert 'venue' in first_favorite['offer']
             assert 'validationToken' not in first_favorite['offer']['venue']
 
-    class Returns403:
+    class Returns401:
         @clean_database
         def when_user_is_not_logged_in(self, app):
             # When
