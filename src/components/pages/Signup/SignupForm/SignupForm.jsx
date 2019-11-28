@@ -6,7 +6,7 @@ import { Field, Form, SubmitButton } from 'pass-culture-shared'
 class SignupForm extends PureComponent {
   onHandleSuccessRedirect = () => '/inscription/confirmation'
 
-  handleFormatPatch = patch => Object.assign({publicName: patch.firstName}, patch)
+  onHandleFormatPatch = patch => Object.assign({publicName: patch.firstName}, patch)
 
   isFieldDisabling = offererName => () => !offererName
 
@@ -42,7 +42,9 @@ class SignupForm extends PureComponent {
     return (
       <section>
         <div className="hero-body">
-          <h1 className="title is-spaced is-1">{'Créez votre compte'}</h1>
+          <h1 className="title is-spaced is-1">
+            {'Créez votre compte'}
+          </h1>
           <h2 className="subtitle is-2">
             {'Nous vous invitons à prendre connaissance des '}
             <a
@@ -56,13 +58,15 @@ class SignupForm extends PureComponent {
             {'avant de renseigner les champs suivants.'}
           </h2>
           <span className="has-text-grey">
-            <span className="required-legend">{'*'}</span>
+            <span className="required-legend">
+              {'*'}
+            </span>
             {' Champs obligatoires'}
           </span>
           <Form
             action="/users/signup/pro"
             BlockComponent={null}
-            formatPatch={this.handleFormatPatch}
+            formatPatch={this.onHandleFormatPatch}
             handleSuccessNotification={null}
             handleSuccessRedirect={this.onHandleSuccessRedirect}
             layout="vertical"
@@ -79,8 +83,7 @@ class SignupForm extends PureComponent {
                 type="email"
               />
               <Field
-                info={this.renderPasswordTooltip()
-                }
+                info={this.renderPasswordTooltip()}
                 label="Mot de passe"
                 name="password"
                 placeholder="Mon mot de passe"

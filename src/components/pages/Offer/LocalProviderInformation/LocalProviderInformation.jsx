@@ -1,4 +1,4 @@
-import React, { Fragment, PureComponent } from 'react'
+import React, { PureComponent } from 'react'
 import Thumb from '../../../layout/Thumb'
 import Icon from '../../../layout/Icon'
 import ReactTooltip from 'react-tooltip'
@@ -26,45 +26,43 @@ class LocalProviderInformation extends PureComponent {
       '</div>'
 
     return (
-      <Fragment>
-        <div className="provider-information">
-          <div className="provider-thumb">
-            <Thumb
-              alt={thumbAltDescription}
-              src={thumbUrl}
+      <div className="provider-information">
+        <div className="provider-thumb">
+          <Thumb
+            alt={thumbAltDescription}
+            src={thumbUrl}
+          />
+        </div>
+        <div className="provider-details">
+          <div className="provider-header">
+            <Icon
+              height="64px"
+              svg={providerInfo.icon}
+              width="64px"
             />
+            <div className="provider-title">
+              <h3>
+                {`Offre synchronisée avec ${providerInfo.name}`}
+              </h3>
+              <span
+                className="button"
+                data-place="bottom"
+                data-tip={tooltip}
+                data-type="info"
+              >
+                <Icon svg="picto-info" />
+              </span>
+            </div>
           </div>
-          <div className="provider-details">
-            <div className="provider-header">
-              <Icon
-                height="64px"
-                svg={providerInfo.icon}
-                width="64px"
-              />
-              <div className="provider-title">
-                <h3>
-                  {`Offre synchronisée avec ${providerInfo.name}`}
-                </h3>
-                <span
-                  className="button"
-                  data-place="bottom"
-                  data-tip={tooltip}
-                  data-type="info"
-                >
-                  <Icon svg="picto-info" />
-                </span>
-              </div>
-            </div>
-            <div className="provider-explanation">
-              <p>
-                {'Le visuel par défaut, les informations et le stock de cette offre sont synchronisés' +
-                  ` avec les données ${providerInfo.name} tous les soirs. De ce fait, seuls sa description et son titre sont modifiables,` +
-                  " pour vos besoins d'éditorialisation pour le pass Culture."}
-              </p>
-            </div>
+          <div className="provider-explanation">
+            <p>
+              {'Le visuel par défaut, les informations et le stock de cette offre sont synchronisés' +
+              ` avec les données ${providerInfo.name} tous les soirs. De ce fait, seuls sa description et son titre sont modifiables,` +
+              " pour vos besoins d'éditorialisation pour le pass Culture."}
+            </p>
           </div>
         </div>
-      </Fragment>
+      </div>
     )
   }
 }

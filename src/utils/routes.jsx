@@ -19,11 +19,13 @@ import SignupValidationContainer from '../components/pages/Signup/SignupValidati
 import Terms from '../components/pages/Terms/Terms'
 import VenueContainer from '../components/pages/Venue/VenueContainer'
 
+const RedirectToConnexionComponent = () => <Redirect to="/connexion" />
+
 // NOTE: routes are sorted by PATH alphabetical order
 const routes = [
   {
+    component: RedirectToConnexionComponent,
     path: '/',
-    render: () => <Redirect to="/connexion" />,
   },
   {
     component: HomeContainer,

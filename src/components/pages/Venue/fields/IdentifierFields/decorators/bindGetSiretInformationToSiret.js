@@ -1,6 +1,6 @@
 import createDecorator from 'final-form-calculate'
 
-import {getSiretInformations} from "../../../siret/selectSiretInformations";
+import {getSiretInformations} from "../../../siret/selectSiretInformations"
 
 const emptyValues = {
   address: null,
