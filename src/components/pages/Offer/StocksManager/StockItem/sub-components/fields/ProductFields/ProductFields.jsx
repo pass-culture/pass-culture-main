@@ -1,6 +1,6 @@
 import moment from 'moment'
 import PropTypes from 'prop-types'
-import React, { Component, Fragment } from 'react'
+import React, { PureComponent, Fragment } from 'react'
 import { createParseNumberValue } from 'react-final-form-utils'
 import ReactTooltip from 'react-tooltip'
 
@@ -10,7 +10,7 @@ import HiddenField from '../../../../../../../layout/form/fields/HiddenField'
 import NumberField from '../../../../../../../layout/form/fields/NumberField'
 import Icon from '../../../../../../../layout/Icon'
 
-class ProductFields extends Component {
+class ProductFields extends PureComponent {
   componentDidUpdate() {
     ReactTooltip.rebuild()
   }

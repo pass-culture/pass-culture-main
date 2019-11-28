@@ -107,8 +107,8 @@ class SignupForm extends PureComponent {
                 label="Téléphone"
                 name="phoneNumber"
                 placeholder="Mon numéro de téléphone"
-                sublabel="utilisé uniquement par l'équipe du pass Culture"
                 required
+                sublabel="utilisé uniquement par l'équipe du pass Culture"
               />
               <Field
                 disabling={this.isFieldDisabling(offererName)}
@@ -138,7 +138,9 @@ class SignupForm extends PureComponent {
                 required
                 type="checkbox"
               />
-              <div className="errors">{errors}</div>
+              <div className="errors">
+                {errors}
+              </div>
             </div>
             <div className="buttons-field">
               <NavLink

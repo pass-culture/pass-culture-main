@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { Component, Fragment } from 'react'
+import React, { PureComponent, Fragment } from 'react'
 import { Portal } from 'react-portal'
 import { requestData } from 'redux-saga-data'
 
@@ -8,7 +8,7 @@ import withFrenchQueryRouter from '../../../../../../hocs/withFrenchQueryRouter'
 import Icon from '../../../../../../layout/Icon'
 import { errorKeyToFrenchKey } from '../../utils/utils'
 
-class EditAndDeleteControl extends Component {
+class EditAndDeleteControl extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {

@@ -2,14 +2,14 @@ import classnames from 'classnames'
 import get from 'lodash.get'
 import { Icon, Modal, resetForm, showNotification, Spinner } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
-import React, { Component, Fragment } from 'react'
+import React, { PureComponent, Fragment } from 'react'
 import { NavLink } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
 
 import HeaderContainer from '../Header/HeaderContainer'
 import NotificationContainer from '../Notification/NotificationContainer'
 
-class Main extends Component {
+class Main extends PureComponent {
   constructor() {
     super()
     this.state = {

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
 import PropTypes from 'prop-types'
 import { requestData } from 'redux-saga-data'
@@ -10,7 +10,7 @@ import Main from '../../layout/Main'
 import TextField from '../../layout/form/fields/TextField'
 import { version } from '../../../../package.json'
 
-class Profil extends React.Component {
+class Profil extends PureComponent {
   constructor(props) {
     super(props)
 

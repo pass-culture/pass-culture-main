@@ -1,14 +1,14 @@
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import { SignoutButton } from 'pass-culture-shared'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { NavLink } from 'react-router-dom'
 
 import Icon from '../Icon'
 import Logo from '../Logo'
 import { HELP_PAGE_URL } from '../../../utils/config'
 
-class Header extends Component {
+class Header extends PureComponent {
   constructor() {
     super()
     this.state = {
@@ -180,9 +180,9 @@ class Header extends Component {
                     </NavLink>
                   )}
                   <SignoutButton
-                    Tag="a"
                     className="navbar-item"
                     handleSuccessRedirect={this.onHandleSuccessRedirect}
+                    Tag="a"
                   >
                     <span className="icon">
                       <Icon svg="ico-deconnect" />
