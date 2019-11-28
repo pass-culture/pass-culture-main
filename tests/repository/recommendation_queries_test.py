@@ -2,12 +2,11 @@ from datetime import datetime, timedelta
 
 from models import PcObject, Recommendation
 from repository.recommendation_queries import keep_only_bookable_stocks, \
-    filter_unseen_valid_recommendations_for_user, \
     update_read_recommendations, delete_all_unread_recommendations_older_than_one_week
 from tests.conftest import clean_database
 from tests.test_utils import create_recommendation, create_offer_with_event_product, create_offerer, \
     create_venue, create_user, create_stock_from_event_occurrence, create_event_occurrence, create_stock_from_offer, \
-    create_offer_with_thing_product, create_mediation, create_booking, create_stock_with_thing_offer
+    create_offer_with_thing_product, create_booking, create_stock_with_thing_offer
 from utils.human_ids import humanize
 
 
@@ -82,38 +81,6 @@ def test_filter_out_recommendation_with_not_bookable_stocks_returns_recos_with_v
     recommendation_ids = [r.id for r in result]
     assert len(recommendation_ids) == 1
     assert recommendation_on_valid_booking_date_stock.id in recommendation_ids
-
-
-@clean_database
-def test_filter_unseen_valid_recommendations_for_user_only_keeps_non_tuto_recommendations_that_have_not_expired(app):
-    # Given
-    now = datetime.utcnow()
-    five_minutes_ago = now - timedelta(minutes=5)
-    tomorrow = now + timedelta(days=1)
-
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    offer = create_offer_with_thing_product(venue)
-    user = create_user()
-    mediation = create_mediation(offer)
-    tuto_mediation = create_mediation(offer, tuto_index=1)
-    invalid_recommendation = create_recommendation(offer, user, mediation, valid_until_date=five_minutes_ago)
-    recommendation_with_no_validity_date = create_recommendation(offer, user, mediation, valid_until_date=None)
-    valid_recommendation = create_recommendation(offer, user, mediation, valid_until_date=tomorrow)
-    tuto_recommendation = create_recommendation(offer, user, tuto_mediation, valid_until_date=None)
-
-    PcObject.save(invalid_recommendation, valid_recommendation, recommendation_with_no_validity_date,
-                  tuto_recommendation)
-
-    query = Recommendation.query
-
-    # When
-    recommendation_query = filter_unseen_valid_recommendations_for_user(query, user, seen_recommendation_ids=[])
-    # Then
-    recommendations = recommendation_query.all()
-    assert len(recommendations) == 2
-    assert valid_recommendation in recommendations
-    assert recommendation_with_no_validity_date in recommendations
 
 
 @clean_database
@@ -200,7 +167,8 @@ class DeleteAllUnreadRecommendationsOlderThanOneWeekTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         user = create_user()
-        not_read_new_recommendation = create_recommendation(offer, user, date_created=today - timedelta(days=7), date_read=None)
+        not_read_new_recommendation = create_recommendation(offer, user, date_created=today - timedelta(days=7),
+                                                            date_read=None)
         read_new_recommendation = create_recommendation(offer, user, date_created=today, date_read=today)
         PcObject.save(not_read_new_recommendation, read_new_recommendation)
 
@@ -222,8 +190,9 @@ class DeleteAllUnreadRecommendationsOlderThanOneWeekTest:
         product_with_thing_type = create_offer_with_thing_product(venue)
         stock = create_stock_with_thing_offer(offerer, venue, product_with_thing_type, price=0)
         user = create_user()
-        booked_recommendation = create_recommendation(offer, user, date_created=today - timedelta(days=9), date_read=None)
-        booking = create_booking(user, stock=stock,  venue=venue, recommendation=booked_recommendation)
+        booked_recommendation = create_recommendation(offer, user, date_created=today - timedelta(days=9),
+                                                      date_read=None)
+        booking = create_booking(user, stock=stock, venue=venue, recommendation=booked_recommendation)
         PcObject.save(booking)
 
         # When
@@ -232,4 +201,3 @@ class DeleteAllUnreadRecommendationsOlderThanOneWeekTest:
         # Then
         recommendations = Recommendation.query.all()
         assert booked_recommendation in recommendations
-

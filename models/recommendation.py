@@ -11,11 +11,11 @@ from sqlalchemy import BigInteger, \
     exists
 from sqlalchemy.orm import relationship, column_property
 from sqlalchemy.sql import expression, select
-from utils.human_ids import humanize
 
 from models import Favorite
 from models.db import Model
 from models.pc_object import PcObject
+from utils.human_ids import humanize
 
 
 class Recommendation(PcObject, Model):
@@ -63,10 +63,6 @@ class Recommendation(PcObject, Model):
 
     dateRead = Column(DateTime,
                       nullable=True)
-
-    validUntilDate = Column(DateTime,
-                            nullable=True,
-                            index=True)
 
     isClicked = Column(Boolean,
                        nullable=False,

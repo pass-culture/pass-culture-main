@@ -362,7 +362,8 @@ def create_product_with_event_type(
 def create_offer_with_thing_product(venue, product=None, date_created=datetime.utcnow(),
                                     booking_email='booking.email@test.com',
                                     thing_type=ThingType.AUDIOVISUEL, thing_name='Test Book', media_urls=['test/urls'],
-                                    author_name='Test Author', description=None, thumb_count=1, url=None, is_national=False, is_active=True, id_at_providers=None, idx=None,
+                                    author_name='Test Author', description=None, thumb_count=1, url=None,
+                                    is_national=False, is_active=True, id_at_providers=None, idx=None,
                                     last_provider_id=None) -> Offer:
     offer = Offer()
     if product:
@@ -514,7 +515,7 @@ def create_user_offerer(user, offerer, validation_token=None, is_admin=False):
 
 
 def create_recommendation(offer=None, user=None, mediation=None, idx=None, date_read=None,
-                          valid_until_date=datetime.utcnow() + timedelta(days=7), search=None, is_clicked=False,
+                          search=None, is_clicked=False,
                           date_created=None):
     recommendation = Recommendation()
     recommendation.id = idx
@@ -522,7 +523,6 @@ def create_recommendation(offer=None, user=None, mediation=None, idx=None, date_
     recommendation.user = user
     recommendation.mediation = mediation
     recommendation.dateRead = date_read
-    recommendation.validUntilDate = valid_until_date
     recommendation.search = search
     recommendation.isClicked = is_clicked
     recommendation.dateCreated = date_created

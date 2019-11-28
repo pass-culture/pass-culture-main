@@ -1,5 +1,5 @@
 """ routes offerer """
-from datetime import timedelta, datetime
+from datetime import datetime
 
 from models import PcObject, Offerer
 from routes.serialization import serialize
@@ -12,7 +12,6 @@ from tests.test_utils import create_offer_with_event_product, \
     create_user_offerer, \
     create_venue
 from utils.human_ids import humanize
-
 
 
 class Patch:
@@ -75,12 +74,11 @@ class Patch:
             offer_venue2_2 = create_offer_with_thing_product(venue2)
             other_offer = create_offer_with_event_product(other_venue)
             user_offerer = create_user_offerer(user, offerer, is_admin=True)
-            original_validity_date = datetime.utcnow() + timedelta(days=7)
-            recommendation1 = create_recommendation(offer_venue1_1, other_user, valid_until_date=original_validity_date)
-            recommendation2 = create_recommendation(offer_venue2_1, other_user, valid_until_date=original_validity_date)
-            recommendation3 = create_recommendation(offer_venue2_2, other_user, valid_until_date=original_validity_date)
-            recommendation4 = create_recommendation(offer_venue2_2, user, valid_until_date=original_validity_date)
-            other_recommendation = create_recommendation(other_offer, user, valid_until_date=original_validity_date)
+            recommendation1 = create_recommendation(offer_venue1_1, other_user)
+            recommendation2 = create_recommendation(offer_venue2_1, other_user)
+            recommendation3 = create_recommendation(offer_venue2_2, other_user)
+            recommendation4 = create_recommendation(offer_venue2_2, user)
+            other_recommendation = create_recommendation(other_offer, user)
             PcObject.save(recommendation1, recommendation2, recommendation3, recommendation4,
                           other_recommendation,
                           user_offerer)

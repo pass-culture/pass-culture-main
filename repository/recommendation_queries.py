@@ -77,8 +77,6 @@ def keep_only_bookable_stocks():
 
 
 def filter_unseen_valid_recommendations_for_user(query, user, seen_recommendation_ids):
-    recommendation_is_valid = (
-            (Recommendation.validUntilDate == None) | (Recommendation.validUntilDate > datetime.utcnow()))
     mediation_is_not_tuto = (Mediation.tutoIndex == None)
     recommendation_is_not_seen = ~Recommendation.id.in_(seen_recommendation_ids)
     recommendation_is_not_from_search = (Recommendation.search == None)
@@ -87,8 +85,7 @@ def filter_unseen_valid_recommendations_for_user(query, user, seen_recommendatio
         .filter((Recommendation.user == user)
                 & recommendation_is_not_from_search
                 & recommendation_is_not_seen
-                & mediation_is_not_tuto
-                & recommendation_is_valid)
+                & mediation_is_not_tuto)
     return new_query
 
 
@@ -101,13 +98,6 @@ def update_read_recommendations(read_recommendations):
         db.session.commit()
 
 
-def invalidate_recommendations(offer: Offer):
-    Recommendation.query.filter((Recommendation.offerId == offer.id)
-                                & (Recommendation.validUntilDate > datetime.utcnow())) \
-        .update({'validUntilDate': datetime.utcnow()})
-    db.session.commit()
-
-
 def _has_no_mediation_or_mediation_does_not_match_offer(mediation: Mediation, offer_id: int) -> bool:
     return mediation is None or (offer_id and (mediation.offerId != offer_id))
 
@@ -115,8 +105,7 @@ def _has_no_mediation_or_mediation_does_not_match_offer(mediation: Mediation, of
 def find_recommendation_already_created_on_discovery(offer_id: int, mediation_id: int, user_id: int) -> Recommendation:
     logger.debug(lambda: 'Requested Recommendation with offer_id=%s mediation_id=%s' % (
         offer_id, mediation_id))
-    query = Recommendation.query.filter((Recommendation.validUntilDate > datetime.utcnow())
-                                        & (Recommendation.userId == user_id)
+    query = Recommendation.query.filter((Recommendation.userId == user_id)
                                         & (Recommendation.search == None))
     if offer_id:
         query = query.join(Offer)

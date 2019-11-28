@@ -8,7 +8,6 @@ from models.api_errors import ResourceNotFoundError
 from repository import venue_queries, offer_queries
 from repository.offer_queries import find_activation_offers, \
     find_offers_with_filter_parameters
-from repository.recommendation_queries import invalidate_recommendations
 from routes.serialization import as_dict
 from utils.config import PRO_URL
 from utils.human_ids import dehumanize
@@ -108,10 +107,5 @@ def patch_offer(id: int):
     offer.populate_from_dict(request_data)
     offer.update_with_product_data(request_data)
     PcObject.save(offer)
-
-    request_data_contains_deactivation = 'isActive' in request_data and not request_data['isActive']
-
-    if request_data_contains_deactivation:
-        invalidate_recommendations(offer)
 
     return jsonify(as_dict(offer, includes=OFFER_INCLUDES)), 200

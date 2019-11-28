@@ -1,5 +1,5 @@
 import random
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import dateutil.parser
 
@@ -80,7 +80,6 @@ def _create_tuto_mediation_if_non_existent_for_user(user: User, tuto_mediation: 
     recommendation = Recommendation()
     recommendation.user = user
     recommendation.mediation = tuto_mediation
-    recommendation.validUntilDate = datetime.utcnow() + timedelta(weeks=2)
     PcObject.save(recommendation)
 
 

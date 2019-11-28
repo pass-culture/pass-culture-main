@@ -779,8 +779,7 @@ class Put:
             stock1 = create_stock_from_offer(offer1, price=0)
             inactive_mediation = create_mediation(offer1, is_active=False)
             active_mediation = create_mediation(offer1, is_active=True)
-            invalid_recommendation = create_recommendation(offer1, user, inactive_mediation,
-                                                           valid_until_date=datetime.utcnow() - timedelta(hours=2))
+            invalid_recommendation = create_recommendation(offer1, user, inactive_mediation)
             PcObject.save(user, stock1, inactive_mediation, active_mediation, invalid_recommendation)
             active_mediation_id = active_mediation.id
             inactive_mediation_id = inactive_mediation.id

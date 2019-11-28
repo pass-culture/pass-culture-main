@@ -1,11 +1,11 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
-from models import PcObject, Offer, Recommendation, Product, Provider
+from models import PcObject, Offer, Product, Provider
 from routes.serialization import serialize
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_venue, \
     create_offer_with_thing_product, API_URL, create_product_with_event_type, create_offer_with_event_product, \
-    create_product_with_thing_type, create_recommendation, activate_provider
+    create_product_with_thing_type, activate_provider
 from utils.human_ids import humanize
 
 
@@ -34,32 +34,6 @@ class Patch:
             # Then
             assert response.status_code == 200
             assert Offer.query.get(offer.id).bookingEmail == 'offer@email.com'
-
-        @clean_database
-        def when_deactivating_offer_and_makes_recommendations_outdated(self, app):
-            # Given
-            seven_days_from_now = datetime.utcnow() + timedelta(days=7)
-            user = create_user()
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
-            venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue, booking_email='old@email.com')
-            recommendation = create_recommendation(offer, user, valid_until_date=seven_days_from_now)
-            PcObject.save(offer, user, user_offerer, recommendation)
-            recommendation_id = recommendation.id
-
-            json = {
-                'isActive': False,
-            }
-
-            # When
-            response = TestClient(app.test_client()).with_auth(user.email).patch(
-                f'{API_URL}/offers/{humanize(offer.id)}',
-                json=json)
-
-            # Then
-            assert response.status_code == 200
-            assert Recommendation.query.get(recommendation_id).validUntilDate < datetime.utcnow()
 
         @clean_database
         def when_user_updating_thing_offer_is_linked_to_same_owning_offerer(self, app):
