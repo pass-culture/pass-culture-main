@@ -36,6 +36,11 @@ class GetPcObjectByIdInDatabaseTest:
 
 
 class BulkUpdatePcObjectsTest:
+    @classmethod
+    def teardown_method(cls):
+        # Clean remaining pc objects from session
+        db.session.expunge_all()
+
     @clean_database
     def test_should_update_pc_object_list_in_database(self, app):
         # Given
@@ -61,11 +66,13 @@ class BulkUpdatePcObjectsTest:
         with pytest.raises(StaleDataError):
             bulk_update_pc_objects([product_to_update], Product)
 
-        # Clean
-        db.session.expunge_all()
-
 
 class BulkInsertPcObjectsTest:
+    @classmethod
+    def teardown_method(cls):
+        # Clean remaining pc objects from session
+        db.session.expunge_all()
+
     @clean_database
     def test_should_insert_pc_object_list_in_database(self, app):
         # Given
@@ -87,6 +94,3 @@ class BulkInsertPcObjectsTest:
         # When / Then
         with pytest.raises(IntegrityError):
             bulk_insert_pc_objects([product], Product)
-
-        # Clean
-        db.session.expunge_all()

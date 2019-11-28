@@ -1,6 +1,6 @@
 import os
 import re
-from typing import Callable, Optional
+from typing import Callable, Optional, List
 
 import requests
 
@@ -52,14 +52,12 @@ def process_product_thumb(uri: str, get_product_thumb: Callable = _get_product_t
 
 
 def process_file(file_path: str, _process_product_thumb: Callable = process_product_thumb):
-    lines_count = _count_lines_in_file(file_path)
+    lines = _get_lines_from_file(file_path)
+    lines_count = len(lines)
     logger.info(f'[BATCH][PRODUCT THUMB UPDATE] Thumbs to process {lines_count}')
 
-    file = open(file_path, mode='r')
     products_to_save = []
-    lines_progress = 0
-    for line in file:
-        lines_progress += 1
+    for index, line in enumerate(lines):
         uri = line.strip()
         product_to_save = _process_product_thumb(uri=uri)
         if product_to_save:
@@ -67,7 +65,7 @@ def process_file(file_path: str, _process_product_thumb: Callable = process_prod
 
         if len(products_to_save) % CHUNK_SIZE == 0:
             bulk_update_pc_objects(products_to_save, Product)
-            logger.info(f'[BATCH][PRODUCT THUMB UPDATE] Progress {round(lines_progress / lines_count * 100, 3)}')
+            logger.info(f'[BATCH][PRODUCT THUMB UPDATE] Progress {round(index / lines_count * 100, 3)}')
             products_to_save = []
 
     if len(products_to_save) > 0:
@@ -75,12 +73,12 @@ def process_file(file_path: str, _process_product_thumb: Callable = process_prod
     logger.info(f'[BATCH][PRODUCT THUMB UPDATE] END')
 
 
-def _count_lines_in_file(file_path: str) -> int:
-    lines_count = 0
+def _get_lines_from_file(file_path: str) -> List[str]:
+    lines = []
     with open(file_path, mode='r') as file_lines:
-        for file_line in file_lines:
-            lines_count += 1
-    return lines_count
+        for line in file_lines:
+            lines.append(line.strip())
+    return lines
 
 
 def _compute_product_id_from_uri(uri: str) -> int:

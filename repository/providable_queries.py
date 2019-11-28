@@ -35,7 +35,7 @@ def _filter_matching_pc_object_in_chunk(model_in_chunk: Model, chunk_to_update: 
 
 def _extract_dict_values_from_chunk(matching_tuples_in_chunk: List[Model]) -> List[Dict]:
     return list(
-        _build_dict_to_update(pc_object_item) for pc_object_key, pc_object_item in matching_tuples_in_chunk
+        dictify_pc_object(pc_object_item) for pc_object_key, pc_object_item in matching_tuples_in_chunk
     )
 
 
@@ -68,7 +68,7 @@ def _dict_to_object(object_dict: Dict, model_object: Model) -> Model:
     return pc_obj
 
 
-def _build_dict_to_update(object_to_update: Model) -> Dict:
+def dictify_pc_object(object_to_update: Model) -> Dict:
     dict_to_update = object_to_update.__dict__
     if '_sa_instance_state' in dict_to_update:
         del dict_to_update['_sa_instance_state']
