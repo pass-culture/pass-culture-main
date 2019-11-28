@@ -4,13 +4,13 @@ import Helmet from 'react-helmet'
 import { matchPath, Route, withRouter } from 'react-router-dom'
 
 import ErrorCatcherContainer from './components/layout/ErrorCatcher/ErrorCatcherContainer'
-import browserRoutes from './components/router/browserRoutes'
 import MenuContainer from './components/layout/Menu/MenuContainer'
 import Notifications from './components/layout/Notifications/Notifications'
 import OverlayContainer from './components/layout/Overlay/OverlayContainer'
 import SharePopinContainer from './components/layout/Share/SharePopinContainer'
 import SplashContainer from './components/layout/Splash/SplashContainer'
-import { ROOT_PATH, IS_DEV, PROJECT_NAME } from './utils/config'
+import browserRoutes from './components/router/browserRoutes'
+import { IS_DEV, PROJECT_NAME } from './utils/config'
 
 const getPageTitle = obj => `${obj && obj.title ? `${obj.title} - ` : ''}`
 
@@ -46,12 +46,6 @@ const App = ({ children, history, location }) => {
           <SplashContainer />
           <SharePopinContainer />
           <Notifications />
-          <img
-            alt="beta"
-            className="beta-corner is-overlay"
-            src={`${ROOT_PATH}/beta.png`}
-            srcSet={`${ROOT_PATH}/beta@2x.png`}
-          />
         </ErrorCatcherContainer>
       </div>
     </Fragment>

@@ -114,16 +114,6 @@ hr[class^='dotted-right-2x-'] {
   max-width: 2px;
 }
 
-.app .beta-corner {
-  left: 0;
-  bottom: 0;
-  top: inherit;
-  right: inherit;
-  width: $footer-height;
-  height: $footer-height;
-  z-index: $zindex-beta-corner;
-}
-
 /* -------------------------------------------------
 
  LAYOUTS
