@@ -22,9 +22,17 @@ class NoMatch extends PureComponent {
   }
 
   renderRedirect = () => <Redirect to="/" />
-  renderRedirecting = () => <span>{'Redirecting...'}</span>
+  renderRedirecting = () => (
+    <span>
+      {'Redirecting...'}
+    </span>
+  )
 
-  renderTimer = timing => <span>{`You will be redirect in ${timing} seconds`}</span>
+  renderTimer = timing => (
+    <span>
+      {`You will be redirect in ${timing} seconds`}
+    </span>
+  )
 
   render() {
     const { timing } = this.state
@@ -32,7 +40,9 @@ class NoMatch extends PureComponent {
     if (timing < 0) return this.renderRedirect()
     return (
       <div id="page-redirect">
-        <h3 className="title">{`404 Not found ${location.pathname}`}</h3>
+        <h3 className="title">
+          {`404 Not found ${location.pathname}`}
+        </h3>
         <p className="content">
           {timing > 0 && this.renderTimer(timing)}
           {timing === 0 && this.renderRedirecting()}

@@ -1,6 +1,6 @@
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import AvatarEditor from 'react-avatar-editor'
 
 const IMAGE_MAX_SIZE = 10 // in MB
@@ -19,7 +19,7 @@ export const computeNewZoom = (current, min, max, step, factor, direction) => {
   return current
 }
 
-class UploadThumb extends Component {
+class UploadThumb extends PureComponent {
   constructor() {
     super()
     this.avatarEditor = React.createRef()

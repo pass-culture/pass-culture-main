@@ -2,7 +2,7 @@ import classnames from 'classnames'
 import { Icon as LeafletIcon } from 'leaflet'
 import debounce from 'lodash.debounce'
 import PropTypes from 'prop-types'
-import React, { Component, Fragment } from 'react'
+import React, { PureComponent, Fragment } from 'react'
 import Autocomplete from 'react-autocomplete'
 import { Map, Marker, TileLayer } from 'react-leaflet'
 
@@ -20,11 +20,10 @@ const markerIcon = new LeafletIcon({
   popupAnchor: null,
 })
 
-class LocationViewer extends Component {
+class LocationViewer extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-      draggable: true,
       inputValue: '',
       isLoading: false,
       hasSelectedSuggestion: false,
@@ -70,12 +69,6 @@ class LocationViewer extends Component {
       nextStateWithPositionAndInputValue,
       nextStateWithSuggestionsAndMarker
     )
-  }
-
-  toggleDraggable = () => {
-    const { draggable } = this.state
-
-    this.setState({ draggable: !draggable })
   }
 
   handleOnMarkerDragend = () => {
@@ -207,7 +200,11 @@ class LocationViewer extends Component {
 
   renderSuggestionsMenu = suggestionElements => {
     const empty = suggestionElements.length === 0
-    return <div className={classnames('menu', { empty })}>{suggestionElements}</div>
+    return (
+      <div className={classnames('menu', { empty })}>
+        {suggestionElements}
+      </div>
+    )
   }
 
   renderSuggestion = ({ id, label, placeholder }, highlighted) => (
