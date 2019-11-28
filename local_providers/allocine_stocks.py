@@ -170,7 +170,8 @@ def _has_original_version_product(movies_showtimes: List[dict]) -> bool:
     return ORIGINAL_VERSION in list(map(lambda movie: movie['diffusionVersion'], movies_showtimes))
 
 def _has_french_version_product(movies_showtimes: List[dict]) -> bool:
-    return LOCAL_VERSION or DUBBED_VERSION in list(map(lambda movie: movie['diffusionVersion'], movies_showtimes))
+    movies = list(map(lambda movie: movie['diffusionVersion'], movies_showtimes))
+    return LOCAL_VERSION in movies or DUBBED_VERSION in movies
 
 def _is_original_version_offer(id_at_providers: str) -> bool:
     return id_at_providers[-3:] == f"-{ORIGINAL_VERSION_SUFFIX}"
