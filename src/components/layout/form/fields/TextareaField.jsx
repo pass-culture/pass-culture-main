@@ -45,7 +45,9 @@ class TextareaField extends PureComponent {
         >
           {label && (
             <span>
-              <span>{label}</span>
+              <span>
+                {label}
+              </span>
               {required && !readOnly && <span className="field-asterisk">{'*'}</span>}
               {!readOnly && (
                 <Fragment>
