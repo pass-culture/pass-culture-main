@@ -5,11 +5,13 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { withRouter } from 'react-router'
 
-const App = ({ modalOpen, children }) => (
-  <div className={classnames('app', { 'modal-open': modalOpen })}>
-    {children}
-  </div>
-)
+const App = ({ modalOpen, children }) =>
+  (
+    <div className={classnames('app', { 'modal-open': modalOpen })}>
+      {children}
+    </div>
+  )
+
 
 function mapStateToProps(state) {
   return {

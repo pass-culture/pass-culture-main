@@ -62,7 +62,11 @@ class SignupValidation extends PureComponent {
 
 SignupValidation.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  match: PropTypes.shape().isRequired,
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      token: PropTypes.string.isRequired
+    })
+  }).isRequired,
 }
 
 export default SignupValidation

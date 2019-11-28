@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
 
@@ -6,7 +6,7 @@ import FieldErrors from '../FieldErrors'
 
 const noOperation = () => {}
 
-class HiddenField extends Component {
+class HiddenField extends PureComponent {
   renderField = ({ input, meta }) => (
     <div>
       <input

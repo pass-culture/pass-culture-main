@@ -16,13 +16,13 @@ const SelectSourceField = ({ handleChange, providers, venueProviders }) => ({ in
     >
       {DEFAULT_PROVIDER_OPTION.name}
     </option>
-    {providers.map((provider, index) => {
+    {providers.map((provider) => {
       const isProviderDisabled = checkIfProviderShouldBeDisabled(venueProviders, provider)
 
       return (
         <option
           disabled={isProviderDisabled}
-          key={index}
+          key={`provider-${provider.id}`}
           value={JSON.stringify(provider)}
         >
           {provider.name}

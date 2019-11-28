@@ -6,8 +6,12 @@ const SignupConfirmation = () => (
   <div className="hero">
     <div className="hero-body">
       <div className="is-italic">
-        <h1 className="title is-spaced is-1">{'Merci !'}</h1>
-        <h2>{'Votre compte est en cours de création.'}</h2>
+        <h1 className="title is-spaced is-1">
+          {'Merci !'}
+        </h1>
+        <h2>
+          {'Votre compte est en cours de création.'}
+        </h2>
         <h2>
           <span className="is-bold">{'Vous allez recevoir un lien de confirmation'}</span>
           {' par e-mail : cliquez sur ce lien pour confirmer la création de votre compte.'}
@@ -19,9 +23,7 @@ const SignupConfirmation = () => (
           src={`${ROOT_PATH}/icons/picto-info-grey.svg`}
         />
         <p>
-          {
-            'Si vous ne recevez pas d’e-mail de notre part d’ici 5 minutes, vérifiez que le message n’est pas dans le dossier "indésirables" ou "spam" de votre messagerie.'
-          }
+          {'Si vous ne recevez pas d’e-mail de notre part d’ici 5 minutes, vérifiez que le message n’est pas dans le dossier "indésirables" ou "spam" de votre messagerie.'}
           <br />
           {'Si vous n’avez rien reçu d’ici demain, merci de '}
           <a href="mailto:pass@culture.gouv.fr?subject=Problème de création de compte pro">

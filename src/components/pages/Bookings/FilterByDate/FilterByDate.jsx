@@ -64,66 +64,64 @@ class FilterByDate extends PureComponent {
 
     if (showThingDateSection) {
       return (
-        <Fragment>
-          <div id="filter-thing-by-date">
-            <div>
-              {'Effectuées en :'}
-            </div>
-            <label
-              className="is-invisible"
-              htmlFor="month"
-            >
-              {'Sélectionnez le mois.'}
-            </label>
-            <select
-              className="pc-selectbox"
-              id="month"
-              onBlur={this.handleOnChangeMonth}
-              onChange={this.handleOnChangeMonth}
-            >
-              <option
-                disabled
-                label=" - Mois - "
-                selected
-              />
-              {MONTH_OPTIONS.map((value, index) => (
-                <option
-                  key={value}
-                  value={index}
-                >
-                  {value}
-                </option>
-              ))}
-            </select>
-
-            <label
-              className="is-invisible"
-              htmlFor="year"
-            >
-              {"Sélectionnez l'année."}
-            </label>
-            <select
-              className="pc-selectbox"
-              id="year"
-              onBlur={this.handleOnChangeYear}
-              onChange={this.handleOnChangeYear}
-            >
-              <option
-                disabled
-                label=" - Année - "
-                selected
-              />
-              {YEAR_OPTIONS.map(value => (
-                <option
-                  key={value}
-                  value={value}
-                >
-                  {value}
-                </option>
-              ))}
-            </select>
+        <div id="filter-thing-by-date">
+          <div>
+            {'Effectuées en :'}
           </div>
-        </Fragment>
+          <label
+            className="is-invisible"
+            htmlFor="month"
+          >
+            {'Sélectionnez le mois.'}
+          </label>
+          <select
+            className="pc-selectbox"
+            id="month"
+            onBlur={this.handleOnChangeMonth}
+            onChange={this.handleOnChangeMonth}
+          >
+            <option
+              disabled
+              label=" - Mois - "
+              selected
+            />
+            {MONTH_OPTIONS.map((value, index) => (
+              <option
+                key={value}
+                value={index}
+              >
+                {value}
+              </option>
+            ))}
+          </select>
+
+          <label
+            className="is-invisible"
+            htmlFor="year"
+          >
+            {"Sélectionnez l'année."}
+          </label>
+          <select
+            className="pc-selectbox"
+            id="year"
+            onBlur={this.handleOnChangeYear}
+            onChange={this.handleOnChangeYear}
+          >
+            <option
+              disabled
+              label=" - Année - "
+              selected
+            />
+            {YEAR_OPTIONS.map(value => (
+              <option
+                key={value}
+                value={value}
+              >
+                {value}
+              </option>
+            ))}
+          </select>
+        </div>
       )
     }
 

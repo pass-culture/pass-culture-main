@@ -1,8 +1,8 @@
-import React, { Component, Fragment } from 'react'
+import React, { PureComponent, Fragment } from 'react'
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
 
-class SubmitAndCancelControl extends Component {
+class SubmitAndCancelControl extends PureComponent {
   handleOnClick = (form, query, stockId) => () => {
     form.reset()
     query.changeToReadOnly(null, { id: stockId, key: 'stock' })

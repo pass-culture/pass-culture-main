@@ -3,8 +3,8 @@ import React from 'react'
 
 import { ROOT_PATH } from '../../utils/config'
 
-const Block = ({ cancelText, confirmText, text, onConfirmation, onCancel }) => {
-  return (
+const Block = ({ cancelText, confirmText, text, onConfirmation, onCancel }) =>
+  (
     <div className="confirm-change">
       <ul>
         <li>
@@ -36,7 +36,6 @@ const Block = ({ cancelText, confirmText, text, onConfirmation, onCancel }) => {
       </div>
     </div>
   )
-}
 
 Block.defaultProps = {
   cancelText: 'Non',

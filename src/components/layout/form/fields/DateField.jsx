@@ -63,7 +63,6 @@ class DateField extends PureComponent {
 
   renderField = ({ input }) => {
     const {
-      autoComplete,
       className,
       clearable,
       dateFormat,
@@ -156,7 +155,6 @@ class DateField extends PureComponent {
 }
 
 DateField.defaultProps = {
-  autoComplete: false,
   className: '',
   clearable: false,
   dateFormat: 'DD/MM/YYYY',
@@ -174,7 +172,6 @@ DateField.defaultProps = {
 }
 
 DateField.propTypes = {
-  autoComplete: PropTypes.bool,
   className: PropTypes.string,
   clearable: PropTypes.bool,
   dateFormat: PropTypes.string,

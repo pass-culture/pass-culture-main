@@ -1,12 +1,12 @@
 import get from 'lodash.get'
 import { BasicInput, removeWhitespaces } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
-import React, { Component, Fragment } from 'react'
+import React, { PureComponent, Fragment } from 'react'
 import { connect } from 'react-redux'
 
 import { formatSirenOrSiret } from '../../utils/siren'
 
-class SirenInput extends Component {
+class SirenInput extends PureComponent {
   handleOnChange = event => {
     const { onChange: onFieldChange, type } = this.props
 

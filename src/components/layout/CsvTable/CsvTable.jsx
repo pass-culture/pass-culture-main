@@ -1,9 +1,9 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import Header from '../Header/Header'
 import PropTypes from 'prop-types'
 import Spinner from '../Spinner'
 
-class CsvTable extends Component {
+class CsvTable extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {

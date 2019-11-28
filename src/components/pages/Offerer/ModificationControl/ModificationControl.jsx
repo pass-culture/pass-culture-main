@@ -6,41 +6,44 @@ import PropTypes from 'prop-types'
 const ModificationControl = ({ adminUserOfferer, parseFormChild, offerer, query }) => {
   const { readOnly } = query.context()
   const { id } = offerer || {}
-  return recursiveMap(
-    <Fragment>
-      <div className="control">
-        {readOnly ? (
-          adminUserOfferer && (
-            <NavLink
-              className="button is-secondary is-medium"
-              to={`/structures/${id}?modification`}
-            >
-              {'Modifier les informations'}
-            </NavLink>
-          )
-        ) : (
-          <div
-            className="field is-grouped is-grouped-centered"
-            style={{ justifyContent: 'space-between' }}
+
+  const fragment = <Fragment>
+    <div className="control">
+      {readOnly ? (
+        adminUserOfferer && (
+          <NavLink
+            className="button is-secondary is-medium"
+            to={`/structures/${id}?modification`}
           >
-            <div className="control">
-              <CancelButton
-                className="button is-secondary is-medium"
-                to={`/structures/${id}`}
-              >
-                {'Annuler'}
-              </CancelButton>
-            </div>
-            <div className="control">
-              <SubmitButton className="button is-primary is-medium">
-                {'Valider'}
-              </SubmitButton>
-            </div>
+            {'Modifier les informations'}
+          </NavLink>
+        )
+      ) : (
+        <div
+          className="field is-grouped is-grouped-centered"
+          style={{ justifyContent: 'space-between' }}
+        >
+          <div className="control">
+            <CancelButton
+              className="button is-secondary is-medium"
+              to={`/structures/${id}`}
+            >
+              {'Annuler'}
+            </CancelButton>
           </div>
-        )}
-      </div>
-      <br />
-    </Fragment>,
+          <div className="control">
+            <SubmitButton className="button is-primary is-medium">
+              {'Valider'}
+            </SubmitButton>
+          </div>
+        </div>
+      )}
+    </div>
+    <br />
+  </Fragment>;
+
+  return recursiveMap(
+    fragment,
     parseFormChild
   )
 }

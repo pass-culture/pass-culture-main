@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { Fragment } from 'react'
 
 import TextField from '../../../../layout/form/fields/TextField'
 
@@ -12,7 +12,7 @@ const BankFields = ({ adminUserOfferer, areBankInformationProvided, readOnly }) 
         {'Informations bancaires'}
         <span className="is-pulled-right fs13 has-text-grey">
           {!adminUserOfferer &&
-            "Vous avez besoin d'être administrateur de la structure pour éditer ces informations."}
+          "Vous avez besoin d'être administrateur de la structure pour éditer ces informations."}
         </span>
       </h2>
       {!areBankInformationProvided && (
@@ -34,8 +34,7 @@ const BankFields = ({ adminUserOfferer, areBankInformationProvided, readOnly }) 
           readOnly={areBankInfosReadOnly}
         />
       </div>
-    </div>
-  )
+    </div>)
 }
 
 BankFields.defaultProps = {

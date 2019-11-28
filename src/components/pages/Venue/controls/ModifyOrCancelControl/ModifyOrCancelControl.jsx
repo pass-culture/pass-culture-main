@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { NavLink } from 'react-router-dom'
 
-class ModifyOrCancelControl extends Component {
+class ModifyOrCancelControl extends PureComponent {
   handleOnCLick = () => {
     const { isCreatedEntity, form, history, offererId, venueId } = this.props
 
