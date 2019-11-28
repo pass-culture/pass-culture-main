@@ -221,149 +221,151 @@ class Mediation extends PureComponent {
     const backPath = `/offres/${offerId}`
 
 
-    const fragment = <Fragment>
-      <div className="thumbnailManager">
-        <div className="section ">
-          <h2 className="has-text-primary has-text-weight-semibold active">
-            {'Comment cadrer votre image d’accroche'}
-          </h2>
-          <ul>
-            <li className="mb12">
+    const fragment = (
+      <Fragment>
+        <div className="thumbnailManager">
+          <div className="section ">
+            <h2 className="has-text-primary has-text-weight-semibold active">
+              {'Comment cadrer votre image d’accroche'}
+            </h2>
+            <ul>
+              <li className="mb12">
                 <span className="li-number">
                   {'1'}
                 </span>
-              <span>
+                <span>
                   {'Le visuel doit '}
-                <b>
+                  <b>
                     {'remplir le cadre 1 violet'}
                   </b>
-                {'.'}
+                  {'.'}
                 </span>
-            </li>
-            <li className="mb12">
+              </li>
+              <li className="mb12">
                 <span className="li-number">
                   {'2'}
                 </span>
-              <span>
+                <span>
                   <b>
                     {'Les éléments importants '}
                   </b>
-                {' (p. ex. un visage, une zone d’intérêt…) doivent se situer '}
-                <b>
+                  {' (p. ex. un visage, une zone d’intérêt…) doivent se situer '}
+                  <b>
                     {'dans le cadre 2 vert.'}
                   </b>
-                  <br/>
-                {' C’est la première vision de l’offre qu’aura l’utilisateur.'}
+                  <br />
+                  {' C’est la première vision de l’offre qu’aura l’utilisateur.'}
                 </span>
-            </li>
-          </ul>
-          {'La zone en pointillés représente la partie visible de l’image dans la fiche détail de l’offre.'}
-        </div>
-        <div className="section">
-          <div className="row">
-            <div className="section">
-              <h6>
-                {'Exemples :'}
-              </h6>
-              <div className="columns crop-explain">
-                <div className="column">
-                  <img
-                    alt="Explication"
-                    src="/bad-crop.png"
-                    title="Exemple de cadrage"
-                  />
-                </div>
-                <div className="column explain-text explain-bad">
-                  <p>
-                    <b>
-                      {'Mauvais cadrage'}
-                    </b>
-                    {'Les éléments importants sont hors-cadre.'}
-                  </p>
-                </div>
-                <div className="column">
-                  <img
-                    alt="Explication"
-                    src="/good-crop.png"
-                    title="Exemple de cadrage"
-                  />
-                </div>
-                <div className="column explain-text explain-good">
-                  <p>
-                    <b>
-                      {'Cadrage idéal'}
-                    </b>
-                    {'Les éléments importants sont visibles dans tous les cadres.'}
-                  </p>
+              </li>
+            </ul>
+            {'La zone en pointillés représente la partie visible de l’image dans la fiche détail de l’offre.'}
+          </div>
+          <div className="section">
+            <div className="row">
+              <div className="section">
+                <h6>
+                  {'Exemples :'}
+                </h6>
+                <div className="columns crop-explain">
+                  <div className="column">
+                    <img
+                      alt="Explication"
+                      src="/bad-crop.png"
+                      title="Exemple de cadrage"
+                    />
+                  </div>
+                  <div className="column explain-text explain-bad">
+                    <p>
+                      <b>
+                        {'Mauvais cadrage'}
+                      </b>
+                      {'Les éléments importants sont hors-cadre.'}
+                    </p>
+                  </div>
+                  <div className="column">
+                    <img
+                      alt="Explication"
+                      src="/good-crop.png"
+                      title="Exemple de cadrage"
+                    />
+                  </div>
+                  <div className="column explain-text explain-good">
+                    <p>
+                      <b>
+                        {'Cadrage idéal'}
+                      </b>
+                      {'Les éléments importants sont visibles dans tous les cadres.'}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <hr className="dotted"/>
-          <div className="row">
-            <UploadThumbContainer
-              border={IMAGE_UPLOAD_BORDER}
-              borderRadius={0}
-              collectionName="mediations"
-              entityId={get(mediation, 'id')}
-              hasExistingImage={!isNew}
-              height={IMAGE_UPLOAD_SIZE}
-              image={image || imageUrl}
-              index={0}
-              onImageChange={this.handleOnImageChange}
-              readOnly
-              required
-              storeKey="mediations"
-              type="thumb"
-              width={IMAGE_UPLOAD_SIZE}
-            />
+            <hr className="dotted" />
+            <div className="row">
+              <UploadThumbContainer
+                border={IMAGE_UPLOAD_BORDER}
+                borderRadius={0}
+                collectionName="mediations"
+                entityId={get(mediation, 'id')}
+                hasExistingImage={!isNew}
+                height={IMAGE_UPLOAD_SIZE}
+                image={image || imageUrl}
+                index={0}
+                onImageChange={this.handleOnImageChange}
+                readOnly
+                required
+                storeKey="mediations"
+                type="thumb"
+                width={IMAGE_UPLOAD_SIZE}
+              />
+            </div>
           </div>
         </div>
-      </div>
-      <div className="section">
-        <div className="field-group">
-          <div className="field">
-            <label className="label">
-              {'Crédit photo'}
-            </label>
-            <input
-              className="input is-rounded"
-              id="mediation-credit"
-              onChange={this.handleOnChange}
-              type="text"
-              value={credit}
-            />
+        <div className="section">
+          <div className="field-group">
+            <div className="field">
+              <label className="label">
+                {'Crédit photo'}
+              </label>
+              <input
+                className="input is-rounded"
+                id="mediation-credit"
+                onChange={this.handleOnChange}
+                type="text"
+                value={credit}
+              />
+            </div>
           </div>
         </div>
-      </div>
-      <hr />
-      <div
-        className="field is-grouped is-grouped-centered"
-        style={{ justifyContent: 'space-between' }}
-      >
-        <div className="control">
-          <NavLink
-            className="button is-primary is-outlined is-medium"
-            to={backPath}
-          >
-            {'Annuler'}
-          </NavLink>
+        <hr />
+        <div
+          className="field is-grouped is-grouped-centered"
+          style={{ justifyContent: 'space-between' }}
+        >
+          <div className="control">
+            <NavLink
+              className="button is-primary is-outlined is-medium"
+              to={backPath}
+            >
+              {'Annuler'}
+            </NavLink>
+          </div>
+          <div className="control">
+            <button
+              className={classnames('button is-primary is-medium', {
+                'is-loading': isLoading,
+              })}
+              disabled={!image}
+              onClick={this.handleOnSubmit}
+              type="button"
+            >
+              {'Valider '}
+            </button>
+          </div>
         </div>
-        <div className="control">
-          <button
-            className={classnames('button is-primary is-medium', {
-              'is-loading': isLoading,
-            })}
-            disabled={!image}
-            onClick={this.handleOnSubmit}
-            type="button"
-          >
-            {'Valider '}
-          </button>
-        </div>
-      </div>
-    </Fragment>;
+      </Fragment>
+    )
 
     const $imageSections = (image || imageUrl) && fragment
 
@@ -384,7 +386,7 @@ class Mediation extends PureComponent {
             {
               'et la rend visuellement plus attrayante. C’est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante...'
             }
-            <br/>
+            <br />
             {'en un mot : accrocheuse.'}
           </p>
           <p>
@@ -397,7 +399,7 @@ class Mediation extends PureComponent {
             <b>
               {'100 Ko minimum. '}
             </b>
-            <br/>
+            <br />
             {'Utilisateurs avancés : vous pouvez '}
             <a href="https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip">
               {'télécharger ici les gabarits Illustrator et Photoshop.'}
