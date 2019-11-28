@@ -28,7 +28,6 @@ ShallowWrapper {
       "children": Array [
         <td>
           <DateField
-            autoComplete={false}
             className=""
             clearable={false}
             dateFormat="DD/MM/YYYY"
@@ -99,7 +98,6 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": <DateField
-            autoComplete={false}
             className=""
             clearable={false}
             dateFormat="DD/MM/YYYY"
@@ -126,7 +124,6 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "class",
           "props": Object {
-            "autoComplete": false,
             "className": "",
             "clearable": false,
             "dateFormat": "DD/MM/YYYY",
@@ -282,7 +279,6 @@ ShallowWrapper {
         "children": Array [
           <td>
             <DateField
-              autoComplete={false}
               className=""
               clearable={false}
               dateFormat="DD/MM/YYYY"
@@ -353,7 +349,6 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": <DateField
-              autoComplete={false}
               className=""
               clearable={false}
               dateFormat="DD/MM/YYYY"
@@ -380,7 +375,6 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "class",
             "props": Object {
-              "autoComplete": false,
               "className": "",
               "clearable": false,
               "dateFormat": "DD/MM/YYYY",

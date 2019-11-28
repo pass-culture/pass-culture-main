@@ -28,7 +28,6 @@ ShallowWrapper {
     "props": Object {
       "children": <form>
         <DateField
-          autoComplete={false}
           className=""
           clearable={false}
           dateFormat="DD/MM/YYYY"
@@ -82,7 +81,6 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <DateField
-            autoComplete={false}
             className=""
             clearable={false}
             dateFormat="DD/MM/YYYY"
@@ -114,7 +112,6 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "class",
           "props": Object {
-            "autoComplete": false,
             "className": "",
             "clearable": false,
             "dateFormat": "DD/MM/YYYY",
@@ -178,7 +175,6 @@ ShallowWrapper {
       "props": Object {
         "children": <form>
           <DateField
-            autoComplete={false}
             className=""
             clearable={false}
             dateFormat="DD/MM/YYYY"
@@ -232,7 +228,6 @@ ShallowWrapper {
         "props": Object {
           "children": Array [
             <DateField
-              autoComplete={false}
               className=""
               clearable={false}
               dateFormat="DD/MM/YYYY"
@@ -264,7 +259,6 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "class",
             "props": Object {
-              "autoComplete": false,
               "className": "",
               "clearable": false,
               "dateFormat": "DD/MM/YYYY",

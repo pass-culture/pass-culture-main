@@ -84,9 +84,7 @@ ShallowWrapper {
                       className="required-legend"
                     >
                       *
-                       
                     </span>
-                     
                     Champs obligatoires
                   </span>
                   <withRouter(Connect(_Form))
@@ -268,9 +266,7 @@ ShallowWrapper {
                       className="required-legend"
                     >
                       *
-                       
                     </span>
-                     
                     Champs obligatoires
                   </span>
                   <withRouter(Connect(_Form))
@@ -415,9 +411,7 @@ ShallowWrapper {
                       className="required-legend"
                     >
                       *
-                       
                     </span>
-                     
                     Champs obligatoires
                   </span>
                   <withRouter(Connect(_Form))
@@ -558,9 +552,7 @@ ShallowWrapper {
                       className="required-legend"
                     >
                       *
-                       
                     </span>
-                     
                     Champs obligatoires
                   </span>
                   <withRouter(Connect(_Form))
@@ -697,9 +689,7 @@ ShallowWrapper {
                       className="required-legend"
                     >
                       *
-                       
                     </span>
-                     
                     Champs obligatoires
                   </span>
                   <withRouter(Connect(_Form))
@@ -833,9 +823,7 @@ ShallowWrapper {
                         className="required-legend"
                       >
                         *
-                         
                       </span>
-                       
                       Champs obligatoires
                     </span>,
                     <withRouter(Connect(_Form))
@@ -1020,9 +1008,7 @@ ShallowWrapper {
                           className="required-legend"
                         >
                           *
-                           
                         </span>,
-                        " ",
                         "Champs obligatoires",
                       ],
                       "className": "has-text-grey",
@@ -1034,20 +1020,13 @@ ShallowWrapper {
                         "key": undefined,
                         "nodeType": "host",
                         "props": Object {
-                          "children": Array [
-                            "*",
-                            " ",
-                          ],
+                          "children": "*",
                           "className": "required-legend",
                         },
                         "ref": null,
-                        "rendered": Array [
-                          "*",
-                          " ",
-                        ],
+                        "rendered": "*",
                         "type": "span",
                       },
-                      " ",
                       "Champs obligatoires",
                     ],
                     "type": "span",
@@ -1424,9 +1403,7 @@ ShallowWrapper {
                         className="required-legend"
                       >
                         *
-                         
                       </span>
-                       
                       Champs obligatoires
                     </span>
                     <withRouter(Connect(_Form))
@@ -1608,9 +1585,7 @@ ShallowWrapper {
                         className="required-legend"
                       >
                         *
-                         
                       </span>
-                       
                       Champs obligatoires
                     </span>
                     <withRouter(Connect(_Form))
@@ -1755,9 +1730,7 @@ ShallowWrapper {
                         className="required-legend"
                       >
                         *
-                         
                       </span>
-                       
                       Champs obligatoires
                     </span>
                     <withRouter(Connect(_Form))
@@ -1898,9 +1871,7 @@ ShallowWrapper {
                         className="required-legend"
                       >
                         *
-                         
                       </span>
-                       
                       Champs obligatoires
                     </span>
                     <withRouter(Connect(_Form))
@@ -2037,9 +2008,7 @@ ShallowWrapper {
                         className="required-legend"
                       >
                         *
-                         
                       </span>
-                       
                       Champs obligatoires
                     </span>
                     <withRouter(Connect(_Form))
@@ -2173,9 +2142,7 @@ ShallowWrapper {
                           className="required-legend"
                         >
                           *
-                           
                         </span>
-                         
                         Champs obligatoires
                       </span>,
                       <withRouter(Connect(_Form))
@@ -2360,9 +2327,7 @@ ShallowWrapper {
                             className="required-legend"
                           >
                             *
-                             
                           </span>,
-                          " ",
                           "Champs obligatoires",
                         ],
                         "className": "has-text-grey",
@@ -2374,20 +2339,13 @@ ShallowWrapper {
                           "key": undefined,
                           "nodeType": "host",
                           "props": Object {
-                            "children": Array [
-                              "*",
-                              " ",
-                            ],
+                            "children": "*",
                             "className": "required-legend",
                           },
                           "ref": null,
-                          "rendered": Array [
-                            "*",
-                            " ",
-                          ],
+                          "rendered": "*",
                           "type": "span",
                         },
-                        " ",
                         "Champs obligatoires",
                       ],
                       "type": "span",

@@ -77,8 +77,7 @@ ShallowWrapper {
                 truncationChar="…"
                 useNativeClamp={false}
               >
-                 
-                 
+                undefined undefined undefined
               </Dotdotdot>
             </li>
           </ul>
@@ -170,8 +169,7 @@ ShallowWrapper {
                   truncationChar="…"
                   useNativeClamp={false}
                 >
-                   
-                   
+                  undefined undefined undefined
                 </Dotdotdot>
               </li>
             </ul>,
@@ -243,8 +241,7 @@ ShallowWrapper {
                     truncationChar="…"
                     useNativeClamp={false}
                   >
-                     
-                     
+                    undefined undefined undefined
                   </Dotdotdot>
                 </li>,
               ],
@@ -328,8 +325,7 @@ ShallowWrapper {
                     truncationChar="…"
                     useNativeClamp={false}
                   >
-                     
-                     
+                    undefined undefined undefined
                   </Dotdotdot>,
                 },
                 "ref": null,
@@ -338,13 +334,7 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "class",
                   "props": Object {
-                    "children": Array [
-                      undefined,
-                      " ",
-                      undefined,
-                      " ",
-                      undefined,
-                    ],
+                    "children": "undefined undefined undefined",
                     "clamp": 2,
                     "className": "has-text-grey",
                     "tagName": "div",
@@ -352,13 +342,7 @@ ShallowWrapper {
                     "useNativeClamp": false,
                   },
                   "ref": null,
-                  "rendered": Array [
-                    undefined,
-                    " ",
-                    undefined,
-                    " ",
-                    undefined,
-                  ],
+                  "rendered": "undefined undefined undefined",
                   "type": [Function],
                 },
                 "type": "li",
@@ -473,8 +457,7 @@ ShallowWrapper {
                   truncationChar="…"
                   useNativeClamp={false}
                 >
-                   
-                   
+                  undefined undefined undefined
                 </Dotdotdot>
               </li>
             </ul>
@@ -566,8 +549,7 @@ ShallowWrapper {
                     truncationChar="…"
                     useNativeClamp={false}
                   >
-                     
-                     
+                    undefined undefined undefined
                   </Dotdotdot>
                 </li>
               </ul>,
@@ -639,8 +621,7 @@ ShallowWrapper {
                       truncationChar="…"
                       useNativeClamp={false}
                     >
-                       
-                       
+                      undefined undefined undefined
                     </Dotdotdot>
                   </li>,
                 ],
@@ -724,8 +705,7 @@ ShallowWrapper {
                       truncationChar="…"
                       useNativeClamp={false}
                     >
-                       
-                       
+                      undefined undefined undefined
                     </Dotdotdot>,
                   },
                   "ref": null,
@@ -734,13 +714,7 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "class",
                     "props": Object {
-                      "children": Array [
-                        undefined,
-                        " ",
-                        undefined,
-                        " ",
-                        undefined,
-                      ],
+                      "children": "undefined undefined undefined",
                       "clamp": 2,
                       "className": "has-text-grey",
                       "tagName": "div",
@@ -748,13 +722,7 @@ ShallowWrapper {
                       "useNativeClamp": false,
                     },
                     "ref": null,
-                    "rendered": Array [
-                      undefined,
-                      " ",
-                      undefined,
-                      " ",
-                      undefined,
-                    ],
+                    "rendered": "undefined undefined undefined",
                     "type": [Function],
                   },
                   "type": "li",

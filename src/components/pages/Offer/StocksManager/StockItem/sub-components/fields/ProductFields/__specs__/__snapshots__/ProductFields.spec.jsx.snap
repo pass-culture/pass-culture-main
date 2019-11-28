@@ -63,7 +63,6 @@ ShallowWrapper {
           title="Laissez vide si pas de limite"
         >
           <DateField
-            autoComplete={false}
             className=""
             clearable={false}
             dateFormat="DD/MM/YYYY"
@@ -186,7 +185,6 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": <DateField
-            autoComplete={false}
             className=""
             clearable={false}
             dateFormat="DD/MM/YYYY"
@@ -212,7 +210,6 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "class",
           "props": Object {
-            "autoComplete": false,
             "className": "",
             "clearable": false,
             "dateFormat": "DD/MM/YYYY",
@@ -323,7 +320,6 @@ ShallowWrapper {
             title="Laissez vide si pas de limite"
           >
             <DateField
-              autoComplete={false}
               className=""
               clearable={false}
               dateFormat="DD/MM/YYYY"
@@ -446,7 +442,6 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": <DateField
-              autoComplete={false}
               className=""
               clearable={false}
               dateFormat="DD/MM/YYYY"
@@ -472,7 +467,6 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "class",
             "props": Object {
-              "autoComplete": false,
               "className": "",
               "clearable": false,
               "dateFormat": "DD/MM/YYYY",
