@@ -1,13 +1,13 @@
 import get from 'lodash.get'
 import classnames from 'classnames'
 import { closeModal } from 'pass-culture-shared'
-import React, { Component, Fragment } from 'react'
+import React, { PureComponent, Fragment } from 'react'
 import PropTypes from 'prop-types'
 
 import StockItemContainer from './StockItem/StockItemContainer'
 import HeroSection from '../../../layout/HeroSection/HeroSection'
 
-class StocksManager extends Component {
+class StocksManager extends PureComponent {
   constructor() {
     super()
     this.state = {

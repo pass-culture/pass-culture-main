@@ -1,13 +1,13 @@
 import { Field, Form, SubmitButton } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { NavLink, Link } from 'react-router-dom'
 
 import Logo from '../../layout/Logo'
 import Main from '../../layout/Main'
 import { mapApiToBrowser } from '../../../utils/translate'
 
-class Signin extends Component {
+class Signin extends PureComponent {
   onHandleSuccessRedirect = (state, action) => {
     const { hasOffers } = action.payload.datum || false
     const { hasPhysicalVenues } = action.payload.datum || false
@@ -45,15 +45,24 @@ class Signin extends Component {
               <section className="has-text-grey">
                 <div className="hero-body">
                   <h1 className="title is-spaced is-1">
-                    <span className="has-text-weight-bold ">{'Bienvenue '}</span>
-                    <span className="has-text-weight-semibold">{'dans la version bêta '}</span>
-                    <span className="has-text-weight-normal">{'du pass Culture pro.'}</span>
+                    <span className="has-text-weight-bold ">
+                      {'Bienvenue '}
+                    </span>
+                    <span className="has-text-weight-semibold">
+                      {'dans la version bêta '}
+                    </span>
+                    <span className="has-text-weight-normal">
+                      {'du pass Culture pro.'}
+                    </span>
                   </h1>
                   <h2 className="subtitle is-2">
                     {'Et merci de votre participation pour nous aider à l’améliorer !'}
                   </h2>
                   <span className="has-text-grey">
-                    <span className="required-legend">{'*'} </span> {'Champs obligatoires'}
+                    <span className="required-legend">
+                      {'*'}
+                    </span>
+                    {'Champs obligatoires'}
                   </span>
                   <Form
                     action="/users/signin"
@@ -89,7 +98,9 @@ class Signin extends Component {
                         </Link>
                       </span>
                     </div>
-                    <div className="errors">{errors}</div>
+                    <div className="errors">
+                      {errors}
+                    </div>
                     <div className="field buttons-field">
                       <NavLink
                         className="button is-secondary"

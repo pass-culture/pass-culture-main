@@ -1,5 +1,5 @@
 import classnames from 'classnames'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
 import { composeValidators } from 'react-final-form-utils'
@@ -7,7 +7,7 @@ import ReactTimeInput from 'react-time-input'
 
 import getRequiredValidate from '../utils/getRequiredValidate'
 
-class TimeField extends Component {
+class TimeField extends PureComponent {
   handleOnTimeChange = input => time => input.onChange(time)
 
   renderField = ({ input }) => {

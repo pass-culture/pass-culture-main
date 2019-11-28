@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
 import PropTypes from 'prop-types'
 import ReactTooltip from 'react-tooltip'
@@ -7,7 +7,7 @@ import updateVenueIdAtOfferProvider from './decorators/updateVenueIdAtOfferProvi
 import { DEFAULT_PROVIDER_OPTION } from './utils/utils'
 import VenueProviderForm from './form/VenueProviderForm/VenueProviderForm'
 
-class VenueProvidersManager extends Component {
+class VenueProvidersManager extends PureComponent {
   static getDerivedStateFromProps(nextProps) {
     const {
       match: {
