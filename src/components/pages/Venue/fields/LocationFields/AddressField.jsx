@@ -46,8 +46,13 @@ export const AddressFieldRender = ({
     >
       {label && (
         <span>
-          <span>{label}</span>
-          {required && !readOnly && <span className="field-asterisk">{'*'}</span>}
+          <span>
+            {label}
+          </span>
+          {required && !readOnly &&
+          <span className="field-asterisk">
+            {'*'}
+          </span>}
         </span>
       )}
     </label>

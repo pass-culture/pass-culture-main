@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 
-class CsvTableButton extends Component {
+class CsvTableButton extends PureComponent {
   handleRedirectToUrl = () => {
     const { history, href, location } = this.props
     const { pathname } = location

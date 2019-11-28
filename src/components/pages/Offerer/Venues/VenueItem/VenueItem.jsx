@@ -47,14 +47,16 @@ const VenueItem = ({ venue }) => {
               </NavLink>
             </li>
           ) : (
-            <li>{'0 offre'}</li>
+            <li>
+              {'0 offre'}
+            </li>
           )}
           <li>
             <Dotdotdot
               clamp={2}
               className="has-text-grey"
             >
-              {address} {postalCode} {city}
+              {`${address} ${postalCode} ${city}`}
             </Dotdotdot>
           </li>
         </ul>

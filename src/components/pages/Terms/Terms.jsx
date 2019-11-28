@@ -56,12 +56,16 @@ const Terms = ({ lastDeployedCommit }) => (
     noHeader
   >
     <header>
-      <h1>{'Mentions légales'}</h1>
+      <h1>
+        {'Mentions légales'}
+      </h1>
     </header>
     <div className="content">
       <ReactMarkdown source={markdownContent} />
       <div className="mt16">
-        <p className="text-right">{`pass Culture - ${lastDeployedCommit}`}</p>
+        <p className="text-right">
+          {`pass Culture - ${lastDeployedCommit}`}
+        </p>
       </div>
     </div>
   </Main>
