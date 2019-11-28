@@ -1,7 +1,7 @@
 import classnames from 'classnames'
 import { Field, Form } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 
 import { OffererClass } from './OffererClass'
 import CreationControl from './CreationControl/CreationControl'
@@ -14,7 +14,7 @@ import { formatPatch } from '../../../utils/formatPatch'
 const OFFERER_CREATION_PATCH_KEYS = ['address', 'city', 'name', 'siren', 'postalCode']
 const OFFERER_MODIFICATION_PATCH_KEYS = ['bic', 'iban', 'rib']
 
-class Offerer extends Component {
+class Offerer extends PureComponent {
   onHandleDataRequest = (handleSuccess, handleFail) => {
     const { getOfferer, getUserOfferers, query } = this.props
     const { isCreatedEntity } = query.context()
@@ -35,7 +35,14 @@ class Offerer extends Component {
   onHandleSuccess = (state, action) => {
     const { payload } = action
     const createdOffererId = payload.datum.id
-    const { offerer, history, query, showNotification, trackCreateOfferer, trackModifyOfferer } = this.props
+    const {
+      offerer,
+      history,
+      query,
+      showNotification,
+      trackCreateOfferer,
+      trackModifyOfferer,
+    } = this.props
     const { isCreatedEntity } = query.context()
 
     if (isCreatedEntity) {
