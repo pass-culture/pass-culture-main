@@ -43,6 +43,10 @@ class TextField extends PureComponent {
     })
   }
 
+  handleRef = _e => {
+    this.inputElement = _e
+  }
+
   renderField = ({ input, meta }) => {
     const {
       className,
@@ -99,9 +103,7 @@ class TextField extends PureComponent {
                 min={min}
                 placeholder={readOnly ? '' : placeholder}
                 readOnly={readOnly}
-                ref={_e => {
-                  this.inputElement = _e
-                }}
+                ref={this.handleRef}
                 required={!!required}
                 type={inputType}
                 value={inputValue}

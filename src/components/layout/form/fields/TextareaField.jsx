@@ -48,11 +48,16 @@ class TextareaField extends PureComponent {
               <span>
                 {label}
               </span>
-              {required && !readOnly && <span className="field-asterisk">{'*'}</span>}
+              {required && !readOnly &&
+                <span className="field-asterisk">
+                  {'*'}
+                </span>}
               {!readOnly && (
                 <Fragment>
                   <br />
-                  <span className="fs12">{` (${input.value.length} / ${maxLength}) `}</span>
+                  <span className="fs12">
+                    {` (${input.value.length} / ${maxLength}) `}
+                  </span>
                 </Fragment>
               )}
             </span>

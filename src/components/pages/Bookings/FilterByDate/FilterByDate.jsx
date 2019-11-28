@@ -1,4 +1,4 @@
-import React, { Fragment, PureComponent } from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
 
@@ -127,35 +127,33 @@ class FilterByDate extends PureComponent {
 
     if (showEventDateSection) {
       return (
-        <Fragment>
-          <div id="filter-event-by-date">
-            <label htmlFor="event-date">
-              {'Pour la date du :'}
-            </label>
-            <select
-              className="pc-selectbox"
-              id="event-date"
-              onBlur={this.handleOnChangeEventDate}
-              onChange={this.handleOnChangeEventDate}
-            >
+        <div id="filter-event-by-date">
+          <label htmlFor="event-date">
+            {'Pour la date du :'}
+          </label>
+          <select
+            className="pc-selectbox"
+            id="event-date"
+            onBlur={this.handleOnChangeEventDate}
+            onChange={this.handleOnChangeEventDate}
+          >
+            <option
+              disabled
+              label=" - Choisissez une date - "
+              selected
+            />
+            {stocks.map(({ beginningDatetime }) => (
               <option
-                disabled
-                label=" - Choisissez une date - "
-                selected
-              />
-              {stocks.map(({ beginningDatetime }) => (
-                <option
-                  key={beginningDatetime}
-                  value={beginningDatetime}
-                >
-                  {moment(beginningDatetime)
-                    .utc()
-                    .format(FRENCH_DATE_FORMAT)}
-                </option>
-              ))}
-            </select>
-          </div>
-        </Fragment>
+                key={beginningDatetime}
+                value={beginningDatetime}
+              >
+                {moment(beginningDatetime)
+                  .utc()
+                  .format(FRENCH_DATE_FORMAT)}
+              </option>
+            ))}
+          </select>
+        </div>
       )
     }
   }

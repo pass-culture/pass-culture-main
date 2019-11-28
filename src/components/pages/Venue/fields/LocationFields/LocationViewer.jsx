@@ -35,7 +35,7 @@ class LocationViewer extends PureComponent {
     this.onDebouncedFetchSuggestions = debounce(this.fetchSuggestions, props.debounceTimeout)
   }
 
-  static getDerivedStateFromProps = (newProps, currentState) => {
+  static getDerivedStateFromProps = (newProps, state) => {
     const latitude = sanitizeCoordinates(newProps.latitude)
     const longitude = sanitizeCoordinates(newProps.longitude)
 
@@ -47,7 +47,7 @@ class LocationViewer extends PureComponent {
       zoom: hasCoordinates ? newProps.zoom : newProps.defaultInitialPosition.zoom,
     }
     const isInputValueEmpty = newProps.value === ''
-    const nextInputValue = isInputValueEmpty ? '' : newProps.value || currentState.inputValue
+    const nextInputValue = isInputValueEmpty ? '' : newProps.value || state.inputValue
     const nextStateWithPositionAndInputValue = {
       inputValue: nextInputValue,
       position: nextPosition,
@@ -55,7 +55,7 @@ class LocationViewer extends PureComponent {
 
     const nextStateWithSuggestionsAndMarker = hasCoordinates
       ? {
-          suggestions: currentState.hasSelectedSuggestion ? [] : currentState.suggestions,
+          suggestions: state.hasSelectedSuggestion ? [] : state.suggestions,
           marker: {
             latitude,
             longitude,
@@ -65,7 +65,7 @@ class LocationViewer extends PureComponent {
 
     return Object.assign(
       {},
-      currentState,
+      state,
       nextStateWithPositionAndInputValue,
       nextStateWithSuggestionsAndMarker
     )

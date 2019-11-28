@@ -235,7 +235,9 @@ class OfferItem extends PureComponent {
 
 OfferItem.propTypes = {
   aggregatedStock: PropTypes.shape().isRequired,
-  location: PropTypes.shape().isRequired,
+  location: PropTypes.shape({
+    search: PropTypes.string.isRequired
+  }).isRequired,
   maxDate: PropTypes.shape().isRequired,
   mediations: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   offer: PropTypes.shape().isRequired,
