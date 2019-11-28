@@ -1,5 +1,5 @@
 import classnames from 'classnames'
-import React, { Component, Fragment } from 'react'
+import React, { PureComponent, Fragment } from 'react'
 import Textarea from 'react-autosize-textarea'
 import { Field } from 'react-final-form'
 import PropTypes from 'prop-types'
@@ -14,7 +14,7 @@ function formatInputValueWhenTooLong(value, maxLength) {
   return valueIsTooLong ? value.slice(0, maxLength - 1) : value
 }
 
-class TextareaField extends Component {
+class TextareaField extends PureComponent {
   renderField = ({ input, meta }) => {
     const {
       autoComplete,

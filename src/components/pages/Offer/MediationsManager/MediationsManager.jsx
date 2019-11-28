@@ -1,6 +1,6 @@
 import { Icon } from 'pass-culture-shared'
 import get from 'lodash.get'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { NavLink } from 'react-router-dom'
 
 import MediationItem from './MediationItem/MediationItem'
@@ -12,7 +12,7 @@ export const NO_MEDIATION_TOOLTIP =
   '<p>- sélectionner au moins une accroche</p></div>'
 
 
-class MediationsManager extends Component {
+class MediationsManager extends PureComponent {
   componentDidMount() {
     const { showNotification, hasMediations, atLeastOneActiveMediation, notification } = this.props
 

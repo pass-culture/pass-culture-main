@@ -13,7 +13,9 @@ const SignupConfirmation = () => (
           {'Votre compte est en cours de création.'}
         </h2>
         <h2>
-          <span className="is-bold">{'Vous allez recevoir un lien de confirmation'}</span>
+          <span className="is-bold">
+            {'Vous allez recevoir un lien de confirmation'}
+          </span>
           {' par e-mail : cliquez sur ce lien pour confirmer la création de votre compte.'}
         </h2>
       </div>

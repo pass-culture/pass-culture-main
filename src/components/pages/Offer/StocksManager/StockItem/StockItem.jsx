@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
 import { bindTimeFieldWithDateField, getCanSubmit } from 'react-final-form-utils'
 import { requestData } from 'redux-saga-data'
@@ -12,7 +12,7 @@ import SubmitAndCancelControlContainer from './sub-components/SubmitAndCancelCon
 import { errorKeyToFrenchKey } from './utils/utils'
 import ProductFieldsContainer from './sub-components/fields/ProductFields/ProductFieldsContainer'
 
-class StockItem extends Component {
+class StockItem extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {

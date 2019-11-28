@@ -1,7 +1,7 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
 import { Icon, pluralize } from 'pass-culture-shared'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import PropTypes from 'prop-types'
 import { NavLink } from 'react-router-dom'
@@ -11,7 +11,7 @@ import Thumb from '../../../layout/Thumb'
 import OfferPreviewLink from '../../../layout/OfferPreviewLink/OfferPreviewLink'
 import { buildWebappDiscoveryUrl } from '../../../layout/OfferPreviewLink/buildWebappDiscoveryUrl'
 
-class OfferItem extends Component {
+class OfferItem extends PureComponent {
   handleHrefClick = event => {
     event.preventDefault()
     const { offer } = this.props
@@ -158,9 +158,10 @@ class OfferItem extends Component {
             <li>
               {maxDate && `jusqu’au ${maxDate.format('DD/MM/YYYY')}`}
             </li>
-            {stockAlertMessage && <li>
-              {stockAlertMessage}
-                                  </li>}
+            {stockAlertMessage &&
+              <li>
+                {stockAlertMessage}
+              </li>}
             <li>
               {priceMin === priceMax ? (
                 <Price value={priceMin || 0} />
