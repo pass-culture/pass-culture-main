@@ -197,7 +197,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'V9',
-        validUntilDate: '2018-10-28T19:48:46.809836Z',
         bookingsIds: [],
       },
       {
@@ -1563,7 +1562,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:21.284854Z',
         bookingsIds: [],
       },
       {
@@ -1693,7 +1691,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:18.851655Z',
         bookingsIds: [],
       },
       {
@@ -1824,7 +1821,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:21.819736Z',
         bookingsIds: [],
       },
       {
@@ -1950,7 +1946,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:20.921572Z',
         bookingsIds: [],
       },
       {
@@ -2075,7 +2070,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:19.029742Z',
         bookingsIds: [],
       },
       {
@@ -2206,7 +2200,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:21.925192Z',
         bookingsIds: [],
       },
       {
@@ -2422,7 +2415,7 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:18.180615Z',
+
         bookingsIds: [],
       },
       {
@@ -2547,7 +2540,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:19.910632Z',
         bookingsIds: [],
       },
       {
@@ -2811,7 +2803,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:19.832435Z',
         bookingsIds: [],
       },
       {
@@ -2937,7 +2928,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:21.606189Z',
         bookingsIds: [],
       },
       {
@@ -3203,7 +3193,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:22.530482Z',
         bookingsIds: [],
       },
       {
@@ -3351,7 +3340,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:18.630441Z',
         bookingsIds: [],
       },
       {
@@ -3473,7 +3461,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:20.490122Z',
         bookingsIds: [],
       },
       {
@@ -3598,7 +3585,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:19.513786Z',
         bookingsIds: [],
       },
       {
@@ -3722,7 +3708,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:18.807889Z',
         bookingsIds: [],
       },
       {
@@ -3845,7 +3830,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:20.158533Z',
         bookingsIds: [],
       },
       {
@@ -4021,7 +4005,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:22.232046Z',
         bookingsIds: [],
       },
       {
@@ -4145,7 +4128,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:18.041244Z',
         bookingsIds: [],
       },
       {
@@ -4293,7 +4275,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:18.352779Z',
         bookingsIds: [],
       },
       {
@@ -4541,7 +4522,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:22.065823Z',
         bookingsIds: [],
       },
       {
@@ -4662,7 +4642,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:18.679822Z',
         bookingsIds: [],
       },
       {
@@ -4845,7 +4824,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:21.745261Z',
         bookingsIds: [],
       },
       {
@@ -5333,7 +5311,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:18.542387Z',
         bookingsIds: [],
       },
       {
@@ -5582,7 +5559,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:22.122119Z',
         bookingsIds: [],
       },
       {
@@ -5831,7 +5807,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:18.274679Z',
         bookingsIds: [],
       },
       {
@@ -6094,7 +6069,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:19.700693Z',
         bookingsIds: [],
       },
       {
@@ -6308,7 +6282,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:21.555076Z',
         bookingsIds: [],
       },
       {
@@ -6456,7 +6429,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:22.463636Z',
         bookingsIds: [],
       },
       {
@@ -6577,7 +6549,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:21.187576Z',
         bookingsIds: [],
       },
       {
@@ -6725,7 +6696,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:18.967618Z',
         bookingsIds: [],
       },
       {
@@ -6846,7 +6816,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:17.906266Z',
         bookingsIds: [],
       },
       {
@@ -6971,7 +6940,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:18.093137Z',
         bookingsIds: [],
       },
       {
@@ -7119,7 +7087,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:21.872306Z',
         bookingsIds: [],
       },
       {
@@ -7248,7 +7215,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:21.990301Z',
         bookingsIds: [],
       },
       {
@@ -7372,7 +7338,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:19.358456Z',
         bookingsIds: [],
       },
       {
@@ -7500,7 +7465,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:21.107755Z',
         bookingsIds: [],
       },
       {
@@ -7624,7 +7588,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:19.642642Z',
         bookingsIds: [],
       },
       {
@@ -7749,7 +7712,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:22.829258Z',
         bookingsIds: [],
       },
       {
@@ -7897,7 +7859,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:19.982206Z',
         bookingsIds: [],
       },
       {
@@ -8021,7 +7982,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:18.596143Z',
         bookingsIds: [],
       },
       {
@@ -8151,7 +8111,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:19.432241Z',
         bookingsIds: [],
       },
       {
@@ -8349,7 +8308,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:22.395792Z',
         bookingsIds: [],
       },
       {
@@ -8491,7 +8449,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-27T12:59:58Z',
         bookingsIds: [],
       },
       {
@@ -8640,7 +8597,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:22.677647Z',
         bookingsIds: [],
       },
       {
@@ -8787,7 +8743,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:19.074981Z',
         bookingsIds: [],
       },
       {
@@ -8908,7 +8863,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:19.784705Z',
         bookingsIds: [],
       },
       {
@@ -9034,7 +8988,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:21.694274Z',
         bookingsIds: [],
       },
       {
@@ -9160,7 +9113,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:18.142148Z',
         bookingsIds: [],
       },
       {
@@ -9285,7 +9237,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:18.441054Z',
         bookingsIds: [],
       },
       {
@@ -9411,7 +9362,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:18.909783Z',
         bookingsIds: [],
       },
       {
@@ -9537,7 +9487,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:19.566177Z',
         bookingsIds: [],
       },
       {
@@ -9659,7 +9608,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:21.029146Z',
         bookingsIds: [],
       },
       {
@@ -9801,7 +9749,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:22.775552Z',
         bookingsIds: [],
       },
       {
@@ -9960,7 +9907,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:22.345807Z',
         bookingsIds: [],
       },
       {
@@ -10258,7 +10204,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:22.176658Z',
         bookingsIds: [],
       },
       {
@@ -10379,7 +10324,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:18.408335Z',
         bookingsIds: [],
       },
       {
@@ -10508,7 +10452,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:18.747528Z',
         bookingsIds: [],
       },
       {
@@ -10632,7 +10575,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:18.490789Z',
         bookingsIds: [],
       },
       {
@@ -10756,7 +10698,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:18.321135Z',
         bookingsIds: [],
       },
       {
@@ -10954,7 +10895,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:22.591804Z',
         bookingsIds: [],
       },
       {
@@ -11079,7 +11019,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:21.399180Z',
         bookingsIds: [],
       },
       {
@@ -11203,7 +11142,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:18.230312Z',
         bookingsIds: [],
       },
       {
@@ -11324,7 +11262,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:20.839961Z',
         bookingsIds: [],
       },
       {
@@ -11486,7 +11423,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-28T18:29:25Z',
         bookingsIds: [],
       },
       {
@@ -11616,7 +11552,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:22.294253Z',
         bookingsIds: [],
       },
       {
@@ -11740,7 +11675,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:19.199022Z',
         bookingsIds: [],
       },
       {
@@ -11872,7 +11806,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:20.299856Z',
         bookingsIds: [],
       },
       {
@@ -12066,7 +11999,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:20.609844Z',
         bookingsIds: [],
       },
       {
@@ -12196,7 +12128,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:22.727289Z',
         bookingsIds: [],
       },
       {
@@ -12322,7 +12253,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'BU',
-        validUntilDate: '2018-10-29T05:39:19.261760Z',
         bookingsIds: [],
       },
     ],

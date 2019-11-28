@@ -346,7 +346,6 @@ const state = {
         search: null,
         shareMedium: null,
         userId: 'AE',
-        validUntilDate: '2018-10-30T09:49:07.381524Z',
         bookingsIds: ['A9', 'AE', 'AM', 'AQ', 'AY', 'AU', 'A4'],
       },
     ],

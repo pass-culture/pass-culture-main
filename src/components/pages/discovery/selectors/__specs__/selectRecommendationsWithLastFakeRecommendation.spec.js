@@ -83,7 +83,6 @@ describe('src | components | pages | discovery | selectors | selectRecommendatio
       thumbUrl: 'http://localhost/storage/thumbs/mediations/AKSA',
       uniqId: 'product_BE',
       userId: 'AQBA',
-      validUntilDate: '2018-10-13T14:19:27.442986Z',
     }
     const state = {
       data: {
