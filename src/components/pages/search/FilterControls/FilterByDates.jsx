@@ -72,53 +72,49 @@ class FilterByDates extends PureComponent {
 
     return (
       <div
-        className="pt18"
         id="filter-by-dates"
       >
-        <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">
+        <h2 className="fd-when-label">
           {'Quand'}
         </h2>
-        <div className="pc-scroll-horizontal is-relative pb18">
-          <div className="pc-list flex-columns">
-            {DAYS_CHECKBOXES.map(({ label, value }, index) => {
-              const checked = isDaysChecked(pickedDate, pickedDaysInQuery, value)
-
-              return (
-                <label
-                  className="item flex-columns items-center py5 pl7 pr22"
-                  htmlFor={`filter-by-dates-days-${index}-checkbox`}
-                  key={value}
-                >
-                  <input
-                    checked={checked}
-                    className="input form-checkbox field field-checkbox"
-                    id={`filter-by-dates-days-${index}-checkbox`}
-                    onChange={this.onChangeDate(value)}
-                    type="checkbox"
-                    value={value}
-                  />
-                  <span className="fs19 flex-1">
-                    {label}
-                  </span>
-                </label>
-              )
-            })}
+        <div className="fd-date-picker-container">
+          <div className="fd-date-picker">
             <DatePickerField
-              className="item fs19 py5 px7"
+              className="fd-date-picker-selectbox"
               minDate={new Date()}
               name="pick-by-date-filter"
               onChange={this.handleOnChangePickedDate}
               placeholder="Par date"
-              popperRefContainer={this.datepickerPopper}
               selected={pickedDate}
             />
           </div>
         </div>
+        <div className="fd-checkboxes">
+          {DAYS_CHECKBOXES.map(({ label, value }, index) => {
+            const checked = isDaysChecked(pickedDate, pickedDaysInQuery, value)
+
+            return (
+              <label
+                className="flex-columns items-center py5 pl7"
+                htmlFor={`filter-by-dates-days-${index}-checkbox`}
+                key={value}
+              >
+                <input
+                  checked={checked}
+                  className="input form-checkbox field field-checkbox"
+                  id={`filter-by-dates-days-${index}-checkbox`}
+                  onChange={this.onChangeDate(value)}
+                  type="checkbox"
+                  value={value}
+                />
+                <span className="fs19">
+                  {label}
+                </span>
+              </label>
+            )
+          })}
+        </div>
         <hr className="dotted-bottom-primary" />
-        <div
-          id="filter-by-dates-datepicker-popper-container"
-          ref={this.datepickerPopper}
-        />
       </div>
     )
   }

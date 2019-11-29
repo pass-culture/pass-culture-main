@@ -44,72 +44,18 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <h2
-          className="fs15 is-italic is-medium is-uppercase text-center mb12"
+          className="fd-when-label"
         >
           Quand
         </h2>,
         <div
-          className="pc-scroll-horizontal is-relative pb18"
+          className="fd-date-picker-container"
         >
           <div
-            className="pc-list flex-columns"
+            className="fd-date-picker"
           >
-            <label
-              className="item flex-columns items-center py5 pl7 pr22"
-              htmlFor="filter-by-dates-days-0-checkbox"
-            >
-              <input
-                checked={false}
-                className="input form-checkbox field field-checkbox"
-                id="filter-by-dates-days-0-checkbox"
-                onChange={[Function]}
-                type="checkbox"
-                value="0-1"
-              />
-              <span
-                className="fs19 flex-1"
-              >
-                Tout de suite !
-              </span>
-            </label>
-            <label
-              className="item flex-columns items-center py5 pl7 pr22"
-              htmlFor="filter-by-dates-days-1-checkbox"
-            >
-              <input
-                checked={false}
-                className="input form-checkbox field field-checkbox"
-                id="filter-by-dates-days-1-checkbox"
-                onChange={[Function]}
-                type="checkbox"
-                value="1-5"
-              />
-              <span
-                className="fs19 flex-1"
-              >
-                Entre 1 et 5 jours
-              </span>
-            </label>
-            <label
-              className="item flex-columns items-center py5 pl7 pr22"
-              htmlFor="filter-by-dates-days-2-checkbox"
-            >
-              <input
-                checked={false}
-                className="input form-checkbox field field-checkbox"
-                id="filter-by-dates-days-2-checkbox"
-                onChange={[Function]}
-                type="checkbox"
-                value="5-100000"
-              />
-              <span
-                className="fs19 flex-1"
-              >
-                Plus de 5 jours
-              </span>
-            </label>
             <DatePickerField
-              className="item fs19 py5 px7"
+              className="fd-date-picker-selectbox"
               clearable={true}
               dateFormat="DD/MM/YYYY"
               hideToday={false}
@@ -121,11 +67,7 @@ ShallowWrapper {
               name="pick-by-date-filter"
               onChange={[Function]}
               placeholder="Par date"
-              popperRefContainer={
-                Object {
-                  "current": null,
-                }
-              }
+              popperRefContainer={null}
               readOnly={false}
               required={false}
               selected={null}
@@ -133,14 +75,68 @@ ShallowWrapper {
             />
           </div>
         </div>,
+        <div
+          className="fd-checkboxes"
+        >
+          <label
+            className="flex-columns items-center py5 pl7"
+            htmlFor="filter-by-dates-days-0-checkbox"
+          >
+            <input
+              checked={false}
+              className="input form-checkbox field field-checkbox"
+              id="filter-by-dates-days-0-checkbox"
+              onChange={[Function]}
+              type="checkbox"
+              value="0-1"
+            />
+            <span
+              className="fs19"
+            >
+              Tout de suite !
+            </span>
+          </label>
+          <label
+            className="flex-columns items-center py5 pl7"
+            htmlFor="filter-by-dates-days-1-checkbox"
+          >
+            <input
+              checked={false}
+              className="input form-checkbox field field-checkbox"
+              id="filter-by-dates-days-1-checkbox"
+              onChange={[Function]}
+              type="checkbox"
+              value="1-5"
+            />
+            <span
+              className="fs19"
+            >
+              Entre 1 et 5 jours
+            </span>
+          </label>
+          <label
+            className="flex-columns items-center py5 pl7"
+            htmlFor="filter-by-dates-days-2-checkbox"
+          >
+            <input
+              checked={false}
+              className="input form-checkbox field field-checkbox"
+              id="filter-by-dates-days-2-checkbox"
+              onChange={[Function]}
+              type="checkbox"
+              value="5-100000"
+            />
+            <span
+              className="fs19"
+            >
+              Plus de 5 jours
+            </span>
+          </label>
+        </div>,
         <hr
           className="dotted-bottom-primary"
         />,
-        <div
-          id="filter-by-dates-datepicker-popper-container"
-        />,
       ],
-      "className": "pt18",
       "id": "filter-by-dates",
     },
     "ref": null,
@@ -151,7 +147,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": "Quand",
-          "className": "fs15 is-italic is-medium is-uppercase text-center mb12",
+          "className": "fd-when-label",
         },
         "ref": null,
         "rendered": "Quand",
@@ -163,64 +159,10 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": <div
-            className="pc-list flex-columns"
+            className="fd-date-picker"
           >
-            <label
-              className="item flex-columns items-center py5 pl7 pr22"
-              htmlFor="filter-by-dates-days-0-checkbox"
-            >
-              <input
-                checked={false}
-                className="input form-checkbox field field-checkbox"
-                id="filter-by-dates-days-0-checkbox"
-                onChange={[Function]}
-                type="checkbox"
-                value="0-1"
-              />
-              <span
-                className="fs19 flex-1"
-              >
-                Tout de suite !
-              </span>
-            </label>
-            <label
-              className="item flex-columns items-center py5 pl7 pr22"
-              htmlFor="filter-by-dates-days-1-checkbox"
-            >
-              <input
-                checked={false}
-                className="input form-checkbox field field-checkbox"
-                id="filter-by-dates-days-1-checkbox"
-                onChange={[Function]}
-                type="checkbox"
-                value="1-5"
-              />
-              <span
-                className="fs19 flex-1"
-              >
-                Entre 1 et 5 jours
-              </span>
-            </label>
-            <label
-              className="item flex-columns items-center py5 pl7 pr22"
-              htmlFor="filter-by-dates-days-2-checkbox"
-            >
-              <input
-                checked={false}
-                className="input form-checkbox field field-checkbox"
-                id="filter-by-dates-days-2-checkbox"
-                onChange={[Function]}
-                type="checkbox"
-                value="5-100000"
-              />
-              <span
-                className="fs19 flex-1"
-              >
-                Plus de 5 jours
-              </span>
-            </label>
             <DatePickerField
-              className="item fs19 py5 px7"
+              className="fd-date-picker-selectbox"
               clearable={true}
               dateFormat="DD/MM/YYYY"
               hideToday={false}
@@ -232,18 +174,14 @@ ShallowWrapper {
               name="pick-by-date-filter"
               onChange={[Function]}
               placeholder="Par date"
-              popperRefContainer={
-                Object {
-                  "current": null,
-                }
-              }
+              popperRefContainer={null}
               readOnly={false}
               required={false}
               selected={null}
               withPortal={true}
             />
           </div>,
-          "className": "pc-scroll-horizontal is-relative pb18",
+          "className": "fd-date-picker-container",
         },
         "ref": null,
         "rendered": Object {
@@ -251,65 +189,329 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": Array [
-              Array [
-                <label
-                  className="item flex-columns items-center py5 pl7 pr22"
-                  htmlFor="filter-by-dates-days-0-checkbox"
+            "children": <DatePickerField
+              className="fd-date-picker-selectbox"
+              clearable={true}
+              dateFormat="DD/MM/YYYY"
+              hideToday={false}
+              icon={null}
+              id={null}
+              label={null}
+              locale="fr"
+              minDate={2019-06-02T12:41:33.680Z}
+              name="pick-by-date-filter"
+              onChange={[Function]}
+              placeholder="Par date"
+              popperRefContainer={null}
+              readOnly={false}
+              required={false}
+              selected={null}
+              withPortal={true}
+            />,
+            "className": "fd-date-picker",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "className": "fd-date-picker-selectbox",
+              "clearable": true,
+              "dateFormat": "DD/MM/YYYY",
+              "hideToday": false,
+              "icon": null,
+              "id": null,
+              "label": null,
+              "locale": "fr",
+              "minDate": 2019-06-02T12:41:33.680Z,
+              "name": "pick-by-date-filter",
+              "onChange": [Function],
+              "placeholder": "Par date",
+              "popperRefContainer": null,
+              "readOnly": false,
+              "required": false,
+              "selected": null,
+              "withPortal": true,
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          "type": "div",
+        },
+        "type": "div",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <label
+              className="flex-columns items-center py5 pl7"
+              htmlFor="filter-by-dates-days-0-checkbox"
+            >
+              <input
+                checked={false}
+                className="input form-checkbox field field-checkbox"
+                id="filter-by-dates-days-0-checkbox"
+                onChange={[Function]}
+                type="checkbox"
+                value="0-1"
+              />
+              <span
+                className="fs19"
+              >
+                Tout de suite !
+              </span>
+            </label>,
+            <label
+              className="flex-columns items-center py5 pl7"
+              htmlFor="filter-by-dates-days-1-checkbox"
+            >
+              <input
+                checked={false}
+                className="input form-checkbox field field-checkbox"
+                id="filter-by-dates-days-1-checkbox"
+                onChange={[Function]}
+                type="checkbox"
+                value="1-5"
+              />
+              <span
+                className="fs19"
+              >
+                Entre 1 et 5 jours
+              </span>
+            </label>,
+            <label
+              className="flex-columns items-center py5 pl7"
+              htmlFor="filter-by-dates-days-2-checkbox"
+            >
+              <input
+                checked={false}
+                className="input form-checkbox field field-checkbox"
+                id="filter-by-dates-days-2-checkbox"
+                onChange={[Function]}
+                type="checkbox"
+                value="5-100000"
+              />
+              <span
+                className="fs19"
+              >
+                Plus de 5 jours
+              </span>
+            </label>,
+          ],
+          "className": "fd-checkboxes",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": "0-1",
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <input
+                  checked={false}
+                  className="input form-checkbox field field-checkbox"
+                  id="filter-by-dates-days-0-checkbox"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="0-1"
+                />,
+                <span
+                  className="fs19"
                 >
-                  <input
-                    checked={false}
-                    className="input form-checkbox field field-checkbox"
-                    id="filter-by-dates-days-0-checkbox"
-                    onChange={[Function]}
-                    type="checkbox"
-                    value="0-1"
-                  />
-                  <span
-                    className="fs19 flex-1"
-                  >
-                    Tout de suite !
-                  </span>
-                </label>,
-                <label
-                  className="item flex-columns items-center py5 pl7 pr22"
-                  htmlFor="filter-by-dates-days-1-checkbox"
-                >
-                  <input
-                    checked={false}
-                    className="input form-checkbox field field-checkbox"
-                    id="filter-by-dates-days-1-checkbox"
-                    onChange={[Function]}
-                    type="checkbox"
-                    value="1-5"
-                  />
-                  <span
-                    className="fs19 flex-1"
-                  >
-                    Entre 1 et 5 jours
-                  </span>
-                </label>,
-                <label
-                  className="item flex-columns items-center py5 pl7 pr22"
-                  htmlFor="filter-by-dates-days-2-checkbox"
-                >
-                  <input
-                    checked={false}
-                    className="input form-checkbox field field-checkbox"
-                    id="filter-by-dates-days-2-checkbox"
-                    onChange={[Function]}
-                    type="checkbox"
-                    value="5-100000"
-                  />
-                  <span
-                    className="fs19 flex-1"
-                  >
-                    Plus de 5 jours
-                  </span>
-                </label>,
+                  Tout de suite !
+                </span>,
               ],
+              "className": "flex-columns items-center py5 pl7",
+              "htmlFor": "filter-by-dates-days-0-checkbox",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "checked": false,
+                  "className": "input form-checkbox field field-checkbox",
+                  "id": "filter-by-dates-days-0-checkbox",
+                  "onChange": [Function],
+                  "type": "checkbox",
+                  "value": "0-1",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": "input",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Tout de suite !",
+                  "className": "fs19",
+                },
+                "ref": null,
+                "rendered": "Tout de suite !",
+                "type": "span",
+              },
+            ],
+            "type": "label",
+          },
+          Object {
+            "instance": null,
+            "key": "1-5",
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <input
+                  checked={false}
+                  className="input form-checkbox field field-checkbox"
+                  id="filter-by-dates-days-1-checkbox"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="1-5"
+                />,
+                <span
+                  className="fs19"
+                >
+                  Entre 1 et 5 jours
+                </span>,
+              ],
+              "className": "flex-columns items-center py5 pl7",
+              "htmlFor": "filter-by-dates-days-1-checkbox",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "checked": false,
+                  "className": "input form-checkbox field field-checkbox",
+                  "id": "filter-by-dates-days-1-checkbox",
+                  "onChange": [Function],
+                  "type": "checkbox",
+                  "value": "1-5",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": "input",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Entre 1 et 5 jours",
+                  "className": "fs19",
+                },
+                "ref": null,
+                "rendered": "Entre 1 et 5 jours",
+                "type": "span",
+              },
+            ],
+            "type": "label",
+          },
+          Object {
+            "instance": null,
+            "key": "5-100000",
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <input
+                  checked={false}
+                  className="input form-checkbox field field-checkbox"
+                  id="filter-by-dates-days-2-checkbox"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="5-100000"
+                />,
+                <span
+                  className="fs19"
+                >
+                  Plus de 5 jours
+                </span>,
+              ],
+              "className": "flex-columns items-center py5 pl7",
+              "htmlFor": "filter-by-dates-days-2-checkbox",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "checked": false,
+                  "className": "input form-checkbox field field-checkbox",
+                  "id": "filter-by-dates-days-2-checkbox",
+                  "onChange": [Function],
+                  "type": "checkbox",
+                  "value": "5-100000",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": "input",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Plus de 5 jours",
+                  "className": "fs19",
+                },
+                "ref": null,
+                "rendered": "Plus de 5 jours",
+                "type": "span",
+              },
+            ],
+            "type": "label",
+          },
+        ],
+        "type": "div",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "className": "dotted-bottom-primary",
+        },
+        "ref": null,
+        "rendered": null,
+        "type": "hr",
+      },
+    ],
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <h2
+            className="fd-when-label"
+          >
+            Quand
+          </h2>,
+          <div
+            className="fd-date-picker-container"
+          >
+            <div
+              className="fd-date-picker"
+            >
               <DatePickerField
-                className="item fs19 py5 px7"
+                className="fd-date-picker-selectbox"
                 clearable={true}
                 dateFormat="DD/MM/YYYY"
                 hideToday={false}
@@ -321,18 +523,243 @@ ShallowWrapper {
                 name="pick-by-date-filter"
                 onChange={[Function]}
                 placeholder="Par date"
-                popperRefContainer={
-                  Object {
-                    "current": null,
-                  }
-                }
+                popperRefContainer={null}
+                readOnly={false}
+                required={false}
+                selected={null}
+                withPortal={true}
+              />
+            </div>
+          </div>,
+          <div
+            className="fd-checkboxes"
+          >
+            <label
+              className="flex-columns items-center py5 pl7"
+              htmlFor="filter-by-dates-days-0-checkbox"
+            >
+              <input
+                checked={false}
+                className="input form-checkbox field field-checkbox"
+                id="filter-by-dates-days-0-checkbox"
+                onChange={[Function]}
+                type="checkbox"
+                value="0-1"
+              />
+              <span
+                className="fs19"
+              >
+                Tout de suite !
+              </span>
+            </label>
+            <label
+              className="flex-columns items-center py5 pl7"
+              htmlFor="filter-by-dates-days-1-checkbox"
+            >
+              <input
+                checked={false}
+                className="input form-checkbox field field-checkbox"
+                id="filter-by-dates-days-1-checkbox"
+                onChange={[Function]}
+                type="checkbox"
+                value="1-5"
+              />
+              <span
+                className="fs19"
+              >
+                Entre 1 et 5 jours
+              </span>
+            </label>
+            <label
+              className="flex-columns items-center py5 pl7"
+              htmlFor="filter-by-dates-days-2-checkbox"
+            >
+              <input
+                checked={false}
+                className="input form-checkbox field field-checkbox"
+                id="filter-by-dates-days-2-checkbox"
+                onChange={[Function]}
+                type="checkbox"
+                value="5-100000"
+              />
+              <span
+                className="fs19"
+              >
+                Plus de 5 jours
+              </span>
+            </label>
+          </div>,
+          <hr
+            className="dotted-bottom-primary"
+          />,
+        ],
+        "id": "filter-by-dates",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Quand",
+            "className": "fd-when-label",
+          },
+          "ref": null,
+          "rendered": "Quand",
+          "type": "h2",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <div
+              className="fd-date-picker"
+            >
+              <DatePickerField
+                className="fd-date-picker-selectbox"
+                clearable={true}
+                dateFormat="DD/MM/YYYY"
+                hideToday={false}
+                icon={null}
+                id={null}
+                label={null}
+                locale="fr"
+                minDate={2019-06-02T12:41:33.680Z}
+                name="pick-by-date-filter"
+                onChange={[Function]}
+                placeholder="Par date"
+                popperRefContainer={null}
+                readOnly={false}
+                required={false}
+                selected={null}
+                withPortal={true}
+              />
+            </div>,
+            "className": "fd-date-picker-container",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <DatePickerField
+                className="fd-date-picker-selectbox"
+                clearable={true}
+                dateFormat="DD/MM/YYYY"
+                hideToday={false}
+                icon={null}
+                id={null}
+                label={null}
+                locale="fr"
+                minDate={2019-06-02T12:41:33.680Z}
+                name="pick-by-date-filter"
+                onChange={[Function]}
+                placeholder="Par date"
+                popperRefContainer={null}
                 readOnly={false}
                 required={false}
                 selected={null}
                 withPortal={true}
               />,
+              "className": "fd-date-picker",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "className": "fd-date-picker-selectbox",
+                "clearable": true,
+                "dateFormat": "DD/MM/YYYY",
+                "hideToday": false,
+                "icon": null,
+                "id": null,
+                "label": null,
+                "locale": "fr",
+                "minDate": 2019-06-02T12:41:33.680Z,
+                "name": "pick-by-date-filter",
+                "onChange": [Function],
+                "placeholder": "Par date",
+                "popperRefContainer": null,
+                "readOnly": false,
+                "required": false,
+                "selected": null,
+                "withPortal": true,
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            "type": "div",
+          },
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <label
+                className="flex-columns items-center py5 pl7"
+                htmlFor="filter-by-dates-days-0-checkbox"
+              >
+                <input
+                  checked={false}
+                  className="input form-checkbox field field-checkbox"
+                  id="filter-by-dates-days-0-checkbox"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="0-1"
+                />
+                <span
+                  className="fs19"
+                >
+                  Tout de suite !
+                </span>
+              </label>,
+              <label
+                className="flex-columns items-center py5 pl7"
+                htmlFor="filter-by-dates-days-1-checkbox"
+              >
+                <input
+                  checked={false}
+                  className="input form-checkbox field field-checkbox"
+                  id="filter-by-dates-days-1-checkbox"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="1-5"
+                />
+                <span
+                  className="fs19"
+                >
+                  Entre 1 et 5 jours
+                </span>
+              </label>,
+              <label
+                className="flex-columns items-center py5 pl7"
+                htmlFor="filter-by-dates-days-2-checkbox"
+              >
+                <input
+                  checked={false}
+                  className="input form-checkbox field field-checkbox"
+                  id="filter-by-dates-days-2-checkbox"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="5-100000"
+                />
+                <span
+                  className="fs19"
+                >
+                  Plus de 5 jours
+                </span>
+              </label>,
             ],
-            "className": "pc-list flex-columns",
+            "className": "fd-checkboxes",
           },
           "ref": null,
           "rendered": Array [
@@ -351,12 +778,12 @@ ShallowWrapper {
                     value="0-1"
                   />,
                   <span
-                    className="fs19 flex-1"
+                    className="fs19"
                   >
                     Tout de suite !
                   </span>,
                 ],
-                "className": "item flex-columns items-center py5 pl7 pr22",
+                "className": "flex-columns items-center py5 pl7",
                 "htmlFor": "filter-by-dates-days-0-checkbox",
               },
               "ref": null,
@@ -383,7 +810,7 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": "Tout de suite !",
-                    "className": "fs19 flex-1",
+                    "className": "fs19",
                   },
                   "ref": null,
                   "rendered": "Tout de suite !",
@@ -407,12 +834,12 @@ ShallowWrapper {
                     value="1-5"
                   />,
                   <span
-                    className="fs19 flex-1"
+                    className="fs19"
                   >
                     Entre 1 et 5 jours
                   </span>,
                 ],
-                "className": "item flex-columns items-center py5 pl7 pr22",
+                "className": "flex-columns items-center py5 pl7",
                 "htmlFor": "filter-by-dates-days-1-checkbox",
               },
               "ref": null,
@@ -439,7 +866,7 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": "Entre 1 et 5 jours",
-                    "className": "fs19 flex-1",
+                    "className": "fs19",
                   },
                   "ref": null,
                   "rendered": "Entre 1 et 5 jours",
@@ -463,12 +890,12 @@ ShallowWrapper {
                     value="5-100000"
                   />,
                   <span
-                    className="fs19 flex-1"
+                    className="fs19"
                   >
                     Plus de 5 jours
                   </span>,
                 ],
-                "className": "item flex-columns items-center py5 pl7 pr22",
+                "className": "flex-columns items-center py5 pl7",
                 "htmlFor": "filter-by-dates-days-2-checkbox",
               },
               "ref": null,
@@ -495,7 +922,7 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": "Plus de 5 jours",
-                    "className": "fs19 flex-1",
+                    "className": "fs19",
                   },
                   "ref": null,
                   "rendered": "Plus de 5 jours",
@@ -504,567 +931,7 @@ ShallowWrapper {
               ],
               "type": "label",
             },
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "function",
-              "props": Object {
-                "className": "item fs19 py5 px7",
-                "clearable": true,
-                "dateFormat": "DD/MM/YYYY",
-                "hideToday": false,
-                "icon": null,
-                "id": null,
-                "label": null,
-                "locale": "fr",
-                "minDate": 2019-06-02T12:41:33.680Z,
-                "name": "pick-by-date-filter",
-                "onChange": [Function],
-                "placeholder": "Par date",
-                "popperRefContainer": Object {
-                  "current": null,
-                },
-                "readOnly": false,
-                "required": false,
-                "selected": null,
-                "withPortal": true,
-              },
-              "ref": null,
-              "rendered": null,
-              "type": [Function],
-            },
           ],
-          "type": "div",
-        },
-        "type": "div",
-      },
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "className": "dotted-bottom-primary",
-        },
-        "ref": null,
-        "rendered": null,
-        "type": "hr",
-      },
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "id": "filter-by-dates-datepicker-popper-container",
-        },
-        "ref": Object {
-          "current": null,
-        },
-        "rendered": null,
-        "type": "div",
-      },
-    ],
-    "type": "div",
-  },
-  Symbol(enzyme.__nodes__): Array [
-    Object {
-      "instance": null,
-      "key": undefined,
-      "nodeType": "host",
-      "props": Object {
-        "children": Array [
-          <h2
-            className="fs15 is-italic is-medium is-uppercase text-center mb12"
-          >
-            Quand
-          </h2>,
-          <div
-            className="pc-scroll-horizontal is-relative pb18"
-          >
-            <div
-              className="pc-list flex-columns"
-            >
-              <label
-                className="item flex-columns items-center py5 pl7 pr22"
-                htmlFor="filter-by-dates-days-0-checkbox"
-              >
-                <input
-                  checked={false}
-                  className="input form-checkbox field field-checkbox"
-                  id="filter-by-dates-days-0-checkbox"
-                  onChange={[Function]}
-                  type="checkbox"
-                  value="0-1"
-                />
-                <span
-                  className="fs19 flex-1"
-                >
-                  Tout de suite !
-                </span>
-              </label>
-              <label
-                className="item flex-columns items-center py5 pl7 pr22"
-                htmlFor="filter-by-dates-days-1-checkbox"
-              >
-                <input
-                  checked={false}
-                  className="input form-checkbox field field-checkbox"
-                  id="filter-by-dates-days-1-checkbox"
-                  onChange={[Function]}
-                  type="checkbox"
-                  value="1-5"
-                />
-                <span
-                  className="fs19 flex-1"
-                >
-                  Entre 1 et 5 jours
-                </span>
-              </label>
-              <label
-                className="item flex-columns items-center py5 pl7 pr22"
-                htmlFor="filter-by-dates-days-2-checkbox"
-              >
-                <input
-                  checked={false}
-                  className="input form-checkbox field field-checkbox"
-                  id="filter-by-dates-days-2-checkbox"
-                  onChange={[Function]}
-                  type="checkbox"
-                  value="5-100000"
-                />
-                <span
-                  className="fs19 flex-1"
-                >
-                  Plus de 5 jours
-                </span>
-              </label>
-              <DatePickerField
-                className="item fs19 py5 px7"
-                clearable={true}
-                dateFormat="DD/MM/YYYY"
-                hideToday={false}
-                icon={null}
-                id={null}
-                label={null}
-                locale="fr"
-                minDate={2019-06-02T12:41:33.680Z}
-                name="pick-by-date-filter"
-                onChange={[Function]}
-                placeholder="Par date"
-                popperRefContainer={
-                  Object {
-                    "current": null,
-                  }
-                }
-                readOnly={false}
-                required={false}
-                selected={null}
-                withPortal={true}
-              />
-            </div>
-          </div>,
-          <hr
-            className="dotted-bottom-primary"
-          />,
-          <div
-            id="filter-by-dates-datepicker-popper-container"
-          />,
-        ],
-        "className": "pt18",
-        "id": "filter-by-dates",
-      },
-      "ref": null,
-      "rendered": Array [
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": "Quand",
-            "className": "fs15 is-italic is-medium is-uppercase text-center mb12",
-          },
-          "ref": null,
-          "rendered": "Quand",
-          "type": "h2",
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": <div
-              className="pc-list flex-columns"
-            >
-              <label
-                className="item flex-columns items-center py5 pl7 pr22"
-                htmlFor="filter-by-dates-days-0-checkbox"
-              >
-                <input
-                  checked={false}
-                  className="input form-checkbox field field-checkbox"
-                  id="filter-by-dates-days-0-checkbox"
-                  onChange={[Function]}
-                  type="checkbox"
-                  value="0-1"
-                />
-                <span
-                  className="fs19 flex-1"
-                >
-                  Tout de suite !
-                </span>
-              </label>
-              <label
-                className="item flex-columns items-center py5 pl7 pr22"
-                htmlFor="filter-by-dates-days-1-checkbox"
-              >
-                <input
-                  checked={false}
-                  className="input form-checkbox field field-checkbox"
-                  id="filter-by-dates-days-1-checkbox"
-                  onChange={[Function]}
-                  type="checkbox"
-                  value="1-5"
-                />
-                <span
-                  className="fs19 flex-1"
-                >
-                  Entre 1 et 5 jours
-                </span>
-              </label>
-              <label
-                className="item flex-columns items-center py5 pl7 pr22"
-                htmlFor="filter-by-dates-days-2-checkbox"
-              >
-                <input
-                  checked={false}
-                  className="input form-checkbox field field-checkbox"
-                  id="filter-by-dates-days-2-checkbox"
-                  onChange={[Function]}
-                  type="checkbox"
-                  value="5-100000"
-                />
-                <span
-                  className="fs19 flex-1"
-                >
-                  Plus de 5 jours
-                </span>
-              </label>
-              <DatePickerField
-                className="item fs19 py5 px7"
-                clearable={true}
-                dateFormat="DD/MM/YYYY"
-                hideToday={false}
-                icon={null}
-                id={null}
-                label={null}
-                locale="fr"
-                minDate={2019-06-02T12:41:33.680Z}
-                name="pick-by-date-filter"
-                onChange={[Function]}
-                placeholder="Par date"
-                popperRefContainer={
-                  Object {
-                    "current": null,
-                  }
-                }
-                readOnly={false}
-                required={false}
-                selected={null}
-                withPortal={true}
-              />
-            </div>,
-            "className": "pc-scroll-horizontal is-relative pb18",
-          },
-          "ref": null,
-          "rendered": Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": Array [
-                Array [
-                  <label
-                    className="item flex-columns items-center py5 pl7 pr22"
-                    htmlFor="filter-by-dates-days-0-checkbox"
-                  >
-                    <input
-                      checked={false}
-                      className="input form-checkbox field field-checkbox"
-                      id="filter-by-dates-days-0-checkbox"
-                      onChange={[Function]}
-                      type="checkbox"
-                      value="0-1"
-                    />
-                    <span
-                      className="fs19 flex-1"
-                    >
-                      Tout de suite !
-                    </span>
-                  </label>,
-                  <label
-                    className="item flex-columns items-center py5 pl7 pr22"
-                    htmlFor="filter-by-dates-days-1-checkbox"
-                  >
-                    <input
-                      checked={false}
-                      className="input form-checkbox field field-checkbox"
-                      id="filter-by-dates-days-1-checkbox"
-                      onChange={[Function]}
-                      type="checkbox"
-                      value="1-5"
-                    />
-                    <span
-                      className="fs19 flex-1"
-                    >
-                      Entre 1 et 5 jours
-                    </span>
-                  </label>,
-                  <label
-                    className="item flex-columns items-center py5 pl7 pr22"
-                    htmlFor="filter-by-dates-days-2-checkbox"
-                  >
-                    <input
-                      checked={false}
-                      className="input form-checkbox field field-checkbox"
-                      id="filter-by-dates-days-2-checkbox"
-                      onChange={[Function]}
-                      type="checkbox"
-                      value="5-100000"
-                    />
-                    <span
-                      className="fs19 flex-1"
-                    >
-                      Plus de 5 jours
-                    </span>
-                  </label>,
-                ],
-                <DatePickerField
-                  className="item fs19 py5 px7"
-                  clearable={true}
-                  dateFormat="DD/MM/YYYY"
-                  hideToday={false}
-                  icon={null}
-                  id={null}
-                  label={null}
-                  locale="fr"
-                  minDate={2019-06-02T12:41:33.680Z}
-                  name="pick-by-date-filter"
-                  onChange={[Function]}
-                  placeholder="Par date"
-                  popperRefContainer={
-                    Object {
-                      "current": null,
-                    }
-                  }
-                  readOnly={false}
-                  required={false}
-                  selected={null}
-                  withPortal={true}
-                />,
-              ],
-              "className": "pc-list flex-columns",
-            },
-            "ref": null,
-            "rendered": Array [
-              Object {
-                "instance": null,
-                "key": "0-1",
-                "nodeType": "host",
-                "props": Object {
-                  "children": Array [
-                    <input
-                      checked={false}
-                      className="input form-checkbox field field-checkbox"
-                      id="filter-by-dates-days-0-checkbox"
-                      onChange={[Function]}
-                      type="checkbox"
-                      value="0-1"
-                    />,
-                    <span
-                      className="fs19 flex-1"
-                    >
-                      Tout de suite !
-                    </span>,
-                  ],
-                  "className": "item flex-columns items-center py5 pl7 pr22",
-                  "htmlFor": "filter-by-dates-days-0-checkbox",
-                },
-                "ref": null,
-                "rendered": Array [
-                  Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "host",
-                    "props": Object {
-                      "checked": false,
-                      "className": "input form-checkbox field field-checkbox",
-                      "id": "filter-by-dates-days-0-checkbox",
-                      "onChange": [Function],
-                      "type": "checkbox",
-                      "value": "0-1",
-                    },
-                    "ref": null,
-                    "rendered": null,
-                    "type": "input",
-                  },
-                  Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "host",
-                    "props": Object {
-                      "children": "Tout de suite !",
-                      "className": "fs19 flex-1",
-                    },
-                    "ref": null,
-                    "rendered": "Tout de suite !",
-                    "type": "span",
-                  },
-                ],
-                "type": "label",
-              },
-              Object {
-                "instance": null,
-                "key": "1-5",
-                "nodeType": "host",
-                "props": Object {
-                  "children": Array [
-                    <input
-                      checked={false}
-                      className="input form-checkbox field field-checkbox"
-                      id="filter-by-dates-days-1-checkbox"
-                      onChange={[Function]}
-                      type="checkbox"
-                      value="1-5"
-                    />,
-                    <span
-                      className="fs19 flex-1"
-                    >
-                      Entre 1 et 5 jours
-                    </span>,
-                  ],
-                  "className": "item flex-columns items-center py5 pl7 pr22",
-                  "htmlFor": "filter-by-dates-days-1-checkbox",
-                },
-                "ref": null,
-                "rendered": Array [
-                  Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "host",
-                    "props": Object {
-                      "checked": false,
-                      "className": "input form-checkbox field field-checkbox",
-                      "id": "filter-by-dates-days-1-checkbox",
-                      "onChange": [Function],
-                      "type": "checkbox",
-                      "value": "1-5",
-                    },
-                    "ref": null,
-                    "rendered": null,
-                    "type": "input",
-                  },
-                  Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "host",
-                    "props": Object {
-                      "children": "Entre 1 et 5 jours",
-                      "className": "fs19 flex-1",
-                    },
-                    "ref": null,
-                    "rendered": "Entre 1 et 5 jours",
-                    "type": "span",
-                  },
-                ],
-                "type": "label",
-              },
-              Object {
-                "instance": null,
-                "key": "5-100000",
-                "nodeType": "host",
-                "props": Object {
-                  "children": Array [
-                    <input
-                      checked={false}
-                      className="input form-checkbox field field-checkbox"
-                      id="filter-by-dates-days-2-checkbox"
-                      onChange={[Function]}
-                      type="checkbox"
-                      value="5-100000"
-                    />,
-                    <span
-                      className="fs19 flex-1"
-                    >
-                      Plus de 5 jours
-                    </span>,
-                  ],
-                  "className": "item flex-columns items-center py5 pl7 pr22",
-                  "htmlFor": "filter-by-dates-days-2-checkbox",
-                },
-                "ref": null,
-                "rendered": Array [
-                  Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "host",
-                    "props": Object {
-                      "checked": false,
-                      "className": "input form-checkbox field field-checkbox",
-                      "id": "filter-by-dates-days-2-checkbox",
-                      "onChange": [Function],
-                      "type": "checkbox",
-                      "value": "5-100000",
-                    },
-                    "ref": null,
-                    "rendered": null,
-                    "type": "input",
-                  },
-                  Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "host",
-                    "props": Object {
-                      "children": "Plus de 5 jours",
-                      "className": "fs19 flex-1",
-                    },
-                    "ref": null,
-                    "rendered": "Plus de 5 jours",
-                    "type": "span",
-                  },
-                ],
-                "type": "label",
-              },
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "function",
-                "props": Object {
-                  "className": "item fs19 py5 px7",
-                  "clearable": true,
-                  "dateFormat": "DD/MM/YYYY",
-                  "hideToday": false,
-                  "icon": null,
-                  "id": null,
-                  "label": null,
-                  "locale": "fr",
-                  "minDate": 2019-06-02T12:41:33.680Z,
-                  "name": "pick-by-date-filter",
-                  "onChange": [Function],
-                  "placeholder": "Par date",
-                  "popperRefContainer": Object {
-                    "current": null,
-                  },
-                  "readOnly": false,
-                  "required": false,
-                  "selected": null,
-                  "withPortal": true,
-                },
-                "ref": null,
-                "rendered": null,
-                "type": [Function],
-              },
-            ],
-            "type": "div",
-          },
           "type": "div",
         },
         Object {
@@ -1077,19 +944,6 @@ ShallowWrapper {
           "ref": null,
           "rendered": null,
           "type": "hr",
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "id": "filter-by-dates-datepicker-popper-container",
-          },
-          "ref": Object {
-            "current": null,
-          },
-          "rendered": null,
-          "type": "div",
         },
       ],
       "type": "div",

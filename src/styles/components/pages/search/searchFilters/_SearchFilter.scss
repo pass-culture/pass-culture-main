@@ -144,78 +144,54 @@
 ------------------------------------------------ */
 
 #filter-by-dates {
-  h2 {
-    margin-bottom: rem(12px);
+  padding: rem(10px);
+
+  .fd-when-label {
+    @extend .fs15;
+    @extend .is-italic;
+    @extend .is-medium;
+    @extend .is-uppercase;
+    @extend .text-center;
+    @extend .mb12;
   }
 
-  label .fs19 {
-    white-space: pre;
-  }
-}
-
-#filter-by-dates .pc-list .item {
-  $size: rem(20px);
-  $fontSize: rem(24px);
-
-  border-radius: 4px;
-  border: 1px solid $primary;
-
-  & + .item {
-    @extend .ml22;
+  .fd-date-picker-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: rem(30px);
   }
 
-  .field {
-    margin-bottom: 0;
+  .fd-date-picker {
+    align-items: center;
+    background-color: transparent;
+    border-radius: 17px;
+    border: 1px solid $primary;
   }
 
-  /* ----- datepicker ----- */
-  .input-inner {
-    background: transparent;
-    border: 0;
-    border-radius: 0;
-    box-shadow: none;
-  }
+  .fd-date-picker-selectbox {
+    #pick-by-date-filter {
+      background-color: $grey-lighter;
+      font-size: rem(18px);
+      font-weight: 400;
+      padding: 0;
+    }
 
-  .form-datepicker-input {
-    background: transparent;
-    border: none;
-    color: $black;
-  }
+    .input-inner {
+      box-shadow: none !important;
+      background-color: $grey-lighter;
 
-  /* ----- Clear Button du filtre par date ----- */
-  .react-datepicker__close-icon {
-    top: 5px;
-    right: 0;
-    width: $size;
-    height: $size;
+      .form-datepicker-input {
+        @extend .no-border;
+      }
 
-    &::after {
-      top: -2px;
-      left: -2px;
-      font-size: $fontSize;
+      .calendar-icon {
+        margin-right: rem(20px);
+      }
     }
   }
 
-  .react-datepicker__input-container_wrapper {
-    padding-left: 1rem;
-
-    &::after {
-      font-size: $fontSize;
-      top: 0;
-    }
-
-    input {
-      color: inherit;
-      font-size: inherit;
-      font-weight: 300;
-      padding-left: 0;
-      padding-top: 0;
-      width: 125px;
-    }
-
-    &.selected {
-      padding-left: 0;
-    }
+  .fd-checkboxes {
+    margin-bottom: rem(10px);
   }
 }
 
@@ -315,21 +291,4 @@
   width: 1.1875em;
   height: 1.1875em;
   border-radius: 0;
-}
-
-/* ------------------------------------------------
-
- Section des filtres par types d'offres
-
------------------------------------------------- */
-
-#filter-by-dates-datepicker-popper-container {
-  @extend .is-absolute;
-
-  top: 8px;
-  left: -120px;
-
-  .react-datepicker__triangle {
-    left: 130px;
-  }
 }

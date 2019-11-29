@@ -8,7 +8,7 @@ import FilterByOfferTypesContainer from './FilterByOfferTypesContainer'
 import { getCanFilter } from './helpers'
 import { getVisibleParamsAreEmpty, INITIAL_FILTER_PARAMS } from '../helpers'
 
-const filtersPanelHeight = 500
+const filtersPanelHeight = 700
 const transitionDelay = 0
 const transitionDuration = 500
 const defaultStyle = {
