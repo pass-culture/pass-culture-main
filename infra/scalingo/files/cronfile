@@ -16,7 +16,7 @@
 
 # Restore dump functions
 # ------------------
-30 2 * * 1 . $HOME/.profile; restore_prod_to_env_new_region.sh -a pass-culture-api-staging -l -h > /var/log/restore/restore_staging.log
+30 2 * * 4 . $HOME/.profile; restore_prod_to_env_new_region.sh -a pass-culture-api-staging -l -h > /var/log/restore/restore_staging.log
 
 #30 1 * * 1 . $HOME/.profile; restore_prod_to_env_new_region.sh -a pass-culture-api-dev -l -z -h > /var/log/restore/restore_dev.log
 
@@ -24,11 +24,11 @@
 
 15 0 * * * . $HOME/.profile; restore_prod_to_env_new_region.sh -a pass-culture-metabase-produit -l -z -h > /var/log/restore/restore_metabase.log && curl -X POST $METABASE_PRODUIT_URL?token=$METABASE_TOKEN
 
-15 4 * * 1 . $HOME/.profile; scalingo -a pass-culture-api-staging --region osc-fr1 run -f /var/lib/scalingo/data_staging.csv -f /var/lib/scalingo/import_users.py python /tmp/uploads/import_users.py data_staging.csv
+15 4 * * 1 . $HOME/.profile; scalingo -a pass-culture-api-staging run -f /var/lib/scalingo/data_staging.csv -f /var/lib/scalingo/import_users.py python /tmp/uploads/import_users.py data_staging.csv
 
-30 3 * * 1 . $HOME/.profile; cd ~/pass-culture-main && ./pc_new_region -e testing sandbox --name=testing
+30 3 * * 1 . $HOME/.profile; cd ~/pass-culture-main && ./pc -e testing sandbox --name=testing
 
-0 4 * * 1 . $HOME/.profile; scalingo -a pass-culture-api-dev --region osc-fr1 run -f /var/lib/scalingo/data_testing.csv -f /var/lib/scalingo/import_users.py python /tmp/uploads/import_users.py data_testing.csv
+0 4 * * 1 . $HOME/.profile; scalingo -a pass-culture-api-dev run -f /var/lib/scalingo/data_testing.csv -f /var/lib/scalingo/import_users.py python /tmp/uploads/import_users.py data_testing.csv
 
 # Monitoring functions
 # ------------------
