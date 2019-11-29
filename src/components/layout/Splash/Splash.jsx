@@ -2,9 +2,9 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Transition } from 'react-transition-group'
 import { bindActionCreators } from 'redux'
+import { closeSplash } from '../../../reducers/splash'
 
 import Icon from '../Icon/Icon'
-import { closeSplash } from '../../../reducers/splash'
 
 const duration = 1000
 
@@ -41,7 +41,7 @@ class Splash extends React.PureComponent {
       >
         {state => (
           <div
-            className="pc-gradient is-overlay text-center"
+            className="is-overlay text-center"
             id="splash"
             style={{ ...defaultStyle, ...transitionStyles[state] }}
           >
@@ -49,6 +49,9 @@ class Splash extends React.PureComponent {
               alt="Logo pass Culture"
               svg="logo-group"
             />
+            <span id="beta-mention">
+              {'beta'}
+            </span>
           </div>
         )}
       </Transition>

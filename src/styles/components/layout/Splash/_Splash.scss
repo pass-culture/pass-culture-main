@@ -1,4 +1,16 @@
 #splash {
   display: flex;
   justify-content: center;
+  align-items: center;
+  background-image: url('/splash-background.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  #beta-mention {
+    padding-top: 7.5em;
+    padding-left: 0.3em;
+    color: white;
+    font-weight: lighter;
+    text-transform: capitalize;
+  }
 }
