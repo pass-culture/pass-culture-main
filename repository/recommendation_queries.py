@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import List
 
-from sqlalchemy import func, or_, and_
+from sqlalchemy import or_, and_
 from sqlalchemy.sql.expression import literal
 
 from models import Offer, PcObject, \
@@ -13,7 +13,6 @@ from models.db import db
 from models.mediation import Mediation
 from repository import mediation_queries
 from repository.offer_queries import find_searchable_offer
-from utils.config import BLOB_SIZE
 from utils.human_ids import dehumanize
 from utils.logger import logger
 
@@ -44,28 +43,6 @@ def count_recommendation(user):
         .count()
 
 
-def find_all_unread_recommendations(user, seen_recommendation_ids, limit=BLOB_SIZE):
-    query = keep_only_bookable_stocks()
-    query = filter_unseen_valid_recommendations_for_user(query, user, seen_recommendation_ids)
-    query = query.filter(Recommendation.dateRead == None) \
-        .group_by(Recommendation) \
-        .order_by(func.random()) \
-        .limit(limit)
-
-    return query.all()
-
-
-def find_all_read_recommendations(user, seen_recommendation_ids, limit=BLOB_SIZE):
-    query = keep_only_bookable_stocks()
-    query = filter_unseen_valid_recommendations_for_user(query, user, seen_recommendation_ids)
-    query = query.filter(Recommendation.dateRead != None) \
-        .group_by(Recommendation) \
-        .order_by(func.random()) \
-        .limit(limit)
-
-    return query.all()
-
-
 def keep_only_bookable_stocks():
     stock_is_still_bookable = or_(Stock.bookingLimitDatetime > datetime.utcnow(), Stock.bookingLimitDatetime == None)
     stock_is_not_soft_deleted = Stock.isSoftDeleted == False
@@ -74,19 +51,6 @@ def keep_only_bookable_stocks():
         .join(Stock) \
         .filter(and_(stock_is_not_soft_deleted,
                      stock_is_still_bookable))
-
-
-def filter_unseen_valid_recommendations_for_user(query, user, seen_recommendation_ids):
-    mediation_is_not_tuto = (Mediation.tutoIndex == None)
-    recommendation_is_not_seen = ~Recommendation.id.in_(seen_recommendation_ids)
-    recommendation_is_not_from_search = (Recommendation.search == None)
-    new_query = query \
-        .outerjoin(Mediation, Mediation.id == Recommendation.mediationId) \
-        .filter((Recommendation.user == user)
-                & recommendation_is_not_from_search
-                & recommendation_is_not_seen
-                & mediation_is_not_tuto)
-    return new_query
 
 
 def update_read_recommendations(read_recommendations):
