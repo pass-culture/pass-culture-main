@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from tests.test_utils import create_user
-from utils.mailing import make_reset_password_email_data
+from emails.user_reset_password import make_reset_password_email_data
 
 
 class MakeResetPasswordEmailDataTest:

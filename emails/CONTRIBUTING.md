@@ -1,11 +1,9 @@
-# Package `utils`
-
-## Mailing
+# Package `emails`
 
 - [Dashboard Mailjet](https://app.mailjet.com/Dashboard).
 - [Documentation Mailjet V3](https://dev.mailjet.com/email/guides/send-api-V3/).
 
-### Pour tester l'envoie d'un e-mail via Mailjet
+## Pour tester l'envoie d'un e-mail via Mailjet
 
 ```python
 from utils.mailing import send_raw_email

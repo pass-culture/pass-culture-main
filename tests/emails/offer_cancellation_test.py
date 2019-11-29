@@ -3,6 +3,8 @@ from unittest.mock import patch
 
 from bs4 import BeautifulSoup
 
+from emails.beneficiary_offer_cancellation import make_offerer_booking_recap_email_after_user_cancellation
+from models import PcObject
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_venue, create_offer_with_event_product, \
     create_event_occurrence, create_stock_from_event_occurrence, create_booking, create_offer_with_thing_product, \
@@ -225,3 +227,145 @@ def test_make_make_batch_cancellation_email_for_case_stock(app):
     assert email['FromEmail'] == 'support@passculture.app'
     assert email['FromName'] == 'pass Culture pro'
     assert email['Subject'] == 'Annulation de réservations pour Le récit de voyage'
+
+
+class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
+    @patch('emails.beneficiary_offer_cancellation.SUPPORT_EMAIL_ADDRESS', 'email@support.com')
+    @patch('emails.beneficiary_offer_cancellation.DEV_EMAIL_ADDRESS', 'dev@pass.com')
+    @patch('emails.beneficiary_offer_cancellation.build_pc_pro_offer_link')
+    def test_should_return_mailjet_data_with_no_ongoing_booking(self, mock_offer_pc_pro_link):
+        # Given
+        mock_offer_pc_pro_link.return_value = 'http://pc_pro.com/offer_link'
+        user = create_user(public_name='Jean Dupont', email='jean.dupont@email.com')
+        offerer = create_offerer(postal_code=75)
+        venue = create_venue(offerer, name='Venue name')
+        offer = create_offer_with_event_product(venue, event_name='My Event')
+        stock = create_stock_from_offer(offer, price=12, beginning_datetime=datetime(2019, 10, 9, 10, 20, 00))
+        booking = create_booking(user, stock, venue, quantity=2, is_cancelled=True)
+        recipients = 'email@test.com'
+
+        # When
+        mailjet_data = make_offerer_booking_recap_email_after_user_cancellation(booking, recipients)
+
+        # Then
+        assert mailjet_data == {
+            'FromEmail': 'email@support.com',
+            'MJ-TemplateID': 780015,
+            'MJ-TemplateLanguage': True,
+            'To': 'dev@pass.com',
+            'Vars': {
+                'departement': 75,
+                'nom_offre': 'My Event',
+                'lien_offre_pcpro': 'http://pc_pro.com/offer_link',
+                'nom_lieu': 'Venue name',
+                'prix': 12,
+                'is_event': 1,
+                'date': '09-Oct-2019',
+                'heure': '12h20',
+                'quantite': 2,
+                'user_name': 'Jean Dupont',
+                'user_email': 'jean.dupont@email.com',
+                'is_active': True,
+                'nombre_resa': 0,
+                'env': '-development',
+                'users': [],
+            },
+        }
+
+    @patch('emails.beneficiary_offer_cancellation.SUPPORT_EMAIL_ADDRESS', 'email@support.com')
+    @patch('emails.beneficiary_offer_cancellation.DEV_EMAIL_ADDRESS', 'dev@pass.com')
+    @patch('emails.beneficiary_offer_cancellation.build_pc_pro_offer_link')
+    def test_should_return_mailjet_data_with_ongoing_bookings(self, mock_offer_pc_pro_link):
+        # Given
+        mock_offer_pc_pro_link.return_value = 'http://pc_pro.com/offer_link'
+        user1 = create_user(public_name='Jean Dupont', email='jean.dupont@email.com')
+        user2 = create_user(public_name='Jean Val', email='jean.val@email.com')
+        offerer = create_offerer(postal_code=75)
+        venue = create_venue(offerer, name='Venue name')
+        offer = create_offer_with_event_product(venue, event_name='My Event')
+        stock = create_stock_from_offer(offer, price=12, beginning_datetime=datetime(2019, 10, 9, 10, 20, 00))
+        booking1 = create_booking(user1, stock, venue, quantity=2, is_cancelled=True)
+        booking2 = create_booking(user2, stock, venue, quantity=1, is_cancelled=False, token='29JM9Q')
+        recipients = 'email@test.com'
+
+        # When
+        mailjet_data = make_offerer_booking_recap_email_after_user_cancellation(booking1, recipients)
+
+        # Then
+        assert mailjet_data == {
+            'FromEmail': 'email@support.com',
+            'MJ-TemplateID': 780015,
+            'MJ-TemplateLanguage': True,
+            'To': 'dev@pass.com',
+            'Vars': {
+                'departement': 75,
+                'nom_offre': 'My Event',
+                'lien_offre_pcpro': 'http://pc_pro.com/offer_link',
+                'nom_lieu': 'Venue name',
+                'prix': 12,
+                'is_event': 1,
+                'date': '09-Oct-2019',
+                'heure': '12h20',
+                'quantite': 2,
+                'user_name': 'Jean Dupont',
+                'user_email': 'jean.dupont@email.com',
+                'is_active': True,
+                'nombre_resa': 1,
+                'env': '-development',
+                'users': [
+                    {'contremarque': '29JM9Q',
+                     'email': 'jean.val@email.com',
+                     'firstName': 'John',
+                     'lastName': 'Doe'}
+                ]
+            }
+        }
+
+    @patch('emails.beneficiary_offer_cancellation.SUPPORT_EMAIL_ADDRESS', 'email@support.com')
+    @patch('emails.beneficiary_offer_cancellation.DEV_EMAIL_ADDRESS', 'dev@pass.com')
+    @patch('emails.beneficiary_offer_cancellation.build_pc_pro_offer_link')
+    def test_should_return_mailjet_data_on_thing_offer(self, mock_offer_pc_pro_link):
+        # Given
+        mock_offer_pc_pro_link.return_value = 'http://pc_pro.com/offer_link'
+        user1 = create_user(public_name='Jean Dupont', email='jean.dupont@email.com')
+        user2 = create_user(public_name='Jean Val', email='jean.val@email.com')
+        offerer = create_offerer(postal_code=75)
+        venue = create_venue(offerer, name='Venue name')
+        offer = create_offer_with_thing_product(venue, thing_name='My Thing')
+        stock = create_stock_from_offer(offer, price=12)
+        booking1 = create_booking(user1, stock, venue, quantity=2, is_cancelled=True)
+        booking2 = create_booking(user2, stock, venue, quantity=1, is_cancelled=False, token='29JM9Q')
+        recipients = 'email@test.com'
+
+        # When
+        mailjet_data = make_offerer_booking_recap_email_after_user_cancellation(booking1, recipients)
+
+        # Then
+        assert mailjet_data == {
+            'FromEmail': 'email@support.com',
+            'MJ-TemplateID': 780015,
+            'MJ-TemplateLanguage': True,
+            'To': 'dev@pass.com',
+            'Vars': {
+                'departement': 75,
+                'nom_offre': 'My Thing',
+                'lien_offre_pcpro': 'http://pc_pro.com/offer_link',
+                'nom_lieu': 'Venue name',
+                'prix': 12,
+                'is_event': 0,
+                'date': '',
+                'heure': '',
+                'quantite': 2,
+                'user_name': 'Jean Dupont',
+                'user_email': 'jean.dupont@email.com',
+                'is_active': True,
+                'nombre_resa': 1,
+                'env': '-development',
+                'users': [
+                    {'contremarque': '29JM9Q',
+                     'email': 'jean.val@email.com',
+                     'firstName': 'John',
+                     'lastName': 'Doe'}
+                ]
+            }
+        }
