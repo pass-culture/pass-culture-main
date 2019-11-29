@@ -106,3 +106,4 @@ if [ "$DB_TUNNEL_HAS_TO_BE_TERMINATED" = true ]; then
   echo terminating tunnel
   kill -9 "$DB_TUNNEL_PID"
 fi
+
