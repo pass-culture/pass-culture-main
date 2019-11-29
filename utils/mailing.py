@@ -108,67 +108,12 @@ def make_final_recap_email_for_stock_with_event(stock: Stock) -> Dict:
     }
 
 
-def get_offerer_booking_recap_email_data(booking: Booking, recipients: List[str]) -> Dict:
-    offer = booking.stock.resolvedOffer
-    venue_name = offer.venue.name
-    offer_name = offer.product.name
-    price = 'Gratuit' if booking.stock.price == 0 else str(booking.stock.price)
-    quantity = booking.quantity
-    user_email = booking.user.email
-    user_firstname = booking.user.firstName
-    user_lastname = booking.user.lastName
-    departement_code = offer.venue.departementCode or 'numérique'
-    offer_type = offer.type
-    is_event = int(offer.isEvent)
-    bookings = booking_queries.find_ongoing_bookings_by_stock(
-        booking.stock)
-
-    offer_link = f'{PRO_URL}/offres/{humanize(offer.id)}?lieu={humanize(offer.venueId)}&structure={humanize(offer.venue.managingOffererId)}'
-    environment = '' if IS_PROD else f'-{ENV}'
-
-    mailjet_json = {
-        'FromEmail': SUPPORT_EMAIL_ADDRESS,
-        'MJ-TemplateID': 1095029,
-        'MJ-TemplateLanguage': True,
-        'To': _create_email_recipients(recipients),
-        'Vars': {
-            'nom_offre': offer_name,
-            'nom_lieu': venue_name,
-            'is_event': is_event,
-            'nombre_resa': len(bookings),
-            'ISBN': '',
-            'offer_type': 'book',
-            'date': '',
-            'heure': '',
-            'quantity': quantity,
-            'contremarque': booking.token,
-            'prix': price,
-            'users': _get_users_information_from_bookings(bookings),
-            'user_firstName': user_firstname,
-            'user_lastName': user_lastname,
-            'user_email': user_email,
-            'lien_offre_pcpro': offer_link,
-            'departement': departement_code,
-            'env': environment
-        },
-    }
-
-    offer_is_a_book = ProductType.is_book(offer_type)
-
-    if offer_is_a_book:
-        mailjet_json['Vars']['ISBN'] = offer.extraData['isbn'] if offer.extraData is not None \
-                                                                  and 'isbn' in offer.extraData else ''
-    else:
-        mailjet_json['Vars']['offer_type'] = offer_type
-
-    offer_is_an_event = is_event == 1
-    if offer_is_an_event:
-        mailjet_json['Vars']['date'], mailjet_json['Vars']['heure'] = _format_date_and_hour_for_email(booking)
-
-    return mailjet_json
+def build_pc_pro_offer_link(offer: Offer) -> str:
+    return f'{PRO_URL}/offres/{humanize(offer.id)}?lieu={humanize(offer.venueId)}' \
+           f'&structure={humanize(offer.venue.managingOffererId)}'
 
 
-def _get_users_information_from_bookings(bookings: List[Booking]) -> List[dict]:
+def extract_users_information_from_bookings(bookings: List[Booking]) -> List[dict]:
     users_keys = ('firstName', 'lastName', 'email', 'contremarque')
     users_properties = [[booking.user.firstName, booking.user.lastName, booking.user.email, booking.token] for booking
                         in bookings]
@@ -183,14 +128,25 @@ def _create_email_recipients(recipients: List[str]) -> str:
         return DEV_EMAIL_ADDRESS
 
 
-def _format_date_and_hour_for_email(booking: Booking) -> (datetime, str):
-    date_in_tz = _get_event_datetime(booking.stock)
-    offer_date = date_in_tz.strftime("%d-%b-%Y")
-    event_hour = date_in_tz.hour
-    event_minute = date_in_tz.minute
-    offer_hour = f'{event_hour}h' if event_minute == 0 else f'{event_hour}h{event_minute}'
+def format_environment_for_email() -> str:
+    return '' if IS_PROD else f'-{ENV}'
 
-    return offer_date, offer_hour
+
+def format_booking_date_for_email(booking: Booking) -> str:
+    if booking.stock.resolvedOffer.isEvent:
+        date_in_tz = _get_event_datetime(booking.stock)
+        offer_date = date_in_tz.strftime("%d-%b-%Y")
+        return offer_date
+    return ''
+
+
+def format_booking_hours_for_email(booking: Booking) -> str:
+    if booking.stock.resolvedOffer.isEvent:
+        date_in_tz = _get_event_datetime(booking.stock)
+        event_hour = date_in_tz.hour
+        event_minute = date_in_tz.minute
+        return f'{event_hour}h' if event_minute == 0 else f'{event_hour}h{event_minute}'
+    return ''
 
 
 def make_offerer_booking_recap_email_after_user_action(booking: Booking, is_cancellation=False) -> Dict:
@@ -340,41 +296,6 @@ def make_user_booking_recap_email(booking: Booking, is_cancellation=False) -> Di
     }
 
 
-def make_reset_password_email_data(user: User) -> Dict:
-    user_first_name = user.firstName
-    user_email = user.email
-    user_reset_password_token = user.resetPasswordToken
-    env = '' if IS_PROD else f'-{ENV}'
-
-    return {
-        'FromEmail': SUPPORT_EMAIL_ADDRESS,
-        'MJ-TemplateID': 912168,
-        'MJ-TemplateLanguage': True,
-        'To': user_email if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
-        'Vars':
-            {
-                'prenom_user': user_first_name,
-                'token': user_reset_password_token,
-                'env': env
-            }
-    }
-
-
-def make_reset_password_email(user, app_origin_url):
-    email_html = render_template(
-        'mails/user_reset_password_email.html',
-        user=user,
-        app_origin_url=app_origin_url
-    )
-
-    return {
-        'FromName': 'pass Culture',
-        'FromEmail': SUPPORT_EMAIL_ADDRESS,
-        'Subject': 'Réinitialisation de votre mot de passe',
-        'Html-part': email_html
-    }
-
-
 def make_validation_confirmation_email(user_offerer: UserOfferer, offerer: Offerer) -> Dict:
     user_offerer_email = None
     user_offerer_rights = None
@@ -417,36 +338,11 @@ def make_venue_validation_email(venue: Venue) -> Dict:
     }
 
 
-def get_activation_email_data(user: User) -> Dict:
-    first_name = user.firstName.capitalize()
-    email = user.email
-    token = user.resetPasswordToken
-    env = '' if IS_PROD else f'-{ENV}'
-
-    return {
-        'FromEmail': SUPPORT_EMAIL_ADDRESS,
-        'Mj-TemplateID': 994771,
-        'Mj-TemplateLanguage': True,
-        'To': email,
-        'Vars': {
-            'prenom_user': first_name,
-            'token': token,
-            'email': quote(email),
-            'env': env
-        },
-    }
-
-
 def make_user_validation_email(user: User, app_origin_url: str, is_webapp: bool) -> Dict:
     if is_webapp:
         data = make_webapp_user_validation_email(user, app_origin_url)
     else:
         data = make_pro_user_validation_email(user, app_origin_url)
-    return data
-
-
-def make_pro_user_waiting_for_validation_by_admin_email(user: User, offerer: Offerer) -> Dict:
-    data = _pro_user_waiting_for_validation_by_admin_email(user, offerer)
     return data
 
 
@@ -607,7 +503,8 @@ def compute_email_html_part_and_recipients(email_html_part, recipients: Union[Li
     if feature_send_mail_to_users_enabled():
         email_to = recipients_string
     else:
-        email_html_part = '<p>This is a test (ENV={environment}). In production, email would have been sent to : {recipients}</p>{html_part}'.format(
+        email_html_part = '<p>This is a test (ENV={environment}).' \
+                          ' In production, email would have been sent to : {recipients}</p>{html_part}'.format(
             environment=ENV, recipients=recipients_string, html_part=email_html_part)
         email_to = DEV_EMAIL_ADDRESS
     return email_html_part, email_to
@@ -768,25 +665,5 @@ def make_pro_user_validation_email(user: User, app_origin_url: str) -> Dict:
         'Vars': {
             'nom_structure': user.publicName,
             'lien_validation_mail': f'{app_origin_url}/inscription/validation/{user.validationToken}'
-        },
-    }
-
-
-def _pro_user_waiting_for_validation_by_admin_email(user: User, offerer: Offerer) -> Dict:
-    offerer_name = offerer.name
-    return {
-        'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
-        'FromName': 'pass Culture pro',
-        'Subject': f'[pass Culture pro] Votre structure {offerer_name} est en cours de validation',
-        'MJ-TemplateID': 778329,
-        'MJ-TemplateLanguage': True,
-        'Recipients': [
-            {
-                "Email": user.email,
-                "Name": user.publicName
-            }
-        ],
-        'Vars': {
-            'nom_structure': offerer_name
         },
     }

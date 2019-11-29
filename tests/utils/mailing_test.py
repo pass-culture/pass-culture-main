@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 
 from freezegun import freeze_time
 
+from domain.user_emails import build_recipients_list
 from models import PcObject, ThingType
 from models.db import db
 from models.email import Email, EmailStatus
@@ -11,11 +12,13 @@ from tests.conftest import clean_database, mocked_mail
 from tests.files.api_entreprise import MOCKED_SIREN_ENTREPRISES_API_RETURN
 from tests.test_utils import create_user, create_booking, create_offerer, create_venue, create_offer_with_thing_product, \
     create_stock_from_offer, \
-    create_email
+    create_email, create_offer_with_event_product
+from utils.human_ids import humanize
 from utils.mailing import parse_email_addresses, \
     send_raw_email, resend_email, \
     compute_email_html_part_and_recipients, \
-    _get_users_information_from_bookings, make_reset_password_email
+    extract_users_information_from_bookings, build_pc_pro_offer_link, format_booking_date_for_email, \
+    format_booking_hours_for_email
 
 
 def get_mocked_response_status_200(entity):
@@ -208,7 +211,7 @@ class GetUsersInformationFromStockBookingsTest:
         stock.bookings = [booking_1, booking_2, booking_3]
 
         # When
-        users_informations = _get_users_information_from_bookings(stock.bookings)
+        users_informations = extract_users_information_from_bookings(stock.bookings)
 
         # Then
         assert users_informations == [
@@ -216,6 +219,139 @@ class GetUsersInformationFromStockBookingsTest:
             {'firstName': 'Jaja', 'lastName': 'Dudu', 'email': 'mail@example.com', 'contremarque': 'HELLO1'},
             {'firstName': 'Toto', 'lastName': 'Titi', 'email': 'mail@example.com', 'contremarque': 'HELLO2'}
         ]
+
+
+class BuildPcProOfferLinkTest:
+    @patch('utils.mailing.PRO_URL', 'http://pcpro.com')
+    @clean_database
+    def test_should_return_pc_pro_offer_link(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        PcObject.save(offer)
+        offer_id = humanize(offer.id)
+        venue_id = humanize(venue.id)
+        offerer_id = humanize(offerer.id)
+
+        # When
+        pc_pro_url = build_pc_pro_offer_link(offer)
+
+        # Then
+        assert pc_pro_url == f'http://pcpro.com/offres/{offer_id}?lieu={venue_id}&structure={offerer_id}'
+
+
+class BuildRecipientsListTest:
+    @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'admin@pass.com')
+    def test_should_return_admin_email_and_booking_email_when_booking_email_on_offer_exists(self):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock_from_offer(offer)
+        booking = create_booking(user, stock)
+
+        # When
+        recipients = build_recipients_list(booking)
+
+        # Then
+        assert recipients == 'booking.email@test.com, admin@pass.com'
+
+    @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'admin@pass.com')
+    def test_should_return_only_admin_email_when_offer_has_no_booking_email(self):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue, booking_email=None)
+        stock = create_stock_from_offer(offer)
+        booking = create_booking(user, stock)
+
+        # When
+        recipients = build_recipients_list(booking)
+
+        # Then
+        assert recipients == 'admin@pass.com'
+
+
+class FormatDateAndHourForEmailTest:
+    def test_should_return_formatted_event_beginningDatetime_when_offer_is_an_event(self):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue)
+        stock = create_stock_from_offer(offer, beginning_datetime=datetime(2019, 10, 9, 10, 20, 00))
+        booking = create_booking(user, stock)
+
+        # When
+        formatted_date = format_booking_date_for_email(booking)
+
+        # Then
+        assert formatted_date == '09-Oct-2019'
+
+    def test_should_return_empty_string_when_offer_is_not_an_event(self):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock_from_offer(offer, beginning_datetime=None)
+        booking = create_booking(user, stock)
+
+        # When
+        formatted_date = format_booking_date_for_email(booking)
+
+        # Then
+        assert formatted_date == ''
+
+
+class FormatBookingHoursForEmailTest:
+    def test_should_return_hours_and_minutes_from_beginningDatetime_when_contains_hours(self):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue)
+        stock = create_stock_from_offer(offer, beginning_datetime=datetime(2019, 10, 9, 10, 20, 00))
+        booking = create_booking(user, stock)
+
+        # When
+        formatted_date = format_booking_hours_for_email(booking)
+
+        # Then
+        assert formatted_date == '12h20'
+
+    def test_should_return_only_hours_from_event_beginningDatetime_when_oclock(self):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue)
+        stock = create_stock_from_offer(offer, beginning_datetime=datetime(2019, 10, 9, 13, 00, 00))
+        booking = create_booking(user, stock)
+
+        # When
+        formatted_date = format_booking_hours_for_email(booking)
+
+        # Then
+        assert formatted_date == '15h'
+
+    def test_should_return_empty_string_when_offer_is_not_an_event(self):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock_from_offer(offer)
+        booking = create_booking(user, stock)
+
+        # When
+        formatted_date = format_booking_hours_for_email(booking)
+
+        # Then
+        assert formatted_date == ''
 
 
 def _remove_whitespaces(text):

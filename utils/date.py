@@ -24,9 +24,11 @@ ENGLISH_TO_FRENCH_MONTH = {
     "December": "Décembre"
 }
 
+
 def english_to_french_month(year, month_number, day=1):
     english_month = datetime(year, month_number, day).strftime("%B")
     return ENGLISH_TO_FRENCH_MONTH[english_month]
+
 
 class DateTimes:
     def __init__(self, *datetimes):
@@ -35,13 +37,16 @@ class DateTimes:
     def __eq__(self, other):
         return self.datetimes == other.datetimes
 
+
 def read_json_date(date):
     if '.' not in date:
         date = date + '.0'
     return datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f")
 
+
 def strftime(date):
     return date.strftime(DATE_ISO_FORMAT)
+
 
 def match_format(value: str, format: str):
     try:
