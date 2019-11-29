@@ -3,7 +3,8 @@ from unittest.mock import patch
 
 from bs4 import BeautifulSoup
 
-from emails.beneficiary_offer_cancellation import make_offerer_booking_recap_email_after_user_cancellation
+from emails.beneficiary_offer_cancellation import make_offerer_booking_recap_email_after_user_cancellation_data, \
+    _is_offer_active_for_recap
 from models import PcObject
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_venue, create_offer_with_event_product, \
@@ -230,29 +231,30 @@ def test_make_make_batch_cancellation_email_for_case_stock(app):
 
 
 class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
-    @patch('emails.beneficiary_offer_cancellation.SUPPORT_EMAIL_ADDRESS', 'email@support.com')
-    @patch('emails.beneficiary_offer_cancellation.DEV_EMAIL_ADDRESS', 'dev@pass.com')
-    @patch('emails.beneficiary_offer_cancellation.build_pc_pro_offer_link')
-    def test_should_return_mailjet_data_with_no_ongoing_booking(self, mock_offer_pc_pro_link):
+    @patch('emails.beneficiary_offer_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('emails.beneficiary_offer_cancellation.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    @patch('emails.beneficiary_offer_cancellation.build_pc_pro_offer_link', return_value='http://pc_pro.com/offer_link')
+    @patch('emails.beneficiary_offer_cancellation._is_offer_active_for_recap', return_value=True)
+    def test_should_return_mailjet_data_with_no_ongoing_booking(self, mock_is_offer_active,
+                                                                mock_build_pc_pro_offer_link):
         # Given
-        mock_offer_pc_pro_link.return_value = 'http://pc_pro.com/offer_link'
-        user = create_user(public_name='Jean Dupont', email='jean.dupont@email.com')
+        user = create_user(public_name='Jean Dupont', email='jean.dupont@example.com')
         offerer = create_offerer(postal_code=75)
         venue = create_venue(offerer, name='Venue name')
         offer = create_offer_with_event_product(venue, event_name='My Event')
         stock = create_stock_from_offer(offer, price=12, beginning_datetime=datetime(2019, 10, 9, 10, 20, 00))
         booking = create_booking(user, stock, venue, quantity=2, is_cancelled=True)
-        recipients = 'email@test.com'
+        recipients = 'support@example.com'
 
         # When
-        mailjet_data = make_offerer_booking_recap_email_after_user_cancellation(booking, recipients)
+        mailjet_data = make_offerer_booking_recap_email_after_user_cancellation_data(booking, recipients)
 
         # Then
         assert mailjet_data == {
-            'FromEmail': 'email@support.com',
+            'FromEmail': 'support@example.com',
             'MJ-TemplateID': 780015,
             'MJ-TemplateLanguage': True,
-            'To': 'dev@pass.com',
+            'To': 'dev@example.com',
             'Vars': {
                 'departement': 75,
                 'nom_offre': 'My Event',
@@ -264,39 +266,39 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
                 'heure': '12h20',
                 'quantite': 2,
                 'user_name': 'Jean Dupont',
-                'user_email': 'jean.dupont@email.com',
-                'is_active': True,
+                'user_email': 'jean.dupont@example.com',
+                'is_active': 1,
                 'nombre_resa': 0,
                 'env': '-development',
                 'users': [],
             },
         }
 
-    @patch('emails.beneficiary_offer_cancellation.SUPPORT_EMAIL_ADDRESS', 'email@support.com')
-    @patch('emails.beneficiary_offer_cancellation.DEV_EMAIL_ADDRESS', 'dev@pass.com')
-    @patch('emails.beneficiary_offer_cancellation.build_pc_pro_offer_link')
-    def test_should_return_mailjet_data_with_ongoing_bookings(self, mock_offer_pc_pro_link):
+    @patch('emails.beneficiary_offer_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('emails.beneficiary_offer_cancellation.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    @patch('emails.beneficiary_offer_cancellation.build_pc_pro_offer_link', return_value='http://pc_pro.com/offer_link')
+    @patch('emails.beneficiary_offer_cancellation._is_offer_active_for_recap', return_value=True)
+    def test_should_return_mailjet_data_with_ongoing_bookings(self, mock_is_offer_active, mock_build_pc_pro_offer_link):
         # Given
-        mock_offer_pc_pro_link.return_value = 'http://pc_pro.com/offer_link'
-        user1 = create_user(public_name='Jean Dupont', email='jean.dupont@email.com')
-        user2 = create_user(public_name='Jean Val', email='jean.val@email.com')
+        user1 = create_user(public_name='Jean Dupont', email='jean.dupont@example.com')
+        user2 = create_user(public_name='Jean Val', email='jean.val@example.com')
         offerer = create_offerer(postal_code=75)
         venue = create_venue(offerer, name='Venue name')
         offer = create_offer_with_event_product(venue, event_name='My Event')
         stock = create_stock_from_offer(offer, price=12, beginning_datetime=datetime(2019, 10, 9, 10, 20, 00))
         booking1 = create_booking(user1, stock, venue, quantity=2, is_cancelled=True)
-        booking2 = create_booking(user2, stock, venue, quantity=1, is_cancelled=False, token='29JM9Q')
-        recipients = 'email@test.com'
+        create_booking(user2, stock, venue, quantity=1, is_cancelled=False, token='29JM9Q')
+        recipients = 'support@example.com'
 
         # When
-        mailjet_data = make_offerer_booking_recap_email_after_user_cancellation(booking1, recipients)
+        mailjet_data = make_offerer_booking_recap_email_after_user_cancellation_data(booking1, recipients)
 
         # Then
         assert mailjet_data == {
-            'FromEmail': 'email@support.com',
+            'FromEmail': 'support@example.com',
             'MJ-TemplateID': 780015,
             'MJ-TemplateLanguage': True,
-            'To': 'dev@pass.com',
+            'To': 'dev@example.com',
             'Vars': {
                 'departement': 75,
                 'nom_offre': 'My Event',
@@ -308,44 +310,46 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
                 'heure': '12h20',
                 'quantite': 2,
                 'user_name': 'Jean Dupont',
-                'user_email': 'jean.dupont@email.com',
-                'is_active': True,
+                'user_email': 'jean.dupont@example.com',
+                'is_active': 1,
                 'nombre_resa': 1,
                 'env': '-development',
                 'users': [
-                    {'contremarque': '29JM9Q',
-                     'email': 'jean.val@email.com',
-                     'firstName': 'John',
-                     'lastName': 'Doe'}
+                    {
+                        'contremarque': '29JM9Q',
+                        'email': 'jean.val@example.com',
+                        'firstName': 'John',
+                        'lastName': 'Doe'
+                    }
                 ]
             }
         }
 
-    @patch('emails.beneficiary_offer_cancellation.SUPPORT_EMAIL_ADDRESS', 'email@support.com')
-    @patch('emails.beneficiary_offer_cancellation.DEV_EMAIL_ADDRESS', 'dev@pass.com')
-    @patch('emails.beneficiary_offer_cancellation.build_pc_pro_offer_link')
-    def test_should_return_mailjet_data_on_thing_offer(self, mock_offer_pc_pro_link):
+    @patch('emails.beneficiary_offer_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('emails.beneficiary_offer_cancellation.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    @patch('emails.beneficiary_offer_cancellation.build_pc_pro_offer_link', return_value='http://pc_pro.com/offer_link')
+    @patch('emails.beneficiary_offer_cancellation._is_offer_active_for_recap', return_value=False)
+    def test_should_return_mailjet_data_on_thing_offer(self, mock_is_offer_active, mock_build_pc_pro_offer_link):
         # Given
-        mock_offer_pc_pro_link.return_value = 'http://pc_pro.com/offer_link'
-        user1 = create_user(public_name='Jean Dupont', email='jean.dupont@email.com')
-        user2 = create_user(public_name='Jean Val', email='jean.val@email.com')
+        user1 = create_user(public_name='Jean Dupont', email='jean.dupont@example.com')
+        user2 = create_user(public_name='Jean Val', email='jean.val@example.com')
         offerer = create_offerer(postal_code=75)
         venue = create_venue(offerer, name='Venue name')
         offer = create_offer_with_thing_product(venue, thing_name='My Thing')
         stock = create_stock_from_offer(offer, price=12)
         booking1 = create_booking(user1, stock, venue, quantity=2, is_cancelled=True)
-        booking2 = create_booking(user2, stock, venue, quantity=1, is_cancelled=False, token='29JM9Q')
-        recipients = 'email@test.com'
+        create_booking(user2, stock, venue, quantity=1, is_cancelled=False, token='29JM9Q')
+        recipients = 'support@example.com'
 
         # When
-        mailjet_data = make_offerer_booking_recap_email_after_user_cancellation(booking1, recipients)
+        mailjet_data = make_offerer_booking_recap_email_after_user_cancellation_data(booking1, recipients)
 
         # Then
         assert mailjet_data == {
-            'FromEmail': 'email@support.com',
+            'FromEmail': 'support@example.com',
             'MJ-TemplateID': 780015,
             'MJ-TemplateLanguage': True,
-            'To': 'dev@pass.com',
+            'To': 'dev@example.com',
             'Vars': {
                 'departement': 75,
                 'nom_offre': 'My Thing',
@@ -357,15 +361,87 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
                 'heure': '',
                 'quantite': 2,
                 'user_name': 'Jean Dupont',
-                'user_email': 'jean.dupont@email.com',
-                'is_active': True,
+                'user_email': 'jean.dupont@example.com',
+                'is_active': 0,
                 'nombre_resa': 1,
                 'env': '-development',
                 'users': [
-                    {'contremarque': '29JM9Q',
-                     'email': 'jean.val@email.com',
-                     'firstName': 'John',
-                     'lastName': 'Doe'}
+                    {
+                        'contremarque': '29JM9Q',
+                        'email': 'jean.val@example.com',
+                        'firstName': 'John',
+                        'lastName': 'Doe'
+                    }
                 ]
             }
         }
+
+
+class IsOfferActiveForRecapTest:
+    @clean_database
+    def test_should_return_true_when_offer_is_active_and_stock_still_bookable(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue, is_active=True)
+        stock = create_stock_from_offer(offer, available=2, booking_limit_datetime=datetime.now() + timedelta(days=6))
+        PcObject.save(stock)
+
+        # When
+        is_active = _is_offer_active_for_recap(stock)
+
+        # Then
+        assert is_active
+
+    @clean_database
+    def test_should_return_false_when_offer_is_not_active(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue, is_active=False)
+        stock = create_stock_from_offer(offer, available=2, booking_limit_datetime=datetime.now() + timedelta(days=6))
+        PcObject.save(stock)
+
+        # When
+        is_active = _is_offer_active_for_recap(stock)
+
+        # Then
+        assert not is_active
+
+    @clean_database
+    def test_should_return_false_when_stock_has_no_remaining_quantity(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue, is_active=True)
+        stock = create_stock_from_offer(offer, price=0,
+                                        available=2,
+                                        booking_limit_datetime=datetime.now() + timedelta(days=6))
+        booking = create_booking(user, stock, quantity=2)
+        PcObject.save(booking)
+
+        # When
+        is_active = _is_offer_active_for_recap(stock)
+
+        # Then
+        assert not is_active
+
+    @clean_database
+    def test_should_return_false_when_stock_booking_limit_is_past(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue, is_active=True)
+        stock = create_stock_from_offer(offer, price=0,
+                                        available=2,
+                                        booking_limit_datetime=datetime.now() - timedelta(days=6))
+        booking = create_booking(user, stock, quantity=2)
+        PcObject.save(booking)
+
+        # When
+        is_active = _is_offer_active_for_recap(stock)
+
+        # Then
+        assert not is_active

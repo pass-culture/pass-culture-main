@@ -11,8 +11,9 @@ from tests.test_utils import create_user, create_offerer, create_venue, create_o
     create_deposit, create_stock_with_event_offer, create_stock_with_thing_offer, create_event_occurrence, \
     create_stock_from_event_occurrence
 from tests.utils.mailing_test import _remove_whitespaces
-from utils.mailing import get_offerer_booking_recap_email_data, ADMINISTRATION_EMAIL_ADDRESS, \
+from utils.mailing import ADMINISTRATION_EMAIL_ADDRESS, \
     make_offerer_booking_recap_email_after_user_action
+from emails.offerer_booking_recap import get_offerer_booking_recap_email_data
 
 
 class MakeOffererBookingRecapEmailWithMailjetTemplateTest:

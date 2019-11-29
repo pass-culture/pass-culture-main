@@ -1,13 +1,12 @@
 from unittest.mock import patch, Mock, call
 
 from domain.user_emails import send_user_driven_cancellation_email_to_user, \
-    send_user_driven_cancellation_email_to_offerer, send_offerer_driven_cancellation_email_to_user, \
+    send_offerer_driven_cancellation_email_to_user, \
     send_offerer_driven_cancellation_email_to_offerer, \
     send_booking_confirmation_email_to_user, send_booking_recap_emails, send_final_booking_recap_email, \
     send_validation_confirmation_email, send_batch_cancellation_emails_to_users, \
     send_batch_cancellation_email_to_offerer, send_user_validation_email, send_venue_validation_confirmation_email, \
-    send_reset_password_email_with_mailjet_template, send_activation_email, \
-    send_pro_user_waiting_for_validation_by_admin_email, send_reset_password_email
+    send_reset_password_email_with_mailjet_template, send_activation_email
 from models import Offerer, UserOfferer, User, RightsType
 from tests.test_utils import create_user, create_booking, create_stock_with_event_offer, create_offerer, create_venue, \
     create_offer_with_thing_product, create_stock_with_thing_offer, create_mocked_bookings
@@ -94,84 +93,6 @@ class SendUserDrivenCancellationEmailToUserTest:
 
             # Then
             make_user_recap_email.assert_called_once_with(booking, is_cancellation=True)
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'dev@passculture.app'
-        assert 'This is a test' in args[1]['data']['Html-part']
-
-
-class SendUserDrivenCancellationEmailToOffererTest:
-
-    def when_feature_send_mail_to_users_enabled_and_offer_booking_email_sends_to_offerer_and_administration(self, app):
-        # Given
-        user = create_user(email='user@email.fr')
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        stock = create_stock_with_event_offer(offerer, venue)
-        stock.resolvedOffer.bookingEmail = 'offer@email.fr'
-        booking = create_booking(user, stock, venue)
-        mocked_send_email = Mock()
-        return_value = Mock()
-        return_value.status_code = 200
-        mocked_send_email.return_value = return_value
-
-        with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True), patch(
-                'domain.user_emails.make_offerer_booking_recap_email_after_user_action',
-                return_value={'Html-part': ''}) as make_offerer_recap_email:
-            # When
-            send_user_driven_cancellation_email_to_offerer(booking, mocked_send_email)
-
-            # Then
-            make_offerer_recap_email.assert_called_once_with(booking, is_cancellation=True)
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'offer@email.fr, administration@passculture.app'
-
-    def when_feature_send_mail_to_users_enabled_and_not_offer_booking_email_sends_only_to_administration(self, app):
-        # Given
-        user = create_user(email='user@email.fr')
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        stock = create_stock_with_event_offer(offerer, venue)
-        stock.resolvedOffer.bookingEmail = None
-        booking = create_booking(user, stock, venue)
-        mocked_send_email = Mock()
-        return_value = Mock()
-        return_value.status_code = 200
-        mocked_send_email.return_value = return_value
-
-        with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True), patch(
-                'domain.user_emails.make_offerer_booking_recap_email_after_user_action',
-                return_value={'Html-part': ''}) as make_offerer_recap_email:
-            # When
-            send_user_driven_cancellation_email_to_offerer(booking, mocked_send_email)
-
-            # Then
-            make_offerer_recap_email.assert_called_once_with(booking, is_cancellation=True)
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'administration@passculture.app'
-
-    def when_feature_send_mail_to_users_disabled_sends_to_pass_culture_dev(self, app):
-        # Given
-        user = create_user(email='user@email.fr')
-        offerer = create_offerer()
-        venue = create_venue(offerer, booking_email='booking@email.fr')
-        stock = create_stock_with_event_offer(offerer, venue)
-        booking = create_booking(user, stock, venue)
-        mocked_send_email = Mock()
-        return_value = Mock()
-        return_value.status_code = 200
-        mocked_send_email.return_value = return_value
-
-        with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False), patch(
-                'domain.user_emails.make_offerer_booking_recap_email_after_user_action',
-                return_value={'Html-part': ''}) as make_offerer_recap_email:
-            # When
-            send_user_driven_cancellation_email_to_offerer(booking, mocked_send_email)
-
-            # Then
-            make_offerer_recap_email.assert_called_once_with(booking, is_cancellation=True)
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
         assert args[1]['data']['To'] == 'dev@passculture.app'
@@ -274,7 +195,8 @@ class SendBookingConfirmationEmailToUserTest:
         # Then
         mocked_send_email.assert_called_once()
         called_with_args = mocked_send_email.call_args[1]['data']
-        assert 'This is a test (ENV=development). In production, email would have been sent to : test@email.com' in called_with_args['Html-part']
+        assert 'This is a test (ENV=development). In production, email would have been sent to : test@email.com' in \
+               called_with_args['Html-part']
         assert called_with_args['To'] == 'dev@passculture.app'
         assert called_with_args['FromName'] == 'pass Culture'
         assert called_with_args['FromEmail'] == 'dev@passculture.app'
@@ -441,7 +363,7 @@ class SendValidationConfirmationEmailTest:
                 'domain.user_emails.make_validation_confirmation_email',
                 return_value={'Html-part': ''}) as make_cancellation_email, patch(
             'domain.user_emails.find_all_emails_of_user_offerers_admins',
-                return_value=['admin1@email.com', 'admin2@email.com']):
+            return_value=['admin1@email.com', 'admin2@email.com']):
             # When
             send_validation_confirmation_email(user_offerer, offerer, mocked_send_email)
 
@@ -468,7 +390,8 @@ class SendCancellationEmailOneUserTest:
         with patch(
                 'domain.user_emails.send_offerer_driven_cancellation_email_to_user') as send_cancellation_email_one_user, patch(
             'domain.user_emails.make_offerer_driven_cancellation_email_for_user',
-            return_value={'Html-part': ''}), patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
+            return_value={'Html-part': ''}), patch('utils.mailing.feature_send_mail_to_users_enabled',
+                                                   return_value=True):
             send_batch_cancellation_emails_to_users(bookings, mocked_send_email)
 
         # Then
@@ -584,7 +507,7 @@ class SendVenueValidationConfirmationEmailTest:
                 'domain.user_emails.make_venue_validation_confirmation_email',
                 return_value={'Html-part': ''}) as make_cancellation_email, patch(
             'domain.user_emails.find_all_emails_of_user_offerers_admins',
-                return_value=['admin1@email.com', 'admin2@email.com']):
+            return_value=['admin1@email.com', 'admin2@email.com']):
             # When
             send_venue_validation_confirmation_email(venue, mocked_send_email)
 
@@ -608,7 +531,7 @@ class SendVenueValidationConfirmationEmailTest:
                 'domain.user_emails.make_venue_validation_confirmation_email',
                 return_value={'Html-part': ''}) as make_cancellation_email, patch(
             'domain.user_emails.find_all_emails_of_user_offerers_admins',
-                return_value=['admin1@email.com', 'admin2@email.com']):
+            return_value=['admin1@email.com', 'admin2@email.com']):
             # When
             send_venue_validation_confirmation_email(venue, mocked_send_email)
 
@@ -631,36 +554,14 @@ class SendUserValidationEmailTest:
         mocked_send_email.return_value = return_value
 
         # When
-        with patch('domain.user_emails.make_user_validation_email', return_value={'Html-part': ''}) as make_email, patch(
-                'utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
+        with patch('domain.user_emails.make_user_validation_email',
+                   return_value={'Html-part': ''}) as make_email, patch(
+            'utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
             send_user_validation_email(user, mocked_send_email, 'localhost-test', True)
         # Then
         mocked_send_email.assert_called_once()
         make_email.assert_called_once()
         mocked_send_email.call_args[1]['To'] = user.email
-
-
-class SendUserWaitingForValidationByAdminEmailTest:
-    def when_feature_send_mail_to_users_enabled_sends_email_to_user_with_offerer_name_in_subject(self):
-        # Given
-        user = create_user()
-        user.generate_validation_token()
-        offerer = create_offerer(name='Bar des amis')
-        mocked_send_email = Mock()
-        return_value = Mock()
-        return_value.status_code = 200
-        mocked_send_email.return_value = return_value
-
-        # When
-        with patch('domain.user_emails.make_user_validation_email', return_value={'Html-part': ''}) as make_email, patch(
-                'utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
-            send_pro_user_waiting_for_validation_by_admin_email(user, mocked_send_email, offerer)
-
-        # Then
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        data = args[1]['data']
-        assert data['Subject'] == '[pass Culture pro] Votre structure Bar des amis est en cours de validation'
 
 
 class SendResetPasswordEmailWithMailjetTemplateTest:
@@ -673,7 +574,7 @@ class SendResetPasswordEmailWithMailjetTemplateTest:
         mocked_send_email.return_value = return_value
 
         # when
-        with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
+        with patch('emails.user_reset_password.feature_send_mail_to_users_enabled', return_value=True):
             send_reset_password_email_with_mailjet_template(user, mocked_send_email)
 
         # then

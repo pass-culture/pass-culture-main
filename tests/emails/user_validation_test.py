@@ -2,8 +2,8 @@ from unittest.mock import patch
 
 from bs4 import BeautifulSoup
 
-from tests.test_utils import create_user, create_offerer
-from utils.mailing import make_user_validation_email, make_pro_user_waiting_for_validation_by_admin_email
+from tests.test_utils import create_user
+from utils.mailing import make_user_validation_email
 
 
 class UserValidationEmailsTest:
@@ -55,35 +55,6 @@ class UserValidationEmailsTest:
                 {
                     'nom_structure': 'John Doe',
                     'lien_validation_mail': f'{app_origin_url}/inscription/validation/{user.validationToken}'
-                }
-        }
-
-        # Then
-        assert email == expected
-
-    def test_make_pro_user_waiting_for_validation_by_admin_email(self, app):
-        # Given
-        user = create_user(email="test@example.com")
-        user.generate_validation_token()
-        offerer = create_offerer(name='Bar des amis')
-
-        # When
-        email = make_pro_user_waiting_for_validation_by_admin_email(user, offerer)
-        expected = {
-            'FromEmail': 'dev@passculture.app',
-            'FromName': 'pass Culture pro',
-            'Subject': f'[pass Culture pro] Votre structure {offerer.name} est en cours de validation',
-            'MJ-TemplateID': 778329,
-            'MJ-TemplateLanguage': True,
-            'Recipients': [
-                {
-                    'Email': 'test@example.com',
-                    'Name': 'John Doe'
-                }
-            ],
-            'Vars':
-                {
-                    'nom_structure': 'Bar des amis'
                 }
         }
 

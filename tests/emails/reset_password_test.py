@@ -1,15 +1,15 @@
 from unittest.mock import patch
 
-from tests.test_utils import create_user
 from emails.user_reset_password import make_reset_password_email_data
+from tests.test_utils import create_user
 
 
 class MakeResetPasswordEmailDataTest:
-    @patch('utils.mailing.ENV', 'testing')
-    @patch('utils.mailing.IS_PROD', False)
-    @patch('utils.mailing.SUPPORT_EMAIL_ADDRESS', 'john.doe@example.com')
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False)
-    def test_should_write_email_with_right_data_when_not_production_environment(self, app):
+    @patch('emails.user_reset_password.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('emails.user_reset_password.format_environment_for_email', return_value='-testing')
+    @patch('emails.user_reset_password.feature_send_mail_to_users_enabled', return_value=False)
+    def test_should_write_email_with_right_data_when_not_production_environment(self, mock_send_mail_enabled,
+                                                                                mock_format_env):
         # Given
         user = create_user(email="johnny.wick@example.com", first_name="Johnny", reset_password_token='ABCDEFG')
 
@@ -18,7 +18,7 @@ class MakeResetPasswordEmailDataTest:
 
         # Then
         assert reset_password_email_data == {
-            'FromEmail': 'john.doe@example.com',
+            'FromEmail': 'support@example.com',
             'MJ-TemplateID': 912168,
             'MJ-TemplateLanguage': True,
             'To': 'dev@passculture.app',
@@ -30,11 +30,11 @@ class MakeResetPasswordEmailDataTest:
                 }
         }
 
-    @patch('utils.mailing.ENV', 'production')
-    @patch('utils.mailing.IS_PROD', True)
-    @patch('utils.mailing.SUPPORT_EMAIL_ADDRESS', 'john.doe@example.com')
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
-    def test_should_write_email_with_right_data_when_production_environment(self, app):
+    @patch('emails.user_reset_password.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('emails.user_reset_password.format_environment_for_email', return_value='')
+    @patch('emails.user_reset_password.feature_send_mail_to_users_enabled', return_value=True)
+    def test_should_write_email_with_right_data_when_production_environment(self, mock_send_mail_enabled,
+                                                                            mock_format_env):
         # Given
         user = create_user(email="johnny.wick@example.com", first_name="Johnny", reset_password_token='ABCDEFG')
 
@@ -43,7 +43,7 @@ class MakeResetPasswordEmailDataTest:
 
         # Then
         assert reset_password_email_data == {
-            'FromEmail': 'john.doe@example.com',
+            'FromEmail': 'support@example.com',
             'MJ-TemplateID': 912168,
             'MJ-TemplateLanguage': True,
             'To': 'johnny.wick@example.com',
