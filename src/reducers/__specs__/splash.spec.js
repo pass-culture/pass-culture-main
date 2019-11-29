@@ -4,7 +4,7 @@ describe('src | reducers | splash', () => {
   it('should return the initial state by default', () => {
     // given
     const initialState = {
-      closeTimeout: 1000,
+      closeTimeout: 1500,
       isActive: true,
     }
     const action = {}
