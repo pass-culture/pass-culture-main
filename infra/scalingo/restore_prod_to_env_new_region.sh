@@ -103,19 +103,22 @@ if [ "$DB_TUNNEL_HAS_TO_BE_TERMINATED" = true ]; then
 fi
 
 if grep -q 'ERROR' /var/log/restore/"$APP_NAME"_error.log; then
-  echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Restore fail."
-  echo "Script duration : $((script_end_time-script_start_time))"
+  script_duration=$((`date +%s`-$script_start_time))
+  echo "Script duration : $script_duration"
   echo "ERRORS found during restore backup. Please see file: /var/log/restore/"$APP_NAME"_error.log"
 
-  curl -d text="Database Restore to $APP_NAME failed !" "https://api.telegram.org/$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown"
+  BOT_MESSAGE="'Database restore to *"$APP_NAME"* may contain errors :confused: Lasted: *"$script_duration"* seconds'"
+  curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
   exit 1
-elif [[ $# -gt 0 ]] && [[ "$1" == "-h" ]]; then
+fi
+
+if [[ $# -gt 0 ]] && [[ "$1" == "-h" ]]; then
   echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Upgrading Alembic Head."
   /usr/local/bin/scalingo -a "$APP_NAME" run 'alembic upgrade head'
 else
   echo "$(date -u +"%Y-%m-%dT%H:%M:%S") Database restored."
 fi
 
-script_end_time=`date +%s`
+script_duration=$((`date +%s`-$script_start_time))
 echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : End of script"
-echo "Script duration : $((script_end_time-script_start_time))"
+echo "Script duration : $script_duration"
