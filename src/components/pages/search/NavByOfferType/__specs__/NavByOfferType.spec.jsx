@@ -11,7 +11,6 @@ describe('src | components | search | searchByType | NavByOfferType', () => {
     // given
     props = {
       categories: ['Category 1', 'Category 2', 'Category 3', 'Category 4'],
-      resetSearchStore: jest.fn(),
       title: 'Fake title',
       updateSearchQuery: jest.fn(),
     }
@@ -40,19 +39,7 @@ describe('src | components | search | searchByType | NavByOfferType', () => {
       })
     })
 
-    describe('i click on one category', () => {
-      it('should reset the search value of the store', () => {
-        // given
-        const wrapper = shallow(<NavByOfferType {...props} />)
-        const categories = wrapper.find('.item')
-
-        // when
-        categories.first().simulate('click')
-
-        // then
-        expect(props.resetSearchStore).toHaveBeenCalledWith()
-      })
-
+    describe('when I click on one category', () => {
       it('should update the search parameter of the query', () => {
         // given
         const wrapper = shallow(<NavByOfferType {...props} />)

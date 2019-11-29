@@ -16,7 +16,6 @@ import {
   translateBrowserUrlToApiUrl,
 } from './helpers'
 import HeaderContainer from '../../layout/Header/HeaderContainer'
-import { getRecommendationSearch } from '../../../helpers/getRecommendationSearch'
 import Icon from '../../layout/Icon/Icon'
 import Spinner from '../../layout/Spinner/Spinner'
 import RelativeFooterContainer from '../../layout/RelativeFooter/RelativeFooterContainer'
@@ -107,22 +106,19 @@ class Search extends PureComponent {
   }
 
   handleRecommendationsRequest = () => {
-    const { getRecommendations, location, query } = this.props
+    const { resetSearchStore, getResearchedRecommendations, location, query } = this.props
     const isResultatsView = location.pathname.includes('resultats')
     if (!isResultatsView) return
     const queryParams = query.parse()
     const apiParams = translateBrowserUrlToApiUrl(queryParams)
     const apiParamsString = stringify(apiParams)
     const apiPath = `/recommendations?${apiParamsString}`
+
     if (this.isFirstPageRequest(queryParams)) {
       this.setState({ isLoading: true })
+      resetSearchStore()
     }
-    const recommendationsAlreadyExist = this.isRecommendationFound()
-    if (!recommendationsAlreadyExist) {
-      getRecommendations(apiPath, this.handleDataSuccess)
-    } else {
-      this.setState({ isLoading: false })
-    }
+    getResearchedRecommendations(apiPath, this.handleDataSuccess)
   }
 
   handleDataSuccess = () => {
@@ -201,17 +197,6 @@ class Search extends PureComponent {
     return page === '1' || page === ''
   }
 
-  isRecommendationFound = () => {
-    const { location, recommendations, types } = this.props
-    const searchQuery = getRecommendationSearch(location.search, types)
-    const foundRecommendations = recommendations.filter(
-      recommendation =>
-        recommendation.search === searchQuery || `${recommendation.search}&page=1` === searchQuery
-    )
-
-    return foundRecommendations.length > 0 ? true : false
-  }
-
   renderNavByOfferTypeContainer = typeSublabels => () => (
     <NavByOfferTypeContainer
       categories={typeSublabels}
@@ -224,7 +209,7 @@ class Search extends PureComponent {
       location,
       match,
       query,
-      recommendations,
+      researchedRecommendations,
       typeSublabels,
       typeSublabelsAndDescription,
     } = this.props
@@ -246,7 +231,7 @@ class Search extends PureComponent {
         />
         <ResultsContainer
           cameFromOfferTypesPage
-          items={recommendations}
+          items={researchedRecommendations}
           keywords={keywords}
           typeSublabels={typeSublabels}
         />
@@ -255,7 +240,7 @@ class Search extends PureComponent {
   }
 
   renderResults = () => {
-    const { query, recommendations, typeSublabels } = this.props
+    const { query, researchedRecommendations, typeSublabels } = this.props
     const queryParams = query.parse()
     const keywords =
       queryParams['mots-cles'] !== undefined ? encodeURI(queryParams['mots-cles']) : ''
@@ -263,7 +248,7 @@ class Search extends PureComponent {
     return (
       <ResultsContainer
         cameFromOfferTypesPage={false}
-        items={recommendations}
+        items={researchedRecommendations}
         keywords={keywords}
         typeSublabels={typeSublabels}
       />
@@ -407,7 +392,7 @@ class Search extends PureComponent {
 }
 
 Search.propTypes = {
-  getRecommendations: PropTypes.func.isRequired,
+  getResearchedRecommendations: PropTypes.func.isRequired,
   getTypes: PropTypes.func.isRequired,
   history: PropTypes.shape({
     replace: PropTypes.func.isRequired,
@@ -424,19 +409,13 @@ Search.propTypes = {
     }).isRequired,
   }).isRequired,
   query: PropTypes.shape().isRequired,
-  recommendations: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  researchedRecommendations: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  resetSearchStore: PropTypes.func.isRequired,
   typeSublabels: PropTypes.arrayOf(PropTypes.string).isRequired,
   typeSublabelsAndDescription: PropTypes.arrayOf(
     PropTypes.shape({
       description: PropTypes.string,
       sublabel: PropTypes.string,
-    })
-  ).isRequired,
-  types: PropTypes.arrayOf(
-    PropTypes.shape({
-      appLabel: PropTypes.string,
-      description: PropTypes.string,
-      id: PropTypes.number,
     })
   ).isRequired,
 }

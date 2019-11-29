@@ -4,7 +4,7 @@ exports[`src | components | pages | Search snapshot should match the snapshot 1`
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Search
-    getRecommendations={[MockFunction]}
+    getResearchedRecommendations={[MockFunction]}
     getTypes={
       [MockFunction] {
         "calls": Array [
@@ -120,15 +120,11 @@ ShallowWrapper {
         "parse": [Function],
       }
     }
-    recommendations={Array []}
+    researchedRecommendations={Array []}
+    resetSearchStore={[MockFunction]}
     search={Object {}}
     typeSublabels={Array []}
     typeSublabelsAndDescription={Array []}
-    types={
-      Array [
-        Object {},
-      ]
-    }
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],

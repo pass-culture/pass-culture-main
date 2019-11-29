@@ -76,7 +76,7 @@ describe('src | components | pages | Search', () => {
     beforeEach(() => {
       props = {
         history: historyMock,
-        getRecommendations: jest.fn(),
+        getResearchedRecommendations: jest.fn(),
         getTypes: jest.fn(),
         location: {
           hash: '',
@@ -94,9 +94,9 @@ describe('src | components | pages | Search', () => {
           change: queryChangeMock,
           parse: () => ({ page: '1' }),
         },
-        recommendations: [],
+        researchedRecommendations: [],
+        resetSearchStore: jest.fn(),
         search: {},
-        types: [{}],
         typeSublabels: [],
         typeSublabelsAndDescription: [],
       }
@@ -116,7 +116,7 @@ describe('src | components | pages | Search', () => {
       let props
       beforeEach(() => {
         props = {
-          getRecommendations: jest.fn(),
+          getResearchedRecommendations: jest.fn(),
           getTypes: jest.fn(),
           history: historyMock,
           location: {
@@ -135,9 +135,9 @@ describe('src | components | pages | Search', () => {
             change: queryChangeMock,
             parse: () => ({ page: '1' }),
           },
-          recommendations: [],
+          researchedRecommendations: [],
+          resetSearchStore: jest.fn(),
           search: {},
-          types: [{}],
           typeSublabels: [],
           typeSublabelsAndDescription: [],
         }
@@ -205,7 +205,7 @@ describe('src | components | pages | Search', () => {
         let props
         beforeEach(() => {
           props = {
-            getRecommendations: jest.fn(),
+            getResearchedRecommendations: jest.fn(),
             getTypes: jest.fn(),
             history: historyMock,
             location: {
@@ -224,9 +224,9 @@ describe('src | components | pages | Search', () => {
               change: queryChangeMock,
               parse: () => ({ page: '1' }),
             },
-            recommendations: [],
+            researchedRecommendations: [],
+            resetSearchStore: jest.fn(),
             search: {},
-            types: [{}],
             typeSublabels: [],
             typeSublabelsAndDescription: [],
           }
@@ -256,7 +256,7 @@ describe('src | components | pages | Search', () => {
         let props
         beforeEach(() => {
           props = {
-            getRecommendations: jest.fn(),
+            getResearchedRecommendations: jest.fn(),
             getTypes: jest.fn(),
             history: historyMock,
             location: {
@@ -279,9 +279,9 @@ describe('src | components | pages | Search', () => {
                 'mots-cles': 'Fake',
               }),
             },
-            recommendations: [],
+            researchedRecommendations: [],
+            resetSearchStore: jest.fn(),
             search: {},
-            types: [{}],
             typeSublabels: [],
             typeSublabelsAndDescription: [
               {
@@ -336,7 +336,7 @@ describe('src | components | pages | Search', () => {
       beforeEach(() => {
         props = {
           history: historyMock,
-          getRecommendations: jest.fn(),
+          getResearchedRecommendations: jest.fn(),
           getTypes: jest.fn(),
           location: {
             hash: '',
@@ -354,8 +354,8 @@ describe('src | components | pages | Search', () => {
             change: queryChangeMock,
             parse: () => ({ page: '1' }),
           },
-          recommendations: [],
-          types: [{}],
+          researchedRecommendations: [],
+          resetSearchStore: jest.fn(),
           search: {},
           typeSublabels: [],
           typeSublabelsAndDescription: [],
@@ -384,7 +384,7 @@ describe('src | components | pages | Search', () => {
         let props
         beforeEach(() => {
           props = {
-            getRecommendations: jest.fn(),
+            getResearchedRecommendations: jest.fn(),
             getTypes: jest.fn(),
             history: historyMock,
             location: {
@@ -403,9 +403,9 @@ describe('src | components | pages | Search', () => {
               change: queryChangeMock,
               parse: () => ({ page: '1' }),
             },
-            recommendations: [],
+            researchedRecommendations: [],
+            resetSearchStore: jest.fn(),
             search: {},
-            types: [{}],
             typeSublabels: [],
             typeSublabelsAndDescription: [],
           }
@@ -428,7 +428,7 @@ describe('src | components | pages | Search', () => {
           let props
           beforeEach(() => {
             props = {
-              getRecommendations: jest.fn(),
+              getResearchedRecommendations: jest.fn(),
               getTypes: jest.fn(),
               history: historyMock,
               location: {
@@ -447,9 +447,9 @@ describe('src | components | pages | Search', () => {
                 change: queryChangeMock,
                 parse: () => ({ page: '1' }),
               },
-              recommendations: [],
+              researchedRecommendations: [],
+              resetSearchStore: jest.fn(),
               search: {},
-              types: [{}],
               typeSublabels: [],
               typeSublabelsAndDescription: [],
             }
@@ -471,7 +471,7 @@ describe('src | components | pages | Search', () => {
           let props
           beforeEach(() => {
             props = {
-              getRecommendations: jest.fn(),
+              getResearchedRecommendations: jest.fn(),
               getTypes: jest.fn(),
               history: historyMock,
               location: {
@@ -490,9 +490,9 @@ describe('src | components | pages | Search', () => {
                 change: queryChangeMock,
                 parse: () => ({ page: '1' }),
               },
-              recommendations: [],
+              researchedRecommendations: [],
+              resetSearchStore: jest.fn(),
               search: {},
-              types: [{}],
               typeSublabels: [],
               typeSublabelsAndDescription: [],
             }
@@ -520,7 +520,7 @@ describe('src | components | pages | Search', () => {
         let props
         beforeEach(() => {
           props = {
-            getRecommendations: jest.fn(),
+            getResearchedRecommendations: jest.fn(),
             getTypes: jest.fn(),
             history: historyMock,
             location: {
@@ -539,9 +539,9 @@ describe('src | components | pages | Search', () => {
               change: queryChangeMock,
               parse: () => ({ page: '1' }),
             },
-            recommendations: [],
+            researchedRecommendations: [],
+            resetSearchStore: jest.fn(),
             search: {},
-            types: [{}],
             typeSublabels: [],
             typeSublabelsAndDescription: [],
           }
@@ -565,7 +565,7 @@ describe('src | components | pages | Search', () => {
 
       beforeEach(() => {
         props = {
-          getRecommendations: jest.fn(),
+          getResearchedRecommendations: jest.fn(),
           getTypes: jest.fn(),
           history: historyMock,
           location: {
@@ -584,9 +584,9 @@ describe('src | components | pages | Search', () => {
             change: queryChangeMock,
             parse: () => ({ page: '1' }),
           },
-          recommendations: [],
+          researchedRecommendations: [],
+          resetSearchStore: jest.fn(),
           search: {},
-          types: [{}],
           typeSublabels: [],
           typeSublabelsAndDescription: [],
         }
@@ -697,7 +697,7 @@ describe('src | components | pages | Search', () => {
       let props
       beforeEach(() => {
         props = {
-          getRecommendations: jest.fn(),
+          getResearchedRecommendations: jest.fn(),
           getTypes: jest.fn(),
           history: historyMock,
           location: {
@@ -716,9 +716,9 @@ describe('src | components | pages | Search', () => {
             change: queryChangeMock,
             parse: () => ({ page: '1' }),
           },
-          recommendations: [],
+          researchedRecommendations: [],
+          resetSearchStore: jest.fn(),
           search: {},
-          types: [{}],
           typeSublabels: [],
           typeSublabelsAndDescription: [],
         }
@@ -772,7 +772,7 @@ describe('src | components | pages | Search', () => {
     describe('onKeywordsChange', () => {
       // when
       const props = {
-        getRecommendations: jest.fn(),
+        getResearchedRecommendations: jest.fn(),
         getTypes: jest.fn(),
         history: historyMock,
         location: {
@@ -791,9 +791,9 @@ describe('src | components | pages | Search', () => {
           change: queryChangeMock,
           parse: () => ({ page: '1' }),
         },
-        recommendations: [],
+        researchedRecommendations: [],
+        resetSearchStore: jest.fn(),
         search: {},
-        types: [{}],
         typeSublabels: [],
         typeSublabelsAndDescription: [],
       }
@@ -825,7 +825,7 @@ describe('src | components | pages | Search', () => {
       describe('when user does not click on the icon button', () => {
         // given
         const props = {
-          getRecommendations: jest.fn(),
+          getResearchedRecommendations: jest.fn(),
           getTypes: jest.fn(),
           history: historyMock,
           location: {
@@ -844,9 +844,9 @@ describe('src | components | pages | Search', () => {
             change: queryChangeMock,
             parse: () => ({ page: '1' }),
           },
-          recommendations: [],
+          researchedRecommendations: [],
+          resetSearchStore: jest.fn(),
           search: {},
-          types: [{}],
           typeSublabels: [],
           typeSublabelsAndDescription: [],
         }
@@ -875,7 +875,7 @@ describe('src | components | pages | Search', () => {
       describe('when user click on the icon button', () => {
         // when
         const props = {
-          getRecommendations: jest.fn(),
+          getResearchedRecommendations: jest.fn(),
           getTypes: jest.fn(),
           history: historyMock,
           location: {
@@ -894,9 +894,9 @@ describe('src | components | pages | Search', () => {
             change: queryChangeMock,
             parse: () => ({ page: '1' }),
           },
-          recommendations: [],
+          researchedRecommendations: [],
+          resetSearchStore: jest.fn(),
           search: {},
-          types: [{}],
           typeSublabels: [],
           typeSublabelsAndDescription: [],
         }
@@ -924,7 +924,7 @@ describe('src | components | pages | Search', () => {
         it('should show ico-filter-active icon', () => {
           // given
           const props = {
-            getRecommendations: jest.fn(),
+            getResearchedRecommendations: jest.fn(),
             getTypes: jest.fn(),
             history: historyMock,
             location: {
@@ -954,9 +954,9 @@ describe('src | components | pages | Search', () => {
                 types: null,
               }),
             },
-            recommendations: [],
+            researchedRecommendations: [],
+            resetSearchStore: jest.fn(),
             search: {},
-            types: [{}],
             typeSublabels: [],
             typeSublabelsAndDescription: [],
           }
@@ -976,7 +976,7 @@ describe('src | components | pages | Search', () => {
 
       beforeEach(() => {
         props = {
-          getRecommendations: jest.fn(),
+          getResearchedRecommendations: jest.fn(),
           getTypes: jest.fn(),
           history: historyMock,
           location: {
@@ -1006,9 +1006,9 @@ describe('src | components | pages | Search', () => {
               types: null,
             }),
           },
-          recommendations: [],
+          researchedRecommendations: [],
+          resetSearchStore: jest.fn(),
           search: {},
-          types: [{}],
           typeSublabels: [],
           typeSublabelsAndDescription: [],
         }
@@ -1066,7 +1066,7 @@ describe('src | components | pages | Search', () => {
 
       beforeEach(() => {
         props = {
-          getRecommendations: jest.fn(),
+          getResearchedRecommendations: jest.fn(),
           getTypes: jest.fn(),
           history: historyMock,
           location: {
@@ -1082,9 +1082,9 @@ describe('src | components | pages | Search', () => {
             change: queryChangeMock,
             parse: () => ({}),
           },
-          recommendations: [],
+          researchedRecommendations: [],
+          resetSearchStore: jest.fn(),
           search: {},
-          types: [{}],
           typeSublabels: [],
           typeSublabelsAndDescription: [],
         }
@@ -1135,7 +1135,7 @@ describe('src | components | pages | Search', () => {
 
       it('should request data if needed', () => {
         // given
-        props.recommendations = [
+        props.researchedRecommendations = [
           {
             id: 'ABCD',
           },
@@ -1150,20 +1150,14 @@ describe('src | components | pages | Search', () => {
         wrapperInstance.handleRecommendationsRequest()
 
         // then
-        expect(props.getRecommendations).toHaveBeenCalledWith(
+        expect(props.getResearchedRecommendations).toHaveBeenCalledWith(
           '/recommendations?keywords=yolo',
           expect.any(Function)
         )
       })
 
-      it('should not request data if not needed', () => {
+      it('should reset researchedRecommendations store before a first page request', () => {
         // given
-        props.recommendations = [
-          {
-            id: 'ABCD',
-            search: 'keywords_string=bonjour',
-          },
-        ]
         props.query.parse = () => ({
           'mots-cles': 'yolo',
         })
@@ -1174,114 +1168,23 @@ describe('src | components | pages | Search', () => {
         wrapperInstance.handleRecommendationsRequest()
 
         // then
-        expect(props.getRecommendations).not.toHaveBeenCalled()
-        expect(wrapper.state('isLoading')).toBe(false)
-      })
-    })
-
-    describe('isRecommendationFound', () => {
-      let props
-
-      beforeEach(() => {
-        props = {
-          getRecommendations: jest.fn(),
-          getTypes: jest.fn(),
-          history: historyMock,
-          location: {
-            hash: '',
-            key: 'lxn6vp',
-            pathname: '/resultats',
-            search: '?mots-cles=bonjour',
-          },
-          match: {
-            params: {},
-          },
-          query: {
-            change: queryChangeMock,
-            parse: () => ({}),
-          },
-          recommendations: [],
-          search: {},
-          types: [{}],
-          typeSublabels: [],
-          typeSublabelsAndDescription: [],
-        }
+        expect(props.resetSearchStore).toHaveBeenCalledWith()
       })
 
-      it('should return true if recommendations are found', () => {
+      it('should not reset researchedRecommendations store before a second page or more request', () => {
         // given
-        props.location.search = '?mots-cles=bonjour'
-        props.recommendations = [
-          {
-            id: 'ABCD',
-            search: 'keywords_string=bonjour',
-          },
-        ]
+        props.query.parse = () => ({
+          'mots-cles': 'yolo',
+          page: 2,
+        })
         const wrapper = shallow(<Search {...props} />)
         const wrapperInstance = wrapper.instance()
 
         // when
-        const result = wrapperInstance.isRecommendationFound()
+        wrapperInstance.handleRecommendationsRequest()
 
         // then
-        expect(result).toBe(true)
-      })
-
-      it('should return false if no recommendations are found', () => {
-        // given
-        props.location.search = '?mots-cles=bonjour'
-        props.recommendations = [
-          {
-            id: 'ABCD',
-            search: 'keywords_string=NOT_FOUND',
-          },
-        ]
-        const wrapper = shallow(<Search {...props} />)
-        const wrapperInstance = wrapper.instance()
-
-        // when
-        const result = wrapperInstance.isRecommendationFound()
-
-        // then
-        expect(result).toBe(false)
-      })
-
-      it('should return false if page are different', () => {
-        // given
-        props.location.search = '?mots-cles=presque&page=1'
-        props.recommendations = [
-          {
-            id: 'ABCD',
-            search: 'keywords_string=presque&page=2',
-          },
-        ]
-        const wrapper = shallow(<Search {...props} />)
-        const wrapperInstance = wrapper.instance()
-
-        // when
-        const result = wrapperInstance.isRecommendationFound()
-
-        // then
-        expect(result).toBe(false)
-      })
-
-      it('should return true for same search without page on recommendation and with page=1', () => {
-        // given
-        props.location.search = '?mots-cles=presque&page=1'
-        props.recommendations = [
-          {
-            id: 'ABCD',
-            search: 'keywords_string=presque',
-          },
-        ]
-        const wrapper = shallow(<Search {...props} />)
-        const wrapperInstance = wrapper.instance()
-
-        // when
-        const result = wrapperInstance.isRecommendationFound()
-
-        // then
-        expect(result).toBe(true)
+        expect(props.resetSearchStore).not.toHaveBeenCalledWith()
       })
     })
   })

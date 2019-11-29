@@ -28,7 +28,7 @@ describe('src | components | layout | Menu | SignoutButton | SignoutButtonContai
             users: [{ id: 'u1' }],
           },
           menu: true,
-          pagination: initialPagination
+          pagination: initialPagination,
         })
         const history = createBrowserHistory()
         const readRecommendations = [
@@ -58,6 +58,7 @@ describe('src | components | layout | Menu | SignoutButton | SignoutButtonContai
           offers: [],
           readRecommendations: [],
           recommendations: [],
+          researchedRecommendations: [],
           showTypes: [],
           stocks: [],
           types: [],
@@ -67,7 +68,9 @@ describe('src | components | layout | Menu | SignoutButton | SignoutButtonContai
         expect(history.location.pathname).toBe('/connexion')
         expect(pagination.page).toBe(1)
         expect(pagination.seed).not.toStrictEqual(initialPagination.seed)
-        expect(pagination.seedLastRequestTimestamp).not.toStrictEqual(initialPagination.seedLastRequestTimestamp)
+        expect(pagination.seedLastRequestTimestamp).not.toStrictEqual(
+          initialPagination.seedLastRequestTimestamp
+        )
       })
     })
   })

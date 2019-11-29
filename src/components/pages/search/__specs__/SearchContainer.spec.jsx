@@ -14,23 +14,17 @@ describe('src | components | pages | SearchContainer', () => {
       // given
       const state = {
         data: {
-          recommendations: [],
+          researchedRecommendations: [],
           types: [],
-        },
-      }
-      const ownProps = {
-        location: {
-          search: '',
         },
       }
 
       // when
-      const props = mapStateToProps(state, ownProps)
+      const props = mapStateToProps(state)
 
       // then
       expect(props).toStrictEqual({
-        recommendations: [],
-        types: [],
+        researchedRecommendations: [],
         typeSublabels: [],
         typeSublabelsAndDescription: [],
         user: undefined,
@@ -44,15 +38,15 @@ describe('src | components | pages | SearchContainer', () => {
         // given
         const dispatch = jest.fn()
         const props = {}
-        const apiPath = 'Applaudir'
+        const apiPath = '/recommendations?categories=Applaudir'
 
         // when
-        mapDispatchToProps(dispatch, props).getRecommendations(apiPath)
+        mapDispatchToProps(dispatch, props).getResearchedRecommendations(apiPath)
 
         // then
         expect(dispatch.mock.calls[0][0]).toStrictEqual({
           config: {
-            apiPath: 'Applaudir',
+            apiPath: '/recommendations?categories=Applaudir',
             handleSuccess: undefined,
             method: 'GET',
             normalizer: {
@@ -71,12 +65,13 @@ describe('src | components | pages | SearchContainer', () => {
                 stateKey: 'offers',
               },
             },
+            stateKey: 'researchedRecommendations',
           },
-          type: 'REQUEST_DATA_GET_APPLAUDIR',
+          type: 'REQUEST_DATA_GET_RESEARCHEDRECOMMENDATIONS',
         })
         expect(dispatch.mock.calls[1][0]).toStrictEqual({
           page: 1,
-          type: 'UPDATE_PAGE'
+          type: 'UPDATE_PAGE',
         })
       })
     })
@@ -85,14 +80,14 @@ describe('src | components | pages | SearchContainer', () => {
       // given
       const dispatch = jest.fn()
       const props = {}
-      const apiPath = '%C3%89couter'
+      const apiPath = '/recommendations?categories=%C3%89couter'
       // when
-      mapDispatchToProps(dispatch, props).getRecommendations(apiPath)
+      mapDispatchToProps(dispatch, props).getResearchedRecommendations(apiPath)
 
       // then
       expect(dispatch).toHaveBeenCalledWith({
         config: {
-          apiPath: 'Écouter',
+          apiPath: '/recommendations?categories=Écouter',
           handleSuccess: undefined,
           method: 'GET',
           normalizer: {
@@ -111,8 +106,9 @@ describe('src | components | pages | SearchContainer', () => {
               stateKey: 'offers',
             },
           },
+          stateKey: 'researchedRecommendations',
         },
-        type: 'REQUEST_DATA_GET_ÉCOUTER',
+        type: 'REQUEST_DATA_GET_RESEARCHEDRECOMMENDATIONS',
       })
     })
 

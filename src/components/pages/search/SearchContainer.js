@@ -1,51 +1,51 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { requestData } from 'redux-thunk-data'
+import { assignData, requestData } from 'redux-thunk-data'
 
 import Search from './Search'
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
 import {
-  selectTypes,
   selectTypeSublabels,
   selectTypeSublabelsAndDescription,
 } from '../../../selectors/data/typesSelectors'
-import { selectRecommendationsBySearchQuery } from '../../../selectors/data/recommendationsSelectors'
+import { selectResearchedRecommendations } from '../../../selectors/data/researchedRecommendationsSelectors'
 import { recommendationNormalizer } from '../../../utils/normalizers'
 import { updatePage } from '../../../reducers/pagination'
 
-export const mapStateToProps = (state, ownProps) => {
-  const recommendations = selectRecommendationsBySearchQuery(state, ownProps.location)
+export const mapStateToProps = state => {
+  const researchedRecommendations = selectResearchedRecommendations(state)
   const typeSublabels = selectTypeSublabels(state)
   const typeSublabelsAndDescription = selectTypeSublabelsAndDescription(state)
-  const types = selectTypes(state)
   const { user } = state
 
   return {
-    recommendations,
+    researchedRecommendations,
     typeSublabels,
     typeSublabelsAndDescription,
     user,
-    types,
   }
 }
 
 export const mapDispatchToProps = dispatch => ({
-  getRecommendations: (apiPath, handleSuccess) => {
+  getResearchedRecommendations: (apiPath, handleSuccess) => {
     apiPath = decodeURIComponent(apiPath)
     dispatch(
       requestData({
         apiPath,
         handleSuccess,
         normalizer: recommendationNormalizer,
+        stateKey: 'researchedRecommendations',
       })
     )
-    dispatch(
-      updatePage(1)
-    )
+    dispatch(updatePage(1))
   },
 
   getTypes: () => {
     dispatch(requestData({ apiPath: '/types' }))
+  },
+
+  resetSearchStore: () => {
+    dispatch(assignData({ researchedRecommendations: [] }))
   },
 })
 
