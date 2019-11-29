@@ -100,11 +100,6 @@ Pour tester le backend:
 pc test-backend
 ```
 
-Pour tester le frontend:
-```bash
-pc test-frontend
-```
-
 Pour tester la navigation du site web
 ```bash
 pc -e production test-cafe-webapp -b firefox
