@@ -333,7 +333,7 @@ def make_user_booking_recap_email(booking: Booking, is_cancellation=False) -> Di
             booking)
 
     return {
-        'FromName': 'Pass Culture',
+        'FromName': 'pass Culture',
         'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
         'Subject': email_subject,
         'Html-part': email_html,
@@ -357,6 +357,21 @@ def make_reset_password_email_data(user: User) -> Dict:
                 'token': user_reset_password_token,
                 'env': env
             }
+    }
+
+
+def make_reset_password_email(user, app_origin_url):
+    email_html = render_template(
+        'mails/user_reset_password_email.html',
+        user=user,
+        app_origin_url=app_origin_url
+    )
+
+    return {
+        'FromName': 'Pass Culture',
+        'FromEmail': SUPPORT_EMAIL_ADDRESS,
+        'Subject': 'Réinitialisation de votre mot de passe',
+        'Html-part': email_html
     }
 
 

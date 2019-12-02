@@ -13,7 +13,7 @@ from utils.mailing import make_user_booking_recap_email, \
     make_pro_user_waiting_for_validation_by_admin_email, \
     make_venue_validation_confirmation_email, compute_email_html_part_and_recipients, \
     get_activation_email_data, ADMINISTRATION_EMAIL_ADDRESS, \
-    get_offerer_booking_recap_email_data, make_reset_password_email_data
+    get_offerer_booking_recap_email_data, make_reset_password_email_data, make_reset_password_email
 
 
 def send_final_booking_recap_email(stock: Stock, send_email: Callable[..., bool]) -> bool:
@@ -87,6 +87,13 @@ def send_offerer_driven_cancellation_email_to_offerer(booking: Booking, send_ema
         recipients.append(offerer_email)
     recipients.append(ADMINISTRATION_EMAIL_ADDRESS)
     email = make_offerer_driven_cancellation_email_for_offerer(booking)
+    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
+    return send_email(data=email)
+
+
+def send_reset_password_email(user: User, send_email: Callable[..., bool], app_origin_url: str) -> bool:
+    email = make_reset_password_email(user, app_origin_url)
+    recipients = [user.email]
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     return send_email(data=email)
 

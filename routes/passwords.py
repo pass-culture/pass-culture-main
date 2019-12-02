@@ -3,7 +3,7 @@ from flask_login import current_user, login_required
 
 from domain.password import validate_reset_request, check_reset_token_validity, validate_new_password_request, \
     check_password_strength, check_new_password_validity, generate_reset_token, validate_change_password_request
-from domain.user_emails import send_reset_password_email_with_mailjet_template
+from domain.user_emails import send_reset_password_email_with_mailjet_template, send_reset_password_email
 from models import ApiErrors, PcObject
 from repository.user_queries import find_user_by_email, find_user_by_reset_password_token
 from utils.mailing import \
@@ -38,9 +38,14 @@ def post_for_password_token():
 
     generate_reset_token(user)
     PcObject.save(user)
+    app_origin_url = request.headers.get('origin')
 
     try:
-        send_reset_password_email_with_mailjet_template(user, send_raw_email)
+        if user.canBookFreeOffers:
+            send_reset_password_email_with_mailjet_template(user, send_raw_email)
+        else:
+            send_reset_password_email(user, send_raw_email, app_origin_url)
+
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 

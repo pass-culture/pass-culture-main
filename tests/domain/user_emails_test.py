@@ -6,10 +6,53 @@ from domain.user_emails import send_user_driven_cancellation_email_to_user, \
     send_booking_confirmation_email_to_user, send_booking_recap_emails, send_final_booking_recap_email, \
     send_validation_confirmation_email, send_batch_cancellation_emails_to_users, \
     send_batch_cancellation_email_to_offerer, send_user_validation_email, send_venue_validation_confirmation_email, \
-    send_reset_password_email_with_mailjet_template, send_activation_email, send_pro_user_waiting_for_validation_by_admin_email
+    send_reset_password_email_with_mailjet_template, send_activation_email, \
+    send_pro_user_waiting_for_validation_by_admin_email, send_reset_password_email
 from models import Offerer, UserOfferer, User, RightsType
 from tests.test_utils import create_user, create_booking, create_stock_with_event_offer, create_offerer, create_venue, \
     create_offer_with_thing_product, create_stock_with_thing_offer, create_mocked_bookings
+
+
+class SendResetPasswordEmailTest:
+    def when_feature_send_emails_enabled_sends_a_reset_password_email_to_user(self, app):
+        # given
+        user = create_user(public_name='bobby', email='bobby@test.com', reset_password_token='AZ45KNB99H')
+        mocked_send_email = Mock()
+        return_value = Mock()
+        return_value.status_code = 200
+        mocked_send_email.return_value = return_value
+
+        # when
+        with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
+            send_reset_password_email(user, mocked_send_email, 'localhost')
+
+        # then
+        mocked_send_email.assert_called_once()
+        args = mocked_send_email.call_args
+        data = args[1]['data']
+        assert data['FromName'] == 'Pass Culture'
+        assert data['FromEmail'] == 'support@passculture.app'
+        assert data['Subject'] == 'Réinitialisation de votre mot de passe'
+        assert data['To'] == 'bobby@test.com'
+
+    def when_feature_send_emails_disabled_sends_email_to_pass_culture_dev(self, app):
+        # given
+        user = create_user(public_name='bobby', email='bobby@test.com', reset_password_token='AZ45KNB99H')
+        mocked_send_email = Mock()
+        return_value = Mock()
+        return_value.status_code = 200
+        mocked_send_email.return_value = return_value
+
+        # when
+        with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
+            send_reset_password_email(user, mocked_send_email, 'localhost')
+
+        # then
+        mocked_send_email.assert_called_once()
+        args = mocked_send_email.call_args
+        email = args[1]['data']
+        assert email['To'] == 'dev@passculture.app'
+        assert 'This is a test' in email['Html-part']
 
 
 class SendUserDrivenCancellationEmailToUserTest:
@@ -233,7 +276,7 @@ class SendBookingConfirmationEmailToUserTest:
         called_with_args = mocked_send_email.call_args[1]['data']
         assert 'This is a test (ENV=development). In production, email would have been sent to : test@email.com' in called_with_args['Html-part']
         assert called_with_args['To'] == 'dev@passculture.app'
-        assert called_with_args['FromName'] == 'Pass Culture'
+        assert called_with_args['FromName'] == 'pass Culture'
         assert called_with_args['FromEmail'] == 'dev@passculture.app'
 
 

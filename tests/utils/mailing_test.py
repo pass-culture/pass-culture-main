@@ -38,7 +38,7 @@ from utils.mailing import get_activation_email_data, make_batch_cancellation_ema
     send_raw_email, resend_email, \
     write_object_validation_email, compute_email_html_part_and_recipients, \
     get_offerer_booking_recap_email_data, make_reset_password_email_data, \
-    ADMINISTRATION_EMAIL_ADDRESS, _get_users_information_from_bookings
+    ADMINISTRATION_EMAIL_ADDRESS, _get_users_information_from_bookings, make_reset_password_email
 
 SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL = \
     'Confirmation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
@@ -1971,6 +1971,22 @@ class ComputeEmailHtmlPartAndRecipientsTest:
         # then
         assert html == "my_html"
         assert to == "plop@plop.com, plip@plip.com"
+
+
+class MakeResetPasswordTest:
+    def test_make_reset_password_email_generates_an_html_email_with_a_reset_link(app):
+        # given
+        user = create_user(public_name='bobby', email='bobby@test.com', reset_password_token='AZ45KNB99H')
+
+        # when
+        email = make_reset_password_email(user, 'app-jeune')
+
+        # then
+        html = BeautifulSoup(email['Html-part'], features="html.parser")
+        assert html.select('a.reset-password-link')[
+                   0].text.strip() == 'app-jeune/mot-de-passe-perdu?token=AZ45KNB99H'
+        assert html.select('div.validity-info')[
+                   0].text.strip() == 'Le lien est valable 24h. Au delà de ce délai, vous devrez demander une nouvelle réinitialisation.'
 
 
 @freeze_time('2018-10-15 09:21:34')
