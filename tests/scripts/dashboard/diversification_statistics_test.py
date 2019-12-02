@@ -910,7 +910,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
 
     @clean_database
     @patch('repository.offer_queries._exclude_booked_and_favorite')
-    def test_should_not_filter_for_favorites_and_bookings_if_no_user(self, exclude_booked_and_favorite,app):
+    def test_should_not_filter_favorites_and_bookings_if_no_user(self, exclude_booked_and_favorite,app):
         # When
         get_offers_available_on_discovery_count()
 
