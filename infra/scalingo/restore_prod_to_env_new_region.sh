@@ -36,6 +36,7 @@ if [[ $# -gt 1 ]] && [[ "$1" == "-b" ]]; then
   shift 2
 elif [[ "$*" == *"-l"* ]]; then
   BACKUP_FILE=$(cd "$DUMP_DIRECTORY" && find -L . ! -size 0 -type f -printf "%T@ %p\n" | sort -n  | tail -1 | cut -d' ' -f 2)
+  echo "Using backup file :" $BACKUP_FILE
   shift 1
 else
   echo "You must provide a existing backup file to restore."
@@ -73,6 +74,7 @@ PGPASSWORD="$PG_PASSWORD" psql --host 127.0.0.1 \
                                -a -f /usr/local/bin/clean_database.sql
 
 echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Database dropped"
+echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Start restore"
 
 
 PGPASSWORD="$PG_PASSWORD" pg_restore --host 127.0.0.1 \
@@ -81,6 +83,7 @@ PGPASSWORD="$PG_PASSWORD" pg_restore --host 127.0.0.1 \
                                          --no-owner \
                                          -j 2 \
                                          --no-privileges \
+					                               --verbose \
                                          --dbname "$PG_DATABASE" \
                                          "$DUMP_DIRECTORY"/"$BACKUP_FILE" 2>&1 | grep -v 'must be owner of extension' \
                                           | grep -v 'must be owner of schema public' \
@@ -89,7 +92,7 @@ PGPASSWORD="$PG_PASSWORD" pg_restore --host 127.0.0.1 \
 
 if [[ $# -gt 0 ]] && [[ "$1" == "-z" ]]; then
   echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Start anonymization"
-  TARGET_USER=$PG_USER TARGET_PASSWORD=$PG_PASSWORD bash /usr/local/bin/anonymize_database.sh -a "$APP_NAME"
+  TUNNEL_PORT=$TUNNEL_PORT TARGET_USER=$PG_USER TARGET_PASSWORD=$PG_PASSWORD bash /usr/local/bin/anonymize_database.sh -a "$APP_NAME"
   echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Anonymization success."
   shift 1
 fi
