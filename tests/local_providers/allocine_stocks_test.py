@@ -515,10 +515,18 @@ class UpdateObjectsTest:
                         "showtimes": [
                             {
                                 "startsAt": "2019-10-29T10:30:00",
-                                "diffusionVersion": "ORIGINAL"
+                                "diffusionVersion": "ORIGINAL",
+                                "projection": [
+                                    "DIGITAL"
+                                ],
+                                "experience": None
                             },{
                                 "startsAt": "2019-10-29T14:30:00",
-                                "diffusionVersion": "ORIGINAL"
+                                "diffusionVersion": "ORIGINAL",
+                                "projection": [
+                                    "DIGITAL"
+                                ],
+                                "experience": None
                             }
                         ]
                     }
@@ -1666,8 +1674,8 @@ class RetrieveShowtimeInformationTest:
         parsed_movie_showtime = retrieve_showtime_information(movie_showtime)
 
         # Then
-        assert parsed_movie_showtime == {"startsAt": datetime(2019, 12, 3, 20, 0), "diffusionVersion": "LOCAL", "projection": "NON DIGITAL",
-                                         "experience": None}
+        assert parsed_movie_showtime == {"startsAt": datetime(2019, 12, 3, 20, 0), "diffusionVersion": "LOCAL",
+                                         "projection": "NON DIGITAL","experience": None}
 
     def test_should_raise_key_error_exception_when_missing_keys_in_showtime_information(self):
         # Given
