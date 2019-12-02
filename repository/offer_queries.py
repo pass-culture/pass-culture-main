@@ -125,7 +125,8 @@ def get_active_offers_ids_query(user, departement_codes=['00'], offer_id=None):
     logger.debug(lambda: '(reco) active and validated {}'.format(active_offers_query.count()))
     active_offers_query = _not_activation_offers(active_offers_query)
     logger.debug(lambda: '(reco) not_currently_recommended and not_activation {}'.format(active_offers_query.count()))
-    active_offers_query = _exclude_booked_and_favorite(active_offers_query, user)
+    if user:
+        active_offers_query = _exclude_booked_and_favorite(active_offers_query, user)
     active_offer_ids = active_offers_query.with_entities(Offer.id).subquery()
     return active_offer_ids
 

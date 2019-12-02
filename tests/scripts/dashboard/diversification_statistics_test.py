@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from unittest.mock import patch
 
 import pandas
 
@@ -115,6 +116,15 @@ class GetOffererCountWithStockTest:
 
 class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
     @clean_database
+    @patch('repository.offer_queries._exclude_booked_and_favorite')
+    def test_should_not_filter_for_favorites_and_bookings_if_no_user(self, exclude_booked_and_favorite,app):
+        # When
+        get_offerers_with_offer_available_on_discovery_count()
+
+        # Then
+        exclude_booked_and_favorite.assert_not_called()
+
+    @clean_database
     def test_returns_0_if_only_offerer_with_inactive_offer(self, app):
         # Given
         offerer = create_offerer()
@@ -126,7 +136,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         PcObject.save(stock)
 
         # When
-        number_of_offerers = get_offerers_with_offer_available_on_discovery_count(user=user)
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count()
 
         # Then
         assert number_of_offerers == 0
@@ -142,7 +152,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         PcObject.save(offer)
 
         # When
-        number_of_offerers = get_offerers_with_offer_available_on_discovery_count(user=user)
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count()
 
         # Then
         assert number_of_offerers == 0
@@ -159,7 +169,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         PcObject.save(stock)
 
         # When
-        number_of_offerers = get_offerers_with_offer_available_on_discovery_count(user=user)
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count()
 
         # Then
         assert number_of_offerers == 0
@@ -175,7 +185,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         PcObject.save(stock)
 
         # When
-        number_of_offerers = get_offerers_with_offer_available_on_discovery_count(user=user)
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count()
 
         # Then
         assert number_of_offerers == 0
@@ -192,7 +202,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         PcObject.save(stock)
 
         # When
-        number_of_offerers = get_offerers_with_offer_available_on_discovery_count(user=user)
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count()
 
         # Then
         assert number_of_offerers == 0
@@ -208,7 +218,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         PcObject.save(stock)
 
         # When
-        number_of_offerers = get_offerers_with_offer_available_on_discovery_count(user=user)
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count()
 
         # Then
         assert number_of_offerers == 0
@@ -224,7 +234,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         PcObject.save(stock)
 
         # When
-        number_of_offerers = get_offerers_with_offer_available_on_discovery_count(user=user)
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count()
 
         # Then
         assert number_of_offerers == 0
@@ -240,7 +250,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         PcObject.save(stock)
 
         # When
-        number_of_offerers = get_offerers_with_offer_available_on_discovery_count(user=user)
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count()
 
         # Then
         assert number_of_offerers == 0
@@ -257,7 +267,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         PcObject.save(stock)
 
         # When
-        number_of_offerers = get_offerers_with_offer_available_on_discovery_count(user=user)
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count()
 
         # Then
         assert number_of_offerers == 1
@@ -277,7 +287,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         PcObject.save(stock1, stock2, offer2)
 
         # When
-        number_of_offerers = get_offerers_with_offer_available_on_discovery_count(user=user)
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count()
 
         # Then
         assert number_of_offerers == 1
@@ -304,7 +314,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         PcObject.save(first_offerer, first_venue, second_offerer, second_venue)
 
         # When
-        number_of_offerers = get_offerers_with_offer_available_on_discovery_count(user=first_user, departement_code='76')
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count(departement_code='76')
 
         # Then
         assert number_of_offerers == 1
@@ -435,6 +445,7 @@ class GetOfferersWithOffersAvailableOnSearchCountTest:
 
         # Then
         assert number_of_offers == 1
+
 
 
 class GetOfferersWithNonCancelledBookingsCountTest:
@@ -698,7 +709,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         PcObject.save(stock)
 
         # When
-        number_of_offers = get_offers_available_on_discovery_count(user=user)
+        number_of_offers = get_offers_available_on_discovery_count()
 
         # Then
         assert number_of_offers == 0
@@ -714,7 +725,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         PcObject.save(offer)
 
         # When
-        number_of_offers = get_offers_available_on_discovery_count(user=user)
+        number_of_offers = get_offers_available_on_discovery_count()
 
         # Then
         assert number_of_offers == 0
@@ -731,7 +742,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         PcObject.save(stock)
 
         # When
-        number_of_offers = get_offers_available_on_discovery_count(user=user)
+        number_of_offers = get_offers_available_on_discovery_count()
 
         # Then
         assert number_of_offers == 0
@@ -747,7 +758,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         PcObject.save(stock)
 
         # When
-        number_of_offers = get_offers_available_on_discovery_count(user=user)
+        number_of_offers = get_offers_available_on_discovery_count()
 
         # Then
         assert number_of_offers == 0
@@ -763,7 +774,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         PcObject.save(stock)
 
         # When
-        number_of_offers = get_offers_available_on_discovery_count(user=user)
+        number_of_offers = get_offers_available_on_discovery_count()
 
         # Then
         assert number_of_offers == 0
@@ -780,7 +791,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         PcObject.save(stock)
 
         # When
-        number_of_offers = get_offers_available_on_discovery_count(user=user)
+        number_of_offers = get_offers_available_on_discovery_count()
 
         # Then
         assert number_of_offers == 0
@@ -796,7 +807,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         PcObject.save(stock)
 
         # When
-        number_of_offers = get_offers_available_on_discovery_count(user=user)
+        number_of_offers = get_offers_available_on_discovery_count()
 
         # Then
         assert number_of_offers == 0
@@ -812,7 +823,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         PcObject.save(stock)
 
         # When
-        number_of_offers = get_offers_available_on_discovery_count(user=user)
+        number_of_offers = get_offers_available_on_discovery_count()
 
         # Then
         assert number_of_offers == 0
@@ -828,7 +839,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         PcObject.save(stock)
 
         # When
-        number_of_offers = get_offers_available_on_discovery_count(user=user)
+        number_of_offers = get_offers_available_on_discovery_count()
 
         # Then
         assert number_of_offers == 0
@@ -845,7 +856,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         PcObject.save(stock)
 
         # When
-        number_of_offers = get_offers_available_on_discovery_count(user=user)
+        number_of_offers = get_offers_available_on_discovery_count()
 
         # Then
         assert number_of_offers == 1
@@ -865,7 +876,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         PcObject.save(stock1, stock2)
 
         # When
-        number_of_offers = get_offers_available_on_discovery_count(user=user)
+        number_of_offers = get_offers_available_on_discovery_count()
 
         # Then
         assert number_of_offers == 2
@@ -892,10 +903,19 @@ class GetOffersAvailableOnDiscoveryCountTest:
         PcObject.save(first_stock, second_stock)
 
         # When
-        number_of_offers = get_offers_available_on_discovery_count(user=first_user, departement_code='41')
+        number_of_offers = get_offers_available_on_discovery_count(departement_code='41')
 
         # Then
         assert number_of_offers == 1
+
+    @clean_database
+    @patch('repository.offer_queries._exclude_booked_and_favorite')
+    def test_should_not_filter_for_favorites_and_bookings_if_no_user(self, exclude_booked_and_favorite,app):
+        # When
+        get_offers_available_on_discovery_count()
+
+        # Then
+        exclude_booked_and_favorite.assert_not_called()
 
 
 class GetOffersAvailableOnSearchCountTest:
