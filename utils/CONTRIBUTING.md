@@ -12,7 +12,7 @@ from utils.mailing import send_raw_email
 from repository.user_queries import find_user_by_email
 from domain.user_emails import send_activation_email
 
-user = find_user_by_email('prenom.nom@passculture.app')
+user = find_user_by_email('fabien.mercier+test@passculture.app')
 with app.app_context():
     send_activation_email(user, send_raw_email)
 ```

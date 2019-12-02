@@ -35,14 +35,6 @@ def generate_activation_users_csv(activation_users: Iterable[ActivationUser]) ->
     return output.getvalue()
 
 
-def generate_set_password_url(app_domain: str, user: User) -> str:
-    return '%s/activation/%s?%s' % (
-        app_domain,
-        user.resetPasswordToken,
-        urlencode({'email': user.email})
-    )
-
-
 def is_activation_booking(booking):
     return booking.stock.offer.type in [str(EventType.ACTIVATION), str(ThingType.ACTIVATION)]
 

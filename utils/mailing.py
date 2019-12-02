@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 from pprint import pformat
 from typing import Dict, List, Union
+from urllib.parse import quote
 
 from flask import current_app as app, render_template
 
@@ -415,7 +416,7 @@ def get_activation_email_data(user: User) -> Dict:
         'Vars': {
             'prenom_user': first_name,
             'token': token,
-            'email': email,
+            'email': quote(email),
             'env': env
         },
     }
