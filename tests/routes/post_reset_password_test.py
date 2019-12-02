@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
 
+from unittest.mock import patch
+
 from domain.password import RESET_PASSWORD_TOKEN_LENGTH
 from models import PcObject, User
 from tests.conftest import clean_database, TestClient
@@ -65,3 +67,39 @@ class PostResetPassword:
             assert len(user.resetPasswordToken) == RESET_PASSWORD_TOKEN_LENGTH
             now = datetime.utcnow()
             assert (now + timedelta(hours=23)) < user.resetPasswordTokenValidityLimit < (now + timedelta(hours=25))
+
+        @clean_database
+        @patch('routes.passwords.send_reset_password_email_with_mailjet_template')
+        @patch('routes.passwords.send_raw_email')
+        def test_should_send_reset_password_with_mailjet_template_when_user_is_a_beneficiary(self, send_raw_email_mock,
+                                                                                             send_reset_password_email_with_mailjet_template_mock,
+                                                                                             app):
+            # given
+            data = {'email': 'bobby@example.com'}
+            user = create_user(email='bobby@example.com', can_book_free_offers=True)
+            app_origin_header = 'http://localhost:3000'
+            PcObject.save(user)
+
+            # when
+            TestClient(app.test_client()).post('/users/reset-password', json=data,
+                                                          headers={'origin': app_origin_header})
+
+            # then
+            send_reset_password_email_with_mailjet_template_mock.assert_called_once_with(user, send_raw_email_mock)
+
+        @clean_database
+        @patch('routes.passwords.send_reset_password_email')
+        @patch('routes.passwords.send_raw_email')
+        def test_should_send_reset_password_when_user_is_an_offerer(self, send_raw_email_mock, send_reset_password_email_mock, app):
+            # given
+            data = {'email': 'bobby@example.com'}
+            user = create_user(email='bobby@example.com', can_book_free_offers=False)
+            app_origin_header = 'http://localhost:3000'
+            PcObject.save(user)
+
+            # when
+            TestClient(app.test_client()).post('/users/reset-password', json=data,
+                                                          headers={'origin': app_origin_header})
+
+            # then
+            send_reset_password_email_mock.assert_called_once_with(user, send_raw_email_mock, app_origin_header)

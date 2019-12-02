@@ -30,7 +30,7 @@ class SendResetPasswordEmailTest:
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
         data = args[1]['data']
-        assert data['FromName'] == 'Pass Culture'
+        assert data['FromName'] == 'pass Culture'
         assert data['FromEmail'] == 'support@passculture.app'
         assert data['Subject'] == 'Réinitialisation de votre mot de passe'
         assert data['To'] == 'bobby@test.com'
