@@ -9,7 +9,7 @@ from freezegun import freeze_time
 
 from local_providers import AllocineStocks
 from local_providers.allocine_stocks import retrieve_movie_information, _parse_movie_duration, _format_poster_url, \
-    _get_stock_number_from_stock_id, _filter_only_digital_and_non_experience_showtimes, retrieve_showtime_information
+    _get_stock_number_from_id_at_providers, _filter_only_digital_and_non_experience_showtimes, retrieve_showtime_information
 from models import PcObject, Offer, EventType, Product, Stock
 from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
@@ -1222,7 +1222,7 @@ class UpdateObjectsTest:
                 }])
 
             offerer = create_offerer(siren='775671464')
-            venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@toto.com')
+            venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@example.com')
             PcObject.save(venue)
 
             allocine_provider = get_provider_by_local_class('AllocineStocks')
@@ -1383,7 +1383,7 @@ class UpdateObjectsTest:
                 }])
 
             offerer = create_offerer(siren='775671464')
-            venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@toto.com')
+            venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@example.com')
             PcObject.save(venue)
 
             allocine_provider = get_provider_by_local_class('AllocineStocks')
@@ -1667,15 +1667,19 @@ class RetrieveMovieInformationTest:
 class RetrieveShowtimeInformationTest:
     def test_should_retrieve_showtime_information_from_allocine_json_response(self):
         # Given
-        movie_showtime = {"startsAt": "2019-12-03T20:00:00", "diffusionVersion": "LOCAL", "projection": ["NON DIGITAL"],
+        movie_showtime = {"startsAt": "2019-12-03T20:00:00",
+                          "diffusionVersion": "LOCAL",
+                          "projection": ["NON DIGITAL"],
                           "experience": None}
 
         # When
         parsed_movie_showtime = retrieve_showtime_information(movie_showtime)
 
         # Then
-        assert parsed_movie_showtime == {"startsAt": datetime(2019, 12, 3, 20, 0), "diffusionVersion": "LOCAL",
-                                         "projection": "NON DIGITAL","experience": None}
+        assert parsed_movie_showtime == {"startsAt": datetime(2019, 12, 3, 20, 0),
+                                         "diffusionVersion": "LOCAL",
+                                         "projection": "NON DIGITAL",
+                                         "experience": None}
 
     def test_should_raise_key_error_exception_when_missing_keys_in_showtime_information(self):
         # Given
@@ -1704,7 +1708,7 @@ class GetStockNumberFromStockIdTest:
         id_at_provider = 'TW92aWU6Mzc4MzI=-12'
 
         # When
-        stock_number = _get_stock_number_from_stock_id(id_at_provider)
+        stock_number = _get_stock_number_from_id_at_providers(id_at_provider)
 
         # Then
         assert stock_number == 12
@@ -1714,15 +1718,21 @@ class FilterOnlyDigitalAndNonExperiencedShowtimesTest:
     def test_should_filter_only_digital_and_non_experience_showtimes(self):
         # Given
         movie_information = [
-            {"startsAt": "2019-12-03T10:00:00", "diffusionVersion": "LOCAL", "projection": ["DIGITAL"],
+            {"startsAt": "2019-12-03T10:00:00",
+             "diffusionVersion": "LOCAL",
+             "projection": ["DIGITAL"],
              "experience": None},
-            {"startsAt": "2019-12-03T18:00:00", "diffusionVersion": "ORIGINAL", "projection": ["NON DIGITALE"],
+            {"startsAt": "2019-12-03T18:00:00",
+             "diffusionVersion": "ORIGINAL",
+             "projection": ["NON DIGITAL"],
              "experience": 'experience'},
-            {"startsAt": "2019-12-03T20:00:00", "diffusionVersion": "LOCAL", "projection": ["DIGITAL"],
-             "experience": None},
-            {"startsAt": "2019-12-03T20:00:00", "diffusionVersion": "LOCAL", "projection": ["DIGITAL"],
+            {"startsAt": "2019-12-03T20:00:00",
+             "diffusionVersion": "LOCAL",
+             "projection": ["DIGITAL"],
              "experience": 'experience'},
-            {"startsAt": "2019-12-03T20:00:00", "diffusionVersion": "LOCAL", "projection": ["NON DIGITAL"],
+            {"startsAt": "2019-12-03T20:00:00",
+             "diffusionVersion": "LOCAL",
+             "projection": ["NON DIGITAL"],
              "experience": None}
         ]
 
@@ -1731,8 +1741,8 @@ class FilterOnlyDigitalAndNonExperiencedShowtimesTest:
 
         # Then
         assert filtered_movie_showtimes == [
-            {"startsAt": "2019-12-03T10:00:00", "diffusionVersion": "LOCAL", "projection": ["DIGITAL"],
-             "experience": None},
-            {"startsAt": "2019-12-03T20:00:00", "diffusionVersion": "LOCAL", "projection": ["DIGITAL"],
-             "experience": None},
+            {"startsAt": "2019-12-03T10:00:00",
+             "diffusionVersion": "LOCAL",
+             "projection": ["DIGITAL"],
+             "experience": None}
             ]

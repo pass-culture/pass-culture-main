@@ -136,16 +136,8 @@ class AllocineStocks(LocalProvider):
             self.last_vf_offer_id = allocine_offer.id
 
     def fill_stock_attributes(self, allocine_stock: Stock):
-        stock_number = _get_stock_number_from_stock_id(allocine_stock.idAtProviders)
-
-        try:
-            parsed_showtimes = retrieve_showtime_information(self.filtered_movie_showtimes[stock_number])
-
-        except KeyError:
-            self.log_provider_event(LocalProviderEventType.SyncError,
-                                f"Error parsing information for movie: {self.filtered_movie_showtimes[stock_number]}")
-            return []
-
+        stock_number = _get_stock_number_from_id_at_providers(allocine_stock.idAtProviders)
+        parsed_showtimes = retrieve_showtime_information(self.filtered_movie_showtimes[stock_number])
         diffusion_version = parsed_showtimes['diffusionVersion']
 
         allocine_stock.offerId = self.last_vo_offer_id if diffusion_version == ORIGINAL_VERSION else \
@@ -200,22 +192,20 @@ def retrieve_movie_information(raw_movie_information: dict) -> dict:
 
 
 def retrieve_showtime_information(showtime_information: dict) -> dict:
-    parsed_showtime_information = dict()
-    parsed_showtime_information['startsAt'] = parse(showtime_information['startsAt'])
-    parsed_showtime_information['diffusionVersion'] = showtime_information['diffusionVersion']
-    parsed_showtime_information['projection'] = showtime_information['projection'][0]
-    parsed_showtime_information['experience'] = showtime_information['experience']
-
-    return parsed_showtime_information
+    return {
+        'startsAt': parse(showtime_information['startsAt']),
+        'diffusionVersion': showtime_information['diffusionVersion'],
+        'projection': showtime_information['projection'][0],
+        'experience': showtime_information['experience']
+    }
 
 
 def _filter_only_digital_and_non_experience_showtimes(showtimes_information: List[dict]) -> List[dict]:
-    filtered_movie_information = list(filter(lambda showtime: showtime['projection'][0] == DIGITAL_PROJECTION and
+    return list(filter(lambda showtime: showtime['projection'][0] == DIGITAL_PROJECTION and
                                                               showtime['experience'] is None, showtimes_information))
-    return filtered_movie_information
 
 
-def _get_stock_number_from_stock_id(id_at_providers: str) -> int:
+def _get_stock_number_from_id_at_providers(id_at_providers: str) -> int:
     return int(id_at_providers.split("-", 1)[1])
 
 
