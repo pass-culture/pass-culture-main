@@ -48,7 +48,7 @@ describe('src | components | pages | Offer | Offer ', () => {
       history: {},
       trackCreateOffer: jest.fn(),
       trackModifyOffer: jest.fn(),
-      venues: [],
+      venuesMatchingOfferType: [],
     }
   })
 
@@ -113,6 +113,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           },
           dispatch: dispatch,
           history: {},
+          selectedOfferType: {},
           trackCreateOffer: jest.fn(),
           trackModifyOffer: jest.fn(),
         }
@@ -148,7 +149,7 @@ describe('src | components | pages | Offer | Offer ', () => {
   describe('hasConditionalField', () => {
     it('should return false without selected offer type', () => {
       // given
-      props.selectedOfferType = null
+      props.selectedOfferType = undefined
       const wrapper = shallow(<Offer {...props} />)
 
       // when
@@ -436,7 +437,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           isModifiedEntity: false,
           readOnly: false,
         })
-        props.venues = [{ name: 'quel beau théâtre' }, { name: 'quel beau musée' }]
+        props.venuesMatchingOfferType = [{ name: 'quel beau théâtre' }, { name: 'quel beau musée' }]
         const expectedOptions = [{ name: 'quel beau théâtre' }, { name: 'quel beau musée' }]
 
         // when
@@ -452,7 +453,7 @@ describe('src | components | pages | Offer | Offer ', () => {
 
       it('should display venue public name when venue public name is provided', () => {
         // given
-        props.venues = [
+        props.venuesMatchingOfferType = [
           { name: 'quel beau théâtre', publicName: 'quel beau théâtre public' },
           { name: 'quel beau musée', publicName: 'quel beau musée public' },
         ]

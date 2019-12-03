@@ -3,6 +3,7 @@ import {
   selectVenuesByOffererIdAndOfferType,
   selectPhysicalVenuesByOffererId,
   selectVenueById,
+  selectVenuesByOffererId,
 } from '../venuesSelectors'
 
 describe('src | selectors | data | venuesSelectors', () => {
@@ -189,6 +190,79 @@ describe('src | selectors | data | venuesSelectors', () => {
           },
         }
         expect(selectVenueById(store, 'AE')).toStrictEqual({ id: 'AE' })
+      })
+    })
+  })
+
+  describe('selectVenuesByOffererId', () => {
+    describe('when venues is empty', () => {
+      it('should return an empty array', () => {
+        const store = {
+          data: {
+            venues: [],
+          },
+        }
+        expect(selectVenuesByOffererId(store)).toStrictEqual([])
+      })
+    })
+
+    describe('when offerer id is not given', () => {
+      it('should return all venues', () => {
+        const store = {
+          data: {
+            venues: [
+              { managingOffererId: 'AE' },
+              {
+                managingOfferer: {
+                  id: 'AE',
+                },
+              },
+            ],
+          },
+        }
+        expect(selectVenuesByOffererId(store)).toStrictEqual([
+          { managingOffererId: 'AE' },
+          { managingOfferer: { id: 'AE' } },
+        ])
+      })
+    })
+
+    describe('when venue id doesnt exist in venues', () => {
+      it('should return undefined', () => {
+        const store = {
+          data: {
+            venues: [
+              { managingOffererId: 'AE' },
+              {
+                managingOfferer: {
+                  id: 'AE',
+                },
+              },
+            ],
+          },
+        }
+        expect(selectVenueById(store, 'B4')).toBeUndefined()
+      })
+    })
+
+    describe('when venue id matches a venue', () => {
+      it('should return it', () => {
+        const store = {
+          data: {
+            venues: [
+              { managingOffererId: 'AE' },
+              {
+                managingOfferer: {
+                  id: 'AE',
+                },
+              },
+            ],
+          },
+        }
+        expect(selectVenuesByOffererId(store, 'AE')).toStrictEqual([
+          { managingOffererId: 'AE' },
+          { managingOfferer: { id: 'AE' } },
+        ])
       })
     })
   })

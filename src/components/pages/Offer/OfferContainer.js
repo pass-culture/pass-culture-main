@@ -34,6 +34,7 @@ export const mapStateToProps = (state, ownProps) => {
 
   const translatedQueryParams = query.translate()
   const providers = selectProviders(state)
+
   const offer = selectOfferById(state, offerId)
   const isEditableOffer = get(offer, 'isEditable')
   const productId = get(offer, 'productId')
@@ -50,10 +51,16 @@ export const mapStateToProps = (state, ownProps) => {
     offerTypeValue
   )
   const formOffererId = get(state, 'form.offer.offererId')
+
   let offererId = formOffererId || translatedQueryParams.offererId
+
   offererId = offererId || get(venue, 'managingOffererId')
 
-  const venues = selectVenuesByOffererIdAndOfferType(state, offererId, selectedOfferType)
+  const venuesMatchingOfferType = selectVenuesByOffererIdAndOfferType(
+    state,
+    offererId,
+    selectedOfferType
+  )
 
   const offerers = selectOfferers(state)
   const offerer = selectOffererById(state, offererId)
@@ -96,7 +103,7 @@ export const mapStateToProps = (state, ownProps) => {
     types,
     url,
     venue,
-    venues,
+    venuesMatchingOfferType,
   }
 }
 

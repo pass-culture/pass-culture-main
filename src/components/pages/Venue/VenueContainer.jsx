@@ -35,7 +35,12 @@ export const mapStateToProps = (state, ownProps) => {
     offererId,
     isCreatedEntity
   )
-  const adminUserOfferer = selectUserOffererByOffererIdAndUserIdAndRightsType(state, offererId, currentUserId,  'admin')
+  const adminUserOfferer = selectUserOffererByOffererIdAndUserIdAndRightsType(
+    state,
+    offererId,
+    currentUserId,
+    'admin'
+  )
 
   return {
     adminUserOfferer,
@@ -57,7 +62,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
     const isVenueCreated = method === 'POST'
 
     if (isVenueCreated) {
-      const createOfferPathname = `/offres/${CREATION}?lieu=${venueId}`
+      const createOfferPathname = `/offres/${CREATION}?lieu=${venueId}&structure=${offererId}`
 
       return (
         <p>
@@ -158,10 +163,10 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
     ...stateProps,
     ...dispatchProps,
     ...ownProps,
-    trackCreateVenue: (createdVenueId) => {
+    trackCreateVenue: createdVenueId => {
       ownProps.tracking.trackEvent({ action: 'createVenue', name: createdVenueId })
     },
-    trackModifyVenue: (venueId) => {
+    trackModifyVenue: venueId => {
       ownProps.tracking.trackEvent({ action: 'modifyVenue', name: venueId })
     },
   }

@@ -2,12 +2,18 @@ import createCachedSelector from 're-reselect'
 
 export const selectVenues = state => state.data.venues
 
+function hasMananingOffererId(venue, offererId) {
+  if (venue.managingOfferer) {
+    return venue.managingOfferer.id == offererId
+  } else return venue.managingOffererId == offererId
+}
+
 export const selectVenuesByOffererId = createCachedSelector(
   selectVenues,
   (state, offererId = null) => offererId,
   (venues, offererId) => {
     if (offererId) {
-      return venues.filter(venue => venue.managingOffererId === offererId)
+      return venues.filter(venue => hasMananingOffererId(venue, offererId))
     }
     return venues
   }

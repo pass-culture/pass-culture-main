@@ -253,7 +253,7 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
           thumbCount: 0,
           validationToken: null,
         },
-        venues: [
+        venuesMatchingOfferType: [
           {
             address: null,
             bookingEmail: 'john.doe@test.com',

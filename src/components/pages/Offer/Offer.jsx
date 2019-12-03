@@ -80,6 +80,7 @@ class Offer extends PureComponent {
       selectedOfferType,
       venue,
     } = this.props
+
     const { search } = location
 
     if (prevProps.location.search !== search) {
@@ -135,7 +136,7 @@ class Offer extends PureComponent {
         params: { offerId },
       },
       offerers,
-      venues,
+      venuesMatchingOfferType,
       providers,
       query,
       types,
@@ -172,7 +173,9 @@ class Offer extends PureComponent {
               dispatch(
                 showModal(
                   <div>
-                    {'Vous devez avoir déjà enregistré un lieu dans une de vos structures pour ajouter des offres'}
+                    {
+                      'Vous devez avoir déjà enregistré un lieu dans une de vos structures pour ajouter des offres'
+                    }
                   </div>,
                   {
                     onCloseClick: () => history.push('/structures'),
@@ -187,7 +190,7 @@ class Offer extends PureComponent {
       )
     }
 
-    if (offerers.length === 0 || venues.length === 0) {
+    if (offerers.length === 0 || venuesMatchingOfferType.length === 0) {
       dispatch(
         requestData({
           apiPath: OFFERERS_API_PATH,
@@ -311,10 +314,11 @@ class Offer extends PureComponent {
     const mediationId = get(get(offer, 'activeMediation'), 'id')
 
     const offerWebappUrl = buildWebappDiscoveryUrl(offerId, mediationId)
+
     window.open(offerWebappUrl, 'targetWindow', 'toolbar=no,width=375,height=667').focus()
   }
 
-  handleCheckIsDuo = (event)  => {
+  handleCheckIsDuo = event => {
     const { updateFormSetIsDuo } = this.props
     updateFormSetIsDuo(event.target.checked)
   }
@@ -336,7 +340,7 @@ class Offer extends PureComponent {
       types,
       url,
       venue,
-      venues,
+      venuesMatchingOfferType,
     } = this.props
 
     const { isEvent } = offer || {}
@@ -354,6 +358,7 @@ class Offer extends PureComponent {
     const offererId = get(offerer, 'id')
     const offerName = get(offer, 'name')
     const showAllForm = selectedOfferType || !isCreatedEntity
+
     const venueId = get(venue, 'id')
     const isOfferActive = get(offer, 'isActive')
     const isOffererSelectReadOnly = typeof offererId !== 'undefined' || offerFromLocalProvider
@@ -363,6 +368,7 @@ class Offer extends PureComponent {
     const formApiPath = isCreatedEntity ? '/offers' : `/offers/${offerId}`
 
     let title
+
     if (isCreatedEntity) {
       title = 'Ajouter une offre'
       if (venueId) {
@@ -378,16 +384,16 @@ class Offer extends PureComponent {
       title = 'Détails de l’offre'
     }
 
-
     let isDuoDefaultStatus
     if (isFeatureActive) {
       if (formInitialValues.isDuo === undefined) {
         isDuoDefaultStatus = true
-      }
-      else {
+      } else {
         isDuoDefaultStatus = formInitialValues.isDuo
       }
     }
+
+    const offererHasNoPhysicalVenues = offerer && get(venuesMatchingOfferType, 'length') === 0
 
     return (
       <Main
@@ -417,11 +423,9 @@ class Offer extends PureComponent {
           </p>
 
           <p className="fs13 pb30">
-            {
-              'Les offres payantes seront visibles dans l’application, toutefois les utilisateurs ne pourront les réserver que s’ils ont activé leur portefeuille numérique de 500 € sur Internet ou lors d’un des événements d’activation.'
-            }
+            {'Les offres paya' +
+              'ntes seront visibles dans l’application, toutefois les utilisateurs ne pourront les réserver que s’ils ont activé leur portefeuille numérique de 500 € sur Internet ou lors d’un des événements d’activation.'}
           </p>
-
         </HeroSection>
         <Form
           action={formApiPath}
@@ -548,12 +552,15 @@ class Offer extends PureComponent {
               </div>
             )}
           </div>
-          {offerFromLocalProvider && <LocalProviderInformation
-            isAllocine={offerFromAllocine}
-            isTiteLive={offerFromTiteLive}
-            offererId={offererId}
-                                     />}
+          {offerFromLocalProvider && (
+            <LocalProviderInformation
+              isAllocine={offerFromAllocine}
+              isTiteLive={offerFromTiteLive}
+              offererId={offererId}
+            />
+          )}
           {!isCreatedEntity && offer && <MediationsManager />}
+
           {showAllForm && (
             <div>
               <h2 className="main-list-title">
@@ -570,7 +577,7 @@ class Offer extends PureComponent {
                   required
                   type="select"
                 />
-                {offerer && get(venues, 'length') === 0 && (
+                {offererHasNoPhysicalVenues && (
                   <div className="field is-horizontal">
                     <div className="field-label" />
                     <div className="field-body">
@@ -590,7 +597,7 @@ class Offer extends PureComponent {
                 <Field
                   label="Lieu"
                   name="venueId"
-                  options={this.replaceVenueNameByPublicName(venues)}
+                  options={this.replaceVenueNameByPublicName(venuesMatchingOfferType)}
                   placeholder="Sélectionnez un lieu"
                   readOnly={isVenueSelectReadOnly}
                   required
@@ -628,7 +635,7 @@ class Offer extends PureComponent {
                     placeholder="HH:MM"
                     type="duration"
                   />
-                  )}
+                )}
                 {isEventType && isFeatureActive && (
                   <div className="select-duo-offer">
                     <input
@@ -647,7 +654,9 @@ class Offer extends PureComponent {
                     <span
                       className="tip-icon"
                       data-place="bottom"
-                      data-tip={"En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l'accompagnateur."}
+                      data-tip={
+                        "En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l'accompagnateur."
+                      }
                       data-type="info"
                     >
                       <Icon
@@ -656,7 +665,7 @@ class Offer extends PureComponent {
                       />
                     </span>
                   </div>
-                  )}
+                )}
 
                 <Field
                   label="Email auquel envoyer les réservations"
@@ -785,9 +794,7 @@ class Offer extends PureComponent {
                 </NavLink>
               ) : (
                 showAllForm && (
-                  <SubmitButton
-                    className="button is-primary is-medium"
-                  >
+                  <SubmitButton className="button is-primary is-medium">
                     {'Enregistrer'}
                     {isCreatedEntity && ' et passer ' + (isEventType ? 'aux dates' : 'aux stocks')}
                   </SubmitButton>
@@ -803,7 +810,7 @@ class Offer extends PureComponent {
 
 Offer.defaultProps = {
   isFeatureActive: true,
-  venues: [],
+  venuesMatchingOfferType: [],
 }
 
 Offer.propTypes = {
@@ -816,7 +823,7 @@ Offer.propTypes = {
   selectedOfferType: PropTypes.shape().isRequired,
   trackCreateOffer: PropTypes.func.isRequired,
   trackModifyOffer: PropTypes.func.isRequired,
-  venues: PropTypes.arrayOf(PropTypes.shape()),
+  venuesMatchingOfferType: PropTypes.arrayOf(PropTypes.shape()),
 }
 
 export default Offer

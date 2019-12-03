@@ -58,7 +58,7 @@ ShallowWrapper {
                 activeClassName="active"
                 aria-current="page"
                 className="has-text-primary"
-                to="/offres/creation?lieu=AAA"
+                to="/offres/creation?lieu=AAA&structure=ABC"
               >
                 <Icon
                   svg="ico-offres-r"
@@ -150,7 +150,7 @@ ShallowWrapper {
                   activeClassName="active"
                   aria-current="page"
                   className="has-text-primary"
-                  to="/offres/creation?lieu=AAA"
+                  to="/offres/creation?lieu=AAA&structure=ABC"
                 >
                   <Icon
                     svg="ico-offres-r"
@@ -222,7 +222,7 @@ ShallowWrapper {
                     activeClassName="active"
                     aria-current="page"
                     className="has-text-primary"
-                    to="/offres/creation?lieu=AAA"
+                    to="/offres/creation?lieu=AAA&structure=ABC"
                   >
                     <Icon
                       svg="ico-offres-r"
@@ -258,7 +258,7 @@ ShallowWrapper {
                     activeClassName="active"
                     aria-current="page"
                     className="has-text-primary"
-                    to="/offres/creation?lieu=AAA"
+                    to="/offres/creation?lieu=AAA&structure=ABC"
                   >
                     <Icon
                       svg="ico-offres-r"
@@ -281,7 +281,7 @@ ShallowWrapper {
                       " Créer une offre",
                     ],
                     "className": "has-text-primary",
-                    "to": "/offres/creation?lieu=AAA",
+                    "to": "/offres/creation?lieu=AAA&structure=ABC",
                   },
                   "ref": null,
                   "rendered": Array [
@@ -438,7 +438,7 @@ ShallowWrapper {
                   activeClassName="active"
                   aria-current="page"
                   className="has-text-primary"
-                  to="/offres/creation?lieu=AAA"
+                  to="/offres/creation?lieu=AAA&structure=ABC"
                 >
                   <Icon
                     svg="ico-offres-r"
@@ -530,7 +530,7 @@ ShallowWrapper {
                     activeClassName="active"
                     aria-current="page"
                     className="has-text-primary"
-                    to="/offres/creation?lieu=AAA"
+                    to="/offres/creation?lieu=AAA&structure=ABC"
                   >
                     <Icon
                       svg="ico-offres-r"
@@ -602,7 +602,7 @@ ShallowWrapper {
                       activeClassName="active"
                       aria-current="page"
                       className="has-text-primary"
-                      to="/offres/creation?lieu=AAA"
+                      to="/offres/creation?lieu=AAA&structure=ABC"
                     >
                       <Icon
                         svg="ico-offres-r"
@@ -638,7 +638,7 @@ ShallowWrapper {
                       activeClassName="active"
                       aria-current="page"
                       className="has-text-primary"
-                      to="/offres/creation?lieu=AAA"
+                      to="/offres/creation?lieu=AAA&structure=ABC"
                     >
                       <Icon
                         svg="ico-offres-r"
@@ -661,7 +661,7 @@ ShallowWrapper {
                         " Créer une offre",
                       ],
                       "className": "has-text-primary",
-                      "to": "/offres/creation?lieu=AAA",
+                      "to": "/offres/creation?lieu=AAA&structure=ABC",
                     },
                     "ref": null,
                     "rendered": Array [

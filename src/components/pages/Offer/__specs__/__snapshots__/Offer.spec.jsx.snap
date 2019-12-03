@@ -66,7 +66,7 @@ ShallowWrapper {
     selectedOfferType={Object {}}
     trackCreateOffer={[MockFunction]}
     trackModifyOffer={[MockFunction]}
-    venues={Array []}
+    venuesMatchingOfferType={Array []}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],

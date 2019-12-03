@@ -30,7 +30,7 @@ const VenueItem = ({ venue }) => {
           <li>
             <NavLink
               className="has-text-primary"
-              to={`/offres/creation?lieu=${id}`}
+              to={`/offres/creation?lieu=${id}&structure=${managingOffererId}`}
             >
               <Icon svg="ico-offres-r" />
               {' Créer une offre'}
