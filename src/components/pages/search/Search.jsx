@@ -106,7 +106,7 @@ class Search extends PureComponent {
   }
 
   handleRecommendationsRequest = () => {
-    const { resetSearchStore, getResearchedRecommendations, location, query } = this.props
+    const { resetSearchedRecommendations, getSearchedRecommendations, location, query } = this.props
     const isResultatsView = location.pathname.includes('resultats')
     if (!isResultatsView) return
     const queryParams = query.parse()
@@ -116,9 +116,9 @@ class Search extends PureComponent {
 
     if (this.isFirstPageRequest(queryParams)) {
       this.setState({ isLoading: true })
-      resetSearchStore()
+      resetSearchedRecommendations()
     }
-    getResearchedRecommendations(apiPath, this.handleDataSuccess)
+    getSearchedRecommendations(apiPath, this.handleDataSuccess)
   }
 
   handleDataSuccess = () => {
@@ -209,7 +209,7 @@ class Search extends PureComponent {
       location,
       match,
       query,
-      researchedRecommendations,
+      searchedRecommendations,
       typeSublabels,
       typeSublabelsAndDescription,
     } = this.props
@@ -231,7 +231,7 @@ class Search extends PureComponent {
         />
         <ResultsContainer
           cameFromOfferTypesPage
-          items={researchedRecommendations}
+          items={searchedRecommendations}
           keywords={keywords}
           typeSublabels={typeSublabels}
         />
@@ -240,7 +240,7 @@ class Search extends PureComponent {
   }
 
   renderResults = () => {
-    const { query, researchedRecommendations, typeSublabels } = this.props
+    const { query, searchedRecommendations, typeSublabels } = this.props
     const queryParams = query.parse()
     const keywords =
       queryParams['mots-cles'] !== undefined ? encodeURI(queryParams['mots-cles']) : ''
@@ -248,7 +248,7 @@ class Search extends PureComponent {
     return (
       <ResultsContainer
         cameFromOfferTypesPage={false}
-        items={researchedRecommendations}
+        items={searchedRecommendations}
         keywords={keywords}
         typeSublabels={typeSublabels}
       />
@@ -392,7 +392,7 @@ class Search extends PureComponent {
 }
 
 Search.propTypes = {
-  getResearchedRecommendations: PropTypes.func.isRequired,
+  getSearchedRecommendations: PropTypes.func.isRequired,
   getTypes: PropTypes.func.isRequired,
   history: PropTypes.shape({
     replace: PropTypes.func.isRequired,
@@ -409,8 +409,8 @@ Search.propTypes = {
     }).isRequired,
   }).isRequired,
   query: PropTypes.shape().isRequired,
-  researchedRecommendations: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  resetSearchStore: PropTypes.func.isRequired,
+  resetSearchedRecommendations: PropTypes.func.isRequired,
+  searchedRecommendations: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   typeSublabels: PropTypes.arrayOf(PropTypes.string).isRequired,
   typeSublabelsAndDescription: PropTypes.arrayOf(
     PropTypes.shape({

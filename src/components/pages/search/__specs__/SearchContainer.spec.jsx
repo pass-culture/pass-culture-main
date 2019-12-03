@@ -1,10 +1,11 @@
 import { mapDispatchToProps, mapStateToProps } from '../SearchContainer'
 
 jest.mock('redux-thunk-data', () => {
-  const { requestData } = jest.requireActual('fetch-normalize-data')
+  const { assignData, requestData } = jest.requireActual('fetch-normalize-data')
 
   return {
     requestData,
+    assignData,
   }
 })
 
@@ -14,7 +15,7 @@ describe('src | components | pages | SearchContainer', () => {
       // given
       const state = {
         data: {
-          researchedRecommendations: [],
+          searchedRecommendations: [],
           types: [],
         },
       }
@@ -24,7 +25,7 @@ describe('src | components | pages | SearchContainer', () => {
 
       // then
       expect(props).toStrictEqual({
-        researchedRecommendations: [],
+        searchedRecommendations: [],
         typeSublabels: [],
         typeSublabelsAndDescription: [],
         user: undefined,
@@ -41,10 +42,12 @@ describe('src | components | pages | SearchContainer', () => {
         const apiPath = '/recommendations?categories=Applaudir'
 
         // when
-        mapDispatchToProps(dispatch, props).getResearchedRecommendations(apiPath)
+        mapDispatchToProps(dispatch, props).getSearchedRecommendations(apiPath)
 
         // then
-        expect(dispatch.mock.calls[0][0]).toStrictEqual({
+        const firstDispatchedAction = dispatch.mock.calls[0][0]
+        const secondDispatchedAction = dispatch.mock.calls[1][0]
+        expect(firstDispatchedAction).toStrictEqual({
           config: {
             apiPath: '/recommendations?categories=Applaudir',
             handleSuccess: undefined,
@@ -65,11 +68,11 @@ describe('src | components | pages | SearchContainer', () => {
                 stateKey: 'offers',
               },
             },
-            stateKey: 'researchedRecommendations',
+            stateKey: 'searchedRecommendations',
           },
-          type: 'REQUEST_DATA_GET_RESEARCHEDRECOMMENDATIONS',
+          type: 'REQUEST_DATA_GET_SEARCHEDRECOMMENDATIONS',
         })
-        expect(dispatch.mock.calls[1][0]).toStrictEqual({
+        expect(secondDispatchedAction).toStrictEqual({
           page: 1,
           type: 'UPDATE_PAGE',
         })
@@ -82,7 +85,7 @@ describe('src | components | pages | SearchContainer', () => {
       const props = {}
       const apiPath = '/recommendations?categories=%C3%89couter'
       // when
-      mapDispatchToProps(dispatch, props).getResearchedRecommendations(apiPath)
+      mapDispatchToProps(dispatch, props).getSearchedRecommendations(apiPath)
 
       // then
       expect(dispatch).toHaveBeenCalledWith({
@@ -106,9 +109,9 @@ describe('src | components | pages | SearchContainer', () => {
               stateKey: 'offers',
             },
           },
-          stateKey: 'researchedRecommendations',
+          stateKey: 'searchedRecommendations',
         },
-        type: 'REQUEST_DATA_GET_RESEARCHEDRECOMMENDATIONS',
+        type: 'REQUEST_DATA_GET_SEARCHEDRECOMMENDATIONS',
       })
     })
 
@@ -128,6 +131,25 @@ describe('src | components | pages | SearchContainer', () => {
             method: 'GET',
           },
           type: 'REQUEST_DATA_GET_/TYPES',
+        })
+      })
+    })
+
+    describe('resetSearchedRecommendations', () => {
+      it('should reset searched recommendations', () => {
+        // given
+        const dispatch = jest.fn()
+        const props = {}
+
+        // when
+        mapDispatchToProps(dispatch, props).resetSearchedRecommendations()
+
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          patch: {
+            searchedRecommendations: [],
+          },
+          type: 'ASSIGN_DATA',
         })
       })
     })

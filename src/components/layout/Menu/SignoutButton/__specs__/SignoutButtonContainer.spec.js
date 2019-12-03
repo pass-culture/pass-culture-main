@@ -58,7 +58,7 @@ describe('src | components | layout | Menu | SignoutButton | SignoutButtonContai
           offers: [],
           readRecommendations: [],
           recommendations: [],
-          researchedRecommendations: [],
+          searchedRecommendations: [],
           showTypes: [],
           stocks: [],
           types: [],

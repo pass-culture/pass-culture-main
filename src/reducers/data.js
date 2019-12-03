@@ -29,7 +29,7 @@ const dataReducer = createDataReducer({
   offers: [],
   readRecommendations: [],
   recommendations: [],
-  researchedRecommendations: [],
+  searchedRecommendations: [],
   showTypes: [],
   stocks: [],
   types: [],

@@ -8,18 +8,18 @@ import {
   selectTypeSublabels,
   selectTypeSublabelsAndDescription,
 } from '../../../selectors/data/typesSelectors'
-import { selectResearchedRecommendations } from '../../../selectors/data/researchedRecommendationsSelectors'
+import { selectSearchedRecommendations } from '../../../selectors/data/searchedRecommendationsSelectors'
 import { recommendationNormalizer } from '../../../utils/normalizers'
 import { updatePage } from '../../../reducers/pagination'
 
 export const mapStateToProps = state => {
-  const researchedRecommendations = selectResearchedRecommendations(state)
+  const searchedRecommendations = selectSearchedRecommendations(state)
   const typeSublabels = selectTypeSublabels(state)
   const typeSublabelsAndDescription = selectTypeSublabelsAndDescription(state)
   const { user } = state
 
   return {
-    researchedRecommendations,
+    searchedRecommendations,
     typeSublabels,
     typeSublabelsAndDescription,
     user,
@@ -27,14 +27,14 @@ export const mapStateToProps = state => {
 }
 
 export const mapDispatchToProps = dispatch => ({
-  getResearchedRecommendations: (apiPath, handleSuccess) => {
+  getSearchedRecommendations: (apiPath, handleSuccess) => {
     apiPath = decodeURIComponent(apiPath)
     dispatch(
       requestData({
         apiPath,
         handleSuccess,
         normalizer: recommendationNormalizer,
-        stateKey: 'researchedRecommendations',
+        stateKey: 'searchedRecommendations',
       })
     )
     dispatch(updatePage(1))
@@ -44,8 +44,8 @@ export const mapDispatchToProps = dispatch => ({
     dispatch(requestData({ apiPath: '/types' }))
   },
 
-  resetSearchStore: () => {
-    dispatch(assignData({ researchedRecommendations: [] }))
+  resetSearchedRecommendations: () => {
+    dispatch(assignData({ searchedRecommendations: [] }))
   },
 })
 

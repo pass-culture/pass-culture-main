@@ -19,7 +19,7 @@ describe('src | reducers | data', () => {
         offers: [],
         readRecommendations: [],
         recommendations: [],
-        researchedRecommendations: [],
+        searchedRecommendations: [],
         showTypes: [],
         stocks: [],
         types: [],
