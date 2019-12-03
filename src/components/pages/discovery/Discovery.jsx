@@ -44,7 +44,7 @@ class Discovery extends PureComponent {
       recommendations,
       redirectToFirstRecommendationIfNeeded,
       seedLastRequestTimestamp,
-      updateSeedAndLastRequestTimestamp
+      updatePageAndSeedAndLastRequestTimestamp
     } = this.props
     const { location: prevLocation } = prevProps
 
@@ -53,7 +53,7 @@ class Discovery extends PureComponent {
     }
 
     if (Date.now() > seedLastRequestTimestamp + MINIMUM_DELAY_BEFORE_UPDATING_SEED_3_HOURS) {
-      updateSeedAndLastRequestTimestamp()
+      updatePageAndSeedAndLastRequestTimestamp()
     }
   }
 
@@ -212,7 +212,7 @@ Discovery.propTypes = {
   seedLastRequestTimestamp: PropTypes.number.isRequired,
   shouldReloadRecommendations: PropTypes.bool.isRequired,
   tutorials: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  updateSeedAndLastRequestTimestamp: PropTypes.func.isRequired,
+  updatePageAndSeedAndLastRequestTimestamp: PropTypes.func.isRequired,
 }
 
 export default Discovery

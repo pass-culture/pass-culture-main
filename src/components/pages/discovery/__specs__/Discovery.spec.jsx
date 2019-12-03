@@ -31,7 +31,7 @@ describe('src | components | pages | discovery | Discovery', () => {
       seedLastRequestTimestamp: 1574236357670,
       shouldReloadRecommendations: false,
       tutorials: [],
-      updateSeedAndLastRequestTimestamp: jest.fn(),
+      updatePageAndSeedAndLastRequestTimestamp: jest.fn(),
     }
   })
 
@@ -246,7 +246,7 @@ describe('src | components | pages | discovery | Discovery', () => {
       wrapper.setProps(props)
 
       // then
-      expect(props.updateSeedAndLastRequestTimestamp).toHaveBeenCalledWith()
+      expect(props.updatePageAndSeedAndLastRequestTimestamp).toHaveBeenCalledWith()
     })
 
     it('should not update seed and seed last request timestamp when date is anterior to limit', () => {
@@ -263,7 +263,7 @@ describe('src | components | pages | discovery | Discovery', () => {
       wrapper.setProps(props)
 
       // then
-      expect(props.updateSeedAndLastRequestTimestamp).not.toHaveBeenCalledWith()
+      expect(props.updatePageAndSeedAndLastRequestTimestamp).not.toHaveBeenCalledWith()
     })
   })
 })
