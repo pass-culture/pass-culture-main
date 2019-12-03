@@ -71,9 +71,7 @@ class FilterByDates extends PureComponent {
     const pickedDaysInQuery = decodeURI(filterState.params.jours || '')
 
     return (
-      <div
-        id="filter-by-dates"
-      >
+      <div id="filter-by-dates">
         <h2 className="fd-when-label">
           {'Quand'}
         </h2>
