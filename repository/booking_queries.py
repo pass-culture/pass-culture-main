@@ -1,8 +1,7 @@
 from datetime import datetime
 from typing import Set, List, Union
 
-from postgresql_audit.flask import versioning_manager
-from sqlalchemy import and_, text, func
+from sqlalchemy import and_, func
 from sqlalchemy.orm import Query
 
 from domain.keywords import create_get_filter_matching_ts_query_in_any_model
@@ -74,7 +73,9 @@ def find_active_bookings_by_user_id(user_id: int) -> List[Booking]:
         .all()
 
 
-def find_offerer_bookings(offerer_id: int, venue_id: int = None, offer_id: int = None, date_from: Union[datetime, str] = None, date_to: Union[datetime, str] = None) -> List[Booking]:
+def find_offerer_bookings(offerer_id: int, venue_id: int = None, offer_id: int = None,
+                          date_from: Union[datetime, str] = None, date_to: Union[datetime, str] = None) -> List[
+    Booking]:
     query = _filter_bookings_by_offerer_id(offerer_id)
 
     if venue_id:
@@ -97,7 +98,8 @@ def find_offerer_bookings(offerer_id: int, venue_id: int = None, offer_id: int =
     return query.all()
 
 
-def find_digital_bookings_for_offerer(offerer_id: int, offer_id: int = None, date_from: Union[datetime, str] = None, date_to: Union[datetime, str] = None) -> List[Booking]:
+def find_digital_bookings_for_offerer(offerer_id: int, offer_id: int = None, date_from: Union[datetime, str] = None,
+                                      date_to: Union[datetime, str] = None) -> List[Booking]:
     query = _filter_bookings_by_offerer_id(offerer_id)
 
     query = query.filter(Venue.isVirtual == True)
@@ -193,21 +195,10 @@ def find_date_used(booking: Booking) -> datetime:
     if booking.dateUsed:
         return booking.dateUsed
 
-    Activity = versioning_manager.activity_cls
-    find_by_id_and_is_used = "table_name='booking' " \
-                             "AND verb='update' " \
-                             "AND CAST(old_data->>'id' AS INT) = %s " \
-                             "AND CAST(changed_data->>'isUsed' AS BOOLEAN) = true" % booking.id
-    activity = Activity.query \
-        .filter(text(find_by_id_and_is_used)) \
-        .first()
-
-    return activity.issued_at if activity else None
-
 
 def find_user_activation_booking(user: User) -> Booking:
     is_activation_offer = (Offer.type == str(ThingType.ACTIVATION)) | (
-        Offer.type == str(EventType.ACTIVATION))
+            Offer.type == str(EventType.ACTIVATION))
 
     return Booking.query \
         .join(User) \
@@ -239,7 +230,7 @@ def _query_non_cancelled_non_activation_bookings() -> Query:
 
 def _query_keep_only_used_or_finished_bookings_on_non_activation_offers() -> Query:
     booking_on_event_finished_more_than_two_days_ago = (
-        datetime.utcnow() > Stock.endDatetime + STOCK_DELETION_DELAY)
+            datetime.utcnow() > Stock.endDatetime + STOCK_DELETION_DELAY)
 
     return _query_keep_on_non_activation_offers() \
         .join(Venue) \

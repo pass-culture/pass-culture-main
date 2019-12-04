@@ -517,27 +517,18 @@ class FindDateUsedTest:
         assert date_used == datetime(2018, 2, 12)
 
     @clean_database
-    def test_returns_issued_date_of_matching_activity(self, app):
+    def test_returns_none_when_date_used_is_none(self, app):
         # given
         user = create_user()
         deposit = create_deposit(user, amount=500)
         booking = create_booking(user)
         PcObject.save(user, deposit, booking)
 
-        activity_insert = create_booking_activity(
-            booking, 'booking', 'insert', issued_at=datetime(2018, 1, 28)
-        )
-        activity_update = create_booking_activity(
-            booking, 'booking', 'update', issued_at=datetime(2018, 2, 12),
-            data={'isUsed': True}
-        )
-        save_all_activities(activity_insert, activity_update)
-
         # when
         date_used = booking_queries.find_date_used(booking)
 
         # then
-        assert date_used == datetime(2018, 2, 12)
+        assert date_used is None
 
     @clean_database
     def test_find_date_used_on_booking_returns_none_if_no_update_recorded_in_activity_table(self, app):
