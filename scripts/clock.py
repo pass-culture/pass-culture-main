@@ -241,7 +241,7 @@ if __name__ == '__main__':
         scheduler.add_job(pc_remote_import_beneficiaries, 'cron', id='remote_import_beneficiaries', day='*')
 
     if feature_write_dashboard_enabled():
-        scheduler.add_job(pc_write_dashboard, 'cron', id='pc_write_dashboard', day_of_week='mon', hour='4')
+        scheduler.add_job(pc_write_dashboard, 'cron', id='pc_write_dashboard', day='*', hour='4')
 
     if feature_update_booking_used():
         scheduler.add_job(pc_update_booking_used, 'cron', id='pc_update_booking_used', day='*', hour='0')
