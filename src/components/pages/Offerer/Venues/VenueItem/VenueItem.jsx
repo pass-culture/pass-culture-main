@@ -10,8 +10,8 @@ const buildLinkIdFromVenue = ({ publicName, name }) => {
 
 const VenueItem = ({ venue }) => {
   const { address, city, id, managingOffererId, name, postalCode, publicName } = venue || {}
-
   const showPath = `/structures/${managingOffererId}/lieux/${id}`
+
   return (
     <li className="venue-item">
       <div className="picto">
