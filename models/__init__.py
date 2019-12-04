@@ -40,7 +40,6 @@ from models.venue import Venue
 from models.venue_provider import VenueProvider
 from models.versioned_mixin import VersionedMixin
 
-# app.config['SQLALCHEMY_ECHO'] = IS_DEV
 
 __all__ = (
     'VersionedMixin',

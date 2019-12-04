@@ -11,10 +11,9 @@ from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship
 
 from models.api_errors import ApiErrors
-from models.versioned_mixin import VersionedMixin
 
 
-class ProvidableMixin(VersionedMixin):
+class ProvidableMixin:
 
     @declared_attr
     def lastProviderId(cls):

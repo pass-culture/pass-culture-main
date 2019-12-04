@@ -7,7 +7,8 @@ from sqlalchemy.sql import select, func
 
 from domain.bookings import filter_bookings_to_compute_remaining_stock
 from domain.keywords import create_ts_vector_and_table_args
-from models import ExtraDataMixin
+from models.extra_data_mixin import ExtraDataMixin
+from models.versioned_mixin import VersionedMixin
 from models.criterion import Criterion
 from models.db import db, Model
 from models.deactivable_mixin import DeactivableMixin
@@ -24,7 +25,8 @@ class Offer(PcObject,
             Model,
             ExtraDataMixin,
             DeactivableMixin,
-            ProvidableMixin):
+            ProvidableMixin,
+            VersionedMixin):
     # We redefine this so we can reference it in the baseScore column_property
     id = Column(BigInteger,
                 primary_key=True,
