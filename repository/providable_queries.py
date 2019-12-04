@@ -51,9 +51,6 @@ def get_existing_object(model_type: Model, id_at_providers: str) -> Optional[Dic
 def get_last_update_for_provider(provider_id: int, pc_obj: Model) -> datetime:
     if pc_obj.lastProviderId == provider_id:
         return pc_obj.dateModifiedAtLastProvider
-    for change in pc_obj.activity():
-        if change.changed_data['lastProviderId'] == provider_id:
-            return read_json_date(change.changed_data['dateModifiedAtLastProvider'])
 
 
 def _dict_to_object(object_dict: Dict, model_object: Model) -> Model:
