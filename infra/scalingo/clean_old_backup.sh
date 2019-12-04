@@ -20,11 +20,11 @@ else
 fi
 
 # Keep only 2 last backups
-echo "Backups to be delete : $(ls $absolute_path_to_backup_directory -t |grep .pg | tail +3)"
-rm $(ls $absolute_path_to_backup_directory -t |grep .pg | tail +3)
+echo "Backups to be delete : $(find $absolute_path_to_backup_directory -name "*.pgdump" |sort -r |tail +3)"
+rm $(find $absolute_path_to_backup_directory -name "*.pgdump" |sort -r |tail +3)
 
 if [ $? -eq 0 ]; then
-  echo "Old backup cleaned!"
+  echo "Old backups cleaned!"
 else
   echo 'Backup cleaning failed'
 fi
