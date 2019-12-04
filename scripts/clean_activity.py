@@ -10,3 +10,15 @@ def delete_tables_from_activity(tables: List[str]):
         DELETE FROM activity WHERE table_name IN ({tables_as_str})
     """
     db.engine.execute(query)
+
+
+def populate_stock_date_created_from_activity():
+    query = f'''
+        UPDATE stock
+        SET "dateCreated" = activity.issued_at
+        FROM activity
+        WHERE table_name='stock'
+        AND (changed_data ->>'id')::int = stock.id
+        AND verb='insert';
+        '''
+    db.engine.execute(query)

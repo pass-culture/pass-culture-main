@@ -35,6 +35,10 @@ class Stock(PcObject,
                 primary_key=True,
                 autoincrement=True)
 
+    dateCreated = Column(DateTime,
+                         nullable=False,
+                         default=datetime.utcnow)
+
     dateModified = Column(DateTime,
                           nullable=False,
                           default=datetime.utcnow)
@@ -165,7 +169,6 @@ Stock.trig_ddl = """
 event.listen(Stock.__table__,
              'after_create',
              DDL(Stock.trig_ddl))
-
 
 Stock.trig_update_date_ddl = """
     CREATE OR REPLACE FUNCTION save_stock_modification_date()

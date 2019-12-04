@@ -645,12 +645,14 @@ def create_venue_activity(venue, verb, issued_at=datetime.utcnow):
     return activity
 
 
-def create_activity(table_name, verb, issued_at=datetime(2019, 1, 1)):
+def create_activity(table_name, verb, issued_at=datetime(2019, 1, 1), object_id=None):
     Activity = versioning_manager.activity_cls
     activity = Activity()
     activity.issued_at = issued_at
     activity.table_name = table_name
     activity.verb = verb
+    if object_id:
+        activity.changed_data = {'id': object_id}
     return activity
 
 
