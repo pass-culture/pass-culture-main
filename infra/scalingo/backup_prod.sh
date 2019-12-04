@@ -16,6 +16,7 @@ where:
 fi
 
 echo "--------"
+script_start_time=`date +%s`
 echo $(date)
 
 # GET APPLICATION NAME
@@ -107,3 +108,5 @@ if [ "$DB_TUNNEL_HAS_TO_BE_TERMINATED" = true ]; then
   kill -9 "$DB_TUNNEL_PID"
 fi
 
+script_duration=$((`date +%s`-$script_start_time))
+echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : End of script"
