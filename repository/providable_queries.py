@@ -1,11 +1,10 @@
 import datetime
-from typing import Dict, Optional, List
+from typing import Dict, Optional, List, Union
 
 from sqlalchemy import select
 
 import models
 from models.db import db, Model
-from utils.date import read_json_date
 from utils.human_ids import humanize
 
 
@@ -50,7 +49,8 @@ def get_existing_object(model_type: Model, id_at_providers: str) -> Optional[Dic
 
 def get_last_update_for_provider(provider_id: int, pc_obj: Model) -> datetime:
     if pc_obj.lastProviderId == provider_id:
-        return pc_obj.dateModifiedAtLastProvider
+        return pc_obj.dateModifiedAtLastProvider if pc_obj.dateModifiedAtLastProvider else None
+    return None
 
 
 def _dict_to_object(object_dict: Dict, model_object: Model) -> Model:
