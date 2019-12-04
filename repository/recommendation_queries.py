@@ -103,7 +103,7 @@ def get_recommendations_for_offers(offer_ids: List[int]) -> List[Recommendation]
         .all()
 
 
-def delete_useless_recommendations(limit: int=10000):
+def delete_useless_recommendations(limit: int=500000):
     favorite_query = (select([Favorite.offerId])).alias('favorite_query')
     is_unread = Recommendation.dateRead == None
     is_older_than_one_week = Recommendation.dateCreated < EIGHT_DAYS_AGO
@@ -131,8 +131,7 @@ def delete_useless_recommendations(limit: int=10000):
         db.session.execute(delete_query)
         db.session.commit()
 
-        if increment % 10 == 1:
-            logger.info(f'delete_useless_recommendations {increment}0000 recommendations deleted')
+        logger.info(f'delete_useless_recommendations 5x{increment}00000 recommendations deleted')
         increment += 1
         if len(recommendations) < limit:
             has_next = False
