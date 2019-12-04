@@ -2,17 +2,17 @@ from bs4 import BeautifulSoup
 
 from tests.test_utils import create_offerer, create_venue
 from tests.utils.mailing_test import _remove_whitespaces
-from utils.mailing import make_venue_validation_email, make_venue_validation_confirmation_email
+from utils.mailing import make_venue_to_validate_email, make_venue_validated_email
 
 
-def test_make_venue_validation_email(app):
+def test_make_venue_to_validate_email(app):
     # Given
     offerer = create_offerer(name='La Structure', siren='123456789')
     venue = create_venue(offerer, name='Le Lieu', comment='Ceci est mon commentaire')
     venue.generate_validation_token()
 
     # When
-    email = make_venue_validation_email(venue)
+    email = make_venue_to_validate_email(venue)
 
     # Then
     assert email["FromEmail"] == 'support@passculture.app'
@@ -30,13 +30,13 @@ def test_make_venue_validation_email(app):
     assert 'localhost/validate/venue?token={}'.format(venue.validationToken) in html_validation_link
 
 
-def test_make_venue_validation_confirmation_email(app):
+def test_make_venue_validated_email(app):
     # Given
     offerer = create_offerer(name='La Structure', siren='123456789')
     venue = create_venue(offerer, name='Le Lieu', comment='Ceci est mon commentaire')
 
     # When
-    email = make_venue_validation_confirmation_email(venue)
+    email = make_venue_validated_email(venue)
 
     # Then
     assert email['Subject'] == 'Validation du rattachement du lieu "Le Lieu" à votre structure "La Structure"'

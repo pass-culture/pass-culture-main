@@ -8,16 +8,6 @@ from tests.test_utils import create_offerer, create_venue, create_stock_with_eve
 from tests.utils.mailing_test import _remove_whitespaces
 from utils.mailing import make_user_booking_recap_email
 
-SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL = \
-    'Confirmation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
-SUBJECT_USER_THING_BOOKING_CONFIRMATION_EMAIL = \
-    'Confirmation de votre commande pour Test Book'
-SUBJECT_USER_BOOKING_THING_CANCELLATION_EMAIL = \
-    'Annulation de votre commande pour Test Book'
-SUBJECT_USER_BOOKING_EVENT_CANCELLATION_EMAIL = \
-    'Annulation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
-
-
 @mocked_mail
 @clean_database
 def test_make_user_booking_event_recap_email_should_have_standard_subject_and_body(app):
@@ -43,7 +33,7 @@ def test_make_user_booking_event_recap_email_should_have_standard_subject_and_bo
     mail_content = recap_email_soup.find("div", {"id": 'mail-content'}).text
     mail_greeting = recap_email_soup.find("p", {"id": 'mail-greeting'}).text
     mail_salutation = recap_email_soup.find("p", {"id": 'mail-salutation'}).text
-    assert recap_email['Subject'] == SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL
+    assert recap_email['Subject'] == 'Confirmation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
     assert 'Bonjour Test,' in mail_greeting
     assert 'Nous vous confirmons votre réservation pour Mains, sorts et papiers' in recap_email_soup.find("div", {
         "id": 'mail-content'}).text
@@ -81,7 +71,7 @@ def test_make_user_booking_event_recap_email_should_have_standard_cancellation_b
     assert 'proposé par Test offerer' in mail_content
     assert 'le 20 juillet 2019 à 14:00,' in mail_content
     assert 'a bien été annulée.' in mail_content
-    assert recap_email['Subject'] == SUBJECT_USER_BOOKING_EVENT_CANCELLATION_EMAIL
+    assert recap_email['Subject'] == 'Annulation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
 
 
 @mocked_mail
@@ -107,7 +97,7 @@ def test_maker_user_booking_thing_recap_email_should_have_standard_body_and_subj
     mail_content = recap_email_soup.find("div", {"id": 'mail-content'}).text
     assert 'Nous vous confirmons votre commande pour Test Book (Ref: 12345),' in mail_content
     assert 'proposé par Test offerer.' in mail_content
-    assert recap_email['Subject'] == SUBJECT_USER_THING_BOOKING_CONFIRMATION_EMAIL
+    assert recap_email['Subject'] == 'Confirmation de votre commande pour Test Book'
 
 
 @mocked_mail
@@ -131,4 +121,4 @@ def test_make_user_booking_thing_recap_email_should_have_standard_cancellation_b
     recap_email_soup = BeautifulSoup(html_email, 'html.parser')
     assert 'Votre commande pour Test Book (Ref: 12345),' in recap_email_soup.find("div",
                                                                                   {"id": 'mail-content'}).text
-    assert recap_email['Subject'] == SUBJECT_USER_BOOKING_THING_CANCELLATION_EMAIL
+    assert recap_email['Subject'] == 'Annulation de votre commande pour Test Book'

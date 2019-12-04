@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from emails.pro_waiting_validation import make_pro_user_waiting_for_validation_data
+from emails.pro_waiting_validation import retrieve_data_for_pro_user_waiting_offerer_validation_email
 from tests.test_utils import create_user, create_offerer
 
 
@@ -14,7 +14,7 @@ class MakeProUserWaitingForValidationByAdminEmailTest:
         offerer = create_offerer(name='Bar des amis')
 
         # When
-        mailjet_data = make_pro_user_waiting_for_validation_data(user, offerer)
+        mailjet_data = retrieve_data_for_pro_user_waiting_offerer_validation_email(user, offerer)
 
         # Then
         assert mailjet_data == {
@@ -38,7 +38,7 @@ class MakeProUserWaitingForValidationByAdminEmailTest:
         offerer = create_offerer(name='Bar des amis')
 
         # When
-        mailjet_data = make_pro_user_waiting_for_validation_data(user, offerer)
+        mailjet_data = retrieve_data_for_pro_user_waiting_offerer_validation_email(user, offerer)
 
         # Then
         assert mailjet_data == {

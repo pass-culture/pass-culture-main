@@ -1,10 +1,10 @@
 from typing import Callable, List
 
 from emails.beneficiary_activation import get_activation_email_data
-from emails.beneficiary_offer_cancellation import make_offerer_booking_recap_email_after_user_cancellation_data
-from emails.offerer_booking_recap import get_offerer_booking_recap_email_data
-from emails.pro_waiting_validation import make_pro_user_waiting_for_validation_data
-from emails.user_reset_password import make_reset_password_email_data
+from emails.beneficiary_offer_cancellation import retrieve_offerer_booking_recap_email_data_after_user_cancellation
+from emails.offerer_booking_recap import retrieve_data_for_offerer_booking_recap_email
+from emails.pro_waiting_validation import retrieve_data_for_pro_user_waiting_offerer_validation_email
+from emails.user_reset_password import retrieve_data_for_reset_password_email
 from models import User, Stock, Booking, UserOfferer, Offerer, Venue
 from repository import booking_queries
 from repository.stock_queries import set_booking_recap_sent_and_save
@@ -15,8 +15,8 @@ from utils.mailing import make_user_booking_recap_email, \
     make_offerer_driven_cancellation_email_for_offerer, make_final_recap_email_for_stock_with_event, \
     make_validation_confirmation_email, make_batch_cancellation_email, \
     make_user_validation_email, \
-    make_venue_validation_confirmation_email, compute_email_html_part_and_recipients, \
-    ADMINISTRATION_EMAIL_ADDRESS
+    make_venue_validated_email, compute_email_html_part_and_recipients, \
+    ADMINISTRATION_EMAIL_ADDRESS, make_reset_password_email
 
 
 def send_final_booking_recap_email(stock: Stock, send_email: Callable[..., bool]) -> bool:
@@ -42,7 +42,7 @@ def send_booking_recap_emails(booking: Booking, send_email: Callable[..., bool])
     if booking.stock.resolvedOffer.bookingEmail:
         recipients.append(booking.stock.resolvedOffer.bookingEmail)
 
-    email = get_offerer_booking_recap_email_data(booking, recipients)
+    email = retrieve_data_for_offerer_booking_recap_email(booking, recipients)
     return send_email(data=email)
 
 
@@ -67,7 +67,7 @@ def send_user_driven_cancellation_email_to_user(booking: Booking, send_email: Ca
 
 def send_user_driven_cancellation_email_to_offerer(booking: Booking, send_email: Callable[..., bool]) -> bool:
     recipients = build_recipients_list(booking)
-    mailjet_data = make_offerer_booking_recap_email_after_user_cancellation_data(booking, recipients)
+    mailjet_data = retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking, recipients)
     return send_email(data=mailjet_data)
 
 
@@ -106,7 +106,7 @@ def send_reset_password_email(user: User, send_email: Callable[..., bool], app_o
 
 
 def send_reset_password_email_with_mailjet_template(user: User, send_email: Callable[..., bool]) -> bool:
-    email = make_reset_password_email_data(user)
+    email = retrieve_data_for_reset_password_email(user)
     return send_email(data=email)
 
 
@@ -149,7 +149,7 @@ def send_cancellation_emails_to_user_and_offerer(booking: Booking, is_offerer_ca
 
 def send_venue_validation_confirmation_email(venue: Venue, send_email: Callable[..., bool]) -> bool:
     recipients = find_all_emails_of_user_offerers_admins(venue.managingOffererId)
-    email = make_venue_validation_confirmation_email(venue)
+    email = make_venue_validated_email(venue)
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     return send_email(data=email)
 
@@ -161,7 +161,7 @@ def send_user_validation_email(user: User, send_email: Callable[..., bool], app_
 
 def send_pro_user_waiting_for_validation_by_admin_email(user: User, send_email: Callable[..., bool],
                                                         offerer: Offerer) -> bool:
-    email = make_pro_user_waiting_for_validation_data(user, offerer)
+    email = retrieve_data_for_pro_user_waiting_offerer_validation_email(user, offerer)
     return send_email(data=email)
 
 

@@ -6,7 +6,7 @@ from domain.user_emails import send_user_driven_cancellation_email_to_user, \
     send_booking_confirmation_email_to_user, send_booking_recap_emails, send_final_booking_recap_email, \
     send_validation_confirmation_email, send_batch_cancellation_emails_to_users, \
     send_batch_cancellation_email_to_offerer, send_user_validation_email, send_venue_validation_confirmation_email, \
-    send_reset_password_email_with_mailjet_template, send_activation_email
+    send_reset_password_email_with_mailjet_template, send_activation_email, send_reset_password_email
 from models import Offerer, UserOfferer, User, RightsType
 from tests.test_utils import create_user, create_booking, create_stock_with_event_offer, create_offerer, create_venue, \
     create_offer_with_thing_product, create_stock_with_thing_offer, create_mocked_bookings
@@ -504,7 +504,7 @@ class SendVenueValidationConfirmationEmailTest:
         mocked_send_email.return_value = return_value
 
         with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True), patch(
-                'domain.user_emails.make_venue_validation_confirmation_email',
+                'domain.user_emails.make_venue_validated_email',
                 return_value={'Html-part': ''}) as make_cancellation_email, patch(
             'domain.user_emails.find_all_emails_of_user_offerers_admins',
             return_value=['admin1@email.com', 'admin2@email.com']):
@@ -528,7 +528,7 @@ class SendVenueValidationConfirmationEmailTest:
         mocked_send_email.return_value = return_value
 
         with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False), patch(
-                'domain.user_emails.make_venue_validation_confirmation_email',
+                'domain.user_emails.make_venue_validated_email',
                 return_value={'Html-part': ''}) as make_cancellation_email, patch(
             'domain.user_emails.find_all_emails_of_user_offerers_admins',
             return_value=['admin1@email.com', 'admin2@email.com']):

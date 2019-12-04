@@ -20,8 +20,6 @@ class MakePaymentsReportEmailTest:
         self.error_csv = '"header 1","header 2","header 3","header 4"\n"part 1","part 2","part 3","part 4"\n'
 
     def test_it_contains_the_two_csv_files_as_attachment(self, app):
-        # Given
-
         # When
         email = make_payments_report_email(self.not_processable_csv, self.error_csv, self.grouped_payments)
 

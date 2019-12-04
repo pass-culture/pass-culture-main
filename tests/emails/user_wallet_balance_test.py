@@ -12,11 +12,11 @@ def test_make_wallet_balances_email():
     email = make_wallet_balances_email(csv)
 
     # Then
+    csv_binary = 'ImhlYWRlciBBIiwiaGVhZGVyIEIiLCJoZWFkZXIgQyIsImhlYWRlciBEIgoicGFydCBBIiwicGFydCBCIiwicGFydCBDIiwicGFydCBEIgo='
     assert email["FromEmail"] == 'support@passculture.app'
     assert email["FromName"] == "pass Culture Pro"
     assert email["Subject"] == "Soldes des utilisateurs pass Culture - 2018-10-15"
     assert email["Html-part"] == ""
     assert email["Attachments"] == [{"ContentType": "text/csv",
                                      "Filename": "soldes_des_utilisateurs_20181015.csv",
-                                     "Content": 'ImhlYWRlciBBIiwiaGVhZGVyIEIiLCJoZWFkZXIgQyIsImhlYWRlciBE'
-                                                'IgoicGFydCBBIiwicGFydCBCIiwicGFydCBDIiwicGFydCBEIgo='}]
+                                     "Content": csv_binary}]

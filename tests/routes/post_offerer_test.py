@@ -119,15 +119,15 @@ class Post:
             offerer = Offerer.query.first()
             assert offerer.UserOfferers[0].rights == RightsType.editor
 
-        @patch('domain.admin_emails.write_object_validation_email')
+        @patch('domain.admin_emails.make_validation_email_object')
         @patch('connectors.api_entreprises.requests.get')
         @clean_database
         def when_offerer_already_have_user_offerer_new_user_offerer_has_validation_token(self,
                                                                                          mock_api_entreprise,
-                                                                                         write_object_validation_email,
+                                                                                         make_validation_email_object,
                                                                                          app):
             # Given
-            write_object_validation_email.return_value={'Html-part': None}
+            make_validation_email_object.return_value={'Html-part': None}
             mock_api_entreprise.return_value = MagicMock(status_code=200,
                                                          text='',
                                                          json=MagicMock(return_value={}))
@@ -159,15 +159,15 @@ class Post:
                 .one()
             assert created_user_offerer.validationToken is not None
 
-        @patch('domain.admin_emails.write_object_validation_email')
+        @patch('domain.admin_emails.make_validation_email_object')
         @patch('connectors.api_entreprises.requests.get')
         @clean_database
         def expect_new_offerer_to_have_validation_token_but_user_offerer_dont(self,
                                                                               mock_api_entreprise,
-                                                                              write_object_validation_email,
+                                                                              make_validation_email_object,
                                                                               app):
             # Given
-            write_object_validation_email.return_value={'Html-part': None}
+            make_validation_email_object.return_value={'Html-part': None}
             mock_api_entreprise.return_value = MagicMock(status_code=200,
                                                          text='',
                                                          json=MagicMock(return_value={}))
@@ -193,15 +193,15 @@ class Post:
             assert offerer.validationToken is not None
             assert offerer.UserOfferers[0].validationToken is None
 
-        @patch('domain.admin_emails.write_object_validation_email')
+        @patch('domain.admin_emails.make_validation_email_object')
         @patch('connectors.api_entreprises.requests.get')
         @clean_database
         def when_offerer_already_in_base_just_create_user_offerer_with_validation_token(self,
                                                                                         mock_api_entreprise,
-                                                                                        write_object_validation_email,
+                                                                                        make_validation_email_object,
                                                                                         app):
             # Given
-            write_object_validation_email.return_value = {'Html-part': None}
+            make_validation_email_object.return_value = {'Html-part': None}
             mock_api_entreprise.return_value = MagicMock(status_code=200,
                                                          text='',
                                                          json=MagicMock(return_value={}))
@@ -228,15 +228,15 @@ class Post:
             assert offerer.UserOfferers[0].rights == RightsType.editor
             assert offerer.UserOfferers[0].validationToken is not None
 
-        @patch('domain.admin_emails.write_object_validation_email')
+        @patch('domain.admin_emails.make_validation_email_object')
         @patch('connectors.api_entreprises.requests.get')
         @clean_database
         def expect_not_validated_offerer_to_keeps_validation_token_and_user_offerer_get_one(self,
                                                                                             mock_api_entreprise,
-                                                                                            write_object_validation_email,
+                                                                                            make_validation_email_object,
                                                                                             app):
             # Given
-            write_object_validation_email.return_value = {'Html-part': None}
+            make_validation_email_object.return_value = {'Html-part': None}
             mock_api_entreprise.return_value = MagicMock(status_code=200,
                                                          text='',
                                                          json=MagicMock(return_value={}))

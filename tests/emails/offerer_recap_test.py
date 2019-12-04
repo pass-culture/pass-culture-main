@@ -12,7 +12,7 @@ from utils.mailing import make_final_recap_email_for_stock_with_event
 
 @mocked_mail
 @clean_database
-def test_offerer_recap_email_past_offer_without_booking(app):
+def test_offerer_recap_email_does_not_contain_past_offer_without_booking(app):
     # Given
     beginning_datetime = datetime(2017, 7, 20, 12, 0, 0)
     end_datetime = beginning_datetime + timedelta(hours=1)
@@ -41,7 +41,7 @@ def test_offerer_recap_email_past_offer_without_booking(app):
 
 @mocked_mail
 @clean_database
-def test_offerer_recap_email_past_offer_with_booking(app):
+def test_offerer_recap_email_contains_past_offer_with_booking(app):
     # Given
     beginning_datetime = datetime(2017, 7, 20, 12, 0, 0)
     end_datetime = beginning_datetime + timedelta(hours=1)
@@ -81,7 +81,7 @@ def test_offerer_recap_email_past_offer_with_booking(app):
 
 @mocked_mail
 @clean_database
-def test_offerer_recap_email_does_not_send_cancelled_or_used_booking(app):
+def test_offerer_recap_email_does_not_retrieve_cancelled_or_used_booking(app):
     # Given
     venue = create_venue(Offerer(), 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     stock = create_stock_with_event_offer(offerer=Offerer(), venue=venue)

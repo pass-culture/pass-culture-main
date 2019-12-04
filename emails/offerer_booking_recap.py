@@ -8,7 +8,7 @@ from utils.mailing import build_pc_pro_offer_link, format_environment_for_email,
     format_booking_hours_for_email
 
 
-def get_offerer_booking_recap_email_data(booking: Booking, recipients: List[str]) -> Dict:
+def retrieve_data_for_offerer_booking_recap_email(booking: Booking, recipients: List[str]) -> Dict:
     offer = booking.stock.resolvedOffer
     venue_name = offer.venue.name
     offer_name = offer.product.name

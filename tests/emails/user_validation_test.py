@@ -7,7 +7,7 @@ from utils.mailing import make_user_validation_email
 
 
 class UserValidationEmailsTest:
-    def test_make_webapp_user_validation_email_includes_validation_url_with_token_and_user_email(self, app):
+    def test_webapp_user_validation_email_includes_validation_url_with_token_and_user_email(self, app):
         # Given
         user = create_user(email="test@example.com")
         user.generate_validation_token()

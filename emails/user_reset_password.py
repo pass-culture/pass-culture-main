@@ -5,7 +5,7 @@ from repository.feature_queries import feature_send_mail_to_users_enabled
 from utils.mailing import SUPPORT_EMAIL_ADDRESS, DEV_EMAIL_ADDRESS, format_environment_for_email
 
 
-def make_reset_password_email_data(user: User) -> Dict:
+def retrieve_data_for_reset_password_email(user: User) -> Dict:
     user_first_name = user.firstName
     user_email = user.email
     user_reset_password_token = user.resetPasswordToken

@@ -28,6 +28,7 @@ class MakeOfferCreationNotificationEmailTest:
         # When
         author = create_user(email='user@email.com')
         email = make_offer_creation_notification_email(self.physical_offer93, author, 'test.url')
+
         # Then
         assert email["FromEmail"] == 'support@passculture.app'
         assert email["FromName"] == "pass Culture"
@@ -53,6 +54,7 @@ class MakeOfferCreationNotificationEmailTest:
         # When
         author = create_user('author@email.com')
         email = make_offer_creation_notification_email(self.virtual_offer, author, 'test.url')
+
         # Then
         assert email["FromEmail"] == 'support@passculture.app'
         assert email["FromName"] == "pass Culture"

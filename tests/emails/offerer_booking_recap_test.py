@@ -13,7 +13,7 @@ from tests.test_utils import create_user, create_offerer, create_venue, create_o
 from tests.utils.mailing_test import _remove_whitespaces
 from utils.mailing import ADMINISTRATION_EMAIL_ADDRESS, \
     make_offerer_booking_recap_email_after_user_action
-from emails.offerer_booking_recap import get_offerer_booking_recap_email_data
+from emails.offerer_booking_recap import retrieve_data_for_offerer_booking_recap_email
 
 
 class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
@@ -34,7 +34,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         PcObject.save(stock)
 
         # When
-        email = get_offerer_booking_recap_email_data(booking, recipient)
+        email = retrieve_data_for_offerer_booking_recap_email(booking, recipient)
 
         # Then
         assert email == {
@@ -86,7 +86,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         PcObject.save(stock)
 
         # When
-        email = get_offerer_booking_recap_email_data(booking, recipient)
+        email = retrieve_data_for_offerer_booking_recap_email(booking, recipient)
 
         # Then
         assert email == {
@@ -139,7 +139,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         PcObject.save(deposit, stock)
 
         # When
-        email = get_offerer_booking_recap_email_data(booking, recipient)
+        email = retrieve_data_for_offerer_booking_recap_email(booking, recipient)
 
         # Then
         assert email == {
@@ -190,7 +190,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
 
         # When
         thing_offer.extraData = None
-        email_data_template = get_offerer_booking_recap_email_data(booking, recipient)
+        email_data_template = retrieve_data_for_offerer_booking_recap_email(booking, recipient)
 
         # Then
         assert email_data_template == {
@@ -241,7 +241,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
 
         # When
         thing_offer.extraData = {}
-        email_data_template = get_offerer_booking_recap_email_data(booking, recipient)
+        email_data_template = retrieve_data_for_offerer_booking_recap_email(booking, recipient)
 
         # Then
         assert email_data_template == {
@@ -296,7 +296,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         # When
         thing_offer.extraData = None
 
-        email_data_template = get_offerer_booking_recap_email_data(booking, recipient)
+        email_data_template = retrieve_data_for_offerer_booking_recap_email(booking, recipient)
 
         # Then
         assert email_data_template == {
@@ -333,7 +333,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
     @patch('utils.mailing.IS_PROD', False)
     @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
     @clean_database
-    def test_returns_email_with_correct_data_when_two_users_made_reservations_on_same_offer(self, app):
+    def test_returns_email_with_correct_data_when_two_users_book_the_same_offer(self, app):
         # Given
         user_1 = create_user('Test', first_name='Jean', last_name='Dupont', departement_code='93',
                              email='test@example.com',
@@ -358,7 +358,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         # When
         thing_offer.extraData = None
 
-        email_data_template = get_offerer_booking_recap_email_data(booking_1, recipient)
+        email_data_template = retrieve_data_for_offerer_booking_recap_email(booking_1, recipient)
 
         # Then
         assert email_data_template == {
@@ -399,7 +399,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
 
     @patch('utils.mailing.IS_PROD', True)
     @clean_database
-    def test_returns_right_email_with_correct_link_to_the_corresponding_offer(self, app):
+    def test_returns_email_with_link_to_the_corresponding_offer(self, app):
         # Given
         user = create_user('Test', first_name='Jean', last_name='Dupont', departement_code='93',
                            email='test@example.com',
@@ -421,7 +421,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         # When
         thing_offer.extraData = None
 
-        email_data_template = get_offerer_booking_recap_email_data(booking, recipient)
+        email_data_template = retrieve_data_for_offerer_booking_recap_email(booking, recipient)
 
         # Then
         assert email_data_template == {
@@ -537,7 +537,7 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
 
     @mocked_mail
     @clean_database
-    def test_booking_recap_email_html_should_not_have_cancelled_or_used_bookings(app):
+    def test_booking_recap_email_html_should_not_retrieve_cancelled_or_used_bookings(app):
         # Given
         venue = create_venue(Offerer(), 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
                              '93')
@@ -743,7 +743,7 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
 
     @freeze_time('2018-10-15 09:21:34')
     @clean_database
-    def test_make_offerer_booking_recap_email_after_user_cancellation_should_have_unsubscribe_option(app):
+    def test_offerer_booking_recap_email_after_user_cancellation_should_have_unsubscribe_option(app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
@@ -808,7 +808,7 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         assert '(Adresse:' not in email_racap_html
 
     @clean_database
-    def test_make_offerer_booking_user_cancellation_for_event_email_when_virtual_venue_does_not_show_address(app):
+    def test_offerer_email_after_booking_cancellation_by_user_for_event_does_not_contain_address_when_venue_is_virtual(app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None,
@@ -857,7 +857,7 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
 
     @freeze_time('2018-10-15 09:21:34')
     @clean_database
-    def test_make_offerer_booking_user_cancellation_email_for_event_has_cancellation_subject_with_date(app):
+    def test_booking_cancellation_email_of_event_for_offerer_has_cancellation_subject_with_date(app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, 'Test offerer')
@@ -879,7 +879,7 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         assert recap_email['Subject'] == '[Réservations] Annulation de réservation pour Test - 15 octobre 2018 à 11:21'
 
     @clean_database
-    def test_make_offerer_booking_user_cancellation_has_recap_information_but_no_token(app):
+    def test_booking_cancellation_email_for_offerer_has_recap_information_but_no_token(app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None)

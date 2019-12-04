@@ -189,7 +189,7 @@ def make_offerer_booking_recap_email_after_user_action(booking: Booking, is_canc
     }
 
 
-def write_object_validation_email(offerer: Offerer, user_offerer: UserOfferer,
+def make_validation_email_object(offerer: Offerer, user_offerer: UserOfferer,
                                   get_by_siren=api_entreprises.get_by_offerer) -> Dict:
     vars_obj_user = vars(user_offerer.user)
     vars_obj_user.pop('clearTextPassword', None)
@@ -327,7 +327,7 @@ def make_validation_confirmation_email(user_offerer: UserOfferer, offerer: Offer
     }
 
 
-def make_venue_validation_email(venue: Venue) -> Dict:
+def make_venue_to_validate_email(venue: Venue) -> Dict:
     html = render_template(
         'mails/venue_validation_email.html', venue=venue, api_url=API_URL)
     return {
@@ -335,6 +335,21 @@ def make_venue_validation_email(venue: Venue) -> Dict:
         'FromName': 'pass Culture',
         'Subject': '{} - rattachement de lieu pro à valider : {}'.format(venue.departementCode, venue.name),
         'Html-part': html
+    }
+
+
+def make_reset_password_email(user, app_origin_url):
+    email_html = render_template(
+        'mails/user_reset_password_email.html',
+        user=user,
+        app_origin_url=app_origin_url
+    )
+
+    return {
+        'FromName': 'pass Culture',
+        'FromEmail': SUPPORT_EMAIL_ADDRESS,
+        'Subject': 'Réinitialisation de votre mot de passe',
+        'Html-part': email_html
     }
 
 
@@ -483,7 +498,7 @@ def make_activation_users_email(csv: str) -> Dict:
     }
 
 
-def make_venue_validation_confirmation_email(venue: Venue) -> Dict:
+def make_venue_validated_email(venue: Venue) -> Dict:
     html = render_template(
         'mails/venue_validation_confirmation_email.html', venue=venue)
     return {
