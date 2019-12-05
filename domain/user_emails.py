@@ -12,7 +12,8 @@ from repository import booking_queries
 from repository.stock_queries import set_booking_recap_sent_and_save
 from repository.user_queries import find_all_emails_of_user_offerers_admins
 from utils.logger import logger
-from utils.mailing import make_user_booking_recap_email, \
+from emails.beneficiary_booking_cancellation import make_user_booking_cancellation_recap_email
+from utils.mailing import make_user_booking_confirmation_recap_email, \
     make_offerer_driven_cancellation_email_for_offerer, make_final_recap_email_for_stock_with_event, \
     make_validation_confirmation_email, make_batch_cancellation_email, \
     make_user_validation_email, \
@@ -47,9 +48,8 @@ def send_booking_recap_emails(booking: Booking, send_email: Callable[..., bool])
     return send_email(data=email)
 
 
-def send_booking_confirmation_email_to_user(booking: Booking, send_email: Callable[..., bool],
-                                            is_cancellation: bool = False) -> bool:
-    email = make_user_booking_recap_email(booking, is_cancellation)
+def send_booking_confirmation_email_to_user(booking: Booking, send_email: Callable[..., bool]) -> bool:
+    email = make_user_booking_confirmation_recap_email(booking)
     recipients = [booking.user.email]
 
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
@@ -58,7 +58,7 @@ def send_booking_confirmation_email_to_user(booking: Booking, send_email: Callab
 
 
 def send_user_driven_cancellation_email_to_user(booking: Booking, send_email: Callable[..., bool]) -> bool:
-    email = make_user_booking_recap_email(booking, is_cancellation=True)
+    email = make_user_booking_cancellation_recap_email(booking)
     recipients = [booking.user.email]
 
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)

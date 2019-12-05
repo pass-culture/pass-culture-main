@@ -246,15 +246,10 @@ def make_offerer_driven_cancellation_email_for_offerer(booking: Booking) -> Dict
     }
 
 
-def make_user_booking_recap_email(booking: Booking, is_cancellation=False) -> Dict:
+def make_user_booking_confirmation_recap_email(booking: Booking) -> Dict:
     stock = booking.stock
     user = booking.user
-    if is_cancellation:
-        email_html, email_subject = _generate_user_driven_cancellation_email_for_user(user,
-                                                                                      stock)
-    else:
-        email_html, email_subject = _generate_reservation_email_html_subject(
-            booking)
+    email_html, email_subject = _generate_reservation_email_html_subject(booking)
 
     return {
         'FromName': 'pass Culture',
@@ -567,32 +562,6 @@ def _generate_reservation_email_html_subject(booking: Booking) -> (str, str):
                                      formatted_date_time=formatted_date_time,
                                      venue=venue
                                      )
-
-    return email_html, email_subject
-
-
-def _generate_user_driven_cancellation_email_for_user(user: User, stock: Stock) -> (str, str):
-    venue = stock.resolvedOffer.venue
-    if stock.beginningDatetime is None:
-        email_subject = 'Annulation de votre commande pour {}'.format(
-            stock.resolvedOffer.product.name)
-        email_html = render_template('mails/user_cancellation_email_thing.html',
-                                     user=user,
-                                     thing_name=stock.resolvedOffer.product.name,
-                                     thing_reference=stock.resolvedOffer.product.idAtProviders,
-                                     venue=venue)
-    else:
-        date_in_tz = get_event_datetime(stock)
-        formatted_date_time = format_datetime(date_in_tz)
-        email_html = render_template('mails/user_cancellation_email_event.html',
-                                     user=user,
-                                     event_occurrence_name=stock.offer.product.name,
-                                     venue=venue,
-                                     formatted_date_time=formatted_date_time)
-        email_subject = 'Annulation de votre réservation pour {} le {}'.format(
-            stock.offer.product.name,
-            formatted_date_time
-        )
 
     return email_html, email_subject
 
