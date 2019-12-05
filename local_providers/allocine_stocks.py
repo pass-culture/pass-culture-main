@@ -3,6 +3,7 @@ import re
 from datetime import datetime, timedelta
 from typing import List, Optional
 
+from dateutil import tz
 from dateutil.parser import parse
 from sqlalchemy import Sequence
 
@@ -70,7 +71,7 @@ class AllocineStocks(LocalProvider):
             providable_information_list.append(french_version_offer_providable_information)
 
         stock_providable_information = [self.create_providable_info(Stock, f"{self.movie_information['id']}-"
-                                f"{showtime_number}", datetime.utcnow()) for showtime_number in range(showtimes_number)]
+        f"{showtime_number}", datetime.utcnow()) for showtime_number in range(showtimes_number)]
 
         providable_information_list += stock_providable_information
 
@@ -143,8 +144,9 @@ class AllocineStocks(LocalProvider):
         allocine_stock.offerId = self.last_vo_offer_id if diffusion_version == ORIGINAL_VERSION else \
             self.last_vf_offer_id
 
-        allocine_stock.beginningDatetime = parsed_showtimes['startsAt']
-        allocine_stock.bookingLimitDatetime = parsed_showtimes['startsAt']
+        date_in_utc = _format_naive_date_to_utc(parsed_showtimes['startsAt'])
+        allocine_stock.beginningDatetime = date_in_utc
+        allocine_stock.bookingLimitDatetime = date_in_utc
         allocine_stock.available = None
         allocine_stock.price = 0
 
@@ -202,7 +204,14 @@ def retrieve_showtime_information(showtime_information: dict) -> dict:
 
 def _filter_only_digital_and_non_experience_showtimes(showtimes_information: List[dict]) -> List[dict]:
     return list(filter(lambda showtime: showtime['projection'][0] == DIGITAL_PROJECTION and
-                                                              showtime['experience'] is None, showtimes_information))
+                                        showtime['experience'] is None, showtimes_information))
+
+
+def _format_naive_date_to_utc(date: datetime) -> datetime:
+    from_zone = tz.gettz('Europe/Paris')
+    to_zone = tz.gettz('UTC')
+    date_in_tz = date.replace(tzinfo=from_zone)
+    return date_in_tz.astimezone(to_zone)
 
 
 def _get_stock_number_from_id_at_providers(id_at_providers: str) -> int:
