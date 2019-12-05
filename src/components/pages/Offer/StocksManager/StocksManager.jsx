@@ -217,7 +217,7 @@ class StocksManager extends PureComponent {
                 <tr>
                   <td colSpan="10">
                     <i>
-                      {'Il n’est pas possible d’ajouter ni de supprimer d’horaires'}
+                      {'Il n’est pas possible d’ajouter ni de supprimer d’horaires '}
                       {'pour cet événement '}
                       {provider.name}
                     </i>
