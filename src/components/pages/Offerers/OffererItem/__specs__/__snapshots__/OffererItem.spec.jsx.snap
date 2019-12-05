@@ -11,15 +11,13 @@ ShallowWrapper {
         "search": "",
       }
     }
-    offerers={
-      Array [
-        Object {
-          "id": "AE",
-          "isValidated": true,
-          "nOffers": 56,
-          "name": "Fake Name",
-        },
-      ]
+    offerer={
+      Object {
+        "id": "AE",
+        "isValidated": true,
+        "nOffers": 0,
+        "name": "Fake Name",
+      }
     }
     pagination={
       Object {
@@ -41,7 +39,9 @@ ShallowWrapper {
     }
     venues={
       Array [
-        Object {},
+        Object {
+          "isDigital": true,
+        },
       ]
     }
   />,
@@ -64,69 +64,69 @@ ShallowWrapper {
           className="list-content"
         >
           <p
-            className="name"
+            className="offerer-name"
           >
             <NavLink
               activeClassName="active"
               aria-current="page"
-              to="/structures/undefined"
-            />
-          </p>
-          <p
-            className="is-italic mb12"
-            id="offerer-item-validation"
-          >
-            Structure en cours de validation par l’équipe pass Culture.
+              to="/structures/AE"
+            >
+              Fake Name
+            </NavLink>
           </p>
           <ul
             className="actions"
           >
-            <React.Fragment>
-              <li>
-                <NavLink
-                  activeClassName="active"
-                  aria-current="page"
-                  className="has-text-primary"
-                  to="/offres/creation?structure=undefined"
-                >
-                  <Icon
-                    svg="ico-offres-r"
-                  />
-                  Nouvelle offre
-                </NavLink>
-              </li>
-              <li>
-                0 offre
-              </li>
-            </React.Fragment>
-            <React.Fragment>
-              <li>
-                <NavLink
-                  activeClassName="active"
-                  aria-current="page"
-                  className="has-text-primary"
-                  to="/structures/undefined/"
-                >
-                  <Icon
-                    svg="ico-venue"
-                  />
-                  1 lieu
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  activeClassName="active"
-                  aria-current="page"
-                  className="has-text-primary"
-                  to="/structures/undefined/lieux/creation"
-                >
-                  <Icon
-                    svg="ico-venue-r"
-                  />
-                  Nouveau lieu
-                </NavLink>
-              </li>
-            </React.Fragment>
+            <li
+              id="create-offer-action"
+            >
+              <NavLink
+                activeClassName="active"
+                aria-current="page"
+                className="has-text-primary"
+                to="/offres/creation?structure=AE&lieu=undefined"
+              >
+                <Icon
+                  svg="ico-offres-r"
+                />
+                Nouvelle offre
+              </NavLink>
+            </li>
+            <li
+              className="count-offers-action"
+            >
+              0 offre
+            </li>
+            <li
+              id="count-venues-action"
+            >
+              <NavLink
+                activeClassName="active"
+                aria-current="page"
+                className="has-text-primary"
+                to="/structures/AE/"
+              >
+                <Icon
+                  svg="ico-venue"
+                />
+                1 lieu
+              </NavLink>
+            </li>
+            <li
+              id="create-venue-action"
+            >
+              <NavLink
+                activeClassName="active"
+                aria-current="page"
+                className="has-text-primary"
+                to="/structures/AE/lieux/creation"
+              >
+                <Icon
+                  svg="ico-venue-r"
+                />
+                Nouveau lieu
+              </NavLink>
+            </li>
           </ul>
         </div>,
         <div
@@ -135,7 +135,7 @@ ShallowWrapper {
           <NavLink
             activeClassName="active"
             aria-current="page"
-            to="/structures/undefined"
+            to="/structures/AE"
           >
             <Icon
               svg="ico-next-S"
@@ -154,69 +154,70 @@ ShallowWrapper {
         "props": Object {
           "children": Array [
             <p
-              className="name"
+              className="offerer-name"
             >
               <NavLink
                 activeClassName="active"
                 aria-current="page"
-                to="/structures/undefined"
-              />
+                to="/structures/AE"
+              >
+                Fake Name
+              </NavLink>
             </p>,
-            <p
-              className="is-italic mb12"
-              id="offerer-item-validation"
-            >
-              Structure en cours de validation par l’équipe pass Culture.
-            </p>,
+            false,
             <ul
               className="actions"
             >
-              <React.Fragment>
-                <li>
-                  <NavLink
-                    activeClassName="active"
-                    aria-current="page"
-                    className="has-text-primary"
-                    to="/offres/creation?structure=undefined"
-                  >
-                    <Icon
-                      svg="ico-offres-r"
-                    />
-                    Nouvelle offre
-                  </NavLink>
-                </li>
-                <li>
-                  0 offre
-                </li>
-              </React.Fragment>
-              <React.Fragment>
-                <li>
-                  <NavLink
-                    activeClassName="active"
-                    aria-current="page"
-                    className="has-text-primary"
-                    to="/structures/undefined/"
-                  >
-                    <Icon
-                      svg="ico-venue"
-                    />
-                    1 lieu
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    activeClassName="active"
-                    aria-current="page"
-                    className="has-text-primary"
-                    to="/structures/undefined/lieux/creation"
-                  >
-                    <Icon
-                      svg="ico-venue-r"
-                    />
-                    Nouveau lieu
-                  </NavLink>
-                </li>
-              </React.Fragment>
+              <li
+                id="create-offer-action"
+              >
+                <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  className="has-text-primary"
+                  to="/offres/creation?structure=AE&lieu=undefined"
+                >
+                  <Icon
+                    svg="ico-offres-r"
+                  />
+                  Nouvelle offre
+                </NavLink>
+              </li>
+              <li
+                className="count-offers-action"
+              >
+                0 offre
+              </li>
+              <li
+                id="count-venues-action"
+              >
+                <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  className="has-text-primary"
+                  to="/structures/AE/"
+                >
+                  <Icon
+                    svg="ico-venue"
+                  />
+                  1 lieu
+                </NavLink>
+              </li>
+              <li
+                id="create-venue-action"
+              >
+                <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  className="has-text-primary"
+                  to="/structures/AE/lieux/creation"
+                >
+                  <Icon
+                    svg="ico-venue-r"
+                  />
+                  Nouveau lieu
+                </NavLink>
+              </li>
             </ul>,
           ],
           "className": "list-content",
@@ -231,9 +232,11 @@ ShallowWrapper {
               "children": <NavLink
                 activeClassName="active"
                 aria-current="page"
-                to="/structures/undefined"
-              />,
-              "className": "name",
+                to="/structures/AE"
+              >
+                Fake Name
+              </NavLink>,
+              "className": "offerer-name",
             },
             "ref": null,
             "rendered": Object {
@@ -243,80 +246,72 @@ ShallowWrapper {
               "props": Object {
                 "activeClassName": "active",
                 "aria-current": "page",
-                "children": undefined,
-                "to": "/structures/undefined",
+                "children": "Fake Name",
+                "to": "/structures/AE",
               },
               "ref": null,
-              "rendered": null,
+              "rendered": "Fake Name",
               "type": [Function],
             },
             "type": "p",
           },
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": "Structure en cours de validation par l’équipe pass Culture.",
-              "className": "is-italic mb12",
-              "id": "offerer-item-validation",
-            },
-            "ref": null,
-            "rendered": "Structure en cours de validation par l’équipe pass Culture.",
-            "type": "p",
-          },
+          false,
           Object {
             "instance": null,
             "key": undefined,
             "nodeType": "host",
             "props": Object {
               "children": Array [
-                <React.Fragment>
-                  <li>
-                    <NavLink
-                      activeClassName="active"
-                      aria-current="page"
-                      className="has-text-primary"
-                      to="/offres/creation?structure=undefined"
-                    >
-                      <Icon
-                        svg="ico-offres-r"
-                      />
-                      Nouvelle offre
-                    </NavLink>
-                  </li>
-                  <li>
-                    0 offre
-                  </li>
-                </React.Fragment>,
-                <React.Fragment>
-                  <li>
-                    <NavLink
-                      activeClassName="active"
-                      aria-current="page"
-                      className="has-text-primary"
-                      to="/structures/undefined/"
-                    >
-                      <Icon
-                        svg="ico-venue"
-                      />
-                      1 lieu
-                    </NavLink>
-                  </li>
-                  <li>
-                    <NavLink
-                      activeClassName="active"
-                      aria-current="page"
-                      className="has-text-primary"
-                      to="/structures/undefined/lieux/creation"
-                    >
-                      <Icon
-                        svg="ico-venue-r"
-                      />
-                      Nouveau lieu
-                    </NavLink>
-                  </li>
-                </React.Fragment>,
+                <li
+                  id="create-offer-action"
+                >
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="has-text-primary"
+                    to="/offres/creation?structure=AE&lieu=undefined"
+                  >
+                    <Icon
+                      svg="ico-offres-r"
+                    />
+                    Nouvelle offre
+                  </NavLink>
+                </li>,
+                <li
+                  className="count-offers-action"
+                >
+                  0 offre
+                </li>,
+                <li
+                  id="count-venues-action"
+                >
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="has-text-primary"
+                    to="/structures/AE/"
+                  >
+                    <Icon
+                      svg="ico-venue"
+                    />
+                    1 lieu
+                  </NavLink>
+                </li>,
+                <li
+                  id="create-venue-action"
+                >
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="has-text-primary"
+                    to="/structures/AE/lieux/creation"
+                  >
+                    <Icon
+                      svg="ico-venue-r"
+                    />
+                    Nouveau lieu
+                  </NavLink>
+                </li>,
               ],
               "className": "actions",
             },
@@ -325,242 +320,178 @@ ShallowWrapper {
               Object {
                 "instance": null,
                 "key": undefined,
-                "nodeType": "function",
+                "nodeType": "host",
                 "props": Object {
-                  "children": Array [
-                    <li>
-                      <NavLink
-                        activeClassName="active"
-                        aria-current="page"
-                        className="has-text-primary"
-                        to="/offres/creation?structure=undefined"
-                      >
-                        <Icon
-                          svg="ico-offres-r"
-                        />
-                        Nouvelle offre
-                      </NavLink>
-                    </li>,
-                    <li>
-                      0 offre
-                    </li>,
-                  ],
+                  "children": <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="has-text-primary"
+                    to="/offres/creation?structure=AE&lieu=undefined"
+                  >
+                    <Icon
+                      svg="ico-offres-r"
+                    />
+                    Nouvelle offre
+                  </NavLink>,
+                  "id": "create-offer-action",
                 },
                 "ref": null,
-                "rendered": Array [
-                  Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "host",
-                    "props": Object {
-                      "children": <NavLink
-                        activeClassName="active"
-                        aria-current="page"
-                        className="has-text-primary"
-                        to="/offres/creation?structure=undefined"
-                      >
-                        <Icon
-                          svg="ico-offres-r"
-                        />
-                        Nouvelle offre
-                      </NavLink>,
-                    },
-                    "ref": null,
-                    "rendered": Object {
+                "rendered": Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "function",
+                  "props": Object {
+                    "activeClassName": "active",
+                    "aria-current": "page",
+                    "children": Array [
+                      <Icon
+                        svg="ico-offres-r"
+                      />,
+                      "Nouvelle offre",
+                      undefined,
+                    ],
+                    "className": "has-text-primary",
+                    "to": "/offres/creation?structure=AE&lieu=undefined",
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    Object {
                       "instance": null,
                       "key": undefined,
                       "nodeType": "function",
                       "props": Object {
-                        "activeClassName": "active",
-                        "aria-current": "page",
-                        "children": Array [
-                          <Icon
-                            svg="ico-offres-r"
-                          />,
-                          "Nouvelle offre",
-                          undefined,
-                        ],
-                        "className": "has-text-primary",
-                        "to": "/offres/creation?structure=undefined",
+                        "svg": "ico-offres-r",
                       },
                       "ref": null,
-                      "rendered": Array [
-                        Object {
-                          "instance": null,
-                          "key": undefined,
-                          "nodeType": "function",
-                          "props": Object {
-                            "svg": "ico-offres-r",
-                          },
-                          "ref": null,
-                          "rendered": null,
-                          "type": [Function],
-                        },
-                        "Nouvelle offre",
-                        undefined,
-                      ],
+                      "rendered": null,
                       "type": [Function],
                     },
-                    "type": "li",
-                  },
-                  Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "host",
-                    "props": Object {
-                      "children": "0 offre",
-                    },
-                    "ref": null,
-                    "rendered": "0 offre",
-                    "type": "li",
-                  },
-                ],
-                "type": Symbol(react.fragment),
+                    "Nouvelle offre",
+                    undefined,
+                  ],
+                  "type": [Function],
+                },
+                "type": "li",
               },
               Object {
                 "instance": null,
                 "key": undefined,
-                "nodeType": "function",
+                "nodeType": "host",
                 "props": Object {
-                  "children": Array [
-                    <li>
-                      <NavLink
-                        activeClassName="active"
-                        aria-current="page"
-                        className="has-text-primary"
-                        to="/structures/undefined/"
-                      >
-                        <Icon
-                          svg="ico-venue"
-                        />
-                        1 lieu
-                      </NavLink>
-                    </li>,
-                    <li>
-                      <NavLink
-                        activeClassName="active"
-                        aria-current="page"
-                        className="has-text-primary"
-                        to="/structures/undefined/lieux/creation"
-                      >
-                        <Icon
-                          svg="ico-venue-r"
-                        />
-                        Nouveau lieu
-                      </NavLink>
-                    </li>,
-                  ],
+                  "children": "0 offre",
+                  "className": "count-offers-action",
                 },
                 "ref": null,
-                "rendered": Array [
-                  Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "host",
-                    "props": Object {
-                      "children": <NavLink
-                        activeClassName="active"
-                        aria-current="page"
-                        className="has-text-primary"
-                        to="/structures/undefined/"
-                      >
-                        <Icon
-                          svg="ico-venue"
-                        />
-                        1 lieu
-                      </NavLink>,
-                    },
-                    "ref": null,
-                    "rendered": Object {
+                "rendered": "0 offre",
+                "type": "li",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="has-text-primary"
+                    to="/structures/AE/"
+                  >
+                    <Icon
+                      svg="ico-venue"
+                    />
+                    1 lieu
+                  </NavLink>,
+                  "id": "count-venues-action",
+                },
+                "ref": null,
+                "rendered": Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "function",
+                  "props": Object {
+                    "activeClassName": "active",
+                    "aria-current": "page",
+                    "children": Array [
+                      <Icon
+                        svg="ico-venue"
+                      />,
+                      "1 lieu",
+                    ],
+                    "className": "has-text-primary",
+                    "to": "/structures/AE/",
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    Object {
                       "instance": null,
                       "key": undefined,
                       "nodeType": "function",
                       "props": Object {
-                        "activeClassName": "active",
-                        "aria-current": "page",
-                        "children": Array [
-                          <Icon
-                            svg="ico-venue"
-                          />,
-                          "1 lieu",
-                        ],
-                        "className": "has-text-primary",
-                        "to": "/structures/undefined/",
+                        "svg": "ico-venue",
                       },
                       "ref": null,
-                      "rendered": Array [
-                        Object {
-                          "instance": null,
-                          "key": undefined,
-                          "nodeType": "function",
-                          "props": Object {
-                            "svg": "ico-venue",
-                          },
-                          "ref": null,
-                          "rendered": null,
-                          "type": [Function],
-                        },
-                        "1 lieu",
-                      ],
+                      "rendered": null,
                       "type": [Function],
                     },
-                    "type": "li",
+                    "1 lieu",
+                  ],
+                  "type": [Function],
+                },
+                "type": "li",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="has-text-primary"
+                    to="/structures/AE/lieux/creation"
+                  >
+                    <Icon
+                      svg="ico-venue-r"
+                    />
+                    Nouveau lieu
+                  </NavLink>,
+                  "id": "create-venue-action",
+                },
+                "ref": null,
+                "rendered": Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "function",
+                  "props": Object {
+                    "activeClassName": "active",
+                    "aria-current": "page",
+                    "children": Array [
+                      <Icon
+                        svg="ico-venue-r"
+                      />,
+                      "Nouveau lieu",
+                    ],
+                    "className": "has-text-primary",
+                    "to": "/structures/AE/lieux/creation",
                   },
-                  Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "host",
-                    "props": Object {
-                      "children": <NavLink
-                        activeClassName="active"
-                        aria-current="page"
-                        className="has-text-primary"
-                        to="/structures/undefined/lieux/creation"
-                      >
-                        <Icon
-                          svg="ico-venue-r"
-                        />
-                        Nouveau lieu
-                      </NavLink>,
-                    },
-                    "ref": null,
-                    "rendered": Object {
+                  "ref": null,
+                  "rendered": Array [
+                    Object {
                       "instance": null,
                       "key": undefined,
                       "nodeType": "function",
                       "props": Object {
-                        "activeClassName": "active",
-                        "aria-current": "page",
-                        "children": Array [
-                          <Icon
-                            svg="ico-venue-r"
-                          />,
-                          "Nouveau lieu",
-                        ],
-                        "className": "has-text-primary",
-                        "to": "/structures/undefined/lieux/creation",
+                        "svg": "ico-venue-r",
                       },
                       "ref": null,
-                      "rendered": Array [
-                        Object {
-                          "instance": null,
-                          "key": undefined,
-                          "nodeType": "function",
-                          "props": Object {
-                            "svg": "ico-venue-r",
-                          },
-                          "ref": null,
-                          "rendered": null,
-                          "type": [Function],
-                        },
-                        "Nouveau lieu",
-                      ],
+                      "rendered": null,
                       "type": [Function],
                     },
-                    "type": "li",
-                  },
-                ],
-                "type": Symbol(react.fragment),
+                    "Nouveau lieu",
+                  ],
+                  "type": [Function],
+                },
+                "type": "li",
               },
             ],
             "type": "ul",
@@ -576,7 +507,7 @@ ShallowWrapper {
           "children": <NavLink
             activeClassName="active"
             aria-current="page"
-            to="/structures/undefined"
+            to="/structures/AE"
           >
             <Icon
               svg="ico-next-S"
@@ -595,7 +526,7 @@ ShallowWrapper {
             "children": <Icon
               svg="ico-next-S"
             />,
-            "to": "/structures/undefined",
+            "to": "/structures/AE",
           },
           "ref": null,
           "rendered": Object {
@@ -627,69 +558,69 @@ ShallowWrapper {
             className="list-content"
           >
             <p
-              className="name"
+              className="offerer-name"
             >
               <NavLink
                 activeClassName="active"
                 aria-current="page"
-                to="/structures/undefined"
-              />
-            </p>
-            <p
-              className="is-italic mb12"
-              id="offerer-item-validation"
-            >
-              Structure en cours de validation par l’équipe pass Culture.
+                to="/structures/AE"
+              >
+                Fake Name
+              </NavLink>
             </p>
             <ul
               className="actions"
             >
-              <React.Fragment>
-                <li>
-                  <NavLink
-                    activeClassName="active"
-                    aria-current="page"
-                    className="has-text-primary"
-                    to="/offres/creation?structure=undefined"
-                  >
-                    <Icon
-                      svg="ico-offres-r"
-                    />
-                    Nouvelle offre
-                  </NavLink>
-                </li>
-                <li>
-                  0 offre
-                </li>
-              </React.Fragment>
-              <React.Fragment>
-                <li>
-                  <NavLink
-                    activeClassName="active"
-                    aria-current="page"
-                    className="has-text-primary"
-                    to="/structures/undefined/"
-                  >
-                    <Icon
-                      svg="ico-venue"
-                    />
-                    1 lieu
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    activeClassName="active"
-                    aria-current="page"
-                    className="has-text-primary"
-                    to="/structures/undefined/lieux/creation"
-                  >
-                    <Icon
-                      svg="ico-venue-r"
-                    />
-                    Nouveau lieu
-                  </NavLink>
-                </li>
-              </React.Fragment>
+              <li
+                id="create-offer-action"
+              >
+                <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  className="has-text-primary"
+                  to="/offres/creation?structure=AE&lieu=undefined"
+                >
+                  <Icon
+                    svg="ico-offres-r"
+                  />
+                  Nouvelle offre
+                </NavLink>
+              </li>
+              <li
+                className="count-offers-action"
+              >
+                0 offre
+              </li>
+              <li
+                id="count-venues-action"
+              >
+                <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  className="has-text-primary"
+                  to="/structures/AE/"
+                >
+                  <Icon
+                    svg="ico-venue"
+                  />
+                  1 lieu
+                </NavLink>
+              </li>
+              <li
+                id="create-venue-action"
+              >
+                <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  className="has-text-primary"
+                  to="/structures/AE/lieux/creation"
+                >
+                  <Icon
+                    svg="ico-venue-r"
+                  />
+                  Nouveau lieu
+                </NavLink>
+              </li>
             </ul>
           </div>,
           <div
@@ -698,7 +629,7 @@ ShallowWrapper {
             <NavLink
               activeClassName="active"
               aria-current="page"
-              to="/structures/undefined"
+              to="/structures/AE"
             >
               <Icon
                 svg="ico-next-S"
@@ -717,69 +648,70 @@ ShallowWrapper {
           "props": Object {
             "children": Array [
               <p
-                className="name"
+                className="offerer-name"
               >
                 <NavLink
                   activeClassName="active"
                   aria-current="page"
-                  to="/structures/undefined"
-                />
+                  to="/structures/AE"
+                >
+                  Fake Name
+                </NavLink>
               </p>,
-              <p
-                className="is-italic mb12"
-                id="offerer-item-validation"
-              >
-                Structure en cours de validation par l’équipe pass Culture.
-              </p>,
+              false,
               <ul
                 className="actions"
               >
-                <React.Fragment>
-                  <li>
-                    <NavLink
-                      activeClassName="active"
-                      aria-current="page"
-                      className="has-text-primary"
-                      to="/offres/creation?structure=undefined"
-                    >
-                      <Icon
-                        svg="ico-offres-r"
-                      />
-                      Nouvelle offre
-                    </NavLink>
-                  </li>
-                  <li>
-                    0 offre
-                  </li>
-                </React.Fragment>
-                <React.Fragment>
-                  <li>
-                    <NavLink
-                      activeClassName="active"
-                      aria-current="page"
-                      className="has-text-primary"
-                      to="/structures/undefined/"
-                    >
-                      <Icon
-                        svg="ico-venue"
-                      />
-                      1 lieu
-                    </NavLink>
-                  </li>
-                  <li>
-                    <NavLink
-                      activeClassName="active"
-                      aria-current="page"
-                      className="has-text-primary"
-                      to="/structures/undefined/lieux/creation"
-                    >
-                      <Icon
-                        svg="ico-venue-r"
-                      />
-                      Nouveau lieu
-                    </NavLink>
-                  </li>
-                </React.Fragment>
+                <li
+                  id="create-offer-action"
+                >
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="has-text-primary"
+                    to="/offres/creation?structure=AE&lieu=undefined"
+                  >
+                    <Icon
+                      svg="ico-offres-r"
+                    />
+                    Nouvelle offre
+                  </NavLink>
+                </li>
+                <li
+                  className="count-offers-action"
+                >
+                  0 offre
+                </li>
+                <li
+                  id="count-venues-action"
+                >
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="has-text-primary"
+                    to="/structures/AE/"
+                  >
+                    <Icon
+                      svg="ico-venue"
+                    />
+                    1 lieu
+                  </NavLink>
+                </li>
+                <li
+                  id="create-venue-action"
+                >
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="has-text-primary"
+                    to="/structures/AE/lieux/creation"
+                  >
+                    <Icon
+                      svg="ico-venue-r"
+                    />
+                    Nouveau lieu
+                  </NavLink>
+                </li>
               </ul>,
             ],
             "className": "list-content",
@@ -794,9 +726,11 @@ ShallowWrapper {
                 "children": <NavLink
                   activeClassName="active"
                   aria-current="page"
-                  to="/structures/undefined"
-                />,
-                "className": "name",
+                  to="/structures/AE"
+                >
+                  Fake Name
+                </NavLink>,
+                "className": "offerer-name",
               },
               "ref": null,
               "rendered": Object {
@@ -806,80 +740,72 @@ ShallowWrapper {
                 "props": Object {
                   "activeClassName": "active",
                   "aria-current": "page",
-                  "children": undefined,
-                  "to": "/structures/undefined",
+                  "children": "Fake Name",
+                  "to": "/structures/AE",
                 },
                 "ref": null,
-                "rendered": null,
+                "rendered": "Fake Name",
                 "type": [Function],
               },
               "type": "p",
             },
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": "Structure en cours de validation par l’équipe pass Culture.",
-                "className": "is-italic mb12",
-                "id": "offerer-item-validation",
-              },
-              "ref": null,
-              "rendered": "Structure en cours de validation par l’équipe pass Culture.",
-              "type": "p",
-            },
+            false,
             Object {
               "instance": null,
               "key": undefined,
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  <React.Fragment>
-                    <li>
-                      <NavLink
-                        activeClassName="active"
-                        aria-current="page"
-                        className="has-text-primary"
-                        to="/offres/creation?structure=undefined"
-                      >
-                        <Icon
-                          svg="ico-offres-r"
-                        />
-                        Nouvelle offre
-                      </NavLink>
-                    </li>
-                    <li>
-                      0 offre
-                    </li>
-                  </React.Fragment>,
-                  <React.Fragment>
-                    <li>
-                      <NavLink
-                        activeClassName="active"
-                        aria-current="page"
-                        className="has-text-primary"
-                        to="/structures/undefined/"
-                      >
-                        <Icon
-                          svg="ico-venue"
-                        />
-                        1 lieu
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink
-                        activeClassName="active"
-                        aria-current="page"
-                        className="has-text-primary"
-                        to="/structures/undefined/lieux/creation"
-                      >
-                        <Icon
-                          svg="ico-venue-r"
-                        />
-                        Nouveau lieu
-                      </NavLink>
-                    </li>
-                  </React.Fragment>,
+                  <li
+                    id="create-offer-action"
+                  >
+                    <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="has-text-primary"
+                      to="/offres/creation?structure=AE&lieu=undefined"
+                    >
+                      <Icon
+                        svg="ico-offres-r"
+                      />
+                      Nouvelle offre
+                    </NavLink>
+                  </li>,
+                  <li
+                    className="count-offers-action"
+                  >
+                    0 offre
+                  </li>,
+                  <li
+                    id="count-venues-action"
+                  >
+                    <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="has-text-primary"
+                      to="/structures/AE/"
+                    >
+                      <Icon
+                        svg="ico-venue"
+                      />
+                      1 lieu
+                    </NavLink>
+                  </li>,
+                  <li
+                    id="create-venue-action"
+                  >
+                    <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="has-text-primary"
+                      to="/structures/AE/lieux/creation"
+                    >
+                      <Icon
+                        svg="ico-venue-r"
+                      />
+                      Nouveau lieu
+                    </NavLink>
+                  </li>,
                 ],
                 "className": "actions",
               },
@@ -888,242 +814,178 @@ ShallowWrapper {
                 Object {
                   "instance": null,
                   "key": undefined,
-                  "nodeType": "function",
+                  "nodeType": "host",
                   "props": Object {
-                    "children": Array [
-                      <li>
-                        <NavLink
-                          activeClassName="active"
-                          aria-current="page"
-                          className="has-text-primary"
-                          to="/offres/creation?structure=undefined"
-                        >
-                          <Icon
-                            svg="ico-offres-r"
-                          />
-                          Nouvelle offre
-                        </NavLink>
-                      </li>,
-                      <li>
-                        0 offre
-                      </li>,
-                    ],
+                    "children": <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="has-text-primary"
+                      to="/offres/creation?structure=AE&lieu=undefined"
+                    >
+                      <Icon
+                        svg="ico-offres-r"
+                      />
+                      Nouvelle offre
+                    </NavLink>,
+                    "id": "create-offer-action",
                   },
                   "ref": null,
-                  "rendered": Array [
-                    Object {
-                      "instance": null,
-                      "key": undefined,
-                      "nodeType": "host",
-                      "props": Object {
-                        "children": <NavLink
-                          activeClassName="active"
-                          aria-current="page"
-                          className="has-text-primary"
-                          to="/offres/creation?structure=undefined"
-                        >
-                          <Icon
-                            svg="ico-offres-r"
-                          />
-                          Nouvelle offre
-                        </NavLink>,
-                      },
-                      "ref": null,
-                      "rendered": Object {
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "activeClassName": "active",
+                      "aria-current": "page",
+                      "children": Array [
+                        <Icon
+                          svg="ico-offres-r"
+                        />,
+                        "Nouvelle offre",
+                        undefined,
+                      ],
+                      "className": "has-text-primary",
+                      "to": "/offres/creation?structure=AE&lieu=undefined",
+                    },
+                    "ref": null,
+                    "rendered": Array [
+                      Object {
                         "instance": null,
                         "key": undefined,
                         "nodeType": "function",
                         "props": Object {
-                          "activeClassName": "active",
-                          "aria-current": "page",
-                          "children": Array [
-                            <Icon
-                              svg="ico-offres-r"
-                            />,
-                            "Nouvelle offre",
-                            undefined,
-                          ],
-                          "className": "has-text-primary",
-                          "to": "/offres/creation?structure=undefined",
+                          "svg": "ico-offres-r",
                         },
                         "ref": null,
-                        "rendered": Array [
-                          Object {
-                            "instance": null,
-                            "key": undefined,
-                            "nodeType": "function",
-                            "props": Object {
-                              "svg": "ico-offres-r",
-                            },
-                            "ref": null,
-                            "rendered": null,
-                            "type": [Function],
-                          },
-                          "Nouvelle offre",
-                          undefined,
-                        ],
+                        "rendered": null,
                         "type": [Function],
                       },
-                      "type": "li",
-                    },
-                    Object {
-                      "instance": null,
-                      "key": undefined,
-                      "nodeType": "host",
-                      "props": Object {
-                        "children": "0 offre",
-                      },
-                      "ref": null,
-                      "rendered": "0 offre",
-                      "type": "li",
-                    },
-                  ],
-                  "type": Symbol(react.fragment),
+                      "Nouvelle offre",
+                      undefined,
+                    ],
+                    "type": [Function],
+                  },
+                  "type": "li",
                 },
                 Object {
                   "instance": null,
                   "key": undefined,
-                  "nodeType": "function",
+                  "nodeType": "host",
                   "props": Object {
-                    "children": Array [
-                      <li>
-                        <NavLink
-                          activeClassName="active"
-                          aria-current="page"
-                          className="has-text-primary"
-                          to="/structures/undefined/"
-                        >
-                          <Icon
-                            svg="ico-venue"
-                          />
-                          1 lieu
-                        </NavLink>
-                      </li>,
-                      <li>
-                        <NavLink
-                          activeClassName="active"
-                          aria-current="page"
-                          className="has-text-primary"
-                          to="/structures/undefined/lieux/creation"
-                        >
-                          <Icon
-                            svg="ico-venue-r"
-                          />
-                          Nouveau lieu
-                        </NavLink>
-                      </li>,
-                    ],
+                    "children": "0 offre",
+                    "className": "count-offers-action",
                   },
                   "ref": null,
-                  "rendered": Array [
-                    Object {
-                      "instance": null,
-                      "key": undefined,
-                      "nodeType": "host",
-                      "props": Object {
-                        "children": <NavLink
-                          activeClassName="active"
-                          aria-current="page"
-                          className="has-text-primary"
-                          to="/structures/undefined/"
-                        >
-                          <Icon
-                            svg="ico-venue"
-                          />
-                          1 lieu
-                        </NavLink>,
-                      },
-                      "ref": null,
-                      "rendered": Object {
+                  "rendered": "0 offre",
+                  "type": "li",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="has-text-primary"
+                      to="/structures/AE/"
+                    >
+                      <Icon
+                        svg="ico-venue"
+                      />
+                      1 lieu
+                    </NavLink>,
+                    "id": "count-venues-action",
+                  },
+                  "ref": null,
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "activeClassName": "active",
+                      "aria-current": "page",
+                      "children": Array [
+                        <Icon
+                          svg="ico-venue"
+                        />,
+                        "1 lieu",
+                      ],
+                      "className": "has-text-primary",
+                      "to": "/structures/AE/",
+                    },
+                    "ref": null,
+                    "rendered": Array [
+                      Object {
                         "instance": null,
                         "key": undefined,
                         "nodeType": "function",
                         "props": Object {
-                          "activeClassName": "active",
-                          "aria-current": "page",
-                          "children": Array [
-                            <Icon
-                              svg="ico-venue"
-                            />,
-                            "1 lieu",
-                          ],
-                          "className": "has-text-primary",
-                          "to": "/structures/undefined/",
+                          "svg": "ico-venue",
                         },
                         "ref": null,
-                        "rendered": Array [
-                          Object {
-                            "instance": null,
-                            "key": undefined,
-                            "nodeType": "function",
-                            "props": Object {
-                              "svg": "ico-venue",
-                            },
-                            "ref": null,
-                            "rendered": null,
-                            "type": [Function],
-                          },
-                          "1 lieu",
-                        ],
+                        "rendered": null,
                         "type": [Function],
                       },
-                      "type": "li",
+                      "1 lieu",
+                    ],
+                    "type": [Function],
+                  },
+                  "type": "li",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="has-text-primary"
+                      to="/structures/AE/lieux/creation"
+                    >
+                      <Icon
+                        svg="ico-venue-r"
+                      />
+                      Nouveau lieu
+                    </NavLink>,
+                    "id": "create-venue-action",
+                  },
+                  "ref": null,
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "activeClassName": "active",
+                      "aria-current": "page",
+                      "children": Array [
+                        <Icon
+                          svg="ico-venue-r"
+                        />,
+                        "Nouveau lieu",
+                      ],
+                      "className": "has-text-primary",
+                      "to": "/structures/AE/lieux/creation",
                     },
-                    Object {
-                      "instance": null,
-                      "key": undefined,
-                      "nodeType": "host",
-                      "props": Object {
-                        "children": <NavLink
-                          activeClassName="active"
-                          aria-current="page"
-                          className="has-text-primary"
-                          to="/structures/undefined/lieux/creation"
-                        >
-                          <Icon
-                            svg="ico-venue-r"
-                          />
-                          Nouveau lieu
-                        </NavLink>,
-                      },
-                      "ref": null,
-                      "rendered": Object {
+                    "ref": null,
+                    "rendered": Array [
+                      Object {
                         "instance": null,
                         "key": undefined,
                         "nodeType": "function",
                         "props": Object {
-                          "activeClassName": "active",
-                          "aria-current": "page",
-                          "children": Array [
-                            <Icon
-                              svg="ico-venue-r"
-                            />,
-                            "Nouveau lieu",
-                          ],
-                          "className": "has-text-primary",
-                          "to": "/structures/undefined/lieux/creation",
+                          "svg": "ico-venue-r",
                         },
                         "ref": null,
-                        "rendered": Array [
-                          Object {
-                            "instance": null,
-                            "key": undefined,
-                            "nodeType": "function",
-                            "props": Object {
-                              "svg": "ico-venue-r",
-                            },
-                            "ref": null,
-                            "rendered": null,
-                            "type": [Function],
-                          },
-                          "Nouveau lieu",
-                        ],
+                        "rendered": null,
                         "type": [Function],
                       },
-                      "type": "li",
-                    },
-                  ],
-                  "type": Symbol(react.fragment),
+                      "Nouveau lieu",
+                    ],
+                    "type": [Function],
+                  },
+                  "type": "li",
                 },
               ],
               "type": "ul",
@@ -1139,7 +1001,7 @@ ShallowWrapper {
             "children": <NavLink
               activeClassName="active"
               aria-current="page"
-              to="/structures/undefined"
+              to="/structures/AE"
             >
               <Icon
                 svg="ico-next-S"
@@ -1158,7 +1020,7 @@ ShallowWrapper {
               "children": <Icon
                 svg="ico-next-S"
               />,
-              "to": "/structures/undefined",
+              "to": "/structures/AE",
             },
             "ref": null,
             "rendered": Object {
