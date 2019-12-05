@@ -66,6 +66,15 @@
       tags: 'copy-tljh'
       notify: Reload tljh config
 
+    - name: Copy tljh environment
+      template:
+        src: environment.py.j2
+        dest: /opt/tljh/config/jupyterhub_config.d/environment.py
+        owner: ubuntu
+        mode: u=rw,g=r,o=r
+      tags: 'copy-tljh-environment'
+      notify: Reload tljh config
+
     - meta: flush_handlers
 
     - name: Copy create_database_tunnel.sh
