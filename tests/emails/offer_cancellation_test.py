@@ -11,66 +11,7 @@ from tests.test_utils import create_user, create_offerer, create_venue, create_o
     create_event_occurrence, create_stock_from_event_occurrence, create_booking, create_offer_with_thing_product, \
     create_stock_from_offer, create_product_with_thing_type, create_mocked_bookings
 from tests.utils.mailing_test import _remove_whitespaces
-from utils.mailing import make_offerer_driven_cancellation_email_for_user, \
-    make_offerer_driven_cancellation_email_for_offerer, make_batch_cancellation_email
-
-
-class MakeOffererDrivenCancellationEmailForUserTest:
-    @clean_database
-    def test_make_offerer_driven_cancellation_email_for_user_event(self, app):
-        # Given
-        beginning_datetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
-        end_datetime = beginning_datetime + timedelta(hours=1)
-        booking_limit_datetime = beginning_datetime - timedelta(hours=1)
-
-        user = create_user(public_name='John Doe')
-        offerer = create_offerer(name='Test offerer')
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue, event_name='Mains, sorts et papiers')
-        event_occurrence = create_event_occurrence(offer, beginning_datetime=beginning_datetime,
-                                                   end_datetime=end_datetime)
-        stock = create_stock_from_event_occurrence(event_occurrence, price=20, available=10,
-                                                   booking_limit_date=booking_limit_datetime)
-        booking = create_booking(user, stock)
-
-        # When
-        with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[]):
-            email = make_offerer_driven_cancellation_email_for_user(booking)
-
-        # Then
-        email_html = BeautifulSoup(email['Html-part'], 'html.parser')
-        mail_content = str(email_html.find("div", {"id": "mail-content"}))
-        assert 'réservation' in mail_content
-        assert 'pour Mains, sorts et papiers' in mail_content
-        assert 'le 20 juillet 2019 à 14:00' in mail_content
-        assert 'proposé par Test offerer' in mail_content
-        assert 'recrédité de 20 euros' in mail_content
-        assert email[
-                   'Subject'] == 'Votre réservation pour Mains, sorts et papiers, proposé par Test offerer a été annulée par l\'offreur'
-
-    @clean_database
-    def test_make_offerer_driven_cancellation_email_for_user_thing(self, app):
-        # Given
-        user = create_user(public_name='John Doe')
-        offerer = create_offerer(name='Test offerer')
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, thing_name='Test Book')
-        stock = create_stock_from_offer(offer, price=15, available=10)
-        booking = create_booking(user, stock, quantity=2)
-
-        # When
-        with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[]):
-            email = make_offerer_driven_cancellation_email_for_user(booking)
-
-        # Then
-        email_html = BeautifulSoup(email['Html-part'], 'html.parser')
-        mail_content = str(email_html.find("div", {"id": "mail-content"}))
-        assert 'commande' in mail_content
-        assert 'pour Test Book' in mail_content
-        assert 'proposé par Test offerer' in mail_content
-        assert 'recrédité de 30 euros' in mail_content
-        assert email[
-                   'Subject'] == 'Votre commande pour Test Book, proposé par Test offerer a été annulée par l\'offreur'
+from utils.mailing import make_offerer_driven_cancellation_email_for_offerer, make_batch_cancellation_email
 
 
 class MakeOffererDrivenCancellationEmailForOffererTest:

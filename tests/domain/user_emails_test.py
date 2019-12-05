@@ -110,16 +110,13 @@ class SendOffererDrivenCancellationEmailToUserTest:
         mocked_send_email.return_value = return_value
 
         with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True), patch(
-                'domain.user_emails.make_offerer_driven_cancellation_email_for_user',
-                return_value={'Html-part': ''}) as make_cancellation_email:
+                'domain.user_emails.retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation') as make_cancellation_email:
             # When
             send_offerer_driven_cancellation_email_to_user(booking, mocked_send_email)
 
             # Then
             make_cancellation_email.assert_called_once_with(booking)
         mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'user@email.fr'
 
 
 class SendOffererDrivenCancellationEmailToOffererTest:
@@ -388,10 +385,9 @@ class SendCancellationEmailOneUserTest:
 
         # When
         with patch(
-                'domain.user_emails.send_offerer_driven_cancellation_email_to_user') as send_cancellation_email_one_user, patch(
-            'domain.user_emails.make_offerer_driven_cancellation_email_for_user',
-            return_value={'Html-part': ''}), patch('utils.mailing.feature_send_mail_to_users_enabled',
-                                                   return_value=True):
+                'domain.user_emails.send_offerer_driven_cancellation_email_to_user') as send_cancellation_email_one_user,\
+                patch('domain.user_emails.retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation'),\
+                patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
             send_batch_cancellation_emails_to_users(bookings, mocked_send_email)
 
         # Then

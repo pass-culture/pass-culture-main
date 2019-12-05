@@ -2,6 +2,8 @@ from typing import Callable, List
 
 from emails.beneficiary_activation import get_activation_email_data
 from emails.beneficiary_offer_cancellation import retrieve_offerer_booking_recap_email_data_after_user_cancellation
+from emails.beneficiary_warning_after_pro_booking_cancellation import \
+    retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation
 from emails.offerer_booking_recap import retrieve_data_for_offerer_booking_recap_email
 from emails.pro_waiting_validation import retrieve_data_for_pro_user_waiting_offerer_validation_email
 from emails.user_reset_password import retrieve_data_for_reset_password_email
@@ -11,7 +13,6 @@ from repository.stock_queries import set_booking_recap_sent_and_save
 from repository.user_queries import find_all_emails_of_user_offerers_admins
 from utils.logger import logger
 from utils.mailing import make_user_booking_recap_email, \
-    make_offerer_driven_cancellation_email_for_user, \
     make_offerer_driven_cancellation_email_for_offerer, make_final_recap_email_for_stock_with_event, \
     make_validation_confirmation_email, make_batch_cancellation_email, \
     make_user_validation_email, \
@@ -81,9 +82,7 @@ def build_recipients_list(booking: Booking) -> str:
 
 
 def send_offerer_driven_cancellation_email_to_user(booking: Booking, send_email: Callable[..., bool]) -> bool:
-    email = make_offerer_driven_cancellation_email_for_user(booking)
-    recipients = [booking.user.email]
-    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
+    email = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
     return send_email(data=email)
 
 
