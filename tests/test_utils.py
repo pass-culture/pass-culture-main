@@ -551,7 +551,7 @@ def create_event_occurrence(
 
 
 def create_mediation(offer=None, author=None, date_created=datetime.utcnow(), front_text='Some front text',
-                     back_text='Some back test', is_active=True, tuto_index=None):
+                     back_text='Some back test', is_active=True, tuto_index=None, idx=None):
     mediation = Mediation()
     mediation.offer = offer
     mediation.dateCreated = date_created
@@ -560,6 +560,7 @@ def create_mediation(offer=None, author=None, date_created=datetime.utcnow(), fr
     mediation.author = author
     mediation.isActive = is_active
     mediation.tutoIndex = tuto_index
+    mediation.id = idx
     return mediation
 
 

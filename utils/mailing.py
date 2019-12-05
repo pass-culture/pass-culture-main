@@ -9,7 +9,6 @@ from flask import current_app as app, render_template
 from connectors import api_entreprises
 from models import Booking, Offer, Email, PcObject, Offerer, RightsType, Stock, User, UserOfferer, Venue
 from models.email import EmailStatus
-from models.offer_type import ProductType
 from repository import booking_queries
 from repository import email_queries
 from repository.feature_queries import feature_send_mail_to_users_enabled
@@ -238,19 +237,6 @@ def make_offerer_driven_cancellation_email_for_offerer(booking: Booking) -> Dict
                                  stock_name=stock_name,
                                  venue=venue,
                                  )
-    return {
-        'FromName': 'pass Culture',
-        'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
-        'Subject': email_subject,
-        'Html-part': email_html,
-    }
-
-
-def make_user_booking_confirmation_recap_email(booking: Booking) -> Dict:
-    stock = booking.stock
-    user = booking.user
-    email_html, email_subject = _generate_reservation_email_html_subject(booking)
-
     return {
         'FromName': 'pass Culture',
         'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,

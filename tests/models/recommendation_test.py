@@ -15,8 +15,7 @@ def test_model_thumbUrl_should_use_mediation_first_as_thumbUrl(get_storage_base_
     venue = create_venue(offerer)
     product = create_product_with_event_type(thumb_count=1)
     offer = create_offer_with_event_product(product=product, venue=venue)
-    mediation = create_mediation(offer)
-    mediation.id = 1
+    mediation = create_mediation(offer, idx=1)
 
     # when
     recommendation = create_recommendation(offer, user, mediation=mediation)
@@ -49,8 +48,7 @@ def test_model_should_use_environment_variable(get_storage_base_url):
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_offer_with_event_product(venue)
-    mediation = create_mediation(offer)
-    mediation.id = 1
+    mediation = create_mediation(offer, idx=1)
 
     # when
     recommendation = create_recommendation(offer, user, mediation=mediation)

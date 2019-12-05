@@ -1,11 +1,12 @@
 from datetime import datetime, timedelta
+from unittest.mock import patch
 
 from models import Offerer, PcObject, EventType, ThingType
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_stock_with_thing_offer, \
     create_offer_with_thing_product, create_deposit, create_stock_with_event_offer, create_venue, create_offerer, \
     create_recommendation, create_user, create_booking, create_offer_with_event_product, \
-    create_event_occurrence, create_stock_from_event_occurrence
+    create_event_occurrence, create_stock_from_event_occurrence, create_mediation
 from utils.human_ids import humanize
 
 
@@ -544,14 +545,16 @@ class Post:
 
     class Returns201:
         @clean_database
-        def expect_the_booking_to_have_good_includes(self, app):
+        @patch('routes.bookings.send_raw_email')
+        def expect_the_booking_to_have_good_includes(self, send_raw_email_mock, app):
             offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
             venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
                                  '93')
             ok_stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0)
             ok_stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
-            ok_stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
             PcObject.save(ok_stock)
+            mediation = create_mediation(ok_stock.offer)
+            PcObject.save(mediation)
 
             user = create_user(email='test@mail.com')
             PcObject.save(user)
@@ -571,7 +574,8 @@ class Post:
             assert r_create.json['stock']['isBookable']
 
         @clean_database
-        def when_limit_date_is_in_the_future_and_offer_is_free(self, app):
+        @patch('routes.bookings.send_raw_email')
+        def when_limit_date_is_in_the_future_and_offer_is_free(self, send_raw_email_mock, app):
             offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
             venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
                                  '93')
@@ -579,6 +583,8 @@ class Post:
             ok_stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
             ok_stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
             PcObject.save(ok_stock)
+            mediation = create_mediation(ok_stock.offer)
+            PcObject.save(mediation)
 
             user = create_user(email='test@mail.com')
             PcObject.save(user)
@@ -603,7 +609,8 @@ class Post:
                 assert created_booking_json[key] == booking_json[key]
 
         @clean_database
-        def when_booking_limit_datetime_is_none(self, app):
+        @patch('routes.bookings.send_raw_email')
+        def when_booking_limit_datetime_is_none(self, send_raw_email_mock, app):
             # Given
             user = create_user(email='test@email.com')
             offerer = create_offerer()
@@ -613,6 +620,8 @@ class Post:
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=20, booking_limit_datetime=None)
 
             PcObject.save(deposit, stock, user)
+            mediation = create_mediation(thing_offer)
+            PcObject.save(mediation)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -627,7 +636,8 @@ class Post:
             assert response.status_code == 201
 
         @clean_database
-        def when_user_has_enough_credit(self, app):
+        @patch('routes.bookings.send_raw_email')
+        def when_user_has_enough_credit(self, send_raw_email_mock, app):
             # Given
             offerer = create_offerer('819202819', '1 Fake Address', 'Fake city', '93000', 'Fake offerer')
             venue = create_venue(offerer, 'venue name', 'booking@email.com', '1 fake street', '93000', 'False city',
@@ -639,6 +649,8 @@ class Post:
 
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=50, available=1)
             PcObject.save(stock)
+            mediation = create_mediation(thing_offer)
+            PcObject.save(mediation)
 
             recommendation = create_recommendation(thing_offer, user)
             PcObject.save(recommendation)
@@ -665,7 +677,8 @@ class Post:
             assert 'validationToken' not in response.json['recommendation']['offer']['venue']
 
         @clean_database
-        def when_user_respects_expenses_limits(self, app):
+        @patch('routes.bookings.send_raw_email')
+        def when_user_respects_expenses_limits(self, send_raw_email_mock, app):
             # Given
             offerer = create_offerer('819202819', '1 Fake Address', 'Fake city', '93000', 'Fake offerer')
             venue = create_venue(offerer, 'venue name', 'booking@email.com', '1 fake street', '93000', 'False city',
@@ -677,6 +690,9 @@ class Post:
 
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=210, available=1)
             PcObject.save(stock)
+
+            mediation = create_mediation(thing_offer)
+            PcObject.save(mediation)
 
             recommendation = create_recommendation(thing_offer, user)
             PcObject.save(recommendation)
@@ -699,7 +715,8 @@ class Post:
             assert response.status_code == 201
 
         @clean_database
-        def when_user_has_enough_credit_after_cancelling_booking(self, app):
+        @patch('routes.bookings.send_raw_email')
+        def when_user_has_enough_credit_after_cancelling_booking(self, send_raw_email_mock, app):
             # Given
             user = create_user(email='test@email.com')
             PcObject.save(user)
@@ -710,15 +727,16 @@ class Post:
             offerer = create_offerer('819202819', '1 Fake Address', 'Fake city', '93000', 'Fake offerer')
             venue = create_venue(offerer, 'venue name', 'booking@email.com', '1 fake street', '93000', 'False city',
                                  '93')
-            event_offer = create_offer_with_event_product(venue)
 
             stock = create_stock_with_event_offer(offerer, venue, price=50, available=1)
             PcObject.save(stock)
+            mediation = create_mediation(stock.offer)
+            PcObject.save(mediation)
 
             booking = create_booking(user, stock, venue, is_cancelled=True)
             PcObject.save(booking)
 
-            recommendation = create_recommendation(event_offer, user)
+            recommendation = create_recommendation(stock.offer, user)
             PcObject.save(recommendation)
 
             booking_json = {
@@ -736,7 +754,8 @@ class Post:
             assert r_create.status_code == 201
 
         @clean_database
-        def when_user_cannot_book_free_offers_but_has_enough_credit_for_paid_offer(self, app):
+        @patch('routes.bookings.send_raw_email')
+        def when_user_cannot_book_free_offers_but_has_enough_credit_for_paid_offer(self, send_raw_email_mock, app):
             user = create_user(email='can_book_paid_offers@email.com', can_book_free_offers=False)
             PcObject.save(user)
 
@@ -750,6 +769,9 @@ class Post:
 
             thing_offer = create_offer_with_thing_product(venue)
             PcObject.save(thing_offer)
+
+            mediation = create_mediation(thing_offer)
+            PcObject.save(mediation)
 
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=10)
             PcObject.save(stock)
@@ -778,15 +800,18 @@ class Post:
             assert r_create_json['quantity'] == 1
 
         @clean_database
-        def when_already_booked_by_user_but_cancelled(self, app):
+        @patch('routes.bookings.send_raw_email')
+        def when_already_booked_by_user_but_cancelled(self, send_raw_email_mock, app):
             # Given
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             thing_offer = create_offer_with_thing_product(venue)
+            mediation = create_mediation(thing_offer)
             create_deposit(user, amount=200)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
             booking = create_booking(user, stock, venue, is_cancelled=True)
+            PcObject.save(mediation)
             PcObject.save(stock, user, booking)
 
             booking_json = {

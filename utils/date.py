@@ -1,7 +1,7 @@
 from datetime import datetime, time
 from math import floor
 
-from babel.dates import format_datetime as babel_format_datetime
+from babel.dates import format_datetime as babel_format_datetime, format_date
 from dateutil import tz
 
 from utils.string_processing import parse_timedelta
@@ -92,3 +92,14 @@ def dept_timezone_datetime_to_utc(datetimeObj, departementCode):
 
 def format_into_ISO_8601(value):
     return value.isoformat() + "Z"
+
+
+def get_date_formatted_for_email(date_time):
+    return format_date(date_time, format='long', locale='fr')[:-5]
+
+
+def get_time_formatted_for_email(date_time):
+    event_beginning_hour = date_time.hour
+    event_beginning_minute = date_time.minute
+    formatted_event_beginning_time = f'{event_beginning_hour}h' if event_beginning_minute == 0 else f'{event_beginning_hour}h{event_beginning_minute}'
+    return formatted_event_beginning_time

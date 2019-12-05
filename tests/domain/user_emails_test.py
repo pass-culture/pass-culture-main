@@ -178,25 +178,21 @@ class SendOffererDrivenCancellationEmailToOffererTest:
 class SendBookingConfirmationEmailToUserTest:
     def when_called_calls_send_email(self):
         # Given
-        venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-        stock = create_stock_with_event_offer(offerer=None, venue=venue)
-        user = create_user('Test', departement_code='93', email='test@example.com', can_book_free_offers=True)
-        booking = create_booking(user, stock, venue, None)
-        booking.token = '56789'
+        user_email = 'test@email.com'
+        user = create_user('Test', departement_code='93', email=user_email, can_book_free_offers=True)
+        booking = create_booking(user)
 
         mocked_send_email = Mock()
 
-        # When
-        send_booking_confirmation_email_to_user(booking, mocked_send_email)
+        with patch('domain.user_emails.retrieve_data_for_user_booking_confirmation_email',
+                   return_value={'To': user_email}) as email_data_retrieval:
+
+            # When
+            send_booking_confirmation_email_to_user(booking, mocked_send_email)
 
         # Then
-        mocked_send_email.assert_called_once()
-        called_with_args = mocked_send_email.call_args[1]['data']
-        assert 'This is a test (ENV=development). In production, email would have been sent to : test@example.com' in \
-               called_with_args['Html-part']
-        assert called_with_args['To'] == 'dev@passculture.app'
-        assert called_with_args['FromName'] == 'pass Culture'
-        assert called_with_args['FromEmail'] == 'dev@passculture.app'
+        email_data_retrieval.assert_called_once_with(booking, [user_email])
+        mocked_send_email.assert_called_once_with(data={'To': user_email})
 
 
 class SendBookingRecapEmailsTest:
