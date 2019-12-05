@@ -9,7 +9,7 @@ from freezegun import freeze_time
 from local_providers import AllocineStocks
 from local_providers.allocine_stocks import retrieve_movie_information, _parse_movie_duration, _format_poster_url, \
     _get_stock_number_from_id_at_providers, _filter_only_digital_and_non_experience_showtimes, \
-    retrieve_showtime_information, _format_naive_date_to_utc
+    retrieve_showtime_information, _format_date_from_local_timezone_to_utc
 from models import PcObject, Offer, EventType, Product, Stock
 from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
@@ -1717,13 +1717,14 @@ class GetStockNumberFromStockIdTest:
 class FormatNaiveDateToUtcTest:
     def test_should_convert_date_to_utc_timezone(self):
         # Given
-        naive_local_date = datetime(2019, 12, 3, 20, 0)
+        local_date = datetime(2019, 12, 3, 20, 0)
+        local_tz = 'America/Cayenne'
 
         # When
-        date_in_utc = _format_naive_date_to_utc(naive_local_date)
+        date_in_utc = _format_date_from_local_timezone_to_utc(local_date, local_tz)
 
         # Then
-        assert date_in_utc.hour == 19
+        assert date_in_utc.hour == 23
         assert date_in_utc.tzname() == 'UTC'
 
 

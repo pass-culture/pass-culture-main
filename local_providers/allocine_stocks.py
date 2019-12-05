@@ -13,6 +13,7 @@ from local_providers.providable_info import ProvidableInfo
 from models import VenueProvider, Offer, Product, EventType, Stock
 from models.db import Model, db
 from models.local_provider_event import LocalProviderEventType
+from utils.date import get_dept_timezone
 
 DIGITAL_PROJECTION = 'DIGITAL'
 DUBBED_VERSION = 'DUBBED'
@@ -144,7 +145,9 @@ class AllocineStocks(LocalProvider):
         allocine_stock.offerId = self.last_vo_offer_id if diffusion_version == ORIGINAL_VERSION else \
             self.last_vf_offer_id
 
-        date_in_utc = _format_naive_date_to_utc(parsed_showtimes['startsAt'])
+        local_tz = get_dept_timezone(self.venue.departementCode)
+        date_in_utc = _format_date_from_local_timezone_to_utc(parsed_showtimes['startsAt'], local_tz)
+
         allocine_stock.beginningDatetime = date_in_utc
         allocine_stock.bookingLimitDatetime = date_in_utc
         allocine_stock.available = None
@@ -207,8 +210,8 @@ def _filter_only_digital_and_non_experience_showtimes(showtimes_information: Lis
                                         showtime['experience'] is None, showtimes_information))
 
 
-def _format_naive_date_to_utc(date: datetime) -> datetime:
-    from_zone = tz.gettz('Europe/Paris')
+def _format_date_from_local_timezone_to_utc(date: datetime, local_tz: str) -> datetime:
+    from_zone = tz.gettz(local_tz)
     to_zone = tz.gettz('UTC')
     date_in_tz = date.replace(tzinfo=from_zone)
     return date_in_tz.astimezone(to_zone)
