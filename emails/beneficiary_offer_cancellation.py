@@ -13,7 +13,7 @@ def retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking: B
     offer = stock.resolvedOffer
     venue = offer.venue
     departement_code = venue.departementCode or 'numérique'
-    price = float(stock.price) if stock.price > 0 else 'Gratuit'
+    price = str(stock.price) if stock.price > 0 else 'Gratuit'
     offer_pc_pro_link = build_pc_pro_offer_link(offer)
     environment = format_environment_for_email()
     booked_date = format_booking_date_for_email(booking)
