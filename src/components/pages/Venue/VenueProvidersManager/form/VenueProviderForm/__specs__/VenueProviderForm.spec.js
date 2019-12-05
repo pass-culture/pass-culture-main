@@ -4,6 +4,7 @@ import { Field } from 'react-final-form'
 import VenueProviderForm from '../VenueProviderForm'
 import HiddenField from '../../../../../../layout/form/fields/HiddenField'
 import TextField from '../../../../../../layout/form/fields/TextField'
+import NumberField from '../../../../../../layout/form/fields/NumberField'
 import Icon from '../../../../../../layout/Icon'
 
 describe('src | components | pages | Venue | VenueProvidersManager | form | VenueProviderForm', () => {
@@ -19,6 +20,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Venu
       isCreationMode: false,
       isLoadingMode: false,
       isProviderSelected: false,
+      providerSelectedIsAllocine: false,
       providers: [{ id: 'AA' }, { id: 'BB' }],
       venueProviders: [{ id: 'AA' }, { id: 'BB' }],
       venueIdAtOfferProviderIsRequired: false,
@@ -138,7 +140,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Venu
       expect(textField.prop('required')).toBe(true)
     })
 
-    it('should not display a tooltip and an Icon component when provider is selected, not in loading mode and provider identifier is not required', () => {
+    it('should not display a tooltip and an Icon component', () => {
       // given
       props.isProviderSelected = true
       props.isLoadingMode = false
@@ -187,6 +189,39 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Venu
       // then
       const importButtonContainer = wrapper.find('.provider-import-button-container')
       expect(importButtonContainer).toHaveLength(0)
+    })
+  })
+
+  describe('when provider selected is "Allociné", and is not in loading mode', () => {
+    it('should display the price field', () => {
+      // given
+      props.isProviderSelected = true
+      props.providerSelectedIsAllocine = true
+      props.isLoadingMode = false
+
+      // when
+      const wrapper = shallow(VenueProviderForm({ ...props })(handleSubmit))
+
+      // then
+      const priceInputContainer = wrapper.find('.price-container')
+      const priceInput = priceInputContainer.find(NumberField)
+      expect(priceInputContainer).toHaveLength(1)
+      expect(priceInput).toHaveLength(1)
+    })
+
+    it('should display a tooltip and an Icon component', () => {
+      // given
+      props.isProviderSelected = true
+      props.providerSelectedIsAllocine = true
+      props.isLoadingMode = false
+
+      // when
+      const wrapper = shallow(VenueProviderForm({ ...props })(handleSubmit))
+
+      // then
+      const priceInputContainer = wrapper.find('.price-container')
+      const tooltip = priceInputContainer.find('.tooltip-info')
+      expect(tooltip).toHaveLength(1)
     })
   })
 })

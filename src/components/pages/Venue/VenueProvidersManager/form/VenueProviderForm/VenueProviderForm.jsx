@@ -5,6 +5,7 @@ import { Field } from 'react-final-form'
 
 import HiddenField from '../../../../../layout/form/fields/HiddenField'
 import TextField from '../../../../../layout/form/fields/TextField'
+import NumberField from '../../../../../layout/form/fields/NumberField'
 import Icon from '../../../../../layout/Icon'
 import SelectSourceField from '../SelectSourceField/SelectSourceField'
 
@@ -13,6 +14,7 @@ const VenueProviderForm = ({
   isProviderSelected,
   isLoadingMode,
   isCreationMode,
+  providerSelectedIsAllocine,
   providers,
   venueProviders,
   venueIdAtOfferProviderIsRequired,
@@ -67,6 +69,28 @@ const VenueProviderForm = ({
               />
             </span>
           )}
+
+          {!isLoadingMode && providerSelectedIsAllocine && (
+            <div className="price-container">
+              <NumberField
+                className={classNames('field-text fs12')}
+                label="Prix de vente/place: "
+                name="price"
+                placeholder="Ex : 12€"
+                required
+              />
+              <span
+                className="tooltip tooltip-info"
+                data-place="bottom"
+                data-tip={`<p>Prix de vente/place : Prix auquel la place de cinéma sera vendue</p>`}
+              >
+                <Icon
+                  alt="image d’aide à l’information"
+                  svg="picto-info"
+                />
+              </span>
+            </div>
+          )}
         </div>
       )}
 
@@ -89,6 +113,7 @@ VenueProviderForm.propTypes = {
   isCreationMode: PropTypes.bool.isRequired,
   isLoadingMode: PropTypes.bool.isRequired,
   isProviderSelected: PropTypes.bool.isRequired,
+  providerSelectedIsAllocine: PropTypes.bool.isRequired,
   providers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   venueIdAtOfferProviderIsRequired: PropTypes.bool.isRequired,
   venueProviders: PropTypes.arrayOf(PropTypes.shape()).isRequired,

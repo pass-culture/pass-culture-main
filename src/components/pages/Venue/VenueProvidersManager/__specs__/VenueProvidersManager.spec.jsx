@@ -58,6 +58,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         isCreationMode: false,
         isLoadingMode: false,
         isProviderSelected: false,
+        providerSelectedIsAllocine: false,
         venueIdAtOfferProviderIsRequired: true,
       })
     })
@@ -74,6 +75,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         isCreationMode: true,
         isLoadingMode: false,
         isProviderSelected: false,
+        providerSelectedIsAllocine: false,
         venueIdAtOfferProviderIsRequired: true,
       })
     })
@@ -224,6 +226,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         isCreationMode: false,
         isLoadingMode: false,
         isProviderSelected: false,
+        providerSelectedIsAllocine: false,
         venueIdAtOfferProviderIsRequired: true,
       })
     })
@@ -257,6 +260,22 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       expect(wrapper.state('venueIdAtOfferProviderIsRequired')).toBe(true)
     })
 
+    it('should update providerSelectedIsAllocine values when Allocine is selected', () => {
+      // given
+      const event = {
+        target: {
+          value: '{"id":"EM","name":"Allociné"}',
+        },
+      }
+      const wrapper = shallow(<VenueProvidersManager {...props} />)
+
+      // when
+      wrapper.instance().handleChange(event, input)
+
+      // then
+      expect(wrapper.state('providerSelectedIsAllocine')).toBe(true)
+    })
+
     it('should reset form state when selected option is equal to default value', () => {
       // given
       const event = {
@@ -274,6 +293,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         isCreationMode: false,
         isLoadingMode: false,
         isProviderSelected: false,
+        providerSelectedIsAllocine: false,
         venueIdAtOfferProviderIsRequired: true,
       })
     })

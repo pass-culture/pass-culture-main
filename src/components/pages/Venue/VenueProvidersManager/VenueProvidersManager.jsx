@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import ReactTooltip from 'react-tooltip'
 import VenueProviderItem from './VenueProviderItem/VenueProviderItem'
 import updateVenueIdAtOfferProvider from './decorators/updateVenueIdAtOfferProvider'
-import { DEFAULT_PROVIDER_OPTION } from './utils/utils'
+import { ALLOCINE_PROVIDER_OPTION, DEFAULT_PROVIDER_OPTION } from './utils/utils'
 import VenueProviderForm from './form/VenueProviderForm/VenueProviderForm'
 
 class VenueProvidersManager extends PureComponent {
@@ -27,6 +27,7 @@ class VenueProvidersManager extends PureComponent {
       isCreationMode: false,
       isLoadingMode: false,
       isProviderSelected: false,
+      providerSelectedIsAllocine: false,
       venueIdAtOfferProviderIsRequired: true,
     }
   }
@@ -118,6 +119,13 @@ class VenueProvidersManager extends PureComponent {
     } else {
       this.resetFormState()
     }
+
+    if (valueParsed && valueParsed.name === ALLOCINE_PROVIDER_OPTION.name) {
+      this.setState({
+        providerSelectedIsAllocine: true,
+      })
+    }
+
     input.onChange(valueFromSelectInput)
   }
 
@@ -127,6 +135,7 @@ class VenueProvidersManager extends PureComponent {
       isCreationMode,
       isLoadingMode,
       isProviderSelected,
+      providerSelectedIsAllocine,
       venueIdAtOfferProviderIsRequired,
     } = this.state
     const decorators = [updateVenueIdAtOfferProvider]
@@ -158,6 +167,7 @@ class VenueProvidersManager extends PureComponent {
                   isLoadingMode,
                   isCreationMode,
                   providers,
+                  providerSelectedIsAllocine,
                   venueProviders,
                   venueIdAtOfferProviderIsRequired,
                 })}
