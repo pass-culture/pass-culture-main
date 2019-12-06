@@ -9,16 +9,27 @@
         dest: /usr/local/bin
         mode: "755"
       loop:
-        - check_disk_space.sh
-        - restore_prod_to_env.sh
-        - restore_prod_to_env_new_region.sh
-        - backup_prod.sh
-        - anonymize.sql
-        - anonymize_database.sh
-        - clean_old_backup.sh
-        - clean_elasticsearch_indices.sh
-        - clean_database.sql
+#        - check_disk_space.sh
+#        - restore_prod_to_env.sh
+#        - restore_prod_to_env_new_region.sh
+        - backup_data/manage_backups.sh
+        - backup_data/partial_backup_restore.sh
+        - backup_data/partial_backup.sh
+        - backup_data/open_tunnel.sh
+#        - backup_prod.sh
+#        - anonymize.sql
+#        - anonymize_database.sh
+#        - clean_old_backup.sh
+#        - clean_elasticsearch_indices.sh
+#        - clean_database.sql
       tags: scripts
+
+
+    - name: Create /data/partial_backup directory
+      file:
+        path: /data/partial_backup
+        state: directory
+        owner: 'ubuntu'
 
     - name: Create /var/lib/scalingo directory
       file:
