@@ -6,6 +6,7 @@ import VenueProviderItem from './VenueProviderItem/VenueProviderItem'
 import updateVenueIdAtOfferProvider from './decorators/updateVenueIdAtOfferProvider'
 import { ALLOCINE_PROVIDER_OPTION, DEFAULT_PROVIDER_OPTION } from './utils/utils'
 import VenueProviderForm from './form/VenueProviderForm/VenueProviderForm'
+import SynchronisationConfirmationModal from './SynchronisationConfirmationModal/SynchronisationConfirmationModal'
 
 class VenueProvidersManager extends PureComponent {
   static getDerivedStateFromProps(nextProps) {
@@ -24,10 +25,13 @@ class VenueProvidersManager extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
+      allocineForm: {},
       isCreationMode: false,
       isLoadingMode: false,
       isProviderSelected: false,
+      isShowingConfirmationModal: false,
       providerSelectedIsAllocine: false,
+      userHasValidatedModal: false,
       venueIdAtOfferProviderIsRequired: true,
     }
   }
@@ -39,6 +43,18 @@ class VenueProvidersManager extends PureComponent {
 
   componentDidUpdate() {
     ReactTooltip.rebuild()
+  }
+
+  showModal = () => {
+    this.setState({
+      isShowingConfirmationModal: true,
+    })
+  }
+
+  hideModal = () => {
+    this.setState({
+      isShowingConfirmationModal: false,
+    })
   }
 
   handleAddVenueProvider = () => {
@@ -64,20 +80,56 @@ class VenueProvidersManager extends PureComponent {
   }
 
   handleSubmit = (formValues, form) => {
-    const { createVenueProvider } = this.props
-    this.setState({
-      isLoadingMode: true,
-    })
-    const { id, provider, venueIdAtOfferProvider } = formValues
-    const parsedProvider = JSON.parse(provider)
+    const { providerSelectedIsAllocine } = this.state
 
-    const payload = {
-      providerId: parsedProvider.id,
-      venueIdAtOfferProvider,
-      venueId: id,
+    if (!providerSelectedIsAllocine) {
+      const { createVenueProvider } = this.props
+      this.setState({
+        isLoadingMode: true,
+      })
+      const { id, provider, venueIdAtOfferProvider } = formValues
+      const parsedProvider = JSON.parse(provider)
+
+      const payload = {
+        providerId: parsedProvider.id,
+        venueIdAtOfferProvider,
+        venueId: id,
+      }
+
+      createVenueProvider(this.handleFail(form), this.handleSuccess, payload)
+    } else {
+      this.setState({ allocineForm: { formValues, form } })
+      this.handleSubmitAllocine(formValues, form)
     }
+  }
 
-    createVenueProvider(this.handleFail(form), this.handleSuccess, payload)
+  handleSubmitAllocine = (formValues, form) => {
+    const { userHasValidatedModal } = this.state
+    if (userHasValidatedModal) {
+      const { createVenueProvider } = this.props
+      this.setState({
+        isLoadingMode: true,
+      })
+      const { id, provider, venueIdAtOfferProvider } = formValues
+      const parsedProvider = JSON.parse(provider)
+
+      const payload = {
+        providerId: parsedProvider.id,
+        venueIdAtOfferProvider,
+        venueId: id,
+      }
+
+      createVenueProvider(this.handleFail(form), this.handleSuccess, payload)
+    } else {
+      this.showModal()
+    }
+  }
+
+  onHandleModalConfirmation = () => {
+    const { allocineForm } = this.state
+    this.setState({ userHasValidatedModal: true }, () => {
+      return this.handleSubmitAllocine(allocineForm.formValues, allocineForm.form)
+    })
   }
 
   handleSuccess = () => {
@@ -124,6 +176,10 @@ class VenueProvidersManager extends PureComponent {
       this.setState({
         providerSelectedIsAllocine: true,
       })
+    } else {
+      this.setState({
+        providerSelectedIsAllocine: false,
+      })
     }
 
     input.onChange(valueFromSelectInput)
@@ -135,6 +191,7 @@ class VenueProvidersManager extends PureComponent {
       isCreationMode,
       isLoadingMode,
       isProviderSelected,
+      isShowingConfirmationModal,
       providerSelectedIsAllocine,
       venueIdAtOfferProviderIsRequired,
     } = this.state
@@ -188,6 +245,13 @@ class VenueProvidersManager extends PureComponent {
               {'+ Importer des offres'}
             </button>
           </div>
+        )}
+
+        {isShowingConfirmationModal && (
+          <SynchronisationConfirmationModal
+            handleClose={this.hideModal}
+            handleConfirm={this.onHandleModalConfirmation}
+          />
         )}
       </div>
     )
