@@ -1,9 +1,7 @@
-from datetime import datetime
-
 from models import PcObject
+from models.activity import load_activity
 from models.db import db
 from scripts.clean_activity import delete_tables_from_activity, populate_stock_date_created_from_activity
-from models.activity import load_activity
 from tests.conftest import clean_database
 from tests.test_utils import create_activity, save_all_activities, create_stock, create_venue, create_offerer, \
     create_offer_with_thing_product
