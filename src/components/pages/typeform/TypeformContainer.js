@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { requestData } from 'redux-thunk-data'
 import { selectCurrentUser } from 'with-react-redux-login'
 
-import TypeForm from './TypeForm'
+import Typeform from './Typeform'
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
 import moment from 'moment'
 
@@ -14,7 +14,7 @@ export const mapStateToProps = state => {
 }
 
 export const mapDispatchToProps = dispatch => ({
-  flagUserHasFilledTypeForm: id => {
+  flagUserHasFilledTypeform: id => {
     const todayInUtc = moment().utc().format()
 
     dispatch(
@@ -37,4 +37,4 @@ export default compose(
     mapStateToProps,
     mapDispatchToProps
   )
-)(TypeForm)
+)(Typeform)

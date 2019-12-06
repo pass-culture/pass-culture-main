@@ -13,7 +13,7 @@ const buildTypeformURLWithHiddenFields = userId => {
   return url
 }
 
-class TypeForm extends PureComponent {
+class Typeform extends PureComponent {
   constructor(props) {
     super(props)
     this.typeformElementContainer = null
@@ -36,8 +36,8 @@ class TypeForm extends PureComponent {
   }
 
   onSubmitTypeForm = () => {
-    const { flagUserHasFilledTypeForm } = this.props
-    flagUserHasFilledTypeForm(this.uniqId)
+    const { flagUserHasFilledTypeform } = this.props
+    flagUserHasFilledTypeform(this.uniqId)
   }
 
   divRef = elt => {
@@ -54,13 +54,13 @@ class TypeForm extends PureComponent {
   }
 }
 
-TypeForm.defaultProps = {
+Typeform.defaultProps = {
   needsToFillCulturalSurvey: true,
 }
 
-TypeForm.propTypes = {
-  flagUserHasFilledTypeForm: PropTypes.func.isRequired,
+Typeform.propTypes = {
+  flagUserHasFilledTypeform: PropTypes.func.isRequired,
   needsToFillCulturalSurvey: PropTypes.bool,
 }
 
-export default TypeForm
+export default Typeform

@@ -14,7 +14,7 @@ const baseURL = `${ROOT_PATH}activation`
 
 fixture(`Activation d'un compte utilisateur·trice`)
 
-test('lorsque je clique sur le lien reçu par mail et que je saisis mon premier mot de passe, je suis redirigé vers le TypeForm', async t => {
+test('lorsque je clique sur le lien reçu par mail et que je saisis mon premier mot de passe, je suis redirigé vers le Typeform', async t => {
   // given
   const { user } = await fetchSandbox(
     'webapp_01_activation',

@@ -1,6 +1,6 @@
 import { getCurrentUserUUID } from 'with-react-redux-login'
 
-import { mapDispatchToProps, mapStateToProps } from '../TypeFormContainer'
+import { mapDispatchToProps, mapStateToProps } from '../TypeformContainer'
 
 jest.mock('redux-thunk-data', () => {
   const { requestData } = jest.requireActual('fetch-normalize-data')
@@ -9,7 +9,7 @@ jest.mock('redux-thunk-data', () => {
   }
 })
 
-describe('src | components |pages | typeform | TypeFormContainer', () => {
+describe('src | components |pages | typeform | TypeformContainer', () => {
   describe('mapStateToProps', () => {
     it('should return empty object when current user is not defined', () => {
       // given
@@ -19,10 +19,9 @@ describe('src | components |pages | typeform | TypeFormContainer', () => {
       const result = mapStateToProps(state)
 
       // then
-      const expected = {
+      expect(result).toStrictEqual({
         needsToFillCulturalSurvey: undefined,
-      }
-      expect(result).toStrictEqual(expected)
+      })
     })
 
     it('should return an url with search parameters: currentUser.id', () => {
@@ -58,14 +57,14 @@ describe('src | components |pages | typeform | TypeFormContainer', () => {
       functions = mapDispatchToProps(dispatch)
     })
 
-    describe('flagUserHasFilledTypeForm', () => {
-      it('should dispatch an action with thr right parameters', () => {
+    describe('flagUserHasFilledTypeform', () => {
+      it('should dispatch an action with the right parameters', () => {
         // given
-        const { flagUserHasFilledTypeForm } = functions
+        const { flagUserHasFilledTypeform } = functions
         jest.spyOn(global.Date, 'now').mockImplementation(() => 1575201600)
 
         // when
-        flagUserHasFilledTypeForm(1)
+        flagUserHasFilledTypeform(1)
 
         // then
         expect(dispatch).toHaveBeenCalledWith({

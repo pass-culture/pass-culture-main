@@ -3,16 +3,16 @@ import { shallow } from 'enzyme'
 import { MemoryRouter } from 'react-router-dom'
 import { createBrowserHistory } from 'history'
 
-import TypeForm from '../TypeForm'
+import Typeform from '../Typeform'
 
 const history = createBrowserHistory()
 history.push('/typeform')
 
-describe('src | components | pages | typeform | TypeForm', () => {
+describe('src | components | pages | typeform | Typeform', () => {
   it('should match the snapshots with required props', () => {
     // given
     const props = {
-      flagUserHasFilledTypeForm: jest.fn(),
+      flagUserHasFilledTypeform: jest.fn(),
       needsToFillCulturalSurvey: true,
     }
 
@@ -22,7 +22,7 @@ describe('src | components | pages | typeform | TypeForm', () => {
         initialEntries={['/typeform']}
         keyLength={0}
       >
-        <TypeForm {...props} />
+        <Typeform {...props} />
       </MemoryRouter>
     )
 
