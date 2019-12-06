@@ -1,53 +1,42 @@
-BACKUP_PATH=$(pwd)/backup_data
+#!/bin/bash
+set -e
 
-mkdir $BACKUP_PATH
+BACKUP_PATH=/data
+TIMEFORMAT=%R
 
-get_tunnel_database_port() {
-  DB_TUNNEL_PID="$(pgrep -f $PG_DATABASE |tail -1)"
-  DB_TUNNEL_HAS_TO_BE_TERMINATED=false
+# GET APPLICATION NAME
+if [[ $# -gt 1 ]] && [[ "$1" == "-a" ]]; then
+  APP_NAME=$2
+  shift 2
+else
+  echo "You must provide a project name."
+  exit 1
+fi
 
-  if [ -z "$DB_TUNNEL_PID" ]
-  then
-    echo "Opening new tunnel to database"
-    /usr/local/bin/scalingo --region osc-fr1 -a "$APP_NAME" db-tunnel postgres://"$POSTGRESQL_URL" &
-    sleep 3
-    DB_TUNNEL_PID=$!
-    DB_TUNNEL_HAS_TO_BE_TERMINATED=true
-  fi
+mkdir -p $BACKUP_PATH
+source open_tunnel.sh
 
-  TUNNEL_PORT="$(lsof -Pan -p "$DB_TUNNEL_PID" -iTCP -sTCP:LISTEN -Fn |grep n |sed 's/n127.0.0.1://g')"
-}
+script_start_time=$(date +%s)
+echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Start partial restore DB"
 
-get_tunnel_database_url () {
-  APP_NAME=$1
-
-  POSTGRESQL_URL="$(/usr/local/bin/scalingo --region osc-fr1 -a $APP_NAME env |grep SCALINGO_POSTGRESQL_URL= | sed -e s,SCALINGO_POSTGRESQL_URL=postgres://,,g)"
-  PG_USER="$(echo $POSTGRESQL_URL | grep @ | cut -d@ -f1 | cut -d':' -f1)"
-  PG_PASSWORD="$(echo $POSTGRESQL_URL | grep @ | cut -d@ -f1 | cut -d':' -f2)"
-  PG_DATABASE="$(echo $POSTGRESQL_URL | grep @ | cut -d'/' -f2 | cut -d '?' -f1)"
-
-  tunnel_database_url="postgres://$PG_USER:$PG_PASSWORD@127.0.0.1:10000/$PG_DATABASE?sslmode=prefer"
-}
-
-echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Start partial restore DB script"
-
-get_tunnel_database_url "pass-culture-api-perf"
-get_tunnel_database_port "pass-culture-api-perf"
-
-echo TUNNEL_PORT = $TUNNEL_PORT
+get_tunnel_database_port $APP_NAME
+get_tunnel_database_url $APP_NAME
 
 echo "- Backup pre-data :"
-time /usr/lib/postgresql/11/bin/pg_dump $tunnel_database_url -o --section=pre-data > "$BACKUP_PATH"/pre-data.sql
+time /usr/lib/postgresql/11/bin/pg_dump --no-privileges --no-owner $tunnel_database_url --section=pre-data > "$BACKUP_PATH"/pre_data_$APP_NAME.sql
+exit 0
 echo "- Backup post-data :"
-time /usr/lib/postgresql/11/bin/pg_dump $tunnel_database_url -o --section=post-data > "$BACKUP_PATH"/post-data.sql
-#pg_dump -d pass_culture -U pass_culture -a -F c > "$BACKUP_PATH"/`date +%Y%m%d_%H%M%S`.pgdump
+time /usr/lib/postgresql/11/bin/pg_dump $tunnel_database_url --no-privileges --no-owner --section=post-data > "$BACKUP_PATH"/post_data_$APP_NAME.sql
 echo "- Backup raw data :"
-time /usr/lib/postgresql/11/bin/pg_dump $tunnel_database_url --exclude-table=recommendation -a -F c  > "$BACKUP_PATH"/data.pgdump
+time /usr/lib/postgresql/11/bin/pg_dump $tunnel_database_url --exclude-table=recommendation --exclude-table=activity -a -F c  > "$BACKUP_PATH"/data_$APP_NAME.pgdump
 echo "- Backup recommendation linked to booking"
-time psql -Atx $tunnel_database_url -c " COPY (select * from recommendation where id in (select booking.\"recommendationId\" from booking where booking.\"recommendationId\" is not null)) TO stdout;" > /tmp/reco_perf
-echo "- Backup recommendation linked to activity"
-time psql -Atx $tunnel_database_url -c " COPY (select * from activity where (table_name='booking' and verb='update') or (table_name='stock' and verb='insert') or (table_name='user' and verb='update');" > /tmp/activity_perf
+time psql -Atx $tunnel_database_url -c "COPY (select * from recommendation where id in (select booking.\"recommendationId\" from booking where booking.\"recommendationId\" is not null)) TO stdout;" > /tmp/reco_$APP_NAME
+echo "- Backup selected activity rows"
+time psql -Atx $tunnel_database_url -c "COPY (select * from activity where (table_name='booking' and verb='update') or (table_name='stock' and verb='insert') or (table_name='user' and verb='update')) TO stdout;" > /tmp/activity_$APP_NAME
+
 #mv /tmp/recommendation.csv $BACKUP_PATH/recommendation.csv
+mv /tmp/reco_$APP_NAME $BACKUP_PATH/reco_$APP_NAME
+mv /tmp/activity_$APP_NAME $BACKUP_PATH/activity_$APP_NAME
 
 if [ "$DB_TUNNEL_HAS_TO_BE_TERMINATED" = true ]; then
   echo terminating tunnel
@@ -55,4 +44,4 @@ if [ "$DB_TUNNEL_HAS_TO_BE_TERMINATED" = true ]; then
 fi
 
 script_duration=$((`date +%s`-$script_start_time))
-echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : End of script"
+echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : End of script, script duration $script_duration seconds"

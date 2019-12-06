@@ -24,7 +24,7 @@
 
 15 0 * * * . $HOME/.profile; restore_prod_to_env_new_region.sh -a pass-culture-metabase-produit -l -z -h > /var/log/restore/restore_metabase.log && curl -X POST $METABASE_PRODUIT_URL?token=$METABASE_TOKEN
 
-15 4 * * 1 . $HOME/.profile; scalingo -a pass-culture-api-staging run -f /var/lib/scalingo/data_staging.csv -f /var/lib/scalingo/import_users.py python /tmp/uploads/import_users.py data_staging.csv
+15 7 * * 4 . $HOME/.profile; scalingo -a pass-culture-api-staging run -f /var/lib/scalingo/data_staging.csv -f /var/lib/scalingo/import_users.py python /tmp/uploads/import_users.py data_staging.csv
 
 30 3 * * 1 . $HOME/.profile; cd ~/pass-culture-main && ./pc -e testing sandbox --name=testing
 
