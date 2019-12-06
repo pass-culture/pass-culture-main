@@ -1,6 +1,10 @@
 import { mapDispatchToProps, mapStateToProps, mergeProps } from '../VenueContainer'
 import { getCurrentUserUUID } from 'with-react-redux-login'
 
+jest.mock('../Notification', () => {
+  return jest.fn().mockImplementation(() => 'Some text')
+})
+
 window.scroll = () => {}
 
 const mockRequestDataCatch = jest.fn()
@@ -110,6 +114,32 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
       expect(dispatch.mock.calls[1][0]).toStrictEqual({
         config: { apiPath: '/userOfferers/APEQ', method: 'GET' },
         type: 'REQUEST_DATA_GET_/USEROFFERERS/APEQ',
+      })
+    })
+  })
+
+  describe('handleSubmitRequestSuccess', () => {
+    it('should dispatch action to display a succes message', () => {
+      // given
+      const state = {}
+      const action = {
+        config: {
+          method: 'POST',
+        },
+        payload: {
+          datum: {
+            id: 'TR',
+          },
+        },
+      }
+
+      // when
+      mapDispatchToProps(dispatch, ownProps).handleSubmitRequestSuccess(state, action)
+
+      // then
+      expect(dispatch.mock.calls[0][0]).toStrictEqual({
+        patch: { text: 'Some text', type: 'success' },
+        type: 'SHOW_NOTIFICATION',
       })
     })
   })

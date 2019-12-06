@@ -1,11 +1,10 @@
-import { closeNotification, showNotification } from 'pass-culture-shared'
+import { showNotification } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import React from 'react'
-import { NavLink } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
 
 import Venue from './Venue'
+import BuildNotificationMessage from './Notification'
 
 import { withRequiredLogin } from '../../hocs'
 import withTracking from '../../hocs/withTracking'
@@ -16,8 +15,6 @@ import { formatPatch } from '../../../utils/formatPatch'
 import selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity from './selectors/selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity'
 import { selectUserOffererByOffererIdAndUserIdAndRightsType } from '../../../selectors/data/userOfferersSelectors'
 import { selectOffererById } from '../../../selectors/data/offerersSelectors'
-
-const handleOnClick = dispatch => () => dispatch(closeNotification())
 
 export const mapStateToProps = (state, ownProps) => {
   const {
@@ -56,29 +53,8 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
     },
     query,
   } = ownProps
+
   const { isCreatedEntity, method } = query.context({ id: venueId })
-
-  const buildNotificationMessage = (venueId, method) => {
-    const isVenueCreated = method === 'POST'
-
-    if (isVenueCreated) {
-      const createOfferPathname = `/offres/${CREATION}?lieu=${venueId}&structure=${offererId}`
-
-      return (
-        <p>
-          {'Lieu créé. Vous pouvez maintenant y '}
-          <NavLink
-            onClick={handleOnClick(dispatch)}
-            to={createOfferPathname}
-          >
-            {'créer une offre'}
-          </NavLink>
-          {', ou en importer automatiquement. '}
-        </p>
-      )
-    }
-    return 'Lieu modifié avec succès !'
-  }
 
   return {
     handleInitialRequest: () => {
@@ -147,7 +123,17 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
         config: { method },
         payload: { datum },
       } = action
-      const notificationMessage = buildNotificationMessage(datum.id, method)
+
+      const informationsDisplayed = {
+        venueId: datum.id,
+        offererId,
+        dispatch,
+      }
+      let notificationMessage = 'Lieu modifié avec succès !'
+      if (method == 'POST') {
+        notificationMessage = BuildNotificationMessage(informationsDisplayed)
+      }
+
       dispatch(
         showNotification({
           text: notificationMessage,
