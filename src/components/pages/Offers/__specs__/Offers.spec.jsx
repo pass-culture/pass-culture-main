@@ -18,6 +18,7 @@ describe('src | components | pages | Offers | Offers', () => {
     currentUser = { isAdmin: false }
 
     props = {
+      closeNotification: jest.fn(),
       currentUser,
       handleOnActivateAllVenueOffersClick: jest.fn(),
       handleOnDeactivateAllVenueOffersClick: jest.fn(),
@@ -167,7 +168,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
     describe('navLink to create offer', () => {
       describe('when user isAdmin', () => {
-        it('should not display NavLink', () => {
+        it('should not display the link', () => {
           // given
           props.currentUser = {
             isAdmin: true,
@@ -181,6 +182,24 @@ describe('src | components | pages | Offers | Offers', () => {
           expect(navLink).toHaveLength(0)
         })
       })
+
+      describe('when user is not admin ', () => {
+        it('should display a link to create an offer', () => {
+          // given
+          props.currentUser = {
+            isAdmin: false,
+          }
+
+          // when
+          const wrapper = shallow(<Offers {...props} />)
+          const navLink = wrapper.find(NavLink)
+
+          // then
+          expect(navLink).toHaveLength(1)
+          expect(navLink.props().to).toStrictEqual('/offres/creation')
+        })
+      })
+
       describe('when structure (or offererId)', () => {
         it('should render link properly', () => {
           // given

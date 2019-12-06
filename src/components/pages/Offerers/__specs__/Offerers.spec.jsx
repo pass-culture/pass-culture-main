@@ -34,6 +34,28 @@ describe('src | components | pages | Offerers | Offerers', () => {
   })
 
   describe('render', () => {
+    describe('subtitle message', () => {
+      it('should display a link to create an offer', () => {
+        // when
+        const wrapper = shallow(<Offerers {...props} />)
+        const links = wrapper.find('a')
+
+        // then
+        expect(links.at(0).text()).toBe('créer un nouveau lieu ')
+        expect(links.at(0).prop('href')).toBe('/structures/AE/lieux/creation')
+      })
+
+      it('should display a link to create a venue', () => {
+        // when
+        const wrapper = shallow(<Offerers {...props} />)
+        const links = wrapper.find('a')
+
+        // then
+        expect(links.at(1).text()).toBe('ajouter des offres numériques.')
+        expect(links.at(1).prop('href')).toBe('/offres/creation')
+      })
+    })
+
     describe('when loading the offerer list', () => {
       it('should transmit keywords', () => {
         // given

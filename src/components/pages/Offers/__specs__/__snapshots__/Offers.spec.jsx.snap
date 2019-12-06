@@ -4,6 +4,7 @@ exports[`src | components | pages | Offers | Offers should match the snapshot 1`
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Offers
+    closeNotification={[MockFunction]}
     currentUser={
       Object {
         "isAdmin": false,
