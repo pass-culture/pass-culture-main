@@ -1,31 +1,32 @@
 from datetime import datetime, timedelta
+from freezegun import freeze_time
 
-from models import ApiKey, PcObject, EventType, ThingType
-from routes.serialization import serialize
+from models import PcObject, EventType
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_stock_with_thing_offer, \
     create_venue, create_offerer, \
     create_user, create_booking, create_offer_with_event_product, \
     create_event_occurrence, create_stock_from_event_occurrence, create_user_offerer, create_stock_with_event_offer, \
-    create_api_key, create_deposit, create_product_with_thing_type, create_offer_with_thing_product, create_stock
-from utils.human_ids import humanize
+    create_api_key, create_deposit
 from utils.token import random_token
 
 API_KEY_VALUE = random_token(64)
 
+
 class Get:
     class Returns200:
+        @freeze_time('2019-11-26 18:29:20.891028')
         @clean_database
         def when_user_has_rights_and_regular_offer(self, app):
             # Given
             user = create_user(public_name='John Doe', email='user@example.com')
-            deposit = create_deposit(user)
+            create_deposit(user)
             admin_user = create_user(email='admin@example.com')
             offerer = create_offerer()
-            user_offerer = create_user_offerer(admin_user, offerer)
+            create_user_offerer(admin_user, offerer)
             venue = create_venue(offerer, name='Venue name', address='Venue address')
             offer = create_offer_with_event_product(venue=venue, event_name='Event Name', event_type=EventType.CINEMA)
-            event_occurrence = create_event_occurrence(offer, beginning_datetime='2019-11-26 18:29:20.891028')
+            event_occurrence = create_event_occurrence(offer, beginning_datetime=datetime.utcnow())
             stock = create_stock_from_event_occurrence(event_occurrence, price=12)
             booking = create_booking(user, stock=stock, venue=venue, quantity=3)
             PcObject.save(booking)
@@ -285,7 +286,7 @@ class Get:
             user_offerer = create_user_offerer(admin_user, offerer)
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0, beginning_datetime=in_73_hours,
-                                                    end_datetime=in_74_hours, booking_limit_datetime=in_72_hours)
+                                                  end_datetime=in_74_hours, booking_limit_datetime=in_72_hours)
             booking = create_booking(user, stock, venue=venue)
             PcObject.save(admin_user, booking, user_offerer)
             url = f'/v2/bookings/token/{booking.token}'

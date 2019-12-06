@@ -1,6 +1,6 @@
 from unittest.mock import patch, Mock, call
 
-from domain.user_emails import send_user_driven_cancellation_email_to_user, \
+from domain.user_emails import send_beneficiary_booking_cancellation_email, \
     send_warning_to_beneficiary_after_pro_booking_cancellation, \
     send_offerer_driven_cancellation_email_to_offerer, \
     send_booking_confirmation_email_to_user, send_booking_recap_emails, send_final_booking_recap_email, \
@@ -9,7 +9,8 @@ from domain.user_emails import send_user_driven_cancellation_email_to_user, \
     send_reset_password_email_with_mailjet_template, send_activation_email, send_reset_password_email
 from models import Offerer, UserOfferer, User, RightsType
 from tests.test_utils import create_user, create_booking, create_stock_with_event_offer, create_offerer, create_venue, \
-    create_offer_with_thing_product, create_stock_with_thing_offer, create_mocked_bookings
+    create_offer_with_thing_product, create_stock_with_thing_offer, create_mocked_bookings, create_mediation, \
+    create_recommendation, create_stock_from_offer
 
 
 class SendResetPasswordEmailTest:
@@ -50,45 +51,43 @@ class SendResetPasswordEmailTest:
         assert 'This is a test' in email['Html-part']
 
 
-class SendUserDrivenCancellationEmailToUserTest:
-    @patch('domain.user_emails.make_user_booking_recap_email', return_value={'Html-part': ''})
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
-    def when_feature_send_mail_to_users_enabled_sends_email_to_user(self,
-                                                                    feature_send_mail_to_users_enabled,
-                                                                    make_user_booking_recap_email):
-        # Given
-        user = create_user(email='user@example.com')
-        booking = create_booking(user)
+class SendBeneficiaryBookingCancellationEmailTest:
+    @patch('emails.beneficiary_booking_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    def test_should_called_mocked_send_email_with_valid_data(self):
+        # given
+        beneficiary = create_user(first_name='Fabien', email='fabien@example.com')
+        thing_offer = create_offer_with_thing_product(venue=None, thing_name='Test thing name', idx=123456)
+        mediation = create_mediation(offer=thing_offer)
+        mediation.id = 36
+        recommendation = create_recommendation(offer=thing_offer, user=beneficiary, mediation=mediation)
+        stock = create_stock_from_offer(offer=thing_offer, price=10)
+        booking = create_booking(beneficiary, stock=stock, recommendation=recommendation, is_cancelled=1)
         mocked_send_email = Mock()
 
-        # When
-        send_user_driven_cancellation_email_to_user(booking, mocked_send_email)
+        # when
+        send_beneficiary_booking_cancellation_email(booking, mocked_send_email)
 
-        # Then
-        make_user_booking_recap_email.assert_called_once_with(booking, is_cancellation=True)
+        # then
         mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'user@example.com'
-
-    @patch('domain.user_emails.make_user_booking_recap_email', return_value={'Html-part': ''})
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False)
-    def when_feature_send_mail_to_users_disabled_sends_email_to_pass_culture_dev(self,
-                                                                                 feature_send_mail_to_users_enabled,
-                                                                                 make_user_booking_recap_email):
-        # Given
-        user = create_user(email='user@example.com')
-        booking = create_booking(user)
-        mocked_send_email = Mock()
-
-        # When
-        send_user_driven_cancellation_email_to_user(booking, mocked_send_email)
-
-        # Then
-        make_user_booking_recap_email.assert_called_once_with(booking, is_cancellation=True)
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'dev@passculture.app'
-        assert 'This is a test' in args[1]['data']['Html-part']
+        args, kwargs = mocked_send_email.call_args
+        assert kwargs['data'] == {
+            'FromEmail': 'support@example.com',
+            'Mj-TemplateID': 1091464,
+            'Mj-TemplateLanguage': True,
+            'To': 'fabien@example.com',
+            'Vars': {
+                'env': '-development',
+                'event_date': '',
+                'event_hour': '',
+                'is_event': 0,
+                'is_free_offer': '0',
+                'mediation_id': '',
+                'offer_id': 123456,
+                'offer_name': 'Test thing name',
+                'offer_price': '10',
+                'user_first_name': 'Fabien',
+            }
+        }
 
 
 class SendWarningToBeneficiaryAfterProBookingCancellationTest:
@@ -550,7 +549,7 @@ class SendResetPasswordEmailWithMailjetTemplateTest:
 
 
 class SendActivationEmailTest:
-    def test_should_return_true_when_email_data_are_good(self):
+    def test_should_return_true_when_email_data_are_valid(self):
         # given
         user = create_user(public_name='bobby', email='bobby@example.net', reset_password_token='AZ45KNB99H')
         mocked_send_email = Mock(return_value=True)
@@ -559,7 +558,7 @@ class SendActivationEmailTest:
         activation_email = send_activation_email(user, mocked_send_email)
 
         # then
-        assert activation_email == True
+        assert activation_email is True
 
     def test_should_return_false_when_email_data_are_not_valid(self):
         # given
@@ -570,4 +569,4 @@ class SendActivationEmailTest:
         activation_email = send_activation_email(user, mocked_send_email)
 
         # then
-        assert activation_email == False
+        assert activation_email is False

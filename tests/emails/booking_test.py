@@ -8,6 +8,7 @@ from tests.test_utils import create_offerer, create_venue, create_stock_with_eve
 from tests.utils.mailing_test import _remove_whitespaces
 from utils.mailing import make_user_booking_confirmation_recap_email
 
+
 @mocked_mail
 @clean_database
 def test_make_user_booking_event_recap_email_should_have_standard_subject_and_body(app):
@@ -44,6 +45,7 @@ def test_make_user_booking_event_recap_email_should_have_standard_subject_and_bo
     assert 'Cordialement,' in mail_salutation
     assert 'L\'équipe pass Culture' in mail_salutation
 
+
 @mocked_mail
 @clean_database
 def test_maker_user_booking_thing_recap_email_should_have_standard_body_and_subject(app):
@@ -68,4 +70,3 @@ def test_maker_user_booking_thing_recap_email_should_have_standard_body_and_subj
     assert 'Nous vous confirmons votre commande pour Test Book (Ref: 12345),' in mail_content
     assert 'proposé par Test offerer.' in mail_content
     assert recap_email['Subject'] == 'Confirmation de votre commande pour Test Book'
-
