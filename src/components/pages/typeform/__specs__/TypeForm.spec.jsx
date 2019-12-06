@@ -12,7 +12,7 @@ describe('src | components | pages | typeform | TypeForm', () => {
   it('should match the snapshots with required props', () => {
     // given
     const props = {
-      flagUserHasFilledTypeform: jest.fn(),
+      flagUserHasFilledTypeForm: jest.fn(),
       needsToFillCulturalSurvey: true,
     }
 

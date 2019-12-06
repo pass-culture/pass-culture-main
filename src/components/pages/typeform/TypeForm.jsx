@@ -36,8 +36,8 @@ class TypeForm extends PureComponent {
   }
 
   onSubmitTypeForm = () => {
-    const { flagUserHasFilledTypeform } = this.props
-    flagUserHasFilledTypeform(this.uniqId)
+    const { flagUserHasFilledTypeForm } = this.props
+    flagUserHasFilledTypeForm(this.uniqId)
   }
 
   divRef = elt => {
@@ -59,7 +59,7 @@ TypeForm.defaultProps = {
 }
 
 TypeForm.propTypes = {
-  flagUserHasFilledTypeform: PropTypes.func.isRequired,
+  flagUserHasFilledTypeForm: PropTypes.func.isRequired,
   needsToFillCulturalSurvey: PropTypes.bool,
 }
 
