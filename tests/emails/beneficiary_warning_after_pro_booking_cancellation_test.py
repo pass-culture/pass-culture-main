@@ -3,169 +3,115 @@ from unittest.mock import patch
 
 from emails.beneficiary_warning_after_pro_booking_cancellation import \
     retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation
-from tests.conftest import clean_database
 from tests.test_utils import create_booking, create_stock_from_event_occurrence, create_event_occurrence, \
     create_offer_with_event_product, create_venue, create_offerer, create_user, create_offer_with_thing_product, \
     create_stock_from_offer
-from utils.mailing import DEV_EMAIL_ADDRESS, SUPPORT_EMAIL_ADDRESS
 
 
 class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
-    @clean_database
-    def test_retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation_when_booking_is_sent_from_support_when_feature_send_mail_to_users_is_enabled(self, app):
-        # Given
-        beginning_datetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
-        end_datetime = beginning_datetime + timedelta(hours=1)
-        booking_limit_datetime = beginning_datetime - timedelta(hours=1)
-
-        user = create_user(public_name='John Doe')
-        offerer = create_offerer(name='Test offerer')
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue, event_name='Mains, sorts et papiers')
-        event_occurrence = create_event_occurrence(offer, beginning_datetime=beginning_datetime,
-                                                   end_datetime=end_datetime)
-        stock = create_stock_from_event_occurrence(event_occurrence, price=20, available=10,
-                                                   booking_limit_date=booking_limit_datetime)
-        booking = create_booking(user, stock)
-
-        # When
-        with patch('emails.beneficiary_warning_after_pro_booking_cancellation.feature_send_mail_to_users_enabled', return_value=True):
-            email = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
-
-        # Then
-        assert email['FromEmail'] == SUPPORT_EMAIL_ADDRESS
-
-    @clean_database
-    def test_retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation_when_booking_is_sent_from_dev_when_feature_send_mail_to_users_is_not_enabled(self, app):
-        # Given
-        beginning_datetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
-        end_datetime = beginning_datetime + timedelta(hours=1)
-        booking_limit_datetime = beginning_datetime - timedelta(hours=1)
-
-        user = create_user(public_name='John Doe')
-        offerer = create_offerer(name='Test offerer')
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue, event_name='Mains, sorts et papiers')
-        event_occurrence = create_event_occurrence(offer, beginning_datetime=beginning_datetime,
-                                                   end_datetime=end_datetime)
-        stock = create_stock_from_event_occurrence(event_occurrence, price=20, available=10,
-                                                   booking_limit_date=booking_limit_datetime)
-        booking = create_booking(user, stock)
-
-        # When
-        with patch('emails.beneficiary_warning_after_pro_booking_cancellation.feature_send_mail_to_users_enabled', return_value=False):
-            email = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
-
-        # Then
-        assert email['FromEmail'] == DEV_EMAIL_ADDRESS
-
-
-
-    @clean_database
-    def test_retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation_when_booking_is_sent_to_user_when_feature_send_mail_to_users_is_enabled(self, app):
-        # Given
-        beginning_datetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
-        end_datetime = beginning_datetime + timedelta(hours=1)
-        booking_limit_datetime = beginning_datetime - timedelta(hours=1)
-
-        user = create_user(public_name='John Doe')
-        offerer = create_offerer(name='Test offerer')
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue, event_name='Mains, sorts et papiers')
-        event_occurrence = create_event_occurrence(offer, beginning_datetime=beginning_datetime,
-                                                   end_datetime=end_datetime)
-        stock = create_stock_from_event_occurrence(event_occurrence, price=20, available=10,
-                                                   booking_limit_date=booking_limit_datetime)
-        booking = create_booking(user, stock)
-
-        # When
-        with patch('emails.beneficiary_warning_after_pro_booking_cancellation.feature_send_mail_to_users_enabled', return_value=True):
-            email = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
-
-        # Then
-        assert email['To'] == user.email
-
-    @clean_database
-    def test_retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation_when_booking_is_sent_to_dev_when_feature_send_mail_to_users_is_not_enabled(self, app):
-        # Given
-        beginning_datetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
-        end_datetime = beginning_datetime + timedelta(hours=1)
-        booking_limit_datetime = beginning_datetime - timedelta(hours=1)
-
-        user = create_user(public_name='John Doe')
-        offerer = create_offerer(name='Test offerer')
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue, event_name='Mains, sorts et papiers')
-        event_occurrence = create_event_occurrence(offer, beginning_datetime=beginning_datetime,
-                                                   end_datetime=end_datetime)
-        stock = create_stock_from_event_occurrence(event_occurrence, price=20, available=10,
-                                                   booking_limit_date=booking_limit_datetime)
-        booking = create_booking(user, stock)
-
-        # When
-        with patch('emails.beneficiary_warning_after_pro_booking_cancellation.feature_send_mail_to_users_enabled', return_value=False):
-            email = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
-
-        # Then
-        assert email['To'] == DEV_EMAIL_ADDRESS
-
-
-    @clean_database
-    def test_retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation_when_booking_is_on_an_event(self, app):
-        # Given
-        beginning_datetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
-        end_datetime = beginning_datetime + timedelta(hours=1)
-        booking_limit_datetime = beginning_datetime - timedelta(hours=1)
-
-        user = create_user(public_name='John Doe')
-        offerer = create_offerer(name='Test offerer')
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue, event_name='Mains, sorts et papiers')
-        event_occurrence = create_event_occurrence(offer, beginning_datetime=beginning_datetime, end_datetime=end_datetime)
-        stock = create_stock_from_event_occurrence(event_occurrence, price=20, available=10,
-                                                   booking_limit_date=booking_limit_datetime)
-        booking = create_booking(user, stock)
-
-        # When
-        email = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
-        print(email)
-
-        # Then
-        assert email['Vars']['prix_offre'] == '20'
-        assert email['Vars']['offer_price'] == '1'
-        assert email['Vars']['heure_event'] == '14h'
-        assert email['Vars']['date_event'] == '20 Juillet 2019'
-        assert email['Vars']['nom_lieu'] == venue.name
-        assert email['Vars']['event'] == '1'
-        assert email['Vars']['prenom_user'] == user.firstName
-        assert email['Vars']['nom_offre'] == offer.name
-
-    @clean_database
-    def test_retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation_when_booking_is_on_a_thing(self, app):
+    @patch('emails.beneficiary_warning_after_pro_booking_cancellation.feature_send_mail_to_users_enabled', return_value=True)
+    def test_should_send_mail_to_user_when_feature_send_mail_to_users_is_enabled(self, feature_send_mail_to_users_enabled):
         # Given
         user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, thing_name='Test Book')
+        offer = create_offer_with_event_product(venue)
+        event_occurrence = create_event_occurrence(offer)
+        stock = create_stock_from_event_occurrence(event_occurrence)
+        booking = create_booking(user, stock)
+
+        # When
+        mailjet_data = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
+
+        # Then
+        assert mailjet_data['To'] == user.email
+
+    @patch('emails.beneficiary_warning_after_pro_booking_cancellation.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    @patch('emails.beneficiary_warning_after_pro_booking_cancellation.feature_send_mail_to_users_enabled', return_value=False)
+    def test_should_send_mail_to_dev_when_feature_send_mail_to_users_is_disabled(self, feature_send_mail_to_users_enabled):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue)
+        event_occurrence = create_event_occurrence(offer)
+        stock = create_stock_from_event_occurrence(event_occurrence)
+        booking = create_booking(user, stock)
+
+        # When
+        mailjet_data = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
+
+        # Then
+        assert mailjet_data['To'] == 'dev@example.com'
+
+    @patch('emails.beneficiary_warning_after_pro_booking_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('emails.beneficiary_warning_after_pro_booking_cancellation.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    def test_should_return_event_data_when_booking_is_on_an_event(self):
+        # Given
+        beginning_datetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
+
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue)
+        event_occurrence = create_event_occurrence(offer, beginning_datetime=beginning_datetime)
+        stock = create_stock_from_event_occurrence(event_occurrence, price=20)
+        booking = create_booking(user, stock)
+
+        # When
+        mailjet_data = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
+
+        # Then
+        assert mailjet_data == {
+            'FromEmail': 'support@example.com',
+            'MJ-TemplateID': 1116690,
+            'MJ-TemplateLanguage': True,
+            'To': 'dev@example.com',
+            'Vars': {
+                'event_hour': '14h',
+                'event_date': 'samedi 20 juillet 2019',
+                'is_event': 1,
+                'is_free_offer': '1',
+                'offer_name': booking.stock.offer.name,
+                'offer_price': '20',
+                'user_first_name': user.firstName,
+                'venue_name': booking.stock.offer.venue.name
+            }
+        }
+
+    @patch('emails.beneficiary_warning_after_pro_booking_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('emails.beneficiary_warning_after_pro_booking_cancellation.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    def test_should_return_thing_data_when_booking_is_on_a_thing(self):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
         stock = create_stock_from_offer(offer, price=15)
         booking = create_booking(user, stock)
 
         # When
-        email = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
+        mailjet_data = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
 
         # Then
-        assert email['Vars']['prix_offre'] == '15'
-        assert email['Vars']['offer_price'] == '1'
-        assert email['Vars']['heure_event'] == ''
-        assert email['Vars']['date_event'] == ''
-        assert email['Vars']['nom_lieu'] == venue.name
-        assert email['Vars']['event'] == '0'
-        assert email['Vars']['prenom_user'] == user.firstName
-        assert email['Vars']['nom_offre'] == offer.name
+        assert mailjet_data == {
+            'FromEmail': 'support@example.com',
+            'MJ-TemplateID': 1116690,
+            'MJ-TemplateLanguage': True,
+            'To': 'dev@example.com',
+            'Vars': {
+                'event_hour': '',
+                'event_date': '',
+                'is_event': 0,
+                'is_free_offer': '1',
+                'offer_name': booking.stock.offer.name,
+                'offer_price': '15',
+                'user_first_name': user.firstName,
+                'venue_name': booking.stock.offer.venue.name
+            }
+        }
 
-
-    @clean_database
-    def test_retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation_when_booking_is_on_a_free_offer(self, app):
+    def test_should_not_display_the_price_when_booking_is_on_a_free_offer(self):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -175,16 +121,13 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
         booking = create_booking(user, stock)
 
         # When
-        email = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
+        mailjet_data = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
 
         # Then
-        assert email['Vars']['offer_price'] == '0'
-        assert email['Vars']['prix_offre'] == '0'
+        assert mailjet_data['Vars']['is_free_offer'] == '0'
+        assert mailjet_data['Vars']['offer_price'] == '0'
 
-
-    @clean_database
-    def test_retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation_when_venue_has_a_public_name(self,
-                                                                                                              app):
+    def test_should_use_venue_public_name_when_venue_has_one(self):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -194,8 +137,7 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
         booking = create_booking(user, stock)
 
         # When
-        email = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
+        mailjet_data = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
 
         # Then
-
-        assert email['Vars']['nom_lieu'] == venue.publicName
+        assert mailjet_data['Vars']['venue_name'] == "Mon nouveau nom"

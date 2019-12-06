@@ -81,9 +81,9 @@ def build_recipients_list(booking: Booking) -> str:
     return ", ".join(recipients)
 
 
-def send_offerer_driven_cancellation_email_to_user(booking: Booking, send_email: Callable[..., bool]) -> bool:
+def send_warning_to_beneficiary_after_pro_booking_cancellation(booking: Booking, send_email: Callable[..., bool]) -> None:
     email = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
-    return send_email(data=email)
+    send_email(data=email)
 
 
 def send_offerer_driven_cancellation_email_to_offerer(booking: Booking, send_email: Callable[..., bool]) -> bool:
@@ -120,7 +120,7 @@ def send_validation_confirmation_email(user_offerer: UserOfferer, offerer: Offer
 
 def send_batch_cancellation_emails_to_users(bookings: List[Booking], send_email: Callable[..., bool]) -> None:
     for booking in bookings:
-        send_offerer_driven_cancellation_email_to_user(booking, send_email)
+        send_warning_to_beneficiary_after_pro_booking_cancellation(booking, send_email)
 
 
 def send_batch_cancellation_email_to_offerer(bookings: List[Booking], cancellation_case: str,
@@ -142,7 +142,7 @@ def send_cancellation_emails_to_user_and_offerer(booking: Booking, is_offerer_ca
         send_user_driven_cancellation_email_to_user(booking, send_email)
         send_user_driven_cancellation_email_to_offerer(booking, send_email)
     if is_offerer_cancellation:
-        send_offerer_driven_cancellation_email_to_user(booking, send_email)
+        send_warning_to_beneficiary_after_pro_booking_cancellation(booking, send_email)
         send_offerer_driven_cancellation_email_to_offerer(booking, send_email)
 
 
