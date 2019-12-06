@@ -165,6 +165,7 @@ RECOMMENDATION_INCLUDES = [
 
 USER_INCLUDES = [
     '-culturalSurveyId',
+    '-culturalSurveyFilledDate',
     '-password',
     '-resetPasswordToken',
     '-resetPasswordTokenValidityLimit',
@@ -322,6 +323,7 @@ PRO_BOOKING_INCLUDES = [
             '-canBookFreeOffers',
             '-clearTextPassword',
             '-culturalSurveyId',
+            '-culturalSurveyFilledDate',
             '-dateCreated',
             '-dateOfBirth',
             '-departementCode',

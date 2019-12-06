@@ -180,6 +180,7 @@ def test_pending_validation_return_only_requested_data(app):
                    'validationToken': None,
                    'modelName': 'User',
                    'culturalSurveyId': None,
+                   'culturalSurveyFilledDate': None,
                    'needsToFillCulturalSurvey': False
                    }}],
         'managedVenues':

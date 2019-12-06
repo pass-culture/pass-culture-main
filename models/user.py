@@ -1,5 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
+
 import bcrypt
 from sqlalchemy import Binary, \
     Boolean, \
@@ -14,12 +15,12 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 
 from domain.expenses import get_expenses
-from models.versioned_mixin import VersionedMixin
 from models.db import Model, db
+from models.deposit import Deposit
 from models.needs_validation_mixin import NeedsValidationMixin
 from models.pc_object import PcObject
 from models.user_offerer import UserOfferer, RightsType
-from models.deposit import Deposit
+from models.versioned_mixin import VersionedMixin
 
 
 class User(PcObject,
@@ -37,6 +38,8 @@ class User(PcObject,
     clearTextPassword = None
 
     culturalSurveyId = Column(UUID(as_uuid=True), nullable=True)
+
+    culturalSurveyFilledDate = Column(DateTime, nullable=True)
 
     dateCreated = Column(DateTime,
                          nullable=False,
@@ -60,8 +63,8 @@ class User(PcObject,
     lastName = Column(String(128), nullable=True)
 
     needsToFillCulturalSurvey = Column(Boolean,
-        server_default=expression.true(),
-        default=True)
+                                       server_default=expression.true(),
+                                       default=True)
 
     offerers = relationship('Offerer',
                             secondary='user_offerer')
@@ -183,6 +186,7 @@ class User(PcObject,
     @property
     def hasOffers(self):
         return any([offerer.nOffers > 0 for offerer in self.offerers])
+
 
 class WalletBalance:
     CSV_HEADER = [

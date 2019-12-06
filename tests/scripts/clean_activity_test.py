@@ -1,10 +1,13 @@
+from datetime import datetime
+
 from models import PcObject
 from models.activity import load_activity
 from models.db import db
-from scripts.clean_activity import delete_tables_from_activity, populate_stock_date_created_from_activity
+from scripts.clean_activity import delete_tables_from_activity, populate_stock_date_created_from_activity, \
+    populate_cultural_survey_filled_date_from_activity
 from tests.conftest import clean_database
 from tests.test_utils import create_activity, save_all_activities, create_stock, create_venue, create_offerer, \
-    create_offer_with_thing_product
+    create_offer_with_thing_product, create_user
 
 Activity = load_activity()
 
@@ -69,3 +72,45 @@ class PopulateStockDateCreatedFromActivityTest:
 
         # Then
         assert stock.dateCreated == activity_issued_at.first()[0]
+
+
+class PopulateCulturalSurveyFilledDateFromActivityTest:
+    @clean_database
+    def test_fills_cultural_survey_filled_date_from_activity(self, app):
+        # Given
+        user = create_user(idx=1, needs_to_fill_cultural_survey=False)
+        PcObject.save(user)
+        modification_date = datetime(2019, 12, 1, 0, 0, 0)
+        user_activity = create_activity(
+            'user',
+            'update',
+            issued_at=modification_date,
+            changed_data={'id': 1, 'needsToFillCulturalSurvey': False}
+        )
+        save_all_activities(user_activity)
+
+        # When
+        populate_cultural_survey_filled_date_from_activity()
+
+        # Then
+        assert user.culturalSurveyFilledDate == modification_date
+
+    @clean_database
+    def test_not_fills_cultural_survey_filled_date_from_activity_when_user_id_does_not_match(self, app):
+        # Given
+        user = create_user(idx=1, needs_to_fill_cultural_survey=False)
+        PcObject.save(user)
+        modification_date = datetime(2019, 12, 1, 0, 0, 0)
+        user_activity = create_activity(
+            'user',
+            'update',
+            issued_at=modification_date,
+            changed_data={'id': 2, 'needsToFillCulturalSurvey': False}
+        )
+        save_all_activities(user_activity)
+
+        # When
+        populate_cultural_survey_filled_date_from_activity()
+
+        # Then
+        assert user.culturalSurveyFilledDate is None

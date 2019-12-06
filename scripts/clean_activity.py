@@ -22,3 +22,16 @@ def populate_stock_date_created_from_activity():
         AND verb='insert';
         '''
     db.engine.execute(query)
+
+
+def populate_cultural_survey_filled_date_from_activity():
+    query = f'''
+        UPDATE "user"
+        SET "culturalSurveyFilledDate" = activity.issued_at
+        FROM activity
+        WHERE table_name='user'
+        AND (changed_data ->>'id')::int = "user".id
+        AND (changed_data ->>'needsToFillCulturalSurvey')::bool = false
+        AND verb='update';
+        '''
+    db.engine.execute(query)
