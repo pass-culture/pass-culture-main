@@ -20,7 +20,7 @@
     "bookings/token/{token}": {
       "get": {
         "tags": [
-          "Version 1"
+          "Version 1 (will be deprecated in 2020)"
         ],
         "summary": "Webservice permettant de consulter la validité d’une réservation.",
         "description": "Le code “contremarque” ou token est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation. <br/> Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et lui est transmis à cette occasion.",
@@ -38,14 +38,14 @@
           },
           {
             "name": "email",
-            "in": "path",
-            "description": "Email de la personne ayant fait la réservation",
+            "in": "query",
+            "description": "E-mail de la personne ayant fait la réservation",
             "required": true,
             "type": "string"
           },
           {
             "name": "offer_id",
-            "in": "path",
+            "in": "query",
             "description": "Identifiant de l'offre correspondant à la réservation",
             "required": true,
             "type": "string"
@@ -109,7 +109,7 @@
       },
       "patch": {
         "tags": [
-          "Version 1"
+          "Version 1 (will be deprecated in 2020)"
         ],
         "summary": "Webservice permettant de valider une réservation.",
         "description": "Le code “contremarque” ou token est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation. <br/> Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et lui est transmis à cette occasion.",
@@ -127,14 +127,14 @@
           },
           {
             "name": "email",
-            "in": "path",
-            "description": "Email de la personne ayant fait la réservation",
+            "in": "query",
+            "description": "E-mail de la personne ayant fait la réservation",
             "required": true,
             "type": "string"
           },
           {
             "name": "offer_id",
-            "in": "path",
+            "in": "query",
             "description": "Identifiant de l'offre correspondant à la réservation",
             "required": true,
             "type": "string"
