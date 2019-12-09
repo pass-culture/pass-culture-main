@@ -54,8 +54,8 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
   })
 
   describe('render', () => {
-    describe('offerer not validated information', () => {
-      it('should display message', () => {
+    describe('when the offerer is waiting for approval', () => {
+      it('should display an activation status message', () => {
         // given
         props.offerer = {
           id: 'AE',

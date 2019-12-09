@@ -5,6 +5,7 @@ import { Form } from 'react-final-form'
 import Venue from '../Venue'
 import VenueProvidersManagerContainer from '../VenueProvidersManager/VenueProvidersManagerContainer'
 import HeroSection from '../../../../components/layout/HeroSection/HeroSection'
+import { NavLink } from 'react-router-dom'
 
 describe('src | components | pages | Venue', () => {
   let push
@@ -41,11 +42,11 @@ describe('src | components | pages | Venue', () => {
         context: jest.fn().mockReturnValue({
           isCreatedEntity: true,
           isModifiedEntity: false,
-          readOnly: false
+          readOnly: false,
         }),
       },
       trackCreateVenue: jest.fn(),
-      trackModifyVenue: jest.fn()
+      trackModifyVenue: jest.fn(),
     }
   })
 
@@ -176,6 +177,20 @@ describe('src | components | pages | Venue', () => {
         // then
         expect(wrapper.state('isRequestPending')).toBe(false)
       })
+
+      describe('create new offer link', () => {
+        it('should redirect to offer creation page', () => {
+          // when
+          const wrapper = shallow(<Venue {...props} />)
+          const createOfferLink = wrapper.find('#action-create-offer')
+          const navLink = createOfferLink.find(NavLink)
+          const spanText = navLink.find('span')
+
+          // then
+          expect(spanText.at(1).text()).toBe('Créer une offre')
+          expect(navLink.at(0).prop('to')).toBe('/offres/creation?lieu=CM')
+        })
+      })
     })
   })
 
@@ -228,14 +243,15 @@ describe('src | components | pages | Venue', () => {
             {
               config: {
                 apiPath: '/venues/CM',
-                method: 'POST'
+                method: 'POST',
               },
               payload: {
                 datum: {
-                  id: 'CM'
-                }
-              }
-            })
+                  id: 'CM',
+                },
+              },
+            }
+          )
         })
 
         describe('when editing a venue', () => {
@@ -285,13 +301,13 @@ describe('src | components | pages | Venue', () => {
               {
                 config: {
                   apiPath: '/venues/CM',
-                  method: 'PATCH'
+                  method: 'PATCH',
                 },
                 payload: {
                   datum: {
-                    id: 'CM'
-                  }
-                }
+                    id: 'CM',
+                  },
+                },
               }
             )
           })
@@ -307,13 +323,12 @@ describe('src | components | pages | Venue', () => {
       const action = {
         payload: {
           datum: {
-          id: 'Ty5645dgfd'
-          }
+            id: 'Ty5645dgfd',
+          },
         },
       }
       const wrapper = shallow(<Venue {...props} />)
       const formResolver = jest.fn()
-
 
       // when
       wrapper.instance().handleFormSuccess(formResolver)(state, action)
@@ -329,14 +344,14 @@ describe('src | components | pages | Venue', () => {
       jest.spyOn(props.query, 'context').mockReturnValue({
         isCreatedEntity: false,
         isModifiedEntity: false,
-        readOnly: false
+        readOnly: false,
       })
 
       const action = {
         payload: {
           datum: {
-          id: 'Ty5645dgfd'
-          }
+            id: 'Ty5645dgfd',
+          },
         },
       }
       const wrapper = shallow(<Venue {...props} />)

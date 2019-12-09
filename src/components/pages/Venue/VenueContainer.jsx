@@ -4,7 +4,7 @@ import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
 import Venue from './Venue'
-import BuildNotificationMessage from './Notification'
+import NotificationMessage from './Notification'
 
 import { withRequiredLogin } from '../../hocs'
 import withTracking from '../../hocs/withTracking'
@@ -131,7 +131,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
       }
       let notificationMessage = 'Lieu modifié avec succès !'
       if (method == 'POST') {
-        notificationMessage = BuildNotificationMessage(informationsDisplayed)
+        notificationMessage = NotificationMessage(informationsDisplayed)
       }
 
       dispatch(

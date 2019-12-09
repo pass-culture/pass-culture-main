@@ -37,7 +37,9 @@ ShallowWrapper {
             className="button is-secondary is-medium"
             to="/offres/creation?lieu=1"
           >
-            Créer une offre dans ce lieu
+            <span>
+              Créer une offre dans ce lieu
+            </span>
           </NavLink>
         </div>
       </div>,
@@ -58,7 +60,9 @@ ShallowWrapper {
             className="button is-secondary is-medium"
             to="/offres/creation?lieu=1"
           >
-            Créer une offre dans ce lieu
+            <span>
+              Créer une offre dans ce lieu
+            </span>
           </NavLink>
         </div>,
         "className": "field is-grouped is-grouped-centered",
@@ -78,7 +82,9 @@ ShallowWrapper {
             className="button is-secondary is-medium"
             to="/offres/creation?lieu=1"
           >
-            Créer une offre dans ce lieu
+            <span>
+              Créer une offre dans ce lieu
+            </span>
           </NavLink>,
           "className": "control",
         },
@@ -90,12 +96,24 @@ ShallowWrapper {
           "props": Object {
             "activeClassName": "active",
             "aria-current": "page",
-            "children": "Créer une offre dans ce lieu",
+            "children": <span>
+              Créer une offre dans ce lieu
+            </span>,
             "className": "button is-secondary is-medium",
             "to": "/offres/creation?lieu=1",
           },
           "ref": null,
-          "rendered": "Créer une offre dans ce lieu",
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Créer une offre dans ce lieu",
+            },
+            "ref": null,
+            "rendered": "Créer une offre dans ce lieu",
+            "type": "span",
+          },
           "type": [Function],
         },
         "type": "div",
@@ -127,7 +145,9 @@ ShallowWrapper {
               className="button is-secondary is-medium"
               to="/offres/creation?lieu=1"
             >
-              Créer une offre dans ce lieu
+              <span>
+                Créer une offre dans ce lieu
+              </span>
             </NavLink>
           </div>
         </div>,
@@ -148,7 +168,9 @@ ShallowWrapper {
               className="button is-secondary is-medium"
               to="/offres/creation?lieu=1"
             >
-              Créer une offre dans ce lieu
+              <span>
+                Créer une offre dans ce lieu
+              </span>
             </NavLink>
           </div>,
           "className": "field is-grouped is-grouped-centered",
@@ -168,7 +190,9 @@ ShallowWrapper {
               className="button is-secondary is-medium"
               to="/offres/creation?lieu=1"
             >
-              Créer une offre dans ce lieu
+              <span>
+                Créer une offre dans ce lieu
+              </span>
             </NavLink>,
             "className": "control",
           },
@@ -180,12 +204,24 @@ ShallowWrapper {
             "props": Object {
               "activeClassName": "active",
               "aria-current": "page",
-              "children": "Créer une offre dans ce lieu",
+              "children": <span>
+                Créer une offre dans ce lieu
+              </span>,
               "className": "button is-secondary is-medium",
               "to": "/offres/creation?lieu=1",
             },
             "ref": null,
-            "rendered": "Créer une offre dans ce lieu",
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Créer une offre dans ce lieu",
+              },
+              "ref": null,
+              "rendered": "Créer une offre dans ce lieu",
+              "type": "span",
+            },
             "type": [Function],
           },
           "type": "div",

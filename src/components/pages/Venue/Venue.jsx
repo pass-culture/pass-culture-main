@@ -211,6 +211,8 @@ class Venue extends PureComponent {
 
     const showForm = !initialIsVirtual && typeof offerer !== 'undefined'
 
+    const isDiplayedOrModifiedVenue = this.checkIfVenueExists(initialId) && !isCreatedEntity
+
     return (
       <Main
         backTo={this.buildBackToInfos(offererName, initialName, offererId)}
@@ -227,9 +229,10 @@ class Venue extends PureComponent {
             </p>
           )}
 
-          {this.checkIfVenueExists(initialId) && !isCreatedEntity && (
+          {isDiplayedOrModifiedVenue && (
             <NavLink
               className="cta button is-primary"
+              id="action-create-offer"
               to={`/offres/creation?lieu=${initialId}`}
             >
               <span className="icon">

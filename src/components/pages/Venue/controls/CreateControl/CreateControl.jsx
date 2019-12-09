@@ -13,7 +13,9 @@ const CreateControl = ({ venueId }) => (
           className="button is-secondary is-medium"
           to={`/offres/creation?lieu=${venueId}`}
         >
-          {'Créer une offre dans ce lieu'}
+          <span>
+            {'Créer une offre dans ce lieu'}
+          </span>
         </NavLink>
       </div>
     </div>

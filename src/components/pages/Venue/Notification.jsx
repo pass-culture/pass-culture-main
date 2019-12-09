@@ -4,7 +4,7 @@ import { CREATION } from '../../hocs/withFrenchQueryRouter'
 import { NavLink } from 'react-router-dom'
 
 const handleOnClick = dispatch => () => dispatch(closeNotification())
-const BuildNotificationMessage = ({ venueId, offererId, dispatch }) => {
+const NotificationMessage = ({ venueId, offererId, dispatch }) => {
   const createOfferPathname = `/offres/${CREATION}?lieu=${venueId}&structure=${offererId}`
   return (
     <p>
@@ -20,4 +20,4 @@ const BuildNotificationMessage = ({ venueId, offererId, dispatch }) => {
   )
 }
 
-export default BuildNotificationMessage
+export default NotificationMessage

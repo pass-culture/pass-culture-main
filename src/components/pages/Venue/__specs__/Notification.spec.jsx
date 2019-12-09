@@ -2,7 +2,7 @@ import { mount } from 'enzyme'
 import React from 'react'
 import { NavLink, Router } from 'react-router-dom'
 import { createBrowserHistory } from 'history'
-import BuildNotificationMessage from '../Notification'
+import NotificationMessage from '../Notification'
 
 describe('src | components | pages | Venue | Notification', () => {
   const props = {
@@ -18,7 +18,7 @@ describe('src | components | pages | Venue | Notification', () => {
     // when
     const wrapper = mount(
       <Router history={history}>
-        <BuildNotificationMessage {...props} />
+        <NotificationMessage {...props} />
       </Router>
     )
     const textMessage = wrapper.find('p')
