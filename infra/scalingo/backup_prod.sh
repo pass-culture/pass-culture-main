@@ -97,8 +97,6 @@ TUNNEL_PORT="$(lsof -Pan -p "$DB_TUNNEL_PID" -iTCP -sTCP:LISTEN -Fn |grep n |sed
 echo "Connection up !"
 echo "Current db-tunnel PID : $DB_TUNNEL_PID, tunnel port : $TUNNEL_PORT"
 
-exit 1
-
 echo "Start backup process."
 mkdir -p "$BACKUP_PATH"
 PGPASSWORD="$PG_PASSWORD" pg_dump --host 127.0.0.1 --port $TUNNEL_PORT --username "$PG_USER" --dbname "$PG_USER" -F c > "$BACKUP_PATH"/`date +%Y%m%d_%H%M%S`.pgdump
