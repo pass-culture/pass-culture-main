@@ -1,5 +1,12 @@
 #!/bin/bash
 
+failure_alert() {
+  message="$app_name backup restore failed at step: $1"
+  echo $message
+  curl -X POST -H 'Content-type: application/json' --data "{'text': '$message'}" $SLACK_OPS_BOT_URL
+  exit 1
+}
+
 show_help() {
 cat << EOF
 Usage: ${0##*/} [-hcuz] [-a APP NAME]
@@ -7,7 +14,7 @@ Restore database backup with the last backup in \$BACKUP_PATH
     -h            display this help and exit
     -a APP_NAME   The application that will have its database restored
     -c            Create test users at the end of the restore process
-    -d            Drop database only
+    -d            Drop database
     -n            No backup restoration (default to false)
     -r            Region where the app is hosted, default is osc-fr1
     -u            Upgrade head
@@ -74,25 +81,25 @@ echo "Local postgres url : $tunnel_database_url $TUNNEL_PORT"
 if "$drop_database" ; then
   echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Start database drop"
   time psql $tunnel_database_url -a -f /usr/local/bin/clean_database.sql \
-    && echo "Database dropped" || echo "Database drop Failed"
+    && echo "Database dropped" || failure_alert "Database drop"
   echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : End of database drop"
 fi
 
 if "$restore_backup" ; then
   echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Start partial restore DB script"
-  source partial_backup_restore.sh && echo "Partial restore completed" || echo "Partial restore Failed"
+  source partial_backup_restore.sh && echo "Partial restore completed"
 fi
 
 if "$anonymize" ; then
   echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Start anonymization"
   TUNNEL_PORT=$TUNNEL_PORT TARGET_USER=$PG_USER TARGET_PASSWORD=$PG_PASSWORD bash anonymize_database.sh -a "$app_name" \
-    && echo "Anonymized" || echo "Anonymization Failed"
+    && echo "Anonymized" || failure_alert "Anonymization"
 fi
 
 if "$upgrade_head" ; then
   echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Upgrading Alembic Head."
   time /usr/local/bin/scalingo --region $SCALINGO_REGION -a "$app_name" run 'alembic upgrade head' \
-    && echo "Alembic head upgraded" || echo "Alembic head upgrad Failed"
+    && echo "Alembic head upgraded" || failure_alert "Alembic head upgrade"
 fi
 
 if "$create_users" ; then
@@ -100,7 +107,7 @@ if "$create_users" ; then
   echo create_users $create_users
   time /usr/local/bin/scalingo --region $SCALINGO_REGION -a "$app_name" run  /var/lib/scalingo/data_$app_name.csv \
     -f /var/lib/scalingo/import_users.py python /tmp/uploads/import_users.py data_$app_name.csv \
-     && echo "User imported" || echo "User importation Failed"
+     && echo "User imported" || failure_alert "User importation"
 fi
 
 if [ "$DB_TUNNEL_HAS_TO_BE_TERMINATED" = true ]; then
@@ -108,5 +115,5 @@ if [ "$DB_TUNNEL_HAS_TO_BE_TERMINATED" = true ]; then
   kill -9 "$DB_TUNNEL_PID"
 fi
 
-echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : End of backup operation"
+echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : End of backup operations"
 exit 0

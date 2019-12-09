@@ -1,10 +1,10 @@
 #!/bin/bash
 
-
 get_tunnel_database_url() {
   app_name=$1
 
   POSTGRESQL_URL="$(/usr/local/bin/scalingo --region $SCALINGO_REGION -a $app_name env |grep SCALINGO_POSTGRESQL_URL= | sed -e s,SCALINGO_POSTGRESQL_URL=postgres://,,g)"
+  echo $POSTGRESQL_URL
   if [ -z "$POSTGRESQL_URL" ]; then
     return
   fi
