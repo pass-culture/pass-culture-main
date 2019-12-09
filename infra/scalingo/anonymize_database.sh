@@ -49,7 +49,8 @@ else
                                --port "$TUNNEL_PORT" \
                                --username "$TARGET_USER" \
                                --dbname "$TARGET_USER" \
-                               -a  || exit 1
+                               -a -f /tmp/anonymize_tmp.sql
+ || exit 1
 fi
 
 rm /tmp/anonymize_tmp.sql
