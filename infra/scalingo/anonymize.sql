@@ -176,7 +176,9 @@ AS $function$
 DECLARE
     query text;
 BEGIN
-    EXECUTE 'ALTER TABLE ' || table_name || ' DISABLE TRIGGER audit_trigger_row;';
+    EXECUTE 'ALTER TABLE ' || table_name || ' DISABLE TRIGGER audit_trigger_delete;';
+    EXECUTE 'ALTER TABLE ' || table_name || ' DISABLE TRIGGER audit_trigger_insert;';
+    EXECUTE 'ALTER TABLE ' || table_name || ' DISABLE TRIGGER audit_trigger_update;';
 END;
 $function$;
 
@@ -187,7 +189,9 @@ AS $function$
 DECLARE
     query text;
 BEGIN
-    EXECUTE 'ALTER TABLE ' || table_name || ' ENABLE TRIGGER audit_trigger_row;';
+    EXECUTE 'ALTER TABLE ' || table_name || ' ENABLE TRIGGER audit_trigger_delete;';
+    EXECUTE 'ALTER TABLE ' || table_name || ' ENABLE TRIGGER audit_trigger_insert;';
+    EXECUTE 'ALTER TABLE ' || table_name || ' ENABLE TRIGGER audit_trigger_update;';
 END;
 $function$;
 
