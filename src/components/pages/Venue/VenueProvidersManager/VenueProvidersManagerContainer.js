@@ -1,4 +1,3 @@
-import { getRequestErrorStringFromErrors, showNotification } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
@@ -22,24 +21,12 @@ export const mapStateToProps = (state, ownProps) => {
 
 export const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    createVenueProvider: (handleFail, handleSuccess, payload) => {
-      dispatch(
-        requestData({
-          apiPath: `/venueProviders`,
-          body: payload,
-          handleFail: handleFail,
-          handleSuccess: handleSuccess,
-          method: 'POST',
-        })
-      )
-    },
     loadProvidersAndVenueProviders: () => {
       const {
         match: {
           params: { venueId },
         },
       } = ownProps
-
       dispatch(
         requestData({
           apiPath: '/providers',
@@ -48,14 +35,6 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(
         requestData({
           apiPath: `/venueProviders?venueId=${venueId}`,
-        })
-      )
-    },
-    notify: errors => {
-      dispatch(
-        showNotification({
-          text: getRequestErrorStringFromErrors(errors),
-          type: 'fail',
         })
       )
     },

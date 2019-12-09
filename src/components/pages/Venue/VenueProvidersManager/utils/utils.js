@@ -4,6 +4,6 @@ export const DEFAULT_PROVIDER_OPTION = {
 }
 
 export const ALLOCINE_PROVIDER_OPTION = {
-  id: 'default',
+  id: 'allocine',
   name: 'Allociné',
 }

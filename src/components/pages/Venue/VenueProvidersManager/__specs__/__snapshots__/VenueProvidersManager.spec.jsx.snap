@@ -4,7 +4,6 @@ exports[`src | components | pages | Venue | VenueProvidersManager should match s
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <VenueProvidersManager
-    createVenueProvider={[MockFunction]}
     history={
       Object {
         "push": [MockFunction],
@@ -28,27 +27,22 @@ ShallowWrapper {
         "params": Object {
           "offererId": "CC",
           "venueId": "AB",
-          "venueProviderId": "AE",
         },
       }
     }
-    notify={[MockFunction]}
     providers={
       Array [
         Object {
           "id": "DD",
+          "name": "Cinema provider",
           "requireProviderIdentifier": true,
         },
         Object {
           "id": "EE",
+          "name": "Movies provider",
           "requireProviderIdentifier": true,
         },
       ]
-    }
-    venue={
-      Object {
-        "id": "AB",
-      }
     }
     venueProviders={
       Array [
@@ -82,7 +76,7 @@ ShallowWrapper {
           Importation d’offres
         </h2>,
         <ul
-          className="main-list"
+          className="provider-list"
         >
           <VenueProviderItem
             venueProvider={
@@ -153,7 +147,7 @@ ShallowWrapper {
             ],
             false,
           ],
-          "className": "main-list",
+          "className": "provider-list",
         },
         "ref": null,
         "rendered": Array [
@@ -238,7 +232,7 @@ ShallowWrapper {
             Importation d’offres
           </h2>,
           <ul
-            className="main-list"
+            className="provider-list"
           >
             <VenueProviderItem
               venueProvider={
@@ -309,7 +303,7 @@ ShallowWrapper {
               ],
               false,
             ],
-            "className": "main-list",
+            "className": "provider-list",
           },
           "ref": null,
           "rendered": Array [

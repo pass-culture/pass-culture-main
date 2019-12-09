@@ -46,40 +46,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
 
       // then
       expect(result).toStrictEqual({
-        createVenueProvider: expect.any(Function),
         loadProvidersAndVenueProviders: expect.any(Function),
-        notify: expect.any(Function),
-      })
-    })
-
-    describe('createVenueProvider', () => {
-      it('should create a venue provider using API', () => {
-        // given
-        const payload = {
-          providerId: 'AA',
-          venueIdAtOfferProvider: 'AB',
-          venueId: 'AC',
-        }
-        const functions = mapDispatchToProps(dispatch, props)
-
-        // when
-        functions.createVenueProvider(jest.fn(), jest.fn(), payload)
-
-        // then
-        expect(dispatch).toHaveBeenCalledWith({
-          config: {
-            apiPath: '/venueProviders',
-            body: {
-              providerId: 'AA',
-              venueId: 'AC',
-              venueIdAtOfferProvider: 'AB',
-            },
-            handleFail: expect.any(Function),
-            handleSuccess: expect.any(Function),
-            method: 'POST',
-          },
-          type: 'REQUEST_DATA_POST_/VENUEPROVIDERS',
-        })
       })
     })
 
@@ -105,26 +72,6 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
             method: 'GET',
           },
           type: 'REQUEST_DATA_GET_/VENUEPROVIDERS?VENUEID=AE',
-        })
-      })
-    })
-
-    describe('notify', () => {
-      it('should display a notification', () => {
-        // given
-        const functions = mapDispatchToProps(dispatch, props)
-        const errors = [{ error: 'error' }]
-
-        // when
-        functions.notify(errors)
-
-        // then
-        expect(dispatch).toHaveBeenCalledWith({
-          patch: {
-            text: 'error',
-            type: 'fail',
-          },
-          type: 'SHOW_NOTIFICATION',
         })
       })
     })

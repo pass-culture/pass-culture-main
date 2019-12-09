@@ -1,0 +1,32 @@
+.titelive-provider-form {
+  display: flex;
+  flex-direction: row;
+
+  .compte-section {
+    flex-direction: column;
+    max-width: 250px;
+    margin-right: 20px;
+
+    .label-section {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      align-items: baseline;
+
+      .label-text {
+        vertical-align: center;
+        font-size: 12px;
+      }
+    }
+
+  }
+
+  .provider-import-button-container {
+    position: relative;
+
+    button {
+      position: absolute;
+      top: 48%;
+    }
+  }
+}

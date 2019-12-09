@@ -78,11 +78,6 @@ const routes = [
     title: 'Lieu',
   },
   {
-    component: VenueContainer,
-    path: '/structures/:offererId/lieux/:venueId/fournisseurs/:venueProviderId',
-    title: 'Lieu',
-  },
-  {
     component: Offers,
     path: '/structures/:offererId/lieux/:venueId/offres',
     title: 'Offres',

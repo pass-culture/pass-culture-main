@@ -3,68 +3,66 @@
     width: 100%;
   }
 
-  .venue-provider-table {
+  .provider-list {
+
+    .add-provider-form {
+      display: flex;
+      flex-direction: row;
+
+      .select-provider-section {
+        margin-right: 20px;
+
+        .provider-picto {
+          align-items: center;
+          width: 30px;
+
+          img {
+            line-height: 30px;
+          }
+        }
+
+        #select-source {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+
+          label {
+            margin-top: 6px;
+          }
+
+          .field-select {
+            margin-top: 8px;
+            border-radius: 17px;
+            border: 2px solid $grey-dark;
+            background-image: url('/icons/dropdown-disclosure-down-s-w.svg');
+          }
+        }
+      }
+
+    }
+  }
+
+  .venue-id-at-offer-provider-container {
     display: flex;
-    width: 100%;
+    flex: 6;
 
-    .provider-container {
-      margin-left: 10px;
-      display: flex;
-      flex: 4;
 
-      .field-select {
-        border-radius: 17px;
-        border: 2px solid $grey-dark;
-        background-image: url('/icons/dropdown-disclosure-down-s-w.svg');
-        font-size: small;
-        height: 24px !important;
-        min-height: 24px !important;
-        min-width: 174px !important;
-        padding-left: 10px;
-        padding-right: 20px;
-        width: 174px !important;
-      }
-
-      .provider-picto {
-        margin-right: 5px;
-        width: 30px;
-      }
+    .field-is-read-only {
+      margin-left: 0;
     }
 
-    .venue-id-at-offer-provider-container {
-      display: flex;
-      flex: 6;
-
-      .field-text {
-        height: 24px !important;
-        margin-bottom: 0;
-        min-height: 24px !important;
-        min-width: 120px !important;
-        width: 174px !important;
-
-        .field-label {
-          font-size: small;
-          padding: 0 5px 0 0;
-        }
-      }
-
-      .field-is-read-only {
-        margin-left: 0;
-      }
-
-      .tooltip {
-        &.tooltip-info {
-          margin-left: 70px;
-          padding: 4px;
-        }
+    .tooltip {
+      &.tooltip-info {
+        margin-left: 70px;
+        padding: 4px;
       }
     }
+  }
 
-    .provider-import-button-container {
-      .provider-import-button {
-        height: 28px;
-        width: 91px;
-      }
+  .provider-import-button-container {
+    .provider-import-button {
+      height: 28px;
+      width: 91px;
     }
   }
 }

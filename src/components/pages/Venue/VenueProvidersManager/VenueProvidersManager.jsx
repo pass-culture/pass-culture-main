@@ -1,37 +1,20 @@
 import React, { PureComponent } from 'react'
-import { Form } from 'react-final-form'
 import PropTypes from 'prop-types'
-import ReactTooltip from 'react-tooltip'
 import VenueProviderItem from './VenueProviderItem/VenueProviderItem'
-import updateVenueIdAtOfferProvider from './decorators/updateVenueIdAtOfferProvider'
 import { ALLOCINE_PROVIDER_OPTION, DEFAULT_PROVIDER_OPTION } from './utils/utils'
-import VenueProviderForm from './form/VenueProviderForm/VenueProviderForm'
-import SynchronisationConfirmationModal from './SynchronisationConfirmationModal/SynchronisationConfirmationModal'
+import checkIfProviderShouldBeDisabled from './utils/checkIfProviderShouldBeDisabled'
+import AllocineProviderForm from './AllocineProviderForm/AllocineProviderFormContainer'
+import TiteliveProviderForm from './TiteliveProviderForm/TiteliveProviderFormContainer'
 
 class VenueProvidersManager extends PureComponent {
-  static getDerivedStateFromProps(nextProps) {
-    const {
-      match: {
-        params: { venueProviderId },
-      },
-    } = nextProps
-    const isCreationMode = venueProviderId === 'nouveau'
-
-    return {
-      isCreationMode,
-    }
-  }
-
   constructor(props) {
     super(props)
     this.state = {
-      allocineForm: {},
       isCreationMode: false,
       isLoadingMode: false,
       isProviderSelected: false,
-      isShowingConfirmationModal: false,
+      providerId: null,
       providerSelectedIsAllocine: false,
-      userHasValidatedModal: false,
       venueIdAtOfferProviderIsRequired: true,
     }
   }
@@ -41,125 +24,13 @@ class VenueProvidersManager extends PureComponent {
     loadProvidersAndVenueProviders()
   }
 
-  componentDidUpdate() {
-    ReactTooltip.rebuild()
-  }
-
-  showModal = () => {
-    this.setState({
-      isShowingConfirmationModal: true,
-    })
-  }
-
-  hideModal = () => {
-    this.setState({
-      isShowingConfirmationModal: false,
-    })
-  }
-
   handleAddVenueProvider = () => {
-    const {
-      history,
-      match: {
-        params: { offererId, venueId },
-      },
-    } = this.props
     this.setState({
       isCreationMode: true,
     })
-    history.push(`/structures/${offererId}/lieux/${venueId}/fournisseurs/nouveau`)
   }
 
-  resetFormState = () => {
-    this.setState({
-      isCreationMode: false,
-      isLoadingMode: false,
-      isProviderSelected: false,
-      venueIdAtOfferProviderIsRequired: true,
-    })
-  }
-
-  handleSubmit = (formValues, form) => {
-    const { providerSelectedIsAllocine } = this.state
-
-    if (!providerSelectedIsAllocine) {
-      const { createVenueProvider } = this.props
-      this.setState({
-        isLoadingMode: true,
-      })
-      const { id, provider, venueIdAtOfferProvider } = formValues
-      const parsedProvider = JSON.parse(provider)
-
-      const payload = {
-        providerId: parsedProvider.id,
-        venueIdAtOfferProvider,
-        venueId: id,
-      }
-
-      createVenueProvider(this.handleFail(form), this.handleSuccess, payload)
-    } else {
-      this.setState({ allocineForm: { formValues, form } })
-      this.handleSubmitAllocine(formValues, form)
-    }
-  }
-
-  handleSubmitAllocine = (formValues, form) => {
-    const { userHasValidatedModal } = this.state
-    if (userHasValidatedModal) {
-      const { createVenueProvider } = this.props
-      this.setState({
-        isLoadingMode: true,
-      })
-      const { id, provider, venueIdAtOfferProvider } = formValues
-      const parsedProvider = JSON.parse(provider)
-
-      const payload = {
-        providerId: parsedProvider.id,
-        venueIdAtOfferProvider,
-        venueId: id,
-      }
-
-      createVenueProvider(this.handleFail(form), this.handleSuccess, payload)
-    } else {
-      this.showModal()
-    }
-  }
-
-  onHandleModalConfirmation = () => {
-    const { allocineForm } = this.state
-    this.setState({ userHasValidatedModal: true }, () => {
-      return this.handleSubmitAllocine(allocineForm.formValues, allocineForm.form)
-    })
-  }
-
-  handleSuccess = () => {
-    const {
-      history,
-      match: {
-        params: { offererId, venueId },
-      },
-    } = this.props
-    history.push(`/structures/${offererId}/lieux/${venueId}`)
-  }
-
-  handleFail = form => (state, action) => {
-    const { notify } = this.props
-    const {
-      payload: { errors },
-    } = action
-
-    notify(errors)
-    this.resetFormInput(form)
-    this.resetFormState()
-  }
-
-  resetFormInput = form => {
-    form.batch(() => {
-      form.change('provider', JSON.stringify(DEFAULT_PROVIDER_OPTION))
-    })
-  }
-
-  handleChange = (event, input) => {
+  handleChange = event => {
     const valueFromSelectInput = event.target.value
     const valueParsed = JSON.parse(valueFromSelectInput)
 
@@ -168,8 +39,6 @@ class VenueProvidersManager extends PureComponent {
         isProviderSelected: true,
         venueIdAtOfferProviderIsRequired: valueParsed.requireProviderIdentifier,
       })
-    } else {
-      this.resetFormState()
     }
 
     if (valueParsed && valueParsed.name === ALLOCINE_PROVIDER_OPTION.name) {
@@ -182,20 +51,28 @@ class VenueProvidersManager extends PureComponent {
       })
     }
 
-    input.onChange(valueFromSelectInput)
+    if (valueParsed && valueParsed.id == DEFAULT_PROVIDER_OPTION.id) {
+      this.setState({
+        isProviderSelected: false,
+        venueIdAtOfferProviderIsRequired: valueParsed.requireProviderIdentifier,
+      })
+    }
+
+    this.setState({
+      providerId: valueParsed.id,
+    })
   }
 
   render() {
-    const { providers, venue, venueProviders } = this.props
+    const { providers, match, venueProviders } = this.props
     const {
       isCreationMode,
       isLoadingMode,
       isProviderSelected,
-      isShowingConfirmationModal,
+      providerId,
       providerSelectedIsAllocine,
       venueIdAtOfferProviderIsRequired,
     } = this.state
-    const decorators = [updateVenueIdAtOfferProvider]
     const hasAtLeastOneProvider = providers.length > 0
 
     return (
@@ -204,7 +81,7 @@ class VenueProvidersManager extends PureComponent {
           {'Importation d’offres'}
         </h2>
 
-        <ul className="main-list">
+        <ul className="provider-list">
           {venueProviders.map(venueProvider => (
             <VenueProviderItem
               key={venueProvider.id}
@@ -213,22 +90,62 @@ class VenueProvidersManager extends PureComponent {
           ))}
 
           {isCreationMode && (
-            <li>
-              <Form
-                decorators={decorators}
-                initialValues={venue}
-                onSubmit={this.handleSubmit}
-                render={VenueProviderForm({
-                  handleChange: this.handleChange,
-                  isProviderSelected,
-                  isLoadingMode,
-                  isCreationMode,
-                  providers,
-                  providerSelectedIsAllocine,
-                  venueProviders,
-                  venueIdAtOfferProviderIsRequired,
-                })}
-              />
+            <li className="add-provider-form">
+              <div className="select-provider-section">
+                <div id="select-source">
+                  <label htmlFor="provider-options">
+                    {'Source'}
+                  </label>
+                  <select
+                    className="field-select"
+                    id="provider-options"
+                    onBlur={this.handleChange}
+                  >
+                    <option
+                      key={DEFAULT_PROVIDER_OPTION.id}
+                      value={JSON.stringify(DEFAULT_PROVIDER_OPTION)}
+                    >
+                      {DEFAULT_PROVIDER_OPTION.name}
+                    </option>
+                    {providers.map(provider => {
+                      const isProviderDisabled = checkIfProviderShouldBeDisabled(
+                        venueProviders,
+                        provider
+                      )
+
+                      return (
+                        <option
+                          disabled={isProviderDisabled}
+                          key={`provider-${provider.id}`}
+                          value={JSON.stringify(provider)}
+                        >
+                          {provider.name}
+                        </option>
+                      )
+                    })}
+                  </select>
+                </div>
+              </div>
+              <div className="provider-form">
+                {providerSelectedIsAllocine && (
+                  <AllocineProviderForm
+                    isCreationMode={isCreationMode}
+                    isLoadingMode={isLoadingMode}
+                    providerId={providerId}
+                    venueId={match.params.venueId}
+                    venueIdAtOfferProviderIsRequired={venueIdAtOfferProviderIsRequired}
+                  />
+                )}
+
+                {!providerSelectedIsAllocine && isProviderSelected && (
+                  <TiteliveProviderForm
+                    isCreationMode={isCreationMode}
+                    providerId={providerId}
+                    venueId={match.params.venueId}
+                    venueIdAtOfferProviderIsRequired={venueIdAtOfferProviderIsRequired}
+                  />
+                )}
+              </div>
             </li>
           )}
         </ul>
@@ -246,28 +163,17 @@ class VenueProvidersManager extends PureComponent {
             </button>
           </div>
         )}
-
-        {isShowingConfirmationModal && (
-          <SynchronisationConfirmationModal
-            handleClose={this.hideModal}
-            handleConfirm={this.onHandleModalConfirmation}
-          />
-        )}
       </div>
     )
   }
 }
 
 VenueProvidersManager.propTypes = {
-  createVenueProvider: PropTypes.func.isRequired,
-  history: PropTypes.shape().isRequired,
   loadProvidersAndVenueProviders: PropTypes.func.isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape(),
   }).isRequired,
-  notify: PropTypes.func.isRequired,
   providers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  venue: PropTypes.shape().isRequired,
   venueProviders: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
 
