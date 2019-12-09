@@ -53,7 +53,7 @@ class DeleteTablesFromActivityTest:
 
 class PopulateStockDateCreatedFromActivityTest:
     @clean_database
-    def test_fills_stock_date_created_if_found_in_activity(self, app):
+    def test_fills_stock_date_created_when_found_in_activity(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
