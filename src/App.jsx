@@ -1,28 +1,18 @@
 import classnames from 'classnames'
-import { compose } from 'redux'
-import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import React from 'react'
-import { withRouter } from 'react-router'
+import RedirectToMaintenance from './components/RedirectToMaintenance'
 
-export const App = ({ modalOpen, children }) => (
-  <div className={classnames('app', { 'modal-open': modalOpen })}>
+export const App = ({ modalOpen, isMaintenanceActivated, children }) => {
+  if (isMaintenanceActivated) {
+    return <RedirectToMaintenance />
+  } else return (<div className={classnames('app', { 'modal-open': modalOpen })}>
     {children}
-  </div>
-)
-
-function mapStateToProps(state) {
-  return {
-    modalOpen: state.modal.isActive,
-  }
+  </div>)
 }
 
 App.propTypes = {
   children: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  isMaintenanceActivated: PropTypes.bool.isRequired,
   modalOpen: PropTypes.bool.isRequired,
 }
-
-export default compose(
-  withRouter,
-  connect(mapStateToProps)
-)(App)

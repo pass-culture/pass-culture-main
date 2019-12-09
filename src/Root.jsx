@@ -3,7 +3,7 @@ import { Provider } from 'react-redux'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import { PersistGate } from 'redux-persist/integration/react'
 
-import App from './App'
+import AppContainer from './AppContainer'
 import NoMatchPage from './components/pages/NoMatch/NoMatch'
 import routes from './utils/routes'
 import configureStore from './utils/store'
@@ -21,7 +21,7 @@ const Root = () => {
           persistor={persistor}
         >
           <BrowserRouter>
-            <App>
+            <AppContainer>
               <Switch>
                 {routes.map(route => {
                   const isExact = typeof route.exact !== 'undefined' ? route.exact : true
@@ -35,7 +35,7 @@ const Root = () => {
                 <Route component={NoMatchPage} />
               </Switch>
               <MatomoContainer />
-            </App>
+            </AppContainer>
           </BrowserRouter>
         </PersistGate>
       </Provider>

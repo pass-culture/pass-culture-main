@@ -20,7 +20,7 @@ export const DELETE = '_delete_'
 export const HELP_PAGE_URL = 'https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/'
 
 export const API_URL = process.env.API_URL || 'http://localhost'
-export const { ENVIRONMENT_NAME, SENTRY_SERVER_URL_FOR_PRO } = process.env
+export const { ENVIRONMENT_NAME, SENTRY_SERVER_URL_FOR_PRO, URL_FOR_MAINTENANCE } = process.env
 
 function getMobileOperatingSystem() {
   if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
