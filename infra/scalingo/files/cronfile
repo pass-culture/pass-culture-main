@@ -22,7 +22,7 @@
 
 30 0 * * * . $HOME/.profile; restore_prod_to_env.sh -a pass-culture-datalake -l -z -h > /var/log/restore/restore_datalake.log
 
-15 0 * * * . $HOME/.profile; restore_prod_to_env_new_region.sh -a pass-culture-metabase-produit -l -z -h > /var/log/restore/restore_metabase.log && scalingo -a pass-culture-metabase-produit run python /app/create_enriched_data_tables.py
+15 0 * * * . $HOME/.profile; restore_prod_to_env_new_region.sh -a pass-culture-metabase-produit -l -z -h > /var/log/restore/restore_metabase.log && curl -X POST $METABASE_PRODUIT_URL?token=$METABASE_TOKEN
 
 15 4 * * 1 . $HOME/.profile; scalingo -a pass-culture-api-staging --region osc-fr1 run -f /var/lib/scalingo/data_staging.csv -f /var/lib/scalingo/import_users.py python /tmp/uploads/import_users.py data_staging.csv
 
