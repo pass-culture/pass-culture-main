@@ -34,6 +34,7 @@ ShallowWrapper {
           <Icon
             alt="Dates"
             className={null}
+            png={null}
             src={null}
             svg="ico-calendar"
           />
@@ -64,6 +65,7 @@ ShallowWrapper {
           "children": <Icon
             alt="Dates"
             className={null}
+            png={null}
             src={null}
             svg="ico-calendar"
           />,
@@ -77,6 +79,7 @@ ShallowWrapper {
           "props": Object {
             "alt": "Dates",
             "className": null,
+            "png": null,
             "src": null,
             "svg": "ico-calendar",
           },
@@ -107,6 +110,7 @@ ShallowWrapper {
             <Icon
               alt="Dates"
               className={null}
+              png={null}
               src={null}
               svg="ico-calendar"
             />
@@ -137,6 +141,7 @@ ShallowWrapper {
             "children": <Icon
               alt="Dates"
               className={null}
+              png={null}
               src={null}
               svg="ico-calendar"
             />,
@@ -150,6 +155,7 @@ ShallowWrapper {
             "props": Object {
               "alt": "Dates",
               "className": null,
+              "png": null,
               "src": null,
               "svg": "ico-calendar",
             },

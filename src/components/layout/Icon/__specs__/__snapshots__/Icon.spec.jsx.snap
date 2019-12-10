@@ -6,6 +6,7 @@ ShallowWrapper {
   Symbol(enzyme.__unrendered__): <Icon
     alt={null}
     className={null}
+    png={null}
     src={null}
     svg={null}
   />,
@@ -25,7 +26,7 @@ ShallowWrapper {
     "props": Object {
       "alt": null,
       "className": null,
-      "src": "http://localhost/icons/null.svg",
+      "src": "http://localhost/icons/null.png",
     },
     "ref": null,
     "rendered": null,
@@ -39,7 +40,7 @@ ShallowWrapper {
       "props": Object {
         "alt": null,
         "className": null,
-        "src": "http://localhost/icons/null.svg",
+        "src": "http://localhost/icons/null.png",
       },
       "ref": null,
       "rendered": null,

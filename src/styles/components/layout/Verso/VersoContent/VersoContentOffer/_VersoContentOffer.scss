@@ -33,14 +33,39 @@
   }
 
   a.distance {
-    padding: 0;
-    font-weight: 500;
+    padding-top: 0.75rem;
+    padding-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    font-weight: 200;
     color: $primary;
-    font-size: 1.35rem;
+    font-size: rem(16px);
     text-decoration: none;
+    line-height: rem(29px);
 
-    img {
-      margin-left: 0.8rem;
+    span {
+      margin-left: 0.75rem;
     }
+  }
+
+  a.itinerary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $primary;
+    font-weight: bold;
+    margin-top: 1em;
+    padding: rem(6px) 0;
+    border: rem(2px) solid $primary;
+    border-radius: rem(24px);
+
+    span {
+      margin-left: 0.75rem;
+    }
+  }
+
+  .geolocation-icon {
+    height: 24px;
+    width: 24px;
   }
 }

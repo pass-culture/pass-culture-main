@@ -109,6 +109,7 @@ ShallowWrapper {
             <Icon
               alt={null}
               className="teaser-arrow-img"
+              png={null}
               src={null}
               svg="ico-next-S"
             />
@@ -188,6 +189,7 @@ ShallowWrapper {
               <Icon
                 alt={null}
                 className="teaser-arrow-img"
+                png={null}
                 src={null}
                 svg="ico-next-S"
               />
@@ -344,6 +346,7 @@ ShallowWrapper {
               "children": <Icon
                 alt={null}
                 className="teaser-arrow-img"
+                png={null}
                 src={null}
                 svg="ico-next-S"
               />,
@@ -357,6 +360,7 @@ ShallowWrapper {
               "props": Object {
                 "alt": null,
                 "className": "teaser-arrow-img",
+                "png": null,
                 "src": null,
                 "svg": "ico-next-S",
               },
@@ -531,6 +535,7 @@ ShallowWrapper {
               <Icon
                 alt={null}
                 className="teaser-arrow-img"
+                png={null}
                 src={null}
                 svg="ico-next-S"
               />
@@ -610,6 +615,7 @@ ShallowWrapper {
                 <Icon
                   alt={null}
                   className="teaser-arrow-img"
+                  png={null}
                   src={null}
                   svg="ico-next-S"
                 />
@@ -766,6 +772,7 @@ ShallowWrapper {
                 "children": <Icon
                   alt={null}
                   className="teaser-arrow-img"
+                  png={null}
                   src={null}
                   svg="ico-next-S"
                 />,
@@ -779,6 +786,7 @@ ShallowWrapper {
                 "props": Object {
                   "alt": null,
                   "className": "teaser-arrow-img",
+                  "png": null,
                   "src": null,
                   "svg": "ico-next-S",
                 },

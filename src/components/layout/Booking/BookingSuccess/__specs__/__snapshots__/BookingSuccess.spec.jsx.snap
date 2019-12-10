@@ -46,6 +46,7 @@ ShallowWrapper {
             <Icon
               alt={null}
               className={null}
+              png={null}
               src={null}
               svg="picto-validation"
             />
@@ -135,6 +136,7 @@ ShallowWrapper {
               <Icon
                 alt={null}
                 className={null}
+                png={null}
                 src={null}
                 svg="picto-validation"
               />
@@ -161,6 +163,7 @@ ShallowWrapper {
               "children": <Icon
                 alt={null}
                 className={null}
+                png={null}
                 src={null}
                 svg="picto-validation"
               />,
@@ -178,6 +181,7 @@ ShallowWrapper {
               "props": Object {
                 "alt": null,
                 "className": null,
+                "png": null,
                 "src": null,
                 "svg": "picto-validation",
               },
@@ -510,6 +514,7 @@ ShallowWrapper {
               <Icon
                 alt={null}
                 className={null}
+                png={null}
                 src={null}
                 svg="picto-validation"
               />
@@ -599,6 +604,7 @@ ShallowWrapper {
                 <Icon
                   alt={null}
                   className={null}
+                  png={null}
                   src={null}
                   svg="picto-validation"
                 />
@@ -625,6 +631,7 @@ ShallowWrapper {
                 "children": <Icon
                   alt={null}
                   className={null}
+                  png={null}
                   src={null}
                   svg="picto-validation"
                 />,
@@ -642,6 +649,7 @@ ShallowWrapper {
                 "props": Object {
                   "alt": null,
                   "className": null,
+                  "png": null,
                   "src": null,
                   "svg": "picto-validation",
                 },
@@ -1028,6 +1036,7 @@ ShallowWrapper {
             <Icon
               alt={null}
               className={null}
+              png={null}
               src={null}
               svg="picto-validation"
             />
@@ -1124,6 +1133,7 @@ ShallowWrapper {
               <Icon
                 alt={null}
                 className={null}
+                png={null}
                 src={null}
                 svg="picto-validation"
               />
@@ -1157,6 +1167,7 @@ ShallowWrapper {
               "children": <Icon
                 alt={null}
                 className={null}
+                png={null}
                 src={null}
                 svg="picto-validation"
               />,
@@ -1174,6 +1185,7 @@ ShallowWrapper {
               "props": Object {
                 "alt": null,
                 "className": null,
+                "png": null,
                 "src": null,
                 "svg": "picto-validation",
               },
@@ -1551,6 +1563,7 @@ ShallowWrapper {
               <Icon
                 alt={null}
                 className={null}
+                png={null}
                 src={null}
                 svg="picto-validation"
               />
@@ -1647,6 +1660,7 @@ ShallowWrapper {
                 <Icon
                   alt={null}
                   className={null}
+                  png={null}
                   src={null}
                   svg="picto-validation"
                 />
@@ -1680,6 +1694,7 @@ ShallowWrapper {
                 "children": <Icon
                   alt={null}
                   className={null}
+                  png={null}
                   src={null}
                   svg="picto-validation"
                 />,
@@ -1697,6 +1712,7 @@ ShallowWrapper {
                 "props": Object {
                   "alt": null,
                   "className": null,
+                  "png": null,
                   "src": null,
                   "svg": "picto-validation",
                 },
@@ -2128,6 +2144,7 @@ ShallowWrapper {
             <Icon
               alt={null}
               className={null}
+              png={null}
               src={null}
               svg="picto-validation"
             />
@@ -2214,6 +2231,7 @@ ShallowWrapper {
               <Icon
                 alt={null}
                 className={null}
+                png={null}
                 src={null}
                 svg="picto-validation"
               />
@@ -2237,6 +2255,7 @@ ShallowWrapper {
               "children": <Icon
                 alt={null}
                 className={null}
+                png={null}
                 src={null}
                 svg="picto-validation"
               />,
@@ -2254,6 +2273,7 @@ ShallowWrapper {
               "props": Object {
                 "alt": null,
                 "className": null,
+                "png": null,
                 "src": null,
                 "svg": "picto-validation",
               },
@@ -2574,6 +2594,7 @@ ShallowWrapper {
               <Icon
                 alt={null}
                 className={null}
+                png={null}
                 src={null}
                 svg="picto-validation"
               />
@@ -2660,6 +2681,7 @@ ShallowWrapper {
                 <Icon
                   alt={null}
                   className={null}
+                  png={null}
                   src={null}
                   svg="picto-validation"
                 />
@@ -2683,6 +2705,7 @@ ShallowWrapper {
                 "children": <Icon
                   alt={null}
                   className={null}
+                  png={null}
                   src={null}
                   svg="picto-validation"
                 />,
@@ -2700,6 +2723,7 @@ ShallowWrapper {
                 "props": Object {
                   "alt": null,
                   "className": null,
+                  "png": null,
                   "src": null,
                   "svg": "picto-validation",
                 },

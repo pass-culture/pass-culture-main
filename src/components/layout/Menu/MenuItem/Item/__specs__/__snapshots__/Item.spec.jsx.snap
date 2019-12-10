@@ -28,6 +28,7 @@ ShallowWrapper {
           <Icon
             alt=""
             className={null}
+            png={null}
             src={null}
             svg="ico-offres-w"
           />
@@ -49,6 +50,7 @@ ShallowWrapper {
           "children": <Icon
             alt=""
             className={null}
+            png={null}
             src={null}
             svg="ico-offres-w"
           />,
@@ -62,6 +64,7 @@ ShallowWrapper {
           "props": Object {
             "alt": "",
             "className": null,
+            "png": null,
             "src": null,
             "svg": "ico-offres-w",
           },
@@ -99,6 +102,7 @@ ShallowWrapper {
             <Icon
               alt=""
               className={null}
+              png={null}
               src={null}
               svg="ico-offres-w"
             />
@@ -120,6 +124,7 @@ ShallowWrapper {
             "children": <Icon
               alt=""
               className={null}
+              png={null}
               src={null}
               svg="ico-offres-w"
             />,
@@ -133,6 +138,7 @@ ShallowWrapper {
             "props": Object {
               "alt": "",
               "className": null,
+              "png": null,
               "src": null,
               "svg": "ico-offres-w",
             },

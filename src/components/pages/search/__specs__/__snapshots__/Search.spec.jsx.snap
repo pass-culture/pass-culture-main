@@ -201,6 +201,7 @@ ShallowWrapper {
                     <Icon
                       alt={null}
                       className={null}
+                      png={null}
                       src={null}
                       svg="ico-filter"
                     />
@@ -328,6 +329,7 @@ ShallowWrapper {
                       <Icon
                         alt={null}
                         className={null}
+                        png={null}
                         src={null}
                         svg="ico-filter"
                       />
@@ -433,6 +435,7 @@ ShallowWrapper {
                         <Icon
                           alt={null}
                           className={null}
+                          png={null}
                           src={null}
                           svg="ico-filter"
                         />
@@ -531,6 +534,7 @@ ShallowWrapper {
                           <Icon
                             alt={null}
                             className={null}
+                            png={null}
                             src={null}
                             svg="ico-filter"
                           />
@@ -597,6 +601,7 @@ ShallowWrapper {
                             <Icon
                               alt={null}
                               className={null}
+                              png={null}
                               src={null}
                               svg="ico-filter"
                             />
@@ -752,6 +757,7 @@ ShallowWrapper {
                             <Icon
                               alt={null}
                               className={null}
+                              png={null}
                               src={null}
                               svg="ico-filter"
                             />
@@ -768,6 +774,7 @@ ShallowWrapper {
                             "children": <Icon
                               alt={null}
                               className={null}
+                              png={null}
                               src={null}
                               svg="ico-filter"
                             />,
@@ -783,6 +790,7 @@ ShallowWrapper {
                             "props": Object {
                               "alt": null,
                               "className": null,
+                              "png": null,
                               "src": null,
                               "svg": "ico-filter",
                             },
@@ -1009,6 +1017,7 @@ ShallowWrapper {
                       <Icon
                         alt={null}
                         className={null}
+                        png={null}
                         src={null}
                         svg="ico-filter"
                       />
@@ -1136,6 +1145,7 @@ ShallowWrapper {
                         <Icon
                           alt={null}
                           className={null}
+                          png={null}
                           src={null}
                           svg="ico-filter"
                         />
@@ -1241,6 +1251,7 @@ ShallowWrapper {
                           <Icon
                             alt={null}
                             className={null}
+                            png={null}
                             src={null}
                             svg="ico-filter"
                           />
@@ -1339,6 +1350,7 @@ ShallowWrapper {
                             <Icon
                               alt={null}
                               className={null}
+                              png={null}
                               src={null}
                               svg="ico-filter"
                             />
@@ -1405,6 +1417,7 @@ ShallowWrapper {
                               <Icon
                                 alt={null}
                                 className={null}
+                                png={null}
                                 src={null}
                                 svg="ico-filter"
                               />
@@ -1560,6 +1573,7 @@ ShallowWrapper {
                               <Icon
                                 alt={null}
                                 className={null}
+                                png={null}
                                 src={null}
                                 svg="ico-filter"
                               />
@@ -1576,6 +1590,7 @@ ShallowWrapper {
                               "children": <Icon
                                 alt={null}
                                 className={null}
+                                png={null}
                                 src={null}
                                 svg="ico-filter"
                               />,
@@ -1591,6 +1606,7 @@ ShallowWrapper {
                               "props": Object {
                                 "alt": null,
                                 "className": null,
+                                "png": null,
                                 "src": null,
                                 "svg": "ico-filter",
                               },

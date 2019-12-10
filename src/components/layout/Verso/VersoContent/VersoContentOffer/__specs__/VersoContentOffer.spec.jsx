@@ -1,10 +1,10 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 
-import VersoContentOffer from '../VersoContentOffer'
-import Icon from '../../../../Icon/Icon'
 import { navigationLink } from '../../../../../../utils/geolocation'
+import Icon from '../../../../Icon/Icon'
 import VersoActionsBar from '../VersoActionsBar/VersoActionsBar'
+import VersoContentOffer from '../VersoContentOffer'
 
 jest.mock('../../../../../../utils/geolocation', () => ({
   navigationLink: jest.fn(),
@@ -244,29 +244,113 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
     expect(address).toBe('fake name72 rue Carnot93230ROMAINVILLE')
   })
 
-  it('should render distance to the venue when latitude & longitude are given', () => {
-    // given
-    const nbsp = '\u00a0'
-    const props = {
-      bookables: [{ id: 1 }, { id: 2 }],
-      distance: '1',
-      handleRequestMusicAndShowTypes: jest.fn(),
-      isNotBookable: true,
-      maxShownDates: 1,
-      offer,
-    }
-    navigationLink.mockReturnValue('this is a fake url')
+  describe('distance informations', () => {
+    describe('when latitude and longitude are given', () => {
+      it('should render distance to the venue', () => {
+        // given
+        const props = {
+          bookables: [{ id: 1 }, { id: 2 }],
+          distance: '1',
+          handleRequestMusicAndShowTypes: jest.fn(),
+          offer,
+        }
+        navigationLink.mockReturnValue('this is a fake url')
 
-    // when
-    const wrapper = shallow(<VersoContentOffer {...props} />)
+        // when
+        const wrapper = shallow(<VersoContentOffer {...props} />)
 
-    // then
-    const venueDistance = wrapper.find('.distance')
-    const iconComponent = wrapper.find('.distance').find(Icon)
-    expect(venueDistance.prop('href')).toBe('this is a fake url')
-    expect(venueDistance.find('span').text()).toBe(`1${nbsp}`)
-    expect(iconComponent.prop('svg')).toBe('ico-geoloc-solid2')
-    expect(iconComponent.prop('alt')).toBe('Géolocalisation dans Open Street Map')
+        // then
+        const venueDistance = wrapper.find('.distance')
+        const iconComponent = wrapper.find('.distance').find(Icon)
+        expect(venueDistance.prop('href')).toBe('this is a fake url')
+        expect(venueDistance.find('span').text()).toBe(`À 1`)
+        expect(iconComponent.prop('png')).toBe('geoloc')
+        expect(iconComponent.prop('alt')).toBe('Géolocalisation dans Open Street Map')
+      })
+
+      it('should render itinerary button', () => {
+        // given
+        const props = {
+          bookables: [{ id: 1 }, { id: 2 }],
+          distance: '1',
+          handleRequestMusicAndShowTypes: jest.fn(),
+          offer,
+        }
+        navigationLink.mockReturnValue('this is a fake url')
+
+        // when
+        const wrapper = shallow(<VersoContentOffer {...props} />)
+
+        // then
+        const venueItinerary = wrapper.find('.itinerary')
+        const iconComponent = wrapper.find('.itinerary').find(Icon)
+        expect(venueItinerary.prop('href')).toBe('this is a fake url')
+        expect(venueItinerary.find('span').text()).toBe(`Itinéraire`)
+        expect(iconComponent.prop('png')).toBe('go')
+        expect(iconComponent.prop('alt')).toBe('Géolocalisation dans Open Street Map')
+      })
+    })
+
+    describe('when latitude and longitude are not given', () => {
+      let offerWithoutCoordinates
+      beforeEach(() => {
+        offerWithoutCoordinates = {
+          description: 'fake description',
+          id: 'X9',
+          isEvent: false,
+          isThing: true,
+          offerType: {
+            appLabel: 'Presse — Abonnements',
+          },
+          product: {
+            description: 'fake description do not use',
+          },
+          productId: 'QE',
+          venue: {
+            address: '72 rue Carnot',
+            city: 'ROMAINVILLE',
+            id: 'A9',
+            name: 'fake name',
+            postalCode: '93230',
+            publicName: 'fake publicName',
+          },
+        }
+      })
+
+      it('should not render distance to the venue', () => {
+        // given
+        const props = {
+          bookables: [{ id: 1 }, { id: 2 }],
+          distance: '1',
+          handleRequestMusicAndShowTypes: jest.fn(),
+          offer: offerWithoutCoordinates,
+        }
+        navigationLink.mockReturnValue('this is a fake url')
+
+        // when
+        const wrapper = shallow(<VersoContentOffer {...props} />)
+
+        // then
+        expect(wrapper.exists('.distance')).toBe(false)
+      })
+
+      it('should not render itinerary button', () => {
+        // given
+        const props = {
+          bookables: [{ id: 1 }, { id: 2 }],
+          distance: '1',
+          handleRequestMusicAndShowTypes: jest.fn(),
+          offer: offerWithoutCoordinates,
+        }
+        navigationLink.mockReturnValue('this is a fake url')
+
+        // when
+        const wrapper = shallow(<VersoContentOffer {...props} />)
+
+        // then
+        expect(wrapper.exists('.itinerary')).toBe(false)
+      })
+    })
   })
 
   describe('when the offer is booked and have a link offer', () => {

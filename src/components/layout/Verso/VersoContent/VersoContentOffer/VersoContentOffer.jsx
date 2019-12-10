@@ -3,11 +3,11 @@ import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { capitalize } from 'react-final-form-utils'
 
+import { navigationLink } from '../../../../../utils/geolocation'
 import DuoOfferContainer from '../../../DuoOffer/DuoOfferContainer'
+import Icon from '../../../Icon/Icon'
 import getDurationFromMinutes from './utils/getDurationFromMinutes'
 import VersoActionsBar from './VersoActionsBar/VersoActionsBar'
-import Icon from '../../../Icon/Icon'
-import { navigationLink } from '../../../../../utils/geolocation'
 
 class VersoContentOffer extends PureComponent {
   componentDidMount() {
@@ -145,20 +145,10 @@ class VersoContentOffer extends PureComponent {
 
     return (
       <Fragment>
-        <h3>
-          {'Où ?'}
-        </h3>
         <div className="flex-columns flex-between">
-          <address>
-            {publicName || name}
-            <br />
-            {address && address}
-            <br />
-            {postalCode && postalCode}
-            <br />
-            {city && city}
-            <br />
-          </address>
+          <h3>
+            {'Où ?'}
+          </h3>
           {latitude && longitude && (
             <a
               className="distance"
@@ -166,16 +156,44 @@ class VersoContentOffer extends PureComponent {
               rel="noopener noreferrer"
               target="_blank"
             >
-              <span>
-                {`${distance}\u00a0`}
-              </span>
               <Icon
                 alt="Géolocalisation dans Open Street Map"
-                svg="ico-geoloc-solid2"
+                className="geolocation-icon"
+                png="geoloc"
               />
+              <span>
+                {`À ${distance}`}
+              </span>
             </a>
           )}
         </div>
+        <address>
+          {publicName || name}
+          <br />
+          {address && address}
+          <br />
+          {postalCode && postalCode}
+          <br />
+          {city && city}
+          <br />
+        </address>
+        {latitude && longitude && (
+          <a
+            className="itinerary"
+            href={navigationLink(latitude, longitude)}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <Icon
+              alt="Géolocalisation dans Open Street Map"
+              className="geolocation-icon"
+              png="go"
+            />
+            <span>
+              {'Itinéraire'}
+            </span>
+          </a>
+        )}
       </Fragment>
     )
   }
