@@ -192,8 +192,7 @@ def find_eligible_bookings_for_venue(venue_id: int) -> List[Booking]:
 
 
 def find_date_used(booking: Booking) -> datetime:
-    if booking.dateUsed:
-        return booking.dateUsed
+    return booking.dateUsed
 
 
 def find_user_activation_booking(user: User) -> Booking:

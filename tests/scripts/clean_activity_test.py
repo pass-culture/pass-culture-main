@@ -96,7 +96,7 @@ class PopulateCulturalSurveyFilledDateFromActivityTest:
         assert user.culturalSurveyFilledDate == modification_date
 
     @clean_database
-    def test_not_fills_cultural_survey_filled_date_from_activity_when_user_id_does_not_match(self, app):
+    def test_does_not_fill_cultural_survey_filled_date_from_activity_when_user_id_does_not_match(self, app):
         # Given
         user = create_user(idx=1, needs_to_fill_cultural_survey=False)
         PcObject.save(user)
