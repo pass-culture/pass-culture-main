@@ -266,7 +266,7 @@ class LocalProviderTest:
             provider = TestLocalProvider()
 
             # When
-            product = provider.create_object(providable_info)
+            product = provider._create_object(providable_info)
 
             # Then
             assert isinstance(product, Product)
@@ -286,7 +286,7 @@ class LocalProviderTest:
 
             # When
             with pytest.raises(ApiErrors) as api_errors:
-                provider.create_object(providable_info)
+                provider._create_object(providable_info)
 
             # Then
             assert api_errors.value.errors[

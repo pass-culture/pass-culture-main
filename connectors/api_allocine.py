@@ -23,3 +23,4 @@ def get_movie_poster_from_allocine(poster_url: str) -> bytes:
                                 f' with code {api_response.status_code}')
 
     return api_response.content
+

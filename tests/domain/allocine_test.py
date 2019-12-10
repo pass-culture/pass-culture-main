@@ -1,6 +1,6 @@
 from unittest.mock import Mock, MagicMock
 
-from domain.allocine import get_movies_showtimes, get_movie_poster
+from domain.allocine import get_movies_showtimes, get_movie_poster, _filter_only_non_special_events_type_movie_showtimes
 
 
 class GetMovieShowtimeListFromAllocineTest:
@@ -17,7 +17,8 @@ class GetMovieShowtimeListFromAllocineTest:
                     "movie": {
                         "id": "TW92aWU6Mzc4MzI=",
                         "internalId": 37832,
-                        "title": "Les Contes de la m\u00e8re poule"
+                        "title": "Les Contes de la m\u00e8re poule",
+                        "type": "COMMERCIAL"
                     }
                 }
             }
@@ -41,7 +42,9 @@ class GetMovieShowtimeListFromAllocineTest:
                     "movie": {
                         "id": "TW92aWU6Mzc4MzI=",
                         "internalId": 37832,
-                        "title": "Les Contes de la m\u00e8re poule"
+                        "title": "Les Contes de la m\u00e8re poule",
+                        "type": "COMMERCIAL"
+
                     }
                 }
             },
@@ -50,11 +53,11 @@ class GetMovieShowtimeListFromAllocineTest:
                     "movie": {
                         "id": "TW92aWU6NTA0MDk=",
                         "internalId": 50609,
-                        "title": "Le Ch\u00e2teau ambulant"
+                        "title": "Le Ch\u00e2teau ambulant",
+                        "type": "SPECIAL_TYPE"
                     }
                 }
             }
-
         ]
         self.mock_get_movies_showtimes.return_value = {
             "movieShowtimeList": {
@@ -70,6 +73,7 @@ class GetMovieShowtimeListFromAllocineTest:
         assert any(expected_movie == next(movies) for expected_movie in expected_movies)
 
 
+
 class GetMoviePosterTest:
     def test_should_call_api_with_correct_poster_url(self):
         # Given
@@ -83,3 +87,50 @@ class GetMoviePosterTest:
         # Then
         mock_get_movie_poster_from_allocine.assert_called_once_with('http://url.com')
         assert movie_poster == bytes()
+
+class RemoveMovieShowsWithSpecialEventTypeTest:
+    def test_should_remove_movie_shows_with_special_event_type(self):
+        # Given
+        movies_list = [
+            {
+                "node": {
+                    "movie": {
+                        "id": "TW92aWU6Mzc4MzI=",
+                        "internalId": 37832,
+                        "title": "Les Contes de la m\u00e8re poule",
+                        "type": "COMMERCIAL"
+                    }
+                }
+            },
+            {
+                "node": {
+                    "movie": {
+                        "id": "TW92aWU6NTA0MDk=",
+                        "internalId": 50609,
+                        "title": "Le Ch\u00e2teau ambulant",
+                        "type": "SPECIAL_EVENT"
+                    }
+                }
+            }
+            ]
+
+        expected_movies_list = [
+            {
+                "node": {
+                    "movie": {
+                        "id": "TW92aWU6Mzc4MzI=",
+                        "internalId": 37832,
+                        "title": "Les Contes de la m\u00e8re poule",
+                        "type": "COMMERCIAL"
+                    }
+                }
+            }
+        ]
+
+        # When
+        filtered_movies_list = _filter_only_non_special_events_type_movie_showtimes(movies_list)
+
+        ## Then
+        assert len(filtered_movies_list) == 1
+        assert filtered_movies_list == expected_movies_list
+
