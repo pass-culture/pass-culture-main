@@ -21,11 +21,8 @@ from repository.feature_queries import feature_cron_send_final_booking_recaps_en
     feature_cron_retrieve_bank_information_for_venue_without_siret, \
     feature_cron_send_wallet_balances, \
     feature_import_beneficiaries_enabled, \
-    feature_cron_synchronize_titelive_things, \
-    feature_cron_synchronize_titelive_descriptions, \
-    feature_cron_synchronize_titelive_thumbs, \
-    feature_cron_synchronize_titelive_stocks, \
-    feature_cron_synchronize_allocine_stocks, feature_update_recommendations_view
+    feature_cron_synchronize_allocine_stocks, \
+    feature_update_recommendations_view
 from repository.provider_queries import get_provider_by_local_class
 from repository.recommendation_queries import delete_useless_recommendations
 from repository.user_queries import find_most_recent_beneficiary_creation_date
@@ -43,7 +40,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['DEBUG'] = True
 db.init_app(app)
 
-TITELIVE_STOCKS_PROVIDER_NAME = "TiteLiveStocks"
 ALLOCINE_STOCKS_PROVIDER_NAME = "AllocineStocks"
 
 RECO_VIEW_REFRESH_FREQUENCY = os.environ.get('RECO_VIEW_REFRESH_FREQUENCY', '*')
@@ -95,56 +91,6 @@ def pc_send_wallet_balances():
         app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
         recipients = parse_email_addresses(os.environ.get('WALLET_BALANCES_RECIPIENTS', None))
         send_wallet_balances(recipients)
-
-
-@log_cron
-def pc_synchronize_titelive_things():
-    with app.app_context():
-        process = subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
-                                   + ' --provider TiteLiveThings',
-                                   shell=True,
-                                   cwd=API_ROOT_PATH)
-        output, error = process.communicate()
-        logger.info(StringIO(output))
-        logger.info(StringIO(error))
-
-
-@log_cron
-def pc_synchronize_titelive_descriptions():
-    with app.app_context():
-        process = subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
-                                   + ' --provider TiteLiveThingDescriptions',
-                                   shell=True,
-                                   cwd=API_ROOT_PATH)
-        output, error = process.communicate()
-        logger.info(StringIO(output))
-        logger.info(StringIO(error))
-
-
-@log_cron
-def pc_synchronize_titelive_thumbs():
-    with app.app_context():
-        process = subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
-                                   + ' --provider TiteLiveThingThumbs',
-                                   shell=True,
-                                   cwd=API_ROOT_PATH)
-        output, error = process.communicate()
-        logger.info(StringIO(output))
-        logger.info(StringIO(error))
-
-
-@log_cron
-def pc_synchronize_titelive_stocks():
-    with app.app_context():
-        titelive_stocks_provider_id = get_provider_by_local_class(TITELIVE_STOCKS_PROVIDER_NAME).id
-        process = subprocess.Popen(
-            'PYTHONPATH="." python scripts/pc.py update_providables_by_provider_id --provider-id '
-            + str(titelive_stocks_provider_id),
-            shell=True,
-            cwd=API_ROOT_PATH)
-        output, error = process.communicate()
-        logger.info(StringIO(output))
-        logger.info(StringIO(error))
 
 
 @log_cron
@@ -239,22 +185,6 @@ if __name__ == '__main__':
         scheduler.add_job(pc_retrieve_bank_information_for_venue_without_siret, 'cron',
                           id='retrieve_bank_information_venue_without_siret',
                           day='*')
-
-    if feature_cron_synchronize_titelive_things():
-        scheduler.add_job(pc_synchronize_titelive_things, 'cron', id='synchronize_titelive_things',
-                          day='*', hour='1')
-
-    if feature_cron_synchronize_titelive_descriptions():
-        scheduler.add_job(pc_synchronize_titelive_descriptions, 'cron', id='synchronize_titelive_descriptions',
-                          day='*', hour='2')
-
-    if feature_cron_synchronize_titelive_thumbs():
-        scheduler.add_job(pc_synchronize_titelive_thumbs, 'cron', id='synchronize_titelive_thumbs',
-                          day='*', hour='3')
-
-    if feature_cron_synchronize_titelive_stocks():
-        scheduler.add_job(pc_synchronize_titelive_stocks, 'cron', id='synchronize_titelive_stocks',
-                          day='*', hour='6')
 
     if feature_cron_synchronize_allocine_stocks():
         scheduler.add_job(pc_synchronize_allocine_stocks, 'cron', id='synchronize_allocine_stocks',

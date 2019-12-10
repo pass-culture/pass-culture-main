@@ -17,14 +17,22 @@ REDIS_URL = os.environ.get('REDIS_URL', 'redis')
 
 if IS_DEV:
     API_URL = 'http://localhost'
+    API_APPLICATION_NAME = None
     WEBAPP_URL = 'http://localhost:3000'
     PRO_URL = 'http://localhost:3001'
 elif IS_PROD:
     API_URL = 'https://backend.passculture.beta.gouv.fr'
+    API_APPLICATION_NAME = 'pass-culture-api'
     WEBAPP_URL = 'https://app.passculture.beta.gouv.fr'
     PRO_URL = 'https://pro.passculture.beta.gouv.fr'
+elif IS_TESTING:
+    API_URL = 'https://backend.passculture-%s.beta.gouv.fr' % ENV
+    API_APPLICATION_NAME = 'pass-culture-api-dev'
+    WEBAPP_URL = 'https://app.passculture-%s.beta.gouv.fr' % ENV
+    PRO_URL = 'https://pro.passculture-%s.beta.gouv.fr' % ENV
 else:
     API_URL = 'https://backend.passculture-%s.beta.gouv.fr' % ENV
+    API_APPLICATION_NAME = 'pass-culture-api-%s' % ENV
     WEBAPP_URL = 'https://app.passculture-%s.beta.gouv.fr' % ENV
     PRO_URL = 'https://pro.passculture-%s.beta.gouv.fr' % ENV
 

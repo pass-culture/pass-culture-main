@@ -33,6 +33,8 @@ class VenueProvider(PcObject,
 
     lastSyncDate = Column(DateTime, nullable=True)
 
+    syncWorkerId = Column(String(24), nullable=True)
+
     __table_args__ = (
         UniqueConstraint(
             'venueId',

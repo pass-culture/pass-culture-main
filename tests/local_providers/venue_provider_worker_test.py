@@ -1,0 +1,73 @@
+from unittest.mock import patch, call
+
+from local_providers.venue_provider_worker import update_venues_for_specific_provider, do_sync_venue_provider
+from models import VenueProvider, PcObject
+from tests.conftest import clean_database
+from tests.model_creators.generic_creators import create_offerer, create_venue, create_venue_provider
+from tests.model_creators.provider_creators import activate_provider
+
+
+class UpdateVenuesForSpecificProviderTest:
+    @patch('local_providers.venue_provider_worker.do_sync_venue_provider')
+    @clean_database
+    def test_should_call_sync_venue_provider_for_excpected_venue_provider(self,
+                                                                          mock_do_sync_venue_provider,
+                                                                          app):
+        # Given
+        mock_do_sync_venue_provider.return_value = {}
+        titelive_provider = activate_provider('TiteLiveStocks')
+        offerer = create_offerer()
+        venue1 = create_venue(offerer)
+        venue2 = create_venue(offerer, siret='12345678912356')
+        venue_provider_titelive1 = create_venue_provider(venue1, titelive_provider)
+        venue_provider_titelive2 = create_venue_provider(venue2, titelive_provider)
+        PcObject.save(venue_provider_titelive1, venue_provider_titelive2)
+
+        # When
+        update_venues_for_specific_provider(titelive_provider.id)
+
+        # Then
+        assert mock_do_sync_venue_provider.call_count == 2
+        assert mock_do_sync_venue_provider.call_args_list == [call(venue_provider_titelive2),
+                                                              call(venue_provider_titelive1)]
+
+
+class DoSyncVenueProviderTest:
+    @patch('local_providers.venue_provider_worker.run_process_in_one_off_container')
+    @clean_database
+    def test_should_called_run_process_in_one_off_container_function(self,
+                                                                     mock_run_process_in_one_off_container, app):
+        # Given
+        mock_run_process_in_one_off_container.return_value = 'azertyTE7898RTYUIZERTYUI'
+        titelive_provider = activate_provider('TiteLiveStocks')
+        offerer = create_offerer()
+        venue1 = create_venue(offerer)
+        venue_provider = create_venue_provider(venue1, titelive_provider)
+        PcObject.save(venue_provider)
+        update_venue_provider_command = f"PYTHONPATH=. python scripts/pc.py update_providables" \
+                                        f" --venue-provider-id {venue_provider.id}"
+
+        # When
+        do_sync_venue_provider(venue_provider)
+
+        # Then
+        mock_run_process_in_one_off_container.assert_called_once_with(update_venue_provider_command)
+
+    @patch('local_providers.venue_provider_worker.run_process_in_one_off_container')
+    @clean_database
+    def test_should_update_venue_provider_with_worker_id(self,
+                                                         mock_run_process_in_one_off_container, app):
+        # Given
+        mock_run_process_in_one_off_container.return_value = 'azertyTE7898RTYUIZERTYUI'
+        titelive_provider = activate_provider('TiteLiveStocks')
+        offerer = create_offerer()
+        venue1 = create_venue(offerer)
+        venue_provider = create_venue_provider(venue1, titelive_provider, venue_id_at_offer_provider='12345')
+        PcObject.save(venue_provider)
+
+        # When
+        do_sync_venue_provider(venue_provider)
+
+        # Then
+        updated_venue_provider = VenueProvider.query.one()
+        assert updated_venue_provider.syncWorkerId == 'azertyTE7898RTYUIZERTYUI'

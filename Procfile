@@ -4,3 +4,4 @@ postdeploy: python scripts/pc.py install_postgres_extension &&
   python scripts/pc.py install_data
 clock: python scripts/clock.py
 redisclock: python scripts/redis_clock.py
+titeliveclock: python scripts/titelive_clock.py
