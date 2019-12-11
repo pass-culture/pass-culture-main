@@ -39,7 +39,7 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
                 'is_event': 0,
                 'is_free_offer': '0',
                 'mediation_id': 36,
-                'offer_id': 123456,
+                'offer_id': 'AHREA',
                 'offer_name': 'Test thing name',
                 'offer_price': '10.2',
                 'user_first_name': 'Fabien',
@@ -75,20 +75,18 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
                 'is_event': 1,
                 'is_free_offer': '0',
                 'mediation_id': 36,
-                'offer_id': 123456,
+                'offer_id': 'AHREA',
                 'offer_name': 'Test event name',
                 'offer_price': '10.2',
                 'user_first_name': 'Fabien',
             },
         }
 
-    @patch('emails.beneficiary_booking_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('emails.beneficiary_booking_cancellation.format_environment_for_email', return_value='')
-    def test_should_return_its_free_offer_when_offer_price_equals_to_zero(self, mock_format_environment_for_email):
+    def test_should_return_its_free_offer_when_offer_price_equals_to_zero(self):
         # Given
-        beneficiary = create_user(first_name='Fabien', email='fabien@example.com')
-        thing_offer = create_offer_with_thing_product(venue=None, thing_name='Test thing name', idx=123456)
-        recommendation = create_recommendation(offer=thing_offer, user=beneficiary)
+        beneficiary = create_user()
+        thing_offer = create_offer_with_thing_product(venue=None)
+        recommendation = create_recommendation()
         recommendation.mediationId = 36
         stock = create_stock_from_offer(offer=thing_offer, price=0)
         booking = create_booking(beneficiary, stock=stock, recommendation=recommendation, is_cancelled=1)
@@ -99,18 +97,30 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
         # Then
         assert email_data['Vars']['is_free_offer'] == '1'
 
-    @patch('emails.beneficiary_booking_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('emails.beneficiary_booking_cancellation.format_environment_for_email', return_value='')
-    def test_should_return_empty_mediation_id_when_no_mediation(self, mock_format_environment_for_email):
+    def test_should_return_empty_mediation_id_when_no_mediation(self):
         # Given
-        beneficiary = create_user(first_name='Fabien', email='fabien@example.com')
-        thing_offer = create_offer_with_thing_product(venue=None, thing_name='Test thing name', idx=123456)
-        recommendation = create_recommendation(offer=thing_offer, user=beneficiary)
-        stock = create_stock_from_offer(offer=thing_offer, price=0)
+        beneficiary = create_user()
+        thing_offer = create_offer_with_thing_product(venue=None)
+        recommendation = create_recommendation()
+        stock = create_stock_from_offer(offer=thing_offer)
         booking = create_booking(beneficiary, stock=stock, recommendation=recommendation, is_cancelled=1)
 
         # When
         email_data = make_beneficiary_booking_cancellation_email_data(booking)
 
         # Then
-        assert email_data['Vars']['mediation_id'] == ''
+        assert email_data['Vars']['mediation_id'] == 'vide'
+
+    def test_should_return_the_price_multiplied_by_quantity_when_it_is_a_duo_offer(self):
+        # Given
+        beneficiary = create_user()
+        thing_offer = create_offer_with_thing_product(venue=None)
+        recommendation = create_recommendation()
+        stock = create_stock_from_offer(offer=thing_offer, price=10)
+        booking = create_booking(beneficiary, stock=stock, recommendation=recommendation, is_cancelled=1, quantity=2)
+
+        # When
+        email_data = make_beneficiary_booking_cancellation_email_data(booking)
+
+        # Then
+        assert email_data['Vars']['offer_price'] == '20'
