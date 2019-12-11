@@ -70,7 +70,7 @@ class LocalProvider(Iterator):
     def name(self):
         pass
 
-    def handle_thumb(self, pc_object: Model):
+    def _handle_thumb(self, pc_object: Model):
         new_thumb_index = self.get_object_thumb_index()
         if new_thumb_index == 0:
             return
@@ -80,7 +80,7 @@ class LocalProvider(Iterator):
         if not new_thumb:
             return
 
-        save_same_thumb_from_thumb_count_to_index(pc_object, new_thumb_index, new_thumb)
+        _save_same_thumb_from_thumb_count_to_index(pc_object, new_thumb_index, new_thumb)
         logger.debug("Creating thumb #" + str(new_thumb_index) + " for " + str(pc_object))
         self.createdThumbs += new_thumb_index
 
@@ -101,7 +101,7 @@ class LocalProvider(Iterator):
         self.createdObjects += 1
         return pc_object
 
-    def handle_update(self, pc_object, providable_info):
+    def _handle_update(self, pc_object, providable_info):
         self.fill_object_attributes(pc_object)
 
         pc_object.lastProviderId = self.provider.id
@@ -123,7 +123,7 @@ class LocalProvider(Iterator):
         db.session.add(local_provider_event)
         db.session.commit()
 
-    def print_objects_summary(self):
+    def _print_objects_summary(self):
         logger.info("  Checked " + str(self.checkedObjects) + " objects")
         logger.info("  Created " + str(self.createdObjects) + " objects")
         logger.info("  Updated " + str(self.updatedObjects) + " objects")
@@ -181,7 +181,7 @@ class LocalProvider(Iterator):
 
                     if object_need_update:
                         try:
-                            self.handle_update(pc_object, providable_info)
+                            self._handle_update(pc_object, providable_info)
                             if chunk_key in chunk_to_insert:
                                 chunk_to_insert[chunk_key] = pc_object
                             else:
@@ -192,7 +192,7 @@ class LocalProvider(Iterator):
                 if isinstance(pc_object, HasThumbMixin):
                     initial_thumb_count = pc_object.thumbCount
                     try:
-                        self.handle_thumb(pc_object)
+                        self._handle_thumb(pc_object)
                     except Exception as e:
                         self.log_provider_event(LocalProviderEventType.SyncError, e.__class__.__name__)
                         self.erroredThumbs += 1
@@ -218,7 +218,7 @@ class LocalProvider(Iterator):
         if len(chunk_to_insert) + len(chunk_to_update) > 0:
             save_chunks(chunk_to_insert, chunk_to_update)
 
-        self.print_objects_summary()
+        self._print_objects_summary()
         self.log_provider_event(LocalProviderEventType.SyncEnd)
 
         if self.venue_provider is not None:
@@ -226,17 +226,17 @@ class LocalProvider(Iterator):
             PcObject.save(self.venue_provider)
 
 
-def save_same_thumb_from_thumb_count_to_index(pc_object: Model, thumb_index: int, image_as_bytes: bytes):
+def _save_same_thumb_from_thumb_count_to_index(pc_object: Model, thumb_index: int, image_as_bytes: bytes):
     thumb_counter = pc_object.thumbCount if pc_object.thumbCount else 0
     if thumb_index <= thumb_counter:
-        add_new_thumb(pc_object, thumb_index, image_as_bytes)
+        _add_new_thumb(pc_object, thumb_index, image_as_bytes)
     else:
         while thumb_counter < thumb_index:
-            add_new_thumb(pc_object, thumb_counter, image_as_bytes)
+            _add_new_thumb(pc_object, thumb_counter, image_as_bytes)
             thumb_counter += 1
 
 
-def add_new_thumb(pc_object: Model, thumb_index: int, image_as_bytes: bytes):
+def _add_new_thumb(pc_object: Model, thumb_index: int, image_as_bytes: bytes):
     thumb_destination_storage_id = build_thumb_path(pc_object, thumb_index)
     save_provider_thumb(thumb_destination_storage_id, image_as_bytes)
     pc_object.thumbCount = pc_object.thumbCount + 1

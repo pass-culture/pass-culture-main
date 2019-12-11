@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from local_providers.local_provider import save_same_thumb_from_thumb_count_to_index
+from local_providers.local_provider import _save_same_thumb_from_thumb_count_to_index
 from models import Product, PcObject, ThingType, VenueProvider, ApiErrors, LocalProviderEvent
 from models.local_provider_event import LocalProviderEventType
 from tests.conftest import clean_database
@@ -313,7 +313,7 @@ class LocalProviderTest:
                                                               date_modified_at_last_provider=datetime(2000, 1, 1))
 
             # When
-            provider.handle_update(existing_product, providable_info)
+            provider._handle_update(existing_product, providable_info)
 
             # Then
             assert existing_product.name == 'New Product'
@@ -337,7 +337,7 @@ class LocalProviderTest:
 
             # When
             with pytest.raises(ApiErrors) as api_errors:
-                provider.handle_update(existing_product, providable_info)
+                provider._handle_update(existing_product, providable_info)
 
             # Then
             assert api_errors.value.errors[
@@ -365,7 +365,7 @@ class LocalProviderTest:
             PcObject.save(existing_product)
 
             # When
-            provider.handle_thumb(existing_product)
+            provider._handle_thumb(existing_product)
 
             # Then
             assert provider.checkedThumbs == 1
@@ -373,7 +373,7 @@ class LocalProviderTest:
             assert provider.createdThumbs == 1
             assert existing_product.thumbCount == 1
 
-        @patch('local_providers.local_provider.save_same_thumb_from_thumb_count_to_index')
+        @patch('local_providers.local_provider._save_same_thumb_from_thumb_count_to_index')
         @clean_database
         def test_call_save_thumb_once_when_thumb_count_is_0(self, mock_save_thumb, app):
             # Given
@@ -391,7 +391,7 @@ class LocalProviderTest:
                                                               date_modified_at_last_provider=datetime(2000, 1, 1),
                                                               thumb_count=0)
             # When
-            provider.handle_thumb(existing_product)
+            provider._handle_thumb(existing_product)
 
             # Then
             assert mock_save_thumb.call_count == 1
@@ -424,7 +424,7 @@ class LocalProviderTest:
             mock_get_thumb_storage_id.return_value = 'products/AAERT'
 
             # When
-            provider.handle_thumb(existing_product)
+            provider._handle_thumb(existing_product)
 
             # Then
             assert mock_save_thumb.call_count == 4
@@ -454,7 +454,7 @@ class LocalProviderTest:
             thumb = provider.get_object_thumb()
 
             # When
-            save_same_thumb_from_thumb_count_to_index(product, thumb_index, thumb)
+            _save_same_thumb_from_thumb_count_to_index(product, thumb_index, thumb)
 
             # Then
             assert product.thumbCount == 4
@@ -480,12 +480,12 @@ class LocalProviderTest:
             thumb = provider.get_object_thumb()
 
             # When
-            save_same_thumb_from_thumb_count_to_index(product, thumb_index, thumb)
+            _save_same_thumb_from_thumb_count_to_index(product, thumb_index, thumb)
 
             # Then
             assert product.thumbCount == 4
 
-        @patch('local_providers.local_provider.add_new_thumb')
+        @patch('local_providers.local_provider._add_new_thumb')
         @clean_database
         def test_should_only_replace_image_at_specific_thumb_index_when_thumCount_is_superior_to_thumbIndex(self,
                                                                                                             mock_add_new_thumb,
@@ -509,7 +509,7 @@ class LocalProviderTest:
             thumb = provider.get_object_thumb()
 
             # When
-            save_same_thumb_from_thumb_count_to_index(product, thumb_index, thumb)
+            _save_same_thumb_from_thumb_count_to_index(product, thumb_index, thumb)
 
             # Then
             assert mock_add_new_thumb.call_count == 1
