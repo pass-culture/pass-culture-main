@@ -111,12 +111,15 @@ class SendWarningToBeneficiaryAfterProBookingCancellationTest:
             'MJ-TemplateLanguage': True,
             'To': 'dev@example.com',
             'Vars': {
-                'event_hour': '',
                 'event_date': '',
+                'event_hour': '',
                 'is_event': 0,
                 'is_free_offer': '1',
+                'is_thing': 1,
+                'is_online': 0,
                 'offer_name': booking.stock.offer.name,
                 'offer_price': '10',
+                'offerer_name': booking.stock.offer.venue.managingOfferer.name,
                 'user_first_name': user.firstName,
                 'venue_name': booking.stock.offer.venue.name
             }

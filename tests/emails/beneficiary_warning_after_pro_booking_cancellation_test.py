@@ -68,12 +68,15 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
             'MJ-TemplateLanguage': True,
             'To': 'dev@example.com',
             'Vars': {
-                'event_hour': '14h',
                 'event_date': 'samedi 20 juillet 2019',
+                'event_hour': '14h',
                 'is_event': 1,
                 'is_free_offer': '1',
+                'is_online': 0,
+                'is_thing': 0,
                 'offer_name': booking.stock.offer.name,
                 'offer_price': '20',
+                'offerer_name': booking.stock.offer.venue.managingOfferer.name,
                 'user_first_name': user.firstName,
                 'venue_name': booking.stock.offer.venue.name
             }
@@ -100,12 +103,50 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
             'MJ-TemplateLanguage': True,
             'To': 'dev@example.com',
             'Vars': {
-                'event_hour': '',
                 'event_date': '',
+                'event_hour': '',
                 'is_event': 0,
                 'is_free_offer': '1',
+                'is_online': 0,
+                'is_thing': 1,
                 'offer_name': booking.stock.offer.name,
                 'offer_price': '15',
+                'offerer_name': booking.stock.offer.venue.managingOfferer.name,
+                'user_first_name': user.firstName,
+                'venue_name': booking.stock.offer.venue.name
+            }
+        }
+
+    @patch('emails.beneficiary_warning_after_pro_booking_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('emails.beneficiary_warning_after_pro_booking_cancellation.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    def test_should_return_thing_data_when_booking_is_on_an_online_offer(self):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue, url='http://online.offer')
+        stock = create_stock_from_offer(offer, price=15)
+        booking = create_booking(user, stock)
+
+        # When
+        mailjet_data = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
+
+        # Then
+        assert mailjet_data == {
+            'FromEmail': 'support@example.com',
+            'MJ-TemplateID': 1116690,
+            'MJ-TemplateLanguage': True,
+            'To': 'dev@example.com',
+            'Vars': {
+                'event_date': '',
+                'event_hour': '',
+                'is_event': 0,
+                'is_free_offer': '1',
+                'is_online': 1,
+                'is_thing': 0,
+                'offer_name': booking.stock.offer.name,
+                'offer_price': '15',
+                'offerer_name': booking.stock.offer.venue.managingOfferer.name,
                 'user_first_name': user.firstName,
                 'venue_name': booking.stock.offer.venue.name
             }
