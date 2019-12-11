@@ -18,7 +18,7 @@ from utils.mailing import make_offerer_driven_cancellation_email_for_offerer, ma
     make_user_validation_email, \
     make_venue_validated_email, compute_email_html_part_and_recipients, \
     ADMINISTRATION_EMAIL_ADDRESS, make_reset_password_email
-from emails.beneficiary_booking_confirmation import retrieve_data_for_user_booking_confirmation_email
+from emails.beneficiary_booking_confirmation import retrieve_data_for_beneficiary_booking_confirmation_email
 
 
 def send_final_booking_recap_email(stock: Stock, send_email: Callable[..., bool]) -> bool:
@@ -48,11 +48,9 @@ def send_booking_recap_emails(booking: Booking, send_email: Callable[..., bool])
     return send_email(data=email)
 
 
-def send_booking_confirmation_email_to_user(booking: Booking, send_email: Callable[..., bool]) -> bool:
-    recipients = [booking.user.email]
-    email_data = retrieve_data_for_user_booking_confirmation_email(booking, recipients)
-
-    return send_email(data=email_data)
+def send_booking_confirmation_email_to_beneficiary(booking: Booking, send_email: Callable[..., bool]) -> bool:
+    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
+    send_email(data=email_data)
 
 
 def send_beneficiary_booking_cancellation_email(booking: Booking, send_email: Callable[..., bool]):

@@ -10,7 +10,7 @@ from domain.expenses import get_expenses
 from domain.user_activation import create_initial_deposit, \
     is_activation_booking
 from domain.user_emails import send_booking_recap_emails, \
-    send_booking_confirmation_email_to_user, send_cancellation_emails_to_user_and_offerer, \
+    send_booking_confirmation_email_to_beneficiary, send_cancellation_emails_to_user_and_offerer, \
     send_activation_email
 from models import ApiErrors, Booking, PcObject, Stock, RightsType, EventType, ThingType, Offerer
 from models.feature import FeatureToggle
@@ -178,7 +178,7 @@ def create_booking():
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
     try:
-        send_booking_confirmation_email_to_user(new_booking, send_raw_email)
+        send_booking_confirmation_email_to_beneficiary(new_booking, send_raw_email)
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 

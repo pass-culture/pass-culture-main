@@ -8,7 +8,7 @@ from emails.beneficiary_booking_cancellation import \
 from tests.test_utils import create_booking, create_offer_with_event_product, \
     create_offer_with_thing_product, \
     create_recommendation, create_stock_from_offer, \
-    create_user
+    create_user, create_offerer, create_venue
 
 
 class MakeBeneficiaryBookingCancellationEmailDataTest:
@@ -51,8 +51,9 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
     @patch('emails.beneficiary_booking_cancellation.format_environment_for_email', return_value='-testing')
     def test_should_return_event_data_when_booking_is_an_event(self, mock_format_environment_for_email):
         # Given
+        venue = create_venue(create_offerer())
         beneficiary = create_user(first_name='Fabien', email='fabien@example.com')
-        event_offer = create_offer_with_event_product(event_name='Test event name', idx=123456)
+        event_offer = create_offer_with_event_product(venue, event_name='Test event name', idx=123456)
         recommendation = create_recommendation(offer=event_offer, user=beneficiary)
         recommendation.mediationId = 36
         stock = create_stock_from_offer(offer=event_offer, price=10.2, beginning_datetime=datetime.utcnow())
@@ -70,7 +71,7 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
             'Vars': {
                 'env': '-testing',
                 'event_date': '26 novembre',
-                'event_hour': '18h29',
+                'event_hour': '19h29',
                 'is_event': 1,
                 'is_free_offer': '0',
                 'mediation_id': 36,

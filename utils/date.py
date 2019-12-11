@@ -99,7 +99,4 @@ def get_date_formatted_for_email(date_time):
 
 
 def get_time_formatted_for_email(date_time):
-    event_beginning_hour = date_time.hour
-    event_beginning_minute = date_time.minute
-    formatted_event_beginning_time = f'{event_beginning_hour}h' if event_beginning_minute == 0 else f'{event_beginning_hour}h{event_beginning_minute}'
-    return formatted_event_beginning_time
+    return date_time.strftime('%Hh%M')
