@@ -120,7 +120,7 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
             <OffererItem {...props} />
           </Router>
         )
-        const createOffer = wrapper.find('.offerer-name')
+        const createOffer = wrapper.find('.name')
         const navLink = createOffer.find(NavLink)
 
         // then

@@ -64,7 +64,7 @@ ShallowWrapper {
           className="list-content"
         >
           <p
-            className="offerer-name"
+            className="name"
           >
             <NavLink
               activeClassName="active"
@@ -154,7 +154,7 @@ ShallowWrapper {
         "props": Object {
           "children": Array [
             <p
-              className="offerer-name"
+              className="name"
             >
               <NavLink
                 activeClassName="active"
@@ -236,7 +236,7 @@ ShallowWrapper {
               >
                 Fake Name
               </NavLink>,
-              "className": "offerer-name",
+              "className": "name",
             },
             "ref": null,
             "rendered": Object {
@@ -558,7 +558,7 @@ ShallowWrapper {
             className="list-content"
           >
             <p
-              className="offerer-name"
+              className="name"
             >
               <NavLink
                 activeClassName="active"
@@ -648,7 +648,7 @@ ShallowWrapper {
           "props": Object {
             "children": Array [
               <p
-                className="offerer-name"
+                className="name"
               >
                 <NavLink
                   activeClassName="active"
@@ -730,7 +730,7 @@ ShallowWrapper {
                 >
                   Fake Name
                 </NavLink>,
-                "className": "offerer-name",
+                "className": "name",
               },
               "ref": null,
               "rendered": Object {

@@ -17,7 +17,7 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
   return (
     <li className="offerer-item">
       <div className="list-content">
-        <p className="offerer-name">
+        <p className="name">
           <NavLink to={showPath}>
             {name}
           </NavLink>
