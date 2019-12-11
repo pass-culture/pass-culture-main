@@ -82,7 +82,7 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
             },
         }
 
-    def test_should_return_its_free_offer_when_offer_price_equals_to_zero(self):
+    def test_should_return_is_free_offer_when_offer_price_equals_to_zero(self):
         # Given
         beneficiary = create_user()
         thing_offer = create_offer_with_thing_product(venue=None)
@@ -97,7 +97,7 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
         # Then
         assert email_data['Vars']['is_free_offer'] == '1'
 
-    def test_should_return_empty_mediation_id_when_no_mediation(self):
+    def test_should_return_an_empty_mediation_id_when_no_mediation(self):
         # Given
         beneficiary = create_user()
         thing_offer = create_offer_with_thing_product(venue=None)

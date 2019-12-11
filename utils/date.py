@@ -95,7 +95,7 @@ def format_into_ISO_8601(value):
 
 
 def get_date_formatted_for_email(date_time):
-    return format_date(date_time, format='long', locale='fr')[:-5]
+    return format_date(date_time, format='d MMMM', locale='fr')
 
 
 def get_time_formatted_for_email(date_time):
