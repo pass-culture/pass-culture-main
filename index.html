@@ -4,11 +4,58 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <style>
+        @font-face {
+            font-family: 'Barlow';
+            font-style: italic;
+            src:
+                url('./fonts/Barlow-BoldItalic.eot') format('eot'),
+                url('./fonts/Barlow-BoldItalic.woff') format('woff'),
+                url('./fonts/Barlow-BoldItalic.ttf')  format('truetype'); /* Safari, Android, iOS */
+        }
+
+        @font-face {
+            font-family: 'Barlow';
+            font-style: normal;
+            src:
+                    url('./fonts/Barlow-Regular.eot') format('eot'),
+                    url('./fonts/Barlow-Regular.woff') format('woff'),
+                    url('./fonts/Barlow-Regular.ttf')  format('truetype'); /* Safari, Android, iOS */
+        }
+
+        html, body {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        body {
+            padding: 20px;
+            background: linear-gradient(#EB0055, #320096);
+            color: white;
+            font-family: 'Barlow', sans-serif;
+        }
+
+        h1, p, body {
+            margin: 0;
+        }
+
+        h1 {
+            font-style: italic;
+            padding: 5px;
+        }
+
+        p, h1, .icon-container {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
+    <div class="icon-container">
+        <img src="casque.png" alt="">
+    </div>
     <h1>App en maintenance</h1>
-    <p>Toutes nos excuses, nous revenons très vite !</p>
+    <p><span>Toutes nos excuses,</span> <span>nous revenons très vite !</span></p>
 </body>
 </html>
 
