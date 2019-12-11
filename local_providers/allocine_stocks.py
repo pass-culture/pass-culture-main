@@ -155,11 +155,18 @@ class AllocineStocks(LocalProvider):
         allocine_stock.beginningDatetime = date_in_utc
         allocine_stock.bookingLimitDatetime = date_in_utc
         allocine_stock.available = None
-        allocine_stock.price = 0
+        allocine_stock.price = self.apply_allocine_price_rule(allocine_stock)
 
         movie_duration = self.movie_information['duration']
         if movie_duration is not None:
             allocine_stock.endDatetime = allocine_stock.beginningDatetime + timedelta(minutes=movie_duration)
+
+    def apply_allocine_price_rule(self, allocine_stock: Stock) -> int:
+        price = None
+        for price_rule in self.venue_provider.priceRules:
+            if price_rule.priceRule(allocine_stock):
+                price = price_rule.price
+        return price
 
     def get_object_thumb(self) -> bytes:
         image_url = self.movie_information['poster_url']

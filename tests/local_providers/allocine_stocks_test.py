@@ -7,14 +7,14 @@ import pytest
 from freezegun import freeze_time
 
 from local_providers import AllocineStocks
-from local_providers.allocine_stocks import retrieve_movie_information, _parse_movie_duration, _format_poster_url, \
-    _get_stock_number_from_id_at_providers, _filter_only_digital_and_non_experience_showtimes, \
-    retrieve_showtime_information, _format_date_from_local_timezone_to_utc
+from local_providers.allocine_stocks import _parse_movie_duration, retrieve_movie_information, \
+    retrieve_showtime_information, _format_poster_url, _get_stock_number_from_id_at_providers, \
+    _format_date_from_local_timezone_to_utc, _filter_only_digital_and_non_experience_showtimes
 from models import PcObject, Offer, EventType, Product, Stock
 from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
 from tests.test_utils import create_offerer, create_venue, create_venue_provider, create_product_with_event_type, \
-    create_offer_with_event_product
+    create_offer_with_event_product, create_venue_provider_price_rule
 from utils.human_ids import humanize
 
 
@@ -258,7 +258,8 @@ class UpdateObjectsTest:
         allocine_provider = get_provider_by_local_class('AllocineStocks')
         allocine_provider.isActive = True
         venue_provider = create_venue_provider(venue, allocine_provider, venue_id_at_offer_provider=theater_token)
-        PcObject.save(venue, venue_provider)
+        venue_provider_price_rule = create_venue_provider_price_rule(venue_provider)
+        PcObject.save(venue, venue_provider, venue_provider_price_rule)
 
         allocine_stocks_provider = AllocineStocks(venue_provider)
 
@@ -407,7 +408,8 @@ class UpdateObjectsTest:
         allocine_provider.isActive = True
         venue_provider = create_venue_provider(venue, allocine_provider,
                                                venue_id_at_offer_provider=theater_token)
-        PcObject.save(venue, venue_provider)
+        venue_provider_price_rule = create_venue_provider_price_rule(venue_provider)
+        PcObject.save(venue, venue_provider, venue_provider_price_rule)
 
         allocine_stocks_provider = AllocineStocks(venue_provider)
 
@@ -549,7 +551,8 @@ class UpdateObjectsTest:
         allocine_provider.isActive = True
         venue_provider = create_venue_provider(venue, allocine_provider,
                                                venue_id_at_offer_provider=theater_token)
-        PcObject.save(venue, venue_provider)
+        venue_provider_price_rule = create_venue_provider_price_rule(venue_provider)
+        PcObject.save(venue, venue_provider, venue_provider_price_rule)
 
         allocine_stocks_provider = AllocineStocks(venue_provider)
 
@@ -682,7 +685,8 @@ class UpdateObjectsTest:
         allocine_provider = get_provider_by_local_class('AllocineStocks')
         allocine_provider.isActive = True
         venue_provider = create_venue_provider(venue, allocine_provider, venue_id_at_offer_provider=theater_token)
-        PcObject.save(venue, product, offer_vo, offer_vf, venue_provider)
+        venue_provider_price_rule = create_venue_provider_price_rule(venue_provider)
+        PcObject.save(venue, product, offer_vo, offer_vf, venue_provider, venue_provider_price_rule)
 
         allocine_stocks_provider = AllocineStocks(venue_provider)
 
@@ -800,7 +804,8 @@ class UpdateObjectsTest:
         allocine_provider = get_provider_by_local_class('AllocineStocks')
         allocine_provider.isActive = True
         venue_provider = create_venue_provider(venue, allocine_provider, venue_id_at_offer_provider=theater_token)
-        PcObject.save(venue, product, venue_provider)
+        venue_provider_price_rule = create_venue_provider_price_rule(venue_provider)
+        PcObject.save(venue, product, venue_provider, venue_provider_price_rule)
 
         allocine_stocks_provider = AllocineStocks(venue_provider)
 
@@ -896,7 +901,8 @@ class UpdateObjectsTest:
         allocine_provider = get_provider_by_local_class('AllocineStocks')
         allocine_provider.isActive = True
         venue_provider = create_venue_provider(venue, allocine_provider, venue_id_at_offer_provider=theater_token)
-        PcObject.save(venue, venue_provider)
+        venue_provider_price_rule = create_venue_provider_price_rule(venue_provider)
+        PcObject.save(venue, venue_provider, venue_provider_price_rule)
 
         allocine_stocks_provider = AllocineStocks(venue_provider)
 
@@ -1007,7 +1013,8 @@ class UpdateObjectsTest:
         allocine_provider = get_provider_by_local_class('AllocineStocks')
         allocine_provider.isActive = True
         venue_provider = create_venue_provider(venue, allocine_provider, venue_id_at_offer_provider=theater_token)
-        PcObject.save(venue, product, venue_provider)
+        venue_provider_price_rule = create_venue_provider_price_rule(venue_provider)
+        PcObject.save(venue, product, venue_provider, venue_provider_price_rule)
 
         allocine_stocks_provider = AllocineStocks(venue_provider)
 
@@ -1128,7 +1135,8 @@ class UpdateObjectsTest:
         allocine_provider = get_provider_by_local_class('AllocineStocks')
         allocine_provider.isActive = True
         venue_provider = create_venue_provider(venue, allocine_provider, venue_id_at_offer_provider=theater_token)
-        PcObject.save(venue, product, venue_provider)
+        venue_provider_price_rule = create_venue_provider_price_rule(venue_provider)
+        PcObject.save(venue, product, venue_provider, venue_provider_price_rule)
 
         allocine_stocks_provider = AllocineStocks(venue_provider)
 
@@ -1252,7 +1260,8 @@ class UpdateObjectsTest:
         allocine_provider = get_provider_by_local_class('AllocineStocks')
         allocine_provider.isActive = True
         venue_provider = create_venue_provider(venue, allocine_provider, venue_id_at_offer_provider=theater_token)
-        PcObject.save(venue_provider)
+        venue_provider_price_rule = create_venue_provider_price_rule(venue_provider)
+        PcObject.save(venue_provider, venue_provider_price_rule)
 
         allocine_stocks_provider = AllocineStocks(venue_provider)
 
@@ -1277,14 +1286,14 @@ class UpdateObjectsTest:
 
         assert first_stock.offerId == vf_offer.id
         assert first_stock.available is None
-        assert first_stock.price == 0
+        assert first_stock.price == 10
         assert first_stock.beginningDatetime == datetime(2019, 12, 3, 9, 00)
         assert first_stock.endDatetime is None
         assert first_stock.bookingLimitDatetime == datetime(2019, 12, 3, 9, 00)
 
         assert second_stock.offerId == vf_offer.id
         assert second_stock.available is None
-        assert second_stock.price == 0
+        assert second_stock.price == 10
         assert second_stock.beginningDatetime == datetime(2019, 12, 3, 17, 00)
         assert second_stock.endDatetime is None
         assert second_stock.bookingLimitDatetime == datetime(2019, 12, 3, 17, 00)
@@ -1417,7 +1426,8 @@ class UpdateObjectsTest:
         allocine_provider = get_provider_by_local_class('AllocineStocks')
         allocine_provider.isActive = True
         venue_provider = create_venue_provider(venue, allocine_provider, venue_id_at_offer_provider=theater_token)
-        PcObject.save(venue_provider)
+        venue_provider_price_rule = create_venue_provider_price_rule(venue_provider)
+        PcObject.save(venue_provider, venue_provider_price_rule)
 
         allocine_stocks_provider = AllocineStocks(venue_provider)
 
@@ -1447,21 +1457,21 @@ class UpdateObjectsTest:
 
         assert first_stock.offerId == vf_offer.id
         assert first_stock.available is None
-        assert first_stock.price == 0
+        assert first_stock.price == 10
         assert first_stock.beginningDatetime == datetime(2019, 12, 3, 9, 0)
         assert first_stock.endDatetime == datetime(2019, 12, 3, 10, 50)
         assert first_stock.bookingLimitDatetime == datetime(2019, 12, 3, 9, 0)
 
         assert second_stock.offerId == vo_offer.id
         assert second_stock.available is None
-        assert second_stock.price == 0
+        assert second_stock.price == 10
         assert second_stock.beginningDatetime == datetime(2019, 12, 3, 17, 0)
         assert second_stock.endDatetime == datetime(2019, 12, 3, 18, 50)
         assert second_stock.bookingLimitDatetime == datetime(2019, 12, 3, 17, 0)
 
         assert third_stock.offerId == vf_offer.id
         assert third_stock.available is None
-        assert third_stock.price == 0
+        assert third_stock.price == 10
         assert third_stock.beginningDatetime == datetime(2019, 12, 3, 19, 0)
         assert third_stock.endDatetime == datetime(2019, 12, 3, 20, 50)
         assert third_stock.bookingLimitDatetime == datetime(2019, 12, 3, 19, 0)
