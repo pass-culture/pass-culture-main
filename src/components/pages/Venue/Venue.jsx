@@ -174,7 +174,10 @@ class Venue extends PureComponent {
             readOnly={readOnly}
             venueId={venueId}
           />
-          {readOnly && <CreateControl venueId={venueId} />}
+          {readOnly && <CreateControl
+            offererId={offererId}
+            venueId={venueId}
+                       />}
           <ReturnOrSubmitControl
             canSubmit={canSubmit}
             isCreatedEntity={isCreatedEntity}
@@ -233,7 +236,7 @@ class Venue extends PureComponent {
             <NavLink
               className="cta button is-primary"
               id="action-create-offer"
-              to={`/offres/creation?lieu=${initialId}`}
+              to={`/offres/creation?lieu=${initialId}&structure=${offererId}`}
             >
               <span className="icon">
                 <Icon svg="ico-offres-w" />

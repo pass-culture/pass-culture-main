@@ -9,6 +9,7 @@ describe('src | components | pages | Venue | controls | CreateControl ', () => {
   beforeEach(() => {
     props = {
       venueId: 1,
+      offererId: 'RG',
     }
   })
 
@@ -31,7 +32,7 @@ describe('src | components | pages | Venue | controls | CreateControl ', () => {
 
       expect(navLink.prop('className')).toBe('button is-secondary is-medium')
       expect(spanText.text()).toBe('Créer une offre dans ce lieu')
-      expect(navLink.prop('to')).toBe('/offres/creation?lieu=1')
+      expect(navLink.prop('to')).toBe('/offres/creation?lieu=1&structure=RG')
     })
   })
 })

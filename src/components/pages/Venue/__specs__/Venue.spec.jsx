@@ -188,7 +188,7 @@ describe('src | components | pages | Venue', () => {
 
           // then
           expect(spanText.at(1).text()).toBe('Créer une offre')
-          expect(navLink.at(0).prop('to')).toBe('/offres/creation?lieu=CM')
+          expect(navLink.at(0).prop('to')).toBe('/offres/creation?lieu=CM&structure=APEQ')
         })
       })
     })

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 
-const CreateControl = ({ venueId }) => (
+const CreateControl = ({ venueId, offererId }) => (
   <div className="control">
     <div
       className="field is-grouped is-grouped-centered"
@@ -11,7 +11,7 @@ const CreateControl = ({ venueId }) => (
       <div className="control">
         <NavLink
           className="button is-secondary is-medium"
-          to={`/offres/creation?lieu=${venueId}`}
+          to={`/offres/creation?lieu=${venueId}&structure=${offererId}`}
         >
           <span>
             {'Créer une offre dans ce lieu'}

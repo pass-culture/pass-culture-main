@@ -4,6 +4,7 @@ exports[`src | components | pages | Venue | controls | CreateControl  should mat
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <CreateControl
+    offererId="RG"
     venueId={1}
   />,
   Symbol(enzyme.__renderer__): Object {
@@ -35,7 +36,7 @@ ShallowWrapper {
             activeClassName="active"
             aria-current="page"
             className="button is-secondary is-medium"
-            to="/offres/creation?lieu=1"
+            to="/offres/creation?lieu=1&structure=RG"
           >
             <span>
               Créer une offre dans ce lieu
@@ -58,7 +59,7 @@ ShallowWrapper {
             activeClassName="active"
             aria-current="page"
             className="button is-secondary is-medium"
-            to="/offres/creation?lieu=1"
+            to="/offres/creation?lieu=1&structure=RG"
           >
             <span>
               Créer une offre dans ce lieu
@@ -80,7 +81,7 @@ ShallowWrapper {
             activeClassName="active"
             aria-current="page"
             className="button is-secondary is-medium"
-            to="/offres/creation?lieu=1"
+            to="/offres/creation?lieu=1&structure=RG"
           >
             <span>
               Créer une offre dans ce lieu
@@ -100,7 +101,7 @@ ShallowWrapper {
               Créer une offre dans ce lieu
             </span>,
             "className": "button is-secondary is-medium",
-            "to": "/offres/creation?lieu=1",
+            "to": "/offres/creation?lieu=1&structure=RG",
           },
           "ref": null,
           "rendered": Object {
@@ -143,7 +144,7 @@ ShallowWrapper {
               activeClassName="active"
               aria-current="page"
               className="button is-secondary is-medium"
-              to="/offres/creation?lieu=1"
+              to="/offres/creation?lieu=1&structure=RG"
             >
               <span>
                 Créer une offre dans ce lieu
@@ -166,7 +167,7 @@ ShallowWrapper {
               activeClassName="active"
               aria-current="page"
               className="button is-secondary is-medium"
-              to="/offres/creation?lieu=1"
+              to="/offres/creation?lieu=1&structure=RG"
             >
               <span>
                 Créer une offre dans ce lieu
@@ -188,7 +189,7 @@ ShallowWrapper {
               activeClassName="active"
               aria-current="page"
               className="button is-secondary is-medium"
-              to="/offres/creation?lieu=1"
+              to="/offres/creation?lieu=1&structure=RG"
             >
               <span>
                 Créer une offre dans ce lieu
@@ -208,7 +209,7 @@ ShallowWrapper {
                 Créer une offre dans ce lieu
               </span>,
               "className": "button is-secondary is-medium",
-              "to": "/offres/creation?lieu=1",
+              "to": "/offres/creation?lieu=1&structure=RG",
             },
             "ref": null,
             "rendered": Object {
