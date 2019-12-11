@@ -4,6 +4,7 @@ from models import Booking
 from models.offer_type import ProductType
 from repository.feature_queries import feature_send_mail_to_users_enabled
 from utils.date import utc_datetime_to_dept_timezone, get_date_formatted_for_email, get_time_formatted_for_email
+from utils.human_ids import humanize
 from utils.mailing import SUPPORT_EMAIL_ADDRESS, format_environment_for_email, \
     DEV_EMAIL_ADDRESS
 
@@ -18,29 +19,31 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
     is_physical_offer = ProductType.is_thing(name=offer.type) and not is_digital_offer
     is_event = ProductType.is_event(name=offer.type)
 
-    booking_date_in_tz = utc_datetime_to_dept_timezone(booking.dateCreated, venue.departementCode)
+    department_code = venue.departementCode if not is_digital_offer else beneficiary.departementCode
+    booking_date_in_tz = utc_datetime_to_dept_timezone(booking.dateCreated, department_code)
 
     beneficiary_email = beneficiary.email if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS
     beneficiary_first_name = beneficiary.firstName
     formatted_booking_date = get_date_formatted_for_email(booking_date_in_tz)
     formatted_booking_time = get_time_formatted_for_email(booking_date_in_tz)
+
     offer_name = offer.name
     offerer_name = venue.managingOfferer.name
     formatted_event_beginning_time = ''
     formatted_event_beginning_date = ''
-    stock_price = stock.price
+    stock_price = str(stock.price) if stock.price > 0 else 'Gratuit'
     booking_token = booking.token
     venue_name = venue.name
     venue_address = venue.address
     is_event_or_physical_offer_stringified_boolean = '1' if is_event or is_physical_offer else '0'
     is_physical_offer_stringified_boolean = '1' if is_physical_offer else '0'
     is_event_stringified_boolean = '1' if is_event else '0'
-    offer_id = offer.id
-    mediation_id = offer.activeMediation.id
+    offer_id = humanize(offer.id)
+    mediation_id = humanize(offer.activeMediation.id) if offer.activeMediation else ''
     environment = format_environment_for_email()
     if is_event:
         event_beginning_date_in_tz = utc_datetime_to_dept_timezone(stock.beginningDatetime,
-                                                                   venue.departementCode)
+                                                                   department_code)
         formatted_event_beginning_time = get_time_formatted_for_email(event_beginning_date_in_tz)
         formatted_event_beginning_date = get_date_formatted_for_email(event_beginning_date_in_tz)
 
