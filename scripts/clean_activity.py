@@ -27,11 +27,22 @@ def populate_stock_date_created_from_activity():
 def populate_cultural_survey_filled_date_from_activity():
     query = f'''
         UPDATE "user"
-        SET "culturalSurveyFilledDate" = activity.issued_at
-        FROM activity
-        WHERE table_name='user'
-        AND (changed_data ->>'id')::int = "user".id
-        AND (changed_data ->>'needsToFillCulturalSurvey')::bool = false
-        AND verb='update';
+        SET "culturalSurveyFilledDate" = typeform.filling_date
+        FROM (
+            SELECT 
+            DISTINCT ON (user_id)
+            (activity.old_data ->>'id')::int AS user_id,
+            activity.issued_at AS filling_date
+            FROM activity
+            WHERE table_name='user'
+            AND (changed_data ->>'needsToFillCulturalSurvey')::bool = false
+            AND verb='update'
+            ORDER BY user_id, filling_date DESC            
+        ) AS typeform
+        WHERE typeform.user_id = "user".id;
         '''
     db.engine.execute(query)
+
+
+
+

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from models import PcObject
+from models import PcObject, User
 from models.activity import load_activity
 from models.db import db
 from scripts.clean_activity import delete_tables_from_activity, populate_stock_date_created_from_activity, \
@@ -85,7 +85,8 @@ class PopulateCulturalSurveyFilledDateFromActivityTest:
             'user',
             'update',
             issued_at=modification_date,
-            changed_data={'id': 1, 'needsToFillCulturalSurvey': False}
+            changed_data={'needsToFillCulturalSurvey': False},
+            old_data={'id': 1}
         )
         save_all_activities(user_activity)
 
@@ -114,3 +115,39 @@ class PopulateCulturalSurveyFilledDateFromActivityTest:
 
         # Then
         assert user.culturalSurveyFilledDate is None
+
+    @clean_database
+    def test_does_fill_cultural_survey_filled_date_with_last_matching_activity_date(self, app):
+        # Given
+        user = create_user(idx=1, needs_to_fill_cultural_survey=True)
+        PcObject.save(user)
+        last_modification_date = datetime(2019, 12, 1, 0, 0, 0)
+        user_activity_1 = create_activity(
+            'user',
+            'update',
+            issued_at=datetime(2019, 10, 1, 0, 0, 0),
+            changed_data={'needsToFillCulturalSurvey': False},
+            old_data={'id': 1}
+        )
+        user_activity_2 = create_activity(
+            'user',
+            'update',
+            issued_at=datetime(2019, 11, 1, 0, 0, 0),
+            changed_data={'needsToFillCulturalSurvey': True},
+            old_data={'id': 1}
+
+        )
+        user_activity_3 = create_activity(
+            'user',
+            'update',
+            issued_at=last_modification_date,
+            changed_data={'needsToFillCulturalSurvey': False},
+            old_data={'id': 1}
+        )
+        save_all_activities(user_activity_1, user_activity_2, user_activity_3)
+
+        # When
+        populate_cultural_survey_filled_date_from_activity()
+
+        # Then
+        assert user.culturalSurveyFilledDate == last_modification_date

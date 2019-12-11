@@ -646,7 +646,7 @@ def create_venue_activity(venue, verb, issued_at=datetime.utcnow):
     return activity
 
 
-def create_activity(table_name, verb, issued_at=datetime(2019, 1, 1), changed_data=None):
+def create_activity(table_name, verb, issued_at=datetime(2019, 1, 1), changed_data=None, old_data=None):
     Activity = versioning_manager.activity_cls
     activity = Activity()
     activity.issued_at = issued_at
@@ -654,6 +654,8 @@ def create_activity(table_name, verb, issued_at=datetime(2019, 1, 1), changed_da
     activity.verb = verb
     if changed_data:
         activity.changed_data = changed_data
+    if old_data:
+        activity.old_data = old_data
     return activity
 
 
