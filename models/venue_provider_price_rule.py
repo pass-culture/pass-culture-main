@@ -1,0 +1,39 @@
+from sqlalchemy import Column, Enum, BigInteger, ForeignKey, Numeric, CheckConstraint, UniqueConstraint
+from sqlalchemy.orm import relationship
+
+from local_providers.price_rule import PriceRule
+from models import PcObject
+from models.db import Model
+
+
+class VenueProviderPriceRule(PcObject, Model):
+    priceRule = Column(Enum(PriceRule), nullable=True, index=False)
+
+    venueProviderId = Column(BigInteger,
+                             ForeignKey('venue_provider.id'),
+                             index=True,
+                             nullable=False)
+
+    venueProvider = relationship('VenueProvider',
+                                 foreign_keys=[venueProviderId],
+                                 backref='priceRules')
+
+    price = Column(Numeric(10, 2),
+                   CheckConstraint('price >= 0', name='check_price_is_not_negative'),
+                   nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint(
+            'venueProviderId',
+            'priceRule',
+            name='unique_venue_provider_price_rule',
+        ),
+    )
+
+    @staticmethod
+    def restize_integrity_error(internal_error):
+        if 'unique_venue_provider_price_rule' in str(internal_error.orig):
+            return ['global', 'Vous ne pouvez avoir qu''un seul prix par catégorie']
+        if 'check_price_is_not_negative' in str(internal_error.orig):
+            return ['global', 'Vous ne pouvez renseigner un prix négatif']
+        return PcObject.restize_integrity_error(internal_error)

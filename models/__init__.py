@@ -39,7 +39,7 @@ from models.user_session import UserSession
 from models.venue import Venue
 from models.venue_provider import VenueProvider
 from models.versioned_mixin import VersionedMixin
-
+from models.venue_provider_price_rule import VenueProviderPriceRule
 
 __all__ = (
     'VersionedMixin',
@@ -67,6 +67,7 @@ __all__ = (
     'Stock',
     'Offerer',
     'VenueProvider',
+    'VenueProviderPriceRule',
     'LocalProviderEvent',
     'OfferCriterion',
     'Offer',

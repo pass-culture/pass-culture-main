@@ -31,8 +31,7 @@ class VenueProvider(PcObject,
 
     venueIdAtOfferProvider = Column(String(70))
 
-    lastSyncDate = Column(DateTime,
-                          nullable=True)
+    lastSyncDate = Column(DateTime, nullable=True)
 
     __table_args__ = (
         UniqueConstraint(

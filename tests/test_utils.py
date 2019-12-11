@@ -34,7 +34,7 @@ from models import ApiKey, \
     User, \
     UserOfferer, \
     Venue, \
-    VenueProvider
+    VenueProvider, VenueProviderPriceRule
 from models.beneficiary_import import BeneficiaryImport
 from models.beneficiary_import_status import ImportStatus, BeneficiaryImportStatus
 from models.db import db, Model
@@ -43,6 +43,7 @@ from models.feature import FeatureToggle, Feature
 from models.payment import PaymentDetails
 from models.payment_status import PaymentStatus, TransactionStatus
 from models.pc_object import PcObject
+from local_providers.price_rule import PriceRule
 from repository.provider_queries import get_provider_by_local_class
 from utils.object_storage import STORAGE_DIR
 from utils.token import random_token
@@ -859,6 +860,14 @@ def create_venue_provider(venue, provider, venue_id_at_offer_provider='775671464
     venue_provider.isActive = is_active
     venue_provider.provider = provider
     venue_provider.venueIdAtOfferProvider = venue_id_at_offer_provider
+    return venue_provider
+
+
+def create_venue_provider_price_rule(venue_provider: VenueProvider, price_rule: PriceRule = PriceRule.default, price: int = 10):
+    venue_provider_price_rule = VenueProviderPriceRule()
+    venue_provider_price_rule.venueProvider = venue_provider
+    venue_provider_price_rule.priceRule = price_rule
+    venue_provider_price_rule.price = price
     return venue_provider
 
 

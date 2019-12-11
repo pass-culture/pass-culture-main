@@ -1,7 +1,7 @@
 from local_providers.install import install_local_providers
 from models.activity import load_activity
 from models.db import db
-from models import ApiKey,\
+from models import ApiKey, \
     BeneficiaryImport, \
     Booking, \
     Deposit, \
@@ -25,7 +25,7 @@ from models import ApiKey,\
     Favorite, \
     BeneficiaryImportStatus, \
     OfferCriterion, \
-    Criterion
+    Criterion, VenueProviderPriceRule
 from models.email import Email
 from models.install import install_features
 
@@ -34,6 +34,7 @@ def clean_all_database(*args, **kwargs):
     """ Order of deletions matters because of foreign key constraints """
     Activity = load_activity()
     LocalProviderEvent.query.delete()
+    VenueProviderPriceRule.query.delete()
     VenueProvider.query.delete()
     PaymentStatus.query.delete()
     Payment.query.delete()
