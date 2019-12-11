@@ -48,7 +48,7 @@ def send_booking_recap_emails(booking: Booking, send_email: Callable[..., bool])
     return send_email(data=email)
 
 
-def send_booking_confirmation_email_to_beneficiary(booking: Booking, send_email: Callable[..., bool]) -> bool:
+def send_booking_confirmation_email_to_beneficiary(booking: Booking, send_email: Callable[..., bool]):
     email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
     send_email(data=email_data)
 
