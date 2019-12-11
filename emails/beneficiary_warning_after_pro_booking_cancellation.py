@@ -24,7 +24,7 @@ def retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking: Bo
         is_thing = 0
     offerer_name = offer.venue.managingOfferer.name
     offer_name = offer.name
-    offer_price = str(stock.price)
+    offer_price = str(stock.price * booking.quantity)
     user_first_name = booking.user.firstName
     venue_name = offer.venue.publicName if offer.venue.publicName else offer.venue.name
 

@@ -168,6 +168,22 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
         assert mailjet_data['Vars']['is_free_offer'] == '0'
         assert mailjet_data['Vars']['offer_price'] == '0'
 
+    def test_should_display_the_price_multiplied_by_qantity_when_it_is_a_duo_booking(self):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock_from_offer(offer, price=10)
+        booking = create_booking(user, stock, quantity=2)
+
+        # When
+        mailjet_data = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
+
+        # Then
+        assert mailjet_data['Vars']['is_free_offer'] == '1'
+        assert mailjet_data['Vars']['offer_price'] == '20'
+
     def test_should_use_venue_public_name_when_venue_has_one(self):
         # Given
         user = create_user()
