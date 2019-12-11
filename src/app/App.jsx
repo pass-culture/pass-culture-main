@@ -1,7 +1,7 @@
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
-import RedirectToMaintenance from './components/RedirectToMaintenance'
+import RedirectToMaintenance from './RedirectToMaintenance'
 
 export const App = ({ modalOpen, isMaintenanceActivated, children }) => {
   if (isMaintenanceActivated) {

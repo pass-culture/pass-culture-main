@@ -16,12 +16,11 @@ const maintenanceReducer = (state = initialState, action = { type: '' }) => {
     return Object.assign({}, state, {
       isActivated: true,
     })
-  } else {
-    if (actionType.startsWith(SUCCESS_DATA_PATTERN)) {
-      return Object.assign({}, state, {
-        isActivated: false,
-      })
-    }
+  }
+  if (actionType.startsWith(SUCCESS_DATA_PATTERN)) {
+    return Object.assign({}, state, {
+      isActivated: false,
+    })
   }
 
   return state

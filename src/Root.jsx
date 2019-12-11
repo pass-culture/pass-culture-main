@@ -3,7 +3,7 @@ import { Provider } from 'react-redux'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import { PersistGate } from 'redux-persist/integration/react'
 
-import AppContainer from './AppContainer'
+import AppContainer from './app/AppContainer'
 import NoMatchPage from './components/pages/NoMatch/NoMatch'
 import routes from './utils/routes'
 import configureStore from './utils/store'

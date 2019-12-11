@@ -1,27 +1,10 @@
 import React from 'react'
 import { mount, shallow } from 'enzyme/build'
 import { App } from '../App'
-import RedirectToMaintenance from '../components/RedirectToMaintenance'
+import RedirectToMaintenance from '../RedirectToMaintenance'
 
 describe('src | App', () => {
-  it('should render children components', () => {
-    // Given
-    const props = { modalOpen: false, isMaintenanceActivated: false }
-
-    // When
-    const wrapper = mount(
-      <App {...props}>
-        <p>
-          {'Sub component'}
-        </p>
-      </App>
-    )
-
-    // Then
-    expect(wrapper.text()).toBe('Sub component')
-  })
-
-  it('should render an App component when isMaintenanceActivated is false', () => {
+  it('should render App and children components when isMaintenanceActivated is false', () => {
     // Given
     const props = { modalOpen: false, isMaintenanceActivated: false }
 
