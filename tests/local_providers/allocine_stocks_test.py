@@ -130,7 +130,8 @@ class AllocineStocksTest:
             ])
 
             offerer = create_offerer(siren='775671464')
-            venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@example.com')
+            venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110',
+                                 booking_email='toto@example.com')
 
             allocine_provider = get_provider_by_local_class('AllocineStocks')
             venue_provider = create_venue_provider(venue, allocine_provider, venue_id_at_offer_provider=theater_token)
@@ -153,19 +154,22 @@ class AllocineStocksTest:
             assert product_providable_info.date_modified_at_provider == datetime(year=2019, month=10, day=15, hour=9)
 
             assert offer_providable_info.type == Offer
-            assert offer_providable_info.id_at_providers == 'TW92aWU6Mzc4MzI=-VF'
+            assert offer_providable_info.id_at_providers == 'TW92aWU6Mzc4MzI=%77567146400110-VF'
             assert offer_providable_info.date_modified_at_provider == datetime(year=2019, month=10, day=15, hour=9)
 
             assert stock_providable_info.type == Stock
-            assert stock_providable_info.id_at_providers == 'TW92aWU6Mzc4MzI=-0'
+            assert stock_providable_info.id_at_providers == 'TW92aWU6Mzc4MzI=%77567146400110-0'
             assert stock_providable_info.date_modified_at_provider == datetime(year=2019, month=10, day=15, hour=9)
 
 
 class UpdateObjectsTest:
+    @patch('local_providers.allocine_stocks.get_movie_poster')
     @patch('local_providers.allocine_stocks.get_movies_showtimes')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
     @clean_database
-    def test_should_create_one_product_and_one_local_version_offer_with_movie_info(self, mock_call_allocine_api,
+    def test_should_create_one_product_and_one_local_version_offer_with_movie_info(self,
+                                                                                   mock_call_allocine_api,
+                                                                                   mock_api_poster,
                                                                                    app):
         # Given
         theater_token = 'test'
@@ -284,11 +288,12 @@ class UpdateObjectsTest:
         assert created_product.name == "Les Contes de la mère poule"
         assert created_product.type == str(EventType.CINEMA)
 
+    @patch('local_providers.allocine_stocks.get_movie_poster')
     @patch('local_providers.allocine_stocks.get_movies_showtimes')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
     @clean_database
     def test_should_create_one_product_and_one_original_version_offer_and_one_dubbed_version_offer_with_movie_info(
-            self, mock_call_allocine_api, app):
+            self, mock_call_allocine_api, mock_api_poster, app):
         # Given
         theater_token = 'test'
         mock_call_allocine_api.return_value = iter([
@@ -440,10 +445,14 @@ class UpdateObjectsTest:
         assert dubbed_version_offer.product == created_products[0]
         assert dubbed_version_offer.type == str(EventType.CINEMA)
 
+    @patch('local_providers.allocine_stocks.get_movie_poster')
     @patch('local_providers.allocine_stocks.get_movies_showtimes')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
     @clean_database
-    def test_should_create_only_one_original_version_offer_when_only_original_showtimes_exist(self, mock_call_allocine_api, app):
+    def test_should_create_only_one_original_version_offer_when_only_original_showtimes_exist(self,
+                                                                                              mock_call_allocine_api,
+                                                                                              mock_api_poster,
+                                                                                              app):
         # Given
         theater_token = 'test'
         mock_call_allocine_api.return_value = iter([
@@ -520,7 +529,7 @@ class UpdateObjectsTest:
                                 "DIGITAL"
                             ],
                             "experience": None
-                        },{
+                        }, {
                             "startsAt": "2019-10-29T14:30:00",
                             "diffusionVersion": "ORIGINAL",
                             "projection": [
@@ -554,10 +563,13 @@ class UpdateObjectsTest:
         assert len(created_offers) == 1
         assert len(created_products) == 1
 
+    @patch('local_providers.allocine_stocks.get_movie_poster')
     @patch('local_providers.allocine_stocks.get_movies_showtimes')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
     @clean_database
-    def test_should_update_existing_product_duration_and_update_matching_offers(self, mock_call_allocine_api,
+    def test_should_update_existing_product_duration_and_update_matching_offers(self,
+                                                                                mock_call_allocine_api,
+                                                                                mock_api_poster,
                                                                                 app):
         # Given
         theater_token = 'test'
@@ -661,11 +673,11 @@ class UpdateObjectsTest:
         offer_vo = create_offer_with_event_product(product=product, event_name='Test event',
                                                    event_type=EventType.CINEMA,
                                                    duration_minutes=60,
-                                                   id_at_providers="TW92aWU6Mzc4MzI=-VO", venue=venue)
+                                                   id_at_providers="TW92aWU6Mzc4MzI=%77567146400110-VO", venue=venue)
         offer_vf = create_offer_with_event_product(product=product, event_name='Test event',
                                                    event_type=EventType.CINEMA,
                                                    duration_minutes=60,
-                                                   id_at_providers="TW92aWU6Mzc4MzI=-VF", venue=venue)
+                                                   id_at_providers="TW92aWU6Mzc4MzI=%77567146400110-VF", venue=venue)
 
         allocine_provider = get_provider_by_local_class('AllocineStocks')
         allocine_provider.isActive = True
@@ -686,11 +698,13 @@ class UpdateObjectsTest:
         assert existing_offers[1].durationMinutes == 110
         assert existing_product.durationMinutes == 110
 
+    @patch('local_providers.allocine_stocks.get_movie_poster')
     @patch('local_providers.allocine_stocks.get_movies_showtimes')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
     @clean_database
     def test_should_update_existing_product_duration_and_create_new_offer_when_no_offer_exists(self,
                                                                                                mock_call_allocine_api,
+                                                                                               mock_api_poster,
                                                                                                app):
         # Given
         theater_token = 'test'
@@ -801,11 +815,13 @@ class UpdateObjectsTest:
         assert created_offer.type == str(EventType.CINEMA)
         assert created_offer.name == 'Les Contes de la mère poule - VF'
 
+    @patch('local_providers.allocine_stocks.get_movie_poster')
     @patch('local_providers.allocine_stocks.get_movies_showtimes')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
     @clean_database
     def test_should_create_product_and_new_offer_with_missing_visa_and_stage_director(self,
                                                                                       mock_call_allocine_api,
+                                                                                      mock_api_poster,
                                                                                       app):
         # Given
         theater_token = 'test'
@@ -897,6 +913,7 @@ class UpdateObjectsTest:
         assert created_offer.type == str(EventType.CINEMA)
         assert created_offer.name == 'Les Contes de la mère poule - VF'
 
+    @patch('local_providers.allocine_stocks.get_movie_poster')
     @patch('local_providers.allocine_stocks.get_movies_showtimes')
     @patch('local_providers.allocine_stocks.AllocineStocks.get_object_thumb')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
@@ -904,6 +921,7 @@ class UpdateObjectsTest:
     def test_should_create_product_with_correct_thumb_and_increase_thumbCount_by_1(self,
                                                                                    mock_get_object_thumb,
                                                                                    mock_call_allocine_api,
+                                                                                   mock_api_poster,
                                                                                    app):
         # Given
         theater_token = 'test'
@@ -1002,6 +1020,7 @@ class UpdateObjectsTest:
         assert existing_product.thumbUrl == f"http://localhost/storage/thumbs/products/{humanize(existing_product.id)}"
         assert existing_product.thumbCount == 1
 
+    @patch('local_providers.allocine_stocks.get_movie_poster')
     @patch('local_providers.allocine_stocks.get_movies_showtimes')
     @patch('local_providers.allocine_stocks.AllocineStocks.get_object_thumb')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
@@ -1009,6 +1028,7 @@ class UpdateObjectsTest:
     def test_should_replace_product_thumb_when_product_has_already_one_thumb(self,
                                                                              mock_get_object_thumb,
                                                                              mock_call_allocine_api,
+                                                                             mock_api_poster,
                                                                              app):
         # Given
         theater_token = 'test'
@@ -1121,9 +1141,13 @@ class UpdateObjectsTest:
         assert existing_product.thumbCount == 1
 
     @patch('local_providers.allocine_stocks.get_movies_showtimes')
+    @patch('local_providers.allocine_stocks.get_movie_poster')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
     @clean_database
-    def test_should_create_one_product_and_one_offer_and_associated_stocks(self,mock_call_allocine_api, app):
+    def test_should_create_one_product_and_one_offer_and_associated_stocks(self,
+                                                                           mock_api_poster,
+                                                                           mock_call_allocine_api,
+                                                                           app):
         # Given
         theater_token = 'test'
         mock_call_allocine_api.return_value = iter([
@@ -1266,9 +1290,13 @@ class UpdateObjectsTest:
         assert second_stock.bookingLimitDatetime == datetime(2019, 12, 3, 17, 00)
 
     @patch('local_providers.allocine_stocks.get_movies_showtimes')
+    @patch('local_providers.allocine_stocks.get_movie_poster')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
     @clean_database
-    def test_should_create_one_product_and_two_offers_and_associated_stocks(self, mock_call_allocine_api, app):
+    def test_should_create_one_product_and_two_offers_and_associated_stocks(self,
+                                                                            mock_poster_get_allocine,
+                                                                            mock_call_allocine_api,
+                                                                            app):
         # Given
         theater_token = 'test'
         mock_call_allocine_api.return_value = iter([
@@ -1437,6 +1465,76 @@ class UpdateObjectsTest:
         assert third_stock.beginningDatetime == datetime(2019, 12, 3, 19, 0)
         assert third_stock.endDatetime == datetime(2019, 12, 3, 20, 50)
         assert third_stock.bookingLimitDatetime == datetime(2019, 12, 3, 19, 0)
+
+    @patch('local_providers.allocine_stocks.get_movies_showtimes')
+    @patch('local_providers.allocine_stocks.get_movie_poster')
+    @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
+    @clean_database
+    def test_should_create_one_different_offer_and_stock_for_different_venues(self,
+                                                                              mock_poster_get_allocine,
+                                                                              mock_call_allocine_api,
+                                                                              app):
+        # Given
+        theater_token1 = 'test1'
+        theater_token2 = 'test2'
+        allocine_api_response = [
+            {"node": {"movie": {"id": "TW92aWU6Mzc4MzI=", "internalId": 37832, "backlink": {
+                "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
+                "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9"},
+                                "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E",
+                                         "productionYear": 2001},
+                                "title": "Les Contes de la m\u00e8re poule",
+                                "originalTitle": "Les Contes de la m\u00e8re poule",
+                                "runtime": "PT1H50M0S",
+                                "poster": {
+                                    "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"},
+                                "synopsis": "synopsis du film", "releases": [
+                    {"name": "Released", "releaseDate": {"date": "2001-10-03"}, "data": {"visa_number": "2009993528"}}],
+                                "credits": {"edges": [{"node": {
+                                    "person": {"firstName": "Farkhondeh", "lastName": "Torabi"},
+                                    "position": {"name": "DIRECTOR"}}}]}, "cast": {
+                    "backlink": {"url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
+                                 "label": "Casting complet du film sur AlloCin\u00e9"}, "edges": []},
+                                "countries": [{"name": "Iran", "alpha3": "IRN"}],
+                                "genres": ["ANIMATION", "FAMILY"], "companies": []}, "showtimes": [
+                {"startsAt": "2019-12-03T10:00:00", "diffusionVersion": "LOCAL", "projection": ["DIGITAL"],
+                 "experience": None}, ]}}
+        ]
+        mock_call_allocine_api.side_effect = [iter(allocine_api_response),
+                                              iter(allocine_api_response)]
+        mock_poster_get_allocine.return_value = bytes()
+
+        offerer = create_offerer(siren='775671464')
+        venue1 = create_venue(offerer, name='Cinema Allocine 1',
+                              siret='77567146400110',
+                              booking_email='toto1@example.com')
+        venue2 = create_venue(offerer, name='Cinema Allocine 2',
+                              siret='98765432345677',
+                              booking_email='toto2@example.com')
+        PcObject.save(venue1, venue2)
+
+        allocine_provider = get_provider_by_local_class('AllocineStocks')
+        allocine_provider.isActive = True
+        venue_provider1 = create_venue_provider(venue1, allocine_provider, venue_id_at_offer_provider=theater_token1)
+        venue_provider2 = create_venue_provider(venue2, allocine_provider, venue_id_at_offer_provider=theater_token2)
+        PcObject.save(venue_provider1, venue_provider2)
+
+        allocine_stocks_provider1 = AllocineStocks(venue_provider1)
+        allocine_stocks_provider1.updateObjects()
+
+        allocine_stocks_provider2 = AllocineStocks(venue_provider2)
+        # When
+        allocine_stocks_provider2.updateObjects()
+
+        # Then
+        created_product = Product.query.all()
+        created_offer = Offer.query.all()
+        created_stock = Stock.query.all()
+
+        assert mock_poster_get_allocine.call_count == 2
+        assert len(created_product) == 1
+        assert len(created_offer) == 2
+        assert len(created_stock) == 2
 
 
 class ParseMovieDurationTest:
@@ -1760,4 +1858,3 @@ class FilterOnlyDigitalAndNonExperiencedShowtimesTest:
              "projection": ["DIGITAL"],
              "experience": None}
         ]
-

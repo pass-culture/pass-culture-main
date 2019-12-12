@@ -5,7 +5,6 @@ from datetime import datetime
 from pprint import pprint
 
 from connectors.thumb_storage import save_provider_thumb
-from domain.mediations import BLACK
 from local_providers.chunk_manager import get_existing_pc_obj, save_chunks
 from local_providers.providable_info import ProvidableInfo
 from models import ApiErrors

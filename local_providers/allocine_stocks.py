@@ -56,25 +56,29 @@ class AllocineStocks(LocalProvider):
                                                                    self.movie_information['id'],
                                                                    datetime.utcnow())]
 
+        venue_movie_unique_id = f"{self.movie_information['id']}%{self.venue.siret}"
+
         if _has_original_version_product(self.filtered_movie_showtimes):
+            venue_movie_original_version_unique_id = f"{venue_movie_unique_id}-{ORIGINAL_VERSION_SUFFIX}"
             original_version_offer_providable_information = self.create_providable_info(Offer,
-                                                                                        f"{self.movie_information['id']}"
-                                                                                        f"-{ORIGINAL_VERSION_SUFFIX}",
+                                                                                        venue_movie_original_version_unique_id,
                                                                                         datetime.utcnow())
 
             providable_information_list.append(original_version_offer_providable_information)
 
         if _has_french_version_product(self.filtered_movie_showtimes):
+            venue_movie_french_version_unique_id = f"{venue_movie_unique_id}-{FRENCH_VERSION_SUFFIX}"
             french_version_offer_providable_information = self.create_providable_info(Offer,
-                                                                                      f"{self.movie_information['id']}-"
-                                                                                      f"{FRENCH_VERSION_SUFFIX}",
+                                                                                      venue_movie_french_version_unique_id,
                                                                                       datetime.utcnow())
             providable_information_list.append(french_version_offer_providable_information)
 
-        stock_providable_information = [self.create_providable_info(Stock, f"{self.movie_information['id']}-"
-        f"{showtime_number}", datetime.utcnow()) for showtime_number in range(showtimes_number)]
-
-        providable_information_list += stock_providable_information
+        for showtime_number in range(showtimes_number):
+            venue_showtime_unique_id = f"{venue_movie_unique_id}-{showtime_number}"
+            stock_providable_information = self.create_providable_info(Stock,
+                                                                       venue_showtime_unique_id,
+                                                                       datetime.utcnow())
+            providable_information_list.append(stock_providable_information)
 
         return providable_information_list
 
