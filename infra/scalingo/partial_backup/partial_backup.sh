@@ -30,7 +30,7 @@ time pg_dump $tunnel_database_url --no-privileges --no-owner --section=post-data
 echo "- Backup raw data :"
 time pg_dump $tunnel_database_url --exclude-table=recommendation --exclude-table=activity -a -F c  > "$BACKUP_PATH"/data.pgdump
 echo "- Backup recommendation linked to booking"
-time psql -Atx $tunnel_database_url -c "COPY (select * from recommendation where id in (select booking.\"recommendationId\" from booking where booking.\"recommendationId\" is not null)) TO stdout;" > /tmp/reco.csv
+time psql -Atx $tunnel_database_url -c "COPY (SELECT * FROM recommendation r INNER JOIN booking b on r.id = \"recommendationId\") TO stdout;" > /tmp/reco.csv
 echo "- Backup selected activity rows"
 time psql -Atx $tunnel_database_url -c "COPY (select * from activity where (table_name='booking' and verb='update') or (table_name='stock' and verb='insert') or (table_name='user' and verb='update')) TO stdout;" > /tmp/activity.csv
 
