@@ -7,12 +7,13 @@ set -o nounset
 # =============================================
 
 if [[ $# -eq 0 ]] || [[ "$1" == "-h" ]]; then
-  echo "$(basename "$0") [-h] [-e env -b backend -f file c] -- program to deal with Pass Culture ecosystem
+  echo "$(basename "$0") [-h] [-e env -b backend -f file -r region c] -- program to deal with Pass Culture ecosystem
 where:
   -h  show this help text
   -e  specify environment to target (default: development)
   -b  specify backend to connect with local app (default: localhost)
   -f  file to upload to scalingo off-container
+  -r  region
   -t  specify version you want to deploy (create tag with this name)
   -c  command that you want to run"
   exit 0
@@ -42,6 +43,13 @@ if [[ $# -gt 2 ]] && [[ "$1" == "-f" ]]; then
   shift 2
 else
   FILE_TO_UPLOAD=${FILE_TO_UPLOAD:-'none'}
+fi
+
+if [[ $# -gt 2 ]] && [[ "$1" == "-r" ]]; then
+  export SCALINGO_REGION=$2
+  shift 2
+else
+  export SCALINGO_REGION=agora-fr1
 fi
 
 if [[ $# -gt 2 ]] && [[ "$1" == "-t" ]]; then
@@ -576,7 +584,7 @@ elif [[ "$CMD" == "symlink" ]]; then
 # Administration commands
 # =============================================
 
-# Open a python prompt in the specified environment
+# List pip licences
 elif [[ "$CMD" == "api-licenses" ]]; then
   COLUMNS=${COLUMNS:-''};
   if [[ "$ENV" == "development" ]]; then
@@ -642,6 +650,7 @@ elif [[ "$CMD" == "python" ]]; then
 		exit
 	fi
 
+
 # Connect to administration instances
 elif [[ "$CMD" == "ssh" ]]; then
   if [[ "$ENV" == "production" ]]; then
@@ -649,6 +658,14 @@ elif [[ "$CMD" == "ssh" ]]; then
   elif [[ "$ENV" == "staging" ]]; then
     ssh deploy@api.passculture-staging.beta.gouv.fr
   fi
+
+
+# Display environement database restore infos
+elif [[ "$CMD" == "db_restore_infos" ]]; then
+  source "$INFRA_SCRIPTS_PATH"get_restore_infos.sh
+  get_restore_infos
+
+
 
 # =============================================
 # Python Scripts commands
