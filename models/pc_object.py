@@ -209,7 +209,7 @@ class PcObject:
         try:
             db.session.commit()
         except DataError as de:
-            api_errors.add_error(*PcObject.restize_data_error(de))
+            api_errors.add_error(*obj.restize_data_error(de))
             db.session.rollback()
             raise api_errors
         except IntegrityError as ie:

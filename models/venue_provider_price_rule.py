@@ -37,3 +37,9 @@ class VenueProviderPriceRule(PcObject, Model):
         if 'check_price_is_not_negative' in str(internal_error.orig):
             return ['global', 'Vous ne pouvez renseigner un prix négatif']
         return PcObject.restize_integrity_error(internal_error)
+
+    @staticmethod
+    def restize_data_error(data_error):
+        if 'wrong_price' in str(data_error):
+            return ['global', 'Le prix doit être un nombre décimal']
+        return PcObject.restize_integrity_error(data_error)
