@@ -80,6 +80,7 @@ function getClientEnvironment(publicUrl) {
           process.env.TYPEFORM_URL_CULTURAL_PRACTICES_POLL ||
           'https://passculture.typeform.com/to/T8rurj',
         SENTRY_SERVER_URL_FOR_WEBAPP: process.env.SENTRY_SERVER_URL_FOR_WEBAPP,
+        URL_FOR_MAINTENANCE: process.env.URL_FOR_MAINTENANCE
       }
     )
   // Stringify all values so we can feed into Webpack DefinePlugin

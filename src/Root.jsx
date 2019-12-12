@@ -3,7 +3,7 @@ import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
 
-import App from './App'
+import AppContainer from './app/AppContainer'
 import FeaturedRouteContainer from './components/router/FeaturedRouteContainer'
 import MatomoContainer from './components/matomo/MatomoContainer'
 import NotMatch from './components/pages/not-match/NotMatch'
@@ -20,7 +20,7 @@ const Root = () => (
         persistor={persistor}
       >
         <BrowserRouter>
-          <App>
+          <AppContainer>
             <Switch>
               {browserRoutes.map(route => (
                 <FeaturedRouteContainer
@@ -31,7 +31,7 @@ const Root = () => (
               <Route component={NotMatch} />
             </Switch>
             <MatomoContainer />
-          </App>
+          </AppContainer>
         </BrowserRouter>
       </PersistGate>
     </Provider>

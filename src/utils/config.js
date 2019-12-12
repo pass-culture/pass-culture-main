@@ -13,6 +13,7 @@ export const {
   TYPEFORM_URL_CULTURAL_PRACTICES_POLL,
   ENVIRONMENT_NAME,
   SENTRY_SERVER_URL_FOR_WEBAPP,
+  URL_FOR_MAINTENANCE
 } = process.env
 export const APP_VERSION = version
 export const USE_REDUX_PERSIST = false
