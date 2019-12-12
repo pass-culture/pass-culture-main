@@ -1,9 +1,17 @@
 #!/bin/bash
 
+end_script() {
+  if [ "$DB_TUNNEL_HAS_TO_BE_TERMINATED" = true ]; then
+  echo terminating tunnel
+  kill -9 "$DB_TUNNEL_PID"
+  fi
+}
+
 failure_alert() {
   message="$app_name backup restore failed at step: $1"
   echo $message
   curl -X POST -H 'Content-type: application/json' --data "{'text': '$message'}" $SLACK_OPS_BOT_URL
+  end_script
   exit 1
 }
 
@@ -11,7 +19,7 @@ show_help() {
 cat << EOF
 Usage: ${0##*/} [-hcuz] [-a APP NAME]
 Restore database backup with the last backup in \$BACKUP_PATH
-    -h            display this help and exit
+    -h            Display this help and exit
     -a APP_NAME   The application that will have its database restored
     -c            Create test users at the end of the restore process
     -d            Drop database
@@ -71,8 +79,6 @@ fi
 source open_tunnel.sh
 get_tunnel_database_url $app_name
 
-exit 0
-
 if [ -z "$TUNNEL_PORT" ]; then
   failure_alert "Connection to Database."
 fi
@@ -111,10 +117,7 @@ if "$create_users" ; then
      && echo "User imported" || failure_alert "User importation"
 fi
 
-if [ "$DB_TUNNEL_HAS_TO_BE_TERMINATED" = true ]; then
-  echo terminating tunnel
-  kill -9 "$DB_TUNNEL_PID"
-fi
+end_script
 
 echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : End of backup operations"
 exit 0
