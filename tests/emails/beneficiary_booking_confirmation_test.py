@@ -165,7 +165,7 @@ def test_should_return_digital_thing_specific_data_for_email_when_offer_is_a_dig
     user = create_user(first_name='Joe')
     offerer = create_offerer(idx=1, name="Théâtre de l'angle")
     venue = create_venue(offerer, 'Lieu', idx=1,
-                         address='22 avenue du lieu')
+                         address=None)
     digital_thing_offer = create_offer_with_thing_product(venue, url='http://mon.url',
                                                           thing_name='Super offre numérique', idx=32)
     stock = create_stock_from_offer(digital_thing_offer, price=0)
@@ -193,7 +193,7 @@ def test_should_return_digital_thing_specific_data_for_email_when_offer_is_a_dig
                 'offer_price': 'Gratuit',
                 'offer_token': '123ABC',
                 'venue_name': 'Lieu',
-                'venue_address': '22 avenue du lieu',
+                'venue_address': '',
                 'all_but_not_virtual_thing': '0',
                 'all_things_not_virtual_thing': '0',
                 'is_event': '0',

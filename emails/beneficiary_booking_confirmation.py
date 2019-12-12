@@ -34,7 +34,7 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
     stock_price = str(stock.price * booking.quantity) if stock.price > 0 else 'Gratuit'
     booking_token = booking.token
     venue_name = venue.name
-    venue_address = venue.address
+    venue_address = venue.address or ''
     is_event_or_physical_offer_stringified_boolean = '1' if is_event or is_physical_offer else '0'
     is_physical_offer_stringified_boolean = '1' if is_physical_offer else '0'
     is_event_stringified_boolean = '1' if is_event else '0'
