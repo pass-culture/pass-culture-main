@@ -5,6 +5,7 @@ from models import ApiErrors
 def check_allowed_changes_for_user(data):
     changes_allowed = {
         'culturalSurveyId',
+        'culturalSurveyFilledDate',
         'departementCode',
         'email',
         'needsToFillCulturalSurvey',
