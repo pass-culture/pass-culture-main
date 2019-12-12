@@ -17,6 +17,10 @@ echo "- Restore post-data :"
 time psql $tunnel_database_url -f $BACKUP_PATH/post_data.sql || failure_alert "Restore post data"
 
 script_duration=$((`date +%s`-$script_start_time))
+backup_file_timestamp=$(stat $BACKUP_PATH/data.pgdump -c %y)
 echo "Restore script duration: $script_duration seconds"
+
+psql $tunnel_database_url -c "CREATE TABLE db_restore_infos (backup_file_timestamp TIMESTAMP NOT NULL, end_of_db_restore TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, restore_duration INT NOT NULL);"
+psql $tunnel_database_url -c "INSERT INTO db_restore_infos (backup_file_timestamp, restore_duration) values ('$backup_file_timestamp', '$script_duration');"
 
 return 0
