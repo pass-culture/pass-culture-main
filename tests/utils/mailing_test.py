@@ -216,9 +216,9 @@ class GetUsersInformationFromStockBookingsTest:
 
         # Then
         assert users_informations == [
-            {'firstName': 'Jean', 'lastName': 'Dupont', 'email': 'test@example.com', 'contremarque': 'HELLO0'},
-            {'firstName': 'Jaja', 'lastName': 'Dudu', 'email': 'mail@example.com', 'contremarque': 'HELLO1'},
-            {'firstName': 'Toto', 'lastName': 'Titi', 'email': 'mail@example.com', 'contremarque': 'HELLO2'}
+            {'firstName': 'Jean', 'lastName': 'Dupont', 'email': 'test%40example.com', 'contremarque': 'HELLO0'},
+            {'firstName': 'Jaja', 'lastName': 'Dudu', 'email': 'mail%40example.com', 'contremarque': 'HELLO1'},
+            {'firstName': 'Toto', 'lastName': 'Titi', 'email': 'mail%40example.com', 'contremarque': 'HELLO2'}
         ]
 
 

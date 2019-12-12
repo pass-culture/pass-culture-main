@@ -1,4 +1,5 @@
 from typing import Dict
+from urllib.parse import quote
 
 from models import Booking, Stock
 from repository.feature_queries import feature_send_mail_to_users_enabled
@@ -36,7 +37,7 @@ def retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking: B
             'heure': booked_hour,
             'quantite': booking.quantity,
             'user_name': user.publicName,
-            'user_email': user.email,
+            'user_email': quote(user.email),
             'is_active': int(is_active),
             'nombre_resa': len(bookings),
             'env': environment,

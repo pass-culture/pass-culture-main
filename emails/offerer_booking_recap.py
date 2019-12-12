@@ -1,4 +1,5 @@
 from typing import List, Dict
+from urllib.parse import quote
 
 from models import Booking
 from models.offer_type import ProductType
@@ -46,7 +47,7 @@ def retrieve_data_for_offerer_booking_recap_email(booking: Booking, recipients: 
             'users': extract_users_information_from_bookings(bookings),
             'user_firstName': user_firstname,
             'user_lastName': user_lastname,
-            'user_email': user_email,
+            'user_email': quote(user_email),
             'lien_offre_pcpro': offer_link,
             'departement': departement_code,
             'env': environment
