@@ -185,7 +185,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
     def test_should_return_mailjet_data_with_no_ongoing_booking(self, mock_is_offer_active,
                                                                 mock_build_pc_pro_offer_link):
         # Given
-        user = create_user(public_name='Jean Dupont', email='jean.dupont+test@example.com')
+        user = create_user(public_name='Jean Dupont', email='jean.dupont@example.com')
         offerer = create_offerer()
         venue = create_venue(offerer, name='Venue name', departement_code='75')
         offer = create_offer_with_event_product(venue, event_name='My Event')
@@ -213,7 +213,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
                 'heure': '12h20',
                 'quantite': 2,
                 'user_name': 'Jean Dupont',
-                'user_email': 'jean.dupont%2Btest%40example.com',
+                'user_email': 'jean.dupont@example.com',
                 'is_active': 1,
                 'nombre_resa': 0,
                 'env': '-development',
@@ -227,7 +227,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
     @patch('emails.beneficiary_offer_cancellation._is_offer_active_for_recap', return_value=True)
     def test_should_return_mailjet_data_with_ongoing_bookings(self, mock_is_offer_active, mock_build_pc_pro_offer_link):
         # Given
-        user1 = create_user(public_name='Jean Dupont', email='jean.dupont+test@example.com')
+        user1 = create_user(public_name='Jean Dupont', email='jean.dupont@example.com')
         user2 = create_user(public_name='Jean Val', email='jean.val@example.com')
         offerer = create_offerer()
         venue = create_venue(offerer, name='Venue name', departement_code='75')
@@ -257,14 +257,14 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
                 'heure': '12h20',
                 'quantite': 2,
                 'user_name': 'Jean Dupont',
-                'user_email': 'jean.dupont%2Btest%40example.com',
+                'user_email': 'jean.dupont@example.com',
                 'is_active': 1,
                 'nombre_resa': 1,
                 'env': '-development',
                 'users': [
                     {
                         'contremarque': '29JM9Q',
-                        'email': 'jean.val%40example.com',
+                        'email': 'jean.val@example.com',
                         'firstName': 'John',
                         'lastName': 'Doe'
                     }
@@ -278,7 +278,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
     @patch('emails.beneficiary_offer_cancellation._is_offer_active_for_recap', return_value=False)
     def test_should_return_mailjet_data_on_thing_offer(self, mock_is_offer_active, mock_build_pc_pro_offer_link):
         # Given
-        user1 = create_user(public_name='Jean Dupont', email='jean.dupont+test@example.com')
+        user1 = create_user(public_name='Jean Dupont', email='jean.dupont@example.com')
         user2 = create_user(public_name='Jean Val', email='jean.val@example.com')
         offerer = create_offerer()
         venue = create_venue(offerer, name='Venue name', departement_code='75')
@@ -308,14 +308,14 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
                 'heure': '',
                 'quantite': 2,
                 'user_name': 'Jean Dupont',
-                'user_email': 'jean.dupont%2Btest%40example.com',
+                'user_email': 'jean.dupont@example.com',
                 'is_active': 0,
                 'nombre_resa': 1,
                 'env': '-development',
                 'users': [
                     {
                         'contremarque': '29JM9Q',
-                        'email': 'jean.val%40example.com',
+                        'email': 'jean.val@example.com',
                         'firstName': 'John',
                         'lastName': 'Doe'
                     }
@@ -329,7 +329,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
     @patch('emails.beneficiary_offer_cancellation._is_offer_active_for_recap', return_value=False)
     def test_should_return_numerique_when_venue_is_virtual(self, mock_is_offer_active, mock_build_pc_pro_offer_link):
         # Given
-        user1 = create_user(public_name='Jean Dupont', email='jean.dupont+test@example.com')
+        user1 = create_user(public_name='Jean Dupont', email='jean.dupont@example.com')
         user2 = create_user(public_name='Jean Val', email='jean.val@example.com')
         offerer = create_offerer()
         venue = create_venue(offerer, name='Venue name', is_virtual=True)
@@ -359,14 +359,14 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
                 'heure': '',
                 'quantite': 2,
                 'user_name': 'Jean Dupont',
-                'user_email': 'jean.dupont%2Btest%40example.com',
+                'user_email': 'jean.dupont@example.com',
                 'is_active': 0,
                 'nombre_resa': 1,
                 'env': '-development',
                 'users': [
                     {
                         'contremarque': '29JM9Q',
-                        'email': 'jean.val%40example.com',
+                        'email': 'jean.val@example.com',
                         'firstName': 'John',
                         'lastName': 'Doe'
                     }

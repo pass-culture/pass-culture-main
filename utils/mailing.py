@@ -3,7 +3,6 @@ import os
 from datetime import datetime
 from pprint import pformat
 from typing import Dict, List, Union
-from urllib.parse import quote
 
 from flask import current_app as app, render_template
 
@@ -114,7 +113,7 @@ def build_pc_pro_offer_link(offer: Offer) -> str:
 
 def extract_users_information_from_bookings(bookings: List[Booking]) -> List[dict]:
     users_keys = ('firstName', 'lastName', 'email', 'contremarque')
-    users_properties = [[booking.user.firstName, booking.user.lastName, quote(booking.user.email), booking.token] for booking
+    users_properties = [[booking.user.firstName, booking.user.lastName, booking.user.email, booking.token] for booking
                         in bookings]
 
     return [dict(zip(users_keys, user_property)) for user_property in users_properties]

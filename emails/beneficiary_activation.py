@@ -1,5 +1,4 @@
 from typing import Dict
-from urllib.parse import quote
 
 from models import User
 from utils.mailing import SUPPORT_EMAIL_ADDRESS, format_environment_for_email
@@ -19,7 +18,7 @@ def get_activation_email_data(user: User) -> Dict:
         'Vars': {
             'prenom_user': first_name,
             'token': token,
-            'email': quote(email),
+            'email': email,
             'env': env
         },
     }

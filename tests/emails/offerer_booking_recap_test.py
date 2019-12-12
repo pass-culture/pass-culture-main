@@ -20,7 +20,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
     @clean_database
     def test_should_write_email_with_right_data_when_offer_is_an_event(self, app):
         # Given
-        user = create_user(email='test+test@example.com')
+        user = create_user(email='test@example.com')
         offerer = create_offerer(idx=1)
         venue = create_venue(offerer, 'Test offerer', 'reservations@example.com', siret='89765389057043', idx=1,
                              departement_code='75', postal_code='75000')
@@ -52,7 +52,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'quantity': 1,
                     'user_firstName': 'John',
                     'user_lastName': 'Doe',
-                    'user_email': 'test%2Btest%40example.com',
+                    'user_email': 'test@example.com',
                     'is_event': 1,
                     'nombre_resa': 1,
                     'contremarque': 'ABC123',
@@ -63,7 +63,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'departement': '75',
                     'users': [{'firstName': 'John',
                                'lastName': 'Doe',
-                               'email': 'test%2Btest%40example.com',
+                               'email': 'test@example.com',
                                'contremarque': 'ABC123'}]
                 }
         }
@@ -71,7 +71,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
     @clean_database
     def test_should_write_email_with_right_data_when_offer_is_a_book(self, app):
         # Given
-        user = create_user(email='test+test@example.com')
+        user = create_user(email='test@example.com')
         offerer = create_offerer(idx=1)
         extra_data = {'isbn': '123456789'}
         venue = create_venue(offerer, 'Test offerer', 'reservations@example.com', is_virtual=True, siret=None, idx=1)
@@ -107,7 +107,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
 
                     'user_firstName': 'John',
                     'user_lastName': 'Doe',
-                    'user_email': 'test%2Btest%40example.com',
+                    'user_email': 'test@example.com',
                     'is_event': 0,
                     'date': '',
                     'heure': '',
@@ -116,7 +116,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'departement': 'numérique',
                     'users': [{'firstName': 'John',
                                'lastName': 'Doe',
-                               'email': 'test%2Btest%40example.com',
+                               'email': 'test@example.com',
                                'contremarque': 'ABC123'}]
                 }
         }
@@ -124,7 +124,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
     @clean_database
     def test_should_not_truncate_price(self, app):
         # Given
-        user = create_user(email='test+test@example.com')
+        user = create_user(email='test@example.com')
         offerer = create_offerer(idx=1)
         deposit = create_deposit(user, amount=50, source='public')
         venue = create_venue(offerer, 'Test offerer', 'reservations@example.com', siret='89765389057043', idx=1,
@@ -157,7 +157,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'quantity': 1,
                     'user_firstName': 'John',
                     'user_lastName': 'Doe',
-                    'user_email': 'test%2Btest%40example.com',
+                    'user_email': 'test@example.com',
                     'is_event': 1,
                     'ISBN': '',
                     'offer_type': 'EventType.SPECTACLE_VIVANT',
@@ -168,7 +168,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'lien_offre_pcpro': 'http://localhost:3001/offres/AE?lieu=AE&structure=AE',
                     'users': [{'firstName': 'John',
                                'lastName': 'Doe',
-                               'email': 'test%2Btest%40example.com',
+                               'email': 'test@example.com',
                                'contremarque': 'ABC123'}]
                 }
         }
@@ -176,7 +176,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
     @clean_database
     def test_returns_empty_ISBN_when_no_extra_data(self, app):
         # Given
-        user = create_user(email='test+test@example.com')
+        user = create_user(email='test@example.com')
         offerer = create_offerer(idx=1)
         venue = create_venue(offerer, 'Test offerer', 'reservations@example.com', is_virtual=True, siret=None, idx=1)
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=1)
@@ -208,7 +208,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'quantity': 1,
                     'user_firstName': 'John',
                     'user_lastName': 'Doe',
-                    'user_email': 'test%2Btest%40example.com',
+                    'user_email': 'test@example.com',
                     'is_event': 0,
                     'ISBN': '',
                     'offer_type': 'book',
@@ -219,7 +219,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'lien_offre_pcpro': 'http://localhost:3001/offres/AE?lieu=AE&structure=AE',
                     'users': [{'firstName': 'John',
                                'lastName': 'Doe',
-                               'email': 'test%2Btest%40example.com',
+                               'email': 'test@example.com',
                                'contremarque': 'ABC123'}]
                 }
         }
@@ -227,7 +227,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
     @clean_database
     def test_returns_empty_ISBN_when_extra_data_has_no_key_isbn(self, app):
         # Given
-        user = create_user(email='test+test@example.com')
+        user = create_user(email="test@example.com")
         offerer = create_offerer(idx=1)
         venue = create_venue(offerer, 'Test offerer', 'reservations@example.com', is_virtual=True, siret=None, idx=1)
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=1)
@@ -259,7 +259,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'quantity': 1,
                     'user_firstName': 'John',
                     'user_lastName': 'Doe',
-                    'user_email': 'test%2Btest%40example.com',
+                    'user_email': 'test@example.com',
                     'is_event': 0,
                     'ISBN': '',
                     'departement': 'numérique',
@@ -270,7 +270,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'contremarque': 'ABC123',
                     'users': [{'firstName': 'John',
                                'lastName': 'Doe',
-                               'email': 'test%2Btest%40example.com',
+                               'email': 'test@example.com',
                                'contremarque': 'ABC123'}]
                 }
         }
@@ -279,7 +279,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
     @clean_database
     def test_returns_multiple_offer_email_when_production_environment(self, app):
         # Given
-        user = create_user(email='test+test@example.com')
+        user = create_user(email='test@example.com')
         offerer = create_offerer(idx=1)
         venue = create_venue(offerer, 'Test offerer', 'reservations@example.com', siret='89765389057043', idx=1,
                              departement_code='75', postal_code='75000')
@@ -314,7 +314,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'quantity': 1,
                     'user_firstName': 'John',
                     'user_lastName': 'Doe',
-                    'user_email': 'test%2Btest%40example.com',
+                    'user_email': 'test@example.com',
                     'is_event': 0,
                     'ISBN': '',
                     'offer_type': 'book',
@@ -325,7 +325,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'lien_offre_pcpro': 'http://localhost:3001/offres/AE?lieu=AE&structure=AE',
                     'users': [{'firstName': 'John',
                                'lastName': 'Doe',
-                               'email': 'test%2Btest%40example.com',
+                               'email': 'test@example.com',
                                'contremarque': 'ABC123'}]
                 }
         }
@@ -336,7 +336,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
     def test_returns_email_with_correct_data_when_two_users_book_the_same_offer(self, app):
         # Given
         user_1 = create_user('Test', first_name='Jean', last_name='Dupont', departement_code='93',
-                             email='test+test@example.com',
+                             email='test@example.com',
                              can_book_free_offers=True)
         user_2 = create_user('Test', first_name='Jaja', last_name='Dudu', departement_code='93',
                              email='mail@example.com',
@@ -376,7 +376,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'quantity': 1,
                     'user_firstName': 'Jean',
                     'user_lastName': 'Dupont',
-                    'user_email': 'test%2Btest%40example.com',
+                    'user_email': 'test@example.com',
                     'is_event': 0,
                     'ISBN': '',
                     'offer_type': 'book',
@@ -387,11 +387,11 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'contremarque': 'ACVSDC',
                     'users': [{'firstName': 'Jean',
                                'lastName': 'Dupont',
-                               'email': 'test%2Btest%40example.com',
+                               'email': 'test@example.com',
                                'contremarque': 'ACVSDC'},
                               {'firstName': 'Jaja',
                                'lastName': 'Dudu',
-                               'email': 'mail%40example.com',
+                               'email': 'mail@example.com',
                                'contremarque': 'TEST95'}
                               ]
                 }
@@ -402,7 +402,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
     def test_returns_email_with_link_to_the_corresponding_offer(self, app):
         # Given
         user = create_user('Test', first_name='Jean', last_name='Dupont', departement_code='93',
-                           email='test+test@example.com',
+                           email='test@example.com',
                            can_book_free_offers=True)
 
         offerer = create_offerer(idx=1)
@@ -439,7 +439,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'quantity': 1,
                     'user_firstName': 'Jean',
                     'user_lastName': 'Dupont',
-                    'user_email': 'test%2Btest%40example.com',
+                    'user_email': 'test@example.com',
                     'is_event': 0,
                     'ISBN': '',
                     'offer_type': 'book',
@@ -450,7 +450,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'contremarque': 'ACVSDC',
                     'users': [{'firstName': 'Jean',
                                'lastName': 'Dupont',
-                               'email': 'test%2Btest%40example.com',
+                               'email': 'test@example.com',
                                'contremarque': 'ACVSDC'}]
                 }
         }
@@ -473,7 +473,7 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
                                               beginning_datetime=beginning_datetime, end_datetime=end_datetime,
                                               booking_limit_datetime=booking_limit_datetime)
         user = create_user(public_name='Test', first_name='First', last_name='Last', departement_code='93',
-                           email='test+test@example.com', can_book_free_offers=True)
+                           email='test@example.com', can_book_free_offers=True)
         booking = create_booking(user, stock, venue, None)
         booking.token = '56789'
 
@@ -489,7 +489,7 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         recap_table = recap_email_soup.find('table', {'id': 'recap-table'}).text
         recap = recap_email_soup.find('p', {'id': 'recap'}).text
         assert 'Cher partenaire pass Culture,' in mail_greeting
-        assert 'First Last (test+test@example.com) vient de faire une nouvelle réservation.' in action
+        assert 'First Last (test@example.com) vient de faire une nouvelle réservation.' in action
         assert 'Voici le récapitulatif des réservations à ce jour :' in recap
         assert '(total 1) pour Mains, sorts et papiers (Spectacle vivant) http://localhost:3001/offres/AE' in recap
         assert 'le 20 juillet 2019 à 14:00,' in recap
@@ -500,7 +500,7 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         assert 'Code réservation' in recap_table
         assert 'First' in recap_table
         assert 'Last' in recap_table
-        assert 'test+test@example.com' in recap_table
+        assert 'test@example.com' in recap_table
         assert '56789' in recap_table
         assert recap_email[
                    'Subject'] == '[Réservations 93] Nouvelle réservation pour Mains, sorts et papiers - 20 juillet 2019 à 14:00'
@@ -513,7 +513,7 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
                              '93')
         stock = create_stock_with_event_offer(offerer=None, venue=venue)
-        user = create_user('Test', departement_code='93', email='test+test@example.com', can_book_free_offers=True)
+        user = create_user('Test', departement_code='93', email='test@example.com', can_book_free_offers=True)
         booking = create_booking(user, stock, venue, None)
         booking.token = '56789'
 
@@ -544,11 +544,11 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         stock = create_stock_with_event_offer(offerer=Offerer(), venue=venue)
 
         user1 = create_user(public_name='Test1', first_name='First1', last_name='Last1', departement_code='93',
-                            email='test+test@example.com', can_book_free_offers=True)
+                            email='test@example.com', can_book_free_offers=True)
         booking1 = create_booking(user1, stock)
 
         user2 = create_user(public_name='Test2', first_name='First2', last_name='Last2', departement_code='93',
-                            email='test+test@example.com', can_book_free_offers=True)
+                            email='test@example.com', can_book_free_offers=True)
         booking2 = create_booking(user2, stock)
 
         ongoing_bookings = [booking1, booking2]
@@ -574,11 +574,12 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
                              '93')
         stock = create_stock_with_event_offer(offerer=None, venue=venue)
         user_1 = create_user('Test', first_name='John', last_name='Doe', departement_code='93',
-                             email='test+test@example.com',
+                             email='test@example.com',
                              can_book_free_offers=True)
         user_2 = create_user('Test 2', first_name='Jane', last_name='Doe', departement_code='93',
-                             email='other_test@example.com',
+                             email='test@example.com',
                              can_book_free_offers=True)
+        user_2.email = 'other_test@example.com'
         booking_1 = create_booking(user_1, stock, venue, None)
         booking_1.token = '56789'
         booking_2 = create_booking(user_2, stock, venue, None)
@@ -598,7 +599,7 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         assert '(total 2) pour Mains, sorts et papiers' in recap_html
         assert 'John' in recap_table_html
         assert 'Jane' in recap_table_html
-        assert 'test+test@example.com' in recap_table_html
+        assert 'test@example.com' in recap_table_html
         assert 'other_test@example.com' in recap_table_html
         assert '56789' in recap_table_html
         assert '67890' in recap_table_html
