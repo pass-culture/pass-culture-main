@@ -37,6 +37,7 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
     venue_address = venue.address
     is_event_or_physical_offer_stringified_boolean = '1' if is_event or is_physical_offer else '0'
     is_physical_offer_stringified_boolean = '1' if is_physical_offer else '0'
+    is_event_stringified_boolean = '1' if is_event else '0'
     is_single_event_stringified_boolean = '1' if is_event and booking.quantity == 1 else '0'
     is_duo_event_stringified_boolean = '1' if is_event and booking.quantity == 2 else '0'
     offer_id = humanize(offer.id)
@@ -68,6 +69,7 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
                 'venue_address': venue_address,
                 'all_but_not_virtual_thing': is_event_or_physical_offer_stringified_boolean,
                 'all_things_not_virtual_thing': is_physical_offer_stringified_boolean,
+                'is_event': is_event_stringified_boolean,
                 'is_single_event': is_single_event_stringified_boolean,
                 'is_duo_event': is_duo_event_stringified_boolean,
                 'offer_id': offer_id,
