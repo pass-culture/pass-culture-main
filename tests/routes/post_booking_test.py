@@ -545,8 +545,7 @@ class Post:
 
     class Returns201:
         @clean_database
-        @patch('routes.bookings.send_raw_email')
-        def expect_the_booking_to_have_good_includes(self, send_raw_email_mock, app):
+        def expect_the_booking_to_have_good_includes(self, app):
             offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
             venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
                                  '93')
@@ -574,8 +573,7 @@ class Post:
             assert r_create.json['stock']['isBookable']
 
         @clean_database
-        @patch('routes.bookings.send_raw_email')
-        def when_limit_date_is_in_the_future_and_offer_is_free(self, send_raw_email_mock, app):
+        def when_limit_date_is_in_the_future_and_offer_is_free(self, app):
             offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
             venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
                                  '93')
@@ -609,8 +607,7 @@ class Post:
                 assert created_booking_json[key] == booking_json[key]
 
         @clean_database
-        @patch('routes.bookings.send_raw_email')
-        def when_booking_limit_datetime_is_none(self, send_raw_email_mock, app):
+        def when_booking_limit_datetime_is_none(self, app):
             # Given
             user = create_user(email='test@email.com')
             offerer = create_offerer()
@@ -636,8 +633,7 @@ class Post:
             assert response.status_code == 201
 
         @clean_database
-        @patch('routes.bookings.send_raw_email')
-        def when_user_has_enough_credit(self, send_raw_email_mock, app):
+        def when_user_has_enough_credit(self, app):
             # Given
             offerer = create_offerer('819202819', '1 Fake Address', 'Fake city', '93000', 'Fake offerer')
             venue = create_venue(offerer, 'venue name', 'booking@email.com', '1 fake street', '93000', 'False city',
@@ -677,8 +673,7 @@ class Post:
             assert 'validationToken' not in response.json['recommendation']['offer']['venue']
 
         @clean_database
-        @patch('routes.bookings.send_raw_email')
-        def when_user_respects_expenses_limits(self, send_raw_email_mock, app):
+        def when_user_respects_expenses_limits(self, app):
             # Given
             offerer = create_offerer('819202819', '1 Fake Address', 'Fake city', '93000', 'Fake offerer')
             venue = create_venue(offerer, 'venue name', 'booking@email.com', '1 fake street', '93000', 'False city',
@@ -715,8 +710,7 @@ class Post:
             assert response.status_code == 201
 
         @clean_database
-        @patch('routes.bookings.send_raw_email')
-        def when_user_has_enough_credit_after_cancelling_booking(self, send_raw_email_mock, app):
+        def when_user_has_enough_credit_after_cancelling_booking(self, app):
             # Given
             user = create_user(email='test@email.com')
             PcObject.save(user)
@@ -754,8 +748,7 @@ class Post:
             assert r_create.status_code == 201
 
         @clean_database
-        @patch('routes.bookings.send_raw_email')
-        def when_user_cannot_book_free_offers_but_has_enough_credit_for_paid_offer(self, send_raw_email_mock, app):
+        def when_user_cannot_book_free_offers_but_has_enough_credit_for_paid_offer(self, app):
             user = create_user(email='can_book_paid_offers@email.com', can_book_free_offers=False)
             PcObject.save(user)
 

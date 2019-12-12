@@ -31,15 +31,16 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
     offerer_name = venue.managingOfferer.name
     formatted_event_beginning_time = ''
     formatted_event_beginning_date = ''
-    stock_price = str(stock.price) if stock.price > 0 else 'Gratuit'
+    stock_price = str(stock.price * booking.quantity) if stock.price > 0 else 'Gratuit'
     booking_token = booking.token
     venue_name = venue.name
     venue_address = venue.address
     is_event_or_physical_offer_stringified_boolean = '1' if is_event or is_physical_offer else '0'
     is_physical_offer_stringified_boolean = '1' if is_physical_offer else '0'
-    is_event_stringified_boolean = '1' if is_event else '0'
+    is_single_event_stringified_boolean = '1' if is_event and booking.quantity == 1 else '0'
+    is_duo_event_stringified_boolean = '1' if is_event and booking.quantity == 2 else '0'
     offer_id = humanize(offer.id)
-    mediation_id = humanize(offer.activeMediation.id) if offer.activeMediation else ''
+    mediation_id = humanize(offer.activeMediation.id) if offer.activeMediation else 'vide'
     environment = format_environment_for_email()
     if is_event:
         event_beginning_date_in_tz = utc_datetime_to_dept_timezone(stock.beginningDatetime,
@@ -67,7 +68,8 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
                 'venue_address': venue_address,
                 'all_but_not_virtual_thing': is_event_or_physical_offer_stringified_boolean,
                 'all_things_not_virtual_thing': is_physical_offer_stringified_boolean,
-                'is_event': is_event_stringified_boolean,
+                'is_single_event': is_single_event_stringified_boolean,
+                'is_duo_event': is_duo_event_stringified_boolean,
                 'offer_id': offer_id,
                 'mediation_id': mediation_id,
                 'env': environment
