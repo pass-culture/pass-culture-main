@@ -14,7 +14,7 @@ get_tunnel_database_url() {
   PG_PASSWORD="$(echo $POSTGRESQL_URL | grep @ | cut -d@ -f1 | cut -d':' -f2)"
 
   echo $PG_DATABASE
-  DB_TUNNEL_PID="$(pgrep -f $PG_DATABASE |tail -1)"
+  DB_TUNNEL_PID="$(pgrep -f $PG_DATABASE | tail -1)"
   DB_TUNNEL_HAS_TO_BE_TERMINATED=false
 
   if [ -z "$DB_TUNNEL_PID" ]
@@ -27,6 +27,6 @@ get_tunnel_database_url() {
   fi
 
   echo $DB_TUNNEL_PID
-  TUNNEL_PORT="$(lsof -Pan -w -p "$DB_TUNNEL_PID" -iTCP -sTCP:LISTEN -Fn |grep n |sed 's/n127.0.0.1://g')"
+  TUNNEL_PORT="$(lsof -Pan -w -p "$DB_TUNNEL_PID" -iTCP -sTCP:LISTEN -Fn | grep n | sed 's/n127.0.0.1://g')"
   tunnel_database_url="postgres://$PG_USER:$PG_PASSWORD@127.0.0.1:$TUNNEL_PORT/$PG_DATABASE?sslmode=prefer"
 }

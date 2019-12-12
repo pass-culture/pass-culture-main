@@ -71,7 +71,7 @@ else
   exit 1
 fi
 
-DB_TUNNEL_PID="$(pgrep -f $(echo $POSTGRESQL_URL | cut -d '?' -f1) |tail -1)"
+DB_TUNNEL_PID="$(pgrep -f $(echo $POSTGRESQL_URL | cut -d '?' -f1) | tail -1)"
 DB_TUNNEL_HAS_TO_BE_TERMINATED=false
 
 if [ -z "$DB_TUNNEL_PID" ]
@@ -81,7 +81,6 @@ then
   sleep 3
   DB_TUNNEL_PID=$!
   DB_TUNNEL_HAS_TO_BE_TERMINATED=true
-  TUNNEL_PORT="$(lsof -Pan -p "$DB_TUNNEL_PID" -iTCP -sTCP:LISTEN -Fn |grep n |sed 's/n127.0.0.1://g')"
   echo "Waiting for connection to be up"
   is_connection_ready=1
   while [ "$is_connection_ready" != 0 ]
