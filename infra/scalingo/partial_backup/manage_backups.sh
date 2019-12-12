@@ -70,13 +70,13 @@ fi
 source open_tunnel.sh
 get_tunnel_database_url $app_name
 
+exit 0
+
 if [ -z "$TUNNEL_PORT" ]; then
-  echo "Could not connect to database."
-  exit 1
+  failure_alert "Connection to Database."
 fi
 
 echo "Local postgres url : $tunnel_database_url $TUNNEL_PORT"
-
 
 if "$drop_database" ; then
   echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Start database drop"
@@ -105,7 +105,7 @@ fi
 if "$create_users" ; then
   echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Start user importation"
   echo create_users $create_users
-  time /usr/local/bin/scalingo --region $SCALINGO_REGION -a "$app_name" run  /var/lib/scalingo/data_$app_name.csv \
+  time /usr/local/bin/scalingo --region $SCALINGO_REGION -a "$app_name" run -f /var/lib/scalingo/data_$app_name.csv \
     -f /var/lib/scalingo/import_users.py python /tmp/uploads/import_users.py data_$app_name.csv \
      && echo "User imported" || failure_alert "User importation"
 fi
