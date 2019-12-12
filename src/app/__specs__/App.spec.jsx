@@ -28,20 +28,20 @@ describe('src | components | App', () => {
     expect(wrapper).toMatchSnapshot()
   })
 
-  it('should render a Redirect component when isMaintenanceActivated is true', () => {
+  it('should render a Redirect component when isMaintenanceSelector.js is true', () => {
     // Given
     const props = {
       history: {},
       location: {},
-      isMaintenanceActivated: true
+      isMaintenanceActivated: true,
     }
     // When
     const wrapper = shallow(
-        <App {...props}>
-          <p>
-            {'Sub component'}
-          </p>
-        </App>
+      <App {...props}>
+        <p>
+          {'Sub component'}
+        </p>
+      </App>
     )
 
     // Then
