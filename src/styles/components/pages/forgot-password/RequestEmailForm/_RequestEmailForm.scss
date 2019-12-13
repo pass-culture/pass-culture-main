@@ -1,0 +1,9 @@
+.form-label-inner {
+  font-size: rem(16px);
+}
+
+::placeholder {
+  color: $grey;
+  font-size: rem(16px) !important;
+  font-style: normal !important;
+}

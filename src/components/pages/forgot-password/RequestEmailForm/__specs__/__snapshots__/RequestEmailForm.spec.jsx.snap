@@ -32,11 +32,6 @@ ShallowWrapper {
             >
               Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
             </div>
-            <div
-              className="logout-form-mandatory-label"
-            >
-              * Champs obligatoires
-            </div>
           </div>
           <div>
             <InputField
@@ -45,7 +40,7 @@ ShallowWrapper {
               label="Adresse e-mail"
               name="email"
               placeholder="Ex. : nom@domaine.fr"
-              required={true}
+              required={false}
               sublabel={null}
               theme="white"
             />
@@ -88,11 +83,6 @@ ShallowWrapper {
               >
                 Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
               </div>
-              <div
-                className="logout-form-mandatory-label"
-              >
-                * Champs obligatoires
-              </div>
             </div>,
             <div>
               <InputField
@@ -101,7 +91,7 @@ ShallowWrapper {
                 label="Adresse e-mail"
                 name="email"
                 placeholder="Ex. : nom@domaine.fr"
-                required={true}
+                required={false}
                 sublabel={null}
                 theme="white"
               />
@@ -115,47 +105,26 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": Array [
-                <div
-                  className="logout-form-title"
-                >
-                  Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
-                </div>,
-                <div
-                  className="logout-form-mandatory-label"
-                >
-                  * Champs obligatoires
-                </div>,
-              ],
+              "children": <div
+                className="logout-form-title"
+              >
+                Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
+              </div>,
               "className": "logout-form-header",
             },
             "ref": null,
-            "rendered": Array [
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.",
-                  "className": "logout-form-title",
-                },
-                "ref": null,
-                "rendered": "Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.",
-                "type": "div",
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.",
+                "className": "logout-form-title",
               },
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "* Champs obligatoires",
-                  "className": "logout-form-mandatory-label",
-                },
-                "ref": null,
-                "rendered": "* Champs obligatoires",
-                "type": "div",
-              },
-            ],
+              "ref": null,
+              "rendered": "Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.",
+              "type": "div",
+            },
             "type": "div",
           },
           Object {
@@ -170,7 +139,7 @@ ShallowWrapper {
                   label="Adresse e-mail"
                   name="email"
                   placeholder="Ex. : nom@domaine.fr"
-                  required={true}
+                  required={false}
                   sublabel={null}
                   theme="white"
                 />,
@@ -189,7 +158,7 @@ ShallowWrapper {
                   "label": "Adresse e-mail",
                   "name": "email",
                   "placeholder": "Ex. : nom@domaine.fr",
-                  "required": true,
+                  "required": false,
                   "sublabel": null,
                   "theme": "white",
                 },
@@ -246,11 +215,6 @@ ShallowWrapper {
               >
                 Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
               </div>
-              <div
-                className="logout-form-mandatory-label"
-              >
-                * Champs obligatoires
-              </div>
             </div>
             <div>
               <InputField
@@ -259,7 +223,7 @@ ShallowWrapper {
                 label="Adresse e-mail"
                 name="email"
                 placeholder="Ex. : nom@domaine.fr"
-                required={true}
+                required={false}
                 sublabel={null}
                 theme="white"
               />
@@ -302,11 +266,6 @@ ShallowWrapper {
                 >
                   Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
                 </div>
-                <div
-                  className="logout-form-mandatory-label"
-                >
-                  * Champs obligatoires
-                </div>
               </div>,
               <div>
                 <InputField
@@ -315,7 +274,7 @@ ShallowWrapper {
                   label="Adresse e-mail"
                   name="email"
                   placeholder="Ex. : nom@domaine.fr"
-                  required={true}
+                  required={false}
                   sublabel={null}
                   theme="white"
                 />
@@ -329,47 +288,26 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": Array [
-                  <div
-                    className="logout-form-title"
-                  >
-                    Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
-                  </div>,
-                  <div
-                    className="logout-form-mandatory-label"
-                  >
-                    * Champs obligatoires
-                  </div>,
-                ],
+                "children": <div
+                  className="logout-form-title"
+                >
+                  Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
+                </div>,
                 "className": "logout-form-header",
               },
               "ref": null,
-              "rendered": Array [
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.",
-                    "className": "logout-form-title",
-                  },
-                  "ref": null,
-                  "rendered": "Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.",
-                  "type": "div",
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.",
+                  "className": "logout-form-title",
                 },
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "* Champs obligatoires",
-                    "className": "logout-form-mandatory-label",
-                  },
-                  "ref": null,
-                  "rendered": "* Champs obligatoires",
-                  "type": "div",
-                },
-              ],
+                "ref": null,
+                "rendered": "Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.",
+                "type": "div",
+              },
               "type": "div",
             },
             Object {
@@ -384,7 +322,7 @@ ShallowWrapper {
                     label="Adresse e-mail"
                     name="email"
                     placeholder="Ex. : nom@domaine.fr"
-                    required={true}
+                    required={false}
                     sublabel={null}
                     theme="white"
                   />,
@@ -403,7 +341,7 @@ ShallowWrapper {
                     "label": "Adresse e-mail",
                     "name": "email",
                     "placeholder": "Ex. : nom@domaine.fr",
-                    "required": true,
+                    "required": false,
                     "sublabel": null,
                     "theme": "white",
                   },
