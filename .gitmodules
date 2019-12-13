@@ -13,3 +13,9 @@
 [submodule "webapp"]
 	path = webapp
 	url = git@github.com:betagouv/pass-culture-browser.git
+[submodule "maintenance-page/maintenance-site"]
+	path = maintenance-page/maintenance-site
+	url = git@github.com:betagouv/pc-maintenance.git
+[submodule "maintenance-site"]
+	path = maintenance-site
+	url = git@github.com:betagouv/pc-maintenance.git
