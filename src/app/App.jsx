@@ -24,12 +24,12 @@ const getBodyClass = obj => {
 }
 
 export const App = ({ children, history, location, isMaintenanceActivated }) => {
-  const currentRouteObj = getCurrentRouteObjectByPath(browserRoutes, location.pathname)
-  const bodyClass = getBodyClass(currentRouteObj)
-  const pageTitle = getPageTitle(currentRouteObj)
   if (isMaintenanceActivated) {
     return <RedirectToMaintenance />
-  } else
+  } else {
+    const currentRouteObj = getCurrentRouteObjectByPath(browserRoutes, location.pathname)
+    const bodyClass = getBodyClass(currentRouteObj)
+    const pageTitle = getPageTitle(currentRouteObj)
     return (
       <Fragment>
         <Helmet>
@@ -54,6 +54,7 @@ export const App = ({ children, history, location, isMaintenanceActivated }) => 
         </div>
       </Fragment>
     )
+  }
 }
 
 App.propTypes = {

@@ -4,8 +4,6 @@ import React from 'react'
 import { shallow } from 'enzyme'
 import { App } from '../App'
 import RedirectToMaintenance from '../RedirectToMaintenance'
-import Router from 'react-router/Router'
-import { createBrowserHistory } from 'history'
 
 const middlewares = []
 const mockStore = configureStore(middlewares)
@@ -49,35 +47,5 @@ describe('src | components | App', () => {
     // then
     const redirectNode = wrapper.find(RedirectToMaintenance)
     expect(redirectNode).toHaveLength(1)
-  })
-
-  it('should render a App component when isMaintenanceSelector.js is false', () => {
-    // given
-    const history = createBrowserHistory()
-    const initialState = {}
-    const store = configureStore([])(initialState)
-    const props = {
-      history: {},
-      location: {},
-      isMaintenanceActivated: false,
-    }
-    // when
-    const wrapper = shallow(
-      <Provider store={store}>
-        <Router history={history}>
-          <App {...props}>
-            <div>
-              {'Sub component'}
-            </div>
-          </App>
-        </Router>
-      </Provider>
-    )
-
-    // then
-    const appNode = wrapper.find(App)
-    const redirectNode = wrapper.find(RedirectToMaintenance)
-    expect(appNode).toHaveLength(1)
-    expect(redirectNode).toHaveLength(0)
   })
 })
