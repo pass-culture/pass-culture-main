@@ -1,39 +1,46 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import FormFooter from '../../forms/FormFooter'
 
 const BetaPage = () => (
-  <div className="beta-page page pc-gradient flex-rows">
-    <main className="pc-main padded flex-rows flex-center">
-      <h1>
-        <div className="is-italic is-bold">
-          {'Bienvenue'}
-        </div>
-        <div className="is-italic is-semi-bold">
-          {'dans l’avant-première'}
-        </div>
-        <div className="is-italic is-normal">
-          {'du pass Culture'}
-        </div>
-      </h1>
-      <p className="is-italic is-medium mt36 fs22">
-        {'Et merci de votre participation pour nous aider à l’améliorer !'}
-      </p>
+  <div className="beta-page">
+    <main className="bp-main">
+      <div className="bp-title">
+        {'Bienvenue dans\n'}
+        {'votre pass Culture'}
+      </div>
+      <div className="bp-content">
+        {'Vous avez 18 ans & vivez dans un\n'}
+        <a
+          href='https://pass.culture.fr/#jeune'
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          {'département éligible ?'}
+        </a>
+      </div>
+      <div className="bp-content">
+        {'Bénéficiez de 500€ afin de\n'}
+        {'renforcer vos pratiques\n'}
+        {'culturelles et d\'en découvrir\n'}
+        {'de nouvelles !'}
+      </div>
     </main>
-    <footer className="pc-footer flex-columns flex-end">
-      <Link
-        className="flex-center items-center"
-        id="beta-connexion-link"
-        to="/connexion"
-      >
-        <span className="fs32 is-italic is-semi-bold">
-          {'C’est par là'}
-        </span>
-        <span
-          aria-hidden
-          className="pc-icon icon-legacy-next-long"
-          title="C’est par là"
-        />
-      </Link>
+    <footer className="bp-footer">
+      <FormFooter
+        externalLink={{
+          id: 'sign-up-link',
+          label: 'Créer un compte',
+          target: '_blank',
+          url: 'https://www.demarches-simplifiees.fr/commencer/inscription-pass-culture',
+        }}
+        submit={{
+          className: 'is-bold',
+          disabled: false,
+          id: 'signin-button',
+          label: 'J\'ai un compte',
+          url: '/connexion'
+        }}
+      />
     </footer>
   </div>
 )

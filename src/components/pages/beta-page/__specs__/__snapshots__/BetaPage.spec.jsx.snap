@@ -20,53 +20,67 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <main
-          className="pc-main padded flex-rows flex-center"
+          className="bp-main"
         >
-          <h1>
-            <div
-              className="is-italic is-bold"
-            >
-              Bienvenue
-            </div>
-            <div
-              className="is-italic is-semi-bold"
-            >
-              dans l’avant-première
-            </div>
-            <div
-              className="is-italic is-normal"
-            >
-              du pass Culture
-            </div>
-          </h1>
-          <p
-            className="is-italic is-medium mt36 fs22"
+          <div
+            className="bp-title"
           >
-            Et merci de votre participation pour nous aider à l’améliorer !
-          </p>
+            Bienvenue dans
+
+            votre pass Culture
+          </div>
+          <div
+            className="bp-content"
+          >
+            Vous avez 18 ans & vivez dans un
+
+            <a
+              href="https://pass.culture.fr/#jeune"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              département éligible ?
+            </a>
+          </div>
+          <div
+            className="bp-content"
+          >
+            Bénéficiez de 500€ afin de
+
+            renforcer vos pratiques
+
+            culturelles et d'en découvrir
+
+            de nouvelles !
+          </div>
         </main>,
         <footer
-          className="pc-footer flex-columns flex-end"
+          className="bp-footer"
         >
-          <ForwardRef
-            className="flex-center items-center"
-            id="beta-connexion-link"
-            to="/connexion"
-          >
-            <span
-              className="fs32 is-italic is-semi-bold"
-            >
-              C’est par là
-            </span>
-            <span
-              aria-hidden={true}
-              className="pc-icon icon-legacy-next-long"
-              title="C’est par là"
-            />
-          </ForwardRef>
+          <FormFooter
+            cancel={null}
+            className=""
+            externalLink={
+              Object {
+                "id": "sign-up-link",
+                "label": "Créer un compte",
+                "target": "_blank",
+                "url": "https://www.demarches-simplifiees.fr/commencer/inscription-pass-culture",
+              }
+            }
+            submit={
+              Object {
+                "className": "is-bold",
+                "disabled": false,
+                "id": "signin-button",
+                "label": "J'ai un compte",
+                "url": "/connexion",
+              }
+            }
+          />
         </footer>,
       ],
-      "className": "beta-page page pc-gradient flex-rows",
+      "className": "beta-page",
     },
     "ref": null,
     "rendered": Array [
@@ -76,30 +90,39 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            <h1>
-              <div
-                className="is-italic is-bold"
-              >
-                Bienvenue
-              </div>
-              <div
-                className="is-italic is-semi-bold"
-              >
-                dans l’avant-première
-              </div>
-              <div
-                className="is-italic is-normal"
-              >
-                du pass Culture
-              </div>
-            </h1>,
-            <p
-              className="is-italic is-medium mt36 fs22"
+            <div
+              className="bp-title"
             >
-              Et merci de votre participation pour nous aider à l’améliorer !
-            </p>,
+              Bienvenue dans
+
+              votre pass Culture
+            </div>,
+            <div
+              className="bp-content"
+            >
+              Vous avez 18 ans & vivez dans un
+
+              <a
+                href="https://pass.culture.fr/#jeune"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                département éligible ?
+              </a>
+            </div>,
+            <div
+              className="bp-content"
+            >
+              Bénéficiez de 500€ afin de
+
+              renforcer vos pratiques
+
+              culturelles et d'en découvrir
+
+              de nouvelles !
+            </div>,
           ],
-          "className": "pc-main padded flex-rows flex-center",
+          "className": "bp-main",
         },
         "ref": null,
         "rendered": Array [
@@ -109,75 +132,86 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": Array [
-                <div
-                  className="is-italic is-bold"
-                >
-                  Bienvenue
-                </div>,
-                <div
-                  className="is-italic is-semi-bold"
-                >
-                  dans l’avant-première
-                </div>,
-                <div
-                  className="is-italic is-normal"
-                >
-                  du pass Culture
-                </div>,
+                "Bienvenue dans
+",
+                "votre pass Culture",
               ],
+              "className": "bp-title",
             },
             "ref": null,
             "rendered": Array [
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "Bienvenue",
-                  "className": "is-italic is-bold",
-                },
-                "ref": null,
-                "rendered": "Bienvenue",
-                "type": "div",
-              },
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "dans l’avant-première",
-                  "className": "is-italic is-semi-bold",
-                },
-                "ref": null,
-                "rendered": "dans l’avant-première",
-                "type": "div",
-              },
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "du pass Culture",
-                  "className": "is-italic is-normal",
-                },
-                "ref": null,
-                "rendered": "du pass Culture",
-                "type": "div",
-              },
+              "Bienvenue dans
+",
+              "votre pass Culture",
             ],
-            "type": "h1",
+            "type": "div",
           },
           Object {
             "instance": null,
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": "Et merci de votre participation pour nous aider à l’améliorer !",
-              "className": "is-italic is-medium mt36 fs22",
+              "children": Array [
+                "Vous avez 18 ans & vivez dans un
+",
+                <a
+                  href="https://pass.culture.fr/#jeune"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  département éligible ?
+                </a>,
+              ],
+              "className": "bp-content",
             },
             "ref": null,
-            "rendered": "Et merci de votre participation pour nous aider à l’améliorer !",
-            "type": "p",
+            "rendered": Array [
+              "Vous avez 18 ans & vivez dans un
+",
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "département éligible ?",
+                  "href": "https://pass.culture.fr/#jeune",
+                  "rel": "noopener noreferrer",
+                  "target": "_blank",
+                },
+                "ref": null,
+                "rendered": "département éligible ?",
+                "type": "a",
+              },
+            ],
+            "type": "div",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                "Bénéficiez de 500€ afin de
+",
+                "renforcer vos pratiques
+",
+                "culturelles et d'en découvrir
+",
+                "de nouvelles !",
+              ],
+              "className": "bp-content",
+            },
+            "ref": null,
+            "rendered": Array [
+              "Bénéficiez de 500€ afin de
+",
+              "renforcer vos pratiques
+",
+              "culturelles et d'en découvrir
+",
+              "de nouvelles !",
+            ],
+            "type": "div",
           },
         ],
         "type": "main",
@@ -187,86 +221,54 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": <ForwardRef
-            className="flex-center items-center"
-            id="beta-connexion-link"
-            to="/connexion"
-          >
-            <span
-              className="fs32 is-italic is-semi-bold"
-            >
-              C’est par là
-            </span>
-            <span
-              aria-hidden={true}
-              className="pc-icon icon-legacy-next-long"
-              title="C’est par là"
-            />
-          </ForwardRef>,
-          "className": "pc-footer flex-columns flex-end",
+          "children": <FormFooter
+            cancel={null}
+            className=""
+            externalLink={
+              Object {
+                "id": "sign-up-link",
+                "label": "Créer un compte",
+                "target": "_blank",
+                "url": "https://www.demarches-simplifiees.fr/commencer/inscription-pass-culture",
+              }
+            }
+            submit={
+              Object {
+                "className": "is-bold",
+                "disabled": false,
+                "id": "signin-button",
+                "label": "J'ai un compte",
+                "url": "/connexion",
+              }
+            }
+          />,
+          "className": "bp-footer",
         },
         "ref": null,
         "rendered": Object {
           "instance": null,
           "key": undefined,
-          "nodeType": "function",
+          "nodeType": "class",
           "props": Object {
-            "children": Array [
-              <span
-                className="fs32 is-italic is-semi-bold"
-              >
-                C’est par là
-              </span>,
-              <span
-                aria-hidden={true}
-                className="pc-icon icon-legacy-next-long"
-                title="C’est par là"
-              />,
-            ],
-            "className": "flex-center items-center",
-            "id": "beta-connexion-link",
-            "to": "/connexion",
+            "cancel": null,
+            "className": "",
+            "externalLink": Object {
+              "id": "sign-up-link",
+              "label": "Créer un compte",
+              "target": "_blank",
+              "url": "https://www.demarches-simplifiees.fr/commencer/inscription-pass-culture",
+            },
+            "submit": Object {
+              "className": "is-bold",
+              "disabled": false,
+              "id": "signin-button",
+              "label": "J'ai un compte",
+              "url": "/connexion",
+            },
           },
           "ref": null,
-          "rendered": Array [
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": "C’est par là",
-                "className": "fs32 is-italic is-semi-bold",
-              },
-              "ref": null,
-              "rendered": "C’est par là",
-              "type": "span",
-            },
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "aria-hidden": true,
-                "className": "pc-icon icon-legacy-next-long",
-                "title": "C’est par là",
-              },
-              "ref": null,
-              "rendered": null,
-              "type": "span",
-            },
-          ],
-          "type": Object {
-            "$$typeof": Symbol(react.forward_ref),
-            "displayName": "Link",
-            "propTypes": Object {
-              "innerRef": [Function],
-              "onClick": [Function],
-              "replace": [Function],
-              "target": [Function],
-              "to": [Function],
-            },
-            "render": [Function],
-          },
+          "rendered": null,
+          "type": [Function],
         },
         "type": "footer",
       },
@@ -281,53 +283,67 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <main
-            className="pc-main padded flex-rows flex-center"
+            className="bp-main"
           >
-            <h1>
-              <div
-                className="is-italic is-bold"
-              >
-                Bienvenue
-              </div>
-              <div
-                className="is-italic is-semi-bold"
-              >
-                dans l’avant-première
-              </div>
-              <div
-                className="is-italic is-normal"
-              >
-                du pass Culture
-              </div>
-            </h1>
-            <p
-              className="is-italic is-medium mt36 fs22"
+            <div
+              className="bp-title"
             >
-              Et merci de votre participation pour nous aider à l’améliorer !
-            </p>
+              Bienvenue dans
+
+              votre pass Culture
+            </div>
+            <div
+              className="bp-content"
+            >
+              Vous avez 18 ans & vivez dans un
+
+              <a
+                href="https://pass.culture.fr/#jeune"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                département éligible ?
+              </a>
+            </div>
+            <div
+              className="bp-content"
+            >
+              Bénéficiez de 500€ afin de
+
+              renforcer vos pratiques
+
+              culturelles et d'en découvrir
+
+              de nouvelles !
+            </div>
           </main>,
           <footer
-            className="pc-footer flex-columns flex-end"
+            className="bp-footer"
           >
-            <ForwardRef
-              className="flex-center items-center"
-              id="beta-connexion-link"
-              to="/connexion"
-            >
-              <span
-                className="fs32 is-italic is-semi-bold"
-              >
-                C’est par là
-              </span>
-              <span
-                aria-hidden={true}
-                className="pc-icon icon-legacy-next-long"
-                title="C’est par là"
-              />
-            </ForwardRef>
+            <FormFooter
+              cancel={null}
+              className=""
+              externalLink={
+                Object {
+                  "id": "sign-up-link",
+                  "label": "Créer un compte",
+                  "target": "_blank",
+                  "url": "https://www.demarches-simplifiees.fr/commencer/inscription-pass-culture",
+                }
+              }
+              submit={
+                Object {
+                  "className": "is-bold",
+                  "disabled": false,
+                  "id": "signin-button",
+                  "label": "J'ai un compte",
+                  "url": "/connexion",
+                }
+              }
+            />
           </footer>,
         ],
-        "className": "beta-page page pc-gradient flex-rows",
+        "className": "beta-page",
       },
       "ref": null,
       "rendered": Array [
@@ -337,30 +353,39 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              <h1>
-                <div
-                  className="is-italic is-bold"
-                >
-                  Bienvenue
-                </div>
-                <div
-                  className="is-italic is-semi-bold"
-                >
-                  dans l’avant-première
-                </div>
-                <div
-                  className="is-italic is-normal"
-                >
-                  du pass Culture
-                </div>
-              </h1>,
-              <p
-                className="is-italic is-medium mt36 fs22"
+              <div
+                className="bp-title"
               >
-                Et merci de votre participation pour nous aider à l’améliorer !
-              </p>,
+                Bienvenue dans
+
+                votre pass Culture
+              </div>,
+              <div
+                className="bp-content"
+              >
+                Vous avez 18 ans & vivez dans un
+
+                <a
+                  href="https://pass.culture.fr/#jeune"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  département éligible ?
+                </a>
+              </div>,
+              <div
+                className="bp-content"
+              >
+                Bénéficiez de 500€ afin de
+
+                renforcer vos pratiques
+
+                culturelles et d'en découvrir
+
+                de nouvelles !
+              </div>,
             ],
-            "className": "pc-main padded flex-rows flex-center",
+            "className": "bp-main",
           },
           "ref": null,
           "rendered": Array [
@@ -370,75 +395,86 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  <div
-                    className="is-italic is-bold"
-                  >
-                    Bienvenue
-                  </div>,
-                  <div
-                    className="is-italic is-semi-bold"
-                  >
-                    dans l’avant-première
-                  </div>,
-                  <div
-                    className="is-italic is-normal"
-                  >
-                    du pass Culture
-                  </div>,
+                  "Bienvenue dans
+",
+                  "votre pass Culture",
                 ],
+                "className": "bp-title",
               },
               "ref": null,
               "rendered": Array [
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "Bienvenue",
-                    "className": "is-italic is-bold",
-                  },
-                  "ref": null,
-                  "rendered": "Bienvenue",
-                  "type": "div",
-                },
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "dans l’avant-première",
-                    "className": "is-italic is-semi-bold",
-                  },
-                  "ref": null,
-                  "rendered": "dans l’avant-première",
-                  "type": "div",
-                },
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "du pass Culture",
-                    "className": "is-italic is-normal",
-                  },
-                  "ref": null,
-                  "rendered": "du pass Culture",
-                  "type": "div",
-                },
+                "Bienvenue dans
+",
+                "votre pass Culture",
               ],
-              "type": "h1",
+              "type": "div",
             },
             Object {
               "instance": null,
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": "Et merci de votre participation pour nous aider à l’améliorer !",
-                "className": "is-italic is-medium mt36 fs22",
+                "children": Array [
+                  "Vous avez 18 ans & vivez dans un
+",
+                  <a
+                    href="https://pass.culture.fr/#jeune"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    département éligible ?
+                  </a>,
+                ],
+                "className": "bp-content",
               },
               "ref": null,
-              "rendered": "Et merci de votre participation pour nous aider à l’améliorer !",
-              "type": "p",
+              "rendered": Array [
+                "Vous avez 18 ans & vivez dans un
+",
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "département éligible ?",
+                    "href": "https://pass.culture.fr/#jeune",
+                    "rel": "noopener noreferrer",
+                    "target": "_blank",
+                  },
+                  "ref": null,
+                  "rendered": "département éligible ?",
+                  "type": "a",
+                },
+              ],
+              "type": "div",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  "Bénéficiez de 500€ afin de
+",
+                  "renforcer vos pratiques
+",
+                  "culturelles et d'en découvrir
+",
+                  "de nouvelles !",
+                ],
+                "className": "bp-content",
+              },
+              "ref": null,
+              "rendered": Array [
+                "Bénéficiez de 500€ afin de
+",
+                "renforcer vos pratiques
+",
+                "culturelles et d'en découvrir
+",
+                "de nouvelles !",
+              ],
+              "type": "div",
             },
           ],
           "type": "main",
@@ -448,86 +484,54 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": <ForwardRef
-              className="flex-center items-center"
-              id="beta-connexion-link"
-              to="/connexion"
-            >
-              <span
-                className="fs32 is-italic is-semi-bold"
-              >
-                C’est par là
-              </span>
-              <span
-                aria-hidden={true}
-                className="pc-icon icon-legacy-next-long"
-                title="C’est par là"
-              />
-            </ForwardRef>,
-            "className": "pc-footer flex-columns flex-end",
+            "children": <FormFooter
+              cancel={null}
+              className=""
+              externalLink={
+                Object {
+                  "id": "sign-up-link",
+                  "label": "Créer un compte",
+                  "target": "_blank",
+                  "url": "https://www.demarches-simplifiees.fr/commencer/inscription-pass-culture",
+                }
+              }
+              submit={
+                Object {
+                  "className": "is-bold",
+                  "disabled": false,
+                  "id": "signin-button",
+                  "label": "J'ai un compte",
+                  "url": "/connexion",
+                }
+              }
+            />,
+            "className": "bp-footer",
           },
           "ref": null,
           "rendered": Object {
             "instance": null,
             "key": undefined,
-            "nodeType": "function",
+            "nodeType": "class",
             "props": Object {
-              "children": Array [
-                <span
-                  className="fs32 is-italic is-semi-bold"
-                >
-                  C’est par là
-                </span>,
-                <span
-                  aria-hidden={true}
-                  className="pc-icon icon-legacy-next-long"
-                  title="C’est par là"
-                />,
-              ],
-              "className": "flex-center items-center",
-              "id": "beta-connexion-link",
-              "to": "/connexion",
+              "cancel": null,
+              "className": "",
+              "externalLink": Object {
+                "id": "sign-up-link",
+                "label": "Créer un compte",
+                "target": "_blank",
+                "url": "https://www.demarches-simplifiees.fr/commencer/inscription-pass-culture",
+              },
+              "submit": Object {
+                "className": "is-bold",
+                "disabled": false,
+                "id": "signin-button",
+                "label": "J'ai un compte",
+                "url": "/connexion",
+              },
             },
             "ref": null,
-            "rendered": Array [
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "C’est par là",
-                  "className": "fs32 is-italic is-semi-bold",
-                },
-                "ref": null,
-                "rendered": "C’est par là",
-                "type": "span",
-              },
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "aria-hidden": true,
-                  "className": "pc-icon icon-legacy-next-long",
-                  "title": "C’est par là",
-                },
-                "ref": null,
-                "rendered": null,
-                "type": "span",
-              },
-            ],
-            "type": Object {
-              "$$typeof": Symbol(react.forward_ref),
-              "displayName": "Link",
-              "propTypes": Object {
-                "innerRef": [Function],
-                "onClick": [Function],
-                "replace": [Function],
-                "target": [Function],
-                "to": [Function],
-              },
-              "render": [Function],
-            },
+            "rendered": null,
+            "type": [Function],
           },
           "type": "footer",
         },
