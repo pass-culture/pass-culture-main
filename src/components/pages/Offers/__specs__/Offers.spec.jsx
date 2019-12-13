@@ -2,7 +2,7 @@ import React from 'react'
 import { shallow } from 'enzyme'
 import { NavLink } from 'react-router-dom'
 
-import Offers from '../Offers'
+import Offers, { createLinkToOfferCreation } from '../Offers'
 import OfferItem from '../OfferItem/OfferItemContainer'
 import mockedOffers from './offersMock'
 
@@ -460,6 +460,44 @@ describe('src | components | pages | Offers | Offers', () => {
         // then
         expect(props.closeNotification).not.toHaveBeenCalledWith()
       })
+    })
+  })
+
+  describe('createLinkToOfferCreation', () => {
+    it('should create link when venue only is in path', () => {
+      // given
+      const venueId = 'TF'
+      const offererId = undefined
+
+      // when
+      const result = createLinkToOfferCreation(venueId, offererId)
+
+      // then
+      expect(result).toStrictEqual('/offres/creation?lieu=TF')
+    })
+
+    it('should create link when offerer only is in path', () => {
+      // given
+      const venueId = undefined
+      const offererId = 'TF'
+
+      // when
+      const result = createLinkToOfferCreation(venueId, offererId)
+
+      // then
+      expect(result).toStrictEqual('/offres/creation?structure=TF')
+    })
+
+    it('should create link when offerer and venue are in path', () => {
+      // given
+      const venueId = '7X'
+      const offererId = 'TF'
+
+      // when
+      const result = createLinkToOfferCreation(venueId, offererId)
+
+      // then
+      expect(result).toStrictEqual('/offres/creation?structure=TF&lieu=7X')
     })
   })
 })

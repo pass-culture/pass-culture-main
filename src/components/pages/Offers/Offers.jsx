@@ -13,6 +13,20 @@ import { mapApiToBrowser, translateQueryParamsToApiParams } from '../../../utils
 import OfferItemContainer from './OfferItem/OfferItemContainer'
 import { selectOffersByOffererIdAndVenueId } from '../../../selectors/data/offersSelectors'
 
+export const createLinkToOfferCreation = (venueId, offererId) => {
+  let createOfferTo = `/offres/creation`
+
+  if (venueId && offererId) {
+    createOfferTo = `${createOfferTo}?${mapApiToBrowser.offererId}=${offererId}&${mapApiToBrowser.venueId}=${venueId}`
+  } else if (offererId) {
+    createOfferTo = `${createOfferTo}?${mapApiToBrowser.offererId}=${offererId}`
+  } else if (venueId) {
+    createOfferTo = `${createOfferTo}?${mapApiToBrowser.venueId}=${venueId}`
+  }
+
+  return createOfferTo
+}
+
 class Offers extends PureComponent {
   constructor(props) {
     super(props)
@@ -141,12 +155,7 @@ class Offers extends PureComponent {
     const { keywords, venueId, offererId, orderBy } = apiParams
     const { hasMore, isLoading } = this.state
 
-    let createOfferTo = `/offres/creation`
-    if (venueId) {
-      createOfferTo = `${createOfferTo}?${mapApiToBrowser.venueId}=${venueId}`
-    } else if (offererId) {
-      createOfferTo = `${createOfferTo}?${mapApiToBrowser.offererId}=${offererId}`
-    }
+    const createOfferTo = createLinkToOfferCreation(venueId, offererId)
 
     const [orderName, orderDirection] = (orderBy || '').split('+')
 
