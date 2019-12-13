@@ -2,17 +2,17 @@ import { mapStateToProps } from '../AppContainer'
 
 describe('src | AppContainer', () => {
   it('should map maintenance status to App', () => {
-    // Given
+    // given
     const state = {
       location: {},
       history: {},
       maintenance: { isActivated: true },
     }
 
-    // When
+    // when
     const result = mapStateToProps(state)
 
-    // Then
+    // then
     expect(result).toHaveProperty('isMaintenanceActivated', true)
   })
 })

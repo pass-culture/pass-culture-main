@@ -11,7 +11,7 @@ import SharePopinContainer from '../components/layout/Share/SharePopinContainer'
 import SplashContainer from '../components/layout/Splash/SplashContainer'
 import browserRoutes from '../components/router/browserRoutes'
 import { IS_DEV, PROJECT_NAME } from '../utils/config'
-import RedirectToMaintenance from '../components/RedirectToMaintenance'
+import RedirectToMaintenance from './RedirectToMaintenance'
 
 const getPageTitle = obj => `${obj && obj.title ? `${obj.title} - ` : ''}`
 
@@ -28,40 +28,37 @@ export const App = ({ children, history, location, isMaintenanceActivated }) => 
   const bodyClass = getBodyClass(currentRouteObj)
   const pageTitle = getPageTitle(currentRouteObj)
   if (isMaintenanceActivated) {
+    return <RedirectToMaintenance />
+  } else
     return (
-      <RedirectToMaintenance />
-      )
-  }
-  else
-    return (
-    <Fragment>
-      <Helmet>
-        <body className={`web ${bodyClass}`} />
-        <title>
-          {`${pageTitle}${PROJECT_NAME}${(IS_DEV && ' | DEV') || ''}`}
-        </title>
-      </Helmet>
-      <div className="app is-relative">
-        <ErrorCatcherContainer>
-          {children}
-          <OverlayContainer />
-          <Route
-            component={MenuContainer}
-            history={history}
-            path="*/menu"
-          />
-          <SplashContainer />
-          <SharePopinContainer />
-          <Notifications />
-        </ErrorCatcherContainer>
-      </div>
-    </Fragment>
-  )
+      <Fragment>
+        <Helmet>
+          <body className={`web ${bodyClass}`} />
+          <title>
+            {`${pageTitle}${PROJECT_NAME}${(IS_DEV && ' | DEV') || ''}`}
+          </title>
+        </Helmet>
+        <div className="app is-relative">
+          <ErrorCatcherContainer>
+            {children}
+            <OverlayContainer />
+            <Route
+              component={MenuContainer}
+              history={history}
+              path="*/menu"
+            />
+            <SplashContainer />
+            <SharePopinContainer />
+            <Notifications />
+          </ErrorCatcherContainer>
+        </div>
+      </Fragment>
+    )
 }
 
 App.propTypes = {
   children: PropTypes.node.isRequired,
   history: PropTypes.shape().isRequired,
+  isMaintenanceActivated: PropTypes.bool.isRequired,
   location: PropTypes.shape().isRequired,
-  isMaintenanceActivated: PropTypes.bool.isRequired
 }
