@@ -94,7 +94,7 @@ class SendWarningToBeneficiaryAfterProBookingCancellationTest:
                 'event_date': '',
                 'event_hour': '',
                 'is_event': 0,
-                'is_free_offer': '1',
+                'is_free_offer': 1,
                 'is_thing': 1,
                 'is_online': 0,
                 'offer_name': booking.stock.offer.name,

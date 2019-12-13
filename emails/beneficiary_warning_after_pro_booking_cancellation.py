@@ -16,7 +16,7 @@ def retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking: Bo
     if is_event:
         event_date = format_date(get_event_datetime(stock), format='full', locale='fr')
         event_hour = format_booking_hours_for_email(booking)
-    is_free_offer = '1' if stock.price > 0 else '0'
+    is_free_offer = 1 if stock.price > 0 else 0
     is_thing = int(offer.isThing)
     is_online = int(offer.isDigital)
     if is_online:

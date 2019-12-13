@@ -37,7 +37,7 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
                 'event_date': '',
                 'event_hour': '',
                 'is_event': 0,
-                'is_free_offer': '0',
+                'is_free_offer': 0,
                 'mediation_id': 'EQ',
                 'offer_id': 'AHREA',
                 'offer_name': 'Test thing name',
@@ -73,7 +73,7 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
                 'event_date': '26 novembre',
                 'event_hour': '19h29',
                 'is_event': 1,
-                'is_free_offer': '0',
+                'is_free_offer': 0,
                 'mediation_id': 'EQ',
                 'offer_id': 'AHREA',
                 'offer_name': 'Test event name',
@@ -95,7 +95,7 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
         email_data = make_beneficiary_booking_cancellation_email_data(booking)
 
         # Then
-        assert email_data['Vars']['is_free_offer'] == '1'
+        assert email_data['Vars']['is_free_offer'] == 1
 
     def test_should_return_an_empty_mediation_id_when_no_mediation(self):
         # Given

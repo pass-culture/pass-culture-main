@@ -35,11 +35,11 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
     booking_token = booking.token
     venue_name = venue.name
     venue_address = venue.address or ''
-    is_event_or_physical_offer_stringified_boolean = '1' if is_event or is_physical_offer else '0'
-    is_physical_offer_stringified_boolean = '1' if is_physical_offer else '0'
-    is_event_stringified_boolean = '1' if is_event else '0'
-    is_single_event_stringified_boolean = '1' if is_event and booking.quantity == 1 else '0'
-    is_duo_event_stringified_boolean = '1' if is_event and booking.quantity == 2 else '0'
+    is_event_or_physical_offer_stringified_boolean = 1 if is_event or is_physical_offer else 0
+    is_physical_offer_stringified_boolean = 1 if is_physical_offer else 0
+    is_event_stringified_boolean = 1 if is_event else 0
+    is_single_event_stringified_boolean = 1 if is_event and booking.quantity == 1 else 0
+    is_duo_event_stringified_boolean = 1 if is_event and booking.quantity == 2 else 0
     offer_id = humanize(offer.id)
     mediation_id = humanize(offer.activeMediation.id) if offer.activeMediation else 'vide'
     environment = format_environment_for_email()
