@@ -8,9 +8,9 @@ import DiscoveryContainer from '../pages/discovery/DiscoveryContainer'
 import MyFavoritesContainer from '../pages/my-favorites/MyFavoritesContainer'
 import ForgotPassword from '../pages/forgot-password/ForgotPassword'
 import ProfileContainer from '../pages/profile/ProfileContainer'
-import TypeFormPage from '../pages/typeform/TypeformContainer'
+import TypeFormContainer from '../pages/typeform/TypeformContainer'
 import SearchContainer from '../pages/search/SearchContainer'
-import SigninContainer from '../pages/signin/SigninContainer'
+import SignInContainer from '../pages/signin/SignInContainer'
 import SignupContainer from '../pages/signup/SignupContainer'
 import { WEBAPP_CONTACT_EXTERNAL_PAGE } from '../../utils/config'
 
@@ -34,7 +34,7 @@ const routes = [
     title: 'Activation',
   },
   {
-    component: SigninContainer,
+    component: SignInContainer,
     path: '/connexion',
     title: 'Connexion',
   },
@@ -50,7 +50,7 @@ const routes = [
     title: 'Mot de passe perdu',
   },
   {
-    component: TypeFormPage,
+    component: TypeFormContainer,
     path: '/typeform',
     title: 'Questionnaire',
   },

@@ -1,5 +1,69 @@
-.page-connexion {
+.login-form-main {
+  @extend .page;
+
+  background-image: linear-gradient(to bottom right, $primary, $purple-blue);
+  color: $white;
+  overflow: auto;
+}
+
+.lf-container {
+  @extend .is-full-layout;
+
+  display: flex;
+  flex-direction: column;
+
+  > div {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    padding: rem(24px);
+  }
+
+  .lf-header {
+    margin-top: rem(50px);
+    margin-bottom: rem(24px);
+  }
+
+  .form-label-inner {
+    font-size: rem(16px);
+  }
+
+  .lf-title {
+    font-size: rem(32px);
+    font-style: italic;
+    font-weight: 700;
+    margin-bottom: rem(8px);
+  }
+
+  .lf-subtitle {
+    font-size: rem(22px);
+    font-style: italic;
+    font-weight: 500;
+    white-space: pre-wrap;
+  }
+
+  .label-email-inner {
+    margin-bottom: rem(24px);
+  }
+
   .label-password-inner {
-    margin-bottom: 0;
+    margin-bottom: rem(16px);
+  }
+
+  ::placeholder {
+    color: $grey;
+    font-size: rem(16px) !important;
+    font-style: normal !important;
+  }
+
+  .lf-lost-password {
+    color: $white;
+    font-size: rem(16px);
+    font-weight: 500;
+    line-height: rem(19px);
+    text-align: center;
   }
 }
+
+

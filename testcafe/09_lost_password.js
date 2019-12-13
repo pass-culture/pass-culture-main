@@ -3,7 +3,7 @@ import { Selector } from 'testcafe'
 import { ROOT_PATH } from '../src/utils/config'
 import { fetchSandbox } from './helpers/sandboxes'
 
-const forgotPasswordLink = Selector('.logout-form-link')
+const forgotPasswordLink = Selector('.lf-lost-password')
 const inputUserEmail = Selector('#email')
 const sendTokenButton = Selector('footer > button')
 const pageH2Title = Selector('.logout-form-title')
