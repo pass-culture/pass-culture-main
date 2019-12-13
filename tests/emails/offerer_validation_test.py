@@ -1,94 +1,11 @@
 import secrets
-from unittest.mock import patch
 
 from bs4 import BeautifulSoup
 
 from tests.conftest import clean_database, mocked_mail
 from tests.test_utils import create_user, create_offerer, create_user_offerer
 from tests.utils.mailing_test import get_mocked_response_status_200
-from utils.mailing import make_validation_confirmation_email, make_validation_email_object
-
-
-class MakeValidationConfirmationEmailTest:
-    @clean_database
-    def test_make_validation_confirmation_email_offerer_user_offerer_admin(app):
-        # Given
-        user = create_user(email='admin@letheatresas.com')
-        offerer = create_offerer(name='Le Théâtre SAS')
-        user_offerer = create_user_offerer(user, offerer, is_admin=True)
-
-        # When
-        with patch('utils.mailing.find_user_offerer_email', return_value='admin@letheatresas.com'):
-            email = make_validation_confirmation_email(user_offerer, offerer)
-
-        # Then
-        email_html = BeautifulSoup(email['Html-part'], 'html.parser')
-        html_validation_details = str(email_html.find('p', {'id': 'validation-details'}))
-        assert 'Votre structure "Le Théâtre SAS"' in html_validation_details
-        assert 'L\'utilisateur admin@letheatresas.com' in html_validation_details
-        assert 'en tant qu\'administrateur' in html_validation_details
-        assert email['FromName'] == 'pass Culture pro'
-        assert email['Subject'] == 'Validation de votre structure et de compte administrateur rattaché'
-
-
-    @clean_database
-    def test_make_validation_confirmation_email_offerer_user_offerer_editor(app):
-        # Given
-        user = create_user(email='admin@letheatresas.com')
-        offerer = create_offerer(name='Le Théâtre SAS')
-        user_offerer = create_user_offerer(user, offerer)
-
-        # When
-        with patch('utils.mailing.find_user_offerer_email', return_value='editor@letheatresas.com'):
-            email = make_validation_confirmation_email(user_offerer, offerer)
-
-        # Then
-        email_html = BeautifulSoup(email['Html-part'], 'html.parser')
-        html_validation_details = str(email_html.find('p', {'id': 'validation-details'}))
-        assert 'Votre structure "Le Théâtre SAS"' in html_validation_details
-        assert 'L\'utilisateur editor@letheatresas.com' in html_validation_details
-        assert 'en tant qu\'éditeur' in html_validation_details
-        assert email['FromName'] == 'pass Culture pro'
-        assert email['Subject'] == 'Validation de votre structure et de compte éditeur rattaché'
-
-
-    @clean_database
-    def test_make_validation_confirmation_email_user_offerer_editor(app):
-        # Given
-        user = create_user(email='admin@letheatresas.com')
-        offerer = create_offerer(name='Le Théâtre SAS')
-        user_offerer = create_user_offerer(user, offerer)
-
-        # When
-        with patch('utils.mailing.find_user_offerer_email', return_value='editor@letheatresas.com'):
-            email = make_validation_confirmation_email(user_offerer, offerer=None)
-
-        # Then
-        email_html = BeautifulSoup(email['Html-part'], 'html.parser')
-        html_validation_details = str(email_html.find('p', {'id': 'validation-details'}))
-        assert 'Votre structure "Le Théâtre SAS"' not in html_validation_details
-        assert 'L\'utilisateur editor@letheatresas.com a été validé' in html_validation_details
-        assert 'en tant qu\'éditeur' in html_validation_details
-        assert email['FromName'] == 'pass Culture pro'
-        assert email['Subject'] == 'Validation de compte éditeur rattaché à votre structure'
-
-
-    @clean_database
-    def test_make_validation_confirmation_email_offerer(app):
-        # Given
-        offerer = create_offerer(name='Le Théâtre SAS')
-
-        # When
-        with patch('utils.mailing.find_user_offerer_email', return_value='admin@letheatresas.com'):
-            email = make_validation_confirmation_email(user_offerer=None, offerer=offerer)
-
-        # Then
-        email_html = BeautifulSoup(email['Html-part'], 'html.parser')
-        html_validation_details = str(email_html.find('p', {'id': 'validation-details'}))
-        assert 'Votre structure "Le Théâtre SAS"' in html_validation_details
-        assert 'L\'utilisateur' not in html_validation_details
-        assert email['FromName'] == 'pass Culture pro'
-        assert email['Subject'] == 'Validation de votre structure'
+from utils.mailing import make_validation_email_object
 
 
 class WriteObjectValidationEmailTest:

@@ -4,7 +4,7 @@ from models import Booking
 from models.offer_type import ProductType
 from repository import booking_queries
 from utils.mailing import build_pc_pro_offer_link, format_environment_for_email, SUPPORT_EMAIL_ADDRESS, \
-    _create_email_recipients, extract_users_information_from_bookings, format_booking_date_for_email, \
+    create_email_recipients, extract_users_information_from_bookings, format_booking_date_for_email, \
     format_booking_hours_for_email
 
 
@@ -30,7 +30,7 @@ def retrieve_data_for_offerer_booking_recap_email(booking: Booking, recipients: 
         'FromEmail': SUPPORT_EMAIL_ADDRESS,
         'MJ-TemplateID': 1095029,
         'MJ-TemplateLanguage': True,
-        'To': _create_email_recipients(recipients),
+        'To': create_email_recipients(recipients),
         'Vars': {
             'nom_offre': offer_name,
             'nom_lieu': venue_name,

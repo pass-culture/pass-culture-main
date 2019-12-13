@@ -7,10 +7,9 @@ from domain.user_emails import send_beneficiary_booking_cancellation_email, \
     send_validation_confirmation_email, send_batch_cancellation_emails_to_users, \
     send_batch_cancellation_email_to_offerer, send_user_validation_email, send_venue_validation_confirmation_email, \
     send_reset_password_email_with_mailjet_template, send_activation_email, send_reset_password_email
-from models import Offerer, UserOfferer, User, RightsType
+from models import Offerer, UserOfferer, User
 from tests.test_utils import create_user, create_booking, create_stock_with_event_offer, create_offerer, create_venue, \
-    create_offer_with_thing_product, create_stock_with_thing_offer, create_mocked_bookings, create_mediation, \
-    create_recommendation, create_stock_from_offer
+    create_offer_with_thing_product, create_stock_with_thing_offer, create_mocked_bookings
 
 
 class SendResetPasswordEmailTest:
@@ -301,18 +300,13 @@ class SendFinalBookingRecapEmailTest:
 
 
 class SendValidationConfirmationEmailTest:
-    @patch('domain.user_emails.find_all_emails_of_user_offerers_admins',
-           return_value=['admin1@example.com', 'admin2@example.com'])
-    @patch('domain.user_emails.make_validation_confirmation_email', return_value={'Html-part': ''})
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
-    def when_feature_send_mail_to_users_enabled_sends_email_to_all_users_linked_to_offerer(self,
-                                                                                           feature_send_mail_to_users_enabled,
-                                                                                           make_validation_confirmation_email,
-                                                                                           find_all_emails_of_user_offerers_admins):
+    @patch('domain.user_emails.retrieve_data_for_new_offerer_validation_email',
+           return_value={'Mj-TemplateID': 778723})
+    def when_feature_send_mail_to_users_is_enabled_sends_email_to_all_users_linked_to_offerer(self,
+                                                                                           mock_retrieve_data_for_new_offerer_validation_email):
         # Given
         offerer = Offerer()
         user_offerer = UserOfferer()
-        user_offerer.rights = RightsType.editor
         user_offerer.user = User(email='test@example.com')
         mocked_send_email = Mock()
 
@@ -320,11 +314,8 @@ class SendValidationConfirmationEmailTest:
         send_validation_confirmation_email(user_offerer, offerer, mocked_send_email)
 
         # Then
-        make_validation_confirmation_email.assert_called_once_with(user_offerer, offerer)
-
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'admin1@example.com, admin2@example.com'
+        mock_retrieve_data_for_new_offerer_validation_email.assert_called_once_with(user_offerer, offerer)
+        mocked_send_email.assert_called_once_with(data={'Mj-TemplateID': 778723})
 
 
 class SendCancellationEmailOneUserTest:

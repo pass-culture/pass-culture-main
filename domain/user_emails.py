@@ -4,6 +4,7 @@ from emails.beneficiary_activation import get_activation_email_data
 from emails.beneficiary_offer_cancellation import retrieve_offerer_booking_recap_email_data_after_user_cancellation
 from emails.beneficiary_warning_after_pro_booking_cancellation import \
     retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation
+from emails.new_offerer_validation import retrieve_data_for_new_offerer_validation_email
 from emails.offerer_booking_recap import retrieve_data_for_offerer_booking_recap_email
 from emails.pro_waiting_validation import retrieve_data_for_pro_user_waiting_offerer_validation_email
 from emails.user_reset_password import retrieve_data_for_reset_password_email
@@ -13,8 +14,9 @@ from repository.stock_queries import set_booking_recap_sent_and_save
 from repository.user_queries import find_all_emails_of_user_offerers_admins
 from utils.logger import logger
 from emails.beneficiary_booking_cancellation import make_beneficiary_booking_cancellation_email_data
-from utils.mailing import make_offerer_driven_cancellation_email_for_offerer, make_final_recap_email_for_stock_with_event, \
-    make_validation_confirmation_email, make_batch_cancellation_email, \
+from utils.mailing import make_offerer_driven_cancellation_email_for_offerer, \
+    make_final_recap_email_for_stock_with_event, \
+    make_batch_cancellation_email, \
     make_user_validation_email, \
     make_venue_validated_email, compute_email_html_part_and_recipients, \
     ADMINISTRATION_EMAIL_ADDRESS, make_reset_password_email
@@ -104,10 +106,7 @@ def send_reset_password_email_with_mailjet_template(user: User, send_email: Call
 
 def send_validation_confirmation_email(user_offerer: UserOfferer, offerer: Offerer,
                                        send_email: Callable[..., bool]) -> bool:
-    offerer_id = _get_offerer_id(offerer, user_offerer)
-    recipients = find_all_emails_of_user_offerers_admins(offerer_id)
-    email = make_validation_confirmation_email(user_offerer, offerer)
-    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
+    email = retrieve_data_for_new_offerer_validation_email(user_offerer, offerer)
     return send_email(data=email)
 
 
@@ -161,11 +160,3 @@ def send_activation_email(user: User, send_email: Callable[..., bool]) -> bool:
     activation_email_data = get_activation_email_data(user)
 
     return send_email(activation_email_data)
-
-
-def _get_offerer_id(offerer: Offerer, user_offerer: UserOfferer) -> int:
-    if offerer is None:
-        offerer_id = user_offerer.offerer.id
-    else:
-        offerer_id = offerer.id
-    return offerer_id

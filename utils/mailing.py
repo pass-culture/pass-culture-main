@@ -119,7 +119,7 @@ def extract_users_information_from_bookings(bookings: List[Booking]) -> List[dic
     return [dict(zip(users_keys, user_property)) for user_property in users_properties]
 
 
-def _create_email_recipients(recipients: List[str]) -> str:
+def create_email_recipients(recipients: List[str]) -> str:
     if feature_send_mail_to_users_enabled():
         return ', '.join(recipients)
     else:
@@ -241,37 +241,6 @@ def make_offerer_driven_cancellation_email_for_offerer(booking: Booking) -> Dict
         'FromName': 'pass Culture',
         'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
         'Subject': email_subject,
-        'Html-part': email_html,
-    }
-
-
-def make_validation_confirmation_email(user_offerer: UserOfferer, offerer: Offerer) -> Dict:
-    user_offerer_email = None
-    user_offerer_rights = None
-    if user_offerer is not None:
-        user_offerer_email = find_user_offerer_email(user_offerer.id)
-        if user_offerer.rights == RightsType.admin:
-            user_offerer_rights = 'administrateur'
-        else:
-            user_offerer_rights = 'éditeur'
-    email_html = render_template(
-        'mails/user_offerer_and_offerer_validation_confirmation_email.html',
-        user_offerer_email=user_offerer_email,
-        offerer=offerer,
-        user_offerer_rights=user_offerer_rights
-    )
-    if user_offerer and offerer:
-        subject = 'Validation de votre structure et de compte {} rattaché'.format(
-            user_offerer_rights)
-    elif user_offerer:
-        subject = 'Validation de compte {} rattaché à votre structure'.format(
-            user_offerer_rights)
-    else:
-        subject = 'Validation de votre structure'
-    return {
-        'FromName': 'pass Culture pro',
-        'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
-        'Subject': subject,
         'Html-part': email_html,
     }
 
