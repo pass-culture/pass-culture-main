@@ -1534,6 +1534,8 @@ class UpdateObjectsTest:
         assert mock_poster_get_allocine.call_count == 2
         assert len(created_product) == 1
         assert len(created_offer) == 2
+        assert created_offer[0].venueId == venue1.id
+        assert created_offer[1].venueId == venue2.id
         assert len(created_stock) == 2
 
 

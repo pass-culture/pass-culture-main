@@ -74,9 +74,9 @@ class AllocineStocks(LocalProvider):
             providable_information_list.append(french_version_offer_providable_information)
 
         for showtime_number in range(showtimes_number):
-            venue_showtime_unique_id = f"{venue_movie_unique_id}-{showtime_number}"
+            venue_movie_showtime_unique_id = f"{venue_movie_unique_id}-{showtime_number}"
             stock_providable_information = self.create_providable_info(Stock,
-                                                                       venue_showtime_unique_id,
+                                                                       venue_movie_showtime_unique_id,
                                                                        datetime.utcnow())
             providable_information_list.append(stock_providable_information)
 
