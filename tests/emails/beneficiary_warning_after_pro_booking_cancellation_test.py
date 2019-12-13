@@ -71,7 +71,7 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
                 'event_date': 'samedi 20 juillet 2019',
                 'event_hour': '14h',
                 'is_event': 1,
-                'is_free_offer': 1,
+                'is_free_offer': 0,
                 'is_online': 0,
                 'is_thing': 0,
                 'offer_name': booking.stock.offer.name,
@@ -106,7 +106,7 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
                 'event_date': '',
                 'event_hour': '',
                 'is_event': 0,
-                'is_free_offer': 1,
+                'is_free_offer': 0,
                 'is_online': 0,
                 'is_thing': 1,
                 'offer_name': booking.stock.offer.name,
@@ -141,7 +141,7 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
                 'event_date': '',
                 'event_hour': '',
                 'is_event': 0,
-                'is_free_offer': 1,
+                'is_free_offer': 0,
                 'is_online': 1,
                 'is_thing': 0,
                 'offer_name': booking.stock.offer.name,
@@ -165,7 +165,7 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
         mailjet_data = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
 
         # Then
-        assert mailjet_data['Vars']['is_free_offer'] == 0
+        assert mailjet_data['Vars']['is_free_offer'] == 1
         assert mailjet_data['Vars']['offer_price'] == '0'
 
     def test_should_display_the_price_multiplied_by_quantity_when_it_is_a_duo_offer(self):
@@ -181,7 +181,7 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
         mailjet_data = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
 
         # Then
-        assert mailjet_data['Vars']['is_free_offer'] == 1
+        assert mailjet_data['Vars']['is_free_offer'] == 0
         assert mailjet_data['Vars']['offer_price'] == '20'
 
     def test_should_use_venue_public_name_when_venue_has_one(self):
