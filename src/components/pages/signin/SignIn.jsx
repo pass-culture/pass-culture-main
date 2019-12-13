@@ -22,9 +22,8 @@ class SignIn extends PureComponent {
     formResolver(formErrors)
   }
 
-  handleSuccess = formResolver => () => {
+  handleSuccess = (formResolver) => () => {
     const { history } = this.props
-
     formResolver()
     history.push('/decouverte')
   }
@@ -39,9 +38,9 @@ class SignIn extends PureComponent {
     )
   }
 
-  renderForm = formProps => {
-    const canSubmit = canSubmitForm(formProps)
-    const { handleSubmit } = formProps
+  renderForm = props => {
+    const canSubmit = canSubmitForm(props)
+    const { handleSubmit } = props
 
     return (
       <form
@@ -88,7 +87,7 @@ class SignIn extends PureComponent {
             url: '/beta',
           }}
           submit={{
-            className: 'is-bold is-white-text',
+            className: 'is-bold',
             disabled: !canSubmit,
             id: 'signin-button',
             label: 'Connexion',

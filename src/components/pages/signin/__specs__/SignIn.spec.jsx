@@ -65,5 +65,57 @@ describe('component | SignIn', () => {
         expect.any(Function)
       )
     })
+
+    it('should redirect to discovery page when user sign in succeeded', async () => {
+      // given
+      const mock = jest.fn()
+      props.signIn = jest.spyOn(props, 'signIn').mockImplementation((values, fail, success) => {
+        new Promise(resolve => resolve())
+          .then(success(mock)())
+      })
+      const wrapper = mount(
+        <Router history={history}>
+          <SignIn {...props} />
+        </Router>
+      )
+      wrapper.find(EmailField).find('input').simulate('change', { target: { value: 'pc-beneficiary@example.com' } })
+      wrapper.find(PasswordField).find('input').simulate('change', { target: { value: 'abcdef1234' } })
+      const signInButton = wrapper.findWhere(node => node.text() === 'Connexion').first()
+
+      // when
+      await signInButton.simulate('submit')
+
+      // then
+      expect(history.push).toHaveBeenCalledWith('/decouverte')
+    })
+
+    it('should display inputs error when user sign in failed', async () => {
+      // given
+      const state = {}
+      const mock = jest.fn()
+      const action = {
+        payload: {
+          errors: ['error1']
+        }
+      }
+      props.signIn = jest.spyOn(props, 'signIn').mockImplementation((values, fail) => {
+        new Promise(resolve => resolve())
+          .catch(fail(mock)(state, action))
+      })
+      const wrapper = mount(
+        <Router history={history}>
+          <SignIn {...props} />
+        </Router>
+      )
+      wrapper.find(EmailField).find('input').simulate('change', { target: { value: 'pc-beneficiary@example.com' } })
+      wrapper.find(PasswordField).find('input').simulate('change', { target: { value: 'abcdef1234' } })
+      const signInButton = wrapper.findWhere(node => node.text() === 'Connexion').first()
+
+      // when
+      await signInButton.simulate('submit')
+
+      // then
+      expect(mock).toHaveBeenCalledWith({ 0: 'error1' })
+    })
   })
 })
