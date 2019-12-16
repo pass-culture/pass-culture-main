@@ -2,11 +2,11 @@ import { compose } from 'redux'
 import { withRouter } from 'react-router'
 import { connect } from 'react-redux'
 import { App } from './App'
-import { isMaintenanceSelector } from '../selectors/isMaintenanceSelector'
+import { maintenanceSelector } from '../selectors/maintenanceSelector'
 
-export function mapStateToProps(state) {
+export const mapStateToProps = state => {
   return {
-    isMaintenanceActivated: isMaintenanceSelector(state),
+    isMaintenanceActivated: maintenanceSelector(state),
   }
 }
 

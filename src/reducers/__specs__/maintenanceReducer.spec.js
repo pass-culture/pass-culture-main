@@ -1,6 +1,6 @@
 import maintenanceReducer from '../maintenanceReducer'
 
-describe('src | Reducers | Maintenance errors', () => {
+describe('src | reducers | maintenance', () => {
   it('should have an initial state', () => {
     // When
     const newState = maintenanceReducer()
@@ -15,20 +15,6 @@ describe('src | Reducers | Maintenance errors', () => {
 describe('when receiving a FAIL_DATA_ event', () => {
   it('should mark maintenance as activated when receiving a 503 status code', () => {
     const action = {
-      config: {
-        method: 'GET',
-        rootUrl: 'http://localhost',
-        timeout: 50000,
-        apiPath: '/offerers/DY',
-        normalizer: {
-          managedVenues: {
-            normalizer: {
-              offers: 'offers',
-            },
-            stateKey: 'venues',
-          },
-        },
-      },
       payload: {
         headers: {
           'content-type': 'application/json',
@@ -52,20 +38,6 @@ describe('when receiving a FAIL_DATA_ event', () => {
   it('should leave isActivated as false when receiving any status code different than 503', () => {
     // Given
     const action = {
-      config: {
-        method: 'GET',
-        rootUrl: 'http://localhost',
-        timeout: 50000,
-        apiPath: '/offerers/DY',
-        normalizer: {
-          managedVenues: {
-            normalizer: {
-              offers: 'offers',
-            },
-            stateKey: 'venues',
-          },
-        },
-      },
       payload: {
         headers: {
           'content-type': 'application/json',
@@ -91,12 +63,6 @@ describe('when receiving a SUCCESS_DATA_ event', () => {
   it('should mark maintenance as deactivated when receiving a success', () => {
     // Given
     const action = {
-      config: {
-        method: 'GET',
-        rootUrl: 'http://localhost',
-        timeout: 50000,
-        apiPath: '/features',
-      },
       payload: {
         headers: {
           'content-type': 'application/json',

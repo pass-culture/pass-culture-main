@@ -28,7 +28,7 @@ describe('src | components | App', () => {
     expect(wrapper).toMatchSnapshot()
   })
 
-  it('should render a Redirect component when isMaintenanceSelector.js is true', () => {
+  it('should render a RedirectToMaintenance component when maintenance mode is activated', () => {
     // given
     const props = {
       history: {},
@@ -45,7 +45,7 @@ describe('src | components | App', () => {
     )
 
     // then
-    const redirectNode = wrapper.find(RedirectToMaintenance)
-    expect(redirectNode).toHaveLength(1)
+    const redirectToMaintenance = wrapper.find(RedirectToMaintenance)
+    expect(redirectToMaintenance).toHaveLength(1)
   })
 })
