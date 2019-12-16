@@ -32,7 +32,8 @@ TIMEFORMAT=%R
 
 OPTIND=1
 
-while getopts hcdnuza:r: opt; do
+script_parameters="hcdnuza:r:"
+while getopts $script_parameters opt; do
     case $opt in
         h)
             show_help
