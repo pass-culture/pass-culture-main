@@ -33,16 +33,13 @@
 }
 
 #sign-in-link {
+  color: $white;
   font-weight: 700;
+  font-size: rem(16px);
 }
 
-footer {
-  display: flex;
-  flex: 0;
-
-  a {
-    color: inherit;
-    font-size: rem(16px);
-    text-decoration: none;
-  }
+#sign-up-link {
+  color: $white;
+  font-size: rem(16px);
+  text-decoration: none;
 }

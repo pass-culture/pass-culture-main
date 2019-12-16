@@ -1,8 +1,10 @@
 import React from 'react'
-import { shallow } from 'enzyme'
+import { mount, shallow } from 'enzyme'
 
 import BetaPage from '../BetaPage'
 import FormFooter from '../../../forms/FormFooter'
+import {  Router } from 'react-router'
+import { createBrowserHistory } from 'history'
 
 describe('components | BetaPage', () => {
   it('should render page component with pass culture information', () => {
@@ -10,11 +12,12 @@ describe('components | BetaPage', () => {
     const wrapper = shallow(<BetaPage />)
 
     // then
-    const divs = wrapper.find('main').find('div')
-    expect(divs).toHaveLength(3)
-    expect(divs.at(0).text()).toBe('Bienvenue dans\nvotre pass Culture')
-    expect(divs.at(1).text()).toBe('Vous avez 18 ans et vivez dans un\ndépartement éligible ?')
-    expect(divs.at(2).text()).toBe('Bénéficiez de 500 € afin de\nrenforcer vos pratiques\nculturelles et d\'en découvrir\nde nouvelles !')
+    const line1 = wrapper.findWhere(node => node.text() ===  'Bienvenue dans\nvotre pass Culture')
+    const line2 = wrapper.findWhere(node => node.text() ===  'Vous avez 18 ans et vivez dans un\ndépartement éligible ?')
+    const line3 = wrapper.findWhere(node => node.text() ===  "Bénéficiez de 500 € afin de\nrenforcer vos pratiques\nculturelles et d'en découvrir\nde nouvelles !")
+    expect(line1).toHaveLength(1)
+    expect(line2).toHaveLength(1)
+    expect(line3).toHaveLength(1)
   })
 
   it('should render a FormFooter component with the right props', () => {
@@ -35,5 +38,22 @@ describe('components | BetaPage', () => {
       label: "J'ai un compte",
       url: '/connexion'
     })
+  })
+
+  it('should redirect to sign in page when clicking on sign in link', () => {
+    // given
+    const history = createBrowserHistory()
+    const wrapper = mount(
+      <Router history={history}>
+        <BetaPage />
+      </Router>)
+    const signInLink = wrapper.findWhere(node => node.text() ===  "J'ai un compte").first()
+
+    // when
+    // see issue : shorturl.at/rxCHW
+    signInLink.simulate('click', { button: 0 })
+
+    // then
+    expect(wrapper.prop('history').location.pathname).toBe('/connexion')
   })
 })
