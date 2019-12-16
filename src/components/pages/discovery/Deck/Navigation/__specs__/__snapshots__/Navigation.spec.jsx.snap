@@ -90,7 +90,6 @@ ShallowWrapper {
                   alt="Plus d'infos"
                   className=" "
                   png={null}
-                  src={null}
                   svg="ico-slideup-w"
                 />
               </button>
@@ -186,7 +185,6 @@ ShallowWrapper {
                     alt="Plus d'infos"
                     className=" "
                     png={null}
-                    src={null}
                     svg="ico-slideup-w"
                   />
                 </button>
@@ -290,7 +288,6 @@ ShallowWrapper {
                     alt="Plus d'infos"
                     className=" "
                     png={null}
-                    src={null}
                     svg="ico-slideup-w"
                   />
                 </button>
@@ -353,7 +350,6 @@ ShallowWrapper {
                     alt="Plus d'infos"
                     className=" "
                     png={null}
-                    src={null}
                     svg="ico-slideup-w"
                   />
                 </button>
@@ -422,7 +418,6 @@ ShallowWrapper {
                       alt="Plus d'infos"
                       className=" "
                       png={null}
-                      src={null}
                       svg="ico-slideup-w"
                     />
                   </button>,
@@ -466,7 +461,6 @@ ShallowWrapper {
                       alt="Plus d'infos"
                       className=" "
                       png={null}
-                      src={null}
                       svg="ico-slideup-w"
                     />,
                     "className": "button to-recto",
@@ -484,7 +478,6 @@ ShallowWrapper {
                       "alt": "Plus d'infos",
                       "className": " ",
                       "png": null,
-                      "src": null,
                       "svg": "ico-slideup-w",
                     },
                     "ref": null,
@@ -676,7 +669,6 @@ ShallowWrapper {
                     alt="Plus d'infos"
                     className=" "
                     png={null}
-                    src={null}
                     svg="ico-slideup-w"
                   />
                 </button>
@@ -772,7 +764,6 @@ ShallowWrapper {
                       alt="Plus d'infos"
                       className=" "
                       png={null}
-                      src={null}
                       svg="ico-slideup-w"
                     />
                   </button>
@@ -876,7 +867,6 @@ ShallowWrapper {
                       alt="Plus d'infos"
                       className=" "
                       png={null}
-                      src={null}
                       svg="ico-slideup-w"
                     />
                   </button>
@@ -939,7 +929,6 @@ ShallowWrapper {
                       alt="Plus d'infos"
                       className=" "
                       png={null}
-                      src={null}
                       svg="ico-slideup-w"
                     />
                   </button>
@@ -1008,7 +997,6 @@ ShallowWrapper {
                         alt="Plus d'infos"
                         className=" "
                         png={null}
-                        src={null}
                         svg="ico-slideup-w"
                       />
                     </button>,
@@ -1052,7 +1040,6 @@ ShallowWrapper {
                         alt="Plus d'infos"
                         className=" "
                         png={null}
-                        src={null}
                         svg="ico-slideup-w"
                       />,
                       "className": "button to-recto",
@@ -1070,7 +1057,6 @@ ShallowWrapper {
                         "alt": "Plus d'infos",
                         "className": " ",
                         "png": null,
-                        "src": null,
                         "svg": "ico-slideup-w",
                       },
                       "ref": null,

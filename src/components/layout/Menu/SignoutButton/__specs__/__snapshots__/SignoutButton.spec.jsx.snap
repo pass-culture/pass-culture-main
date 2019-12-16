@@ -42,7 +42,6 @@ ShallowWrapper {
             alt=""
             className={null}
             png={null}
-            src={null}
             svg="ico-deconnect-w"
           />
         </span>,
@@ -68,7 +67,6 @@ ShallowWrapper {
             alt=""
             className={null}
             png={null}
-            src={null}
             svg="ico-deconnect-w"
           />,
           "className": "menu-icon mr16 text-center",
@@ -82,7 +80,6 @@ ShallowWrapper {
             "alt": "",
             "className": null,
             "png": null,
-            "src": null,
             "svg": "ico-deconnect-w",
           },
           "ref": null,
@@ -120,7 +117,6 @@ ShallowWrapper {
               alt=""
               className={null}
               png={null}
-              src={null}
               svg="ico-deconnect-w"
             />
           </span>,
@@ -146,7 +142,6 @@ ShallowWrapper {
               alt=""
               className={null}
               png={null}
-              src={null}
               svg="ico-deconnect-w"
             />,
             "className": "menu-icon mr16 text-center",
@@ -160,7 +155,6 @@ ShallowWrapper {
               "alt": "",
               "className": null,
               "png": null,
-              "src": null,
               "svg": "ico-deconnect-w",
             },
             "ref": null,

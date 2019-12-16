@@ -9,6 +9,8 @@ import Icon from '../../../Icon/Icon'
 import getDurationFromMinutes from './utils/getDurationFromMinutes'
 import VersoActionsBar from './VersoActionsBar/VersoActionsBar'
 
+const UNKNOWN_DISTANCE = '-'
+
 class VersoContentOffer extends PureComponent {
   componentDidMount() {
     const { handleRequestMusicAndShowTypes } = this.props
@@ -142,6 +144,7 @@ class VersoContentOffer extends PureComponent {
     const { distance, offer } = this.props
     const { venue } = offer || {}
     const { address, city, latitude, longitude, name, postalCode, publicName } = venue || {}
+    const isNotDigitalOffer = latitude && longitude
 
     return (
       <Fragment>
@@ -149,20 +152,20 @@ class VersoContentOffer extends PureComponent {
           <h3>
             {'Où ?'}
           </h3>
-          {latitude && longitude && (
+          {isNotDigitalOffer && (
             <a
-              className="distance"
+              className="vco-distance"
               href={navigationLink(latitude, longitude)}
               rel="noopener noreferrer"
               target="_blank"
+              title="Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre"
             >
               <Icon
-                alt="Géolocalisation dans Open Street Map"
-                className="geolocation-icon"
+                className="vco-geolocation-icon"
                 png="geoloc"
               />
               <span>
-                {`À ${distance}`}
+                {distance === UNKNOWN_DISTANCE ? UNKNOWN_DISTANCE : `À ${distance}`}
               </span>
             </a>
           )}
@@ -170,23 +173,35 @@ class VersoContentOffer extends PureComponent {
         <address>
           {publicName || name}
           <br />
-          {address && address}
-          <br />
-          {postalCode && postalCode}
-          <br />
-          {city && city}
-          <br />
+          {address && (
+            <Fragment>
+              {address}
+              <br />
+            </Fragment>
+          )}
+          {postalCode && (
+            <Fragment>
+              {postalCode}
+              <br />
+            </Fragment>
+          )}
+          {city && (
+            <Fragment>
+              {city}
+              <br />
+            </Fragment>
+          )}
         </address>
-        {latitude && longitude && (
+        {isNotDigitalOffer && (
           <a
-            className="itinerary"
+            className="vco-itinerary"
             href={navigationLink(latitude, longitude)}
             rel="noopener noreferrer"
             target="_blank"
+            title="Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre"
           >
             <Icon
-              alt="Géolocalisation dans Open Street Map"
-              className="geolocation-icon"
+              className="vco-geolocation-icon"
               png="go"
             />
             <span>

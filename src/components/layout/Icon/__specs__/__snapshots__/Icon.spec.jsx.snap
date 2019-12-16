@@ -4,10 +4,9 @@ exports[`src | components | layout | Icon should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Icon
-    alt={null}
+    alt=""
     className={null}
     png={null}
-    src={null}
     svg={null}
   />,
   Symbol(enzyme.__renderer__): Object {
@@ -24,9 +23,9 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "host",
     "props": Object {
-      "alt": null,
+      "alt": "",
       "className": null,
-      "src": "http://localhost/icons/null.png",
+      "src": "path/to/icons/null.png",
     },
     "ref": null,
     "rendered": null,
@@ -38,9 +37,9 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "host",
       "props": Object {
-        "alt": null,
+        "alt": "",
         "className": null,
-        "src": "http://localhost/icons/null.png",
+        "src": "path/to/icons/null.png",
       },
       "ref": null,
       "rendered": null,

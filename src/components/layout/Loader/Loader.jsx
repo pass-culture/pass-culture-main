@@ -88,7 +88,6 @@ class Loader extends React.PureComponent {
             <div className="flex-1 flex-rows flex-center">
               {isLoading && <Icon
                 alt=""
-                draggable={false}
                 svg="ico-loading-card"
                             />}
               <h2 className="fs20 is-normal">

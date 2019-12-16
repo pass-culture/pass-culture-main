@@ -62,7 +62,6 @@ ShallowWrapper {
                 alt="erreur"
                 className={null}
                 png={null}
-                src={null}
                 svg="picto-info"
               />
             </div>
@@ -117,7 +116,6 @@ ShallowWrapper {
                   alt="erreur"
                   className={null}
                   png={null}
-                  src={null}
                   svg="picto-info"
                 />
               </div>
@@ -205,7 +203,6 @@ ShallowWrapper {
                     alt="erreur"
                     className={null}
                     png={null}
-                    src={null}
                     svg="picto-info"
                   />
                 </div>,
@@ -228,7 +225,6 @@ ShallowWrapper {
                     alt="erreur"
                     className={null}
                     png={null}
-                    src={null}
                     svg="picto-info"
                   />,
                   "className": "mb-info-picto",
@@ -242,7 +238,6 @@ ShallowWrapper {
                     "alt": "erreur",
                     "className": null,
                     "png": null,
-                    "src": null,
                     "svg": "picto-info",
                   },
                   "ref": null,
@@ -325,7 +320,6 @@ ShallowWrapper {
                   alt="erreur"
                   className={null}
                   png={null}
-                  src={null}
                   svg="picto-info"
                 />
               </div>
@@ -380,7 +374,6 @@ ShallowWrapper {
                     alt="erreur"
                     className={null}
                     png={null}
-                    src={null}
                     svg="picto-info"
                   />
                 </div>
@@ -468,7 +461,6 @@ ShallowWrapper {
                       alt="erreur"
                       className={null}
                       png={null}
-                      src={null}
                       svg="picto-info"
                     />
                   </div>,
@@ -491,7 +483,6 @@ ShallowWrapper {
                       alt="erreur"
                       className={null}
                       png={null}
-                      src={null}
                       svg="picto-info"
                     />,
                     "className": "mb-info-picto",
@@ -505,7 +496,6 @@ ShallowWrapper {
                       "alt": "erreur",
                       "className": null,
                       "png": null,
-                      "src": null,
                       "svg": "picto-info",
                     },
                     "ref": null,
@@ -625,7 +615,6 @@ ShallowWrapper {
                 alt="erreur"
                 className={null}
                 png={null}
-                src={null}
                 svg="picto-info"
               />
             </div>
@@ -684,7 +673,6 @@ ShallowWrapper {
                   alt="erreur"
                   className={null}
                   png={null}
-                  src={null}
                   svg="picto-info"
                 />
               </div>
@@ -737,7 +725,6 @@ ShallowWrapper {
                     alt="erreur"
                     className={null}
                     png={null}
-                    src={null}
                     svg="picto-info"
                   />
                 </div>,
@@ -760,7 +747,6 @@ ShallowWrapper {
                     alt="erreur"
                     className={null}
                     png={null}
-                    src={null}
                     svg="picto-info"
                   />,
                   "className": "mb-info-picto",
@@ -774,7 +760,6 @@ ShallowWrapper {
                     "alt": "erreur",
                     "className": null,
                     "png": null,
-                    "src": null,
                     "svg": "picto-info",
                   },
                   "ref": null,
@@ -900,7 +885,6 @@ ShallowWrapper {
                   alt="erreur"
                   className={null}
                   png={null}
-                  src={null}
                   svg="picto-info"
                 />
               </div>
@@ -959,7 +943,6 @@ ShallowWrapper {
                     alt="erreur"
                     className={null}
                     png={null}
-                    src={null}
                     svg="picto-info"
                   />
                 </div>
@@ -1012,7 +995,6 @@ ShallowWrapper {
                       alt="erreur"
                       className={null}
                       png={null}
-                      src={null}
                       svg="picto-info"
                     />
                   </div>,
@@ -1035,7 +1017,6 @@ ShallowWrapper {
                       alt="erreur"
                       className={null}
                       png={null}
-                      src={null}
                       svg="picto-info"
                     />,
                     "className": "mb-info-picto",
@@ -1049,7 +1030,6 @@ ShallowWrapper {
                       "alt": "erreur",
                       "className": null,
                       "png": null,
-                      "src": null,
                       "svg": "picto-info",
                     },
                     "ref": null,
@@ -1228,7 +1208,6 @@ ShallowWrapper {
                 alt="erreur"
                 className={null}
                 png={null}
-                src={null}
                 svg="picto-info"
               />
             </div>
@@ -1284,7 +1263,6 @@ ShallowWrapper {
                   alt="erreur"
                   className={null}
                   png={null}
-                  src={null}
                   svg="picto-info"
                 />
               </div>
@@ -1334,7 +1312,6 @@ ShallowWrapper {
                     alt="erreur"
                     className={null}
                     png={null}
-                    src={null}
                     svg="picto-info"
                   />
                 </div>,
@@ -1357,7 +1334,6 @@ ShallowWrapper {
                     alt="erreur"
                     className={null}
                     png={null}
-                    src={null}
                     svg="picto-info"
                   />,
                   "className": "mb-info-picto",
@@ -1371,7 +1347,6 @@ ShallowWrapper {
                     "alt": "erreur",
                     "className": null,
                     "png": null,
-                    "src": null,
                     "svg": "picto-info",
                   },
                   "ref": null,
@@ -1491,7 +1466,6 @@ ShallowWrapper {
                   alt="erreur"
                   className={null}
                   png={null}
-                  src={null}
                   svg="picto-info"
                 />
               </div>
@@ -1547,7 +1521,6 @@ ShallowWrapper {
                     alt="erreur"
                     className={null}
                     png={null}
-                    src={null}
                     svg="picto-info"
                   />
                 </div>
@@ -1597,7 +1570,6 @@ ShallowWrapper {
                       alt="erreur"
                       className={null}
                       png={null}
-                      src={null}
                       svg="picto-info"
                     />
                   </div>,
@@ -1620,7 +1592,6 @@ ShallowWrapper {
                       alt="erreur"
                       className={null}
                       png={null}
-                      src={null}
                       svg="picto-info"
                     />,
                     "className": "mb-info-picto",
@@ -1634,7 +1605,6 @@ ShallowWrapper {
                       "alt": "erreur",
                       "className": null,
                       "png": null,
-                      "src": null,
                       "svg": "picto-info",
                     },
                     "ref": null,
@@ -2019,7 +1989,6 @@ ShallowWrapper {
                 alt="erreur"
                 className={null}
                 png={null}
-                src={null}
                 svg="picto-info"
               />
             </div>
@@ -2074,7 +2043,6 @@ ShallowWrapper {
                   alt="erreur"
                   className={null}
                   png={null}
-                  src={null}
                   svg="picto-info"
                 />
               </div>
@@ -2162,7 +2130,6 @@ ShallowWrapper {
                     alt="erreur"
                     className={null}
                     png={null}
-                    src={null}
                     svg="picto-info"
                   />
                 </div>,
@@ -2185,7 +2152,6 @@ ShallowWrapper {
                     alt="erreur"
                     className={null}
                     png={null}
-                    src={null}
                     svg="picto-info"
                   />,
                   "className": "mb-info-picto",
@@ -2199,7 +2165,6 @@ ShallowWrapper {
                     "alt": "erreur",
                     "className": null,
                     "png": null,
-                    "src": null,
                     "svg": "picto-info",
                   },
                   "ref": null,
@@ -2282,7 +2247,6 @@ ShallowWrapper {
                   alt="erreur"
                   className={null}
                   png={null}
-                  src={null}
                   svg="picto-info"
                 />
               </div>
@@ -2337,7 +2301,6 @@ ShallowWrapper {
                     alt="erreur"
                     className={null}
                     png={null}
-                    src={null}
                     svg="picto-info"
                   />
                 </div>
@@ -2425,7 +2388,6 @@ ShallowWrapper {
                       alt="erreur"
                       className={null}
                       png={null}
-                      src={null}
                       svg="picto-info"
                     />
                   </div>,
@@ -2448,7 +2410,6 @@ ShallowWrapper {
                       alt="erreur"
                       className={null}
                       png={null}
-                      src={null}
                       svg="picto-info"
                     />,
                     "className": "mb-info-picto",
@@ -2462,7 +2423,6 @@ ShallowWrapper {
                       "alt": "erreur",
                       "className": null,
                       "png": null,
-                      "src": null,
                       "svg": "picto-info",
                     },
                     "ref": null,

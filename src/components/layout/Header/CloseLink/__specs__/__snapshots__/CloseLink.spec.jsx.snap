@@ -26,7 +26,6 @@ ShallowWrapper {
         alt="fake close title"
         className="close-link-img"
         png={null}
-        src={null}
         svg="ico-close"
       />,
       "className": "close-link",
@@ -42,7 +41,6 @@ ShallowWrapper {
         "alt": "fake close title",
         "className": "close-link-img",
         "png": null,
-        "src": null,
         "svg": "ico-close",
       },
       "ref": null,
@@ -72,7 +70,6 @@ ShallowWrapper {
           alt="fake close title"
           className="close-link-img"
           png={null}
-          src={null}
           svg="ico-close"
         />,
         "className": "close-link",
@@ -88,7 +85,6 @@ ShallowWrapper {
           "alt": "fake close title",
           "className": "close-link-img",
           "png": null,
-          "src": null,
           "svg": "ico-close",
         },
         "ref": null,

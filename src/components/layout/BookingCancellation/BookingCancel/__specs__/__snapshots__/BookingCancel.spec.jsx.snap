@@ -38,10 +38,9 @@ ShallowWrapper {
             }
           >
             <Icon
-              alt={null}
+              alt=""
               className={null}
               png={null}
-              src={null}
               svg="picto-validation"
             />
           </span>
@@ -86,10 +85,9 @@ ShallowWrapper {
               }
             >
               <Icon
-                alt={null}
+                alt=""
                 className={null}
                 png={null}
-                src={null}
                 svg="picto-validation"
               />
             </span>,
@@ -108,10 +106,9 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": <Icon
-                alt={null}
+                alt=""
                 className={null}
                 png={null}
-                src={null}
                 svg="picto-validation"
               />,
               "className": "is-block mt24 mb8",
@@ -126,10 +123,9 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "function",
               "props": Object {
-                "alt": null,
+                "alt": "",
                 "className": null,
                 "png": null,
-                "src": null,
                 "svg": "picto-validation",
               },
               "ref": null,
@@ -222,10 +218,9 @@ ShallowWrapper {
               }
             >
               <Icon
-                alt={null}
+                alt=""
                 className={null}
                 png={null}
-                src={null}
                 svg="picto-validation"
               />
             </span>
@@ -270,10 +265,9 @@ ShallowWrapper {
                 }
               >
                 <Icon
-                  alt={null}
+                  alt=""
                   className={null}
                   png={null}
-                  src={null}
                   svg="picto-validation"
                 />
               </span>,
@@ -292,10 +286,9 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": <Icon
-                  alt={null}
+                  alt=""
                   className={null}
                   png={null}
-                  src={null}
                   svg="picto-validation"
                 />,
                 "className": "is-block mt24 mb8",
@@ -310,10 +303,9 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "function",
                 "props": Object {
-                  "alt": null,
+                  "alt": "",
                   "className": null,
                   "png": null,
-                  "src": null,
                   "svg": "picto-validation",
                 },
                 "ref": null,

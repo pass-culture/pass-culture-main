@@ -14,58 +14,50 @@
     padding-left: 2px;
   }
 
-  .offerer {
-    text-align: right;
-    color: $primary;
-    font-size: 1.2em;
-    margin-left: 40%;
-    margin-bottom: 1rem;
-  }
-
   ul.dates-info {
-    margin-bottom: 1rem;
+    margin-bottom: rem(16px);
     list-style: none;
     margin-left: 0;
 
     li + li {
-      margin-top: 0.3rem;
+      margin-top: rem(5px);
     }
   }
+}
 
-  a.distance {
-    padding-top: 0.75rem;
-    padding-bottom: 0.5rem;
-    display: flex;
-    align-items: center;
-    font-weight: 200;
-    color: $primary;
-    font-size: rem(16px);
-    text-decoration: none;
-    line-height: rem(29px);
+.vco-distance {
+  padding-top: rem(12px);
+  padding-bottom: rem(8px);
+  display: flex;
+  align-items: center;
+  font-weight: 200;
+  color: $primary;
+  font-size: rem(16px);
+  text-decoration: none;
+  line-height: rem(29px);
 
-    span {
-      margin-left: 0.75rem;
-    }
+  span {
+    margin-left: rem(12px);
   }
+}
 
-  a.itinerary {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: $primary;
-    font-weight: bold;
-    margin-top: 1em;
-    padding: rem(6px) 0;
-    border: rem(2px) solid $primary;
-    border-radius: rem(24px);
+.vco-itinerary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $primary;
+  font-weight: bold;
+  margin-top: 1em;
+  padding: rem(6px) 0;
+  border: rem(2px) solid $primary;
+  border-radius: rem(24px);
 
-    span {
-      margin-left: 0.75rem;
-    }
+  span {
+    margin-left: rem(12px);
   }
+}
 
-  .geolocation-icon {
-    height: 24px;
-    width: 24px;
-  }
+.vco-geolocation-icon {
+  height: 24px;
+  width: 24px;
 }

@@ -107,10 +107,9 @@ ShallowWrapper {
             className="teaser-arrow"
           >
             <Icon
-              alt={null}
+              alt=""
               className="teaser-arrow-img"
               png={null}
-              src={null}
               svg="ico-next-S"
             />
           </div>
@@ -187,10 +186,9 @@ ShallowWrapper {
               className="teaser-arrow"
             >
               <Icon
-                alt={null}
+                alt=""
                 className="teaser-arrow-img"
                 png={null}
-                src={null}
                 svg="ico-next-S"
               />
             </div>,
@@ -344,10 +342,9 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": <Icon
-                alt={null}
+                alt=""
                 className="teaser-arrow-img"
                 png={null}
-                src={null}
                 svg="ico-next-S"
               />,
               "className": "teaser-arrow",
@@ -358,10 +355,9 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "function",
               "props": Object {
-                "alt": null,
+                "alt": "",
                 "className": "teaser-arrow-img",
                 "png": null,
-                "src": null,
                 "svg": "ico-next-S",
               },
               "ref": null,
@@ -533,10 +529,9 @@ ShallowWrapper {
               className="teaser-arrow"
             >
               <Icon
-                alt={null}
+                alt=""
                 className="teaser-arrow-img"
                 png={null}
-                src={null}
                 svg="ico-next-S"
               />
             </div>
@@ -613,10 +608,9 @@ ShallowWrapper {
                 className="teaser-arrow"
               >
                 <Icon
-                  alt={null}
+                  alt=""
                   className="teaser-arrow-img"
                   png={null}
-                  src={null}
                   svg="ico-next-S"
                 />
               </div>,
@@ -770,10 +764,9 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": <Icon
-                  alt={null}
+                  alt=""
                   className="teaser-arrow-img"
                   png={null}
-                  src={null}
                   svg="ico-next-S"
                 />,
                 "className": "teaser-arrow",
@@ -784,10 +777,9 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "function",
                 "props": Object {
-                  "alt": null,
+                  "alt": "",
                   "className": "teaser-arrow-img",
                   "png": null,
-                  "src": null,
                   "svg": "ico-next-S",
                 },
                 "ref": null,

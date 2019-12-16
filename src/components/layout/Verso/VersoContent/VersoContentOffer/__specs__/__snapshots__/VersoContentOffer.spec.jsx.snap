@@ -115,15 +115,15 @@ ShallowWrapper {
               Où ?
             </h3>
             <a
-              className="distance"
+              className="vco-distance"
               rel="noopener noreferrer"
               target="_blank"
+              title="Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre"
             >
               <Icon
-                alt="Géolocalisation dans Open Street Map"
-                className="geolocation-icon"
+                alt=""
+                className="vco-geolocation-icon"
                 png="geoloc"
-                src={null}
                 svg={null}
               />
               <span>
@@ -134,23 +134,29 @@ ShallowWrapper {
           <address>
             fake publicName
             <br />
-            72 rue Carnot
-            <br />
-            93230
-            <br />
-            ROMAINVILLE
-            <br />
+            <React.Fragment>
+              72 rue Carnot
+              <br />
+            </React.Fragment>
+            <React.Fragment>
+              93230
+              <br />
+            </React.Fragment>
+            <React.Fragment>
+              ROMAINVILLE
+              <br />
+            </React.Fragment>
           </address>
           <a
-            className="itinerary"
+            className="vco-itinerary"
             rel="noopener noreferrer"
             target="_blank"
+            title="Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre"
           >
             <Icon
-              alt="Géolocalisation dans Open Street Map"
-              className="geolocation-icon"
+              alt=""
+              className="vco-geolocation-icon"
               png="go"
-              src={null}
               svg={null}
             />
             <span>
@@ -396,15 +402,15 @@ ShallowWrapper {
                 Où ?
               </h3>
               <a
-                className="distance"
+                className="vco-distance"
                 rel="noopener noreferrer"
                 target="_blank"
+                title="Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre"
               >
                 <Icon
-                  alt="Géolocalisation dans Open Street Map"
-                  className="geolocation-icon"
+                  alt=""
+                  className="vco-geolocation-icon"
                   png="geoloc"
-                  src={null}
                   svg={null}
                 />
                 <span>
@@ -415,23 +421,29 @@ ShallowWrapper {
             <address>
               fake publicName
               <br />
-              72 rue Carnot
-              <br />
-              93230
-              <br />
-              ROMAINVILLE
-              <br />
+              <React.Fragment>
+                72 rue Carnot
+                <br />
+              </React.Fragment>
+              <React.Fragment>
+                93230
+                <br />
+              </React.Fragment>
+              <React.Fragment>
+                ROMAINVILLE
+                <br />
+              </React.Fragment>
             </address>,
             <a
-              className="itinerary"
+              className="vco-itinerary"
               rel="noopener noreferrer"
               target="_blank"
+              title="Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre"
             >
               <Icon
-                alt="Géolocalisation dans Open Street Map"
-                className="geolocation-icon"
+                alt=""
+                className="vco-geolocation-icon"
                 png="go"
-                src={null}
                 svg={null}
               />
               <span>
@@ -452,15 +464,15 @@ ShallowWrapper {
                   Où ?
                 </h3>,
                 <a
-                  className="distance"
+                  className="vco-distance"
                   rel="noopener noreferrer"
                   target="_blank"
+                  title="Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre"
                 >
                   <Icon
-                    alt="Géolocalisation dans Open Street Map"
-                    className="geolocation-icon"
+                    alt=""
+                    className="vco-geolocation-icon"
                     png="geoloc"
-                    src={null}
                     svg={null}
                   />
                   <span>
@@ -490,20 +502,20 @@ ShallowWrapper {
                 "props": Object {
                   "children": Array [
                     <Icon
-                      alt="Géolocalisation dans Open Street Map"
-                      className="geolocation-icon"
+                      alt=""
+                      className="vco-geolocation-icon"
                       png="geoloc"
-                      src={null}
                       svg={null}
                     />,
                     <span>
                       À 1
                     </span>,
                   ],
-                  "className": "distance",
+                  "className": "vco-distance",
                   "href": undefined,
                   "rel": "noopener noreferrer",
                   "target": "_blank",
+                  "title": "Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre",
                 },
                 "ref": null,
                 "rendered": Array [
@@ -512,10 +524,9 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "function",
                     "props": Object {
-                      "alt": "Géolocalisation dans Open Street Map",
-                      "className": "geolocation-icon",
+                      "alt": "",
+                      "className": "vco-geolocation-icon",
                       "png": "geoloc",
-                      "src": null,
                       "svg": null,
                     },
                     "ref": null,
@@ -547,12 +558,18 @@ ShallowWrapper {
               "children": Array [
                 "fake publicName",
                 <br />,
-                "72 rue Carnot",
-                <br />,
-                "93230",
-                <br />,
-                "ROMAINVILLE",
-                <br />,
+                <React.Fragment>
+                  72 rue Carnot
+                  <br />
+                </React.Fragment>,
+                <React.Fragment>
+                  93230
+                  <br />
+                </React.Fragment>,
+                <React.Fragment>
+                  ROMAINVILLE
+                  <br />
+                </React.Fragment>,
               ],
             },
             "ref": null,
@@ -567,35 +584,80 @@ ShallowWrapper {
                 "rendered": null,
                 "type": "br",
               },
-              "72 rue Carnot",
               Object {
                 "instance": null,
                 "key": undefined,
-                "nodeType": "host",
-                "props": Object {},
+                "nodeType": "function",
+                "props": Object {
+                  "children": Array [
+                    "72 rue Carnot",
+                    <br />,
+                  ],
+                },
                 "ref": null,
-                "rendered": null,
-                "type": "br",
+                "rendered": Array [
+                  "72 rue Carnot",
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {},
+                    "ref": null,
+                    "rendered": null,
+                    "type": "br",
+                  },
+                ],
+                "type": Symbol(react.fragment),
               },
-              "93230",
               Object {
                 "instance": null,
                 "key": undefined,
-                "nodeType": "host",
-                "props": Object {},
+                "nodeType": "function",
+                "props": Object {
+                  "children": Array [
+                    "93230",
+                    <br />,
+                  ],
+                },
                 "ref": null,
-                "rendered": null,
-                "type": "br",
+                "rendered": Array [
+                  "93230",
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {},
+                    "ref": null,
+                    "rendered": null,
+                    "type": "br",
+                  },
+                ],
+                "type": Symbol(react.fragment),
               },
-              "ROMAINVILLE",
               Object {
                 "instance": null,
                 "key": undefined,
-                "nodeType": "host",
-                "props": Object {},
+                "nodeType": "function",
+                "props": Object {
+                  "children": Array [
+                    "ROMAINVILLE",
+                    <br />,
+                  ],
+                },
                 "ref": null,
-                "rendered": null,
-                "type": "br",
+                "rendered": Array [
+                  "ROMAINVILLE",
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {},
+                    "ref": null,
+                    "rendered": null,
+                    "type": "br",
+                  },
+                ],
+                "type": Symbol(react.fragment),
               },
             ],
             "type": "address",
@@ -607,20 +669,20 @@ ShallowWrapper {
             "props": Object {
               "children": Array [
                 <Icon
-                  alt="Géolocalisation dans Open Street Map"
-                  className="geolocation-icon"
+                  alt=""
+                  className="vco-geolocation-icon"
                   png="go"
-                  src={null}
                   svg={null}
                 />,
                 <span>
                   Itinéraire
                 </span>,
               ],
-              "className": "itinerary",
+              "className": "vco-itinerary",
               "href": undefined,
               "rel": "noopener noreferrer",
               "target": "_blank",
+              "title": "Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre",
             },
             "ref": null,
             "rendered": Array [
@@ -629,10 +691,9 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "function",
                 "props": Object {
-                  "alt": "Géolocalisation dans Open Street Map",
-                  "className": "geolocation-icon",
+                  "alt": "",
+                  "className": "vco-geolocation-icon",
                   "png": "go",
-                  "src": null,
                   "svg": null,
                 },
                 "ref": null,
@@ -716,15 +777,15 @@ ShallowWrapper {
                 Où ?
               </h3>
               <a
-                className="distance"
+                className="vco-distance"
                 rel="noopener noreferrer"
                 target="_blank"
+                title="Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre"
               >
                 <Icon
-                  alt="Géolocalisation dans Open Street Map"
-                  className="geolocation-icon"
+                  alt=""
+                  className="vco-geolocation-icon"
                   png="geoloc"
-                  src={null}
                   svg={null}
                 />
                 <span>
@@ -735,23 +796,29 @@ ShallowWrapper {
             <address>
               fake publicName
               <br />
-              72 rue Carnot
-              <br />
-              93230
-              <br />
-              ROMAINVILLE
-              <br />
+              <React.Fragment>
+                72 rue Carnot
+                <br />
+              </React.Fragment>
+              <React.Fragment>
+                93230
+                <br />
+              </React.Fragment>
+              <React.Fragment>
+                ROMAINVILLE
+                <br />
+              </React.Fragment>
             </address>
             <a
-              className="itinerary"
+              className="vco-itinerary"
               rel="noopener noreferrer"
               target="_blank"
+              title="Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre"
             >
               <Icon
-                alt="Géolocalisation dans Open Street Map"
-                className="geolocation-icon"
+                alt=""
+                className="vco-geolocation-icon"
                 png="go"
-                src={null}
                 svg={null}
               />
               <span>
@@ -997,15 +1064,15 @@ ShallowWrapper {
                   Où ?
                 </h3>
                 <a
-                  className="distance"
+                  className="vco-distance"
                   rel="noopener noreferrer"
                   target="_blank"
+                  title="Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre"
                 >
                   <Icon
-                    alt="Géolocalisation dans Open Street Map"
-                    className="geolocation-icon"
+                    alt=""
+                    className="vco-geolocation-icon"
                     png="geoloc"
-                    src={null}
                     svg={null}
                   />
                   <span>
@@ -1016,23 +1083,29 @@ ShallowWrapper {
               <address>
                 fake publicName
                 <br />
-                72 rue Carnot
-                <br />
-                93230
-                <br />
-                ROMAINVILLE
-                <br />
+                <React.Fragment>
+                  72 rue Carnot
+                  <br />
+                </React.Fragment>
+                <React.Fragment>
+                  93230
+                  <br />
+                </React.Fragment>
+                <React.Fragment>
+                  ROMAINVILLE
+                  <br />
+                </React.Fragment>
               </address>,
               <a
-                className="itinerary"
+                className="vco-itinerary"
                 rel="noopener noreferrer"
                 target="_blank"
+                title="Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre"
               >
                 <Icon
-                  alt="Géolocalisation dans Open Street Map"
-                  className="geolocation-icon"
+                  alt=""
+                  className="vco-geolocation-icon"
                   png="go"
-                  src={null}
                   svg={null}
                 />
                 <span>
@@ -1053,15 +1126,15 @@ ShallowWrapper {
                     Où ?
                   </h3>,
                   <a
-                    className="distance"
+                    className="vco-distance"
                     rel="noopener noreferrer"
                     target="_blank"
+                    title="Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre"
                   >
                     <Icon
-                      alt="Géolocalisation dans Open Street Map"
-                      className="geolocation-icon"
+                      alt=""
+                      className="vco-geolocation-icon"
                       png="geoloc"
-                      src={null}
                       svg={null}
                     />
                     <span>
@@ -1091,20 +1164,20 @@ ShallowWrapper {
                   "props": Object {
                     "children": Array [
                       <Icon
-                        alt="Géolocalisation dans Open Street Map"
-                        className="geolocation-icon"
+                        alt=""
+                        className="vco-geolocation-icon"
                         png="geoloc"
-                        src={null}
                         svg={null}
                       />,
                       <span>
                         À 1
                       </span>,
                     ],
-                    "className": "distance",
+                    "className": "vco-distance",
                     "href": undefined,
                     "rel": "noopener noreferrer",
                     "target": "_blank",
+                    "title": "Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre",
                   },
                   "ref": null,
                   "rendered": Array [
@@ -1113,10 +1186,9 @@ ShallowWrapper {
                       "key": undefined,
                       "nodeType": "function",
                       "props": Object {
-                        "alt": "Géolocalisation dans Open Street Map",
-                        "className": "geolocation-icon",
+                        "alt": "",
+                        "className": "vco-geolocation-icon",
                         "png": "geoloc",
-                        "src": null,
                         "svg": null,
                       },
                       "ref": null,
@@ -1148,12 +1220,18 @@ ShallowWrapper {
                 "children": Array [
                   "fake publicName",
                   <br />,
-                  "72 rue Carnot",
-                  <br />,
-                  "93230",
-                  <br />,
-                  "ROMAINVILLE",
-                  <br />,
+                  <React.Fragment>
+                    72 rue Carnot
+                    <br />
+                  </React.Fragment>,
+                  <React.Fragment>
+                    93230
+                    <br />
+                  </React.Fragment>,
+                  <React.Fragment>
+                    ROMAINVILLE
+                    <br />
+                  </React.Fragment>,
                 ],
               },
               "ref": null,
@@ -1168,35 +1246,80 @@ ShallowWrapper {
                   "rendered": null,
                   "type": "br",
                 },
-                "72 rue Carnot",
                 Object {
                   "instance": null,
                   "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {},
+                  "nodeType": "function",
+                  "props": Object {
+                    "children": Array [
+                      "72 rue Carnot",
+                      <br />,
+                    ],
+                  },
                   "ref": null,
-                  "rendered": null,
-                  "type": "br",
+                  "rendered": Array [
+                    "72 rue Carnot",
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {},
+                      "ref": null,
+                      "rendered": null,
+                      "type": "br",
+                    },
+                  ],
+                  "type": Symbol(react.fragment),
                 },
-                "93230",
                 Object {
                   "instance": null,
                   "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {},
+                  "nodeType": "function",
+                  "props": Object {
+                    "children": Array [
+                      "93230",
+                      <br />,
+                    ],
+                  },
                   "ref": null,
-                  "rendered": null,
-                  "type": "br",
+                  "rendered": Array [
+                    "93230",
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {},
+                      "ref": null,
+                      "rendered": null,
+                      "type": "br",
+                    },
+                  ],
+                  "type": Symbol(react.fragment),
                 },
-                "ROMAINVILLE",
                 Object {
                   "instance": null,
                   "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {},
+                  "nodeType": "function",
+                  "props": Object {
+                    "children": Array [
+                      "ROMAINVILLE",
+                      <br />,
+                    ],
+                  },
                   "ref": null,
-                  "rendered": null,
-                  "type": "br",
+                  "rendered": Array [
+                    "ROMAINVILLE",
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {},
+                      "ref": null,
+                      "rendered": null,
+                      "type": "br",
+                    },
+                  ],
+                  "type": Symbol(react.fragment),
                 },
               ],
               "type": "address",
@@ -1208,20 +1331,20 @@ ShallowWrapper {
               "props": Object {
                 "children": Array [
                   <Icon
-                    alt="Géolocalisation dans Open Street Map"
-                    className="geolocation-icon"
+                    alt=""
+                    className="vco-geolocation-icon"
                     png="go"
-                    src={null}
                     svg={null}
                   />,
                   <span>
                     Itinéraire
                   </span>,
                 ],
-                "className": "itinerary",
+                "className": "vco-itinerary",
                 "href": undefined,
                 "rel": "noopener noreferrer",
                 "target": "_blank",
+                "title": "Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre",
               },
               "ref": null,
               "rendered": Array [
@@ -1230,10 +1353,9 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "function",
                   "props": Object {
-                    "alt": "Géolocalisation dans Open Street Map",
-                    "className": "geolocation-icon",
+                    "alt": "",
+                    "className": "vco-geolocation-icon",
                     "png": "go",
-                    "src": null,
                     "svg": null,
                   },
                   "ref": null,
