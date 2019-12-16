@@ -133,58 +133,64 @@ class PcObject:
         db.session.add(self)
 
     @staticmethod
-    def restize_global_error(e):
+    def restize_global_error(global_error):
         logger.error("UNHANDLED ERROR : ")
         traceback.print_exc()
         return ["global",
                 "Une erreur technique s'est produite. Elle a été notée, et nous allons investiguer au plus vite."]
 
     @staticmethod
-    def restize_data_error(e):
-        if e.args and len(e.args) > 0 and e.args[0].startswith('(psycopg2.DataError) value too long for type'):
-            max_length = re.search('\(psycopg2.DataError\) value too long for type (.*?) varying\((.*?)\)', e.args[0],
+    def restize_data_error(data_error):
+        if data_error.args and len(data_error.args) > 0 and data_error.args[0].startswith(
+                '(psycopg2.DataError) value too long for type'):
+            max_length = re.search('\(psycopg2.DataError\) value too long for type (.*?) varying\((.*?)\)',
+                                   data_error.args[0],
                                    re.IGNORECASE).group(2)
             return ['global', "La valeur d'une entrée est trop longue (max " + max_length + ")"]
         else:
-            return PcObject.restize_global_error(e)
+            return PcObject.restize_global_error(data_error)
 
     @staticmethod
-    def restize_integrity_error(e):
-        if hasattr(e, 'orig') and hasattr(e.orig, 'pgcode') and e.orig.pgcode == DUPLICATE_KEY_ERROR_CODE:
-            field = re.search('Key \((.*?)\)=', str(e._message), re.IGNORECASE).group(1)
+    def restize_integrity_error(integrity_error):
+        if hasattr(integrity_error, 'orig') and hasattr(integrity_error.orig,
+                                                        'pgcode') and integrity_error.orig.pgcode == DUPLICATE_KEY_ERROR_CODE:
+            field = re.search('Key \((.*?)\)=', str(integrity_error._message), re.IGNORECASE).group(1)
             if "," in field:
                 field = "global"
             return [field, 'Une entrée avec cet identifiant existe déjà dans notre base de données']
-        elif hasattr(e, 'orig') and hasattr(e.orig, 'pgcode') and e.orig.pgcode == NOT_FOUND_KEY_ERROR_CODE:
-            field = re.search('Key \((.*?)\)=', str(e._message), re.IGNORECASE).group(1)
+        elif hasattr(integrity_error, 'orig') and hasattr(integrity_error.orig,
+                                                          'pgcode') and integrity_error.orig.pgcode == NOT_FOUND_KEY_ERROR_CODE:
+            field = re.search('Key \((.*?)\)=', str(integrity_error._message), re.IGNORECASE).group(1)
             return [field, 'Aucun objet ne correspond à cet identifiant dans notre base de données']
-        elif hasattr(e, 'orig') and hasattr(e.orig, 'pgcode') and e.orig.pgcode == OBLIGATORY_FIELD_ERROR_CODE:
-            field = re.search('column "(.*?)"', e.orig.pgerror, re.IGNORECASE).group(1)
+        elif hasattr(integrity_error, 'orig') and hasattr(integrity_error.orig,
+                                                          'pgcode') and integrity_error.orig.pgcode == OBLIGATORY_FIELD_ERROR_CODE:
+            field = re.search('column "(.*?)"', integrity_error.orig.pgerror, re.IGNORECASE).group(1)
             return [field, 'Ce champ est obligatoire']
         else:
-            return PcObject.restize_global_error(e)
+            return PcObject.restize_global_error(integrity_error)
 
     @staticmethod
-    def restize_internal_error(e):
-        return PcObject.restize_global_error(e)
+    def restize_internal_error(internal_error):
+        return PcObject.restize_global_error(internal_error)
 
     @staticmethod
-    def restize_type_error(e):
-        if e.args and len(e.args) > 1 and e.args[1] == 'geography':
-            return [e.args[2], 'doit etre une liste de nombre décimaux comme par exemple : [2.22, 3.22]']
-        elif e.args and len(e.args) > 1 and e.args[1] and e.args[1] == 'decimal':
-            return [e.args[2], 'doit être un nombre décimal']
-        elif e.args and len(e.args) > 1 and e.args[1] and e.args[1] == 'integer':
-            return [e.args[2], 'doit être un entier']
+    def restize_type_error(type_error):
+        if type_error.args and len(type_error.args) > 1 and type_error.args[1] == 'geography':
+            return [type_error.args[2], 'doit etre une liste de nombre décimaux comme par exemple : [2.22, 3.22]']
+        elif type_error.args and len(type_error.args) > 1 and type_error.args[1] and type_error.args[1] == 'decimal':
+            return [type_error.args[2], 'doit être un nombre décimal']
+        elif type_error.args and len(type_error.args) > 1 and type_error.args[1] and type_error.args[1] == 'integer':
+            return [type_error.args[2], 'doit être un entier']
         else:
-            return PcObject.restize_global_error(e)
+            return PcObject.restize_global_error(type_error)
 
     @staticmethod
-    def restize_value_error(e):
-        if len(e.args) > 1 and e.args[1] == 'enum':
-            return [e.args[2], ' doit etre dans cette liste : ' + ",".join(map(lambda x: '"' + x + '"', e.args[3]))]
+    def restize_value_error(value_error):
+        if len(value_error.args) > 1 and value_error.args[1] == 'enum':
+            return [value_error.args[2],
+                    ' doit etre dans cette liste : ' + ",".join(map(lambda x: '"' + x + '"', value_error.args[3]))]
         else:
-            return PcObject.restize_global_error(e)
+            return PcObject.restize_global_error(value_error)
 
     @staticmethod
     def save(*objects):

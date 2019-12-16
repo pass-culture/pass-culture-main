@@ -10,23 +10,13 @@ from local_providers.allocine_stocks import _parse_movie_duration, retrieve_movi
 class ParseMovieDurationTest:
     def test_should_convert_duration_string_to_minutes(self):
         # Given
-        movie_runtime = "PT1H50M0S"
+        movie_runtime = "PT1H50M15S"
 
         # When
         duration_in_minutes = _parse_movie_duration(movie_runtime)
 
         # Then
         assert duration_in_minutes == 110
-
-    def test_should_only_parse_hours_and_minutes(self):
-        # Given
-        movie_runtime = "PT11H0M15S"
-
-        # When
-        duration_in_minutes = _parse_movie_duration(movie_runtime)
-
-        # Then
-        assert duration_in_minutes == 660
 
     def test_should_return_None_when_null_value_given(self):
         # Given
@@ -124,15 +114,16 @@ class RetrieveMovieInformationTest:
         movie_parsed_information = retrieve_movie_information(movie_information['node']['movie'])
 
         # Then
-        assert movie_parsed_information['title'] == "Les Contes de la mère poule"
-        assert movie_parsed_information[
-                   'description'] == "synopsis du film\nTous les détails du film sur AlloCiné:" \
-                                     " http://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html"
-        assert movie_parsed_information["visa"] == "2009993528"
-        assert movie_parsed_information["stageDirector"] == "Farkhondeh Torabi"
-        assert movie_parsed_information['duration'] == 110
-        assert movie_parsed_information[
-                   'poster_url'] == "https://fr.web.img6.acsta.net/medias/nmedia/00/02/32/64/69215979_af.jpg"
+        assert movie_parsed_information == {
+            'id': 'TW92aWU6Mzc4MzI=',
+            'title': "Les Contes de la mère poule",
+            'description': "synopsis du film\n"
+                           "Tous les détails du film sur AlloCiné: http://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html",
+            'visa': "2009993528",
+            'stageDirector': "Farkhondeh Torabi",
+            'duration': 110,
+            'poster_url': "https://fr.web.img6.acsta.net/medias/nmedia/00/02/32/64/69215979_af.jpg"
+        }
 
     def test_should_not_add_operating_visa_and_stageDirector_keys_when_nodes_are_missing(self):
         # Given
@@ -204,13 +195,14 @@ class RetrieveMovieInformationTest:
         movie_parsed_information = retrieve_movie_information(movie_information['node']['movie'])
 
         # Then
-        assert movie_parsed_information['title'] == "Les Contes de la mère poule"
-        assert movie_parsed_information[
-                   'description'] == "synopsis du film\nTous les détails du film sur AlloCiné:" \
-                                     " http://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html"
-        assert "visa" not in movie_parsed_information
-        assert "stageDirector" not in movie_parsed_information
-        assert movie_parsed_information['duration'] == 110
+        assert movie_parsed_information == {
+            'id': 'TW92aWU6Mzc4MzI=',
+            'title': "Les Contes de la mère poule",
+            'description': "synopsis du film\n"
+                           "Tous les détails du film sur AlloCiné: http://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html",
+            'duration': 110,
+            'poster_url': "https://fr.web.img6.acsta.net/medias/nmedia/00/02/32/64/69215979_af.jpg"
+        }
 
     def test_should_raise_key_error_exception_when_missing_keys_in_movie_information(self):
         # Given
@@ -235,23 +227,31 @@ class RetrieveMovieInformationTest:
 class RetrieveShowtimeInformationTest:
     def test_should_retrieve_showtime_information_from_allocine_json_response(self):
         # Given
-        movie_showtime = {"startsAt": "2019-12-03T20:00:00",
-                          "diffusionVersion": "LOCAL",
-                          "projection": ["NON DIGITAL"],
-                          "experience": None}
+        movie_showtime = {
+            "startsAt": "2019-12-03T20:00:00",
+            "diffusionVersion": "LOCAL",
+            "projection": ["NON DIGITAL"],
+            "experience": None
+        }
 
         # When
         parsed_movie_showtime = retrieve_showtime_information(movie_showtime)
 
         # Then
-        assert parsed_movie_showtime == {"startsAt": datetime(2019, 12, 3, 20, 0),
-                                         "diffusionVersion": "LOCAL",
-                                         "projection": "NON DIGITAL",
-                                         "experience": None}
+        assert parsed_movie_showtime == {
+            "startsAt": datetime(2019, 12, 3, 20, 0),
+            "diffusionVersion": "LOCAL",
+            "projection": "NON DIGITAL",
+            "experience": None
+        }
 
     def test_should_raise_key_error_exception_when_missing_keys_in_showtime_information(self):
         # Given
-        movie_showtime = {"startsAt": "2019-12-03T20:00:00", "diffusionVersion": "LOCAL", "experience": None}
+        movie_showtime = {
+            "startsAt": "2019-12-03T20:00:00",
+            "diffusionVersion": "LOCAL",
+            "experience": None
+        }
 
         # When
         with pytest.raises(KeyError):
@@ -282,7 +282,7 @@ class GetStockNumberFromStockIdTest:
         assert stock_number == 12
 
 
-class FormatNaiveDateToUtcTest:
+class FormatDateFromLocalTimezoneToUtcTest:
     def test_should_convert_date_to_utc_timezone(self):
         # Given
         local_date = datetime(2019, 12, 3, 20, 0)
@@ -300,22 +300,29 @@ class FilterOnlyDigitalAndNonExperiencedShowtimesTest:
     def test_should_filter_only_digital_and_non_experience_showtimes(self):
         # Given
         movie_information = [
-            {"startsAt": "2019-12-03T10:00:00",
-             "diffusionVersion": "LOCAL",
-             "projection": ["DIGITAL"],
-             "experience": None},
-            {"startsAt": "2019-12-03T18:00:00",
-             "diffusionVersion": "ORIGINAL",
-             "projection": ["NON DIGITAL"],
-             "experience": 'experience'},
-            {"startsAt": "2019-12-03T20:00:00",
-             "diffusionVersion": "LOCAL",
-             "projection": ["DIGITAL"],
-             "experience": 'experience'},
-            {"startsAt": "2019-12-03T20:00:00",
-             "diffusionVersion": "LOCAL",
-             "projection": ["NON DIGITAL"],
-             "experience": None}
+            {
+                "startsAt": "2019-12-03T10:00:00",
+                "diffusionVersion": "LOCAL",
+                "projection": ["DIGITAL"],
+                "experience": None
+            },
+            {
+                "startsAt": "2019-12-03T18:00:00",
+                "diffusionVersion": "ORIGINAL",
+                "projection": ["NON DIGITAL"],
+                "experience": 'experience'
+            },
+            {
+                "startsAt": "2019-12-03T20:00:00",
+                "diffusionVersion": "LOCAL",
+                "projection": ["DIGITAL"],
+                "experience": 'experience'},
+            {
+                "startsAt": "2019-12-03T20:00:00",
+                "diffusionVersion": "LOCAL",
+                "projection": ["NON DIGITAL"],
+                "experience": None
+            }
         ]
 
         # When
@@ -323,8 +330,10 @@ class FilterOnlyDigitalAndNonExperiencedShowtimesTest:
 
         # Then
         assert filtered_movie_showtimes == [
-            {"startsAt": "2019-12-03T10:00:00",
-             "diffusionVersion": "LOCAL",
-             "projection": ["DIGITAL"],
-             "experience": None}
+            {
+                "startsAt": "2019-12-03T10:00:00",
+                "diffusionVersion": "LOCAL",
+                "projection": ["DIGITAL"],
+                "experience": None
+            }
         ]

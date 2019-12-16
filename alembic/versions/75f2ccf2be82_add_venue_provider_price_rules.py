@@ -24,7 +24,7 @@ def upgrade():
         sa.Column('id', sa.BigInteger, primary_key=True, autoincrement=True),
         sa.Column('venueProviderId', sa.BigInteger, ForeignKey('venue_provider.id'), nullable=False, index=True),
         sa.Column('priceRule', sa.Enum(PriceRule), nullable=False),
-        sa.Column('price', sa.Numeric(10, 2), nullable=True)
+        sa.Column('price', sa.Numeric(10, 2), nullable=False)
     )
 
     op.create_check_constraint(

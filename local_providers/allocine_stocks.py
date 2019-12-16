@@ -1,7 +1,7 @@
 import os
 import re
 from datetime import datetime, timedelta
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 from dateutil import tz
 from dateutil.parser import parse
@@ -9,6 +9,7 @@ from sqlalchemy import Sequence
 
 from domain.allocine import get_movies_showtimes, get_movie_poster
 from local_providers.local_provider import LocalProvider
+from local_providers.price_rule import AllocineStocksPriceRule
 from local_providers.providable_info import ProvidableInfo
 from models import VenueProvider, Offer, Product, EventType, Stock
 from models.db import Model, db
@@ -165,8 +166,9 @@ class AllocineStocks(LocalProvider):
         price = None
         for price_rule in self.venue_provider.priceRules:
             if price_rule.priceRule(allocine_stock):
-                price = price_rule.price
-        return price
+                return price_rule.price
+        if not price:
+            raise AllocineStocksPriceRule("Aucun prix par défaut n'a été trouvé")
 
     def get_object_thumb(self) -> bytes:
         image_url = self.movie_information['poster_url']
@@ -186,7 +188,7 @@ def get_next_offer_id_from_database():
     return db.session.execute(sequence)
 
 
-def retrieve_movie_information(raw_movie_information: dict) -> dict:
+def retrieve_movie_information(raw_movie_information: Dict) -> Dict:
     parsed_movie_information = dict()
     parsed_movie_information['id'] = raw_movie_information['id']
     parsed_movie_information['description'] = _build_description(raw_movie_information)
@@ -207,7 +209,7 @@ def retrieve_movie_information(raw_movie_information: dict) -> dict:
     return parsed_movie_information
 
 
-def retrieve_showtime_information(showtime_information: dict) -> dict:
+def retrieve_showtime_information(showtime_information: Dict) -> Dict:
     return {
         'startsAt': parse(showtime_information['startsAt']),
         'diffusionVersion': showtime_information['diffusionVersion'],
@@ -216,7 +218,7 @@ def retrieve_showtime_information(showtime_information: dict) -> dict:
     }
 
 
-def _filter_only_digital_and_non_experience_showtimes(showtimes_information: List[dict]) -> List[dict]:
+def _filter_only_digital_and_non_experience_showtimes(showtimes_information: List[Dict]) -> List[Dict]:
     return list(filter(lambda showtime: showtime['projection'][0] == DIGITAL_PROJECTION and
                                         showtime['experience'] is None, showtimes_information))
 
@@ -232,7 +234,7 @@ def _get_stock_number_from_id_at_providers(id_at_providers: str) -> int:
     return int(id_at_providers.split("-", 1)[1])
 
 
-def _build_description(movie_info: dict) -> str:
+def _build_description(movie_info: Dict) -> str:
     allocine_movie_url = movie_info['backlink']['url'].replace("\\", "")
     return f"{movie_info['synopsis']}\n{movie_info['backlink']['label']}: {allocine_movie_url}"
 
@@ -241,11 +243,11 @@ def _format_poster_url(url: str) -> str:
     return url.replace("\/", "/")
 
 
-def _get_operating_visa(movie_info: dict) -> Optional[str]:
+def _get_operating_visa(movie_info: Dict) -> Optional[str]:
     return movie_info['releases'][0]['data']['visa_number']
 
 
-def _build_stage_director_full_name(movie_info: dict) -> str:
+def _build_stage_director_full_name(movie_info: Dict) -> str:
     stage_director_first_name = movie_info['credits']['edges'][0]['node']['person']['firstName']
     stage_director_last_name = movie_info['credits']['edges'][0]['node']['person']['lastName']
     return f"{stage_director_first_name} {stage_director_last_name}"
@@ -262,11 +264,11 @@ def _parse_movie_duration(duration: str) -> Optional[int]:
     return movie_duration_hours * 60 + movie_duration_minutes
 
 
-def _has_original_version_product(movies_showtimes: List[dict]) -> bool:
+def _has_original_version_product(movies_showtimes: List[Dict]) -> bool:
     return ORIGINAL_VERSION in list(map(lambda movie: movie['diffusionVersion'], movies_showtimes))
 
 
-def _has_french_version_product(movies_showtimes: List[dict]) -> bool:
+def _has_french_version_product(movies_showtimes: List[Dict]) -> bool:
     movies = list(map(lambda movie: movie['diffusionVersion'], movies_showtimes))
     return LOCAL_VERSION in movies or DUBBED_VERSION in movies
 

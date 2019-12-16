@@ -1487,29 +1487,71 @@ class UpdateObjectsTest:
         # Given
         theater_token1 = 'test1'
         theater_token2 = 'test2'
-        allocine_api_response = [
-            {"node": {"movie": {"id": "TW92aWU6Mzc4MzI=", "internalId": 37832, "backlink": {
-                "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9"},
-                                "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E",
-                                         "productionYear": 2001},
-                                "title": "Les Contes de la m\u00e8re poule",
-                                "originalTitle": "Les Contes de la m\u00e8re poule",
-                                "runtime": "PT1H50M0S",
-                                "poster": {
-                                    "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"},
-                                "synopsis": "synopsis du film", "releases": [
-                    {"name": "Released", "releaseDate": {"date": "2001-10-03"}, "data": {"visa_number": "2009993528"}}],
-                                "credits": {"edges": [{"node": {
-                                    "person": {"firstName": "Farkhondeh", "lastName": "Torabi"},
-                                    "position": {"name": "DIRECTOR"}}}]}, "cast": {
-                    "backlink": {"url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                                 "label": "Casting complet du film sur AlloCin\u00e9"}, "edges": []},
-                                "countries": [{"name": "Iran", "alpha3": "IRN"}],
-                                "genres": ["ANIMATION", "FAMILY"], "companies": []}, "showtimes": [
-                {"startsAt": "2019-12-03T10:00:00", "diffusionVersion": "LOCAL", "projection": ["DIGITAL"],
-                 "experience": None}, ]}}
-        ]
+        allocine_api_response = [{
+            "node": {
+                "movie": {
+                    "id": "TW92aWU6Mzc4MzI=",
+                    "internalId": 37832,
+                    "backlink": {
+                        "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
+                        "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9"
+                    },
+                    "data": {
+                        "eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E",
+                        "productionYear": 2001
+                    },
+                    "title": "Les Contes de la m\u00e8re poule",
+                    "originalTitle": "Les Contes de la m\u00e8re poule",
+                    "runtime": "PT1H50M0S",
+                    "poster": {
+                        "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
+                    },
+                    "synopsis": "synopsis du film",
+                    "releases": [{
+                        "name": "Released",
+                        "releaseDate": {
+                            "date": "2001-10-03"
+                        },
+                        "data": {
+                            "visa_number": "2009993528"
+                        }
+                    }],
+                    "credits": {
+                        "edges": [{
+                            "node": {
+                                "person": {
+                                    "firstName": "Farkhondeh",
+                                    "lastName": "Torabi"
+                                },
+                                "position": {
+                                    "name": "DIRECTOR"
+                                }
+                            }}
+                        ]},
+                    "cast": {
+                        "backlink": {
+                            "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
+                            "label": "Casting complet du film sur AlloCin\u00e9"
+                        },
+                        "edges": []
+                    },
+                    "countries": [{
+                        "name": "Iran",
+                        "alpha3": "IRN"
+                    }],
+                    "genres": [
+                        "ANIMATION",
+                        "FAMILY"
+                    ],
+                    "companies": []
+                },
+                "showtimes": [{
+                    "startsAt": "2019-12-03T10:00:00",
+                    "diffusionVersion": "LOCAL",
+                    "projection": ["DIGITAL"],
+                    "experience": None
+                }]}
+        }]
         mock_call_allocine_api.side_effect = [iter(allocine_api_response),
                                               iter(allocine_api_response)]
         mock_poster_get_allocine.return_value = bytes()
@@ -1526,8 +1568,10 @@ class UpdateObjectsTest:
         allocine_provider = get_provider_by_local_class('AllocineStocks')
         allocine_provider.isActive = True
         venue_provider1 = create_venue_provider(venue1, allocine_provider, venue_id_at_offer_provider=theater_token1)
+        venue_provider_price_rule1 = create_venue_provider_price_rule(venue_provider1)
         venue_provider2 = create_venue_provider(venue2, allocine_provider, venue_id_at_offer_provider=theater_token2)
-        PcObject.save(venue_provider1, venue_provider2)
+        venue_provider_price_rule2 = create_venue_provider_price_rule(venue_provider2)
+        PcObject.save(venue_provider1, venue_provider2, venue_provider_price_rule1, venue_provider_price_rule2)
 
         allocine_stocks_provider1 = AllocineStocks(venue_provider1)
         allocine_stocks_provider1.updateObjects()

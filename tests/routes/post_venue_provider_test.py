@@ -17,7 +17,7 @@ class Post:
             # Given
             user = create_user(is_admin=True, can_book_free_offers=False)
             offerer = create_offerer(siren='775671464')
-            venue = create_venue(offerer, name='Librairie Titelive')
+            venue = create_venue(offerer)
             PcObject.save(venue, user)
 
             provider = activate_provider('TiteLiveStocks')
@@ -49,7 +49,7 @@ class Post:
         def when_add_allocine_stocks_provider_with_price(self, mock_suprocess, app):
             # Given
             offerer = create_offerer(siren='775671464')
-            venue = create_venue(offerer, name='Cinema Allocine')
+            venue = create_venue(offerer)
             user = create_user(is_admin=True, can_book_free_offers=False)
             PcObject.save(venue, user)
 
@@ -134,7 +134,7 @@ class Post:
         def when_add_allocine_stocks_provider_with_wrong_format_price(self, mock_suprocess, app):
             # Given
             offerer = create_offerer(siren='775671464')
-            venue = create_venue(offerer, name='Cinema Allocine')
+            venue = create_venue(offerer)
             user = create_user(is_admin=True, can_book_free_offers=False)
             PcObject.save(venue, user)
 

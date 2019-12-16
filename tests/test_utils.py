@@ -863,12 +863,14 @@ def create_venue_provider(venue, provider, venue_id_at_offer_provider='775671464
     return venue_provider
 
 
-def create_venue_provider_price_rule(venue_provider: VenueProvider, price_rule: PriceRule = PriceRule.default, price: int = 10):
+def create_venue_provider_price_rule(venue_provider: VenueProvider,
+                                     price_rule: PriceRule = PriceRule.default,
+                                     price: int = 10) -> VenueProviderPriceRule:
     venue_provider_price_rule = VenueProviderPriceRule()
     venue_provider_price_rule.venueProvider = venue_provider
     venue_provider_price_rule.priceRule = price_rule
     venue_provider_price_rule.price = price
-    return venue_provider
+    return venue_provider_price_rule
 
 
 def activate_provider(provider_classname: str) -> Provider:

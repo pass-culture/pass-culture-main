@@ -7,7 +7,7 @@ from models.db import Model
 
 
 class VenueProviderPriceRule(PcObject, Model):
-    priceRule = Column(Enum(PriceRule), nullable=True, index=False)
+    priceRule = Column(Enum(PriceRule), nullable=False)
 
     venueProviderId = Column(BigInteger,
                              ForeignKey('venue_provider.id'),
@@ -33,9 +33,9 @@ class VenueProviderPriceRule(PcObject, Model):
     @staticmethod
     def restize_integrity_error(internal_error):
         if 'unique_venue_provider_price_rule' in str(internal_error.orig):
-            return ['global', 'Vous ne pouvez avoir qu''un seul prix par catégorie']
+            return ['global', "Vous ne pouvez avoir qu''un seul prix par catégorie"]
         if 'check_price_is_not_negative' in str(internal_error.orig):
-            return ['global', 'Vous ne pouvez renseigner un prix négatif']
+            return ['global', "Vous ne pouvez renseigner un prix négatif"]
         return PcObject.restize_integrity_error(internal_error)
 
     @staticmethod

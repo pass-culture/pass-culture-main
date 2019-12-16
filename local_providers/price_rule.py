@@ -2,6 +2,10 @@ import enum
 from functools import partial
 
 
+class AllocineStocksPriceRule(Exception):
+    pass
+
+
 def default_price(*args):
     return True
 

@@ -29,7 +29,7 @@ class SaveVenueProviderPriceRuleTest:
         assert venue_provider_price_rule.priceRule == PriceRule.default
 
     @clean_database
-    def test_should_raise_exception_when_price_in_wrong_format(self, app):
+    def test_should_not_save_new_venue_provider_price_rule(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -38,8 +38,8 @@ class SaveVenueProviderPriceRuleTest:
         price = 'wrong_price_format'
 
         # When
-        with pytest.raises(ApiErrors) as error:
+        with pytest.raises(ApiErrors):
             save_venue_provider_price_rule(venue_provider, price)
 
         # Then
-        assert error.value.errors == {'global': ['Le prix doit être un nombre décimal']}
+        assert VenueProviderPriceRule.query.count() == 0
