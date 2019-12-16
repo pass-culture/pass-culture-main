@@ -19,7 +19,7 @@ else
 fi
 
 # Keep only 2 last backups
-echo "Backups to be deleteted : $(find $absolute_path_to_backup_directory -name "*.pgdump" | sort -r | tail +3)"
+echo "Backups to be deleted : $(find $absolute_path_to_backup_directory -name "*.pgdump" | sort -r | tail +3)"
 rm $(find $absolute_path_to_backup_directory -name "*.pgdump" | sort -r | tail +3)
 
 if [ $? -eq 0 ]; then
