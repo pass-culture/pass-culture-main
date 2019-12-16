@@ -1,8 +1,6 @@
-import PropTypes from 'prop-types'
+import PropTypes, { bool, shape, string } from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Link } from 'react-router-dom'
-
-import { FormFooterObject } from '../../types'
 
 class FormFooter extends PureComponent {
   renderSubmitButton = buttonOptions => {
@@ -73,7 +71,13 @@ FormFooter.defaultProps = {
 }
 
 FormFooter.propTypes = {
-  cancel: FormFooterObject,
+  cancel: shape({
+    className: string,
+    disabled: bool,
+    id: string,
+    label: string.isRequired,
+    url: string,
+  }),
   className: PropTypes.string,
   externalLink: PropTypes.shape({
     className: PropTypes.string,
@@ -81,7 +85,13 @@ FormFooter.propTypes = {
     label: PropTypes.string.isRequired,
     url: PropTypes.string,
   }),
-  submit: FormFooterObject,
+  submit: shape({
+    className: string,
+    disabled: bool,
+    id: string,
+    label: string.isRequired,
+    url: string,
+  }),
 }
 
 export default FormFooter

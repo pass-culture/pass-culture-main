@@ -8,31 +8,35 @@
   @extend .is-italic;
   flex: 1;
   padding: rem(23px);
+}
 
-  .bp-title {
-    @extend .is-bold;
+.bp-title {
+  @extend .is-bold;
 
-    font-size: rem(32px);
-    line-height: rem(38px);
-    margin-top: rem(150px);
-    margin-bottom: rem(32px);
-    white-space: pre-wrap;
-  }
+  font-size: rem(32px);
+  line-height: rem(38px);
+  margin-top: rem(150px);
+  margin-bottom: rem(32px);
+  white-space: pre-wrap;
+}
 
-  .bp-content {
-    font-size: rem(24px);
-    font-weight: normal;
-    line-height: rem(29px);
-    margin-bottom: rem(24px);
+.bp-content {
+  font-size: rem(24px);
+  font-weight: normal;
+  line-height: rem(29px);
+  margin-bottom: rem(24px);
 
-    a {
-      color: inherit;
-      text-decoration-line: underline;
-    }
+  a {
+    color: inherit;
+    text-decoration-line: underline;
   }
 }
 
-.bp-footer {
+#sign-in-link {
+  font-weight: 700;
+}
+
+footer {
   display: flex;
   flex: 0;
 
