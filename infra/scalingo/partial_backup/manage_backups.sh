@@ -2,14 +2,13 @@
 
 end_script() {
   if [ "$DB_TUNNEL_HAS_TO_BE_TERMINATED" = true ]; then
-  echo terminating tunnel
-  kill -9 "$DB_TUNNEL_PID"
+    echo Terminating tunnel
+    kill -9 "$DB_TUNNEL_PID"
   fi
 }
 
 failure_alert() {
   message="$app_name backup restore failed at step: $1"
-  echo $message
   curl -X POST -H 'Content-type: application/json' --data "{'text': '$message'}" $SLACK_OPS_BOT_URL
   end_script
   exit 1
