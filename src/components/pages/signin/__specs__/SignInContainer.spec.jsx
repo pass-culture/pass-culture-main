@@ -24,7 +24,11 @@ describe('container | SignInContainer', () => {
       const { signIn } = functions
 
       // when
-      signIn(values, jest.fn(() => true), jest.fn(() => true))
+      const result = signIn(
+        values,
+        jest.fn().mockImplementationOnce(() => true),
+        jest.fn().mockImplementationOnce(() => true)
+      )
 
       // then
       expect(dispatch).toHaveBeenCalledWith({
@@ -37,6 +41,7 @@ describe('container | SignInContainer', () => {
         },
         type: 'REQUEST_DATA_POST_/USERS/SIGNIN'
       })
+      expect(result).toBeInstanceOf(Promise)
     })
   })
 })
