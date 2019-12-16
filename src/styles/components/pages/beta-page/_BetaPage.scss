@@ -1,18 +1,21 @@
 .beta-page {
-  @extend .page;
-  @extend .pc-gradient;
-  @extend .flex-rows;
+  background-image: linear-gradient(to bottom right, $primary, $purple-blue);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 100%;
+  position: relative;
+  width: 100%;
 }
 
 .bp-main {
-  @extend .is-italic;
+  font-style: italic;
   flex: 1;
   padding: rem(23px);
 }
 
 .bp-title {
-  @extend .is-bold;
-
+  font-weight: 700;
   font-size: rem(32px);
   line-height: rem(38px);
   margin-top: rem(150px);
