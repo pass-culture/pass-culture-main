@@ -37,7 +37,7 @@ describe('src | App', () => {
     )
 
     // Then
-    const redirectNode = wrapper.find(RedirectToMaintenance)
-    expect(redirectNode).toHaveLength(1)
+    const redirectToMaintenanceElement = wrapper.find(RedirectToMaintenance)
+    expect(redirectToMaintenanceElement).toHaveLength(1)
   })
 })
