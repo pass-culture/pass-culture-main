@@ -234,7 +234,7 @@ class Patch:
         @clean_database
         def when_the_booking_does_not_exists(self, app):
             # Given
-            user = create_user(public_name='J.F', email='j.f@example.net')
+            user = create_user()
             create_deposit(user)
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
@@ -244,14 +244,14 @@ class Patch:
             booking = create_booking(user, stock, venue=venue)
             PcObject.save(user_offerer, booking)
 
-            api_key = random_token(64)
+            api_key = 'A_MOCKED_API_KEY'
             offerer_api_key = create_api_key_for_offerer(offerer, api_key)
             PcObject.save(offerer_api_key)
 
             # When
             response = TestClient(app.test_client()).patch('/v2/bookings/cancel/token/FAKETOKEN',
                                                            headers={
-                                                               'Authorization': api_key,
+                                                               'Authorization': f'Bearer {api_key}',
                                                                'Origin': 'http://localhost'
                                                            })
 

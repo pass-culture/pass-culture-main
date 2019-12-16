@@ -8,9 +8,8 @@ from tests.test_utils import create_stock_with_thing_offer, \
     create_user, create_booking, create_offer_with_event_product, \
     create_event_occurrence, create_stock_from_event_occurrence, create_user_offerer, create_stock_with_event_offer, \
     create_api_key, create_deposit
-from utils.token import random_token
 
-API_KEY_VALUE = random_token(64)
+API_KEY_VALUE = 'A_MOCKED_API_KEY'
 
 
 class Get:
@@ -169,19 +168,9 @@ class Get:
             assert response.status_code == 200
 
     class Returns401:
-        @clean_database
         def when_user_not_logged_in_and_doesnt_give_api_key(self, app):
             # Given
-            user = create_user(email='user@example.com')
-            admin_user = create_user(email='admin@example.com')
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event_name='Event Name')
-            event_occurrence = create_event_occurrence(offer)
-            stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-            booking = create_booking(user, stock, venue=venue)
-            PcObject.save(admin_user, booking)
-            url = f'/v2/bookings/token/{booking.token}'
+            url = '/v2/bookings/token/MOCKED_TOKEN'
 
             # When
             response = TestClient(app.test_client()) \
@@ -190,19 +179,9 @@ class Get:
             # Then
             assert response.status_code == 401
 
-        @clean_database
-        def when_user_not_logged_in_and_not_existing_api_key_given(self, app):
+        def when_user_not_logged_in_and_given_api_key_does_not_exist(self, app):
             # Given
-            user = create_user(email='user@example.com')
-            admin_user = create_user(email='admin@example.com')
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event_name='Event Name')
-            event_occurrence = create_event_occurrence(offer)
-            stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-            booking = create_booking(user, stock, venue=venue)
-            PcObject.save(admin_user, booking)
-            url = f'/v2/bookings/token/{booking.token}'
+            url = '/v2/bookings/token/FAKETOKEN'
 
             # When
             response = TestClient(app.test_client()) \
@@ -210,6 +189,30 @@ class Get:
                     url,
                     headers={
                         'Authorization': 'Bearer WrongApiKey1234567',
+                        'Origin': 'http://localhost'
+                    }
+                )
+
+            # Then
+            assert response.status_code == 401
+
+        @clean_database
+        def when_user_not_logged_in_and_existing_api_key_given_with_no_bearer_prefix(self, app):
+            # Given
+            pro = create_user(email='offerer@example.com')
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(pro, offerer)
+            PcObject.save(user_offerer)
+            offerer_api_key = create_api_key(offerer, API_KEY_VALUE)
+            PcObject.save(offerer_api_key)
+            url = f'/v2/bookings/token/FAKETOKEN'
+
+            # When
+            response = TestClient(app.test_client()) \
+                .get(
+                    url,
+                    headers={
+                        'Authorization': API_KEY_VALUE,
                         'Origin': 'http://localhost'
                     }
                 )
