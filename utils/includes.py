@@ -185,6 +185,7 @@ WEBAPP_GET_BOOKING_INCLUDES = [
     {
         "key": "stock",
         "includes": [
+            "isBookable",
             {
                 "key": "offer",
                 "includes": [
@@ -220,6 +221,7 @@ WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES = [
     {
         "key": "stock",
         "includes": [
+            "isBookable",
             {
                 "key": "offer",
                 "includes": [

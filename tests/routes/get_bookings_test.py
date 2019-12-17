@@ -13,8 +13,8 @@ class Get:
         @clean_database
         def when_user_has_bookings_and_qr_code_feature_is_off_does_not_return_qr_code(self, qr_code_is_active, app):
             # Given
-            user1 = create_user(email='user1+plus@email.fr')
-            user2 = create_user(email='user2+plus@email.fr')
+            user1 = create_user(email='user1+plus@example.fr')
+            user2 = create_user(email='user2+plus@example.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
@@ -40,19 +40,20 @@ class Get:
             first_booking = all_bookings[0]
             assert response.status_code == 200
             assert len(all_bookings) == 2
+            assert 'qrCode' not in first_booking
             assert 'completedUrl' in first_booking
             assert 'isEventExpired' in first_booking
             assert 'isUserCancellable' in first_booking
             assert 'mediation' in first_booking
             assert 'thumbUrl' in first_booking
             assert 'offer' in first_booking['stock']
+            assert 'isBookable' in first_booking['stock']
             assert 'isDigital' in first_booking['stock']['offer']
             assert 'isEvent' in first_booking['stock']['offer']
             assert 'isNotBookable' in first_booking['stock']['offer']
             assert 'isFullyBooked' in first_booking['stock']['offer']
             assert 'offerType' in first_booking['stock']['offer']
             assert 'product' in first_booking['stock']['offer']
-            assert 'qrCode' not in first_booking
             assert 'thumbUrl' in first_booking['stock']['offer']['product']
             assert 'stocks' in first_booking['stock']['offer']
             assert 'isBookable' in first_booking['stock']['offer']['stocks'][0]
@@ -63,8 +64,8 @@ class Get:
     @clean_database
     def when_user_has_bookings_and_qr_code_feature_is_on(self, qr_code_is_active, app):
         # Given
-        user1 = create_user(email='user1+plus@email.fr')
-        user2 = create_user(email='user2+plus@email.fr')
+        user1 = create_user(email='user1+plus@example.fr')
+        user2 = create_user(email='user2+plus@example.fr')
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
@@ -87,6 +88,25 @@ class Get:
 
         # Then
         all_bookings = response.json
+        assert len(all_bookings) == 2
         first_booking = all_bookings[0]
         assert response.status_code == 200
         assert 'qrCode' in first_booking
+        assert 'completedUrl' in first_booking
+        assert 'isEventExpired' in first_booking
+        assert 'isUserCancellable' in first_booking
+        assert 'mediation' in first_booking
+        assert 'thumbUrl' in first_booking
+        assert 'offer' in first_booking['stock']
+        assert 'isBookable' in first_booking['stock']
+        assert 'isDigital' in first_booking['stock']['offer']
+        assert 'isEvent' in first_booking['stock']['offer']
+        assert 'isNotBookable' in first_booking['stock']['offer']
+        assert 'isFullyBooked' in first_booking['stock']['offer']
+        assert 'offerType' in first_booking['stock']['offer']
+        assert 'product' in first_booking['stock']['offer']
+        assert 'thumbUrl' in first_booking['stock']['offer']['product']
+        assert 'stocks' in first_booking['stock']['offer']
+        assert 'isBookable' in first_booking['stock']['offer']['stocks'][0]
+        assert 'venue' in first_booking['stock']['offer']
+        assert 'validationToken' not in first_booking['stock']['offer']['venue']
