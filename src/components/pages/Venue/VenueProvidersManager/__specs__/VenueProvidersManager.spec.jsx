@@ -1,4 +1,4 @@
-import { shallow } from 'enzyme'
+import { shallow , mount} from 'enzyme'
 import React from 'react'
 
 import VenueProvidersManager from '../VenueProvidersManager'
@@ -94,7 +94,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         expect(importButton.prop('type')).toBe('button')
       })
 
-      it('is hiden when no providers are given', () => {
+      it('is hidden when no providers are given', () => {
         // given
         props.providers = []
 
