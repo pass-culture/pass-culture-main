@@ -1,9 +1,15 @@
 .allocine-provider-form {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
 
   .compte-section {
     margin-right: 20px;
+
+    .compte-section-label {
+      display: flex;
+      justify-content: space-between;
+    }
 
     .label {
       display: flex;
@@ -19,6 +25,11 @@
   .price-section {
     margin-right: 20px;
 
+    .price-section-label {
+      display: flex;
+      justify-content: space-between;
+    }
+
     .price-field {
       display: flex;
       flex-direction: column;
@@ -30,7 +41,7 @@
 
     button {
       position: absolute;
-      top: 48%;
+      top: 23%;
     }
   }
 }

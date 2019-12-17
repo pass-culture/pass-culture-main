@@ -7,6 +7,7 @@ import NumberField from '../../../../../layout/form/fields/NumberField'
 import Icon from '../../../../../layout/Icon'
 
 import AllocineProviderForm from '../../AllocineProviderForm/AllocineProviderForm'
+import SynchronisationConfirmationModal from '../SynchronisationConfirmationModal/SynchronisationConfirmationModal'
 
 describe('src | components | pages | Venue | VenueProvidersManager | form | AllocineProviderForm', () => {
   let createVenueProvider
@@ -163,6 +164,20 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Allo
       // then
       const tooltip = wrapper.find('.compte-section').find('.tooltip-info')
       expect(tooltip).toHaveLength(0)
+    })
+  })
+
+  describe('when the import is clicked', () => {
+    it('should display a synchronisation modal', () => {
+      // given
+      const wrapper = mount(<AllocineProviderForm {...props} />)
+
+      // when
+      wrapper.find('.provider-import-button').simulate('click')
+
+      // then
+      const synchronisationModal = wrapper.find(SynchronisationConfirmationModal)
+      expect(synchronisationModal).toHaveLength(1)
     })
   })
 

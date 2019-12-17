@@ -5,6 +5,7 @@ import { ALLOCINE_PROVIDER_OPTION, DEFAULT_PROVIDER_OPTION } from './utils/utils
 import checkIfProviderShouldBeDisabled from './utils/checkIfProviderShouldBeDisabled'
 import AllocineProviderForm from './AllocineProviderForm/AllocineProviderFormContainer'
 import TiteliveProviderForm from './TiteliveProviderForm/TiteliveProviderFormContainer'
+import ReactTooltip from 'react-tooltip'
 
 class VenueProvidersManager extends PureComponent {
   constructor(props) {
@@ -25,6 +26,7 @@ class VenueProvidersManager extends PureComponent {
   }
 
   componentDidUpdate(prevProps) {
+    ReactTooltip.rebuild()
     if(prevProps.venueProviders.length < this.props.venueProviders.length) {
       this.setState({ isCreationMode: false })
     }

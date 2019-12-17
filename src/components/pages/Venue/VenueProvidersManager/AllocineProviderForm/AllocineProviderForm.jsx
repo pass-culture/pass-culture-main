@@ -64,75 +64,77 @@ class AllocineProviderForm extends PureComponent {
   }
 
   renderForm = (props) => {
-    const { venueIdAtOfferProviderIsRequired } = this.props
-    const { isLoadingMode, isShowingConfirmationModal} = this.state
+    const {venueIdAtOfferProviderIsRequired} = this.props
+    const {isLoadingMode, isShowingConfirmationModal} = this.state
 
     return (
       <form onSubmit={props.handleSubmit}>
         <div className="allocine-provider-form">
-          <div className="compte-section">
-            <div>
-              <label
-                className="label-text"
-                htmlFor="venueIdAtOfferProvider"
-              >
-                {'Compte'}
-              </label>
-              {!isLoadingMode && venueIdAtOfferProviderIsRequired && (
-                <span
-                  className="tooltip tooltip-info"
-                  data-place="bottom"
-                  data-tip={`<p>Veuillez saisir un compte.</p>`}
-                  id="compte-tooltip"
-                >
-                  <Icon
-                    alt="image d’aide à l’information"
-                    svg="picto-info"
-                  />
-                </span>
-              )}
-            </div>
-            <TextField
-              className={classNames('field-text', {
-                'field-is-read-only': !venueIdAtOfferProviderIsRequired || isLoadingMode,
-              })}
-              name="venueIdAtOfferProvider"
-              readOnly={!venueIdAtOfferProviderIsRequired || isLoadingMode}
-              required
-            />
-
-          </div>
-
-          {!isLoadingMode && (
-            <div className="price-section">
-              <div>
+          <div>
+            <div className="compte-section">
+              <div className="compte-section-label">
                 <label
-                  className="label-prix"
-                  htmlFor="price"
+                  className="label-text"
+                  htmlFor="venueIdAtOfferProvider"
                 >
-                  {'Prix de vente/place'}
+                  {'Compte'}
                 </label>
-                <span
-                  className="tooltip tooltip-info"
-                  data-place="bottom"
-                  data-tip={`<p>Prix de vente/place : Prix auquel la place de cinéma sera vendue</p>`}
-                  id="price-tooltip"
-                >
-                  <Icon
-                    alt="image d’aide à l’information"
-                    svg="picto-info"
-                  />
-                </span>
+                {!isLoadingMode && venueIdAtOfferProviderIsRequired && (
+                  <span
+                    className="tooltip tooltip-info"
+                    data-place="bottom"
+                    data-tip={`<p>Veuillez saisir un compte.</p>`}
+                    id="compte-tooltip"
+                  >
+                    <Icon
+                      alt="image d’aide à l’information"
+                      svg="picto-info"
+                    />
+                  </span>
+                )}
               </div>
-              <NumberField
-                className={classNames('field-text price-field')}
-                name="price"
-                placeholder="Ex : 12€"
+              <TextField
+                className={classNames('field-text', {
+                  'field-is-read-only': !venueIdAtOfferProviderIsRequired || isLoadingMode,
+                })}
+                name="venueIdAtOfferProvider"
+                readOnly={!venueIdAtOfferProviderIsRequired || isLoadingMode}
                 required
               />
 
             </div>
-          )}
+
+            {!isLoadingMode && (
+              <div className="price-section">
+                <div className="price-section-label">
+                  <label
+                    className="label-prix"
+                    htmlFor="price"
+                  >
+                    {'Prix de vente/place'}
+                  </label>
+                  <span
+                    className="tooltip tooltip-info"
+                    data-place="bottom"
+                    data-tip={`<p>Prix de vente/place : Prix auquel la place de cinéma sera vendue</p>`}
+                    id="price-tooltip"
+                  >
+                    <Icon
+                      alt="image d’aide à l’information"
+                      svg="picto-info"
+                    />
+                  </span>
+                </div>
+                <NumberField
+                  className={classNames('field-text price-field')}
+                  name="price"
+                  placeholder="Ex : 12€"
+                  required
+                />
+
+              </div>
+            )}
+          </div>
 
           {!isLoadingMode && (
             <div className="provider-import-button-container">
