@@ -300,9 +300,9 @@ class TiteliveThingsTest:
     @patch('local_providers.titelive_things.get_files_to_process_from_titelive_ftp')
     @patch('local_providers.titelive_things.get_lines_from_thing_file')
     def test_does_not_create_thing_when_too_many_columns_in_data_line(self,
-                                                                       get_lines_from_thing_file,
-                                                                       get_files_to_process_from_titelive_ftp,
-                                                                       app):
+                                                                      get_lines_from_thing_file,
+                                                                      get_files_to_process_from_titelive_ftp,
+                                                                      app):
         # Given
         files_list = list()
         files_list.append('Quotidien30.tit')
@@ -695,3 +695,77 @@ class TiteliveThingsTest:
             .filter_by(type=LocalProviderEventType.SyncError) \
             .one()
         assert provider_log_error.payload == 'Error deleting product with ISBN: 9782895026310'
+
+    @clean_database
+    @patch('local_providers.titelive_things.get_files_to_process_from_titelive_ftp')
+    @patch('local_providers.titelive_things.get_lines_from_thing_file')
+    def test_should_fill_isbn_info_with_ean13_if_isbn_not_known(self,
+                                                                get_lines_from_thing_file,
+                                                                get_files_to_process_from_titelive_ftp,
+                                                                app):
+        files_list = list()
+        files_list.append('Quotidien30.tit')
+
+        get_files_to_process_from_titelive_ftp.return_value = files_list
+
+        data_line = "9782895026310" \
+                    "~" \
+                    "~nouvelles du Chili" \
+                    "~" \
+                    "~0203" \
+                    "~1" \
+                    "~" \
+                    "~" \
+                    "~" \
+                    "~18,99" \
+                    "~LES EDITIONS DE L'INSTANT MEME" \
+                    "~EPAGINE" \
+                    "~11/05/2011" \
+                    "~BL" \
+                    "~2" \
+                    "~0" \
+                    "~0,0" \
+                    "~0,0" \
+                    "~0,0" \
+                    "~0" \
+                    "~0" \
+                    "~0" \
+                    "~0" \
+                    "~Collectif" \
+                    "~15/01/2013" \
+                    "~02/03/2018" \
+                    "~5,50" \
+                    "~Littérature Hispano-Portugaise" \
+                    "~" \
+                    "~" \
+                    "~" \
+                    "~" \
+                    "~" \
+                    "~1" \
+                    "~3012420280013" \
+                    "~" \
+                    "~" \
+                    "~" \
+                    "~" \
+                    "~" \
+                    "~0" \
+                    "~" \
+                    "~369" \
+                    "~860" \
+                    "~3694440" \
+                    "~"
+        get_lines_from_thing_file.return_value = iter([data_line])
+
+        offerer = create_offerer(siren='775671464')
+        venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
+        titelive_provider = activate_provider('TiteLiveThings')
+        PcObject.save(venue, titelive_provider)
+
+        titelive_things = TiteLiveThings()
+
+        # When
+        titelive_things.updateObjects()
+
+        # Then
+        product = Product.query.one()
+        assert product.extraData.get('isbn') == '9782895026310'
