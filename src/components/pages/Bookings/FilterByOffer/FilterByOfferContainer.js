@@ -2,9 +2,11 @@ import { connect } from 'react-redux'
 import { requestData } from 'redux-saga-data'
 
 import FilterByOffer from './FilterByOffer'
-import selectDigitalOffers from '../selectors/selectDigitalOffers'
-import selectOffersByVenueId from '../selectors/selectOffersByVenueId'
-import selectIsUserAdmin from '../selectors/selectIsUserAdmin'
+import selectIsUserAdmin from '../../../../selectors/userSelectors'
+import {
+  selectDigitalOffers,
+  selectOffersByVenueId,
+} from '../../../../selectors/data/offersSelectors'
 
 export const mapDispatchToProps = dispatch => ({
   loadOffers: () => {

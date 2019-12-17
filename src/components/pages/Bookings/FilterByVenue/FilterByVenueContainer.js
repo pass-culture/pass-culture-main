@@ -4,9 +4,9 @@ import { connect } from 'react-redux'
 import withFrenchQueryRouter from '../../../hocs/withFrenchQueryRouter'
 
 import FilterByVenue from './FilterByVenue'
-import selectNonVirtualVenues from './selectors/selectNonVirtualVenues'
 import { closeNotification, showNotification } from 'pass-culture-shared'
-import selectIsUserAdmin from '../selectors/selectIsUserAdmin'
+import selectIsUserAdmin from '../../../../selectors/userSelectors'
+import { selectNonVirtualVenues } from '../../../../selectors/data/venuesSelectors'
 
 export const mapDispatchToProps = dispatch => ({
   closeNotification: () => {

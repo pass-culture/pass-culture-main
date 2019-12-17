@@ -81,6 +81,8 @@ class OfferItem extends PureComponent {
       venue,
     } = this.props
 
+    console.log('OFFER', offer)
+
     const { isNew, name } = offer || {}
     const { groupSizeMin, groupSizeMax, priceMin, priceMax } = aggregatedStock || {}
     const thumbUrl = this.getThumbUrl()
@@ -158,10 +160,9 @@ class OfferItem extends PureComponent {
             <li>
               {maxDate && `jusqu’au ${maxDate.format('DD/MM/YYYY')}`}
             </li>
-            {stockAlertMessage &&
-              <li>
-                {stockAlertMessage}
-              </li>}
+            {stockAlertMessage && <li>
+              {stockAlertMessage}
+                                  </li>}
             <li>
               {priceMin === priceMax ? (
                 <Price value={priceMin || 0} />
@@ -236,7 +237,7 @@ class OfferItem extends PureComponent {
 OfferItem.propTypes = {
   aggregatedStock: PropTypes.shape().isRequired,
   location: PropTypes.shape({
-    search: PropTypes.string.isRequired
+    search: PropTypes.string.isRequired,
   }).isRequired,
   maxDate: PropTypes.shape().isRequired,
   mediations: PropTypes.arrayOf(PropTypes.shape()).isRequired,

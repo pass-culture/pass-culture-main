@@ -1,4 +1,4 @@
-import { selectOfferById } from '../offersSelectors'
+import { selectDigitalOffers, selectOfferById, selectOffersByVenueId } from '../offersSelectors'
 import state from './mockState.json'
 
 describe('selectOfferById', () => {
@@ -36,5 +36,111 @@ describe('selectOfferById', () => {
 
     // then
     expect(offer).toBeUndefined()
+  })
+})
+
+describe('selectDigitalOffers', () => {
+  it('should return an empty array when state contains no offers', () => {
+    // given
+    const state = {
+      data: {
+        offers: [],
+      },
+    }
+
+    // when
+    const result = selectDigitalOffers(state)
+
+    // then
+    expect(result).toStrictEqual([])
+  })
+
+  it('should return an array containing only digital offers', () => {
+    // given
+    const state = {
+      data: {
+        offers: [
+          {
+            id: 'A8HQ',
+            isDigital: true,
+          },
+          {
+            id: 'A8RQ',
+            isDigital: false,
+          },
+          {
+            id: 'AVGQ',
+            isDigital: false,
+          },
+        ],
+      },
+    }
+
+    // when
+    const result = selectDigitalOffers(state)
+
+    // then
+    expect(result).toStrictEqual([
+      {
+        id: 'A8HQ',
+        isDigital: true,
+      },
+    ])
+  })
+})
+
+describe('selectOffersByVenueId', () => {
+  it('should return an empty array when state contains no offers', () => {
+    // given
+    const venueId = 'CU'
+    const state = {
+      data: {
+        offer: [],
+      },
+    }
+
+    // when
+    const result = selectOffersByVenueId(state, venueId)
+
+    // then
+    expect(result).toStrictEqual([])
+  })
+
+  it('should return an array of physical offers matching venueId', () => {
+    // given
+    const venueId = 'CU'
+    const state = {
+      data: {
+        offers: [
+          {
+            id: 'A8HQ',
+            venueId: 'CU',
+          },
+          {
+            id: 'A8RQ',
+            venueId: 'CU',
+          },
+          {
+            id: 'AVGQ',
+            venueId: 'B9',
+          },
+        ],
+      },
+    }
+
+    // when
+    const result = selectOffersByVenueId(state, venueId)
+
+    // then
+    expect(result).toStrictEqual([
+      {
+        id: 'A8HQ',
+        venueId: 'CU',
+      },
+      {
+        id: 'A8RQ',
+        venueId: 'CU',
+      },
+    ])
   })
 })

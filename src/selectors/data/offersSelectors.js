@@ -1,5 +1,6 @@
 import createCachedSelector from 're-reselect'
 import { selectVenuesByOffererId } from './venuesSelectors'
+import { createSelector } from 'reselect'
 
 export const selectOfferById = createCachedSelector(
   state => state.data.offers,
@@ -20,3 +21,18 @@ export const selectOffersByOffererIdAndVenueId = createCachedSelector(
     return offers.filter(o => (venueIds.length ? venueIds.includes(o.venueId) : true))
   }
 )((state, offererId = '', venueId = '') => `${offererId}/${venueId}`)
+
+export const selectDigitalOffers = createSelector(
+  state => state.data.offers || [],
+  offers => offers.filter(offer => offer.isDigital === true)
+)
+
+function mapArgsToCacheKey(state, venueId) {
+  return venueId || ''
+}
+
+export const selectOffersByVenueId = createCachedSelector(
+  state => state.data.offers || [],
+  (state, venueId) => venueId,
+  (offers, venueId) => offers.filter(offer => offer.venueId === venueId)
+)(mapArgsToCacheKey)
