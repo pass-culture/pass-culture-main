@@ -21,13 +21,10 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Tite
     props = {
       createVenueProvider,
       history,
-      match: {
-        params: {
-          offererId: 'CC',
-          venueId: 'AB',
-        },
-      },
       notify,
+      offererId: 'CC',
+      providerId: 'CC',
+      venueId: 'AA',
       venueIdAtOfferProviderIsRequired: false,
     }
   })
@@ -136,10 +133,8 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Tite
   describe('handleSubmit', () => {
     it('should update venue provider using API', () => {
       // given
-      props.providerId = 'CC'
-      props.venueId = 'AA'
       const formValues = {
-        venueIdAtOfferProvider: 'BB',
+        venueIdAtOfferProvider: 'token',
         preventDefault: jest.fn(),
       }
       const wrapper = shallow(<TiteliveProviderForm {...props} />)
@@ -152,7 +147,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Tite
       expect(createVenueProvider).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), {
         providerId: 'CC',
         venueId: 'AA',
-        venueIdAtOfferProvider: 'BB',
+        venueIdAtOfferProvider: 'token',
       })
     })
   })
@@ -166,7 +161,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Tite
       wrapper.instance().handleSuccess()
 
       // then
-      expect(history.push).toHaveBeenCalledWith('/structures/CC/lieux/AB')
+      expect(history.push).toHaveBeenCalledWith('/structures/CC/lieux/AA')
     })
   })
 

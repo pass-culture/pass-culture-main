@@ -24,8 +24,8 @@ class AllocineProviderForm extends PureComponent {
     const payload = {
       price,
       providerId,
-      venueIdAtOfferProvider,
       venueId,
+      venueIdAtOfferProvider,
     }
 
     this.setState({ isLoadingMode: true })
@@ -36,9 +36,8 @@ class AllocineProviderForm extends PureComponent {
   handleSuccess = () => {
     const {
       history,
-      match: {
-        params: { offererId, venueId },
-      },
+      offererId,
+      venueId
     } = this.props
     history.push(`/structures/${offererId}/lieux/${venueId}`)
   }
@@ -86,11 +85,11 @@ class AllocineProviderForm extends PureComponent {
                   data-tip={`<p>Veuillez saisir un compte.</p>`}
                   id="compte-tooltip"
                 >
-                <Icon
-                  alt="image d’aide à l’information"
-                  svg="picto-info"
-                />
-              </span>
+                  <Icon
+                    alt="image d’aide à l’information"
+                    svg="picto-info"
+                  />
+                </span>
               )}
             </div>
             <TextField
@@ -119,11 +118,11 @@ class AllocineProviderForm extends PureComponent {
                   data-tip={`<p>Prix de vente/place : Prix auquel la place de cinéma sera vendue</p>`}
                   id="price-tooltip"
                 >
-                <Icon
-                  alt="image d’aide à l’information"
-                  svg="picto-info"
-                />
-              </span>
+                  <Icon
+                    alt="image d’aide à l’information"
+                    svg="picto-info"
+                  />
+                </span>
               </div>
               <NumberField
                 className={classNames('field-text price-field')}
@@ -160,12 +159,10 @@ class AllocineProviderForm extends PureComponent {
 
   render() {
     return (
-      <React.Fragment>
-        <Form
-          onSubmit={this.handleSubmit}
-          render={this.renderForm}
-        />
-      </React.Fragment>
+      <Form
+        onSubmit={this.handleSubmit}
+        render={this.renderForm}
+      />
     )
   }
 }
@@ -173,10 +170,9 @@ class AllocineProviderForm extends PureComponent {
 
 AllocineProviderForm.propTypes = {
   history: PropTypes.shape().isRequired,
-  match: PropTypes.shape({
-    params: PropTypes.shape(),
-  }).isRequired,
   notify: PropTypes.func.isRequired,
+  providerId: PropTypes.string.isRequired,
+  venueId: PropTypes.string.isRequired,
   venueIdAtOfferProviderIsRequired: PropTypes.bool.isRequired,
 }
 

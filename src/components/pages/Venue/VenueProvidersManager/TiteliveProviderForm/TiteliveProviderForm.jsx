@@ -1,6 +1,6 @@
 import classNames from 'classnames'
-import React, { PureComponent } from 'react'
-import { Form } from 'react-final-form'
+import React, {PureComponent} from 'react'
+import {Form} from 'react-final-form'
 
 import TextField from '../../../../layout/form/fields/TextField'
 import Icon from '../../../../layout/Icon'
@@ -34,9 +34,8 @@ class TiteliveProviderForm extends PureComponent {
   handleSuccess = () => {
     const {
       history,
-      match: {
-        params: { offererId, venueId },
-      },
+      offererId,
+      venueId,
     } = this.props
     history.push(`/structures/${offererId}/lieux/${venueId}`)
   }
@@ -111,10 +110,9 @@ class TiteliveProviderForm extends PureComponent {
 TiteliveProviderForm.propTypes = {
   createVenueProvider: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
-  match: PropTypes.shape({
-    params: PropTypes.shape(),
-  }).isRequired,
   notify: PropTypes.func.isRequired,
+  providerId: PropTypes.string.isRequired,
+  venueId: PropTypes.string.isRequired,
   venueIdAtOfferProviderIsRequired: PropTypes.bool.isRequired,
 }
 

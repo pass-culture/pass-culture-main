@@ -23,14 +23,10 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Allo
     props = {
       createVenueProvider,
       history,
-      match: {
-        params: {
-          offererId: 'CC',
-          venueId: 'AB',
-          venueProviderId: 'AE',
-        },
-      },
       notify,
+      offererId: 'CC',
+      providerId: 'AA',
+      venueId: 'BB',
       venueIdAtOfferProviderIsRequired: false,
     }
   })
@@ -167,6 +163,65 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Allo
       // then
       const tooltip = wrapper.find('.compte-section').find('.tooltip-info')
       expect(tooltip).toHaveLength(0)
+    })
+  })
+
+  describe('handleSuccess', () => {
+    it('should update current url when action was handled successfully', () => {
+      // given
+      const wrapper = shallow(<AllocineProviderForm {...props} />)
+
+      // when
+      wrapper.instance().handleSuccess()
+
+      // then
+      expect(history.push).toHaveBeenCalledWith('/structures/CC/lieux/BB')
+    })
+  })
+
+  describe('handleFail', () => {
+    it('should display a notification with the proper informations', () => {
+      // given
+      const wrapper = shallow(<AllocineProviderForm {...props} />)
+      const action = {
+        payload: {
+          errors: [
+            {
+              error: 'fake error',
+            },
+          ],
+        },
+      }
+      const form = {
+        batch: jest.fn(),
+      }
+      // when
+      wrapper.instance().handleFail(form)({}, action)
+      // then
+      expect(notify).toHaveBeenCalledWith([{ error: 'fake error' }])
+    })
+  })
+
+  describe('handleSubmit', () => {
+    it('should update venue provider using API', () => {
+      // given
+      const formValues = {
+        price: 12,
+        venueIdAtOfferProvider: 'token',
+      }
+      const wrapper = shallow(<AllocineProviderForm {...props} />)
+
+      // when
+      wrapper.instance().handleSubmit(formValues, {})
+
+      // then
+      expect(wrapper.state('isLoadingMode')).toBe(true)
+      expect(createVenueProvider).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), {
+        price: 12,
+        providerId: 'AA',
+        venueId: 'BB',
+        venueIdAtOfferProvider: 'token',
+      })
     })
   })
 })

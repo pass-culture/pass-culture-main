@@ -136,8 +136,7 @@ class VenueProvidersManager extends PureComponent {
               <div className="provider-form">
                 {providerSelectedIsAllocine && (
                   <AllocineProviderForm
-                    isCreationMode={isCreationMode}
-                    isLoadingMode={isLoadingMode}
+                    offererId={match.params.offererId}
                     providerId={providerId}
                     venueId={match.params.venueId}
                     venueIdAtOfferProviderIsRequired={venueIdAtOfferProviderIsRequired}
@@ -146,7 +145,7 @@ class VenueProvidersManager extends PureComponent {
 
                 {!providerSelectedIsAllocine && isProviderSelected && (
                   <TiteliveProviderForm
-                    isCreationMode={isCreationMode}
+                    offererId={match.params.offererId}
                     providerId={providerId}
                     venueId={match.params.venueId}
                     venueIdAtOfferProviderIsRequired={venueIdAtOfferProviderIsRequired}
