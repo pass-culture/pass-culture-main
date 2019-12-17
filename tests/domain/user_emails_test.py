@@ -4,7 +4,7 @@ from domain.user_emails import send_beneficiary_booking_cancellation_email, \
     send_warning_to_beneficiary_after_pro_booking_cancellation, \
     send_offerer_driven_cancellation_email_to_offerer, \
     send_booking_confirmation_email_to_beneficiary, send_booking_recap_emails, send_final_booking_recap_email, \
-    send_validation_confirmation_email, send_batch_cancellation_emails_to_users, \
+    send_validation_confirmation_email_to_pro, send_batch_cancellation_emails_to_users, \
     send_batch_cancellation_email_to_offerer, send_user_validation_email, send_venue_validation_confirmation_email, \
     send_reset_password_email_with_mailjet_template, send_activation_email, send_reset_password_email
 from models import Offerer, UserOfferer, User
@@ -306,15 +306,13 @@ class SendValidationConfirmationEmailTest:
                                                                                            mock_retrieve_data_for_new_offerer_validation_email):
         # Given
         offerer = Offerer()
-        user_offerer = UserOfferer()
-        user_offerer.user = User(email='test@example.com')
         mocked_send_email = Mock()
 
         # When
-        send_validation_confirmation_email(user_offerer, offerer, mocked_send_email)
+        send_validation_confirmation_email_to_pro(offerer, mocked_send_email)
 
         # Then
-        mock_retrieve_data_for_new_offerer_validation_email.assert_called_once_with(user_offerer, offerer)
+        mock_retrieve_data_for_new_offerer_validation_email.assert_called_once_with(offerer)
         mocked_send_email.assert_called_once_with(data={'Mj-TemplateID': 778723})
 
 

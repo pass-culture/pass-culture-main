@@ -8,7 +8,7 @@ from domain.admin_emails import maybe_send_offerer_validation_email
 from domain.user_emails import send_pro_user_waiting_for_validation_by_admin_email
 from domain.payments import read_message_name_in_message_file, \
     generate_file_checksum
-from domain.user_emails import send_validation_confirmation_email, send_venue_validation_confirmation_email
+from domain.user_emails import send_validation_confirmation_email_to_pro, send_venue_validation_confirmation_email
 from models import ApiErrors, \
     PcObject, UserOfferer, Offerer, Venue
 from models.api_errors import ResourceNotFoundError, ForbiddenError
@@ -51,13 +51,10 @@ def validate():
 
     PcObject.save(*objects_to_validate)
 
-    user_offerers = iter([obj for obj in objects_to_validate if isinstance(obj, UserOfferer)])
-    user_offerer = next(user_offerers, None)
-
     offerers = iter([obj for obj in objects_to_validate if isinstance(obj, Offerer)])
     offerer = next(offerers, None)
     try:
-        send_validation_confirmation_email(user_offerer, offerer, send_raw_email)
+        send_validation_confirmation_email_to_pro(offerer, send_raw_email)
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
     return "Validation effectuée", 202
