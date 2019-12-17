@@ -5,6 +5,7 @@ import BetaPage from '../BetaPage'
 import FormFooter from '../../../forms/FormFooter'
 import {  Router } from 'react-router'
 import { createBrowserHistory } from 'history'
+import Icon from '../../../layout/Icon/Icon'
 
 describe('components | BetaPage', () => {
   it('should render page component with pass culture information', () => {
@@ -20,6 +21,16 @@ describe('components | BetaPage', () => {
     expect(line3).toHaveLength(1)
   })
 
+  it('should render an Icon component for page background', () => {
+    // when
+    const wrapper = shallow(<BetaPage />)
+
+    // then
+    const icon = wrapper.find(Icon)
+    expect(icon.prop('alt')).toBe('')
+    expect(icon.prop('svg')).toBe('circle')
+  })
+
   it('should render a FormFooter component with the right props', () => {
     // when
     const wrapper = shallow(<BetaPage />)
@@ -30,7 +41,7 @@ describe('components | BetaPage', () => {
     expect(footer.prop('externalLink')).toStrictEqual({
       id: 'sign-up-link',
       label: 'Créer un compte',
-      target: '_blank',
+      title: 'Créer un compte (nouvelle fenêtre)',
       url: 'https://www.demarches-simplifiees.fr/commencer/inscription-pass-culture'
     })
     expect(footer.prop('submit')).toStrictEqual({

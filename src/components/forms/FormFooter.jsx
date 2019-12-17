@@ -3,61 +3,68 @@ import React, { PureComponent } from 'react'
 import { Link } from 'react-router-dom'
 
 class FormFooter extends PureComponent {
-  renderSubmitButton = buttonOptions => {
+  renderSubmitButton = options => {
     const attributes = {
-      className: `flex-1 ${buttonOptions.className || ''}`,
-      disabled: buttonOptions.disabled,
-      id: buttonOptions.id,
+      className: `flex-1 ${options.className || ''}`,
+      disabled: options.disabled,
+      id: options.id,
     }
     return (
       <button
         type="submit"
         {...attributes}
       >
-        {buttonOptions.label}
+        {options.label}
       </button>
     )
   }
 
-  renderLink = linkOptions => {
+  renderLink = options => {
     const attributes = {
-      className: `flex-1 ${linkOptions.className || ''}`,
-      disabled: linkOptions.disabled,
-      id: linkOptions.id,
-      to: linkOptions.url,
+      className: `flex-1 ${options.className || ''}`,
+      disabled: options.disabled,
+      id: options.id,
+      to: options.url,
     }
-    return (<Link {...attributes}>
-      {linkOptions.label}
-    </Link>)
+    return (
+      <Link {...attributes}>
+        {options.label}
+      </Link>
+    )
   }
 
-  renderExternalLink = linkOptions => {
+  renderExternalLink = options => {
     const attributes = {
-      className: `flex-1 ${linkOptions.className || ''}`,
-      href: linkOptions.url,
-      id: linkOptions.id,
-      target: linkOptions.target,
+      className: `flex-1 ${options.className || ''}`,
+      href: options.url,
+      id: options.id,
+      title: options.title,
     }
-    return (<a {...attributes}>
-      {linkOptions.label}
-    </a>)
+    return (
+      <a
+        {...attributes}
+        target='_blank'
+      >
+        {options.label}
+      </a>
+    )
   }
 
   render() {
     const { cancel, className, externalLink, submit } = this.props
-    const useCancel = Boolean(cancel && cancel.url)
-    const useExternalLink = Boolean(externalLink && externalLink.url)
-    const useLink = Boolean(submit && submit.url)
-    const useSubmit = Boolean(submit && !submit.url)
-    const hideSeparator = !(useCancel || useExternalLink) || !submit
+    const isCancelLink = Boolean(cancel && cancel.url)
+    const isExternalLink = Boolean(externalLink && externalLink.url)
+    const isInnerLink = Boolean(submit && submit.url)
+    const isSubmitButton = Boolean(submit && !submit.url)
+    const hideSeparator = !(isCancelLink || isExternalLink) || !submit
 
     return (
       <footer className={`logout-form-footer ${className}`}>
-        {useCancel && this.renderLink(cancel)}
-        {useExternalLink && this.renderExternalLink(externalLink)}
+        {isCancelLink && this.renderLink(cancel)}
+        {isExternalLink && this.renderExternalLink(externalLink)}
         {!hideSeparator && <hr className="dotted-left-2x-white flex-0" />}
-        {useLink && this.renderLink(submit)}
-        {useSubmit && this.renderSubmitButton(submit)}
+        {isInnerLink && this.renderLink(submit)}
+        {isSubmitButton && this.renderSubmitButton(submit)}
       </footer>
     )
   }
@@ -83,6 +90,7 @@ FormFooter.propTypes = {
     className: PropTypes.string,
     id: PropTypes.string,
     label: PropTypes.string.isRequired,
+    title: PropTypes.string,
     url: PropTypes.string,
   }),
   submit: shape({

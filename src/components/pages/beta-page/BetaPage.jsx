@@ -1,13 +1,13 @@
 import React from 'react'
 import FormFooter from '../../forms/FormFooter'
-import { ICONS_URL } from '../../../utils/config'
+import Icon from '../../layout/Icon/Icon'
 
 const BetaPage = () => (
   <div className="beta-page">
-    <img
+    <Icon
       alt=""
       className="bp-logo"
-      src={`${ICONS_URL}/circle.svg`}
+      svg="circle"
     />
     <main className="bp-main">
       <div className="bp-title">
@@ -36,7 +36,7 @@ const BetaPage = () => (
         externalLink={{
           id: 'sign-up-link',
           label: 'Créer un compte',
-          target: '_blank',
+          title: 'Créer un compte (nouvelle fenêtre)',
           url: 'https://www.demarches-simplifiees.fr/commencer/inscription-pass-culture',
         }}
         submit={{

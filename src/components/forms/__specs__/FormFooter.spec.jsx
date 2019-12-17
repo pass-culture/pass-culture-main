@@ -2,272 +2,134 @@ import React from 'react'
 import { shallow } from 'enzyme'
 
 import FormFooter from '../FormFooter'
+import { Link } from 'react-router-dom'
 
-describe('src | components | forms | FormFooter', () => {
+describe('components | FormFooter', () => {
   describe('render', () => {
-    const separatorSelector = 'hr.dotted-left-2x-white'
+    describe('regular links', () => {
+      it('should render a Link component when an url is provided', () => {
+        // given
+        const props = {
+          cancel: null,
+          className: null,
+          externalLink: null,
+          submit: {
+            className: 'my-class',
+            disabled: false,
+            id: 'my-id',
+            label: 'my-label',
+            url: 'my-url',
+          },
+        }
 
-    it('hide separator when no submit and no cancel', () => {
-      // given
-      const props = {
-        cancel: {
+        // when
+        const wrapper = shallow(<FormFooter {...props} />)
+
+        // then
+        const regularLink = wrapper.find(Link)
+        expect(regularLink).toHaveLength(1)
+        expect(regularLink.props()).toStrictEqual({
+          children: 'my-label',
+          className: 'flex-1 my-class',
           disabled: false,
-          label: '',
-        },
-        submit: {
+          id: 'my-id',
+          to: 'my-url'
+        })
+      })
+
+      it('should render a cancel link when a cancel url is provided', () => {
+        // given
+        const props = {
+          cancel: {
+            className: 'my-class',
+            disabled: false,
+            id: 'my-id',
+            label: 'my-label',
+            url: 'my-url',
+          },
+          className: null,
+          externalLink: null,
+          submit: null,
+        }
+
+        // when
+        const wrapper = shallow(<FormFooter {...props} />)
+
+        // then
+        const cancelLink = wrapper.find(Link)
+        expect(cancelLink).toHaveLength(1)
+        expect(cancelLink.props()).toStrictEqual({
+          children: 'my-label',
+          className: 'flex-1 my-class',
           disabled: false,
-          label: '',
-        },
-      }
-
-      // when
-      const wrapper = shallow(<FormFooter {...props} />)
-      const separator = wrapper.find(separatorSelector)
-
-      // then
-      expect(separator).toHaveLength(0)
+          id: 'my-id',
+          to: 'my-url'
+        })
+      })
     })
 
-    it('hide separator when no cancel', () => {
-      // given
-      const props = {
-        submit: {
-          disabled: false,
-          id: 'fake submit id',
-          label: 'fake submit label',
-        },
-      }
+    describe('external links', () => {
+      it('should render an external link when an url is provided', () => {
+        // given
+        const props = {
+          cancel: null,
+          className: null,
+          externalLink: {
+            className: 'my-class',
+            id: 'my-id',
+            label: 'my-label',
+            title: 'my-title',
+            url: 'my-url',
+          },
+          submit: null
+        }
 
-      // when
-      const wrapper = shallow(<FormFooter {...props} />)
-      const separator = wrapper.find(separatorSelector)
+        // when
+        const wrapper = shallow(<FormFooter {...props} />)
 
-      // then
-      expect(separator).toHaveLength(0)
+        // then
+        const externalLink = wrapper.find('a')
+        expect(externalLink).toHaveLength(1)
+        expect(externalLink.props()).toStrictEqual({
+          children: 'my-label',
+          className: 'flex-1 my-class',
+          href: 'my-url',
+          id: 'my-id',
+          target: '_blank',
+          title: 'my-title'
+        })
+      })
     })
 
-    it('hide separator when no submit', () => {
-      // given
-      const props = {
-        cancel: {
+    describe('buttons', () => {
+      it('should render a submit button when an url is not provided', () => {
+        // given
+        const props = {
+          cancel: null,
+          className: null,
+          externalLink: null,
+          submit: {
+            className: 'my-class',
+            disabled: false,
+            id: 'my-id',
+            label: 'my-label',
+          },
+        }
+
+        // when
+        const wrapper = shallow(<FormFooter {...props} />)
+
+        // then
+        const submitButton = wrapper.find('button')
+        expect(submitButton).toHaveLength(1)
+        expect(submitButton.props()).toStrictEqual({
+          children: 'my-label',
+          className: 'flex-1 my-class',
           disabled: false,
-          id: 'fake cancel id',
-          label: 'fake cancel label',
-          url: 'fake cancel url',
-        },
-      }
-
-      // when
-      const wrapper = shallow(<FormFooter {...props} />)
-      const separator = wrapper.find(separatorSelector)
-
-      // then
-      expect(separator).toHaveLength(0)
-    })
-
-    it('show separator when cancel and submit with no url', () => {
-      // given
-      const props = {
-        cancel: {
-          disabled: false,
-          id: 'fake cancel id',
-          label: 'fake cancel label',
-          url: 'fake cancel url',
-        },
-        submit: {
-          disabled: false,
-          id: 'fake submit id',
-          label: 'fake submit label',
-        },
-      }
-
-      // when
-      const wrapper = shallow(<FormFooter {...props} />)
-      const separator = wrapper.find(separatorSelector)
-
-      // then
-      expect(separator).toHaveLength(1)
-    })
-
-    it('show separator when cancel and submit with url', () => {
-      // given
-      const props = {
-        cancel: {
-          disabled: false,
-          id: 'fake cancel id',
-          label: 'fake cancel label',
-          url: 'fake cancel url',
-        },
-        submit: {
-          disabled: false,
-          id: 'fake submit id',
-          label: 'fake submit label',
-          url: 'fake submit url',
-        },
-      }
-
-      // when
-      const wrapper = shallow(<FormFooter {...props} />)
-      const separator = wrapper.find(separatorSelector)
-
-      // then
-      expect(separator).toHaveLength(1)
-    })
-
-    it('render submit as submit button', () => {
-      // given
-      const props = {
-        submit: {
-          disabled: false,
-          id: 'fake submit id',
-          label: 'fake submit label',
-        },
-      }
-
-      // when
-      const wrapper = shallow(<FormFooter {...props} />)
-      const submitButtonProps = wrapper.find('button').props()
-
-      // then
-      expect(submitButtonProps.id).toStrictEqual('fake submit id')
-    })
-
-    it('render submit as text link', () => {
-      // given
-      const props = {
-        submit: {
-          disabled: false,
-          id: 'fake submit id',
-          label: 'fake submit label',
-          url: 'fake submit url',
-        },
-      }
-
-      // when
-      const wrapper = shallow(<FormFooter {...props} />)
-      const submitButtonProps = wrapper.find('Link').props()
-
-      // then
-      expect(submitButtonProps.id).toStrictEqual('fake submit id')
-    })
-
-    it('render cancel button only', () => {
-      // given
-      const props = {
-        cancel: {
-          disabled: false,
-          id: 'fake cancel id',
-          label: 'fake cancel label',
-          url: 'fake cancel url',
-        },
-      }
-
-      // when
-      const wrapper = shallow(<FormFooter {...props} />)
-      const submitButtonProps = wrapper.find('Link').props()
-
-      // then
-      expect(submitButtonProps.id).toStrictEqual('fake cancel id')
-    })
-  })
-
-  describe('match the snapshots', () => {
-    it('hidden separator, cancel and submit buttons', () => {
-      // given
-      const props = {
-        cancel: {
-          disabled: false,
-          label: '',
-        },
-        className: 'fake className',
-        submit: {
-          disabled: false,
-          label: '',
-        },
-      }
-
-      // when
-      const wrapper = shallow(<FormFooter {...props} />)
-
-      // then
-      expect(wrapper).toMatchSnapshot()
-    })
-
-    it('show submit as submit button', () => {
-      // given
-      const props = {
-        cancel: {
-          className: 'fake cancel className',
-          disabled: false,
-          id: 'fake cancel id',
-          label: 'fake cancel label',
-          url: 'fake cancel url',
-        },
-        className: 'fake className',
-        submit: {
-          className: 'fake submit className',
-          disabled: false,
-          id: 'fake submit id',
-          label: 'fake submit label',
-        },
-      }
-
-      // when
-      const wrapper = shallow(<FormFooter {...props} />)
-
-      // then
-      expect(wrapper).toMatchSnapshot()
-    })
-
-    it('show submit as a text link', () => {
-      // given
-      const props = {
-        cancel: {
-          className: 'fake cancel className',
-          disabled: false,
-          id: 'fake cancel id',
-          label: 'fake cancel label',
-          url: 'fake cancel url',
-        },
-        className: 'fake className',
-        submit: {
-          className: 'fake submit className',
-          disabled: false,
-          id: 'fake submit id',
-          label: 'fake submit label',
-          url: 'fake submit url',
-        },
-      }
-
-      // when
-      const wrapper = shallow(<FormFooter {...props} />)
-
-      // then
-      expect(wrapper).toMatchSnapshot()
-    })
-
-    it('hide cancel button', () => {
-      // given
-      const props = {
-        cancel: {
-          disabled: false,
-          label: '',
-        },
-        className: 'fake className',
-        submit: {
-          className: 'fake submit className',
-          disabled: false,
-          id: 'fake submit id',
-          label: 'fake submit label',
-          url: 'fake submit url',
-        },
-      }
-
-      // when
-      const wrapper = shallow(<FormFooter {...props} />)
-
-      // then
-      expect(wrapper).toMatchSnapshot()
+          id: 'my-id',
+          type: 'submit'
+        })
+      })
     })
   })
 })
