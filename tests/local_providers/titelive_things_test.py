@@ -72,11 +72,7 @@ class TiteliveThingsTest:
                     "~"
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        offerer = create_offerer(siren='775671464')
-        venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-        titelive_provider = activate_provider('TiteLiveThings')
-        PcObject.save(venue, titelive_provider)
-
+        activate_provider('TiteLiveThings')
         titelive_things = TiteLiveThings()
 
         # When
@@ -148,11 +144,7 @@ class TiteliveThingsTest:
                     "~"
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        offerer = create_offerer(siren='775671464')
-        venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-        titelive_provider = activate_provider('TiteLiveThings')
-        PcObject.save(venue, titelive_provider)
-
+        activate_provider('TiteLiveThings')
         titelive_things = TiteLiveThings()
 
         # When
@@ -224,16 +216,12 @@ class TiteliveThingsTest:
 
         titelive_things_provider = get_provider_by_local_class('TiteLiveThings')
 
-        offerer = create_offerer(siren='775671464')
-        venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-
         product = create_product_with_thing_type(id_at_providers='9782895026310',
                                                  thing_name='Toto à la playa',
                                                  date_modified_at_last_provider=datetime(2001, 1, 1),
                                                  last_provider_id=titelive_things_provider.id)
-        titelive_provider = activate_provider('TiteLiveThings')
-        PcObject.save(venue, product, titelive_provider)
-
+        activate_provider('TiteLiveThings')
+        PcObject.save(product)
         titelive_things = TiteLiveThings()
 
         # When
@@ -253,11 +241,7 @@ class TiteliveThingsTest:
         files_list = list()
         get_files_to_process_from_titelive_ftp.return_value = files_list
 
-        offerer = create_offerer(siren='775671464')
-        venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-        titelive_provider = activate_provider('TiteLiveThings')
-        PcObject.save(venue, titelive_provider)
-
+        activate_provider('TiteLiveThings')
         titelive_things = TiteLiveThings()
 
         # When
@@ -283,11 +267,7 @@ class TiteliveThingsTest:
 
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        offerer = create_offerer(siren='775671464')
-        venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-        titelive_provider = activate_provider('TiteLiveThings')
-        PcObject.save(venue, titelive_provider)
-
+        activate_provider('TiteLiveThings')
         titelive_things = TiteLiveThings()
 
         # When
@@ -361,11 +341,7 @@ class TiteliveThingsTest:
                     "~Other Test Data"
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        offerer = create_offerer(siren='775671464')
-        venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-        titelive_provider = activate_provider('TiteLiveThings')
-        PcObject.save(venue, titelive_provider)
-
+        activate_provider('TiteLiveThings')
         titelive_things = TiteLiveThings()
 
         # When
@@ -435,11 +411,7 @@ class TiteliveThingsTest:
                     "~"
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        offerer = create_offerer(siren='775671464')
-        venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-        titelive_provider = activate_provider('TiteLiveThings')
-        PcObject.save(venue, titelive_provider)
-
+        activate_provider('TiteLiveThings')
         titelive_things = TiteLiveThings()
 
         # When
@@ -510,10 +482,8 @@ class TiteliveThingsTest:
 
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        offerer = create_offerer(siren='775671464')
-        venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
         titelive_provider = activate_provider('TiteLiveThings')
-        PcObject.save(venue, titelive_provider)
+        PcObject.save(titelive_provider)
         product = create_product_with_thing_type(id_at_providers='9782895026310',
                                                  thing_name='Toto à la playa',
                                                  date_modified_at_last_provider=datetime(2001, 1, 1),
@@ -590,16 +560,12 @@ class TiteliveThingsTest:
 
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        offerer = create_offerer(siren='775671464')
-        venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
         titelive_provider = activate_provider('TiteLiveThings')
-        PcObject.save(venue, titelive_provider)
         product = create_product_with_thing_type(id_at_providers='9782895026310',
                                                  thing_name='Toto à la playa',
                                                  date_modified_at_last_provider=datetime(2001, 1, 1),
                                                  last_provider_id=titelive_provider.id)
         PcObject.save(product)
-
         titelive_things = TiteLiveThings()
 
         # When
@@ -674,7 +640,7 @@ class TiteliveThingsTest:
         offerer = create_offerer(siren='775671464')
         venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
         titelive_provider = activate_provider('TiteLiveThings')
-        PcObject.save(venue, titelive_provider)
+        PcObject.save(venue)
         product = create_product_with_thing_type(id_at_providers='9782895026310',
                                                  thing_name='Toto à la playa',
                                                  date_modified_at_last_provider=datetime(2001, 1, 1),
@@ -699,10 +665,10 @@ class TiteliveThingsTest:
     @clean_database
     @patch('local_providers.titelive_things.get_files_to_process_from_titelive_ftp')
     @patch('local_providers.titelive_things.get_lines_from_thing_file')
-    def test_should_fill_isbn_info_with_ean13_if_isbn_not_known(self,
-                                                                get_lines_from_thing_file,
-                                                                get_files_to_process_from_titelive_ftp,
-                                                                app):
+    def test_should_fill_isbn_info_with_ean13_if_isbn_is_missing(self,
+                                                                 get_lines_from_thing_file,
+                                                                 get_files_to_process_from_titelive_ftp,
+                                                                 app):
         files_list = list()
         files_list.append('Quotidien30.tit')
 
@@ -756,11 +722,7 @@ class TiteliveThingsTest:
                     "~"
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        offerer = create_offerer(siren='775671464')
-        venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-        titelive_provider = activate_provider('TiteLiveThings')
-        PcObject.save(venue, titelive_provider)
-
+        activate_provider('TiteLiveThings')
         titelive_things = TiteLiveThings()
 
         # When
@@ -768,4 +730,4 @@ class TiteliveThingsTest:
 
         # Then
         product = Product.query.one()
-        assert product.extraData.get('isbn') == '9782895026310'
+        assert product.extraData['isbn'] == '9782895026310'
