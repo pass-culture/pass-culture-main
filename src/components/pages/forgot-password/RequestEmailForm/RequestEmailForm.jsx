@@ -6,18 +6,6 @@ import FormFooter from '../../../forms/FormFooter'
 import InputField from '../../../forms/inputs/InputField'
 import withResetForm from '../hocs/withResetForm'
 
-const cancelOptions = {
-  className: 'is-white-text',
-  disabled: false,
-  label: 'Annuler',
-  url: '/connexion',
-}
-
-const submitOptions = {
-  className: 'is-bold is-white-text',
-  label: 'OK',
-}
-
 export const RequestEmailForm = ({ canSubmit, isLoading, formErrors }) => (
   <Fragment>
     <div>
@@ -38,8 +26,18 @@ export const RequestEmailForm = ({ canSubmit, isLoading, formErrors }) => (
       </div>
     </div>
     <FormFooter
-      cancel={cancelOptions}
-      submit={{ ...submitOptions, disabled: !canSubmit }}
+      cancel={{
+        className: 'is-white-text',
+        id: 'np-cancel-link',
+        label: 'Annuler',
+        url: '/connexion',
+      }}
+      submit={{
+        className: 'is-bold is-white-text',
+        id: 'np-ok-button',
+        label: 'OK',
+        disabled: !canSubmit
+      }}
     />
   </Fragment>
 )

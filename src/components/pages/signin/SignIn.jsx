@@ -51,13 +51,13 @@ class SignIn extends PureComponent {
       >
         <div>
           <div className="lf-header">
-            <p className="lf-title">
+            <h1 className="lf-title">
               {'Connexion'}
-            </p>
-            <p className="lf-subtitle">
+            </h1>
+            <h2 className="lf-subtitle">
               {'Identifiez-vous\n'}
               {'pour accéder aux offres'}
-            </p>
+            </h2>
           </div>
           <EmailField
             id="user-identifier"
@@ -80,16 +80,14 @@ class SignIn extends PureComponent {
         </div>
         <FormFooter
           cancel={{
-            className: 'is-white-text',
             disabled: false,
-            id: 'cancel-button',
+            id: 'cancel-link',
             label: 'Annuler',
             url: '/beta',
           }}
           submit={{
-            className: 'is-bold',
             disabled: !canSubmit,
-            id: 'signin-button',
+            id: 'sign-in-button',
             label: 'Connexion',
           }}
         />

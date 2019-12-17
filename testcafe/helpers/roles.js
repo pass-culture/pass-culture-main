@@ -3,7 +3,7 @@ import { Role, Selector } from 'testcafe'
 import getPageUrl from './getPageUrl'
 import { ROOT_PATH } from '../../src/utils/config'
 
-const signInButton = Selector('#signin-button:enabled')
+const signInButton = Selector('#sign-in-button:enabled')
 
 export const signinAs = user => async t => {
   await t

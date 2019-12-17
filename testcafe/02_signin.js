@@ -9,7 +9,7 @@ const errorClass = '.pc-error-message'
 const userPassword = Selector(passId)
 const userIdentifier = Selector(userId)
 const identifierErrors = Selector(`${userId}-error`).find(errorClass)
-const signInButton = Selector('#signin-button')
+const signInButton = Selector('#sign-in-button')
 
 fixture("Suite à l'activation de mon compte,")
   .page(`${ROOT_PATH}connexion`)

@@ -50,7 +50,7 @@ ShallowWrapper {
           cancel={
             Object {
               "className": "is-white-text",
-              "disabled": false,
+              "id": "np-cancel-link",
               "label": "Annuler",
               "url": "/connexion",
             }
@@ -61,6 +61,7 @@ ShallowWrapper {
             Object {
               "className": "is-bold is-white-text",
               "disabled": false,
+              "id": "np-ok-button",
               "label": "OK",
             }
           }
@@ -180,7 +181,7 @@ ShallowWrapper {
         "props": Object {
           "cancel": Object {
             "className": "is-white-text",
-            "disabled": false,
+            "id": "np-cancel-link",
             "label": "Annuler",
             "url": "/connexion",
           },
@@ -189,6 +190,7 @@ ShallowWrapper {
           "submit": Object {
             "className": "is-bold is-white-text",
             "disabled": false,
+            "id": "np-ok-button",
             "label": "OK",
           },
         },
@@ -233,7 +235,7 @@ ShallowWrapper {
             cancel={
               Object {
                 "className": "is-white-text",
-                "disabled": false,
+                "id": "np-cancel-link",
                 "label": "Annuler",
                 "url": "/connexion",
               }
@@ -244,6 +246,7 @@ ShallowWrapper {
               Object {
                 "className": "is-bold is-white-text",
                 "disabled": false,
+                "id": "np-ok-button",
                 "label": "OK",
               }
             }
@@ -363,7 +366,7 @@ ShallowWrapper {
           "props": Object {
             "cancel": Object {
               "className": "is-white-text",
-              "disabled": false,
+              "id": "np-cancel-link",
               "label": "Annuler",
               "url": "/connexion",
             },
@@ -372,6 +375,7 @@ ShallowWrapper {
             "submit": Object {
               "className": "is-bold is-white-text",
               "disabled": false,
+              "id": "np-ok-button",
               "label": "OK",
             },
           },

@@ -7,3 +7,9 @@
   font-size: rem(16px) !important;
   font-style: normal !important;
 }
+
+#np-cancel-link, #np-ok-button {
+  color: $white;
+  font-size: rem(16px);
+  font-weight: 700;
+}

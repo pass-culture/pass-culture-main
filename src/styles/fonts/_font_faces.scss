@@ -6,6 +6,7 @@
     url('../fonts/barlow-latin-200.woff') format('woff');
 }
 
+// light-italic
 @font-face {
   font-family: 'Barlow';
   font-style: italic;
@@ -22,6 +23,7 @@
     url('../fonts/barlow-latin-400.woff') format('woff');
 }
 
+// normal-italic | regular-italic
 @font-face {
   font-family: 'Barlow';
   font-style: italic;
@@ -38,6 +40,7 @@
     url('../fonts/barlow-latin-500.woff') format('woff');
 }
 
+// medium-italic
 @font-face {
   font-family: 'Barlow';
   font-weight: 500;
@@ -54,6 +57,7 @@
     url('../fonts/barlow-latin-600.woff') format('woff');
 }
 
+// semi-bold-italic
 @font-face {
   font-family: 'Barlow';
   font-weight: 600;
@@ -78,6 +82,7 @@
     url('../fonts/barlow-latin-800.woff') format('woff');
 }
 
+// extra-bold-italic
 @font-face {
   font-family: 'Barlow';
   font-weight: 800;

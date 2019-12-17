@@ -37,9 +37,9 @@
   }
 
   .lf-subtitle {
-    font-size: rem(22px);
-    font-style: italic;
     font-weight: 500;
+    font-size: rem(24px);
+    font-style: italic;
     white-space: pre-wrap;
   }
 
@@ -64,6 +64,12 @@
     line-height: rem(19px);
     text-align: center;
   }
+}
+
+#cancel-link, #sign-in-button {
+  color: $white;
+  font-size: rem(16px);
+  font-weight: 700;
 }
 
 
