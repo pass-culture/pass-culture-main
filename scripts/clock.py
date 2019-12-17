@@ -7,6 +7,8 @@ from io import StringIO
 from apscheduler.schedulers.blocking import BlockingScheduler
 from flask import Flask
 from mailjet_rest import Client
+from scripts.cron_logger.cron_logger import build_cron_log_message
+from scripts.cron_logger.cron_status import CronStatus
 from sqlalchemy import orm
 
 from models.db import db
@@ -23,13 +25,12 @@ from repository.feature_queries import feature_cron_send_final_booking_recaps_en
     feature_cron_synchronize_titelive_things, \
     feature_cron_synchronize_titelive_descriptions, \
     feature_cron_synchronize_titelive_thumbs, \
-    feature_cron_synchronize_titelive_stocks
+    feature_cron_synchronize_titelive_stocks, \
+    feature_cron_synchronize_allocine_stocks
 from repository.provider_queries import get_provider_by_local_class
 from repository.recommendation_queries import delete_useless_recommendations
 from repository.user_queries import find_most_recent_beneficiary_creation_date
 from scripts.beneficiary import remote_import
-from scripts.cron_logger.cron_logger import build_cron_log_message
-from scripts.cron_logger.cron_status import CronStatus
 from scripts.dashboard.write_dashboard import write_dashboard
 from utils.config import API_ROOT_PATH
 from utils.logger import logger
@@ -42,6 +43,7 @@ app.config['DEBUG'] = True
 db.init_app(app)
 
 TITELIVE_STOCKS_PROVIDER_NAME = "TiteLiveStocks"
+ALLOCINE_STOCKS_PROVIDER_NAME = "AllocineStocks"
 
 
 def log_cron(func):
@@ -68,14 +70,12 @@ def pc_send_final_booking_recaps():
         send_final_booking_recaps()
 
 
-
 @log_cron
 def pc_generate_and_send_payments(payment_message_id: str = None):
     with app.app_context():
         from scripts.payment.batch import generate_and_send_payments
         app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
         generate_and_send_payments(payment_message_id)
-
 
 
 @log_cron
@@ -145,8 +145,21 @@ def pc_synchronize_titelive_stocks():
 
 
 @log_cron
-def pc_retrieve_offerers_bank_information():
+def pc_synchronize_allocine_stocks():
+    with app.app_context():
+        allocine_stocks_provider_id = get_provider_by_local_class(ALLOCINE_STOCKS_PROVIDER_NAME).id
+        process = subprocess.Popen(
+            'PYTHONPATH="." python scripts/pc.py update_providables_by_provider_id --provider-id '
+            + str(allocine_stocks_provider_id),
+            shell=True,
+            cwd=API_ROOT_PATH)
+        output, error = process.communicate()
+        logger.info(StringIO(output))
+        logger.info(StringIO(error))
 
+
+@log_cron
+def pc_retrieve_offerers_bank_information():
     with app.app_context():
         process = subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
                                    + ' --provider BankInformationProvider',
@@ -233,6 +246,10 @@ if __name__ == '__main__':
     if feature_cron_synchronize_titelive_stocks():
         scheduler.add_job(pc_synchronize_titelive_stocks, 'cron', id='synchronize_titelive_stocks',
                           day='*', hour='4')
+
+    if feature_cron_synchronize_allocine_stocks():
+        scheduler.add_job(pc_synchronize_allocine_stocks, 'cron', id='synchronize_allocine_stocks',
+                          day='*', hour='23')
 
     if feature_cron_send_remedial_emails():
         scheduler.add_job(pc_send_remedial_emails, 'cron', id='send_remedial_emails', minute='*/15')
