@@ -6,7 +6,7 @@ import TextField from '../../../../../layout/form/fields/TextField'
 import Icon from '../../../../../layout/Icon'
 import { Form } from 'react-final-form'
 
-describe('src | components | pages | Venue | VenueProvidersManager | form | ProviderForm', () => {
+describe('src | components | pages | Venue | VenueProvidersManager | form | TiteliveProviderForm', () => {
   let createVenueProvider
   let props
   let notify
@@ -125,58 +125,6 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Prov
 
         // when
         const wrapper = mount(<TiteliveProviderForm {...props} />)
-
-        // then
-        const tooltip = wrapper.find('.tooltip-info')
-        expect(tooltip).toHaveLength(0)
-      })
-    })
-  })
-
-  describe('when in loading mode', () => {
-    it('should not display an import button', () => {
-      // when
-      const wrapper = mount(<TiteliveProviderForm {...props} />)
-      wrapper.find('button').simulate('click')
-
-      // then
-      const importButtonContainer = wrapper.find('.provider-import-button-container')
-      expect(importButtonContainer).toHaveLength(0)
-    })
-
-    describe('when provider identifier is required', () => {
-      it('should render a TextField component in read only mode', () => {
-        // given
-        props.venueIdAtOfferProviderIsRequired = true
-
-        // when
-        const wrapper = mount(<TiteliveProviderForm {...props} />)
-        wrapper
-          .find(Form)
-          .find(TextField)
-          .simulate('change', { target: { value: 'account' } })
-        wrapper.find('button').simulate('click')
-
-        // then
-        const form = wrapper.find(Form)
-        expect(form).toHaveLength(1)
-        const label = form.find('label')
-        expect(label.text()).toBe('Compte')
-        const textField = form.find(TextField)
-        expect(textField).toHaveLength(1)
-        //expect(textField.prop('className')).toBe('field-text field-is-read-only')
-        //expect(textField.prop('name')).toBe('venueIdAtOfferProvider')
-        expect(textField.prop('readOnly')).toBe(true)
-        expect(textField.prop('required')).toBe(true)
-      })
-
-      it('should not display a tooltip and an Icon component', () => {
-        // given
-        props.venueIdAtOfferProviderIsRequired = true
-
-        // when
-        const wrapper = mount(<TiteliveProviderForm {...props} />)
-        wrapper.find('.provider-import-button-container').simulate('click')
 
         // then
         const tooltip = wrapper.find('.tooltip-info')

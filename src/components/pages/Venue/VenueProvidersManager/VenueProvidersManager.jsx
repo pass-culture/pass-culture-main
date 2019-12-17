@@ -24,6 +24,12 @@ class VenueProvidersManager extends PureComponent {
     loadProvidersAndVenueProviders()
   }
 
+  componentDidUpdate(prevProps) {
+    if(prevProps.venueProviders.length < this.props.venueProviders.length) {
+      this.setState({ isCreationMode: false })
+    }
+  }
+
   handleAddVenueProvider = () => {
     this.setState({
       isCreationMode: true,
@@ -151,7 +157,7 @@ class VenueProvidersManager extends PureComponent {
           )}
         </ul>
 
-        {hasAtLeastOneProvider && hasNoVenueProvider &&(
+        {hasAtLeastOneProvider && hasNoVenueProvider && (
           <div className="has-text-centered">
             <button
               className="button is-secondary"

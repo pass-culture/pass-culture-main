@@ -138,6 +138,22 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         expect(selectButtonOptions.at(2).text()).toStrictEqual('Movies provider')
       })
     })
+
+    describe('when venue provider is added from the store', () => {
+      it('is not possible to select another venue provider', () => {
+        // given
+        props.venueProviders = []
+        const wrapper = shallow(<VenueProvidersManager {...props} />)
+        wrapper.setState({ isCreationMode: true })
+
+        // when
+        wrapper.setProps({ venueProviders: [{ id : 'AD' }] })
+
+        // then
+        const addProviderForm = wrapper.find('.add-provider-form')
+        expect(addProviderForm).toHaveLength(0)
+      })
+    })
   })
 
   describe('handleChange', () => {

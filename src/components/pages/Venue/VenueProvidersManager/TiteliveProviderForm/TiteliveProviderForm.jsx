@@ -48,7 +48,6 @@ class TiteliveProviderForm extends PureComponent {
     } = action
 
     notify(errors)
-    console.log('FAAAAAAAIIIL')
   }
 
   renderForm = props => {
