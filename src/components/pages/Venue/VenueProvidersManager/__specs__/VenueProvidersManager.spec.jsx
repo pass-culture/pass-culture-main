@@ -1,4 +1,4 @@
-import { shallow , mount} from 'enzyme'
+import { shallow } from 'enzyme'
 import React from 'react'
 
 import VenueProvidersManager from '../VenueProvidersManager'
@@ -28,7 +28,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         { id: 'DD', requireProviderIdentifier: true, name: 'Cinema provider' },
         { id: 'EE', requireProviderIdentifier: true, name: 'Movies provider' },
       ],
-      venueProviders: [{ id: 'AA' }, { id: 'BB' }],
+      venueProviders: [],
     }
   })
 
@@ -57,17 +57,17 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
 
   describe('render', () => {
     it('should display a list of VenueProviderItem', () => {
+      // given
+      props.venueProviders = [{ id: 'AA' }]
+
       // when
       const wrapper = shallow(<VenueProvidersManager {...props} />)
 
       // then
       const venueProviderItem = wrapper.find(VenueProviderItem)
-      expect(venueProviderItem).toHaveLength(2)
+      expect(venueProviderItem).toHaveLength(1)
       expect(venueProviderItem.at(0).prop('venueProvider')).toStrictEqual({
         id: 'AA',
-      })
-      expect(venueProviderItem.at(1).prop('venueProvider')).toStrictEqual({
-        id: 'BB',
       })
     })
 
@@ -80,7 +80,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
     })
 
     describe('the import button', () => {
-      it('is displayed when at least one provider is given', () => {
+      it('is displayed when at least one provider is given and no venueProviders is given', () => {
         // when
         const wrapper = shallow(<VenueProvidersManager {...props} />)
 
@@ -97,6 +97,18 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       it('is hidden when no providers are given', () => {
         // given
         props.providers = []
+
+        // when
+        const wrapper = shallow(<VenueProvidersManager {...props} />)
+
+        // then
+        const importButton = wrapper.find('#add-venue-provider-btn')
+        expect(importButton).toHaveLength(0)
+      })
+
+      it('is hidden when provider and a venue provider are given', () => {
+        // Given
+        props.venueProviders = [{ id: 'AA' }]
 
         // when
         const wrapper = shallow(<VenueProvidersManager {...props} />)

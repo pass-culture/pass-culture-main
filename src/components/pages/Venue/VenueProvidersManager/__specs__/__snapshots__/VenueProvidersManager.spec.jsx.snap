@@ -44,16 +44,7 @@ ShallowWrapper {
         },
       ]
     }
-    venueProviders={
-      Array [
-        Object {
-          "id": "AA",
-        },
-        Object {
-          "id": "BB",
-        },
-      ]
-    }
+    venueProviders={Array []}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -77,22 +68,7 @@ ShallowWrapper {
         </h2>,
         <ul
           className="provider-list"
-        >
-          <VenueProviderItem
-            venueProvider={
-              Object {
-                "id": "AA",
-              }
-            }
-          />
-          <VenueProviderItem
-            venueProvider={
-              Object {
-                "id": "BB",
-              }
-            }
-          />
-        </ul>,
+        />,
         <div
           className="has-text-centered"
         >
@@ -129,54 +105,13 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            Array [
-              <VenueProviderItem
-                venueProvider={
-                  Object {
-                    "id": "AA",
-                  }
-                }
-              />,
-              <VenueProviderItem
-                venueProvider={
-                  Object {
-                    "id": "BB",
-                  }
-                }
-              />,
-            ],
+            Array [],
             false,
           ],
           "className": "provider-list",
         },
         "ref": null,
         "rendered": Array [
-          Object {
-            "instance": null,
-            "key": "AA",
-            "nodeType": "function",
-            "props": Object {
-              "venueProvider": Object {
-                "id": "AA",
-              },
-            },
-            "ref": null,
-            "rendered": null,
-            "type": [Function],
-          },
-          Object {
-            "instance": null,
-            "key": "BB",
-            "nodeType": "function",
-            "props": Object {
-              "venueProvider": Object {
-                "id": "BB",
-              },
-            },
-            "ref": null,
-            "rendered": null,
-            "type": [Function],
-          },
           false,
         ],
         "type": "ul",
@@ -233,22 +168,7 @@ ShallowWrapper {
           </h2>,
           <ul
             className="provider-list"
-          >
-            <VenueProviderItem
-              venueProvider={
-                Object {
-                  "id": "AA",
-                }
-              }
-            />
-            <VenueProviderItem
-              venueProvider={
-                Object {
-                  "id": "BB",
-                }
-              }
-            />
-          </ul>,
+          />,
           <div
             className="has-text-centered"
           >
@@ -285,54 +205,13 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              Array [
-                <VenueProviderItem
-                  venueProvider={
-                    Object {
-                      "id": "AA",
-                    }
-                  }
-                />,
-                <VenueProviderItem
-                  venueProvider={
-                    Object {
-                      "id": "BB",
-                    }
-                  }
-                />,
-              ],
+              Array [],
               false,
             ],
             "className": "provider-list",
           },
           "ref": null,
           "rendered": Array [
-            Object {
-              "instance": null,
-              "key": "AA",
-              "nodeType": "function",
-              "props": Object {
-                "venueProvider": Object {
-                  "id": "AA",
-                },
-              },
-              "ref": null,
-              "rendered": null,
-              "type": [Function],
-            },
-            Object {
-              "instance": null,
-              "key": "BB",
-              "nodeType": "function",
-              "props": Object {
-                "venueProvider": Object {
-                  "id": "BB",
-                },
-              },
-              "ref": null,
-              "rendered": null,
-              "type": [Function],
-            },
             false,
           ],
           "type": "ul",

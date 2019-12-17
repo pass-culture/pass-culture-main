@@ -74,6 +74,7 @@ class VenueProvidersManager extends PureComponent {
       venueIdAtOfferProviderIsRequired,
     } = this.state
     const hasAtLeastOneProvider = providers.length > 0
+    const hasNoVenueProvider = venueProviders.length === 0
 
     return (
       <div className="venue-providers-manager section">
@@ -99,7 +100,7 @@ class VenueProvidersManager extends PureComponent {
                   <select
                     className="field-select"
                     id="provider-options"
-                    onBlur={this.handleChange}
+                    onChange={this.handleChange}
                   >
                     <option
                       key={DEFAULT_PROVIDER_OPTION.id}
@@ -150,7 +151,7 @@ class VenueProvidersManager extends PureComponent {
           )}
         </ul>
 
-        {hasAtLeastOneProvider && (
+        {hasAtLeastOneProvider && hasNoVenueProvider &&(
           <div className="has-text-centered">
             <button
               className="button is-secondary"
