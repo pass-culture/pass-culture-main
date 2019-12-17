@@ -22,6 +22,7 @@ const SynchronisationConfirmationModal = ({ handleClose, handleConfirm }) => {
               className="confirm-button"
               id="confirm-button"
               onClick={handleConfirm}
+              type="button"
             >
               {'Synchroniser'}
             </button>
