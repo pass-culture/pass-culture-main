@@ -17,12 +17,18 @@ depends_on = None
 
 def upgrade():
     op.execute("""
-        DROP TRIGGER IF EXISTS audit_trigger_delete ON product;
-        DROP TRIGGER IF EXISTS audit_trigger_insert ON product;
-        DROP TRIGGER IF EXISTS audit_trigger_update ON product;
-        DROP TRIGGER IF EXISTS audit_trigger_delete ON mediation;
-        DROP TRIGGER IF EXISTS audit_trigger_insert ON mediation;
-        DROP TRIGGER IF EXISTS audit_trigger_update ON mediation;
+        BEGIN TRANSACTION;
+            DROP TRIGGER IF EXISTS audit_trigger_delete ON product;
+            DROP TRIGGER IF EXISTS audit_trigger_insert ON product;
+            DROP TRIGGER IF EXISTS audit_trigger_update ON product;
+        COMMIT;
+    """)
+    op.execute("""
+        BEGIN TRANSACTION;
+            DROP TRIGGER IF EXISTS audit_trigger_delete ON mediation;
+            DROP TRIGGER IF EXISTS audit_trigger_insert ON mediation;
+            DROP TRIGGER IF EXISTS audit_trigger_update ON mediation;
+        COMMIT;
     """)
 
 
