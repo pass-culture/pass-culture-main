@@ -53,26 +53,6 @@
             text-align: center;
         }
     </style>
-    <script type="text/javascript">
-        setInterval(redirectToApp, 30000);
-
-	function redirectToApp(){
-            var url = new URL(window.location.href);
-            var param = url.searchParams.get("source");
-
-	    fetch("https://backend.passculture.beta.gouv.fr/health", {"mode": "cors"}).then(function(response) {
-		if(response.ok) {
-	            if (param === 'app'){
-        	        window.location.replace("http://app.passculture.beta.gouv.fr");
-                    } else {
-	                window.location.replace("http://pro.passculture.beta.gouv.fr");
-        	    }
-		}
-	    }).catch(error => {
-		console.log('API is unavailable');
-	    });
-        }
-    </script>
 </head>
 <body>
     <div class="icon-container">
@@ -100,6 +80,29 @@
             </g>
         </svg>
     </div>
+    <script>
+        const redirectToApp = () => {
+            const url = new URL(window.location.href)
+            const param = url.searchParams.get("source")
+
+	    const doRedirect = response => {
+                if (response.ok) {
+                    if (param === 'app') {
+                        window.location.replace("https://app.passculture.beta.gouv.fr")
+                    } else {
+                        window.location.replace("https://pro.passculture.beta.gouv.fr")
+                    }
+                }
+            }
+
+            fetch("https://backend.passculture.beta.gouv.fr/health", {"mode": "cors"}).then(
+		doRedirect
+            ).catch(error => {
+                console.log('API is unavailable')
+            })
+        }
+	setInterval(redirectToApp, 30000)
+    </script>
 </body>
 </html>
 
