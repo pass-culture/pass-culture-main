@@ -3,29 +3,31 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  max-height: 100%;
-  position: relative;
   width: 100%;
 }
 
 .bp-main {
-  font-style: italic;
+  display: flex;
+  flex-direction: column;
   flex: 1;
+  font-style: italic;
+  justify-content: center;
   padding: rem(23px);
 }
 
 .bp-title {
-  font-weight: 700;
+  font-weight: 800;
   font-size: rem(32px);
   line-height: rem(38px);
-  margin-top: rem(150px);
+  margin-top: rem(100px);
   margin-bottom: rem(32px);
   white-space: pre-wrap;
 }
 
 .bp-content {
   font-size: rem(24px);
-  font-weight: normal;
+  font-style: italic;
+  font-weight: 500;
   line-height: rem(29px);
   margin-bottom: rem(24px);
 
@@ -35,14 +37,22 @@
   }
 }
 
-#sign-in-link {
-  color: $white;
-  font-weight: 700;
-  font-size: rem(16px);
+.bp-buttons-container {
+  flex: 0;
+
+  #sign-in-link, #sign-up-link {
+    color: $white;
+    font-size: rem(16px);
+    font-weight: 700;
+    text-decoration: none;
+  }
 }
 
-#sign-up-link {
-  color: $white;
-  font-size: rem(16px);
-  text-decoration: none;
+.bp-logo {
+  height: rem(50%);
+  right: -12%;
+  opacity: 0.14;
+  position: absolute;
+  top: -17%;
+  width: rem(50%);
 }

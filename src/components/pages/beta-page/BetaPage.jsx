@@ -1,8 +1,14 @@
 import React from 'react'
 import FormFooter from '../../forms/FormFooter'
+import { ICONS_URL } from '../../../utils/config'
 
 const BetaPage = () => (
   <div className="beta-page">
+    <img
+      alt=""
+      className="bp-logo"
+      src={`${ICONS_URL}/circle.svg`}
+    />
     <main className="bp-main">
       <div className="bp-title">
         {'Bienvenue dans\n'}
@@ -25,19 +31,21 @@ const BetaPage = () => (
         {'de nouvelles !'}
       </div>
     </main>
-    <FormFooter
-      externalLink={{
-        id: 'sign-up-link',
-        label: 'Créer un compte',
-        target: '_blank',
-        url: 'https://www.demarches-simplifiees.fr/commencer/inscription-pass-culture',
-      }}
-      submit={{
-        id: 'sign-in-link',
-        label: "J'ai un compte",
-        url: '/connexion'
-      }}
-    />
+    <div className="bp-buttons-container">
+      <FormFooter
+        externalLink={{
+          id: 'sign-up-link',
+          label: 'Créer un compte',
+          target: '_blank',
+          url: 'https://www.demarches-simplifiees.fr/commencer/inscription-pass-culture',
+        }}
+        submit={{
+          id: 'sign-in-link',
+          label: "J'ai un compte",
+          url: '/connexion'
+        }}
+      />
+    </div>
   </div>
 )
 
