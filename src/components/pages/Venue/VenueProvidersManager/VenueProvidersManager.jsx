@@ -1,8 +1,11 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import VenueProviderItem from './VenueProviderItem/VenueProviderItem'
-import { ALLOCINE_PROVIDER_OPTION, DEFAULT_PROVIDER_OPTION } from './utils/utils'
-import checkIfProviderShouldBeDisabled from './utils/checkIfProviderShouldBeDisabled'
+import {
+  ALLOCINE_PROVIDER_OPTION,
+  DEFAULT_PROVIDER_OPTION,
+  TITELIVE_PROVIDER_OPTION,
+} from './utils/utils'
 import AllocineProviderForm from './AllocineProviderForm/AllocineProviderFormContainer'
 import TiteliveProviderForm from './TiteliveProviderForm/TiteliveProviderFormContainer'
 import ReactTooltip from 'react-tooltip'
@@ -12,10 +15,9 @@ class VenueProvidersManager extends PureComponent {
     super(props)
     this.state = {
       isCreationMode: false,
-      isLoadingMode: false,
-      isProviderSelected: false,
       providerId: null,
       providerSelectedIsAllocine: false,
+      providerSelectedIsTitelive: false,
       venueIdAtOfferProviderIsRequired: true,
     }
   }
@@ -27,7 +29,7 @@ class VenueProvidersManager extends PureComponent {
 
   componentDidUpdate(prevProps) {
     ReactTooltip.rebuild()
-    if(prevProps.venueProviders.length < this.props.venueProviders.length) {
+    if (prevProps.venueProviders.length < this.props.venueProviders.length) {
       this.setState({ isCreationMode: false })
     }
   }
@@ -41,28 +43,19 @@ class VenueProvidersManager extends PureComponent {
   handleChange = event => {
     const valueFromSelectInput = event.target.value
     const valueParsed = JSON.parse(valueFromSelectInput)
-
-    if (valueParsed && valueParsed.id !== DEFAULT_PROVIDER_OPTION.id) {
-      this.setState({
-        isProviderSelected: true,
-        venueIdAtOfferProviderIsRequired: valueParsed.requireProviderIdentifier,
-      })
-    }
+    this.setState({
+      providerSelectedIsAllocine: false,
+      providerSelectedIsTitelive: false,
+    })
 
     if (valueParsed && valueParsed.name === ALLOCINE_PROVIDER_OPTION.name) {
       this.setState({
         providerSelectedIsAllocine: true,
-      })
-    } else {
-      this.setState({
-        providerSelectedIsAllocine: false,
-      })
-    }
-
-    if (valueParsed && valueParsed.id == DEFAULT_PROVIDER_OPTION.id) {
-      this.setState({
-        isProviderSelected: false,
         venueIdAtOfferProviderIsRequired: valueParsed.requireProviderIdentifier,
+      })
+    } else if (valueParsed && valueParsed.name === TITELIVE_PROVIDER_OPTION.name) {
+      this.setState({
+        providerSelectedIsTitelive: true,
       })
     }
 
@@ -72,13 +65,12 @@ class VenueProvidersManager extends PureComponent {
   }
 
   render() {
-    const { providers, match, venueProviders } = this.props
+    const { providers, match, venueProviders, venueSiret } = this.props
     const {
       isCreationMode,
-      isLoadingMode,
-      isProviderSelected,
       providerId,
       providerSelectedIsAllocine,
+      providerSelectedIsTitelive,
       venueIdAtOfferProviderIsRequired,
     } = this.state
     const hasAtLeastOneProvider = providers.length > 0
@@ -117,14 +109,8 @@ class VenueProvidersManager extends PureComponent {
                       {DEFAULT_PROVIDER_OPTION.name}
                     </option>
                     {providers.map(provider => {
-                      const isProviderDisabled = checkIfProviderShouldBeDisabled(
-                        venueProviders,
-                        provider
-                      )
-
                       return (
                         <option
-                          disabled={isProviderDisabled}
                           key={`provider-${provider.id}`}
                           value={JSON.stringify(provider)}
                         >
@@ -145,12 +131,12 @@ class VenueProvidersManager extends PureComponent {
                   />
                 )}
 
-                {!providerSelectedIsAllocine && isProviderSelected && (
+                {providerSelectedIsTitelive && (
                   <TiteliveProviderForm
                     offererId={match.params.offererId}
                     providerId={providerId}
                     venueId={match.params.venueId}
-                    venueIdAtOfferProviderIsRequired={venueIdAtOfferProviderIsRequired}
+                    venueSiret={venueSiret}
                   />
                 )}
               </div>
@@ -183,6 +169,7 @@ VenueProvidersManager.propTypes = {
   }).isRequired,
   providers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   venueProviders: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  venueSiret: PropTypes.string.isRequired,
 }
 
 export default VenueProvidersManager

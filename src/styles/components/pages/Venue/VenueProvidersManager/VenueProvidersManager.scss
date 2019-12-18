@@ -22,19 +22,19 @@
         }
 
         #select-source {
+          align-items: flex-start;
           display: flex;
           flex-direction: column;
-          align-items: flex-start;
 
           label {
             margin-top: 6px;
           }
 
           .field-select {
-            margin-top: 8px;
-            border-radius: 17px;
-            border: 2px solid $grey-dark;
             background-image: url('/icons/dropdown-disclosure-down-s-w.svg');
+            border: 2px solid $grey-dark;
+            border-radius: 17px;
+            margin-top: 8px;
           }
         }
       }

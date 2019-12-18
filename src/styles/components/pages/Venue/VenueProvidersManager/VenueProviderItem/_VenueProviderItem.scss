@@ -7,8 +7,13 @@
     @extend .has-text-weight-bold;
     @extend .fs14;
 
+    align-content: center;
+    display: flex;
     flex: 2;
+    flex-direction: column;
     font-size: medium;
+    justify-content: center;
+    margin-left: 20px;
   }
 
   .venue-id-at-offer-provider-container-with-message {
@@ -16,6 +21,7 @@
 
     display: inline;
     flex: 4;
+    margin-left: 20px;
   }
 
   .venue-id-at-offer-provider-container {

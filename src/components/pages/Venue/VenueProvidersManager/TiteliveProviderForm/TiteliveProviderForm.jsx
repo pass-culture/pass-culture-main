@@ -1,9 +1,5 @@
-import classNames from 'classnames'
 import React, {PureComponent} from 'react'
 import {Form} from 'react-final-form'
-
-import TextField from '../../../../layout/form/fields/TextField'
-import Icon from '../../../../layout/Icon'
 import PropTypes from 'prop-types'
 
 class TiteliveProviderForm extends PureComponent {
@@ -15,16 +11,14 @@ class TiteliveProviderForm extends PureComponent {
   }
 
   handleFormSubmit = (formValues, form) => {
-    formValues.preventDefault()
     this.setState({ isLoadingMode: true })
 
     const { createVenueProvider } = this.props
-    const { venueIdAtOfferProvider } = formValues
-    const { providerId, venueId } = this.props
+    const { providerId, venueId, venueSiret } = this.props
 
     const payload = {
       providerId: providerId,
-      venueIdAtOfferProvider,
+      venueIdAtOfferProvider: venueSiret,
       venueId: venueId,
     }
 
@@ -50,38 +44,20 @@ class TiteliveProviderForm extends PureComponent {
   }
 
   renderForm = props => {
-    const { venueIdAtOfferProviderIsRequired } = this.props
+    const { venueSiret } = this.props
     const { isLoadingMode } = this.state
     return (
       <form onSubmit={props.handleSubmit}>
         <div className="titelive-provider-form">
           <div className="compte-section">
-            <div className="label-section">
-              <label htmlFor="venueIdAtOfferProvider">
-                {'Compte'}
-              </label>
-              {!isLoadingMode && venueIdAtOfferProviderIsRequired && (
-                <span
-                  className="tooltip tooltip-info"
-                  data-place="bottom"
-                  data-tip={`<p>Veuillez saisir un compte.</p>`}
-                >
-                  <Icon
-                    alt="image d’aide à l’information"
-                    svg="picto-info"
-                  />
-                </span>
-              )}
+            <div className="account-label">
+              {'Compte'}
             </div>
-
-            <TextField
-              className={classNames('field-text', {
-                'field-is-read-only': !venueIdAtOfferProviderIsRequired || isLoadingMode,
-              })}
-              name="venueIdAtOfferProvider"
-              readOnly={!venueIdAtOfferProviderIsRequired || isLoadingMode}
-              required
-            />
+            <div
+              className='account-value'
+            >
+              {venueSiret}
+            </div>
           </div>
 
           {!isLoadingMode && (
@@ -113,7 +89,7 @@ TiteliveProviderForm.propTypes = {
   notify: PropTypes.func.isRequired,
   providerId: PropTypes.string.isRequired,
   venueId: PropTypes.string.isRequired,
-  venueIdAtOfferProviderIsRequired: PropTypes.bool.isRequired,
+  venueSiret: PropTypes.string.isRequired
 }
 
 export default TiteliveProviderForm

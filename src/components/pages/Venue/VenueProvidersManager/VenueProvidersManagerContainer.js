@@ -9,13 +9,14 @@ import { selectProviders } from '../../../../selectors/data/providersSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const { venue } = ownProps
-  const { id: venueId } = venue
+  const { id: venueId, siret: venueSiret } = venue
   const providers = selectProviders(state)
   const venueProviders = selectVenueProvidersByVenueId(state, venueId)
 
   return {
     providers,
     venueProviders,
+    venueSiret
   }
 }
 

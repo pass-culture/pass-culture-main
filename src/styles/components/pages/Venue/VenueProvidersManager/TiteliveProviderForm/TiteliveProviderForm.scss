@@ -5,18 +5,17 @@
   .compte-section {
     flex-direction: column;
     max-width: 250px;
-    margin-right: 20px;
+    margin-right: 25px;
 
-    .label-section {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-around;
-      align-items: baseline;
+    .account-label {
+      margin-top: 6px;
+      margin-bottom: 15px;
+    }
 
-      .label-text {
-        vertical-align: center;
-        font-size: 12px;
-      }
+    .account-value {
+      font-size: 1.2rem;
+      font-weight: 500;
+      height: 36px;
     }
 
   }
@@ -26,7 +25,7 @@
 
     button {
       position: absolute;
-      top: 48%;
+      top: 50%;
     }
   }
 }

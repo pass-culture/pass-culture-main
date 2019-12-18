@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 const SynchronisationConfirmationModal = ({ handleClose, handleConfirm }) => {
   return (
-    <div className="fond">
+    <div className="background">
       <section className="modal-main">
         <div className="confirmation-modal-content">
           <p className="warning-text">

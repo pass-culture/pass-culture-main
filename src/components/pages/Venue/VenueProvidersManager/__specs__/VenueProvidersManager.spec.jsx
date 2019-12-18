@@ -4,6 +4,7 @@ import React from 'react'
 import VenueProvidersManager from '../VenueProvidersManager'
 import VenueProviderItem from '../VenueProviderItem/VenueProviderItem'
 import AllocineProviderFormContainer from '../AllocineProviderForm/AllocineProviderFormContainer'
+import TiteliveProviderFormContainer from '../TiteliveProviderForm/TiteliveProviderFormContainer'
 
 describe('src | components | pages | Venue | VenueProvidersManager', () => {
   let props
@@ -29,6 +30,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         { id: 'EE', requireProviderIdentifier: true, name: 'Movies provider' },
       ],
       venueProviders: [],
+      venueSiret: '12345678901234',
     }
   })
 
@@ -47,10 +49,9 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
     // then
     expect(wrapper.state()).toStrictEqual({
       isCreationMode: false,
-      isLoadingMode: false,
-      isProviderSelected: false,
       providerId: null,
       providerSelectedIsAllocine: false,
+      providerSelectedIsTitelive: false,
       venueIdAtOfferProviderIsRequired: true,
     })
   })
@@ -147,7 +148,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         wrapper.setState({ isCreationMode: true })
 
         // when
-        wrapper.setProps({ venueProviders: [{ id : 'AD' }] })
+        wrapper.setProps({ venueProviders: [{ id: 'AD' }] })
 
         // then
         const addProviderForm = wrapper.find('.add-provider-form')
@@ -186,6 +187,28 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       expect(allocineProviderForm).toHaveLength(1)
     })
 
+    it('should display the titelive form when the user choose Titelive', () => {
+      // given
+      props.providers = [
+        { id: 'EM', name: 'Allociné' },
+        { id: 'EM', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' },
+      ]
+      const chooseTiteliveEvent = {
+        target: {
+          value: '{"id":"EM","name":"TiteLive Stocks (Epagine / Place des libraires.com)"}',
+        },
+      }
+      const wrapper = shallow(<VenueProvidersManager {...props} />)
+
+      // when
+      wrapper.find('#add-venue-provider-btn').simulate('click')
+      wrapper.find('#provider-options').simulate('change', chooseTiteliveEvent)
+
+      // then
+      const titeliveProviderForm = wrapper.find(TiteliveProviderFormContainer)
+      expect(titeliveProviderForm).toHaveLength(1)
+    })
+
     it('should update state values when selected option is valid and different from default value', () => {
       // given
       const event = {
@@ -199,7 +222,6 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       wrapper.instance().handleChange(event, input)
 
       // then
-      expect(wrapper.state('isProviderSelected')).toBe(true)
       expect(wrapper.state('venueIdAtOfferProviderIsRequired')).toBe(true)
     })
 

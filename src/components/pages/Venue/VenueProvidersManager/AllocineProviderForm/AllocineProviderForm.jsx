@@ -16,7 +16,7 @@ class AllocineProviderForm extends PureComponent {
     }
   }
 
-  handleSubmit = (formValues, form) => {
+  handleSubmit = (formValues) => {
     this.hideModal()
     const { createVenueProvider, providerId, venueId } = this.props
     const { venueIdAtOfferProvider, price } = formValues
@@ -30,7 +30,7 @@ class AllocineProviderForm extends PureComponent {
 
     this.setState({ isLoadingMode: true })
 
-    createVenueProvider(this.handleFail(form), this.handleSuccess, payload)
+    createVenueProvider(this.handleFail, this.handleSuccess, payload)
   }
 
   handleSuccess = () => {
@@ -43,6 +43,7 @@ class AllocineProviderForm extends PureComponent {
   }
 
   handleFail = () => (state, action) => {
+    this.setState({ isLoadingMode: false })
     const { notify } = this.props
     const {
       payload: { errors },
@@ -127,6 +128,7 @@ class AllocineProviderForm extends PureComponent {
                 </div>
                 <NumberField
                   className={classNames('field-text price-field')}
+                  min="0"
                   name="price"
                   placeholder="Ex : 12€"
                   required

@@ -1,10 +1,8 @@
 import React from 'react'
-import { mount, shallow } from 'enzyme'
+import {mount, shallow} from 'enzyme'
 
 import TiteliveProviderForm from '../TiteliveProviderForm'
-import TextField from '../../../../../layout/form/fields/TextField'
-import Icon from '../../../../../layout/Icon'
-import { Form } from 'react-final-form'
+import {Form} from 'react-final-form'
 
 describe('src | components | pages | Venue | VenueProvidersManager | form | TiteliveProviderForm', () => {
   let createVenueProvider
@@ -26,7 +24,16 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Tite
       providerId: 'CC',
       venueId: 'AA',
       venueIdAtOfferProviderIsRequired: false,
+      venueSiret: '12345678901234'
     }
+  })
+
+  it('should match the snapshot', () => {
+    // when
+    const wrapper = shallow(<TiteliveProviderForm {...props} />)
+
+    // then
+    expect(wrapper).toMatchSnapshot()
   })
 
   it('should initialize TiteliveProviderForm component with default state', () => {
@@ -54,79 +61,27 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Tite
       expect(importButton.text()).toBe('Importer')
     })
 
-    describe('when provider identifier is required', () => {
-      it('should render a TextField component not in read only mode', () => {
-        // given
-        props.venueIdAtOfferProviderIsRequired = true
+    it('should render the title of the section compte', () => {
+      // when
+      const wrapper = mount(<TiteliveProviderForm {...props} />)
 
-        // when
-        const wrapper = mount(<TiteliveProviderForm {...props} />)
-
-        // then
-        const form = wrapper.find(Form)
-        expect(form).toHaveLength(1)
-        const label = form.find('label')
-        expect(label.text()).toBe('Compte')
-        const textField = form.find(TextField)
-        expect(textField).toHaveLength(1)
-        expect(textField.prop('className')).toBe('field-text')
-        expect(textField.prop('name')).toBe('venueIdAtOfferProvider')
-        expect(textField.prop('readOnly')).toBe(false)
-        expect(textField.prop('required')).toBe(true)
-      })
-
-      it('should display a tooltip and an Icon component', () => {
-        // given
-        props.venueIdAtOfferProviderIsRequired = true
-
-        // when
-        const wrapper = mount(<TiteliveProviderForm {...props} />)
-
-        // then
-        const tooltip = wrapper.find('.tooltip-info')
-        expect(tooltip).toHaveLength(1)
-        expect(tooltip.prop('className')).toBe('tooltip tooltip-info')
-        expect(tooltip.prop('data-place')).toBe('bottom')
-        expect(tooltip.prop('data-tip')).toBe('<p>Veuillez saisir un compte.</p>')
-        const icon = tooltip.find(Icon)
-        expect(icon).toHaveLength(1)
-        expect(icon.prop('svg')).toBe('picto-info')
-        expect(icon.prop('alt')).toBe('image d’aide à l’information')
-      })
+      // then
+      const form = wrapper.find(Form)
+      expect(form).toHaveLength(1)
+      const label = form.find('.account-label')
+      expect(label.text()).toBe('Compte')
     })
 
-    describe('when provider identifier is not required', () => {
-      it('should render a TextField component in read only mode', () => {
-        // given
-        props.venueIdAtOfferProviderIsRequired = false
+    it('should display the venue siret as provider identifier', () => {
+      // when
+      const wrapper = mount(<TiteliveProviderForm {...props} />)
 
-        // when
-        const wrapper = mount(<TiteliveProviderForm {...props} />)
-
-        // then
-        const form = wrapper.find(Form)
-        expect(form).toHaveLength(1)
-        const label = form.find('label')
-        expect(label.text()).toBe('Compte')
-        const textField = form.find(TextField)
-        expect(textField).toHaveLength(1)
-        expect(textField.prop('className')).toBe('field-text field-is-read-only')
-        expect(textField.prop('name')).toBe('venueIdAtOfferProvider')
-        expect(textField.prop('readOnly')).toBe(true)
-        expect(textField.prop('required')).toBe(true)
-      })
-
-      it('should not display a tooltip and an Icon component', () => {
-        // given
-        props.venueIdAtOfferProviderIsRequired = false
-
-        // when
-        const wrapper = mount(<TiteliveProviderForm {...props} />)
-
-        // then
-        const tooltip = wrapper.find('.tooltip-info')
-        expect(tooltip).toHaveLength(0)
-      })
+      // then
+      const form = wrapper.find(Form)
+      expect(form).toHaveLength(1)
+      const textField = form.find('.account-value')
+      expect(textField).toHaveLength(1)
+      expect(textField.text()).toBe('12345678901234')
     })
   })
 
@@ -134,7 +89,6 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Tite
     it('should update venue provider using API', () => {
       // given
       const formValues = {
-        venueIdAtOfferProvider: 'token',
         preventDefault: jest.fn(),
       }
       const wrapper = shallow(<TiteliveProviderForm {...props} />)
@@ -147,7 +101,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Tite
       expect(createVenueProvider).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), {
         providerId: 'CC',
         venueId: 'AA',
-        venueIdAtOfferProvider: 'token',
+        venueIdAtOfferProvider: '12345678901234',
       })
     })
   })

@@ -11,7 +11,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         },
       }
       const props = {
-        venue: { id: 'EE' },
+        venue: { id: 'EE', siret: '12345678901234' },
       }
 
       // when
@@ -21,6 +21,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       expect(result).toStrictEqual({
         providers: [{ id: 'AF', localClass: 'a' }, { id: 'AG', localClass: 'b' }],
         venueProviders: [{ id: 'AE', venueId: 'EE' }],
+        venueSiret: '12345678901234'
       })
     })
   })

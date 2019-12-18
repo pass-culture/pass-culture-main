@@ -45,6 +45,7 @@ ShallowWrapper {
       ]
     }
     venueProviders={Array []}
+    venueSiret="12345678901234"
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],

@@ -1,8 +1,8 @@
 import classnames from 'classnames'
-import React, {PureComponent} from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
-import {Field} from 'react-final-form'
-import {composeValidators, createParseNumberValue} from 'react-final-form-utils'
+import { Field } from 'react-final-form'
+import { composeValidators, createParseNumberValue } from 'react-final-form-utils'
 
 import FieldErrors from '../FieldErrors'
 import getRequiredValidate from '../utils/getRequiredValidate'
@@ -19,7 +19,7 @@ function getInputValue(inputType, value) {
 
 class TextField extends PureComponent {
   componentDidMount() {
-    const {type} = this.props
+    const { type } = this.props
 
     if (type === 'number') {
       this.hasEnteredSignsAfterOrBeforeNumbers()
@@ -47,7 +47,7 @@ class TextField extends PureComponent {
     this.inputElement = _e
   }
 
-  renderField = ({input, meta}) => {
+  renderField = ({ input, meta }) => {
     const {
       className,
       disabled,
@@ -75,7 +75,6 @@ class TextField extends PureComponent {
         })}
         id={id}
       >
-
         {label && (
           <label
             className={classnames('field-label')}
@@ -113,15 +112,15 @@ class TextField extends PureComponent {
             </div>
             {renderValue()}
           </div>
-          <FieldErrors meta={meta}/>
+          <FieldErrors meta={meta} />
         </div>
-        <div/>
+        <div />
       </div>
     )
   }
 
   render() {
-    const {format, name, parse, required, type, validate} = this.props
+    const { format, name, parse, required, type, validate } = this.props
 
     return (
       <Field

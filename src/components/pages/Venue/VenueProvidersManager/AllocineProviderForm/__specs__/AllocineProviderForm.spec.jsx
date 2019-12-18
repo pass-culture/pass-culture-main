@@ -32,6 +32,14 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Allo
     }
   })
 
+  it('should match the snapshot', () => {
+    // when
+    const wrapper = shallow(<AllocineProviderForm {...props} />)
+
+    // then
+    expect(wrapper).toMatchSnapshot()
+  })
+
   it('should initialize AllocineProviderForm component with default state', () => {
     // when
     const wrapper = shallow(<AllocineProviderForm {...props} />)
@@ -57,7 +65,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Allo
     expect(importButton.text()).toBe('Importer')
   })
 
-  it('should display the price field', () => {
+  it('should display the price field with minimum value set to 0', () => {
     // when
     const wrapper = mount(<AllocineProviderForm {...props} />)
 
@@ -68,6 +76,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Allo
     expect(label.text()).toBe('Prix de vente/place')
     const priceInput = priceSection.find(NumberField)
     expect(priceInput).toHaveLength(1)
+    expect(priceInput.prop('min')).toBe('0')
   })
 
   it('should display a tooltip and an Icon component for price field', () => {
