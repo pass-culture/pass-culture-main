@@ -8,11 +8,13 @@ import {
   selectOffersByVenueId,
 } from '../../../../selectors/data/offersSelectors'
 
+const PAGINATION_LIMIT = 1000
+
 export const mapDispatchToProps = dispatch => ({
   loadOffers: () => {
     dispatch(
       requestData({
-        apiPath: `/offers`,
+        apiPath: `/offers?paginate=${PAGINATION_LIMIT}`,
         method: 'GET',
         stateKey: 'offers',
       })

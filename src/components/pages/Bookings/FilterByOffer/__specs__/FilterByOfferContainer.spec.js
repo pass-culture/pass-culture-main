@@ -308,7 +308,7 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
     })
 
     describe('loadOffers', () => {
-      it('should load offers using API', () => {
+      it('should load all offers with pagination at 1000 using API', () => {
         // given
         const functions = mapDispatchToProps(dispatch)
         const { loadOffers } = functions
@@ -318,7 +318,7 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
-          config: { apiPath: '/offers', method: 'GET', stateKey: 'offers' },
+          config: { apiPath: '/offers?paginate=1000', method: 'GET', stateKey: 'offers' },
           type: 'REQUEST_DATA_GET_OFFERS',
         })
       })
