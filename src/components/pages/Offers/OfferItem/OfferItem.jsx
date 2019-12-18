@@ -59,7 +59,7 @@ class OfferItem extends PureComponent {
       return offer.activeMediation.thumbUrl
     }
 
-    if (product.thumbUrl) {
+    if (product && product.thumbUrl) {
       return product.thumbUrl
     }
 

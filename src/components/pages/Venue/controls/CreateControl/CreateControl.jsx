@@ -23,7 +23,7 @@ const CreateControl = ({ venueId, offererId }) => (
 )
 
 CreateControl.propTypes = {
-  venueId: PropTypes.number.isRequired,
+  venueId: PropTypes.string.isRequired,
 }
 
 export default CreateControl

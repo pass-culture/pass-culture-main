@@ -7,6 +7,7 @@ import {
   selectDigitalOffers,
   selectOffersByVenueId,
 } from '../../../../selectors/data/offersSelectors'
+import { offerNormalizer } from '../../../../utils/normalizers'
 
 const PAGINATION_LIMIT = 1000
 
@@ -17,6 +18,7 @@ export const mapDispatchToProps = dispatch => ({
         apiPath: `/offers?paginate=${PAGINATION_LIMIT}`,
         method: 'GET',
         stateKey: 'offers',
+        normalizer: offerNormalizer,
       })
     )
   },

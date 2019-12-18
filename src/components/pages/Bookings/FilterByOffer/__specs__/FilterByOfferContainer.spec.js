@@ -318,7 +318,25 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
-          config: { apiPath: '/offers?paginate=1000', method: 'GET', stateKey: 'offers' },
+          config: {
+            apiPath: '/offers?paginate=1000',
+            method: 'GET',
+            normalizer: {
+              mediations: 'mediations',
+              product: {
+                normalizer: { offers: 'offers' },
+                stateKey: 'products',
+              },
+              stocks: 'stocks',
+              venue: {
+                normalizer: {
+                  managingOfferer: 'offerers',
+                },
+                stateKey: 'venues',
+              },
+            },
+            stateKey: 'offers',
+          },
           type: 'REQUEST_DATA_GET_OFFERS',
         })
       })
