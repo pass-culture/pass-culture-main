@@ -15,11 +15,17 @@ def delete_tables_from_activity(tables: List[str]):
 def populate_stock_date_created_from_activity():
     query = f'''
         UPDATE stock
-        SET "dateCreated" = activity.issued_at
-        FROM activity
-        WHERE table_name='stock'
-        AND (changed_data ->>'id')::int = stock.id
-        AND verb='insert';
+        SET "dateCreated" = all_stocks.dateCreated
+        FROM (
+            SELECT 
+            DISTINCT ON (stock_id)
+            (activity.changed_data ->>'id')::int AS stock_id,
+            activity.issued_at AS dateCreated
+            FROM activity
+            WHERE table_name='stock'
+            AND verb='insert'
+        ) AS all_stocks
+        WHERE all_stocks.stock_id = stock.id;
         '''
     db.engine.execute(query)
 
