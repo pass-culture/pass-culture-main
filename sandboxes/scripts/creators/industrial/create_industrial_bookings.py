@@ -4,7 +4,6 @@ from sandboxes.scripts.utils.select import remove_every
 from utils.logger import logger
 from tests.test_utils import create_booking
 
-from pprint import pprint
 
 RECOMMENDATIONS_WITH_BOOKINGS_REMOVE_RATIO = 3
 RECOMMENDATIONS_WITH_SEVERAL_STOCKS_REMOVE_MODULO = 2

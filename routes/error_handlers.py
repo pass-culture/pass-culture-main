@@ -1,9 +1,9 @@
 """ error handlers """
 import traceback
-from pprint import pprint
 
 import simplejson as json
 from flask import current_app as app, jsonify, request
+from werkzeug.exceptions import NotFound
 
 from domain.stocks import TooLateToDeleteError
 from domain.user_activation import AlreadyActivatedException
@@ -13,10 +13,16 @@ from routes.before_request import InvalidOriginHeader
 from utils.human_ids import NonDehumanizableId
 
 
+@app.errorhandler(NotFound)
+def restize_not_found_route_errors(e):
+    return {}, 404
+
+
 @app.errorhandler(ApiErrors)
 def restize_api_errors(e):
     app.logger.error(json.dumps(e.errors))
     return jsonify(e.errors), e.status_code or 400
+
 
 @app.errorhandler(TooLateToDeleteError)
 def restize_too_late_to_delete_error(e):
@@ -51,6 +57,7 @@ def restize_invalid_header_exception(e):
 
 
 @app.errorhandler(500)
+@app.errorhandler(Exception)
 def internal_error(error):
     tb = traceback.format_exc()
     oneline_stack = ''.join(tb).replace('\n', ' ### ')
