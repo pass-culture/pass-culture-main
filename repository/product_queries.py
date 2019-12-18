@@ -1,7 +1,7 @@
 from models import Product, ThingType, Offer, Stock, Booking, PcObject
 from repository.favorite_queries import get_favorites_for_offers
 from repository.mediation_queries import get_mediations_for_offers
-from repository.offer_queries import get_offers_by_productId
+from repository.offer_queries import get_offers_by_product_id
 from repository.recommendation_queries import get_recommendations_for_offers
 from repository.stock_queries import get_stocks_for_offers
 
@@ -25,7 +25,7 @@ def delete_unwanted_existing_product(isbn: str):
     product = find_thing_product_by_isbn_only_for_type_book(isbn)
     if product:
         objects_to_delete.append(product)
-        offers = get_offers_by_productId(product.id)
+        offers = get_offers_by_product_id(product.id)
         offer_ids = [offer.id for offer in offers]
         objects_to_delete = objects_to_delete + offers
         stocks = get_stocks_for_offers(offer_ids)

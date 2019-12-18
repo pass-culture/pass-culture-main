@@ -12,7 +12,8 @@ from repository.offer_queries import department_or_national_offers, \
     get_active_offers, \
     _has_remaining_stock, \
     find_offers_by_venue_id, \
-    order_by_with_criteria, _order_by_occurs_soon_or_is_thing_then_randomize
+    order_by_with_criteria, _order_by_occurs_soon_or_is_thing_then_randomize, \
+    get_offers_by_ids
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_criterion, create_user, create_offerer, create_venue, \
     create_user_offerer, create_favorite, create_mediation
@@ -1401,3 +1402,22 @@ def _create_event_stock_and_offer_for_date(venue, date):
     event_occurrence = create_event_occurrence(offer, beginning_datetime=date, end_datetime=date + timedelta(hours=1))
     stock = create_stock_from_event_occurrence(event_occurrence, booking_limit_date=date)
     return stock
+
+class GetOffersByIdsTest:
+    @clean_database
+    def test_should_return_all_existing_offers_when_offer_ids_are_given(self, app):
+        # given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer1 = create_offer_with_thing_product(venue=venue, idx=1)
+        offer2 = create_offer_with_thing_product(venue=venue, idx=2)
+        PcObject.save(offer1, offer2)
+        offer_ids = [0, 1, 2]
+
+        # when
+        offers = get_offers_by_ids(offer_ids)
+
+        # then
+        assert len(offers) == 2
+        assert offers[0].id == 1
+        assert offers[1].id == 2

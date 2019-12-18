@@ -389,7 +389,7 @@ def find_offer_for_venue_id_and_specific_thing(venue_id, thing):
     return offer
 
 
-def get_offer_by_id(offer_id):
+def get_offer_by_id(offer_id: int):
     return Offer.query.get(offer_id)
 
 
@@ -399,7 +399,13 @@ def find_offers_by_venue_id(venue_id: int) -> List[Offer]:
         .all()
 
 
-def get_offers_by_productId(product_id: int) -> List[Offer]:
+def get_offers_by_product_id(product_id: int) -> List[Offer]:
     return Offer.query \
         .filter_by(productId=product_id) \
+        .all()
+
+
+def get_offers_by_ids(offer_ids: List[int]) -> List[Offer]:
+    return Offer.query \
+        .filter(Offer.id.in_(offer_ids)) \
         .all()
