@@ -17,7 +17,7 @@ from utils.human_ids import dehumanize, humanize
 class Get:
     class Returns200:
         @clean_database
-        def test_results_are_paginated_by_chunks_of_10(self, app):
+        def test_results_are_paginated_by_default_by_chunks_of_10(self, app):
             # Given
             user = create_user(email='user@test.com')
             create_offers_for(user, 20)
@@ -28,7 +28,21 @@ class Get:
             # then
             offers = response.json
             assert response.status_code == 200
-            assert len(offers) == 10
+            assert len(offers) == 10 \
+
+        @clean_database
+        def test_results_are_paginated_by_chunks(self, app):
+            # Given
+            user = create_user(email='user@test.com')
+            create_offers_for(user, 500)
+
+            # when
+            response = TestClient(app.test_client()).with_auth(email='user@test.com').get('/offers?paginate=200')
+
+            # then
+            offers = response.json
+            assert response.status_code == 200
+            assert len(offers) == 200
 
         @clean_database
         def test_results_are_paginated_by_default_on_page_1(self, app):
@@ -134,7 +148,6 @@ class Get:
                 assert offer['venueId'] == humanize(venue_id)
                 assert 'event' in offer['name'].lower()
                 assert 'event' in offer['product']['name'].lower()
-
 
         @clean_database
         def test_can_be_searched_using_multiple_search_terms(self, app):

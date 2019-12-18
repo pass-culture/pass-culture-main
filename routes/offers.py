@@ -25,6 +25,9 @@ from validation.offers import check_venue_exists_when_requested, check_user_has_
 def list_offers():
     offerer_id = dehumanize(request.args.get('offererId'))
     venue_id = dehumanize(request.args.get('venueId'))
+
+    pagination_limit = request.args.get('paginate', '10')
+
     venue = venue_queries.find_by_id(venue_id)
 
     check_venue_exists_when_requested(venue, venue_id)
@@ -41,7 +44,7 @@ def list_offers():
                                 includes=OFFER_INCLUDES,
                                 order_by=None,
                                 page=request.args.get('page'),
-                                paginate=10,
+                                paginate=int(pagination_limit),
                                 query=query,
                                 with_total_data_count=True
                                 )
