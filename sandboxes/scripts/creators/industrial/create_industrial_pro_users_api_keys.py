@@ -1,4 +1,4 @@
-from tests.test_utils import create_api_key
+from tests.model_creators.generic_creators import create_api_key
 from utils.logger import logger
 
 PROS_COUNT = 1

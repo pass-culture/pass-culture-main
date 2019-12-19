@@ -10,13 +10,9 @@ from recommendations_engine import create_recommendations_for_discovery, \
     get_recommendation_search_params, \
     give_requested_recommendation_to_user
 from tests.conftest import clean_database
-from tests.test_utils import create_mediation, \
-    create_offerer, \
-    create_recommendation, \
-    create_stock_from_offer, \
-    create_offer_with_thing_product, \
-    create_user, \
-    create_venue, create_stock
+from tests.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, \
+    create_recommendation, create_mediation
+from tests.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product
 from utils.human_ids import humanize
 
 

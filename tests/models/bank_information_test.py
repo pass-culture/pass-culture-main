@@ -1,4 +1,4 @@
-from tests.test_utils import create_bank_information
+from tests.model_creators.generic_creators import create_bank_information
 
 
 def test_offerer_errors_raises_an_error_if_both_iban_and_bic_are_empty(app):

@@ -1,8 +1,9 @@
 from models import PcObject, Stock
 from routes.serialization import as_dict
 from tests.conftest import clean_database
-from tests.test_utils import create_user, create_offerer, create_user_offerer, create_product_with_event_type, \
-    create_mediation, create_offer_with_event_product, create_venue, create_booking
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+    create_user_offerer, create_mediation
+from tests.model_creators.specific_creators import create_product_with_event_type, create_offer_with_event_product
 
 
 class AsDictTest:
@@ -135,7 +136,7 @@ class AsDictTest:
     @clean_database
     def test_returns_humanized_ids_for_primary_keys(self, app):
         # given
-        user = create_user(postal_code=None, idx=12)
+        user = create_user(id=12, postal_code=None)
 
         # when
         dict_result = as_dict(user, includes=[])
@@ -146,8 +147,8 @@ class AsDictTest:
     @clean_database
     def test_returns_humanized_ids_for_foreign_keys(self, app):
         # given
-        user = create_user(postal_code=None, idx=12)
-        booking = create_booking(user, Stock(), idx=13)
+        user = create_user(id=12, postal_code=None)
+        booking = create_booking(user=user, stock=Stock(), id=13)
         booking.userId = user.id
 
         # when

@@ -1,6 +1,6 @@
 from models.pc_object import PcObject
 from utils.logger import logger
-from tests.test_utils import create_offer_with_thing_product
+from tests.model_creators.specific_creators import create_offer_with_thing_product
 
 DEACTIVATED_OFFERS_PICK_MODULO = 3
 THINGS_PER_OFFERER = 5

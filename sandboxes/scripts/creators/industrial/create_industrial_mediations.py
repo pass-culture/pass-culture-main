@@ -2,7 +2,7 @@ from models.pc_object import PcObject
 from sandboxes.scripts.utils.select import remove_every
 from sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
 from utils.logger import logger
-from tests.test_utils import create_mediation
+from tests.model_creators.generic_creators import create_mediation
 
 OFFERS_WITH_MEDIATION_REMOVE_MODULO = 5
 

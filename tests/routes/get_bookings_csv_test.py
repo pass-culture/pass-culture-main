@@ -3,10 +3,10 @@ from unittest.mock import patch
 
 from models import PcObject, ApiErrors
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_stock_with_thing_offer, \
-    create_deposit, create_venue, create_offerer, \
-    create_user, create_booking, create_user_offerer, create_offer_with_thing_product, create_stock_from_offer, \
-    create_offer_with_event_product
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, create_deposit, \
+    create_user_offerer
+from tests.model_creators.specific_creators import create_stock_from_offer, create_stock_with_thing_offer, \
+    create_offer_with_thing_product, create_offer_with_event_product
 from utils.human_ids import humanize
 
 
@@ -28,12 +28,12 @@ class Get:
             stock2 = create_stock_with_thing_offer(offerer=offerer1, venue=venue2, price=11)
             stock3 = create_stock_with_thing_offer(offerer=offerer2, venue=venue3, price=12)
             stock4 = create_stock_with_thing_offer(offerer=offerer2, venue=venue3, price=13)
-            booking1 = create_booking(user, stock1, venue=venue1, token='ABCDEF')
-            booking2 = create_booking(user, stock1, venue=venue1, token='ABCDEG')
-            booking3 = create_booking(user, stock2, venue=venue2, token='ABCDEH')
-            booking4 = create_booking(user, stock3, venue=venue3, token='ABCDEI')
-            booking5 = create_booking(user, stock4, venue=venue3, token='ABCDEJ')
-            booking6 = create_booking(user, stock4, venue=venue3, token='ABCDEK')
+            booking1 = create_booking(user=user, stock=stock1, token='ABCDEF', venue=venue1)
+            booking2 = create_booking(user=user, stock=stock1, token='ABCDEG', venue=venue1)
+            booking3 = create_booking(user=user, stock=stock2, token='ABCDEH', venue=venue2)
+            booking4 = create_booking(user=user, stock=stock3, token='ABCDEI', venue=venue3)
+            booking5 = create_booking(user=user, stock=stock4, token='ABCDEJ', venue=venue3)
+            booking6 = create_booking(user=user, stock=stock4, token='ABCDEK', venue=venue3)
 
             PcObject.save(deposit, booking1, booking2, booking3,
                           booking4, booking5, booking6, user_offerer1,
@@ -83,10 +83,10 @@ class Get:
             stock1 = create_stock_from_offer(offer1, available=100, price=20)
             stock2 = create_stock_from_offer(offer2, available=150, price=16)
             stock3 = create_stock_from_offer(offer3, available=150, price=18)
-            booking1 = create_booking(user, stock1, venue=venue1, token='ABCDEF')
-            booking2 = create_booking(user, stock1, venue=venue1, token='ABCDEG')
-            booking3 = create_booking(user, stock2, venue=venue2, token='ABCDEH')
-            booking4 = create_booking(user, stock3, venue=venue3, token='ABCDEI')
+            booking1 = create_booking(user=user, stock=stock1, token='ABCDEF', venue=venue1)
+            booking2 = create_booking(user=user, stock=stock1, token='ABCDEG', venue=venue1)
+            booking3 = create_booking(user=user, stock=stock2, token='ABCDEH', venue=venue2)
+            booking4 = create_booking(user=user, stock=stock3, token='ABCDEI', venue=venue3)
 
             PcObject.save(deposit, booking1, booking2, booking3,
                           booking4, user_offerer1, user_offerer2)
@@ -119,8 +119,8 @@ class Get:
 
             stock1 = create_stock_from_offer(offer1, available=100, price=20)
             stock2 = create_stock_from_offer(offer2, available=150, price=16)
-            booking_on_physical_venue = create_booking(user, stock1, venue=physical_venue, token='ABCDEF')
-            booking_on_digital_venue = create_booking(user, stock2, venue=virtual_venue, token='ABCDEH')
+            booking_on_physical_venue = create_booking(user=user, stock=stock1, token='ABCDEF', venue=physical_venue)
+            booking_on_digital_venue = create_booking(user=user, stock=stock2, token='ABCDEH', venue=virtual_venue)
 
             PcObject.save(deposit, booking_on_physical_venue, booking_on_digital_venue, user_offerer1)
 
@@ -152,9 +152,15 @@ class Get:
 
             stock1 = create_stock_from_offer(target_offer, available=100, price=20)
             stock2 = create_stock_from_offer(other_offer, available=150, price=16)
-            booking_on_other_offer = create_booking(user, stock2, venue=venue, token='ABCDEF')
-            booking_on_target_offer_and_date = create_booking(user, stock1, venue=venue, token='ABCDEH', date_created=datetime.strptime("2020-05-01T00:00:00.000Z", "%Y-%m-%dT%H:%M:%S.%fZ"))
-            booking_on_other_date = create_booking(user, stock1, venue=venue, token='ABCDEG', date_created=datetime.strptime("2020-04-30T00:00:00.000Z", "%Y-%m-%dT%H:%M:%S.%fZ"))
+            booking_on_other_offer = create_booking(user=user, stock=stock2, token='ABCDEF', venue=venue)
+            booking_on_target_offer_and_date = create_booking(user=user, stock=stock1,
+                                                              date_created=datetime.strptime("2020-05-01T00:00:00.000Z",
+                                                                                             "%Y-%m-%dT%H:%M:%S.%fZ"),
+                                                              token='ABCDEH', venue=venue)
+            booking_on_other_date = create_booking(user=user, stock=stock1,
+                                                   date_created=datetime.strptime("2020-04-30T00:00:00.000Z",
+                                                                                  "%Y-%m-%dT%H:%M:%S.%fZ"),
+                                                   token='ABCDEG', venue=venue)
 
             PcObject.save(deposit, booking_on_other_offer, booking_on_target_offer_and_date, booking_on_other_date, user_offerer1)
 
@@ -178,7 +184,7 @@ class Get:
         @patch('routes.bookings.check_rights_to_get_bookings_csv')
         def when_user_is_admin(self, check_rights_to_get_bookings_csv, app):
             # Given
-            user_admin = create_user(email='user+plus@email.fr', is_admin=True, can_book_free_offers=False)
+            user_admin = create_user(can_book_free_offers=False, email='user+plus@email.fr', is_admin=True)
             PcObject.save(user_admin)
 
             api_errors = ApiErrors()

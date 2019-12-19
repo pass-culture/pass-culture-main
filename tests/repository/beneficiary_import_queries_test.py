@@ -7,7 +7,7 @@ from models import PcObject
 from repository.beneficiary_import_queries import is_already_imported, save_beneficiary_import_with_status, \
     find_applications_ids_to_retry
 from tests.conftest import clean_database
-from tests.test_utils import create_user, create_beneficiary_import
+from tests.model_creators.generic_creators import create_user, create_beneficiary_import
 
 
 class IsAlreadyImportedTest:
@@ -15,8 +15,8 @@ class IsAlreadyImportedTest:
     def test_returns_true_when_a_beneficiary_import_exist_with_status_created(self, app):
         # given
         now = datetime.utcnow()
-        user1 = create_user(email='user1@test.com', date_created=now)
-        beneficiary_import = create_beneficiary_import(user1, status=ImportStatus.CREATED,
+        user1 = create_user(date_created=now, email='user1@test.com')
+        beneficiary_import = create_beneficiary_import(user=user1, status=ImportStatus.CREATED,
                                                        demarche_simplifiee_application_id=123)
 
         PcObject.save(beneficiary_import)
@@ -31,8 +31,8 @@ class IsAlreadyImportedTest:
     def test_returns_true_when_a_beneficiary_import_exist_with_status_duplicate(self, app):
         # given
         now = datetime.utcnow()
-        user1 = create_user(email='user1@test.com', date_created=now)
-        beneficiary_import = create_beneficiary_import(user1, status=ImportStatus.DUPLICATE,
+        user1 = create_user(date_created=now, email='user1@test.com')
+        beneficiary_import = create_beneficiary_import(user=user1, status=ImportStatus.DUPLICATE,
                                                        demarche_simplifiee_application_id=123)
 
         PcObject.save(beneficiary_import)
@@ -47,8 +47,8 @@ class IsAlreadyImportedTest:
     def test_returns_true_when_a_beneficiary_import_exist_with_status_rejected(self, app):
         # given
         now = datetime.utcnow()
-        user1 = create_user(email='user1@test.com', date_created=now)
-        beneficiary_import = create_beneficiary_import(user1, status=ImportStatus.REJECTED,
+        user1 = create_user(date_created=now, email='user1@test.com')
+        beneficiary_import = create_beneficiary_import(user=user1, status=ImportStatus.REJECTED,
                                                        demarche_simplifiee_application_id=123)
 
         PcObject.save(beneficiary_import)
@@ -63,8 +63,8 @@ class IsAlreadyImportedTest:
     def test_returns_true_when_a_beneficiary_import_exist_with_status_error(self, app):
         # given
         now = datetime.utcnow()
-        user1 = create_user(email='user1@test.com', date_created=now)
-        beneficiary_import = create_beneficiary_import(user1, status=ImportStatus.ERROR,
+        user1 = create_user(date_created=now, email='user1@test.com')
+        beneficiary_import = create_beneficiary_import(user=user1, status=ImportStatus.ERROR,
                                                        demarche_simplifiee_application_id=123)
 
         PcObject.save(beneficiary_import)
@@ -79,8 +79,8 @@ class IsAlreadyImportedTest:
     def test_returns_false_when_a_beneficiary_import_exist_with_status_retry(self, app):
         # given
         now = datetime.utcnow()
-        user1 = create_user(email='user1@test.com', date_created=now)
-        beneficiary_import = create_beneficiary_import(user1, status=ImportStatus.RETRY,
+        user1 = create_user(date_created=now, email='user1@test.com')
+        beneficiary_import = create_beneficiary_import(user=user1, status=ImportStatus.RETRY,
                                                        demarche_simplifiee_application_id=123)
 
         PcObject.save(beneficiary_import)
@@ -95,8 +95,8 @@ class IsAlreadyImportedTest:
     def test_returns_false_when_no_beneficiary_import_exist_for_this_id(self, app):
         # given
         now = datetime.utcnow()
-        user1 = create_user(email='user1@test.com', date_created=now)
-        beneficiary_import = create_beneficiary_import(user1, status=ImportStatus.CREATED,
+        user1 = create_user(date_created=now, email='user1@test.com')
+        beneficiary_import = create_beneficiary_import(user=user1, status=ImportStatus.CREATED,
                                                        demarche_simplifiee_application_id=123)
 
         PcObject.save(beneficiary_import)
@@ -143,7 +143,7 @@ class FindApplicationsIdsToRetryTest:
         import1 = create_beneficiary_import(status=ImportStatus.RETRY, demarche_simplifiee_application_id=456)
         import2 = create_beneficiary_import(status=ImportStatus.RETRY, demarche_simplifiee_application_id=123)
         user = create_user(email='user1@test.com')
-        import3 = create_beneficiary_import(user, status=ImportStatus.CREATED, demarche_simplifiee_application_id=789)
+        import3 = create_beneficiary_import(user=user, status=ImportStatus.CREATED, demarche_simplifiee_application_id=789)
 
         PcObject.save(import1, import2, import3)
 
@@ -159,7 +159,7 @@ class FindApplicationsIdsToRetryTest:
         import1 = create_beneficiary_import(status=ImportStatus.DUPLICATE, demarche_simplifiee_application_id=456)
         import2 = create_beneficiary_import(status=ImportStatus.ERROR, demarche_simplifiee_application_id=123)
         user = create_user(email='user1@test.com')
-        import3 = create_beneficiary_import(user, status=ImportStatus.CREATED, demarche_simplifiee_application_id=789)
+        import3 = create_beneficiary_import(user=user, status=ImportStatus.CREATED, demarche_simplifiee_application_id=789)
 
         PcObject.save(import1, import2, import3)
 

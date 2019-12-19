@@ -3,7 +3,7 @@ from models.offerer import Offerer
 from models.user import User
 from models.user_offerer import UserOfferer, RightsType
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_user, create_user_offerer
+from tests.model_creators.generic_creators import create_user, create_user_offerer
 
 BASE_DATA_PRO = {
     'email': 'toto_pro@btmx.fr',
@@ -135,7 +135,7 @@ class Post:
             }
             offerer = Offerer(from_dict=json_offerer)
             offerer.generate_validation_token()
-            user = create_user(public_name='bobby', email='bobby@test.com')
+            user = create_user(email='bobby@test.com', public_name='bobby')
             user_offerer = create_user_offerer(user, offerer, is_admin=False)
             PcObject.save(offerer, user_offerer)
 

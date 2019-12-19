@@ -2,7 +2,8 @@ from unittest.mock import patch
 
 from models import Mediation, PcObject
 from tests.conftest import clean_database
-from tests.test_utils import create_mediation, create_offer_with_thing_product, create_venue, create_offerer
+from tests.model_creators.generic_creators import create_offerer, create_venue, create_mediation
+from tests.model_creators.specific_creators import create_offer_with_thing_product
 from utils.tutorials import _upsert_tuto_mediation
 
 

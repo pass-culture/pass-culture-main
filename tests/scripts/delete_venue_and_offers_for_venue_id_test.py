@@ -3,7 +3,8 @@ import pytest
 from models import PcObject, Venue, Offer
 from scripts.delete_venue_and_offers_for_venue_id import delete_venue_and_offers_for_venue_id
 from tests.conftest import clean_database
-from tests.test_utils import create_venue, create_offerer, create_offer_with_event_product, create_stock
+from tests.model_creators.generic_creators import create_stock, create_offerer, create_venue
+from tests.model_creators.specific_creators import create_offer_with_event_product
 from utils.human_ids import humanize
 
 

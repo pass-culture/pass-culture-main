@@ -5,8 +5,8 @@ from unittest.mock import patch
 from models import Product, PcObject
 from scripts.remove_non_book_after_import import delete_product_from_isbn_file, read_isbn_from_file
 from tests.conftest import clean_database
-from tests.test_utils import create_product_with_thing_type, create_user, create_offerer, create_venue, \
-    create_offer_with_thing_product, create_stock, create_booking
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue
+from tests.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
 
 
 @clean_database

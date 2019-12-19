@@ -6,8 +6,9 @@ from repository.user_queries import get_all_users_wallet_balances, find_by_civil
     find_most_recent_beneficiary_creation_date, count_all_activated_users, count_users_having_booked, \
     count_all_activated_users_by_departement, count_users_having_booked_by_departement_code
 from tests.conftest import clean_database
-from tests.test_utils import create_user, create_offerer, create_venue, create_offer_with_thing_product, create_deposit, \
-    create_stock, create_booking, create_beneficiary_import, create_offer_with_event_product
+from tests.model_creators.generic_creators import create_booking, create_user, create_beneficiary_import, create_stock, \
+    create_offerer, create_venue, create_deposit
+from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 
 
 class GetAllUsersWalletBalancesTest:
@@ -104,10 +105,10 @@ class FindByCivilityTest:
     @clean_database
     def test_returns_users_with_matching_criteria_ignoring_case(self, app):
         # given
-        user1 = create_user(first_name="john", last_name='DOe', email='john@test.com',
-                            date_of_birth=datetime(2000, 5, 1))
-        user2 = create_user(first_name="jaNE", last_name='DOe', email='jane@test.com',
-                            date_of_birth=datetime(2000, 3, 20))
+        user1 = create_user(date_of_birth=datetime(2000, 5, 1), email='john@test.com', first_name="john",
+                            last_name='DOe')
+        user2 = create_user(date_of_birth=datetime(2000, 3, 20), email='jane@test.com', first_name="jaNE",
+                            last_name='DOe')
         PcObject.save(user1, user2)
 
         # when
@@ -120,10 +121,10 @@ class FindByCivilityTest:
     @clean_database
     def test_returns_users_with_matching_criteria_ignoring_dash(self, app):
         # given
-        user2 = create_user(first_name="jaNE", last_name='DOe', email='jane@test.com',
-                            date_of_birth=datetime(2000, 3, 20))
-        user1 = create_user(first_name="john-bob", last_name='doe', email='john.b@test.com',
-                            date_of_birth=datetime(2000, 5, 1))
+        user2 = create_user(date_of_birth=datetime(2000, 3, 20), email='jane@test.com', first_name="jaNE",
+                            last_name='DOe')
+        user1 = create_user(date_of_birth=datetime(2000, 5, 1), email='john.b@test.com', first_name="john-bob",
+                            last_name='doe')
         PcObject.save(user1, user2)
 
         # when
@@ -136,10 +137,10 @@ class FindByCivilityTest:
     @clean_database
     def test_returns_users_with_matching_criteria_ignoring_spaces(self, app):
         # given
-        user2 = create_user(first_name="jaNE", last_name='DOe', email='jane@test.com',
-                            date_of_birth=datetime(2000, 3, 20))
-        user1 = create_user(first_name="john bob", last_name='doe', email='john.b@test.com',
-                            date_of_birth=datetime(2000, 5, 1))
+        user2 = create_user(date_of_birth=datetime(2000, 3, 20), email='jane@test.com', first_name="jaNE",
+                            last_name='DOe')
+        user1 = create_user(date_of_birth=datetime(2000, 5, 1), email='john.b@test.com', first_name="john bob",
+                            last_name='doe')
         PcObject.save(user1, user2)
 
         # when
@@ -152,10 +153,10 @@ class FindByCivilityTest:
     @clean_database
     def test_returns_users_with_matching_criteria_ignoring_accents(self, app):
         # given
-        user2 = create_user(first_name="jaNE", last_name='DOe', email='jane@test.com',
-                            date_of_birth=datetime(2000, 3, 20))
-        user1 = create_user(first_name="john bob", last_name='doe', email='john.b@test.com',
-                            date_of_birth=datetime(2000, 5, 1))
+        user2 = create_user(date_of_birth=datetime(2000, 3, 20), email='jane@test.com', first_name="jaNE",
+                            last_name='DOe')
+        user1 = create_user(date_of_birth=datetime(2000, 5, 1), email='john.b@test.com', first_name="john bob",
+                            last_name='doe')
         PcObject.save(user1, user2)
 
         # when
@@ -168,7 +169,7 @@ class FindByCivilityTest:
     @clean_database
     def test_returns_nothing_if_one_criteria_does_not_match(self, app):
         # given
-        user = create_user(first_name="Jean", last_name='DOe', date_of_birth=datetime(2000, 5, 1))
+        user = create_user(date_of_birth=datetime(2000, 5, 1), first_name="Jean", last_name='DOe')
         PcObject.save(user)
 
         # when
@@ -180,10 +181,10 @@ class FindByCivilityTest:
     @clean_database
     def test_returns_users_with_matching_criteria_first_and_last_names_and_birthdate_and_invalid_email(self, app):
         # given
-        user1 = create_user(first_name="john", last_name='DOe', email='john@test.com',
-                            date_of_birth=datetime(2000, 5, 1))
-        user2 = create_user(first_name="jaNE", last_name='DOe', email='jane@test.com',
-                            date_of_birth=datetime(2000, 3, 20))
+        user1 = create_user(date_of_birth=datetime(2000, 5, 1), email='john@test.com', first_name="john",
+                            last_name='DOe')
+        user2 = create_user(date_of_birth=datetime(2000, 3, 20), email='jane@test.com', first_name="jaNE",
+                            last_name='DOe')
         PcObject.save(user1, user2)
 
         # when
@@ -205,12 +206,12 @@ class FindMostRecentBeneficiaryCreationDateTest:
         two_days_ago = now - timedelta(days=2)
         three_days_ago = now - timedelta(days=3)
 
-        user1 = create_user(email='user1@test.com', date_created=yesterday)
-        user2 = create_user(email='user2@test.com', date_created=two_days_ago)
-        user3 = create_user(email='user3@test.com', date_created=three_days_ago)
-        beneficiary_import2 = create_beneficiary_import(user2, status=ImportStatus.ERROR, date=two_days_ago,
+        user1 = create_user(date_created=yesterday, email='user1@test.com')
+        user2 = create_user(date_created=two_days_ago, email='user2@test.com')
+        user3 = create_user(date_created=three_days_ago, email='user3@test.com')
+        beneficiary_import2 = create_beneficiary_import(user=user2, status=ImportStatus.ERROR, date=two_days_ago,
                                                         demarche_simplifiee_application_id=1)
-        beneficiary_import3 = create_beneficiary_import(user3, status=ImportStatus.CREATED, date=three_days_ago,
+        beneficiary_import3 = create_beneficiary_import(user=user3, status=ImportStatus.CREATED, date=three_days_ago,
                                                         demarche_simplifiee_application_id=3)
 
         PcObject.save(user1, beneficiary_import2, beneficiary_import3)
@@ -225,7 +226,7 @@ class FindMostRecentBeneficiaryCreationDateTest:
     def test_returns_min_year_if_no_beneficiary_import_exist(self, app):
         # given
         yesterday = datetime.utcnow() - timedelta(days=1)
-        user1 = create_user(email='user1@test.com', date_created=yesterday)
+        user1 = create_user(date_created=yesterday, email='user1@test.com')
         PcObject.save(user1)
 
         # when
@@ -315,8 +316,8 @@ class CountUsersHavingBookedTest:
         offer2 = create_offer_with_thing_product(venue)
         stock1 = create_stock(offer=offer1, price=0)
         stock2 = create_stock(offer=offer2, price=0)
-        booking1 = create_booking(user_having_booked, stock1, is_cancelled=False)
-        booking2 = create_booking(user_having_booked, stock2, is_cancelled=True)
+        booking1 = create_booking(user=user_having_booked, stock=stock1, is_cancelled=False)
+        booking2 = create_booking(user=user_having_booked, stock=stock2, is_cancelled=True)
         PcObject.save(booking1, booking2)
 
         # When
@@ -334,8 +335,8 @@ class CountUsersHavingBookedTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
-        booking1 = create_booking(user_having_booked1, stock, is_cancelled=True)
-        booking2 = create_booking(user_having_booked2, stock, is_cancelled=True)
+        booking1 = create_booking(user=user_having_booked1, stock=stock, is_cancelled=True)
+        booking2 = create_booking(user=user_having_booked2, stock=stock, is_cancelled=True)
         PcObject.save(booking1, booking2)
 
         # When
@@ -364,7 +365,7 @@ class CountUsersHavingBookedTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
         stock = create_stock(offer=offer, price=0)
-        booking1 = create_booking(user_having_booked1, stock, is_cancelled=True)
+        booking1 = create_booking(user=user_having_booked1, stock=stock, is_cancelled=True)
         PcObject.save(booking1)
 
         # When
@@ -387,8 +388,8 @@ class CountUsersHavingBookedTest:
         stock2 = create_stock(offer=offer2, price=0, booking_limit_datetime=tomorrow,
                               beginning_datetime=tomorrow + timedelta(hours=1),
                               end_datetime=tomorrow + timedelta(hours=3))
-        booking1 = create_booking(user1, stock1)
-        booking2 = create_booking(user2, stock2)
+        booking1 = create_booking(user=user1, stock=stock1)
+        booking2 = create_booking(user=user2, stock=stock2)
         PcObject.save(booking1, booking2)
 
         # When
@@ -408,8 +409,8 @@ class CountUsersHavingBookedByDepartementTest:
         venue = create_venue(offerer)
         offer1 = create_offer_with_thing_product(venue)
         stock1 = create_stock(offer=offer1, price=0)
-        booking1 = create_booking(user_having_booked_from_73, stock1)
-        booking2 = create_booking(user_having_booked_from_32, stock1)
+        booking1 = create_booking(user=user_having_booked_from_73, stock=stock1)
+        booking2 = create_booking(user=user_having_booked_from_32, stock=stock1)
         PcObject.save(booking1, booking2)
 
         # When
@@ -428,8 +429,8 @@ class CountUsersHavingBookedByDepartementTest:
         offer2 = create_offer_with_thing_product(venue)
         stock1 = create_stock(offer=offer1, price=0)
         stock2 = create_stock(offer=offer2, price=0)
-        booking1 = create_booking(user_having_booked, stock1, is_cancelled=False)
-        booking2 = create_booking(user_having_booked, stock2, is_cancelled=True)
+        booking1 = create_booking(user=user_having_booked, stock=stock1, is_cancelled=False)
+        booking2 = create_booking(user=user_having_booked, stock=stock2, is_cancelled=True)
         PcObject.save(booking1, booking2)
 
         # When
@@ -442,13 +443,13 @@ class CountUsersHavingBookedByDepartementTest:
     def test_returns_two_when_two_users_with_cancelled_bookings(self, app):
         # Given
         user_having_booked1 = create_user(departement_code='87')
-        user_having_booked2 = create_user(email='test1@email.com', departement_code='87')
+        user_having_booked2 = create_user(departement_code='87', email='test1@email.com')
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
-        booking1 = create_booking(user_having_booked1, stock, is_cancelled=True)
-        booking2 = create_booking(user_having_booked2, stock, is_cancelled=True)
+        booking1 = create_booking(user=user_having_booked1, stock=stock, is_cancelled=True)
+        booking2 = create_booking(user=user_having_booked2, stock=stock, is_cancelled=True)
         PcObject.save(booking1, booking2)
 
         # When
@@ -477,7 +478,7 @@ class CountUsersHavingBookedByDepartementTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
         stock = create_stock(offer=offer, price=0)
-        booking1 = create_booking(user_having_booked1, stock, is_cancelled=True)
+        booking1 = create_booking(user=user_having_booked1, stock=stock, is_cancelled=True)
         PcObject.save(booking1)
 
         # When
@@ -490,15 +491,15 @@ class CountUsersHavingBookedByDepartementTest:
     def test_returns_zero_when_two_users_with_activation_bookings(self, app):
         # Given
         user_having_booked1 = create_user(departement_code='87')
-        user_having_booked2 = create_user(email='test1@email.com', departement_code='87')
+        user_having_booked2 = create_user(departement_code='87', email='test1@email.com')
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
         offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
         stock1 = create_stock(offer=offer1, price=0)
         stock2 = create_stock(offer=offer2, price=0)
-        booking1 = create_booking(user_having_booked1, stock1)
-        booking2 = create_booking(user_having_booked2, stock2)
+        booking1 = create_booking(user=user_having_booked1, stock=stock1)
+        booking2 = create_booking(user=user_having_booked2, stock=stock2)
         PcObject.save(booking1, booking2)
 
         # When
@@ -510,14 +511,14 @@ class CountUsersHavingBookedByDepartementTest:
 
 def _create_balances_for_user2(stock3, user2, venue):
     deposit3 = create_deposit(user2, amount=200)
-    booking4 = create_booking(user2, venue=venue, stock=stock3, quantity=3, is_cancelled=False, is_used=False)
+    booking4 = create_booking(user=user2, is_cancelled=False, is_used=False, quantity=3, stock=stock3, venue=venue)
     PcObject.save(deposit3, booking4)
 
 
 def _create_balances_for_user1(stock1, stock2, stock3, user1, venue):
     deposit1 = create_deposit(user1, amount=100)
     deposit2 = create_deposit(user1, amount=50)
-    booking1 = create_booking(user1, venue=venue, stock=stock1, quantity=1, is_cancelled=True, is_used=False)
-    booking2 = create_booking(user1, venue=venue, stock=stock2, quantity=2, is_cancelled=False, is_used=True)
-    booking3 = create_booking(user1, venue=venue, stock=stock3, quantity=1, is_cancelled=False, is_used=False)
+    booking1 = create_booking(user=user1, is_cancelled=True, is_used=False, quantity=1, stock=stock1, venue=venue)
+    booking2 = create_booking(user=user1, is_cancelled=False, is_used=True, quantity=2, stock=stock2, venue=venue)
+    booking3 = create_booking(user=user1, is_cancelled=False, is_used=False, quantity=1, stock=stock3, venue=venue)
     PcObject.save(deposit1, deposit2, booking1, booking2, booking3)

@@ -2,7 +2,7 @@ import pytest
 
 from models import PcObject, ApiErrors, ThingType
 from tests.conftest import clean_database
-from tests.test_utils import create_product_with_thing_type
+from tests.model_creators.specific_creators import create_product_with_thing_type
 
 
 def test_thing_type_find_from_sub_labels_returns_nothing_if_no_sub_labels():

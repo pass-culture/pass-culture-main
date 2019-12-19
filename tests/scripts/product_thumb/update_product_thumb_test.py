@@ -7,7 +7,7 @@ from scripts.product_thumb.update_product_thumb import process_product_thumb, _c
     OBJECT_STORAGE_URL, process_file
 from tests.conftest import clean_database
 from tests.scripts.product_thumb.test_image_as_bytes import IMAGE_AS_BYTES
-from tests.test_utils import create_product_with_thing_type
+from tests.model_creators.specific_creators import create_product_with_thing_type
 from utils.human_ids import humanize
 
 

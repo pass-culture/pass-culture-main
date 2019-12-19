@@ -4,7 +4,7 @@ from unittest.mock import Mock
 import pytest
 
 from domain.titelive import get_stocks_information, get_date_from_filename
-from tests.test_utils import assert_iterator_is_empty
+from tests.model_creators.provider_creators import assert_iterator_is_empty
 
 
 class GetStocksInformation:

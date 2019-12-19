@@ -11,9 +11,9 @@ from models.db import db
 from models.email import Email, EmailStatus
 from tests.conftest import clean_database, mocked_mail
 from tests.files.api_entreprise import MOCKED_SIREN_ENTREPRISES_API_RETURN
-from tests.test_utils import create_user, create_booking, create_offerer, create_venue, create_offer_with_thing_product, \
-    create_stock_from_offer, \
-    create_email, create_offer_with_event_product
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, create_email
+from tests.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product, \
+    create_offer_with_event_product
 from utils.human_ids import humanize
 from utils.mailing import parse_email_addresses, \
     send_raw_email, resend_email, \
@@ -190,24 +190,21 @@ class ComputeEmailHtmlPartAndRecipientsTest:
 class GetUsersInformationFromStockBookingsTest:
     def test_returns_correct_users_information_from_bookings_stock(self):
         # Given
-        user_1 = create_user('Test', first_name='Jean', last_name='Dupont', departement_code='93',
-                             email='test@example.com',
-                             can_book_free_offers=True)
-        user_2 = create_user('Test', first_name='Jaja', last_name='Dudu', departement_code='93',
-                             email='mail@example.com',
-                             can_book_free_offers=True)
-        user_3 = create_user('Test', first_name='Toto', last_name='Titi', departement_code='93',
-                             email='mail@example.com',
-                             can_book_free_offers=True)
+        user_1 = create_user(can_book_free_offers=True, departement_code='93', email='test@example.com',
+                             first_name='Jean', last_name='Dupont', public_name='Test')
+        user_2 = create_user(can_book_free_offers=True, departement_code='93', email='mail@example.com',
+                             first_name='Jaja', last_name='Dudu', public_name='Test')
+        user_3 = create_user(can_book_free_offers=True, departement_code='93', email='mail@example.com',
+                             first_name='Toto', last_name='Titi', public_name='Test')
         offerer = create_offerer()
         venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None)
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION,
                                                       booking_email='dev@passculture.app')
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
         stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0, available=10)
-        booking_1 = create_booking(user_1, stock, venue, token='HELLO0')
-        booking_2 = create_booking(user_2, stock, venue, token='HELLO1')
-        booking_3 = create_booking(user_3, stock, venue, token='HELLO2')
+        booking_1 = create_booking(user=user_1, stock=stock, venue=venue, token='HELLO0')
+        booking_2 = create_booking(user=user_2, stock=stock, venue=venue, token='HELLO1')
+        booking_3 = create_booking(user=user_3, stock=stock, venue=venue, token='HELLO2')
 
         stock.bookings = [booking_1, booking_2, booking_3]
 
@@ -251,7 +248,7 @@ class BuildRecipientsListTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock_from_offer(offer)
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
 
         # When
         recipients = build_recipients_list(booking)
@@ -267,7 +264,7 @@ class BuildRecipientsListTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, booking_email=None)
         stock = create_stock_from_offer(offer)
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
 
         # When
         recipients = build_recipients_list(booking)
@@ -284,7 +281,7 @@ class FormatDateAndHourForEmailTest:
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock = create_stock_from_offer(offer, beginning_datetime=datetime(2019, 10, 9, 10, 20, 00))
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
 
         # When
         formatted_date = format_booking_date_for_email(booking)
@@ -299,7 +296,7 @@ class FormatDateAndHourForEmailTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock_from_offer(offer, beginning_datetime=None)
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
 
         # When
         formatted_date = format_booking_date_for_email(booking)
@@ -316,7 +313,7 @@ class FormatBookingHoursForEmailTest:
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock = create_stock_from_offer(offer, beginning_datetime=datetime(2019, 10, 9, 10, 20, 00))
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
 
         # When
         formatted_date = format_booking_hours_for_email(booking)
@@ -331,7 +328,7 @@ class FormatBookingHoursForEmailTest:
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock = create_stock_from_offer(offer, beginning_datetime=datetime(2019, 10, 9, 13, 00, 00))
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
 
         # When
         formatted_date = format_booking_hours_for_email(booking)
@@ -346,7 +343,7 @@ class FormatBookingHoursForEmailTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock_from_offer(offer)
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
 
         # When
         formatted_date = format_booking_hours_for_email(booking)
@@ -358,7 +355,7 @@ class FormatBookingHoursForEmailTest:
 class MakeResetPasswordTest:
     def test_make_reset_password_email_generates_an_html_email_with_a_reset_link(app):
         # given
-        user = create_user(public_name='bobby', email='bobby@test.com', reset_password_token='AZ45KNB99H')
+        user = create_user(email='bobby@test.com', public_name='bobby', reset_password_token='AZ45KNB99H')
 
         # when
         email = make_reset_password_email(user, 'app-jeune')

@@ -2,8 +2,9 @@ import pytest
 
 from models import PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_user, create_offerer, create_venue, create_offer_with_thing_product, \
-    create_mediation, create_favorite
+from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_favorite, create_mediation, \
+    API_URL
+from tests.model_creators.specific_creators import create_offer_with_thing_product
 
 
 @pytest.mark.standalone

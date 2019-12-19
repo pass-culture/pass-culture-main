@@ -1,7 +1,7 @@
 import uuid
 
 from models.pc_object import PcObject
-from tests.test_utils import create_user
+from tests.model_creators.generic_creators import create_user
 from utils.logger import logger
 
 departement_codeS = ["93", "97"]
@@ -42,17 +42,19 @@ def create_industrial_webapp_users():
 
             email = "pctest.jeune{}.{}@btmx.fr".format(departement_code, tag)
 
-            users_by_name['jeune{} {}'.format(departement_code, tag)] = create_user(
-                cultural_survey_id=cultural_survey_id,
-                departement_code=str(departement_code),
-                email=email,
-                first_name="PC Test Jeune",
-                last_name="{} {}".format(departement_code, short_tag),
-                needs_to_fill_cultural_survey=needs_to_fill_cultural_survey,
-                postal_code="{}100".format(departement_code),
-                public_name="PC Test Jeune {} {}".format(departement_code, short_tag),
-                reset_password_token=reset_password_token
-            )
+            users_by_name['jeune{} {}'.format(departement_code, tag)] = create_user(None,
+                                                                                    cultural_survey_id=cultural_survey_id,
+                                                                                    departement_code=str(
+                                                                                        departement_code), email=email,
+                                                                                    first_name="PC Test Jeune",
+                                                                                    last_name="{} {}".format(
+                                                                                        departement_code, short_tag),
+                                                                                    needs_to_fill_cultural_survey=needs_to_fill_cultural_survey,
+                                                                                    postal_code="{}100".format(
+                                                                                        departement_code),
+                                                                                    public_name="PC Test Jeune {} {}".format(
+                                                                                        departement_code, short_tag),
+                                                                                    reset_password_token=reset_password_token)
 
     PcObject.save(*users_by_name.values())
 

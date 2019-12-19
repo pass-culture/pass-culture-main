@@ -1,12 +1,12 @@
-from decimal import Decimal
-
 from models import PcObject, ThingType
 from models.feature import FeatureToggle
 from models.payment import Payment
 from scripts.payment.batch_steps import generate_new_payments
 from tests.conftest import clean_database
-from tests.test_utils import create_offerer, create_venue, create_offer_with_thing_product, create_stock_from_offer, \
-    create_booking, create_user, create_deposit, create_payment, create_bank_information, deactivate_feature
+from tests.test_utils import deactivate_feature
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, create_deposit, \
+    create_payment, create_bank_information
+from tests.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product
 
 
 class GenerateNewPaymentsTest:
@@ -22,10 +22,10 @@ class GenerateNewPaymentsTest:
             free_stock = create_stock_from_offer(offer, price=0)
             user = create_user()
             deposit = create_deposit(user, amount=500)
-            booking1 = create_booking(user, paying_stock, venue, is_used=True)
-            booking2 = create_booking(user, paying_stock, venue, is_used=True)
-            booking3 = create_booking(user, paying_stock, venue, is_used=True)
-            booking4 = create_booking(user, free_stock, venue, is_used=True)
+            booking1 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True)
+            booking2 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True)
+            booking3 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True)
+            booking4 = create_booking(user=user, stock=free_stock, venue=venue, is_used=True)
             payment1 = create_payment(booking2, offerer, 10, payment_message_name="ABCD123")
 
             PcObject.save(payment1)
@@ -57,10 +57,10 @@ class GenerateNewPaymentsTest:
             free_stock1 = create_stock_from_offer(offer1, price=0)
             user = create_user()
             deposit = create_deposit(user, amount=500)
-            booking1 = create_booking(user, paying_stock1, venue1, is_used=True)
-            booking2 = create_booking(user, paying_stock1, venue1, is_used=True)
-            booking3 = create_booking(user, paying_stock2, venue2, is_used=True)
-            booking4 = create_booking(user, free_stock1, venue1, is_used=True)
+            booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True)
+            booking2 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True)
+            booking3 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True)
+            booking4 = create_booking(user=user, stock=free_stock1, venue=venue1, is_used=True)
             PcObject.save(deposit, booking1, booking2, booking3, booking4, bank_information)
 
             # When
@@ -89,9 +89,9 @@ class GenerateNewPaymentsTest:
             paying_stock3 = create_stock_from_offer(offer3, price=10000)
             user = create_user()
             deposit = create_deposit(user, amount=50000)
-            booking1 = create_booking(user, paying_stock1, venue1, quantity=1, is_used=True)
-            booking2 = create_booking(user, paying_stock2, venue2, quantity=1, is_used=True)
-            booking3 = create_booking(user, paying_stock3, venue3, quantity=1, is_used=True)
+            booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
+            booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
+            booking3 = create_booking(user=user, stock=paying_stock3, venue=venue3, is_used=True, quantity=1)
             PcObject.save(deposit, booking1, booking2, booking3, bank_information)
 
             # When
@@ -113,10 +113,10 @@ class GenerateNewPaymentsTest:
             free_stock = create_stock_from_offer(offer, price=0)
             user = create_user()
             deposit = create_deposit(user, amount=500)
-            booking1 = create_booking(user, paying_stock, venue, is_used=True)
-            booking2 = create_booking(user, paying_stock, venue, is_used=True)
-            booking3 = create_booking(user, paying_stock, venue, is_used=True)
-            booking4 = create_booking(user, free_stock, venue, is_used=True)
+            booking1 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True)
+            booking2 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True)
+            booking3 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True)
+            booking4 = create_booking(user=user, stock=free_stock, venue=venue, is_used=True)
             payment1 = create_payment(booking2, offerer, 10, payment_message_name="ABCD123")
 
             PcObject.save(payment1)
@@ -147,10 +147,10 @@ class GenerateNewPaymentsTest:
             free_stock1 = create_stock_from_offer(offer1, price=0)
             user = create_user()
             deposit = create_deposit(user, amount=500)
-            booking1 = create_booking(user, paying_stock1, venue1, is_used=True)
-            booking2 = create_booking(user, paying_stock1, venue1, is_used=True)
-            booking3 = create_booking(user, paying_stock2, venue2, is_used=True)
-            booking4 = create_booking(user, free_stock1, venue1, is_used=True)
+            booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True)
+            booking2 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True)
+            booking3 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True)
+            booking4 = create_booking(user=user, stock=free_stock1, venue=venue1, is_used=True)
             PcObject.save(deposit, booking1, booking2, booking3, booking4, bank_information)
 
             # When
@@ -178,9 +178,9 @@ class GenerateNewPaymentsTest:
             paying_stock3 = create_stock_from_offer(offer3, price=10000)
             user = create_user()
             deposit = create_deposit(user, amount=50000)
-            booking1 = create_booking(user, paying_stock1, venue1, quantity=1, is_used=True)
-            booking2 = create_booking(user, paying_stock2, venue2, quantity=1, is_used=True)
-            booking3 = create_booking(user, paying_stock3, venue3, quantity=1, is_used=True)
+            booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
+            booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
+            booking3 = create_booking(user=user, stock=paying_stock3, venue=venue3, is_used=True, quantity=1)
             PcObject.save(deposit, booking1, booking2, booking3, bank_information)
 
             # When
@@ -209,9 +209,9 @@ class GenerateNewPaymentsTest:
             paying_stock3 = create_stock_from_offer(offer3, price=30000)
             user = create_user()
             deposit = create_deposit(user, amount=50000)
-            booking1 = create_booking(user, paying_stock1, venue1, quantity=1, is_used=True)
-            booking2 = create_booking(user, paying_stock2, venue2, quantity=1, is_used=True)
-            booking3 = create_booking(user, paying_stock3, venue3, quantity=1, is_used=True)
+            booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
+            booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
+            booking3 = create_booking(user=user, stock=paying_stock3, venue=venue3, is_used=True, quantity=1)
             PcObject.save(deposit, booking1, booking2, booking3, bank_information)
 
             # When
@@ -237,8 +237,8 @@ class GenerateNewPaymentsTest:
             paying_stock2 = create_stock_from_offer(offer2, price=19990)
             user = create_user()
             deposit = create_deposit(user, amount=50000)
-            booking1 = create_booking(user, paying_stock1, venue1, quantity=1, is_used=True)
-            booking2 = create_booking(user, paying_stock2, venue2, quantity=1, is_used=True)
+            booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
+            booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
             PcObject.save(deposit, booking1, booking2, bank_information)
 
             # When
@@ -267,9 +267,9 @@ class GenerateNewPaymentsTest:
             paying_stock3 = create_stock_from_offer(offer3, price=30000)
             user = create_user()
             deposit = create_deposit(user, amount=50000)
-            booking1 = create_booking(user, paying_stock1, venue1, quantity=1, is_used=True)
-            booking2 = create_booking(user, paying_stock2, venue2, quantity=1, is_used=True)
-            booking3 = create_booking(user, paying_stock3, venue3, quantity=1, is_used=True)
+            booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
+            booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
+            booking3 = create_booking(user=user, stock=paying_stock3, venue=venue3, is_used=True, quantity=1)
             PcObject.save(deposit, booking1, booking2, booking3, bank_information)
 
             # When
@@ -298,9 +298,9 @@ class GenerateNewPaymentsTest:
             paying_stock3 = create_stock_from_offer(offer3, price=50000)
             user = create_user()
             deposit = create_deposit(user, amount=80000)
-            booking1 = create_booking(user, paying_stock1, venue1, quantity=1, is_used=True)
-            booking2 = create_booking(user, paying_stock2, venue2, quantity=1, is_used=True)
-            booking3 = create_booking(user, paying_stock3, venue3, quantity=1, is_used=True)
+            booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
+            booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
+            booking3 = create_booking(user=user, stock=paying_stock3, venue=venue3, is_used=True, quantity=1)
             PcObject.save(deposit, booking1, booking2, booking3, bank_information)
 
             # When
@@ -329,9 +329,9 @@ class GenerateNewPaymentsTest:
             paying_stock3 = create_stock_from_offer(offer3, price=100000)
             user = create_user()
             deposit = create_deposit(user, amount=120000)
-            booking1 = create_booking(user, paying_stock1, venue1, quantity=1, is_used=True)
-            booking2 = create_booking(user, paying_stock2, venue2, quantity=1, is_used=True)
-            booking3 = create_booking(user, paying_stock3, venue3, quantity=1, is_used=True)
+            booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
+            booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
+            booking3 = create_booking(user=user, stock=paying_stock3, venue=venue3, is_used=True, quantity=1)
             PcObject.save(deposit, booking1, booking2, booking3, bank_information)
 
             # When

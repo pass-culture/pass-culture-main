@@ -1,6 +1,5 @@
 from domain.music_types import music_types
 from domain.types import get_formatted_active_product_types
-from models.offer_type import EventType, ThingType
 from models.pc_object import PcObject
 from sandboxes.scripts.mocks.thing_mocks import MOCK_AUTHOR_NAMES, \
                                                 MOCK_DESCRIPTIONS, \
@@ -10,7 +9,7 @@ from sandboxes.scripts.mocks.user_mocks import MOCK_FIRST_NAMES, \
 from utils.token import random_token
 
 from utils.logger import logger
-from tests.test_utils import create_product_with_thing_type
+from tests.model_creators.specific_creators import create_product_with_thing_type
 
 THINGS_PER_TYPE = 7
 

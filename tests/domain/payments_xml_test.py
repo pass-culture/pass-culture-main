@@ -11,8 +11,8 @@ from lxml.etree import DocumentInvalid
 from domain.payments import validate_message_file_structure, generate_message_file, \
     read_message_name_in_message_file, \
     generate_file_checksum
-from tests.test_utils import create_payment, create_offerer, create_user, create_venue, create_stock_from_offer, \
-    create_booking, create_offer_with_thing_product
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, create_payment
+from tests.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product
 
 XML_NAMESPACE = {'ns': 'urn:iso:std:iso:20022:tech:xsd:pain.001.001.03'}
 MESSAGE_ID = 'passCulture-SCT-20181015-114356'
@@ -25,7 +25,7 @@ class GenerateMessageFileTest:
         user = create_user()
         venue = create_venue(offerer)
         stock = create_stock_from_offer(create_offer_with_thing_product(venue))
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
         payment1 = create_payment(booking, offerer, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
         payment2 = create_payment(booking, offerer, Decimal(20), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
         payments = [
@@ -47,7 +47,7 @@ class GenerateMessageFileTest:
         user = create_user()
         venue = create_venue(offerer)
         stock = create_stock_from_offer(create_offer_with_thing_product(venue))
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
         payment1 = create_payment(booking, offerer, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
         payment2 = create_payment(booking, offerer, Decimal(20), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
         payments = [
@@ -68,7 +68,7 @@ class GenerateMessageFileTest:
         user = create_user()
         venue = create_venue(offerer)
         stock = create_stock_from_offer(create_offer_with_thing_product(venue))
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
         payment1 = create_payment(booking, offerer, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
         payment2 = create_payment(booking, offerer, Decimal(20), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
         payments = [
@@ -92,8 +92,8 @@ class GenerateMessageFileTest:
         venue2 = create_venue(offerer2)
         stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
         stock2 = create_stock_from_offer(create_offer_with_thing_product(venue2))
-        booking1 = create_booking(user, stock1)
-        booking2 = create_booking(user, stock2)
+        booking1 = create_booking(user=user, stock=stock1)
+        booking2 = create_booking(user=user, stock=stock2)
 
         payments = [
             create_payment(booking1, offerer1, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
@@ -120,9 +120,9 @@ class GenerateMessageFileTest:
         stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
         stock2 = create_stock_from_offer(create_offer_with_thing_product(venue2))
         stock3 = create_stock_from_offer(create_offer_with_thing_product(venue3))
-        booking1 = create_booking(user, stock1)
-        booking2 = create_booking(user, stock2)
-        booking3 = create_booking(user, stock3)
+        booking1 = create_booking(user=user, stock=stock1)
+        booking2 = create_booking(user=user, stock=stock2)
+        booking3 = create_booking(user=user, stock=stock3)
 
         payments = [
             create_payment(booking1, offerer1, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
@@ -143,7 +143,7 @@ class GenerateMessageFileTest:
         user = create_user()
         venue1 = create_venue(offerer1)
         stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
-        booking1 = create_booking(user, stock1)
+        booking1 = create_booking(user=user, stock=stock1)
 
         payments = [create_payment(booking1, offerer1, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')]
 
@@ -166,9 +166,9 @@ class GenerateMessageFileTest:
         stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
         stock2 = create_stock_from_offer(create_offer_with_thing_product(venue2))
         stock3 = create_stock_from_offer(create_offer_with_thing_product(venue3))
-        booking1 = create_booking(user, stock1)
-        booking2 = create_booking(user, stock2)
-        booking3 = create_booking(user, stock3)
+        booking1 = create_booking(user=user, stock=stock1)
+        booking2 = create_booking(user=user, stock=stock2)
+        booking3 = create_booking(user=user, stock=stock3)
 
         payments = [
             create_payment(booking1, offerer1, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
@@ -192,8 +192,8 @@ class GenerateMessageFileTest:
         venue2 = create_venue(offerer2)
         stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
         stock2 = create_stock_from_offer(create_offer_with_thing_product(venue2))
-        booking1 = create_booking(user, stock1)
-        booking2 = create_booking(user, stock2)
+        booking1 = create_booking(user=user, stock=stock1)
+        booking2 = create_booking(user=user, stock=stock2)
 
         payments = [
             create_payment(booking1, offerer1, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
@@ -214,7 +214,7 @@ class GenerateMessageFileTest:
         user = create_user()
         venue = create_venue(offerer)
         stock = create_stock_from_offer(create_offer_with_thing_product(venue))
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
 
         payments = [create_payment(booking, offerer, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')]
 
@@ -231,7 +231,7 @@ class GenerateMessageFileTest:
         user = create_user()
         venue = create_venue(offerer)
         stock = create_stock_from_offer(create_offer_with_thing_product(venue))
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
 
         payments = [create_payment(booking, offerer, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')]
 
@@ -248,7 +248,7 @@ class GenerateMessageFileTest:
         user = create_user()
         venue = create_venue(offerer)
         stock = create_stock_from_offer(create_offer_with_thing_product(venue))
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
 
         payments = [create_payment(booking, offerer, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')]
 
@@ -265,7 +265,7 @@ class GenerateMessageFileTest:
         user = create_user()
         venue = create_venue(offerer)
         stock = create_stock_from_offer(create_offer_with_thing_product(venue))
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
 
         payments = [create_payment(booking, offerer, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')]
 
@@ -281,7 +281,7 @@ class GenerateMessageFileTest:
         user = create_user()
         venue = create_venue(offerer)
         stock = create_stock_from_offer(create_offer_with_thing_product(venue))
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
 
         payments = [create_payment(booking, offerer, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')]
 
@@ -297,7 +297,7 @@ class GenerateMessageFileTest:
         user = create_user()
         venue = create_venue(offerer)
         stock = create_stock_from_offer(create_offer_with_thing_product(venue))
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
 
         payments = [create_payment(booking, offerer, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')]
 
@@ -315,7 +315,7 @@ class GenerateMessageFileTest:
         user = create_user()
         venue = create_venue(offerer)
         stock = create_stock_from_offer(create_offer_with_thing_product(venue))
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
 
         payments = [create_payment(booking, offerer, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')]
 
@@ -332,7 +332,7 @@ class GenerateMessageFileTest:
         user = create_user()
         venue = create_venue(offerer)
         stock = create_stock_from_offer(create_offer_with_thing_product(venue))
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
 
         payments = [create_payment(booking, offerer, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')]
 
@@ -355,9 +355,9 @@ class GenerateMessageFileTest:
         stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
         stock2 = create_stock_from_offer(create_offer_with_thing_product(venue2))
         stock3 = create_stock_from_offer(create_offer_with_thing_product(venue3))
-        booking1 = create_booking(user, stock1)
-        booking2 = create_booking(user, stock2)
-        booking3 = create_booking(user, stock3)
+        booking1 = create_booking(user=user, stock=stock1)
+        booking2 = create_booking(user=user, stock=stock2)
+        booking3 = create_booking(user=user, stock=stock3)
 
         payments = [
             create_payment(booking1, offerer1, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
@@ -384,9 +384,9 @@ class GenerateMessageFileTest:
         stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
         stock2 = create_stock_from_offer(create_offer_with_thing_product(venue2))
         stock3 = create_stock_from_offer(create_offer_with_thing_product(venue3))
-        booking1 = create_booking(user, stock1)
-        booking2 = create_booking(user, stock2)
-        booking3 = create_booking(user, stock3)
+        booking1 = create_booking(user=user, stock=stock1)
+        booking2 = create_booking(user=user, stock=stock2)
+        booking3 = create_booking(user=user, stock=stock3)
 
         payments = [
             create_payment(booking1, offerer1, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
@@ -415,9 +415,9 @@ class GenerateMessageFileTest:
         stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
         stock2 = create_stock_from_offer(create_offer_with_thing_product(venue2))
         stock3 = create_stock_from_offer(create_offer_with_thing_product(venue3))
-        booking1 = create_booking(user, stock1)
-        booking2 = create_booking(user, stock2)
-        booking3 = create_booking(user, stock3)
+        booking1 = create_booking(user=user, stock=stock1)
+        booking2 = create_booking(user=user, stock=stock2)
+        booking3 = create_booking(user=user, stock=stock3)
 
         payments = [
             create_payment(booking1, offerer1, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
@@ -444,9 +444,9 @@ class GenerateMessageFileTest:
         stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
         stock2 = create_stock_from_offer(create_offer_with_thing_product(venue2))
         stock3 = create_stock_from_offer(create_offer_with_thing_product(venue3))
-        booking1 = create_booking(user, stock1)
-        booking2 = create_booking(user, stock2)
-        booking3 = create_booking(user, stock3)
+        booking1 = create_booking(user=user, stock=stock1)
+        booking2 = create_booking(user=user, stock=stock2)
+        booking3 = create_booking(user=user, stock=stock3)
 
         payments = [
             create_payment(booking1, offerer1, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555',
@@ -476,9 +476,9 @@ class GenerateMessageFileTest:
         stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
         stock2 = create_stock_from_offer(create_offer_with_thing_product(venue1))
         stock3 = create_stock_from_offer(create_offer_with_thing_product(venue2))
-        booking1 = create_booking(user, stock1)
-        booking2 = create_booking(user, stock2)
-        booking3 = create_booking(user, stock3)
+        booking1 = create_booking(user=user, stock=stock1)
+        booking2 = create_booking(user=user, stock=stock2)
+        booking3 = create_booking(user=user, stock=stock3)
 
         payments = [
             create_payment(booking1, offerer1, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
@@ -505,8 +505,8 @@ class GenerateMessageFileTest:
         venue2 = create_venue(offerer2)
         stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
         stock2 = create_stock_from_offer(create_offer_with_thing_product(venue2))
-        booking1 = create_booking(user, stock1)
-        booking2 = create_booking(user, stock2)
+        booking1 = create_booking(user=user, stock=stock1)
+        booking2 = create_booking(user=user, stock=stock2)
         uuid1 = UUID(hex='abcd1234abcd1234abcd1234abcd1234', version=4)
         uuid2 = UUID(hex='cdef5678cdef5678cdef5678cdef5678', version=4)
         mocked_uuid.side_effect = [uuid1, uuid2]
@@ -530,7 +530,7 @@ class GenerateMessageFileTest:
         user = create_user()
         venue = create_venue(offerer)
         stock = create_stock_from_offer(create_offer_with_thing_product(venue))
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
         payment1 = create_payment(booking, offerer, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
         payment2 = create_payment(booking, offerer, Decimal(20), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
         payments = [
@@ -551,7 +551,7 @@ class GenerateMessageFileTest:
         user = create_user()
         venue = create_venue(offerer)
         stock = create_stock_from_offer(create_offer_with_thing_product(venue))
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
 
         payments = [create_payment(booking, offerer, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')]
 
@@ -575,9 +575,9 @@ def test_generate_file_checksum_returns_a_checksum_of_the_file(mocked_uuid, app)
     stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
     stock2 = create_stock_from_offer(create_offer_with_thing_product(venue1))
     stock3 = create_stock_from_offer(create_offer_with_thing_product(venue2))
-    booking1 = create_booking(user, stock1)
-    booking2 = create_booking(user, stock2)
-    booking3 = create_booking(user, stock3)
+    booking1 = create_booking(user=user, stock=stock1)
+    booking2 = create_booking(user=user, stock=stock2)
+    booking3 = create_booking(user=user, stock=stock3)
 
     payments = [
         create_payment(booking1, offerer1, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
@@ -618,7 +618,7 @@ def test_read_message_name_in_message_file_returns_the_content_of_message_id_tag
     user = create_user()
     venue = create_venue(offerer)
     stock = create_stock_from_offer(create_offer_with_thing_product(venue))
-    booking = create_booking(user, stock)
+    booking = create_booking(user=user, stock=stock)
     payment1 = create_payment(booking, offerer, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
     payment2 = create_payment(booking, offerer, Decimal(20), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
     payments = [payment1, payment2]

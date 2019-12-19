@@ -5,7 +5,8 @@ from bs4 import BeautifulSoup
 
 from models import Offerer
 from tests.conftest import mocked_mail, clean_database
-from tests.test_utils import create_offerer, create_venue, create_stock_with_event_offer, create_user, create_booking
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue
+from tests.model_creators.specific_creators import create_stock_with_event_offer
 from tests.utils.mailing_test import _remove_whitespaces
 from utils.mailing import make_final_recap_email_for_stock_with_event
 
@@ -50,9 +51,9 @@ def test_offerer_recap_email_contains_past_offer_with_booking(app):
     venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     stock = create_stock_with_event_offer(offerer=None, venue=venue, beginning_datetime=beginning_datetime,
                                           end_datetime=end_datetime, booking_limit_datetime=booking_limit_datetime)
-    user = create_user('Test', first_name='Jean', last_name='Dupont', departement_code='93', email='test@example.com',
-                       can_book_free_offers=True)
-    booking = create_booking(user, stock, venue, None)
+    user = create_user(can_book_free_offers=True, departement_code='93', email='test@example.com',
+                       first_name='Jean', last_name='Dupont', public_name='Test')
+    booking = create_booking(user=user, stock=stock, venue=venue)
     booking.token = '56789'
     stock.bookings = [booking]
 
@@ -86,14 +87,13 @@ def test_offerer_recap_email_does_not_retrieve_cancelled_or_used_booking(app):
     venue = create_venue(Offerer(), 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     stock = create_stock_with_event_offer(offerer=Offerer(), venue=venue)
 
-    user1 = create_user('Test1', first_name='Lucie', last_name='Dubois', departement_code='93',
-                        email='test@example.com',
-                        can_book_free_offers=True)
-    booking1 = create_booking(user1, stock)
+    user1 = create_user(can_book_free_offers=True, departement_code='93', email='test@example.com',
+                        first_name='Lucie', last_name='Dubois', public_name='Test1')
+    booking1 = create_booking(user=user1, stock=stock)
 
-    user2 = create_user('Test2', first_name='Jean', last_name='Dupont', departement_code='93', email='test@example.com',
-                        can_book_free_offers=True)
-    booking2 = create_booking(user2, stock)
+    user2 = create_user(can_book_free_offers=True, departement_code='93', email='test@example.com',
+                        first_name='Jean', last_name='Dupont', public_name='Test2')
+    booking2 = create_booking(user=user2, stock=stock)
 
     ongoing_bookings = [booking1, booking2]
 
@@ -117,11 +117,13 @@ def test_offerer_recap_email_has_unsubscribe_options(app):
     venue = create_venue(Offerer(), 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     stock = create_stock_with_event_offer(offerer=Offerer(), venue=venue)
 
-    user1 = create_user('Test1', departement_code='93', email='test@example.com', can_book_free_offers=True)
-    booking1 = create_booking(user1, stock)
+    user1 = create_user(can_book_free_offers=True, departement_code='93', email='test@example.com',
+                        public_name='Test1')
+    booking1 = create_booking(user=user1, stock=stock)
 
-    user2 = create_user('Test2', departement_code='93', email='test@example.com', can_book_free_offers=True)
-    booking2 = create_booking(user2, stock)
+    user2 = create_user(can_book_free_offers=True, departement_code='93', email='test@example.com',
+                        public_name='Test2')
+    booking2 = create_booking(user=user2, stock=stock)
 
     ongoing_bookings = [booking1, booking2]
 

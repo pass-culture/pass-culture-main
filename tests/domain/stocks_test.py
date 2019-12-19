@@ -4,7 +4,7 @@ import pytest
 from freezegun import freeze_time
 
 from domain.stocks import delete_stock_and_cancel_bookings, TooLateToDeleteError
-from tests.test_utils import create_stock, create_booking, create_user
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock
 
 user1 = create_user()
 user2 = create_user()
@@ -26,8 +26,8 @@ class DeleteStockAndCancelBookingsTest:
         def test_only_unused_bookings_are_cancelled_and_returned(self):
             # given
             self.stock.bookings = [
-                create_booking(user1, is_used=True, is_cancelled=False),
-                create_booking(user2, is_used=False, is_cancelled=False)
+                create_booking(user=user1, is_cancelled=False, is_used=True),
+                create_booking(user=user2, is_cancelled=False, is_used=False)
             ]
 
             # when
@@ -58,8 +58,8 @@ class DeleteStockAndCancelBookingsTest:
             def test_all_bookings_are_cancelled(self):
                 # given
                 self.stock.bookings = [
-                    create_booking(user1, is_used=False, is_cancelled=False),
-                    create_booking(user2, is_used=False, is_cancelled=False),
+                    create_booking(user=user1, is_cancelled=False, is_used=False),
+                    create_booking(user=user2, is_cancelled=False, is_used=False),
                 ]
 
                 # when
@@ -88,8 +88,8 @@ class DeleteStockAndCancelBookingsTest:
             def test_all_bookings_are_not_cancelled(self):
                 # given
                 self.stock.bookings = [
-                    create_booking(user1, is_used=False, is_cancelled=False),
-                    create_booking(user2, is_used=False, is_cancelled=False),
+                    create_booking(user=user1, is_cancelled=False, is_used=False),
+                    create_booking(user=user2, is_cancelled=False, is_used=False),
                 ]
 
                 # when

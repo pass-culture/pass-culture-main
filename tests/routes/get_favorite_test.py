@@ -2,8 +2,9 @@ import pytest
 
 from models import PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_user, create_offerer, create_venue, create_offer_with_thing_product, \
-    create_mediation, create_favorite, create_booking, create_stock
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue, \
+    create_favorite, create_mediation, API_URL
+from tests.model_creators.specific_creators import create_offer_with_thing_product
 from utils.human_ids import humanize
 
 
@@ -44,7 +45,7 @@ class Get:
             mediation = create_mediation(offer, is_active=True)
             favorite = create_favorite(mediation, offer, user)
             stock = create_stock(price=0, offer=offer)
-            booking = create_booking(user, stock)
+            booking = create_booking(user=user, stock=stock)
             PcObject.save(booking, favorite)
             url = f'{API_URL}/favorites/{humanize(favorite.id)}'
 

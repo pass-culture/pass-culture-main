@@ -1,7 +1,6 @@
 from models import PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_user, \
-    create_offerer
+from tests.model_creators.generic_creators import create_user, create_offerer
 from utils.human_ids import humanize
 
 

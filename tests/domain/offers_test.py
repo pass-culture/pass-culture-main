@@ -3,9 +3,8 @@ from unittest.mock import Mock
 from domain.offers import update_is_active_status
 from models import Offer
 from tests.conftest import clean_database
-from tests.test_utils import create_offer_with_event_product, \
-    create_offerer, \
-    create_venue, create_booking, create_stock, create_user
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue
+from tests.model_creators.specific_creators import create_offer_with_event_product
 
 find_thing = Mock()
 
@@ -54,7 +53,7 @@ class ChangeOfferStatusTest:
             venue = create_venue(offerer)
             existing_offer = create_offer_with_event_product(venue, is_active=True)
             stock = create_stock(offer=existing_offer)
-            booking = create_booking(stock=stock, user=user)
+            booking = create_booking(user=user, stock=stock)
             offers = [existing_offer]
             status = False
 

@@ -6,15 +6,12 @@ from models import PcObject, ThingType, Booking, EventType
 from models.api_errors import ResourceNotFoundError, ApiErrors
 from repository import booking_queries
 from tests.conftest import clean_database
-from tests.test_utils import create_booking, \
-    create_deposit, \
-    create_offerer, \
-    create_stock_with_event_offer, \
-    create_stock_with_thing_offer, \
-    create_user, \
-    create_venue, create_offer_with_thing_product, \
-    create_offer_with_event_product, \
-    create_booking_activity, save_all_activities, create_stock_from_offer, create_payment, create_stock
+from tests.model_creators.activity_creators import create_booking_activity, save_all_activities
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+    create_venue, \
+    create_deposit, create_payment
+from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_offer, \
+    create_stock_with_thing_offer, create_offer_with_thing_product, create_offer_with_event_product
 
 NOW = datetime.utcnow()
 two_days_ago = NOW - timedelta(days=2)
@@ -39,12 +36,9 @@ class FindAllOffererBookingsByVenueIdTest:
             offerer1, venue2, price=0, available=100)
         stock3 = create_stock_with_thing_offer(
             offerer2, venue3, price=0, available=100)
-        booking1 = create_booking(
-            user, stock1, venue1, recommendation=None, quantity=2)
-        booking2 = create_booking(
-            user, stock2, venue2, recommendation=None, quantity=2)
-        booking3 = create_booking(
-            user, stock3, venue3, recommendation=None, quantity=2)
+        booking1 = create_booking(user=user, stock=stock1, venue=venue1, quantity=2, recommendation=None)
+        booking2 = create_booking(user=user, stock=stock2, venue=venue2, quantity=2, recommendation=None)
+        booking3 = create_booking(user=user, stock=stock3, venue=venue3, quantity=2, recommendation=None)
 
         PcObject.save(booking1, booking2, booking3)
 
@@ -70,12 +64,9 @@ class FindAllOffererBookingsByVenueIdTest:
         stock1 = create_stock_from_offer(offer1, available=100, price=20)
         stock2 = create_stock_from_offer(offer2, available=150, price=16)
         stock3 = create_stock_from_offer(offer3, available=150, price=16)
-        booking1 = create_booking(
-            user, stock1, venue1, recommendation=None, quantity=2)
-        booking2 = create_booking(
-            user, stock2, venue1, recommendation=None, quantity=2)
-        booking3 = create_booking(
-            user, stock3, venue2, recommendation=None, quantity=2)
+        booking1 = create_booking(user=user, stock=stock1, venue=venue1, quantity=2, recommendation=None)
+        booking2 = create_booking(user=user, stock=stock2, venue=venue1, quantity=2, recommendation=None)
+        booking3 = create_booking(user=user, stock=stock3, venue=venue2, quantity=2, recommendation=None)
         PcObject.save(booking1, booking2, booking3)
 
         # when
@@ -90,39 +81,51 @@ class FindAllOffererBookingsByVenueIdTest:
     def test_returns_bookings_on_given_venue_and_thing_offer_and_date(self, app):
         # given
         user = create_user()
-        now = datetime.utcnow()
-        create_deposit(user, amount=1600)
+        create_deposit(user=user, amount=1600)
         offerer = create_offerer(siren='123456789')
-        venue = create_venue(offerer, siret=offerer.siren + '12345')
-
+        venue = create_venue(offerer=offerer, siret=offerer.siren + '12345')
         target_offer = create_offer_with_thing_product(venue)
         other_offer = create_offer_with_thing_product(venue)
-
-        target_stock = create_stock_from_offer(
-            target_offer, available=100, price=20)
-        other_stock = create_stock_from_offer(
-            other_offer, available=150, price=16)
-
-        other_booking_1 = create_booking(user, target_stock, venue, recommendation=None, quantity=2,
+        target_stock = create_stock_from_offer(target_offer, available=100, price=20)
+        other_stock = create_stock_from_offer(other_offer, available=150, price=16)
+        other_booking_1 = create_booking(user=user,
+                                         stock=target_stock,
+                                         venue=venue,
+                                         quantity=2,
+                                         recommendation=None,
                                          date_created=datetime(2020, 5, 30))
-        target_booking_1 = create_booking(user, target_stock, venue, recommendation=None, quantity=2,
+        target_booking_1 = create_booking(user=user,
+                                          stock=target_stock,
+                                          venue=venue,
+                                          quantity=2,
+                                          recommendation=None,
                                           date_created=datetime(2020, 6, 1))
-        target_booking_2 = create_booking(user, target_stock, venue, recommendation=None, quantity=2,
+        target_booking_2 = create_booking(user=user,
+                                          stock=target_stock,
+                                          venue=venue,
+                                          quantity=2,
+                                          recommendation=None,
                                           date_created=datetime(2020, 6, 30))
-        other_booking_2 = create_booking(user, target_stock, venue, recommendation=None, quantity=2,
+        other_booking_2 = create_booking(user=user,
+                                         stock=target_stock,
+                                         venue=venue,
+                                         quantity=2,
+                                         recommendation=None,
                                          date_created=datetime(2020, 7, 1))
-
-        other_booking_3 = create_booking(user, other_stock, venue, recommendation=None, quantity=2,
+        other_booking_3 = create_booking(user=user,
+                                         stock=other_stock,
+                                         venue=venue,
+                                         quantity=2,
+                                         recommendation=None,
                                          date_created=datetime(2020, 6, 1))
 
-        PcObject.save(other_booking_1, other_booking_2,
-                      other_booking_3, target_booking_1, target_booking_2)
+        PcObject.save(other_booking_1, other_booking_2, other_booking_3, target_booking_1, target_booking_2)
 
         target_offer_id = target_offer.id
 
         # when
         bookings = booking_queries.find_offerer_bookings(offerer.id, venue_id=venue.id, offer_id=target_offer_id,
-                                             date_from=datetime(2020, 6, 1), date_to=datetime(2020, 6, 30))
+                                                         date_from=datetime(2020, 6, 1), date_to=datetime(2020, 6, 30))
 
         # then
         assert len(bookings) == 2
@@ -154,14 +157,10 @@ class FindAllOffererBookingsByVenueIdTest:
                                                 beginning_datetime=datetime.strptime("2020-07-02T20:00:00.000Z",
                                                                                      "%Y-%m-%dT%H:%M:%S.%fZ"))
 
-        target_booking = create_booking(
-            user, target_stock, venue, recommendation=None, quantity=2)
-        other_booking_1 = create_booking(
-            user, other_stock_1, venue, recommendation=None, quantity=2)
-        other_booking_2 = create_booking(
-            user, other_stock_2, venue, recommendation=None, quantity=2)
-        other_booking_3 = create_booking(
-            user, other_stock_3, venue, recommendation=None, quantity=2)
+        target_booking = create_booking(user=user, stock=target_stock, venue=venue, quantity=2, recommendation=None)
+        other_booking_1 = create_booking(user=user, stock=other_stock_1, venue=venue, quantity=2, recommendation=None)
+        other_booking_2 = create_booking(user=user, stock=other_stock_2, venue=venue, quantity=2, recommendation=None)
+        other_booking_3 = create_booking(user=user, stock=other_stock_3, venue=venue, quantity=2, recommendation=None)
 
         PcObject.save(other_booking_1, other_booking_2,
                       target_booking, other_booking_3)
@@ -170,7 +169,8 @@ class FindAllOffererBookingsByVenueIdTest:
 
         # when
         bookings = booking_queries.find_offerer_bookings(offerer.id, venue_id=venue.id, offer_id=target_offer_id,
-                                             date_from='2020-06-01T20:00:00.000Z', date_to='2020-05-01T20:00:00.000Z')
+                                                         date_from='2020-06-01T20:00:00.000Z',
+                                                         date_to='2020-05-01T20:00:00.000Z')
 
         # then
         assert len(bookings) == 1
@@ -191,10 +191,10 @@ class FindAllDigitalBookingsForOffererTest:
             offerer1, digital_venue, price=2, available=100)
         stock2 = create_stock_with_thing_offer(
             offerer1, physical_venue, price=3, available=100)
-        booking_for_digital = create_booking(
-            user, stock1, digital_venue, recommendation=None, quantity=2)
-        booking_for_physical = create_booking(
-            user, stock2, physical_venue, recommendation=None, quantity=2)
+        booking_for_digital = create_booking(user=user, stock=stock1, venue=digital_venue, quantity=2,
+                                             recommendation=None)
+        booking_for_physical = create_booking(user=user, stock=stock2, venue=physical_venue, quantity=2,
+                                              recommendation=None)
 
         PcObject.save(booking_for_digital, booking_for_physical)
 
@@ -225,10 +225,10 @@ class FindAllDigitalBookingsForOffererTest:
         other_stock = create_stock_with_thing_offer(
             other_offerer, other_digital_venue, price=3, available=100)
 
-        targeet_booking = create_booking(
-            user, target_stock, target_digital_venue, recommendation=None, quantity=2)
-        other_booking = create_booking(
-            user, other_stock, other_digital_venue, recommendation=None, quantity=2)
+        targeet_booking = create_booking(user=user, stock=target_stock, venue=target_digital_venue, quantity=2,
+                                         recommendation=None)
+        other_booking = create_booking(user=user, stock=other_stock, venue=other_digital_venue, quantity=2,
+                                       recommendation=None)
 
         PcObject.save(targeet_booking, other_booking)
 
@@ -252,10 +252,10 @@ class FindAllDigitalBookingsForOffererTest:
             offerer1, digital_venue_for_offerer1, price=2, available=100)
         stock2 = create_stock_with_thing_offer(
             offerer1, digital_venue_for_offerer1, price=3, available=100)
-        booking_for_offerer1 = create_booking(
-            user, stock1, digital_venue_for_offerer1, recommendation=None, quantity=2)
-        booking_for_offerer2 = create_booking(
-            user, stock2, digital_venue_for_offerer1, recommendation=None, quantity=2)
+        booking_for_offerer1 = create_booking(user=user, stock=stock1, venue=digital_venue_for_offerer1, quantity=2,
+                                              recommendation=None)
+        booking_for_offerer2 = create_booking(user=user, stock=stock2, venue=digital_venue_for_offerer1, quantity=2,
+                                              recommendation=None)
 
         PcObject.save(booking_for_offerer1, booking_for_offerer2)
 
@@ -280,23 +280,24 @@ class FindAllDigitalBookingsForOffererTest:
             offerer1, digital_venue_for_offerer1, price=2, available=100)
         stock2 = create_stock_with_thing_offer(
             offerer1, digital_venue_for_offerer1, price=3, available=100)
-        booking_for_offerer1 = create_booking(user, stock2, digital_venue_for_offerer1, recommendation=None, quantity=2,
-                                              date_created=datetime(2020, 5, 30))
-        booking_for_offerer2 = create_booking(user, stock2, digital_venue_for_offerer1, recommendation=None, quantity=2,
-                                              date_created=datetime(2020, 6, 1))
-        booking_for_offerer3 = create_booking(user, stock2, digital_venue_for_offerer1, recommendation=None, quantity=2,
-                                              date_created=datetime(2020, 6, 30))
-        booking_for_offerer4 = create_booking(user, stock2, digital_venue_for_offerer1, recommendation=None, quantity=2,
-                                              date_created=datetime(2020, 7, 31))
-        booking_for_offerer5 = create_booking(user, stock1, digital_venue_for_offerer1, recommendation=None, quantity=2,
-                                              date_created=datetime(2020, 6, 30))
+        booking_for_offerer1 = create_booking(user=user, stock=stock2, venue=digital_venue_for_offerer1, quantity=2,
+                                              recommendation=None, date_created=datetime(2020, 5, 30))
+        booking_for_offerer2 = create_booking(user=user, stock=stock2, venue=digital_venue_for_offerer1, quantity=2,
+                                              recommendation=None, date_created=datetime(2020, 6, 1))
+        booking_for_offerer3 = create_booking(user=user, stock=stock2, venue=digital_venue_for_offerer1, quantity=2,
+                                              recommendation=None, date_created=datetime(2020, 6, 30))
+        booking_for_offerer4 = create_booking(user=user, stock=stock2, venue=digital_venue_for_offerer1, quantity=2,
+                                              recommendation=None, date_created=datetime(2020, 7, 31))
+        booking_for_offerer5 = create_booking(user=user, stock=stock1, venue=digital_venue_for_offerer1, quantity=2,
+                                              recommendation=None, date_created=datetime(2020, 6, 30))
 
         PcObject.save(booking_for_offerer1, booking_for_offerer2, booking_for_offerer3, booking_for_offerer4,
                       booking_for_offerer5)
 
         # when
-        bookings = booking_queries.find_digital_bookings_for_offerer(offerer1.id, stock2.offer.id, date_from=datetime(2020, 6, 1),
-                                                         date_to=datetime(2020, 6, 30))
+        bookings = booking_queries.find_digital_bookings_for_offerer(offerer1.id, stock2.offer.id,
+                                                                     date_from=datetime(2020, 6, 1),
+                                                                     date_to=datetime(2020, 6, 30))
 
         # then
         assert len(bookings) == 2
@@ -312,10 +313,9 @@ def test_find_all_ongoing_bookings(app):
     venue = create_venue(offerer)
     stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
     user = create_user()
-    cancelled_booking = create_booking(user, stock, is_cancelled=True)
-    validated_booking = create_booking(user, stock, is_used=True)
-    ongoing_booking = create_booking(
-        user, stock, is_cancelled=False, is_used=False)
+    cancelled_booking = create_booking(user=user, stock=stock, is_cancelled=True)
+    validated_booking = create_booking(user=user, stock=stock, is_used=True)
+    ongoing_booking = create_booking(user=user, stock=stock, is_cancelled=False, is_used=False)
     PcObject.save(ongoing_booking)
     PcObject.save(validated_booking)
     PcObject.save(cancelled_booking)
@@ -338,14 +338,14 @@ class FindFinalOffererBookingsTest:
         venue = create_venue(offerer1, siret=offerer1.siren + '12345')
         offer = create_offer_with_thing_product(venue)
         stock = create_stock_with_thing_offer(offerer1, venue, offer)
-        booking1 = create_booking(user, stock=stock, venue=venue, is_used=True)
-        booking2 = create_booking(user, stock=stock, venue=venue, is_used=True)
+        booking1 = create_booking(user=user, is_used=True, stock=stock, venue=venue)
+        booking2 = create_booking(user=user, is_used=True, stock=stock, venue=venue)
 
         offerer2 = create_offerer(siren='987654321')
         venue = create_venue(offerer2, siret=offerer2.siren + '12345')
         offer = create_offer_with_thing_product(venue)
         stock = create_stock_with_thing_offer(offerer2, venue, offer)
-        booking3 = create_booking(user, stock=stock, venue=venue, is_used=True)
+        booking3 = create_booking(user=user, is_used=True, stock=stock, venue=venue)
 
         PcObject.save(deposit, booking1, booking2, booking3)
 
@@ -367,14 +367,10 @@ class FindFinalOffererBookingsTest:
         venue = create_venue(offerer, siret=offerer.siren + '12345')
         offer = create_offer_with_thing_product(venue)
         stock = create_stock_with_thing_offer(offerer, venue, offer)
-        booking1 = create_booking(
-            user, stock=stock, venue=venue, is_used=True, date_created=five_days_ago)
-        booking2 = create_booking(
-            user, stock=stock, venue=venue, is_used=True, date_created=two_days_ago)
-        booking3 = create_booking(
-            user, stock=stock, venue=venue, is_used=True, date_created=four_days_ago)
-        booking4 = create_booking(
-            user, stock=stock, venue=venue, is_used=True, date_created=three_days_ago)
+        booking1 = create_booking(user=user, date_created=five_days_ago, is_used=True, stock=stock, venue=venue)
+        booking2 = create_booking(user=user, date_created=two_days_ago, is_used=True, stock=stock, venue=venue)
+        booking3 = create_booking(user=user, date_created=four_days_ago, is_used=True, stock=stock, venue=venue)
+        booking4 = create_booking(user=user, date_created=three_days_ago, is_used=True, stock=stock, venue=venue)
         payment1 = create_payment(booking4, offerer, 5)
         payment2 = create_payment(booking3, offerer, 5)
 
@@ -400,9 +396,8 @@ class FindFinalOffererBookingsTest:
         venue = create_venue(offerer1)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock_with_thing_offer(offerer1, venue, offer)
-        booking1 = create_booking(user, stock=stock, venue=venue, is_used=True)
-        booking2 = create_booking(
-            user, stock=stock, venue=venue, is_cancelled=True, is_used=True)
+        booking1 = create_booking(user=user, is_used=True, stock=stock, venue=venue)
+        booking2 = create_booking(user=user, is_cancelled=True, is_used=True, stock=stock, venue=venue)
 
         PcObject.save(deposit, booking1, booking2)
 
@@ -423,9 +418,8 @@ class FindFinalOffererBookingsTest:
         venue = create_venue(offerer1)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock_with_thing_offer(offerer1, venue, offer)
-        booking1 = create_booking(user, stock=stock, venue=venue, is_used=True)
-        booking2 = create_booking(
-            user, stock=stock, venue=venue, is_used=False)
+        booking1 = create_booking(user=user, is_used=True, stock=stock, venue=venue)
+        booking2 = create_booking(user=user, is_used=False, stock=stock, venue=venue)
 
         PcObject.save(deposit, booking1, booking2)
 
@@ -448,17 +442,14 @@ class FindFinalVenueBookingsTest:
         venue1 = create_venue(offerer1, siret=offerer1.siren + '12345')
         offer = create_offer_with_thing_product(venue1)
         stock = create_stock_with_thing_offer(offerer1, venue1, offer)
-        booking1 = create_booking(
-            user, stock=stock, venue=venue1, is_used=True, date_created=datetime(2019, 1, 1))
-        booking2 = create_booking(
-            user, stock=stock, venue=venue1, is_used=True, date_created=datetime(2019, 1, 2))
+        booking1 = create_booking(user=user, date_created=datetime(2019, 1, 1), is_used=True, stock=stock, venue=venue1)
+        booking2 = create_booking(user=user, date_created=datetime(2019, 1, 2), is_used=True, stock=stock, venue=venue1)
 
         offerer2 = create_offerer(siren='987654321')
         venue2 = create_venue(offerer2, siret=offerer2.siren + '12345')
         offer = create_offer_with_thing_product(venue2)
         stock = create_stock_with_thing_offer(offerer2, venue2, offer)
-        booking3 = create_booking(
-            user, stock=stock, venue=venue2, is_used=True)
+        booking3 = create_booking(user=user, is_used=True, stock=stock, venue=venue2)
 
         PcObject.save(deposit, booking1, booking2, booking3)
 
@@ -485,10 +476,8 @@ class FindFinalVenueBookingsTest:
             offer=offer, end_datetime=now - timedelta(days=3))
         stock2 = create_stock(
             offer=offer, end_datetime=now - timedelta(days=1))
-        booking1 = create_booking(
-            user, stock=stock1, venue=venue, is_used=False)
-        booking2 = create_booking(
-            user, stock=stock2, venue=venue, is_used=False)
+        booking1 = create_booking(user=user, is_used=False, stock=stock1, venue=venue)
+        booking2 = create_booking(user=user, is_used=False, stock=stock2, venue=venue)
 
         PcObject.save(deposit, booking1, booking2)
 
@@ -506,8 +495,7 @@ class FindDateUsedTest:
         # given
         user = create_user()
         deposit = create_deposit(user, amount=500)
-        booking = create_booking(
-            user, is_used=True, date_used=datetime(2018, 2, 12))
+        booking = create_booking(user=user, date_used=datetime(2018, 2, 12), is_used=True)
         PcObject.save(user, deposit, booking)
 
         # when
@@ -521,7 +509,7 @@ class FindDateUsedTest:
         # given
         user = create_user()
         deposit = create_deposit(user, amount=500)
-        booking = create_booking(user)
+        booking = create_booking(user=user)
         PcObject.save(user, deposit, booking)
 
         # when
@@ -535,7 +523,7 @@ class FindDateUsedTest:
         # given
         user = create_user()
         deposit = create_deposit(user, amount=500)
-        booking = create_booking(user)
+        booking = create_booking(user=user)
         PcObject.save(user, deposit, booking)
 
         activity_insert = create_booking_activity(
@@ -562,8 +550,7 @@ class FindUserActivationBookingTest:
             venue_online, thing_type=ThingType.ACTIVATION)
         activation_stock = create_stock_from_offer(
             activation_offer, available=200, price=0)
-        activation_booking = create_booking(
-            user, stock=activation_stock, venue=venue_online)
+        activation_booking = create_booking(user=user, stock=activation_stock, venue=venue_online)
         PcObject.save(activation_booking)
 
         # when
@@ -582,8 +569,7 @@ class FindUserActivationBookingTest:
             venue_online, event_type=EventType.ACTIVATION)
         activation_stock = create_stock_from_offer(
             activation_offer, available=200, price=0)
-        activation_booking = create_booking(
-            user, stock=activation_stock, venue=venue_online)
+        activation_booking = create_booking(user=user, stock=activation_stock, venue=venue_online)
         PcObject.save(activation_booking)
 
         # when
@@ -602,8 +588,7 @@ class FindUserActivationBookingTest:
             venue_online, thing_type=ThingType.LIVRE_EDITION)
         book_stock = create_stock_from_offer(
             book_offer, available=200, price=0)
-        book_booking = create_booking(
-            user, stock=book_stock, venue=venue_online)
+        book_booking = create_booking(user=user, stock=book_stock, venue=venue_online)
         PcObject.save(book_booking)
 
         # when
@@ -624,9 +609,9 @@ class GetExistingTokensTest:
             venue_online, thing_type=ThingType.LIVRE_EDITION)
         book_stock = create_stock_from_offer(
             book_offer, available=200, price=0)
-        booking1 = create_booking(user, stock=book_stock, venue=venue_online)
-        booking2 = create_booking(user, stock=book_stock, venue=venue_online)
-        booking3 = create_booking(user, stock=book_stock, venue=venue_online)
+        booking1 = create_booking(user=user, stock=book_stock, venue=venue_online)
+        booking2 = create_booking(user=user, stock=book_stock, venue=venue_online)
+        booking3 = create_booking(user=user, stock=book_stock, venue=venue_online)
         PcObject.save(booking1, booking2, booking3)
 
         # when
@@ -655,11 +640,9 @@ class FindAllActiveByUserIdTest:
             venue_online, thing_type=ThingType.LIVRE_EDITION)
         book_stock = create_stock_from_offer(
             book_offer, available=200, price=0)
-        booking1 = create_booking(
-            user, stock=book_stock, venue=venue_online, is_cancelled=True)
-        booking2 = create_booking(
-            user, stock=book_stock, venue=venue_online, is_used=True)
-        booking3 = create_booking(user, stock=book_stock, venue=venue_online)
+        booking1 = create_booking(user=user, is_cancelled=True, stock=book_stock, venue=venue_online)
+        booking2 = create_booking(user=user, is_used=True, stock=book_stock, venue=venue_online)
+        booking3 = create_booking(user=user, stock=book_stock, venue=venue_online)
         PcObject.save(booking1, booking2, booking3)
 
         # when
@@ -679,7 +662,7 @@ class FindByTest:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, price=0)
-            booking = create_booking(user, stock=stock)
+            booking = create_booking(user=user, stock=stock)
             PcObject.save(booking)
 
             # when
@@ -695,7 +678,7 @@ class FindByTest:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, price=0)
-            booking = create_booking(user, stock=stock)
+            booking = create_booking(user=user, stock=stock)
             PcObject.save(booking)
 
             # when
@@ -714,7 +697,7 @@ class FindByTest:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, price=0)
-            booking = create_booking(user, stock=stock)
+            booking = create_booking(user=user, stock=stock)
             PcObject.save(booking)
 
             # when
@@ -730,7 +713,7 @@ class FindByTest:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, price=0)
-            booking = create_booking(user, stock=stock)
+            booking = create_booking(user=user, stock=stock)
             PcObject.save(booking)
 
             # when
@@ -746,7 +729,7 @@ class FindByTest:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, price=0)
-            booking = create_booking(user, stock=stock)
+            booking = create_booking(user=user, stock=stock)
             PcObject.save(booking)
 
             # when
@@ -762,7 +745,7 @@ class FindByTest:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, price=0)
-            booking = create_booking(user, stock=stock)
+            booking = create_booking(user=user, stock=stock)
             PcObject.save(booking)
 
             # when
@@ -781,12 +764,12 @@ class FindByTest:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, price=0)
-            booking = create_booking(user, stock=stock)
+            booking = create_booking(user=user, stock=stock)
             PcObject.save(booking)
 
             # when
             result = booking_queries.find_by(booking.token, email='user@example.com',
-                             offer_id=stock.resolvedOffer.id)
+                                             offer_id=stock.resolvedOffer.id)
 
             # then
             assert result.id == booking.id
@@ -798,12 +781,12 @@ class FindByTest:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
-            booking = create_booking(user, venue=venue, stock=stock)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(booking)
 
             # when
             result = booking_queries.find_by(booking.token, email='user@example.com',
-                             offer_id=stock.resolvedOffer.id)
+                                             offer_id=stock.resolvedOffer.id)
 
             # then
             assert result.id == booking.id
@@ -815,7 +798,7 @@ class FindByTest:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, price=0)
-            booking = create_booking(user, stock=stock)
+            booking = create_booking(user=user, stock=stock)
             PcObject.save(booking)
 
             # when
@@ -838,10 +821,9 @@ class SaveBookingTest:
         stock = create_stock_from_offer(offer, price=0, available=1)
         user_cancelled = create_user(email='cancelled@booking.com')
         user_booked = create_user(email='booked@email.com')
-        cancelled_booking = create_booking(
-            user_cancelled, stock, is_cancelled=True)
+        cancelled_booking = create_booking(user=user_cancelled, stock=stock, is_cancelled=True)
         PcObject.save(cancelled_booking)
-        booking = create_booking(user_booked, stock, is_cancelled=False)
+        booking = create_booking(user=user_booked, stock=stock, is_cancelled=False)
 
         # When
         PcObject.save(booking)
@@ -859,9 +841,9 @@ class SaveBookingTest:
         stock = create_stock_from_offer(offer, price=0, available=1)
         user1 = create_user(email='cancelled@booking.com')
         user2 = create_user(email='booked@email.com')
-        booking1 = create_booking(user1, stock, is_cancelled=False)
+        booking1 = create_booking(user=user1, stock=stock, is_cancelled=False)
         PcObject.save(booking1)
-        booking2 = create_booking(user2, stock, is_cancelled=False)
+        booking2 = create_booking(user=user2, stock=stock, is_cancelled=False)
 
         # When
         with pytest.raises(ApiErrors) as e:
@@ -881,7 +863,7 @@ class CountNonCancelledBookingsTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
-        booking = create_booking(user_having_booked, stock, is_cancelled=False)
+        booking = create_booking(user=user_having_booked, stock=stock, is_cancelled=False)
         PcObject.save(booking)
 
         # When
@@ -898,7 +880,7 @@ class CountNonCancelledBookingsTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
-        booking = create_booking(user_having_booked, stock, is_cancelled=True)
+        booking = create_booking(user=user_having_booked, stock=stock, is_cancelled=True)
         PcObject.save(booking)
 
         # When
@@ -920,8 +902,8 @@ class CountNonCancelledBookingsTest:
             venue, event_type=EventType.ACTIVATION)
         stock1 = create_stock(offer=offer1, price=0)
         stock2 = create_stock(offer=offer2, price=0)
-        booking1 = create_booking(user1, stock1)
-        booking2 = create_booking(user2, stock2)
+        booking1 = create_booking(user=user1, stock=stock1)
+        booking2 = create_booking(user=user2, stock=stock2)
         PcObject.save(booking1, booking2)
 
         # When
@@ -940,7 +922,7 @@ class CountNonCancelledBookingsByDepartementTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
-        booking = create_booking(user_having_booked, stock, is_cancelled=False)
+        booking = create_booking(user=user_having_booked, stock=stock, is_cancelled=False)
         PcObject.save(booking)
 
         # When
@@ -957,7 +939,7 @@ class CountNonCancelledBookingsByDepartementTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
-        booking = create_booking(user_having_booked, stock, is_cancelled=True)
+        booking = create_booking(user=user_having_booked, stock=stock, is_cancelled=True)
         PcObject.save(booking)
 
         # When
@@ -974,7 +956,7 @@ class CountNonCancelledBookingsByDepartementTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
-        booking = create_booking(user_having_booked, stock, is_cancelled=False)
+        booking = create_booking(user=user_having_booked, stock=stock, is_cancelled=False)
         PcObject.save(booking)
 
         # When
@@ -987,7 +969,7 @@ class CountNonCancelledBookingsByDepartementTest:
     def test_returns_zero_if_users_only_have_activation_bookings(self, app):
         # Given
         user1 = create_user(departement_code='76')
-        user2 = create_user(email='e@mail.com', departement_code='76')
+        user2 = create_user(departement_code='76', email='e@mail.com')
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer1 = create_offer_with_thing_product(
@@ -996,8 +978,8 @@ class CountNonCancelledBookingsByDepartementTest:
             venue, event_type=EventType.ACTIVATION)
         stock1 = create_stock(offer=offer1, price=0)
         stock2 = create_stock(offer=offer2, price=0)
-        booking1 = create_booking(user1, stock1)
-        booking2 = create_booking(user2, stock2)
+        booking1 = create_booking(user=user1, stock=stock1)
+        booking2 = create_booking(user=user2, stock=stock2)
         PcObject.save(booking1, booking2)
 
         # When
@@ -1023,7 +1005,7 @@ class GetAllCancelledBookingsCountTest:
             booking_limit_datetime=less_than_48_hours_ago - timedelta(hours=1)
         )
         user = create_user()
-        booking = create_booking(user, event_stock, is_cancelled=False)
+        booking = create_booking(user=user, stock=event_stock, is_cancelled=False)
         PcObject.save(booking)
 
         # When
@@ -1047,7 +1029,7 @@ class GetAllCancelledBookingsCountTest:
             booking_limit_datetime=less_than_48_hours_ago - timedelta(hours=1)
         )
         user = create_user()
-        booking = create_booking(user, event_stock, is_cancelled=True)
+        booking = create_booking(user=user, stock=event_stock, is_cancelled=True)
         PcObject.save(booking)
 
         # When
@@ -1075,8 +1057,8 @@ class GetAllCancelledBookingsCountTest:
         )
         stock2 = create_stock(offer=offer2, price=0)
         user = create_user()
-        booking1 = create_booking(user, stock1, is_cancelled=True)
-        booking2 = create_booking(user, stock2, is_cancelled=True)
+        booking1 = create_booking(user=user, stock=stock1, is_cancelled=True)
+        booking2 = create_booking(user=user, stock=stock2, is_cancelled=True)
         PcObject.save(booking1, booking2)
 
         # When
@@ -1102,7 +1084,7 @@ class GetAllCancelledBookingsByDepartementCountTest:
             booking_limit_datetime=less_than_48_hours_ago - timedelta(hours=1)
         )
         user = create_user(departement_code='76')
-        booking = create_booking(user, event_stock, is_cancelled=False)
+        booking = create_booking(user=user, stock=event_stock, is_cancelled=False)
         PcObject.save(booking)
 
         # When
@@ -1126,7 +1108,7 @@ class GetAllCancelledBookingsByDepartementCountTest:
             booking_limit_datetime=less_than_48_hours_ago - timedelta(hours=1)
         )
         user = create_user(departement_code='76')
-        booking = create_booking(user, event_stock, is_cancelled=True)
+        booking = create_booking(user=user, stock=event_stock, is_cancelled=True)
         PcObject.save(booking)
 
         # When
@@ -1138,19 +1120,17 @@ class GetAllCancelledBookingsByDepartementCountTest:
     @clean_database
     def test_returns_1_when_filtered_on_user_departement(self, app):
         # Given
-        user_in_76 = create_user(
-            departement_code='76', email='user-76@example.net')
-        user_in_41 = create_user(
-            departement_code='41', email='user-41@example.net')
+        user_in_76 = create_user(departement_code='76', email='user-76@example.net')
+        user_in_41 = create_user(departement_code='41', email='user-41@example.net')
 
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
 
-        booking1 = create_booking(user_in_76, stock, is_cancelled=True)
-        booking2 = create_booking(user_in_41, stock, is_cancelled=True)
-        booking3 = create_booking(user_in_41, stock, is_cancelled=False)
+        booking1 = create_booking(user=user_in_76, stock=stock, is_cancelled=True)
+        booking2 = create_booking(user=user_in_41, stock=stock, is_cancelled=True)
+        booking3 = create_booking(user=user_in_41, stock=stock, is_cancelled=False)
         PcObject.save(booking1, booking2, booking3)
 
         # When
@@ -1173,8 +1153,8 @@ class GetAllCancelledBookingsByDepartementCountTest:
         stock1 = create_stock(offer=offer1, price=0)
         stock2 = create_stock(offer=offer2, price=0)
 
-        booking1 = create_booking(user, stock1, is_cancelled=True)
-        booking2 = create_booking(user, stock2, is_cancelled=True)
+        booking1 = create_booking(user=user, stock=stock1, is_cancelled=True)
+        booking2 = create_booking(user=user, stock=stock2, is_cancelled=True)
         PcObject.save(booking1, booking2)
 
         # When
@@ -1203,16 +1183,11 @@ class CountAllBookingsTest:
         user1 = create_user(email='used_booking@booking.com')
         user2 = create_user(email='booked@email.com')
         one_day_before_stock_last_update = datetime.utcnow() - timedelta(days=2)
-        booking1 = create_booking(user1,
-                                  stock,
+        booking1 = create_booking(user=user1, stock=stock, date_used=one_day_before_stock_last_update,
                                   is_cancelled=False,
-                                  is_used=True,
-                                  date_used=one_day_before_stock_last_update)
+                                  is_used=True)
         PcObject.save(booking1)
-        booking2 = create_booking(user2,
-                                  stock,
-                                  is_cancelled=False,
-                                  is_used=False)
+        booking2 = create_booking(user=user2, stock=stock, is_cancelled=False, is_used=False)
 
         # When
         PcObject.save(booking2)
@@ -1228,8 +1203,8 @@ class CountAllBookingsTest:
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
         user = create_user()
-        booking1 = create_booking(user, stock)
-        booking2 = create_booking(user, stock, is_cancelled=True)
+        booking1 = create_booking(user=user, stock=stock)
+        booking2 = create_booking(user=user, stock=stock, is_cancelled=True)
         PcObject.save(booking1, booking2)
 
         # When
@@ -1246,8 +1221,8 @@ class CountAllBookingsTest:
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
         user = create_user()
-        booking1 = create_booking(user, stock)
-        booking2 = create_booking(user, stock, is_cancelled=True)
+        booking1 = create_booking(user=user, stock=stock)
+        booking2 = create_booking(user=user, stock=stock, is_cancelled=True)
         PcObject.save(booking1, booking2)
 
         # When
@@ -1268,8 +1243,8 @@ class CountAllBookingsTest:
         stock1 = create_stock(offer=offer1, price=0)
         stock2 = create_stock(offer=offer2, price=0)
         user = create_user()
-        booking1 = create_booking(user, stock1)
-        booking2 = create_booking(user, stock2)
+        booking1 = create_booking(user=user, stock=stock1)
+        booking2 = create_booking(user=user, stock=stock2)
         PcObject.save(booking1, booking2)
 
         # When
@@ -1296,8 +1271,8 @@ class CountBookingsByDepartementTest:
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
         user = create_user(departement_code='74')
-        booking1 = create_booking(user, stock)
-        booking2 = create_booking(user, stock, is_cancelled=True)
+        booking1 = create_booking(user=user, stock=stock)
+        booking2 = create_booking(user=user, stock=stock, is_cancelled=True)
         PcObject.save(booking1, booking2)
 
         # When
@@ -1309,18 +1284,16 @@ class CountBookingsByDepartementTest:
     @clean_database
     def test_returns_1_when_bookings_are_filtered_by_departement(self, app):
         # Given
-        user_in_76 = create_user(
-            departement_code='76', email='user-76@example.net')
-        user_in_41 = create_user(
-            departement_code='41', email='user-41@example.net')
+        user_in_76 = create_user(departement_code='76', email='user-76@example.net')
+        user_in_41 = create_user(departement_code='41', email='user-41@example.net')
 
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
 
-        booking1 = create_booking(user_in_76, stock)
-        booking2 = create_booking(user_in_41, stock, is_cancelled=True)
+        booking1 = create_booking(user=user_in_76, stock=stock)
+        booking2 = create_booking(user=user_in_41, stock=stock, is_cancelled=True)
         PcObject.save(booking1, booking2)
 
         # When
@@ -1342,8 +1315,8 @@ class CountBookingsByDepartementTest:
         stock1 = create_stock(offer=offer1, price=0)
         stock2 = create_stock(offer=offer2, price=0)
 
-        booking1 = create_booking(user, stock1)
-        booking2 = create_booking(user, stock1)
+        booking1 = create_booking(user=user, stock=stock1)
+        booking2 = create_booking(user=user, stock=stock1)
         PcObject.save(booking1, booking2)
 
         # When
@@ -1363,8 +1336,7 @@ class FindAllNotUsedAndNotCancelledTest:
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=offer)
-        booking = create_booking(
-            user, stock=stock, is_used=True, date_used=datetime(2019, 10, 12))
+        booking = create_booking(user=user, date_used=datetime(2019, 10, 12), is_used=True, stock=stock)
         PcObject.save(user, deposit, booking)
 
         # When
@@ -1382,7 +1354,7 @@ class FindAllNotUsedAndNotCancelledTest:
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=offer)
-        booking = create_booking(user, stock=stock, is_cancelled=True)
+        booking = create_booking(user=user, is_cancelled=True, stock=stock)
         PcObject.save(user, deposit, booking)
 
         # When
@@ -1400,8 +1372,7 @@ class FindAllNotUsedAndNotCancelledTest:
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=offer)
-        booking = create_booking(
-            user, stock=stock, is_used=True, is_cancelled=True)
+        booking = create_booking(user=user, is_cancelled=True, is_used=True, stock=stock)
         PcObject.save(user, deposit, booking)
 
         # When
@@ -1419,10 +1390,9 @@ class FindAllNotUsedAndNotCancelledTest:
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=offer)
-        booking1 = create_booking(
-            user, stock=stock, is_used=False, is_cancelled=False)
-        booking2 = create_booking(user, stock=stock, is_used=True)
-        booking3 = create_booking(user, stock=stock, is_cancelled=True)
+        booking1 = create_booking(user=user, is_cancelled=False, is_used=False, stock=stock)
+        booking2 = create_booking(user=user, is_used=True, stock=stock)
+        booking3 = create_booking(user=user, is_cancelled=True, stock=stock)
         PcObject.save(user, deposit, booking1, booking2, booking3)
 
         # When
@@ -1444,8 +1414,8 @@ class GetValidBookingsByUserId:
         stock = create_stock(offer=offer)
         user2 = create_user(email='fa@example.net')
         deposit2 = create_deposit(user2)
-        booking1 = create_booking(user1, stock=stock)
-        booking2 = create_booking(user2, stock=stock)
+        booking1 = create_booking(user=user1, stock=stock)
+        booking2 = create_booking(user=user2, stock=stock)
         PcObject.save(user1, user2, deposit1, deposit2, booking1, booking2)
 
         # When
@@ -1453,7 +1423,6 @@ class GetValidBookingsByUserId:
 
         # Then
         assert bookings == [booking1]
-
 
     @clean_database
     def test_should_return_bookings_by_type_other_than_ACTIVATION(self, app):
@@ -1471,9 +1440,9 @@ class GetValidBookingsByUserId:
         stock1 = create_stock(offer=offer1)
         stock2 = create_stock(offer=offer2)
         stock3 = create_stock(offer=offer3)
-        booking1 = create_booking(user, stock=stock1)
-        booking2 = create_booking(user, stock=stock2)
-        booking3 = create_booking(user, stock=stock3)
+        booking1 = create_booking(user=user, stock=stock1)
+        booking2 = create_booking(user=user, stock=stock2)
+        booking3 = create_booking(user=user, stock=stock3)
         PcObject.save(user, deposit, booking1, booking2, booking3)
 
         # When
@@ -1481,7 +1450,6 @@ class GetValidBookingsByUserId:
 
         # Then
         assert bookings == [booking3]
-
 
     @clean_database
     def test_should_return_bookings_when_there_is_one_cancelled_booking(self, app):
@@ -1494,9 +1462,9 @@ class GetValidBookingsByUserId:
         stock = create_stock(offer=offer)
         offer2 = create_offer_with_event_product(venue)
         stock2 = create_stock(offer=offer2)
-        booking1 = create_booking(user, stock=stock, is_cancelled=True)
-        booking2 = create_booking(user, stock=stock, is_cancelled=False)
-        booking3 = create_booking(user, stock=stock2, is_cancelled=False)
+        booking1 = create_booking(user=user, is_cancelled=True, stock=stock)
+        booking2 = create_booking(user=user, is_cancelled=False, stock=stock)
+        booking3 = create_booking(user=user, is_cancelled=False, stock=stock2)
         PcObject.save(user, deposit, booking1, booking2, booking3)
 
         # When
@@ -1504,7 +1472,6 @@ class GetValidBookingsByUserId:
 
         # Then
         assert booking1 not in bookings
-
 
     @clean_database
     def test_should_return_most_recent_booking_when_two_cancelled_on_same_stock(self, app):
@@ -1515,8 +1482,8 @@ class GetValidBookingsByUserId:
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=offer)
-        booking1 = create_booking(user, stock=stock, is_cancelled=True, date_created=two_days_ago)
-        booking2 = create_booking(user, stock=stock, is_cancelled=True, date_created=three_days_ago)
+        booking1 = create_booking(user=user, date_created=two_days_ago, is_cancelled=True, stock=stock)
+        booking2 = create_booking(user=user, date_created=three_days_ago, is_cancelled=True, stock=stock)
         PcObject.save(user, deposit, booking1, booking2)
 
         # When
@@ -1524,7 +1491,6 @@ class GetValidBookingsByUserId:
 
         # Then
         assert bookings == [booking1]
-
 
     @clean_database
     def test_should_return_bookings_ordered_by_beginning_date_time_ascendant(self, app):
@@ -1538,14 +1504,17 @@ class GetValidBookingsByUserId:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer1 = create_offer_with_event_product(venue)
-        stock1 = create_stock(offer=offer1, beginning_datetime=three_days, end_datetime=five_days, booking_limit_datetime=NOW)
+        stock1 = create_stock(offer=offer1, beginning_datetime=three_days, end_datetime=five_days,
+                              booking_limit_datetime=NOW)
         offer2 = create_offer_with_event_product(venue)
-        stock2 = create_stock(offer=offer2, beginning_datetime=two_days, end_datetime=five_days, booking_limit_datetime=NOW)
+        stock2 = create_stock(offer=offer2, beginning_datetime=two_days, end_datetime=five_days,
+                              booking_limit_datetime=NOW)
         offer3 = create_offer_with_event_product(venue)
-        stock3 = create_stock(offer=offer3, beginning_datetime=two_days_bis, end_datetime=five_days, booking_limit_datetime=NOW)
-        booking1 = create_booking(user, stock=stock1)
-        booking2 = create_booking(user, stock=stock2)
-        booking3 = create_booking(user, stock=stock3)
+        stock3 = create_stock(offer=offer3, beginning_datetime=two_days_bis, end_datetime=five_days,
+                              booking_limit_datetime=NOW)
+        booking1 = create_booking(user=user, stock=stock1)
+        booking2 = create_booking(user=user, stock=stock2)
+        booking3 = create_booking(user=user, stock=stock3)
         PcObject.save(user, deposit, booking1, booking2, booking3)
 
         # When

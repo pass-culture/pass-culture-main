@@ -1,11 +1,11 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from unittest.mock import patch
 
 from emails.beneficiary_warning_after_pro_booking_cancellation import \
     retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation
-from tests.test_utils import create_booking, create_stock_from_event_occurrence, create_event_occurrence, \
-    create_offer_with_event_product, create_venue, create_offerer, create_user, create_offer_with_thing_product, \
-    create_stock_from_offer
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue
+from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_from_offer, \
+    create_offer_with_thing_product, create_offer_with_event_product, create_event_occurrence
 
 
 class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
@@ -18,7 +18,7 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
         offer = create_offer_with_event_product(venue)
         event_occurrence = create_event_occurrence(offer)
         stock = create_stock_from_event_occurrence(event_occurrence)
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
 
         # When
         mailjet_data = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
@@ -36,7 +36,7 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
         offer = create_offer_with_event_product(venue)
         event_occurrence = create_event_occurrence(offer)
         stock = create_stock_from_event_occurrence(event_occurrence)
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
 
         # When
         mailjet_data = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
@@ -56,7 +56,7 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
         offer = create_offer_with_event_product(venue)
         event_occurrence = create_event_occurrence(offer, beginning_datetime=beginning_datetime)
         stock = create_stock_from_event_occurrence(event_occurrence, price=20)
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
 
         # When
         mailjet_data = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
@@ -91,7 +91,7 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock_from_offer(offer, price=15)
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
 
         # When
         mailjet_data = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
@@ -126,7 +126,7 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, url='http://online.offer')
         stock = create_stock_from_offer(offer, price=15)
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
 
         # When
         mailjet_data = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
@@ -159,7 +159,7 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock_from_offer(offer, price=0)
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
 
         # When
         mailjet_data = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
@@ -175,7 +175,7 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock_from_offer(offer, price=10)
-        booking = create_booking(user, stock, quantity=2)
+        booking = create_booking(user=user, stock=stock, quantity=2)
 
         # When
         mailjet_data = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
@@ -191,7 +191,7 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
         venue = create_venue(offerer, publicName="Mon nouveau nom")
         offer = create_offer_with_thing_product(venue,)
         stock = create_stock_from_offer(offer)
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
 
         # When
         mailjet_data = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)

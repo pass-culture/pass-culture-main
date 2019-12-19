@@ -1,10 +1,8 @@
-from unittest.mock import patch
-
 from models import PcObject, ApiErrors
 from tests.conftest import clean_database
-from tests.test_utils import create_offerer, create_venue, create_offer_with_thing_product, \
-    create_offer_with_event_product, \
-    create_bank_information, create_user, create_user_offerer
+from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
+    create_bank_information
+from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 
 
 @clean_database
@@ -178,7 +176,7 @@ class AppendUserHasAccessAttributeTest:
     @clean_database
     def test_should_return_false_when_current_user_has_no_access(self, app):
         # Given
-        current_user = create_user(postal_code=None, email='current@example.net')
+        current_user = create_user(email='current@example.net', postal_code=None)
         user = create_user(postal_code=None)
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer, validation_token=None)
@@ -193,7 +191,7 @@ class AppendUserHasAccessAttributeTest:
     @clean_database
     def test_should_return_true_when_current_user_is_admin(self, app):
         # Given
-        current_user = create_user(postal_code=None, email='current@example.net', is_admin=True)
+        current_user = create_user(email='current@example.net', is_admin=True, postal_code=None)
         user = create_user(postal_code=None)
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer, validation_token=None)

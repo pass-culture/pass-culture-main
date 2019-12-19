@@ -1,14 +1,10 @@
 from unittest.mock import Mock
 
 import pytest
-from flask_login import AnonymousUserMixin
 
-from models import ApiErrors, ApiKey, User, PcObject
-from tests.conftest import clean_database
-from tests.test_utils import create_offerer, create_user, create_user_offerer
+from models import ApiErrors
 from validation.users import check_valid_signup_webapp,\
     check_valid_signup_pro
-from utils.token import random_token
 
 
 def test_check_valid_signup_webapp_raises_api_error_if_not_contact_ok():

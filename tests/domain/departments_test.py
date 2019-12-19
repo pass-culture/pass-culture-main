@@ -1,8 +1,6 @@
-import pytest
-
 from domain.departments import get_departement_codes_from_user
 from unittest.mock import patch
-from tests.test_utils import create_user
+from tests.model_creators.generic_creators import create_user
 
 
 class GetDepartementCodesFromUser:

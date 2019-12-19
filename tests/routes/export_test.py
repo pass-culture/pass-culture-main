@@ -4,10 +4,11 @@ from datetime import datetime
 from models import PcObject, Venue, Offerer
 from routes.serialization import serialize
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_user, create_user_offerer, \
-    create_offerer, create_venue, create_event_occurrence, create_offer_with_event_product, \
-    create_venue_activity, create_stock_with_thing_offer, create_stock_with_event_offer, \
-    save_all_activities, create_bank_information, create_stock_from_event_occurrence
+from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
+    create_bank_information
+from tests.model_creators.activity_creators import create_venue_activity, save_all_activities
+from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_event_occurrence, \
+    create_stock_with_thing_offer, create_offer_with_event_product, create_event_occurrence
 from utils.human_ids import humanize
 
 TOKEN = os.environ.get('EXPORT_TOKEN')
@@ -115,7 +116,7 @@ def test_pending_validation_returns_403_when_user_is_structure_admin_but_not_adm
 def test_pending_validation_return_200_and_validation_token(app):
     # given
     user = create_user(can_book_free_offers=False, is_admin=True)
-    user_pro = create_user(email='user0@test.com', can_book_free_offers=False, is_admin=False)
+    user_pro = create_user(can_book_free_offers=False, email='user0@test.com', is_admin=False)
     offerer = create_offerer(validation_token="first_token")
     user_offerer = create_user_offerer(user_pro, offerer, is_admin=True, validation_token="a_token")
     venue = create_venue(offerer, siret=None, comment="comment because no siret",
@@ -137,7 +138,7 @@ def test_pending_validation_return_200_and_validation_token(app):
 def test_pending_validation_return_only_requested_data(app):
     # given
     user = create_user(can_book_free_offers=False, is_admin=True)
-    user_pro = create_user(email='user0@test.com', can_book_free_offers=False, is_admin=False)
+    user_pro = create_user(can_book_free_offers=False, email='user0@test.com', is_admin=False)
     offerer = create_offerer(validation_token="first_token")
     user_offerer = create_user_offerer(user_pro, offerer, is_admin=True)
     venue = create_venue(offerer, siret=None, comment="comment because no siret",
@@ -420,9 +421,9 @@ def test_get_venues_with_params_for_pc_reporting_return_200_and_filtered_venues(
     }
     query_user = create_user(can_book_free_offers=False, is_admin=True)
 
-    validated_user = create_user(email="another@mail.com", can_book_free_offers=False)
-    validated_user_2 = create_user(email="another2@mail.com", can_book_free_offers=False)
-    not_validated_user = create_user(email="a@mail.com", can_book_free_offers=False, validation_token="a_token")
+    validated_user = create_user(can_book_free_offers=False, email="another@mail.com")
+    validated_user_2 = create_user(can_book_free_offers=False, email="another2@mail.com")
+    not_validated_user = create_user(can_book_free_offers=False, email="a@mail.com", validation_token="a_token")
 
     validated_offerer_with_siren1 = create_offerer()
     validated_offerer_with_siren2 = create_offerer(siren='123456782')

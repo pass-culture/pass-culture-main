@@ -4,7 +4,7 @@ from models import PcObject
 from models.db import db
 from scripts.update_venue_with_sirene_data import update_venue_with_sirene_data
 from tests.conftest import clean_database
-from tests.test_utils import create_venue, create_offerer
+from tests.model_creators.generic_creators import create_offerer, create_venue
 
 
 class UpdateVenueWithSireneDataTest:

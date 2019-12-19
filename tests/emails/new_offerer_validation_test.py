@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from emails.new_offerer_validation import retrieve_data_for_new_offerer_validation_email
-from tests.test_utils import create_user, create_offerer, create_user_offerer
+from tests.model_creators.generic_creators import create_offerer
 
 
 class MakeNewOffererValidationEmailTest:

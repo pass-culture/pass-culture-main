@@ -1,5 +1,5 @@
 from models import EventType, Product
-from tests.test_utils import create_product_with_event_type
+from tests.model_creators.specific_creators import create_product_with_event_type
 
 
 def test_an_event_is_always_physical_and_cannot_be_digital():

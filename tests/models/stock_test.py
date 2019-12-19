@@ -8,9 +8,9 @@ from models import ApiErrors, PcObject
 from models.pc_object import DeletedRecordException
 from models.stock import Stock
 from tests.conftest import clean_database
-from tests.test_utils import create_stock_with_event_offer, create_offerer, create_venue, \
-    create_offer_with_event_product, \
-    create_stock_from_offer, create_offer_with_thing_product, create_booking, create_user, create_stock
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue
+from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_offer, \
+    create_offer_with_thing_product, create_offer_with_event_product
 
 
 @clean_database
@@ -154,11 +154,12 @@ def test_available_stocks_can_be_changed_even_when_bookings_with_cancellations_e
     offer = create_offer_with_thing_product(venue)
     stock = create_stock_from_offer(offer, available=2, price=0)
     PcObject.save(stock)
-    user = create_user()
-    cancelled_booking1 = create_booking(user, stock, quantity=1, is_cancelled=True)
-    cancelled_booking2 = create_booking(user, stock, quantity=1, is_cancelled=True)
-    booking1 = create_booking(user, stock, quantity=1, is_cancelled=False)
-    booking2 = create_booking(create_user(email='test@mail.com'), stock, quantity=1, is_cancelled=False)
+    user1 = create_user()
+    user2 = create_user(email='test@mail.com')
+    cancelled_booking1 = create_booking(user=user1, stock=stock, is_cancelled=True, quantity=1)
+    cancelled_booking2 = create_booking(user=user1, stock=stock, is_cancelled=True, quantity=1)
+    booking1 = create_booking(user=user1, stock=stock, is_cancelled=False, quantity=1)
+    booking2 = create_booking(user=user2, stock=stock, is_cancelled=False, quantity=1)
     PcObject.save(cancelled_booking1, cancelled_booking2, booking1, booking2)
     stock.available = 3
 
@@ -179,7 +180,7 @@ def test_update_available_stocks_even_when_is_less_than_number_of_bookings(app):
     stock = create_stock_from_offer(offer, available=2, price=0)
     PcObject.save(stock)
     user = create_user()
-    booking = create_booking(user, stock, quantity=2, is_cancelled=False)
+    booking = create_booking(user=user, stock=stock, is_cancelled=False, quantity=2)
     PcObject.save(booking)
     stock.available = 1
 
@@ -214,8 +215,8 @@ class StockRemainingQuantityTest:
         stock = create_stock_from_offer(offer, available=2, price=0)
         PcObject.save(stock)
         user = create_user()
-        booking1 = create_booking(user, stock, quantity=1, is_cancelled=False)
-        booking2 = create_booking(user, stock, quantity=1, is_cancelled=False)
+        booking1 = create_booking(user=user, stock=stock, is_cancelled=False, quantity=1)
+        booking2 = create_booking(user=user, stock=stock, is_cancelled=False, quantity=1)
 
         # When
         PcObject.save(booking1, booking2)
@@ -232,8 +233,8 @@ class StockRemainingQuantityTest:
         stock = create_stock_from_offer(offer, available=2, price=0)
         PcObject.save(stock)
         user = create_user()
-        booking1 = create_booking(user, stock, quantity=1, is_cancelled=False, is_used=False)
-        booking2 = create_booking(user, stock, quantity=1, is_cancelled=False, is_used=False)
+        booking1 = create_booking(user=user, stock=stock, is_cancelled=False, is_used=False, quantity=1)
+        booking2 = create_booking(user=user, stock=stock, is_cancelled=False, is_used=False, quantity=1)
         PcObject.save(booking1, booking2)
         stock.available = 1
 
@@ -252,15 +253,9 @@ class StockRemainingQuantityTest:
         stock = create_stock_from_offer(offer, available=2, price=0)
         PcObject.save(stock)
         user = create_user()
-        booking1 = create_booking(user, stock,
-                                  quantity=1,
-                                  is_cancelled=False,
-                                  is_used=True,
-                                  date_used=datetime.utcnow() - timedelta(days=1))
-        booking2 = create_booking(user, stock,
-                                  quantity=1,
-                                  is_cancelled=False,
-                                  is_used=False)
+        booking1 = create_booking(user=user, stock=stock, date_used=datetime.utcnow() - timedelta(days=1), is_cancelled=False,
+                                  is_used=True, quantity=1)
+        booking2 = create_booking(user=user, stock=stock, is_cancelled=False, is_used=False, quantity=1)
 
         # When
         PcObject.save(booking1, booking2)

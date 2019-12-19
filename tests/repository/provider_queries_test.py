@@ -1,7 +1,7 @@
 from models import PcObject
 from repository.provider_queries import get_enabled_providers_for_pro
 from tests.conftest import clean_database
-from tests.test_utils import create_provider
+from tests.model_creators.generic_creators import create_provider
 
 
 class GetEnabledProvidersForProTest:

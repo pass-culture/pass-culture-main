@@ -4,8 +4,10 @@ from models import Stock, Provider
 from models.pc_object import PcObject
 from routes.serialization import serialize
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_booking, create_user, create_user_offerer, create_offerer, create_venue, \
-    create_stock_with_event_offer, create_stock_with_thing_offer, create_stock, create_offer_with_thing_product
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue, \
+    create_user_offerer
+from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_with_thing_offer, \
+    create_offer_with_thing_product
 from utils.human_ids import humanize
 
 
@@ -36,7 +38,7 @@ class Patch:
         @clean_database
         def when_user_is_admin(self, app):
             # given
-            user = create_user(email='test@email.com', can_book_free_offers=False, is_admin=True)
+            user = create_user(can_book_free_offers=False, email='test@email.com', is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=10, available=10)
@@ -57,7 +59,7 @@ class Patch:
         @clean_database
         def when_booking_limit_datetime_is_none_for_thing(self, app):
             # Given
-            user = create_user(email='test@email.fr', can_book_free_offers=False, is_admin=True)
+            user = create_user(can_book_free_offers=False, email='test@email.fr', is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue)
@@ -82,12 +84,12 @@ class Patch:
         def when_available_below_number_of_already_existing_bookings(self, app):
             # given
             user = create_user()
-            user_admin = create_user(email='email@test.com', can_book_free_offers=False, is_admin=True)
+            user_admin = create_user(can_book_free_offers=False, email='email@test.com', is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
             stock.available = 1
-            booking = create_booking(user, stock, venue, recommendation=None)
+            booking = create_booking(user=user, stock=stock, venue=venue, recommendation=None)
             PcObject.save(booking, user_admin)
 
             # when
@@ -103,12 +105,12 @@ class Patch:
         def when_wrong_type_for_available(self, app):
             # given
             user = create_user()
-            user_admin = create_user(email='email@test.com', can_book_free_offers=False, is_admin=True)
+            user_admin = create_user(can_book_free_offers=False, email='email@test.com', is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
             stock.available = 1
-            booking = create_booking(user, stock, venue, recommendation=None)
+            booking = create_booking(user=user, stock=stock, venue=venue, recommendation=None)
             PcObject.save(booking, user_admin)
 
             # when
@@ -122,7 +124,7 @@ class Patch:
         @clean_database
         def when_booking_limit_datetime_after_beginning_datetime(self, app):
             # given
-            user = create_user(email='email@test.com', can_book_free_offers=False, is_admin=True)
+            user = create_user(can_book_free_offers=False, email='email@test.com', is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue)
@@ -143,7 +145,7 @@ class Patch:
         @clean_database
         def when_end_limit_datetime_is_none_for_event(self, app):
             # given
-            user = create_user(email='email@test.com', can_book_free_offers=False, is_admin=True)
+            user = create_user(can_book_free_offers=False, email='email@test.com', is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue)
@@ -160,7 +162,7 @@ class Patch:
         @clean_database
         def when_booking_limit_datetime_is_none_for_event(self, app):
             # Given
-            user = create_user(email='test@email.fr', can_book_free_offers=False, is_admin=True)
+            user = create_user(can_book_free_offers=False, email='test@email.fr', is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue)

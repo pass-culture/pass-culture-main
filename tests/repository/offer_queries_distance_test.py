@@ -3,12 +3,9 @@ from repository.offer_queries import get_offers_for_recommendations_search
 
 from tests.conftest import clean_database
 
-from tests.test_utils import create_offerer, \
-    create_venue, \
-    create_product_with_event_type, \
-    create_offer_with_event_product, \
-    create_event_occurrence, \
-    create_stock_from_event_occurrence
+from tests.model_creators.generic_creators import create_offerer, create_venue
+from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_product_with_event_type, \
+    create_offer_with_event_product, create_event_occurrence
 
 
 @clean_database

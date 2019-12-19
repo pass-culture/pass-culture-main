@@ -1,16 +1,12 @@
 import secrets
 from datetime import datetime, timedelta
 
-from models import PcObject, Venue, EventType, ThingType
+from models import PcObject, Venue, EventType
 from models.offer_type import ProductType
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_offer_with_event_product, \
-    create_offerer, \
-    create_offer_with_thing_product, \
-    create_user, \
-    create_user_offerer, \
-    create_venue, \
-    create_stock_from_offer
+from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
+from tests.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product, \
+    create_offer_with_event_product
 from utils.human_ids import dehumanize, humanize
 
 
@@ -230,6 +226,7 @@ class Get:
             # then
             assert response.status_code == 200
             assert response.headers['Total-Data-Count'] == "20"
+
 
 def create_offers_for(user, n, siren='123456789'):
     offerer = create_offerer(siren=siren)

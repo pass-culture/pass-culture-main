@@ -9,8 +9,9 @@ from scripts.dashboard.finance_statistics import get_total_deposits, get_total_a
     _query_get_top_20_offerers_by_number_of_bookings, get_top_20_offerers_table_by_number_of_bookings, \
     _query_get_top_20_offerers_by_booking_amounts, get_top_20_offerers_by_amount_table
 from tests.conftest import clean_database
-from tests.test_utils import create_deposit, create_user, create_booking, create_stock, create_offer_with_thing_product, \
-    create_venue, create_offerer, create_payment, create_offer_with_event_product
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue, \
+    create_deposit, create_payment
+from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 
 
 class GetTotalDepositsTest:
@@ -41,9 +42,9 @@ class GetTotalDepositsTest:
     @clean_database
     def test_returns_500_if_two_deposits_but_filtered_by_departement(self, app):
         # Given
-        user1 = create_user(email='test1@email.com', departement_code='42')
+        user1 = create_user(departement_code='42', email='test1@email.com')
         deposit1 = create_deposit(user1, amount=500)
-        user2 = create_user(email='test2@email.com', departement_code='95')
+        user2 = create_user(departement_code='95', email='test2@email.com')
         deposit2 = create_deposit(user2, amount=500)
 
         PcObject.save(deposit1, deposit2)
@@ -75,8 +76,8 @@ class GetTotalAmountSpentTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(price=10, offer=offer)
-        booking1 = create_booking(user1, stock, venue=venue)
-        booking2 = create_booking(user2, stock, venue=venue)
+        booking1 = create_booking(user=user1, stock=stock, venue=venue)
+        booking2 = create_booking(user=user2, stock=stock, venue=venue)
         PcObject.save(booking1, booking2, deposit1, deposit2)
 
         # When
@@ -96,8 +97,8 @@ class GetTotalAmountSpentTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(price=10, offer=offer)
-        booking1 = create_booking(user1, stock, venue=venue)
-        booking2 = create_booking(user2, stock, venue=venue, is_cancelled=True)
+        booking1 = create_booking(user=user1, stock=stock, venue=venue)
+        booking2 = create_booking(user=user2, stock=stock, is_cancelled=True, venue=venue)
         PcObject.save(booking1, booking2, deposit1, deposit2)
 
         # When
@@ -115,7 +116,7 @@ class GetTotalAmountSpentTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(price=10, offer=offer)
-        booking = create_booking(user, stock, venue=venue, quantity=2)
+        booking = create_booking(user=user, stock=stock, quantity=2, venue=venue)
         PcObject.save(booking, deposit)
 
         # When
@@ -127,17 +128,17 @@ class GetTotalAmountSpentTest:
     @clean_database
     def test_returns_15_if_two_bookings_but_only_one_the_filtered_departement(self, app):
         # Given
-        user67 = create_user(email='email67@test.com', departement_code='67')
+        user67 = create_user(departement_code='67', email='email67@test.com')
         create_deposit(user67, amount=500)
-        user89 = create_user(email='email89@test.com', departement_code='89')
+        user89 = create_user(departement_code='89', email='email89@test.com')
         create_deposit(user89, amount=500)
 
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(price=15, offer=offer)
-        booking_in_67 = create_booking(user67, stock, venue=venue)
-        booking_in_89 = create_booking(user89, stock, venue=venue)
+        booking_in_67 = create_booking(user=user67, stock=stock, venue=venue)
+        booking_in_89 = create_booking(user=user89, stock=stock, venue=venue)
         PcObject.save(booking_in_67, booking_in_89, user67, user89)
 
         # When
@@ -167,8 +168,8 @@ class GetTotalAmountToPayTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(price=10, offer=offer)
-        booking1 = create_booking(user1, stock, venue=venue)
-        booking2 = create_booking(user2, stock, venue=venue)
+        booking1 = create_booking(user=user1, stock=stock, venue=venue)
+        booking2 = create_booking(user=user2, stock=stock, venue=venue)
         payment1 = create_payment(booking1, offerer, amount=5)
         payment2 = create_payment(booking2, offerer, amount=10)
         PcObject.save(payment1, payment2)
@@ -188,7 +189,7 @@ class GetTotalAmountToPayTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(price=10, offer=offer)
-        booking = create_booking(user, stock, venue=venue)
+        booking = create_booking(user=user, stock=stock, venue=venue)
         payment = create_payment(booking, offerer, amount=5, status=TransactionStatus.BANNED)
         PcObject.save(payment)
 
@@ -207,7 +208,7 @@ class GetTotalAmountToPayTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(price=10, offer=offer)
-        booking = create_booking(user, stock, venue=venue)
+        booking = create_booking(user=user, stock=stock, venue=venue)
         payment = create_payment(booking, offerer, amount=5, status=TransactionStatus.BANNED)
         payment.setStatus(TransactionStatus.RETRY)
         PcObject.save(payment)
@@ -226,13 +227,13 @@ class GetTotalAmountToPayTest:
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(price=10, offer=offer)
 
-        user_in_35 = create_user(email='email35@example.net', departement_code='35')
-        user_in_78 = create_user(email='email78@example.net', departement_code='78')
+        user_in_35 = create_user(departement_code='35', email='email35@example.net')
+        user_in_78 = create_user(departement_code='78', email='email78@example.net')
         create_deposit(user_in_35, amount=500)
         create_deposit(user_in_78, amount=500)
 
-        booking_in_35 = create_booking(user_in_35, stock=stock, venue=venue)
-        booking_in_78 = create_booking(user_in_78, stock=stock, venue=venue)
+        booking_in_35 = create_booking(user=user_in_35, stock=stock, venue=venue)
+        booking_in_78 = create_booking(user=user_in_78, stock=stock, venue=venue)
 
         payment1 = create_payment(booking_in_35, offerer, amount=20)
         payment2 = create_payment(booking_in_78, offerer, amount=10)
@@ -274,7 +275,7 @@ class QueryGetTop20OffersByNumberOfBookingsTest:
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
         user = create_user()
-        booking = create_booking(user, stock, quantity=1, is_cancelled=True)
+        booking = create_booking(user=user, stock=stock, is_cancelled=True, quantity=1)
         PcObject.save(booking)
 
         # When
@@ -293,9 +294,9 @@ class QueryGetTop20OffersByNumberOfBookingsTest:
         stock2 = create_stock(offer=offer, price=20)
         user = create_user()
         create_deposit(user, amount=500)
-        booking1 = create_booking(user, stock1, quantity=1, is_cancelled=False)
-        booking2 = create_booking(user, stock2, quantity=2, is_cancelled=False)
-        booking3 = create_booking(user, stock2, quantity=1, is_cancelled=True)
+        booking1 = create_booking(user=user, stock=stock1, is_cancelled=False, quantity=1)
+        booking2 = create_booking(user=user, stock=stock2, is_cancelled=False, quantity=2)
+        booking3 = create_booking(user=user, stock=stock2, is_cancelled=True, quantity=1)
         PcObject.save(booking1, booking2, booking3)
 
         # When
@@ -315,8 +316,8 @@ class QueryGetTop20OffersByNumberOfBookingsTest:
         stock2 = create_stock(offer=offer2, price=20)
         user = create_user()
         create_deposit(user, amount=500)
-        booking1 = create_booking(user, stock1, quantity=1, is_cancelled=False)
-        booking2 = create_booking(user, stock2, quantity=1, is_cancelled=False)
+        booking1 = create_booking(user=user, stock=stock1, is_cancelled=False, quantity=1)
+        booking2 = create_booking(user=user, stock=stock2, is_cancelled=False, quantity=1)
         PcObject.save(booking1, booking2)
 
         # When
@@ -332,12 +333,12 @@ class QueryGetTop20OffersByNumberOfBookingsTest:
         venue = create_venue(offerer, postal_code='78490', siret='11111111100002')
         offer = create_offer_with_thing_product(venue, thing_name='Offer')
         stock = create_stock(offer=offer, price=10)
-        user_in_78 = create_user(email='user78@email.com', departement_code='78')
-        user_in_35 = create_user(email='user35@email.com', departement_code='35')
+        user_in_78 = create_user(departement_code='78', email='user78@email.com')
+        user_in_35 = create_user(departement_code='35', email='user35@email.com')
         create_deposit(user_in_78, amount=500)
         create_deposit(user_in_35, amount=500)
-        booking1 = create_booking(user_in_78, stock, quantity=1)
-        booking2 = create_booking(user_in_35, stock, quantity=2)
+        booking1 = create_booking(user=user_in_78, stock=stock, quantity=1)
+        booking2 = create_booking(user=user_in_35, stock=stock, quantity=2)
         PcObject.save(booking1, booking2)
 
         # When
@@ -357,8 +358,8 @@ class QueryGetTop20OffersByNumberOfBookingsTest:
         stock2 = create_stock(offer=offer2, price=20)
         user = create_user()
         create_deposit(user, amount=500)
-        booking1 = create_booking(user, stock1, quantity=1, is_cancelled=False)
-        booking2 = create_booking(user, stock2, quantity=1, is_cancelled=False)
+        booking1 = create_booking(user=user, stock=stock1, is_cancelled=False, quantity=1)
+        booking2 = create_booking(user=user, stock=stock2, is_cancelled=False, quantity=1)
         PcObject.save(booking1, booking2)
 
         # When
@@ -441,7 +442,7 @@ class QueryGetTop20OfferersByNumberOfBookingsTest:
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
         user = create_user()
-        booking = create_booking(user, stock, quantity=1, is_cancelled=True)
+        booking = create_booking(user=user, stock=stock, is_cancelled=True, quantity=1)
         PcObject.save(booking)
 
         # When
@@ -460,9 +461,9 @@ class QueryGetTop20OfferersByNumberOfBookingsTest:
         stock2 = create_stock(offer=offer, price=20)
         user = create_user()
         create_deposit(user, amount=500)
-        booking1 = create_booking(user, stock1, quantity=1, is_cancelled=False)
-        booking2 = create_booking(user, stock2, quantity=2, is_cancelled=False)
-        booking3 = create_booking(user, stock2, quantity=1, is_cancelled=True)
+        booking1 = create_booking(user=user, stock=stock1, is_cancelled=False, quantity=1)
+        booking2 = create_booking(user=user, stock=stock2, is_cancelled=False, quantity=2)
+        booking3 = create_booking(user=user, stock=stock2, is_cancelled=True, quantity=1)
         PcObject.save(booking1, booking2, booking3)
 
         # When
@@ -479,11 +480,11 @@ class QueryGetTop20OfferersByNumberOfBookingsTest:
         offer = create_offer_with_thing_product(venue=venue, thing_name='Offer')
         stock = create_stock(offer=offer, price=31)
         user_30 = create_user(departement_code=30)
-        user_57 = create_user(email='t@est.com', departement_code='57')
+        user_57 = create_user(departement_code='57', email='t@est.com')
         create_deposit(user_30, amount=500)
         create_deposit(user_57, amount=500)
-        booking1 = create_booking(user_30, stock, quantity=3)
-        booking2 = create_booking(user_57, stock, quantity=2)
+        booking1 = create_booking(user=user_30, stock=stock, quantity=3)
+        booking2 = create_booking(user=user_57, stock=stock, quantity=2)
         PcObject.save(booking1, booking2)
 
         # When
@@ -503,8 +504,8 @@ class QueryGetTop20OfferersByNumberOfBookingsTest:
         stock2 = create_stock(offer=offer2, price=20)
         user = create_user()
         create_deposit(user, amount=500)
-        booking1 = create_booking(user, stock1, quantity=1, is_cancelled=False)
-        booking2 = create_booking(user, stock2, quantity=2, is_cancelled=False)
+        booking1 = create_booking(user=user, stock=stock1, is_cancelled=False, quantity=1)
+        booking2 = create_booking(user=user, stock=stock2, is_cancelled=False, quantity=2)
         PcObject.save(booking1, booking2)
 
         # When
@@ -524,8 +525,8 @@ class QueryGetTop20OfferersByNumberOfBookingsTest:
         stock2 = create_stock(offer=offer2, price=20)
         user = create_user(departement_code='76')
         create_deposit(user, amount=500)
-        booking1 = create_booking(user, stock1, quantity=1, is_cancelled=False)
-        booking2 = create_booking(user, stock2, quantity=2, is_cancelled=False)
+        booking1 = create_booking(user=user, stock=stock1, is_cancelled=False, quantity=1)
+        booking2 = create_booking(user=user, stock=stock2, is_cancelled=False, quantity=2)
         PcObject.save(booking1, booking2)
 
         # When
@@ -568,7 +569,7 @@ class QueryGetTop20OfferersByAmountTest:
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
         user = create_user()
-        booking = create_booking(user, stock, quantity=1, is_cancelled=True)
+        booking = create_booking(user=user, stock=stock, is_cancelled=True, quantity=1)
         PcObject.save(booking)
 
         # When
@@ -608,9 +609,9 @@ class QueryGetTop20OfferersByAmountTest:
         stock2 = create_stock(offer=offer, price=20)
         user = create_user()
         create_deposit(user, amount=500)
-        booking1 = create_booking(user, stock1, quantity=1, is_cancelled=False)
-        booking2 = create_booking(user, stock2, quantity=2, is_cancelled=False)
-        booking3 = create_booking(user, stock2, quantity=1, is_cancelled=True)
+        booking1 = create_booking(user=user, stock=stock1, is_cancelled=False, quantity=1)
+        booking2 = create_booking(user=user, stock=stock2, is_cancelled=False, quantity=2)
+        booking3 = create_booking(user=user, stock=stock2, is_cancelled=True, quantity=1)
         PcObject.save(booking1, booking2, booking3)
 
         # When
@@ -633,12 +634,12 @@ class QueryGetTop20OfferersByAmountTest:
         stock2 = create_stock(offer=offer2, price=10)
 
         user_76 = create_user(departement_code='76')
-        user_77 = create_user(email='e@mail.com', departement_code='77')
+        user_77 = create_user(departement_code='77', email='e@mail.com')
         create_deposit(user_76, amount=500)
         create_deposit(user_77, amount=500)
-        booking1 = create_booking(user_76, stock1, quantity=2)
-        booking2 = create_booking(user_76, stock2, quantity=2)
-        booking3 = create_booking(user_77, stock2, quantity=2)
+        booking1 = create_booking(user=user_76, stock=stock1, quantity=2)
+        booking2 = create_booking(user=user_76, stock=stock2, quantity=2)
+        booking3 = create_booking(user=user_77, stock=stock2, quantity=2)
 
         PcObject.save(booking1, booking2, booking3)
 
@@ -659,8 +660,8 @@ class QueryGetTop20OfferersByAmountTest:
         stock2 = create_stock(offer=offer2, price=20)
         user = create_user()
         create_deposit(user, amount=500)
-        booking1 = create_booking(user, stock1, quantity=1, is_cancelled=False)
-        booking2 = create_booking(user, stock2, quantity=2, is_cancelled=False)
+        booking1 = create_booking(user=user, stock=stock1, is_cancelled=False, quantity=1)
+        booking2 = create_booking(user=user, stock=stock2, is_cancelled=False, quantity=2)
         PcObject.save(booking1, booking2)
 
         # When
@@ -680,8 +681,8 @@ class QueryGetTop20OfferersByAmountTest:
         stock2 = create_stock(offer=offer2, price=20)
         user = create_user(departement_code='34')
         create_deposit(user, amount=500)
-        booking1 = create_booking(user, stock1, quantity=1, is_cancelled=False)
-        booking2 = create_booking(user, stock2, quantity=2, is_cancelled=False)
+        booking1 = create_booking(user=user, stock=stock1, is_cancelled=False, quantity=1)
+        booking2 = create_booking(user=user, stock=stock2, is_cancelled=False, quantity=2)
         PcObject.save(booking1, booking2)
 
         # When
@@ -725,7 +726,7 @@ def _create_bookings_with_prices(prices: List[int]):
         stock = create_stock(offer=offer, price=price, available=1000)
         user = create_user(email=f'{i}@mail.com')
         deposit = create_deposit(user, amount=500)
-        bookings.append(create_booking(user, stock, quantity=1))
+        bookings.append(create_booking(user=user, stock=stock, quantity=1))
         siren += 1
     return bookings
 
@@ -739,6 +740,6 @@ def _create_bookings_with_quantities(quantities: List[int]):
         offer = create_offer_with_thing_product(venue, thing_name=f'{i}')
         stock = create_stock(offer=offer, price=0, available=1000)
         user = create_user(email=f'{i}@mail.com')
-        bookings.append(create_booking(user, stock, quantity=quantity))
+        bookings.append(create_booking(user=user, stock=stock, quantity=quantity))
         siren += 1
     return bookings

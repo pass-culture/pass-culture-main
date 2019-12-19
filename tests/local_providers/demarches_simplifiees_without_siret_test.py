@@ -7,7 +7,8 @@ from local_providers.demarches_simplifiees_bank_information_without_siret import
 from models import BankInformation, PcObject, LocalProviderEvent
 from models.local_provider_event import LocalProviderEventType
 from tests.conftest import clean_database
-from tests.test_utils import create_offerer, create_venue, provider_test, create_bank_information, activate_provider
+from tests.model_creators.generic_creators import create_offerer, create_venue, create_bank_information
+from tests.model_creators.provider_creators import provider_test, activate_provider
 from utils.human_ids import dehumanize, humanize
 
 

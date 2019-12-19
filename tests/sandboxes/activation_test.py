@@ -2,8 +2,7 @@ from models import Stock
 
 from sandboxes.scripts.save_sandbox import save_sandbox
 from tests.conftest import clean_database
-from tests.test_utils import assertCreatedCounts, \
-    saveCounts
+from tests.model_creators.provider_creators import saveCounts, assertCreatedCounts
 from utils.logger import logger
 
 

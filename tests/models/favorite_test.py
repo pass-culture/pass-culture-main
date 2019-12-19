@@ -1,8 +1,8 @@
 from unittest.mock import patch
 
-from tests.test_utils import create_offer_with_thing_product, create_product_with_thing_type, \
-    create_venue, create_offerer, \
-    create_mediation, create_user, create_offer_with_event_product, create_favorite, create_product_with_event_type
+from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_favorite, create_mediation
+from tests.model_creators.specific_creators import create_product_with_thing_type, create_product_with_event_type, \
+    create_offer_with_thing_product, create_offer_with_event_product
 
 
 @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')

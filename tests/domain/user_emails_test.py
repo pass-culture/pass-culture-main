@@ -7,9 +7,10 @@ from domain.user_emails import send_beneficiary_booking_cancellation_email, \
     send_validation_confirmation_email_to_pro, send_batch_cancellation_emails_to_users, \
     send_batch_cancellation_email_to_offerer, send_user_validation_email, send_venue_validation_confirmation_email, \
     send_reset_password_email_with_mailjet_template, send_activation_email, send_reset_password_email
-from models import Offerer, UserOfferer, User
-from tests.test_utils import create_user, create_booking, create_stock_with_event_offer, create_offerer, create_venue, \
-    create_offer_with_thing_product, create_stock_with_thing_offer, create_mocked_bookings
+from models import Offerer
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue
+from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_with_thing_offer, \
+    create_offer_with_thing_product, create_mocked_bookings
 
 
 class SendResetPasswordEmailTest:
@@ -18,7 +19,7 @@ class SendResetPasswordEmailTest:
                                                                               feature_send_mail_to_users_enabled,
                                                                               app):
         # given
-        user = create_user(public_name='bobby', email='bobby@test.com', reset_password_token='AZ45KNB99H')
+        user = create_user(email='bobby@test.com', public_name='bobby', reset_password_token='AZ45KNB99H')
         mocked_send_email = Mock()
 
         # when
@@ -37,7 +38,7 @@ class SendResetPasswordEmailTest:
     def when_feature_send_emails_disabled_sends_email_to_pass_culture_dev(self, feature_send_mail_to_users_enabled,
                                                                           app):
         # given
-        user = create_user(public_name='bobby', email='bobby@test.com', reset_password_token='AZ45KNB99H')
+        user = create_user(email='bobby@test.com', public_name='bobby', reset_password_token='AZ45KNB99H')
         mocked_send_email = Mock()
 
         # when
@@ -58,7 +59,7 @@ class SendBeneficiaryBookingCancellationEmailTest:
                                                              mocked_make_beneficiary_booking_cancellation_email_data):
         # given
         beneficiary = create_user()
-        booking = create_booking(beneficiary, idx=23)
+        booking = create_booking(beneficiary, id=23)
         mocked_send_email = Mock()
 
         # when
@@ -75,7 +76,7 @@ class SendWarningToBeneficiaryAfterProBookingCancellationTest:
     def test_should_sends_email_to_beneficiary_when_pro_cancels_booking(self):
         # Given
         user = create_user(email='user@example.com')
-        booking = create_booking(user)
+        booking = create_booking(user=user)
         mocked_send_email = Mock()
 
         # When
@@ -118,7 +119,7 @@ class SendOffererDrivenCancellationEmailToOffererTest:
         venue.bookingEmail = 'booking@example.com'
         stock = create_stock_with_event_offer(offerer, venue)
         stock.resolvedOffer.bookingEmail = 'offer@example.com'
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
         mocked_send_email = Mock()
 
         # When
@@ -141,7 +142,7 @@ class SendOffererDrivenCancellationEmailToOffererTest:
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue)
         stock.resolvedOffer.bookingEmail = None
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
         mocked_send_email = Mock()
 
         # When
@@ -160,7 +161,7 @@ class SendBookingConfirmationEmailToBeneficiaryTest:
     def when_called_calls_send_email(self, mocked_retrieve_data_for_beneficiary_booking_confirmation_email):
         # Given
         user = create_user()
-        booking = create_booking(user, idx=23)
+        booking = create_booking(user=user, id=23)
         mocked_send_email = Mock()
 
         # When
@@ -181,7 +182,7 @@ class SendBookingRecapEmailsTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, booking_email='offer.booking.email@example.net')
         stock = create_stock_with_thing_offer(offerer, venue, offer)
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
         mocked_send_email = Mock()
 
         # when
@@ -203,7 +204,7 @@ class SendBookingRecapEmailsTest:
         offer = create_offer_with_thing_product(venue, booking_email='offer.booking.email@example.net')
         stock = create_stock_with_thing_offer(offerer, venue, offer,
                                               booking_email='offer.booking.email@example.net')
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
         mocked_send_email = Mock()
 
         # when
@@ -224,7 +225,7 @@ class SendBookingRecapEmailsTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, booking_email=None)
         stock = create_stock_with_thing_offer(offerer, venue, offer, booking_email=None)
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
         mocked_send_email = Mock()
 
         # when
@@ -487,7 +488,7 @@ class SendResetPasswordEmailWithMailjetTemplateTest:
     def when_feature_send_emails_enabled_sends_a_reset_password_email_to_user(self,
                                                                               feature_send_mail_to_users_enabled):
         # given
-        user = create_user(public_name='bobby', email='bobby@example.net', reset_password_token='AZ45KNB99H')
+        user = create_user(email='bobby@example.net', public_name='bobby', reset_password_token='AZ45KNB99H')
         mocked_send_email = Mock()
 
         # when
@@ -504,7 +505,7 @@ class SendResetPasswordEmailWithMailjetTemplateTest:
     def when_feature_send_emails_disabled_sends_email_to_pass_culture_dev(self,
                                                                           feature_send_mail_to_users_enabled):
         # given
-        user = create_user(public_name='bobby', email='bobby@example.net', reset_password_token='AZ45KNB99H')
+        user = create_user(email='bobby@example.net', public_name='bobby', reset_password_token='AZ45KNB99H')
         mocked_send_email = Mock()
 
         # when
@@ -520,7 +521,7 @@ class SendResetPasswordEmailWithMailjetTemplateTest:
 class SendActivationEmailTest:
     def test_should_return_true_when_email_data_are_valid(self):
         # given
-        user = create_user(public_name='bobby', email='bobby@example.net', reset_password_token='AZ45KNB99H')
+        user = create_user(email='bobby@example.net', public_name='bobby', reset_password_token='AZ45KNB99H')
         mocked_send_email = Mock(return_value=True)
 
         # when
@@ -531,7 +532,7 @@ class SendActivationEmailTest:
 
     def test_should_return_false_when_email_data_are_not_valid(self):
         # given
-        user = create_user(public_name='bobby', email='bobby@example.net', reset_password_token='AZ45KNB99H')
+        user = create_user(email='bobby@example.net', public_name='bobby', reset_password_token='AZ45KNB99H')
         mocked_send_email = Mock(return_value=False)
 
         # when

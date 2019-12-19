@@ -3,7 +3,7 @@ from random import randrange
 from models import Product, PcObject
 from scripts.product_thumb.reset_thumb_count import reset_thumb_count
 from tests.conftest import clean_database
-from tests.test_utils import create_product_with_thing_type
+from tests.model_creators.specific_creators import create_product_with_thing_type
 
 
 @clean_database

@@ -1,11 +1,8 @@
 from models import PcObject, Offer
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_offer_with_event_product, \
-    create_offerer, \
-    create_user, \
-    create_user_offerer, \
-    create_venue, \
-    create_offer_with_thing_product, create_stock, create_stock_from_offer
+from tests.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, create_user_offerer
+from tests.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product, \
+    create_offer_with_event_product
 from utils.human_ids import humanize
 
 API_URL = '/venues/'

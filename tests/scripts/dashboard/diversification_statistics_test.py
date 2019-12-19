@@ -14,8 +14,9 @@ from scripts.dashboard.diversification_statistics import get_offerers_with_offer
     query_get_booking_counts_grouped_by_type_and_medium_for_departement, get_all_used_or_finished_bookings, \
     get_offers_available_on_search_count, get_offerers_with_offers_available_on_search_count
 from tests.conftest import clean_database
-from tests.test_utils import create_user, create_offerer, create_user_offerer, create_stock, \
-    create_offer_with_thing_product, create_venue, create_mediation, create_offer_with_event_product, create_booking
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue, \
+    create_user_offerer, create_mediation
+from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 
 two_days_ago = datetime.utcnow() - timedelta(days=2)
 
@@ -469,7 +470,7 @@ class GetOfferersWithNonCancelledBookingsCountTest:
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
         user = create_user()
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
         PcObject.save(booking)
 
         # When
@@ -487,8 +488,8 @@ class GetOfferersWithNonCancelledBookingsCountTest:
         stock1 = create_stock(offer=offer, price=0)
         stock2 = create_stock(offer=offer, price=0)
         user = create_user()
-        booking1 = create_booking(user, stock1)
-        booking2 = create_booking(user, stock2)
+        booking1 = create_booking(user=user, stock=stock1)
+        booking2 = create_booking(user=user, stock=stock2)
         PcObject.save(booking1, booking2)
 
         # When
@@ -506,13 +507,13 @@ class GetOfferersWithNonCancelledBookingsCountTest:
         first_venue = create_venue(first_offerer, postal_code='76130', siret='11111111100001')
         first_offer = create_offer_with_thing_product(first_venue)
         first_stock = create_stock(offer=first_offer, price=0)
-        first_booking = create_booking(user, first_stock)
+        first_booking = create_booking(user=user, stock=first_stock)
 
         second_offerer = create_offerer(siren='222222222')
         second_venue = create_venue(second_offerer, postal_code='41571', siret='22222222200001')
         second_offer = create_offer_with_thing_product(second_venue)
         second_stock = create_stock(offer=second_offer, price=0)
-        second_booking = create_booking(user, second_stock)
+        second_booking = create_booking(user=user, stock=second_stock)
 
         PcObject.save(first_booking, second_booking)
 
@@ -530,7 +531,7 @@ class GetOfferersWithNonCancelledBookingsCountTest:
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
         user = create_user()
-        booking = create_booking(user, stock, is_cancelled=True)
+        booking = create_booking(user=user, stock=stock, is_cancelled=True)
         PcObject.save(booking)
 
         # When
@@ -551,8 +552,8 @@ class GetOfferersWithNonCancelledBookingsCountTest:
         stock1 = create_stock(offer=offer1, price=0)
         stock2 = create_stock(offer=offer2, price=0)
         user = create_user()
-        booking1 = create_booking(user, stock1)
-        booking2 = create_booking(user, stock2)
+        booking1 = create_booking(user=user, stock=stock1)
+        booking2 = create_booking(user=user, stock=stock2)
         PcObject.save(booking1, booking2)
 
         # When
@@ -1068,7 +1069,7 @@ class GetOffersWithNonCancelledBookingsCountTest:
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
         user = create_user()
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
         PcObject.save(booking)
 
         # When
@@ -1086,8 +1087,8 @@ class GetOffersWithNonCancelledBookingsCountTest:
         stock1 = create_stock(offer=offer, price=0)
         stock2 = create_stock(offer=offer, price=0)
         user = create_user()
-        booking1 = create_booking(user, stock1)
-        booking2 = create_booking(user, stock2)
+        booking1 = create_booking(user=user, stock=stock1)
+        booking2 = create_booking(user=user, stock=stock2)
         PcObject.save(booking1, booking2)
 
         # When
@@ -1114,8 +1115,8 @@ class GetOffersWithNonCancelledBookingsCountTest:
         second_stock = create_stock(offer=second_offer, price=0)
 
         user_with_bookings = create_user()
-        booking1 = create_booking(user_with_bookings, first_stock)
-        booking2 = create_booking(user_with_bookings, second_stock)
+        booking1 = create_booking(user=user_with_bookings, stock=first_stock)
+        booking2 = create_booking(user=user_with_bookings, stock=second_stock)
 
         PcObject.save(first_stock, second_stock, booking1, booking2)
 
@@ -1133,7 +1134,7 @@ class GetOffersWithNonCancelledBookingsCountTest:
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
         user = create_user()
-        booking = create_booking(user, stock, is_cancelled=True)
+        booking = create_booking(user=user, stock=stock, is_cancelled=True)
         PcObject.save(booking)
 
         # When
@@ -1152,8 +1153,8 @@ class GetOffersWithNonCancelledBookingsCountTest:
         stock1 = create_stock(offer=offer1, price=0)
         stock2 = create_stock(offer=offer2, price=0)
         user = create_user()
-        booking1 = create_booking(user, stock1)
-        booking2 = create_booking(user, stock2)
+        booking1 = create_booking(user=user, stock=stock1)
+        booking2 = create_booking(user=user, stock=stock2)
         PcObject.save(booking1, booking2)
 
         # When
@@ -1175,8 +1176,8 @@ class GetAllBookingsCount:
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
 
-        booking1 = create_booking(user_in_76, stock)
-        booking2 = create_booking(user_in_41, stock, is_cancelled=True)
+        booking1 = create_booking(user=user_in_76, stock=stock)
+        booking2 = create_booking(user=user_in_41, stock=stock, is_cancelled=True)
         PcObject.save(booking1, booking2)
 
         # When
@@ -1196,8 +1197,8 @@ class GetAllBookingsCount:
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
 
-        booking1 = create_booking(user_in_76, stock)
-        booking2 = create_booking(user_in_41, stock, is_cancelled=True)
+        booking1 = create_booking(user=user_in_76, stock=stock)
+        booking2 = create_booking(user=user_in_41, stock=stock, is_cancelled=True)
         PcObject.save(booking1, booking2)
 
         # When
@@ -1434,9 +1435,9 @@ class GetCountsByTypeAndDigitalCountsTest:
         stock_cinema2 = create_stock(offer=offer_cinema2, price=0)
         stock_musique_digital = create_stock(offer=offer_musique_digital, price=0)
         stock_musique_physical = create_stock(offer=offer_musique_physical, price=0)
-        booking_musique_physical1 = create_booking(user_booking, stock_musique_physical)
-        booking_musique_physical2 = create_booking(user_booking, stock_musique_physical, quantity=2)
-        booking_musique_digital = create_booking(user_booking, stock_musique_digital)
+        booking_musique_physical1 = create_booking(user=user_booking, stock=stock_musique_physical)
+        booking_musique_physical2 = create_booking(user=user_booking, stock=stock_musique_physical, quantity=2)
+        booking_musique_digital = create_booking(user=user_booking, stock=stock_musique_digital)
         PcObject.save(stock_cinema1, stock_cinema2, booking_musique_physical1, booking_musique_physical2,
                       booking_musique_digital, user_offerer)
 
@@ -1466,10 +1467,10 @@ class GetCountsByTypeAndDigitalCountsTest:
         stock_pizza_digital = create_stock(offer=offer_pizza_digital, price=0)
         stock_musique_digital = create_stock(offer=offer_musique_digital, price=0)
         stock_musique_physical = create_stock(offer=offer_musique_physical, price=0)
-        booking_pizza_digital = create_booking(user_booking, stock_pizza_digital)
-        booking_musique_physical1 = create_booking(user_booking, stock_musique_physical)
-        booking_musique_physical2 = create_booking(user_booking, stock_musique_physical, quantity=2)
-        booking_musique_digital = create_booking(user_booking, stock_musique_digital)
+        booking_pizza_digital = create_booking(user=user_booking, stock=stock_pizza_digital)
+        booking_musique_physical1 = create_booking(user=user_booking, stock=stock_musique_physical)
+        booking_musique_physical2 = create_booking(user=user_booking, stock=stock_musique_physical, quantity=2)
+        booking_musique_digital = create_booking(user=user_booking, stock=stock_musique_digital)
         PcObject.save(booking_pizza_digital, booking_musique_physical1, booking_musique_physical2,
                       booking_musique_digital, user_offerer)
 
@@ -1501,9 +1502,9 @@ class QueryGetBookingCountsPerTypeAndDigitalTest:
         stock_cinema2 = create_stock(offer=offer_cinema2, price=0)
         stock_musique_digital = create_stock(offer=offer_musique_digital, price=0)
         stock_musique_physical = create_stock(offer=offer_musique_physical, price=0)
-        booking_musique_physical1 = create_booking(user, stock_musique_physical, quantity=2)
-        booking_musique_physical2 = create_booking(user, stock_musique_physical, quantity=2)
-        booking_musique_digital = create_booking(user, stock_musique_digital)
+        booking_musique_physical1 = create_booking(user=user, stock=stock_musique_physical, quantity=2)
+        booking_musique_physical2 = create_booking(user=user, stock=stock_musique_physical, quantity=2)
+        booking_musique_digital = create_booking(user=user, stock=stock_musique_digital)
         PcObject.save(stock_cinema1, stock_cinema2, booking_musique_physical1, booking_musique_physical2,
                       booking_musique_digital)
 
@@ -1524,7 +1525,7 @@ class QueryGetBookingCountsPerTypeAndDigitalTest:
         physical_venue = create_venue(offerer, is_virtual=False)
         offer = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
         stock = create_stock(offer=offer, price=0)
-        cancelled_booking = create_booking(user_booking, stock, is_cancelled=True)
+        cancelled_booking = create_booking(user=user_booking, stock=stock, is_cancelled=True)
         PcObject.save(offer, cancelled_booking)
 
         # When
@@ -1540,7 +1541,7 @@ class QueryGetBookingCountsPerTypeAndMediumForDepartementTest:
             self, app):
         # Given
         offerer = create_offerer()
-        user = create_user(email='booking@test.com', departement_code='33')
+        user = create_user(departement_code='33', email='booking@test.com')
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
         physical_venue = create_venue(offerer, postal_code='32000')
         offer_cinema1 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
@@ -1552,9 +1553,9 @@ class QueryGetBookingCountsPerTypeAndMediumForDepartementTest:
         stock_cinema2 = create_stock(offer=offer_cinema2, price=0)
         stock_musique_digital = create_stock(offer=offer_musique_digital, price=0)
         stock_musique_physical = create_stock(offer=offer_musique_physical, price=0)
-        booking_musique_physical1 = create_booking(user, stock_musique_physical, quantity=2)
-        booking_musique_physical2 = create_booking(user, stock_musique_physical, quantity=2)
-        booking_musique_digital = create_booking(user, stock_musique_digital)
+        booking_musique_physical1 = create_booking(user=user, stock=stock_musique_physical, quantity=2)
+        booking_musique_physical2 = create_booking(user=user, stock=stock_musique_physical, quantity=2)
+        booking_musique_digital = create_booking(user=user, stock=stock_musique_digital)
         PcObject.save(stock_cinema1, stock_cinema2, booking_musique_physical1, booking_musique_physical2,
                       booking_musique_digital)
 
@@ -1570,11 +1571,11 @@ class QueryGetBookingCountsPerTypeAndMediumForDepartementTest:
     def test_returns_nothing_when_cancelled_booking(self, app):
         # Given
         offerer = create_offerer()
-        user = create_user(email='booking@test.com', departement_code='33')
+        user = create_user(departement_code='33', email='booking@test.com')
         physical_venue = create_venue(offerer, postal_code='32000')
         offer = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
         stock = create_stock(offer=offer, price=0)
-        cancelled_booking = create_booking(user, stock, is_cancelled=True)
+        cancelled_booking = create_booking(user=user, stock=stock, is_cancelled=True)
         PcObject.save(offer, cancelled_booking)
 
         # When
@@ -1587,7 +1588,7 @@ class QueryGetBookingCountsPerTypeAndMediumForDepartementTest:
     def test_returns_nothing_when_no_booking_user_in_requested_departement(self, app):
         # Given
         offerer = create_offerer()
-        user = create_user(email='booking@test.com', departement_code='75')
+        user = create_user(departement_code='75', email='booking@test.com')
         physical_venue = create_venue(offerer, postal_code='33000')
         offer_cinema1 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
         offer_cinema2 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
@@ -1595,8 +1596,8 @@ class QueryGetBookingCountsPerTypeAndMediumForDepartementTest:
         stock_cinema1 = create_stock(offer=offer_cinema1, price=0)
         stock_cinema2 = create_stock(offer=offer_cinema2, price=0)
         stock_musique_physical = create_stock(offer=offer_musique_physical, price=0)
-        booking_musique_physical1 = create_booking(user, stock_musique_physical)
-        booking_musique_physical2 = create_booking(user, stock_musique_physical, quantity=2)
+        booking_musique_physical1 = create_booking(user=user, stock=stock_musique_physical)
+        booking_musique_physical2 = create_booking(user=user, stock=stock_musique_physical, quantity=2)
         PcObject.save(stock_cinema1, stock_cinema2, booking_musique_physical1, booking_musique_physical2)
 
         # When
@@ -1618,9 +1619,9 @@ class CountAllCancelledBookingsTest:
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
 
-        booking1 = create_booking(user_in_76, stock, is_cancelled=True)
-        booking2 = create_booking(user_in_41, stock, is_cancelled=True)
-        booking3 = create_booking(user_in_41, stock, is_cancelled=False)
+        booking1 = create_booking(user=user_in_76, stock=stock, is_cancelled=True)
+        booking2 = create_booking(user=user_in_41, stock=stock, is_cancelled=True)
+        booking3 = create_booking(user=user_in_41, stock=stock, is_cancelled=False)
         PcObject.save(booking1, booking2, booking3)
 
         # When
@@ -1640,9 +1641,9 @@ class CountAllCancelledBookingsTest:
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
 
-        booking1 = create_booking(user_in_76, stock, is_cancelled=True)
-        booking2 = create_booking(user_in_41, stock, is_cancelled=True)
-        booking3 = create_booking(user_in_41, stock, is_cancelled=False)
+        booking1 = create_booking(user=user_in_76, stock=stock, is_cancelled=True)
+        booking2 = create_booking(user=user_in_41, stock=stock, is_cancelled=True)
+        booking3 = create_booking(user=user_in_41, stock=stock, is_cancelled=False)
         PcObject.save(booking1, booking2, booking3)
 
         # When
@@ -1661,7 +1662,7 @@ class GetAllUsedOrFinishedBookingsTest:
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
         user = create_user(departement_code='76')
-        booking = create_booking(user, stock, is_used=True)
+        booking = create_booking(user=user, stock=stock, is_used=True)
         PcObject.save(booking)
 
         # When
@@ -1678,7 +1679,7 @@ class GetAllUsedOrFinishedBookingsTest:
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
         user = create_user(departement_code='54')
-        booking = create_booking(user, stock, is_used=True)
+        booking = create_booking(user=user, stock=stock, is_used=True)
         PcObject.save(booking)
 
         # When
@@ -1695,7 +1696,7 @@ class GetAllUsedOrFinishedBookingsTest:
         thing_offer = create_offer_with_thing_product(venue)
         thing_stock = create_stock(offer=thing_offer, price=0)
         user = create_user(departement_code='76')
-        thing_booking = create_booking(user, thing_stock, is_used=False)
+        thing_booking = create_booking(user=user, stock=thing_stock, is_used=False)
         PcObject.save(thing_booking)
 
         # When
@@ -1715,9 +1716,9 @@ class GetAllUsedOrFinishedBookingsTest:
         user_in_76 = create_user(departement_code='76', email='user-76@example.net')
         user_in_41 = create_user(departement_code='41', email='user-41@example.net')
 
-        booking1 = create_booking(user_in_76, event_stock, is_used=True)
-        booking2 = create_booking(user_in_41, event_stock, is_used=True)
-        booking3 = create_booking(user_in_41, event_stock, is_used=True)
+        booking1 = create_booking(user=user_in_76, stock=event_stock, is_used=True)
+        booking2 = create_booking(user=user_in_41, stock=event_stock, is_used=True)
+        booking3 = create_booking(user=user_in_41, stock=event_stock, is_used=True)
         PcObject.save(booking1, booking2, booking3)
 
         # When
@@ -1738,8 +1739,8 @@ class GetAllUsedOrFinishedBookingsTest:
 
         user = create_user(departement_code='41', email='user-41@example.net')
 
-        booking1 = create_booking(user, stock1, is_used=True)
-        booking2 = create_booking(user, stock2, is_used=True)
+        booking1 = create_booking(user=user, stock=stock1, is_used=True)
+        booking2 = create_booking(user=user, stock=stock2, is_used=True)
         PcObject.save(booking1, booking2)
 
         # When
@@ -1759,9 +1760,9 @@ class GetAllUsedOrFinishedBookingsTest:
         user_in_76 = create_user(departement_code='76', email='user-76@example.net')
         user_in_41 = create_user(departement_code='41', email='user-41@example.net')
 
-        booking1 = create_booking(user_in_76, event_stock, is_used=True)
-        booking2 = create_booking(user_in_41, event_stock, is_used=True)
-        booking3 = create_booking(user_in_41, event_stock, is_used=True)
+        booking1 = create_booking(user=user_in_76, stock=event_stock, is_used=True)
+        booking2 = create_booking(user=user_in_41, stock=event_stock, is_used=True)
+        booking3 = create_booking(user=user_in_41, stock=event_stock, is_used=True)
         PcObject.save(booking1, booking2, booking3)
 
         # When

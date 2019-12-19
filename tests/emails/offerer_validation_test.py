@@ -3,7 +3,7 @@ import secrets
 from bs4 import BeautifulSoup
 
 from tests.conftest import clean_database, mocked_mail
-from tests.test_utils import create_user, create_offerer, create_user_offerer
+from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 from tests.utils.mailing_test import get_mocked_response_status_200
 from utils.mailing import make_validation_email_object
 
@@ -17,8 +17,8 @@ class WriteObjectValidationEmailTest:
         offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
                                  name='Accenture', validation_token=validation_token)
 
-        user = create_user(public_name='Test', departement_code='75', email='user@accenture.com',
-                           can_book_free_offers=False, validation_token=validation_token)
+        user = create_user(can_book_free_offers=False, departement_code='75', email='user@accenture.com',
+                           public_name='Test', validation_token=validation_token)
 
         user_offerer = create_user_offerer(user, offerer, validation_token)
 
@@ -67,8 +67,8 @@ class WriteObjectValidationEmailTest:
         offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
                                  name='Accenture', validation_token=validation_token)
 
-        user = create_user(public_name='Test', departement_code='75', email='user@accenture.com',
-                           can_book_free_offers=False, validation_token=validation_token)
+        user = create_user(can_book_free_offers=False, departement_code='75', email='user@accenture.com',
+                           public_name='Test', validation_token=validation_token)
 
         user_offerer = create_user_offerer(user, offerer, validation_token=None)
 
@@ -89,8 +89,8 @@ class WriteObjectValidationEmailTest:
         offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
                                  name='Accenture', validation_token=None)
 
-        user = create_user(public_name='Test', departement_code='75', email='user@accenture.com',
-                           can_book_free_offers=False, validation_token=validation_token)
+        user = create_user(can_book_free_offers=False, departement_code='75', email='user@accenture.com',
+                           public_name='Test', validation_token=validation_token)
 
         user_offerer = create_user_offerer(user, offerer, validation_token)
 
@@ -111,8 +111,8 @@ class WriteObjectValidationEmailTest:
         offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
                                  name='Accenture', validation_token=validation_token)
 
-        user = create_user(public_name='Test', departement_code='75', email='user@accenture.com',
-                           can_book_free_offers=False, validation_token=validation_token)
+        user = create_user(can_book_free_offers=False, departement_code='75', email='user@accenture.com',
+                           public_name='Test', validation_token=validation_token)
 
         user_offerer = create_user_offerer(user, offerer, validation_token)
 

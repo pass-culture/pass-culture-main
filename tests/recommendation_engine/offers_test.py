@@ -5,7 +5,8 @@ from recommendations_engine import create_recommendations_for_discovery, get_off
 from repository.offer_queries import order_by_with_criteria
 from tests.conftest import clean_database
 from tests.recommendation_engine.recommendations_test import _create_and_save_stock_for_offerer_in_departements
-from tests.test_utils import create_user, create_offer_with_thing_product, create_venue, create_offerer
+from tests.model_creators.generic_creators import create_user, create_offerer, create_venue
+from tests.model_creators.specific_creators import create_offer_with_thing_product
 
 
 class GetOffersForRecommendationsDiscoveryTest:

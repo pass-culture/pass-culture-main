@@ -13,8 +13,9 @@ from scripts.payment.batch_steps import send_transactions, send_payments_details
     send_payments_report, concatenate_payments_with_errors_and_retries, \
     set_not_processable_payments_with_bank_information_to_retry
 from tests.conftest import clean_database, mocked_mail
-from tests.test_utils import create_offerer, create_venue, create_offer_with_thing_product, create_stock_from_offer, \
-    create_booking, create_user, create_deposit, create_payment, create_bank_information
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, create_deposit, \
+    create_payment, create_bank_information
+from tests.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product
 
 
 class ConcatenatePaymentsWithErrorsAndRetriesTest:
@@ -22,7 +23,7 @@ class ConcatenatePaymentsWithErrorsAndRetriesTest:
     def test_a_list_of_payments_is_returned_with_statuses_in_error_or_retry_or_pending(self, app):
         # Given
         user = create_user()
-        booking = create_booking(user)
+        booking = create_booking(user=user)
         deposit = create_deposit(user)
         offerer = booking.stock.resolvedOffer.venue.managingOfferer
 
@@ -62,9 +63,9 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_iban_is_miss
     user = create_user()
     venue1 = create_venue(offerer1)
     stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
-    booking1 = create_booking(user, stock1)
-    booking2 = create_booking(user, stock1)
-    booking3 = create_booking(user, stock1)
+    booking1 = create_booking(user=user, stock=stock1)
+    booking2 = create_booking(user=user, stock=stock1)
+    booking3 = create_booking(user=user, stock=stock1)
     payments = [
         create_payment(booking1, offerer1, Decimal(10)),
         create_payment(booking2, offerer1, Decimal(20)),
@@ -87,9 +88,9 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_bic_is_missi
     user = create_user()
     venue1 = create_venue(offerer1)
     stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
-    booking1 = create_booking(user, stock1)
-    booking2 = create_booking(user, stock1)
-    booking3 = create_booking(user, stock1)
+    booking1 = create_booking(user=user, stock=stock1)
+    booking2 = create_booking(user=user, stock=stock1)
+    booking3 = create_booking(user=user, stock=stock1)
     payments = [
         create_payment(booking1, offerer1, Decimal(10)),
         create_payment(booking2, offerer1, Decimal(20)),
@@ -112,9 +113,9 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_id_is_missin
     user = create_user()
     venue1 = create_venue(offerer1)
     stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
-    booking1 = create_booking(user, stock1)
-    booking2 = create_booking(user, stock1)
-    booking3 = create_booking(user, stock1)
+    booking1 = create_booking(user=user, stock=stock1)
+    booking2 = create_booking(user=user, stock=stock1)
+    booking3 = create_booking(user=user, stock=stock1)
     payments = [
         create_payment(booking1, offerer1, Decimal(10)),
         create_payment(booking2, offerer1, Decimal(20)),
@@ -137,9 +138,9 @@ def test_send_transactions_should_send_an_email_with_xml_attachment(app):
     user = create_user()
     venue1 = create_venue(offerer1)
     stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
-    booking1 = create_booking(user, stock1)
-    booking2 = create_booking(user, stock1)
-    booking3 = create_booking(user, stock1)
+    booking1 = create_booking(user=user, stock=stock1)
+    booking2 = create_booking(user=user, stock=stock1)
+    booking3 = create_booking(user=user, stock=stock1)
     deposit = create_deposit(user, amount=500)
     PcObject.save(deposit)
     payments = [
@@ -168,9 +169,9 @@ def test_send_transactions_creates_a_new_payment_transaction_if_email_was_sent_p
     user = create_user()
     venue1 = create_venue(offerer1)
     stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
-    booking1 = create_booking(user, stock1)
-    booking2 = create_booking(user, stock1)
-    booking3 = create_booking(user, stock1)
+    booking1 = create_booking(user=user, stock=stock1)
+    booking2 = create_booking(user=user, stock=stock1)
+    booking3 = create_booking(user=user, stock=stock1)
     deposit = create_deposit(user, amount=500)
     payments = [
         create_payment(booking1, offerer1, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
@@ -200,9 +201,9 @@ def test_send_transactions_set_status_to_sent_if_email_was_sent_properly(app):
     user = create_user()
     venue1 = create_venue(offerer1)
     stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
-    booking1 = create_booking(user, stock1)
-    booking2 = create_booking(user, stock1)
-    booking3 = create_booking(user, stock1)
+    booking1 = create_booking(user=user, stock=stock1)
+    booking2 = create_booking(user=user, stock=stock1)
+    booking3 = create_booking(user=user, stock=stock1)
     deposit = create_deposit(user, amount=500)
     payments = [
         create_payment(booking1, offerer1, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
@@ -234,9 +235,9 @@ def test_send_transactions_set_status_to_error_with_details_if_email_was_not_sen
     user = create_user()
     venue1 = create_venue(offerer1)
     stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
-    booking1 = create_booking(user, stock1)
-    booking2 = create_booking(user, stock1)
-    booking3 = create_booking(user, stock1)
+    booking1 = create_booking(user=user, stock=stock1)
+    booking2 = create_booking(user=user, stock=stock1)
+    booking3 = create_booking(user=user, stock=stock1)
     deposit = create_deposit(user, amount=500)
     payments = [
         create_payment(booking1, offerer1, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
@@ -269,7 +270,7 @@ def test_send_transactions_with_malformed_iban_on_payments_gives_them_an_error_s
     user = create_user()
     venue = create_venue(offerer)
     stock = create_stock_from_offer(create_offer_with_thing_product(venue))
-    booking = create_booking(user, stock)
+    booking = create_booking(user=user, stock=stock)
     deposit = create_deposit(user, amount=500)
     payments = [
         create_payment(booking, offerer, Decimal(10), iban='CF  13QSDFGH45 qbc //', bic='QSDFGH8Z555'),
@@ -300,9 +301,9 @@ def test_send_payment_details_sends_a_csv_attachment(app):
     user = create_user()
     venue1 = create_venue(offerer1)
     stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
-    booking1 = create_booking(user, stock1)
-    booking2 = create_booking(user, stock1)
-    booking3 = create_booking(user, stock1)
+    booking1 = create_booking(user=user, stock=stock1)
+    booking2 = create_booking(user=user, stock=stock1)
+    booking3 = create_booking(user=user, stock=stock1)
     deposit = create_deposit(user, amount=500)
     payments = [
         create_payment(booking1, offerer1, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
@@ -332,9 +333,9 @@ def test_send_payment_details_does_not_send_anything_if_all_payment_have_error_s
     user = create_user()
     venue1 = create_venue(offerer1)
     stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
-    booking1 = create_booking(user, stock1)
-    booking2 = create_booking(user, stock1)
-    booking3 = create_booking(user, stock1)
+    booking1 = create_booking(user=user, stock=stock1)
+    booking2 = create_booking(user=user, stock=stock1)
+    booking3 = create_booking(user=user, stock=stock1)
 
     payments = [
         create_payment(booking1, offerer1, Decimal(10), status=TransactionStatus.ERROR, iban='CF13QSDFGH456789',
@@ -399,9 +400,9 @@ def test_send_payments_report_sends_two_csv_attachments_if_some_payments_are_not
     user = create_user()
     venue1 = create_venue(offerer1)
     stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
-    booking1 = create_booking(user, stock1)
-    booking2 = create_booking(user, stock1)
-    booking3 = create_booking(user, stock1)
+    booking1 = create_booking(user=user, stock=stock1)
+    booking2 = create_booking(user=user, stock=stock1)
+    booking3 = create_booking(user=user, stock=stock1)
     deposit = create_deposit(user, amount=500)
     payments = [
         create_payment(booking1, offerer1, Decimal(10), status=TransactionStatus.SENT, iban='CF13QSDFGH456789',
@@ -436,9 +437,9 @@ def test_send_payments_report_sends_two_csv_attachments_if_no_payments_are_in_er
     user = create_user()
     venue1 = create_venue(offerer1)
     stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
-    booking1 = create_booking(user, stock1)
-    booking2 = create_booking(user, stock1)
-    booking3 = create_booking(user, stock1)
+    booking1 = create_booking(user=user, stock=stock1)
+    booking2 = create_booking(user=user, stock=stock1)
+    booking3 = create_booking(user=user, stock=stock1)
     deposit = create_deposit(user, amount=500)
     payments = [
         create_payment(booking1, offerer1, Decimal(10), status=TransactionStatus.SENT, iban='CF13QSDFGH456789',
@@ -488,7 +489,7 @@ class SetNotProcessablePaymentsWithBankInformationToRetryTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock_from_offer(offer, price=0)
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
         bank_information = create_bank_information(offerer=offerer, iban='FR7611808009101234567890147',
                                                    bic='CCBPFRPPVER')
         not_processable_payment = create_payment(booking, offerer, Decimal(10),
@@ -516,7 +517,7 @@ class SetNotProcessablePaymentsWithBankInformationToRetryTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock_from_offer(offer, price=0)
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
         bank_information = create_bank_information(venue=venue, iban='FR7611808009101234567890147', bic='CCBPFRPPVER', )
         not_processable_payment = create_payment(booking, offerer, Decimal(10),
                                                  status=TransactionStatus.NOT_PROCESSABLE, iban=None, bic=None)

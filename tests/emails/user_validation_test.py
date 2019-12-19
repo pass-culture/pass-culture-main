@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 from bs4 import BeautifulSoup
 
-from tests.test_utils import create_user
+from tests.model_creators.generic_creators import create_user
 from utils.mailing import make_user_validation_email
 
 

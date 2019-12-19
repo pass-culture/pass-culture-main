@@ -5,8 +5,9 @@ from freezegun import freeze_time
 from models import Booking, PcObject
 from scripts.update_booking_used import update_booking_used_after_stock_occurrence
 from tests.conftest import clean_database
-from tests.test_utils import create_deposit, create_booking, create_user, create_offerer, create_venue, \
-    create_offer_with_event_product, create_stock, create_offer_with_thing_product
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue, \
+    create_deposit
+from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 
 
 class UpdateBookingUsedTest:
@@ -22,7 +23,7 @@ class UpdateBookingUsedTest:
         stock = create_stock(offer=offer,
                              beginning_datetime=None,
                              end_datetime=None)
-        booking = create_booking(user, stock=stock, is_used=False)
+        booking = create_booking(user=user, is_used=False, stock=stock)
         PcObject.save(user, deposit, booking, stock)
 
         # When
@@ -46,7 +47,7 @@ class UpdateBookingUsedTest:
         stock = create_stock(offer=offer,
                              beginning_datetime=datetime(2019, 10, 9, 10, 20, 00),
                              end_datetime=datetime(2019, 10, 9, 12, 20, 0))
-        booking = create_booking(user, stock=stock, is_used=False)
+        booking = create_booking(user=user, is_used=False, stock=stock)
         PcObject.save(user, deposit, booking, stock)
 
         # When
@@ -70,7 +71,7 @@ class UpdateBookingUsedTest:
         stock = create_stock(offer=offer,
                              beginning_datetime=datetime(2019, 10, 9, 10, 20, 00),
                              end_datetime=datetime(2019, 10, 9, 12, 20, 0))
-        booking = create_booking(user, stock=stock, is_used=False)
+        booking = create_booking(user=user, is_used=False, stock=stock)
         PcObject.save(user, deposit, booking, stock)
 
         # When
@@ -94,7 +95,7 @@ class UpdateBookingUsedTest:
                              beginning_datetime=datetime(2019, 10, 9, 10, 20, 00),
                              end_datetime=datetime(2019, 10, 9, 12, 20, 0))
         booking_date = datetime(2019, 10, 12, 12, 20, 0)
-        booking = create_booking(user, stock=stock, is_used=True, date_used=booking_date)
+        booking = create_booking(user=user, date_used=booking_date, is_used=True, stock=stock)
         PcObject.save(user, deposit, booking, stock)
 
         # When

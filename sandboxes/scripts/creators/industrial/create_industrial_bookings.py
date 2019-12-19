@@ -2,8 +2,7 @@ from models.offer_type import EventType
 from models.pc_object import PcObject
 from sandboxes.scripts.utils.select import remove_every
 from utils.logger import logger
-from tests.test_utils import create_booking
-
+from tests.model_creators.generic_creators import create_booking
 
 RECOMMENDATIONS_WITH_BOOKINGS_REMOVE_RATIO = 3
 RECOMMENDATIONS_WITH_SEVERAL_STOCKS_REMOVE_MODULO = 2
@@ -80,15 +79,8 @@ def create_industrial_bookings(
             else:
                 booking_amount = None
 
-            booking = create_booking(
-                user,
-                recommendation=recommendation,
-                stock=stock,
-                token=str(token),
-                venue=recommendation.offer.venue,
-                amount=booking_amount,
-                is_used=is_used
-            )
+            booking = create_booking(user=user, amount=booking_amount, is_used=is_used, recommendation=recommendation,
+                                     stock=stock, token=str(token), venue=recommendation.offer.venue)
 
             token += 1
 

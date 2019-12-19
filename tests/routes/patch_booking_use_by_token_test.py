@@ -3,11 +3,9 @@ from unittest.mock import patch, Mock
 from domain.user_emails import send_activation_email
 from models import PcObject, EventType, Deposit, Booking, User
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_deposit, create_venue, create_offerer, \
-    create_user, create_booking, \
-    create_user_offerer, create_stock, \
-    create_offer_with_thing_product
-from tests.test_utils import create_api_key, create_stock_with_event_offer
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue, \
+    create_deposit, create_user_offerer, create_api_key
+from tests.model_creators.specific_creators import create_stock_with_event_offer, create_offer_with_thing_product
 from utils.token import random_token
 
 API_KEY_VALUE = random_token(64)
@@ -23,7 +21,7 @@ class Patch:
                 offerer = create_offerer()
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
-                booking = create_booking(user, stock, venue=venue)
+                booking = create_booking(user=user, stock=stock, venue=venue)
                 PcObject.save(booking, offerer)
                 booking_id = booking.id
 
@@ -54,7 +52,7 @@ class Patch:
                 user_offerer = create_user_offerer(pro_user, offerer)
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
-                booking = create_booking(user, stock, venue=venue)
+                booking = create_booking(user=user, stock=stock, venue=venue)
                 PcObject.save(booking, user_offerer)
                 booking_id = booking.id
 
@@ -86,7 +84,7 @@ class Patch:
                 user_offerer = create_user_offerer(pro_user, offerer)
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
-                booking = create_booking(user, stock, venue=venue)
+                booking = create_booking(user=user, stock=stock, venue=venue)
                 PcObject.save(booking, user_offerer)
                 booking_id = booking.id
 
@@ -107,7 +105,7 @@ class Patch:
                 user_offerer = create_user_offerer(pro_user, offerer)
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
-                booking = create_booking(user, stock, venue=venue)
+                booking = create_booking(user=user, stock=stock, venue=venue)
                 PcObject.save(booking, user_offerer)
                 booking_id = booking.id
                 booking_token = booking.token.lower()
@@ -124,12 +122,12 @@ class Patch:
             def when_admin_user_is_logged_in_expect_activation_booking_to_be_used_and_linked_user_to_be_able_to_book(self, app):
                 # Given
                 user = create_user(can_book_free_offers=False, is_admin=False)
-                admin_user = create_user(email='pro@email.fr', can_book_free_offers=False, is_admin=True)
+                admin_user = create_user(can_book_free_offers=False, email='pro@email.fr', is_admin=True)
                 offerer = create_offerer()
                 user_offerer = create_user_offerer(admin_user, offerer)
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0, event_type=EventType.ACTIVATION)
-                booking = create_booking(user, stock, venue=venue)
+                booking = create_booking(user=user, stock=stock, venue=venue)
                 PcObject.save(booking, user_offerer)
                 user_id = user.id
 
@@ -147,12 +145,12 @@ class Patch:
             def when_admin_user_is_logged_in_expect_to_send_notification_email(self, app):
                 # Given
                 user = create_user(email='user@email.fr')
-                admin_user = create_user(email='pro@email.fr', can_book_free_offers=False, is_admin=True)
+                admin_user = create_user(can_book_free_offers=False, email='pro@email.fr', is_admin=True)
                 offerer = create_offerer()
                 user_offerer = create_user_offerer(admin_user, offerer)
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0, event_type=EventType.ACTIVATION)
-                booking = create_booking(user, stock, venue=venue)
+                booking = create_booking(user=user, stock=stock, venue=venue)
                 PcObject.save(booking, user_offerer)
                 user_id = user.id
 
@@ -184,7 +182,7 @@ class Patch:
             user_offerer = create_user_offerer(pro_user, offerer)
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(booking, user_offerer)
 
             stock.available = 0
@@ -206,7 +204,7 @@ class Patch:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
 
             PcObject.save(booking)
 
@@ -226,7 +224,7 @@ class Patch:
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
             stock = create_stock(offer=offer, price=0)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
 
             PcObject.save(pro_user, booking)
 
@@ -251,7 +249,7 @@ class Patch:
                 user_offerer = create_user_offerer(pro_user, offerer)
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0, event_type=EventType.ACTIVATION)
-                booking = create_booking(user, stock, venue=venue)
+                booking = create_booking(user=user, stock=stock, venue=venue)
 
                 PcObject.save(pro_user, booking, user_offerer, offerer2)
 
@@ -282,7 +280,7 @@ class Patch:
                 offerer = create_offerer()
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
-                booking = create_booking(user, stock, venue=venue)
+                booking = create_booking(user=user, stock=stock, venue=venue)
                 PcObject.save(booking, pro_user)
                 booking_id = booking.id
                 url = '/v2/bookings/use/token/{}'.format(booking.token, user.email)
@@ -304,7 +302,7 @@ class Patch:
                 user_offerer = create_user_offerer(pro_user, offerer)
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0, event_type=EventType.ACTIVATION)
-                booking = create_booking(user, stock, venue=venue)
+                booking = create_booking(user=user, stock=stock, venue=venue)
                 PcObject.save(booking, user_offerer)
 
                 # When
@@ -323,7 +321,7 @@ class Patch:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
 
             PcObject.save(booking)
 
@@ -342,7 +340,7 @@ class Patch:
                 offerer = create_offerer()
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
-                booking = create_booking(user, stock, venue=venue)
+                booking = create_booking(user=user, stock=stock, venue=venue)
                 PcObject.save(booking)
 
                 offerer_api_key = create_api_key(offerer, API_KEY_VALUE)
@@ -374,7 +372,7 @@ class Patch:
                 user_offerer = create_user_offerer(pro_user, offerer)
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
-                booking = create_booking(user, stock, venue=venue)
+                booking = create_booking(user=user, stock=stock, venue=venue)
                 PcObject.save(booking, user_offerer)
 
                 # When
@@ -390,18 +388,17 @@ class Patch:
             @clean_database
             def expect_no_new_deposits_when_the_linked_user_has_been_already_activated(self, app):
                 # Given
-                user = create_user(email='user@email.fr',
-                                   can_book_free_offers=False)
+                user = create_user(can_book_free_offers=False, email='user@email.fr')
                 deposit = create_deposit(user, amount=0)
 
-                admin_user = create_user(email='admin@email.fr', can_book_free_offers=False, is_admin=True)
+                admin_user = create_user(can_book_free_offers=False, email='admin@email.fr', is_admin=True)
 
                 offerer = create_offerer()
                 admin_user_offerer = create_user_offerer(admin_user, offerer)
                 venue = create_venue(offerer)
                 activation_offer_stock = create_stock_with_event_offer(offerer, venue, price=0, event_type=EventType.ACTIVATION)
 
-                booking = create_booking(user, activation_offer_stock, venue=venue)
+                booking = create_booking(user=user, stock=activation_offer_stock, venue=venue)
 
                 PcObject.save(booking, admin_user_offerer, deposit)
 
@@ -429,7 +426,7 @@ class Patch:
                 user_offerer = create_user_offerer(pro_user, offerer)
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
-                booking = create_booking(user, stock, venue=venue)
+                booking = create_booking(user=user, stock=stock, venue=venue)
                 booking.isCancelled = True
                 PcObject.save(booking, user_offerer)
                 booking_id = booking.id
@@ -452,7 +449,7 @@ class Patch:
                 user_offerer = create_user_offerer(pro_user, offerer)
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
-                booking = create_booking(user, stock, venue=venue)
+                booking = create_booking(user=user, stock=stock, venue=venue)
                 booking.isUsed = True
                 PcObject.save(booking, user_offerer)
                 booking_id = booking.id
@@ -476,7 +473,7 @@ class Patch:
                 user_offerer = create_user_offerer(pro_user, offerer)
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
-                booking = create_booking(user, stock, venue=venue)
+                booking = create_booking(user=user, stock=stock, venue=venue)
                 booking.isCancelled = True
                 PcObject.save(booking, user_offerer)
                 booking_id = booking.id
@@ -499,7 +496,7 @@ class Patch:
                 user_offerer = create_user_offerer(pro_user, offerer)
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
-                booking = create_booking(user, stock, venue=venue)
+                booking = create_booking(user=user, stock=stock, venue=venue)
                 booking.isUsed = True
                 PcObject.save(booking, user_offerer)
                 booking_id = booking.id

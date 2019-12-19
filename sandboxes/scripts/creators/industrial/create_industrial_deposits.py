@@ -1,6 +1,7 @@
 from models.pc_object import PcObject
 from utils.logger import logger
-from tests.test_utils import create_deposit
+from tests.model_creators.generic_creators import create_deposit
+
 
 def create_industrial_deposits(users_by_name):
     logger.info('create_industrial_deposits')

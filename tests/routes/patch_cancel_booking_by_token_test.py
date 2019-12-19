@@ -1,9 +1,8 @@
 from models import ApiKey, PcObject, Booking
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_venue, create_offerer, \
-    create_user, create_booking, create_offer_with_event_product, \
-    create_user_offerer, create_stock, \
-    create_deposit, create_offer_with_thing_product
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue, \
+    create_deposit, create_user_offerer
+from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 from utils.token import random_token
 
 
@@ -19,16 +18,16 @@ class Patch:
         @clean_database
         def test_should_returns_204_with_cancellation_allowed(self, app):
             # Given
-            pro_user = create_user(public_name='Mr Books', email='Mr Books@example.net')
+            pro_user = create_user(email='Mr Books@example.net', public_name='Mr Books')
             offerer = create_offerer(siren='793875030')
             user_offerer = create_user_offerer(pro_user, offerer)
             venue = create_venue(offerer)
             book_offer = create_offer_with_event_product(venue)
             stock = create_stock(offer=book_offer)
 
-            user = create_user(public_name='J.F', email='j.f@example.net')
+            user = create_user(email='j.f@example.net', public_name='J.F')
             create_deposit(user)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
 
             PcObject.save(booking, user_offerer)
             api_key = random_token(64)
@@ -51,16 +50,16 @@ class Patch:
         @clean_database
         def test_should_returns_204_with_lowercase_token(self, app):
             # Given
-            pro_user = create_user(public_name='Mr Books', email='Mr Books@example.net')
+            pro_user = create_user(email='Mr Books@example.net', public_name='Mr Books')
             offerer = create_offerer(siren='793875030')
             user_offerer = create_user_offerer(pro_user, offerer)
             venue = create_venue(offerer)
             book_offer = create_offer_with_event_product(venue)
             stock = create_stock(offer=book_offer)
 
-            user = create_user(public_name='J.F', email='j.f@example.net')
+            user = create_user(email='j.f@example.net', public_name='J.F')
             create_deposit(user)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
 
             PcObject.save(booking, user_offerer)
             api_key = random_token(64)
@@ -85,14 +84,14 @@ class Patch:
         @clean_database
         def when_not_authenticated_used_api_key_or_login(self, app):
             # Given
-            user = create_user(public_name='J.F', email='j.f@example.net')
+            user = create_user(email='j.f@example.net', public_name='J.F')
             create_deposit(user)
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
             stock = create_stock(offer=offer)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(user_offerer, booking)
 
             # When
@@ -105,14 +104,14 @@ class Patch:
         @clean_database
         def when_giving_an_api_key_that_does_not_exists(self, app):
             # Given
-            user = create_user(public_name='J.F', email='j.f@example.net')
+            user = create_user(email='j.f@example.net', public_name='J.F')
             create_deposit(user)
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
             stock = create_stock(offer=offer)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(user_offerer, booking)
 
             # When
@@ -129,16 +128,16 @@ class Patch:
         @clean_database
         def when_the_api_key_is_not_linked_to_the_right_offerer(self, app):
             # Given
-            pro_user = create_user(public_name='Mr Books', email='Mr Books@example.net')
+            pro_user = create_user(email='Mr Books@example.net', public_name='Mr Books')
             offerer = create_offerer(siren='793875030')
             user_offerer = create_user_offerer(pro_user, offerer)
             venue = create_venue(offerer)
             book_offer = create_offer_with_event_product(venue)
             stock = create_stock(offer=book_offer)
 
-            user = create_user(public_name='J.F', email='j.f@example.net')
+            user = create_user(email='j.f@example.net', public_name='J.F')
             create_deposit(user)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
 
             PcObject.save(booking, user_offerer)
 
@@ -165,16 +164,16 @@ class Patch:
         @clean_database
         def when_the_logged_user_has_not_rights_on_offerer(self, app):
             # Given
-            pro_user = create_user(public_name='Mr Books', email='mr.book@example.net')
+            pro_user = create_user(email='mr.book@example.net', public_name='Mr Books')
             offerer = create_offerer(siren='793875030')
             user_offerer = create_user_offerer(pro_user, offerer)
             venue = create_venue(offerer)
             book_offer = create_offer_with_event_product(venue)
             stock = create_stock(offer=book_offer)
 
-            user = create_user(public_name='J.F', email='j.f@example.net')
+            user = create_user(email='j.f@example.net', public_name='J.F')
             create_deposit(user)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
 
             PcObject.save(booking, user_offerer)
 
@@ -199,16 +198,16 @@ class Patch:
             @clean_database
             def test_should_prevent_a_used_booking_from_being_cancelled(self, app):
                 # Given
-                pro_user = create_user(public_name='Mr Books', email='Mr Books@example.net')
+                pro_user = create_user(email='Mr Books@example.net', public_name='Mr Books')
                 offerer = create_offerer(siren='793875030')
                 user_offerer = create_user_offerer(pro_user, offerer)
                 venue = create_venue(offerer)
                 book_offer = create_offer_with_event_product(venue)
                 stock = create_stock(offer=book_offer)
 
-                user = create_user(public_name='J.F', email='j.f@example.net')
+                user = create_user(email='j.f@example.net', public_name='J.F')
                 create_deposit(user)
-                booking = create_booking(user, stock, venue=venue, is_used=True)
+                booking = create_booking(user=user, stock=stock, is_used=True, venue=venue)
 
                 PcObject.save(booking, user_offerer)
                 api_key = random_token(64)
@@ -241,7 +240,7 @@ class Patch:
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
             stock = create_stock(offer=offer)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(user_offerer, booking)
 
             api_key = 'A_MOCKED_API_KEY'
@@ -263,16 +262,16 @@ class Patch:
         @clean_database
         def test_cancel_a_booking_already_cancelled(self, app):
             # Given
-            pro_user = create_user(public_name='Mr Books', email='Mr Books@example.net')
+            pro_user = create_user(email='Mr Books@example.net', public_name='Mr Books')
             offerer = create_offerer(siren='793875030')
             user_offerer = create_user_offerer(pro_user, offerer)
             venue = create_venue(offerer)
             book_offer = create_offer_with_thing_product(venue)
             stock = create_stock(offer=book_offer)
 
-            user = create_user(public_name='J.F', email='j.f@example.net')
+            user = create_user(email='j.f@example.net', public_name='J.F')
             create_deposit(user)
-            booking = create_booking(user, stock, venue=venue, is_cancelled=True)
+            booking = create_booking(user=user, stock=stock, is_cancelled=True, venue=venue)
 
             PcObject.save(booking, user_offerer)
             api_key = random_token(64)

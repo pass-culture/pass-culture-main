@@ -1,7 +1,8 @@
 from models.pc_object import PcObject
 from sandboxes.scripts.utils.select import remove_every
 from utils.logger import logger
-from tests.test_utils import create_stock_from_offer, get_price_by_short_name, get_occurrence_short_name
+from tests.test_utils import get_price_by_short_name, get_occurrence_short_name
+from tests.model_creators.specific_creators import create_stock_from_offer
 
 THING_OFFERS_WITH_STOCK_REMOVE_MODULO = 3
 

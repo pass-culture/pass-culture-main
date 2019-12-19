@@ -5,7 +5,7 @@ from pprint import pprint
 from flask import current_app as app
 
 from tests.conftest import TestClient
-from tests.test_utils import API_URL
+from tests.model_creators.generic_creators import API_URL
 
 
 @app.manager.command

@@ -3,7 +3,7 @@ from io import BytesIO
 from models import PcObject
 from tests.conftest import clean_database, TestClient
 from tests.files.transactions import VALID_MESSAGE
-from tests.test_utils import create_user, create_payment_message
+from tests.model_creators.generic_creators import create_user, create_payment_message
 
 
 class Post:

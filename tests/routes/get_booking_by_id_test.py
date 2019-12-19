@@ -1,8 +1,7 @@
 from models import PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_stock_with_thing_offer, \
-    create_offer_with_thing_product, create_venue, create_offerer, \
-    create_user, create_booking
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue
+from tests.model_creators.specific_creators import create_stock_with_thing_offer, create_offer_with_thing_product
 from utils.human_ids import humanize
 
 
@@ -17,7 +16,7 @@ class Get:
             offer = create_offer_with_thing_product(venue,
                                                     url='https://host/path/{token}?offerId={offerId}&email={email}')
             stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, offer=offer, price=0)
-            booking = create_booking(user, stock, venue=venue, token='ABCDEF')
+            booking = create_booking(user=user, stock=stock, token='ABCDEF', venue=venue)
 
             PcObject.save(booking)
 

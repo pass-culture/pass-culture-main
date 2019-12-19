@@ -10,8 +10,7 @@ from sandboxes.scripts.mocks.event_mocks import MOCK_ACTIVATION_DESCRIPTION, \
 from sandboxes.scripts.mocks.user_mocks import MOCK_FIRST_NAMES, \
     MOCK_LAST_NAMES
 from utils.logger import logger
-from tests.test_utils import create_product_with_event_type
-
+from tests.model_creators.specific_creators import create_product_with_event_type
 
 EVENT_COUNTS_PER_TYPE = 7
 

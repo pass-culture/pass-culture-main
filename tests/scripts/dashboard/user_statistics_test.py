@@ -5,8 +5,9 @@ from scripts.dashboard.users_statistics import count_activated_users, count_user
     get_mean_number_of_bookings_per_user_having_booked, get_mean_amount_spent_by_user, \
     _query_get_non_cancelled_bookings_by_user_departement, get_non_cancelled_bookings_by_user_departement
 from tests.conftest import clean_database
-from tests.test_utils import create_user, create_booking, create_stock, create_offer_with_thing_product, create_venue, \
-    create_offerer, create_deposit, create_offer_with_event_product
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue, \
+    create_deposit
+from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 
 
 class CountActivatedUsersTest:
@@ -14,7 +15,8 @@ class CountActivatedUsersTest:
     def test_count_all_users_by_default(self, app):
         # Given
         activated_user_from_74 = create_user(can_book_free_offers=True, departement_code='74')
-        activated_user_from_75 = create_user(can_book_free_offers=True, departement_code='75', email='email2@test.com')
+        activated_user_from_75 = create_user(can_book_free_offers=True, departement_code='75',
+                                             email='email2@test.com')
         PcObject.save(activated_user_from_74, activated_user_from_75)
 
         # When
@@ -27,7 +29,8 @@ class CountActivatedUsersTest:
     def test_count_users_by_departement_when_departement_code_given(self, app):
         # Given
         activated_user_from_74 = create_user(can_book_free_offers=True, departement_code='74')
-        activated_user_from_75 = create_user(can_book_free_offers=True, departement_code='75', email='email2@test.com')
+        activated_user_from_75 = create_user(can_book_free_offers=True, departement_code='75',
+                                             email='email2@test.com')
         PcObject.save(activated_user_from_74, activated_user_from_75)
 
         # When
@@ -42,13 +45,14 @@ class CountUsersHavingBookedTest:
     def test_count_all_users_by_default(self, app):
         # Given
         activated_user_from_74 = create_user(can_book_free_offers=True, departement_code='74')
-        activated_user_from_75 = create_user(can_book_free_offers=True, departement_code='75', email='email2@test.com')
+        activated_user_from_75 = create_user(can_book_free_offers=True, departement_code='75',
+                                             email='email2@test.com')
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer1 = create_offer_with_thing_product(venue)
         stock1 = create_stock(offer=offer1, price=0)
-        booking1 = create_booking(activated_user_from_74, stock1)
-        booking2 = create_booking(activated_user_from_75, stock1)
+        booking1 = create_booking(activated_user_from_74, stock=stock1)
+        booking2 = create_booking(activated_user_from_75, stock=stock1)
         PcObject.save(booking1, booking2)
         PcObject.save(activated_user_from_74, activated_user_from_75)
 
@@ -69,8 +73,8 @@ class CountUsersHavingBookedTest:
         offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
         stock1 = create_stock(offer=offer1, price=0)
         stock2 = create_stock(offer=offer2, price=0)
-        booking1 = create_booking(user1, stock1)
-        booking2 = create_booking(user2, stock2)
+        booking1 = create_booking(user=user1, stock=stock1)
+        booking2 = create_booking(user=user2, stock=stock2)
         PcObject.save(booking1, booking2)
 
         # When
@@ -83,13 +87,14 @@ class CountUsersHavingBookedTest:
     def test_count_users_by_departement_when_departement_code_given(self, app):
         # Given
         activated_user_from_74 = create_user(can_book_free_offers=True, departement_code='74')
-        activated_user_from_75 = create_user(can_book_free_offers=True, departement_code='75', email='email2@test.com')
+        activated_user_from_75 = create_user(can_book_free_offers=True, departement_code='75',
+                                             email='email2@test.com')
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer1 = create_offer_with_thing_product(venue)
         stock1 = create_stock(offer=offer1, price=0)
-        booking1 = create_booking(activated_user_from_74, stock1)
-        booking2 = create_booking(activated_user_from_75, stock1)
+        booking1 = create_booking(activated_user_from_74, stock=stock1)
+        booking2 = create_booking(activated_user_from_75, stock=stock1)
         PcObject.save(booking1, booking2)
         PcObject.save(activated_user_from_74, activated_user_from_75)
 
@@ -110,8 +115,8 @@ class CountUsersHavingBookedTest:
         offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
         stock1 = create_stock(offer=offer1, price=0)
         stock2 = create_stock(offer=offer2, price=0)
-        booking1 = create_booking(user1, stock1)
-        booking2 = create_booking(user2, stock2)
+        booking1 = create_booking(user=user1, stock=stock1)
+        booking2 = create_booking(user=user2, stock=stock2)
         PcObject.save(booking1, booking2)
 
         # When
@@ -138,7 +143,7 @@ class GetMeanNumberOfBookingsPerUserHavingBookedTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
-        booking = create_booking(user_having_booked, stock, is_cancelled=False)
+        booking = create_booking(user=user_having_booked, stock=stock, is_cancelled=False)
         PcObject.save(booking)
 
         # When
@@ -155,7 +160,7 @@ class GetMeanNumberOfBookingsPerUserHavingBookedTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
-        booking = create_booking(user_having_booked, stock, is_cancelled=True)
+        booking = create_booking(user=user_having_booked, stock=stock, is_cancelled=True)
         PcObject.save(booking)
 
         # When
@@ -173,8 +178,8 @@ class GetMeanNumberOfBookingsPerUserHavingBookedTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
-        booking1 = create_booking(user_having_booked1, stock, is_cancelled=True)
-        booking2 = create_booking(user_having_booked2, stock, is_cancelled=False)
+        booking1 = create_booking(user=user_having_booked1, stock=stock, is_cancelled=True)
+        booking2 = create_booking(user=user_having_booked2, stock=stock, is_cancelled=False)
         PcObject.save(booking1, booking2)
 
         # When
@@ -192,8 +197,8 @@ class GetMeanNumberOfBookingsPerUserHavingBookedTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
-        booking1 = create_booking(user_having_booked1, stock, is_cancelled=False)
-        booking2 = create_booking(user_having_booked2, stock, is_cancelled=False)
+        booking1 = create_booking(user=user_having_booked1, stock=stock, is_cancelled=False)
+        booking2 = create_booking(user=user_having_booked2, stock=stock, is_cancelled=False)
         PcObject.save(booking1, booking2)
 
         # When
@@ -213,8 +218,8 @@ class GetMeanNumberOfBookingsPerUserHavingBookedTest:
         offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
         stock1 = create_stock(offer=offer1, price=0)
         stock2 = create_stock(offer=offer2, price=0)
-        booking1 = create_booking(user1, stock1, is_cancelled=False)
-        booking2 = create_booking(user2, stock2, is_cancelled=False)
+        booking1 = create_booking(user=user1, stock=stock1, is_cancelled=False)
+        booking2 = create_booking(user=user2, stock=stock2, is_cancelled=False)
         PcObject.save(booking1, booking2)
 
         # When
@@ -234,8 +239,8 @@ class GetMeanNumberOfBookingsPerUserHavingBookedTest:
         offer2 = create_offer_with_event_product(venue, event_type=EventType.CINEMA)
         stock1 = create_stock(offer=offer1, price=0)
         stock2 = create_stock(offer=offer2, price=0)
-        booking1 = create_booking(user1, stock1, is_cancelled=False)
-        booking2 = create_booking(user2, stock2, is_cancelled=False)
+        booking1 = create_booking(user=user1, stock=stock1, is_cancelled=False)
+        booking2 = create_booking(user=user2, stock=stock2, is_cancelled=False)
         PcObject.save(booking1, booking2)
 
         # When
@@ -262,7 +267,7 @@ class GetMeanAmountSpentByUserTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=10)
-        booking = create_booking(user_having_booked, stock, is_cancelled=False)
+        booking = create_booking(user=user_having_booked, stock=stock, is_cancelled=False)
         deposit = create_deposit(user=user_having_booked)
         PcObject.save(booking)
 
@@ -280,7 +285,7 @@ class GetMeanAmountSpentByUserTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=10)
-        booking = create_booking(user_having_booked, stock, is_cancelled=False, quantity=2)
+        booking = create_booking(user=user_having_booked, stock=stock, is_cancelled=False, quantity=2)
         deposit = create_deposit(user=user_having_booked)
         PcObject.save(booking)
 
@@ -298,7 +303,7 @@ class GetMeanAmountSpentByUserTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=10)
-        booking = create_booking(user_having_booked, stock, is_cancelled=True)
+        booking = create_booking(user=user_having_booked, stock=stock, is_cancelled=True)
         deposit = create_deposit(user=user_having_booked)
         PcObject.save(booking)
 
@@ -317,8 +322,8 @@ class GetMeanAmountSpentByUserTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=10)
-        booking1 = create_booking(user_having_booked1, stock, is_cancelled=True)
-        booking2 = create_booking(user_having_booked2, stock, is_cancelled=False)
+        booking1 = create_booking(user=user_having_booked1, stock=stock, is_cancelled=True)
+        booking2 = create_booking(user=user_having_booked2, stock=stock, is_cancelled=False)
         deposit1 = create_deposit(user=user_having_booked1)
         deposit2 = create_deposit(user=user_having_booked2)
 
@@ -342,9 +347,9 @@ class GetMeanAmountSpentByUserTest:
         activation_stock1 = create_stock(offer=activation_offer1, price=6)
         activation_stock2 = create_stock(offer=activation_offer2, price=10)
         stock = create_stock(offer=offer, price=30)
-        activation_booking1 = create_booking(user, activation_stock1)
-        activation_booking2 = create_booking(user, activation_stock2)
-        booking = create_booking(user, stock)
+        activation_booking1 = create_booking(user=user, stock=activation_stock1)
+        activation_booking2 = create_booking(user=user, stock=activation_stock2)
+        booking = create_booking(user=user, stock=stock)
         deposit = create_deposit(user=user)
 
         PcObject.save(activation_booking1, activation_booking2, booking)
@@ -365,8 +370,8 @@ class GetMeanAmountSpentByUserTest:
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=10)
         expensive_stock = create_stock(offer=offer, price=200)
-        booking_for_user_one = create_booking(user_having_booked_from_25, stock, is_cancelled=False)
-        booking_for_user_two = create_booking(user_having_booked_from_63, expensive_stock, is_cancelled=False)
+        booking_for_user_one = create_booking(user=user_having_booked_from_25, stock=stock, is_cancelled=False)
+        booking_for_user_two = create_booking(user=user_having_booked_from_63, stock=expensive_stock, is_cancelled=False)
         firstDeposit = create_deposit(user=user_having_booked_from_25)
         secondDeposit = create_deposit(user=user_having_booked_from_63)
         PcObject.save(booking_for_user_one, booking_for_user_two)
@@ -389,7 +394,7 @@ class QueryGetNonCancelledBookingsByDepartementTest:
 
         user_in_93 = create_user(departement_code='93')
         create_deposit(user_in_93, amount=500)
-        booking = create_booking(user_in_93, stock, quantity=1, is_cancelled=True)
+        booking = create_booking(user=user_in_93, stock=stock, is_cancelled=True, quantity=1)
         PcObject.save(booking)
 
         # When
@@ -408,8 +413,8 @@ class QueryGetNonCancelledBookingsByDepartementTest:
 
         user_in_93 = create_user(departement_code='93')
         create_deposit(user_in_93, amount=500)
-        booking = create_booking(user_in_93, stock, quantity=1)
-        booking2 = create_booking(user_in_93, stock, quantity=1)
+        booking = create_booking(user=user_in_93, stock=stock, quantity=1)
+        booking2 = create_booking(user=user_in_93, stock=stock, quantity=1)
         PcObject.save(booking, booking2)
 
         # When
@@ -433,8 +438,8 @@ class QueryGetNonCancelledBookingsByDepartementTest:
 
         user_in_93 = create_user(departement_code='76')
         create_deposit(user_in_93, amount=500)
-        booking = create_booking(user_in_93, stock93, quantity=5)
-        booking2 = create_booking(user_in_93, stock95, quantity=2)
+        booking = create_booking(user=user_in_93, stock=stock93, quantity=5)
+        booking2 = create_booking(user=user_in_93, stock=stock95, quantity=2)
         PcObject.save(booking, booking2)
 
         # When
@@ -459,11 +464,11 @@ class QueryGetNonCancelledBookingsByDepartementTest:
 
         user_in_95 = create_user(departement_code='95', email="user_in_95@example.net")
         create_deposit(user_in_95, amount=500)
-        booking_in_95 = create_booking(user_in_95, stock95, quantity=5)
+        booking_in_95 = create_booking(user=user_in_95, stock=stock95, quantity=5)
 
         user_in_93 = create_user(departement_code='93', email="user_in_93@example.net")
         create_deposit(user_in_93, amount=500)
-        booking_in_93 = create_booking(user_in_93, stock93, quantity=2)
+        booking_in_93 = create_booking(user=user_in_93, stock=stock93, quantity=2)
 
         PcObject.save(booking_in_93, booking_in_95)
 
@@ -486,8 +491,8 @@ class QueryGetNonCancelledBookingsByDepartementTest:
 
         user_in_93 = create_user(departement_code='93')
         create_deposit(user_in_93, amount=500)
-        booking1 = create_booking(user_in_93, stock1, quantity=1)
-        booking2 = create_booking(user_in_93, stock2, quantity=1)
+        booking1 = create_booking(user=user_in_93, stock=stock1, quantity=1)
+        booking2 = create_booking(user=user_in_93, stock=stock2, quantity=1)
         PcObject.save(booking1, booking2)
 
         # When
@@ -528,7 +533,7 @@ def _create_departement_booking_for_users(departement_code, user_email, booking_
     stock = create_stock(offer=offer, price=0)
 
     for i in range(booking_count):
-        create_booking(user_having_booked, stock, is_cancelled=False)
+        create_booking(user=user_having_booked, stock=stock, is_cancelled=False)
 
     PcObject.save(stock)
 
@@ -544,6 +549,6 @@ def _create_bookings_for_departement(bookings_by_departement):
     for departement_code, quantity in bookings_by_departement:
         user = create_user(departement_code=departement_code, email=f"user_in_{departement_code}@example.net")
         create_deposit(user, amount=500)
-        bookings.append(create_booking(user, stock, quantity=quantity))
+        bookings.append(create_booking(user=user, stock=stock, quantity=quantity))
 
     return bookings

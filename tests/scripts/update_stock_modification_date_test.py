@@ -4,8 +4,9 @@ from models.db import db
 from models import PcObject, Stock
 from scripts.update_stock_modification_date import update_stock_modification_date_sql_version
 from tests.conftest import clean_database
-from tests.test_utils import save_all_activities, \
-    create_stock, create_offer_with_thing_product, create_stock_activity, create_venue, create_offerer
+from tests.model_creators.generic_creators import create_stock, create_offerer, create_venue
+from tests.model_creators.activity_creators import create_stock_activity, save_all_activities
+from tests.model_creators.specific_creators import create_offer_with_thing_product
 
 
 class UpdateStockModificationDateTest:

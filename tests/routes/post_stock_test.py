@@ -4,8 +4,8 @@ from models import Stock, Provider
 from models.pc_object import PcObject
 from routes.serialization import serialize
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_user, create_offerer, create_venue, \
-    create_offer_with_event_product, create_user_offerer, create_offer_with_thing_product
+from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
+from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 from utils.human_ids import dehumanize, humanize
 
 
@@ -38,7 +38,7 @@ class Post:
         @clean_database
         def when_booking_limit_datetime_is_none_for_thing(self, app):
             # Given
-            user = create_user(email='test@email.fr', can_book_free_offers=False, is_admin=True)
+            user = create_user(can_book_free_offers=False, email='test@email.fr', is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
@@ -68,7 +68,7 @@ class Post:
         @clean_database
         def when_missing_offer_id(self, app):
             # Given
-            user = create_user(email='test@email.fr', can_book_free_offers=False, is_admin=True)
+            user = create_user(can_book_free_offers=False, email='test@email.fr', is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
@@ -85,7 +85,7 @@ class Post:
         @clean_database
         def when_booking_limit_datetime_after_beginning_datetime(self, app):
             # Given
-            user = create_user(email='email@test.com', can_book_free_offers=False, is_admin=True)
+            user = create_user(can_book_free_offers=False, email='email@test.com', is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
@@ -114,7 +114,7 @@ class Post:
         @clean_database
         def when_invalid_format_for_booking_limit_datetime(self, app):
             # Given
-            user = create_user(email='test@email.fr', can_book_free_offers=False, is_admin=True)
+            user = create_user(can_book_free_offers=False, email='test@email.fr', is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
@@ -138,7 +138,7 @@ class Post:
         def when_booking_limit_datetime_is_none_for_event(self, app):
             # Given
             beginningDatetime = datetime(2019, 2, 14)
-            user = create_user(email='test@email.fr', can_book_free_offers=False, is_admin=True)
+            user = create_user(can_book_free_offers=False, email='test@email.fr', is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
@@ -163,7 +163,7 @@ class Post:
         @clean_database
         def when_setting_beginning_and_end_datetimes_on_offer_with_thing(self, app):
             # Given
-            user = create_user(email='test@email.fr', can_book_free_offers=False, is_admin=True)
+            user = create_user(can_book_free_offers=False, email='test@email.fr', is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)

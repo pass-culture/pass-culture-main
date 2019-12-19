@@ -1,5 +1,5 @@
 from routes.serialization import as_dict
-from tests.test_utils import PLAIN_DEFAULT_TESTING_PASSWORD
+from tests.model_creators.generic_creators import PLAIN_DEFAULT_TESTING_PASSWORD
 from utils.includes import RECOMMENDATION_INCLUDES, USER_INCLUDES
 
 

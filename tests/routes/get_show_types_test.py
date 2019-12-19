@@ -1,7 +1,7 @@
 from domain.show_types import show_types
 from models import PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_user
+from tests.model_creators.generic_creators import create_user
 
 
 class Get:

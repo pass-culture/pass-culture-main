@@ -5,8 +5,8 @@ from domain.admin_emails import maybe_send_offerer_validation_email, send_venue_
     send_offer_creation_notification_to_administration, send_payment_message_email, \
     send_remote_beneficiaries_import_report_email
 from models import User
-from tests.test_utils import create_offerer, create_user, \
-    create_user_offerer, create_venue, create_offer_with_thing_product
+from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
+from tests.model_creators.specific_creators import create_offer_with_thing_product
 from utils.mailing import MailServiceException
 
 
@@ -22,8 +22,8 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_ob
     offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
                              name='Accenture', validation_token='12345')
 
-    user = create_user(public_name='Test', departement_code='75', email='user@accenture.com',
-                       can_book_free_offers=False, validation_token='98765')
+    user = create_user(can_book_free_offers=False, departement_code='75', email='user@accenture.com',
+                       public_name='Test', validation_token='98765')
 
     user_offerer = create_user_offerer(user, offerer, validation_token=None)
 
@@ -56,8 +56,8 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_dev_whe
     offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
                              name='Accenture', validation_token='12345')
 
-    user = create_user(public_name='Test', departement_code='75', email='user@accenture.com',
-                       can_book_free_offers=False, validation_token='98765')
+    user = create_user(can_book_free_offers=False, departement_code='75', email='user@accenture.com',
+                       public_name='Test', validation_token='98765')
 
     user_offerer = create_user_offerer(user, offerer, validation_token=None)
 
@@ -83,8 +83,8 @@ def test_maybe_send_offerer_validation_email_does_not_send_email_if_all_validate
     offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
                              name='Accenture', validation_token=None)
 
-    user = create_user(public_name='Test', departement_code='75', email='user@accenture.com',
-                       can_book_free_offers=False, validation_token=None)
+    user = create_user(can_book_free_offers=False, departement_code='75', email='user@accenture.com',
+                       public_name='Test', validation_token=None)
 
     user_offerer = create_user_offerer(user, offerer, validation_token=None)
 

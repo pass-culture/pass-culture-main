@@ -1,9 +1,10 @@
 import pytest
 
-from models import PcObject, Provider, ApiErrors
+from models import PcObject, ApiErrors
 from tests.conftest import clean_database
-from tests.test_utils import create_offerer, create_venue, create_offer_with_thing_product, \
-    create_offer_with_event_product, create_venue_provider, create_provider, activate_provider
+from tests.model_creators.provider_creators import activate_provider
+from tests.model_creators.generic_creators import create_offerer, create_venue, create_venue_provider, create_provider
+from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 
 
 @clean_database

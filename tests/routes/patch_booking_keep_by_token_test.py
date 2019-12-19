@@ -4,10 +4,10 @@ from decimal import Decimal
 
 from models import PcObject, EventType, Booking, Stock
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_venue, create_offerer, \
-    create_user, create_booking, create_offer_with_event_product, \
-    create_event_occurrence, create_stock_from_event_occurrence, create_user_offerer, create_payment, create_stock
-from tests.test_utils import create_api_key, create_stock_with_event_offer
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+    create_user_offerer, create_payment, create_api_key
+from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_event_occurrence, \
+    create_offer_with_event_product, create_event_occurrence
 from utils.token import random_token
 
 API_KEY_VALUE = random_token(64)
@@ -24,7 +24,7 @@ class Patch:
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
 
-                booking = create_booking(user, stock, venue=venue, is_used=True)
+                booking = create_booking(user=user, stock=stock, is_used=True, venue=venue)
                 PcObject.save(booking, offerer)
 
                 offererApiKey = create_api_key(offerer, API_KEY_VALUE)
@@ -58,7 +58,7 @@ class Patch:
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
 
-                booking = create_booking(user, stock, venue=venue, is_used=True)
+                booking = create_booking(user=user, stock=stock, is_used=True, venue=venue)
                 PcObject.save(booking, offerer)
 
                 offererApiKey = create_api_key(offerer, API_KEY_VALUE)
@@ -95,7 +95,7 @@ class Patch:
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
 
-                booking = create_booking(user, stock, venue=venue, is_used=True)
+                booking = create_booking(user=user, stock=stock, is_used=True, venue=venue)
                 PcObject.save(booking, user_offerer)
                 booking_id = booking.id
 
@@ -118,7 +118,7 @@ class Patch:
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
 
-                booking = create_booking(user, stock, venue=venue, is_used=True)
+                booking = create_booking(user=user, stock=stock, is_used=True, venue=venue)
 
                 PcObject.save(booking, user_offerer)
                 booking_id = booking.id
@@ -146,7 +146,7 @@ class Patch:
                 stock.available=1
                 PcObject.save(stock)
 
-                booking = create_booking(user, stock, venue=venue, is_used=True, date_used=datetime.utcnow())
+                booking = create_booking(user=user, stock=stock, date_used=datetime.utcnow(), is_used=True, venue=venue)
                 PcObject.save(booking, user_offerer)
 
                 PcObject.save(booking)
@@ -175,7 +175,7 @@ class Patch:
             stock = create_stock_with_event_offer(offerer, venue, price=0)
             stock.available = 1
             PcObject.save(stock)
-            booking = create_booking(user, stock, venue=venue, is_used=True, date_used=datetime.utcnow())
+            booking = create_booking(user=user, stock=stock, date_used=datetime.utcnow(), is_used=True, venue=venue)
 
             PcObject.save(booking, user_offerer)
 
@@ -201,7 +201,7 @@ class Patch:
             offer = create_offer_with_event_product(venue, event_name='Event Name')
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
 
             PcObject.save(booking)
 
@@ -221,7 +221,7 @@ class Patch:
             offer = create_offer_with_event_product(venue, event_name='Event Name')
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
 
             PcObject.save(booking)
 
@@ -249,7 +249,7 @@ class Patch:
                 offer = create_offer_with_event_product(venue, event_name='Event Name')
                 event_occurrence = create_event_occurrence(offer)
                 stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-                booking = create_booking(user, stock, venue=venue)
+                booking = create_booking(user=user, stock=stock, venue=venue)
 
                 PcObject.save(pro_user, booking, user_offerer, offerer2)
 
@@ -283,7 +283,7 @@ class Patch:
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
 
 
-                booking = create_booking(user, stock, venue=venue)
+                booking = create_booking(user=user, stock=stock, venue=venue)
                 PcObject.save(booking, pro_user)
 
                 # When
@@ -309,7 +309,7 @@ class Patch:
                 activation_event_occurrence = create_event_occurrence(activation_offer)
                 stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0)
 
-                booking = create_booking(user, stock, venue=venue)
+                booking = create_booking(user=user, stock=stock, venue=venue)
 
                 PcObject.save(booking, user_offerer)
 
@@ -335,7 +335,7 @@ class Patch:
                 event_occurrence = create_event_occurrence(offer)
                 stock = create_stock_from_event_occurrence(event_occurrence, price=0)
 
-                booking = create_booking(user, stock, venue=venue)
+                booking = create_booking(user=user, stock=stock, venue=venue)
 
                 PcObject.save(booking)
 
@@ -365,7 +365,7 @@ class Patch:
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
 
-                booking = create_booking(user, stock, venue=venue)
+                booking = create_booking(user=user, stock=stock, venue=venue)
                 PcObject.save(booking)
 
                 offererApiKey = create_api_key(offerer, API_KEY_VALUE)
@@ -398,7 +398,7 @@ class Patch:
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
 
-                booking = create_booking(user, stock, venue=venue)
+                booking = create_booking(user=user, stock=stock, venue=venue)
                 PcObject.save(booking, user_offerer)
 
                 # When
@@ -419,7 +419,7 @@ class Patch:
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
 
-                booking = create_booking(user, stock, venue=venue)
+                booking = create_booking(user=user, stock=stock, venue=venue)
 
                 PcObject.save(booking, user_offerer)
 
@@ -442,7 +442,7 @@ class Patch:
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
 
-                booking = create_booking(user, stock, venue=venue, is_used=True)
+                booking = create_booking(user=user, stock=stock, is_used=True, venue=venue)
 
                 booking.isCancelled = True
                 PcObject.save(booking, user_offerer)
@@ -466,7 +466,7 @@ class Patch:
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
 
-                booking = create_booking(user, stock, venue=venue)
+                booking = create_booking(user=user, stock=stock, venue=venue)
                 PcObject.save(booking, user_offerer)
 
                 # When
@@ -488,7 +488,7 @@ class Patch:
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
 
-                booking = create_booking(user, stock, venue=venue)
+                booking = create_booking(user=user, stock=stock, venue=venue)
                 payment = create_payment(booking, offerer, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
 
                 PcObject.save(booking, user_offerer, payment)
@@ -515,7 +515,7 @@ class Patch:
 
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
 
-                booking = create_booking(user, stock, venue=venue, is_used=True)
+                booking = create_booking(user=user, stock=stock, is_used=True, venue=venue)
                 booking.isCancelled = True
 
                 PcObject.save(booking, user_offerer)
@@ -549,7 +549,7 @@ class Patch:
                 user_offerer = create_user_offerer(pro_user, offerer)
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
-                booking = create_booking(user, stock, venue=venue)
+                booking = create_booking(user=user, stock=stock, venue=venue)
                 PcObject.save(booking, user_offerer)
 
                 offererApiKey = create_api_key(offerer, API_KEY_VALUE)
@@ -581,7 +581,7 @@ class Patch:
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
 
-                booking = create_booking(user, stock, venue=venue)
+                booking = create_booking(user=user, stock=stock, venue=venue)
                 payment = create_payment(booking, offerer, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
 
                 PcObject.save(booking, user_offerer, payment)

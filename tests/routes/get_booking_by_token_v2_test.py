@@ -3,11 +3,10 @@ from freezegun import freeze_time
 
 from models import PcObject, EventType
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_stock_with_thing_offer, \
-    create_venue, create_offerer, \
-    create_user, create_booking, create_offer_with_event_product, \
-    create_event_occurrence, create_stock_from_event_occurrence, create_user_offerer, create_stock_with_event_offer, \
-    create_api_key, create_deposit
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, create_deposit, \
+    create_user_offerer, create_api_key
+from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_event_occurrence, \
+    create_stock_with_thing_offer, create_offer_with_event_product, create_event_occurrence
 
 API_KEY_VALUE = 'A_MOCKED_API_KEY'
 
@@ -18,7 +17,7 @@ class Get:
         @clean_database
         def when_user_has_rights_and_regular_offer(self, app):
             # Given
-            user = create_user(public_name='John Doe', email='user@example.com')
+            user = create_user(email='user@example.com', public_name='John Doe')
             create_deposit(user)
             admin_user = create_user(email='admin@example.com')
             offerer = create_offerer()
@@ -27,7 +26,7 @@ class Get:
             offer = create_offer_with_event_product(venue=venue, event_name='Event Name', event_type=EventType.CINEMA)
             event_occurrence = create_event_occurrence(offer, beginning_datetime=datetime.utcnow())
             stock = create_stock_from_event_occurrence(event_occurrence, price=12)
-            booking = create_booking(user, stock=stock, venue=venue, quantity=3)
+            booking = create_booking(user=user, quantity=3, stock=stock, venue=venue)
             PcObject.save(booking)
             url = f'/v2/bookings/token/{booking.token}'
 
@@ -43,15 +42,15 @@ class Get:
         @clean_database
         def when_api_key_is_provided_and_rights_and_regular_offer(self, app):
             # Given
-            user = create_user(public_name='John Doe', email='user@example.com')
-            user2 = create_user(public_name='Jane Doe', email='user2@example.com')
+            user = create_user(email='user@example.com', public_name='John Doe')
+            user2 = create_user(email='user2@example.com', public_name='Jane Doe')
             offerer = create_offerer()
             user_offerer = create_user_offerer(user2, offerer)
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue, event_name='Event Name', event_type=EventType.CINEMA)
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(user_offerer, booking)
             offererApiKey = create_api_key(offerer, API_KEY_VALUE)
             PcObject.save(offererApiKey)
@@ -81,7 +80,7 @@ class Get:
             user_offerer = create_user_offerer(pro_user, offerer)
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(booking, user_offerer)
             url = f'/v2/bookings/token/{booking.token}'
             stock.available = 0
@@ -98,7 +97,7 @@ class Get:
         @clean_database
         def when_user_has_rights_and_regular_offer_and_token_in_lower_case(self, app):
             # Given
-            user = create_user(public_name='John Doe', email='user@example.com')
+            user = create_user(email='user@example.com', public_name='John Doe')
             admin_user = create_user(email='admin@example.com')
             offerer = create_offerer()
             user_offerer = create_user_offerer(admin_user, offerer)
@@ -106,7 +105,7 @@ class Get:
             offer = create_offer_with_event_product(venue, event_name='Event Name', event_type=EventType.CINEMA)
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(user_offerer, booking)
             booking_token = booking.token.lower()
             url = f'/v2/bookings/token/{booking_token}'
@@ -128,7 +127,7 @@ class Get:
             user_offerer = create_user_offerer(admin_user, offerer)
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(booking, user_offerer)
             url = f'/v2/bookings/token/{booking.token}'
 
@@ -148,14 +147,15 @@ class Get:
         @clean_database
         def when_activation_event_and_user_has_rights(self, app):
             # Given
-            user = create_user(email='user@example.com', phone_number='0698765432', date_of_birth=datetime(2001, 2, 1))
-            admin_user = create_user(email='admin@example.com', is_admin=True, can_book_free_offers=False)
+            user = create_user(date_of_birth=datetime(2001, 2, 1), email='user@example.com',
+                               phone_number='0698765432')
+            admin_user = create_user(can_book_free_offers=False, email='admin@example.com', is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue, event_name="Offre d'activation", event_type=EventType.ACTIVATION)
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(admin_user, booking)
             url = f'/v2/bookings/token/{booking.token}'
 
@@ -231,7 +231,7 @@ class Get:
             offer = create_offer_with_event_product(venue, event_name='Event Name')
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(querying_user, booking)
             url = f'/v2/bookings/token/{booking.token}'
 
@@ -256,7 +256,7 @@ class Get:
             offer = create_offer_with_event_product(venue, event_name='Event Name')
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(admin_user, booking, user_offerer, offerer2)
             offerer2ApiKey = create_api_key(offerer2, API_KEY_VALUE)
             PcObject.save(offerer2ApiKey)
@@ -290,7 +290,7 @@ class Get:
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0, beginning_datetime=in_73_hours,
                                                   end_datetime=in_74_hours, booking_limit_datetime=in_72_hours)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(admin_user, booking, user_offerer)
             url = f'/v2/bookings/token/{booking.token}'
 
@@ -313,7 +313,7 @@ class Get:
             offer = create_offer_with_event_product(venue, event_name='Event Name')
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(booking)
             url = '/v2/bookings/token/'
 
@@ -351,7 +351,7 @@ class Get:
             offer = create_offer_with_event_product(venue, event_name='Event Name')
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(admin_user, booking, user_offerer)
             offererApiKey = create_api_key(offerer, API_KEY_VALUE)
             PcObject.save(offererApiKey)
@@ -382,7 +382,7 @@ class Get:
             user_offerer = create_user_offerer(admin_user, offerer)
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
-            booking = create_booking(user, stock, venue=venue, is_used=True)
+            booking = create_booking(user=user, stock=stock, is_used=True, venue=venue)
             PcObject.save(admin_user, booking, user_offerer)
             offererApiKey = create_api_key(offerer, API_KEY_VALUE)
             PcObject.save(offererApiKey)
@@ -412,7 +412,7 @@ class Get:
             user_offerer = create_user_offerer(admin_user, offerer)
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
-            booking = create_booking(user, stock, venue=venue, is_cancelled=True)
+            booking = create_booking(user=user, stock=stock, is_cancelled=True, venue=venue)
             PcObject.save(admin_user, booking, user_offerer)
             offererApiKey = create_api_key(offerer, API_KEY_VALUE)
             PcObject.save(offererApiKey)

@@ -1,6 +1,6 @@
 from models import UserSession, PcObject
 from tests.conftest import TestClient, clean_database
-from tests.test_utils import create_user
+from tests.model_creators.generic_creators import create_user
 
 
 class Get:

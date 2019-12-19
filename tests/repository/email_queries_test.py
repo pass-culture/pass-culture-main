@@ -2,7 +2,7 @@ from models import PcObject
 from models.email import EmailStatus
 from repository.email_queries import find_all_in_error
 from tests.conftest import clean_database
-from tests.test_utils import create_email
+from tests.model_creators.generic_creators import create_email
 
 
 class FindAllInErrorTest:

@@ -1,7 +1,8 @@
 from bs4 import BeautifulSoup
 
 from models import ThingType
-from tests.test_utils import create_offerer, create_venue, create_offer_with_thing_product, create_user
+from tests.model_creators.generic_creators import create_user, create_offerer, create_venue
+from tests.model_creators.specific_creators import create_offer_with_thing_product
 from tests.utils.mailing_test import _remove_whitespaces
 from utils.mailing import make_offer_creation_notification_email
 
@@ -52,7 +53,7 @@ class MakeOfferCreationNotificationEmailTest:
 
     def test_when_virtual_offer_returns_subject_with_virtual_information_and_dictionary_with_given_content(self, app):
         # When
-        author = create_user('author@email.com')
+        author = create_user(can_book_free_offers='author@email.com')
         email = make_offer_creation_notification_email(self.virtual_offer, author, 'test.url')
 
         # Then

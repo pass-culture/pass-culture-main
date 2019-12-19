@@ -4,10 +4,9 @@ from urllib.parse import urlencode
 from models import PcObject, EventType
 from routes.serialization import serialize
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_stock_with_thing_offer, \
-    create_venue, create_offerer, \
-    create_user, create_booking, create_offer_with_event_product, \
-    create_event_occurrence, create_stock_from_event_occurrence, create_user_offerer, create_stock_with_event_offer
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, create_user_offerer
+from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_event_occurrence, \
+    create_stock_with_thing_offer, create_offer_with_event_product, create_event_occurrence
 from utils.human_ids import humanize
 
 
@@ -16,7 +15,7 @@ class Get:
         @clean_database
         def when_user_has_rights_and_regular_offer(self, app):
             # Given
-            user = create_user(public_name='John Doe', email='user@example.com')
+            user = create_user(email='user@example.com', public_name='John Doe')
             admin_user = create_user(email='admin@example.com')
             offerer = create_offerer()
             user_offerer = create_user_offerer(admin_user, offerer)
@@ -24,7 +23,7 @@ class Get:
             offer = create_offer_with_event_product(venue, event_name='Event Name', event_type=EventType.CINEMA)
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(user_offerer, booking)
             url = f'/bookings/token/{booking.token}'
 
@@ -49,7 +48,7 @@ class Get:
         @clean_database
         def when_user_has_rights_and_regular_offer_and_token_in_lower_case(self, app):
             # Given
-            user = create_user(public_name='John Doe', email='user@example.com')
+            user = create_user(email='user@example.com', public_name='John Doe')
             admin_user = create_user(email='admin@example.com')
             offerer = create_offerer()
             user_offerer = create_user_offerer(admin_user, offerer)
@@ -57,7 +56,7 @@ class Get:
             offer = create_offer_with_event_product(venue, event_name='Event Name', event_type=EventType.CINEMA)
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(user_offerer, booking)
             booking_token = booking.token.lower()
             url = f'/bookings/token/{booking_token}'
@@ -83,14 +82,15 @@ class Get:
         @clean_database
         def when_user_has_rights_and_activation_event(self, app):
             # Given
-            user = create_user(email='user@example.com', phone_number='0698765432', date_of_birth=datetime(2001, 2, 1))
-            admin_user = create_user(email='admin@example.com', is_admin=True, can_book_free_offers=False)
+            user = create_user(date_of_birth=datetime(2001, 2, 1), email='user@example.com',
+                               phone_number='0698765432')
+            admin_user = create_user(can_book_free_offers=False, email='admin@example.com', is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue, event_name="Offre d'activation", event_type=EventType.ACTIVATION)
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(admin_user, booking)
             url = f'/bookings/token/{booking.token}'
 
@@ -125,7 +125,7 @@ class Get:
             offer = create_offer_with_event_product(venue, event_name='Event Name')
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(user_offerer, booking)
             url_email = urlencode({'email': 'user+plus@example.com'})
             url = f'/bookings/token/{booking.token}?{url_email}'
@@ -149,7 +149,7 @@ class Get:
             offer = create_offer_with_event_product(venue, event_name='Event Name')
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(admin_user, booking)
             url = f'/bookings/token/{booking.token}?email=user@example.com'
 
@@ -170,7 +170,7 @@ class Get:
             offer = create_offer_with_event_product(venue, event_name='Event Name')
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(admin_user, booking)
             url = f'/bookings/token/{booking.token}?email=user@example.com&offer_id={humanize(offer.id)}'
 
@@ -189,7 +189,7 @@ class Get:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(admin_user, booking)
             url = f'/bookings/token/{booking.token}?email=user@example.com&offer_id={humanize(stock.offerId)}'
 
@@ -227,7 +227,7 @@ class Get:
             offer = create_offer_with_event_product(venue, event_name='Event Name')
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(admin_user, booking)
             url = f'/bookings/token/{booking.token}?email=toto@example.com'
 
@@ -248,7 +248,7 @@ class Get:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(admin_user, booking)
             url = f'/bookings/token/{booking.token}?email=user@example.com&offer_id={humanize(123)}'
 
@@ -271,7 +271,7 @@ class Get:
             offer = create_offer_with_event_product(venue, event_name='Event Name')
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(user_offerer, booking)
             url = f'/bookings/token/{booking.token}?email={user.email}'
 
@@ -294,7 +294,7 @@ class Get:
             offer = create_offer_with_event_product(venue, event_name='Event Name')
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(admin_user, booking)
             url = f'/bookings/token/{booking.token}'
 
@@ -317,7 +317,7 @@ class Get:
             offer = create_offer_with_event_product(venue, event_name='Event Name')
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(querying_user, booking)
             url = f'/bookings/token/{booking.token}'
 
@@ -343,7 +343,7 @@ class Get:
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0, beginning_datetime=in_73_hours,
                                                   end_datetime=in_74_hours, booking_limit_datetime=in_72_hours)
-            booking = create_booking(user, stock, venue=venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(admin_user, booking)
             url = f'/bookings/token/{booking.token}?email=user@example.com&offer_id={humanize(stock.offerId)}'
 
@@ -364,7 +364,7 @@ class Get:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
-            booking = create_booking(user, stock, venue=venue, is_used=True)
+            booking = create_booking(user=user, stock=stock, is_used=True, venue=venue)
             PcObject.save(admin_user, booking)
             url = f'/bookings/token/{booking.token}?email=user@example.com&offer_id={humanize(stock.offerId)}'
 
@@ -384,7 +384,7 @@ class Get:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
-            booking = create_booking(user, stock, venue=venue, is_cancelled=True)
+            booking = create_booking(user=user, stock=stock, is_cancelled=True, venue=venue)
             PcObject.save(admin_user, booking)
             url = f'/bookings/token/{booking.token}?email=user@example.com&offer_id={humanize(stock.offerId)}'
 

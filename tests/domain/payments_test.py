@@ -11,13 +11,12 @@ from domain.payments import create_payment_for_booking, filter_out_already_paid_
     filter_out_bookings_without_cost, keep_only_pending_payments, keep_only_not_processable_payments, apply_banishment, \
     UnmatchedPayments
 from domain.reimbursement import BookingReimbursement, ReimbursementRules
-from models import Offer, Venue, Booking, Offerer, PcObject
+from models import Offer, Venue, Booking, Offerer
 from models.payment import Payment
 from models.payment_status import TransactionStatus
-from tests.conftest import clean_database
-from tests.test_utils import create_booking, create_stock, create_user, create_offerer, create_venue, create_payment, \
-    create_offer_with_thing_product, create_bank_information, create_deposit, create_booking_activity, \
-    save_all_activities
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue, \
+    create_payment, create_bank_information
+from tests.model_creators.specific_creators import create_offer_with_thing_product
 
 
 @freeze_time('2018-10-15 09:21:34')
@@ -25,7 +24,7 @@ def test_create_payment_for_booking_with_common_information(app):
     # given
     user = create_user()
     stock = create_stock(price=10, available=5)
-    booking = create_booking(user, stock=stock, quantity=1)
+    booking = create_booking(user=user, quantity=1, stock=stock)
     booking.stock.offer = Offer()
     booking.stock.offer.venue = Venue()
     offerer = create_offerer()
@@ -52,7 +51,7 @@ def test_create_payment_for_booking_when_iban_is_on_venue_should_take_payment_in
     stock = create_stock(price=10, available=5)
     offerer = create_offerer(name='Test Offerer')
     venue = create_venue(offerer, name='Test Venue', )
-    booking = create_booking(user, stock=stock, quantity=1)
+    booking = create_booking(user=user, quantity=1, stock=stock)
 
     offerer_bank_information = create_bank_information(bic='Lajr93', iban='B135TGGEG532TG', offerer=offerer)
     venue_bank_information = create_bank_information(bic='LokiJU76', iban='KD98765RFGHZ788', venue=venue)
@@ -80,7 +79,7 @@ def test_create_payment_for_booking_when_no_iban_on_venue_should_take_payment_in
     offerer_bank_information = create_bank_information(bic='QsdFGH8Z555', iban='cf13QSDFGH456789', offerer=offerer)
     venue_bank_information = create_bank_information(bic=None, iban=None, venue=venue)
 
-    booking = create_booking(user, stock=stock, quantity=1)
+    booking = create_booking(user=user, quantity=1, stock=stock)
     booking.stock.offer = Offer()
     booking.stock.offer.venue = venue
     booking.stock.offer.venue.managingOfferer = offerer
@@ -98,7 +97,7 @@ def test_create_payment_for_booking_takes_recipient_name_and_siren_from_offerer(
     # given
     user = create_user()
     stock = create_stock(price=10, available=5)
-    booking = create_booking(user, stock=stock, quantity=1)
+    booking = create_booking(user=user, quantity=1, stock=stock)
     booking.stock.offer = Offer()
     offerer = create_offerer(name='Test Offerer', siren='123456789')
     venue = create_venue(offerer, name='Test Venue')
@@ -122,7 +121,7 @@ def test_create_payment_for_booking_with_not_processable_status_when_no_bank_inf
     # given
     user = create_user()
     stock = create_stock(price=10, available=5)
-    booking = create_booking(user, stock=stock, quantity=1)
+    booking = create_booking(user=user, quantity=1, stock=stock)
     booking.stock.offer = Offer()
     booking.stock.offer.venue = Venue()
     booking.stock.offer.venue.managingOfferer = create_offerer(name='Test Offerer')
@@ -142,7 +141,7 @@ def test_create_payment_for_booking_with_pending_status(app):
     # given
     user = create_user()
     stock = create_stock(price=10, available=5)
-    booking = create_booking(user, stock=stock, quantity=1)
+    booking = create_booking(user=user, quantity=1, stock=stock)
     booking.stock.offer = Offer()
     booking.stock.offer.venue = Venue()
     offerer = create_offerer()
@@ -237,7 +236,7 @@ class KeepOnlyPendingPaymentsTest:
     def test_it_returns_only_payments_with_current_status_as_pending(self):
         # given
         user = create_user()
-        booking = create_booking(user)
+        booking = create_booking(user=user)
         offerer = create_offerer()
         payments = [
             create_payment(booking, offerer, 30, status=TransactionStatus.PENDING),
@@ -255,7 +254,7 @@ class KeepOnlyPendingPaymentsTest:
     def test_it_returns_an_empty_list_if_everything_has_no_pending_payment(self):
         # given
         user = create_user()
-        booking = create_booking(user)
+        booking = create_booking(user=user)
         offerer = create_offerer()
         payments = [
             create_payment(booking, offerer, 30, status=TransactionStatus.SENT),
@@ -281,7 +280,7 @@ class KeepOnlyNotProcessablePaymentsTest:
     def test_it_returns_only_payments_with_current_status_as_not_processable(self):
         # given
         user = create_user()
-        booking = create_booking(user)
+        booking = create_booking(user=user)
         offerer = create_offerer()
         payments = [
             create_payment(booking, offerer, 30, status=TransactionStatus.PENDING),
@@ -299,7 +298,7 @@ class KeepOnlyNotProcessablePaymentsTest:
     def test_it_returns_an_empty_list_if_everything_has_no_not_processable_payment(self):
         # given
         user = create_user()
-        booking = create_booking(user)
+        booking = create_booking(user=user)
         offerer = create_offerer()
         payments = [
             create_payment(booking, offerer, 30, status=TransactionStatus.SENT),
@@ -325,7 +324,7 @@ class CreatePaymentDetailsTest:
     def test_contains_info_on_bank_transaction(self):
         # given
         user = create_user()
-        booking = create_booking(user)
+        booking = create_booking(user=user)
         offerer = create_offerer()
         payment = create_payment(booking, offerer, 35, payment_message_name='1234',
                                  transaction_end_to_end_id=uuid.uuid4(), iban='123456789')
@@ -342,8 +341,8 @@ class CreatePaymentDetailsTest:
 
     def test_contains_info_on_user_who_booked(self):
         # given
-        user = create_user(email='jane.doe@test.com', idx=3)
-        booking = create_booking(user)
+        user = create_user(email='jane.doe@test.com', id=3)
+        booking = create_booking(user=user)
         offerer = create_offerer()
         payment = create_payment(booking, offerer, 35)
 
@@ -356,13 +355,13 @@ class CreatePaymentDetailsTest:
 
     def test_contains_info_on_booking(self):
         # given
-        user = create_user(email='jane.doe@test.com', idx=3)
+        user = create_user(email='jane.doe@test.com', id=3)
         offerer = create_offerer(siren='987654321', name='Joe le Libraire')
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(price=12, available=5, offer=offer)
-        booking = create_booking(user, stock, date_created=datetime(2018, 2, 5), quantity=2, idx=5)
-        payment = create_payment(booking, offerer, 35)
+        booking = create_booking(user=user, stock=stock, date_created=datetime(2018, 2, 5), id=5, quantity=2)
+        payment = create_payment(booking=booking, offerer=offerer, amount=35)
         find_date = Mock()
         find_date.return_value = datetime(2018, 2, 19)
 
@@ -376,12 +375,12 @@ class CreatePaymentDetailsTest:
 
     def test_contains_info_on_offerer(self):
         # given
-        user = create_user(email='jane.doe@test.com', idx=3)
+        user = create_user(email='jane.doe@test.com', id=3)
         offerer = create_offerer(siren='987654321', name='Joe le Libraire')
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(price=12, available=5, offer=offer)
-        booking = create_booking(user, stock, date_created=datetime(2018, 2, 5), quantity=2, idx=5)
+        booking = create_booking(user=user, stock=stock, date_created=datetime(2018, 2, 5), id=5, quantity=2)
         payment = create_payment(booking, offerer, 35)
         find_date = Mock()
         find_date.return_value = datetime(2018, 2, 19)
@@ -395,12 +394,12 @@ class CreatePaymentDetailsTest:
 
     def test_contains_info_on_venue(self):
         # given
-        user = create_user(email='jane.doe@test.com', idx=3)
+        user = create_user(email='jane.doe@test.com', id=3)
         offerer = create_offerer(siren='987654321', name='Joe le Libraire')
         venue = create_venue(offerer, name='Jack le Sculpteur', siret='1234567891234')
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(price=12, available=5, offer=offer)
-        booking = create_booking(user, stock, date_created=datetime(2018, 2, 5), quantity=2, idx=5)
+        booking = create_booking(user=user, stock=stock, date_created=datetime(2018, 2, 5), id=5, quantity=2)
         payment = create_payment(booking, offerer, 35)
         find_date = Mock()
         find_date.return_value = datetime(2018, 2, 19)
@@ -414,12 +413,12 @@ class CreatePaymentDetailsTest:
 
     def test_contains_info_on_offer(self):
         # given
-        user = create_user(email='jane.doe@test.com', idx=3)
+        user = create_user(email='jane.doe@test.com', id=3)
         offerer = create_offerer(siren='987654321', name='Joe le Libraire')
         venue = create_venue(offerer, name='Jack le Sculpteur', siret='1234567891234')
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(price=12, available=5, offer=offer)
-        booking = create_booking(user, stock, date_created=datetime(2018, 2, 5), quantity=2, idx=5)
+        booking = create_booking(user=user, stock=stock, date_created=datetime(2018, 2, 5), id=5, quantity=2)
         payment = create_payment(booking, offerer, 35)
         find_date = Mock()
         find_date.return_value = datetime(2018, 2, 19)
@@ -445,9 +444,9 @@ class CreateAllPaymentsDetailsTest:
         offerer1, offerer2 = create_offerer(), create_offerer()
         user1, user2 = create_user(), create_user()
         payments = [
-            create_payment(create_booking(user1), offerer1, 10),
-            create_payment(create_booking(user1), offerer1, 20),
-            create_payment(create_booking(user2), offerer2, 30)
+            create_payment(create_booking(user=user1), offerer1, 10),
+            create_payment(create_booking(user=user1), offerer1, 20),
+            create_payment(create_booking(user=user2), offerer2, 30)
         ]
 
         # when
@@ -479,7 +478,7 @@ class GroupPaymentsByStatusTest:
     def test_payments_are_grouped_by_current_statuses_names(self):
         # given
         user = create_user()
-        booking = create_booking(user)
+        booking = create_booking(user=user)
         offerer = create_offerer()
         payment1 = create_payment(booking, offerer, 10)
         payment2 = create_payment(booking, offerer, 20)

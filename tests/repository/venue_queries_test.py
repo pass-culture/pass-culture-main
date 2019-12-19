@@ -4,9 +4,10 @@ from datetime import datetime, timedelta
 from models import PcObject
 from repository.venue_queries import find_filtered_venues, find_by_managing_user
 from tests.conftest import clean_database
-from tests.test_utils import create_venue, create_offer_with_event_product, create_venue_activity, \
-    create_event_occurrence, create_offerer, create_offer_with_thing_product, create_stock_with_thing_offer, \
-    create_user, create_user_offerer, create_stock_from_event_occurrence, save_all_activities
+from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
+from tests.model_creators.activity_creators import create_venue_activity, save_all_activities
+from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_with_thing_offer, \
+    create_offer_with_thing_product, create_offer_with_event_product, create_event_occurrence
 
 
 @clean_database

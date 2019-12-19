@@ -2,7 +2,7 @@ from unittest.mock import patch, MagicMock
 
 from models import PcObject, Offerer, RightsType, UserOfferer
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_user, create_user_offerer, create_offerer
+from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 
 
 class Post:

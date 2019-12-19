@@ -1,6 +1,6 @@
 from models import PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_user
+from tests.model_creators.generic_creators import create_user
 
 
 class Get:
@@ -40,8 +40,7 @@ class Get:
         @clean_database
         def when_user_is_admin(self, app):
             # given
-            admin_user = create_user(
-                email='pctest.admin93.0@btmx.fr', can_book_free_offers=False, is_admin=True)
+            admin_user = create_user(can_book_free_offers=False, email='pctest.admin93.0@btmx.fr', is_admin=True)
             PcObject.save(admin_user)
 
             # when

@@ -7,9 +7,10 @@ from emails.beneficiary_offer_cancellation import retrieve_offerer_booking_recap
     _is_offer_active_for_recap
 from models import PcObject
 from tests.conftest import clean_database
-from tests.test_utils import create_user, create_offerer, create_venue, create_offer_with_event_product, \
-    create_event_occurrence, create_stock_from_event_occurrence, create_booking, create_offer_with_thing_product, \
-    create_stock_from_offer, create_product_with_thing_type, create_mocked_bookings
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue
+from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_from_offer, \
+    create_product_with_thing_type, create_offer_with_thing_product, create_offer_with_event_product, \
+    create_event_occurrence, create_mocked_bookings
 from tests.utils.mailing_test import _remove_whitespaces
 from utils.mailing import make_offerer_driven_cancellation_email_for_offerer, make_batch_cancellation_email
 
@@ -22,7 +23,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         end_datetime = beginning_datetime + timedelta(hours=1)
         booking_limit_datetime = beginning_datetime - timedelta(hours=1)
 
-        user = create_user(public_name='John Doe', email='john@doe.fr')
+        user = create_user(email='john@doe.fr', public_name='John Doe')
         offerer = create_offerer(name='Test offerer')
         venue = create_venue(offerer, name='Le petit théâtre', address='1 rue de la Libération', city='Montreuil',
                              postal_code='93100')
@@ -31,7 +32,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
                                                    end_datetime=end_datetime)
         stock = create_stock_from_event_occurrence(event_occurrence, price=20, available=10,
                                                    booking_limit_date=booking_limit_datetime)
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
 
         # When
         with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[]):
@@ -58,8 +59,8 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
     @clean_database
     def test_make_offerer_driven_cancellation_email_for_offerer_event_when_other_booking(self, app):
         # Given
-        user1 = create_user(public_name='John Doe', first_name='John', last_name='Doe', email='john@doe.fr')
-        user2 = create_user(public_name='Jane S.', first_name='Jane', last_name='Smith', email='jane@smith.fr')
+        user1 = create_user(email='john@doe.fr', first_name='John', last_name='Doe', public_name='John Doe')
+        user2 = create_user(email='jane@smith.fr', first_name='Jane', last_name='Smith', public_name='Jane S.')
         offerer = create_offerer(name='Test offerer')
         venue = create_venue(offerer, name='Le petit théâtre', address='1 rue de la Libération', city='Montreuil',
                              postal_code='93100')
@@ -68,8 +69,8 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
                                                    beginning_datetime=datetime(2019, 7, 20, 12, 0, 0,
                                                                                tzinfo=timezone.utc))
         stock = create_stock_from_event_occurrence(event_occurrence, price=20, available=10)
-        booking1 = create_booking(user1, stock, token='98765')
-        booking2 = create_booking(user2, stock, token='12345')
+        booking1 = create_booking(user=user1, stock=stock, token='98765')
+        booking2 = create_booking(user=user2, stock=stock, token='12345')
 
         # When
         with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking2]):
@@ -89,17 +90,18 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
     @clean_database
     def test_make_offerer_driven_cancellation_email_for_offerer_thing_and_already_existing_booking(self, app):
         # Given
-        user = create_user(public_name='John Doe', first_name='John', last_name='Doe', email='john@doe.fr')
+        user = create_user(email='john@doe.fr', first_name='John', last_name='Doe', public_name='John Doe')
         offerer = create_offerer(name='Test offerer')
         venue = create_venue(offerer, name='La petite librairie', address='1 rue de la Libération', city='Montreuil',
                              postal_code='93100')
         thing_product = create_product_with_thing_type(thing_name='Le récit de voyage')
         offer = create_offer_with_thing_product(venue, thing_product)
         stock = create_stock_from_offer(offer, price=0, available=10)
-        booking = create_booking(user, stock, token='12346')
+        booking = create_booking(user=user, stock=stock, token='12346')
 
-        user2 = create_user(public_name='James Bond', first_name='James', last_name='Bond', email='bond@james.bond.uk')
-        booking2 = create_booking(user2, stock, token='12345')
+        user2 = create_user(email='bond@james.bond.uk', first_name='James', last_name='Bond',
+                            public_name='James Bond')
+        booking2 = create_booking(user=user2, stock=stock, token='12345')
         ongoing_bookings = [booking2]
 
         # When
@@ -185,12 +187,12 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
     def test_should_return_mailjet_data_with_no_ongoing_booking(self, mock_is_offer_active,
                                                                 mock_build_pc_pro_offer_link):
         # Given
-        user = create_user(public_name='Jean Dupont', email='jean.dupont@example.com')
+        user = create_user(email='jean.dupont@example.com', public_name='Jean Dupont')
         offerer = create_offerer()
         venue = create_venue(offerer, name='Venue name', departement_code='75')
         offer = create_offer_with_event_product(venue, event_name='My Event')
         stock = create_stock_from_offer(offer, price=12.52, beginning_datetime=datetime(2019, 10, 9, 10, 20, 00))
-        booking = create_booking(user, stock, venue, quantity=2, is_cancelled=True)
+        booking = create_booking(user=user, stock=stock, venue=venue, is_cancelled=True, quantity=2)
         recipients = 'support@example.com'
 
         # When
@@ -227,14 +229,14 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
     @patch('emails.beneficiary_offer_cancellation._is_offer_active_for_recap', return_value=True)
     def test_should_return_mailjet_data_with_ongoing_bookings(self, mock_is_offer_active, mock_build_pc_pro_offer_link):
         # Given
-        user1 = create_user(public_name='Jean Dupont', email='jean.dupont@example.com')
-        user2 = create_user(public_name='Jean Val', email='jean.val@example.com')
+        user1 = create_user(email='jean.dupont@example.com', public_name='Jean Dupont')
+        user2 = create_user(email='jean.val@example.com', public_name='Jean Val')
         offerer = create_offerer()
         venue = create_venue(offerer, name='Venue name', departement_code='75')
         offer = create_offer_with_event_product(venue, event_name='My Event')
         stock = create_stock_from_offer(offer, price=0, beginning_datetime=datetime(2019, 10, 9, 10, 20, 00))
-        booking1 = create_booking(user1, stock, venue, quantity=2, is_cancelled=True)
-        create_booking(user2, stock, venue, quantity=1, is_cancelled=False, token='29JM9Q')
+        booking1 = create_booking(user=user1, stock=stock, venue=venue, is_cancelled=True, quantity=2)
+        create_booking(user=user2, stock=stock, venue=venue, is_cancelled=False, quantity=1, token='29JM9Q')
         recipients = 'support@example.com'
 
         # When
@@ -278,14 +280,14 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
     @patch('emails.beneficiary_offer_cancellation._is_offer_active_for_recap', return_value=False)
     def test_should_return_mailjet_data_on_thing_offer(self, mock_is_offer_active, mock_build_pc_pro_offer_link):
         # Given
-        user1 = create_user(public_name='Jean Dupont', email='jean.dupont@example.com')
-        user2 = create_user(public_name='Jean Val', email='jean.val@example.com')
+        user1 = create_user(email='jean.dupont@example.com', public_name='Jean Dupont')
+        user2 = create_user(email='jean.val@example.com', public_name='Jean Val')
         offerer = create_offerer()
         venue = create_venue(offerer, name='Venue name', departement_code='75')
         offer = create_offer_with_thing_product(venue, thing_name='My Thing')
         stock = create_stock_from_offer(offer, price=12)
-        booking1 = create_booking(user1, stock, venue, quantity=2, is_cancelled=True)
-        create_booking(user2, stock, venue, quantity=1, is_cancelled=False, token='29JM9Q')
+        booking1 = create_booking(user=user1, stock=stock, venue=venue, is_cancelled=True, quantity=2)
+        create_booking(user=user2, stock=stock, venue=venue, is_cancelled=False, quantity=1, token='29JM9Q')
         recipients = 'support@example.com'
 
         # When
@@ -329,14 +331,14 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
     @patch('emails.beneficiary_offer_cancellation._is_offer_active_for_recap', return_value=False)
     def test_should_return_numerique_when_venue_is_virtual(self, mock_is_offer_active, mock_build_pc_pro_offer_link):
         # Given
-        user1 = create_user(public_name='Jean Dupont', email='jean.dupont@example.com')
-        user2 = create_user(public_name='Jean Val', email='jean.val@example.com')
+        user1 = create_user(email='jean.dupont@example.com', public_name='Jean Dupont')
+        user2 = create_user(email='jean.val@example.com', public_name='Jean Val')
         offerer = create_offerer()
         venue = create_venue(offerer, name='Venue name', is_virtual=True)
         offer = create_offer_with_thing_product(venue, thing_name='My Thing')
         stock = create_stock_from_offer(offer, price=12)
-        booking1 = create_booking(user1, stock, venue, quantity=2, is_cancelled=True)
-        create_booking(user2, stock, venue, quantity=1, is_cancelled=False, token='29JM9Q')
+        booking1 = create_booking(user=user1, stock=stock, venue=venue, is_cancelled=True, quantity=2)
+        create_booking(user=user2, stock=stock, venue=venue, is_cancelled=False, quantity=1, token='29JM9Q')
         recipients = 'support@example.com'
 
         # When
@@ -416,7 +418,7 @@ class IsOfferActiveForRecapTest:
         stock = create_stock_from_offer(offer, price=0,
                                         available=2,
                                         booking_limit_datetime=datetime.now() + timedelta(days=6))
-        booking = create_booking(user, stock, quantity=2)
+        booking = create_booking(user=user, stock=stock, quantity=2)
         PcObject.save(booking)
 
         # When
@@ -435,7 +437,7 @@ class IsOfferActiveForRecapTest:
         stock = create_stock_from_offer(offer, price=0,
                                         available=2,
                                         booking_limit_datetime=datetime.now() - timedelta(days=6))
-        booking = create_booking(user, stock, quantity=2)
+        booking = create_booking(user=user, stock=stock, quantity=2)
         PcObject.save(booking)
 
         # When
@@ -453,7 +455,7 @@ class IsOfferActiveForRecapTest:
         offer = create_offer_with_thing_product(venue, is_active=True)
         stock = create_stock_from_offer(offer, price=0,
                                         available=None)
-        booking = create_booking(user, stock, quantity=2)
+        booking = create_booking(user=user, stock=stock, quantity=2)
         PcObject.save(booking)
 
         # When
@@ -472,7 +474,7 @@ class IsOfferActiveForRecapTest:
         stock = create_stock_from_offer(offer, price=0,
                                         available=None,
                                         booking_limit_datetime=datetime.now() - timedelta(days=6))
-        booking = create_booking(user, stock, quantity=2)
+        booking = create_booking(user=user, stock=stock, quantity=2)
         PcObject.save(booking)
 
         # When

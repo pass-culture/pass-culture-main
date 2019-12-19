@@ -3,8 +3,9 @@ from io import BytesIO
 from models import PcObject
 from tests.conftest import clean_database, TestClient
 from tests.files.images import ONE_PIXEL_PNG
-from tests.test_utils import create_venue, create_offerer, create_user, \
-    create_mediation, create_offer_with_event_product, create_user_offerer
+from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
+    create_mediation
+from tests.model_creators.specific_creators import create_offer_with_event_product
 from utils.human_ids import humanize
 
 

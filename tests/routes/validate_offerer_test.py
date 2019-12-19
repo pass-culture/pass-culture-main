@@ -2,7 +2,7 @@ import secrets
 
 from models import Offerer, PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_user, create_offerer, create_user_offerer
+from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 
 
 class Get:

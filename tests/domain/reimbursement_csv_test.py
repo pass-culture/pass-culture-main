@@ -1,5 +1,4 @@
 from datetime import datetime
-from freezegun import freeze_time
 
 from freezegun import freeze_time
 
@@ -11,8 +10,10 @@ from models.payment_status import TransactionStatus, PaymentStatus
 from repository.reimbursement_queries import find_all_offerer_reimbursement_details
 from scripts.payment.batch_steps import generate_new_payments
 from tests.conftest import clean_database
-from tests.test_utils import create_bank_information, create_stock_with_thing_offer, \
-    create_deposit, create_venue, create_offerer, create_user, create_booking, create_user_offerer, deactivate_feature
+from tests.test_utils import deactivate_feature
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, create_deposit, \
+    create_user_offerer, create_bank_information
+from tests.model_creators.specific_creators import create_stock_with_thing_offer
 
 
 @freeze_time('2019-07-10')
@@ -41,8 +42,8 @@ class ReimbursementDetailsCSVTest:
         venue1 = create_venue(offerer1)
         bank_information1 = create_bank_information(id_at_providers='79387501900056', venue=venue1)
         stock1 = create_stock_with_thing_offer(offerer=offerer1, venue=venue1, price=10)
-        booking1 = create_booking(user, stock1, venue=venue1, token='ABCDEF', is_used=True)
-        booking2 = create_booking(user, stock1, venue=venue1, token='ABCDEG')
+        booking1 = create_booking(user=user, stock=stock1, is_used=True, token='ABCDEF', venue=venue1)
+        booking2 = create_booking(user=user, stock=stock1, token='ABCDEG', venue=venue1)
 
         PcObject.save(deposit, booking1, booking2, user_offerer1, bank_information1)
 
@@ -68,7 +69,7 @@ class AsCsvRowTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=10)
-        booking = create_booking(user, stock, venue=venue, token='ABCDEF', is_used=True)
+        booking = create_booking(user=user, stock=stock, is_used=True, token='ABCDEF', venue=venue)
         payment.booking = booking
         payment.booking.stock = stock
 

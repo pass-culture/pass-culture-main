@@ -1,7 +1,6 @@
 from domain.expenses import get_expenses
 from models import ThingType, EventType
-from tests.test_utils import create_booking_for_event, \
-    create_booking_for_thing
+from tests.model_creators.specific_creators import create_booking_for_thing, create_booking_for_event
 
 
 class ExpensesTest:
@@ -374,7 +373,7 @@ class ExpensesTest:
                 # Given
                 booking_1 = create_booking_for_thing(amount=90)
                 booking_2 = create_booking_for_event(amount=60, quantity=2)
-                booking_3 = create_booking_for_event(amount=20, isCancelled=True)
+                booking_3 = create_booking_for_event(amount=20, is_cancelled=True)
                 bookings = [booking_1, booking_2, booking_3]
 
                 # When

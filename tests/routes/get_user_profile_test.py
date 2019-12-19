@@ -1,16 +1,19 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from models import PcObject, ThingType
 from tests.conftest import clean_database, TestClient
 
-from tests.test_utils import create_offer_with_thing_product, create_user, create_offerer, create_user_offerer, create_venue, create_stock_with_thing_offer, create_recommendation, create_deposit, create_booking
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, create_deposit, \
+    create_user_offerer, create_recommendation
+from tests.model_creators.specific_creators import create_stock_with_thing_offer, create_offer_with_thing_product
+
 
 class Get:
     class Returns200:
         @clean_database
         def when_user_is_logged_in_and_has_no_deposit(self, app):
             # Given
-            user = create_user(public_name='Toto', departement_code='93', email='toto@btmx.fr')
+            user = create_user(departement_code='93', email='toto@btmx.fr', public_name='Toto')
             PcObject.save(user)
 
             # When
@@ -31,7 +34,7 @@ class Get:
         @clean_database
         def when_user_is_logged_in_and_has_a_deposit(self, app):
             # Given
-            user = create_user(public_name='Test', departement_code='93', email='wallet_test@email.com')
+            user = create_user(departement_code='93', email='wallet_test@email.com', public_name='Test')
             PcObject.save(user)
 
             deposit = create_deposit(user, amount=10)
@@ -48,7 +51,7 @@ class Get:
         @clean_database
         def when_user_has_booked_some_offers(self, app):
             # Given
-            user = create_user(public_name='Test', departement_code='93', email='wallet_test@email.com')
+            user = create_user(departement_code='93', email='wallet_test@email.com', public_name='Test')
             offerer = create_offerer('999199987', '2 Test adress', 'Test city', '93000', 'Test offerer')
             venue = create_venue(offerer)
             thing_offer = create_offer_with_thing_product(venue=None)
@@ -56,7 +59,7 @@ class Get:
             recommendation = create_recommendation(thing_offer, user)
             deposit_1 = create_deposit(user, amount=10)
             deposit_2 = create_deposit(user, amount=10)
-            booking = create_booking(user, stock, venue, recommendation, quantity=1)
+            booking = create_booking(user=user, stock=stock, venue=venue, recommendation=recommendation, quantity=1)
 
             PcObject.save(user, venue, deposit_1, deposit_2, booking)
 
@@ -98,7 +101,7 @@ class Get:
         @clean_database
         def when_header_not_in_whitelist(self, app):
             # Given
-            user = create_user(email='e@mail.com', can_book_free_offers=True, is_admin=False)
+            user = create_user(can_book_free_offers=True, email='e@mail.com', is_admin=False)
             PcObject.save(user)
 
             # When

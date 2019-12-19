@@ -1,6 +1,7 @@
 from models.pc_object import PcObject
 from utils.logger import logger
-from tests.test_utils import create_user_offerer
+from tests.model_creators.generic_creators import create_user_offerer
+
 
 def create_industrial_user_offerers(users_by_name, offerers_by_name):
     logger.info('create_industrial_user_offerers')

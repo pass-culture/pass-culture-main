@@ -14,22 +14,12 @@ from repository.offer_queries import department_or_national_offers, \
     find_offers_by_venue_id, \
     order_by_with_criteria, _order_by_occurs_soon_or_is_thing_then_randomize
 from tests.conftest import clean_database
-from tests.test_utils import create_booking, \
-    create_criterion, \
-    create_product_with_event_type, \
-    create_event_occurrence, \
-    create_offer_with_event_product, \
-    create_mediation, \
-    create_stock_from_event_occurrence, \
-    create_product_with_thing_type, \
-    create_offer_with_thing_product, \
-    create_offerer, \
-    create_stock_from_offer, \
-    create_stock_with_event_offer, \
-    create_stock_with_thing_offer, \
-    create_user_offerer, \
-    create_user, \
-    create_venue, create_favorite
+from tests.model_creators.generic_creators import create_booking, create_criterion, create_user, create_offerer, create_venue, \
+    create_user_offerer, create_favorite, create_mediation
+from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_event_occurrence, \
+    create_stock_from_offer, create_stock_with_thing_offer, create_product_with_thing_type, \
+    create_product_with_event_type, create_offer_with_thing_product, create_offer_with_event_product, \
+    create_event_occurrence
 
 REFERENCE_DATE = '2017-10-15 09:21:34'
 
@@ -613,18 +603,19 @@ class FindActivationOffersTest:
     @clean_database
     def test_find_activation_offers_returns_activation_offers_with_available_stocks(self, app):
         # given
+        user = create_user()
         offerer = create_offerer()
-        venue1 = create_venue(offerer, siret=offerer.siren + '12345', postal_code='93000', departement_code='93')
-        venue2 = create_venue(offerer, siret=offerer.siren + '67890', postal_code='93000', departement_code='93')
-        venue3 = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
-        offer1 = create_offer_with_event_product(venue1, event_type=EventType.ACTIVATION)
-        offer2 = create_offer_with_event_product(venue2, event_type=EventType.ACTIVATION)
-        offer3 = create_offer_with_event_product(venue3, event_type=EventType.ACTIVATION)
-        offer4 = create_offer_with_event_product(venue3, event_type=EventType.ACTIVATION)
+        venue1 = create_venue(offerer=offerer, siret=offerer.siren + '12345', postal_code='93000', departement_code='93')
+        venue2 = create_venue(offerer=offerer, siret=offerer.siren + '67890', postal_code='93000', departement_code='93')
+        venue3 = create_venue(offerer=offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
+        offer1 = create_offer_with_event_product(venue=venue1, event_type=EventType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue=venue2, event_type=EventType.ACTIVATION)
+        offer3 = create_offer_with_event_product(venue=venue3, event_type=EventType.ACTIVATION)
+        offer4 = create_offer_with_event_product(venue=venue3, event_type=EventType.ACTIVATION)
         stock1 = create_stock_from_offer(offer1, price=0, available=0)
         stock2 = create_stock_from_offer(offer2, price=0, available=10)
         stock3 = create_stock_from_offer(offer3, price=0, available=1)
-        booking = create_booking(create_user(), stock3, venue=venue3, quantity=1)
+        booking = create_booking(user=user, stock=stock3, quantity=1, venue=venue3)
         PcObject.save(stock1, stock2, stock3, booking, offer4)
 
         # when
@@ -643,12 +634,12 @@ class FindActivationOffersTest:
         venue1 = create_venue(offerer, siret=offerer.siren + '12345', postal_code='93000', departement_code='93')
         venue2 = create_venue(offerer, siret=offerer.siren + '67890', postal_code='93000', departement_code='93')
         venue3 = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
-        offer1 = create_offer_with_event_product(venue1, event_type=EventType.ACTIVATION)
-        offer2 = create_offer_with_event_product(venue2, event_type=EventType.ACTIVATION)
-        offer3 = create_offer_with_event_product(venue3, event_type=EventType.ACTIVATION)
-        stock1 = create_stock_from_offer(offer1, price=0, booking_limit_datetime=five_days_ago)
-        stock2 = create_stock_from_offer(offer2, price=0, booking_limit_datetime=next_week)
-        stock3 = create_stock_from_offer(offer3, price=0, booking_limit_datetime=None)
+        offer1 = create_offer_with_event_product(venue=venue1, event_type=EventType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue=venue2, event_type=EventType.ACTIVATION)
+        offer3 = create_offer_with_event_product(venue=venue3, event_type=EventType.ACTIVATION)
+        stock1 = create_stock_from_offer(offer=offer1, price=0, booking_limit_datetime=five_days_ago)
+        stock2 = create_stock_from_offer(offer=offer2, price=0, booking_limit_datetime=next_week)
+        stock3 = create_stock_from_offer(offer=offer3, price=0, booking_limit_datetime=None)
         PcObject.save(stock1, stock2, stock3)
 
         # when
@@ -667,8 +658,8 @@ class FindOffersTest:
         offerer1 = create_offerer(siren='123456789')
         offerer2 = create_offerer(siren='987654321')
         ko_offerer3 = create_offerer(siren='123456780')
-        user_offerer1 = create_user_offerer(user, offerer1)
-        user_offerer2 = create_user_offerer(user, offerer2)
+        user_offerer1 = create_user_offerer(user=user, offerer=offerer1)
+        user_offerer2 = create_user_offerer(user=user, offerer=offerer2)
 
         ok_product_event = create_product_with_event_type(event_name='Rencontre avec Jacques Martin')
         ok_product_thing = create_product_with_thing_type(thing_name='Rencontrez Jacques Chirac')
@@ -676,8 +667,8 @@ class FindOffersTest:
         thing1_product = create_product_with_thing_type(thing_name='Jacques la fripouille')
         thing2_product = create_product_with_thing_type(thing_name='Belle du Seigneur')
         offerer = create_offerer()
-        venue1 = create_venue(offerer1, name='Bataclan', city='Paris', siret=offerer.siren + '12345')
-        venue2 = create_venue(offerer2, name='Librairie la Rencontre', city='Saint Denis',
+        venue1 = create_venue(offerer=offerer1, name='Bataclan', city='Paris', siret=offerer.siren + '12345')
+        venue2 = create_venue(offerer=offerer2, name='Librairie la Rencontre', city='Saint Denis',
                               siret=offerer.siren + '54321')
         ko_venue3 = create_venue(ko_offerer3, name='Une librairie du méchant concurrent gripsou', city='Saint Denis',
                                  siret=ko_offerer3.siren + '54321')
@@ -751,8 +742,8 @@ class HasRemainingStockTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, thing)
         stock = create_stock_from_offer(offer, available=4, price=0)
-        booking_1 = create_booking(user, stock, quantity=2)
-        booking_2 = create_booking(user, stock, quantity=1)
+        booking_1 = create_booking(user=user, stock=stock, quantity=2)
+        booking_2 = create_booking(user=user, stock=stock, quantity=1)
         PcObject.save(stock, booking_1, booking_2)
 
         # When
@@ -773,8 +764,8 @@ class HasRemainingStockTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, thing)
         stock = create_stock_from_offer(offer, available=3, price=0)
-        booking_1 = create_booking(user, stock, quantity=2)
-        booking_2 = create_booking(user, stock, quantity=1)
+        booking_1 = create_booking(user=user, stock=stock, quantity=2)
+        booking_2 = create_booking(user=user, stock=stock, quantity=1)
         PcObject.save(stock, booking_1, booking_2)
 
         # When
@@ -795,7 +786,7 @@ class HasRemainingStockTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, thing)
         stock = create_stock_from_offer(offer, available=1, price=0)
-        booking = create_booking(user, stock, quantity=1, is_used=True)
+        booking = create_booking(user=user, stock=stock, is_used=True, quantity=1)
         stock.dateModified = datetime.utcnow() + timedelta(days=1)
         PcObject.save(stock, booking)
 
@@ -811,12 +802,13 @@ class HasRemainingStockTest:
     @clean_database
     def test_should_return_1_offer_when_booking_was_cancelled(app):
         # Given
+        user = create_user()
         product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
         offer = create_offer_with_thing_product(venue, product)
         stock = create_stock_from_offer(offer, available=2)
-        booking = create_booking(create_user(), stock, venue=venue, quantity=2, is_cancelled=True)
+        booking = create_booking(user=user, stock=stock, is_cancelled=True, quantity=2, venue=venue)
         PcObject.save(booking)
 
         # When
@@ -837,8 +829,8 @@ class HasRemainingStockTest:
         offer = create_offer_with_thing_product(venue, product)
         stock = create_stock_from_offer(offer, available=2, price=0)
         user = create_user()
-        booking1 = create_booking(user, stock, venue=venue, quantity=2, is_cancelled=True)
-        booking2 = create_booking(user, stock, venue=venue, quantity=2)
+        booking1 = create_booking(user=user, stock=stock, is_cancelled=True, quantity=2, venue=venue)
+        booking2 = create_booking(user=user, stock=stock, quantity=2, venue=venue)
         PcObject.save(booking1, booking2)
 
         # When
@@ -860,7 +852,7 @@ class HasRemainingStockTest:
         stock1 = create_stock_from_offer(offer, available=2, price=0)
         stock2 = create_stock_from_offer(offer, available=2, price=0)
         user = create_user()
-        booking1 = create_booking(user, stock1, venue=venue, quantity=2)
+        booking1 = create_booking(user=user, stock=stock1, quantity=2, venue=venue)
         PcObject.save(booking1, stock2)
 
         # When
@@ -1110,8 +1102,8 @@ class GetActiveOffersTest:
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
         offer = create_offer_with_thing_product(venue, product)
         stock = create_stock_from_offer(offer, available=2, price=0)
-        booking1 = create_booking(user, stock, venue=venue, quantity=2, is_cancelled=True)
-        booking2 = create_booking(user, stock, venue=venue, quantity=2)
+        booking1 = create_booking(user=user, stock=stock, is_cancelled=True, quantity=2, venue=venue)
+        booking2 = create_booking(user=user, stock=stock, quantity=2, venue=venue)
         create_mediation(stock.offer)
         PcObject.save(booking1, booking2)
 
@@ -1323,7 +1315,7 @@ class GetActiveOffersTest:
         offer = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
         stock = create_stock_from_offer(offer, price=0)
         user = create_user()
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
         create_mediation(stock.offer)
         PcObject.save(booking)
 

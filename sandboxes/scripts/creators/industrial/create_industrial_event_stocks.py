@@ -1,7 +1,8 @@
 from models.offer_type import EventType
 from models.pc_object import PcObject
 from sandboxes.scripts.utils.select import remove_every
-from tests.test_utils import create_stock_from_event_occurrence, get_price_by_short_name, get_occurrence_short_name
+from tests.test_utils import get_price_by_short_name, get_occurrence_short_name
+from tests.model_creators.specific_creators import create_stock_from_event_occurrence
 from utils.logger import logger
 
 EVENT_OCCURRENCES_WITH_STOCKS_REMOVE_MODULO = 4

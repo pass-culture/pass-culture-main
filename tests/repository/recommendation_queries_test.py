@@ -4,9 +4,11 @@ from models import PcObject, Recommendation
 from repository.recommendation_queries import keep_only_bookable_stocks, \
      update_read_recommendations, delete_useless_recommendations
 from tests.conftest import clean_database
-from tests.test_utils import create_recommendation, create_offer_with_event_product, create_offerer, \
-    create_venue, create_user, create_stock_from_event_occurrence, create_event_occurrence, create_stock_from_offer, \
-    create_offer_with_thing_product, create_mediation, create_booking, create_stock_with_thing_offer, create_favorite
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+    create_recommendation, create_favorite, create_mediation
+from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_from_offer, \
+    create_stock_with_thing_offer, create_offer_with_thing_product, create_offer_with_event_product, \
+    create_event_occurrence
 
 from utils.human_ids import humanize
 
@@ -225,7 +227,7 @@ class DeleteUselessRecommendationsTest:
         stock = create_stock_with_thing_offer(offerer, venue, product_with_thing_type, price=0)
         user = create_user()
         booked_recommendation = create_recommendation(offer, user, date_created=today - timedelta(days=9), date_read=None)
-        booking = create_booking(user, stock=stock,  venue=venue, recommendation=booked_recommendation)
+        booking = create_booking(user=user, recommendation=booked_recommendation, stock=stock, venue=venue)
         recommendation_to_delete = create_recommendation(offer, user, date_created=today - timedelta(days=9), date_read=None)
         PcObject.save(booking, recommendation_to_delete)
         recommendation_to_delete_id = recommendation_to_delete.id

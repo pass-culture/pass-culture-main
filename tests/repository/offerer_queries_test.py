@@ -10,9 +10,10 @@ from repository.offerer_queries import find_all_offerers_with_managing_user_info
     count_offerer_by_departement, count_offerer_with_stock_by_departement
 from repository.user_queries import find_all_emails_of_user_offerers_admins
 from tests.conftest import clean_database
-from tests.test_utils import create_user, create_offerer, create_user_offerer, create_venue, \
-    create_offer_with_event_product, create_offer_with_thing_product, create_event_occurrence, \
-    create_stock_with_thing_offer, create_stock_from_event_occurrence, create_bank_information, create_stock
+from tests.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, create_user_offerer, \
+    create_bank_information
+from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_with_thing_offer, \
+    create_offer_with_thing_product, create_offer_with_event_product, create_event_occurrence
 
 
 class OffererQueriesTest:
@@ -550,7 +551,7 @@ def test_find_all_offerers_with_venue(app):
 @clean_database
 def test_get_all_pending_offerers_return_requested_tokens_in_case_only_venue_not_validated(app):
     # given
-    user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
+    user_validated = create_user(can_book_free_offers=False, email="user@user.pro", is_admin=False)
     offerer_validated = create_offerer()
     user_offerer_validated = create_user_offerer(user_validated, offerer_validated)
     venue_not_validated = create_venue(offerer_validated, siret=None, comment="comment because no siret",
@@ -575,8 +576,8 @@ def test_get_all_pending_offerers_return_requested_tokens_in_case_only_venue_not
 @clean_database
 def test_get_all_pending_offerers_return_requested_tokens_in_case_only_user_not_validated(app):
     # given
-    user_not_validated = create_user(email="user@user.pro", can_book_free_offers=False,
-                                     validation_token="token_for_user", is_admin=False)
+    user_not_validated = create_user(can_book_free_offers=False, email="user@user.pro", is_admin=False,
+                                     validation_token="token_for_user")
     offerer_validated = create_offerer()
     user_offerer_validated = create_user_offerer(user_not_validated, offerer_validated)
     venue_validated = create_venue(offerer_validated)
@@ -600,7 +601,7 @@ def test_get_all_pending_offerers_return_requested_tokens_in_case_only_user_not_
 @clean_database
 def test_get_all_pending_offerers_return_requested_tokens_in_case_only_user_offerer_not_validated(app):
     # given
-    user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
+    user_validated = create_user(can_book_free_offers=False, email="user@user.pro", is_admin=False)
     offerer_validated = create_offerer()
     user_offerer_not_validated = create_user_offerer(user_validated, offerer_validated,
                                                      validation_token='user_off_token')
@@ -625,7 +626,7 @@ def test_get_all_pending_offerers_return_requested_tokens_in_case_only_user_offe
 @clean_database
 def test_get_all_pending_offerers_return_nothing_in_case_only_offerer_not_validated(app):
     # given
-    user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
+    user_validated = create_user(can_book_free_offers=False, email="user@user.pro", is_admin=False)
     offerer_not_validated = create_offerer(validation_token="this_offerer_has_a_token")
     user_offerer_validated = create_user_offerer(user_validated, offerer_not_validated)
     venue_validated = create_venue(offerer_not_validated)
@@ -649,7 +650,7 @@ def test_get_all_pending_offerers_return_nothing_in_case_only_offerer_not_valida
 @clean_database
 def test_get_all_pending_offerers_return_empty_list_in_case_all_validated(app):
     # given
-    user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
+    user_validated = create_user(can_book_free_offers=False, email="user@user.pro", is_admin=False)
     offerer_validated = create_offerer()
     user_offerer_validated = create_user_offerer(user_validated, offerer_validated)
     venue_validated = create_venue(offerer_validated)

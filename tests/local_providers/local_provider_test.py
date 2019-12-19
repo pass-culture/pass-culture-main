@@ -9,8 +9,9 @@ from models.local_provider_event import LocalProviderEventType
 from tests.conftest import clean_database
 from tests.local_providers.provider_test_utils import TestLocalProvider, TestLocalProviderWithApiErrors, \
     TestLocalProviderNoCreation, TestLocalProviderWithThumb, TestLocalProviderWithThumbIndexAt4
-from tests.test_utils import create_product_with_thing_type, create_venue, create_offerer, create_providable_info, \
-    create_provider
+from tests.model_creators.provider_creators import create_providable_info
+from tests.model_creators.generic_creators import create_offerer, create_venue, create_provider
+from tests.model_creators.specific_creators import create_product_with_thing_type
 
 
 class LocalProviderTest:

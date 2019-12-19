@@ -1,7 +1,7 @@
 from models.pc_object import PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_user, create_offerer, create_venue, \
-    create_stock_with_event_offer
+from tests.model_creators.generic_creators import create_user, create_offerer, create_venue
+from tests.model_creators.specific_creators import create_stock_with_event_offer
 from utils.human_ids import humanize
 
 
@@ -10,7 +10,7 @@ class Get:
         @clean_database
         def when_user_is_admin(self, app):
             # given
-            user = create_user(email='test@email.com', can_book_free_offers=False, is_admin=True)
+            user = create_user(can_book_free_offers=False, email='test@email.com', is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=10, available=10)
@@ -29,7 +29,7 @@ class Get:
         @clean_database
         def when_stock_is_soft_deleted(self, app):
             # given
-            user = create_user(email='test@email.com', can_book_free_offers=False, is_admin=True)
+            user = create_user(can_book_free_offers=False, email='test@email.com', is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=10, available=10, is_soft_deleted=True)

@@ -1,13 +1,14 @@
 from datetime import datetime
 
-from models import PcObject, User
+from models import PcObject
 from models.activity import load_activity
 from models.db import db
 from scripts.clean_activity import delete_tables_from_activity, populate_stock_date_created_from_activity, \
     populate_cultural_survey_filled_date_from_activity
 from tests.conftest import clean_database
-from tests.test_utils import create_activity, save_all_activities, create_stock, create_venue, create_offerer, \
-    create_offer_with_thing_product, create_user
+from tests.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue
+from tests.model_creators.activity_creators import create_activity, save_all_activities
+from tests.model_creators.specific_creators import create_offer_with_thing_product
 
 Activity = load_activity()
 
@@ -78,7 +79,7 @@ class PopulateCulturalSurveyFilledDateFromActivityTest:
     @clean_database
     def test_fills_cultural_survey_filled_date_from_activity(self, app):
         # Given
-        user = create_user(idx=1, needs_to_fill_cultural_survey=False)
+        user = create_user(id=1, needs_to_fill_cultural_survey=False)
         PcObject.save(user)
         modification_date = datetime(2019, 12, 1, 0, 0, 0)
         user_activity = create_activity(
@@ -99,7 +100,7 @@ class PopulateCulturalSurveyFilledDateFromActivityTest:
     @clean_database
     def test_does_not_fill_cultural_survey_filled_date_from_activity_when_user_id_does_not_match(self, app):
         # Given
-        user = create_user(idx=1, needs_to_fill_cultural_survey=False)
+        user = create_user(id=1, needs_to_fill_cultural_survey=False)
         PcObject.save(user)
         modification_date = datetime(2019, 12, 1, 0, 0, 0)
         user_activity = create_activity(
@@ -119,7 +120,7 @@ class PopulateCulturalSurveyFilledDateFromActivityTest:
     @clean_database
     def test_does_fill_cultural_survey_filled_date_with_last_matching_activity_date(self, app):
         # Given
-        user = create_user(idx=1, needs_to_fill_cultural_survey=True)
+        user = create_user(id=1, needs_to_fill_cultural_survey=True)
         PcObject.save(user)
         last_modification_date = datetime(2019, 12, 1, 0, 0, 0)
         user_activity_1 = create_activity(

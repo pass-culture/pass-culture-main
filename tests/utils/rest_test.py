@@ -3,7 +3,7 @@ from sqlalchemy import func
 
 from models import Offer, PcObject, Venue, ApiErrors
 from tests.conftest import clean_database
-from tests.test_utils import create_venue, create_offerer
+from tests.model_creators.generic_creators import create_offerer, create_venue
 from utils.human_ids import humanize
 from utils.rest import check_order_by, load_or_raise_error
 

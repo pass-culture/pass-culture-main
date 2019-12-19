@@ -5,7 +5,7 @@ from unittest.mock import patch
 from domain.password import RESET_PASSWORD_TOKEN_LENGTH
 from models import PcObject, User
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_user
+from tests.model_creators.generic_creators import create_user
 
 
 class PostResetPassword:
@@ -76,7 +76,7 @@ class PostResetPassword:
                                                                                              app):
             # given
             data = {'email': 'bobby@example.com'}
-            user = create_user(email='bobby@example.com', can_book_free_offers=True)
+            user = create_user(can_book_free_offers=True, email='bobby@example.com')
             app_origin_header = 'http://localhost:3000'
             PcObject.save(user)
 
@@ -93,7 +93,7 @@ class PostResetPassword:
         def test_should_send_reset_password_when_user_is_an_offerer(self, send_raw_email_mock, send_reset_password_email_mock, app):
             # given
             data = {'email': 'bobby@example.com'}
-            user = create_user(email='bobby@example.com', can_book_free_offers=False)
+            user = create_user(can_book_free_offers=False, email='bobby@example.com')
             app_origin_header = 'http://localhost:3000'
             PcObject.save(user)
 

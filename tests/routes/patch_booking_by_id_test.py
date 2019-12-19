@@ -2,9 +2,9 @@ from datetime import datetime, timedelta
 
 from models import PcObject, Booking
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_deposit, create_venue, create_offerer, \
-    create_user, create_booking, create_offer_with_event_product, \
-    create_event_occurrence, create_stock_from_event_occurrence
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, create_deposit
+from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_offer_with_event_product, \
+    create_event_occurrence
 from utils.human_ids import humanize
 
 
@@ -24,7 +24,7 @@ class Patch:
             event_occurrence = create_event_occurrence(offer, beginning_datetime=in_four_days,
                                                        end_datetime=in_five_days)
             stock = create_stock_from_event_occurrence(event_occurrence)
-            booking = create_booking(user, stock, venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(user, deposit, booking)
             booking_id = booking.id
 
@@ -50,7 +50,7 @@ class Patch:
             event_occurrence = create_event_occurrence(offer, beginning_datetime=in_four_days,
                                                        end_datetime=in_five_days)
             stock = create_stock_from_event_occurrence(event_occurrence)
-            booking = create_booking(user, stock, venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(user, deposit, booking)
             booking_id = booking.id
 
@@ -65,7 +65,7 @@ class Patch:
         @clean_database
         def expect_the_booking_to_be_cancelled_by_admin_for_someone_else(self, app):
             # Given
-            admin_user = create_user(email='test@email.com', can_book_free_offers=False, is_admin=True)
+            admin_user = create_user(can_book_free_offers=False, email='test@email.com', is_admin=True)
             other_user = create_user(email='test2@email.com')
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
             deposit = create_deposit(other_user, amount=500)
@@ -88,7 +88,7 @@ class Patch:
             user = create_user(email='test@email.com')
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
             deposit = create_deposit(user, amount=500)
-            booking = create_booking(user, is_used=True)
+            booking = create_booking(user=user, is_used=True)
             PcObject.save(user, deposit, booking)
             booking_id = booking.id
 
@@ -107,7 +107,7 @@ class Patch:
             user = create_user(email='test@email.com')
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
             deposit = create_deposit(user, amount=500)
-            booking = create_booking(user, quantity=1)
+            booking = create_booking(user=user, quantity=1)
             PcObject.save(user, deposit, booking)
             booking_id = booking.id
 
@@ -125,7 +125,7 @@ class Patch:
             user = create_user(email='test@email.com')
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
             deposit = create_deposit(user, amount=500)
-            booking = create_booking(user)
+            booking = create_booking(user=user)
             booking.isCancelled = True
             PcObject.save(user, deposit, booking)
             booking_id = booking.id
@@ -151,7 +151,7 @@ class Patch:
             offer = create_offer_with_event_product(venue)
             event_occurrence = create_event_occurrence(offer, beginning_datetime=in_one_days, end_datetime=in_five_days)
             stock = create_stock_from_event_occurrence(event_occurrence)
-            booking = create_booking(user, stock, venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(user, deposit, booking)
 
             # When

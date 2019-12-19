@@ -9,8 +9,8 @@ from local_providers import TiteLiveThingThumbs
 from local_providers.titelive_thing_thumbs import extract_thumb_index
 from models import PcObject, Product
 from tests.conftest import clean_database
-from tests.test_utils import provider_test, \
-    create_product_with_thing_type
+from tests.model_creators.provider_creators import provider_test
+from tests.model_creators.specific_creators import create_product_with_thing_type
 
 
 class TiteliveThingThumbsTest:

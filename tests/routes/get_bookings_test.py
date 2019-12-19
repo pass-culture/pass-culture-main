@@ -2,9 +2,8 @@ from unittest.mock import patch
 
 from models import PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_stock_with_thing_offer, \
-    create_offer_with_thing_product, create_venue, create_offerer, \
-    create_user, create_booking, create_favorite
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue
+from tests.model_creators.specific_creators import create_stock_with_thing_offer, create_offer_with_thing_product
 
 
 class Get:
@@ -23,11 +22,9 @@ class Get:
             offer2 = create_offer_with_thing_product(venue)
             stock2 = create_stock_with_thing_offer(
                 offerer=offerer, venue=venue, offer=offer2, price=0)
-            booking1 = create_booking(
-                user1, stock, venue=venue, token='ABCDEF')
-            booking2 = create_booking(user2, stock, venue=venue, token='GHIJK')
-            booking3 = create_booking(
-                user1, stock2, venue=venue, token='BBBBB')
+            booking1 = create_booking(user=user1, stock=stock, token='ABCDEF', venue=venue)
+            booking2 = create_booking(user=user2, stock=stock, token='GHIJK', venue=venue)
+            booking3 = create_booking(user=user1, stock=stock2, token='BBBBB', venue=venue)
 
             PcObject.save(booking1, booking2, booking3)
 
@@ -67,18 +64,14 @@ class Get:
             user1 = create_user(email='user1+plus@example.com')
             user2 = create_user(email='user2+plus@example.com')
             offerer = create_offerer()
-            venue = create_venue(offerer)
+            venue = create_venue(offerer=offerer)
             offer = create_offer_with_thing_product(venue)
-            stock = create_stock_with_thing_offer(
-                offerer=offerer, venue=venue, offer=offer, price=0)
+            stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, offer=offer, price=0)
             offer2 = create_offer_with_thing_product(venue)
-            stock2 = create_stock_with_thing_offer(
-                offerer=offerer, venue=venue, offer=offer2, price=0)
-            booking1 = create_booking(
-                user1, stock, venue=venue, token='ABCDEF')
-            booking2 = create_booking(user2, stock, venue=venue, token='GHIJK')
-            booking3 = create_booking(
-                user1, stock2, venue=venue, token='BBBBB')
+            stock2 = create_stock_with_thing_offer(offerer=offerer, venue=venue, offer=offer2, price=0)
+            booking1 = create_booking(user=user1, stock=stock, venue=venue, token='ABCDEF')
+            booking2 = create_booking(user=user2, stock=stock, venue=venue, token='GHIJK')
+            booking3 = create_booking(user=user1, stockstock2, venue=venue, token='BBBBB')
 
             PcObject.save(booking1, booking2, booking3)
 

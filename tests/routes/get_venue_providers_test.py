@@ -1,7 +1,7 @@
-from models import PcObject, Provider
+from models import PcObject
 from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_offerer, create_venue, create_user, create_venue_provider
+from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_venue_provider
 from utils.human_ids import humanize
 from utils.logger import logger
 

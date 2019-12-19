@@ -1,10 +1,8 @@
-import json
-
 import pytest
 
 from models import PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_user
+from tests.model_creators.generic_creators import create_user, API_URL
 
 
 @pytest.mark.standalone

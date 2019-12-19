@@ -4,8 +4,8 @@ from local_providers.chunk_manager import save_chunks
 from models import PcObject, Offer, Stock
 from models.db import db
 from tests.conftest import clean_database
-from tests.test_utils import create_offer_with_thing_product, create_offerer, create_venue, \
-    create_product_with_thing_type, create_stock
+from tests.model_creators.generic_creators import create_stock, create_offerer, create_venue
+from tests.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
 
 
 class SaveChunksTest:

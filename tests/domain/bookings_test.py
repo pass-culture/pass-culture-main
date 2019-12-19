@@ -3,9 +3,9 @@ from unittest.mock import patch
 
 from domain.bookings import generate_qr_code
 from models import ThingType
-from tests.test_utils import create_booking, create_user, create_offer_with_event_product, create_venue, \
-    create_product_with_event_type, create_stock, create_offerer, create_offer_with_thing_product, \
-    create_product_with_thing_type
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue
+from tests.model_creators.specific_creators import create_product_with_thing_type, create_product_with_event_type, \
+    create_offer_with_thing_product, create_offer_with_event_product
 
 
 class BookingsTest:
@@ -22,7 +22,7 @@ class BookingsTest:
             product = create_product_with_event_type()
             offer = create_offer_with_event_product(product=product, venue=venue)
             stock = create_stock(offer=offer, price=10)
-            booking = create_booking(token=1, stock=stock, user=user)
+            booking = create_booking(user=user, stock=stock, token=1)
 
             # when
             generate_qr_code(booking)
@@ -47,7 +47,7 @@ class BookingsTest:
             product = create_product_with_thing_type(extra_data={'isbn': '123456789'}, thing_name='Naruto')
             offer = create_offer_with_thing_product(idx=1, product=product, venue=venue)
             stock = create_stock(available=10, offer=offer, price=10)
-            booking = create_booking(token='ABCDE', stock=stock, user=user)
+            booking = create_booking(user=user, stock=stock, token='ABCDE')
 
             # when
             generate_qr_code(booking)
@@ -71,7 +71,7 @@ class BookingsTest:
             product = create_product_with_thing_type(extra_data=None, thing_name='Naruto')
             offer = create_offer_with_thing_product(idx=1, product=product, venue=venue)
             stock = create_stock(available=10, offer=offer, price=10)
-            booking = create_booking(token='ABCDE', stock=stock, user=user)
+            booking = create_booking(user=user, stock=stock, token='ABCDE')
 
             # when
             generate_qr_code(booking)
@@ -94,7 +94,7 @@ class BookingsTest:
             product = create_product_with_event_type(event_type=ThingType.CINEMA_ABO)
             offer = create_offer_with_thing_product(idx=1, product=product, venue=venue)
             stock = create_stock(beginning_datetime=datetime(2019, 7, 20, 12, 0, 0), offer=offer)
-            booking = create_booking(token='ABCDE', stock=stock, user=user)
+            booking = create_booking(user=user, stock=stock, token='ABCDE')
 
             # when
             generate_qr_code(booking)
@@ -113,7 +113,7 @@ class BookingsTest:
             product = create_product_with_event_type(event_type=ThingType.CINEMA_ABO)
             offer = create_offer_with_thing_product(idx=1, product=product, venue=venue)
             stock = create_stock(available=10, beginning_datetime=datetime(2019, 7, 20, 12, 0, 0), offer=offer)
-            booking = create_booking(quantity=1, token='ABCDE', stock=stock, user=user)
+            booking = create_booking(user=user, quantity=1, stock=stock, token='ABCDE')
 
             # when
             qr_code = generate_qr_code(booking)

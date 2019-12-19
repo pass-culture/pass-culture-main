@@ -5,17 +5,11 @@ from models import PcObject
 from models.mediation import Mediation
 from models.recommendation import Recommendation
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_event_occurrence, \
-    create_offer_with_event_product, \
-    create_mediation, \
-    create_offerer, \
-    create_recommendation, \
-    create_stock_from_event_occurrence, \
-    create_stock_from_offer, \
-    create_offer_with_thing_product, \
-    create_user, \
-    create_venue, \
-    create_stock_with_thing_offer, create_booking
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+    create_recommendation, create_mediation
+from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_from_offer, \
+    create_stock_with_thing_offer, create_offer_with_thing_product, create_offer_with_event_product, \
+    create_event_occurrence
 from utils.human_ids import humanize
 from utils.tutorials import upsert_tuto_mediations
 
@@ -249,7 +243,7 @@ class Put:
         @clean_database
         def when_user_has_no_offer_in_his_department(self, app):
             # given
-            user = create_user(departement_code='973', can_book_free_offers=True, is_admin=False)
+            user = create_user(can_book_free_offers=True, departement_code='973', is_admin=False)
             offerer = create_offerer()
             venue29 = create_venue(offerer, siret=offerer.siren + '98765', postal_code='29000', departement_code='29')
             venue34 = create_venue(offerer, siret=offerer.siren + '12345', postal_code='34000', departement_code='34')
@@ -279,7 +273,7 @@ class Put:
         @clean_database
         def when_user_has_one_offer_in_his_department(self, app):
             # given
-            user = create_user(departement_code='93', can_book_free_offers=True, is_admin=False)
+            user = create_user(can_book_free_offers=True, departement_code='93', is_admin=False)
             offerer = create_offerer()
             venue93 = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
             venue67 = create_venue(offerer, siret=offerer.siren + '56789', postal_code='67000', departement_code='67')
@@ -1008,12 +1002,12 @@ class Put:
         @clean_database
         def when_user_has_bookings_on_recommended_offers(self, app):
             # given
-            user = create_user(departement_code='93', can_book_free_offers=True, is_admin=False)
+            user = create_user(can_book_free_offers=True, departement_code='93', is_admin=False)
             offerer = create_offerer()
             venue = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
             offer = create_offer_with_thing_product(venue, thing_name='thing 93', url=None, is_national=False)
             stock = create_stock_from_offer(offer, price=0)
-            booking = create_booking(user, stock, venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             create_mediation(offer)
             PcObject.save(booking)
             booking_id = booking.id
@@ -1032,12 +1026,12 @@ class Put:
         @patch('routes.recommendations.create_recommendations_for_discovery')
         def test_should_create_recommendations_using_pagination_params(self, create_recommendations_for_discovery, app):
             # given
-            user = create_user(departement_code='93', can_book_free_offers=True, is_admin=False)
+            user = create_user(can_book_free_offers=True, departement_code='93', is_admin=False)
             offerer = create_offerer()
             venue = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
             offer = create_offer_with_thing_product(venue, thing_name='thing 93', url=None, is_national=False)
             stock = create_stock_from_offer(offer, price=0)
-            booking = create_booking(user, stock, venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             create_mediation(offer)
             PcObject.save(booking)
 
@@ -1060,12 +1054,12 @@ class Put:
                                                                                                  create_recommendations_for_discovery,
                                                                                                  app):
             # given
-            user = create_user(departement_code='93', can_book_free_offers=True, is_admin=False)
+            user = create_user(can_book_free_offers=True, departement_code='93', is_admin=False)
             offerer = create_offerer()
             venue = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
             offer = create_offer_with_thing_product(venue, thing_name='thing 93', url=None, is_national=False)
             stock = create_stock_from_offer(offer, price=0)
-            booking = create_booking(user, stock, venue)
+            booking = create_booking(user=user, stock=stock, venue=venue)
             create_mediation(offer)
             PcObject.save(booking)
 

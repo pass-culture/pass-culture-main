@@ -6,9 +6,9 @@ from models.payment_status import TransactionStatus, PaymentStatus
 from repository.payment_queries import find_message_checksum, find_error_payments, find_retry_payments, \
     find_payments_by_message, get_payments_by_message_id, find_not_processable_with_bank_information
 from tests.conftest import clean_database
-from tests.test_utils import create_payment_message, create_payment, create_booking, create_user, create_deposit, \
-    create_stock_from_offer, create_bank_information
-from tests.test_utils import create_venue, create_offerer, create_offer_with_thing_product
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, create_deposit, \
+    create_payment, create_payment_message, create_bank_information
+from tests.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product
 
 
 class FindMessageChecksumTest:
@@ -46,7 +46,7 @@ class FindErrorPaymentsTest:
     def test_returns_payments_with_last_payment_status_error(self, app):
         # Given
         user = create_user()
-        booking = create_booking(user)
+        booking = create_booking(user=user)
         deposit = create_deposit(user)
         error_payment1 = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
         error_payment2 = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
@@ -72,7 +72,7 @@ class FindErrorPaymentsTest:
     def test_does_not_return_payment_if_has_status_error_but_not_last(self, app):
         # Given
         user = create_user()
-        booking = create_booking(user)
+        booking = create_booking(user=user)
         deposit = create_deposit(user)
         error_payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
         pending_payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
@@ -96,7 +96,7 @@ class FindRetryPaymentsTest:
     def test_returns_payments_with_last_payment_status_retry(self, app):
         # Given
         user = create_user()
-        booking = create_booking(user)
+        booking = create_booking(user=user)
         deposit = create_deposit(user)
         offerer = booking.stock.resolvedOffer.venue.managingOfferer
         retry_payment1 = create_payment(booking, offerer, 10)
@@ -123,7 +123,7 @@ class FindRetryPaymentsTest:
     def test_does_not_return_payment_if_has_status_retry_but_not_last(self, app):
         # Given
         user = create_user()
-        booking = create_booking(user)
+        booking = create_booking(user=user)
         deposit = create_deposit(user)
         payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
         payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
@@ -148,7 +148,7 @@ class FindPaymentsByMessageTest:
     def test_returns_payments_matching_message(self, app):
         # given
         user = create_user()
-        booking = create_booking(user)
+        booking = create_booking(user=user)
         deposit = create_deposit(user)
         offerer = booking.stock.resolvedOffer.venue.managingOfferer
 
@@ -180,7 +180,7 @@ class FindPaymentsByMessageTest:
     def test_returns_nothing_if_message_is_not_matched(self, app):
         # given
         user = create_user()
-        booking = create_booking(user)
+        booking = create_booking(user=user)
         deposit = create_deposit(user)
         offerer = booking.stock.resolvedOffer.venue.managingOfferer
 
@@ -216,10 +216,10 @@ class GeneratePayementsByMessageIdTest:
         free_stock = create_stock_from_offer(offer, price=0)
         user = create_user()
         deposit = create_deposit(user, amount=500)
-        booking1 = create_booking(user, paying_stock, venue, is_used=True)
-        booking2 = create_booking(user, paying_stock, venue, is_used=True)
-        booking3 = create_booking(user, paying_stock, venue, is_used=True)
-        booking4 = create_booking(user, free_stock, venue, is_used=True)
+        booking1 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True)
+        booking2 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True)
+        booking3 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True)
+        booking4 = create_booking(user=user, stock=free_stock, venue=venue, is_used=True)
         payment1 = create_payment(booking1, offerer, 10, payment_message_name="ABCD123")
         payment2 = create_payment(booking2, offerer, 10, payment_message_name="EFGH456")
 
@@ -242,7 +242,7 @@ class FindNotProcessableWithBankInformationTest:
         user = create_user()
         venue = create_venue(offerer)
         stock = create_stock_from_offer(create_offer_with_thing_product(venue), price=0)
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
         not_processable_payment = create_payment(booking, offerer, Decimal(10),
                                                  status=TransactionStatus.NOT_PROCESSABLE,
                                                  iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
@@ -261,7 +261,7 @@ class FindNotProcessableWithBankInformationTest:
         user = create_user()
         venue = create_venue(offerer)
         stock = create_stock_from_offer(create_offer_with_thing_product(venue), price=0)
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
         not_processable_payment = create_payment(booking, offerer, Decimal(10),
                                                  status=TransactionStatus.NOT_PROCESSABLE,
                                                  iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
@@ -281,7 +281,7 @@ class FindNotProcessableWithBankInformationTest:
         user = create_user()
         venue = create_venue(offerer)
         stock = create_stock_from_offer(create_offer_with_thing_product(venue), price=0)
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
         not_processable_payment = create_payment(booking, offerer, Decimal(10),
                                                  status=TransactionStatus.NOT_PROCESSABLE,
                                                  iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
@@ -303,7 +303,7 @@ class FindNotProcessableWithBankInformationTest:
         user = create_user()
         venue = create_venue(offerer)
         stock = create_stock_from_offer(create_offer_with_thing_product(venue), price=0)
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
         not_processable_payment = create_payment(booking, offerer, Decimal(10),
                                                  status=TransactionStatus.NOT_PROCESSABLE,
                                                  iban='CF13QSDFGH456789', bic='QSDFGH8Z555')

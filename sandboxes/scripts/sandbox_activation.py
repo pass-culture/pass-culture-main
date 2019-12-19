@@ -1,6 +1,6 @@
 from models import ThingType, PcObject
-from tests.test_utils import create_offerer, create_venue, create_offer_with_thing_product, \
-    create_stock_with_thing_offer
+from tests.model_creators.generic_creators import create_offerer, create_venue
+from tests.model_creators.specific_creators import create_stock_with_thing_offer, create_offer_with_thing_product
 
 
 def save_sandbox():

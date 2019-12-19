@@ -6,26 +6,26 @@ import pytest
 from domain.user_activation import generate_activation_users_csv, is_import_status_change_allowed, is_activation_booking
 from models import ImportStatus, EventType, User
 from models import ThingType
-from models.booking import ActivationUser, Booking
+from models.booking import ActivationUser
 from scripts.beneficiary.remote_import import create_beneficiary_from_application
-from tests.test_utils import create_booking, create_stock, create_offer_with_thing_product, create_venue, \
-    create_offerer, create_offer_with_event_product, create_product_with_event_type
-from tests.test_utils import create_user
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue
+from tests.model_creators.specific_creators import create_product_with_event_type, create_offer_with_thing_product, \
+    create_offer_with_event_product
 
 
 class GenerateActivationUsersCsvTest:
     def test_generate_activation_users_csv(self):
         # Given
-        user1 = create_user(first_name='Pedro', last_name='Gutierrez', email='email1@test.com',
+        user1 = create_user(email='email1@test.com', first_name='Pedro', last_name='Gutierrez',
                             reset_password_token='AZERTY123')
-        user2 = create_user(first_name='Pablo', last_name='Rodriguez', email='email2+alias@test.com',
+        user2 = create_user(email='email2+alias@test.com', first_name='Pablo', last_name='Rodriguez',
                             reset_password_token='123AZERTY')
         offerer = create_offerer()
         venue = create_venue(offerer, is_virtual=True, address=None, postal_code=None, departement_code=None)
         activation_offer = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
         stock = create_stock(offer=activation_offer, price=0)
-        booking1 = create_booking(user1, stock, token='abc')
-        booking2 = create_booking(user2, stock, token='def')
+        booking1 = create_booking(user=user1, stock=stock, token='abc')
+        booking2 = create_booking(user=user2, stock=stock, token='def')
         bookings = [booking1, booking2]
         activation_users = map(lambda b: ActivationUser(b), bookings)
 
@@ -144,7 +144,7 @@ class IsActivationBookingTest:
         product = create_product_with_event_type(event_type=EventType.ACTIVATION)
         offer = create_offer_with_event_product(product=product)
         stock = create_stock(offer=offer)
-        booking = create_booking(stock=stock, user=User())
+        booking = create_booking(user=User(), stock=stock)
 
         # Then
         assert is_activation_booking(booking)
@@ -154,7 +154,7 @@ class IsActivationBookingTest:
         product = create_product_with_event_type(event_type=ThingType.ACTIVATION)
         offer = create_offer_with_event_product(product=product)
         stock = create_stock(offer=offer)
-        booking = create_booking(stock=stock, user=User())
+        booking = create_booking(user=User(), stock=stock)
 
         # Then
         assert is_activation_booking(booking)
@@ -165,7 +165,7 @@ class IsActivationBookingTest:
         offer = create_offer_with_event_product(product=product)
         offer.type = 'EventType.SPECTACLE_VIVANT'
         stock = create_stock(offer=offer)
-        booking = create_booking(stock=stock, user=User())
+        booking = create_booking(user=User(), stock=stock)
 
         # Then
         assert is_activation_booking(booking) is False

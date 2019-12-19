@@ -1,5 +1,4 @@
 import uuid
-from datetime import datetime
 
 import pytest
 
@@ -7,7 +6,8 @@ from models import PcObject
 from models.payment_status import TransactionStatus
 from scripts.payment.banishment import do_ban_payments, parse_raw_payments_ids
 from tests.conftest import clean_database
-from tests.test_utils import create_payment, create_payment_message, create_deposit, create_booking, create_user
+from tests.model_creators.generic_creators import create_booking, create_user, create_deposit, create_payment, \
+    create_payment_message
 
 
 class ParseRawPaymentIdsTest:
@@ -35,7 +35,7 @@ class DoBanPaymentsTest:
     def test_modify_statuses_on_given_payments(self, app):
         # given
         user = create_user()
-        booking = create_booking(user)
+        booking = create_booking(user=user)
         deposit = create_deposit(user)
         offerer = booking.stock.resolvedOffer.venue.managingOfferer
 
@@ -69,7 +69,7 @@ class DoBanPaymentsTest:
     def test_does_not_modify_statuses_on_given_payments_if_a_payment_id_is_not_found(self, app):
         # given
         user = create_user()
-        booking = create_booking(user)
+        booking = create_booking(user=user)
         deposit = create_deposit(user)
         offerer = booking.stock.resolvedOffer.venue.managingOfferer
 

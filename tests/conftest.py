@@ -17,7 +17,7 @@ from models.install import install_models, install_database_extensions
 from repository.clean_database import clean_all_database
 from repository.user_queries import find_user_by_email
 from routes import install_routes
-from tests.test_utils import PLAIN_DEFAULT_TESTING_PASSWORD
+from tests.model_creators.generic_creators import PLAIN_DEFAULT_TESTING_PASSWORD
 from utils.json_encoder import EnumJSONEncoder
 
 

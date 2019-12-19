@@ -4,9 +4,9 @@ from models import PcObject, ThingType
 from models.activity import load_activity
 from repository.stock_queries import find_stocks_of_finished_events_when_no_recap_sent, find_online_activation_stock
 from tests.conftest import clean_database
-from tests.test_utils import create_stock_from_event_occurrence, create_event_occurrence, \
-    create_offer_with_event_product, \
-    create_venue, create_offerer, create_offer_with_thing_product, create_stock_from_offer
+from tests.model_creators.generic_creators import create_offerer, create_venue
+from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_from_offer, \
+    create_offer_with_thing_product, create_offer_with_event_product, create_event_occurrence
 
 
 @clean_database

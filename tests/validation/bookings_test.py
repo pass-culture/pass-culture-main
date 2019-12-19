@@ -8,10 +8,11 @@ from domain.expenses import SUBVENTION_PHYSICAL_THINGS, SUBVENTION_DIGITAL_THING
 from models import ApiErrors, Booking, Stock, Offer, ThingType, PcObject, User, EventType
 from models.api_errors import ResourceGoneError, ForbiddenError
 from tests.conftest import clean_database
-from tests.test_utils import create_booking_for_thing, create_product_with_thing_type, create_user, \
-    create_venue, create_offerer, create_offer_with_event_product, create_user_offerer, create_payment, \
-    create_stock_from_offer, create_offer_with_thing_product, create_booking, create_product_with_event_type, \
-    create_stock
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue, \
+    create_user_offerer, create_payment
+from tests.model_creators.specific_creators import create_booking_for_thing, create_stock_from_offer, \
+    create_product_with_thing_type, create_product_with_event_type, create_offer_with_thing_product, \
+    create_offer_with_event_product
 from utils.human_ids import humanize
 from validation.bookings import check_expenses_limits, \
     check_booking_is_cancellable, \
@@ -238,7 +239,7 @@ class CheckRightsToGetBookingsCsvTest:
     def test_raises_an_error_when_user_has_no_right_on_venue_id(self, app):
         # given
         offerer1 = create_offerer(siren='123456789')
-        user_with_rights_on_venue = create_user(is_admin=False, email='test@example.net')
+        user_with_rights_on_venue = create_user(email='test@example.net', is_admin=False)
         user_offerer1 = create_user_offerer(user_with_rights_on_venue, offerer1)
 
         user_with_no_rights_on_venue = create_user(is_admin=False)
@@ -256,10 +257,10 @@ class CheckRightsToGetBookingsCsvTest:
     @clean_database
     def test_raises_an_error_when_user_has_no_right_on_offer_id(self, app):
         # given
-        user_with_no_rights_on_offer = create_user(is_admin=False, email='pro_with_no_right@example.net')
+        user_with_no_rights_on_offer = create_user(email='pro_with_no_right@example.net', is_admin=False)
 
         offerer1 = create_offerer(siren='123456789')
-        user_with_rights_on_offer = create_user(is_admin=False, email='test@example.net')
+        user_with_rights_on_offer = create_user(email='test@example.net', is_admin=False)
         user_offerer1 = create_user_offerer(user_with_rights_on_offer, offerer1)
         venue = create_venue(offerer1, siret=offerer1.siren + '12345')
         offer = create_offer_with_event_product(venue)
@@ -275,7 +276,7 @@ class CheckRightsToGetBookingsCsvTest:
     @clean_database
     def test_raises_an_error_when_venue_does_not_exist(self, app):
         # given
-        user = create_user(is_admin=False, email='pro_with_no_right@example.net')
+        user = create_user(email='pro_with_no_right@example.net', is_admin=False)
 
         PcObject.save(user)
 
@@ -287,7 +288,7 @@ class CheckRightsToGetBookingsCsvTest:
     @clean_database
     def test_raises_an_error_when_offer_does_not_exist(self, app):
         # given
-        user = create_user(is_admin=False, email='pro_with_no_right@example.net')
+        user = create_user(email='pro_with_no_right@example.net', is_admin=False)
 
         PcObject.save(user)
 
@@ -363,7 +364,7 @@ class CheckBookingIsNotAlreadyCancelledTest:
     def test_raise_resource_gone_error_when_booking_is_already_cancelled(self):
         # Given
         user = create_user(postal_code=None)
-        booking = create_booking(is_cancelled=True, user=user)
+        booking = create_booking(user=user, is_cancelled=True)
 
         # When
         with pytest.raises(ResourceGoneError) as api_errors:
@@ -375,7 +376,7 @@ class CheckBookingIsNotAlreadyCancelledTest:
     def test_does_not_raise_when_the_booking_is_not_already_cancelled(self):
         # Given
         user = create_user(postal_code=None)
-        booking = create_booking(is_cancelled=False, user=user)
+        booking = create_booking(user=user, is_cancelled=False)
 
         # When
         try:
@@ -389,7 +390,7 @@ class CheckBookingIsNotUsedTest:
     def test_raise_forbidden_error_when_booking_is_already_used(self):
         # Given
         user = create_user(postal_code=None)
-        booking = create_booking(is_used=True, user=user)
+        booking = create_booking(user=user, is_used=True)
 
         # When
         with pytest.raises(ForbiddenError) as api_errors:
@@ -401,7 +402,7 @@ class CheckBookingIsNotUsedTest:
     def test_does_not_raise_when_the_booking_is_not_used(self):
         # Given
         user = create_user(postal_code=None)
-        booking = create_booking(is_used=False, user=user)
+        booking = create_booking(user=user, is_used=False)
 
         # When
         try:
@@ -417,7 +418,7 @@ class CheckActivationBookingCanBeKeptTest:
         product = create_product_with_event_type(event_type=EventType.ACTIVATION)
         offer = create_offer_with_event_product(product=product)
         stock = create_stock(offer=offer)
-        booking = create_booking(stock=stock, user=User())
+        booking = create_booking(user=User(), stock=stock)
 
         # when
         with pytest.raises(ApiErrors) as api_errors:
@@ -431,7 +432,7 @@ class CheckActivationBookingCanBeKeptTest:
         product = create_product_with_event_type(event_type=ThingType.ACTIVATION)
         offer = create_offer_with_event_product(product=product)
         stock = create_stock(offer=offer)
-        booking = create_booking(stock=stock, user=User())
+        booking = create_booking(user=User(), stock=stock)
 
         # when
         with pytest.raises(ApiErrors) as api_errors:
@@ -445,7 +446,7 @@ class CheckActivationBookingCanBeKeptTest:
         product = create_product_with_event_type(event_type=EventType.JEUX)
         offer = create_offer_with_event_product(product=product)
         stock = create_stock(offer=offer)
-        booking = create_booking(stock=stock, user=User())
+        booking = create_booking(user=User(), stock=stock)
 
         # when
         try:
@@ -488,7 +489,7 @@ class CheckBookingIsKeepableTest:
         offer = create_offer_with_thing_product(venue, )
         stock = create_stock_from_offer(offer, price=0)
 
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
 
         payment = create_payment(booking, offerer, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
         PcObject.save(payment)

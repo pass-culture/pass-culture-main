@@ -3,18 +3,11 @@ from datetime import datetime, timedelta
 from models import PcObject, \
     EventType
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_event_occurrence, \
-    create_mediation, \
-    create_stock_from_event_occurrence, \
-    create_offer_with_event_product, \
-    create_offerer, \
-    create_recommendation, \
-    create_stock, \
-    create_stock_from_offer, \
-    create_product_with_thing_type, \
-    create_offer_with_thing_product, \
-    create_user, \
-    create_venue
+from tests.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, \
+    create_recommendation, create_mediation
+from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_from_offer, \
+    create_product_with_thing_type, create_offer_with_thing_product, create_offer_with_event_product, \
+    create_event_occurrence
 from utils.date import strftime
 
 TWENTY_DAYS_FROM_NOW = datetime.utcnow() + timedelta(days=20)

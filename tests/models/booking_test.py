@@ -5,10 +5,10 @@ import pytest
 
 from models import Booking, Offer, Stock, User, Product, PcObject, ApiErrors
 from tests.conftest import clean_database
-from tests.test_utils import create_product_with_thing_type, create_offerer, create_venue, \
-    create_offer_with_thing_product, create_stock_from_offer, create_user, create_booking, \
-    create_offer_with_event_product, create_mediation, create_stock, create_recommendation, \
-    create_product_with_event_type
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue, \
+    create_recommendation, create_mediation
+from tests.model_creators.specific_creators import create_stock_from_offer, create_product_with_thing_type, \
+    create_product_with_event_type, create_offer_with_thing_product, create_offer_with_event_product
 
 
 def test_booking_completed_url_gets_normalized():
@@ -48,18 +48,10 @@ def test_raises_error_on_booking_when_existing_booking_is_used_and_booking_date_
     user2 = create_user(email='booked@email.com')
     PcObject.save(stock)
     date_after_stock_last_update = datetime.utcnow()
-    booking1 = create_booking(user1,
-                              stock,
-                              date_used=date_after_stock_last_update,
-                              is_cancelled=False,
-                              is_used=True)
+    booking1 = create_booking(user=user1, stock=stock, date_used=date_after_stock_last_update, is_cancelled=False, is_used=True)
     PcObject.save(booking1)
     date_after_last_booking = datetime.utcnow()
-    booking2 = create_booking(user2,
-                              stock,
-                              date_used=date_after_last_booking,
-                              is_cancelled=False,
-                              is_used=False)
+    booking2 = create_booking(user=user2, stock=stock, date_used=date_after_last_booking, is_cancelled=False, is_used=False)
 
     # When
     with pytest.raises(ApiErrors) as e:
@@ -83,7 +75,7 @@ def test_model_thumbUrl_should_use_mediation_first_as_thumbUrl(get_storage_base_
     recommendation.mediationId = mediation.id
 
     # when
-    booking = create_booking(recommendation=recommendation, stock=stock, user=user, venue=venue)
+    booking = create_booking(user=user, recommendation=recommendation, stock=stock, venue=venue)
 
     # then
     assert booking.thumbUrl == "http://localhost/storage/thumbs/mediations/AE"
@@ -101,7 +93,7 @@ def test_model_thumbUrl_should_have_thumbUrl_using_productId_when_no_mediation(g
     stock = create_stock(price=12, available=1, offer=offer)
 
     # when
-    booking = create_booking(recommendation=None, stock=stock, user=user, venue=venue)
+    booking = create_booking(user=user, recommendation=None, stock=stock, venue=venue)
 
     # then
     assert booking.thumbUrl == "http://localhost/storage/thumbs/products/A9"
@@ -118,8 +110,8 @@ def test_model_qrCode_should_return_qrCode_as_base64_string_when_booking_is_not_
     stock = create_stock(price=12, available=1, offer=offer)
 
     # when
-    booking = create_booking(recommendation=None, stock=stock, user=user, venue=venue, is_used=False,
-                             is_cancelled=False)
+    booking = create_booking(user=user, is_cancelled=False, is_used=False, recommendation=None, stock=stock,
+                             venue=venue)
 
     # then
     assert booking.qrCode is not None
@@ -137,7 +129,7 @@ def test_model_qrCode_should_return_qrCode_as_None_when_booking_is_used_and_canc
     stock = create_stock(price=12, available=1, offer=offer)
 
     # when
-    booking = create_booking(recommendation=None, stock=stock, user=user, venue=venue, is_used=True, is_cancelled=True)
+    booking = create_booking(user=user, is_cancelled=True, is_used=True, recommendation=None, stock=stock, venue=venue)
 
     # then
     assert booking.qrCode is None
@@ -154,7 +146,7 @@ def test_model_qrCode_should_return_qrCode_as_None_when_booking_is_used_and_not_
     stock = create_stock(price=12, available=1, offer=offer)
 
     # when
-    booking = create_booking(recommendation=None, stock=stock, user=user, venue=venue, is_used=True, is_cancelled=False)
+    booking = create_booking(user=user, is_cancelled=False, is_used=True, recommendation=None, stock=stock, venue=venue)
 
     # then
     assert booking.qrCode is None
@@ -171,7 +163,7 @@ def test_model_qrCode_should_return_qrCode_as_None_when_booking_is_not_used_and_
     stock = create_stock(price=12, available=1, offer=offer)
 
     # when
-    booking = create_booking(recommendation=None, stock=stock, user=user, venue=venue, is_used=False, is_cancelled=True)
+    booking = create_booking(user=user, is_cancelled=True, is_used=False, recommendation=None, stock=stock, venue=venue)
 
     # then
     assert booking.qrCode is None

@@ -1,6 +1,6 @@
 from models import Deposit, PcObject
 from tests.conftest import clean_database
-from tests.test_utils import create_user
+from tests.model_creators.generic_creators import create_user
 
 
 @clean_database

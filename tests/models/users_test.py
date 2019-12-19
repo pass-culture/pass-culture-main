@@ -1,12 +1,12 @@
-from datetime import datetime
 from decimal import Decimal
 
 import pytest
 
 from models import ApiErrors, PcObject, RightsType, ThingType
 from tests.conftest import clean_database
-from tests.test_utils import create_user, create_offerer, create_user_offerer, create_deposit, create_booking, \
-    create_stock, create_venue, create_offer_with_thing_product
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue, \
+    create_deposit, create_user_offerer
+from tests.model_creators.specific_creators import create_offer_with_thing_product
 
 
 @clean_database
@@ -114,8 +114,8 @@ class WalletBalanceTest:
         deposit2 = create_deposit(user, amount=50)
         stock1 = create_stock(price=20, offer=offer)
         stock2 = create_stock(price=30, offer=offer)
-        booking1 = create_booking(user, venue=venue, stock=stock1, quantity=1)
-        booking2 = create_booking(user, venue=venue, stock=stock2, quantity=2)
+        booking1 = create_booking(user=user, quantity=1, stock=stock1, venue=venue)
+        booking2 = create_booking(user=user, quantity=2, stock=stock2, venue=venue)
 
         PcObject.save(deposit1, deposit2, booking1, booking2)
 
@@ -137,8 +137,8 @@ class WalletBalanceTest:
         deposit2 = create_deposit(user, amount=50)
         stock1 = create_stock(price=20, offer=offer)
         stock2 = create_stock(price=30, offer=offer)
-        booking1 = create_booking(user, venue=venue, stock=stock1, quantity=1, is_cancelled=False)
-        booking2 = create_booking(user, venue=venue, stock=stock2, quantity=2, is_cancelled=True)
+        booking1 = create_booking(user=user, is_cancelled=False, quantity=1, stock=stock1, venue=venue)
+        booking2 = create_booking(user=user, is_cancelled=True, quantity=2, stock=stock2, venue=venue)
 
         PcObject.save(deposit1, deposit2, booking1, booking2)
 
@@ -189,9 +189,9 @@ class RealWalletBalanceTest:
         stock1 = create_stock(price=20, offer=offer)
         stock2 = create_stock(price=30, offer=offer)
         stock3 = create_stock(price=40, offer=offer)
-        booking1 = create_booking(user, venue=venue, stock=stock1, quantity=1, is_used=True)
-        booking2 = create_booking(user, venue=venue, stock=stock2, quantity=2, is_used=True)
-        booking3 = create_booking(user, venue=venue, stock=stock3, quantity=1, is_used=False)
+        booking1 = create_booking(user=user, is_used=True, quantity=1, stock=stock1, venue=venue)
+        booking2 = create_booking(user=user, is_used=True, quantity=2, stock=stock2, venue=venue)
+        booking3 = create_booking(user=user, is_used=False, quantity=1, stock=stock3, venue=venue)
 
         PcObject.save(deposit1, deposit2, booking1, booking2, booking3)
 
@@ -214,9 +214,9 @@ class RealWalletBalanceTest:
         stock1 = create_stock(price=20, offer=offer)
         stock2 = create_stock(price=30, offer=offer)
         stock3 = create_stock(price=40, offer=offer)
-        booking1 = create_booking(user, venue=venue, stock=stock1, quantity=1, is_cancelled=True, is_used=True)
-        booking2 = create_booking(user, venue=venue, stock=stock2, quantity=2, is_cancelled=False, is_used=True)
-        booking3 = create_booking(user, venue=venue, stock=stock3, quantity=1, is_cancelled=False, is_used=True)
+        booking1 = create_booking(user=user, is_cancelled=True, is_used=True, quantity=1, stock=stock1, venue=venue)
+        booking2 = create_booking(user=user, is_cancelled=False, is_used=True, quantity=2, stock=stock2, venue=venue)
+        booking3 = create_booking(user=user, is_cancelled=False, is_used=True, quantity=1, stock=stock3, venue=venue)
 
         PcObject.save(deposit1, deposit2, booking1, booking2, booking3)
 

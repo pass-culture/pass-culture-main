@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from emails.pro_waiting_validation import retrieve_data_for_pro_user_waiting_offerer_validation_email
-from tests.test_utils import create_user, create_offerer
+from tests.model_creators.generic_creators import create_user, create_offerer
 
 
 class MakeProUserWaitingForValidationByAdminEmailTest:

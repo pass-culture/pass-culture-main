@@ -3,8 +3,10 @@ from unittest.mock import patch
 
 from models import PcObject, ApiErrors, VenueProvider, VenueProviderPriceRule
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_offerer, create_venue, create_user, activate_provider, \
-    create_venue_provider
+from tests.model_creators.provider_creators import activate_provider
+from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_venue_provider
+from tests.model_creators.specific_creators import create_product_with_thing_type
+from utils.human_ids import humanize
 from utils.config import API_ROOT_PATH
 from utils.human_ids import humanize, dehumanize
 
@@ -87,7 +89,7 @@ class Post:
 
             validate_new_venue_provider_information.side_effect = api_errors
 
-            user = create_user(is_admin=True, can_book_free_offers=False)
+            user = create_user(can_book_free_offers=False, is_admin=True)
             PcObject.save(user)
             auth_request = TestClient(app.test_client()) \
                 .with_auth(email=user.email)
@@ -106,8 +108,16 @@ class Post:
 
         @clean_database
         def when_trying_to_add_existing_provider(self, app):
+<<<<<<< HEAD
             # Given
             user = create_user(is_admin=True, can_book_free_offers=False)
+||||||| merged common ancestors
+            # given
+            user = create_user(is_admin=True, can_book_free_offers=False)
+=======
+            # given
+            user = create_user(can_book_free_offers=False, is_admin=True)
+>>>>>>> (PC-2731): refactored model creators
             offerer = create_offerer()
             venue = create_venue(offerer)
             provider = activate_provider('TiteLiveStocks')

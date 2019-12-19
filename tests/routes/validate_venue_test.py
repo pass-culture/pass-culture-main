@@ -1,7 +1,7 @@
 from models import PcObject
 from models.db import db
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_offerer, create_venue
+from tests.model_creators.generic_creators import create_offerer, create_venue
 
 
 class Get:

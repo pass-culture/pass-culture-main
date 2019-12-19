@@ -5,16 +5,11 @@ import pytest
 from models import Offer, PcObject, ApiErrors, ThingType, EventType, Product, Provider
 from routes.serialization import as_dict
 from tests.conftest import clean_database
-from tests.test_utils import create_booking, create_user, create_mediation, create_recommendation, \
-    create_stock_from_offer, create_deposit
-from tests.test_utils import create_criterion, \
-    create_offer_with_thing_product, \
+from tests.model_creators.generic_creators import create_booking, create_criterion, create_user, create_stock, \
     create_offerer, \
-    create_product_with_thing_type, \
-    create_stock, \
-    create_venue
-from tests.test_utils import create_offer_with_event_product, \
-    create_product_with_event_type
+    create_venue, create_deposit, create_recommendation, create_mediation
+from tests.model_creators.specific_creators import create_stock_from_offer, create_product_with_thing_type, \
+    create_product_with_event_type, create_offer_with_thing_product, create_offer_with_event_product
 from utils.date import DateTimes
 
 now = datetime.utcnow()
@@ -55,8 +50,7 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=None)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(
-                user2, stock, venue, recommendation, quantity=3)
+            booking = create_booking(user=user2, stock=stock, venue=venue, recommendation=recommendation, quantity=3)
 
             PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
 
@@ -79,8 +73,7 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=0)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(
-                user2, stock, venue, recommendation, quantity=3)
+            booking = create_booking(user=user2, stock=stock, venue=venue, recommendation=recommendation, quantity=3)
 
             PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
 
@@ -103,8 +96,7 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=0)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(
-                user2, stock, venue, recommendation, quantity=3)
+            booking = create_booking(user=user2, stock=stock, venue=venue, recommendation=recommendation, quantity=3)
 
             PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
 
@@ -127,10 +119,8 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=10)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(
-                user2, stock, venue, recommendation, quantity=3)
-            booking2 = create_booking(
-                user2, stock2, venue, recommendation, quantity=10)
+            booking = create_booking(user=user2, stock=stock, venue=venue, recommendation=recommendation, quantity=3)
+            booking2 = create_booking(user=user2, stock=stock2, venue=venue, recommendation=recommendation, quantity=10)
 
             PcObject.save(booking, booking2, deposit, user,
                           offer, stock, stock2, user2)
@@ -154,10 +144,8 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=150)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(
-                user2, stock, venue, recommendation, quantity=3)
-            booking2 = create_booking(
-                user2, stock2, venue, recommendation, quantity=20)
+            booking = create_booking(user=user2, stock=stock, venue=venue, recommendation=recommendation, quantity=3)
+            booking2 = create_booking(user=user2, stock=stock2, venue=venue, recommendation=recommendation, quantity=20)
 
             PcObject.save(booking, booking2, deposit, user,
                           offer, stock, stock2, user2)
@@ -181,8 +169,7 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=10)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(
-                user2, stock2, venue, recommendation, quantity=10)
+            booking = create_booking(user=user2, stock=stock2, venue=venue, recommendation=recommendation, quantity=10)
 
             PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
 
@@ -208,10 +195,8 @@ class AddStockAlertMessageToOfferTest:
             stock4 = create_stock_from_offer(offer, available=None)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(
-                user2, stock2, venue, recommendation, quantity=5)
-            booking2 = create_booking(
-                user2, stock3, venue, recommendation, quantity=1)
+            booking = create_booking(user=user2, stock=stock2, venue=venue, recommendation=recommendation, quantity=5)
+            booking2 = create_booking(user=user2, stock=stock3, venue=venue, recommendation=recommendation, quantity=1)
 
             PcObject.save(booking, booking2, deposit, user, offer,
                           stock, stock2, stock3, stock4, user2)
@@ -252,8 +237,7 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=None)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(
-                user2, stock, venue, recommendation, quantity=3)
+            booking = create_booking(user=user2, stock=stock, venue=venue, recommendation=recommendation, quantity=3)
 
             PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
 
@@ -276,8 +260,7 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=0)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(
-                user2, stock, venue, recommendation, quantity=3)
+            booking = create_booking(user=user2, stock=stock, venue=venue, recommendation=recommendation, quantity=3)
 
             PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
 
@@ -300,8 +283,7 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=0)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(
-                user2, stock, venue, recommendation, quantity=3)
+            booking = create_booking(user=user2, stock=stock, venue=venue, recommendation=recommendation, quantity=3)
 
             PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
 
@@ -324,10 +306,8 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=10)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(
-                user2, stock, venue, recommendation, quantity=3)
-            booking2 = create_booking(
-                user2, stock2, venue, recommendation, quantity=10)
+            booking = create_booking(user=user2, stock=stock, venue=venue, recommendation=recommendation, quantity=3)
+            booking2 = create_booking(user=user2, stock=stock2, venue=venue, recommendation=recommendation, quantity=10)
 
             PcObject.save(booking, booking2, deposit, user,
                           offer, stock, stock2, user2)
@@ -351,10 +331,8 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=40)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(
-                user2, stock, venue, recommendation, quantity=3)
-            booking2 = create_booking(
-                user2, stock2, venue, recommendation, quantity=11)
+            booking = create_booking(user=user2, stock=stock, venue=venue, recommendation=recommendation, quantity=3)
+            booking2 = create_booking(user=user2, stock=stock2, venue=venue, recommendation=recommendation, quantity=11)
 
             PcObject.save(booking, booking2, deposit, user,
                           offer, stock, stock2, user2)
@@ -378,8 +356,7 @@ class AddStockAlertMessageToOfferTest:
             stock2 = create_stock_from_offer(offer, available=10)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(
-                user2, stock2, venue, recommendation, quantity=10)
+            booking = create_booking(user=user2, stock=stock2, venue=venue, recommendation=recommendation, quantity=10)
 
             PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
 
@@ -405,10 +382,8 @@ class AddStockAlertMessageToOfferTest:
             stock4 = create_stock_from_offer(offer, available=None)
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(
-                user2, stock2, venue, recommendation, quantity=5)
-            booking2 = create_booking(
-                user2, stock3, venue, recommendation, quantity=1)
+            booking = create_booking(user=user2, stock=stock2, venue=venue, recommendation=recommendation, quantity=5)
+            booking2 = create_booking(user=user2, stock=stock3, venue=venue, recommendation=recommendation, quantity=1)
 
             PcObject.save(booking, booking2, deposit, user, offer,
                           stock, stock2, stock3, stock4, user2)
@@ -433,10 +408,8 @@ class AddStockAlertMessageToOfferTest:
                 offer, available=5, date_modified=datetime.utcnow())
 
             deposit = create_deposit(user2, amount=500)
-            booking = create_booking(user2, stock, venue, recommendation,
-                                     quantity=5,
-                                     is_used=True,
-                                     date_used=datetime.utcnow() - timedelta(days=3))
+            booking = create_booking(user=user2, stock=stock, venue=venue, recommendation=recommendation, is_used=True,
+                                     quantity=5)
 
             PcObject.save(booking, deposit, user, offer, stock, user2)
 
@@ -836,12 +809,9 @@ class IsFullyBookedTest:
         user = create_user()
         stock1 = create_stock(available=2, date_modified=datetime(2019, 1, 1))
         stock2 = create_stock(available=1, date_modified=datetime(2019, 1, 1))
-        create_booking(user, stock=stock1, quantity=1,
-                       is_used=True, date_used=datetime(2019, 2, 1))
-        create_booking(user, stock=stock1, quantity=1,
-                       is_used=True, date_used=datetime(2019, 2, 1))
-        create_booking(user, stock=stock2, quantity=1,
-                       is_used=True, date_used=datetime(2019, 2, 1))
+        create_booking(user=user, date_used=datetime(2019, 2, 1), is_used=True, quantity=1, stock=stock1)
+        create_booking(user=user, date_used=datetime(2019, 2, 1), is_used=True, quantity=1, stock=stock1)
+        create_booking(user=user, date_used=datetime(2019, 2, 1), is_used=True, quantity=1, stock=stock2)
         offer.stocks = [stock1, stock2]
 
         # then
@@ -855,9 +825,9 @@ class IsFullyBookedTest:
         user = create_user()
         stock1 = create_stock(available=2)
         stock2 = create_stock(available=1)
-        create_booking(user, stock=stock1, quantity=1)
-        create_booking(user, stock=stock1, quantity=1, is_cancelled=True)
-        create_booking(user, stock=stock2, quantity=1)
+        create_booking(user=user, quantity=1, stock=stock1)
+        create_booking(user=user, is_cancelled=True, quantity=1, stock=stock1)
+        create_booking(user=user, quantity=1, stock=stock2)
         offer.stocks = [stock1, stock2]
 
         # then
@@ -871,10 +841,8 @@ class IsFullyBookedTest:
             available=2, booking_limit_datetime=datetime.utcnow() - timedelta(weeks=3))
         stock2 = create_stock(available=1, date_modified=datetime(2019, 1, 1))
         stock3 = create_stock(available=1, date_modified=datetime(2019, 1, 1))
-        create_booking(user, stock=stock2, quantity=1,
-                       is_used=True, date_used=datetime(2019, 2, 1))
-        create_booking(user, stock=stock3, quantity=1,
-                       is_used=True, date_used=datetime(2019, 2, 1))
+        create_booking(user=user, date_used=datetime(2019, 2, 1), is_used=True, quantity=1, stock=stock2)
+        create_booking(user=user, date_used=datetime(2019, 2, 1), is_used=True, quantity=1, stock=stock3)
         offer.stocks = [stock1, stock2, stock3]
 
         # then
@@ -886,8 +854,8 @@ class IsFullyBookedTest:
         user = create_user()
         stock1 = create_stock(available=None)
         stock2 = create_stock(available=None)
-        create_booking(user, stock=stock1, quantity=1)
-        create_booking(user, stock=stock2, quantity=1)
+        create_booking(user=user, quantity=1, stock=stock1)
+        create_booking(user=user, quantity=1, stock=stock2)
         offer.stocks = [stock1, stock2]
 
         # then
@@ -900,10 +868,8 @@ class IsFullyBookedTest:
         offer = create_offer_with_thing_product(venue)
         user = create_user()
         stock1 = create_stock(available=2, date_modified=datetime(2019, 1, 1))
-        create_booking(user, stock=stock1, quantity=1,
-                       is_used=True, date_used=datetime(2018, 1, 1))
-        create_booking(user, stock=stock1, quantity=1,
-                       is_used=True, date_used=datetime(2019, 2, 1))
+        create_booking(user=user, date_used=datetime(2018, 1, 1), is_used=True, quantity=1, stock=stock1)
+        create_booking(user=user, date_used=datetime(2019, 2, 1), is_used=True, quantity=1, stock=stock1)
         offer.stocks = [stock1]
 
         # then

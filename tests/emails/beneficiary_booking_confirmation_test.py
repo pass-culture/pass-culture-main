@@ -2,9 +2,9 @@ from datetime import datetime, timezone
 from unittest.mock import patch
 
 from emails.beneficiary_booking_confirmation import retrieve_data_for_beneficiary_booking_confirmation_email
-from tests.test_utils import create_offerer, create_venue, create_user, create_booking, \
-    create_offer_with_event_product, \
-    create_stock_from_offer, create_offer_with_thing_product, create_mediation
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, create_mediation
+from tests.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product, \
+    create_offer_with_event_product
 
 
 @patch('emails.beneficiary_booking_confirmation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
@@ -21,7 +21,7 @@ def test_should_return_event_specific_data_for_email_when_offer_is_an_event(mock
     beginning_datetime = datetime(2019, 11, 6, 14, 59, 5, tzinfo=timezone.utc)
     stock = create_stock_from_offer(event_offer, beginning_datetime=beginning_datetime, price=23.99)
     booking_datetime = datetime(2019, 10, 3, 13, 24, 6, tzinfo=timezone.utc)
-    booking = create_booking(user, stock, venue, token='ABC123', date_created=booking_datetime)
+    booking = create_booking(date_created=booking_datetime, user=user, stock=stock, venue=venue, token='ABC123')
 
     # When
     email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
@@ -66,12 +66,12 @@ def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event(m
     offerer = create_offerer(idx=1, name='Théâtre du coin')
     venue = create_venue(offerer, "Lieu de l'offreur", idx=1,
                          address='25 avenue du lieu')
-    event_offer = create_offer_with_event_product(venue, event_name='Super événement', idx=34)
+    event_offer = create_offer_with_event_product(venue=venue, event_name='Super événement', idx=34)
     create_mediation(event_offer, idx=22)
     beginning_datetime = datetime(2019, 11, 6, 14, 59, 5, tzinfo=timezone.utc)
     stock = create_stock_from_offer(event_offer, beginning_datetime=beginning_datetime, price=23.99)
     booking_datetime = datetime(2019, 10, 3, 13, 24, 6, tzinfo=timezone.utc)
-    booking = create_booking(user, stock, venue, token='ABC123', date_created=booking_datetime, quantity=2)
+    booking = create_booking(date_created=booking_datetime, user=user, stock=stock, venue=venue, quantity=2, token='ABC123')
 
     # When
     email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
@@ -116,11 +116,11 @@ def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing(mock_
     offerer = create_offerer(idx=1, name="Théâtre de l'angle")
     venue = create_venue(offerer, 'Lieu', idx=1,
                          address='22 avenue du lieu')
-    thing_offer = create_offer_with_thing_product(venue, thing_name='Super bien culturel', idx=33)
+    thing_offer = create_offer_with_thing_product(venue=venue, thing_name='Super bien culturel', idx=33)
     create_mediation(thing_offer, idx=24)
     stock = create_stock_from_offer(thing_offer, price=15)
     booking_datetime = datetime(2019, 10, 3, 13, 24, 6, tzinfo=timezone.utc)
-    booking = create_booking(user, stock, venue, token='123ABC', date_created=booking_datetime)
+    booking = create_booking(date_created=booking_datetime, user=user, stock=stock, venue=venue, token='123ABC')
 
     # When
     email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
@@ -170,7 +170,7 @@ def test_should_return_digital_thing_specific_data_for_email_when_offer_is_a_dig
                                                           thing_name='Super offre numérique', idx=32)
     stock = create_stock_from_offer(digital_thing_offer, price=0)
     booking_datetime = datetime(2019, 10, 3, 13, 24, 6, tzinfo=timezone.utc)
-    booking = create_booking(user, stock, venue, token='123ABC', date_created=booking_datetime)
+    booking = create_booking(date_created=booking_datetime, user=user, stock=stock, venue=venue, token='123ABC')
 
     # When
     email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
@@ -216,7 +216,7 @@ def test_should_send_email_to_users_address_when_environment_is_production(mock_
     create_mediation(event_offer)
     stock = create_stock_from_offer(event_offer,
                                     beginning_datetime=datetime(2019, 10, 3, 13, 24, 6, tzinfo=timezone.utc))
-    booking = create_booking(user, stock, venue)
+    booking = create_booking(user=user, stock=stock, venue=venue)
 
     # When
     email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
@@ -233,7 +233,7 @@ def test_should_return_total_price_for_duo_offers():
     event_offer = create_offer_with_event_product(venue)
     stock = create_stock_from_offer(event_offer, price=15,
                                     beginning_datetime=datetime(2019, 10, 3, 13, 24, 6, tzinfo=timezone.utc))
-    booking = create_booking(user, stock, quantity=2)
+    booking = create_booking(user=user, stock=stock, quantity=2)
 
     # When
     email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)

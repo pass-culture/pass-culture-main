@@ -4,11 +4,10 @@ from models import PcObject
 from repository.offer_queries import filter_offers_with_keywords_string, build_offer_search_base_query, \
     get_offers_for_recommendations_search
 from tests.conftest import clean_database
-from tests.test_utils import create_product_with_event_type, create_product_with_thing_type, create_offerer, \
-    create_venue, create_offer_with_event_product, \
-    create_offer_with_thing_product, create_event_occurrence, create_stock_from_event_occurrence, create_stock, \
-    create_booking, \
-    create_user
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue
+from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_product_with_thing_type, \
+    create_product_with_event_type, create_offer_with_thing_product, create_offer_with_event_product, \
+    create_event_occurrence
 
 
 @clean_database
@@ -534,7 +533,7 @@ def test_get_offers_for_recommendations_search_only_return_available_offers(app)
     stock_with_no_available = create_stock_from_event_occurrence(event_occurrence, available=0)
     stock_with_one_available = create_stock_from_event_occurrence(event_occurrence, available=1, price=0)
     user = create_user()
-    booking = create_booking(user, stock_with_one_available, quantity=1, venue=venue)
+    booking = create_booking(user=user, stock=stock_with_one_available, quantity=1, venue=venue)
 
     PcObject.save(stock_with_no_available, stock_available, booking)
 

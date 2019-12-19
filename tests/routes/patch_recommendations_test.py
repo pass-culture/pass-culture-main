@@ -1,10 +1,8 @@
 from models import PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_mediation, \
-    create_offerer, \
-    create_recommendation, \
-    create_user, \
-    create_venue, create_offer_with_thing_product
+from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_recommendation, \
+    create_mediation
+from tests.model_creators.specific_creators import create_offer_with_thing_product
 from utils.human_ids import humanize
 
 RECOMMENDATION_URL = '/recommendations'

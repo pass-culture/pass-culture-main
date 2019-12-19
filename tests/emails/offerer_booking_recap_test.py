@@ -6,10 +6,10 @@ from freezegun import freeze_time
 
 from models import PcObject, ThingType, EventType, Offerer
 from tests.conftest import clean_database, mocked_mail
-from tests.test_utils import create_user, create_offerer, create_venue, create_offer_with_event_product, \
-    create_stock_from_offer, create_booking, create_product_with_thing_type, create_offer_with_thing_product, \
-    create_deposit, create_stock_with_event_offer, create_stock_with_thing_offer, create_event_occurrence, \
-    create_stock_from_event_occurrence
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, create_deposit
+from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_event_occurrence, \
+    create_stock_from_offer, create_stock_with_thing_offer, create_product_with_thing_type, \
+    create_offer_with_thing_product, create_offer_with_event_product, create_event_occurrence
 from tests.utils.mailing_test import _remove_whitespaces
 from utils.mailing import ADMINISTRATION_EMAIL_ADDRESS, \
     make_offerer_booking_recap_email_after_user_action
@@ -27,7 +27,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         event_offer = create_offer_with_event_product(venue, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 59, 5, tzinfo=timezone.utc)
         stock = create_stock_from_offer(event_offer, beginning_datetime=beginning_datetime, price=0, available=10)
-        booking = create_booking(user, stock, venue, token='ABC123')
+        booking = create_booking(user=user, stock=stock, venue=venue, token='ABC123')
         recipient = ['dev@passculture.app']
         stock.bookings = [booking]
 
@@ -79,7 +79,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         thing_product = create_product_with_thing_type(thing_name='Le récit de voyage', extra_data=extra_data)
         event_offer = create_offer_with_thing_product(venue, thing_product, idx=1)
         stock = create_stock_from_offer(event_offer, price=0)
-        booking = create_booking(user, stock, venue, quantity=3, token='ABC123')
+        booking = create_booking(user=user, stock=stock, venue=venue, quantity=3, token='ABC123')
         recipient = ['dev@passculture.app']
         stock.bookings = [booking]
 
@@ -132,7 +132,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         event_offer = create_offer_with_event_product(venue, is_duo=True, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
         stock = create_stock_from_offer(event_offer, beginning_datetime=beginning_datetime, price=5.86, available=10)
-        booking = create_booking(user, stock, venue, token='ABC123')
+        booking = create_booking(user=user, stock=stock, venue=venue, token='ABC123')
         stock.bookings = [booking]
         recipient = ['dev@passculture.app']
 
@@ -182,7 +182,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
         stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0, available=10)
-        booking = create_booking(user, stock, venue, token='ABC123')
+        booking = create_booking(user=user, stock=stock, venue=venue, token='ABC123')
         recipient = ['dev@passculture.app']
         stock.bookings = [booking]
 
@@ -233,7 +233,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
         stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0, available=10)
-        booking = create_booking(user, stock, venue, token='ABC123')
+        booking = create_booking(user=user, stock=stock, venue=venue, token='ABC123')
         stock.bookings = [booking]
         recipient = ['dev@passculture.app']
 
@@ -287,7 +287,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                                                       booking_email='dev@passculture.app', idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
         stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0, available=10)
-        booking = create_booking(user, stock, venue, token='ABC123')
+        booking = create_booking(user=user, stock=stock, venue=venue, token='ABC123')
         stock.bookings = [booking]
         recipient = ['dev@passculture.app', ADMINISTRATION_EMAIL_ADDRESS]
 
@@ -335,12 +335,10 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
     @clean_database
     def test_returns_email_with_correct_data_when_two_users_book_the_same_offer(self, app):
         # Given
-        user_1 = create_user('Test', first_name='Jean', last_name='Dupont', departement_code='93',
-                             email='test@example.com',
-                             can_book_free_offers=True)
-        user_2 = create_user('Test', first_name='Jaja', last_name='Dudu', departement_code='93',
-                             email='mail@example.com',
-                             can_book_free_offers=True)
+        user_1 = create_user(can_book_free_offers=True, departement_code='93', email='test@example.com',
+                             first_name='Jean', last_name='Dupont', public_name='Test')
+        user_2 = create_user(can_book_free_offers=True, departement_code='93', email='mail@example.com',
+                             first_name='Jaja', last_name='Dudu', public_name='Test')
         offerer = create_offerer(idx=1)
         venue = create_venue(offerer, 'Test offerer', 'reservations@example.com', siret='89765389057043', idx=1,
                              departement_code='75', postal_code='75000')
@@ -348,8 +346,8 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                                                       booking_email='dev@passculture.app', idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
         stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0, available=10)
-        booking_1 = create_booking(user_1, stock, venue, token='ACVSDC')
-        booking_2 = create_booking(user_2, stock, venue, token='TEST95')
+        booking_1 = create_booking(user=user_1, stock=stock, venue=venue, token='ACVSDC')
+        booking_2 = create_booking(user=user_2, stock=stock, venue=venue, token='TEST95')
         stock.bookings = [booking_1, booking_2]
         recipient = ['dev@passculture.app', ADMINISTRATION_EMAIL_ADDRESS]
 
@@ -401,9 +399,8 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
     @clean_database
     def test_returns_email_with_link_to_the_corresponding_offer(self, app):
         # Given
-        user = create_user('Test', first_name='Jean', last_name='Dupont', departement_code='93',
-                           email='test@example.com',
-                           can_book_free_offers=True)
+        user = create_user(can_book_free_offers=True, departement_code='93', email='test@example.com',
+                           first_name='Jean', last_name='Dupont', public_name='Test')
 
         offerer = create_offerer(idx=1)
         venue = create_venue(offerer, 'Test offerer', 'reservations@example.com', siret='89765389057043', idx=1,
@@ -412,7 +409,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                                                       booking_email='dev@passculture.app', idx=3)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
         stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0, available=10)
-        booking = create_booking(user, stock, venue, token='ACVSDC')
+        booking = create_booking(user=user, stock=stock, venue=venue, token='ACVSDC')
         stock.bookings = [booking]
         recipient = ['dev@passculture.app', ADMINISTRATION_EMAIL_ADDRESS]
 
@@ -472,9 +469,9 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
                                               offer_id=1,
                                               beginning_datetime=beginning_datetime, end_datetime=end_datetime,
                                               booking_limit_datetime=booking_limit_datetime)
-        user = create_user(public_name='Test', first_name='First', last_name='Last', departement_code='93',
-                           email='test@example.com', can_book_free_offers=True)
-        booking = create_booking(user, stock, venue, None)
+        user = create_user(can_book_free_offers=True, departement_code='93', email='test@example.com',
+                           first_name='First', last_name='Last', public_name='Test')
+        booking = create_booking(user=user, stock=stock, venue=venue)
         booking.token = '56789'
 
         # When
@@ -513,8 +510,9 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
                              '93')
         stock = create_stock_with_event_offer(offerer=None, venue=venue)
-        user = create_user('Test', departement_code='93', email='test@example.com', can_book_free_offers=True)
-        booking = create_booking(user, stock, venue, None)
+        user = create_user(can_book_free_offers=True, departement_code='93', email='test@example.com',
+                           public_name='Test')
+        booking = create_booking(user=user, stock=stock, venue=venue)
         booking.token = '56789'
 
         # When
@@ -543,13 +541,13 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
                              '93')
         stock = create_stock_with_event_offer(offerer=Offerer(), venue=venue)
 
-        user1 = create_user(public_name='Test1', first_name='First1', last_name='Last1', departement_code='93',
-                            email='test@example.com', can_book_free_offers=True)
-        booking1 = create_booking(user1, stock)
+        user1 = create_user(can_book_free_offers=True, departement_code='93', email='test@example.com',
+                            first_name='First1', last_name='Last1', public_name='Test1')
+        booking1 = create_booking(user=user1, stock=stock)
 
-        user2 = create_user(public_name='Test2', first_name='First2', last_name='Last2', departement_code='93',
-                            email='test@example.com', can_book_free_offers=True)
-        booking2 = create_booking(user2, stock)
+        user2 = create_user(can_book_free_offers=True, departement_code='93', email='test@example.com',
+                            first_name='First2', last_name='Last2', public_name='Test2')
+        booking2 = create_booking(user=user2, stock=stock)
 
         ongoing_bookings = [booking1, booking2]
 
@@ -573,16 +571,14 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
                              '93')
         stock = create_stock_with_event_offer(offerer=None, venue=venue)
-        user_1 = create_user('Test', first_name='John', last_name='Doe', departement_code='93',
-                             email='test@example.com',
-                             can_book_free_offers=True)
-        user_2 = create_user('Test 2', first_name='Jane', last_name='Doe', departement_code='93',
-                             email='test@example.com',
-                             can_book_free_offers=True)
+        user_1 = create_user(can_book_free_offers=True, departement_code='93', email='test@example.com',
+                             first_name='John', last_name='Doe', public_name='Test')
+        user_2 = create_user(can_book_free_offers=True, departement_code='93', email='test@example.com',
+                             first_name='Jane', last_name='Doe', public_name='Test 2')
         user_2.email = 'other_test@example.com'
-        booking_1 = create_booking(user_1, stock, venue, None)
+        booking_1 = create_booking(user=user_1, stock=stock, venue=venue)
         booking_1.token = '56789'
-        booking_2 = create_booking(user_2, stock, venue, None)
+        booking_2 = create_booking(user=user_2, stock=stock, venue=venue)
         booking_2.token = '67890'
 
         # When
@@ -614,13 +610,12 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         thing_offer = create_offer_with_thing_product(venue=None, thing_type=ThingType.AUDIOVISUEL)
         stock = create_stock_with_thing_offer(offerer=None, venue=venue, offer=thing_offer)
         stock.offer.id = 1
-        user1 = create_user('Test', first_name='Joe', last_name='Dalton', departement_code='93',
-                            email='test1@email.com',
-                            can_book_free_offers=True)
-        user2 = create_user('Test', first_name='Averell', last_name='Dalton', departement_code='93',
-                            email='test2@email.com', can_book_free_offers=True)
-        booking1 = create_booking(user1, stock, venue, token='56789')
-        booking2 = create_booking(user2, stock, venue, token='12345')
+        user1 = create_user(can_book_free_offers=True, departement_code='93', email='test1@email.com',
+                            first_name='Joe', last_name='Dalton', public_name='Test')
+        user2 = create_user(can_book_free_offers=True, departement_code='93', email='test2@email.com',
+                            first_name='Averell', last_name='Dalton', public_name='Test')
+        booking1 = create_booking(user=user1, stock=stock, venue=venue, token='56789')
+        booking2 = create_booking(user=user2, stock=stock, venue=venue, token='12345')
 
         # When
         with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking1, booking2]):
@@ -649,13 +644,12 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         thing_offer = create_offer_with_thing_product(venue=None, thing_type=ThingType.AUDIOVISUEL)
         stock = create_stock_with_thing_offer(offerer=None, venue=venue, offer=thing_offer)
         stock.offer.id = 1
-        user1 = create_user('Test', first_name='Joe', last_name='Dalton', departement_code='93',
-                            email='test1@email.com',
-                            can_book_free_offers=True)
-        user2 = create_user('Test', first_name='Averell', last_name='Dalton', departement_code='93',
-                            email='test2@email.com', can_book_free_offers=True)
-        booking1 = create_booking(user1, stock, venue, token='56789')
-        booking2 = create_booking(user2, stock, venue, token='12345')
+        user1 = create_user(can_book_free_offers=True, departement_code='93', email='test1@email.com',
+                            first_name='Joe', last_name='Dalton', public_name='Test')
+        user2 = create_user(can_book_free_offers=True, departement_code='93', email='test2@email.com',
+                            first_name='Averell', last_name='Dalton', public_name='Test')
+        booking1 = create_booking(user=user1, stock=stock, venue=venue, token='56789')
+        booking2 = create_booking(user=user2, stock=stock, venue=venue, token='12345')
 
         # When
         with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking1, booking2]):
@@ -681,13 +675,12 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         thing_offer = create_offer_with_thing_product(venue=None, thing_type=ThingType.AUDIOVISUEL)
         stock = create_stock_with_thing_offer(offerer=None, venue=venue, offer=thing_offer)
         stock.offer.id = 1
-        user1 = create_user('Test', first_name='Joe', last_name='Dalton', departement_code='93',
-                            email='test1@email.com',
-                            can_book_free_offers=True)
-        user2 = create_user('Test', first_name='Averell', last_name='Dalton', departement_code='93',
-                            email='test2@email.com', can_book_free_offers=True)
-        booking1 = create_booking(user1, stock, venue, token='56789')
-        booking2 = create_booking(user2, stock, venue, token='12345')
+        user1 = create_user(can_book_free_offers=True, departement_code='93', email='test1@email.com',
+                            first_name='Joe', last_name='Dalton', public_name='Test')
+        user2 = create_user(can_book_free_offers=True, departement_code='93', email='test2@email.com',
+                            first_name='Averell', last_name='Dalton', public_name='Test')
+        booking1 = create_booking(user=user1, stock=stock, venue=venue, token='56789')
+        booking2 = create_booking(user=user2, stock=stock, venue=venue, token='12345')
 
         # When
         with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking1, booking2]):
@@ -712,12 +705,12 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         now = datetime.utcnow() + timedelta()
         event_occurrence = create_event_occurrence(event_offer, beginning_datetime=now)
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-        user_1 = create_user('Test1', first_name='John', last_name='Doe', departement_code='93',
-                             email='test1@email.com')
-        user_2 = create_user('Test2', first_name='Jane', last_name='Doe', departement_code='93',
-                             email='test2@email.com')
-        booking_1 = create_booking(user_1, stock, venue)
-        booking_2 = create_booking(user_2, stock, venue)
+        user_1 = create_user(departement_code='93', email='test1@email.com', first_name='John', last_name='Doe',
+                             public_name='Test1')
+        user_2 = create_user(departement_code='93', email='test2@email.com', first_name='Jane', last_name='Doe',
+                             public_name='Test2')
+        booking_1 = create_booking(user=user_1, stock=stock, venue=venue)
+        booking_2 = create_booking(user=user_2, stock=stock, venue=venue)
         booking_2.isCancelled = True
         PcObject.save(booking_1, booking_2)
 
@@ -752,10 +745,10 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         now = datetime.utcnow() + timedelta()
         event_occurrence = create_event_occurrence(event_offer, beginning_datetime=now)
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-        user_1 = create_user('Test1', departement_code='93', email='test1@email.com')
-        user_2 = create_user('Test2', departement_code='93', email='test2@email.com')
-        booking_1 = create_booking(user_1, stock, venue)
-        booking_2 = create_booking(user_2, stock, venue)
+        user_1 = create_user(departement_code='93', email='test1@email.com', public_name='Test1')
+        user_2 = create_user(departement_code='93', email='test2@email.com', public_name='Test2')
+        booking_1 = create_booking(user=user_1, stock=stock, venue=venue)
+        booking_2 = create_booking(user=user_2, stock=stock, venue=venue)
         booking_2.isCancelled = True
         PcObject.save(booking_1, booking_2)
 
@@ -790,10 +783,10 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
                              departement_code=None, address=None)
         thing_offer = create_offer_with_thing_product(venue, thing_name='Test')
         stock = create_stock_from_offer(thing_offer, price=0)
-        user_1 = create_user('Test1', departement_code='93', email='test1@email.com')
-        user_2 = create_user('Test2', departement_code='93', email='test2@email.com')
-        booking_1 = create_booking(user_1, stock, venue)
-        booking_2 = create_booking(user_2, stock, venue)
+        user_1 = create_user(departement_code='93', email='test1@email.com', public_name='Test1')
+        user_2 = create_user(departement_code='93', email='test2@email.com', public_name='Test2')
+        booking_1 = create_booking(user=user_1, stock=stock, venue=venue)
+        booking_2 = create_booking(user=user_2, stock=stock, venue=venue)
         booking_2.isCancelled = True
         PcObject.save(booking_1, booking_2)
 
@@ -817,10 +810,10 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         event_offer = create_offer_with_event_product(venue, event_name='Test')
         event_occurrence = create_event_occurrence(event_offer, beginning_datetime=datetime.utcnow())
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-        user_1 = create_user('Test1', departement_code='93', email='test1@email.com')
-        user_2 = create_user('Test2', departement_code='93', email='test2@email.com')
-        booking_1 = create_booking(user_1, stock, venue)
-        booking_2 = create_booking(user_2, stock, venue)
+        user_1 = create_user(departement_code='93', email='test1@email.com', public_name='Test1')
+        user_2 = create_user(departement_code='93', email='test2@email.com', public_name='Test2')
+        booking_1 = create_booking(user=user_1, stock=stock, venue=venue)
+        booking_2 = create_booking(user=user_2, stock=stock, venue=venue)
         booking_2.isCancelled = True
         PcObject.save(booking_1, booking_2)
 
@@ -841,10 +834,10 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         venue = create_venue(offerer, 'Test offerer')
         thing_offer = create_offer_with_thing_product(venue, thing_name='Test')
         stock = create_stock_from_offer(thing_offer, price=0)
-        user_1 = create_user('Test1', departement_code='93', email='test1@email.com')
-        user_2 = create_user('Test2', departement_code='93', email='test2@email.com')
-        booking_1 = create_booking(user_1, stock, venue)
-        booking_2 = create_booking(user_2, stock, venue)
+        user_1 = create_user(departement_code='93', email='test1@email.com', public_name='Test1')
+        user_2 = create_user(departement_code='93', email='test2@email.com', public_name='Test2')
+        booking_1 = create_booking(user=user_1, stock=stock, venue=venue)
+        booking_2 = create_booking(user=user_2, stock=stock, venue=venue)
         booking_2.isCancelled = True
         PcObject.save(booking_1, booking_2)
 
@@ -864,10 +857,10 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         event_offer = create_offer_with_event_product(venue, event_name='Test')
         event_occurrence = create_event_occurrence(event_offer, beginning_datetime=datetime.utcnow())
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-        user_1 = create_user('Test1', departement_code='93', email='test1@email.com')
-        user_2 = create_user('Test2', departement_code='93', email='test2@email.com')
-        booking_1 = create_booking(user_1, stock, venue)
-        booking_2 = create_booking(user_2, stock, venue)
+        user_1 = create_user(departement_code='93', email='test1@email.com', public_name='Test1')
+        user_2 = create_user(departement_code='93', email='test2@email.com', public_name='Test2')
+        booking_1 = create_booking(user=user_1, stock=stock, venue=venue)
+        booking_2 = create_booking(user=user_2, stock=stock, venue=venue)
         booking_2.isCancelled = True
         PcObject.save(booking_1, booking_2)
 
@@ -885,12 +878,12 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None)
         thing_offer = create_offer_with_thing_product(venue)
         stock = create_stock_from_offer(thing_offer, price=0)
-        user_1 = create_user('Test1', first_name='Jane', last_name='Doe', departement_code='93',
-                             email='test1@email.com')
-        user_2 = create_user('Test2', first_name='Lucy', last_name='Smith', departement_code='93',
-                             email='test2@email.com')
-        booking_1 = create_booking(user_1, stock, venue, token='12345')
-        booking_2 = create_booking(user_2, stock, venue, token='56789')
+        user_1 = create_user(departement_code='93', email='test1@email.com', first_name='Jane', last_name='Doe',
+                             public_name='Test1')
+        user_2 = create_user(departement_code='93', email='test2@email.com', first_name='Lucy', last_name='Smith',
+                             public_name='Test2')
+        booking_1 = create_booking(user=user_1, stock=stock, venue=venue, token='12345')
+        booking_2 = create_booking(user=user_2, stock=stock, venue=venue, token='56789')
         booking_2.isCancelled = True
         PcObject.save(booking_1, booking_2)
 

@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta
 
 from models import PcObject, EventType, ThingType, Venue
-from tests.test_utils import create_offerer, create_bank_information, create_venue, create_offer_with_event_product, \
-    create_event_occurrence, create_stock, create_stock_from_event_occurrence, create_user, create_deposit, \
-    create_booking, create_offer_with_thing_product, create_recommendation
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue, \
+    create_deposit, create_recommendation, create_bank_information
+from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_offer_with_thing_product, \
+    create_offer_with_event_product, create_event_occurrence
 from utils.logger import logger
 
 now = datetime.utcnow()
@@ -12,11 +13,11 @@ two_hours = timedelta(hours=2)
 
 
 def save_users_with_deposits():
-    user1 = create_user(email='user1@test.com', can_book_free_offers=True)
-    user2 = create_user(email='user2@test.com', can_book_free_offers=True)
-    user3 = create_user(email='user3@test.com', can_book_free_offers=True)
-    user4 = create_user(email='user4@test.com', can_book_free_offers=True)
-    user5 = create_user(email='user5@test.com', can_book_free_offers=True)
+    user1 = create_user(can_book_free_offers=True, email='user1@test.com')
+    user2 = create_user(can_book_free_offers=True, email='user2@test.com')
+    user3 = create_user(can_book_free_offers=True, email='user3@test.com')
+    user4 = create_user(can_book_free_offers=True, email='user4@test.com')
+    user5 = create_user(can_book_free_offers=True, email='user5@test.com')
     deposit1 = create_deposit(user1, amount=500)
     deposit2 = create_deposit(user2, amount=500)
     deposit3 = create_deposit(user3, amount=500)
@@ -133,314 +134,142 @@ def save_sandbox():
     online_book_stock_of_offerer_without_iban = save_paid_online_book_offer(venue_online_of_offerer_with_iban)
 
     bookings = [
-        create_booking(
-            user1,
-            recommendation=create_recommendation(offer=past_free_event_stock.resolvedOffer, user=user1),
-            stock=past_free_event_stock,
-            venue=venue_with_siret_of_offerer_with_iban,
-            token='TOKEN1',
-            is_used=False
-        ),
-        create_booking(
-            user2,
-            recommendation=create_recommendation(offer=past_free_event_stock.resolvedOffer, user=user2),
-            stock=past_free_event_stock,
-            venue=venue_with_siret_of_offerer_with_iban,
-            token='TOKEN2',
-            is_used=False
-        ),
-        create_booking(
-            user3,
-            recommendation=create_recommendation(offer=past_free_event_stock.resolvedOffer, user=user3),
-            stock=past_free_event_stock,
-            venue=venue_with_siret_of_offerer_with_iban,
-            token='TOKEN3',
-            is_used=False
-        ),
-        create_booking(
-            user4,
-            recommendation=create_recommendation(offer=future_free_event_stock.resolvedOffer, user=user4),
-            stock=future_free_event_stock,
-            venue=venue_with_siret_of_offerer_with_iban,
-            token='TOKEN4',
-            is_used=True
-        ),
-        create_booking(
-            user5,
-            recommendation=create_recommendation(offer=future_free_event_stock.resolvedOffer, user=user5),
-            stock=future_free_event_stock,
-            venue=venue_with_siret_of_offerer_with_iban,
-            token='TOKEN5',
-            is_used=False
-        ),
-        create_booking(
-            user1,
-            recommendation=create_recommendation(offer=non_reimbursable_stock_of_offerer_with_iban.resolvedOffer,
-                                                 user=user1),
-            stock=non_reimbursable_stock_of_offerer_with_iban,
-            venue=venue_online_of_offerer_with_iban,
-            token='TOKEN6',
-            is_used=True
-        ),
-        create_booking(
-            user2,
-            recommendation=create_recommendation(offer=non_reimbursable_stock_of_offerer_with_iban.resolvedOffer,
-                                                 user=user2),
-            stock=non_reimbursable_stock_of_offerer_with_iban,
-            venue=venue_online_of_offerer_with_iban,
-            token='TOKEN7',
-            is_used=True
-        ),
-        create_booking(
-            user3,
-            recommendation=create_recommendation(offer=non_reimbursable_stock_of_offerer_with_iban.resolvedOffer,
-                                                 user=user3),
-            stock=non_reimbursable_stock_of_offerer_with_iban,
-            venue=venue_online_of_offerer_with_iban,
-            token='TOKEN8',
-            is_used=True
-        ),
-        create_booking(
-            user4,
-            recommendation=create_recommendation(offer=non_reimbursable_stock_of_offerer_with_iban.resolvedOffer,
-                                                 user=user4),
-            stock=non_reimbursable_stock_of_offerer_with_iban,
-            venue=venue_online_of_offerer_with_iban,
-            token='TOKEN9',
-            is_used=False
-        ),
-        create_booking(
-            user5,
-            recommendation=create_recommendation(offer=non_reimbursable_stock_of_offerer_with_iban.resolvedOffer,
-                                                 user=user5),
-            stock=non_reimbursable_stock_of_offerer_with_iban,
-            venue=venue_online_of_offerer_with_iban,
-            token='TOKE10',
-            is_used=False
-        ),
-        create_booking(
-            user1,
-            recommendation=create_recommendation(offer=reimbursable_stock_of_offerer_with_iban.resolvedOffer,
-                                                 user=user1),
-            stock=reimbursable_stock_of_offerer_with_iban,
-            venue=venue_with_siret_of_offerer_with_iban,
-            token='TOKE11',
-            is_used=True
-        ),
-        create_booking(
-            user2,
-            recommendation=create_recommendation(offer=reimbursable_stock_of_offerer_with_iban.resolvedOffer,
-                                                 user=user2),
-            stock=reimbursable_stock_of_offerer_with_iban,
-            venue=venue_with_siret_of_offerer_with_iban,
-            token='TOKE12',
-            is_used=True
-        ),
-        create_booking(
-            user3,
-            recommendation=create_recommendation(offer=reimbursable_stock_of_offerer_with_iban.resolvedOffer,
-                                                 user=user3),
-            stock=reimbursable_stock_of_offerer_with_iban,
-            venue=venue_with_siret_of_offerer_with_iban,
-            token='TOKE13',
-            is_used=True
-        ),
-        create_booking(
-            user4,
-            recommendation=create_recommendation(offer=reimbursable_stock_of_offerer_with_iban.resolvedOffer,
-                                                 user=user4),
-            stock=reimbursable_stock_of_offerer_with_iban,
-            venue=venue_with_siret_of_offerer_with_iban,
-            token='TOKE14',
-            is_used=False
-        ),
-        create_booking(
-            user5,
-            recommendation=create_recommendation(offer=reimbursable_stock_of_offerer_with_iban.resolvedOffer,
-                                                 user=user5),
-            stock=reimbursable_stock_of_offerer_with_iban,
-            venue=venue_with_siret_of_offerer_with_iban,
-            token='TOKE15',
-            is_used=False
-        ),
-        create_booking(
-            user1,
-            recommendation=create_recommendation(offer=past_event_stock_of_offerer_with_iban.resolvedOffer, user=user1),
-            stock=past_event_stock_of_offerer_with_iban,
-            venue=venue_without_siret_of_offerer_with_iban,
-            token='TOKE16',
-            is_used=True
-        ),
-        create_booking(
-            user2,
-            recommendation=create_recommendation(offer=past_event_stock_of_offerer_with_iban.resolvedOffer, user=user2),
-            stock=past_event_stock_of_offerer_with_iban,
-            venue=venue_without_siret_of_offerer_with_iban,
-            token='TOKE17',
-            is_used=True
-        ),
-        create_booking(
-            user3,
-            recommendation=create_recommendation(offer=past_event_stock_of_offerer_with_iban.resolvedOffer, user=user3),
-            stock=past_event_stock_of_offerer_with_iban,
-            venue=venue_without_siret_of_offerer_with_iban,
-            token='TOKE18',
-            is_used=False
-        ),
-        create_booking(
-            user4,
-            recommendation=create_recommendation(offer=future_event_stock_of_offerer_with_iban.resolvedOffer,
-                                                 user=user4),
-            stock=future_event_stock_of_offerer_with_iban,
-            venue=venue_without_siret_of_offerer_with_iban,
-            token='TOKE19',
-            is_used=True
-        ),
-        create_booking(
-            user5,
-            recommendation=create_recommendation(offer=future_event_stock_of_offerer_with_iban.resolvedOffer,
-                                                 user=user5),
-            stock=future_event_stock_of_offerer_with_iban,
-            venue=venue_without_siret_of_offerer_with_iban,
-            token='TOKE20',
-            is_used=False
-        ),
+        create_booking(user=user1, is_used=False,
+                       recommendation=create_recommendation(offer=past_free_event_stock.resolvedOffer, user=user1),
+                       stock=past_free_event_stock, token='TOKEN1', venue=venue_with_siret_of_offerer_with_iban),
+        create_booking(user=user2, is_used=False,
+                       recommendation=create_recommendation(offer=past_free_event_stock.resolvedOffer, user=user2),
+                       stock=past_free_event_stock, token='TOKEN2', venue=venue_with_siret_of_offerer_with_iban),
+        create_booking(user=user3, is_used=False,
+                       recommendation=create_recommendation(offer=past_free_event_stock.resolvedOffer, user=user3),
+                       stock=past_free_event_stock, token='TOKEN3', venue=venue_with_siret_of_offerer_with_iban),
+        create_booking(user=user4, is_used=True,
+                       recommendation=create_recommendation(offer=future_free_event_stock.resolvedOffer, user=user4),
+                       stock=future_free_event_stock, token='TOKEN4', venue=venue_with_siret_of_offerer_with_iban),
+        create_booking(user=user5, is_used=False,
+                       recommendation=create_recommendation(offer=future_free_event_stock.resolvedOffer, user=user5),
+                       stock=future_free_event_stock, token='TOKEN5', venue=venue_with_siret_of_offerer_with_iban),
+        create_booking(user=user1, is_used=True, recommendation=create_recommendation(
+            offer=non_reimbursable_stock_of_offerer_with_iban.resolvedOffer,
+            user=user1), stock=non_reimbursable_stock_of_offerer_with_iban, token='TOKEN6',
+                       venue=venue_online_of_offerer_with_iban),
+        create_booking(user=user2, is_used=True, recommendation=create_recommendation(
+            offer=non_reimbursable_stock_of_offerer_with_iban.resolvedOffer,
+            user=user2), stock=non_reimbursable_stock_of_offerer_with_iban, token='TOKEN7',
+                       venue=venue_online_of_offerer_with_iban),
+        create_booking(user=user3, is_used=True, recommendation=create_recommendation(
+            offer=non_reimbursable_stock_of_offerer_with_iban.resolvedOffer,
+            user=user3), stock=non_reimbursable_stock_of_offerer_with_iban, token='TOKEN8',
+                       venue=venue_online_of_offerer_with_iban),
+        create_booking(user=user4, is_used=False, recommendation=create_recommendation(
+            offer=non_reimbursable_stock_of_offerer_with_iban.resolvedOffer,
+            user=user4), stock=non_reimbursable_stock_of_offerer_with_iban, token='TOKEN9',
+                       venue=venue_online_of_offerer_with_iban),
+        create_booking(user=user5, is_used=False, recommendation=create_recommendation(
+            offer=non_reimbursable_stock_of_offerer_with_iban.resolvedOffer,
+            user=user5), stock=non_reimbursable_stock_of_offerer_with_iban, token='TOKE10',
+                       venue=venue_online_of_offerer_with_iban),
+        create_booking(user=user1, is_used=True,
+                       recommendation=create_recommendation(offer=reimbursable_stock_of_offerer_with_iban.resolvedOffer,
+                                                            user=user1), stock=reimbursable_stock_of_offerer_with_iban,
+                       token='TOKE11', venue=venue_with_siret_of_offerer_with_iban),
+        create_booking(user=user2, is_used=True,
+                       recommendation=create_recommendation(offer=reimbursable_stock_of_offerer_with_iban.resolvedOffer,
+                                                            user=user2), stock=reimbursable_stock_of_offerer_with_iban,
+                       token='TOKE12', venue=venue_with_siret_of_offerer_with_iban),
+        create_booking(user=user3, is_used=True,
+                       recommendation=create_recommendation(offer=reimbursable_stock_of_offerer_with_iban.resolvedOffer,
+                                                            user=user3), stock=reimbursable_stock_of_offerer_with_iban,
+                       token='TOKE13', venue=venue_with_siret_of_offerer_with_iban),
+        create_booking(user=user4, is_used=False,
+                       recommendation=create_recommendation(offer=reimbursable_stock_of_offerer_with_iban.resolvedOffer,
+                                                            user=user4), stock=reimbursable_stock_of_offerer_with_iban,
+                       token='TOKE14', venue=venue_with_siret_of_offerer_with_iban),
+        create_booking(user=user5, is_used=False,
+                       recommendation=create_recommendation(offer=reimbursable_stock_of_offerer_with_iban.resolvedOffer,
+                                                            user=user5), stock=reimbursable_stock_of_offerer_with_iban,
+                       token='TOKE15', venue=venue_with_siret_of_offerer_with_iban),
+        create_booking(user=user1, is_used=True,
+                       recommendation=create_recommendation(offer=past_event_stock_of_offerer_with_iban.resolvedOffer,
+                                                            user=user1), stock=past_event_stock_of_offerer_with_iban,
+                       token='TOKE16', venue=venue_without_siret_of_offerer_with_iban),
+        create_booking(user=user2, is_used=True,
+                       recommendation=create_recommendation(offer=past_event_stock_of_offerer_with_iban.resolvedOffer,
+                                                            user=user2), stock=past_event_stock_of_offerer_with_iban,
+                       token='TOKE17', venue=venue_without_siret_of_offerer_with_iban),
+        create_booking(user=user3, is_used=False,
+                       recommendation=create_recommendation(offer=past_event_stock_of_offerer_with_iban.resolvedOffer,
+                                                            user=user3), stock=past_event_stock_of_offerer_with_iban,
+                       token='TOKE18', venue=venue_without_siret_of_offerer_with_iban),
+        create_booking(user=user4, is_used=True,
+                       recommendation=create_recommendation(offer=future_event_stock_of_offerer_with_iban.resolvedOffer,
+                                                            user=user4), stock=future_event_stock_of_offerer_with_iban,
+                       token='TOKE19', venue=venue_without_siret_of_offerer_with_iban),
+        create_booking(user=user5, is_used=False,
+                       recommendation=create_recommendation(offer=future_event_stock_of_offerer_with_iban.resolvedOffer,
+                                                            user=user5), stock=future_event_stock_of_offerer_with_iban,
+                       token='TOKE20', venue=venue_without_siret_of_offerer_with_iban),
 
-        create_booking(
-            user1,
-            recommendation=create_recommendation(offer=past_event_stock_of_offerer_without_iban.resolvedOffer,
-                                                 user=user1),
-            stock=past_event_stock_of_offerer_without_iban,
-            venue=venue_of_offerer_without_iban_with_siret_without_iban,
-            token='TOKE21',
-            is_used=True
-        ),
-        create_booking(
-            user2,
-            recommendation=create_recommendation(offer=past_event_stock_of_offerer_without_iban.resolvedOffer,
-                                                 user=user2),
-            stock=past_event_stock_of_offerer_without_iban,
-            venue=venue_of_offerer_without_iban_with_siret_without_iban,
-            token='TOKE22',
-            is_used=True
-        ),
-        create_booking(
-            user3,
-            recommendation=create_recommendation(offer=past_event_stock_of_offerer_without_iban.resolvedOffer,
-                                                 user=user3),
-            stock=past_event_stock_of_offerer_without_iban,
-            venue=venue_of_offerer_without_iban_with_siret_without_iban,
-            token='TOKE23',
-            is_used=False
-        ),
-        create_booking(
-            user4,
-            recommendation=create_recommendation(offer=future_event_stock_of_offerer_without_iban.resolvedOffer,
-                                                 user=user4),
-            stock=future_event_stock_of_offerer_without_iban,
-            venue=venue_of_offerer_without_iban_with_siret_without_iban,
-            token='TOKE24',
-            is_used=True
-        ),
-        create_booking(
-            user5,
-            recommendation=create_recommendation(offer=future_event_stock_of_offerer_without_iban.resolvedOffer,
-                                                 user=user5),
-            stock=future_event_stock_of_offerer_without_iban,
-            venue=venue_of_offerer_without_iban_with_siret_without_iban,
-            token='TOKE25',
-            is_used=False
-        ),
-        create_booking(
-            user1,
-            recommendation=create_recommendation(offer=reimbursable_stock_of_offerer_without_iban.resolvedOffer,
-                                                 user=user1),
-            stock=reimbursable_stock_of_offerer_without_iban,
-            venue=venue_of_offerer_without_iban_with_siret_with_iban,
-            token='TOKE26',
-            is_used=False
-        ),
-        create_booking(
-            user2,
-            recommendation=create_recommendation(offer=reimbursable_stock_of_offerer_without_iban.resolvedOffer,
-                                                 user=user2),
-            stock=reimbursable_stock_of_offerer_without_iban,
-            venue=venue_of_offerer_without_iban_with_siret_with_iban,
-            token='TOKE27',
-            is_used=False
-        ),
-        create_booking(
-            user3,
-            recommendation=create_recommendation(offer=reimbursable_stock_of_offerer_without_iban.resolvedOffer,
-                                                 user=user3),
-            stock=reimbursable_stock_of_offerer_without_iban,
-            venue=venue_of_offerer_without_iban_with_siret_with_iban,
-            token='TOKE28',
-            is_used=False
-        ),
-        create_booking(
-            user4,
-            recommendation=create_recommendation(offer=reimbursable_stock_of_offerer_without_iban.resolvedOffer,
-                                                 user=user4),
-            stock=reimbursable_stock_of_offerer_without_iban,
-            venue=venue_of_offerer_without_iban_with_siret_with_iban,
-            token='TOKE29',
-            is_used=True
-        ),
-        create_booking(
-            user5,
-            recommendation=create_recommendation(offer=reimbursable_stock_of_offerer_without_iban.resolvedOffer,
-                                                 user=user5),
-            stock=reimbursable_stock_of_offerer_without_iban,
-            venue=venue_of_offerer_without_iban_with_siret_with_iban,
-            token='TOKE30',
-            is_used=True
-        ),
-        create_booking(
-            user1,
-            recommendation=create_recommendation(offer=online_book_stock_of_offerer_without_iban.resolvedOffer,
-                                                 user=user1),
-            stock=online_book_stock_of_offerer_without_iban,
-            venue=venue_online_of_offerer_with_iban,
-            token='TOKE31',
-            is_used=False
-        ),
-        create_booking(
-            user2,
-            recommendation=create_recommendation(offer=online_book_stock_of_offerer_without_iban.resolvedOffer,
-                                                 user=user2),
-            stock=online_book_stock_of_offerer_without_iban,
-            venue=venue_online_of_offerer_with_iban,
-            token='TOKE32',
-            is_used=False
-        ),
-        create_booking(
-            user3,
-            recommendation=create_recommendation(offer=online_book_stock_of_offerer_without_iban.resolvedOffer,
-                                                 user=user3),
-            stock=online_book_stock_of_offerer_without_iban,
-            venue=venue_online_of_offerer_with_iban,
-            token='TOKE33',
-            is_used=False
-        ),
-        create_booking(
-            user4,
-            recommendation=create_recommendation(offer=online_book_stock_of_offerer_without_iban.resolvedOffer,
-                                                 user=user4),
-            stock=online_book_stock_of_offerer_without_iban,
-            venue=venue_online_of_offerer_with_iban,
-            token='TOKE34',
-            is_used=True
-        ),
-        create_booking(
-            user5,
-            recommendation=create_recommendation(offer=online_book_stock_of_offerer_without_iban.resolvedOffer,
-                                                 user=user5),
-            stock=online_book_stock_of_offerer_without_iban,
-            venue=venue_online_of_offerer_with_iban,
-            token='TOKE35',
-            is_used=True
-        )
+        create_booking(user=user1, is_used=True, recommendation=create_recommendation(
+            offer=past_event_stock_of_offerer_without_iban.resolvedOffer,
+            user=user1), stock=past_event_stock_of_offerer_without_iban, token='TOKE21',
+                       venue=venue_of_offerer_without_iban_with_siret_without_iban),
+        create_booking(user=user2, is_used=True, recommendation=create_recommendation(
+            offer=past_event_stock_of_offerer_without_iban.resolvedOffer,
+            user=user2), stock=past_event_stock_of_offerer_without_iban, token='TOKE22',
+                       venue=venue_of_offerer_without_iban_with_siret_without_iban),
+        create_booking(user=user3, is_used=False, recommendation=create_recommendation(
+            offer=past_event_stock_of_offerer_without_iban.resolvedOffer,
+            user=user3), stock=past_event_stock_of_offerer_without_iban, token='TOKE23',
+                       venue=venue_of_offerer_without_iban_with_siret_without_iban),
+        create_booking(user=user4, is_used=True, recommendation=create_recommendation(
+            offer=future_event_stock_of_offerer_without_iban.resolvedOffer,
+            user=user4), stock=future_event_stock_of_offerer_without_iban, token='TOKE24',
+                       venue=venue_of_offerer_without_iban_with_siret_without_iban),
+        create_booking(user=user5, is_used=False, recommendation=create_recommendation(
+            offer=future_event_stock_of_offerer_without_iban.resolvedOffer,
+            user=user5), stock=future_event_stock_of_offerer_without_iban, token='TOKE25',
+                       venue=venue_of_offerer_without_iban_with_siret_without_iban),
+        create_booking(user=user1, is_used=False, recommendation=create_recommendation(
+            offer=reimbursable_stock_of_offerer_without_iban.resolvedOffer,
+            user=user1), stock=reimbursable_stock_of_offerer_without_iban, token='TOKE26',
+                       venue=venue_of_offerer_without_iban_with_siret_with_iban),
+        create_booking(user=user2, is_used=False, recommendation=create_recommendation(
+            offer=reimbursable_stock_of_offerer_without_iban.resolvedOffer,
+            user=user2), stock=reimbursable_stock_of_offerer_without_iban, token='TOKE27',
+                       venue=venue_of_offerer_without_iban_with_siret_with_iban),
+        create_booking(user=user3, is_used=False, recommendation=create_recommendation(
+            offer=reimbursable_stock_of_offerer_without_iban.resolvedOffer,
+            user=user3), stock=reimbursable_stock_of_offerer_without_iban, token='TOKE28',
+                       venue=venue_of_offerer_without_iban_with_siret_with_iban),
+        create_booking(user=user4, is_used=True, recommendation=create_recommendation(
+            offer=reimbursable_stock_of_offerer_without_iban.resolvedOffer,
+            user=user4), stock=reimbursable_stock_of_offerer_without_iban, token='TOKE29',
+                       venue=venue_of_offerer_without_iban_with_siret_with_iban),
+        create_booking(user=user5, is_used=True, recommendation=create_recommendation(
+            offer=reimbursable_stock_of_offerer_without_iban.resolvedOffer,
+            user=user5), stock=reimbursable_stock_of_offerer_without_iban, token='TOKE30',
+                       venue=venue_of_offerer_without_iban_with_siret_with_iban),
+        create_booking(user=user1, is_used=False, recommendation=create_recommendation(
+            offer=online_book_stock_of_offerer_without_iban.resolvedOffer,
+            user=user1), stock=online_book_stock_of_offerer_without_iban, token='TOKE31',
+                       venue=venue_online_of_offerer_with_iban),
+        create_booking(user=user2, is_used=False, recommendation=create_recommendation(
+            offer=online_book_stock_of_offerer_without_iban.resolvedOffer,
+            user=user2), stock=online_book_stock_of_offerer_without_iban, token='TOKE32',
+                       venue=venue_online_of_offerer_with_iban),
+        create_booking(user=user3, is_used=False, recommendation=create_recommendation(
+            offer=online_book_stock_of_offerer_without_iban.resolvedOffer,
+            user=user3), stock=online_book_stock_of_offerer_without_iban, token='TOKE33',
+                       venue=venue_online_of_offerer_with_iban),
+        create_booking(user=user4, is_used=True, recommendation=create_recommendation(
+            offer=online_book_stock_of_offerer_without_iban.resolvedOffer,
+            user=user4), stock=online_book_stock_of_offerer_without_iban, token='TOKE34',
+                       venue=venue_online_of_offerer_with_iban),
+        create_booking(user=user5, is_used=True, recommendation=create_recommendation(
+            offer=online_book_stock_of_offerer_without_iban.resolvedOffer,
+            user=user5), stock=online_book_stock_of_offerer_without_iban, token='TOKE35',
+                       venue=venue_online_of_offerer_with_iban)
     ]
 
     logger.info('created %s bookings' % len(bookings))

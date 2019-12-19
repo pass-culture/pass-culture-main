@@ -10,7 +10,7 @@ from scripts.beneficiary.remote_import import parse_beneficiary_information
 from tests.conftest import clean_database
 from tests.scripts.beneficiary.fixture import make_application_detail, \
     APPLICATION_DETAIL_STANDARD_RESPONSE
-from tests.test_utils import create_user
+from tests.model_creators.generic_creators import create_user
 
 NOW = datetime.utcnow()
 datetime_pattern = '%Y-%m-%dT%H:%M:%S.%fZ'
@@ -338,7 +338,7 @@ class ProcessBeneficiaryApplicationTest:
             'civility': 'Mme',
             'activity': 'Étudiant'
         }
-        existing_user = create_user(first_name='Jane', last_name='Doe', date_of_birth=datetime(2000, 5, 1))
+        existing_user = create_user(date_of_birth=datetime(2000, 5, 1), first_name='Jane', last_name='Doe')
         PcObject.save(existing_user)
         mock = Mock(return_value=[existing_user])
 
@@ -367,7 +367,7 @@ class ProcessBeneficiaryApplicationTest:
             'civility': 'Mme',
             'activity': 'Étudiant'
         }
-        existing_user = create_user(first_name='Jane', last_name='Doe', date_of_birth=datetime(2000, 5, 1))
+        existing_user = create_user(date_of_birth=datetime(2000, 5, 1), first_name='Jane', last_name='Doe')
         PcObject.save(existing_user)
         mock = Mock(return_value=[existing_user])
         retry_ids = [123]
@@ -395,7 +395,7 @@ class ProcessBeneficiaryApplicationTest:
             'civility': 'Mme',
             'activity': 'Étudiant'
         }
-        mocked_query = Mock(return_value=[create_user(idx=11), create_user(idx=22)])
+        mocked_query = Mock(return_value=[create_user(id=11), create_user(id=22)])
 
         # when
         remote_import.process_beneficiary_application(information, [], [], [], find_duplicate_users=mocked_query)

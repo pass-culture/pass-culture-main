@@ -1,10 +1,9 @@
 from datetime import timedelta
 
-from models.pc_object import PcObject
 from sandboxes.scripts.utils.select import remove_every
 from utils.date import strftime, today
 from utils.logger import logger
-from tests.test_utils import create_event_occurrence
+from tests.model_creators.specific_creators import create_event_occurrence
 
 EVENT_OCCURRENCE_BEGINNING_DATETIMES = [
     today,

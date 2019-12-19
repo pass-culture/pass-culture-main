@@ -2,7 +2,7 @@ import pytest
 
 from models import PcObject, ApiErrors
 from tests.conftest import clean_database
-from tests.test_utils import create_offerer, create_user, create_user_offerer
+from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 
 
 @clean_database

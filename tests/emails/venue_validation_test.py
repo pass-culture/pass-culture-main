@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 
-from tests.test_utils import create_offerer, create_venue
+from tests.model_creators.generic_creators import create_offerer, create_venue
 from tests.utils.mailing_test import _remove_whitespaces
 from utils.mailing import make_venue_to_validate_email, make_venue_validated_email
 

@@ -3,10 +3,11 @@ from unittest.mock import patch
 
 from models import Offerer, PcObject, EventType, ThingType
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_stock_with_thing_offer, \
-    create_offer_with_thing_product, create_deposit, create_stock_with_event_offer, create_venue, create_offerer, \
-    create_recommendation, create_user, create_booking, create_offer_with_event_product, \
-    create_event_occurrence, create_stock_from_event_occurrence, create_mediation
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, create_deposit, \
+    create_recommendation, create_mediation
+from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_event_occurrence, \
+    create_stock_with_thing_offer, create_offer_with_thing_product, create_offer_with_event_product, \
+    create_event_occurrence
 from utils.human_ids import humanize
 
 
@@ -92,7 +93,7 @@ class Post:
 
             recommendation = create_recommendation(offer=too_many_bookings_stock.offer, user=user)
 
-            booking = create_booking(user2, too_many_bookings_stock, venue, quantity=2)
+            booking = create_booking(user=user2, stock=too_many_bookings_stock, venue=venue, quantity=2)
 
             PcObject.save(booking, recommendation, user, deposit, deposit2, too_many_bookings_stock)
 
@@ -115,7 +116,7 @@ class Post:
         @clean_database
         def when_user_cannot_book_free_offers_and_free_offer(self, app):
             # Given
-            user = create_user(email='cannotBook_freeOffers@email.com', can_book_free_offers=False)
+            user = create_user(can_book_free_offers=False, email='cannotBook_freeOffers@email.com')
             PcObject.save(user)
 
             offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postal_code='93000',
@@ -214,7 +215,7 @@ class Post:
 
             PcObject.save(deposit)
 
-            booking_thing_price_190 = create_booking(user, thing_stock_price_190, venue, recommendation=None)
+            booking_thing_price_190 = create_booking(user=user, stock=thing_stock_price_190, venue=venue, recommendation=None)
             PcObject.save(booking_thing_price_190)
 
             recommendation = create_recommendation(thing_offer, user)
@@ -525,7 +526,7 @@ class Post:
             thing_offer = create_offer_with_thing_product(venue)
             create_deposit(user, amount=200)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
-            booking = create_booking(user, stock, venue, is_cancelled=False)
+            booking = create_booking(user=user, stock=stock, venue=venue, is_cancelled=False)
             PcObject.save(stock, user, booking)
 
             booking_json = {
@@ -727,7 +728,7 @@ class Post:
             mediation = create_mediation(stock.offer)
             PcObject.save(mediation)
 
-            booking = create_booking(user, stock, venue, is_cancelled=True)
+            booking = create_booking(user=user, stock=stock, venue=venue, is_cancelled=True)
             PcObject.save(booking)
 
             recommendation = create_recommendation(stock.offer, user)
@@ -749,7 +750,7 @@ class Post:
 
         @clean_database
         def when_user_cannot_book_free_offers_but_has_enough_credit_for_paid_offer(self, app):
-            user = create_user(email='can_book_paid_offers@email.com', can_book_free_offers=False)
+            user = create_user(can_book_free_offers=False, email='can_book_paid_offers@email.com')
             PcObject.save(user)
 
             offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postal_code='93000',
@@ -803,7 +804,7 @@ class Post:
             mediation = create_mediation(thing_offer)
             create_deposit(user, amount=200)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
-            booking = create_booking(user, stock, venue, is_cancelled=True)
+            booking = create_booking(user=user, stock=stock, venue=venue, is_cancelled=True)
             PcObject.save(mediation)
             PcObject.save(stock, user, booking)
 

@@ -4,7 +4,8 @@ from tests.conftest import clean_database
 from models import ApiErrors, ApiKey, PcObject
 from utils.token import random_token
 
-from tests.test_utils import create_offerer
+from tests.model_creators.generic_creators import create_offerer
+
 
 @clean_database
 def test_save_api_key_raise_api_error_when_offerer_does_not_exist(app):

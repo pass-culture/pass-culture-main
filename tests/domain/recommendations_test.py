@@ -1,8 +1,9 @@
 from domain.build_recommendations import move_requested_recommendation_first
 from models import PcObject
 from tests.conftest import clean_database
-from tests.test_utils import create_mediation, create_recommendation, create_offer_with_thing_product, create_user, \
-    create_venue, create_offerer
+from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_recommendation, \
+    create_mediation
+from tests.model_creators.specific_creators import create_offer_with_thing_product
 
 
 class MoveRequestedRecommendationFirstTest:

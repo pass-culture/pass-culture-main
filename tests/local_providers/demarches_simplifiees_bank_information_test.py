@@ -2,13 +2,12 @@
 from datetime import datetime
 from unittest.mock import patch, ANY
 
-import pytest
-
 from local_providers import BankInformationProvider
 from models import BankInformation, PcObject, LocalProviderEvent
 from models.local_provider_event import LocalProviderEventType
 from tests.conftest import clean_database
-from tests.test_utils import provider_test, create_venue, create_offerer, create_bank_information
+from tests.model_creators.generic_creators import create_offerer, create_venue, create_bank_information
+from tests.model_creators.provider_creators import provider_test
 
 
 class TestableBankInformationProvider(BankInformationProvider):

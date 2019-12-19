@@ -8,7 +8,7 @@ from models.db import db
 from models.email import EmailStatus
 from scripts.send_remedial_emails import send_remedial_emails
 from tests.conftest import clean_database, mocked_mail
-from tests.test_utils import create_email
+from tests.model_creators.generic_creators import create_email
 
 
 @clean_database

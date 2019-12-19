@@ -1,11 +1,9 @@
-from datetime import datetime
-
 from models import PcObject
 from scripts.payment.batch_steps import generate_new_payments
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_bank_information, create_stock_with_thing_offer, \
-    create_deposit, create_venue, create_offerer, \
-    create_user, create_booking, create_user_offerer
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, create_deposit, \
+    create_user_offerer, create_bank_information
+from tests.model_creators.specific_creators import create_stock_with_thing_offer
 
 
 class Get:
@@ -28,12 +26,12 @@ class Get:
             stock2 = create_stock_with_thing_offer(offerer=offerer1, venue=venue2, price=11)
             stock3 = create_stock_with_thing_offer(offerer=offerer2, venue=venue3, price=12)
             stock4 = create_stock_with_thing_offer(offerer=offerer2, venue=venue3, price=13)
-            booking1 = create_booking(user, stock1, venue=venue1, token='ABCDEF', is_used=True)
-            booking2 = create_booking(user, stock1, venue=venue1, token='ABCDEG')
-            booking3 = create_booking(user, stock2, venue=venue2, token='ABCDEH', is_used=True)
-            booking4 = create_booking(user, stock3, venue=venue3, token='ABCDEI', is_used=True)
-            booking5 = create_booking(user, stock4, venue=venue3, token='ABCDEJ', is_used=True)
-            booking6 = create_booking(user, stock4, venue=venue3, token='ABCDEK', is_used=True)
+            booking1 = create_booking(user=user, stock=stock1, is_used=True, token='ABCDEF', venue=venue1)
+            booking2 = create_booking(user=user, stock=stock1, token='ABCDEG', venue=venue1)
+            booking3 = create_booking(user=user, stock=stock2, is_used=True, token='ABCDEH', venue=venue2)
+            booking4 = create_booking(user=user, stock=stock3, is_used=True, token='ABCDEI', venue=venue3)
+            booking5 = create_booking(user=user, stock=stock4, is_used=True, token='ABCDEJ', venue=venue3)
+            booking6 = create_booking(user=user, stock=stock4, is_used=True, token='ABCDEK', venue=venue3)
             PcObject.save(deposit, booking1, booking2, booking3,
                           booking4, booking5, booking6, user_offerer1,
                           user_offerer2, bank_information1, bank_information2)

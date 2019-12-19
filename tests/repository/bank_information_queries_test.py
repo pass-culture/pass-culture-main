@@ -3,7 +3,7 @@ from datetime import datetime
 from models import PcObject
 from repository.bank_information_queries import get_last_update_from_bank_information
 from tests.conftest import clean_database
-from tests.test_utils import create_offerer, create_venue, create_bank_information
+from tests.model_creators.generic_creators import create_offerer, create_venue, create_bank_information
 
 
 class GetLastUpdateForBankInformationTest:

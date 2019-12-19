@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from models import Provider, LocalProviderEvent, PcObject
+from models import LocalProviderEvent, PcObject
 from models.local_provider_event import LocalProviderEventType
 from repository.local_provider_event_queries import find_latest_sync_end_event
 from tests.conftest import clean_database
-from tests.test_utils import create_provider
+from tests.model_creators.generic_creators import create_provider
 
 
 class FindLatestSyncEndEventTest:

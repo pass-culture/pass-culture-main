@@ -1,9 +1,10 @@
 from unittest.mock import patch
 
 from routes.serialization.recommendation_serialize import serialize_recommendation, serialize_recommendations
-from tests.test_utils import create_recommendation, create_user, create_offerer, create_venue, \
-    create_mediation, create_booking, create_stock, \
-    create_offer_with_thing_product, create_product_with_thing_type
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+    create_venue, \
+    create_recommendation, create_mediation
+from tests.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
 
 
 class SerializeRecommendationTest:
@@ -18,7 +19,8 @@ class SerializeRecommendationTest:
         stock = create_stock(offer=offer)
         mediation = create_mediation(offer)
         recommendation = create_recommendation(offer, user, mediation=mediation)
-        find_from_recommendation.return_value = [create_booking(user, stock, venue, recommendation)]
+        find_from_recommendation.return_value = [
+            create_booking(user=user, stock=stock, venue=venue, recommendation=recommendation)]
 
         # When
         serialized_recommendation = serialize_recommendation(recommendation, user, query_booking=True)
@@ -38,7 +40,8 @@ class SerializeRecommendationTest:
         stock = create_stock(offer=offer)
         mediation = create_mediation(offer)
         recommendation = create_recommendation(offer, user, mediation=mediation)
-        find_from_recommendation.return_value = [create_booking(user, stock, venue, recommendation)]
+        find_from_recommendation.return_value = [
+            create_booking(user=user, stock=stock, venue=venue, recommendation=recommendation)]
 
         # When
         serialized_recommendation = serialize_recommendation(recommendation, user, query_booking=False)
@@ -78,7 +81,8 @@ class SerializeRecommendationsTest:
         mediation = create_mediation(offer)
         recommendation = create_recommendation(offer, user, mediation=mediation)
         recommendation.offerId = 1
-        find_for_my_bookings_page.return_value = [create_booking(user, stock, venue, recommendation)]
+        find_for_my_bookings_page.return_value = [
+            create_booking(user=user, stock=stock, venue=venue, recommendation=recommendation)]
 
         # When
         serialized_recommendations = serialize_recommendations([recommendation], user)
@@ -128,7 +132,8 @@ class SerializeRecommendationsTest:
         recommendation1.offerId = 1
         recommendation2 = create_recommendation(offer2, user, mediation=mediation2)
         recommendation2.offerId = 2
-        find_for_my_bookings_page.return_value = [create_booking(user, stock2, venue, recommendation2)]
+        find_for_my_bookings_page.return_value = [
+            create_booking(user=user, stock=stock2, venue=venue, recommendation=recommendation2)]
 
         # When
         serialized_recommendations = serialize_recommendations([recommendation1, recommendation2], user)
