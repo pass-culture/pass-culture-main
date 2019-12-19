@@ -12,44 +12,7 @@ describe('src | Reducers | Maintenance errors', () => {
   })
 
   describe('when receiving a FAIL_DATA_ event', () => {
-    it('should mark maintenance as activated when receiving a 503 status code', () => {
-      // Given
-      const action = {
-        config: {
-          method: 'GET',
-          rootUrl: 'http://localhost',
-          timeout: 50000,
-          apiPath: '/offerers/DY',
-          normalizer: {
-            managedVenues: {
-              normalizer: {
-                offers: 'offers',
-              },
-              stateKey: 'venues',
-            },
-          },
-        },
-        payload: {
-          headers: {
-            'content-type': 'application/json',
-          },
-          ok: false,
-          status: 503,
-          errors: {},
-        },
-        type: 'FAIL_DATA_GET_/OFFERERS/DY',
-      }
-
-      // When
-      const newState = maintenanceReducer({ isActivated: false }, action)
-
-      // Then
-      expect(newState).toStrictEqual({
-        isActivated: true,
-      })
-    })
-
-    it('should leave isActivated as false when receiving any status code different than 503', () => {
+    it('should mark maintenance as activated when receiving a 500 status code from a SERVER_ERROR', () => {
       // Given
       const action = {
         config: {
@@ -72,6 +35,82 @@ describe('src | Reducers | Maintenance errors', () => {
           },
           ok: false,
           status: 500,
+          errors: {},
+          error_type: 'SERVER_ERROR',
+        },
+        type: 'FAIL_DATA_GET_/OFFERERS/DY',
+      }
+
+      // When
+      const newState = maintenanceReducer({ isActivated: false }, action)
+
+      // Then
+      expect(newState).toStrictEqual({
+        isActivated: true,
+      })
+    })
+
+    it('should leave maintenance as activated when receiving a 500 status code from a API_ERROR', () => {
+      // Given
+      const action = {
+        config: {
+          method: 'GET',
+          rootUrl: 'http://localhost',
+          timeout: 50000,
+          apiPath: '/offerers/DY',
+          normalizer: {
+            managedVenues: {
+              normalizer: {
+                offers: 'offers',
+              },
+              stateKey: 'venues',
+            },
+          },
+        },
+        payload: {
+          headers: {
+            'content-type': 'application/json',
+          },
+          ok: false,
+          status: 500,
+          errors: {},
+          error_type: 'API_ERROR',
+        },
+        type: 'FAIL_DATA_GET_/OFFERERS/DY',
+      }
+
+      // When
+      const newState = maintenanceReducer({ isActivated: false }, action)
+
+      // Then
+      expect(newState).toStrictEqual({
+        isActivated: false,
+      })
+    })
+
+    it('should leave maintenance as activated when receiving any error different than SERVER_ERROR', () => {
+      // Given
+      const action = {
+        config: {
+          method: 'GET',
+          rootUrl: 'http://localhost',
+          timeout: 50000,
+          apiPath: '/offerers/DY',
+          normalizer: {
+            managedVenues: {
+              normalizer: {
+                offers: 'offers',
+              },
+              stateKey: 'venues',
+            },
+          },
+        },
+        payload: {
+          headers: {
+            'content-type': 'application/json',
+          },
+          ok: false,
+          status: 404,
           errors: {},
         },
         type: 'FAIL_DATA_GET_/OFFERERS/DY',
