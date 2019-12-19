@@ -4480,7 +4480,7 @@ fetch-normalize-data@1.8.4:
     reselect "^3.0.1"
     uuid "^3.3.2"
 
-fetch-normalize-data@^1.2.2:
+fetch-normalize-data@1.8.6, fetch-normalize-data@^1.2.2:
   version "1.8.6"
   resolved "https://registry.yarnpkg.com/fetch-normalize-data/-/fetch-normalize-data-1.8.6.tgz#d83f490c79ee3b0eac1577047303a755773839bc"
   integrity sha512-bejxIuMyOwox0nNUMqoLJDYNDCfP7yq+xi8p8DxI6cbmh+IoimdubiH+u9SuGM6Er3eFyROV9fXs2fbhWAVQMw==
@@ -9976,6 +9976,14 @@ redux-saga-data@3.2.0:
   integrity sha512-dAAtluG0XDTQJkW0VnfgbLmAwakWjnqXpG2AWrus9fRPBNUyuSaLxlCGBd6fQtaEobPOXtg54tMRmaje08pGeg==
   dependencies:
     fetch-normalize-data "1.8.4"
+    redux-saga "^1.1.1"
+
+redux-saga-data@3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/redux-saga-data/-/redux-saga-data-3.3.0.tgz#0aa5185e3a4e38315277edf0af5d45763cd1fbf9"
+  integrity sha512-SabBXs248Fpj1+MpEaHlajNsATLGvCpkExYeBNo1KJEYJm0iX66WuCOAHjK2Y088FUabDAjPdddBK67W64ondg==
+  dependencies:
+    fetch-normalize-data "1.8.6"
     redux-saga "^1.1.1"
 
 redux-saga@^1.1.1:

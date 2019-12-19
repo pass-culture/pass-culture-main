@@ -1,7 +1,7 @@
 const FAIL_DATA_PATTERN = 'FAIL_DATA_'
 const SUCCESS_DATA_PATTERN = 'SUCCESS_DATA_'
 const MAINTENANCE_STATUS_CODE = 500
-const SERVER_ERROR = 'SERVER_ERROR'
+const { SERVER_ERROR } = require('redux-saga-data')
 
 const initialState = {
   isActivated: false,
