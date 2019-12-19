@@ -79,7 +79,7 @@ function getClientEnvironment(publicUrl) {
         VERSION: version,
         MATOMO_SERVER_URL: process.env.MATOMO_SERVER_URL,
         SENTRY_SERVER_URL_FOR_PRO: process.env.SENTRY_SERVER_URL_FOR_PRO,
-        URL_FOR_MAINTENANCE: process.env.URL_FOR_MAINTENANCE,
+        URL_FOR_MAINTENANCE: process.env.PRO_URL_FOR_MAINTENANCE,
       }
     )
   // Stringify all values so we can feed into Webpack DefinePlugin
