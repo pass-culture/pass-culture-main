@@ -87,10 +87,8 @@
 
 	    const doRedirect = response => {
                 if (response.ok) {
-                    if (param === 'app') {
-                        window.location.replace("https://app.passculture.beta.gouv.fr")
-                    } else {
-                        window.location.replace("https://pro.passculture.beta.gouv.fr")
+                    if (param) {
+                        window.location.replace(param)
                     }
                 }
             }
