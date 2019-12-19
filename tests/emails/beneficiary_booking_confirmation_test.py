@@ -14,8 +14,7 @@ def test_should_return_event_specific_data_for_email_when_offer_is_an_event(mock
     # Given
     user = create_user(first_name='Joe')
     offerer = create_offerer(idx=1, name='Théâtre du coin')
-    venue = create_venue(offerer, "Lieu de l'offreur", idx=1,
-                         address='25 avenue du lieu')
+    venue = create_venue(offerer=offerer, name="Lieu de l'offreur", idx=1, address='25 avenue du lieu')
     event_offer = create_offer_with_event_product(venue, event_name='Super événement', idx=34)
     create_mediation(event_offer, idx=22)
     beginning_datetime = datetime(2019, 11, 6, 14, 59, 5, tzinfo=timezone.utc)
@@ -64,8 +63,7 @@ def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event(m
     # Given
     user = create_user(first_name='Joe')
     offerer = create_offerer(idx=1, name='Théâtre du coin')
-    venue = create_venue(offerer, "Lieu de l'offreur", idx=1,
-                         address='25 avenue du lieu')
+    venue = create_venue(offerer=offerer, name="Lieu de l'offreur", idx=1, address='25 avenue du lieu')
     event_offer = create_offer_with_event_product(venue=venue, event_name='Super événement', idx=34)
     create_mediation(event_offer, idx=22)
     beginning_datetime = datetime(2019, 11, 6, 14, 59, 5, tzinfo=timezone.utc)
@@ -114,8 +112,7 @@ def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing(mock_
     # Given
     user = create_user(first_name='Joe')
     offerer = create_offerer(idx=1, name="Théâtre de l'angle")
-    venue = create_venue(offerer, 'Lieu', idx=1,
-                         address='22 avenue du lieu')
+    venue = create_venue(offerer=offerer, name='Lieu', idx=1, address='22 avenue du lieu')
     thing_offer = create_offer_with_thing_product(venue=venue, thing_name='Super bien culturel', idx=33)
     create_mediation(thing_offer, idx=24)
     stock = create_stock_from_offer(thing_offer, price=15)
@@ -164,8 +161,7 @@ def test_should_return_digital_thing_specific_data_for_email_when_offer_is_a_dig
     # Given
     user = create_user(first_name='Joe')
     offerer = create_offerer(idx=1, name="Théâtre de l'angle")
-    venue = create_venue(offerer, 'Lieu', idx=1,
-                         address=None)
+    venue = create_venue(offerer=offerer, name='Lieu', idx=1, address=None)
     digital_thing_offer = create_offer_with_thing_product(venue, url='http://mon.url',
                                                           thing_name='Super offre numérique', idx=32)
     stock = create_stock_from_offer(digital_thing_offer, price=0)

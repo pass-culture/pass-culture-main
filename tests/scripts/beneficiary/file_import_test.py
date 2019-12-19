@@ -84,7 +84,7 @@ class FillUserFromTest:
 
     def test_returns_the_given_user_with_modified_data_from_the_csv(self):
         # given
-        existing_user = create_user(email='pmortimer@bletchley.co.uk', id=123)
+        existing_user = create_user(email='pmortimer@bletchley.co.uk', idx=123)
 
         # when
         user = fill_user_from(self.csv_row, existing_user)
@@ -208,7 +208,7 @@ class CreateUsersWithActivationBookingsTest:
         venue = create_venue(create_offerer())
         offer = create_offer_with_thing_product(venue=venue)
         stock = create_stock(offer=offer)
-        blake = create_user(email='fblake@bletchley.co.uk', id=123)
+        blake = create_user(email='fblake@bletchley.co.uk', idx=123)
         self.find_user_query.side_effect = [None, blake, None]
         self.find_activation_booking.side_effect = [None, None, None]
         existing_tokens = set()

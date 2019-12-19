@@ -8,9 +8,9 @@ class GetEnabledProvidersForProTest:
     @clean_database
     def test_get_enabled_providers_for_pro(self, app):
         # given
-        provider1 = create_provider('OpenAgenda', is_active=False, is_enable_for_pro=False)
+        provider1 = create_provider(local_class='OpenAgenda', is_active=False, is_enable_for_pro=False)
 
-        provider2 = create_provider('TiteLive', is_active=True, is_enable_for_pro=True)
+        provider2 = create_provider(local_class='TiteLive', is_active=True, is_enable_for_pro=True)
         PcObject.save(provider1, provider2)
 
         # when

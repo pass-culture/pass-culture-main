@@ -4,7 +4,7 @@ from local_providers.price_rule import PriceRule
 from models import PcObject, ApiErrors
 from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
-from tests.test_utils import create_venue_provider, create_venue, create_offerer, create_venue_provider_price_rule
+from tests.model_creators.generic_creators import create_venue_provider, create_venue, create_offerer, create_venue_provider_price_rule
 
 
 class VenueProviderPriceRuleTest:
@@ -16,7 +16,7 @@ class VenueProviderPriceRuleTest:
         allocine_provider = get_provider_by_local_class('AllocineStocks')
         allocine_provider.isActive = True
         venue_provider = create_venue_provider(venue, allocine_provider)
-        venue_provider_price_rule = create_venue_provider_price_rule(venue_provider, PriceRule.default, 10)
+        venue_provider_price_rule = create_venue_provider_price_rule(venue_provider, price_rule=PriceRule.default, price=10)
 
         # When
         PcObject.save(venue_provider_price_rule)
@@ -33,8 +33,8 @@ class VenueProviderPriceRuleTest:
         allocine_provider.isActive = True
         venue_provider = create_venue_provider(venue, allocine_provider)
         venue_provider_price_rule = create_venue_provider_price_rule(venue_provider,
-                                                                     PriceRule.default,
-                                                                     -4)
+                                                                     price_rule=PriceRule.default,
+                                                                     price=-4)
 
         # When
         with pytest.raises(ApiErrors) as error:
@@ -51,9 +51,9 @@ class VenueProviderPriceRuleTest:
         allocine_provider = get_provider_by_local_class('AllocineStocks')
         allocine_provider.isActive = True
         venue_provider = create_venue_provider(venue, allocine_provider)
-        venue_provider_price_rule = create_venue_provider_price_rule(venue_provider, PriceRule.default, 10)
+        venue_provider_price_rule = create_venue_provider_price_rule(venue_provider, price_rule=PriceRule.default, price=10)
         PcObject.save(venue_provider_price_rule)
-        venue_provider_price_rule2 = create_venue_provider_price_rule(venue_provider, PriceRule.default, 12)
+        venue_provider_price_rule2 = create_venue_provider_price_rule(venue_provider, price_rule=PriceRule.default, price=12)
 
         # When
         with pytest.raises(ApiErrors) as error:
@@ -70,7 +70,7 @@ class VenueProviderPriceRuleTest:
         allocine_provider = get_provider_by_local_class('AllocineStocks')
         venue_provider = create_venue_provider(venue, allocine_provider)
         price = 'wrong_price_format'
-        venue_provider_price_rule = create_venue_provider_price_rule(venue_provider, PriceRule.default, price)
+        venue_provider_price_rule = create_venue_provider_price_rule(venue_provider, price_rule=PriceRule.default, price=price)
 
         # When
         with pytest.raises(ApiErrors) as error:

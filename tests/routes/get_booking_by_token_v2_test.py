@@ -52,7 +52,7 @@ class Get:
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(user_offerer, booking)
-            offererApiKey = create_api_key(offerer, API_KEY_VALUE)
+            offererApiKey = create_api_key(offerer_id=offerer.id)
             PcObject.save(offererApiKey)
             user2ApiKey = f'Bearer {offererApiKey.value}'
             booking_token = booking.token.lower()
@@ -203,7 +203,7 @@ class Get:
             offerer = create_offerer()
             user_offerer = create_user_offerer(pro, offerer)
             PcObject.save(user_offerer)
-            offerer_api_key = create_api_key(offerer, API_KEY_VALUE)
+            offerer_api_key = create_api_key(offerer_id=offerer.id)
             PcObject.save(offerer_api_key)
             url = f'/v2/bookings/token/FAKETOKEN'
 
@@ -258,7 +258,7 @@ class Get:
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(admin_user, booking, user_offerer, offerer2)
-            offerer2ApiKey = create_api_key(offerer2, API_KEY_VALUE)
+            offerer2ApiKey = create_api_key(offerer_id=offerer2.id)
             PcObject.save(offerer2ApiKey)
             user2ApiKey = f'Bearer {offerer2ApiKey.value}'
             url = f'/v2/bookings/token/{booking.token}'
@@ -353,7 +353,7 @@ class Get:
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
             PcObject.save(admin_user, booking, user_offerer)
-            offererApiKey = create_api_key(offerer, API_KEY_VALUE)
+            offererApiKey = create_api_key(offerer_id=offerer.id)
             PcObject.save(offererApiKey)
             user2ApiKey = f'Bearer {offererApiKey.value}'
             url = '/v2/bookings/token/12345'
@@ -384,7 +384,7 @@ class Get:
             stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
             booking = create_booking(user=user, stock=stock, is_used=True, venue=venue)
             PcObject.save(admin_user, booking, user_offerer)
-            offererApiKey = create_api_key(offerer, API_KEY_VALUE)
+            offererApiKey = create_api_key(offerer_id=offerer.id)
             PcObject.save(offererApiKey)
             user2ApiKey = f'Bearer {offererApiKey.value}'
             url = f'/v2/bookings/token/{booking.token}'
@@ -414,7 +414,7 @@ class Get:
             stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
             booking = create_booking(user=user, stock=stock, is_cancelled=True, venue=venue)
             PcObject.save(admin_user, booking, user_offerer)
-            offererApiKey = create_api_key(offerer, API_KEY_VALUE)
+            offererApiKey = create_api_key(offerer_id=offerer.id)
             PcObject.save(offererApiKey)
             user2ApiKey = f'Bearer {offererApiKey.value}'
             url = f'/v2/bookings/token/{booking.token}'

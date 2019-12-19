@@ -19,7 +19,7 @@ class Get:
             venue = create_venue(offerer, postal_code='29100', siret='12345678912341')
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             mediation = create_mediation(offer, is_active=True)
-            favorite = create_favorite(mediation, offer, user)
+            favorite = create_favorite(mediation=mediation, offer=offer, user=user)
             PcObject.save(user, favorite)
             url = f'{API_URL}/favorites/{humanize(favorite.id)}'
 
@@ -43,7 +43,7 @@ class Get:
             venue = create_venue(offerer, postal_code='29100', siret='12345678912341')
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             mediation = create_mediation(offer, is_active=True)
-            favorite = create_favorite(mediation, offer, user)
+            favorite = create_favorite(mediation=mediation, offer=offer, user=user)
             stock = create_stock(price=0, offer=offer)
             booking = create_booking(user=user, stock=stock)
             PcObject.save(booking, favorite)

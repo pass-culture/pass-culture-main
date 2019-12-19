@@ -395,7 +395,7 @@ class ProcessBeneficiaryApplicationTest:
             'civility': 'Mme',
             'activity': 'Étudiant'
         }
-        mocked_query = Mock(return_value=[create_user(id=11), create_user(id=22)])
+        mocked_query = Mock(return_value=[create_user(idx=11), create_user(idx=22)])
 
         # when
         remote_import.process_beneficiary_application(information, [], [], [], find_duplicate_users=mocked_query)

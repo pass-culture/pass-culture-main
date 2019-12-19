@@ -21,7 +21,7 @@ def test_offerer_recap_email_does_not_contain_past_offer_without_booking(app):
 
     expected_subject = '[Réservations] Récapitulatif pour Mains, sorts et papiers le 20 juillet 2017 à 14:00'
     offerer = create_offerer()
-    venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
+    venue = create_venue(offerer=offerer, name='Test offerer', booking_email='reservations@test.fr', address='123 rue test', postal_code='93000', city='Test city', departement_code='93')
     stock = create_stock_with_event_offer(offerer=None, venue=venue, beginning_datetime=beginning_datetime,
                                           end_datetime=end_datetime, booking_limit_datetime=booking_limit_datetime)
 
@@ -48,7 +48,7 @@ def test_offerer_recap_email_contains_past_offer_with_booking(app):
     end_datetime = beginning_datetime + timedelta(hours=1)
     booking_limit_datetime = beginning_datetime - timedelta(days=1)
     offerer = create_offerer()
-    venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
+    venue = create_venue(offerer=offerer, name='Test offerer', booking_email='reservations@test.fr', address='123 rue test', postal_code='93000', city='Test city', departement_code='93')
     stock = create_stock_with_event_offer(offerer=None, venue=venue, beginning_datetime=beginning_datetime,
                                           end_datetime=end_datetime, booking_limit_datetime=booking_limit_datetime)
     user = create_user(can_book_free_offers=True, departement_code='93', email='test@example.com',

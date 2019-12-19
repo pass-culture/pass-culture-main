@@ -11,38 +11,30 @@ from models.db import Model
 from repository.provider_queries import get_provider_by_local_class
 from utils.object_storage import STORAGE_DIR
 
+SAVED_COUNTS = {}
 
-def saveCounts():
-    for modelName in models.__all__:
-        model = getattr(models, modelName)
+
+def save_counts():
+    for model_name in models.__all__:
+        model = getattr(models, model_name)
         if isclass(model) \
                 and issubclass(model, PcObject) \
-                and modelName != "PcObject":
-            saved_counts[modelName] = model.query.count()
+                and model_name != 'PcObject':
+            SAVED_COUNTS[model_name] = model.query.count()
 
 
-def assertCreatedCounts(**counts):
-    for modelName in counts:
-        model = getattr(models, modelName)
+def assert_created_counts(**counts):
+    for model_name in counts:
+        model = getattr(models, model_name)
         all_records_count = model.query.count()
-        previous_records_count = saved_counts[modelName]
+        previous_records_count = SAVED_COUNTS[model_name]
         last_created_count = all_records_count - previous_records_count
-        assert last_created_count == counts[modelName], \
-            'Model [%s], Actual [%s], Expected [%s]' % (modelName, last_created_count, counts[modelName])
-
-
-def assertEmptyDb():
-    for modelName in models.__all__:
-        model = getattr(models, modelName)
-        if isinstance(model, PcObject):
-            if modelName == 'Mediation':
-                assert model.query.count() == 2
-            else:
-                assert model.query.count() == 0
+        assert last_created_count == counts[model_name], \
+            'Model [%s], Actual [%s], Expected [%s]' % (model_name, last_created_count, counts[model_name])
 
 
 def assert_created_thumbs():
-    assert len(glob(str(STORAGE_DIR / "thumbs" / "*"))) == 1
+    assert len(glob(str(STORAGE_DIR / 'thumbs' / '*'))) == 1
 
 
 def provider_test(app, provider, venue_provider, **counts):
@@ -52,20 +44,20 @@ def provider_test(app, provider, venue_provider, **counts):
         provider_object = provider(venue_provider)
     provider_object.provider.isActive = True
     PcObject.save(provider_object.provider)
-    saveCounts()
+    save_counts()
     provider_object.updateObjects()
 
-    for countName in ['updatedObjects',
-                      'createdObjects',
-                      'checkedObjects',
-                      'erroredObjects',
-                      'createdThumbs',
-                      'updatedThumbs',
-                      'checkedThumbs',
-                      'erroredThumbs']:
-        assert getattr(provider_object, countName) == counts[countName]
-        del counts[countName]
-    assertCreatedCounts(**counts)
+    for count_name in ['updatedObjects',
+                       'createdObjects',
+                       'checkedObjects',
+                       'erroredObjects',
+                       'createdThumbs',
+                       'updatedThumbs',
+                       'checkedThumbs',
+                       'erroredThumbs']:
+        assert getattr(provider_object, count_name) == counts[count_name]
+        del counts[count_name]
+    assert_created_counts(**counts)
 
 
 def activate_provider(provider_classname: str) -> Provider:
@@ -92,6 +84,3 @@ def create_providable_info(model_name: Model = Product,
 def assert_iterator_is_empty(custom_iterator: iter):
     with pytest.raises(StopIteration):
         next(custom_iterator)
-
-
-saved_counts = {}

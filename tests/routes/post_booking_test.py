@@ -44,10 +44,9 @@ class Post:
         @clean_database
         def when_booking_limit_datetime_has_passed(self, app):
             # given
-            offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
+            offerer = create_offerer(siren='987654321', address='Test address', city='Test city', postal_code='93000', name='Test name')
 
-            venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
-                                 '93')
+            venue = create_venue(offerer=offerer, name='Test offerer', booking_email='reservations@test.fr', address='123 rue test', postal_code='93000', city='Test city', departement_code='93')
 
             thing_offer = create_offer_with_thing_product(venue)
 
@@ -79,9 +78,8 @@ class Post:
         @clean_database
         def when_too_many_bookings(self, app):
             # given
-            offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
-            venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
-                                 '93')
+            offerer = create_offerer(siren='987654321', address='Test address', city='Test city', postal_code='93000', name='Test name')
+            venue = create_venue(offerer=offerer, name='Test offerer', booking_email='reservations@test.fr', address='123 rue test', postal_code='93000', city='Test city', departement_code='93')
             too_many_bookings_stock = create_stock_with_thing_offer(offerer=Offerer(), venue=venue, offer=None,
                                                                     available=2)
 
@@ -547,9 +545,8 @@ class Post:
     class Returns201:
         @clean_database
         def expect_the_booking_to_have_good_includes(self, app):
-            offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
-            venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
-                                 '93')
+            offerer = create_offerer(siren='987654321', address='Test address', city='Test city', postal_code='93000', name='Test name')
+            venue = create_venue(offerer=offerer, name='Test offerer', booking_email='reservations@test.fr', address='123 rue test', postal_code='93000', city='Test city', departement_code='93')
             ok_stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0)
             ok_stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
             PcObject.save(ok_stock)
@@ -575,9 +572,8 @@ class Post:
 
         @clean_database
         def when_limit_date_is_in_the_future_and_offer_is_free(self, app):
-            offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
-            venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
-                                 '93')
+            offerer = create_offerer(siren='987654321', address='Test address', city='Test city', postal_code='93000', name='Test name')
+            venue = create_venue(offerer=offerer, name='Test offerer', booking_email='reservations@test.fr', address='123 rue test', postal_code='93000', city='Test city', departement_code='93')
             ok_stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0)
             ok_stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
             ok_stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
@@ -636,9 +632,8 @@ class Post:
         @clean_database
         def when_user_has_enough_credit(self, app):
             # Given
-            offerer = create_offerer('819202819', '1 Fake Address', 'Fake city', '93000', 'Fake offerer')
-            venue = create_venue(offerer, 'venue name', 'booking@email.com', '1 fake street', '93000', 'False city',
-                                 '93')
+            offerer = create_offerer(siren='819202819', address='1 Fake Address', city='Fake city', postal_code='93000', name='Fake offerer')
+            venue = create_venue(offerer)
             thing_offer = create_offer_with_thing_product(venue)
 
             user = create_user(email='test@email.com')
@@ -676,9 +671,8 @@ class Post:
         @clean_database
         def when_user_respects_expenses_limits(self, app):
             # Given
-            offerer = create_offerer('819202819', '1 Fake Address', 'Fake city', '93000', 'Fake offerer')
-            venue = create_venue(offerer, 'venue name', 'booking@email.com', '1 fake street', '93000', 'False city',
-                                 '93')
+            offerer = create_offerer(siren='819202819', address='1 Fake Address', city='Fake city', postal_code='93000', name='Fake offerer')
+            venue = create_venue(offerer)
             thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.JEUX_VIDEO_ABO)
 
             user = create_user(email='test@email.com')
@@ -719,9 +713,8 @@ class Post:
             deposit = create_deposit(user, amount=50)
             PcObject.save(deposit)
 
-            offerer = create_offerer('819202819', '1 Fake Address', 'Fake city', '93000', 'Fake offerer')
-            venue = create_venue(offerer, 'venue name', 'booking@email.com', '1 fake street', '93000', 'False city',
-                                 '93')
+            offerer = create_offerer(siren='819202819', address='1 Fake Address', city='Fake city', postal_code='93000', name='Fake offerer')
+            venue = create_venue(offerer)
 
             stock = create_stock_with_event_offer(offerer, venue, price=50, available=1)
             PcObject.save(stock)
@@ -757,8 +750,7 @@ class Post:
                                      name='Test offerer')
             PcObject.save(offerer)
 
-            venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
-                                 '93')
+            venue = create_venue(offerer=offerer, name='Test offerer', booking_email='reservations@test.fr', address='123 rue test', postal_code='93000', city='Test city', departement_code='93')
             PcObject.save(venue)
 
             thing_offer = create_offer_with_thing_product(venue)

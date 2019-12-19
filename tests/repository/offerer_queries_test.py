@@ -98,7 +98,7 @@ class CountOffererByDepartementTest:
         # Given
         user = create_user()
         offerer = create_offerer()
-        venue = create_venue(offerer, postal_code='37160')
+        create_venue(offerer, postal_code='37160')
         user_offerer = create_user_offerer(user, offerer)
         PcObject.save(user_offerer)
 
@@ -145,7 +145,7 @@ class CountOffererByDepartementTest:
         # Given
         user1 = create_user()
         user2 = create_user(email='em@ail.com')
-        offerer = create_offerer()
+        offerer = create_offerer(siren='123456789')
         venue1 = create_venue(offerer, postal_code='37160')
         venue2 = create_venue(offerer, postal_code='37160', siret=offerer.siren + '63732')
         user_offerer1 = create_user_offerer(user1, offerer)
@@ -257,7 +257,7 @@ class CountOffererWithStockTest:
         # Given
         user = create_user(email='first@example.net')
         offerer = create_offerer(siren='111111111')
-        user_offerer = create_user_offerer(user, offerer)
+        create_user_offerer(user, offerer)
         venue = create_venue(offerer, siret='1111111110001', postal_code='75018')
         offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
         offer2 = create_offer_with_event_product(venue, event_type=ThingType.ACTIVATION)
@@ -405,7 +405,7 @@ class CountOffererWithStockByDepartementTest:
         # Given
         user = create_user(email='first@example.net')
         offerer = create_offerer(siren='111111111')
-        user_offerer = create_user_offerer(user, offerer)
+        create_user_offerer(user, offerer)
         venue = create_venue(offerer, siret='1111111110001', postal_code='76018')
         offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
         offer2 = create_offer_with_event_product(venue, event_type=ThingType.ACTIVATION)
@@ -453,7 +453,7 @@ def test_find_all_offerers_with_managing_user_information(app):
     user_admin1 = create_user(email='admin1@offerer.com')
     user_admin2 = create_user(email='admin2@offerer.com')
     user_editor1 = create_user(email='editor1@offerer.com')
-    offerer1 = create_offerer(name='offerer1')
+    offerer1 = create_offerer(name='offerer1', siren='123456789')
     offerer2 = create_offerer(name='offerer2', siren='789456123')
     user_offerer1 = create_user_offerer(user_admin1, offerer1, is_admin=True)
     user_offerer2 = create_user_offerer(user_editor1, offerer1, is_admin=False)
@@ -532,7 +532,7 @@ def test_find_all_offerers_with_venue(app):
     # given
     offerer1 = create_offerer(name='offerer1')
     offerer2 = create_offerer(name='offerer2', siren='789456123')
-    venue1 = create_venue(offerer1, is_virtual=True, siret=None)
+    venue1 = create_venue(offerer1, is_virtual=True, siret=None, booking_email='mefa@example.com')
     venue2 = create_venue(offerer2, is_virtual=True, siret=None, booking_email='test@test.test')
     venue3 = create_venue(offerer2, is_virtual=False)
     PcObject.save(offerer1, offerer2, venue1, venue2, venue3)
@@ -1618,17 +1618,17 @@ def test_find_filtered_offerers_with_one_keyword_at_venue_public_name_level(app)
     virtual_venue_without_offer_2 = create_venue(offerer_with_both_venues_none_offer, is_virtual=True, siret=None)
     venue_without_offer_2 = create_venue(offerer_with_both_venues_none_offer, siret="12345678112345")
     virtual_venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, is_virtual=True, siret=None,
-                                              publicName='chouette lieu de ouf')
+                                              public_name='chouette lieu de ouf')
     venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, siret="12345678212345",
-                                      publicName='chouette lieu de ouf')
+                                      public_name='chouette lieu de ouf')
     virtual_venue_with_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, is_virtual=True, siret=None,
-                                              publicName='chouette lieu de ouf')
+                                              public_name='chouette lieu de ouf')
     venue_without_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, siret="12345678312345",
-                                         publicName='chouette lieu de ouf')
+                                         public_name='chouette lieu de ouf')
     virtual_venue_without_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, is_virtual=True,
-                                                 siret=None, publicName='chouette lieu de ouf')
+                                                 siret=None, public_name='chouette lieu de ouf')
     venue_with_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, siret="12345678412345",
-                                      publicName='chouette lieu de ouf')
+                                      public_name='chouette lieu de ouf')
 
     offer_1 = create_offer_with_thing_product(virtual_venue_with_offer_1, url='http://url.com')
     offer_2 = create_offer_with_thing_product(virtual_venue_with_offer_3, url='http://url.com')
@@ -1668,17 +1668,17 @@ def test_find_filtered_offerers_with_one_partial_keyword_at_venue_public_name_le
     virtual_venue_without_offer_2 = create_venue(offerer_with_both_venues_none_offer, is_virtual=True, siret=None)
     venue_without_offer_2 = create_venue(offerer_with_both_venues_none_offer, siret="12345678112345")
     virtual_venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, is_virtual=True, siret=None,
-                                              publicName='chouette lieu de ouf')
+                                              public_name='chouette lieu de ouf')
     venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, siret="12345678212345",
-                                      publicName='chouette lieu de ouf')
+                                      public_name='chouette lieu de ouf')
     virtual_venue_with_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, is_virtual=True, siret=None,
-                                              publicName='chouette lieu de ouf')
+                                              public_name='chouette lieu de ouf')
     venue_without_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, siret="12345678312345",
-                                         publicName='chouette lieu de ouf')
+                                         public_name='chouette lieu de ouf')
     virtual_venue_without_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, is_virtual=True,
-                                                 siret=None, publicName='chouette lieu de ouf')
+                                                 siret=None, public_name='chouette lieu de ouf')
     venue_with_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, siret="12345678412345",
-                                      publicName='chouette lieu de ouf')
+                                      public_name='chouette lieu de ouf')
 
     offer_1 = create_offer_with_thing_product(virtual_venue_with_offer_1, url='http://url.com')
     offer_2 = create_offer_with_thing_product(virtual_venue_with_offer_3, url='http://url.com')
@@ -1718,17 +1718,17 @@ def test_find_filtered_offerers_with_several_keywords_at_venue_public_name_level
     virtual_venue_without_offer_2 = create_venue(offerer_with_both_venues_none_offer, is_virtual=True, siret=None)
     venue_without_offer_2 = create_venue(offerer_with_both_venues_none_offer, siret="12345678112345")
     virtual_venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, is_virtual=True, siret=None,
-                                              publicName='chouette lieu de ouf')
+                                              public_name='chouette lieu de ouf')
     venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, siret="12345678212345",
-                                      publicName='chouette lieu de ouf')
+                                      public_name='chouette lieu de ouf')
     virtual_venue_with_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, is_virtual=True, siret=None,
-                                              publicName='chouette lieu de ouf')
+                                              public_name='chouette lieu de ouf')
     venue_without_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, siret="12345678312345",
-                                         publicName='chouette lieu de ouf')
+                                         public_name='chouette lieu de ouf')
     virtual_venue_without_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, is_virtual=True,
-                                                 siret=None, publicName='chouette lieu de ouf')
+                                                 siret=None, public_name='chouette lieu de ouf')
     venue_with_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, siret="12345678412345",
-                                      publicName='chouette lieu de ouf')
+                                      public_name='chouette lieu de ouf')
 
     offer_1 = create_offer_with_thing_product(virtual_venue_with_offer_1, url='http://url.com')
     offer_2 = create_offer_with_thing_product(virtual_venue_with_offer_3, url='http://url.com')
@@ -1768,17 +1768,17 @@ def test_find_filtered_offerers_with_several_partial_keywords_at_venue_public_na
     virtual_venue_without_offer_2 = create_venue(offerer_with_both_venues_none_offer, is_virtual=True, siret=None)
     venue_without_offer_2 = create_venue(offerer_with_both_venues_none_offer, siret="12345678112345")
     virtual_venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, is_virtual=True, siret=None,
-                                              publicName='chouette lieu de ouf')
+                                              public_name='chouette lieu de ouf')
     venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, siret="12345678212345",
-                                      publicName='chouette lieu de ouf')
+                                      public_name='chouette lieu de ouf')
     virtual_venue_with_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, is_virtual=True, siret=None,
-                                              publicName='chouette lieu de ouf')
+                                              public_name='chouette lieu de ouf')
     venue_without_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, siret="12345678312345",
-                                         publicName='chouette lieu de ouf')
+                                         public_name='chouette lieu de ouf')
     virtual_venue_without_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, is_virtual=True,
-                                                 siret=None, publicName='chouette lieu de ouf')
+                                                 siret=None, public_name='chouette lieu de ouf')
     venue_with_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, siret="12345678412345",
-                                      publicName='chouette lieu de ouf')
+                                      public_name='chouette lieu de ouf')
 
     offer_1 = create_offer_with_thing_product(virtual_venue_with_offer_1, url='http://url.com')
     offer_2 = create_offer_with_thing_product(virtual_venue_with_offer_3, url='http://url.com')

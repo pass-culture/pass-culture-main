@@ -52,7 +52,7 @@ class Get:
         def when_user_has_booked_some_offers(self, app):
             # Given
             user = create_user(departement_code='93', email='wallet_test@email.com', public_name='Test')
-            offerer = create_offerer('999199987', '2 Test adress', 'Test city', '93000', 'Test offerer')
+            offerer = create_offerer(siren='999199987', address='2 Test adress', city='Test city', postal_code='93000', name='Test offerer')
             venue = create_venue(offerer)
             thing_offer = create_offer_with_thing_product(venue=None)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=5)

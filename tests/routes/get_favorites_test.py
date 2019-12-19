@@ -32,10 +32,10 @@ class Get:
             venue = create_venue(offerer, postal_code='29100', siret='12345678912341')
             offer1 = create_offer_with_thing_product(venue, thumb_count=0)
             mediation1 = create_mediation(offer1, is_active=True)
-            favorite1 = create_favorite(mediation1, offer1, user)
+            favorite1 = create_favorite(mediation=mediation1, offer=offer1, user=user)
             offer2 = create_offer_with_thing_product(venue, thumb_count=0)
             mediation2 = create_mediation(offer2, is_active=True)
-            favorite2 = create_favorite(mediation2, offer2, user)
+            favorite2 = create_favorite(mediation=mediation2, offer=offer2, user=user)
             PcObject.save(user, favorite1, favorite2)
 
             # When

@@ -10,7 +10,8 @@ from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue
 from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_from_offer, \
     create_product_with_thing_type, create_offer_with_thing_product, create_offer_with_event_product, \
-    create_event_occurrence, create_mocked_bookings
+    create_event_occurrence
+from tests.test_utils import create_mocked_bookings
 from tests.utils.mailing_test import _remove_whitespaces
 from utils.mailing import make_offerer_driven_cancellation_email_for_offerer, make_batch_cancellation_email
 
@@ -230,7 +231,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
     def test_should_return_mailjet_data_with_ongoing_bookings(self, mock_is_offer_active, mock_build_pc_pro_offer_link):
         # Given
         user1 = create_user(email='jean.dupont@example.com', public_name='Jean Dupont')
-        user2 = create_user(email='jean.val@example.com', public_name='Jean Val')
+        user2 = create_user(email='jean.val@example.com', public_name='Jean Val', first_name='John', last_name='Doe')
         offerer = create_offerer()
         venue = create_venue(offerer, name='Venue name', departement_code='75')
         offer = create_offer_with_event_product(venue, event_name='My Event')
@@ -281,7 +282,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
     def test_should_return_mailjet_data_on_thing_offer(self, mock_is_offer_active, mock_build_pc_pro_offer_link):
         # Given
         user1 = create_user(email='jean.dupont@example.com', public_name='Jean Dupont')
-        user2 = create_user(email='jean.val@example.com', public_name='Jean Val')
+        user2 = create_user(email='jean.val@example.com', public_name='Jean Val', first_name='John', last_name='Doe')
         offerer = create_offerer()
         venue = create_venue(offerer, name='Venue name', departement_code='75')
         offer = create_offer_with_thing_product(venue, thing_name='My Thing')
@@ -332,7 +333,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
     def test_should_return_numerique_when_venue_is_virtual(self, mock_is_offer_active, mock_build_pc_pro_offer_link):
         # Given
         user1 = create_user(email='jean.dupont@example.com', public_name='Jean Dupont')
-        user2 = create_user(email='jean.val@example.com', public_name='Jean Val')
+        user2 = create_user(email='jean.val@example.com', public_name='Jean Val', first_name='John', last_name='Doe')
         offerer = create_offerer()
         venue = create_venue(offerer, name='Venue name', is_virtual=True)
         offer = create_offer_with_thing_product(venue, thing_name='My Thing')

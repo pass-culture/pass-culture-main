@@ -10,7 +10,7 @@ from tests.model_creators.specific_creators import create_offer_with_thing_produ
 @clean_database
 def test_offerer_cannot_have_address_and_isVirtual(app):
     # Given
-    offerer = create_offerer('123456789', '1 rue Test', 'Test city', '93000', 'Test offerer')
+    offerer = create_offerer(siren='123456789', address='1 rue Test', city='Test city', postal_code='93000', name='Test offerer')
     PcObject.save(offerer)
 
     venue = create_venue(offerer, name='Venue_name', booking_email='booking@email.com', is_virtual=True, siret=None)
@@ -24,7 +24,7 @@ def test_offerer_cannot_have_address_and_isVirtual(app):
 @clean_database
 def test_offerer_not_isVirtual_and_has_siret_can_have_null_address(app):
     # Given
-    offerer = create_offerer('123456789', '1 rue Test', 'Test city', '93000', 'Test offerer')
+    offerer = create_offerer(siren='123456789', address='1 rue Test', city='Test city', postal_code='93000', name='Test offerer')
     PcObject.save(offerer)
 
     venue = create_venue(offerer, siret='12345678912345', name='Venue_name', booking_email='booking@email.com',
@@ -42,7 +42,7 @@ def test_offerer_not_isVirtual_and_has_siret_can_have_null_address(app):
 @clean_database
 def test_offerer_not_isVirtual_and_has_siret_cannot_have_null_postal_code_nor_city_nor_departement_code(app):
     # Given
-    offerer = create_offerer('123456789', '1 rue Test', 'Test city', '93000', 'Test offerer')
+    offerer = create_offerer(siren='123456789', address='1 rue Test', city='Test city', postal_code='93000', name='Test offerer')
     PcObject.save(offerer)
 
     venue = create_venue(offerer, siret='12345678912345', name='Venue_name', booking_email='booking@email.com',
@@ -58,7 +58,7 @@ def test_offerer_not_isVirtual_and_has_siret_cannot_have_null_postal_code_nor_ci
 def test_offerer_not_isVirtual_and_has_no_siret_cannot_have_null_address_nor_postal_code_nor_city_nor_departement_code(
         app):
     # Given
-    offerer = create_offerer('123456789', '1 rue Test', 'Test city', '93000', 'Test offerer')
+    offerer = create_offerer(siren='123456789', address='1 rue Test', city='Test city', postal_code='93000', name='Test offerer')
     PcObject.save(offerer)
 
     venue = create_venue(offerer, siret=None, name='Venue_name', booking_email='booking@email.com', address=None,
@@ -72,7 +72,7 @@ def test_offerer_not_isVirtual_and_has_no_siret_cannot_have_null_address_nor_pos
 @clean_database
 def test_offerer_not_isVirtual_and_has_no_siret_and_has_address_and_postal_code_and_city_and_departement_code(app):
     # Given
-    offerer = create_offerer('123456789', '1 rue Test', 'Test city', '93000', 'Test offerer')
+    offerer = create_offerer(siren='123456789', address='1 rue Test', city='Test city', postal_code='93000', name='Test offerer')
     PcObject.save(offerer)
 
     venue = create_venue(offerer, siret=None, comment="fake comment", name='Venue_name',
@@ -92,7 +92,7 @@ def test_offerer_not_isVirtual_and_has_no_siret_and_has_address_and_postal_code_
 @clean_database
 def test_offerer_cannot_create_a_second_virtual_venue(app):
     # Given
-    offerer = create_offerer('123456789', '1 rue Test', 'Test city', '93000', 'Test offerer')
+    offerer = create_offerer(siren='123456789', address='1 rue Test', city='Test city', postal_code='93000', name='Test offerer')
     PcObject.save(offerer)
 
     venue = create_venue(offerer, name='Venue_name', booking_email='booking@email.com', address=None, postal_code=None,
@@ -111,7 +111,7 @@ def test_offerer_cannot_create_a_second_virtual_venue(app):
 def test_offerer_cannot_update_a_second_venue_to_be_virtual(app):
     # Given
     siren = '132547698'
-    offerer = create_offerer(siren, '1 rue Test', 'Test city', '93000', 'Test offerer')
+    offerer = create_offerer(siren=siren, address='1 rue Test', city='Test city', postal_code='93000', name='Test offerer')
     PcObject.save(offerer)
 
     venue = create_venue(offerer, address=None, postal_code=None, city=None, departement_code=None, is_virtual=True,
@@ -218,7 +218,7 @@ class DepartementCodeTest:
     @clean_database
     def test_venue_in_overseas_departemenet_has_a_three_digit_departement_code(self, app):
         # Given
-        offerer = create_offerer('123456789', '1 rue Test', 'Test city', '93000', 'Test offerer')
+        offerer = create_offerer(siren='123456789', address='1 rue Test', city='Test city', postal_code='93000', name='Test offerer')
         venue = create_venue(offerer, siret='12345678912345', name='Venue_name', booking_email='booking@email.com', address='1 test address', postal_code='97300', city='Cayenne', is_virtual=False)
         PcObject.save(venue)
 

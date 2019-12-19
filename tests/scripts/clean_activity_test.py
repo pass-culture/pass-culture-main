@@ -62,9 +62,9 @@ class PopulateStockDateCreatedFromActivityTest:
         stock = create_stock(offer=offer)
         PcObject.save(stock)
         activity_issued_at = db.session.execute('''
-            SELECT issued_at 
-            FROM activity 
-            WHERE verb = 'insert' 
+            SELECT issued_at
+            FROM activity
+            WHERE verb = 'insert'
             AND table_name = 'stock'
         ''')
 
@@ -79,7 +79,7 @@ class PopulateCulturalSurveyFilledDateFromActivityTest:
     @clean_database
     def test_fills_cultural_survey_filled_date_from_activity(self, app):
         # Given
-        user = create_user(id=1, needs_to_fill_cultural_survey=False)
+        user = create_user(idx=1, needs_to_fill_cultural_survey=False)
         PcObject.save(user)
         modification_date = datetime(2019, 12, 1, 0, 0, 0)
         user_activity = create_activity(
@@ -100,7 +100,7 @@ class PopulateCulturalSurveyFilledDateFromActivityTest:
     @clean_database
     def test_does_not_fill_cultural_survey_filled_date_from_activity_when_user_id_does_not_match(self, app):
         # Given
-        user = create_user(id=1, needs_to_fill_cultural_survey=False)
+        user = create_user(idx=1, needs_to_fill_cultural_survey=False)
         PcObject.save(user)
         modification_date = datetime(2019, 12, 1, 0, 0, 0)
         user_activity = create_activity(
@@ -120,7 +120,7 @@ class PopulateCulturalSurveyFilledDateFromActivityTest:
     @clean_database
     def test_does_fill_cultural_survey_filled_date_with_last_matching_activity_date(self, app):
         # Given
-        user = create_user(id=1, needs_to_fill_cultural_survey=True)
+        user = create_user(idx=1, needs_to_fill_cultural_survey=True)
         PcObject.save(user)
         last_modification_date = datetime(2019, 12, 1, 0, 0, 0)
         user_activity_1 = create_activity(

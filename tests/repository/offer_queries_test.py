@@ -540,7 +540,7 @@ class FindActivationOffersTest:
     @clean_database
     def test_find_activation_offers_returns_activation_offers_in_given_department(self, app):
         # given
-        offerer = create_offerer()
+        offerer = create_offerer(siren='123456789')
         venue1 = create_venue(offerer, siret=offerer.siren + '12345', postal_code='34000', departement_code='34')
         venue2 = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
         offer1 = create_offer_with_event_product(venue1, event_type=EventType.ACTIVATION)
@@ -560,7 +560,7 @@ class FindActivationOffersTest:
     @clean_database
     def test_find_activation_offers_returns_activation_offers_if_offer_is_national(self, app):
         # given
-        offerer = create_offerer()
+        offerer = create_offerer(siren='123456789')
         venue1 = create_venue(offerer, siret=offerer.siren + '12345', postal_code='34000', departement_code='34')
         venue2 = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
         offer1 = create_offer_with_event_product(venue1, event_type=EventType.ACTIVATION)
@@ -582,7 +582,7 @@ class FindActivationOffersTest:
     @clean_database
     def test_find_activation_offers_returns_activation_offers_in_all_ile_de_france_if_department_is_93(self, app):
         # given
-        offerer = create_offerer()
+        offerer = create_offerer(siren='123456789')
         venue1 = create_venue(offerer, siret=offerer.siren + '12345', postal_code='34000', departement_code='34')
         venue2 = create_venue(offerer, siret=offerer.siren + '67890', postal_code='75000', departement_code='75')
         venue3 = create_venue(offerer, siret=offerer.siren + '54321', postal_code='78000', departement_code='78')
@@ -604,7 +604,7 @@ class FindActivationOffersTest:
     def test_find_activation_offers_returns_activation_offers_with_available_stocks(self, app):
         # given
         user = create_user()
-        offerer = create_offerer()
+        offerer = create_offerer(siren='123456789')
         venue1 = create_venue(offerer=offerer, siret=offerer.siren + '12345', postal_code='93000', departement_code='93')
         venue2 = create_venue(offerer=offerer, siret=offerer.siren + '67890', postal_code='93000', departement_code='93')
         venue3 = create_venue(offerer=offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
@@ -630,7 +630,7 @@ class FindActivationOffersTest:
         now = datetime.utcnow()
         five_days_ago = now - timedelta(days=5)
         next_week = now + timedelta(days=7)
-        offerer = create_offerer()
+        offerer = create_offerer(siren='123456789')
         venue1 = create_venue(offerer, siret=offerer.siren + '12345', postal_code='93000', departement_code='93')
         venue2 = create_venue(offerer, siret=offerer.siren + '67890', postal_code='93000', departement_code='93')
         venue3 = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
@@ -666,7 +666,7 @@ class FindOffersTest:
         event_product2 = create_product_with_event_type(event_name='Concert de contrebasse')
         thing1_product = create_product_with_thing_type(thing_name='Jacques la fripouille')
         thing2_product = create_product_with_thing_type(thing_name='Belle du Seigneur')
-        offerer = create_offerer()
+        offerer = create_offerer(siren='123456789')
         venue1 = create_venue(offerer=offerer1, name='Bataclan', city='Paris', siret=offerer.siren + '12345')
         venue2 = create_venue(offerer=offerer2, name='Librairie la Rencontre', city='Saint Denis',
                               siret=offerer.siren + '54321')
@@ -897,7 +897,7 @@ class GetActiveOffersTest:
     @clean_database
     def test_when_department_code_00(self, app):
         # Given
-        offerer = create_offerer()
+        offerer = create_offerer(siren='123456789')
         user = create_user()
         venue_34 = create_venue(offerer, postal_code='34000', departement_code='34', siret=offerer.siren + '11111')
         venue_93 = create_venue(offerer, postal_code='93000', departement_code='93', siret=offerer.siren + '22222')
@@ -928,7 +928,7 @@ class GetActiveOffersTest:
     @clean_database
     def test_should_not_return_activation_event(self, app):
         # Given
-        offerer = create_offerer()
+        offerer = create_offerer(siren='123456789')
         user = create_user()
         venue_93 = create_venue(offerer, postal_code='93000', departement_code='93', siret=offerer.siren + '33333')
         offer_93 = create_offer_with_event_product(venue_93, thumb_count=1)
@@ -954,7 +954,7 @@ class GetActiveOffersTest:
     @clean_database
     def test_should_not_return_activation_thing(self, app):
         # Given
-        offerer = create_offerer()
+        offerer = create_offerer(siren='123456789')
         user = create_user()
         venue_93 = create_venue(offerer, postal_code='93000', departement_code='93', siret=offerer.siren + '33333')
         offer_93 = create_offer_with_thing_product(venue_93, thumb_count=1)
@@ -1339,7 +1339,7 @@ class GetActiveOffersTest:
         offer = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
         stock = create_stock_from_offer(offer, price=0)
         mediation = create_mediation(stock.offer)
-        favorite = create_favorite(mediation, offer, user)
+        favorite = create_favorite(mediation=mediation, offer=offer, user=user)
 
         PcObject.save(favorite)
 

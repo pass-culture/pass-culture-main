@@ -1,3 +1,4 @@
+from models import PcObject
 from tests.model_creators.generic_creators import create_api_key
 from utils.logger import logger
 
@@ -18,12 +19,13 @@ API_KEYS_VALUES = [
     "7MGQLYGQAMZMVEK9GUSQNMEYL9Z4Q4LYBY3AJ989C924897EZQ6MFME4LEUMXQ3E"
 ]
 
+
 def create_industrial_pro_users_api_keys(offerers_by_name):
     logger.info('create_industrial_pro_users_api_keys')
-    n = 0
+    counter = 0
     for offerer in offerers_by_name.items():
-        create_api_key(offerer[1], API_KEYS_VALUES[n])
-        n += 1
+        api_key = create_api_key(offerer_id=offerer[1].id, value=API_KEYS_VALUES[counter])
+        PcObject.save(api_key)
+        counter += 1
 
     logger.info('created {} offerers with api key'.format(len(offerers_by_name)))
-

@@ -89,7 +89,7 @@ class PostNewPassword:
         @clean_database
         def when_new_password_is_not_strong_enough(self, app):
             # given
-            user = create_user(reset_password_token='KL89PBNG51')
+            user = create_user(reset_password_token='KL89PBNG51', reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24))
             PcObject.save(user)
 
             data = {'token': 'KL89PBNG51', 'newPassword': 'weak_password'}
@@ -109,7 +109,7 @@ class PostNewPassword:
         @clean_database
         def when_new_password_is_valid(self, app):
             # given
-            user = create_user(reset_password_token='KL89PBNG51')
+            user = create_user(reset_password_token='KL89PBNG51', reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24))
             PcObject.save(user)
             user_id = user.id
             data = {

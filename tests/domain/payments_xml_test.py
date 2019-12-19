@@ -567,8 +567,8 @@ class GenerateMessageFileTest:
 @patch('domain.payments.uuid.uuid4')
 def test_generate_file_checksum_returns_a_checksum_of_the_file(mocked_uuid, app):
     # given
-    offerer1 = create_offerer(name='first offerer')
-    offerer2 = create_offerer(name='second offerer')
+    offerer1 = create_offerer(name='first offerer', siren='123456789')
+    offerer2 = create_offerer(name='second offerer', siren='123456789')
     user = create_user()
     venue1 = create_venue(offerer1)
     venue2 = create_venue(offerer2)
@@ -580,9 +580,9 @@ def test_generate_file_checksum_returns_a_checksum_of_the_file(mocked_uuid, app)
     booking3 = create_booking(user=user, stock=stock3)
 
     payments = [
-        create_payment(booking1, offerer1, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
-        create_payment(booking2, offerer1, Decimal(20), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
-        create_payment(booking3, offerer2, Decimal(20), iban='FR14WXCVBN123456', bic='WXCVBN7B444')
+        create_payment(booking1, offerer1, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555', transaction_label='pass Culture Pro - remboursement 2nde quinzaine 07-2018'),
+        create_payment(booking2, offerer1, Decimal(20), iban='CF13QSDFGH456789', bic='QSDFGH8Z555', transaction_label='pass Culture Pro - remboursement 2nde quinzaine 07-2018'),
+        create_payment(booking3, offerer2, Decimal(20), iban='FR14WXCVBN123456', bic='WXCVBN7B444', transaction_label='pass Culture Pro - remboursement 2nde quinzaine 07-2018')
     ]
     uuid1 = UUID(hex='abcd1234abcd1234abcd1234abcd1234', version=4)
     uuid2 = UUID(hex='cdef5678cdef5678cdef5678cdef5678', version=4)

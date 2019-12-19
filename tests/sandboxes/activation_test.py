@@ -2,14 +2,14 @@ from models import Stock
 
 from sandboxes.scripts.save_sandbox import save_sandbox
 from tests.conftest import clean_database
-from tests.model_creators.provider_creators import saveCounts, assertCreatedCounts
+from tests.model_creators.provider_creators import save_counts, assert_created_counts
 from utils.logger import logger
 
 
 @clean_database
 def test_save_activation_sandbox(app):
     # given
-    saveCounts()
+    save_counts()
     logger_info = logger.info
     logger.info = lambda o: None
 
@@ -17,7 +17,7 @@ def test_save_activation_sandbox(app):
     save_sandbox('activation')
 
     # then
-    assertCreatedCounts(
+    assert_created_counts(
         Booking=0,
         Deposit=0,
         Mediation=2,

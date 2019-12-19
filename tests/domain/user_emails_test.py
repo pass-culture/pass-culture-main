@@ -10,7 +10,8 @@ from domain.user_emails import send_beneficiary_booking_cancellation_email, \
 from models import Offerer
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue
 from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_with_thing_offer, \
-    create_offer_with_thing_product, create_mocked_bookings
+    create_offer_with_thing_product
+from tests.test_utils import create_mocked_bookings
 
 
 class SendResetPasswordEmailTest:
@@ -59,7 +60,7 @@ class SendBeneficiaryBookingCancellationEmailTest:
                                                              mocked_make_beneficiary_booking_cancellation_email_data):
         # given
         beneficiary = create_user()
-        booking = create_booking(beneficiary, id=23)
+        booking = create_booking(beneficiary, idx=23)
         mocked_send_email = Mock()
 
         # when
@@ -161,7 +162,7 @@ class SendBookingConfirmationEmailToBeneficiaryTest:
     def when_called_calls_send_email(self, mocked_retrieve_data_for_beneficiary_booking_confirmation_email):
         # Given
         user = create_user()
-        booking = create_booking(user=user, id=23)
+        booking = create_booking(user=user, idx=23)
         mocked_send_email = Mock()
 
         # When
@@ -521,7 +522,7 @@ class SendResetPasswordEmailWithMailjetTemplateTest:
 class SendActivationEmailTest:
     def test_should_return_true_when_email_data_are_valid(self):
         # given
-        user = create_user(email='bobby@example.net', public_name='bobby', reset_password_token='AZ45KNB99H')
+        user = create_user(email='bobby@example.net', public_name='bobby', reset_password_token='AZ45KNB99H', first_name='John')
         mocked_send_email = Mock(return_value=True)
 
         # when
@@ -532,7 +533,7 @@ class SendActivationEmailTest:
 
     def test_should_return_false_when_email_data_are_not_valid(self):
         # given
-        user = create_user(email='bobby@example.net', public_name='bobby', reset_password_token='AZ45KNB99H')
+        user = create_user(email='bobby@example.net', public_name='bobby', reset_password_token='AZ45KNB99H', first_name='John')
         mocked_send_email = Mock(return_value=False)
 
         # when

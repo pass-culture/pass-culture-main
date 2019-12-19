@@ -12,7 +12,7 @@ class ValidateNewVenueProviderInformationTest:
     @clean_database
     def test_returns_true_when_all_information_are_present_and_well_formed(self, app):
         # given
-        provider = create_provider('OpenAgenda')
+        provider = create_provider()
         offerer = create_offerer()
         user = create_user()
         user_offerer = create_user_offerer(user, offerer, is_admin=True)
@@ -107,7 +107,7 @@ class ValidateNewVenueProviderInformationTest:
     @clean_database
     def test_raise_errors_if_provider_is_not_active(self, app):
         # given
-        provider = create_provider('OpenAgenda', is_active=False)
+        provider = create_provider(is_active=False)
         PcObject.save(provider)
 
         payload = {
@@ -127,7 +127,7 @@ class ValidateNewVenueProviderInformationTest:
     @clean_database
     def test_raise_errors_if_provider_is_not_enable_for_pro(self, app):
         # given
-        provider = create_provider('OpenAgenda', is_enable_for_pro=False)
+        provider = create_provider(is_enable_for_pro=False)
         PcObject.save(provider)
 
         payload = {

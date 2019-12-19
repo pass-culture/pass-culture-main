@@ -25,7 +25,7 @@ class UpdateVenueWithSireneDataTest:
                 "latitude": "48.39",
             }
         }
-        offerer = create_offerer("123456789")
+        offerer = create_offerer(siren=123456789)
         venue = create_venue(
             offerer,
             siret='12345678900002',
@@ -66,7 +66,7 @@ class UpdateVenueWithSireneDataTest:
                 "latitude": "48.39",
             }
         }
-        offerer = create_offerer("123456789")
+        offerer = create_offerer(siren=123456789)
         venue = create_venue(
             offerer,
             siret='12345678900002',

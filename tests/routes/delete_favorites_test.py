@@ -18,7 +18,7 @@ class Delete:
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             mediation = None
             recommendation = create_recommendation(offer=offer, user=user, mediation=mediation)
-            favorite = create_favorite(mediation, offer, user)
+            favorite = create_favorite(mediation=mediation, offer=offer, user=user)
             PcObject.save(recommendation, user, favorite)
 
             # When
@@ -41,7 +41,7 @@ class Delete:
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             mediation = create_mediation(offer, is_active=True)
             recommendation = create_recommendation(offer=offer, user=user, mediation=mediation, is_clicked=False)
-            favorite = create_favorite(mediation, offer, user)
+            favorite = create_favorite(mediation=mediation, offer=offer, user=user)
             PcObject.save(recommendation, user, favorite)
 
             # When
@@ -60,7 +60,7 @@ class Delete:
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             mediation = create_mediation(offer, is_active=True)
             recommendation = create_recommendation(offer=offer, user=user, mediation=mediation, is_clicked=False)
-            favorite = create_favorite(mediation, offer, user)
+            favorite = create_favorite(mediation=mediation, offer=offer, user=user)
             PcObject.save(recommendation, user, favorite)
 
             # When

@@ -4,7 +4,7 @@ from sandboxes.scripts.save_sandbox import save_sandbox
 from sandboxes.scripts.testcafe_helpers import get_all_getters
 from tests.conftest import clean_database
 from tests.sandboxes.mock_adresse_api import MOCK_ADRESSE_API_RESPONSE
-from tests.model_creators.provider_creators import saveCounts, assertCreatedCounts
+from tests.model_creators.provider_creators import save_counts, assert_created_counts
 from utils.logger import logger
 
 
@@ -16,7 +16,7 @@ def test_save_industrial_sandbox(mock_request, app):
     response_return_value.json = MagicMock(side_effect=MOCK_ADRESSE_API_RESPONSE)
     mock_request.return_value = response_return_value
 
-    saveCounts()
+    save_counts()
     logger_info = logger.info
     logger.info = lambda o: None
 
@@ -24,7 +24,7 @@ def test_save_industrial_sandbox(mock_request, app):
     save_sandbox('industrial')
 
     # then
-    assertCreatedCounts(
+    assert_created_counts(
         ApiKey=13,
         Booking=42,
         Deposit=8,

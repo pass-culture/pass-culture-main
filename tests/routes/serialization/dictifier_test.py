@@ -136,7 +136,7 @@ class AsDictTest:
     @clean_database
     def test_returns_humanized_ids_for_primary_keys(self, app):
         # given
-        user = create_user(id=12, postal_code=None)
+        user = create_user(idx=12, postal_code=None)
 
         # when
         dict_result = as_dict(user, includes=[])
@@ -147,8 +147,8 @@ class AsDictTest:
     @clean_database
     def test_returns_humanized_ids_for_foreign_keys(self, app):
         # given
-        user = create_user(id=12, postal_code=None)
-        booking = create_booking(user=user, stock=Stock(), id=13)
+        user = create_user(idx=12, postal_code=None)
+        booking = create_booking(user=user, stock=Stock(), idx=13)
         booking.userId = user.id
 
         # when

@@ -1,4 +1,3 @@
-from decimal import Decimal
 from unittest.mock import Mock
 
 import pytest
@@ -67,9 +66,9 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_iban_is_miss
     booking2 = create_booking(user=user, stock=stock1)
     booking3 = create_booking(user=user, stock=stock1)
     payments = [
-        create_payment(booking1, offerer1, Decimal(10)),
-        create_payment(booking2, offerer1, Decimal(20)),
-        create_payment(booking3, offerer1, Decimal(20))
+        create_payment(booking1, offerer1, 10),
+        create_payment(booking2, offerer1, 20),
+        create_payment(booking3, offerer1, 20)
     ]
 
     # when
@@ -92,9 +91,9 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_bic_is_missi
     booking2 = create_booking(user=user, stock=stock1)
     booking3 = create_booking(user=user, stock=stock1)
     payments = [
-        create_payment(booking1, offerer1, Decimal(10)),
-        create_payment(booking2, offerer1, Decimal(20)),
-        create_payment(booking3, offerer1, Decimal(20))
+        create_payment(booking1, offerer1, 10),
+        create_payment(booking2, offerer1, 20),
+        create_payment(booking3, offerer1, 20)
     ]
 
     # when
@@ -117,9 +116,9 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_id_is_missin
     booking2 = create_booking(user=user, stock=stock1)
     booking3 = create_booking(user=user, stock=stock1)
     payments = [
-        create_payment(booking1, offerer1, Decimal(10)),
-        create_payment(booking2, offerer1, Decimal(20)),
-        create_payment(booking3, offerer1, Decimal(20))
+        create_payment(booking1, offerer1, 10),
+        create_payment(booking2, offerer1, 20),
+        create_payment(booking3, offerer1, 20)
     ]
 
     # when
@@ -144,9 +143,9 @@ def test_send_transactions_should_send_an_email_with_xml_attachment(app):
     deposit = create_deposit(user, amount=500)
     PcObject.save(deposit)
     payments = [
-        create_payment(booking1, offerer1, Decimal(10)),
-        create_payment(booking2, offerer1, Decimal(20)),
-        create_payment(booking3, offerer1, Decimal(20))
+        create_payment(booking1, offerer1, 10, iban='FR7630007000111234567890144', bic='BDFEFR2LCCB'),
+        create_payment(booking2, offerer1, 20, iban='FR7630007000111234567890144', bic='BDFEFR2LCCB'),
+        create_payment(booking3, offerer1, 20, iban='FR7630007000111234567890144', bic='BDFEFR2LCCB')
     ]
 
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
@@ -174,9 +173,9 @@ def test_send_transactions_creates_a_new_payment_transaction_if_email_was_sent_p
     booking3 = create_booking(user=user, stock=stock1)
     deposit = create_deposit(user, amount=500)
     payments = [
-        create_payment(booking1, offerer1, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
-        create_payment(booking2, offerer1, Decimal(20), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
-        create_payment(booking3, offerer1, Decimal(20), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+        create_payment(booking1, offerer1, 10, iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
+        create_payment(booking2, offerer1, 20, iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
+        create_payment(booking3, offerer1, 20, iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
     ]
 
     PcObject.save(deposit)
@@ -206,9 +205,9 @@ def test_send_transactions_set_status_to_sent_if_email_was_sent_properly(app):
     booking3 = create_booking(user=user, stock=stock1)
     deposit = create_deposit(user, amount=500)
     payments = [
-        create_payment(booking1, offerer1, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
-        create_payment(booking2, offerer1, Decimal(20), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
-        create_payment(booking3, offerer1, Decimal(20), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+        create_payment(booking1, offerer1, 10, iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
+        create_payment(booking2, offerer1, 20, iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
+        create_payment(booking3, offerer1, 20, iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
     ]
 
     PcObject.save(deposit)
@@ -240,9 +239,9 @@ def test_send_transactions_set_status_to_error_with_details_if_email_was_not_sen
     booking3 = create_booking(user=user, stock=stock1)
     deposit = create_deposit(user, amount=500)
     payments = [
-        create_payment(booking1, offerer1, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
-        create_payment(booking2, offerer1, Decimal(20), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
-        create_payment(booking3, offerer1, Decimal(20), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+        create_payment(booking1, offerer1, 10, iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
+        create_payment(booking2, offerer1, 20, iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
+        create_payment(booking3, offerer1, 20, iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
     ]
 
     PcObject.save(deposit)
@@ -273,7 +272,7 @@ def test_send_transactions_with_malformed_iban_on_payments_gives_them_an_error_s
     booking = create_booking(user=user, stock=stock)
     deposit = create_deposit(user, amount=500)
     payments = [
-        create_payment(booking, offerer, Decimal(10), iban='CF  13QSDFGH45 qbc //', bic='QSDFGH8Z555'),
+        create_payment(booking, offerer, 10, iban='CF  13QSDFGH45 qbc //', bic='QSDFGH8Z555'),
     ]
 
     PcObject.save(deposit, *payments)
@@ -306,9 +305,9 @@ def test_send_payment_details_sends_a_csv_attachment(app):
     booking3 = create_booking(user=user, stock=stock1)
     deposit = create_deposit(user, amount=500)
     payments = [
-        create_payment(booking1, offerer1, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
-        create_payment(booking2, offerer1, Decimal(20), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
-        create_payment(booking3, offerer1, Decimal(20), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+        create_payment(booking1, offerer1, 10, iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
+        create_payment(booking2, offerer1, 20, iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
+        create_payment(booking3, offerer1, 20, iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
     ]
 
     PcObject.save(deposit)
@@ -338,11 +337,11 @@ def test_send_payment_details_does_not_send_anything_if_all_payment_have_error_s
     booking3 = create_booking(user=user, stock=stock1)
 
     payments = [
-        create_payment(booking1, offerer1, Decimal(10), status=TransactionStatus.ERROR, iban='CF13QSDFGH456789',
+        create_payment(booking1, offerer1, 10, status=TransactionStatus.ERROR, iban='CF13QSDFGH456789',
                        bic='QSDFGH8Z555'),
-        create_payment(booking2, offerer1, Decimal(20), status=TransactionStatus.ERROR, iban='CF13QSDFGH456789',
+        create_payment(booking2, offerer1, 20, status=TransactionStatus.ERROR, iban='CF13QSDFGH456789',
                        bic='QSDFGH8Z555'),
-        create_payment(booking3, offerer1, Decimal(20), status=TransactionStatus.ERROR, iban='CF13QSDFGH456789',
+        create_payment(booking3, offerer1, 20, status=TransactionStatus.ERROR, iban='CF13QSDFGH456789',
                        bic='QSDFGH8Z555')
     ]
 
@@ -405,11 +404,11 @@ def test_send_payments_report_sends_two_csv_attachments_if_some_payments_are_not
     booking3 = create_booking(user=user, stock=stock1)
     deposit = create_deposit(user, amount=500)
     payments = [
-        create_payment(booking1, offerer1, Decimal(10), status=TransactionStatus.SENT, iban='CF13QSDFGH456789',
+        create_payment(booking1, offerer1, 10, status=TransactionStatus.SENT, iban='CF13QSDFGH456789',
                        bic='QSDFGH8Z555'),
-        create_payment(booking2, offerer1, Decimal(20), status=TransactionStatus.ERROR, iban='CF13QSDFGH456789',
+        create_payment(booking2, offerer1, 20, status=TransactionStatus.ERROR, iban='CF13QSDFGH456789',
                        bic='QSDFGH8Z555'),
-        create_payment(booking3, offerer1, Decimal(20), status=TransactionStatus.NOT_PROCESSABLE,
+        create_payment(booking3, offerer1, 20, status=TransactionStatus.NOT_PROCESSABLE,
                        iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
     ]
 
@@ -442,11 +441,11 @@ def test_send_payments_report_sends_two_csv_attachments_if_no_payments_are_in_er
     booking3 = create_booking(user=user, stock=stock1)
     deposit = create_deposit(user, amount=500)
     payments = [
-        create_payment(booking1, offerer1, Decimal(10), status=TransactionStatus.SENT, iban='CF13QSDFGH456789',
+        create_payment(booking1, offerer1, 10, status=TransactionStatus.SENT, iban='CF13QSDFGH456789',
                        bic='QSDFGH8Z555'),
-        create_payment(booking2, offerer1, Decimal(20), status=TransactionStatus.SENT, iban='CF13QSDFGH456789',
+        create_payment(booking2, offerer1, 20, status=TransactionStatus.SENT, iban='CF13QSDFGH456789',
                        bic='QSDFGH8Z555'),
-        create_payment(booking3, offerer1, Decimal(20), status=TransactionStatus.SENT, iban='CF13QSDFGH456789',
+        create_payment(booking3, offerer1, 20, status=TransactionStatus.SENT, iban='CF13QSDFGH456789',
                        bic='QSDFGH8Z555')
     ]
 
@@ -492,9 +491,9 @@ class SetNotProcessablePaymentsWithBankInformationToRetryTest:
         booking = create_booking(user=user, stock=stock)
         bank_information = create_bank_information(offerer=offerer, iban='FR7611808009101234567890147',
                                                    bic='CCBPFRPPVER')
-        not_processable_payment = create_payment(booking, offerer, Decimal(10),
+        not_processable_payment = create_payment(booking, offerer, 10,
                                                  status=TransactionStatus.NOT_PROCESSABLE, iban=None, bic=None)
-        sent_payment = create_payment(booking, offerer, Decimal(10), status=TransactionStatus.SENT)
+        sent_payment = create_payment(booking, offerer, 10, status=TransactionStatus.SENT)
         PcObject.save(bank_information, not_processable_payment, sent_payment)
 
         # When
@@ -519,9 +518,9 @@ class SetNotProcessablePaymentsWithBankInformationToRetryTest:
         stock = create_stock_from_offer(offer, price=0)
         booking = create_booking(user=user, stock=stock)
         bank_information = create_bank_information(venue=venue, iban='FR7611808009101234567890147', bic='CCBPFRPPVER', )
-        not_processable_payment = create_payment(booking, offerer, Decimal(10),
+        not_processable_payment = create_payment(booking, offerer, 10,
                                                  status=TransactionStatus.NOT_PROCESSABLE, iban=None, bic=None)
-        sent_payment = create_payment(booking, offerer, Decimal(10), status=TransactionStatus.SENT,
+        sent_payment = create_payment(booking, offerer, 10, status=TransactionStatus.SENT,
                                       iban='FR7630007000111234567890144', bic='BDFEFR2LCCB')
         PcObject.save(bank_information, not_processable_payment, sent_payment)
 

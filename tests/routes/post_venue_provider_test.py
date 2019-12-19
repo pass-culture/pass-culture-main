@@ -108,16 +108,8 @@ class Post:
 
         @clean_database
         def when_trying_to_add_existing_provider(self, app):
-<<<<<<< HEAD
             # Given
             user = create_user(is_admin=True, can_book_free_offers=False)
-||||||| merged common ancestors
-            # given
-            user = create_user(is_admin=True, can_book_free_offers=False)
-=======
-            # given
-            user = create_user(can_book_free_offers=False, is_admin=True)
->>>>>>> (PC-2731): refactored model creators
             offerer = create_offerer()
             venue = create_venue(offerer)
             provider = activate_provider('TiteLiveStocks')

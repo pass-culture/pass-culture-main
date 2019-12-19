@@ -138,11 +138,11 @@ def test_pending_validation_return_200_and_validation_token(app):
 def test_pending_validation_return_only_requested_data(app):
     # given
     user = create_user(can_book_free_offers=False, is_admin=True)
-    user_pro = create_user(can_book_free_offers=False, email='user0@test.com', is_admin=False)
-    offerer = create_offerer(validation_token="first_token")
+    user_pro = create_user(can_book_free_offers=False, email='user0@test.com', is_admin=False, first_name='John', last_name='Doe', phone_number='0612345678', postal_code='93100')
+    offerer = create_offerer(validation_token='first_token', address='123 rue de Paris')
     user_offerer = create_user_offerer(user_pro, offerer, is_admin=True)
-    venue = create_venue(offerer, siret=None, comment="comment because no siret",
-                         validation_token="venue_validation_token")
+    venue = create_venue(offerer, siret=None, comment='comment because no siret',
+                         validation_token='venue_validation_token', booking_email='john.doe@test.com')
     PcObject.save(user, user_pro, offerer)
 
     expected_result = {
@@ -425,7 +425,7 @@ def test_get_venues_with_params_for_pc_reporting_return_200_and_filtered_venues(
     validated_user_2 = create_user(can_book_free_offers=False, email="another2@mail.com")
     not_validated_user = create_user(can_book_free_offers=False, email="a@mail.com", validation_token="a_token")
 
-    validated_offerer_with_siren1 = create_offerer()
+    validated_offerer_with_siren1 = create_offerer(siren='123456789')
     validated_offerer_with_siren2 = create_offerer(siren='123456782')
     validated_offerer_with_siren3 = create_offerer(siren='123456783')
     validated_offerer_without_siren = create_offerer(siren=None)

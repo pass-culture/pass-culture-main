@@ -10,7 +10,7 @@ from tests.model_creators.specific_creators import create_offer_with_thing_produ
 @clean_database
 def test_nOffers_with_one_venue_provider(app):
     # given
-    provider = create_provider('OpenAgenda')
+    provider = create_provider()
     PcObject.save(provider)
 
     offerer = create_offerer()
@@ -32,8 +32,8 @@ def test_nOffers_with_one_venue_provider(app):
 @clean_database
 def test_nOffers_with_two_venue_providers_from_different_providers(app):
     # given
-    provider1 = create_provider('OpenAgenda')
-    provider2 = create_provider('TiteLive')
+    provider1 = create_provider(local_class='OpenAgenda')
+    provider2 = create_provider(local_class='TiteLive')
     PcObject.save(provider1, provider2)
 
     offerer = create_offerer()

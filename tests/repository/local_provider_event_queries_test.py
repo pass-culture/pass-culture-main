@@ -10,7 +10,7 @@ from tests.model_creators.generic_creators import create_provider
 class FindLatestSyncEndEventTest:
     def test_return_none_when_no_event_happended(self, app):
         # Given
-        provider = create_provider('Provider Test')
+        provider = create_provider()
         PcObject.save(provider)
 
         # When
@@ -22,7 +22,7 @@ class FindLatestSyncEndEventTest:
     @clean_database
     def test_return_last_sync_event_from_the_provider(self, app):
         # Given
-        provider = create_provider('Provider Test')
+        provider = create_provider()
 
         most_recent_event = LocalProviderEvent()
         most_recent_event.provider = provider

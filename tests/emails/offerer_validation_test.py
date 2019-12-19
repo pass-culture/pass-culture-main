@@ -20,7 +20,7 @@ class WriteObjectValidationEmailTest:
         user = create_user(can_book_free_offers=False, departement_code='75', email='user@accenture.com',
                            public_name='Test', validation_token=validation_token)
 
-        user_offerer = create_user_offerer(user, offerer, validation_token)
+        user_offerer = create_user_offerer(user=user, offerer=offerer, validation_token=validation_token)
 
         # When
         email = make_validation_email_object(offerer, user_offerer, get_by_siren=get_mocked_response_status_200)
@@ -92,7 +92,7 @@ class WriteObjectValidationEmailTest:
         user = create_user(can_book_free_offers=False, departement_code='75', email='user@accenture.com',
                            public_name='Test', validation_token=validation_token)
 
-        user_offerer = create_user_offerer(user, offerer, validation_token)
+        user_offerer = create_user_offerer(user=user, offerer=offerer, validation_token=validation_token)
 
         # When
         email = make_validation_email_object(offerer, user_offerer, get_by_siren=get_mocked_response_status_200)
@@ -114,7 +114,7 @@ class WriteObjectValidationEmailTest:
         user = create_user(can_book_free_offers=False, departement_code='75', email='user@accenture.com',
                            public_name='Test', validation_token=validation_token)
 
-        user_offerer = create_user_offerer(user, offerer, validation_token)
+        user_offerer = create_user_offerer(user=user, offerer=offerer, validation_token=validation_token)
 
         mocked_api_entreprises = get_mocked_response_status_200
 

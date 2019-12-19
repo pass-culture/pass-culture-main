@@ -69,7 +69,7 @@ class CreateActivatedUserOffererTest:
 
     def test_returns_created_user_offerer(self, app):
         # given
-        blake = create_user(email='fblake@bletchley.co.uk', id=123)
+        blake = create_user(email='fblake@bletchley.co.uk', idx=123)
         blakes_company = create_offerer(siren='362521879', name='MyBletcheyCompany', idx=234)
         self.find_user_query.side_effect = [blake]
         self.find_offerer_query.side_effect = [blakes_company]
@@ -102,7 +102,7 @@ class FillUserOffererFromTest:
 
     def test_returns_a_user_offerer_built_with_user_and_offerer_relative_to_csv_row(self):
         # given
-        blake = create_user(email='fblake@bletchley.co.uk', id=123)
+        blake = create_user(email='fblake@bletchley.co.uk', idx=123)
         blakes_company = create_offerer(siren='362521879', name='MyBletcheyCompany', idx=234)
 
         # when
@@ -131,7 +131,7 @@ class FillUserOffererFromTest:
 
     def test_raise_error_when_offerer_relative_to_csv_not_created(self):
         # given
-        blake = create_user(email='fblake@bletchley.co.uk', id=123)
+        blake = create_user(email='fblake@bletchley.co.uk', idx=123)
         blakes_company = create_offerer(siren='362521879', name='MyBletcheyCompany')
 
         # when
@@ -210,7 +210,7 @@ class FillUserFromTest:
 
     def test_returns_the_given_user_with_modified_data_from_the_csv(self):
         # given
-        existing_user = create_user(email='pmortimer@bletchley.co.uk', id=123)
+        existing_user = create_user(email='pmortimer@bletchley.co.uk', idx=123)
 
         # when
         user = fill_user_from(self.csv_row, existing_user)

@@ -24,8 +24,6 @@ def test_update_offerer_with_sirene_data_changes_given_offerer_information(app):
         address='1 rue Vieille Adresse',
         name='Vieux nom',
         city='Vieilleville',
-        latitude='48.863',
-        longitude='2.36',
         postal_code='75001')
     PcObject.save(offerer)
 
@@ -38,8 +36,6 @@ def test_update_offerer_with_sirene_data_changes_given_offerer_information(app):
     assert offerer.address == '1 rue Test'
     assert offerer.name == 'Nom'
     assert offerer.city == 'Testville'
-    assert offerer.latitude == '48.853'
-    assert offerer.longitude == '2.35'
     assert offerer.postalCode == '75000'
 
 
@@ -61,8 +57,6 @@ def test_update_offerer_with_sirene_data_keeps_old_information_when_not_given_by
         address='1 rue Vieille Adresse',
         name='Vieux nom',
         city='Vieilleville',
-        latitude='48.863',
-        longitude='2.36',
         postal_code='75001')
     PcObject.save(offerer)
 
@@ -75,6 +69,4 @@ def test_update_offerer_with_sirene_data_keeps_old_information_when_not_given_by
     assert offerer.address == '1 rue Test'
     assert offerer.name == 'Vieux nom'
     assert offerer.city == 'Testville'
-    assert offerer.latitude == '48.853'
-    assert offerer.longitude == '2.35'
     assert offerer.postalCode == '75000'

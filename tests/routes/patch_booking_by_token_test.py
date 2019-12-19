@@ -125,7 +125,7 @@ class Patch:
             @clean_database
             def expect_activation_booking_to_be_used_and_linked_user_to_be_able_to_book(self, app):
                 # Given
-                user = create_user(can_book_free_offers=False, is_admin=False)
+                user = create_user(can_book_free_offers=False, is_admin=False, first_name='John')
                 pro_user = create_user(can_book_free_offers=False, email='pro@email.fr', is_admin=True)
                 offerer = create_offerer()
                 user_offerer = create_user_offerer(pro_user, offerer)

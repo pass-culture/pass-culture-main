@@ -71,7 +71,7 @@ class Get:
             stock2 = create_stock_with_thing_offer(offerer=offerer, venue=venue, offer=offer2, price=0)
             booking1 = create_booking(user=user1, stock=stock, venue=venue, token='ABCDEF')
             booking2 = create_booking(user=user2, stock=stock, venue=venue, token='GHIJK')
-            booking3 = create_booking(user=user1, stockstock2, venue=venue, token='BBBBB')
+            booking3 = create_booking(user=user1, stock=stock2, venue=venue, token='BBBBB')
 
             PcObject.save(booking1, booking2, booking3)
 

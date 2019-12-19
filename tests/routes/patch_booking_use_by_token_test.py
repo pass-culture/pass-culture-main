@@ -25,7 +25,7 @@ class Patch:
                 PcObject.save(booking, offerer)
                 booking_id = booking.id
 
-                offerer_api_key = create_api_key(offerer, API_KEY_VALUE)
+                offerer_api_key = create_api_key(offerer_id=offerer.id)
                 PcObject.save(offerer_api_key)
                 user2ApiKey = 'Bearer ' + offerer_api_key.value
 
@@ -56,7 +56,7 @@ class Patch:
                 PcObject.save(booking, user_offerer)
                 booking_id = booking.id
 
-                offerer_api_key = create_api_key(offerer, API_KEY_VALUE)
+                offerer_api_key = create_api_key(offerer_id=offerer.id)
                 PcObject.save(offerer_api_key)
                 user2ApiKey = 'Bearer ' + offerer_api_key.value
 
@@ -121,11 +121,11 @@ class Patch:
             @clean_database
             def when_admin_user_is_logged_in_expect_activation_booking_to_be_used_and_linked_user_to_be_able_to_book(self, app):
                 # Given
-                user = create_user(can_book_free_offers=False, is_admin=False)
+                user = create_user(can_book_free_offers=False, is_admin=False, first_name='John')
                 admin_user = create_user(can_book_free_offers=False, email='pro@email.fr', is_admin=True)
                 offerer = create_offerer()
                 user_offerer = create_user_offerer(admin_user, offerer)
-                venue = create_venue(offerer)
+                venue = create_venue(offerer, booking_email='john.doe@test.com')
                 stock = create_stock_with_event_offer(offerer, venue, price=0, event_type=EventType.ACTIVATION)
                 booking = create_booking(user=user, stock=stock, venue=venue)
                 PcObject.save(booking, user_offerer)
@@ -144,7 +144,7 @@ class Patch:
             @clean_database
             def when_admin_user_is_logged_in_expect_to_send_notification_email(self, app):
                 # Given
-                user = create_user(email='user@email.fr')
+                user = create_user(email='user@email.fr', first_name='John')
                 admin_user = create_user(can_book_free_offers=False, email='pro@email.fr', is_admin=True)
                 offerer = create_offerer()
                 user_offerer = create_user_offerer(admin_user, offerer)
@@ -253,7 +253,7 @@ class Patch:
 
                 PcObject.save(pro_user, booking, user_offerer, offerer2)
 
-                offerer_api_key = create_api_key(offerer2, API_KEY_VALUE)
+                offerer_api_key = create_api_key(offerer_id=offerer2.id)
                 PcObject.save(offerer_api_key)
 
                 user2ApiKey = 'Bearer ' + offerer_api_key.value
@@ -343,7 +343,7 @@ class Patch:
                 booking = create_booking(user=user, stock=stock, venue=venue)
                 PcObject.save(booking)
 
-                offerer_api_key = create_api_key(offerer, API_KEY_VALUE)
+                offerer_api_key = create_api_key(offerer_id=offerer.id)
                 PcObject.save(offerer_api_key)
 
                 user2ApiKey = 'Bearer ' + offerer_api_key.value

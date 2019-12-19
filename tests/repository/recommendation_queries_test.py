@@ -250,10 +250,10 @@ class DeleteUselessRecommendationsTest:
         favorite_offer = create_offer_with_thing_product(venue)
         offer = create_offer_with_thing_product(venue)
         user = create_user()
-        mediation = create_mediation(favorite_offer)
-        favorite = create_favorite(mediation, favorite_offer, user)
-        favorite_recommendation = create_recommendation(favorite_offer, user, date_created=today - timedelta(days=9), date_read=None)
-        recommendation_to_delete = create_recommendation(offer, user, date_created=today - timedelta(days=9), date_read=None)
+        mediation = create_mediation(offer=favorite_offer)
+        favorite = create_favorite(mediation=mediation, offer=favorite_offer, user=user)
+        favorite_recommendation = create_recommendation(offer=favorite_offer, user=user, date_created=today - timedelta(days=9), date_read=None)
+        recommendation_to_delete = create_recommendation(offer=offer, user=user, date_created=today - timedelta(days=9), date_read=None)
         PcObject.save(favorite_recommendation, recommendation_to_delete, favorite)
         recommendation_to_delete_id = recommendation_to_delete.id
 

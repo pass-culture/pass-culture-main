@@ -341,7 +341,7 @@ class CreatePaymentDetailsTest:
 
     def test_contains_info_on_user_who_booked(self):
         # given
-        user = create_user(email='jane.doe@test.com', id=3)
+        user = create_user(email='jane.doe@test.com', idx=3)
         booking = create_booking(user=user)
         offerer = create_offerer()
         payment = create_payment(booking, offerer, 35)
@@ -355,12 +355,12 @@ class CreatePaymentDetailsTest:
 
     def test_contains_info_on_booking(self):
         # given
-        user = create_user(email='jane.doe@test.com', id=3)
+        user = create_user(email='jane.doe@test.com', idx=3)
         offerer = create_offerer(siren='987654321', name='Joe le Libraire')
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(price=12, available=5, offer=offer)
-        booking = create_booking(user=user, stock=stock, date_created=datetime(2018, 2, 5), id=5, quantity=2)
+        booking = create_booking(user=user, stock=stock, date_created=datetime(2018, 2, 5), idx=5, quantity=2)
         payment = create_payment(booking=booking, offerer=offerer, amount=35)
         find_date = Mock()
         find_date.return_value = datetime(2018, 2, 19)
@@ -375,12 +375,12 @@ class CreatePaymentDetailsTest:
 
     def test_contains_info_on_offerer(self):
         # given
-        user = create_user(email='jane.doe@test.com', id=3)
+        user = create_user(email='jane.doe@test.com', idx=3)
         offerer = create_offerer(siren='987654321', name='Joe le Libraire')
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(price=12, available=5, offer=offer)
-        booking = create_booking(user=user, stock=stock, date_created=datetime(2018, 2, 5), id=5, quantity=2)
+        booking = create_booking(user=user, stock=stock, date_created=datetime(2018, 2, 5), idx=5, quantity=2)
         payment = create_payment(booking, offerer, 35)
         find_date = Mock()
         find_date.return_value = datetime(2018, 2, 19)
@@ -394,12 +394,12 @@ class CreatePaymentDetailsTest:
 
     def test_contains_info_on_venue(self):
         # given
-        user = create_user(email='jane.doe@test.com', id=3)
+        user = create_user(email='jane.doe@test.com', idx=3)
         offerer = create_offerer(siren='987654321', name='Joe le Libraire')
         venue = create_venue(offerer, name='Jack le Sculpteur', siret='1234567891234')
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(price=12, available=5, offer=offer)
-        booking = create_booking(user=user, stock=stock, date_created=datetime(2018, 2, 5), id=5, quantity=2)
+        booking = create_booking(user=user, stock=stock, date_created=datetime(2018, 2, 5), idx=5, quantity=2)
         payment = create_payment(booking, offerer, 35)
         find_date = Mock()
         find_date.return_value = datetime(2018, 2, 19)
@@ -413,12 +413,12 @@ class CreatePaymentDetailsTest:
 
     def test_contains_info_on_offer(self):
         # given
-        user = create_user(email='jane.doe@test.com', id=3)
+        user = create_user(email='jane.doe@test.com', idx=3)
         offerer = create_offerer(siren='987654321', name='Joe le Libraire')
         venue = create_venue(offerer, name='Jack le Sculpteur', siret='1234567891234')
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(price=12, available=5, offer=offer)
-        booking = create_booking(user=user, stock=stock, date_created=datetime(2018, 2, 5), id=5, quantity=2)
+        booking = create_booking(user=user, stock=stock, date_created=datetime(2018, 2, 5), idx=5, quantity=2)
         payment = create_payment(booking, offerer, 35)
         find_date = Mock()
         find_date.return_value = datetime(2018, 2, 19)

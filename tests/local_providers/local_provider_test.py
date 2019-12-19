@@ -20,7 +20,7 @@ class LocalProviderTest:
         @clean_database
         def test_iterator_is_called_until_exhausted(self, next_function, app):
             # Given
-            provider_test = create_provider('TestLocalProvider')
+            provider_test = create_provider(local_class='TestLocalProvider')
             PcObject.save(provider_test)
 
             next_function.side_effect = [
@@ -41,7 +41,7 @@ class LocalProviderTest:
         @clean_database
         def test_iterator_should_log_provider_event_from_start_to_stop(self, next_function, app):
             # Given
-            provider_test = create_provider('TestLocalProvider')
+            provider_test = create_provider(local_class='TestLocalProvider')
             PcObject.save(provider_test)
 
             next_function.side_effect = [
@@ -67,7 +67,7 @@ class LocalProviderTest:
                                                                next_function,
                                                                app):
             # Given
-            provider_test = create_provider('TestLocalProvider')
+            provider_test = create_provider(local_class='TestLocalProvider')
             PcObject.save(provider_test)
 
             providable_info = create_providable_info()
@@ -92,7 +92,7 @@ class LocalProviderTest:
                                          next_function,
                                          app):
             # Given
-            provider_test = create_provider('TestLocalProvider')
+            provider_test = create_provider(local_class='TestLocalProvider')
             PcObject.save(provider_test)
 
             providable_info = create_providable_info(date_modified=datetime(2018, 1, 1))
@@ -125,7 +125,7 @@ class LocalProviderTest:
                                                                                             next_function,
                                                                                             app):
             # Given
-            provider_test = create_provider('TestLocalProvider')
+            provider_test = create_provider(local_class='TestLocalProvider')
             PcObject.save(provider_test)
 
             providable_info = create_providable_info(date_modified=datetime(2018, 1, 1))
@@ -158,7 +158,7 @@ class LocalProviderTest:
                                                                            next_function,
                                                                            app):
             # Given
-            provider_test = create_provider('TestLocalProvider')
+            provider_test = create_provider(local_class='TestLocalProvider')
             PcObject.save(provider_test)
 
             providable_info = create_providable_info(date_modified=datetime(2018, 1, 1))
@@ -187,7 +187,7 @@ class LocalProviderTest:
                                                                      next_function,
                                                                      app):
             # Given
-            provider_test = create_provider('TestLocalProvider', is_active=False)
+            provider_test = create_provider(local_class='TestLocalProvider', is_active=False)
             PcObject.save(provider_test)
 
             providable_info = create_providable_info(date_modified=datetime(2018, 1, 1))
@@ -210,7 +210,7 @@ class LocalProviderTest:
                                                                      next_function,
                                                                      app):
             # Given
-            provider_test = create_provider('TestLocalProviderNoCreation')
+            provider_test = create_provider(local_class='TestLocalProviderNoCreation')
             PcObject.save(provider_test)
 
             providable_info = create_providable_info()
@@ -233,7 +233,7 @@ class LocalProviderTest:
                                                            next_function,
                                                            app):
             # Given
-            provider_test = create_provider('TestLocalProvider')
+            provider_test = create_provider(local_class='TestLocalProvider')
             PcObject.save(provider_test)
 
             providable_info1 = create_providable_info()
@@ -259,7 +259,7 @@ class LocalProviderTest:
         @clean_database
         def test_returns_object_with_expected_attributes(self, app):
             # Given
-            provider_test = create_provider('TestLocalProvider')
+            provider_test = create_provider(local_class='TestLocalProvider')
             PcObject.save(provider_test)
 
             providable_info = create_providable_info()
@@ -278,7 +278,7 @@ class LocalProviderTest:
         @clean_database
         def test_raises_api_errors_exception_when_errors_occur_on_model_and_log_error(self, app):
             # Given
-            provider_test = create_provider('TestLocalProviderWithApiErrors')
+            provider_test = create_provider(local_class='TestLocalProviderWithApiErrors')
             PcObject.save(provider_test)
 
             providable_info = create_providable_info()
@@ -300,7 +300,7 @@ class LocalProviderTest:
         @clean_database
         def test_returns_object_with_expected_attributes(self, app):
             # Given
-            provider_test = create_provider('TestLocalProvider')
+            provider_test = create_provider(local_class='TestLocalProvider')
             PcObject.save(provider_test)
 
             providable_info = create_providable_info()
@@ -323,7 +323,7 @@ class LocalProviderTest:
         @clean_database
         def test_raises_api_errors_exception_when_errors_occur_on_model(self, app):
             # Given
-            provider_test = create_provider('TestLocalProviderWithApiErrors')
+            provider_test = create_provider(local_class='TestLocalProviderWithApiErrors')
             PcObject.save(provider_test)
 
             providable_info = create_providable_info()
@@ -350,7 +350,7 @@ class LocalProviderTest:
         @clean_database
         def test_call_save_thumb_should_increase_thumbCount_by_1(self, app):
             # Given
-            provider_test = create_provider('TestLocalProviderWithThumb')
+            provider_test = create_provider(local_class='TestLocalProviderWithThumb')
             PcObject.save(provider_test)
 
             providable_info = create_providable_info()
@@ -378,7 +378,7 @@ class LocalProviderTest:
         @clean_database
         def test_call_save_thumb_once_when_thumb_count_is_0(self, mock_save_thumb, app):
             # Given
-            provider_test = create_provider('TestLocalProviderWithThumb')
+            provider_test = create_provider(local_class='TestLocalProviderWithThumb')
             PcObject.save(provider_test)
 
             providable_info = create_providable_info()
@@ -407,7 +407,7 @@ class LocalProviderTest:
                                                                                          mock_get_thumb_storage_id,
                                                                                          mock_save_thumb, app):
             # Given
-            provider_test = create_provider('TestLocalProviderWithThumbIndexAt4')
+            provider_test = create_provider(local_class='TestLocalProviderWithThumbIndexAt4')
             PcObject.save(provider_test)
 
             providable_info = create_providable_info()
@@ -437,7 +437,7 @@ class LocalProviderTest:
         @clean_database
         def test_should_iterate_from_current_thumbCount_to_thumbIndex_when_thumbCount_is_0(self, app):
             # Given
-            provider_test = create_provider('TestLocalProviderWithThumb')
+            provider_test = create_provider(local_class='TestLocalProviderWithThumb')
             PcObject.save(provider_test)
 
             providable_info = create_providable_info()
@@ -463,7 +463,7 @@ class LocalProviderTest:
         @clean_database
         def test_should_iterate_from_current_thumbCount_to_thumbIndex_when_thumbCount_is_None(self, app):
             # Given
-            provider_test = create_provider('TestLocalProviderWithThumb')
+            provider_test = create_provider(local_class='TestLocalProviderWithThumb')
             PcObject.save(provider_test)
 
             providable_info = create_providable_info()
@@ -492,7 +492,7 @@ class LocalProviderTest:
                                                                                                             mock_add_new_thumb,
                                                                                                             app):
             # Given
-            provider_test = create_provider('TestLocalProviderWithThumb')
+            provider_test = create_provider(local_class='TestLocalProviderWithThumb')
             PcObject.save(provider_test)
 
             providable_info = create_providable_info()

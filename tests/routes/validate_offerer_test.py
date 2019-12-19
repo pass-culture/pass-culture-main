@@ -11,7 +11,7 @@ class Get:
         def expect_offerer_to_be_validated(self, app):
             # Given
             offerer_token = secrets.token_urlsafe(20)
-            offerer = create_offerer('349974931', '12 boulevard de Pesaro', 'Nanterre', '92000', 'Crédit Coopératif',
+            offerer = create_offerer(siren='349974931', address='12 boulevard de Pesaro', city='Nanterre', postal_code='92000', name='Crédit Coopératif',
                                      validation_token=offerer_token)
             user = create_user()
             user_offerer = create_user_offerer(user, offerer, is_admin=True)

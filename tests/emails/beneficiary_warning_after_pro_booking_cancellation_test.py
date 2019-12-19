@@ -188,7 +188,7 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
         # Given
         user = create_user()
         offerer = create_offerer()
-        venue = create_venue(offerer, publicName="Mon nouveau nom")
+        venue = create_venue(offerer, name="Mon nouveau nom")
         offer = create_offer_with_thing_product(venue,)
         stock = create_stock_from_offer(offer)
         booking = create_booking(user=user, stock=stock)

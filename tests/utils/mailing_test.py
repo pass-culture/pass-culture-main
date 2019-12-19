@@ -197,7 +197,7 @@ class GetUsersInformationFromStockBookingsTest:
         user_3 = create_user(can_book_free_offers=True, departement_code='93', email='mail@example.com',
                              first_name='Toto', last_name='Titi', public_name='Test')
         offerer = create_offerer()
-        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None)
+        venue = create_venue(offerer=offerer, name='Test offerer', booking_email='reservations@test.fr', is_virtual=True, siret=None)
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION,
                                                       booking_email='dev@passculture.app')
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
@@ -254,7 +254,7 @@ class BuildRecipientsListTest:
         recipients = build_recipients_list(booking)
 
         # Then
-        assert recipients == 'booking.email@test.com, admin@pass.com'
+        assert recipients == 'booking.email@example.com, admin@pass.com'
 
     @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'admin@pass.com')
     def test_should_return_only_admin_email_when_offer_has_no_booking_email(self):

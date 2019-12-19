@@ -27,7 +27,7 @@ class Patch:
                 booking = create_booking(user=user, stock=stock, is_used=True, venue=venue)
                 PcObject.save(booking, offerer)
 
-                offererApiKey = create_api_key(offerer, API_KEY_VALUE)
+                offererApiKey = create_api_key(offerer_id=offerer.id)
 
                 PcObject.save(offererApiKey)
 
@@ -61,7 +61,7 @@ class Patch:
                 booking = create_booking(user=user, stock=stock, is_used=True, venue=venue)
                 PcObject.save(booking, offerer)
 
-                offererApiKey = create_api_key(offerer, API_KEY_VALUE)
+                offererApiKey = create_api_key(offerer_id=offerer.id)
 
                 PcObject.save(offererApiKey)
 
@@ -253,7 +253,7 @@ class Patch:
 
                 PcObject.save(pro_user, booking, user_offerer, offerer2)
 
-                offererApiKey = create_api_key(offerer2, API_KEY_VALUE)
+                offererApiKey = create_api_key(offerer_id=offerer2.id)
                 PcObject.save(offererApiKey)
 
                 # When
@@ -339,7 +339,7 @@ class Patch:
 
                 PcObject.save(booking)
 
-                offererApiKey = create_api_key(offerer, API_KEY_VALUE)
+                offererApiKey = create_api_key(offerer_id=offerer.id)
                 PcObject.save(offererApiKey)
 
                 # When
@@ -368,7 +368,7 @@ class Patch:
                 booking = create_booking(user=user, stock=stock, venue=venue)
                 PcObject.save(booking)
 
-                offererApiKey = create_api_key(offerer, API_KEY_VALUE)
+                offererApiKey = create_api_key(offerer_id=offerer.id)
                 PcObject.save(offererApiKey)
 
                 # When
@@ -520,7 +520,7 @@ class Patch:
 
                 PcObject.save(booking, user_offerer)
 
-                offererApiKey = create_api_key(offerer, API_KEY_VALUE)
+                offererApiKey = create_api_key(offerer_id=offerer.id)
                 PcObject.save(offererApiKey)
 
                 # When
@@ -552,7 +552,7 @@ class Patch:
                 booking = create_booking(user=user, stock=stock, venue=venue)
                 PcObject.save(booking, user_offerer)
 
-                offererApiKey = create_api_key(offerer, API_KEY_VALUE)
+                offererApiKey = create_api_key(offerer_id=offerer.id)
                 PcObject.save(offererApiKey)
 
                 # When
@@ -586,7 +586,7 @@ class Patch:
 
                 PcObject.save(booking, user_offerer, payment)
 
-                offererApiKey = create_api_key(offerer, API_KEY_VALUE)
+                offererApiKey = create_api_key(offerer_id=offerer.id)
                 PcObject.save(offererApiKey)
 
                 # When

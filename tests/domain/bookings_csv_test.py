@@ -33,15 +33,15 @@ class BookingsCSVTest:
     @clean_database
     def test_generate_bookings_details_csv_with_headers_and_three_bookings_lines(self, app):
         # given
-        user = create_user(email='jane.doe@test.com', id=3)
+        user = create_user(email='jane.doe@test.com', idx=3, first_name='John', last_name='Doe')
         offerer = create_offerer(siren='987654321', name='Joe le Libraire')
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
+        venue = create_venue(offerer, name='La petite librairie')
+        offer = create_offer_with_thing_product(venue, thing_name='Test Book')
         stock = create_stock(price=12, available=5, offer=offer)
         booking = create_booking(user=user, stock=stock, date_created=datetime(2010, 1, 1, 0, 0, 0, 0))
-        deposit1 = create_deposit(user=user, amount=100)
+        deposit = create_deposit(user=user, amount=100)
 
-        PcObject.save(user, offerer, venue, offer, stock, booking, deposit1)
+        PcObject.save(user, offerer, venue, offer, stock, booking, deposit)
 
         bookings = Booking.query.all()
 

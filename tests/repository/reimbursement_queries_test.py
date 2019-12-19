@@ -13,16 +13,14 @@ class FindReimbursementDetailsTest:
         # Given
         user = create_user(email='user+plus@email.fr')
         deposit = create_deposit(user, amount=500, source='public')
-        offerer1 = create_offerer()
+        offerer1 = create_offerer(siren='123456789')
         user_offerer1 = create_user_offerer(user, offerer1, validation_token=None)
         venue1 = create_venue(offerer1)
         venue2 = create_venue(offerer1, siret='12345678912346')
         bank_information1 = create_bank_information(id_at_providers='79387501900056', venue=venue1)
         bank_information2 = create_bank_information(id_at_providers='79387501900057', venue=venue2)
-
-        offer1 = create_offer_with_thing_product(venue1,
-                                                 url='https://host/path/{token}?offerId={offerId}&email={email}')
-        offer2 = create_offer_with_thing_product(venue2)
+        create_offer_with_thing_product(venue1, url='https://host/path/{token}?offerId={offerId}&email={email}')
+        create_offer_with_thing_product(venue2)
         stock1 = create_stock_with_thing_offer(offerer=offerer1, venue=venue1, price=10)
         stock2 = create_stock_with_thing_offer(offerer=offerer1, venue=venue2, price=11)
         booking1 = create_booking(user=user, stock=stock1, is_used=True, token='ABCDEF', venue=venue1)

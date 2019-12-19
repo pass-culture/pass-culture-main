@@ -209,7 +209,7 @@ class GeneratePayementsByMessageIdTest:
     @clean_database
     def test_only_returns_payments_with_given_message(self, app):
         # Given
-        offerer = create_offerer()
+        offerer = create_offerer(siren='123456789')
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         paying_stock = create_stock_from_offer(offer)
@@ -238,7 +238,7 @@ class FindNotProcessableWithBankInformationTest:
     @clean_database
     def test_should_not_return_payments_to_retry_if_no_bank_information(self, app):
         # Given
-        offerer = create_offerer(name='first offerer')
+        offerer = create_offerer(siren='123456789')
         user = create_user()
         venue = create_venue(offerer)
         stock = create_stock_from_offer(create_offer_with_thing_product(venue), price=0)
@@ -257,7 +257,7 @@ class FindNotProcessableWithBankInformationTest:
     @clean_database
     def test_should_return_payment_to_retry_if_bank_information_linked_to_offerer_and_current_status_is_not_processable(self, app):
         # Given
-        offerer = create_offerer(name='first offerer')
+        offerer = create_offerer(siren='123456789')
         user = create_user()
         venue = create_venue(offerer)
         stock = create_stock_from_offer(create_offer_with_thing_product(venue), price=0)
@@ -277,7 +277,7 @@ class FindNotProcessableWithBankInformationTest:
     @clean_database
     def test_should_not_return_payments_to_retry_if_bank_information_linked_to_offerer_and_current_status_is_not_not_processable(self, app):
         # Given
-        offerer = create_offerer(name='first offerer')
+        offerer = create_offerer(siren='123456789')
         user = create_user()
         venue = create_venue(offerer)
         stock = create_stock_from_offer(create_offer_with_thing_product(venue), price=0)
@@ -299,7 +299,7 @@ class FindNotProcessableWithBankInformationTest:
     @clean_database
     def test_should_return_payment_to_retry_if_bank_information_linked_to_venue_and_current_status_is_not_processable(self, app):
         # Given
-        offerer = create_offerer(name='first offerer')
+        offerer = create_offerer(siren='123456789')
         user = create_user()
         venue = create_venue(offerer)
         stock = create_stock_from_offer(create_offer_with_thing_product(venue), price=0)

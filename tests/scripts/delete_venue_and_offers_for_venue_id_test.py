@@ -12,8 +12,8 @@ class DeleteVenueAndOffersForVenueIdTest:
     @clean_database
     def test_delete_venue_and_offers_should_delete_venue_and_offers_with_venue_id(self, app):
         # Given
-        offerer1 = create_offerer("123456789")
-        offerer2 = create_offerer("111111111")
+        offerer1 = create_offerer(siren='123456789')
+        offerer2 = create_offerer(siren='111111111')
         venue1 = create_venue(
             offerer1,
             idx=1,
@@ -50,7 +50,7 @@ class DeleteVenueAndOffersForVenueIdTest:
     @clean_database
     def test_delete_venue_and_offers_should_raise_an_attribute_error_when_at_least_one_offer_has_stocks(self, app):
         # Given
-        offerer = create_offerer("123456789")
+        offerer = create_offerer(siren='123456789')
         venue = create_venue(
             offerer,
             idx=1,

@@ -94,7 +94,7 @@ class Patch:
         @clean_database
         def when_user_patching_is_global_admin_is_activation_event_and_no_deposit_for_booking_user(self, app):
             # Given
-            user = create_user(can_book_free_offers=False, is_admin=False)
+            user = create_user(can_book_free_offers=False, is_admin=False, first_name='John')
             pro_user = create_user(can_book_free_offers=False, email='pro@email.fr', is_admin=True)
             offerer = create_offerer()
             user_offerer = create_user_offerer(pro_user, offerer)
@@ -124,7 +124,7 @@ class Patch:
         @clean_database
         def when_user_patching_is_global_admin_is_activation_thing_and_no_deposit_for_booking_user(self, app):
             # Given
-            user = create_user(can_book_free_offers=False, is_admin=False)
+            user = create_user(can_book_free_offers=False, is_admin=False, first_name='John')
             pro_user = create_user(can_book_free_offers=False, email='pro@email.fr', is_admin=True)
             offerer = create_offerer()
             user_offerer = create_user_offerer(pro_user, offerer)

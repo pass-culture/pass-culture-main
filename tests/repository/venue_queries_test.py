@@ -180,7 +180,7 @@ def test_find_filtered_venues_with_is_validated_param_return_filtered_venues(app
 @clean_database
 def test_find_filtered_venues_with_has_offerer_with_siren_param_return_filtered_venues(app):
     # Given
-    offerer_with_siren = create_offerer()
+    offerer_with_siren = create_offerer(siren='123456789')
     offerer_without_siren = create_offerer(siren=None)
 
     venue_with_offerer_with_siren = create_venue(offerer_with_siren)

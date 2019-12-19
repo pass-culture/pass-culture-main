@@ -84,7 +84,7 @@ def test_model_should_return_true_if_favorite_exists_for_offer_mediation_and_use
     venue = create_venue(offerer)
     offer = create_offer_with_event_product(venue)
     mediation = create_mediation(offer)
-    favorite = create_favorite(mediation, offer, user)
+    favorite = create_favorite(mediation=mediation, offer=offer, user=user)
     PcObject.save(favorite)
 
     # when
@@ -103,7 +103,7 @@ def test_model_should_return_true_if_favorite_exists_for_offer_without_mediation
     venue = create_venue(offerer)
     offer = create_offer_with_event_product(venue)
     mediation = None
-    favorite = create_favorite(mediation, offer, user)
+    favorite = create_favorite(mediation=mediation, offer=offer, user=user)
     PcObject.save(favorite)
 
     # when
