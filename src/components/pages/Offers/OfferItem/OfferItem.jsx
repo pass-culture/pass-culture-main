@@ -81,8 +81,6 @@ class OfferItem extends PureComponent {
       venue,
     } = this.props
 
-    console.log('OFFER', offer)
-
     const { isNew, name } = offer || {}
     const { groupSizeMin, groupSizeMax, priceMin, priceMax } = aggregatedStock || {}
     const thumbUrl = this.getThumbUrl()
