@@ -1,6 +1,6 @@
 import maintenanceReducer from '../maintenanceReducer'
 
-describe('src | Reducers | Maintenance errors', () => {
+describe('src | Reducers | Maintenance Reducer', () => {
   it('should have an initial state', () => {
     // When
     const newState = maintenanceReducer()
