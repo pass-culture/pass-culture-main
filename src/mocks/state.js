@@ -1,4 +1,5 @@
 import offerTypes from './api/offer_types'
+import { getCurrentUserUUID } from 'with-react-redux-login'
 
 const state = {
   data: {
@@ -424,6 +425,7 @@ const state = {
     types: offerTypes,
     users: [
       {
+        currentUserUUID: getCurrentUserUUID(),
         id: 'AE',
         canBookFreeOffers: true,
         dateCreated: '2018-10-29T09:44:18.243300Z',

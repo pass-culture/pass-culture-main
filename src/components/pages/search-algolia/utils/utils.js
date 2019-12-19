@@ -12,7 +12,7 @@ export const searchedResults = {
           '2019-12-26T21:00:00Z'
         ],
         description: 'L\'assommoir',
-        id: 'VA',
+        id: 'BQ',
         label: 'Livre - adolescent',
         name: 'L\'assommoir',
         type: 'Thingtype.LIVRE',
@@ -27,7 +27,7 @@ export const searchedResults = {
         name: 'Librairie du marais',
         publicName: 'Librairie du marais avec un nom de substitution',
       },
-      objectID: 'BE2'
+      objectID: 'BQ'
     },
     {
       _geoloc: {
@@ -41,7 +41,7 @@ export const searchedResults = {
           '2019-12-26T21:00:00Z'
         ],
         description: 'Boule de suif',
-        id: 'TE',
+        id: 'V4',
         label: 'Livre - adolescent',
         name: 'Boule de suif',
         type: 'Thingtype.LIVRE',
@@ -56,7 +56,7 @@ export const searchedResults = {
         name: 'Librairie du marais',
         publicName: 'Librairie du marais avec un nom de substitution',
       },
-      objectID: 'BE3'
+      objectID: 'V4'
     },
   ],
   page: 0,

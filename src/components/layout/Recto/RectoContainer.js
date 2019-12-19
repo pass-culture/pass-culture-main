@@ -3,35 +3,70 @@ import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
 import Recto from './Recto'
-import {
-  selectMediationById,
-  selectMediationByRouterMatch,
-} from '../../../selectors/data/mediationsSelectors'
+import { selectMediationByOfferId } from '../../../selectors/data/mediationsSelectors'
 import { selectThumbUrlByRouterMatch } from '../../../selectors/data/thumbUrlSelector'
+import { selectBookingById } from '../../../selectors/data/bookingsSelectors'
+import { selectStockById } from '../../../selectors/data/stocksSelectors'
 
-const mapStateToProps = (state, ownProps) => {
-  const { match, recommendation } = ownProps
-  let mediation
+export const mapStateToProps = (state, ownProps) => {
+  const { match } = ownProps
+  const { params } = match
+  const { bookingId, offerId } = params
 
-  if (recommendation && recommendation.mediation) {
-    mediation = recommendation.mediation
-  } else if (recommendation) {
-    mediation = selectMediationById(state, recommendation.mediationId)
-  } else {
-    mediation = selectMediationByRouterMatch(state, match) || {}
+  let result
+  bookingId ?
+    result = findThumbByBookingId(state, bookingId, match) :
+    result = findThumbByOfferId(state, offerId, match)
+
+  return result
+}
+
+export const findThumbByBookingId = (state, bookingId, match) => {
+  let frontText = ''
+  let thumbUrl = ''
+  let withMediation = false
+
+  if (bookingId !== 'menu') {
+    const booking = selectBookingById(state, bookingId)
+    const { stockId = '' } = booking
+    const stock = selectStockById(state, stockId)
+    const { offerId = '' } = stock || {}
+    const mediation = selectMediationByOfferId(state, offerId)
+
+    if (!mediation) {
+      thumbUrl = selectThumbUrlByRouterMatch(state, match)
+    } else {
+      frontText = mediation.frontText
+      thumbUrl = mediation.thumbUrl
+      withMediation = true
+    }
   }
-
-  const { frontText } = mediation || {}
-  const withMediation = typeof mediation !== 'undefined'
-
-  const thumbUrl = recommendation
-    ? recommendation.thumbUrl
-    : selectThumbUrlByRouterMatch(state, match)
 
   return {
     frontText,
     thumbUrl,
-    withMediation,
+    withMediation
+  }
+}
+
+export const findThumbByOfferId = (state, offerId, match) => {
+  let frontText = ''
+  let thumbUrl = ''
+  let withMediation = false
+
+  const mediation = selectMediationByOfferId(state, offerId)
+  if (!mediation) {
+    thumbUrl = selectThumbUrlByRouterMatch(state, match)
+  } else {
+    frontText = mediation.frontText
+    thumbUrl = mediation.thumbUrl
+    withMediation = true
+  }
+
+  return {
+    frontText,
+    thumbUrl,
+    withMediation
   }
 }
 

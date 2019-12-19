@@ -1,0 +1,58 @@
+.result {
+  display: flex;
+
+  a {
+    text-decoration: none;
+  }
+}
+
+.result-image {
+  display: flex;
+  width: 30%;
+}
+
+.result-container {
+  @include dotted($primary, left);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0.5rem;
+  padding-right: 0;
+  width: 55%;
+}
+
+.result-title {
+  color: $black;
+  font-size: rem(18px);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.result-type {
+  color: $grey;
+  font-size: rem(13px);
+  font-weight: 600;
+  line-height: rem(16px);
+}
+
+.result-date {
+  color: $grey;
+  font-size: rem(13px);
+  line-height: rem(16px);
+}
+
+.result-distance {
+  color: $grey;
+  font-size: rem(13px);
+  line-height: rem(16px);
+}
+
+.result-arrow {
+  align-items: center;
+  display: flex;
+  position: relative;
+  width: 15%;
+}

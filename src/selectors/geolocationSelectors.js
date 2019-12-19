@@ -34,3 +34,5 @@ export const selectDistanceByRouterMatch = createCachedSelector(
   const { bookingId, favoriteId, offerId } = params
   return `${bookingId || ' '}${favoriteId || ' '}${offerId || ' '}`
 })
+
+export const selectUserGeolocation = state => state.geolocation

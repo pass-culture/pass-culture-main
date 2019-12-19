@@ -9,28 +9,37 @@ import configureStore from 'redux-mock-store'
 
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
-import ResultsContainer from '../Results/ResultsContainer'
 import SearchAlgolia from '../SearchAlgolia'
-import SearchAlgoliaDetailsContainer from '../SearchAlgoliaDetailsContainer/SearchAlgoliaDetailsContainer'
+import SearchAlgoliaDetailsContainer from '../Result/ResultDetail/ResultDetailContainer'
 import Spinner from '../../../layout/Spinner/Spinner'
 import { fetch } from '../utils/algoliaService'
+import state from '../../../../mocks/state'
+import Result from '../Result/Result'
 
 jest.mock('../utils/algoliaService', () => ({
   fetch: jest.fn()
 }))
 
-describe('src | components | pages | search-algolia | SearchAlgolia', () => {
+describe('components | SearchAlgolia', () => {
   let props
+  let parse
 
   beforeEach(() => {
+    fetch.mockReset()
+    parse = jest.fn().mockReturnValue({})
     props = {
-      match: {
-        params: {}
+      geolocation: {
+        latitude: 40.1,
+        longitude: 41.1
+      },
+      match: {},
+      query: {
+        parse
       }
     }
   })
 
-  describe('render', () => {
+  describe('when render', () => {
     it('should display a header with the right properties', () => {
       // when
       const wrapper = shallow(<SearchAlgolia {...props} />)
@@ -38,14 +47,9 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
       // then
       const header = wrapper.find(HeaderContainer)
       expect(header).toHaveLength(1)
-      expect(header.prop('title')).toBe('Recherche')
-      expect(header.prop('backTo')).toBe(null)
-      expect(header.prop('closeTitle')).toBe('Retourner à la page découverte')
-      expect(header.prop('closeTo')).toBe('/decouverte')
-      expect(header.prop('shouldBackFromDetails')).toBe(false)
     })
 
-    it('should display a form element with an input text when component is mounted', () => {
+    it('should display a form element with an input text', () => {
       // when
       const wrapper = shallow(<SearchAlgolia {...props} />)
 
@@ -59,7 +63,7 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
       expect(textInput.prop('type')).toBe('text')
     })
 
-    it('should display a form element with a submit button when component is mounted', () => {
+    it('should display a form element with a submit button', () => {
       // when
       const wrapper = shallow(<SearchAlgolia {...props} />)
 
@@ -71,16 +75,16 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
       expect(submitButton.text()).toBe('Chercher')
     })
 
-    it('should not have results container when componenent is mounted', () => {
+    it('should not display results when no keywords in url', () => {
       // when
       const wrapper = shallow(<SearchAlgolia {...props} />)
 
       // then
-      const result = wrapper.find(ResultsContainer)
-      expect(result).toHaveLength(0)
+      const results = wrapper.find(Result)
+      expect(results).toHaveLength(0)
     })
 
-    it('should not display waiting spinner when componenent is mounted', () => {
+    it('should not display waiting spinner', () => {
       // when
       const wrapper = shallow(<SearchAlgolia {...props} />)
 
@@ -89,7 +93,7 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
       expect(spinner).toHaveLength(0)
     })
 
-    it('should display a menu in the footer', () => {
+    it('should display a footer', () => {
       // when
       const wrapper = shallow(<SearchAlgolia {...props} />)
 
@@ -99,13 +103,55 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
       expect(footer.prop('className')).toBe('dotted-top-red')
       expect(footer.prop('theme')).toBe('white')
     })
+
+    describe('when keywords in url', () => {
+      it('should fill search input and display keywords, number of results when no results', () => {
+        // given
+        fetch.mockReturnValue({
+          hits: [],
+          nbHits: 0,
+        })
+        parse.mockReturnValue({
+          'mots-cles': 'une librairie'
+        })
+
+        // when
+        const wrapper = shallow(<SearchAlgolia {...props} />)
+
+        // then
+        const results = wrapper.find(Result)
+        const searchInput = wrapper.find('input')
+        const resultTitle = wrapper.findWhere(node => node.text() === '"une librairie" : 0 résultat').first()
+        expect(results).toHaveLength(0)
+        expect(searchInput.prop('defaultValue')).toBe('une librairie')
+        expect(resultTitle).toHaveLength(1)
+      })
+
+      it('should fill search input and display keywords, number of results when results are found', () => {
+        // given
+        fetch.mockReturnValue({
+          hits: [{}, {}],
+          nbHits: 2,
+        })
+        parse.mockReturnValue({
+          'mots-cles': 'une librairie'
+        })
+
+        // when
+        const wrapper = shallow(<SearchAlgolia {...props} />)
+
+        // then
+        const results = wrapper.find(Result)
+        const searchInput = wrapper.find('input')
+        const resultTitle = wrapper.findWhere(node => node.text() === '"une librairie" : 2 résultats').first()
+        expect(results).toHaveLength(2)
+        expect(searchInput.prop('defaultValue')).toBe('une librairie')
+        expect(resultTitle).toHaveLength(1)
+      })
+    })
   })
 
   describe('when searching', () => {
-    beforeEach(() => {
-      fetch.mockReset()
-    })
-
     it('should not trigger search request when no keywords', () => {
       // given
       const wrapper = shallow(<SearchAlgolia {...props} />)
@@ -115,14 +161,14 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
       form.simulate('submit', {
         target: {
           keywords: {
-            value: null
+            value: ''
           }
         },
         preventDefault: jest.fn()
       })
 
-       // then
-       expect(fetch).not.toHaveBeenCalledWith()
+      // then
+      expect(fetch).not.toHaveBeenCalledWith()
     })
 
     it('should trigger search request when keywords have been provided', () => {
@@ -143,8 +189,8 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
         preventDefault: jest.fn()
       })
 
-       // then
-       expect(fetch).toHaveBeenCalledWith('un livre très cherché')
+      // then
+      expect(fetch).toHaveBeenCalledWith('un livre très cherché')
     })
 
     it('should display search keywords and number of results when 0 result', () => {
@@ -158,8 +204,8 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
         nbPages: 0,
         hitsPerPage: 2,
         processingTimeMS: 1,
-        query: "librairie",
-        params: "query=librairie&hitsPerPage=2"
+        query: 'librairie',
+        params: 'query=librairie&hitsPerPage=2'
       })
 
       // when
@@ -182,20 +228,14 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
       const wrapper = shallow(<SearchAlgolia {...props} />)
       const form = wrapper.find('form')
       fetch.mockReturnValue({
-        hits: [{
-            objectID: 'A8'
-          },
-          {
-            objectID: 'A8'
-          }
-        ],
+        hits: [{}, {}],
         page: 0,
         nbHits: 2,
         nbPages: 0,
         hitsPerPage: 2,
         processingTimeMS: 1,
-        query: "librairie",
-        params: "query=librairie&hitsPerPage=2"
+        query: 'librairie',
+        params: 'query=librairie&hitsPerPage=2'
       })
 
       // when
@@ -213,7 +253,7 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
       expect(resultTitle).toHaveLength(1)
     })
 
-    it('should not have results container when 0 result', () => {
+    it('should not display results when no results', () => {
       // given
       fetch.mockReturnValue({
         hits: [],
@@ -222,8 +262,8 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
         nbPages: 0,
         hitsPerPage: 2,
         processingTimeMS: 1,
-        query: "",
-        params: "query=&hitsPerPage=2"
+        query: '',
+        params: 'query=&hitsPerPage=2'
       })
       const wrapper = shallow(<SearchAlgolia {...props} />)
       const form = wrapper.find('form')
@@ -239,24 +279,22 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
       })
 
       // then
-      const result = wrapper.find(ResultsContainer)
-      expect(result).toHaveLength(0)
+      const results = wrapper.find(Result)
+      expect(results).toHaveLength(0)
     })
 
-    it('should have results container when search is over and find at least 1 result', () => {
+    it('should display results when search succeeded with at least one result', () => {
       // given
+      const offer = { objectId: 'AE', offer: { name: 'Livre de folie'} }
       fetch.mockReturnValue({
-        hits: [{
-            objectID: 'A8'
-          },
-        ],
+        hits: [offer],
         page: 0,
-        nbHits: 2,
+        nbHits: 1,
         nbPages: 0,
         hitsPerPage: 2,
         processingTimeMS: 1,
-        query: "librairie",
-        params: "query='librairie'&hitsPerPage=2"
+        query: 'librairie',
+        params: 'query=\'librairie\'&hitsPerPage=2'
       })
       const wrapper = shallow(<SearchAlgolia {...props} />)
       const form = wrapper.find('form')
@@ -272,196 +310,24 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
       })
 
       // then
-      const results = wrapper.find(ResultsContainer)
+      const results = wrapper.find(Result)
       expect(results).toHaveLength(1)
-    })
-
-    it('should display an header with the right properties when there are results', () => {
-      // given
-      fetch.mockReturnValue({
-        hits: [{
-            objectID: 'A8'
-          },
-        ],
-        page: 0,
-        nbHits: 2,
-        nbPages: 0,
-        hitsPerPage: 2,
-        processingTimeMS: 1,
-        query: "librairie",
-        params: "query='librairie'&hitsPerPage=2"
-      })
-      const wrapper = shallow(<SearchAlgolia {...props} />)
-      const form = wrapper.find('form')
-
-      // when
-      form.simulate('submit', {
-        target: {
-          keywords: {
-            value: 'librairie'
-          },
-        },
-        preventDefault: jest.fn()
-      })
-
-      // then
-      const header = wrapper.find(HeaderContainer)
-      expect(header).toHaveLength(1)
-      expect(header.prop('backTo')).toBe('/recherche-algolia')
-      expect(header.prop('closeTitle')).toBe('Retourner à la page recherche')
-      expect(header.prop('closeTo')).toBe('/recherche-algolia')
-      expect(header.prop('shouldBackFromDetails')).toBe(false)
-      expect(header.prop('title')).toBe('Recherche')
-    })
-
-    it('should display waiting spinner when it is searching', () => {
-      // given
-      fetch.mockReturnValue({
-        hits: [{
-            objectID: 'A8'
-          },
-        ],
-        page: 0,
-        nbHits: 2,
-        nbPages: 0,
-        hitsPerPage: 2,
-        processingTimeMS: 1,
-        query: "librairie",
-        params: "query='librairie'&hitsPerPage=2"
-      })
-      const wrapper = shallow(<SearchAlgolia {...props} />)
-      const form = wrapper.find('form')
-
-      // when
-      form.simulate('submit', {
-        target: {
-          keywords: {
-            value: 'Ma recherche'
-          }
-        },
-        preventDefault: jest.fn()
-      })
-
-      // then
-      const spinner = wrapper.find(Spinner)
-      expect(spinner).toHaveLength(1)
-      expect(spinner.prop('label')).toBe('Recherche en cours')
-    })
-
-    it('should not display waiting spinner when results are fetched', () => {
-      // when
-      const wrapper = shallow(<SearchAlgolia {...props} />)
-
-      // then
-      const spinner = wrapper.find(Spinner)
-      expect(spinner).toHaveLength(0)
+      expect(results.at(0).prop('result')).toStrictEqual(offer)
+      expect(results.at(0).prop('geolocation')).toStrictEqual({ latitude: 40.1, longitude: 41.1 })
     })
   })
 
-  describe('on detail page', () => {
-    const buildStore = configureStore([thunk])
+  describe('when navigating', () => {
     let history
     let store
-    const state = {
-      data: {
-        bookings: [],
-        favorites: [],
-        features: [],
-        users: [{
-          wallet_balance: 125,
-        }],
-        offers: [
-          {
-            id: 'A9',
-            product: {
-              thumbCount: 1,
-              thumbUrl: ''
-            }
-          }
-        ],
-        mediations: [],
-        recommendations: [],
-        stocks: [],
-      },
-      geolocation: {
-        latitude: 42.2,
-        longitude: 2.2,
-      },
-    }
+    const buildStore = configureStore([thunk])
 
     beforeEach(() => {
       history = createMemoryHistory()
       store = buildStore(state)
     })
 
-    it('should display an header with the right properties when on detail page', () => {
-      // given
-      history.push('/recherche-algolia/details/A9')
-      const props = {
-        match: {
-          params: {
-            details: "details"
-          }
-        }
-      }
-
-      // when
-      const wrapper = mount(
-        <Router history={history}>
-          <Provider store={store} >
-            <SearchAlgolia  {...props}/>
-          </Provider>
-        </Router>
-      )
-
-      // then
-      const header = wrapper.find(HeaderContainer)
-      expect(header).toHaveLength(1)
-      expect(header.prop('title')).toBe('Recherche')
-      expect(header.prop('backTo')).toBe(null)
-      expect(header.prop('closeTitle')).toBe('Retourner à la page recherche')
-      expect(header.prop('closeTo')).toBe('/recherche-algolia')
-      expect(header.prop('shouldBackFromDetails')).toBe(true)
-    })
-  })
-
-  describe('navigating on routes', () => {
-    const buildStore = configureStore([thunk])
-    let history
-    let store
-    const state = {
-      data: {
-        bookings: [],
-        favorites: [],
-        features: [],
-        users: [{
-          wallet_balance: 125,
-        }],
-        offers: [
-          {
-            id: 'A9',
-            product: {
-              thumbCount: 1,
-              thumbUrl: ''
-            }
-          }
-        ],
-        mediations: [],
-        recommendations: [],
-        stocks: [],
-      },
-      geolocation: {
-        latitude: 42.2,
-        longitude: 2.2,
-      },
-    }
-
-    beforeEach(() => {
-      history = createMemoryHistory()
-      store = buildStore(state)
-    })
-
-    it('should render search-algolia main page ', () => {
+    it('should render search main page when current route is /recherche-algolia', () => {
       // given
       history.push('/recherche-algolia')
 
@@ -475,15 +341,15 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
       )
 
       // then
-      const searchMainPage = wrapper.find('.search-container')
+      const form = wrapper.find('form')
       const searchDetails = wrapper.find(SearchAlgoliaDetailsContainer)
-      expect(searchMainPage).toHaveLength(1)
+      expect(form).toHaveLength(1)
       expect(searchDetails).toHaveLength(0)
     })
 
-    it('should render details page ', () => {
+    it('should render item details when current route is /recherche-algolia/details/AE', () => {
       // given
-      history.push('/recherche-algolia/details/A9')
+      history.push('/recherche-algolia/details/AE')
 
       // when
       const wrapper = mount(
@@ -495,9 +361,9 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
       )
 
       // then
-      const searchMainPage = wrapper.find('.search-container')
+      const form = wrapper.find('form')
       const searchDetails = wrapper.find(SearchAlgoliaDetailsContainer)
-      expect(searchMainPage).toHaveLength(0)
+      expect(form).toHaveLength(0)
       expect(searchDetails).toHaveLength(1)
     })
   })

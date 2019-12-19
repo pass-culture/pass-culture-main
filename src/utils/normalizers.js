@@ -49,3 +49,12 @@ export const recommendationNormalizer = {
     stateKey: 'offers',
   },
 }
+
+export const offerNormalizer = {
+  activeMediation: {
+    stateKey: 'mediations'
+  },
+  stocks: {
+    stateKey: 'stocks',
+  },
+}

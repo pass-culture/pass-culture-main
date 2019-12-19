@@ -20,6 +20,12 @@ class Details extends PureComponent {
 
   componentDidMount() {
     this.handleSetIsDetailsView()
+    const { getOfferById, match } = this.props
+    const { params, path = '' } = match
+    const { offerId } = params
+    if (path.includes('recherche-algolia')) {
+      getOfferById(offerId)
+    }
   }
 
   componentDidUpdate() {
@@ -72,15 +78,20 @@ class Details extends PureComponent {
 }
 
 Details.defaultProps = {
+  bookingPath: '',
   cancelView: false,
+  getOfferById: () => {}
 }
 
 Details.propTypes = {
-  bookingPath: PropTypes.string.isRequired,
+  bookingPath: PropTypes.string,
   cancelView: PropTypes.bool,
+  getOfferById: PropTypes.func,
   match: PropTypes.shape({
+    path: PropTypes.string,
     params: PropTypes.shape({
       details: PropTypes.string,
+      offerId: PropTypes.string
     }),
   }).isRequired,
 }

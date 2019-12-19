@@ -12,10 +12,12 @@ export const selectThumbUrlByRouterMatch = createCachedSelector(
     if (mediation) {
       return mediation.thumbUrl
     }
+
     if (booking && booking.thumbUrl) {
       return booking.thumbUrl
     }
-    if (offer && offer.product.thumbCount >= 0) {
+
+    if (offer && offer.product.thumbUrl) {
       return offer.product.thumbUrl
     }
   }

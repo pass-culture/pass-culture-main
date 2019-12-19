@@ -11,21 +11,14 @@ describe('src | components | layout | Details | Details', () => {
   beforeEach(() => {
     props = {
       bookingPath: 'fake/path',
+      getOfferById: jest.fn(),
       match: {
         params: {},
       },
     }
   })
 
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<Details {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
-  describe('render()', () => {
+  describe('render', () => {
     describe('when I have no details', () => {
       it('should render VersoContainer and not RectoContainer', () => {
         // when
@@ -54,6 +47,38 @@ describe('src | components | layout | Details | Details', () => {
         const rectoContainer = wrapper.find(RectoContainer)
         expect(rectoContainer).toHaveLength(1)
       })
+    })
+
+    it('should fetch offer using offer id when coming from search', () => {
+      // given
+      props.match = {
+        params: {
+          offerId: 'AE'
+        },
+        path: '/recherche-algolia/details/AE'
+      }
+
+      // when
+      shallow(<Details {...props} />)
+
+      // then
+      expect(props.getOfferById).toHaveBeenCalledWith('AE')
+    })
+
+    it('should not fetch offer when not coming from search', () => {
+      // given
+      props.match = {
+        params: {
+          offerId: 'AE'
+        },
+        path: '/decouverte/details/AE'
+      }
+
+      // when
+      shallow(<Details {...props} />)
+
+      // then
+      expect(props.getOfferById).not.toHaveBeenCalledWith()
     })
   })
 })
