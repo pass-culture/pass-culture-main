@@ -157,3 +157,4 @@ class Post:
             # Then
             assert response.status_code == 400
             assert response.json['global'] == ["Le prix doit être un nombre décimal"]
+            assert VenueProvider.query.count() == 0

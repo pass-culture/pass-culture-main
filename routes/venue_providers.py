@@ -51,10 +51,11 @@ def create_venue_provider():
     new_venue_provider = VenueProvider(from_dict=venue_provider_payload)
     is_allocine_stock_creation = venue_provider_payload['providerId'] \
                                  == humanize(get_provider_by_local_class('AllocineStocks').id)
-    PcObject.save(new_venue_provider)
+
     if is_allocine_stock_creation:
         save_venue_provider_price_rule(new_venue_provider, venue_provider_payload['price'])
 
+    PcObject.save(new_venue_provider)
     subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
                      + ' --venue-provider-id %s' % str(new_venue_provider.id),
                      shell=True,
