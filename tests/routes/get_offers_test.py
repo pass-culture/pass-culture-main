@@ -28,7 +28,7 @@ class Get:
             # then
             offers = response.json
             assert response.status_code == 200
-            assert len(offers) == 10 \
+            assert len(offers) == 10
 
         @clean_database
         def test_results_are_paginated_by_chunks(self, app):
