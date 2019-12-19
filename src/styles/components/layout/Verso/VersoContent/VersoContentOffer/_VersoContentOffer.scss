@@ -47,7 +47,8 @@
   justify-content: center;
   color: $primary;
   font-weight: bold;
-  margin-top: 1em;
+  margin-top: rem(16px);
+  margin-bottom: rem(24px);
   padding: rem(6px) 0;
   border: rem(2px) solid $primary;
   border-radius: rem(24px);
