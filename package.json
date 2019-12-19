@@ -51,7 +51,7 @@
     "redux": "^4.0.4",
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.3.0",
-    "redux-thunk-data": "^1.6.5",
+    "redux-thunk-data": "^1.7.0",
     "reselect": "^4.0.0",
     "typeface-barlow": "^0.0.71",
     "util.promisify": "^1.0.0",

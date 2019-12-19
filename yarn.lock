@@ -4776,10 +4776,10 @@ fetch-normalize-data@1.8.4:
     reselect "^3.0.1"
     uuid "^3.3.2"
 
-fetch-normalize-data@1.8.6:
-  version "1.8.6"
-  resolved "https://registry.yarnpkg.com/fetch-normalize-data/-/fetch-normalize-data-1.8.6.tgz#d83f490c79ee3b0eac1577047303a755773839bc"
-  integrity sha512-bejxIuMyOwox0nNUMqoLJDYNDCfP7yq+xi8p8DxI6cbmh+IoimdubiH+u9SuGM6Er3eFyROV9fXs2fbhWAVQMw==
+fetch-normalize-data@1.9.0:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/fetch-normalize-data/-/fetch-normalize-data-1.9.0.tgz#432a685af22c5e7433dfa4e4489804bf2c4234f0"
+  integrity sha512-aZE/k28sGfsmA1g7c+tW8+LEScdY2r5R8IQA6B6C3elbiNl/vXIi+8CGXuPafkeG9i5YwHfxOzUYfBVX4x4xtw==
   dependencies:
     lodash.uniqby "^4.7.0"
     re-reselect "^3.4.0"
@@ -10498,12 +10498,12 @@ redux-persist@^6.0.0:
   resolved "https://registry.yarnpkg.com/redux-persist/-/redux-persist-6.0.0.tgz#b4d2972f9859597c130d40d4b146fecdab51b3a8"
   integrity sha512-71LLMbUq2r02ng2We9S215LtPu3fY0KgaGE0k8WRgl6RkqxtGfl7HUozz1Dftwsb0D/5mZ8dwAaPbtnzfvbEwQ==
 
-redux-thunk-data@^1.6.5:
-  version "1.6.5"
-  resolved "https://registry.yarnpkg.com/redux-thunk-data/-/redux-thunk-data-1.6.5.tgz#f5933a84270ae86a2ebca1065004c01066a7c8b1"
-  integrity sha512-tlk/VEuP7sgp0kZjZeq89Y/yn8i2u5+vPfqewMtJ5Cw3ew1EXdan10Z+Wy0MR4HHr0rZwUstnZCw0V8R1jR2eg==
+redux-thunk-data@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/redux-thunk-data/-/redux-thunk-data-1.7.0.tgz#90402ad2086c7b3c6a2b16c6ff489f25b002185c"
+  integrity sha512-bq78tiI9aSYuc8YWxiD4AcN12OOpQ8vxkU8JpaAXzPCQ+qq5n2jhD8NXecDfJcjnYTHeib+31/lt3fksz6fg/A==
   dependencies:
-    fetch-normalize-data "1.8.6"
+    fetch-normalize-data "1.9.0"
 
 redux-thunk@^2.3.0:
   version "2.3.0"
