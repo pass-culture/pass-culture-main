@@ -675,7 +675,7 @@ class TiteliveThingsTest:
         get_files_to_process_from_titelive_ftp.return_value = files_list
 
         data_line = "9782895026310" \
-                    "~" \
+                    "~*" \
                     "~nouvelles du Chili" \
                     "~" \
                     "~0203" \
