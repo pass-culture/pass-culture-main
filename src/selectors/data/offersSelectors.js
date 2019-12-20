@@ -24,7 +24,7 @@ export const selectOffersByOffererIdAndVenueId = createCachedSelector(
 
 export const selectDigitalOffers = createSelector(
   state => state.data.offers || [],
-  offers => offers.filter(offer => offer.isDigital === true)
+  offers => offers.filter(offer => offer.isDigital)
 )
 
 function mapArgsToCacheKey(state, venueId) {

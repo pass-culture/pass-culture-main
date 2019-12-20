@@ -48,5 +48,5 @@ export const selectVenueById = createCachedSelector(
 
 export const selectNonVirtualVenues = createSelector(
   state => state.data.venues || [],
-  venues => venues.filter(venue => venue.isVirtual === false)
+  venues => venues.filter(venue => !venue.isVirtual)
 )
