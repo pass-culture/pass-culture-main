@@ -245,7 +245,7 @@ if __name__ == '__main__':
 
     if feature_cron_synchronize_titelive_stocks():
         scheduler.add_job(pc_synchronize_titelive_stocks, 'cron', id='synchronize_titelive_stocks',
-                          day='*', hour='4')
+                          day='*', hour='6')
 
     if feature_cron_synchronize_allocine_stocks():
         scheduler.add_job(pc_synchronize_allocine_stocks, 'cron', id='synchronize_allocine_stocks',
