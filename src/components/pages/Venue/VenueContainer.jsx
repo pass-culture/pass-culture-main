@@ -12,9 +12,9 @@ import { CREATION } from '../../hocs/withFrenchQueryRouter'
 import { VENUE_CREATION_PATCH_KEYS, VENUE_MODIFICATION_PATCH_KEYS } from './utils/utils'
 import { offererNormalizer, venueNormalizer } from '../../../utils/normalizers'
 import { formatPatch } from '../../../utils/formatPatch'
-import selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity from './selectors/selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity'
 import { selectUserOffererByOffererIdAndUserIdAndRightsType } from '../../../selectors/data/userOfferersSelectors'
 import { selectOffererById } from '../../../selectors/data/offerersSelectors'
+import selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity from './selectors/selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity'
 
 export const mapStateToProps = (state, ownProps) => {
   const {

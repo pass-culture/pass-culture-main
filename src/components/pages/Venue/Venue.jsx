@@ -201,14 +201,15 @@ class Venue extends PureComponent {
     } = this.props
 
     const { name: offererName } = offerer || {}
-    const { id: initialId, isVirtual: initialIsVirtual, name: initialName, siret: initialSiret } =
+    const { id: initialId, isVirtual: initialIsVirtual, name: initialName } =
       formInitialValues || {}
     const { isCreatedEntity } = query.context({
       id: venueId,
     })
 
     const decorators = [bindGetSuggestionsToLatitude, bindGetSuggestionsToLongitude]
-    if (isCreatedEntity || !initialSiret) {
+
+    if (isCreatedEntity) {
       decorators.push(bindGetSiretInformationToSiret)
     }
 
