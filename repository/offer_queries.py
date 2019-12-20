@@ -19,6 +19,8 @@ from models import EventType, \
     Venue, \
     Product, Favorite, Booking
 from models.db import Model, db
+from models.feature import FeatureToggle
+from repository import feature_queries
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from utils.distance import get_sql_geo_distance_in_kilometers
 from utils.logger import logger
@@ -177,6 +179,11 @@ def _date_interval_to_filter(date_interval):
             (Stock.beginningDatetime <= date_interval[1]))
 
 
+def filter_offers_with_keywords_string_on_offer_only(query: BaseQuery, keywords_string: str) -> Query:
+    query_on_offer_using_keywords = _build_query_using_keywords_on_model(keywords_string, query, Offer)
+    return _order_by_offer_name_containing_keyword_string(keywords_string, query_on_offer_using_keywords)
+
+
 def filter_offers_with_keywords_string(query: BaseQuery, keywords_string: str) -> BaseQuery:
     query_on_offer_using_keywords = _build_query_using_keywords_on_model(keywords_string, query, Offer)
     query_on_offer_using_keywords = _order_by_offer_name_containing_keyword_string(keywords_string,
@@ -252,7 +259,10 @@ def get_offers_for_recommendations_search(
             .reset_joinpoint()
 
     if keywords_string is not None:
-        query = filter_offers_with_keywords_string(query, keywords_string)
+        if feature_queries.is_active(FeatureToggle.FULL_OFFERS_SEARCH_WITH_OFFERER_AND_VENUE):
+            query = filter_offers_with_keywords_string(query, keywords_string)
+        else:
+            query = filter_offers_with_keywords_string_on_offer_only(query, keywords_string)
 
     if type_values is not None:
         query = query.filter(Offer.type.in_(type_values))

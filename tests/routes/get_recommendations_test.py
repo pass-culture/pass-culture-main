@@ -2,12 +2,14 @@ from datetime import datetime, timedelta
 
 from models import PcObject, \
     EventType
+from models.feature import FeatureToggle
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, \
     create_recommendation, create_mediation
 from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_from_offer, \
     create_product_with_thing_type, create_offer_with_thing_product, create_offer_with_event_product, \
     create_event_occurrence
+from tests.test_utils import deactivate_feature
 from utils.date import strftime
 
 TWENTY_DAYS_FROM_NOW = datetime.utcnow() + timedelta(days=20)
@@ -110,7 +112,7 @@ class Get:
             )
 
         @clean_database
-        def when_get_recommendations_and_returns_all_includes(self,app):
+        def when_get_recommendations_and_returns_all_includes(self, app):
             # given
             user = create_user(email='test@email.com')
             offerer = create_offerer()
@@ -124,9 +126,9 @@ class Get:
             PcObject.save(stock, recommendation)
 
             # when
-            response = TestClient(app.test_client())\
-                        .with_auth(user.email)\
-                        .get(RECOMMENDATION_URL)
+            response = TestClient(app.test_client()) \
+                .with_auth(user.email) \
+                .get(RECOMMENDATION_URL)
 
             # then
             assert response.status_code == 200
@@ -835,3 +837,47 @@ class Get:
             assert response.json[2]['offer']['name'] == 'Modern Tango'
             assert response.json[3]['offer']['name'] == 'Training'
             assert response.json[4]['offer']['name'] == 'Tango Plus'
+
+        @clean_database
+        def when_searching_by_keywords_offer_with_search_feature_deactivated(self, app):
+            deactivate_feature(FeatureToggle.FULL_OFFERS_SEARCH_WITH_OFFERER_AND_VENUE)
+            user = create_user(email='test@email.com')
+            offerer = create_offerer(name='modern')
+            venue1 = create_venue(offerer)
+            venue2 = create_venue(offerer, name='modern', siret="12345678912365")
+            offer1 = create_offer_with_event_product(venue1, event_name='modern Tango')
+            offer2 = create_offer_with_event_product(venue1, event_name='Training in Modern Jazz')
+            offer3 = create_offer_with_event_product(venue1, event_name='Training',
+                                                     description='Modern modern Jazz, Salsa & Co')
+            offer4 = create_offer_with_event_product(venue2, event_name='Salsa Plus')
+            offer5 = create_offer_with_event_product(venue1, event_name='Tango Plus')
+
+            event_occurrence1 = create_event_occurrence(offer1, beginning_datetime=self.in_one_hour,
+                                                        end_datetime=self.ten_days_from_now)
+            event_occurrence2 = create_event_occurrence(offer2, beginning_datetime=self.in_one_hour,
+                                                        end_datetime=self.ten_days_from_now)
+            event_occurrence3 = create_event_occurrence(offer3, beginning_datetime=self.in_one_hour,
+                                                        end_datetime=self.ten_days_from_now)
+            event_occurrence4 = create_event_occurrence(offer4, beginning_datetime=self.in_one_hour,
+                                                        end_datetime=self.ten_days_from_now)
+            event_occurrence5 = create_event_occurrence(offer5, beginning_datetime=self.in_one_hour,
+                                                        end_datetime=self.ten_days_from_now)
+
+            stock1 = create_stock_from_event_occurrence(event_occurrence1)
+            stock2 = create_stock_from_event_occurrence(event_occurrence2)
+            stock3 = create_stock_from_event_occurrence(event_occurrence3)
+            stock4 = create_stock_from_event_occurrence(event_occurrence4)
+            stock5 = create_stock_from_event_occurrence(event_occurrence5)
+            PcObject.save(stock1, stock2, stock3, stock4, stock5, user)
+
+            # When
+            response = TestClient(app.test_client()).with_auth(user.email).get(
+                RECOMMENDATION_URL + '?keywords=modern'
+            )
+
+            # Then
+            assert response.status_code == 200
+            assert len(response.json) == 3
+            assert response.json[0]['offer']['name'] == 'Training in Modern Jazz'
+            assert response.json[1]['offer']['name'] == 'modern Tango'
+            assert response.json[2]['offer']['name'] == 'Training'
