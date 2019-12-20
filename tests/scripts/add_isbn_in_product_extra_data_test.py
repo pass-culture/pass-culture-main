@@ -12,13 +12,13 @@ class AddIsbnInProductExtraDataTest:
     def test_does_not_update_extra_data_when_isbn_is_already_present(self, app):
         # Given
         provider = get_provider_by_local_class('TiteLiveThings')
-        json_data = {
+        extra_data = {
             'author': 'author name',
             'isbn': '1234567891234',
         }
         product = create_product_with_thing_type(id_at_providers='12345678',
                                                  last_provider_id=provider.id,
-                                                 extra_data=json_data)
+                                                 extra_data=extra_data)
 
         PcObject.save(product)
 
@@ -26,25 +26,25 @@ class AddIsbnInProductExtraDataTest:
         add_isbn_in_product_and_offer_extra_data()
 
         # Then
-        assert product.extraData == json_data
+        assert product.extraData == extra_data
 
     @clean_database
     def test_update_extra_data_when_isbn_is_missing_and_product_was_updated_by_a_provider(self, app):
         # Given
         provider = get_provider_by_local_class('TiteLiveThings')
-        json_data1 = {
+        extra_data1 = {
             'author': 'author name',
             'isbn': '*',
         }
-        json_data2 = {
+        extra_data2 = {
             'author': 'author name',
         }
         product1 = create_product_with_thing_type(id_at_providers='8765432176124',
                                                   last_provider_id=provider.id,
-                                                  extra_data=json_data1)
+                                                  extra_data=extra_data1)
         product2 = create_product_with_thing_type(id_at_providers='1234567809865',
                                                   last_provider_id=provider.id,
-                                                  extra_data=json_data2)
+                                                  extra_data=extra_data2)
         PcObject.save(product1, product2)
         expected_extra_data = {
             'author': 'author name',
@@ -58,24 +58,24 @@ class AddIsbnInProductExtraDataTest:
         assert product2.extraData == expected_extra_data
 
     @clean_database
-    def test_update_extra_data_when_on_product_and_offer(self, app):
+    def test_update_extra_data_on_product_and_offer_when_isbn_is_missing(self, app):
         # Given
         provider = get_provider_by_local_class('TiteLiveThings')
-        json_data1 = {
+        extra_data1 = {
             'author': 'author name',
             'isbn': '*',
         }
-        json_data2 = {
+        extra_data2 = {
             'author': 'author name',
         }
         offerer = create_offerer()
         venue = create_venue(offerer)
         product1 = create_product_with_thing_type(id_at_providers='8765432176124',
                                                   last_provider_id=provider.id,
-                                                  extra_data=json_data1)
+                                                  extra_data=extra_data1)
         product2 = create_product_with_thing_type(id_at_providers='1234567809865',
                                                   last_provider_id=provider.id,
-                                                  extra_data=json_data2)
+                                                  extra_data=extra_data2)
         offer1 = create_offer_with_thing_product(venue,
                                                  product=product1,
                                                  id_at_providers='8765432176124@12345678912345',

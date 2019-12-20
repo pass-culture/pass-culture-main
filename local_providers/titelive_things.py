@@ -16,6 +16,8 @@ from utils.string_processing import trim_with_elipsis
 DATE_REGEXP = re.compile('([a-zA-Z]+)(\d+).tit')
 THINGS_FOLDER_NAME_TITELIVE = 'livre3_11'
 NUMBER_OF_ELEMENTS_PER_LINE = 46  # (45 elements from line + \n)
+OLD_ISBN_FORMAT_LENGTH = 10
+NEW_ISBN_FORMAT_LENGTH = 13
 SCHOOL_RELATED_CSR_CODE = [
     '2700', '2701', '2702', '2703', '2704', '2800', '2801', '2802', '2803', '2804', '2900', '2901',
     '2902', '2903', '2904', '2905', '2906', '2907', '3000', '3001', '3002', '3003', '3004', '3005',
@@ -237,7 +239,8 @@ def get_infos_from_data_line(elts: []):
 def get_extra_data_from_infos(infos: Dict) -> Dict:
     extra_data = dict()
     extra_data['author'] = infos['auteurs']
-    extra_data['isbn'] = infos['isbn'] if len(infos['isbn']) >= 10 else infos['ean13']
+    extra_data['isbn'] = infos['isbn'] if len(infos['isbn']) in (OLD_ISBN_FORMAT_LENGTH,
+                                                                 NEW_ISBN_FORMAT_LENGTH) else infos['ean13']
     if infos['indice_dewey'] != '':
         extra_data['dewey'] = infos['indice_dewey']
     extra_data['titelive_regroup'] = infos['code_regroupement']
