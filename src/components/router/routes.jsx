@@ -80,7 +80,7 @@ const routes = [
     component: SearchAlgoliaContainer,
     icon: 'search-w',
     path:
-      '/recherche-algolia/:details(details)?/:offerId?',
+      '/recherche-algolia/:details(details|transition)?/:offerId?/:mediationId?/:booking(reservation)?/:bookingId?/:cancellation(annulation)?/:confirmation(confirmation)?',
     title: 'Recherche algolia',
   },
   {

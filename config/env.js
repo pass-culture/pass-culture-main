@@ -63,18 +63,13 @@ function getClientEnvironment(publicUrl) {
       },
       {
         API_URL: process.env.API_URL || 'http://localhost',
+        ALGOLIA_APPLICATION_ID: process.env.ALGOLIA_APPLICATION_ID,
+        ALGOLIA_SEARCH_API_KEY: process.env.ALGOLIA_SEARCH_API_KEY,
+        ALGOLIA_INDEX_NAME: process.env.ALGOLIA_INDEX_NAME,
         ENVIRONMENT_NAME: process.env.ENVIRONMENT_NAME,
-        // Helpful for quick testing the dexis sync
-        // system in a worker or not
         HAS_WORKERS: process.env.HAS_WORKERS || false,
         MATOMO_SERVER_URL: process.env.MATOMO_SERVER_URL,
-        // Useful for determining whether we’re running in production mode.
-        // Most importantly, it switches React into the correct mode.
         NODE_ENV: process.env.NODE_ENV || 'development',
-        // Useful for resolving the correct path to static assets in `public`.
-        // For example, <img src={process.env.PUBLIC_URL + '/img/logo.png'} />.
-        // This should only be used as an escape hatch. Normally you would put
-        // images into the `src` and `import` them in code to get their paths.
         PUBLIC_URL: publicUrl,
         TYPEFORM_URL_CULTURAL_PRACTICES_POLL:
           process.env.TYPEFORM_URL_CULTURAL_PRACTICES_POLL ||

@@ -7,7 +7,7 @@ import { getHumanizeRelativeDistance } from '../../../../utils/geolocation'
 import Icon from '../../../layout/Icon/Icon'
 
 const Result = ({ result, geolocation }) => {
-  const { _geoloc, objectID, offer } = result
+  const { _geoloc = {}, objectID, offer } = result
   const { dateRange, departementCode, id: offerId, label, name, thumbUrl } = offer
   const { latitude : userLatitude, longitude: userLongitude } = geolocation
   const { lat: venueLatitude, lng: venueLongitude } = _geoloc

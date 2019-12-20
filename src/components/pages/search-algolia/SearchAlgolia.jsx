@@ -8,6 +8,7 @@ import Spinner from '../../layout/Spinner/Spinner'
 import { fetch } from './service/algoliaService'
 import Result from './Result/Result'
 import PropTypes from 'prop-types'
+import InfiniteScroll from 'react-infinite-scroller'
 
 
 class SearchAlgolia extends PureComponent {
@@ -15,9 +16,10 @@ class SearchAlgolia extends PureComponent {
     super(props)
     this.state = {
       isLoading: false,
-      hits: [],
-      nbHits: 0,
+      nbResults: 0,
+      nbPages: 0,
       page: 0,
+      results: [],
       searchKeywords: '',
     }
   }
@@ -36,6 +38,23 @@ class SearchAlgolia extends PureComponent {
     }
   }
 
+  handleOnSubmit = event => {
+    event.preventDefault()
+    const { page, searchKeywords } = this.state
+    const keywords = event.target.keywords.value
+    const keywordsTrimmed = keywords.trim()
+
+    if (keywordsTrimmed !== '') {
+
+      if (searchKeywords !== keywordsTrimmed) {
+        this.setState({
+          results: []
+        })
+      }
+      this.handleFetchOffers(keywordsTrimmed, page)
+    }
+  }
+
   handleFetchOffers = (keywords, page) => {
     if (page > 0) {
       this.getOffers(keywords, page - 1)
@@ -44,14 +63,9 @@ class SearchAlgolia extends PureComponent {
     }
   }
 
-  handleOnSubmit = event => {
-    event.preventDefault()
-    const { page } = this.state
-    const keywords = event.target.keywords.value
-
-    if (keywords !== '') {
-      this.handleFetchOffers(keywords, page)
-    }
+  loadMore = page => {
+    const { searchKeywords } = this.state
+    this.getOffers(searchKeywords, page)
   }
 
   getOffers = (keywords, page) => {
@@ -60,32 +74,45 @@ class SearchAlgolia extends PureComponent {
       isLoading: true
     })
 
-    const results = fetch(keywords, page)
-    const { hits, nbHits } = results
-    this.setState({
-      isLoading: false,
-      hits: hits,
-      nbHits: nbHits,
-      page: page,
-      searchKeywords: keywords,
+    const response = fetch(keywords, page)
+    response.then(offers => {
+      const { results } = this.state
+      const { hits, nbHits, nbPages } = offers
+      this.setState({
+        isLoading: false,
+        nbPages: nbPages,
+        nbResults: nbHits,
+        page: page,
+        results: [...results, ...hits],
+        searchKeywords: keywords,
+      })
+      query.change({
+        'mots-cles': keywords,
+        'page': page + 1
+      })
     })
-    query.change({
-      'mots-cles': keywords,
-      'page': page + 1
-    })
+  }
+
+  getScrollParent = () => document.querySelector('.sp-content')
+
+  shouldBackFromDetails = () => {
+    const { match } = this.props
+    const { params } = match
+    const { details } = params
+
+    return !!details
   }
 
   render() {
     const { geolocation } = this.props
-    const { isLoading, nbHits, searchKeywords, hits } = this.state
+    const { isLoading, nbResults, nbPages, page, results, searchKeywords } = this.state
 
     return (
       <main className="search-page">
         <HeaderContainer
-          backTo={null}
-          closeTitle='Retourner à la page recherche'
+          closeTitle='Retourner à la page découverte'
           closeTo='/decouverte'
-          shouldBackFromDetails={false}
+          shouldBackFromDetails={this.shouldBackFromDetails()}
           title="Recherche"
         />
         <Switch>
@@ -118,17 +145,27 @@ class SearchAlgolia extends PureComponent {
               )}
               {searchKeywords && (
                 <h1 className="sp-result-title">
-                  {`"${searchKeywords}" : ${nbHits} ${nbHits > 1 ? 'résultats' : 'résultat'}`}
+                  {`"${searchKeywords}" : ${nbResults} ${nbResults > 1 ? 'résultats' : 'résultat'}`}
                 </h1>
               )}
-              {hits.length > 0 && (
-                hits.map((result) => (
-                  <Result
-                    geolocation={geolocation}
-                    key={result.objectID}
-                    result={result}
-                  />
-                ))
+              {results.length > 0 && (
+                <InfiniteScroll
+                  getScrollParent={this.getScrollParent}
+                  hasMore={page + 1 < nbPages}
+                  loader={<Spinner key="loader" />}
+                  loadMore={this.loadMore}
+                  pageStart={page}
+                  threshold={-10}
+                  useWindow={false}
+                >
+                  {results.map((result) => (
+                    <Result
+                      geolocation={geolocation}
+                      key={result.objectID}
+                      result={result}
+                    />
+                  ))}
+                </InfiniteScroll>
               )}
             </div>
           </Route>
@@ -153,6 +190,7 @@ SearchAlgolia.propTypes = {
     latitude: PropTypes.number,
     longitude: PropTypes.number,
   }).isRequired,
+  match: PropTypes.shape().isRequired,
   query: PropTypes.shape({
     clear: PropTypes.func,
     change: PropTypes.func,
