@@ -13,6 +13,7 @@ import SearchContainer from '../pages/search/SearchContainer'
 import SignInContainer from '../pages/signin/SignInContainer'
 import SignupContainer from '../pages/signup/SignupContainer'
 import { WEBAPP_CONTACT_EXTERNAL_PAGE } from '../../utils/config'
+import SearchAlgoliaContainer from '../pages/search-algolia/SearchAlgoliaContainer'
 
 function redirectToBeta() {
   return <Redirect to="/beta" />
@@ -74,6 +75,13 @@ const routes = [
     path:
       '/recherche/:results(resultats)?/:category?/:details(details|transition)?/:offerId?/:mediationId?/:booking(reservation)?/:bookingId?/:cancellation(annulation)?/:confirmation(confirmation)?',
     title: 'Recherche',
+  },
+  {
+    component: SearchAlgoliaContainer,
+    icon: 'search-w',
+    path:
+      '/recherche-algolia/:details(details)?/:offerId?',
+    title: 'Recherche algolia',
   },
   {
     component: MyBookingsContainer,

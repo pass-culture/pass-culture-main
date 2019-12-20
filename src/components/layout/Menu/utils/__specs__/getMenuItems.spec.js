@@ -5,6 +5,7 @@ import ProfileContainer from '../../../../pages/profile/ProfileContainer'
 import SearchContainer from '../../../../pages/search/SearchContainer'
 import routes from '../../../../router/routes'
 import { getMenuItemsFromRoutes } from '../getMenuItems'
+import SearchAlgoliaContainer from '../../../../pages/search-algolia/SearchAlgoliaContainer'
 
 describe('getMenuItemsFromRoutes', () => {
   it('should filter routes for menu from mock', () => {
@@ -43,6 +44,12 @@ describe('getMenuItemsFromRoutes', () => {
         icon: 'ico-search',
         path: '/recherche',
         title: 'Recherche',
+      },
+      {
+        component: SearchAlgoliaContainer,
+        icon: 'search-w',
+        path: '/recherche-algolia',
+        title: 'Recherche algolia',
       },
       {
         component: MyBookingsContainer,

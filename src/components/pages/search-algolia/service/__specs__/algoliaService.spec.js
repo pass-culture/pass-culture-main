@@ -1,5 +1,5 @@
 import { fetch } from '../algoliaService'
-import { searchedResults } from '../utils'
+import { searchedResults } from '../../utils/utils'
 
 describe('service | algolia', () => {
   it('should return an array containers offers with number of results', () => {

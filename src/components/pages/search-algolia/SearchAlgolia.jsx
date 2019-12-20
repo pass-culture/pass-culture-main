@@ -5,7 +5,7 @@ import HeaderContainer from '../../layout/Header/HeaderContainer'
 import RelativeFooterContainer from '../../layout/RelativeFooter/RelativeFooterContainer'
 import SearchAlgoliaDetailsContainer from './Result/ResultDetail/ResultDetailContainer'
 import Spinner from '../../layout/Spinner/Spinner'
-import { fetch } from './utils/algoliaService'
+import { fetch } from './service/algoliaService'
 import Result from './Result/Result'
 import PropTypes from 'prop-types'
 
@@ -15,9 +15,10 @@ class SearchAlgolia extends PureComponent {
     super(props)
     this.state = {
       isLoading: false,
-      nbHits: 0,
-      searchKeywords: '',
       hits: [],
+      nbHits: 0,
+      page: 0,
+      searchKeywords: '',
     }
   }
 
@@ -25,33 +26,52 @@ class SearchAlgolia extends PureComponent {
     const { query } = this.props
     const queryParams = query.parse()
     const keywords = queryParams['mots-cles']
+    const page = queryParams['page']
+    const pageAsInt = page ? parseInt(page) : 0
 
     if (keywords != null) {
-      this.getOffers(keywords)
+      this.handleFetchOffers(keywords, pageAsInt)
+    } else {
+      query.clear()
+    }
+  }
+
+  handleFetchOffers = (keywords, page) => {
+    if (page > 0) {
+      this.getOffers(keywords, page - 1)
+    } else {
+      this.getOffers(keywords, 0)
     }
   }
 
   handleOnSubmit = event => {
     event.preventDefault()
+    const { page } = this.state
     const keywords = event.target.keywords.value
 
-    if (keywords === '') {
-      return null
+    if (keywords !== '') {
+      this.handleFetchOffers(keywords, page)
     }
-    this.getOffers(keywords)
   }
 
-  getOffers = (keywords) => {
+  getOffers = (keywords, page) => {
+    const { query } = this.props
     this.setState({
       isLoading: true
     })
-    const results = fetch(keywords)
+
+    const results = fetch(keywords, page)
     const { hits, nbHits } = results
     this.setState({
       isLoading: false,
       hits: hits,
       nbHits: nbHits,
+      page: page,
       searchKeywords: keywords,
+    })
+    query.change({
+      'mots-cles': keywords,
+      'page': page + 1
     })
   }
 
@@ -134,6 +154,8 @@ SearchAlgolia.propTypes = {
     longitude: PropTypes.number,
   }).isRequired,
   query: PropTypes.shape({
+    clear: PropTypes.func,
+    change: PropTypes.func,
     parse: PropTypes.func
   }).isRequired
 }
