@@ -36,6 +36,7 @@ describe('components | SearchAlgolia', () => {
         latitude: 40.1,
         longitude: 41.1
       },
+      location: {},
       match: {
         params: {}
       },
@@ -463,8 +464,8 @@ describe('components | SearchAlgolia', () => {
       // then
       const results = wrapper.find(Result)
       expect(results).toHaveLength(1)
-      expect(results.at(0).prop('result')).toStrictEqual(offer)
       expect(results.at(0).prop('geolocation')).toStrictEqual({ latitude: 40.1, longitude: 41.1 })
+      expect(results.at(0).prop('result')).toStrictEqual(offer)
     })
 
     it('should add query params in url when fetching data', async () => {

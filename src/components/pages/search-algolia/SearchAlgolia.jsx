@@ -104,7 +104,8 @@ class SearchAlgolia extends PureComponent {
   }
 
   render() {
-    const { geolocation } = this.props
+    const { geolocation, location } = this.props
+    const { search } = location
     const { isLoading, nbResults, nbPages, page, results, searchKeywords } = this.state
 
     return (
@@ -163,6 +164,7 @@ class SearchAlgolia extends PureComponent {
                       geolocation={geolocation}
                       key={result.objectID}
                       result={result}
+                      search={search}
                     />
                   ))}
                 </InfiniteScroll>
@@ -189,6 +191,9 @@ SearchAlgolia.propTypes = {
   geolocation: PropTypes.shape({
     latitude: PropTypes.number,
     longitude: PropTypes.number,
+  }).isRequired,
+  location: PropTypes.shape({
+    search: PropTypes.string
   }).isRequired,
   match: PropTypes.shape().isRequired,
   query: PropTypes.shape({

@@ -6,7 +6,7 @@ import { formatRecommendationDates } from '../../../../utils/date/date'
 import { getHumanizeRelativeDistance } from '../../../../utils/geolocation'
 import Icon from '../../../layout/Icon/Icon'
 
-const Result = ({ result, geolocation }) => {
+const Result = ({ result, geolocation, search }) => {
   const { _geoloc = {}, objectID, offer } = result
   const { dateRange, departementCode, id: offerId, label, name, thumbUrl } = offer
   const { latitude : userLatitude, longitude: userLongitude } = geolocation
@@ -15,7 +15,7 @@ const Result = ({ result, geolocation }) => {
   return (
     <Link
       key={objectID}
-      to={`/recherche-algolia/details/${offerId}`}
+      to={`/recherche-algolia/details/${offerId}${search}`}
     >
       <div className="result">
         <img
@@ -81,6 +81,7 @@ Result.propTypes = {
     }),
     objectID: PropTypes.string,
   }),
+  search: PropTypes.string.isRequired
 }
 
 export default Result
