@@ -34,15 +34,15 @@ class Get:
         def test_results_are_paginated_by_chunks(self, app):
             # Given
             user = create_user(email='user@test.com')
-            create_offers_for(user, 500)
+            create_offers_for(user, 10)
 
             # when
-            response = TestClient(app.test_client()).with_auth(email='user@test.com').get('/offers?paginate=200')
+            response = TestClient(app.test_client()).with_auth(email='user@test.com').get('/offers?paginate=5')
 
             # then
             offers = response.json
             assert response.status_code == 200
-            assert len(offers) == 200
+            assert len(offers) == 5
 
         @clean_database
         def test_results_are_paginated_by_default_on_page_1(self, app):
