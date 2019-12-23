@@ -3,24 +3,49 @@ import moment from 'moment'
 import {
   selectBookingById,
   selectBookingByRouterMatch,
-  selectBookingsOfTheWeek,
   selectBookingsOrderedByBeginningDateTimeAsc,
   selectCancelledBookings,
-  selectFinishedBookings,
+  selectEventBookingsOfTheWeek,
+  selectFinishedEventBookings,
   selectFirstMatchingBookingByOfferId,
   selectUpComingBookings,
-  selectUsedBookings,
+  selectUsedThingBookings,
 } from '../bookingsSelectors'
 
-describe('selectBookingsOfTheWeek()', () => {
+describe('selectEventBookingsOfTheWeek()', () => {
   it('should return bookings of the week', () => {
     // given
     jest.spyOn(Date, 'now').mockImplementation(() => '2000-01-01T20:00:00Z')
-    const oneDayBeforeNow = new Date('1999-12-31T20:00:00.00Z').toISOString()
-    const fourDaysAfterNow = new Date('2000-01-04T20:00:00.00Z').toISOString()
-    const fourDaysAfterNowBis = new Date('2000-01-04T10:00:00.00Z').toISOString()
-    const nineDaysAfterNow = new Date('2000-01-09T20:00:00.01Z').toISOString()
-    const permanent = null
+    const stockYesterday = {
+      beginningDatetime: new Date('1999-12-31T20:00:00.00Z').toISOString(),
+      id: 's1',
+      offerId: 'o1',
+    }
+    const stockToday = {
+      beginningDatetime: new Date('2000-01-01T21:00:00Z').toISOString(),
+      id: 's7',
+      offerId: 'o1',
+    }
+    const stockInTwoDays = {
+      beginningDatetime: new Date('2000-01-02T20:00:00.00Z').toISOString(),
+      id: 's2',
+      offerId: 'o1',
+    }
+    const stockInEightDays = {
+      beginningDatetime: new Date('2000-01-08T20:00:00.01Z').toISOString(),
+      id: 's6',
+      offerId: 'o1',
+    }
+    const stockInNineDays = {
+      beginningDatetime: new Date('2000-01-09T20:00:00.01Z').toISOString(),
+      id: 's3',
+      offerId: 'o1',
+    }
+    const stockPermanent = {
+      beginningDatetime: null,
+      id: 's4',
+      offerId: 'o2',
+    }
     const state = {
       data: {
         bookings: [
@@ -28,43 +53,49 @@ describe('selectBookingsOfTheWeek()', () => {
             id: 'b1',
             isCancelled: false,
             isUsed: false,
-            stockId: 's1',
+            stockId: stockYesterday.id,
           },
           {
-            id: 'b2',
+            id: 'b8',
             isCancelled: false,
             isUsed: false,
-            stockId: 's2',
-          },
-          {
-            id: 'b3',
-            isCancelled: false,
-            isUsed: false,
-            stockId: 's3',
-          },
-          {
-            id: 'b4',
-            isCancelled: false,
-            isUsed: false,
-            stockId: 's4',
-          },
-          {
-            id: 'b5',
-            isCancelled: true,
-            isUsed: false,
-            stockId: 's5',
-          },
-          {
-            id: 'b6',
-            isCancelled: false,
-            isUsed: true,
-            stockId: 's6',
+            stockId: stockToday.id,
           },
           {
             id: 'b7',
             isCancelled: false,
             isUsed: false,
-            stockId: 's7',
+            stockId: stockInEightDays.id,
+          },
+          {
+            id: 'b2',
+            isCancelled: false,
+            isUsed: false,
+            stockId: stockInTwoDays.id,
+          },
+          {
+            id: 'b5',
+            isCancelled: true,
+            isUsed: false,
+            stockId: stockInTwoDays.id,
+          },
+          {
+            id: 'b6',
+            isCancelled: false,
+            isUsed: true,
+            stockId: stockInTwoDays.id,
+          },
+          {
+            id: 'b3',
+            isCancelled: false,
+            isUsed: false,
+            stockId: stockInNineDays.id,
+          },
+          {
+            id: 'b4',
+            isCancelled: false,
+            isUsed: false,
+            stockId: stockPermanent.id,
           },
         ],
         offers: [
@@ -80,93 +111,46 @@ describe('selectBookingsOfTheWeek()', () => {
               departementCode: '97',
             },
           },
-          {
-            id: 'o3',
-            venue: {
-              departementCode: '97',
-            },
-          },
-          {
-            id: 'o4',
-            venue: {
-              departementCode: '97',
-            },
-          },
-          {
-            id: 'o5',
-            venue: {
-              departementCode: '97',
-            },
-          },
-          {
-            id: 'o6',
-            venue: {
-              departementCode: '97',
-            },
-          },
-          {
-            id: 'o7',
-            venue: {
-              departementCode: '97',
-            },
-          },
         ],
         stocks: [
-          {
-            beginningDatetime: oneDayBeforeNow,
-            id: 's1',
-            offerId: 'o1',
-          },
-          {
-            beginningDatetime: fourDaysAfterNow,
-            id: 's2',
-            offerId: 'o2',
-          },
-          {
-            beginningDatetime: nineDaysAfterNow,
-            id: 's3',
-            offerId: 'o3',
-          },
-          {
-            beginningDatetime: permanent,
-            id: 's4',
-            offerId: 'o4',
-          },
-          {
-            beginningDatetime: fourDaysAfterNow,
-            id: 's5',
-            offerId: 'o5',
-          },
-          {
-            beginningDatetime: fourDaysAfterNow,
-            id: 's6',
-            offerId: 'o6',
-          },
-          {
-            beginningDatetime: fourDaysAfterNowBis,
-            id: 's7',
-            offerId: 'o7',
-          },
+          stockYesterday,
+          stockToday,
+          stockInTwoDays,
+          stockInEightDays,
+          stockInNineDays,
+          stockPermanent,
         ],
       },
     }
 
     // when
-    const results = selectBookingsOfTheWeek(state)
+    const bookings = selectEventBookingsOfTheWeek(state)
 
     // then
-    expect(results).toStrictEqual([
+    expect(bookings).toStrictEqual([
       {
-        id: 'b7',
+        id: 'b8',
         isCancelled: false,
         isUsed: false,
-        stockId: 's7',
+        stockId: stockToday.id,
       },
       {
         id: 'b2',
         isCancelled: false,
         isUsed: false,
-        stockId: 's2',
+        stockId: stockInTwoDays.id,
+      },
+      {
+        id: 'b6',
+        isCancelled: false,
+        isUsed: true,
+        stockId: stockInTwoDays.id,
+      },
+      {
+        id: 'b7',
+        isCancelled: false,
+        isUsed: false,
+        stockId: stockInEightDays.id,
       },
     ])
   })
@@ -314,9 +298,25 @@ describe('selectUpComingBookings()', () => {
   })
 })
 
-describe('selectFinishedBookings()', () => {
+describe('selectFinishedEventBookings()', () => {
   it('should return finished bookings', () => {
     // given
+    const offerBookable = {
+      id: 'o1',
+      isNotBookable: false,
+    }
+    const offerNotBookable = {
+      id: 'o2',
+      isNotBookable: true,
+    }
+    const stockBookableOffer = {
+      id: 's1',
+      offerId: offerBookable.id,
+    }
+    const stockNotBookableOffer = {
+      id: 's2',
+      offerId: offerNotBookable.id,
+    }
     const state = {
       data: {
         bookings: [
@@ -324,96 +324,78 @@ describe('selectFinishedBookings()', () => {
             id: 'b1',
             isCancelled: false,
             isEventExpired: false,
-            stockId: 's1',
+            stockId: stockBookableOffer.id,
           },
           {
             id: 'b2',
             isCancelled: true,
-            isEventExpired: false,
-            stockId: 's2',
+            isEventExpired: true,
+            stockId: stockBookableOffer.id,
           },
           {
             id: 'b3',
-            isCancelled: false,
+            isCancelled: true,
             isEventExpired: false,
-            stockId: 's3',
+            stockId: stockBookableOffer.id,
           },
           {
             id: 'b4',
-            isCancelled: true,
-            isEventExpired: false,
-            stockId: 's4',
+            isCancelled: false,
+            isEventExpired: true,
+            stockId: stockBookableOffer.id,
           },
           {
             id: 'b5',
             isCancelled: false,
+            isEventExpired: false,
+            stockId: stockNotBookableOffer.id,
+          },
+          {
+            id: 'b6',
+            isCancelled: true,
             isEventExpired: true,
-            stockId: 's5',
+            stockId: stockNotBookableOffer.id,
+          },
+          {
+            id: 'b7',
+            isCancelled: true,
+            isEventExpired: false,
+            stockId: stockNotBookableOffer.id,
+          },
+          {
+            id: 'b8',
+            isCancelled: false,
+            isEventExpired: true,
+            stockId: stockNotBookableOffer.id,
           },
         ],
-        offers: [
-          {
-            id: 'o1',
-            isNotBookable: false,
-          },
-          {
-            id: 'o2',
-            isNotBookable: false,
-          },
-          {
-            id: 'o3',
-            isNotBookable: true,
-          },
-          {
-            id: 'o4',
-            isNotBookable: true,
-          },
-          {
-            id: 'o5',
-            isNotBookable: false,
-          },
-        ],
-        stocks: [
-          {
-            id: 's1',
-            offerId: 'o1',
-          },
-          {
-            id: 's2',
-            offerId: 'o2',
-          },
-          {
-            id: 's3',
-            offerId: 'o3',
-          },
-          {
-            id: 's4',
-            offerId: 'o4',
-          },
-          {
-            id: 's5',
-            offerId: 'o5',
-          },
-        ],
+        offers: [offerBookable, offerNotBookable],
+        stocks: [stockBookableOffer, stockNotBookableOffer],
       },
     }
 
     // when
-    const results = selectFinishedBookings(state)
+    const results = selectFinishedEventBookings(state)
 
     // then
     expect(results).toStrictEqual([
       {
-        id: 'b3',
+        id: 'b4',
         isCancelled: false,
-        isEventExpired: false,
-        stockId: 's3',
+        isEventExpired: true,
+        stockId: stockBookableOffer.id,
       },
       {
         id: 'b5',
         isCancelled: false,
+        isEventExpired: false,
+        stockId: stockNotBookableOffer.id,
+      },
+      {
+        id: 'b8',
+        isCancelled: false,
         isEventExpired: true,
-        stockId: 's5',
+        stockId: stockNotBookableOffer.id,
       },
     ])
   })
@@ -450,32 +432,50 @@ describe('selectCancelledBookings()', () => {
   })
 })
 
-describe('selectUsedBookings()', () => {
-  it('should return used bookings', () => {
+describe('selectUsedThingBookings()', () => {
+  it('should return expired booking for events or used bookings for things', () => {
     // given
+    jest.spyOn(Date, 'now').mockImplementation(() => '2000-01-01T20:00:00Z')
+    const stockYesterday = {
+      beginningDatetime: new Date('1999-12-31T20:00:00.00Z').toISOString(),
+      id: 's1',
+    }
+    const stockPermanent = {
+      beginningDatetime: null,
+      id: 's2',
+    }
     const state = {
       data: {
         bookings: [
           {
             id: 'b1',
-            isUsed: false,
+            isUsed: true,
+            stockId: stockYesterday.id,
           },
           {
             id: 'b2',
             isUsed: true,
+            stockId: stockPermanent.id,
+          },
+          {
+            id: 'b3',
+            isUsed: false,
+            stockId: stockPermanent.id,
           },
         ],
+        stocks: [stockYesterday, stockPermanent],
       },
     }
 
     // when
-    const results = selectUsedBookings(state)
+    const results = selectUsedThingBookings(state)
 
     // then
     expect(results).toStrictEqual([
       {
         id: 'b2',
         isUsed: true,
+        stockId: stockPermanent.id,
       },
     ])
   })

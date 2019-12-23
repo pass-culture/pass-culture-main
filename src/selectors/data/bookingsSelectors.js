@@ -54,7 +54,7 @@ export const selectBookingsOrderedByBeginningDateTimeAsc = createSelector(
   }
 )
 
-export const selectBookingsOfTheWeek = createSelector(
+export const selectEventBookingsOfTheWeek = createSelector(
   selectBookings,
   state => state.data.offers,
   state => state.data.stocks,
@@ -63,7 +63,7 @@ export const selectBookingsOfTheWeek = createSelector(
     const sevenDaysFromNow = now.clone().add(SLIDING_DAYS, 'days')
 
     const filteredBookings = bookings.filter(booking => {
-      if (booking.isCancelled || booking.isUsed) return false
+      if (booking.isCancelled) return false
 
       const stock = selectStockById({ data: { stocks } }, booking.stockId)
       const beginningDatetime = moment(stock.beginningDatetime)
@@ -106,7 +106,7 @@ export const selectUpComingBookings = createSelector(
   }
 )
 
-export const selectFinishedBookings = createSelector(
+export const selectFinishedEventBookings = createSelector(
   selectBookings,
   state => state.data.offers,
   state => state.data.stocks,
@@ -124,13 +124,18 @@ export const selectCancelledBookings = createSelector(
   bookings => bookings.filter(booking => booking.isCancelled)
 )
 
-export const selectUsedBookings = createSelector(
-  state => state.data.bookings,
-  bookings => bookings.filter(booking => booking.isUsed)
+export const selectUsedThingBookings = createSelector(
+  selectBookings,
+  state => state.data.stocks,
+  (bookings, stocks) =>
+    bookings.filter(booking => {
+      const stock = selectStockById({ data: { stocks } }, booking.stockId)
+      return !stock.beginningDatetime ? booking.isUsed : false
+    })
 )
 
 export const selectFirstMatchingBookingByOfferId = createCachedSelector(
-  state => state.data.bookings,
+  selectBookings,
   state => state.data.stocks,
   (state, offerId) => offerId,
   (bookings, stocks, offerId) => {
@@ -163,13 +168,13 @@ export const selectFirstMatchingBookingByOfferId = createCachedSelector(
 )((state, offerId = '') => offerId)
 
 export const selectBookingById = createCachedSelector(
-  state => state.data.bookings,
+  selectBookings,
   (state, bookingId) => bookingId,
   (bookings, bookingId) => bookings.find(booking => booking.id === bookingId)
 )((state, bookingId = '') => bookingId)
 
 export const selectBookingByRouterMatch = createCachedSelector(
-  state => state.data.bookings,
+  selectBookings,
   state => state.data.stocks,
   (state, match) => selectBookingById(state, match.params.bookingId),
   (state, match) => selectOfferById(state, match.params.offerId),
@@ -195,7 +200,7 @@ export const selectBookingByRouterMatch = createCachedSelector(
 })
 
 export const selectBookables = createCachedSelector(
-  state => state.data.bookings,
+  selectBookings,
   state => state.data.stocks,
   (state, offer) => offer,
   (bookings, allStocks, offer) => {

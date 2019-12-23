@@ -2,24 +2,24 @@ import { connect } from 'react-redux'
 
 import MyBookingsLists from './MyBookingsLists'
 import {
-  selectBookingsOfTheWeek,
+  selectEventBookingsOfTheWeek,
   selectCancelledBookings,
-  selectFinishedBookings,
+  selectFinishedEventBookings,
   selectUpComingBookings,
-  selectUsedBookings,
+  selectUsedThingBookings,
 } from '../../../../selectors/data/bookingsSelectors'
 import { compose } from 'redux'
 import { withRouter } from 'react-router-dom'
 
 export const mapStateToProps = state => {
-  const bookingsOfTheWeek = selectBookingsOfTheWeek(state)
+  const bookingsOfTheWeek = selectEventBookingsOfTheWeek(state)
   const cancelledBookings = selectCancelledBookings(state)
-  const finishedBookings = selectFinishedBookings(state)
+  const finishedEventBookings = selectFinishedEventBookings(state)
   const upComingBookings = selectUpComingBookings(state)
-  const usedBookings = selectUsedBookings(state)
+  const usedThingBookings = selectUsedThingBookings(state)
   const finishedAndUsedAndCancelledBookings = [
-    ...finishedBookings,
-    ...usedBookings,
+    ...finishedEventBookings,
+    ...usedThingBookings,
     ...cancelledBookings,
   ]
 
