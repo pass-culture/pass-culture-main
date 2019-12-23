@@ -29,7 +29,8 @@ class VenueProvidersManager extends PureComponent {
 
   componentDidUpdate(prevProps) {
     ReactTooltip.rebuild()
-    if (prevProps.venueProviders.length < this.props.venueProviders.length) {
+    const { venueProviders } = this.props
+    if (prevProps.venueProviders.length < venueProviders.length) {
       this.setState({ isCreationMode: false })
     }
   }

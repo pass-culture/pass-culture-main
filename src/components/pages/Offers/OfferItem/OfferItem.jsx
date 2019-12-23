@@ -158,9 +158,10 @@ class OfferItem extends PureComponent {
             <li>
               {maxDate && `jusqu’au ${maxDate.format('DD/MM/YYYY')}`}
             </li>
-            {stockAlertMessage && <li>
-              {stockAlertMessage}
-                                  </li>}
+            {stockAlertMessage &&
+              <li>
+                {stockAlertMessage}
+              </li>}
             <li>
               {priceMin === priceMax ? (
                 <Price value={priceMin || 0} />
