@@ -5,7 +5,8 @@ import pytest
 
 from models import Booking, Offer, Stock, User, Product, PcObject, ApiErrors
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue, \
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+    create_venue, \
     create_recommendation, create_mediation
 from tests.model_creators.specific_creators import create_stock_from_offer, create_product_with_thing_type, \
     create_product_with_event_type, create_offer_with_thing_product, create_offer_with_event_product
@@ -44,14 +45,22 @@ def test_raises_error_on_booking_when_existing_booking_is_used_and_booking_date_
     venue = create_venue(offerer)
     offer = create_offer_with_thing_product(venue)
     stock = create_stock_from_offer(offer, price=0, available=1)
-    user1 = create_user(email='used_booking@booking.com')
-    user2 = create_user(email='booked@email.com')
+    user1 = create_user(email='used_booking@example.com')
+    user2 = create_user(email='booked@example.com')
     PcObject.save(stock)
     date_after_stock_last_update = datetime.utcnow()
-    booking1 = create_booking(user=user1, stock=stock, date_used=date_after_stock_last_update, is_cancelled=False, is_used=True)
+    booking1 = create_booking(user=user1,
+                              stock=stock,
+                              date_used=date_after_stock_last_update,
+                              is_cancelled=False,
+                              is_used=True)
     PcObject.save(booking1)
     date_after_last_booking = datetime.utcnow()
-    booking2 = create_booking(user=user2, stock=stock, date_used=date_after_last_booking, is_cancelled=False, is_used=False)
+    booking2 = create_booking(user=user2,
+                              stock=stock,
+                              date_used=date_after_last_booking,
+                              is_cancelled=False,
+                              is_used=False)
 
     # When
     with pytest.raises(ApiErrors) as e:
@@ -64,7 +73,7 @@ def test_raises_error_on_booking_when_existing_booking_is_used_and_booking_date_
 @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
 def test_model_thumbUrl_should_use_mediation_first_as_thumbUrl(get_storage_base_url):
     # given
-    user = create_user(email='user@test.com')
+    user = create_user(email='user@example.com')
     offerer = create_offerer()
     venue = create_venue(offerer)
     product = create_product_with_event_type(thumb_count=1)
@@ -84,7 +93,7 @@ def test_model_thumbUrl_should_use_mediation_first_as_thumbUrl(get_storage_base_
 @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
 def test_model_thumbUrl_should_have_thumbUrl_using_productId_when_no_mediation(get_storage_base_url):
     # given
-    user = create_user(email='user@test.com')
+    user = create_user(email='user@example.com')
     offerer = create_offerer()
     venue = create_venue(offerer)
     product = create_product_with_event_type(thumb_count=0)
@@ -99,74 +108,166 @@ def test_model_thumbUrl_should_have_thumbUrl_using_productId_when_no_mediation(g
     assert booking.thumbUrl == "http://localhost/storage/thumbs/products/A9"
 
 
-def test_model_qrCode_should_return_qrCode_as_base64_string_when_booking_is_not_used_and_not_cancelled():
-    # given
-    user = create_user(email='user@test.com')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    product = create_product_with_event_type(thumb_count=0)
-    product.id = 2
-    offer = create_offer_with_event_product(product=product, venue=venue)
-    stock = create_stock(price=12, available=1, offer=offer)
+class BookingEventOfferQRCodeGenerationTest:
+    def test_model_qrCode_should_return_qrCode_as_base64_string_when_booking_is_not_used_and_not_cancelled(self):
+        # given
+        two_days_after_now = datetime.utcnow() + timedelta(days=2)
+        user = create_user()
+        product = create_product_with_event_type()
+        offer = create_offer_with_event_product(product=product)
+        stock = create_stock(beginning_datetime=two_days_after_now, offer=offer)
 
-    # when
-    booking = create_booking(user=user, is_cancelled=False, is_used=False, recommendation=None, stock=stock,
-                             venue=venue)
+        # when
+        booking = create_booking(stock=stock, user=user, is_used=False, is_cancelled=False)
 
-    # then
-    assert booking.qrCode is not None
-    assert type(booking.qrCode) is str
+        # then
+        assert booking.qrCode is not None
+        assert type(booking.qrCode) is str
 
+    def test_model_qrCode_should_return_qrCode_as_None_when_booking_is_used_and_cancelled(self):
+        # given
+        two_days_after_now = datetime.utcnow() + timedelta(days=2)
+        user = create_user()
+        product = create_product_with_event_type()
+        offer = create_offer_with_event_product(product=product)
+        stock = create_stock(beginning_datetime=two_days_after_now, offer=offer)
 
-def test_model_qrCode_should_return_qrCode_as_None_when_booking_is_used_and_cancelled():
-    # given
-    user = create_user(email='user@test.com')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    product = create_product_with_event_type(thumb_count=0)
-    product.id = 2
-    offer = create_offer_with_event_product(product=product, venue=venue)
-    stock = create_stock(price=12, available=1, offer=offer)
+        # when
+        booking = create_booking(stock=stock, user=user, is_used=True, is_cancelled=True)
 
-    # when
-    booking = create_booking(user=user, is_cancelled=True, is_used=True, recommendation=None, stock=stock, venue=venue)
+        # then
+        assert booking.qrCode is None
 
-    # then
-    assert booking.qrCode is None
+    def test_model_qrCode_should_return_qrCode_as_None_when_booking_is_used_and_expired_and_not_cancelled(self):
+        # given
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        user = create_user()
+        product = create_product_with_event_type()
+        offer = create_offer_with_event_product(product=product)
+        stock = create_stock(beginning_datetime=yesterday, offer=offer)
 
+        # when
+        booking = create_booking(stock=stock, user=user, is_used=True, is_cancelled=False)
 
-def test_model_qrCode_should_return_qrCode_as_None_when_booking_is_used_and_not_cancelled():
-    # given
-    user = create_user(email='user@test.com')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    product = create_product_with_event_type(thumb_count=0)
-    product.id = 2
-    offer = create_offer_with_event_product(product=product, venue=venue)
-    stock = create_stock(price=12, available=1, offer=offer)
+        # then
+        assert booking.qrCode is None
 
-    # when
-    booking = create_booking(user=user, is_cancelled=False, is_used=True, recommendation=None, stock=stock, venue=venue)
+    def test_model_qrCode_should_return_qrCode_as_base64_string_when_event_booking_is_used_and_not_expired_and_not_cancelled(self):
+        # given
+        two_days_after_now = datetime.utcnow() + timedelta(days=2)
+        user = create_user()
+        product = create_product_with_event_type()
+        offer = create_offer_with_event_product(product=product)
+        stock = create_stock(beginning_datetime=two_days_after_now, offer=offer)
 
-    # then
-    assert booking.qrCode is None
+        # when
+        booking = create_booking(stock=stock, user=user, is_used=True, is_cancelled=False)
 
+        # then
+        assert booking.qrCode is not None
+        assert type(booking.qrCode) is str
 
-def test_model_qrCode_should_return_qrCode_as_None_when_booking_is_not_used_and_is_cancelled():
-    # given
-    user = create_user(email='user@test.com')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    product = create_product_with_event_type(thumb_count=0)
-    product.id = 2
-    offer = create_offer_with_event_product(product=product, venue=venue)
-    stock = create_stock(price=12, available=1, offer=offer)
+    def test_model_qrCode_should_return_qrCode_as_None_when_booking_is_used_and_expired_and_cancelled(self):
+        # given
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        user = create_user()
+        product = create_product_with_event_type()
+        offer = create_offer_with_event_product(product=product)
+        stock = create_stock(beginning_datetime=yesterday, offer=offer)
 
-    # when
-    booking = create_booking(user=user, is_cancelled=True, is_used=False, recommendation=None, stock=stock, venue=venue)
+        # when
+        booking = create_booking(stock=stock, user=user, is_used=True, is_cancelled=True)
 
-    # then
-    assert booking.qrCode is None
+        # then
+        assert booking.qrCode is None
+
+    def test_model_qrCode_should_return_qrCode_as_base64_string_when_event_booking_is_used_and_not_expired_and_cancelled(
+            self):
+        # given
+        two_days_after_now = datetime.utcnow() + timedelta(days=2)
+        user = create_user()
+        product = create_product_with_event_type()
+        offer = create_offer_with_event_product(product=product)
+        stock = create_stock(beginning_datetime=two_days_after_now, offer=offer)
+
+        # when
+        booking = create_booking(stock=stock, user=user, is_used=True, is_cancelled=True)
+
+        # then
+        assert booking.qrCode is None
+
+class BookingThingOfferQRCodeGenerationTest:
+    def test_model_qrCode_should_return_qrCode_as_base64_string_when_booking_is_not_used_and_not_cancelled(self):
+        # given
+        user = create_user()
+        product = create_product_with_thing_type()
+        venue = create_venue(offerer=create_offerer())
+        offer = create_offer_with_thing_product(product=product, venue=venue)
+        stock = create_stock(offer=offer)
+
+        # when
+        booking = create_booking(stock=stock, user=user, is_used=False, is_cancelled=False)
+
+        # then
+        assert booking.qrCode is not None
+        assert type(booking.qrCode) is str
+
+    def test_model_qrCode_should_return_qrCode_as_base64_string_when_thing_booking_is_not_used_and_not_cancelled(self):
+        # given
+        user = create_user()
+        product = create_product_with_thing_type()
+        venue = create_venue(offerer=create_offerer())
+        offer = create_offer_with_thing_product(product=product, venue=venue)
+        stock = create_stock(offer=offer)
+
+        # when
+        booking = create_booking(stock=stock, user=user, is_used=False, is_cancelled=False)
+
+        # then
+        assert booking.qrCode is not None
+        assert type(booking.qrCode) is str
+
+    def test_model_qrCode_should_return_qrCode_as_None_when_booking_is_used_and_cancelled(self):
+        # given
+        user = create_user()
+        product = create_product_with_thing_type()
+        venue = create_venue(offerer=create_offerer())
+        offer = create_offer_with_thing_product(product=product, venue=venue)
+        stock = create_stock(offer=offer)
+
+        # when
+        booking = create_booking(stock=stock, user=user, is_used=True, is_cancelled=True)
+
+        # then
+        assert booking.qrCode is None
+
+    def test_model_qrCode_should_return_qrCode_as_None_when_booking_is_used_and_not_cancelled(self):
+        # given
+        user = create_user()
+        product = create_product_with_thing_type()
+        venue = create_venue(offerer=create_offerer())
+        offer = create_offer_with_thing_product(product=product, venue=venue)
+        stock = create_stock(offer=offer)
+
+        # when
+        booking = create_booking(stock=stock, user=user, is_used=True, is_cancelled=False)
+
+        # then
+        assert booking.qrCode is None
+
+    def test_model_qrCode_should_return_qrCode_as_None_when_booking_is_not_used_and_is_cancelled(self):
+        # given
+        user = create_user()
+        product = create_product_with_thing_type()
+        venue = create_venue(offerer=create_offerer())
+        offer = create_offer_with_thing_product(product=product, venue=venue)
+        stock = create_stock(offer=offer)
+
+        # when
+        booking = create_booking(stock=stock, user=user, is_used=False, is_cancelled=True)
+
+        # then
+        assert booking.qrCode is None
 
 
 class BookingIsCancellableTest:
