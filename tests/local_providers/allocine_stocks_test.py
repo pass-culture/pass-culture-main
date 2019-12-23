@@ -1288,14 +1288,14 @@ class UpdateObjectsTest:
         assert first_stock.available is None
         assert first_stock.price == 10
         assert first_stock.beginningDatetime == datetime(2019, 12, 3, 9, 00)
-        assert first_stock.endDatetime is None
+        assert first_stock.endDatetime == datetime(2019, 12, 3, 9, 00)
         assert first_stock.bookingLimitDatetime == datetime(2019, 12, 3, 9, 00)
 
         assert second_stock.offerId == vf_offer.id
         assert second_stock.available is None
         assert second_stock.price == 10
         assert second_stock.beginningDatetime == datetime(2019, 12, 3, 17, 00)
-        assert second_stock.endDatetime is None
+        assert second_stock.endDatetime == datetime(2019, 12, 3, 17, 00)
         assert second_stock.bookingLimitDatetime == datetime(2019, 12, 3, 17, 00)
 
     @patch('local_providers.allocine_stocks.get_movies_showtimes')

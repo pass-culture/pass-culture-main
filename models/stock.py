@@ -48,7 +48,7 @@ class Stock(PcObject,
                                nullable=True)
 
     endDatetime = Column(DateTime,
-                         CheckConstraint('"endDatetime" > "beginningDatetime"',
+                         CheckConstraint('"endDatetime" >= "beginningDatetime"',
                                          name='check_end_datetime_is_after_beginning_datetime'),
                          nullable=True)
 
@@ -100,7 +100,7 @@ class Stock(PcObject,
 
         if self.endDatetime \
                 and self.beginningDatetime \
-                and self.endDatetime <= self.beginningDatetime:
+                and self.endDatetime < self.beginningDatetime:
             api_errors.add_error('endDatetime',
                                  'La date de fin de l\'événement doit être postérieure à la date de début')
 
