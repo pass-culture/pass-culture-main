@@ -122,7 +122,7 @@ def delete_stock(id):
     if bookings:
         try:
             send_batch_cancellation_emails_to_users(bookings, send_raw_email)
-            send_batch_cancellation_email_to_offerer(bookings, 'stock', send_raw_email)
+            send_batch_cancellation_email_to_offerer(bookings, send_raw_email)
         except MailServiceException as e:
             app.logger.error('Mail service failure', e)
 

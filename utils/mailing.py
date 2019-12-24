@@ -7,12 +7,11 @@ from typing import Dict, List, Union
 from flask import current_app as app, render_template
 
 from connectors import api_entreprises
-from models import Booking, Offer, Email, PcObject, Offerer, RightsType, Stock, User, UserOfferer, Venue
+from models import Booking, Offer, Email, PcObject, Offerer, Stock, User, UserOfferer, Venue
 from models.email import EmailStatus
 from repository import booking_queries
 from repository import email_queries
 from repository.feature_queries import feature_send_mail_to_users_enabled
-from repository.user_offerer_queries import find_user_offerer_email
 from utils import logger
 from utils.config import API_URL, PRO_URL, ENV, IS_PROD
 from utils.date import format_datetime, utc_datetime_to_dept_timezone
@@ -66,20 +65,6 @@ def resend_email(email: Email) -> bool:
     logger.logger.warning(
         f'[EMAIL] Trying to resend email # {email.id}, {email.content} failed with status code {response.status_code}')
     return False
-
-
-def make_batch_cancellation_email(bookings: List[Booking], cancellation_case) -> Dict:
-    booking = next(iter(bookings))
-    offer_name = booking.stock.resolvedOffer.product.name
-    email_html = render_template('mails/offerer_batch_cancellation_email.html',
-                                 offer_name=offer_name, bookings=bookings, cancellation_case=cancellation_case)
-    email_subject = 'Annulation de réservations pour %s' % offer_name
-    return {
-        'FromName': 'pass Culture pro',
-        'FromEmail': SUPPORT_EMAIL_ADDRESS,
-        'Subject': email_subject,
-        'Html-part': email_html,
-    }
 
 
 def make_final_recap_email_for_stock_with_event(stock: Stock) -> Dict:

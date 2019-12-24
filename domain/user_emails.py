@@ -1,20 +1,18 @@
 from typing import Callable, List
 
 from emails.beneficiary_activation import get_activation_email_data
-from emails.beneficiary_booking_cancellation import \
-    make_beneficiary_booking_cancellation_email_data
+from emails.beneficiary_booking_cancellation import make_beneficiary_booking_cancellation_email_data
 from emails.beneficiary_booking_confirmation import \
     retrieve_data_for_beneficiary_booking_confirmation_email
 from emails.beneficiary_offer_cancellation import \
     retrieve_offerer_booking_recap_email_data_after_user_cancellation
 from emails.beneficiary_warning_after_pro_booking_cancellation import \
     retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation
-from emails.new_offerer_validation import \
-    retrieve_data_for_new_offerer_validation_email
-from emails.offerer_booking_recap import \
-    retrieve_data_for_offerer_booking_recap_email
-from emails.pro_waiting_validation import \
-    retrieve_data_for_pro_user_waiting_offerer_validation_email
+from emails.new_offerer_validation import retrieve_data_for_new_offerer_validation_email
+from emails.offerer_booking_recap import retrieve_data_for_offerer_booking_recap_email
+from emails.offerer_bookings_recap_after_deleting_stock import \
+    retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation
+from emails.pro_waiting_validation import retrieve_data_for_pro_user_waiting_offerer_validation_email
 from emails.user_reset_password import retrieve_data_for_reset_password_email
 from models import Booking, Offerer, Stock, User, Venue
 from repository import booking_queries
@@ -23,12 +21,12 @@ from repository.user_queries import find_all_emails_of_user_offerers_admins
 from utils.logger import logger
 from utils.mailing import ADMINISTRATION_EMAIL_ADDRESS, \
     compute_email_html_part_and_recipients, \
-    make_batch_cancellation_email, \
-    make_final_recap_email_for_stock_with_event, \
-    make_offerer_driven_cancellation_email_for_offerer, \
     make_reset_password_email, \
-    make_user_validation_email, \
-    make_venue_validated_email
+ \
+    from utils.mailing import make_offerer_driven_cancellation_email_for_offerer, \
+        make_final_recap_email_for_stock_with_event, \
+        make_user_validation_email, \
+        make_venue_validated_email
 
 
 def send_final_booking_recap_email(stock: Stock, send_email: Callable[..., bool]) -> bool:
@@ -75,16 +73,8 @@ def send_user_driven_cancellation_email_to_offerer(booking: Booking, send_email:
     return send_email(data=mailjet_data)
 
 
-def build_recipients_list(booking: Booking) -> str:
-    recipients = []
-    offerer_booking_email = booking.stock.resolvedOffer.bookingEmail
-    if offerer_booking_email:
-        recipients.append(offerer_booking_email)
-    recipients.append(ADMINISTRATION_EMAIL_ADDRESS)
-    return ", ".join(recipients)
-
-
-def send_warning_to_beneficiary_after_pro_booking_cancellation(booking: Booking, send_email: Callable[..., bool]) -> None:
+def send_warning_to_beneficiary_after_pro_booking_cancellation(booking: Booking,
+                                                               send_email: Callable[..., bool]) -> None:
     email = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
     send_email(data=email)
 
@@ -122,16 +112,10 @@ def send_batch_cancellation_emails_to_users(bookings: List[Booking], send_email:
         send_warning_to_beneficiary_after_pro_booking_cancellation(booking, send_email)
 
 
-def send_batch_cancellation_email_to_offerer(bookings: List[Booking], cancellation_case: str,
-                                             send_email: Callable[..., bool]) -> bool:
-    booking = bookings[0] if bookings else None
-    offerer_email = booking.stock.resolvedOffer.bookingEmail
-    recipients = []
-    if offerer_email:
-        recipients.append(offerer_email)
-    recipients.append(ADMINISTRATION_EMAIL_ADDRESS)
-    email = make_batch_cancellation_email(bookings, cancellation_case)
-    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
+def send_batch_cancellation_email_to_offerer(bookings: List[Booking], send_email: Callable[..., bool]) -> bool:
+    booking = bookings[0]
+    recipients = build_recipients_list(booking)
+    email = retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation(bookings, recipients)
     return send_email(data=email)
 
 
@@ -167,3 +151,12 @@ def send_activation_email(user: User, send_email: Callable[..., bool]) -> bool:
     activation_email_data = get_activation_email_data(user)
 
     return send_email(activation_email_data)
+
+
+def build_recipients_list(booking: Booking) -> str:
+    recipients = []
+    offerer_booking_email = booking.stock.resolvedOffer.bookingEmail
+    if offerer_booking_email:
+        recipients.append(offerer_booking_email)
+    recipients.append(ADMINISTRATION_EMAIL_ADDRESS)
+    return ", ".join(recipients)

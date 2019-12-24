@@ -11,7 +11,8 @@ from models import Offerer
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue
 from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_offer_with_thing_product
-from tests.test_utils import create_mocked_bookings
+from tests.test_utils import create_user, create_booking, create_stock_with_event_offer, create_offerer, create_venue, \
+    create_offer_with_thing_product, create_stock_with_thing_offer, create_mocked_bookings
 
 
 class SendResetPasswordEmailTest:
@@ -305,7 +306,7 @@ class SendValidationConfirmationEmailTest:
     @patch('domain.user_emails.retrieve_data_for_new_offerer_validation_email',
            return_value={'Mj-TemplateID': 778723})
     def when_feature_send_mail_to_users_is_enabled_sends_email_to_all_users_linked_to_offerer(self,
-                                                                                           mock_retrieve_data_for_new_offerer_validation_email):
+                                                                                              mock_retrieve_data_for_new_offerer_validation_email):
         # Given
         offerer = Offerer()
         mocked_send_email = Mock()
@@ -338,82 +339,47 @@ class SendCancellationEmailOneUserTest:
 
 
 class SendBatchCancellationEmailToOffererTest:
-    @patch('domain.user_emails.make_batch_cancellation_email', return_value={'Html-part': ''})
+    @patch('domain.user_emails.retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation',
+           return_value={'Mj-TemplateID': 1116333})
+    @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
     @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
-    def when_feature_send_mail_to_users_enabled_and_offer_booking_email_sends_to_offerer_and_administration_stock_case(
-            self, feature_send_mail_to_users_enabled, make_batch_cancellation_email):
+    def when_feature_send_mail_to_users_enabled_sends_to_offerer_administration(self,
+                                                                                feature_send_mail_to_users_enabled,
+                                                                                retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation):
         # Given
         num_bookings = 5
         bookings = create_mocked_bookings(num_bookings, 'offerer@example.com')
+        recipients = 'offerer@example.com, administration@example.com'
         mocked_send_email = Mock()
 
         # When
-        send_batch_cancellation_email_to_offerer(bookings, 'stock', mocked_send_email)
+        send_batch_cancellation_email_to_offerer(bookings, mocked_send_email)
 
         # Then
-        make_batch_cancellation_email.assert_called_once_with(bookings, 'stock')
+        retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation.assert_called_once_with(bookings,
+                                                                                                      recipients)
+        mocked_send_email.assert_called_once_with(data={'Mj-TemplateID': 1116333})
 
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'offerer@example.com, administration@passculture.app'
-
-    @patch('domain.user_emails.make_batch_cancellation_email', return_value={'Html-part': ''})
+    @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
+    @patch('domain.user_emails.retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation',
+           return_value={'Mj-TemplateID': 1116333})
     @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
-    def when_feature_send_mail_to_users_enabled_and_offer_booking_email_sends_to_offerer_and_administration_event_occurrence_case(
-            self, feature_send_mail_to_users_enabled, make_batch_cancellation_email):
-        # Given
-        num_bookings = 5
-        bookings = create_mocked_bookings(num_bookings, 'offerer@example.com')
-        mocked_send_email = Mock()
-
-        # When
-        send_batch_cancellation_email_to_offerer(bookings, 'event_occurrence', mocked_send_email)
-
-        # Then
-        make_batch_cancellation_email.assert_called_once_with(bookings, 'event_occurrence')
-
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'offerer@example.com, administration@passculture.app'
-
-    @patch('domain.user_emails.make_batch_cancellation_email', return_value={'Html-part': ''})
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False)
-    def when_feature_send_mail_to_users_disabled_sends_email_to_pass_culture_dev(self,
-                                                                                 feature_send_mail_to_users_enabled,
-                                                                                 make_batch_cancellation_email):
-        # Given
-        num_bookings = 5
-        bookings = create_mocked_bookings(num_bookings, 'offerer@example.com')
-        mocked_send_email = Mock()
-
-        # When
-        send_batch_cancellation_email_to_offerer(bookings, 'stock', mocked_send_email)
-
-        # Then
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'dev@passculture.app'
-        assert 'This is a test' in args[1]['data']['Html-part']
-
-    @patch('domain.user_emails.make_batch_cancellation_email', return_value={'Html-part': ''})
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
-    def when_feature_send_mail_to_users_enabled_and_not_offer_booking_email_sends_only_to_administration(self,
-                                                                                                         feature_send_mail_to_users_enabled,
-                                                                                                         make_batch_cancellation_email):
+    def when_feature_send_mail_to_users_enabled_and_offerer_email_is_missing_sends_only_to_administration(self,
+                                                                                                          feature_send_mail_to_users_enabled,
+                                                                                                          retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation):
         # Given
         num_bookings = 5
         bookings = create_mocked_bookings(num_bookings, None)
+        recipients = 'administration@example.com'
         mocked_send_email = Mock()
 
         # When
-        send_batch_cancellation_email_to_offerer(bookings, 'event_occurrence', mocked_send_email)
+        send_batch_cancellation_email_to_offerer(bookings, mocked_send_email)
 
         # Then
-        make_batch_cancellation_email.assert_called_once_with(bookings, 'event_occurrence')
-
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'administration@passculture.app'
+        retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation.assert_called_once_with(bookings,
+                                                                                                      recipients)
+        mocked_send_email.assert_called_once_with(data={'Mj-TemplateID': 1116333})
 
 
 class SendVenueValidationConfirmationEmailTest:
@@ -522,7 +488,8 @@ class SendResetPasswordEmailWithMailjetTemplateTest:
 class SendActivationEmailTest:
     def test_should_return_true_when_email_data_are_valid(self):
         # given
-        user = create_user(email='bobby@example.net', public_name='bobby', reset_password_token='AZ45KNB99H', first_name='John')
+        user = create_user(email='bobby@example.net', public_name='bobby', reset_password_token='AZ45KNB99H',
+                           first_name='John')
         mocked_send_email = Mock(return_value=True)
 
         # when
@@ -533,7 +500,8 @@ class SendActivationEmailTest:
 
     def test_should_return_false_when_email_data_are_not_valid(self):
         # given
-        user = create_user(email='bobby@example.net', public_name='bobby', reset_password_token='AZ45KNB99H', first_name='John')
+        user = create_user(email='bobby@example.net', public_name='bobby', reset_password_token='AZ45KNB99H',
+                           first_name='John')
         mocked_send_email = Mock(return_value=False)
 
         # when
