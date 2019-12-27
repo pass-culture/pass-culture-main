@@ -159,9 +159,8 @@ class AllocineStocks(LocalProvider):
         allocine_stock.price = self.apply_allocine_price_rule(allocine_stock)
 
         movie_duration = self.movie_information['duration']
-
-        allocine_stock.endDatetime = allocine_stock.beginningDatetime + timedelta(minutes=movie_duration) \
-            if movie_duration else allocine_stock.beginningDatetime
+        if movie_duration is not None:
+            allocine_stock.endDatetime = allocine_stock.beginningDatetime + timedelta(minutes=movie_duration)
 
     def apply_allocine_price_rule(self, allocine_stock: Stock) -> int:
         price = None

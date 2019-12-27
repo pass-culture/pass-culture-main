@@ -18,6 +18,6 @@ class CreateVenueTest:
         )
 
         # Then
-        assert venue.address is None
-        assert venue.latitude is None
-        assert venue.longitude is None
+        assert venue.address == None
+        assert venue.latitude == None
+        assert venue.longitude == None
