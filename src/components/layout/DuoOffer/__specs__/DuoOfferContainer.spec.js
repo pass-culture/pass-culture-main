@@ -65,24 +65,6 @@ describe('src | components | layout | DuoOffer | DuoOfferContainer', () => {
       })
     })
 
-    it('should return an object with isDisabled to false when feature is not enable', () => {
-      // given
-      state.data.features = [
-        {
-          isActive: false,
-          nameKey: 'DUO_OFFER',
-        },
-      ]
-
-      // when
-      const props = mapStateToProps(state, ownProps)
-
-      // then
-      expect(props).toStrictEqual({
-        isDuoOffer: false,
-      })
-    })
-
     it('should return an object with isDisabled to false when offer is not Duo', () => {
       // given
       state.data.offers = [
