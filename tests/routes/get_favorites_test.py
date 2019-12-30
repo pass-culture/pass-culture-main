@@ -1,9 +1,12 @@
+from unittest.mock import patch
+
 import pytest
 
 from models import PcObject
+from models.feature import FeatureToggle
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import API_URL, create_user, create_offerer, create_venue, create_offer_with_thing_product, \
-    create_mediation, create_favorite
+    create_mediation, create_favorite, deactivate_feature
 
 
 @pytest.mark.standalone
@@ -58,3 +61,21 @@ class Get:
 
             # Then
             assert response.status_code == 401
+
+    class Returns403:
+        @clean_database
+        def when_favorites_are_flipped_off(self, app):
+            # Given
+            url = f'{API_URL}/favorites'
+            user = create_user()
+            PcObject.save(user)
+            deactivate_feature(FeatureToggle.FAVORITE_OFFER)
+
+            # When
+            response = TestClient(app.test_client()) \
+                .with_auth(user.email) \
+                .get(url)
+
+            # Then
+            assert response.status_code == 403
+            assert response.json == {'Forbidden': ["You don't have access to this page or resource"]}

@@ -1,5 +1,6 @@
 from functools import wraps
 
+from models import ApiErrors
 from models.feature import FeatureToggle
 from repository import feature_queries
 
@@ -11,6 +12,12 @@ def feature_required(feature_toggle: FeatureToggle):
             if feature_queries.is_active(feature_toggle):
                 return f(*args, **kwargs)
 
-            return '', 403
+            errors = ApiErrors()
+            errors.add_error(
+                'Forbidden',
+                'You don\'t have access to this page or resource'
+            )
+            errors.status_code = 403
+            raise errors
         return wrapper
     return decorator

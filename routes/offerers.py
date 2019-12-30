@@ -113,4 +113,3 @@ def patch_offerer(offererId):
     offerer.populate_from_dict(data, skipped_keys=['validationToken'])
     PcObject.save(offerer)
     return jsonify(get_dict_offerer(offerer)), 200
-
