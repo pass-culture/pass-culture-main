@@ -18,7 +18,6 @@ import {
   selectVenuesByOffererIdAndOfferType,
 } from '../../../selectors/data/venuesSelectors'
 import { selectOfferers } from '../../../selectors/data/offerersSelectors'
-import selectIsFeatureActive from '../../router/selectors/selectIsFeatureActive'
 import { mergeForm } from 'pass-culture-shared'
 import { selectStocksByOfferId } from '../../../selectors/data/stocksSelectors'
 import { selectProviders } from '../../../selectors/data/providersSelectors'
@@ -83,14 +82,11 @@ export const mapStateToProps = (state, ownProps) => {
   const showSubOptions = extraData.showType && selectShowSubOptionsByShowType(extraData.showType)
   const offerTypeError = get(state, 'errors.offer.type')
 
-  const isFeatureActive = selectIsFeatureActive(state, 'DUO_OFFER')
-
   return {
     formInitialValues,
     formOffererId,
     formVenueId,
     isEditableOffer,
-    isFeatureActive,
     musicSubOptions,
     offer,
     offerer,

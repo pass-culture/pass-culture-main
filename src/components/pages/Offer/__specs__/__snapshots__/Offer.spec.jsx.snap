@@ -33,7 +33,6 @@ ShallowWrapper {
     }
     history={Object {}}
     isEditableOffer={true}
-    isFeatureActive={true}
     loadVenue={[MockFunction]}
     location={
       Object {

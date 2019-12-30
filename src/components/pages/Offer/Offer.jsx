@@ -279,9 +279,7 @@ class Offer extends PureComponent {
   }
 
   setDefaultIsDuoIfNewAndEvent() {
-    const { isFeatureActive, query, updateFormSetIsDuo, selectedOfferType } = this.props
-
-    if (!isFeatureActive) return
+    const { query, updateFormSetIsDuo, selectedOfferType } = this.props
 
     const { isCreatedEntity } = query.context()
     if (!isCreatedEntity) return
@@ -328,7 +326,6 @@ class Offer extends PureComponent {
       currentUser,
       formInitialValues,
       isEditableOffer,
-      isFeatureActive,
       musicSubOptions,
       offer,
       offerer,
@@ -385,12 +382,11 @@ class Offer extends PureComponent {
     }
 
     let isDuoDefaultStatus
-    if (isFeatureActive) {
-      if (formInitialValues.isDuo === undefined) {
-        isDuoDefaultStatus = true
-      } else {
-        isDuoDefaultStatus = formInitialValues.isDuo
-      }
+
+    if (formInitialValues.isDuo === undefined) {
+      isDuoDefaultStatus = true
+    } else {
+      isDuoDefaultStatus = formInitialValues.isDuo
     }
 
     const offererHasNoPhysicalVenues = offerer && get(venuesMatchingOfferType, 'length') === 0
@@ -637,7 +633,7 @@ class Offer extends PureComponent {
                     type="duration"
                   />
                 )}
-                {isEventType && isFeatureActive && (
+                {isEventType && (
                   <div className="select-duo-offer">
                     <input
                       className="pc-checkbox input"
@@ -810,7 +806,6 @@ class Offer extends PureComponent {
 }
 
 Offer.defaultProps = {
-  isFeatureActive: true,
   venuesMatchingOfferType: [],
 }
 
@@ -818,7 +813,6 @@ Offer.propTypes = {
   currentUser: PropTypes.shape().isRequired,
   dispatch: PropTypes.func.isRequired,
   isEditableOffer: PropTypes.bool.isRequired,
-  isFeatureActive: PropTypes.bool,
   location: PropTypes.shape().isRequired,
   query: PropTypes.shape().isRequired,
   selectedOfferType: PropTypes.shape().isRequired,

@@ -46,7 +46,6 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
         formOffererId: 'BA',
         formVenueId: 'DA',
         isEditableOffer: undefined,
-        isFeatureActive: false,
         musicSubOptions: undefined,
         offer: {
           bookingEmail: 'booking.email@test.com',

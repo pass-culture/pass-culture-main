@@ -22,7 +22,6 @@ describe('src | components | pages | Offer | Offer ', () => {
         isDuo: false,
       },
       isEditableOffer: true,
-      isFeatureActive: true,
       loadVenue: jest.fn(),
       location: {
         search: '?lieu=AQ',
@@ -290,7 +289,6 @@ describe('src | components | pages | Offer | Offer ', () => {
               offerId: 'QU',
             },
           }
-          props.isFeatureActive = true
           props.selectedOfferType = {
             type: 'Event',
           }
