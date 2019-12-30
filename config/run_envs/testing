@@ -1,5 +1,6 @@
 API_URL='https://backend.passculture-testing.beta.gouv.fr'
-URL_FOR_MAINTENANCE=https://maintenance.passculture.app
 THUMBS_URL='https://storage.gra3.cloud.ovh.net/v1/AUTH_688df1e25bd84a48a3804e7fa8938085/storage-pc-dev/thumbs'
 NODE_ENV="production"
 TYPEFORM_URL_CULTURAL_PRACTICES_POLL="https://passculture.typeform.com/to/T8rurj"
+PRO_URL_FOR_MAINTENANCE=https://maintenance.passculture.app?source=https://pro.passculture-testing.beta.gouv.fr/
+WEBAPP_URL_FOR_MAINTENANCE=https://maintenance.passculture.app?source=https://app.passculture-testing.beta.gouv.fr/
