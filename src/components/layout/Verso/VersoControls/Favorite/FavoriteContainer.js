@@ -5,7 +5,6 @@ import { compose } from 'redux'
 
 import Favorite from './Favorite'
 import { selectOfferByRouterMatch } from '../../../../../selectors/data/offersSelectors'
-import selectIsFeatureDisabled from '../../../../router/selectors/selectIsFeatureDisabled'
 import { favoriteNormalizer } from '../../../../../utils/normalizers'
 import { selectFavoriteByOfferId } from '../../../../../selectors/data/favoritesSelectors'
 import { selectMediationByRouterMatch } from '../../../../../selectors/data/mediationsSelectors'
@@ -20,7 +19,6 @@ export const apiPath = (isFavorite, offerId) => {
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
-  const isFeatureDisabled = selectIsFeatureDisabled(state, 'FAVORITE_OFFER')
   const mediation = selectMediationByRouterMatch(state, match) || {}
   const { id: mediationId } = mediation
   const offer = selectOfferByRouterMatch(state, match) || { id: '' }
@@ -30,7 +28,6 @@ export const mapStateToProps = (state, ownProps) => {
 
   return {
     isFavorite,
-    isFeatureDisabled,
     mediationId,
     offerId,
   }

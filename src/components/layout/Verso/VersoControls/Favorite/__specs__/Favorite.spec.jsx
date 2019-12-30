@@ -10,7 +10,6 @@ describe('src | components | layout | Verso | VersoControls | Favorite | Favorit
     props = {
       handleFavorite: jest.fn(),
       isFavorite: true,
-      isFeatureDisabled: false,
       loadFavorites: jest.fn(),
       offerId: 'AE',
     }
@@ -30,19 +29,6 @@ describe('src | components | layout | Verso | VersoControls | Favorite | Favorit
     it('should match the snapshot', () => {
       // given
       props.isFavorite = false
-
-      // when
-      const wrapper = shallow(<Favorite {...props} />)
-
-      // then
-      expect(wrapper).toMatchSnapshot()
-    })
-  })
-
-  describe('when the favorite functionnality is not implemented', () => {
-    it('should match the snapshot', () => {
-      // given
-      props.isFeatureDisabled = true
 
       // when
       const wrapper = shallow(<Favorite {...props} />)

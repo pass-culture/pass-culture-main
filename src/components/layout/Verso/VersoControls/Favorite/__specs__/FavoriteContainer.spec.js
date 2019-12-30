@@ -47,7 +47,6 @@ describe('src | components | layout | Verso | VersoControls | Favorite | Favorit
       // then
       expect(props).toStrictEqual({
         isFavorite: true,
-        isFeatureDisabled: true,
         mediationId,
         offerId,
       })

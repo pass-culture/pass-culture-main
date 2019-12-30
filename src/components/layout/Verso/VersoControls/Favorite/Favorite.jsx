@@ -37,14 +37,14 @@ class Favorite extends PureComponent {
   }
 
   render() {
-    const { isFavorite, isFeatureDisabled, mediationId, offerId } = this.props
+    const { isFavorite, mediationId, offerId } = this.props
     const { isWaitingApi } = this.state
 
     return (
       <button
         aria-label={alternativeText(isFavorite)}
         className="fav-button"
-        disabled={isFeatureDisabled || isWaitingApi}
+        disabled={isWaitingApi}
         onClick={this.handleFavorite(offerId, mediationId, isFavorite)}
         title={alternativeText(isFavorite)}
         type="button"
@@ -60,14 +60,12 @@ class Favorite extends PureComponent {
 
 Favorite.defaultProps = {
   isFavorite: true,
-  isFeatureDisabled: false,
   mediationId: null,
 }
 
 Favorite.propTypes = {
   handleFavorite: PropTypes.func.isRequired,
   isFavorite: PropTypes.bool,
-  isFeatureDisabled: PropTypes.bool,
   loadFavorites: PropTypes.func.isRequired,
   mediationId: PropTypes.string,
   offerId: PropTypes.string.isRequired,
