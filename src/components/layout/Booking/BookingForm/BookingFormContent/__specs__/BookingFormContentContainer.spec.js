@@ -6,12 +6,6 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
       // given
       const state = {
         data: {
-          features: [
-            {
-              nameKey: 'DUO_OFFER',
-              isActive: true,
-            },
-          ],
           offers: [
             {
               id: 'O1',

@@ -6,7 +6,7 @@ import { selectIsStockDuo } from '../../../../../selectors/data/stocksSelectors'
 export const mapStateToProps = (state, ownProps) => {
   const { offerId, values } = ownProps
   const { stockId } = values
-  const isStockDuo = selectIsStockDuo(state, stockId, offerId, 'DUO_OFFER')
+  const isStockDuo = selectIsStockDuo(state, stockId, offerId)
 
   return {
     isStockDuo,

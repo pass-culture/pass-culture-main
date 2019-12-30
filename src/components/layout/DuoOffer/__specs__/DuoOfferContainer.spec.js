@@ -11,12 +11,6 @@ describe('src | components | layout | DuoOffer | DuoOfferContainer', () => {
 
     state = {
       data: {
-        features: [
-          {
-            isActive: true,
-            nameKey: 'DUO_OFFER',
-          },
-        ],
         offers: [
           {
             id: 'AAAA',

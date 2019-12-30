@@ -1,6 +1,5 @@
 import createCachedSelector from 're-reselect'
 
-import selectIsFeatureDisabled from '../../components/router/selectors/selectIsFeatureDisabled'
 import { selectOfferById } from './offersSelectors'
 
 const selectStocks = state => state.data.stocks
@@ -31,11 +30,10 @@ export const selectIsEnoughStockForOfferDuo = createCachedSelector(
 export const selectIsStockDuo = createCachedSelector(
   selectStockById,
   (state, stockId, offerId) => selectOfferById(state, offerId),
-  (state, stockId, offerId, featureName) => selectIsFeatureDisabled(state, featureName),
-  (stock, offer, isFeatureDisabled) => {
+  (stock, offer) => {
     const isEnoughAvailable = stock && (stock.available >= 2 || stock.available === null)
     const isOfferDuo = offer && offer.isDuo
-    const isStockDuo = !isFeatureDisabled && isEnoughAvailable && isOfferDuo
+    const isStockDuo = isEnoughAvailable && isOfferDuo
 
     return isStockDuo
   }

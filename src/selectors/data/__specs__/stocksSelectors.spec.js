@@ -91,16 +91,10 @@ describe('selectIsEnoughStockForOfferDuo', () => {
 })
 
 describe('selectIsStockDuo', () => {
-  it('should be duo if feature is active, stock available 2 or more and on an offer duo', () => {
+  it('should be duo if stock available 2 or more and on an offer duo', () => {
     // given
     const state = {
       data: {
-        features: [
-          {
-            nameKey: 'DUO_OFFER',
-            isActive: true,
-          },
-        ],
         offers: [
           {
             id: 'O1',
@@ -121,22 +115,16 @@ describe('selectIsStockDuo', () => {
     const stockId = 'S1'
 
     // when
-    const isStockDuo = selectIsStockDuo(state, stockId, offerId, 'DUO_OFFER')
+    const isStockDuo = selectIsStockDuo(state, stockId, offerId)
 
     // then
     expect(isStockDuo).toBe(true)
   })
 
-  it('should be duo if feature is active, stock unlimited and on an offer duo', () => {
+  it('should be duo if stock unlimited and on an offer duo', () => {
     // given
     const state = {
       data: {
-        features: [
-          {
-            nameKey: 'DUO_OFFER',
-            isActive: true,
-          },
-        ],
         offers: [
           {
             id: 'O1',
@@ -157,58 +145,16 @@ describe('selectIsStockDuo', () => {
     const stockId = 'S1'
 
     // when
-    const isStockDuo = selectIsStockDuo(state, stockId, offerId, 'DUO_OFFER')
+    const isStockDuo = selectIsStockDuo(state, stockId, offerId)
 
     // then
     expect(isStockDuo).toBe(true)
-  })
-
-  it('should not be duo if feature is not active', () => {
-    // given
-    const state = {
-      data: {
-        features: [
-          {
-            nameKey: 'DUO_OFFER',
-            isActive: false,
-          },
-        ],
-        offers: [
-          {
-            id: 'O1',
-            isDuo: true,
-          },
-        ],
-        stocks: [
-          {
-            id: 'S1',
-            offerId: 'O1',
-            available: 5,
-          },
-        ],
-      },
-    }
-
-    const offerId = 'O1'
-    const stockId = 'S1'
-
-    // when
-    const isStockDuo = selectIsStockDuo(state, stockId, offerId, 'DUO_OFFER')
-
-    // then
-    expect(isStockDuo).toBe(false)
   })
 
   it('should not be duo if there less than 2 available', () => {
     // given
     const state = {
       data: {
-        features: [
-          {
-            nameKey: 'DUO_OFFER',
-            isActive: true,
-          },
-        ],
         offers: [
           {
             id: 'O1',
@@ -229,7 +175,7 @@ describe('selectIsStockDuo', () => {
     const stockId = 'S1'
 
     // when
-    const isStockDuo = selectIsStockDuo(state, stockId, offerId, 'DUO_OFFER')
+    const isStockDuo = selectIsStockDuo(state, stockId, offerId)
 
     // then
     expect(isStockDuo).toBe(false)
@@ -239,12 +185,6 @@ describe('selectIsStockDuo', () => {
     // given
     const state = {
       data: {
-        features: [
-          {
-            nameKey: 'DUO_OFFER',
-            isActive: true,
-          },
-        ],
         offers: [
           {
             id: 'O1',
@@ -265,7 +205,7 @@ describe('selectIsStockDuo', () => {
     const stockId = 'S1'
 
     // when
-    const isStockDuo = selectIsStockDuo(state, stockId, offerId, 'DUO_OFFER')
+    const isStockDuo = selectIsStockDuo(state, stockId, offerId)
 
     // then
     expect(isStockDuo).toBe(false)
