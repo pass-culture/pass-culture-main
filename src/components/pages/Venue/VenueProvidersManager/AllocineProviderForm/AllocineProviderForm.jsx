@@ -6,6 +6,8 @@ import NumberField from '../../../../layout/form/fields/NumberField'
 import Icon from '../../../../layout/Icon'
 import { Form } from 'react-final-form'
 import SynchronisationConfirmationModal from './SynchronisationConfirmationModal/SynchronisationConfirmationModal'
+import { getCanSubmit } from 'react-final-form-utils'
+import Insert from '../../../../layout/Insert/Insert'
 
 class AllocineProviderForm extends PureComponent {
   constructor() {
@@ -67,6 +69,7 @@ class AllocineProviderForm extends PureComponent {
   renderForm = (props) => {
     const {venueIdAtOfferProviderIsRequired} = this.props
     const {isLoadingMode, isShowingConfirmationModal} = this.state
+    const canSubmit = getCanSubmit(props)
 
     return (
       <form onSubmit={props.handleSubmit}>
@@ -78,13 +81,17 @@ class AllocineProviderForm extends PureComponent {
                   className="label-text"
                   htmlFor="venueIdAtOfferProvider"
                 >
-                  {'Compte'}
+                  {'Compte '}
+                  <span className="field-asterisk">
+                    {'*'}
+                  </span>
                 </label>
                 {!isLoadingMode && venueIdAtOfferProviderIsRequired && (
                   <span
-                    className="tooltip tooltip-info"
+                    className="button"
                     data-place="bottom"
-                    data-tip={`<p>Veuillez saisir un compte.</p>`}
+                    data-tip="<p>Veuillez saisir un compte.</p>"
+                    data-type="info"
                     id="compte-tooltip"
                   >
                     <Icon
@@ -102,7 +109,6 @@ class AllocineProviderForm extends PureComponent {
                 readOnly={!venueIdAtOfferProviderIsRequired || isLoadingMode}
                 required
               />
-
             </div>
 
             {!isLoadingMode && (
@@ -112,12 +118,16 @@ class AllocineProviderForm extends PureComponent {
                     className="label-prix"
                     htmlFor="price"
                   >
-                    {'Prix de vente/place'}
+                    {'Prix de vente/place '}
+                    <span className="field-asterisk">
+                      {'*'}
+                    </span>
                   </label>
                   <span
-                    className="tooltip tooltip-info"
+                    className="button"
                     data-place="bottom"
-                    data-tip={`<p>Prix de vente/place : Prix auquel la place de cinéma sera vendue</p>`}
+                    data-tip="<p>Prix de vente/place : Prix auquel la place de cinéma sera vendue.</p>"
+                    data-type="info"
                     id="price-tooltip"
                   >
                     <Icon
@@ -133,7 +143,6 @@ class AllocineProviderForm extends PureComponent {
                   placeholder="Ex : 12€"
                   required
                 />
-
               </div>
             )}
           </div>
@@ -142,12 +151,23 @@ class AllocineProviderForm extends PureComponent {
             <div className="provider-import-button-container">
               <button
                 className="button is-intermediate provider-import-button"
+                disabled={!canSubmit}
                 onClick={this.handleShowModal}
                 type="button"
               >
                 {'Importer'}
               </button>
             </div>
+          )}
+
+          {!isLoadingMode && (
+            <Insert>
+              {'Pour le moment, seules les séances "classiques" peuvent être importées.'}
+              <p />
+              {'Les séances spécifiques (3D, Dolby Atmos, 4DX...) ne génèreront pas d\'offres.'}
+              <p />
+              {'Nous travaillons actuellement à l\'ajout de séances spécifiques.'}
+            </Insert>
           )}
 
           {isShowingConfirmationModal && (

@@ -3,6 +3,11 @@
   flex-direction: row;
   flex-wrap: wrap;
 
+  .field-asterisk {
+    @extend .ml2;
+    color: $violet-dark;
+  }
+
   .compte-section {
     margin-right: 20px;
 

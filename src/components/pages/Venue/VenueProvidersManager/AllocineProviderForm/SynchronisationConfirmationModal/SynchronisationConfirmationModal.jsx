@@ -1,14 +1,22 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import {ROOT_PATH} from '../../../../../../utils/config'
 
 const SynchronisationConfirmationModal = ({ handleClose, handleConfirm }) => {
   return (
     <div className="background">
       <section className="modal-main">
         <div className="confirmation-modal-content">
-          <p className="warning-text">
-            {'Vous ne pourrez plus modifier le prix de vente après la synchronisation.'}
-          </p>
+          <div className="warning-text">
+            <img
+              alt="Attention"
+              src={`${ROOT_PATH}/icons/picto-warning-orange.png`}
+              title="Attention"
+            />
+            <p>
+              {'Vous ne pourrez plus modifier le prix de vente après la synchronisation.'}
+            </p>
+          </div>
           <div className="actions">
             <button
               className="cancel-button"
@@ -16,7 +24,9 @@ const SynchronisationConfirmationModal = ({ handleClose, handleConfirm }) => {
               onClick={handleClose}
               type="button"
             >
-              {'Annuler'}
+              <p>
+                {' Annuler '}
+              </p>
             </button>
             <button
               className="confirm-button"
@@ -24,7 +34,9 @@ const SynchronisationConfirmationModal = ({ handleClose, handleConfirm }) => {
               onClick={handleConfirm}
               type="button"
             >
-              {'Synchroniser'}
+              <b>
+                {' Synchroniser '}
+              </b>
             </button>
           </div>
         </div>

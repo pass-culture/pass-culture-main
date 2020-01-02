@@ -73,7 +73,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Allo
     const priceSection = wrapper.find(Form).find('.price-section')
     expect(priceSection).toHaveLength(1)
     const label = priceSection.find('label')
-    expect(label.text()).toBe('Prix de vente/place')
+    expect(label.text()).toBe('Prix de vente/place *')
     const priceInput = priceSection.find(NumberField)
     expect(priceInput).toHaveLength(1)
     expect(priceInput.prop('min')).toBe('0')
@@ -85,12 +85,11 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Allo
 
     // then
     const priceSection = wrapper.find(Form).find('.price-section')
-    const tooltip = priceSection.find('.tooltip-info')
+    const tooltip = priceSection.find('#price-tooltip')
     expect(tooltip).toHaveLength(1)
-    expect(tooltip.prop('className')).toBe('tooltip tooltip-info')
     expect(tooltip.prop('data-place')).toBe('bottom')
     expect(tooltip.prop('data-tip')).toBe(
-      '<p>Prix de vente/place : Prix auquel la place de cinéma sera vendue</p>'
+      '<p>Prix de vente/place : Prix auquel la place de cinéma sera vendue.</p>'
     )
     const icon = tooltip.find(Icon)
     expect(icon).toHaveLength(1)
@@ -110,7 +109,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Allo
       const form = wrapper.find(Form)
       expect(form).toHaveLength(1)
       const label = form.find('label[htmlFor="venueIdAtOfferProvider"]')
-      expect(label.text()).toBe('Compte')
+      expect(label.text()).toBe('Compte *')
       const textField = form.find('.compte-section').find(TextField)
       expect(textField).toHaveLength(1)
       expect(textField.prop('className')).toBe('field-text')
@@ -130,7 +129,6 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Allo
       // then
       const tooltip = wrapper.find('#compte-tooltip')
       expect(tooltip).toHaveLength(1)
-      expect(tooltip.prop('className')).toBe('tooltip tooltip-info')
       expect(tooltip.prop('data-place')).toBe('bottom')
       expect(tooltip.prop('data-tip')).toBe('<p>Veuillez saisir un compte.</p>')
       const icon = tooltip.find(Icon)
@@ -153,7 +151,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Allo
       const form = wrapper.find(Form)
       expect(form).toHaveLength(1)
       const label = form.find('label[htmlFor="venueIdAtOfferProvider"]')
-      expect(label.text()).toBe('Compte')
+      expect(label.text()).toBe('Compte *')
       const textField = form.find('.compte-section').find(TextField)
       expect(textField).toHaveLength(1)
       expect(textField.prop('className')).toBe('field-text field-is-read-only')
