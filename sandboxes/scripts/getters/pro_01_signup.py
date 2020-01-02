@@ -16,19 +16,15 @@ def get_existing_pro_user_with_offerer():
         "user": get_user_helper(user)
     }
 
+
 def get_existing_pro_not_validated_user_with_real_offerer():
-    query = User.query.filter(User.validationToken != None)
-    query = query.join(UserOfferer) \
-                 .join(Offerer) \
-                 .filter(~Offerer.siren.startswith('222'))
-    user = query.first()
+    users = User.query \
+        .filter(User.validationToken is not None) \
+        .join(UserOfferer) \
+        .all()
 
-    offerer = [
-        uo.offerer for uo in user.UserOfferers
-        if not uo.offerer.siren.startswith('222')
-    ][0]
-
-    return {
-        "offerer": get_offerer_helper(offerer),
-        "user": get_user_helper(user)
-    }
+    for user in users:
+        if len(user.UserOfferers) == 1:
+            return {
+                'user': get_user_helper(user)
+            }
