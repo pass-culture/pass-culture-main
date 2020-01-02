@@ -13,11 +13,11 @@ two_hours = timedelta(hours=2)
 
 
 def save_users_with_deposits():
-    user1 = create_user(can_book_free_offers=True, email='user1@test.com')
-    user2 = create_user(can_book_free_offers=True, email='user2@test.com')
-    user3 = create_user(can_book_free_offers=True, email='user3@test.com')
-    user4 = create_user(can_book_free_offers=True, email='user4@test.com')
-    user5 = create_user(can_book_free_offers=True, email='user5@test.com')
+    user1 = create_user(can_book_free_offers=True, email='user1@test.com', reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24))
+    user2 = create_user(can_book_free_offers=True, email='user2@test.com', reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24))
+    user3 = create_user(can_book_free_offers=True, email='user3@test.com', reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24))
+    user4 = create_user(can_book_free_offers=True, email='user4@test.com', reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24))
+    user5 = create_user(can_book_free_offers=True, email='user5@test.com', reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24))
     deposit1 = create_deposit(user1, amount=500)
     deposit2 = create_deposit(user2, amount=500)
     deposit3 = create_deposit(user3, amount=500)

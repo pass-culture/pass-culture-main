@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from models.pc_object import PcObject
 from tests.model_creators.generic_creators import create_user
 from utils.logger import logger
@@ -15,22 +17,17 @@ def create_industrial_admin_users():
 
         for admin_count in range(ADMINS_COUNT):
             email = "pctest.admin{}.{}@btmx.fr".format(departement_code, admin_count)
-            users_by_name['admin{} {}'.format(departement_code, admin_count)] = create_user(None,
-                                                                                            can_book_free_offers=False,
-                                                                                            date_of_birth=None,
-                                                                                            departement_code=str(
-                                                                                                departement_code),
-                                                                                            email=email,
-                                                                                            first_name="PC Test Admin",
-                                                                                            is_admin=True,
-                                                                                            last_name="{} {}".format(
-                                                                                                departement_code,
-                                                                                                admin_count),
-                                                                                            postal_code="{}100".format(
-                                                                                                departement_code),
-                                                                                            public_name="PC Test Admin {} {}".format(
-                                                                                                departement_code,
-                                                                                                admin_count))
+            users_by_name['admin{} {}'.format(departement_code, admin_count)] = create_user(
+                reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
+                can_book_free_offers=False,
+                date_of_birth=None,
+                departement_code=str(departement_code),
+                email=email,
+                first_name="PC Test Admin",
+                is_admin=True,
+                last_name="{} {}".format(departement_code, admin_count),
+                postal_code="{}100".format(departement_code),
+                public_name="PC Test Admin {} {}".format(departement_code, admin_count))
 
     PcObject.save(*users_by_name.values())
 
