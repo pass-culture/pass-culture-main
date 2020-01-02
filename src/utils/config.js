@@ -13,7 +13,7 @@ export const {
   TYPEFORM_URL_CULTURAL_PRACTICES_POLL,
   ENVIRONMENT_NAME,
   SENTRY_SERVER_URL_FOR_WEBAPP,
-  URL_FOR_MAINTENANCE
+  URL_FOR_MAINTENANCE,
 } = process.env
 export const APP_VERSION = version
 export const USE_REDUX_PERSIST = false
@@ -27,8 +27,6 @@ export const WEBAPP_CONTACT_EXTERNAL_PAGE =
 
 // NOTE: valeur également présente en dur dans:
 // - ./webapp/README.md
-// - ./webapp/config-staging.xml
-// - ./webapp/config-production.xml
 // - ./webapp/public/MentionsLegalesPass.md
 export const SUPPORT_EMAIL = 'support@passculture.app'
 export const SUPPORT_EMAIL_SUBJECT = encodeURI('Votre question depuis l’application pass Culture')
@@ -49,32 +47,7 @@ export const IS_LOCALHOST = Boolean(calculatedLocalhost)
 
 // FIXME -> document.body.className should be removed using React.Helmet
 let CALC_ROOT_PATH = ''
-if (typeof window !== 'undefined' && window.cordova) {
-  document.body.className += ' cordova'
-  if (MOBILE_OS === 'android') {
-    CALC_ROOT_PATH = 'file:///android_asset/www'
-    document.body.className += ' cordova-android'
-    // document.body.className += ' android-with-statusbar'
-  } else if (MOBILE_OS === 'ios') {
-    // TODO
-    document.body.className += ' cordova-ios'
-    // NOTE: Si ici on applique pas la regle des ';'
-    // L'application plante en respectant la regle eslint.prefer-destructuring
-    // eslint-disable-next-line
-    CALC_ROOT_PATH = window.location.href.match(/file:\/\/(.*)\/www/)[0]
-  }
-  window.addEventListener('keyboardWillShow', () => {
-    window.log('Keyboard show')
-    document.body.className += ' softkeyboard'
-  })
-  window.addEventListener('keyboardWillHide', () => {
-    window.log('Keyboard Hide')
-    document.body.className = document.body.className
-      .split(' ')
-      .filter(c => c !== 'softkeyboard')
-      .join(' ')
-  })
-} else if (typeof window !== 'undefined') {
+if (typeof window !== 'undefined') {
   CALC_ROOT_PATH = `${window.location.protocol}//${document.location.host}`
 }
 
