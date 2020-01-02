@@ -163,8 +163,8 @@ class Booking(PcObject, Model, VersionedMixin):
         from domain.bookings import generate_qr_code
         offer = self.stock.resolvedOffer
         if offer.isEvent:
-            return generate_qr_code(self) if not (self.isEventExpired or self.isCancelled) else None
-        return generate_qr_code(self) if not (self.isUsed or self.isCancelled) else None
+            return generate_qr_code(self) if self.isEventExpired is False and self.isCancelled is False else None
+        return generate_qr_code(self) if self.isUsed is False and self.isCancelled is False else None
 
 
 class ActivationUser:

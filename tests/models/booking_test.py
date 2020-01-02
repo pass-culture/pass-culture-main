@@ -109,7 +109,7 @@ def test_model_thumbUrl_should_have_thumbUrl_using_productId_when_no_mediation(g
 
 
 class BookingEventOfferQRCodeGenerationTest:
-    def test_model_qrCode_should_return_qrCode_as_base64_string_when_booking_is_not_used_and_not_cancelled(self):
+    def test_model_qrcode_should_return_qrcode_as_base64_string_when_booking_is_not_used_and_not_cancelled(self):
         # given
         two_days_after_now = datetime.utcnow() + timedelta(days=2)
         user = create_user()
@@ -121,10 +121,9 @@ class BookingEventOfferQRCodeGenerationTest:
         booking = create_booking(stock=stock, user=user, is_used=False, is_cancelled=False)
 
         # then
-        assert booking.qrCode is not None
         assert type(booking.qrCode) is str
 
-    def test_model_qrCode_should_return_qrCode_as_None_when_booking_is_used_and_cancelled(self):
+    def test_model_qrcode_should_return_qrcode_as_None_when_booking_is_used_and_cancelled(self):
         # given
         two_days_after_now = datetime.utcnow() + timedelta(days=2)
         user = create_user()
@@ -138,7 +137,7 @@ class BookingEventOfferQRCodeGenerationTest:
         # then
         assert booking.qrCode is None
 
-    def test_model_qrCode_should_return_qrCode_as_None_when_booking_is_used_and_expired_and_not_cancelled(self):
+    def test_model_qrcode_should_return_qrcode_as_None_when_booking_is_used_and_expired_and_not_cancelled(self):
         # given
         yesterday = datetime.utcnow() - timedelta(days=1)
         user = create_user()
@@ -152,7 +151,8 @@ class BookingEventOfferQRCodeGenerationTest:
         # then
         assert booking.qrCode is None
 
-    def test_model_qrCode_should_return_qrCode_as_base64_string_when_event_booking_is_used_and_not_expired_and_not_cancelled(self):
+    def test_model_qrcode_should_return_qrcode_as_base64_string_when_event_booking_is_used_and_not_expired_and_not_cancelled(
+            self):
         # given
         two_days_after_now = datetime.utcnow() + timedelta(days=2)
         user = create_user()
@@ -164,10 +164,9 @@ class BookingEventOfferQRCodeGenerationTest:
         booking = create_booking(stock=stock, user=user, is_used=True, is_cancelled=False)
 
         # then
-        assert booking.qrCode is not None
         assert type(booking.qrCode) is str
 
-    def test_model_qrCode_should_return_qrCode_as_None_when_booking_is_used_and_expired_and_cancelled(self):
+    def test_model_qrcode_should_return_qrcode_as_None_when_booking_is_used_and_expired_and_cancelled(self):
         # given
         yesterday = datetime.utcnow() - timedelta(days=1)
         user = create_user()
@@ -181,7 +180,7 @@ class BookingEventOfferQRCodeGenerationTest:
         # then
         assert booking.qrCode is None
 
-    def test_model_qrCode_should_return_qrCode_as_base64_string_when_event_booking_is_used_and_not_expired_and_cancelled(
+    def test_model_qrcode_should_return_qrcode_as_base64_string_when_event_booking_is_used_and_not_expired_and_cancelled(
             self):
         # given
         two_days_after_now = datetime.utcnow() + timedelta(days=2)
@@ -196,8 +195,9 @@ class BookingEventOfferQRCodeGenerationTest:
         # then
         assert booking.qrCode is None
 
+
 class BookingThingOfferQRCodeGenerationTest:
-    def test_model_qrCode_should_return_qrCode_as_base64_string_when_booking_is_not_used_and_not_cancelled(self):
+    def test_model_qrcode_should_return_qrcode_as_base64_string_when_booking_is_not_used_and_not_cancelled(self):
         # given
         user = create_user()
         product = create_product_with_thing_type()
@@ -209,10 +209,9 @@ class BookingThingOfferQRCodeGenerationTest:
         booking = create_booking(stock=stock, user=user, is_used=False, is_cancelled=False)
 
         # then
-        assert booking.qrCode is not None
         assert type(booking.qrCode) is str
 
-    def test_model_qrCode_should_return_qrCode_as_base64_string_when_thing_booking_is_not_used_and_not_cancelled(self):
+    def test_model_qrcode_should_return_qrcode_as_base64_string_when_thing_booking_is_not_used_and_not_cancelled(self):
         # given
         user = create_user()
         product = create_product_with_thing_type()
@@ -224,10 +223,9 @@ class BookingThingOfferQRCodeGenerationTest:
         booking = create_booking(stock=stock, user=user, is_used=False, is_cancelled=False)
 
         # then
-        assert booking.qrCode is not None
         assert type(booking.qrCode) is str
 
-    def test_model_qrCode_should_return_qrCode_as_None_when_booking_is_used_and_cancelled(self):
+    def test_model_qrcode_should_return_qrcode_as_None_when_booking_is_used_and_cancelled(self):
         # given
         user = create_user()
         product = create_product_with_thing_type()
@@ -241,7 +239,7 @@ class BookingThingOfferQRCodeGenerationTest:
         # then
         assert booking.qrCode is None
 
-    def test_model_qrCode_should_return_qrCode_as_None_when_booking_is_used_and_not_cancelled(self):
+    def test_model_qrcode_should_return_qrcode_as_None_when_booking_is_used_and_not_cancelled(self):
         # given
         user = create_user()
         product = create_product_with_thing_type()
@@ -255,7 +253,7 @@ class BookingThingOfferQRCodeGenerationTest:
         # then
         assert booking.qrCode is None
 
-    def test_model_qrCode_should_return_qrCode_as_None_when_booking_is_not_used_and_is_cancelled(self):
+    def test_model_qrcode_should_return_qrcode_as_None_when_booking_is_not_used_and_is_cancelled(self):
         # given
         user = create_user()
         product = create_product_with_thing_type()
