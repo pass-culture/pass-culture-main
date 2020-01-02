@@ -1,5 +1,1 @@
-export const maintenanceSelector = state => {
-  return state.maintenance.isActivated
-}
-
-export default maintenanceSelector
+export const maintenanceSelector = state => state.maintenance.isActivated
