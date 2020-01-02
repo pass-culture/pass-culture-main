@@ -9,7 +9,7 @@ def api_documentation():
 
 @app.route('/api/doc/<path:path>')
 def static_files(path):
-    if '.json' in path:
+    if '.yaml' in path:
         return send_from_directory('documentation', path)
 
     return send_from_directory('static/documentation', path)
