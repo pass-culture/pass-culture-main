@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { NavLink } from 'react-router-dom'
 
@@ -6,7 +6,7 @@ import { version } from '../../../../../package.json'
 
 const EMPTY_FIELD_PLACEHOLDER = 'Non renseigné'
 
-class MesInformations extends React.PureComponent {
+class MesInformations extends PureComponent {
   renderInformation = field => {
     const { user } = this.props
     const { key, label, mainPlaceholder, resolver, routeName } = field

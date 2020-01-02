@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { PureComponent } from 'react'
 import { Transition } from 'react-transition-group'
 
 import { closeSharePopin } from '../../../reducers/share'
@@ -20,7 +20,7 @@ const transitionStyles = {
   exiting: { bottom: '-100%', opacity: 0 },
 }
 
-class SharePopin extends React.PureComponent {
+class SharePopin extends PureComponent {
   handleCloseHandler = () => {
     const { dispatch, options } = this.props
     const { handleClose } = options

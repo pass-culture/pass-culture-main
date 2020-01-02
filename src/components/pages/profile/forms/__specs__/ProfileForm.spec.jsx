@@ -1,5 +1,5 @@
 import { shallow } from 'enzyme'
-import React from 'react'
+import React, { PureComponent } from 'react'
 
 import ProfileForm from '../ProfileForm'
 
@@ -22,7 +22,7 @@ describe('src | components | pages | profile | forms | ProfileForm', () => {
     dispatch = jest.fn()
     replace = jest.fn()
     props = {
-      WrappedComponent: React.PureComponent,
+      WrappedComponent: PureComponent,
       config: {
         routeMethod: 'fake method',
         routePath: 'fake url',

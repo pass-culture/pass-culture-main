@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { Transition } from 'react-transition-group'
 
@@ -19,7 +19,7 @@ const transitionStyles = {
   exited: { display: 'none', visibility: 'none' },
 }
 
-class Loader extends React.PureComponent {
+class Loader extends PureComponent {
   constructor(props) {
     super(props)
 

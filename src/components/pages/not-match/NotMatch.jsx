@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { PureComponent } from 'react'
 import { Redirect } from 'react-router-dom'
 
-class NoMatch extends React.PureComponent {
+class NoMatch extends PureComponent {
   constructor(props) {
     super(props)
     this.timer = null

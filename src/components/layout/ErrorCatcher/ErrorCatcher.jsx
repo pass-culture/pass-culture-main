@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { PureComponent } from 'react'
+import React, { PureComponent, version } from 'react'
 
 import logger from '../../../utils/logger'
 
@@ -15,7 +15,7 @@ class ErrorCatcher extends PureComponent {
 
   componentDidCatch(error, info) {
     // https://reactjs.org/blog/2017/07/26/error-handling-in-react-16.html
-    logger.log(`Current react version: ${React.version}`)
+    logger.log(`Current react version: ${version}`)
     logger.error(`Error: ${error}`)
     logger.error(`With info: ${JSON.stringify(info)}`)
   }

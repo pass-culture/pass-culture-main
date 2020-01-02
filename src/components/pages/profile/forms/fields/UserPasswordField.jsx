@@ -1,15 +1,15 @@
 import PropTypes from 'prop-types'
-import React, { Fragment } from 'react'
+import React, { Fragment, PureComponent } from 'react'
 
-import FormError from '../../../../forms/FormError'
 import isEmpty from '../../../../../utils/strings/isEmpty'
+import FormError from '../../../../forms/FormError'
 import PasswordField from '../../../../forms/inputs/PasswordField'
 import validateMatchingFields from '../../../../forms/validators/validateMatchingFields'
 import withProfileForm from '../hocs/withProfileForm'
 
 const ERROR_OLD_PASSWORD = 'L’ancien mot de passe est manquant.'
 
-export class UserPasswordField extends React.PureComponent {
+export class UserPasswordField extends PureComponent {
   buildOldPasswordLabel = () => value => (value && !isEmpty(value) ? undefined : ERROR_OLD_PASSWORD)
 
   validateNewPassword = () => (newPasswordConfirm, formvalues) => {

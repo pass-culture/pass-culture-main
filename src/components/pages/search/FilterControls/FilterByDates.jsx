@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { PureComponent } from 'react'
+import React, { createRef, PureComponent } from 'react'
 
 import DatePickerField from '../../../forms/inputs/DatePickerField/DatePickerField'
 import { DAYS_CHECKBOXES, isDaysChecked } from '../helpers'
@@ -10,7 +10,7 @@ class FilterByDates extends PureComponent {
     this.state = {
       pickedDate: null,
     }
-    this.datepickerPopper = React.createRef()
+    this.datepickerPopper = createRef()
   }
 
   componentDidUpdate() {

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { PureComponent } from 'react'
 import { Transition } from 'react-transition-group'
 import { bindActionCreators } from 'redux'
 import { closeSplash } from '../../../reducers/splash'
@@ -18,7 +18,7 @@ const transitionStyles = {
   entering: { opacity: 0 },
 }
 
-class Splash extends React.PureComponent {
+class Splash extends PureComponent {
   constructor(props) {
     super(props)
     this.state = { close: !props.isBetaPage }

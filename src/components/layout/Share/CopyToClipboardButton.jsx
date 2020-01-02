@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { PureComponent } from 'react'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 
-class CopyToClipboardButton extends React.PureComponent {
+class CopyToClipboardButton extends PureComponent {
   handleToggleState = () => {
     const { onClick } = this.props
     onClick(true)

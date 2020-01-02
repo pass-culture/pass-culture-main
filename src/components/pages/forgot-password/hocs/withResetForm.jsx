@@ -1,17 +1,16 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { PureComponent } from 'react'
 import { Form as FinalForm } from 'react-final-form'
 import { connect } from 'react-redux'
 import { requestData } from 'redux-thunk-data'
 
-const noop = () => {
-}
+const noop = () => {}
 
 const withPasswordForm = (WrappedComponent, validator, routePath, routeMethod) => {
   const name = WrappedComponent.displayName || 'Component'
   withPasswordForm.displayName = `withPasswordForm(${name})`
 
-  class ResetPasswordForm extends React.PureComponent {
+  class ResetPasswordForm extends PureComponent {
     constructor(props) {
       super(props)
       const { initialValues } = this.props
@@ -59,14 +58,14 @@ const withPasswordForm = (WrappedComponent, validator, routePath, routeMethod) =
     }
 
     renderFinalForm = ({
-       // https://github.com/final-form/final-form#formstate
-       dirtySinceLastSubmit,
-       error: preSubmitError,
-       handleSubmit,
-       hasSubmitErrors,
-       hasValidationErrors,
-       pristine,
-     }) => {
+      // https://github.com/final-form/final-form#formstate
+      dirtySinceLastSubmit,
+      error: preSubmitError,
+      handleSubmit,
+      hasSubmitErrors,
+      hasValidationErrors,
+      pristine,
+    }) => {
       const { isloading } = this.state
       const canSubmit =
         (!pristine && !hasSubmitErrors && !hasValidationErrors && !isloading) ||

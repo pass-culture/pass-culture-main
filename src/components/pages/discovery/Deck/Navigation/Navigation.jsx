@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { PureComponent } from 'react'
 import Draggable from 'react-draggable'
 
 import DuoOfferContainer from '../../../../layout/DuoOffer/DuoOfferContainer'
@@ -16,7 +16,7 @@ const toRectoDraggableBounds = {
   top: 0,
 }
 
-class Navigation extends React.PureComponent {
+class Navigation extends PureComponent {
   handleStopDrag = event => {
     const { flipHandler, height, verticalSlideRatio } = this.props
     const shiftedDistance = height - getPageY(event)
