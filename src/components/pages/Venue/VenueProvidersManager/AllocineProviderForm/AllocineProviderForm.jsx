@@ -115,7 +115,7 @@ class AllocineProviderForm extends PureComponent {
               <div className="price-section">
                 <div className="price-section-label">
                   <label
-                    className="label-prix"
+                    className="label-price"
                     htmlFor="price"
                   >
                     {'Prix de vente/place '}
