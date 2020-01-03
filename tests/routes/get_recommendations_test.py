@@ -879,6 +879,3 @@ class Get:
             # Then
             assert response.status_code == 200
             assert len(response.json) == 3
-            assert response.json[0]['offer']['name'] == 'Training'
-            assert response.json[1]['offer']['name'] == 'Training in Modern Jazz'
-            assert response.json[2]['offer']['name'] == 'modern Tango'
