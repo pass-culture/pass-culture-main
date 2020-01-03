@@ -19,6 +19,7 @@ TEN_DAYS_FROM_NOW = datetime.utcnow() + timedelta(days=10)
 RECOMMENDATION_URL = '/recommendations'
 
 
+
 class Get:
     class Returns401:
         def when_no_user_is_logged_in(self, app):
@@ -878,6 +879,6 @@ class Get:
             # Then
             assert response.status_code == 200
             assert len(response.json) == 3
-            assert response.json[0]['offer']['name'] == 'Training in Modern Jazz'
-            assert response.json[1]['offer']['name'] == 'modern Tango'
-            assert response.json[2]['offer']['name'] == 'Training'
+            assert response.json[0]['offer']['name'] == 'Training'
+            assert response.json[1]['offer']['name'] == 'Training in Modern Jazz'
+            assert response.json[2]['offer']['name'] == 'modern Tango'

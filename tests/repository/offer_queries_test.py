@@ -24,6 +24,7 @@ from tests.model_creators.specific_creators import create_stock_with_event_offer
 REFERENCE_DATE = '2017-10-15 09:21:34'
 
 
+
 class DepartmentOrNationalOffersTest:
     @clean_database
     def test_returns_national_thing_with_different_department(self, app):

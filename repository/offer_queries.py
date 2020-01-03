@@ -180,8 +180,7 @@ def _date_interval_to_filter(date_interval):
 
 
 def filter_offers_with_keywords_string_on_offer_only(query: BaseQuery, keywords_string: str) -> Query:
-    query_on_offer_using_keywords = _build_query_using_keywords_on_model(keywords_string, query, Offer)
-    return _order_by_offer_name_containing_keyword_string(keywords_string, query_on_offer_using_keywords)
+    return _build_query_using_keywords_on_model(keywords_string, query, Offer)
 
 
 def filter_offers_with_keywords_string(query: BaseQuery, keywords_string: str) -> BaseQuery:
