@@ -4,7 +4,7 @@ exports[`src | components | layout | Booking | BookingForm | BookingFormContent 
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <BookingFormContent
-    className="fake className"
+    extraClassName="fake className"
     formId="fake formId"
     handleSubmit={[MockFunction]}
     invalid={false}
@@ -61,7 +61,7 @@ ShallowWrapper {
         </React.Fragment>,
         false,
       ],
-      "className": "fake className",
+      "className": "fake className ",
       "id": "fake formId",
       "onSubmit": [MockFunction],
     },
@@ -196,7 +196,7 @@ ShallowWrapper {
           </React.Fragment>,
           false,
         ],
-        "className": "fake className",
+        "className": "fake className ",
         "id": "fake formId",
         "onSubmit": [MockFunction],
       },
@@ -338,7 +338,7 @@ exports[`src | components | layout | Booking | BookingForm | BookingFormContent 
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <BookingFormContent
-    className="fake className"
+    extraClassName="fake className"
     formId="fake formId"
     handleSubmit={[MockFunction]}
     invalid={false}
@@ -386,7 +386,7 @@ ShallowWrapper {
           </span>
         </p>,
       ],
-      "className": "fake className",
+      "className": "fake className ",
       "id": "fake formId",
       "onSubmit": [MockFunction],
     },
@@ -467,7 +467,7 @@ ShallowWrapper {
             </span>
           </p>,
         ],
-        "className": "fake className",
+        "className": "fake className ",
         "id": "fake formId",
         "onSubmit": [MockFunction],
       },
@@ -560,7 +560,7 @@ exports[`src | components | layout | Booking | BookingForm | BookingFormContent 
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <BookingFormContent
-    className="fake className"
+    extraClassName="fake className"
     formId="fake formId"
     handleSubmit={[MockFunction]}
     invalid={false}
@@ -604,7 +604,7 @@ ShallowWrapper {
         </React.Fragment>,
         false,
       ],
-      "className": "fake className",
+      "className": "fake className ",
       "id": "fake formId",
       "onSubmit": [MockFunction],
     },
@@ -662,7 +662,7 @@ ShallowWrapper {
           </React.Fragment>,
           false,
         ],
-        "className": "fake className",
+        "className": "fake className ",
         "id": "fake formId",
         "onSubmit": [MockFunction],
       },

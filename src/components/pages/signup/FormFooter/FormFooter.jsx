@@ -1,4 +1,3 @@
-import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { NavLink } from 'react-router-dom'
@@ -12,9 +11,7 @@ const FormFooter = ({ isLoading, isSubmit }) => (
       {'J’ai déjà un compte'}
     </NavLink>
     <button
-      className={classnames('signup-footer-button', {
-        'is-loading': isLoading,
-      })}
+      className={`signup-footer-button ${isLoading ? 'is-loading' : ''}`}
       disabled={!isSubmit}
       type="submit"
     >

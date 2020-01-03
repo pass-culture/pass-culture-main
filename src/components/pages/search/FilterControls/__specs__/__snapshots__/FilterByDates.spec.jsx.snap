@@ -55,9 +55,9 @@ ShallowWrapper {
             className="fd-date-picker"
           >
             <DatePickerField
-              className="fd-date-picker-selectbox"
               clearable={true}
               dateFormat="DD/MM/YYYY"
+              extraClassName="fd-date-picker-selectbox"
               hideToday={false}
               icon={null}
               id={null}
@@ -162,9 +162,9 @@ ShallowWrapper {
             className="fd-date-picker"
           >
             <DatePickerField
-              className="fd-date-picker-selectbox"
               clearable={true}
               dateFormat="DD/MM/YYYY"
+              extraClassName="fd-date-picker-selectbox"
               hideToday={false}
               icon={null}
               id={null}
@@ -190,9 +190,9 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": <DatePickerField
-              className="fd-date-picker-selectbox"
               clearable={true}
               dateFormat="DD/MM/YYYY"
+              extraClassName="fd-date-picker-selectbox"
               hideToday={false}
               icon={null}
               id={null}
@@ -216,9 +216,9 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "function",
             "props": Object {
-              "className": "fd-date-picker-selectbox",
               "clearable": true,
               "dateFormat": "DD/MM/YYYY",
+              "extraClassName": "fd-date-picker-selectbox",
               "hideToday": false,
               "icon": null,
               "id": null,
@@ -511,9 +511,9 @@ ShallowWrapper {
               className="fd-date-picker"
             >
               <DatePickerField
-                className="fd-date-picker-selectbox"
                 clearable={true}
                 dateFormat="DD/MM/YYYY"
+                extraClassName="fd-date-picker-selectbox"
                 hideToday={false}
                 icon={null}
                 id={null}
@@ -618,9 +618,9 @@ ShallowWrapper {
               className="fd-date-picker"
             >
               <DatePickerField
-                className="fd-date-picker-selectbox"
                 clearable={true}
                 dateFormat="DD/MM/YYYY"
+                extraClassName="fd-date-picker-selectbox"
                 hideToday={false}
                 icon={null}
                 id={null}
@@ -646,9 +646,9 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": <DatePickerField
-                className="fd-date-picker-selectbox"
                 clearable={true}
                 dateFormat="DD/MM/YYYY"
+                extraClassName="fd-date-picker-selectbox"
                 hideToday={false}
                 icon={null}
                 id={null}
@@ -672,9 +672,9 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "function",
               "props": Object {
-                "className": "fd-date-picker-selectbox",
                 "clearable": true,
                 "dateFormat": "DD/MM/YYYY",
+                "extraClassName": "fd-date-picker-selectbox",
                 "hideToday": false,
                 "icon": null,
                 "id": null,

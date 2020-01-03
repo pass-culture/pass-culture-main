@@ -1,11 +1,10 @@
-import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
 
 import Thumb from './Thumb'
 
-const Recto = ({ areDetailsVisible, extraClassName, frontText, thumbUrl, withMediation }) => (
-  <div className={classnames('recto', extraClassName)}>
+const Recto = ({ areDetailsVisible, frontText, thumbUrl, withMediation }) => (
+  <div className="recto">
     {thumbUrl && (
       <Thumb
         src={thumbUrl}
@@ -20,7 +19,6 @@ const Recto = ({ areDetailsVisible, extraClassName, frontText, thumbUrl, withMed
 )
 
 Recto.defaultProps = {
-  extraClassName: null,
   frontText: null,
   thumbUrl: null,
   withMediation: null,
@@ -28,7 +26,6 @@ Recto.defaultProps = {
 
 Recto.propTypes = {
   areDetailsVisible: PropTypes.bool.isRequired,
-  extraClassName: PropTypes.string,
   frontText: PropTypes.string,
   thumbUrl: PropTypes.string,
   withMediation: PropTypes.bool,

@@ -96,7 +96,7 @@ class Loader extends PureComponent {
             </div>
             {showFooter && (
               <RelativeFooterContainer
-                className="dotted-top-white"
+                extraClassName="dotted-top-white"
                 theme="transparent"
               />
             )}

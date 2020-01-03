@@ -242,7 +242,7 @@ ShallowWrapper {
             </Switch>
           </div>
           <withRouter(withRouter(RelativeFooter))
-            className="dotted-top-red"
+            extraClassName="dotted-top-red"
             theme="white"
           />
         </React.Fragment>,
@@ -369,7 +369,7 @@ ShallowWrapper {
               </Switch>
             </div>,
             <withRouter(withRouter(RelativeFooter))
-              className="dotted-top-red"
+              extraClassName="dotted-top-red"
               theme="white"
             />,
           ],
@@ -918,7 +918,7 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "function",
             "props": Object {
-              "className": "dotted-top-red",
+              "extraClassName": "dotted-top-red",
               "theme": "white",
             },
             "ref": null,
@@ -1050,7 +1050,7 @@ ShallowWrapper {
               </Switch>
             </div>
             <withRouter(withRouter(RelativeFooter))
-              className="dotted-top-red"
+              extraClassName="dotted-top-red"
               theme="white"
             />
           </React.Fragment>,
@@ -1177,7 +1177,7 @@ ShallowWrapper {
                 </Switch>
               </div>,
               <withRouter(withRouter(RelativeFooter))
-                className="dotted-top-red"
+                extraClassName="dotted-top-red"
                 theme="white"
               />,
             ],
@@ -1726,7 +1726,7 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "function",
               "props": Object {
-                "className": "dotted-top-red",
+                "extraClassName": "dotted-top-red",
                 "theme": "white",
               },
               "ref": null,

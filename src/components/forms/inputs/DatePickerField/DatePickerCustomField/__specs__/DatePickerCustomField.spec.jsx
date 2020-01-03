@@ -29,7 +29,7 @@ describe('src | components | forms | inputs | DatePickerField | DatePickerCustom
       const wrapper = shallow(<DatePickerCustomField {...props} />)
 
       // then
-      expect(wrapper.prop('className')).toBe('react-datepicker__input-container_wrapper')
+      expect(wrapper.prop('className')).toBe('react-datepicker__input-container_wrapper ')
     })
 
     it('should render a DatePickerCustomField with the proper css class when input value is provided', () => {

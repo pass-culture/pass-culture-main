@@ -1,4 +1,3 @@
-import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Field } from 'react-final-form'
@@ -27,7 +26,7 @@ class SelectField extends PureComponent {
     const { onChange, value } = input
 
     return (
-      <div className={classnames('select-field input-inner', { 'is-read-only': readOnly })}>
+      <div className={`select-field input-inner ${readOnly ? 'is-read-only' : ''}`}>
         <select
           {...moreProps}
           className="content"

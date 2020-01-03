@@ -39,7 +39,7 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <h2
-          className="search-results-title"
+          className="search-results-title "
           id="results-title"
         >
           "fakeKeywords" : 0 résultat
@@ -56,7 +56,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": "\\"fakeKeywords\\" : 0 résultat",
-          "className": "search-results-title",
+          "className": "search-results-title ",
           "id": "results-title",
         },
         "ref": null,
@@ -75,7 +75,7 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <h2
-            className="search-results-title"
+            className="search-results-title "
             id="results-title"
           >
             "fakeKeywords" : 0 résultat
@@ -92,7 +92,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": "\\"fakeKeywords\\" : 0 résultat",
-            "className": "search-results-title",
+            "className": "search-results-title ",
             "id": "results-title",
           },
           "ref": null,
@@ -182,7 +182,7 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <h2
-          className="search-results-title"
+          className="search-results-title "
           id="results-title"
         >
           "fakeKeywords" : 2 résultats
@@ -197,10 +197,8 @@ ShallowWrapper {
           loader={
             <Spinner
               Tag="div"
-              className={null}
               dotFrequency={500}
               label="Chargement"
-              style={null}
             />
           }
           pageStart={1}
@@ -235,7 +233,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": "\\"fakeKeywords\\" : 2 résultats",
-          "className": "search-results-title",
+          "className": "search-results-title ",
           "id": "results-title",
         },
         "ref": null,
@@ -271,10 +269,8 @@ ShallowWrapper {
           "loadMore": [Function],
           "loader": <Spinner
             Tag="div"
-            className={null}
             dotFrequency={500}
             label="Chargement"
-            style={null}
           />,
           "pageStart": 1,
           "ref": null,
@@ -324,7 +320,7 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <h2
-            className="search-results-title"
+            className="search-results-title "
             id="results-title"
           >
             "fakeKeywords" : 2 résultats
@@ -339,10 +335,8 @@ ShallowWrapper {
             loader={
               <Spinner
                 Tag="div"
-                className={null}
                 dotFrequency={500}
                 label="Chargement"
-                style={null}
               />
             }
             pageStart={1}
@@ -377,7 +371,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": "\\"fakeKeywords\\" : 2 résultats",
-            "className": "search-results-title",
+            "className": "search-results-title ",
             "id": "results-title",
           },
           "ref": null,
@@ -413,10 +407,8 @@ ShallowWrapper {
             "loadMore": [Function],
             "loader": <Spinner
               Tag="div"
-              className={null}
               dotFrequency={500}
               label="Chargement"
-              style={null}
             />,
             "pageStart": 1,
             "ref": null,

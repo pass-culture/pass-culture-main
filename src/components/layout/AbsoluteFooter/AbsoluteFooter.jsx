@@ -1,4 +1,3 @@
-import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
@@ -14,11 +13,9 @@ const AbsoluteFooter = ({ areDetailsVisible, borderTop, colored, id, location, o
   if (!colored) {
     style.display = areDetailsVisible ? 'none' : 'block'
   }
-  const className = classnames('absolute-footer', {
-    bordered: borderTop,
-    colored,
-    'on-top': onTop,
-  })
+  const className = `absolute-footer ${colored ? 'colored' : ''} ${borderTop ? 'bordered' : ''} ${
+    onTop ? 'on-top' : ''
+  }`
 
   const cleanPath = location.pathname.replace(/\/$/, '')
   const menuUrl = `${cleanPath}/menu${location.search}`

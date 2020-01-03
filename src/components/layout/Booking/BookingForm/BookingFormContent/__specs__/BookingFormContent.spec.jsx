@@ -13,7 +13,7 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
   beforeEach(() => {
     handleSubmit = jest.fn()
     props = {
-      className: 'fake className',
+      extraClassName: 'fake className',
       formId: 'fake formId',
       invalid: false,
       isStockDuo: false,
@@ -87,7 +87,7 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
       // then
       const form = wrapper.find('form')
       expect(form).toHaveLength(1)
-      expect(form.prop('className')).toBe('fake className')
+      expect(form.prop('className')).toBe('fake className ')
       expect(form.prop('id')).toBe('fake formId')
       expect(form.prop('onSubmit')).toStrictEqual(handleSubmit)
     })

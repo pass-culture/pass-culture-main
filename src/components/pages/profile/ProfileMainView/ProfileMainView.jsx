@@ -37,7 +37,7 @@ const ProfileMainView = ({ config, currentUser }) => (
       </div>
     </main>
     <RelativeFooterContainer
-      className="dotted-top-red"
+      extraClassName="dotted-top-red"
       theme="white"
     />
   </div>

@@ -5,10 +5,8 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Spinner
     Tag="div"
-    className={null}
     dotFrequency={500}
     label="Chargement"
-    style={null}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -39,7 +37,6 @@ ShallowWrapper {
         </span>,
       ],
       "className": "spinner",
-      "style": null,
     },
     "ref": null,
     "rendered": Array [
@@ -94,7 +91,6 @@ ShallowWrapper {
           </span>,
         ],
         "className": "spinner",
-        "style": null,
       },
       "ref": null,
       "rendered": Array [

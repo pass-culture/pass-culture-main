@@ -1,4 +1,3 @@
-import classnames from 'classnames'
 import moment from 'moment'
 import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
@@ -183,7 +182,7 @@ class Booking extends PureComponent {
       >
         {state => (
           <div
-            className={classnames('is-overlay is-clipped flex-rows', extraClassName, state)}
+            className={`is-overlay is-clipped flex-rows ${extraClassName} ${state}`}
             id="booking-card"
           >
             <div className="main flex-rows flex-1 scroll-y">
@@ -232,7 +231,7 @@ class Booking extends PureComponent {
 
 Booking.defaultProps = {
   bookables: null,
-  extraClassName: null,
+  extraClassName: '',
   offer: null,
   recommendation: null,
 }

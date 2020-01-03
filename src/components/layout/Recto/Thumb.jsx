@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types'
-import classnames from 'classnames'
 import React from 'react'
 
 const Thumb = ({ withMediation, src, translated }) => {
@@ -15,11 +14,9 @@ const Thumb = ({ withMediation, src, translated }) => {
         style={backgroundStyle}
                          />}
       <div
-        className={classnames({
-          image: true,
-          translatable: translated !== undefined,
-          translated,
-        })}
+        className={`image ${translated !== undefined ? 'translatable' : ''} ${
+          translated ? 'translated' : ''
+        }`}
         style={thumbStyle}
       />
     </div>

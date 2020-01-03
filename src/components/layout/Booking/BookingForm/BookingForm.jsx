@@ -12,7 +12,7 @@ class BookingForm extends PureComponent {
 
     return (
       <BookingFormContentContainer
-        className={className}
+        extraClassName={className}
         formId={formId}
         handleSubmit={handleSubmit}
         invalid={invalid}

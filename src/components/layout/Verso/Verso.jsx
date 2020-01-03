@@ -1,4 +1,3 @@
-import classnames from 'classnames'
 import isEqual from 'lodash.isequal'
 import PropTypes from 'prop-types'
 import React, { createRef, PureComponent } from 'react'
@@ -36,11 +35,7 @@ class Verso extends PureComponent {
     } = this.props
 
     return (
-      <div
-        className={classnames('verso is-overlay', extraClassName, {
-          flipped: areDetailsVisible,
-        })}
-      >
+      <div className={`verso is-overlay ${extraClassName} ${areDetailsVisible ? 'flipped' : ''}`}>
         <div
           className="verso-wrapper"
           ref={this.versoWrapper}

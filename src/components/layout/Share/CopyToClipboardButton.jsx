@@ -9,7 +9,7 @@ class CopyToClipboardButton extends PureComponent {
   }
 
   render() {
-    const { className, value } = this.props
+    const { value } = this.props
 
     return (
       <CopyToClipboard
@@ -17,7 +17,7 @@ class CopyToClipboardButton extends PureComponent {
         text={value}
       >
         <button
-          className={`no-background ${className}`}
+          className="no-background py12 is-bold fs14"
           type="button"
         >
           {'Copier le lien'}
@@ -27,12 +27,7 @@ class CopyToClipboardButton extends PureComponent {
   }
 }
 
-CopyToClipboardButton.defaultProps = {
-  className: '',
-}
-
 CopyToClipboardButton.propTypes = {
-  className: PropTypes.string,
   onClick: PropTypes.func.isRequired,
   value: PropTypes.string.isRequired,
 }

@@ -1,4 +1,3 @@
-import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 
@@ -14,7 +13,7 @@ const MyBookingsLists = ({
   upComingBookings,
 }) => (
   <Fragment>
-    <main className={classnames('teaser-main', { 'teaser-no-teasers': isEmpty })}>
+    <main className={`teaser-main ${isEmpty ? 'teaser-no-teasers' : ''}`}>
       {isEmpty && <NoItems sentence="Dès que vous aurez réservé une offre," />}
 
       {!isEmpty && bookingsOfTheWeek.length > 0 && (
@@ -64,7 +63,7 @@ const MyBookingsLists = ({
       )}
     </main>
     <RelativeFooterContainer
-      className="dotted-top-white"
+      extraClassName="dotted-top-white"
       theme="purple"
     />
   </Fragment>

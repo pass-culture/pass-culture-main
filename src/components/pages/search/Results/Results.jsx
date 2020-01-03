@@ -1,11 +1,10 @@
-import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
+import Spinner from '../../../layout/Spinner/Spinner'
 
 import Teaser from '../../../layout/Teaser/TeaserContainer'
 import { searchResultsTitle } from '../helpers'
-import Spinner from '../../../layout/Spinner/Spinner'
 
 const ITEMS_PER_PAGE = 10
 
@@ -87,9 +86,7 @@ class Results extends PureComponent {
       <div className="search-results">
         {resultTitle && (
           <h2
-            className={classnames('search-results-title', {
-              [`nav-result-title`]: cameFromOfferTypesPage,
-            })}
+            className={`search-results-title ${cameFromOfferTypesPage ? 'nav-result-title' : ''}`}
             id="results-title"
           >
             {resultTitle}

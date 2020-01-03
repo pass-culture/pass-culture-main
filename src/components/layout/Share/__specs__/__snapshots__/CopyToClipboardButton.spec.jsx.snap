@@ -4,7 +4,6 @@ exports[`src | components | share | CopyToClipboardButton should match the snaps
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <CopyToClipboardButton
-    className=""
     onClick={[MockFunction]}
     value="Fake Value"
   />,
@@ -23,7 +22,7 @@ ShallowWrapper {
     "nodeType": "class",
     "props": Object {
       "children": <button
-        className="no-background "
+        className="no-background py12 is-bold fs14"
         type="button"
       >
         Copier le lien
@@ -39,7 +38,7 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": "Copier le lien",
-        "className": "no-background ",
+        "className": "no-background py12 is-bold fs14",
         "type": "button",
       },
       "ref": null,
@@ -55,7 +54,7 @@ ShallowWrapper {
       "nodeType": "class",
       "props": Object {
         "children": <button
-          className="no-background "
+          className="no-background py12 is-bold fs14"
           type="button"
         >
           Copier le lien
@@ -71,7 +70,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": "Copier le lien",
-          "className": "no-background ",
+          "className": "no-background py12 is-bold fs14",
           "type": "button",
         },
         "ref": null,

@@ -1,4 +1,3 @@
-import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React, { PureComponent, Fragment } from 'react'
 import { Field } from 'react-final-form'
@@ -44,9 +43,9 @@ class BookingFormContent extends PureComponent {
     return (
       <DatePickerField
         {...input}
-        className="text-center mb36"
         clearable={false}
         dateFormat={dateFormat}
+        extraClassName="text-center mb36"
         hideToday
         id="booking-form-date-picker-field"
         includeDates={calendarDates}
@@ -69,7 +68,15 @@ class BookingFormContent extends PureComponent {
   }
 
   render() {
-    const { className, formId, handleSubmit, isEvent, isReadOnly, isStockDuo, values } = this.props
+    const {
+      extraClassName,
+      formId,
+      handleSubmit,
+      isEvent,
+      isReadOnly,
+      isStockDuo,
+      values,
+    } = this.props
     const { price, isDuo } = values
     const bookableTimes = parseHoursByStockId(values)
     const hasOneBookableTime = bookableTimes.length === 1
@@ -79,9 +86,7 @@ class BookingFormContent extends PureComponent {
     const computedPrice = isDuo ? price * 2 : price
     return (
       <form
-        className={classnames(className, {
-          'is-read-only': isReadOnly,
-        })}
+        className={`${extraClassName} ${isReadOnly ? 'is-read-only' : ''}`}
         id={formId}
         onSubmit={handleSubmit}
       >
@@ -131,7 +136,7 @@ class BookingFormContent extends PureComponent {
 }
 
 BookingFormContent.defaultProps = {
-  className: '',
+  extraClassName: '',
   isEvent: false,
   isReadOnly: false,
   isStockDuo: false,
@@ -139,7 +144,7 @@ BookingFormContent.defaultProps = {
 }
 
 BookingFormContent.propTypes = {
-  className: PropTypes.string,
+  extraClassName: PropTypes.string,
   formId: PropTypes.string.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   invalid: PropTypes.bool.isRequired,

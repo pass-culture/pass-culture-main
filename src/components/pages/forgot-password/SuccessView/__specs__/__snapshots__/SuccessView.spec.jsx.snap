@@ -32,7 +32,6 @@ ShallowWrapper {
         </div>,
         <FormFooter
           cancel={null}
-          className=""
           externalLink={null}
           submit={
             Object {
@@ -81,7 +80,6 @@ ShallowWrapper {
         "nodeType": "class",
         "props": Object {
           "cancel": null,
-          "className": "",
           "externalLink": null,
           "submit": Object {
             "className": "is-bold is-white-text",
@@ -115,7 +113,6 @@ ShallowWrapper {
           </div>,
           <FormFooter
             cancel={null}
-            className=""
             externalLink={null}
             submit={
               Object {
@@ -164,7 +161,6 @@ ShallowWrapper {
           "nodeType": "class",
           "props": Object {
             "cancel": null,
-            "className": "",
             "externalLink": null,
             "submit": Object {
               "className": "is-bold is-white-text",
@@ -257,7 +253,6 @@ ShallowWrapper {
               "url": "/mot-de-passe-perdu",
             }
           }
-          className=""
           externalLink={null}
           submit={
             Object {
@@ -353,7 +348,6 @@ ShallowWrapper {
             "label": "Recommencer",
             "url": "/mot-de-passe-perdu",
           },
-          "className": "",
           "externalLink": null,
           "submit": Object {
             "className": "is-bold is-white-text",
@@ -401,7 +395,6 @@ ShallowWrapper {
                 "url": "/mot-de-passe-perdu",
               }
             }
-            className=""
             externalLink={null}
             submit={
               Object {
@@ -497,7 +490,6 @@ ShallowWrapper {
               "label": "Recommencer",
               "url": "/mot-de-passe-perdu",
             },
-            "className": "",
             "externalLink": null,
             "submit": Object {
               "className": "is-bold is-white-text",

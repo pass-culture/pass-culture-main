@@ -78,7 +78,7 @@ class FilterByDates extends PureComponent {
         <div className="fd-date-picker-container">
           <div className="fd-date-picker">
             <DatePickerField
-              className="fd-date-picker-selectbox"
+              extraClassName="fd-date-picker-selectbox"
               minDate={new Date()}
               name="pick-by-date-filter"
               onChange={this.handleOnChangePickedDate}

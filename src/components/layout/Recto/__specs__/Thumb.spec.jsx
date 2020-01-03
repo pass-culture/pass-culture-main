@@ -37,7 +37,7 @@ describe('src | components | pages | Thumb', () => {
         expect(backgroundDiv.style.backgroundSize).toBeNull()
         expect(thumbDiv.style.backgroundImage).toStrictEqual("url('http://fake.url')")
         expect(thumbDiv.style.backgroundSize).toBeNull()
-        expect(thumbDiv.className).toStrictEqual('image translatable')
+        expect(thumbDiv.className).toStrictEqual('image translatable ')
       })
     })
     describe('with Mediation', () => {

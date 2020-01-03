@@ -123,8 +123,8 @@ class ProfileForm extends PureComponent {
           validate={validator}
         />
         <RelativeFooterContainer
-          className="dotted-top-red"
           disabled={isLoading}
+          extraClassName="dotted-top-red"
           theme="white"
         />
       </div>

@@ -1,4 +1,3 @@
-import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
@@ -32,13 +31,10 @@ class Spinner extends PureComponent {
   }
 
   render() {
-    const { className, label, style, Tag } = this.props
+    const { label, Tag } = this.props
     const { nbDots } = this.state
     return (
-      <Tag
-        className={classnames('spinner', className)}
-        style={style}
-      >
+      <Tag className="spinner">
         <Icon svg="ico-loader-r" />
         <span
           className="content"
@@ -55,18 +51,14 @@ class Spinner extends PureComponent {
 
 Spinner.defaultProps = {
   Tag: 'div',
-  className: null,
   dotFrequency: 500,
   label: 'Chargement',
-  style: null,
 }
 
 Spinner.propTypes = {
   Tag: PropTypes.string,
-  className: PropTypes.string,
   dotFrequency: PropTypes.number,
   label: PropTypes.string,
-  style: PropTypes.shape(),
 }
 
 export default Spinner

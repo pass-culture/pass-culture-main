@@ -12,7 +12,7 @@ ShallowWrapper {
         },
       }
     }
-    extraClassName={null}
+    extraClassName=""
     handleSubmit={[MockFunction]}
     history={
       Object {

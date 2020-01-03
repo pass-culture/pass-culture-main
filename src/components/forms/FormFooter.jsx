@@ -26,11 +26,9 @@ class FormFooter extends PureComponent {
       id: options.id,
       to: options.url,
     }
-    return (
-      <Link {...attributes}>
-        {options.label}
-      </Link>
-    )
+    return (<Link {...attributes}>
+      {options.label}
+    </Link>)
   }
 
   renderExternalLink = options => {
@@ -43,7 +41,7 @@ class FormFooter extends PureComponent {
     return (
       <a
         {...attributes}
-        target='_blank'
+        target="_blank"
       >
         {options.label}
       </a>
@@ -51,7 +49,7 @@ class FormFooter extends PureComponent {
   }
 
   render() {
-    const { cancel, className, externalLink, submit } = this.props
+    const { cancel, externalLink, submit } = this.props
     const isCancelLink = Boolean(cancel && cancel.url)
     const isExternalLink = Boolean(externalLink && externalLink.url)
     const isInnerLink = Boolean(submit && submit.url)
@@ -59,7 +57,7 @@ class FormFooter extends PureComponent {
     const hideSeparator = !(isCancelLink || isExternalLink) || !submit
 
     return (
-      <footer className={`logout-form-footer ${className}`}>
+      <footer className="logout-form-footer">
         {isCancelLink && this.renderLink(cancel)}
         {isExternalLink && this.renderExternalLink(externalLink)}
         {!hideSeparator && <hr className="dotted-left-2x-white flex-0" />}
@@ -72,7 +70,6 @@ class FormFooter extends PureComponent {
 
 FormFooter.defaultProps = {
   cancel: null,
-  className: '',
   externalLink: null,
   submit: null,
 }
@@ -85,7 +82,6 @@ FormFooter.propTypes = {
     label: string.isRequired,
     url: string,
   }),
-  className: PropTypes.string,
   externalLink: PropTypes.shape({
     className: PropTypes.string,
     id: PropTypes.string,

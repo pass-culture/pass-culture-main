@@ -161,7 +161,7 @@ class MyFavorites extends PureComponent {
         )}
         <MyFavoriteDetailsContainer bookingPath="/favoris/:details(details|transition)/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:booking(reservation)?/:bookingId?/:cancellation(annulation)?/:confirmation(confirmation)?" />
         <RelativeFooterContainer
-          className="dotted-top-red"
+          extraClassName="dotted-top-red"
           theme="purple"
         />
       </div>

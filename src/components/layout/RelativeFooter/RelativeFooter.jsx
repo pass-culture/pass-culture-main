@@ -1,13 +1,12 @@
-import React from 'react'
 import PropTypes from 'prop-types'
+import React from 'react'
 import { Link, withRouter } from 'react-router-dom'
 
-const RelativeFooter = ({ className, disabled, location, theme }) => {
-  const cssClassName = `pc-theme-${theme} pc-footer flex-center flex-none ${className}`
+const RelativeFooter = ({ extraClassName, disabled, location, theme }) => {
   const cleanPath = location.pathname.replace(/\/$/, '')
   const menuUrl = `${cleanPath}/menu${location.search}`
   return (
-    <footer className={cssClassName}>
+    <footer className={`pc-theme-${theme} pc-footer flex-center flex-none ${extraClassName}`}>
       <Link
         className={`no-border no-background no-outline no-select pc-theme-${theme}`}
         disabled={disabled}
@@ -25,13 +24,13 @@ const RelativeFooter = ({ className, disabled, location, theme }) => {
 }
 
 RelativeFooter.defaultProps = {
-  className: '',
   disabled: false,
+  extraClassName: '',
 }
 
 RelativeFooter.propTypes = {
-  className: PropTypes.string,
   disabled: PropTypes.bool,
+  extraClassName: PropTypes.string,
   location: PropTypes.shape().isRequired,
   theme: PropTypes.string.isRequired,
 }

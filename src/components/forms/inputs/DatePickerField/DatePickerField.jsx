@@ -12,7 +12,7 @@ const buildPopperContainer = ({ current }) => ({ children }) => {
 }
 
 const DatePickerField = ({
-  className,
+  extraClassName,
   clearable,
   dateFormat,
   hideToday,
@@ -43,7 +43,7 @@ const DatePickerField = ({
   const inputName = id || name
 
   return (
-    <div className={`${className}`}>
+    <div className={extraClassName}>
       <label
         className="label-datepicker-inner"
         htmlFor={inputName}
@@ -74,9 +74,9 @@ const DatePickerField = ({
 }
 
 DatePickerField.defaultProps = {
-  className: '',
   clearable: true,
   dateFormat: 'DD/MM/YYYY',
+  extraClassName: '',
   hideToday: false,
   icon: null,
   id: null,
@@ -91,9 +91,9 @@ DatePickerField.defaultProps = {
 }
 
 DatePickerField.propTypes = {
-  className: PropTypes.string,
   clearable: PropTypes.bool,
   dateFormat: PropTypes.string,
+  extraClassName: PropTypes.string,
   hideToday: PropTypes.bool,
   icon: PropTypes.string,
   id: PropTypes.string,

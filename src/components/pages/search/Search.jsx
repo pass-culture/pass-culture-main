@@ -368,7 +368,7 @@ class Search extends PureComponent {
           </Switch>
         </div>
         <RelativeFooterContainer
-          className="dotted-top-red"
+          extraClassName="dotted-top-red"
           theme="white"
         />
       </Fragment>

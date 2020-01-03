@@ -56,7 +56,7 @@ describe('src | components | layout | Verso', () => {
 
     // then
     const firstDiv = wrapper.find('div').first()
-    expect(firstDiv.prop('className')).toBe('verso is-overlay extra-classname')
+    expect(firstDiv.prop('className')).toBe('verso is-overlay extra-classname ')
   })
 
   it('should show offer view when is tuto is false', () => {

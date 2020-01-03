@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import classnames from 'classnames'
 
 import Icon from '../../../../layout/Icon/Icon'
 
@@ -8,11 +7,7 @@ const DatePickerCustomField = props => {
   const { readOnly, ref, value } = props
 
   return (
-    <div
-      className={classnames('react-datepicker__input-container_wrapper', {
-        selected: value,
-      })}
-    >
+    <div className={`react-datepicker__input-container_wrapper ${value ? 'selected' : ''}`}>
       <input
         {...props}
         className="form-datepicker-input"

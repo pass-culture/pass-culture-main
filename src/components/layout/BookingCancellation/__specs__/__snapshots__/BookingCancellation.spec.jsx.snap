@@ -9,7 +9,7 @@ ShallowWrapper {
         "amount": 23,
       }
     }
-    extraClassName={null}
+    extraClassName=""
     history={
       Object {
         "replace": [MockFunction],

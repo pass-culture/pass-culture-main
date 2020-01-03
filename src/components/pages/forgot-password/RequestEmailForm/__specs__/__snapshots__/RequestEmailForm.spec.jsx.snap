@@ -55,7 +55,6 @@ ShallowWrapper {
               "url": "/connexion",
             }
           }
-          className=""
           externalLink={null}
           submit={
             Object {
@@ -185,7 +184,6 @@ ShallowWrapper {
             "label": "Annuler",
             "url": "/connexion",
           },
-          "className": "",
           "externalLink": null,
           "submit": Object {
             "className": "is-bold is-white-text",
@@ -240,7 +238,6 @@ ShallowWrapper {
                 "url": "/connexion",
               }
             }
-            className=""
             externalLink={null}
             submit={
               Object {
@@ -370,7 +367,6 @@ ShallowWrapper {
               "label": "Annuler",
               "url": "/connexion",
             },
-            "className": "",
             "externalLink": null,
             "submit": Object {
               "className": "is-bold is-white-text",

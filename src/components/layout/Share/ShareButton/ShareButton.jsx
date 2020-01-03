@@ -12,7 +12,6 @@ class ShareButton extends PureComponent {
 
   getCopyToClipboardButton = (url, onClick) => (
     <CopyToClipboardButton
-      className="py12 is-bold fs14"
       key="CopyToClipboard"
       onClick={onClick}
       value={url}
