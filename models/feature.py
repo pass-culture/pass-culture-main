@@ -15,6 +15,8 @@ class FeatureToggle(enum.Enum):
     QR_CODE = 'Permettre la validation d''une contremarque via QR code'
     FULL_OFFERS_SEARCH_WITH_OFFERER_AND_VENUE = 'Permet la recherche de mots-clés dans les tables structures' \
                                                 ' et lieux en plus de celles des offres'
+    SEARCH_ALGOLIA = 'Permettre la recherche via Algolia'
+
 
 class Feature(PcObject, Model, DeactivableMixin):
     name = Column(Enum(FeatureToggle), index=True, unique=True, nullable=False)
