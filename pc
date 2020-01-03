@@ -553,7 +553,6 @@ elif [[ "$CMD" == "deploy-backend" ]] \
 # Install new local environment
 elif [[ "$CMD" == "install" ]]; then
   RUN='cd $ROOT_PATH;
-    yarn global add concurrently;
     git submodule init;
     git submodule update;
     git submodule foreach git checkout master;
