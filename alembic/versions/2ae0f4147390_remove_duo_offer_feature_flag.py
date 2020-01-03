@@ -20,9 +20,9 @@ depends_on = None
 new_values = ('WEBAPP_SIGNUP', 'FAVORITE_OFFER', 'DEGRESSIVE_REIMBURSEMENT_RATE', 'DUO_OFFER', 'QR_CODE')
 previous_values = ('WEBAPP_SIGNUP', 'FAVORITE_OFFER', 'DEGRESSIVE_REIMBURSEMENT_RATE', 'QR_CODE')
 
-previous_enum = sa.Enum(*previous_values, name='duo_featuretoggle')
-new_enum = sa.Enum(*new_values, name='duo_featuretoggle')
-temporary_enum = sa.Enum(*new_values, name='tmp_duo_featuretoggle')
+previous_enum = sa.Enum(*previous_values, name='featuretoggle')
+new_enum = sa.Enum(*new_values, name='featuretoggle')
+temporary_enum = sa.Enum(*new_values, name='tmp_featuretoggle')
 
 
 def upgrade():
@@ -30,12 +30,12 @@ def upgrade():
 
 def downgrade():
     temporary_enum.create(op.get_bind(), checkfirst=False)
-    op.execute('ALTER TABLE feature ALTER COLUMN name TYPE tmp_duo_featuretoggle'
-               ' USING name::text::tmp_duo_featuretoggle')
+    op.execute('ALTER TABLE feature ALTER COLUMN name TYPE tmp_featuretoggle'
+               ' USING name::text::tmp_featuretoggle')
     previous_enum.drop(op.get_bind(), checkfirst=False)
     new_enum.create(op.get_bind(), checkfirst=False)
-    op.execute('ALTER TABLE feature ALTER COLUMN name TYPE duo_featuretoggle'
-               ' USING name::text::duo_featuretoggle')
+    op.execute('ALTER TABLE feature ALTER COLUMN name TYPE featuretoggle'
+               ' USING name::text::featuretoggle')
     op.execute("""
             INSERT INTO feature (name, description, "isActive")
             VALUES ('%s', '%s', FALSE);
