@@ -174,20 +174,6 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Allo
     })
   })
 
-  describe('when the import is clicked', () => {
-    it('should display a synchronisation modal', () => {
-      // given
-      const wrapper = mount(<AllocineProviderForm {...props} />)
-
-      // when
-      wrapper.find('.provider-import-button').simulate('click')
-
-      // then
-      const synchronisationModal = wrapper.find(SynchronisationConfirmationModal)
-      expect(synchronisationModal).toHaveLength(1)
-    })
-  })
-
   describe('handleSuccess', () => {
     it('should update current url when action was handled successfully', () => {
       // given

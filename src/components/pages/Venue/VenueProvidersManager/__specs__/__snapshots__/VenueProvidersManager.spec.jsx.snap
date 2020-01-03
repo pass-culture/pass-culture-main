@@ -108,11 +108,13 @@ ShallowWrapper {
           "children": Array [
             Array [],
             false,
+            false,
           ],
           "className": "provider-list",
         },
         "ref": null,
         "rendered": Array [
+          false,
           false,
         ],
         "type": "ul",
@@ -208,11 +210,13 @@ ShallowWrapper {
             "children": Array [
               Array [],
               false,
+              false,
             ],
             "className": "provider-list",
           },
           "ref": null,
           "rendered": Array [
+            false,
             false,
           ],
           "type": "ul",

@@ -7,7 +7,6 @@ import Icon from '../../../../layout/Icon'
 import { Form } from 'react-final-form'
 import SynchronisationConfirmationModal from './SynchronisationConfirmationModal/SynchronisationConfirmationModal'
 import { getCanSubmit } from 'react-final-form-utils'
-import Insert from '../../../../layout/Insert/Insert'
 
 class AllocineProviderForm extends PureComponent {
   constructor() {
@@ -158,16 +157,6 @@ class AllocineProviderForm extends PureComponent {
                 {'Importer'}
               </button>
             </div>
-          )}
-
-          {!isLoadingMode && (
-            <Insert>
-              {'Pour le moment, seules les séances "classiques" peuvent être importées.'}
-              <p />
-              {'Les séances spécifiques (3D, Dolby Atmos, 4DX...) ne génèreront pas d\'offres.'}
-              <p />
-              {'Nous travaillons actuellement à l\'ajout de séances spécifiques.'}
-            </Insert>
           )}
 
           {isShowingConfirmationModal && (

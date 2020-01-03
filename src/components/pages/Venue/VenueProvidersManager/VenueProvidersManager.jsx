@@ -9,6 +9,7 @@ import {
 import AllocineProviderForm from './AllocineProviderForm/AllocineProviderFormContainer'
 import TiteliveProviderForm from './TiteliveProviderForm/TiteliveProviderFormContainer'
 import ReactTooltip from 'react-tooltip'
+import Insert from '../../../layout/Insert/Insert'
 
 class VenueProvidersManager extends PureComponent {
   constructor(props) {
@@ -143,6 +144,17 @@ class VenueProvidersManager extends PureComponent {
               </div>
             </li>
           )}
+
+          {providerSelectedIsAllocine && (
+            <Insert>
+              {'Pour le moment, seules les séances "classiques" peuvent être importées.'}
+              <p />
+              {'Les séances spécifiques (3D, Dolby Atmos, 4DX...) ne génèreront pas d\'offres.'}
+              <p />
+              {'Nous travaillons actuellement à l\'ajout de séances spécifiques.'}
+            </Insert>
+          )}
+
         </ul>
 
         {hasAtLeastOneProvider && hasNoVenueProvider && (
