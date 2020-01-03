@@ -9,6 +9,7 @@ import MatomoContainer from './components/matomo/MatomoContainer'
 import NotMatch from './components/pages/not-match/NotMatch'
 import browserRoutes from './components/router/browserRoutes'
 import { configureStore } from './utils/store'
+import Tracking from './components/tracking/Tracking'
 
 const { store, persistor } = configureStore()
 
@@ -31,6 +32,7 @@ const Root = () => (
               <Route component={NotMatch} />
             </Switch>
             <MatomoContainer />
+            <Tracking />
           </AppContainer>
         </BrowserRouter>
       </PersistGate>

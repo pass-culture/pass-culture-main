@@ -27,7 +27,45 @@
   <link rel="stylesheet" type="text/css" href="/static/fontello/css/pass_culture-icon_font.css">
   <link rel="stylesheet" type="text/css" href="/static/fontello-legacy/css/fontello.css">
   <title>pass Culture</title>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-706346995"></script>
   <script>
+    // Snapchat
+    (function(e, t, n) {
+      if (e.snaptr) return;
+      var a = e.snaptr = function() { a.handleRequest ? a.handleRequest.apply(a, arguments) : a.queue.push(arguments) };
+      a.queue = [];
+      var s = 'script';
+      r = t.createElement(s);
+      r.async = !0;
+      r.src = n;
+      var u = t.getElementsByTagName(s)[0];
+      u.parentNode.insertBefore(r, u);
+    })(window, document, 'https://sc-static.net/scevent.min.js');
+    snaptr('init', '2de6998a-feb8-4b7a-aac0-f380a4af8494', { 'user_email': 'dev@passculture.app' });
+
+    // Facebook
+    !function(f, b, e, v, n, t, s) {
+      if (f.fbq) return;
+      n = f.fbq = function() { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments) };
+      if (!f._fbq) f._fbq = n;
+      n.push = n;
+      n.loaded = !0;
+      n.version = '2.0';
+      n.queue = [];
+      t = b.createElement(e);
+      t.async = !0;
+      t.src = v;
+      s = b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t, s)
+    }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '2715078098585151');
+
+    // Google Ads
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'AW-706346995');
+
     var _paq = window._paq || [];
     // Code CNIL
     _paq.push([function() {
