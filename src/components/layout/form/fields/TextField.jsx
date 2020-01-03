@@ -128,7 +128,7 @@ class TextField extends PureComponent {
         name={name}
         parse={parse || createParseNumberValue(type)}
         render={this.renderField}
-        validate={composeValidators(validate, getRequiredValidate(required))}
+        validate={composeValidators(validate, getRequiredValidate(required, type))}
       />
     )
   }
