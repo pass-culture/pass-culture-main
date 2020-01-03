@@ -20,11 +20,6 @@
       display: flex;
       flex-direction: row;
       justify-content: space-around;
-      padding-top: 8px;
-    }
-
-    .field-text {
-      margin-top: -4px;
     }
   }
 
@@ -39,14 +34,6 @@
     .price-field {
       display: flex;
       flex-direction: column;
-    }
-
-    .label-price {
-      padding-top: 8px;
-    }
-
-    .field-text {
-      margin-top: -8px;
     }
   }
 

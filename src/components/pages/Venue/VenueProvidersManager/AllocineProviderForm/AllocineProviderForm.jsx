@@ -87,7 +87,6 @@ class AllocineProviderForm extends PureComponent {
                 </label>
                 {!isLoadingMode && venueIdAtOfferProviderIsRequired && (
                   <span
-                    className="button"
                     data-place="bottom"
                     data-tip="<p>Veuillez saisir un compte.</p>"
                     data-type="info"
@@ -123,7 +122,6 @@ class AllocineProviderForm extends PureComponent {
                     </span>
                   </label>
                   <span
-                    className="button"
                     data-place="bottom"
                     data-tip="<p>Prix de vente/place : Prix auquel la place de cinéma sera vendue.</p>"
                     data-type="info"
