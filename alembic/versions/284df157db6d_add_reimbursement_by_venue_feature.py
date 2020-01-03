@@ -5,13 +5,19 @@ Revises: 883df84383c1
 Create Date: 2019-08-14 12:37:43.969998
 
 """
+from enum import Enum
 from alembic import op
 import sqlalchemy as sa
 
+class FeatureToggle(Enum):
+    WEBAPP_SIGNUP = 'Permettre aux bénéficiaires de créer un compte'
+    FAVORITE_OFFER = 'Permettre aux bénéficiaires d''ajouter des offres en favoris'
+    DEGRESSIVE_REIMBURSEMENT_RATE = 'Permettre le remboursement avec un barème dégressif par lieu'
+    DUO_OFFER = 'Permettre la réservation d’une offre pour soi et un accompagnant'
+    QR_CODE = 'Permettre la validation d''une contremarque via QR code'
+
 
 # revision identifiers, used by Alembic.
-from models.feature import FeatureToggle
-
 revision = '284df157db6d'
 down_revision = '883df84383c1'
 branch_labels = None
