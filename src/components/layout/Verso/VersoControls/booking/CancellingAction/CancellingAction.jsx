@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
 import Price from '../../../../Price/Price'
-import getIsCancelling from '../../../../../../helpers/getIsCancelling'
+import getIsCancelling from '../../../../../../utils/getIsCancelling'
 
 class CancellingAction extends PureComponent {
   componentDidMount() {

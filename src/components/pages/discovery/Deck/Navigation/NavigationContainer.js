@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import getPriceRangeFromStocks from '../../../../../helpers/getPriceRangeFromStocks'
+import getPriceRangeFromStocks from '../../../../../utils/getPriceRangeFromStocks'
 import { selectOfferById } from '../../../../../selectors/data/offersSelectors'
 import { selectDistanceByOfferId } from '../../../../../selectors/geolocationSelectors'
 import { selectStocksByOfferId } from '../../../../../selectors/data/stocksSelectors'

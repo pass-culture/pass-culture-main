@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import Icon from '../../../layout/Icon/Icon'
-import getDisplayPrice from '../../../../helpers/getDisplayPrice'
+import getDisplayPrice from '../../../../utils/getDisplayPrice'
 
 const BookingCancel = ({ isEvent, booking }) => {
   const { amount, quantity } = booking || {}

@@ -6,7 +6,7 @@ import { Route, Router } from 'react-router'
 
 import CancellingAction from '../CancellingAction'
 import CancellingActionContainer from '../CancellingActionContainer'
-import getMockStore from '../../../../../../../helpers/mockStore'
+import getMockStore from '../../../../../../../utils/mockStore'
 
 jest.mock('redux-thunk-data', () => {
   const { requestData } = jest.requireActual('fetch-normalize-data')

@@ -1,4 +1,4 @@
-import { sortByDateAntechronologically } from '../utils/date/sortByDateAntechronologically'
+import { sortByDateAntechronologically } from './date/sortByDateAntechronologically'
 
 export const markAsCancelled = bookings => items =>
   items.map(item => {

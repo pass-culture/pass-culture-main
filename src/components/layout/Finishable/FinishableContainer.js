@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import getIsBooked from '../../../helpers/getIsBooked'
+import getIsBooked from '../../../utils/getIsBooked'
 import { selectBookingByRouterMatch } from '../../../selectors/data/bookingsSelectors'
 import { selectIsNotBookableByRouterMatch } from '../../../selectors/isNotBookableSelector'
 import Finishable from './Finishable'

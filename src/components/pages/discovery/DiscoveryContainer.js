@@ -4,11 +4,16 @@ import { assignData, deleteData, requestData } from 'redux-thunk-data'
 import isEmpty from 'lodash.isempty'
 
 import Discovery from './Discovery'
-import { checkIfShouldReloadRecommendationsBecauseOfLongTime, isDiscoveryStartupUrl, } from './utils/utils'
+import {
+  checkIfShouldReloadRecommendationsBecauseOfLongTime,
+  isDiscoveryStartupUrl,
+} from './utils/utils'
 import selectCurrentRecommendation from './selectors/selectCurrentRecommendation'
 import selectTutorials from './selectors/selectTutorials'
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
-import getOfferIdAndMediationIdApiPathQueryString, { DEFAULT_VIEW_IDENTIFIERS } from '../../../helpers/getOfferIdAndMediationIdApiPathQueryString'
+import getOfferIdAndMediationIdApiPathQueryString, {
+  DEFAULT_VIEW_IDENTIFIERS,
+} from '../../../utils/getOfferIdAndMediationIdApiPathQueryString'
 import { saveLastRecommendationsRequestTimestamp } from '../../../reducers/data'
 import { recommendationNormalizer } from '../../../utils/normalizers'
 import { selectRecommendations } from '../../../selectors/data/recommendationsSelectors'
@@ -16,9 +21,13 @@ import { selectReadRecommendations } from '../../../selectors/data/readRecommend
 import {
   selectPage,
   selectSeed,
-  selectSeedLastRequestTimestamp
+  selectSeedLastRequestTimestamp,
 } from '../../../selectors/pagination/paginationSelector'
-import { updatePage, updateSeed, updateSeedLastRequestTimestamp } from '../../../reducers/pagination'
+import {
+  updatePage,
+  updateSeed,
+  updateSeedLastRequestTimestamp,
+} from '../../../reducers/pagination'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
@@ -32,8 +41,7 @@ export const mapStateToProps = (state, ownProps) => {
   const seed = selectSeed(state)
   const hasNoRecommendations = recommendations && recommendations.length === 0
   const shouldReloadRecommendations =
-    checkIfShouldReloadRecommendationsBecauseOfLongTime(state) ||
-    hasNoRecommendations
+    checkIfShouldReloadRecommendationsBecauseOfLongTime(state) || hasNoRecommendations
   const seedLastRequestTimestamp = selectSeedLastRequestTimestamp(state)
 
   return {
@@ -63,7 +71,9 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
     shouldReloadRecommendations
   ) => {
     const { match } = prevProps
-    const seenRecommendationIds = (shouldReloadRecommendations && []) || (recommendations && recommendations.map(reco => reco.id))
+    const seenRecommendationIds =
+      (shouldReloadRecommendations && []) ||
+      (recommendations && recommendations.map(reco => reco.id))
     let queryParams = getOfferIdAndMediationIdApiPathQueryString(match, currentRecommendation)
 
     let newPage = page
@@ -87,16 +97,11 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
         normalizer: recommendationNormalizer,
       })
     )
-    dispatch(
-      updatePage(newPage)
-    )
+    dispatch(updatePage(newPage))
   },
   redirectHome: () => {
     const { history } = prevProps
-    setTimeout(
-      () => history.replace('/connexion'),
-      2000
-    )
+    setTimeout(() => history.replace('/connexion'), 2000)
   },
   redirectToFirstRecommendationIfNeeded: loadedRecommendations => {
     const { match, history } = prevProps
@@ -105,7 +110,8 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
       return
     }
 
-    const shouldRedirectToFirstRecommendationUrl = loadedRecommendations.length > 0 && isDiscoveryStartupUrl(match)
+    const shouldRedirectToFirstRecommendationUrl =
+      loadedRecommendations.length > 0 && isDiscoveryStartupUrl(match)
     if (!shouldRedirectToFirstRecommendationUrl) {
       return
     }
@@ -120,16 +126,10 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
     dispatch(saveLastRecommendationsRequestTimestamp())
   },
   updatePageAndSeedAndLastRequestTimestamp: () => {
-    dispatch(
-      updateSeedLastRequestTimestamp(Date.now())
-    )
-    dispatch(
-      updateSeed(Math.random())
-    )
-    dispatch(
-      updatePage(1)
-    )
-  }
+    dispatch(updateSeedLastRequestTimestamp(Date.now()))
+    dispatch(updateSeed(Math.random()))
+    dispatch(updatePage(1))
+  },
 })
 
 export default compose(

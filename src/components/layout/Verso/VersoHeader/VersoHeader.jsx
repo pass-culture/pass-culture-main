@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import Draggable from 'react-draggable'
 
-import getUrlWithoutDetailsPart from '../../../../helpers/getUrlWithoutDetailsPart'
+import getUrlWithoutDetailsPart from '../../../../utils/getUrlWithoutDetailsPart'
 import { getPageY } from '../../../../utils/getPageY'
 import findOfferPictoPathByOfferType from './utils/findOfferPictoPathByOfferType'
 

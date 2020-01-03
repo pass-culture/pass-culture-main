@@ -6,9 +6,9 @@ import Draggable from 'react-draggable'
 import CardContainer from './Card/CardContainer'
 import NavigationContainer from './Navigation/NavigationContainer'
 import CloseLink from '../../../layout/Header/CloseLink/CloseLink'
-import isDetailsView from '../../../../helpers/isDetailsView'
-import getUrlWithoutDetailsPart from '../../../../helpers/getUrlWithoutDetailsPart'
-import getIsTransitionDetailsUrl from '../../../../helpers/getIsTransitionDetailsUrl'
+import isDetailsView from '../../../../utils/isDetailsView'
+import getUrlWithoutDetailsPart from '../../../../utils/getUrlWithoutDetailsPart'
+import getIsTransitionDetailsUrl from '../../../../utils/getIsTransitionDetailsUrl'
 
 class Deck extends PureComponent {
   constructor(props) {
@@ -95,7 +95,8 @@ class Deck extends PureComponent {
 
   handleRefreshNext = () => {
     const { currentRecommendation, handleRequestPutRecommendations, nextLimit } = this.props
-    const hasReachedLimitBeforeFetchingRecommendations = nextLimit && currentRecommendation.index === nextLimit
+    const hasReachedLimitBeforeFetchingRecommendations =
+      nextLimit && currentRecommendation.index === nextLimit
 
     if (hasReachedLimitBeforeFetchingRecommendations) {
       handleRequestPutRecommendations()
@@ -193,11 +194,10 @@ class Deck extends PureComponent {
         data-nb-recos={nbRecommendations}
         id="deck"
       >
-        {detailView &&
-        <CloseLink
+        {detailView && <CloseLink
           closeTitle="Fermer"
           closeTo={this.buildCloseToUrl()}
-        />}
+                       />}
 
         {this.renderDraggableCards()}
 

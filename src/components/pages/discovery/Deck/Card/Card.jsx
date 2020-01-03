@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
-import isDetailsView from '../../../../../helpers/isDetailsView'
+import isDetailsView from '../../../../../utils/isDetailsView'
 import RectoContainer from '../../../../layout/Recto/RectoContainer'
 import VersoContainer from '../../../../layout/Verso/VersoContainer'
 

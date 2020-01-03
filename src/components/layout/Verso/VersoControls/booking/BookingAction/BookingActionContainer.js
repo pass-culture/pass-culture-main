@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import getPriceRangeFromStocks from '../../../../../../helpers/getPriceRangeFromStocks'
+import getPriceRangeFromStocks from '../../../../../../utils/getPriceRangeFromStocks'
 import { selectOfferByRouterMatch } from '../../../../../../selectors/data/offersSelectors'
 import { selectStocksByOfferId } from '../../../../../../selectors/data/stocksSelectors'
 import { selectIsNotBookableByRouterMatch } from '../../../../../../selectors/isNotBookableSelector'

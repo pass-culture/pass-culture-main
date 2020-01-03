@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import BackLink from './BackLink/BackLink'
 import CloseLink from './CloseLink/CloseLink'
 import SubmitButton from './SubmitButton/SubmitButton'
-import getIsTransitionDetailsUrl from '../../../helpers/getIsTransitionDetailsUrl'
+import getIsTransitionDetailsUrl from '../../../utils/getIsTransitionDetailsUrl'
 
 class Header extends PureComponent {
   componentDidMount() {

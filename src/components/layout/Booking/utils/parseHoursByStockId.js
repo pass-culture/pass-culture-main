@@ -1,6 +1,6 @@
 import moment from 'moment'
-import getDisplayPrice from '../../../../helpers/getDisplayPrice'
-import isSameDayInEachTimezone from '../../../../helpers/isSameDayInEachTimezone'
+import getDisplayPrice from '../../../../utils/getDisplayPrice'
+import isSameDayInEachTimezone from '../../../../utils/isSameDayInEachTimezone'
 
 const parseHoursByStockId = (allFormValues, format = 'HH:mm') => {
   const hasBookableDates =

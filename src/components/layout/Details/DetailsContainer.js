@@ -2,7 +2,7 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 
-import isCancelView from '../../../helpers/isCancelView'
+import isCancelView from '../../../utils/isCancelView'
 import Details from './Details'
 
 export const mapStateToProps = (state, ownProps) => {

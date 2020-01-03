@@ -4,7 +4,7 @@ import { Route } from 'react-router-dom'
 
 import BookingContainer from '../../layout/Booking/BookingContainer'
 import BookingCancellationContainer from '../../layout/BookingCancellation/BookingCancellationContainer'
-import isDetailsView from '../../../helpers/isDetailsView'
+import isDetailsView from '../../../utils/isDetailsView'
 
 import RectoContainer from '../Recto/RectoContainer'
 import VersoContainer from '../Verso/VersoContainer'
@@ -36,9 +36,7 @@ class Details extends PureComponent {
   renderBookingOrCancellation = route => {
     const { cancelView } = this.props
 
-    return cancelView
-      ? this.renderBookingCancellation(route)
-      : this.renderBooking(route)
+    return cancelView ? this.renderBookingCancellation(route) : this.renderBooking(route)
   }
 
   renderBookingCancellation = route => {

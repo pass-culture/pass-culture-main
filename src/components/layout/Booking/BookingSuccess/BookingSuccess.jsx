@@ -3,7 +3,7 @@ import React, { Fragment } from 'react'
 import { Link } from 'react-router-dom'
 
 import Icon from '../../../layout/Icon/Icon'
-import getDisplayPrice from '../../../../helpers/getDisplayPrice'
+import getDisplayPrice from '../../../../utils/getDisplayPrice'
 
 const BookingSuccess = ({ bookedPayload, isEvent }) => {
   const { completedUrl, quantity, stock, token } = bookedPayload || {}

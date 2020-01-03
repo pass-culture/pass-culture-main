@@ -1,6 +1,6 @@
 import createCachedSelector from 're-reselect'
 
-import getIsNotBookable from '../helpers/getIsNotBookable'
+import getIsNotBookable from '../utils/getIsNotBookable'
 import { selectBookingByRouterMatch } from './data/bookingsSelectors'
 import { selectMediationByRouterMatch } from './data/mediationsSelectors'
 import { selectOfferByRouterMatch } from './data/offersSelectors'

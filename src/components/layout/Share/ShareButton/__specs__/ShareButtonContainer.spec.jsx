@@ -1,11 +1,11 @@
 import { selectCurrentUser } from 'with-react-redux-login'
 
 import { mapStateToProps } from '../ShareButtonContainer'
-import getShareURL from '../../../../../helpers/getShareURL'
+import getShareURL from '../../../../../utils/getShareURL'
 import { mapDispatchToProps, mergeProps } from '../ShareButtonContainer'
 
 jest.mock('with-react-redux-login')
-jest.mock('../../../../../helpers/getShareURL')
+jest.mock('../../../../../utils/getShareURL')
 
 describe('src | components | share | ShareButtonContainer', () => {
   describe('mapStateToProps', () => {

@@ -4,7 +4,7 @@ import { compose } from 'redux'
 
 import VersoControls from './VersoControls'
 import { selectBookingByRouterMatch } from '../../../../selectors/data/bookingsSelectors'
-import getIsBooked from '../../../../helpers/getIsBooked'
+import getIsBooked from '../../../../utils/getIsBooked'
 
 const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps

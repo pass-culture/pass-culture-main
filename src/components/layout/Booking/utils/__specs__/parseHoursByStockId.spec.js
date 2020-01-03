@@ -1,7 +1,7 @@
 import moment from 'moment-timezone'
 
 import parseHoursByStockId from '../parseHoursByStockId'
-import getDisplayPrice from '../../../../../helpers/getDisplayPrice'
+import getDisplayPrice from '../../../../../utils/getDisplayPrice'
 
 describe('src | components | booking | utils | parseHoursByStockId', () => {
   it('returns empty array if not valid', () => {
