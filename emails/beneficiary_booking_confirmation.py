@@ -51,7 +51,7 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
 
     return {
         'FromEmail': SUPPORT_EMAIL_ADDRESS,
-        'MJ-TemplateID': 1089755,
+        'MJ-TemplateID': 1163067,
         'MJ-TemplateLanguage': True,
         'To': beneficiary_email,
         'Vars': {

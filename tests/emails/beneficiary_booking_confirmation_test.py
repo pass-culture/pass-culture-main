@@ -28,7 +28,7 @@ def test_should_return_event_specific_data_for_email_when_offer_is_an_event(mock
     # Then
     assert email_data == {
         'FromEmail': 'support@example.com',
-        'MJ-TemplateID': 1089755,
+        'MJ-TemplateID': 1163067,
         'MJ-TemplateLanguage': True,
         'To': 'dev@example.com',
         'Vars': {
@@ -78,7 +78,7 @@ def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event(m
     # Then
     assert email_data == {
         'FromEmail': 'support@example.com',
-        'MJ-TemplateID': 1089755,
+        'MJ-TemplateID': 1163067,
         'MJ-TemplateLanguage': True,
         'To': 'dev@example.com',
         'Vars': {
@@ -127,7 +127,7 @@ def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing(mock_
     # Then
     assert email_data == {
         'FromEmail': 'support@example.com',
-        'MJ-TemplateID': 1089755,
+        'MJ-TemplateID': 1163067,
         'MJ-TemplateLanguage': True,
         'To': 'dev@example.com',
         'Vars': {
@@ -175,7 +175,7 @@ def test_should_return_digital_thing_specific_data_for_email_when_offer_is_a_dig
     # Then
     assert email_data == {
         'FromEmail': 'support@example.com',
-        'MJ-TemplateID': 1089755,
+        'MJ-TemplateID': 1163067,
         'MJ-TemplateLanguage': True,
         'To': 'dev@example.com',
         'Vars': {

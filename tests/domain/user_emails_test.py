@@ -158,7 +158,7 @@ class SendOffererDrivenCancellationEmailToOffererTest:
 
 class SendBookingConfirmationEmailToBeneficiaryTest:
     @patch('domain.user_emails.retrieve_data_for_beneficiary_booking_confirmation_email',
-           return_value={'MJ-TemplateID': 1089755})
+           return_value={'MJ-TemplateID': 1163067})
     def when_called_calls_send_email(self, mocked_retrieve_data_for_beneficiary_booking_confirmation_email):
         # Given
         user = create_user()
@@ -170,7 +170,7 @@ class SendBookingConfirmationEmailToBeneficiaryTest:
 
         # Then
         mocked_retrieve_data_for_beneficiary_booking_confirmation_email.assert_called_once_with(booking)
-        mocked_send_email.assert_called_once_with(data={'MJ-TemplateID': 1089755})
+        mocked_send_email.assert_called_once_with(data={'MJ-TemplateID': 1163067})
 
 
 class SendBookingRecapEmailsTest:
