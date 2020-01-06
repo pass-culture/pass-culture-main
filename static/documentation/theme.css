@@ -20,3 +20,10 @@
     font-weight: 600;
     color: #fff;
     }
+
+span.example {
+    font-family: sans-serif;
+    color: #3b4151;
+    font-size: 12px;
+    font-weight: 700;
+}

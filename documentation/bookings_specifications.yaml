@@ -177,7 +177,7 @@ paths:
         '403':
           description: |-
             Vous n'avez pas les droits nécessaires pour voir cette contremarque ou l'offre a lieu dans plus de 72 heures (voir CGU)
-            Exemple :
+            <span class='example'>Example Value</span>
             ```
             {
               "user": [
@@ -207,8 +207,7 @@ paths:
         '410':
           description: |-
             La contremarque n’est plus valide car elle a déjà été validée ou a été annulée
-            Exemple :
-            <br>
+            <span class='example'>Example Value</span>
             ```
             {
               "booking": [
@@ -285,7 +284,7 @@ paths:
         '410':
           description: |-
             La contremarque n’est plus valide car elle a déjà été validée ou a été annulée
-            Exemple :
+            <span class='example'>Example Value</span>
             ```
             {
               "booking": [
@@ -310,7 +309,7 @@ paths:
       tags:
         - Version 2
       summary: Webservice permettant d'annuler une validation de contremarque.
-      description: Bien que, dans le cas d’un événement, l’utilisateur ne peut plus annuler sa réservation 72h avant le début de ce dernier, cette API permet d’annuler la réservation d’un utilisateur dès lors que son code de contremarque n’a pas encore été validé.
+      description: ''
       operationId: patchBookingKeepByToken
       produces:
         - application/json
@@ -355,8 +354,7 @@ paths:
         '410':
           description: |-
             La contremarque n’est plus valide car elle a déjà été validée, annulée ou bien le remoursement a été initié <br>
-            Exemple :
-            <br>
+            <span class='example'>Example Value</span>
             ```
             {
               "payment": [
@@ -389,7 +387,7 @@ paths:
       tags:
         - Version 2
       summary: Webservice permettant d'annuler une réservation au moyen de la contremarque associée.
-      description: Le code “contremarque” ou token est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation. <br/> Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et lui est transmis à cette occasion.
+      description: Le code “contremarque” ou token est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation. <br/> Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et lui est transmis à cette occasion. <br>Bien que, dans le cas d’un événement, l’utilisateur ne peut plus annuler sa réservation 72h avant le début de ce dernier, cette API permet d’annuler la réservation d’un utilisateur dès lors que son code de contremarque n’a pas encore été validé.
       operationId: patch_cancel_booking_by_token
       produces:
         - application/json
@@ -410,8 +408,7 @@ paths:
         '403':
           description: |-
             Vous n'avez pas les droits nécessaires pour annuler cette contremarque ou la réservation a déjà été consommée
-            Exemple :
-            <br>
+            <span class='example'>Example Value</span>
             ```
             {
               "global": [
