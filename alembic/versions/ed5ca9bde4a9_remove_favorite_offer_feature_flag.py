@@ -23,3 +23,4 @@ def downgrade():
       INSERT INTO feature (name, description, "isActive")
       VALUES ('%s', '%s', FALSE);
       """ % ('FAVORITE_OFFER', 'Permettre aux bénéficiaires d''ajouter des offres en favoris'))
+
