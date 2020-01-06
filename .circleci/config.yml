@@ -207,7 +207,7 @@ jobs:
             VERSION_TO_DEPLOY=$(git describe --contains)
             BOT_MESSAGE="'*"$CIRCLE_BRANCH"* : *API* deployment *"$VERSION_TO_DEPLOY"* seems to have *FAILED* :collision:'"
             curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
-            curl -i -k -XPOST "$GRAFANA_URL/write?db=$GRAFANA_DB" --data-binary 'deployments,application=Api,environment='"$CIRCLE_BRANCH"',deployed=false version="'"$VERSION_TO_DEPLOY"'"'
+            curl -i -k -XPOST "$GRAFANA_INFLUXDB_URL/write?db=$GRAFANA_DB" --data-binary 'deployments,application=Api,environment='"$CIRCLE_BRANCH"',deployed=false version="'"$VERSION_TO_DEPLOY"'"'
           when: on_fail
 
   deploy-api-datalake:
@@ -266,7 +266,7 @@ jobs:
             VERSION_TO_DEPLOY=$(git describe --contains)
             BOT_MESSAGE="'*"$CIRCLE_BRANCH"* : *Pro* deployment *"$VERSION_TO_DEPLOY"* seems to have *FAILED* :collision:'"
             curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
-            curl -i -k -XPOST "$GRAFANA_URL/write?db=$GRAFANA_DB" --data-binary 'deployments,application=Pro,environment='"$CIRCLE_BRANCH"',deployed=false version="'"$VERSION_TO_DEPLOY"'"'
+            curl -i -k -XPOST "$GRAFANA_INFLUXDB_URL/write?db=$GRAFANA_DB" --data-binary 'deployments,application=Pro,environment='"$CIRCLE_BRANCH"',deployed=false version="'"$VERSION_TO_DEPLOY"'"'
           when: on_fail
 
   deploy-webapp:
@@ -306,7 +306,7 @@ jobs:
             VERSION_TO_DEPLOY=$(git describe --contains)
             BOT_MESSAGE="'*"$CIRCLE_BRANCH"* : *Webapp* deployment *"$VERSION_TO_DEPLOY"* seems to have *FAILED* :collision:'"
             curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
-            curl -i -k -XPOST "$GRAFANA_URL/write?db=$GRAFANA_DB" --data-binary 'deployments,application=Webapp,environment='"$CIRCLE_BRANCH"',deployed=false version="'"$VERSION_TO_DEPLOY"'"'
+            curl -i -k -XPOST "$GRAFANA_INFLUXDB_URL/write?db=$GRAFANA_DB" --data-binary 'deployments,application=Webapp,environment='"$CIRCLE_BRANCH"',deployed=false version="'"$VERSION_TO_DEPLOY"'"'
           when: on_fail
 
   release-synthesis:
@@ -321,7 +321,7 @@ jobs:
             VERSION_TO_DEPLOY=$(git describe --contains)
             BOT_MESSAGE="'Version *"$VERSION_TO_DEPLOY"* has been successfully deployed to *"$CIRCLE_BRANCH"* :muscle:'"
             curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
-            curl -i -k -XPOST "$GRAFANA_URL/write?db=$GRAFANA_DB" --data-binary 'deployments,application=All,environment='"$CIRCLE_BRANCH"',deployed=true version="'"$VERSION_TO_DEPLOY"'"'
+            curl -i -k -XPOST "$GRAFANA_INFLUXDB_URL/write?db=$GRAFANA_DB" --data-binary 'deployments,application=All,environment='"$CIRCLE_BRANCH"',deployed=true version="'"$VERSION_TO_DEPLOY"'"'
 
 workflows:
   version: 2
