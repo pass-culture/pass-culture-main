@@ -60,7 +60,16 @@ describe('src | components | menu | Menu', () => {
       const history = createBrowserHistory()
       const initialState = {
         data: {
-          features: [],
+          features: [
+            {
+              nameKey: 'SEARCH_ALGOLIA',
+              isActive: true,
+            },
+            {
+              nameKey: 'FAVORITE_OFFER',
+              isActive: true,
+            },
+          ],
         },
       }
       props.currentUser = { wallet_balance: 300 }
@@ -80,8 +89,8 @@ describe('src | components | menu | Menu', () => {
       const anchor = wrapper.find(MenuItem).find('a')
       const link = wrapper.find(MenuItem).find(Link)
       const signoutButtonContainer = wrapper.find(SignoutButtonContainer)
-
       // then
+
       expect(transition).toHaveLength(1)
       expect(closeLink).toHaveLength(1)
       expect(header).toHaveLength(1)

@@ -78,6 +78,7 @@ const routes = [
   },
   {
     component: SearchAlgoliaContainer,
+    featureName: 'SEARCH_ALGOLIA',
     icon: 'search-w',
     path:
       '/recherche-algolia/:details(details|transition)?/:offerId?/:mediationId?/:booking(reservation)?/:bookingId?/:cancellation(annulation)?/:confirmation(confirmation)?',

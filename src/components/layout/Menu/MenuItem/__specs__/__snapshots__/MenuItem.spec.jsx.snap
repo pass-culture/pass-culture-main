@@ -32,7 +32,6 @@ ShallowWrapper {
         title="Fake title"
       />,
       "className": "flex-columns mx12 navlink",
-      "disabled": false,
       "role": "menuitem",
       "to": "/plop",
     },
@@ -73,7 +72,6 @@ ShallowWrapper {
           title="Fake title"
         />,
         "className": "flex-columns mx12 navlink",
-        "disabled": false,
         "role": "menuitem",
         "to": "/plop",
       },

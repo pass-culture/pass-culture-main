@@ -68,5 +68,16 @@ describe('src | components | menu | MenuItem', () => {
       // then
       expect(rel).toBeNull()
     })
+
+    it('should not render anything if feature is disabled', () => {
+      // given
+      props.isDisabled = true
+
+      // when
+      const wrapper = shallow(<MenuItem {...props} />)
+
+      // then
+      expect(wrapper.html()).toBeNull()
+    })
   })
 })

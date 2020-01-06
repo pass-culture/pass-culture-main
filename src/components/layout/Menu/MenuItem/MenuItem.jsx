@@ -25,18 +25,19 @@ const MenuItem = ({ isDisabled, item }) => {
   }
 
   return (
-    <Link
-      className="flex-columns mx12 navlink"
-      disabled={isDisabled}
-      key={path}
-      role="menuitem"
-      to={isDisabled ? '#' : path}
-    >
-      <Item
-        icon={icon}
-        title={title}
-      />
-    </Link>
+    !isDisabled && (
+      <Link
+        className="flex-columns mx12 navlink"
+        key={path}
+        role="menuitem"
+        to={path}
+      >
+        <Item
+          icon={icon}
+          title={title}
+        />
+      </Link>
+    )
   )
 }
 
