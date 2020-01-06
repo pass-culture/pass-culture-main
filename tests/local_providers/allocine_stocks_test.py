@@ -13,7 +13,8 @@ from local_providers.allocine_stocks import _parse_movie_duration, retrieve_movi
 from models import PcObject, Offer, EventType, Product, Stock
 from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_offerer, create_venue, create_venue_provider, create_venue_provider_price_rule
+from tests.model_creators.generic_creators import create_offerer, create_venue, create_venue_provider, \
+    create_venue_provider_price_rule
 from tests.model_creators.specific_creators import create_product_with_event_type, create_offer_with_event_product
 from utils.human_ids import humanize
 
@@ -1287,16 +1288,16 @@ class UpdateObjectsTest:
         assert first_stock.offerId == vf_offer.id
         assert first_stock.available is None
         assert first_stock.price == 10
-        assert first_stock.beginningDatetime == datetime(2019, 12, 3, 9, 00)
-        assert first_stock.endDatetime is None
-        assert first_stock.bookingLimitDatetime == datetime(2019, 12, 3, 9, 00)
+        assert first_stock.beginningDatetime == datetime(2019, 12, 3, 9, 0)
+        assert first_stock.endDatetime == datetime(2019, 12, 3, 9, 0, 1)
+        assert first_stock.bookingLimitDatetime == datetime(2019, 12, 3, 9, 0)
 
         assert second_stock.offerId == vf_offer.id
         assert second_stock.available is None
         assert second_stock.price == 10
-        assert second_stock.beginningDatetime == datetime(2019, 12, 3, 17, 00)
-        assert second_stock.endDatetime is None
-        assert second_stock.bookingLimitDatetime == datetime(2019, 12, 3, 17, 00)
+        assert second_stock.beginningDatetime == datetime(2019, 12, 3, 17, 0)
+        assert second_stock.endDatetime == datetime(2019, 12, 3, 17, 0, 1)
+        assert second_stock.bookingLimitDatetime == datetime(2019, 12, 3, 17, 0)
 
     @patch('local_providers.allocine_stocks.get_movies_showtimes')
     @patch('local_providers.allocine_stocks.get_movie_poster')
