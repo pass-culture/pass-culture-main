@@ -1,14 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import { ROOT_PATH } from '../../../../utils/config'
 import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import MesInformations from '../MesInformations/MesInformations'
 import MonAvatar from '../MonAvatar/MonAvatar'
 import MonPassCulture from '../MonPassCulture/MonPassCulture'
-
-const BACKGROUND_IMAGE = `url('${ROOT_PATH}/mosaic-k.png')`
 
 const ProfileMainView = ({ config, currentUser }) => (
   <div
@@ -16,10 +13,7 @@ const ProfileMainView = ({ config, currentUser }) => (
     id="profile-page-main-view"
   >
     <HeaderContainer title="Mon compte" />
-    <main
-      className="pc-main is-clipped is-relative"
-      style={{ backgroundImage: BACKGROUND_IMAGE }}
-    >
+    <main className="mosaic-background pc-main is-clipped is-relative">
       <div className="pc-scroll-container">
         {currentUser && <MonAvatar currentUser={currentUser} />}
         <div id="profile-page-user-passculture">

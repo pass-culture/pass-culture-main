@@ -13,10 +13,7 @@ const BookingSuccess = ({ bookedPayload, isEvent }) => {
   return (
     <div className={`booked text-center ${cssClass}`}>
       <h3 className="fs22">
-        <span
-          className="is-block mb12"
-          style={{ color: '#27AE60', fontSize: '4.5rem' }}
-        >
+        <span className="is-block mb12">
           <Icon svg="picto-validation" />
         </span>
         <span className="is-block mb36">

@@ -9,7 +9,7 @@ ShallowWrapper {
         "completedUrl": "http://fake-url.com",
         "quantity": 2,
         "stock": Object {
-          "price": "12.5",
+          "price": 12.5,
         },
         "token": "G8G8G8",
       }
@@ -36,12 +36,6 @@ ShallowWrapper {
         >
           <span
             className="is-block mb12"
-            style={
-              Object {
-                "color": "#27AE60",
-                "fontSize": "4.5rem",
-              }
-            }
           >
             <Icon
               alt=""
@@ -125,12 +119,6 @@ ShallowWrapper {
           "children": Array [
             <span
               className="is-block mb12"
-              style={
-                Object {
-                  "color": "#27AE60",
-                  "fontSize": "4.5rem",
-                }
-              }
             >
               <Icon
                 alt=""
@@ -165,10 +153,6 @@ ShallowWrapper {
                 svg="picto-validation"
               />,
               "className": "is-block mb12",
-              "style": Object {
-                "color": "#27AE60",
-                "fontSize": "4.5rem",
-              },
             },
             "ref": null,
             "rendered": Object {
@@ -500,12 +484,6 @@ ShallowWrapper {
           >
             <span
               className="is-block mb12"
-              style={
-                Object {
-                  "color": "#27AE60",
-                  "fontSize": "4.5rem",
-                }
-              }
             >
               <Icon
                 alt=""
@@ -589,12 +567,6 @@ ShallowWrapper {
             "children": Array [
               <span
                 className="is-block mb12"
-                style={
-                  Object {
-                    "color": "#27AE60",
-                    "fontSize": "4.5rem",
-                  }
-                }
               >
                 <Icon
                   alt=""
@@ -629,10 +601,6 @@ ShallowWrapper {
                   svg="picto-validation"
                 />,
                 "className": "is-block mb12",
-                "style": Object {
-                  "color": "#27AE60",
-                  "fontSize": "4.5rem",
-                },
               },
               "ref": null,
               "rendered": Object {
@@ -991,7 +959,7 @@ ShallowWrapper {
         "completedUrl": "http://fake-url.com",
         "quantity": 1,
         "stock": Object {
-          "price": "12.5",
+          "price": 12.5,
         },
         "token": "G8G8G8",
       }
@@ -1018,12 +986,6 @@ ShallowWrapper {
         >
           <span
             className="is-block mb12"
-            style={
-              Object {
-                "color": "#27AE60",
-                "fontSize": "4.5rem",
-              }
-            }
           >
             <Icon
               alt=""
@@ -1114,12 +1076,6 @@ ShallowWrapper {
           "children": Array [
             <span
               className="is-block mb12"
-              style={
-                Object {
-                  "color": "#27AE60",
-                  "fontSize": "4.5rem",
-                }
-              }
             >
               <Icon
                 alt=""
@@ -1161,10 +1117,6 @@ ShallowWrapper {
                 svg="picto-validation"
               />,
               "className": "is-block mb12",
-              "style": Object {
-                "color": "#27AE60",
-                "fontSize": "4.5rem",
-              },
             },
             "ref": null,
             "rendered": Object {
@@ -1541,12 +1493,6 @@ ShallowWrapper {
           >
             <span
               className="is-block mb12"
-              style={
-                Object {
-                  "color": "#27AE60",
-                  "fontSize": "4.5rem",
-                }
-              }
             >
               <Icon
                 alt=""
@@ -1637,12 +1583,6 @@ ShallowWrapper {
             "children": Array [
               <span
                 className="is-block mb12"
-                style={
-                  Object {
-                    "color": "#27AE60",
-                    "fontSize": "4.5rem",
-                  }
-                }
               >
                 <Icon
                   alt=""
@@ -1684,10 +1624,6 @@ ShallowWrapper {
                   svg="picto-validation"
                 />,
                 "className": "is-block mb12",
-                "style": Object {
-                  "color": "#27AE60",
-                  "fontSize": "4.5rem",
-                },
               },
               "ref": null,
               "rendered": Object {
@@ -2091,7 +2027,7 @@ ShallowWrapper {
         "completedUrl": "http://fake-url.com",
         "quantity": 1,
         "stock": Object {
-          "price": "12.5",
+          "price": 12.5,
         },
         "token": "G8G8G8",
       }
@@ -2118,12 +2054,6 @@ ShallowWrapper {
         >
           <span
             className="is-block mb12"
-            style={
-              Object {
-                "color": "#27AE60",
-                "fontSize": "4.5rem",
-              }
-            }
           >
             <Icon
               alt=""
@@ -2204,12 +2134,6 @@ ShallowWrapper {
           "children": Array [
             <span
               className="is-block mb12"
-              style={
-                Object {
-                  "color": "#27AE60",
-                  "fontSize": "4.5rem",
-                }
-              }
             >
               <Icon
                 alt=""
@@ -2241,10 +2165,6 @@ ShallowWrapper {
                 svg="picto-validation"
               />,
               "className": "is-block mb12",
-              "style": Object {
-                "color": "#27AE60",
-                "fontSize": "4.5rem",
-              },
             },
             "ref": null,
             "rendered": Object {
@@ -2564,12 +2484,6 @@ ShallowWrapper {
           >
             <span
               className="is-block mb12"
-              style={
-                Object {
-                  "color": "#27AE60",
-                  "fontSize": "4.5rem",
-                }
-              }
             >
               <Icon
                 alt=""
@@ -2650,12 +2564,6 @@ ShallowWrapper {
             "children": Array [
               <span
                 className="is-block mb12"
-                style={
-                  Object {
-                    "color": "#27AE60",
-                    "fontSize": "4.5rem",
-                  }
-                }
               >
                 <Icon
                   alt=""
@@ -2687,10 +2595,6 @@ ShallowWrapper {
                   svg="picto-validation"
                 />,
                 "className": "is-block mb12",
-                "style": Object {
-                  "color": "#27AE60",
-                  "fontSize": "4.5rem",
-                },
               },
               "ref": null,
               "rendered": Object {

@@ -13,7 +13,7 @@ describe('src | components | layout | Booking | BookingSuccess', () => {
         quantity: 1,
         token: 'G8G8G8',
         stock: {
-          price: '12.5',
+          price: 12.5,
         },
       },
       isEvent: true,

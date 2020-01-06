@@ -9,7 +9,7 @@ import getMenuWalletValue from './helpers/getMenuWalletValue'
 const discoverURL = `${ROOT_PATH}decouverte`
 const bookingsDetailsURL = `${ROOT_PATH}reservations/details`
 const openVersoButton = Selector('#deck-open-verso-button')
-const openDeckMenu = Selector('#deck-footer .profile-button')
+const openDeckMenu = Selector('#deck-footer a')
 const sendBookingButton = Selector('#booking-validation-button')
 const alreadyBookedOfferButton = Selector('#verso-already-booked-button')
 const bookOfferButton = Selector('button').withText('J’y vais !')
@@ -17,7 +17,7 @@ const bookingToken = Selector('#booking-booked-token')
 const bookingSuccessButton = Selector('#booking-success-ok-button')
 const checkReversedIcon = Selector('.ticket-reserved-icon')
 const closeMenu = Selector('#main-menu-fixed-container .close-link')
-const openMenuFromVerso = Selector('#verso-footer .profile-button')
+const openMenuFromVerso = Selector('#verso-footer a')
 const bookingErrorReasons = Selector('#booking-error-reasons p')
 const dateSelectBox = Selector('#booking-form-date-picker-field')
 const myBookingsMenuButton = Selector('#main-menu-navigation a').nth(2)

@@ -25,8 +25,7 @@ class Verso extends PureComponent {
   render() {
     const {
       areDetailsVisible,
-      backgroundColor,
-      contentInlineStyle,
+      extraClassNameVersoContent,
       extraClassName,
       isTuto,
       offerName,
@@ -41,16 +40,12 @@ class Verso extends PureComponent {
           ref={this.versoWrapper}
         >
           <VersoHeaderContainer
-            backgroundColor={backgroundColor}
             subtitle={offerVenueNameOrPublicName}
             title={offerName}
             type={offerType}
           />
           {!isTuto && <VersoControlsContainer />}
-          <div
-            className="verso-content"
-            style={contentInlineStyle}
-          >
+          <div className={`mosaic-background ${extraClassNameVersoContent}`}>
             {isTuto ? <VersoContentTutoContainer /> : <VersoContentOfferContainer />}
           </div>
         </div>
@@ -66,9 +61,8 @@ class Verso extends PureComponent {
 }
 
 Verso.defaultProps = {
-  backgroundColor: null,
-  contentInlineStyle: null,
-  extraClassName: null,
+  extraClassName: '',
+  extraClassNameVersoContent: 'verso-content',
   isTuto: null,
   offerName: null,
   offerType: null,
@@ -77,9 +71,8 @@ Verso.defaultProps = {
 
 Verso.propTypes = {
   areDetailsVisible: PropTypes.bool.isRequired,
-  backgroundColor: PropTypes.string,
-  contentInlineStyle: PropTypes.shape(),
   extraClassName: PropTypes.string,
+  extraClassNameVersoContent: PropTypes.string,
   isTuto: PropTypes.bool,
   offerName: PropTypes.string,
   offerType: PropTypes.string,

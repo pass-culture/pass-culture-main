@@ -22,24 +22,20 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": <div
-        id="category-description"
+        className="nav-results-wrapper"
       >
         <h2
-          className="nav-result-title"
+          className="nav-results-title"
         >
           Applaudir
         </h2>
-        <span
-          className="nav-result-description"
+        <div
+          className="nav-results-description"
         >
           Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?
-        </span>
+        </div>
       </div>,
-      "id": "nav-results-header",
-      "style": Object {
-        "backgroundImage": "url(http://localhost/icons/img-Applaudir-L.jpg)",
-      },
-      "title": "Liste des offres de type Applaudir",
+      "className": "nav-results-header nav-results-Applaudir",
     },
     "ref": null,
     "rendered": Object {
@@ -49,17 +45,17 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <h2
-            className="nav-result-title"
+            className="nav-results-title"
           >
             Applaudir
           </h2>,
-          <span
-            className="nav-result-description"
+          <div
+            className="nav-results-description"
           >
             Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?
-          </span>,
+          </div>,
         ],
-        "id": "category-description",
+        "className": "nav-results-wrapper",
       },
       "ref": null,
       "rendered": Array [
@@ -69,7 +65,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": "Applaudir",
-            "className": "nav-result-title",
+            "className": "nav-results-title",
           },
           "ref": null,
           "rendered": "Applaudir",
@@ -81,11 +77,11 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": "Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?",
-            "className": "nav-result-description",
+            "className": "nav-results-description",
           },
           "ref": null,
           "rendered": "Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?",
-          "type": "span",
+          "type": "div",
         },
       ],
       "type": "div",
@@ -99,24 +95,20 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": <div
-          id="category-description"
+          className="nav-results-wrapper"
         >
           <h2
-            className="nav-result-title"
+            className="nav-results-title"
           >
             Applaudir
           </h2>
-          <span
-            className="nav-result-description"
+          <div
+            className="nav-results-description"
           >
             Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?
-          </span>
+          </div>
         </div>,
-        "id": "nav-results-header",
-        "style": Object {
-          "backgroundImage": "url(http://localhost/icons/img-Applaudir-L.jpg)",
-        },
-        "title": "Liste des offres de type Applaudir",
+        "className": "nav-results-header nav-results-Applaudir",
       },
       "ref": null,
       "rendered": Object {
@@ -126,17 +118,17 @@ ShallowWrapper {
         "props": Object {
           "children": Array [
             <h2
-              className="nav-result-title"
+              className="nav-results-title"
             >
               Applaudir
             </h2>,
-            <span
-              className="nav-result-description"
+            <div
+              className="nav-results-description"
             >
               Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?
-            </span>,
+            </div>,
           ],
-          "id": "category-description",
+          "className": "nav-results-wrapper",
         },
         "ref": null,
         "rendered": Array [
@@ -146,7 +138,7 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": "Applaudir",
-              "className": "nav-result-title",
+              "className": "nav-results-title",
             },
             "ref": null,
             "rendered": "Applaudir",
@@ -158,11 +150,11 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": "Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?",
-              "className": "nav-result-description",
+              "className": "nav-results-description",
             },
             "ref": null,
             "rendered": "Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?",
-            "type": "span",
+            "type": "div",
           },
         ],
         "type": "div",

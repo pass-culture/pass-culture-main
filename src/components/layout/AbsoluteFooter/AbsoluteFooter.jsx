@@ -25,12 +25,8 @@ const AbsoluteFooter = ({ areDetailsVisible, borderTop, colored, id, location, o
   }
   return (
     <footer {...footerProps}>
-      <div className="button-wrapper flex-center">
-        <Link
-          className="profile-button is-block text-center"
-          style={{ paddingTop: '0.4rem' }}
-          to={menuUrl}
-        >
+      <div className="button-wrapper">
+        <Link to={menuUrl}>
           <ProfilePicture
             alt="Mon menu"
             {...maybeColored}

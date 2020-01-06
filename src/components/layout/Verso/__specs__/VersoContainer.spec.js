@@ -22,8 +22,7 @@ describe('src | components | layout | Verso | VersoContainer', () => {
 
       // then
       expect(result).toStrictEqual({
-        backgroundColor: 'black',
-        contentInlineStyle: { backgroundImage: "url('http://localhost/mosaic-k.png')" },
+        extraClassNameVersoContent: 'verso-content',
         isTuto: false,
         offerName: 'super offre',
         offerType: 'EventType.SPECTACLE_VIVANT',

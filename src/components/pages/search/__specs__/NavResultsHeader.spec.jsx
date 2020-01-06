@@ -1,7 +1,6 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 
-import { ROOT_PATH } from '../../../../utils/config'
 import NavResultsHeader from '../NavResultsHeader'
 
 describe('src | components | pages | search | NavResultsHeader', () => {
@@ -31,13 +30,11 @@ describe('src | components | pages | search | NavResultsHeader', () => {
       const wrapper = shallow(<NavResultsHeader {...props} />)
 
       // when
-      const img = wrapper.find('#nav-results-header').props()
+      const img = wrapper.find('.nav-results-header').props()
       const title = wrapper.find('h2')
 
       // then
-      const imgUrl = `${ROOT_PATH}/icons/img-Écouter-L.jpg`
-      expect(img.style.backgroundImage).toBe(`url(${imgUrl})`)
-      expect(img.title).toBe('Liste des offres de type Écouter')
+      expect(img.className).toBe('nav-results-header nav-results-Écouter')
       expect(title.text()).toBe('Écouter')
     })
   })

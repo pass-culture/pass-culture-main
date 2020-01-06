@@ -9,7 +9,6 @@ describe('src | components | layout | Verso | VersoHeader', () => {
 
   beforeEach(() => {
     props = {
-      backgroundColor: '#ACE539',
       history: { push: jest.fn() },
       location: {
         pathname: '',
@@ -70,15 +69,6 @@ describe('src | components | layout | Verso | VersoHeader', () => {
     // then
     const offerVenue = wrapper.find('#verso-offer-venue')
     expect(offerVenue).toHaveLength(0)
-  })
-
-  it('should display a div element (triangle) with the right background', () => {
-    // when
-    const wrapper = shallow(<VersoHeader {...props} />)
-
-    // then
-    const triangle = wrapper.find('.verso-header')
-    expect(triangle.prop('style')).toStrictEqual({ backgroundColor: '#ACE539' })
   })
 
   it('should display a picto matching offer type when provided', () => {

@@ -13,7 +13,6 @@ ShallowWrapper {
     priceRange={Array []}
     separator="-"
     trackConsultOffer={[MockFunction]}
-    transitionTimeout={250}
     verticalSlideRatio={0.3}
   />,
   Symbol(enzyme.__renderer__): Object {
@@ -31,12 +30,7 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": <div
-        className="controls flex-columns items-end wrap-3"
-        style={
-          Object {
-            "backgroundImage": "url('http://localhost/mosaic-w@2x.png')",
-          }
-        }
+        className="controls flex-columns items-end wrap-3 mosaicx2-background"
       >
         <span />
         <div
@@ -95,11 +89,6 @@ ShallowWrapper {
               </button>
               <div
                 className="clue"
-                style={
-                  Object {
-                    "transition": "opacity 250ms",
-                  }
-                }
               >
                 <withRouter(Connect(Finishable))>
                   <Price
@@ -190,11 +179,6 @@ ShallowWrapper {
                 </button>
                 <div
                   className="clue"
-                  style={
-                    Object {
-                      "transition": "opacity 250ms",
-                    }
-                  }
                 >
                   <withRouter(Connect(Finishable))>
                     <Price
@@ -219,10 +203,7 @@ ShallowWrapper {
           </div>,
           <span />,
         ],
-        "className": "controls flex-columns items-end wrap-3",
-        "style": Object {
-          "backgroundImage": "url('http://localhost/mosaic-w@2x.png')",
-        },
+        "className": "controls flex-columns items-end wrap-3 mosaicx2-background",
       },
       "ref": null,
       "rendered": Array [
@@ -293,11 +274,6 @@ ShallowWrapper {
                 </button>
                 <div
                   className="clue"
-                  style={
-                    Object {
-                      "transition": "opacity 250ms",
-                    }
-                  }
                 >
                   <withRouter(Connect(Finishable))>
                     <Price
@@ -355,11 +331,6 @@ ShallowWrapper {
                 </button>
                 <div
                   className="clue"
-                  style={
-                    Object {
-                      "transition": "opacity 250ms",
-                    }
-                  }
                 >
                   <withRouter(Connect(Finishable))>
                     <Price
@@ -423,11 +394,6 @@ ShallowWrapper {
                   </button>,
                   <div
                     className="clue"
-                    style={
-                      Object {
-                        "transition": "opacity 250ms",
-                      }
-                    }
                   >
                     <withRouter(Connect(Finishable))>
                       <Price
@@ -509,9 +475,6 @@ ShallowWrapper {
                       </div>
                     </withRouter(Connect(Finishable))>,
                     "className": "clue",
-                    "style": Object {
-                      "transition": "opacity 250ms",
-                    },
                   },
                   "ref": null,
                   "rendered": Object {
@@ -610,12 +573,7 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": <div
-          className="controls flex-columns items-end wrap-3"
-          style={
-            Object {
-              "backgroundImage": "url('http://localhost/mosaic-w@2x.png')",
-            }
-          }
+          className="controls flex-columns items-end wrap-3 mosaicx2-background"
         >
           <span />
           <div
@@ -674,11 +632,6 @@ ShallowWrapper {
                 </button>
                 <div
                   className="clue"
-                  style={
-                    Object {
-                      "transition": "opacity 250ms",
-                    }
-                  }
                 >
                   <withRouter(Connect(Finishable))>
                     <Price
@@ -769,11 +722,6 @@ ShallowWrapper {
                   </button>
                   <div
                     className="clue"
-                    style={
-                      Object {
-                        "transition": "opacity 250ms",
-                      }
-                    }
                   >
                     <withRouter(Connect(Finishable))>
                       <Price
@@ -798,10 +746,7 @@ ShallowWrapper {
             </div>,
             <span />,
           ],
-          "className": "controls flex-columns items-end wrap-3",
-          "style": Object {
-            "backgroundImage": "url('http://localhost/mosaic-w@2x.png')",
-          },
+          "className": "controls flex-columns items-end wrap-3 mosaicx2-background",
         },
         "ref": null,
         "rendered": Array [
@@ -872,11 +817,6 @@ ShallowWrapper {
                   </button>
                   <div
                     className="clue"
-                    style={
-                      Object {
-                        "transition": "opacity 250ms",
-                      }
-                    }
                   >
                     <withRouter(Connect(Finishable))>
                       <Price
@@ -934,11 +874,6 @@ ShallowWrapper {
                   </button>
                   <div
                     className="clue"
-                    style={
-                      Object {
-                        "transition": "opacity 250ms",
-                      }
-                    }
                   >
                     <withRouter(Connect(Finishable))>
                       <Price
@@ -1002,11 +937,6 @@ ShallowWrapper {
                     </button>,
                     <div
                       className="clue"
-                      style={
-                        Object {
-                          "transition": "opacity 250ms",
-                        }
-                      }
                     >
                       <withRouter(Connect(Finishable))>
                         <Price
@@ -1088,9 +1018,6 @@ ShallowWrapper {
                         </div>
                       </withRouter(Connect(Finishable))>,
                       "className": "clue",
-                      "style": Object {
-                        "transition": "opacity 250ms",
-                      },
                     },
                     "ref": null,
                     "rendered": Object {

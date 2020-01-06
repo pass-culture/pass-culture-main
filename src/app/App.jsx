@@ -38,20 +38,18 @@ export const App = ({ children, history, location, isMaintenanceActivated }) => 
             {`${pageTitle}${PROJECT_NAME}${(IS_DEV && ' | DEV') || ''}`}
           </title>
         </Helmet>
-        <div className="app is-relative">
-          <ErrorCatcherContainer>
-            {children}
-            <OverlayContainer />
-            <Route
-              component={MenuContainer}
-              history={history}
-              path="*/menu"
-            />
-            <SplashContainer />
-            <SharePopinContainer />
-            <Notifications />
-          </ErrorCatcherContainer>
-        </div>
+        <ErrorCatcherContainer>
+          {children}
+          <OverlayContainer />
+          <Route
+            component={MenuContainer}
+            history={history}
+            path="*/menu"
+          />
+          <SplashContainer />
+          <SharePopinContainer />
+          <Notifications />
+        </ErrorCatcherContainer>
       </Fragment>
     )
   }

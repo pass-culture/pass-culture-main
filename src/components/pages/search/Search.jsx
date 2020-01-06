@@ -217,7 +217,7 @@ class Search extends PureComponent {
 
     const queryParams = query.parse()
     const keywords = encodeURI(queryParams[`mots-cles`])
-    let description
+    let description = ''
     const category = decodeURIComponent(queryParams.categories || params.category)
     if (location.pathname.includes('/resultats/')) {
       description = getDescriptionFromCategory(category, typeSublabelsAndDescription)

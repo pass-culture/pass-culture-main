@@ -1,30 +1,54 @@
-#category-description {
-  background: rgba($primary, 0.75);
-  padding: 1em;
+.nav-results-header {
+  background-size: cover;
+  height: rem(250px);
+  padding: rem(12px);
+  position: relative;
 }
 
-#category-description h2 {
+.nav-results-Applaudir {
+  background-image: url(/icons/img-Applaudir-L.jpg);
+}
+
+.nav-results-Jouer {
+  background-image: url(/icons/img-Jouer-L.jpg);
+}
+
+.nav-results-Lire {
+  background-image: url(/icons/img-Lire-L.jpg);
+}
+
+.nav-results-Pratiquer {
+  background-image: url(/icons/img-Pratiquer-L.jpg);
+}
+
+.nav-results-Regarder {
+  background-image: url(/icons/img-Regarder-L.jpg);
+}
+
+.nav-results-Rencontrer {
+  background-image: url(/icons/img-Rencontrer-L.jpg);
+}
+
+.nav-results-Écouter {
+  background-image: url(/icons/img-Écouter-L.jpg);
+}
+
+.nav-results-wrapper {
+  background: rgba($primary, 0.75);
+  bottom: rem(12px);
+  color: white;
+  left: rem(12px);
+  padding: 1em;
+  position: absolute;
+  right: rem(12px);
+  margin: 0 rem(12px);
+}
+
+.nav-results-title {
   margin-bottom: rem(12px);
 }
 
-#category-description {
-  @extend .is-absolute;
-  @extend .is-white-text;
-  @extend .mx12;
-  @extend .text-left;
-}
-
- #nav-results-header {
-  @extend .p12;
-  @extend .is-relative;
-}
-
-.nav-result-title {
-  @extend .is-bold;
-  @extend .mb3;
-}
-
-.nav-result-description {
-  @extend .fs13;
-  @extend .is-medium;
+.nav-results-description {
+  font-size: rem(13px);
+  font-weight: 500;
 }

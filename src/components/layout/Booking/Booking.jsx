@@ -11,12 +11,9 @@ import BookingSuccess from './BookingSuccess/BookingSuccess'
 import externalSubmitForm from '../../forms/utils/externalSubmitForm'
 import { priceIsDefined } from '../../../utils/getDisplayPrice'
 import getIsBooking from '../../../utils/getIsBooking'
-import { ROOT_PATH } from '../../../utils/config'
 import handleRedirect from './utils/handleRedirect'
 
 const BOOKING_FORM_ID = 'form-create-booking'
-
-const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`
 
 class Booking extends PureComponent {
   constructor(props) {
@@ -187,10 +184,7 @@ class Booking extends PureComponent {
           >
             <div className="main flex-rows flex-1 scroll-y">
               <BookingHeader offer={offer} />
-              <div
-                className="content flex-1 flex-center items-center"
-                style={{ backgroundImage }}
-              >
+              <div className="mosaic-background content flex-1 flex-center items-center">
                 <div className="py36 px12 flex-rows">
                   {isSubmitting && <BookingLoader />}
 

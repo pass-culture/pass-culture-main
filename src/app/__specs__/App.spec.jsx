@@ -14,6 +14,9 @@ describe('src | components | App', () => {
     const initialState = {}
     const store = mockStore(initialState)
     const props = {
+      children: (<div />),
+      history: {},
+      isMaintenanceActivated: false,
       location: {},
     }
 
@@ -31,10 +34,12 @@ describe('src | components | App', () => {
   it('should render a RedirectToMaintenance component when maintenance mode is activated', () => {
     // given
     const props = {
+      children: (<div />),
       history: {},
-      location: {},
       isMaintenanceActivated: true,
+      location: {},
     }
+
     // when
     const wrapper = shallow(
       <App {...props}>

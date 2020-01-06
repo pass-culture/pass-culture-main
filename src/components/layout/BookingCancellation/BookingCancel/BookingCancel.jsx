@@ -12,10 +12,7 @@ const BookingCancel = ({ isEvent, booking }) => {
   return (
     <div className={`text-center ${cssClass}`}>
       <div>
-        <span
-          className="is-block mt24 mb8"
-          style={{ color: '#27AE60', fontSize: '4rem' }}
-        >
+        <span className="is-block mt24 mb8">
           <Icon svg="picto-validation" />
         </span>
         <span className="is-block fs22">

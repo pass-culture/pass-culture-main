@@ -1,40 +1,22 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import { ROOT_PATH } from '../../../utils/config'
-
-const NavResultsHeader = ({ category, description }) => {
-  const src = `${ROOT_PATH}/icons/img-${category}-L.jpg`
-  const imgDescription = `Liste des offres de type ${category}`
-
-  return (
-    <div
-      id="nav-results-header"
-      style={{
-        backgroundImage: `url(${src})`,
-      }}
-      title={imgDescription}
-    >
-      <div id="category-description">
-        <h2 className="nav-result-title">
-          {category}
-        </h2>
-        <span className="nav-result-description">
-          {description}
-        </span>
+const NavResultsHeader = ({ category, description }) => (
+  <div className={`nav-results-header nav-results-${category}`}>
+    <div className="nav-results-wrapper">
+      <h2 className="nav-results-title">
+        {category}
+      </h2>
+      <div className="nav-results-description">
+        {description}
       </div>
     </div>
-  )
-}
-
-NavResultsHeader.defaultProps = {
-  category: null,
-  description: null,
-}
+  </div>
+)
 
 NavResultsHeader.propTypes = {
-  category: PropTypes.string,
-  description: PropTypes.string,
+  category: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
 }
 
 export default NavResultsHeader

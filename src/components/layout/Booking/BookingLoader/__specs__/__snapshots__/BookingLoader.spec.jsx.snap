@@ -20,26 +20,11 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "host",
     "props": Object {
-      "children": <span>
-        Réservation en cours...
-      </span>,
-      "className": "loading flex-rows flex-1 items-center flex-center loading",
-      "style": Object {
-        "height": "100%",
-      },
+      "children": "Réservation en cours...",
+      "className": "flex-rows flex-1 items-center",
     },
     "ref": null,
-    "rendered": Object {
-      "instance": null,
-      "key": undefined,
-      "nodeType": "host",
-      "props": Object {
-        "children": "Réservation en cours...",
-      },
-      "ref": null,
-      "rendered": "Réservation en cours...",
-      "type": "span",
-    },
+    "rendered": "Réservation en cours...",
     "type": "div",
   },
   Symbol(enzyme.__nodes__): Array [
@@ -48,26 +33,11 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "host",
       "props": Object {
-        "children": <span>
-          Réservation en cours...
-        </span>,
-        "className": "loading flex-rows flex-1 items-center flex-center loading",
-        "style": Object {
-          "height": "100%",
-        },
+        "children": "Réservation en cours...",
+        "className": "flex-rows flex-1 items-center",
       },
       "ref": null,
-      "rendered": Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": "Réservation en cours...",
-        },
-        "ref": null,
-        "rendered": "Réservation en cours...",
-        "type": "span",
-      },
+      "rendered": "Réservation en cours...",
       "type": "div",
     },
   ],

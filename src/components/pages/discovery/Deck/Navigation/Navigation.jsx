@@ -6,7 +6,6 @@ import DuoOfferContainer from '../../../../layout/DuoOffer/DuoOfferContainer'
 import Icon from '../../../../layout/Icon/Icon'
 import Price from '../../../../layout/Price/Price'
 import FinishableContainer from '../../../../layout/Finishable/FinishableContainer'
-import { ROOT_PATH } from '../../../../../utils/config'
 import { getPageY } from '../../../../../utils/getPageY'
 
 const toRectoDraggableBounds = {
@@ -82,14 +81,11 @@ class Navigation extends PureComponent {
       offerId,
       priceRange,
       separator,
-      transitionTimeout,
     } = this.props
+
     return (
       <div id="deck-navigation">
-        <div
-          className="controls flex-columns items-end wrap-3"
-          style={{ backgroundImage: `url('${ROOT_PATH}/mosaic-w@2x.png')` }}
-        >
+        <div className="controls flex-columns items-end wrap-3 mosaicx2-background">
           {this.renderPreviousButton()}
           {(flipHandler && (
             <div className="flex-rows">
@@ -112,10 +108,7 @@ class Navigation extends PureComponent {
                       svg="ico-slideup-w"
                     />
                   </button>
-                  <div
-                    className="clue"
-                    style={{ transition: `opacity ${transitionTimeout}ms` }}
-                  >
+                  <div className="clue">
                     <FinishableContainer>
                       <Price
                         free="Gratuit"
@@ -149,7 +142,6 @@ Navigation.defaultProps = {
   handleGoPrevious: null,
   offerId: '',
   priceRange: null,
-  transitionTimeout: 250,
   verticalSlideRatio: 0.3,
 }
 
@@ -163,7 +155,6 @@ Navigation.propTypes = {
   priceRange: PropTypes.arrayOf(PropTypes.number),
   separator: PropTypes.string.isRequired,
   trackConsultOffer: PropTypes.func.isRequired,
-  transitionTimeout: PropTypes.number,
   verticalSlideRatio: PropTypes.number,
 }
 

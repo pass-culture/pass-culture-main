@@ -16,8 +16,12 @@ ShallowWrapper {
     }
   >
     <Unknown
+      history={Object {}}
+      isMaintenanceActivated={false}
       location={Object {}}
-    />
+    >
+      <div />
+    </Unknown>
   </Provider>,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -34,8 +38,12 @@ ShallowWrapper {
     "nodeType": "function",
     "props": Object {
       "children": <Unknown
+        history={Object {}}
+        isMaintenanceActivated={false}
         location={Object {}}
-      />,
+      >
+        <div />
+      </Unknown>,
       "value": Object {
         "store": Object {
           "clearActions": [Function],
@@ -70,10 +78,21 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "function",
       "props": Object {
+        "children": <div />,
+        "history": Object {},
+        "isMaintenanceActivated": false,
         "location": Object {},
       },
       "ref": null,
-      "rendered": null,
+      "rendered": Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {},
+        "ref": null,
+        "rendered": null,
+        "type": "div",
+      },
       "type": [Function],
     },
     "type": Object {
@@ -102,8 +121,12 @@ ShallowWrapper {
       "nodeType": "function",
       "props": Object {
         "children": <Unknown
+          history={Object {}}
+          isMaintenanceActivated={false}
           location={Object {}}
-        />,
+        >
+          <div />
+        </Unknown>,
         "value": Object {
           "store": Object {
             "clearActions": [Function],
@@ -138,10 +161,21 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
+          "children": <div />,
+          "history": Object {},
+          "isMaintenanceActivated": false,
           "location": Object {},
         },
         "ref": null,
-        "rendered": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {},
+          "ref": null,
+          "rendered": null,
+          "type": "div",
+        },
         "type": [Function],
       },
       "type": Object {

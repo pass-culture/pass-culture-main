@@ -27,14 +27,11 @@ class VersoHeader extends PureComponent {
   }
 
   render() {
-    const { backgroundColor, subtitle, title, type } = this.props
+    const { subtitle, title, type } = this.props
     const offerPictoPath = findOfferPictoPathByOfferType(type)
 
     return (
-      <div
-        className="verso-header with-triangle is-relative pc-theme-black py32 px12"
-        style={{ backgroundColor }}
-      >
+      <div className="verso-header with-triangle is-relative pc-theme-black py32 px12">
         {type && <img
           alt=""
           id="verso-offer-type-picto"
@@ -44,7 +41,6 @@ class VersoHeader extends PureComponent {
           <h1
             className="fs40 is-medium is-hyphens"
             id="verso-offer-name"
-            style={{ lineHeight: '2.7rem' }}
           >
             {title}
             <Draggable
@@ -78,7 +74,6 @@ VersoHeader.defaultProps = {
 }
 
 VersoHeader.propTypes = {
-  backgroundColor: PropTypes.string.isRequired,
   height: PropTypes.number,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,

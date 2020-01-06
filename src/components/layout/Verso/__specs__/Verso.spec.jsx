@@ -15,10 +15,7 @@ describe('src | components | layout | Verso', () => {
     props = {
       areDetailsVisible: true,
       backgroundColor: '#ACE539',
-      contentInlineStyle: {
-        backgroundColor: '#ACE539',
-        backgroundImage: 'any/image',
-      },
+      extraClassNameVersoContent: 'verso-content',
       extraClassName: 'extra-classname',
       isTuto: false,
       offerName: 'Offer title',
@@ -97,7 +94,6 @@ describe('src | components | layout | Verso', () => {
 
     // then
     const versoHeaderContainer = wrapper.find(VersoHeaderContainer)
-    expect(versoHeaderContainer.prop('backgroundColor')).toBe('#ACE539')
     expect(versoHeaderContainer.prop('subtitle')).toBe('Offer subtitle')
     expect(versoHeaderContainer.prop('title')).toBe('Offer title')
     expect(versoHeaderContainer.prop('type')).toBe('EventType.SPECTACLE_VIVANT')

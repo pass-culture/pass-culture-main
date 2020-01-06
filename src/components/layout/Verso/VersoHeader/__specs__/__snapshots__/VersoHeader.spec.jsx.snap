@@ -4,7 +4,6 @@ exports[`src | components | layout | Verso | VersoHeader should match the snapsh
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <VersoHeader
-    backgroundColor="#ACE539"
     height={0}
     history={
       Object {
@@ -50,11 +49,6 @@ ShallowWrapper {
         <h1
           className="fs40 is-medium is-hyphens"
           id="verso-offer-name"
-          style={
-            Object {
-              "lineHeight": "2.7rem",
-            }
-          }
         >
           Offer title
           <Draggable
@@ -104,9 +98,6 @@ ShallowWrapper {
         </h2>,
       ],
       "className": "verso-header with-triangle is-relative pc-theme-black py32 px12",
-      "style": Object {
-        "backgroundColor": "#ACE539",
-      },
     },
     "ref": null,
     "rendered": Array [
@@ -171,9 +162,6 @@ ShallowWrapper {
           ],
           "className": "fs40 is-medium is-hyphens",
           "id": "verso-offer-name",
-          "style": Object {
-            "lineHeight": "2.7rem",
-          },
         },
         "ref": null,
         "rendered": Array [
@@ -263,11 +251,6 @@ ShallowWrapper {
           <h1
             className="fs40 is-medium is-hyphens"
             id="verso-offer-name"
-            style={
-              Object {
-                "lineHeight": "2.7rem",
-              }
-            }
           >
             Offer title
             <Draggable
@@ -317,9 +300,6 @@ ShallowWrapper {
           </h2>,
         ],
         "className": "verso-header with-triangle is-relative pc-theme-black py32 px12",
-        "style": Object {
-          "backgroundColor": "#ACE539",
-        },
       },
       "ref": null,
       "rendered": Array [
@@ -384,9 +364,6 @@ ShallowWrapper {
             ],
             "className": "fs40 is-medium is-hyphens",
             "id": "verso-offer-name",
-            "style": Object {
-              "lineHeight": "2.7rem",
-            },
           },
           "ref": null,
           "rendered": Array [

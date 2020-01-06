@@ -30,12 +30,6 @@ ShallowWrapper {
         <div>
           <span
             className="is-block mt24 mb8"
-            style={
-              Object {
-                "color": "#27AE60",
-                "fontSize": "4rem",
-              }
-            }
           >
             <Icon
               alt=""
@@ -77,12 +71,6 @@ ShallowWrapper {
           "children": Array [
             <span
               className="is-block mt24 mb8"
-              style={
-                Object {
-                  "color": "#27AE60",
-                  "fontSize": "4rem",
-                }
-              }
             >
               <Icon
                 alt=""
@@ -112,10 +100,6 @@ ShallowWrapper {
                 svg="picto-validation"
               />,
               "className": "is-block mt24 mb8",
-              "style": Object {
-                "color": "#27AE60",
-                "fontSize": "4rem",
-              },
             },
             "ref": null,
             "rendered": Object {
@@ -210,12 +194,6 @@ ShallowWrapper {
           <div>
             <span
               className="is-block mt24 mb8"
-              style={
-                Object {
-                  "color": "#27AE60",
-                  "fontSize": "4rem",
-                }
-              }
             >
               <Icon
                 alt=""
@@ -257,12 +235,6 @@ ShallowWrapper {
             "children": Array [
               <span
                 className="is-block mt24 mb8"
-                style={
-                  Object {
-                    "color": "#27AE60",
-                    "fontSize": "4rem",
-                  }
-                }
               >
                 <Icon
                   alt=""
@@ -292,10 +264,6 @@ ShallowWrapper {
                   svg="picto-validation"
                 />,
                 "className": "is-block mt24 mb8",
-                "style": Object {
-                  "color": "#27AE60",
-                  "fontSize": "4rem",
-                },
               },
               "ref": null,
               "rendered": Object {

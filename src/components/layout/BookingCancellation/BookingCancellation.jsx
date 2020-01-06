@@ -2,11 +2,8 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
 import { Transition } from 'react-transition-group'
-import { ROOT_PATH } from '../../../utils/config'
 import BookingCancel from './BookingCancel/BookingCancel'
 import BookingHeader from '../Booking/BookingHeader/BookingHeader'
-
-const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`
 
 class BookingCancellation extends PureComponent {
   constructor(props) {
@@ -52,10 +49,7 @@ class BookingCancellation extends PureComponent {
           >
             <div className="main flex-rows flex-1 scroll-y">
               <BookingHeader offer={offer} />
-              <div
-                className="content flex-1 flex-center"
-                style={{ backgroundImage }}
-              >
+              <div className="mosaic-background content flex-1 flex-center">
                 <div className="flex-rows">
                   <BookingCancel
                     booking={booking}

@@ -4,12 +4,9 @@ import { Form as FinalForm } from 'react-final-form'
 import { requestData } from 'redux-thunk-data'
 import { resolveCurrentUser } from 'with-react-redux-login'
 
-import { ROOT_PATH } from '../../../../utils/config'
 import parseSubmitErrors from '../../../forms/utils/parseSubmitErrors'
 import Header from '../../../layout/Header/Header'
 import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
-
-const BACKGROUND_IMAGE = `url('${ROOT_PATH}/mosaic-k.png')`
 
 class ProfileForm extends PureComponent {
   constructor(props) {
@@ -85,11 +82,10 @@ class ProfileForm extends PureComponent {
     return (
       <form
         autoComplete="off"
-        className="form flex-rows"
+        className="mosaic-background form flex-rows"
         noValidate
         onReset={this.handleOnFormReset}
         onSubmit={handleSubmit}
-        style={{ backgroundImage: BACKGROUND_IMAGE }}
       >
         <Header
           backTo="/profil"

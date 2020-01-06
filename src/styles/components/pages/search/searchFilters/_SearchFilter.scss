@@ -204,8 +204,9 @@
 #filter-by-distance .pc-selectbox {
   @extend .no-outline;
   @extend .no-background;
-  @extend .no-appearance;
 
+  -webkit-appearance: none;
+  -moz-appearance: none;
   border-radius: 17px;
   border: 1px solid $primary;
   width: 250px;

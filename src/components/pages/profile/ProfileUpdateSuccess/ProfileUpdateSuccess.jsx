@@ -2,11 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
-import { ROOT_PATH } from '../../../../utils/config'
 import Header from '../../../layout/Header/Header'
 import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
-
-const BACKGROUND_IMAGE = `url('${ROOT_PATH}/mosaic-k.png')`
 
 const ProfileUpdateSuccess = ({ config, match }) => {
   const item = config[match.params.view]
@@ -20,10 +17,7 @@ const ProfileUpdateSuccess = ({ config, match }) => {
         closeTo={null}
         title={item.title}
       />
-      <main
-        className="pc-main padded is-relative flex-1 flex-rows text-center"
-        style={{ backgroundImage: BACKGROUND_IMAGE }}
-      >
+      <main className="mosaic-background pc-main padded is-relative flex-1 flex-rows text-center">
         <h2 className="is-block fs22">
           <span
             aria-hidden
