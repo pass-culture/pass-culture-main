@@ -241,7 +241,7 @@ def create_stock_from_event_occurrence(event_occurrence: Dict,
 
 
 def create_stock_from_offer(offer: Offer,
-                            price: int = 10,
+                            price: float = 10,
                             available: int = 10,
                             soft_deleted: bool = False,
                             booking_limit_datetime: datetime = None,

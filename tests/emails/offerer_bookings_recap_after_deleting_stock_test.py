@@ -3,9 +3,10 @@ from unittest.mock import patch
 
 from emails.offerer_bookings_recap_after_deleting_stock import \
     retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation
-from tests.test_utils import create_booking, create_stock_from_event_occurrence, create_event_occurrence, \
-    create_offer_with_event_product, create_venue, create_offerer, create_user, create_offer_with_thing_product, \
-    create_stock_from_offer, create_product_with_thing_type
+from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_booking
+from tests.model_creators.specific_creators import create_offer_with_event_product, create_event_occurrence, \
+    create_stock_from_event_occurrence, create_product_with_thing_type, create_offer_with_thing_product, \
+    create_stock_from_offer
 
 
 class RetrieveOffererBookingsRecapEmailDataAfterOffererCancellationTest:
@@ -14,15 +15,15 @@ class RetrieveOffererBookingsRecapEmailDataAfterOffererCancellationTest:
     def test_should_send_mail_to_pass_culture_dev_when_feature_send_mail_to_users_is_disabled(self,
                                                                                               feature_send_mail_to_users_enabled):
         # Given
-        user = create_user(email='test@example.com')
+        user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         event_occurrence = create_event_occurrence(offer)
         stock = create_stock_from_event_occurrence(event_occurrence)
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
         bookings = [booking]
-        recipients = 'administration@passculture.app, fake_email@example.com'
+        recipients = 'administration@example.com, fake_email@example.com'
 
         # When
         mailjet_data = retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation(bookings, recipients)
@@ -35,21 +36,21 @@ class RetrieveOffererBookingsRecapEmailDataAfterOffererCancellationTest:
             self,
             feature_send_mail_to_users_enabled):
         # Given
-        user = create_user(email='test@example.com')
+        user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         event_occurrence = create_event_occurrence(offer)
         stock = create_stock_from_event_occurrence(event_occurrence)
-        booking = create_booking(user, stock)
+        booking = create_booking(user=user, stock=stock)
         bookings = [booking]
-        recipients = 'administration@passculture.app, offerer@example.com'
+        recipients = 'administration@example.com, offerer@example.com'
 
         # When
         mailjet_data = retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation(bookings, recipients)
 
         # Then
-        assert mailjet_data['To'] == 'administration@passculture.app, offerer@example.com'
+        assert mailjet_data['To'] == 'administration@example.com, offerer@example.com'
 
     @patch('emails.offerer_bookings_recap_after_deleting_stock.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     @patch('emails.offerer_bookings_recap_after_deleting_stock.format_environment_for_email', return_value='')
@@ -61,14 +62,14 @@ class RetrieveOffererBookingsRecapEmailDataAfterOffererCancellationTest:
                                                                                         build_pc_pro_offer_link,
                                                                                         feature_send_mail_to_users_enabled):
         # Given
-        user = create_user(public_name='John Doe', first_name='John', last_name='Doe', email='john@doe.fr')
+        user = create_user(public_name='John Doe', first_name='John', last_name='Doe', email='john@example.com')
         offerer = create_offerer()
         venue = create_venue(offerer, name='Venue name')
         offer = create_offer_with_event_product(venue, event_name='My Event')
         stock = create_stock_from_offer(offer, price=12.52, beginning_datetime=datetime(2019, 10, 9, 10, 20, 00))
-        booking = create_booking(user, stock, venue, quantity=2, token='12345')
+        booking = create_booking(user, stock=stock, venue=venue, quantity=2, token='12345')
         bookings = [booking]
-        recipients = 'administration@passculture.app, offerer@example.com'
+        recipients = 'administration@example.com, offerer@example.com'
 
         # When
         mailjet_data = retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation(bookings, recipients)
@@ -78,7 +79,7 @@ class RetrieveOffererBookingsRecapEmailDataAfterOffererCancellationTest:
             'FromEmail': 'support@example.com',
             'MJ-TemplateID': 1116333,
             'MJ-TemplateLanguage': True,
-            'To': 'administration@passculture.app, offerer@example.com',
+            'To': 'administration@example.com, offerer@example.com',
             'Vars': {
                 'offer_name': 'My Event',
                 'lien_offre_pcpro': 'http://pc_pro.com/offer_link',
@@ -91,7 +92,7 @@ class RetrieveOffererBookingsRecapEmailDataAfterOffererCancellationTest:
                 'reservations_number': 1,
                 'env': '',
                 'users': [{'countermark': '12345',
-                           'email': 'john@doe.fr',
+                           'email': 'john@example.com',
                            'firstName': 'John',
                            'lastName': 'Doe'}],
             }
@@ -108,16 +109,16 @@ class RetrieveOffererBookingsRecapEmailDataAfterOffererCancellationTest:
                                                                                     feature_send_mail_to_users_enabled):
         # Given
         user = create_user(public_name='John Doe', first_name='John', last_name='Doe', email='john@example.com')
-        offerer = create_offerer(name='Test offerer')
-        venue = create_venue(offerer, name='La petite librairie')
+        offerer = create_offerer()
+        venue = create_venue(offerer, name='La petite librairie', public_name='La grande librairie')
         thing_product = create_product_with_thing_type(thing_name='Le récit de voyage')
         offer = create_offer_with_thing_product(venue, thing_product)
-        stock = create_stock_from_offer(offer, price=0, available=10)
-        booking = create_booking(user, stock, token='12346', quantity=6)
+        stock = create_stock_from_offer(offer, price=0)
+        booking = create_booking(user=user, stock=stock, token='12346', quantity=6)
 
         user2 = create_user(public_name='James Bond', first_name='James', last_name='Bond', email='bond@example.com')
-        booking2 = create_booking(user2, stock, token='12345')
-        recipients = 'administration@passculture.app, fake_email@example.com'
+        booking2 = create_booking(user=user2, stock=stock, token='12345')
+        recipients = 'administration@example.com, fake_email@example.com'
         bookings = [booking, booking2]
 
         # When
@@ -132,7 +133,7 @@ class RetrieveOffererBookingsRecapEmailDataAfterOffererCancellationTest:
             'Vars': {
                 'offer_name': 'Le récit de voyage',
                 'lien_offre_pcpro': 'http://pc_pro.com/offer_link',
-                'venue_name': 'La petite librairie',
+                'venue_name': 'La grande librairie',
                 'price': 'Gratuit',
                 'is_event': 0,
                 'event_date': '',

@@ -1,4 +1,5 @@
 from typing import Dict, List
+
 from models import Booking
 from repository.feature_queries import feature_send_mail_to_users_enabled
 from utils.mailing import SUPPORT_EMAIL_ADDRESS, DEV_EMAIL_ADDRESS, format_booking_hours_for_email, \
@@ -6,7 +7,8 @@ from utils.mailing import SUPPORT_EMAIL_ADDRESS, DEV_EMAIL_ADDRESS, format_booki
     format_booking_date_for_email
 
 
-def retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation(bookings: List[Booking], recipients: str) -> Dict:
+def retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation(bookings: List[Booking],
+                                                                          recipients: str) -> Dict:
     booking = bookings[0]
     stock = booking.stock
     offer = stock.resolvedOffer
@@ -35,7 +37,6 @@ def retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation(bookin
             'env': environment,
             'lien_offre_pcpro': offer_link,
             'users': _extract_users_information_from_bookings_list(bookings),
-
         }
     }
 

@@ -3,7 +3,7 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user
 
 from domain.stocks import delete_stock_and_cancel_bookings
-from domain.user_emails import send_batch_cancellation_emails_to_users, send_batch_cancellation_email_to_offerer
+from domain.user_emails import send_batch_cancellation_emails_to_users, send_offerer_bookings_recap_email_after_offerer_cancellation
 from models import Product
 from models.mediation import Mediation
 from models.pc_object import PcObject
@@ -122,7 +122,7 @@ def delete_stock(id):
     if bookings:
         try:
             send_batch_cancellation_emails_to_users(bookings, send_raw_email)
-            send_batch_cancellation_email_to_offerer(bookings, send_raw_email)
+            send_offerer_bookings_recap_email_after_offerer_cancellation(bookings, send_raw_email)
         except MailServiceException as e:
             app.logger.error('Mail service failure', e)
 

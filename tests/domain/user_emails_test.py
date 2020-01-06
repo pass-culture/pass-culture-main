@@ -5,14 +5,14 @@ from domain.user_emails import send_beneficiary_booking_cancellation_email, \
     send_offerer_driven_cancellation_email_to_offerer, \
     send_booking_confirmation_email_to_beneficiary, send_booking_recap_emails, send_final_booking_recap_email, \
     send_validation_confirmation_email_to_pro, send_batch_cancellation_emails_to_users, \
-    send_batch_cancellation_email_to_offerer, send_user_validation_email, send_venue_validation_confirmation_email, \
+    send_offerer_bookings_recap_email_after_offerer_cancellation, send_user_validation_email, \
+    send_venue_validation_confirmation_email, \
     send_reset_password_email_with_mailjet_template, send_activation_email, send_reset_password_email
 from models import Offerer
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue
 from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_offer_with_thing_product
-from tests.test_utils import create_user, create_booking, create_stock_with_event_offer, create_offerer, create_venue, \
-    create_offer_with_thing_product, create_stock_with_thing_offer, create_mocked_bookings
+from tests.test_utils import create_mocked_bookings
 
 
 class SendResetPasswordEmailTest:
@@ -338,7 +338,7 @@ class SendCancellationEmailOneUserTest:
         send_warning_to_beneficiary_after_pro_booking_cancellation.assert_has_calls(calls)
 
 
-class SendBatchCancellationEmailToOffererTest:
+class SendOffererBookingsRecapEmailAfterOffererCancellationTest:
     @patch('domain.user_emails.retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation',
            return_value={'Mj-TemplateID': 1116333})
     @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
@@ -353,7 +353,7 @@ class SendBatchCancellationEmailToOffererTest:
         mocked_send_email = Mock()
 
         # When
-        send_batch_cancellation_email_to_offerer(bookings, mocked_send_email)
+        send_offerer_bookings_recap_email_after_offerer_cancellation(bookings, mocked_send_email)
 
         # Then
         retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation.assert_called_once_with(bookings,
@@ -374,7 +374,7 @@ class SendBatchCancellationEmailToOffererTest:
         mocked_send_email = Mock()
 
         # When
-        send_batch_cancellation_email_to_offerer(bookings, mocked_send_email)
+        send_offerer_bookings_recap_email_after_offerer_cancellation(bookings, mocked_send_email)
 
         # Then
         retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation.assert_called_once_with(bookings,

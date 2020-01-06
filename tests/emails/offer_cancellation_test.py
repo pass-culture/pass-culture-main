@@ -11,9 +11,6 @@ from tests.model_creators.generic_creators import create_booking, create_user, c
 from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_from_offer, \
     create_product_with_thing_type, create_offer_with_thing_product, create_offer_with_event_product, \
     create_event_occurrence
-from tests.test_utils import create_user, create_offerer, create_venue, create_offer_with_event_product, \
-    create_event_occurrence, create_stock_from_event_occurrence, create_booking, create_offer_with_thing_product, \
-    create_stock_from_offer, create_product_with_thing_type
 from utils.mailing import make_offerer_driven_cancellation_email_for_offerer
 
 

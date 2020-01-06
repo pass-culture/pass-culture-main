@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 from bs4 import BeautifulSoup
 from freezegun import freeze_time
 
-from domain.user_emails import build_recipients_list
+from domain.user_emails import _build_recipients_list
 from models import PcObject, ThingType
 from models.db import db
 from models.email import Email, EmailStatus
@@ -251,7 +251,7 @@ class BuildRecipientsListTest:
         booking = create_booking(user=user, stock=stock)
 
         # When
-        recipients = build_recipients_list(booking)
+        recipients = _build_recipients_list(booking)
 
         # Then
         assert recipients == 'booking.email@example.com, admin@pass.com'
@@ -267,7 +267,7 @@ class BuildRecipientsListTest:
         booking = create_booking(user=user, stock=stock)
 
         # When
-        recipients = build_recipients_list(booking)
+        recipients = _build_recipients_list(booking)
 
         # Then
         assert recipients == 'admin@pass.com'
