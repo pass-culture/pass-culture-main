@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '2ae0f4147390'
-down_revision = '75f2ccf2be82'
+down_revision = '2cb37da9609e'
 branch_labels = None
 depends_on = None
 
@@ -22,11 +22,13 @@ class FeatureToggle(Enum):
     DEGRESSIVE_REIMBURSEMENT_RATE = 'Permettre le remboursement avec un barème dégressif par lieu'
     DUO_OFFER = 'Permettre la réservation d’une offre pour soi et un accompagnant'
     QR_CODE = 'Permettre la validation d''une contremarque via QR code'
+    FULL_OFFERS_SEARCH_WITH_OFFERER_AND_VENUE = 'Permet la recherche de mots-clés dans les tables structures' \
+                                                ' et lieux en plus de celles des offres'
 
 
 def upgrade():
-    new_values = ('WEBAPP_SIGNUP', 'FAVORITE_OFFER', 'DEGRESSIVE_REIMBURSEMENT_RATE', 'QR_CODE')
-    previous_values = ('WEBAPP_SIGNUP', 'FAVORITE_OFFER', 'DEGRESSIVE_REIMBURSEMENT_RATE', 'DUO_OFFER', 'QR_CODE')
+    new_values = ('WEBAPP_SIGNUP', 'FAVORITE_OFFER', 'DEGRESSIVE_REIMBURSEMENT_RATE', 'QR_CODE', 'FULL_OFFERS_SEARCH_WITH_OFFERER_AND_VENUE')
+    previous_values = ('WEBAPP_SIGNUP', 'FAVORITE_OFFER', 'DEGRESSIVE_REIMBURSEMENT_RATE', 'DUO_OFFER', 'QR_CODE', 'FULL_OFFERS_SEARCH_WITH_OFFERER_AND_VENUE')
 
     op.execute("DELETE FROM feature WHERE name = 'DUO_OFFER'")
     previous_enum = sa.Enum(*previous_values, name='featuretoggle')
@@ -45,8 +47,8 @@ def upgrade():
 
 
 def downgrade():
-    new_values = ('WEBAPP_SIGNUP', 'FAVORITE_OFFER', 'DEGRESSIVE_REIMBURSEMENT_RATE', 'DUO_OFFER', 'QR_CODE')
-    previous_values = ('WEBAPP_SIGNUP', 'FAVORITE_OFFER', 'DEGRESSIVE_REIMBURSEMENT_RATE', 'QR_CODE')
+    new_values = ('WEBAPP_SIGNUP', 'FAVORITE_OFFER', 'DEGRESSIVE_REIMBURSEMENT_RATE', 'DUO_OFFER', 'QR_CODE', 'FULL_OFFERS_SEARCH_WITH_OFFERER_AND_VENUE')
+    previous_values = ('WEBAPP_SIGNUP', 'FAVORITE_OFFER', 'DEGRESSIVE_REIMBURSEMENT_RATE', 'QR_CODE', 'FULL_OFFERS_SEARCH_WITH_OFFERER_AND_VENUE')
 
     previous_enum = sa.Enum(*previous_values, name='featuretoggle')
     new_enum = sa.Enum(*new_values, name='featuretoggle')
