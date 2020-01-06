@@ -18,7 +18,6 @@ from validation.offers import check_offer_id_is_present_in_request
 
 
 @app.route('/favorites', methods=['POST'])
-@feature_required(FeatureToggle.FAVORITE_OFFER)
 @login_required
 def add_to_favorite():
     mediation = None
@@ -37,7 +36,6 @@ def add_to_favorite():
 
 
 @app.route('/favorites/<offer_id>', methods=['DELETE'])
-@feature_required(FeatureToggle.FAVORITE_OFFER)
 @login_required
 def delete_favorite(offer_id):
     dehumanized_offer_id = dehumanize(offer_id)
@@ -52,7 +50,6 @@ def delete_favorite(offer_id):
 
 
 @app.route('/favorites', methods=['GET'])
-@feature_required(FeatureToggle.FAVORITE_OFFER)
 @login_required
 def get_favorites():
     favorites = find_all_favorites_by_user_id(current_user.id)
@@ -61,7 +58,6 @@ def get_favorites():
 
 
 @app.route('/favorites/<favorite_id>', methods=['GET'])
-@feature_required(FeatureToggle.FAVORITE_OFFER)
 @login_required
 def get_favorite(favorite_id):
     favorite = load_or_404(Favorite, favorite_id)
