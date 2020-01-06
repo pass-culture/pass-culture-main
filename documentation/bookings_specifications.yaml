@@ -176,8 +176,7 @@ paths:
             example: API key or login required
         '403':
           description: |-
-            Vous n'avez pas les droits nécessaires pour voir cette contremarque ou l'offre a lieu dans plus de 72 heures (voir CGU).
-            <br>
+            Vous n'avez pas les droits nécessaires pour voir cette contremarque ou l'offre a lieu dans plus de 72 heures (voir CGU)
             Exemple :
             ```
             {
@@ -207,7 +206,7 @@ paths:
                   - Cette contremarque n'a pas été trouvée
         '410':
           description: |-
-            La contremarque n’est plus valide car elle a déjà été validée ou a été annulée. <br>
+            La contremarque n’est plus valide car elle a déjà été validée ou a été annulée
             Exemple :
             <br>
             ```
@@ -285,8 +284,7 @@ paths:
                   - Cette contremarque n'a pas été trouvée
         '410':
           description: |-
-            La contremarque n’est plus valide car elle a déjà été validée ou a été annulée.
-            <br>
+            La contremarque n’est plus valide car elle a déjà été validée ou a été annulée
             Exemple :
             ```
             {
@@ -312,7 +310,7 @@ paths:
       tags:
         - Version 2
       summary: Webservice permettant d'annuler une validation de contremarque.
-      description: ''
+      description: Bien que, dans le cas d’un événement, l’utilisateur ne peut plus annuler sa réservation 72h avant le début de ce dernier, cette API permet d’annuler la réservation d’un utilisateur dès lors que son code de contremarque n’a pas encore été validé.
       operationId: patchBookingKeepByToken
       produces:
         - application/json
@@ -411,10 +409,7 @@ paths:
             example: API key or login required
         '403':
           description: |-
-            Vous n'avez pas les droits nécessaires pour annuler
-            cette contremarque ou la réservation a déjà été
-            consommée
-            <br>
+            Vous n'avez pas les droits nécessaires pour annuler cette contremarque ou la réservation a déjà été consommée
             Exemple :
             <br>
             ```
