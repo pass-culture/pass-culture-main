@@ -10,3 +10,13 @@
 .topbar {
     display: none;
 }
+
+.swagger-ui .markdown code, .swagger-ui .renderedMarkdown code {
+    background: #41444e;
+    font-size: 12px;
+    padding: 10px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-weight: 600;
+    color: #fff;
+    }

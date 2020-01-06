@@ -11,7 +11,7 @@ tags:
 schemes:
   - https
 paths:
-  '/bookings/token/{token}':
+  'bookings/token/{token}':
     get:
       tags:
         - Version 1 (will be deprecated in 2020)
@@ -201,6 +201,8 @@ paths:
             properties:
               global:
                 type: array
+                items:
+                  type: string
                 example:
                   - Cette contremarque n'a pas été trouvée
         '410':
@@ -250,6 +252,8 @@ paths:
             properties:
               global:
                 type: array
+                items:
+                  type: string
                 example:
                   - La quantité disponible pour cette offre est atteinte
         '401':
@@ -264,6 +268,8 @@ paths:
             properties:
               user:
                 type: array
+                items:
+                  type: string
                 example:
                   - Vous n'avez pas les droits suffisants pour valider cette contremarque.
         '404':
@@ -273,6 +279,8 @@ paths:
             properties:
               global:
                 type: array
+                items:
+                  type: string
                 example:
                   - Cette contremarque n'a pas été trouvée
         '410':
@@ -288,18 +296,13 @@ paths:
             }
             ```
             <br> ou <br>
-            ```
-            {
-              "booking": [
-                "Cette réservation a été annulée"
-              ]
-            }
-            ```
           schema:
             type: object
             properties:
               booking:
                 type: array
+                items:
+                  type: string
                 example:
                   - Cette réservation a été annulée
       security:
@@ -372,13 +375,15 @@ paths:
             }
             ```
             ou <br>
-            ```
-            {
-              "booking": [
-                "Cette réservation a été validée"
-              ]
-            }
-            ```
+          schema:
+             type: object
+             properties:
+               booking:
+                 type: array
+                 items:
+                   type: string
+                 example:
+                   - Cette réservation a été validée
       security:
         - api_key: []
   'v2/bookings/cancel/token/{token}':
@@ -428,13 +433,15 @@ paths:
             }
             ```
             ou <br>
-            ```
-            {
-              "global": [
-                "Impossible d'annuler une réservation consommée"
-              ]
-            }
-            ```
+          schema:
+               type: object
+               properties:
+                 global:
+                   type: array
+                   items:
+                     type: string
+                   example:
+                     - Impossible d'annuler une réservation consommée
         '404':
           description: La réservation associée a cette contremarque n’existe pas
         '410':
