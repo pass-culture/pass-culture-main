@@ -103,8 +103,6 @@ def create_booking(user: User,
     elif not stock.offer:
         offer = create_offer_with_thing_product(venue)
         booking.recommendation = create_recommendation(offer=offer, user=user)
-    else:
-        booking.recommendation = create_recommendation(offer=stock.offer, user=user)
 
     booking.user = user
     booking.amount = stock.price

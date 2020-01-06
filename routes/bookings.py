@@ -181,7 +181,6 @@ def create_booking():
         send_booking_confirmation_email_to_beneficiary(new_booking, send_raw_email)
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
-
     return jsonify(as_dict(new_booking, includes=WEBAPP_PATCH_POST_BOOKING_INCLUDES)), 201
 
 

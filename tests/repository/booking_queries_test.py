@@ -9,7 +9,7 @@ from tests.conftest import clean_database
 from tests.model_creators.activity_creators import create_booking_activity, save_all_activities
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
-    create_deposit, create_payment
+    create_deposit, create_payment, create_recommendation
 from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_offer, \
     create_stock_with_thing_offer, create_offer_with_thing_product, create_offer_with_event_product
 
@@ -1512,9 +1512,9 @@ class GetValidBookingsByUserId:
         offer3 = create_offer_with_event_product(venue)
         stock3 = create_stock(offer=offer3, beginning_datetime=two_days_bis, end_datetime=five_days,
                               booking_limit_datetime=NOW)
-        booking1 = create_booking(user=user, stock=stock1)
-        booking2 = create_booking(user=user, stock=stock2)
-        booking3 = create_booking(user=user, stock=stock3)
+        booking1 = create_booking(user=user, stock=stock1, recommendation=create_recommendation(user=user, offer=offer1))
+        booking2 = create_booking(user=user, stock=stock2, recommendation=create_recommendation(user=user, offer=offer2))
+        booking3 = create_booking(user=user, stock=stock3, recommendation=create_recommendation(user=user, offer=offer3))
         PcObject.save(user, deposit, booking1, booking2, booking3)
 
         # When

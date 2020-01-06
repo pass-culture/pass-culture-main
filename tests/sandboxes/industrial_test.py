@@ -32,7 +32,7 @@ def test_save_industrial_sandbox(mock_request, app):
         Offer=106,
         Offerer=14,
         Product=148,
-        Recommendation=101,
+        Recommendation=100,
         Stock=102,
         User=53,
         UserOfferer=125,
