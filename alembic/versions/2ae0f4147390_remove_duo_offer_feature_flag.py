@@ -25,7 +25,23 @@ class FeatureToggle(Enum):
 
 
 def upgrade():
+    new_values = ('WEBAPP_SIGNUP', 'FAVORITE_OFFER', 'DEGRESSIVE_REIMBURSEMENT_RATE', 'QR_CODE')
+    previous_values = ('WEBAPP_SIGNUP', 'FAVORITE_OFFER', 'DEGRESSIVE_REIMBURSEMENT_RATE', 'DUO_OFFER', 'QR_CODE')
+
     op.execute("DELETE FROM feature WHERE name = 'DUO_OFFER'")
+    previous_enum = sa.Enum(*previous_values, name='featuretoggle')
+    new_enum = sa.Enum(*new_values, name='featuretoggle')
+    temporary_enum = sa.Enum(*previous_values, name='tmp_featuretoggle')
+
+    temporary_enum.create(op.get_bind(), checkfirst=False)
+    op.execute('ALTER TABLE feature ALTER COLUMN name TYPE TMP_FEATURETOGGLE'
+               ' USING name::TEXT::TMP_FEATURETOGGLE')
+    previous_enum.drop(op.get_bind(), checkfirst=False)
+    new_enum.create(op.get_bind(), checkfirst=False)
+
+    op.execute('ALTER TABLE feature ALTER COLUMN name TYPE FEATURETOGGLE'
+               ' USING name::TEXT::FEATURETOGGLE')
+    temporary_enum.drop(op.get_bind(), checkfirst=False)
 
 
 def downgrade():
