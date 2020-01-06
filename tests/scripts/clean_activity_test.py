@@ -6,8 +6,8 @@ from models.db import db
 from scripts.clean_activity import delete_tables_from_activity, populate_stock_date_created_from_activity, \
     populate_cultural_survey_filled_date_from_activity
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue
 from tests.model_creators.activity_creators import create_activity, save_all_activities
+from tests.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue
 from tests.model_creators.specific_creators import create_offer_with_thing_product
 
 Activity = load_activity()
@@ -53,26 +53,50 @@ class DeleteTablesFromActivityTest:
 
 
 class PopulateStockDateCreatedFromActivityTest:
+    @staticmethod
+    def setup_method():
+        db.engine.execute("ALTER TABLE stock DISABLE TRIGGER ALL;")
+
+    @staticmethod
+    def teardown_method():
+        db.engine.execute("ALTER TABLE stock ENABLE TRIGGER ALL;")
+
     @clean_database
     def test_fills_stock_date_created_when_found_in_activity(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(offer=offer)
+        stock = create_stock(date_created=None, offer=offer)
         PcObject.save(stock)
-        activity_issued_at = db.session.execute('''
-            SELECT issued_at
-            FROM activity
-            WHERE verb = 'insert'
-            AND table_name = 'stock'
-        ''')
+        now = datetime.utcnow()
+        stock_activity = create_activity(changed_data={'id': stock.id},
+                                         issued_at=now,
+                                         table_name='stock',
+                                         verb='insert')
+        save_all_activities(stock_activity)
 
         # When
         populate_stock_date_created_from_activity()
 
         # Then
-        assert stock.dateCreated == activity_issued_at.first()[0]
+        assert stock.dateCreated == now
+
+    @clean_database
+    def test_does_not_fill_stock_existing_date_created_when_not_found_in_activity(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        date_created = datetime(2020, 1, 1)
+        stock = create_stock(date_created=date_created, offer=offer)
+        PcObject.save(stock)
+
+        # When
+        populate_stock_date_created_from_activity()
+
+        # Then
+        assert stock.dateCreated == date_created
 
 
 class PopulateCulturalSurveyFilledDateFromActivityTest:
