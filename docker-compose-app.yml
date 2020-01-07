@@ -81,7 +81,19 @@ services:
       - web_nw
     depends_on:
       - postgres
+      - redis
       - postgres-test
+
+  redis:
+    image: scalingo/redis
+    container_name: pc-redis
+    command: redis-server
+    ports:
+      - 6379:6379
+    volumes:
+      - redis_data:/data
+    networks:
+      - db_nw
 
   nginx:
     build: nginx
@@ -107,3 +119,4 @@ networks:
 volumes:
   postgres_data:
   postgres_data_test:
+  redis_data:
