@@ -10,8 +10,6 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-from sqlalchemy import ForeignKey
-
 revision = '8f2c1fd24cad'
 down_revision = '2cb37da9609e'
 branch_labels = None
@@ -22,8 +20,8 @@ def upgrade():
     op.create_table(
         'allocine_pivot',
         sa.Column('id', sa.BigInteger, primary_key=True, autoincrement=True),
-        sa.Column('venueSiret', sa.VARCHAR(14), ForeignKey('venue.siret'), nullable=False, unique=True),
-        sa.Column('theaterId', sa.VARCHAR(25), nullable=False, unique=True)
+        sa.Column('siret', sa.VARCHAR(14), nullable=False, unique=True),
+        sa.Column('theaterId', sa.VARCHAR(20), nullable=False, unique=True)
     )
 
 
