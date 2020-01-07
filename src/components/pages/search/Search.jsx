@@ -305,10 +305,9 @@ class Search extends PureComponent {
                         onClick={this.handleOnKeywordsEraseClick}
                         type="button"
                       >
-                        <span
-                          aria-hidden
-                          className="icon-legacy-close"
-                          title="Supprimer le mot-clé"
+                        <Icon
+                          alt="Supprimer les termes de la recherche"
+                          svg="ico-close-p"
                         />
                       </button>
                     </span>

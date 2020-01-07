@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
+import Icon from '../../../layout/Icon/Icon'
 import SearchPicture from '../SearchPicture'
 
 class FilterByOfferTypes extends PureComponent {
@@ -53,7 +54,10 @@ class FilterByOfferTypes extends PureComponent {
                   {isChecked && (
                     <span className="icon-container is-absolute">
                       <span className="is-relative">
-                        <i className="icon-legacy-check-circled" />
+                        <Icon
+                          className="search-picto-checked"
+                          svg="picto-validation-p"
+                        />
                       </span>
                     </span>
                   )}

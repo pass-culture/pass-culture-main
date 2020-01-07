@@ -9,8 +9,8 @@ const VersoActionsBar = ({ url }) => (
       id="verso-online-booked-button"
       rel="noopener noreferrer"
       target="_blank"
+      title="Ouverture de l’offre dans une nouvelle fenêtre"
     >
-      <i className="icon icon-ico-linkexternal fs30" />
       <span className="fs16">
         {'Accéder'}
       </span>

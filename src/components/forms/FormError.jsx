@@ -1,6 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
+import Icon from '../layout/Icon/Icon'
+
 // NOTE: les index d'array ne doit pas servir de clé unique
 // pour les éléments d'une liste d'éléménts
 // ici on considére que l'élément à afficher n'est pas sensible aux updates
@@ -27,10 +29,9 @@ const FormError = ({ customMessage, meta }) => {
       <div className="mt7">
         <div className="flex-columns">
           <div className="flex-0">
-            <span
-              aria-hidden
-              className="icon-legacy-warning-circled fs18"
-              title="Information"
+            <Icon
+              className="picto-error"
+              svg="picto-info-b"
             />
           </div>
           <div className="flex-1">

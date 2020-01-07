@@ -3,6 +3,7 @@ import React, { PureComponent } from 'react'
 import { Transition } from 'react-transition-group'
 
 import { closeSharePopin } from '../../../reducers/share'
+import Icon from '../Icon/Icon'
 
 const transitionDelay = 500
 const transitionDuration = 250
@@ -32,15 +33,14 @@ class SharePopin extends PureComponent {
 
   renderCloseButton = () => (
     <button
-      aria-label="Fermer la popin de partage"
       className="pc-text-button is-absolute fs16"
       id="share-popin-close-button"
       onClick={this.handleCloseHandler}
       type="button"
     >
-      <span
-        aria-hidden
-        className="icon-legacy-close is-white-text"
+      <Icon
+        alt="Fermer la popin de partage"
+        svg="ico-close"
       />
     </button>
   )

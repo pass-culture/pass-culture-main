@@ -27,28 +27,30 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "host",
     "props": Object {
-      "aria-label": "Partager cette offre",
-      "children": <span
-        aria-hidden={true}
-        className="font-icon icon-ico-share"
+      "children": <Icon
+        alt="Partager cette offre"
+        className={null}
+        png={null}
+        svg="ico-share-w"
       />,
       "className": "no-background",
       "onClick": [Function],
-      "title": "Partager cette offre",
       "type": "button",
     },
     "ref": null,
     "rendered": Object {
       "instance": null,
       "key": undefined,
-      "nodeType": "host",
+      "nodeType": "function",
       "props": Object {
-        "aria-hidden": true,
-        "className": "font-icon icon-ico-share",
+        "alt": "Partager cette offre",
+        "className": null,
+        "png": null,
+        "svg": "ico-share-w",
       },
       "ref": null,
       "rendered": null,
-      "type": "span",
+      "type": [Function],
     },
     "type": "button",
   },
@@ -58,28 +60,30 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "host",
       "props": Object {
-        "aria-label": "Partager cette offre",
-        "children": <span
-          aria-hidden={true}
-          className="font-icon icon-ico-share"
+        "children": <Icon
+          alt="Partager cette offre"
+          className={null}
+          png={null}
+          svg="ico-share-w"
         />,
         "className": "no-background",
         "onClick": [Function],
-        "title": "Partager cette offre",
         "type": "button",
       },
       "ref": null,
       "rendered": Object {
         "instance": null,
         "key": undefined,
-        "nodeType": "host",
+        "nodeType": "function",
         "props": Object {
-          "aria-hidden": true,
-          "className": "font-icon icon-ico-share",
+          "alt": "Partager cette offre",
+          "className": null,
+          "png": null,
+          "svg": "ico-share-w",
         },
         "ref": null,
         "rendered": null,
-        "type": "span",
+        "type": [Function],
       },
       "type": "button",
     },

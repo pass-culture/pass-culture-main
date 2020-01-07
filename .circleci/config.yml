@@ -26,7 +26,6 @@ jobs:
             nvm use v8.15.1
             cd ~/pass-culture-main/webapp
             yarn install
-            yarn fontello
             yarn test:unit --coverage
             yarn coveralls
       - store_artifacts:
@@ -89,7 +88,7 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             nvm use "$NODE_VERSION"
             yarn install
-            set -a; source config/run_envs/"${CIRCLE_BRANCH}" && ./scripts/build_with_fontello.sh "${CIRCLE_BRANCH}"
+            set -a; source config/run_envs/"${CIRCLE_BRANCH}"
       - run:
           name: Deploy Webapp
           command: |

@@ -3,9 +3,10 @@ import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
 
 import FormError from '../FormError'
+import hasErrorMessage from '../utils/hasErrorMessage'
+import Icon from '../../layout/Icon/Icon'
 import InputLabel from '../InputLabel'
 import validatePasswordField from '../validators/validatePasswordField'
-import hasErrorMessage from '../utils/hasErrorMessage'
 
 class PasswordField extends PureComponent {
   constructor(props) {
@@ -46,10 +47,9 @@ class PasswordField extends PureComponent {
             onClick={this.handleOnToggleVisibility}
             type="button"
           >
-            <span
-              aria-hidden
-              className={`icon-legacy-eye${status}`}
-              title="Afficher/Masquer le mot de passe"
+            <Icon
+              alt="Afficher/Masquer le mot de passe"
+              svg={`ico-eye${status}`}
             />
           </button>
         </div>

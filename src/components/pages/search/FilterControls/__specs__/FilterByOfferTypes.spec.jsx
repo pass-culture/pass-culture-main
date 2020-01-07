@@ -2,6 +2,7 @@ import { shallow } from 'enzyme'
 import React from 'react'
 
 import FilterByOfferTypes from '../FilterByOfferTypes'
+import Icon from '../../../../layout/Icon/Icon'
 
 describe('src | components | pages | search | FilterControls | FilterByOfferTypes', () => {
   let props
@@ -102,8 +103,8 @@ describe('src | components | pages | search | FilterControls | FilterByOfferType
       }, [])
 
       // when
-      const firstLabel = expectedLabels[0].find('i').is('.icon-legacy-check-circled')
-      const secondLabel = expectedLabels[1].find('i').is('.icon-legacy-check-circled')
+      const firstLabel = expectedLabels[0].exists(Icon)
+      const secondLabel = expectedLabels[1].exists(Icon)
 
       // then
       expect(firstLabel).toBe(true)

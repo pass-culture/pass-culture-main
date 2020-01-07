@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
 import Header from '../../../layout/Header/Header'
+import Icon from '../../../layout/Icon/Icon'
 import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
 
 const ProfileUpdateSuccess = ({ config, match }) => {
@@ -19,10 +20,9 @@ const ProfileUpdateSuccess = ({ config, match }) => {
       />
       <main className="mosaic-background pc-main padded is-relative flex-1 flex-rows text-center">
         <h2 className="is-block fs22">
-          <span
-            aria-hidden
-            className="icon-legacy-check-circled big-success-icon"
-            title=""
+          <Icon
+            className="big-success"
+            svg="ico-check-w"
           />
           <span className="is-block mt24">
             {`${item.title} a bien été modifié`}

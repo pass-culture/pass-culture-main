@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { NavLink } from 'react-router-dom'
 
 import { version } from '../../../../../package.json'
+import Icon from '../../../layout/Icon/Icon'
 
 const EMPTY_FIELD_PLACEHOLDER = 'Non renseigné'
 
@@ -39,10 +40,9 @@ class MesInformations extends PureComponent {
           </span>
           {!disabled && (
             <span className="is-block flex-0">
-              <span
-                aria-hidden
-                className="icon-legacy-next"
-                title={`Modifier ${label}`}
+              <Icon
+                alt={`Modifier ${label}`}
+                svg="ico-next-S"
               />
             </span>
           )}

@@ -4,19 +4,10 @@
   align-items: center;
   background-color: $primary;
   height: rem(62px);
-  min-height: 62px;
+  min-height: rem(62px);
   padding: rem(8px) rem(12px);
 
   li {
     text-align: center;
-  }
-
-  .font-icon {
-    font-size: rem(43px);
-    width: rem(8px);
-
-    &::before {
-      margin: 0;
-    }
   }
 }

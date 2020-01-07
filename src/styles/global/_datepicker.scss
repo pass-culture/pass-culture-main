@@ -157,20 +157,10 @@
   background-color: $primary;
 
   &::after {
-    margin: 0;
-    top: -3px;
+    top: 3px;
     left: -2px;
     padding: 0;
-    content: '\72';
     font-size: rem(30px);
     background-color: transparent;
   }
-}
-
-/* ----- WITH ICONS ----- */
-
-.react-datepicker__close-icon::after,
-.react-datepicker__navigation--next::before,
-.react-datepicker__navigation--previous::before {
-  @extend .inherits-from-fontello-icon;
 }

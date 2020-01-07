@@ -63,7 +63,7 @@ Par défaut, il ne remonte pas beaucoup d'informations. Pour plus de précisions
 
 > **ATTENTION**: Le code fourni par Matomo ne respecte pas totalement la règlementation française sur la vie privée
 
-Afin d'être en règle, ajouter ce snippet au début du script de Matomo : 
+Afin d'être en règle, ajouter ce snippet au début du script de Matomo :
 ```javascript
 <!-- CODE CNIL OBLIGATOIRE -->
 _paq.push([function() {
@@ -93,13 +93,13 @@ On utilise la librairie [react-tracking](https://github.com/NYTimes/react-tracki
 Les Tracking Events sont une des méthodes proposées par Matomo pour mesurer les interactions utilisateurs avec le contenu de notre plateforme qui ne seraient ni des page view, ni des téléchargements.
 Typiquement, un event sera utilisé pour mesurer des clicks sur les éléments de nos pages (menus, boutons, envoi de formulaires, appels AJAX, etc).
 
-Un évènement est constitué de 4 éléments : 
+Un évènement est constitué de 4 éléments :
 * Catégorie
 * Action
 * Nom (optionel mais recommendé)
 * Valeur (optionel)
 
-Exemple de déclaration d'évènement (fonction `trackEvent`) lorsque l'usager consulte (action : `Consult`), une Offre (catégorie : `Offer`) dont le nom (id) est 'B4' (name: `B4`)  : 
+Exemple de déclaration d'évènement (fonction `trackEvent`) lorsque l'usager consulte (action : `Consult`), une Offre (catégorie : `Offer`) dont le nom (id) est 'B4' (name: `B4`)  :
 ```javascript
 _paq.push(['trackEvent', 'Offer', 'Consult', 'B4']);
 ```
@@ -109,7 +109,7 @@ Cet exemple ne comporte pas de valeur, mais si on le souhaitait, on pourrait l'a
 Si l'on se réfère à la cible archi front, la responsabilité de déclencher un évènement en fonction d'une action utilisateur incombe au composant graphique, à l'aide d'une fonction fournie par son container.
 Il est de la responsabilité du container de wrapper l'action du déclenchement de l'event dans cette fonction.
 
-Exemple de container : 
+Exemple de container :
 
 ```javascript
 const mapStateToProps = state => {
@@ -160,23 +160,6 @@ La commande `yarn version` va créée un nouveau commit de version, un nouveau t
 ```bash
 yarn version
 # yarn version --new-version x.x.x
-```
-
-## Font Icons (Fontello)
-
-#### Ajout d'icones
-
-- Ouvrir le site [Fontello.com](https://fontello.com)
-- Glisser/Déposer le fichier `public/static/fontello/config.json` dans la page du navigateur
-- Ajouter une/des icônes
-- Cliquer sur `Download webfont (n)`
-- Remplacer et committer le fichier `public/static/fontello/config.json`
-
-#### Mise à jour
-
-La commande ci-dessous permet de mettre à jour le dossier dans `public/static/fontello` avec la dernière configuration à jour
-```bash
-yarn fontello
 ```
 
 [Nous Contacter](https://aide.passculture.app/fr/category/18-ans-1dnil5r/)

@@ -2,7 +2,9 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { toast } from 'react-toastify'
 
-const iconClass = isFavorite => `icon-ico-like${isFavorite ? '-on' : ''}`
+import Icon from '../../../Icon/Icon'
+
+const iconClass = isFavorite => `ico-like${isFavorite ? '-filled' : '-empty'}`
 
 const alternativeText = isFavorite => (isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris')
 
@@ -42,16 +44,14 @@ class Favorite extends PureComponent {
 
     return (
       <button
-        aria-label={alternativeText(isFavorite)}
         className="fav-button"
         disabled={isWaitingApi}
         onClick={this.handleFavorite(offerId, mediationId, isFavorite)}
-        title={alternativeText(isFavorite)}
         type="button"
       >
-        <i
-          aria-hidden
-          className={`font-icon ${iconClass(isFavorite)}`}
+        <Icon
+          alt={alternativeText(isFavorite)}
+          svg={iconClass(isFavorite)}
         />
       </button>
     )

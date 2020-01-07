@@ -56,8 +56,11 @@ ShallowWrapper {
             free="Gratuit"
             value={20}
           />
-          <i
-            className="icon-ico-check ticket-reserved-icon"
+          <Icon
+            alt=""
+            className={null}
+            png={null}
+            svg="ico-check-w"
           />
         </span>,
         <span
@@ -83,8 +86,11 @@ ShallowWrapper {
               free="Gratuit"
               value={20}
             />,
-            <i
-              className="icon-ico-check ticket-reserved-icon"
+            <Icon
+              alt=""
+              className={null}
+              png={null}
+              svg="ico-check-w"
             />,
           ],
           "className": "ticket-price ticket-reserved",
@@ -107,13 +113,16 @@ ShallowWrapper {
           Object {
             "instance": null,
             "key": undefined,
-            "nodeType": "host",
+            "nodeType": "function",
             "props": Object {
-              "className": "icon-ico-check ticket-reserved-icon",
+              "alt": "",
+              "className": null,
+              "png": null,
+              "svg": "ico-check-w",
             },
             "ref": null,
             "rendered": null,
-            "type": "i",
+            "type": [Function],
           },
         ],
         "type": "span",
@@ -148,8 +157,11 @@ ShallowWrapper {
               free="Gratuit"
               value={20}
             />
-            <i
-              className="icon-ico-check ticket-reserved-icon"
+            <Icon
+              alt=""
+              className={null}
+              png={null}
+              svg="ico-check-w"
             />
           </span>,
           <span
@@ -175,8 +187,11 @@ ShallowWrapper {
                 free="Gratuit"
                 value={20}
               />,
-              <i
-                className="icon-ico-check ticket-reserved-icon"
+              <Icon
+                alt=""
+                className={null}
+                png={null}
+                svg="ico-check-w"
               />,
             ],
             "className": "ticket-price ticket-reserved",
@@ -199,13 +214,16 @@ ShallowWrapper {
             Object {
               "instance": null,
               "key": undefined,
-              "nodeType": "host",
+              "nodeType": "function",
               "props": Object {
-                "className": "icon-ico-check ticket-reserved-icon",
+                "alt": "",
+                "className": null,
+                "png": null,
+                "svg": "ico-check-w",
               },
               "ref": null,
               "rendered": null,
-              "type": "i",
+              "type": [Function],
             },
           ],
           "type": "span",

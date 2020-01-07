@@ -255,32 +255,6 @@
   .icon-container {
     top: rem(-6px);
     right: rem(-6px);
-
-    .icon-legacy-check-circled {
-      @extend .is-block;
-      @extend .text-center;
-
-      background-color: $white;
-      border-radius: 50%;
-      color: $primary;
-
-      &::before {
-        margin: 0;
-      }
-    }
-  }
-
-  .icon-ico-check {
-    @extend .is-absolute;
-
-    top: -2px;
-    left: 2px;
-  }
-
-  .icon-ico-check::before {
-    @extend .fs14;
-    @extend .no-margin;
-    @extend .is-white-text;
   }
 }
 
@@ -292,4 +266,8 @@
   width: 1.1875em;
   height: 1.1875em;
   border-radius: 0;
+}
+
+.search-picto-checked {
+  width: rem(17px);
 }

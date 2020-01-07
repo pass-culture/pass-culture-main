@@ -1940,13 +1940,6 @@ binary-extensions@^1.0.0:
   version "1.13.1"
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-1.13.1.tgz#598afe54755b2868a5330d2aff9d4ebb53209b65"
 
-binary@~0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/binary/-/binary-0.3.0.tgz#9f60553bc5ce8c3386f3b553cff47462adecaa79"
-  dependencies:
-    buffers "~0.1.1"
-    chainsaw "~0.1.0"
-
 block-stream@*:
   version "0.0.9"
   resolved "https://registry.yarnpkg.com/block-stream/-/block-stream-0.0.9.tgz#13ebfe778a03205cfe03751481ebb4b3300c126a"
@@ -2184,10 +2177,6 @@ buffer@^4.3.0:
     ieee754 "^1.1.4"
     isarray "^1.0.0"
 
-buffers@~0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/buffers/-/buffers-0.1.1.tgz#b24579c3bed4d6d396aeee6d9a8ae7f5482ab7bb"
-
 builtin-status-codes@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/builtin-status-codes/-/builtin-status-codes-3.0.0.tgz#85982878e21b98e1c66425e03d0174788f569ee8"
@@ -2419,12 +2408,6 @@ chai@^3.0.0:
     deep-eql "^0.1.3"
     type-detect "^1.0.0"
 
-chainsaw@~0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/chainsaw/-/chainsaw-0.1.0.tgz#5eab50b28afe58074d0d58291388828b5e5fbc98"
-  dependencies:
-    traverse ">=0.3.0 <0.4"
-
 chalk@2.4.1:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.1.tgz#18c49ab16a037b6eb0152cc83e3471338215b66e"
@@ -2654,10 +2637,6 @@ color-name@1.1.3:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/color-name/-/color-name-1.1.3.tgz#a7d0558bd89c42f795dd42328f740831ca53bc25"
 
-colors@0.6.1:
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/colors/-/colors-0.6.1.tgz#59c7799f6c91e0e15802980a98ed138b3c78f4e9"
-
 combined-stream@^1.0.6, combined-stream@~1.0.6:
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/combined-stream/-/combined-stream-1.0.8.tgz#c3d45a8b34fd730631a110a8a2520682b31d5a7f"
@@ -2667,10 +2646,6 @@ combined-stream@^1.0.6, combined-stream@~1.0.6:
 command-exists@^1.2.2:
   version "1.2.8"
   resolved "https://registry.yarnpkg.com/command-exists/-/command-exists-1.2.8.tgz#715acefdd1223b9c9b37110a149c6392c2852291"
-
-commander@2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/commander/-/commander-2.0.0.tgz#d1b86f901f8b64bd941bdeadaf924530393be928"
 
 commander@2.11.x:
   version "2.11.0"
@@ -4375,17 +4350,6 @@ follow-redirects@^1.0.0:
   dependencies:
     debug "^3.0.0"
 
-fontello@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/fontello/-/fontello-0.5.0.tgz#a9f52fd4108d02ce8448cec9ce618a5a95876523"
-  dependencies:
-    colors "0.6.1"
-    commander "2.0.0"
-    mkdirp "0.3.5"
-    needle "0.5.8"
-    open "0.0.4"
-    unzip "0.1.8"
-
 for-in@^1.0.1, for-in@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/for-in/-/for-in-1.0.2.tgz#81068d295a8142ec0ac726c6e2200c30fb6d5e80"
@@ -4484,15 +4448,6 @@ fstream@^1.0.0, fstream@^1.0.12:
     graceful-fs "^4.1.2"
     inherits "~2.0.0"
     mkdirp ">=0.5 0"
-    rimraf "2"
-
-fstream@~0.1.21:
-  version "0.1.31"
-  resolved "https://registry.yarnpkg.com/fstream/-/fstream-0.1.31.tgz#7337f058fbbbbefa8c9f561a28cab0849202c988"
-  dependencies:
-    graceful-fs "~3.0.2"
-    inherits "~2.0.0"
-    mkdirp "0.5"
     rimraf "2"
 
 function-bind@^1.1.1:
@@ -4770,12 +4725,6 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6
 graceful-fs@^4.2.2:
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.3.tgz#4a12ff1b60376ef09862c2093edd908328be8423"
-
-graceful-fs@~3.0.2:
-  version "3.0.12"
-  resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-3.0.12.tgz#0034947ce9ed695ec8ab0b854bc919e82b1ffaef"
-  dependencies:
-    natives "^1.1.3"
 
 "growl@~> 1.10.0":
   version "1.10.5"
@@ -5129,12 +5078,6 @@ husky@^3.0.9:
     read-pkg "^5.2.0"
     run-node "^1.0.0"
     slash "^3.0.0"
-
-iconv-lite@:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.5.0.tgz#59cdde0a2a297cc2aeb0c6445a195ee89f127550"
-  dependencies:
-    safer-buffer ">= 2.1.2 < 3"
 
 iconv-lite@0.4.11:
   version "0.4.11"
@@ -6806,13 +6749,6 @@ markdown-table@^1.1.0:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/markdown-table/-/markdown-table-1.1.3.tgz#9fcb69bcfdb8717bfd0398c6ec2d93036ef8de60"
 
-match-stream@~0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/match-stream/-/match-stream-0.0.2.tgz#99eb050093b34dffade421b9ac0b410a9cfa17cf"
-  dependencies:
-    buffers "~0.1.1"
-    readable-stream "~1.0.0"
-
 match-url-wildcard@0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/match-url-wildcard/-/match-url-wildcard-0.0.2.tgz#6a6585e24b52b1dada033c5b616f13f3fedeb988"
@@ -7135,11 +7071,7 @@ mixin-deep@^1.2.0:
     for-in "^1.0.2"
     is-extendable "^1.0.1"
 
-mkdirp@0.3.5:
-  version "0.3.5"
-  resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-0.3.5.tgz#de3e5f8961c88c787ee1368df849ac4413eca8d7"
-
-mkdirp@0.5, mkdirp@0.5.1, "mkdirp@>=0.5 0", mkdirp@^0.5.0, mkdirp@^0.5.1:
+mkdirp@0.5.1, "mkdirp@>=0.5 0", mkdirp@^0.5.0, mkdirp@^0.5.1:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-0.5.1.tgz#30057438eac6cf7f8c4767f38648d6697d75c903"
   dependencies:
@@ -7251,10 +7183,6 @@ nanomatch@^1.2.9:
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
 
-natives@^1.1.3:
-  version "1.1.6"
-  resolved "https://registry.yarnpkg.com/natives/-/natives-1.1.6.tgz#a603b4a498ab77173612b9ea1acdec4d980f00bb"
-
 natural-compare@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
@@ -7268,13 +7196,6 @@ nearley@^2.7.10:
     railroad-diagrams "^1.0.0"
     randexp "0.4.6"
     semver "^5.4.1"
-
-needle@0.5.8:
-  version "0.5.8"
-  resolved "https://registry.yarnpkg.com/needle/-/needle-0.5.8.tgz#aa5e288fc4f8f887ff7564491d00cb601ded0c39"
-  dependencies:
-    iconv-lite ""
-    qs ""
 
 needle@^2.2.1:
   version "2.4.0"
@@ -7662,10 +7583,6 @@ onetime@^5.1.0:
   dependencies:
     mimic-fn "^2.1.0"
 
-open@0.0.4:
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/open/-/open-0.0.4.tgz#5de46a0858b9f49f9f211aa8f26628550657f262"
-
 opencollective-postinstall@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/opencollective-postinstall/-/opencollective-postinstall-2.0.2.tgz#5657f1bede69b6e33a45939b061eb53d3c6c3a89"
@@ -7742,10 +7659,6 @@ osenv@0, osenv@^0.1.4:
   dependencies:
     os-homedir "^1.0.0"
     os-tmpdir "^1.0.0"
-
-"over@>= 0.0.5 < 1":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/over/-/over-0.0.5.tgz#f29852e70fd7e25f360e013a8ec44c82aedb5708"
 
 p-defer@^1.0.0:
   version "1.0.0"
@@ -8495,15 +8408,6 @@ public-encrypt@^4.0.0:
     randombytes "^2.0.1"
     safe-buffer "^5.1.2"
 
-pullstream@~0.4.0:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/pullstream/-/pullstream-0.4.1.tgz#d6fb3bf5aed697e831150eb1002c25a3f8ae1314"
-  dependencies:
-    over ">= 0.0.5 < 1"
-    readable-stream "~1.0.31"
-    setimmediate ">= 1.0.2 < 2"
-    slice-stream ">= 1.0.0 < 2"
-
 pump@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/pump/-/pump-2.0.1.tgz#12399add6e4cf7526d973cbc8b5ce2e2908b3909"
@@ -8542,13 +8446,13 @@ qrcode-terminal@^0.10.0:
   version "0.10.0"
   resolved "https://registry.yarnpkg.com/qrcode-terminal/-/qrcode-terminal-0.10.0.tgz#a76a48e2610a18f97fa3a2bd532b682acff86c53"
 
-qs@, qs@^6.1.0:
-  version "6.9.0"
-  resolved "https://registry.yarnpkg.com/qs/-/qs-6.9.0.tgz#d1297e2a049c53119cb49cca366adbbacc80b409"
-
 qs@6.7.0:
   version "6.7.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.7.0.tgz#41dc1a015e3d581f1621776be31afb2876a9b1bc"
+
+qs@^6.1.0:
+  version "6.9.0"
+  resolved "https://registry.yarnpkg.com/qs/-/qs-6.9.0.tgz#d1297e2a049c53119cb49cca366adbbacc80b409"
 
 qs@~6.5.2:
   version "6.5.2"
@@ -9053,15 +8957,6 @@ readable-stream@^3.0.6, readable-stream@^3.1.1:
     inherits "^2.0.3"
     string_decoder "^1.1.1"
     util-deprecate "^1.0.1"
-
-readable-stream@~1.0.0, readable-stream@~1.0.31:
-  version "1.0.34"
-  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-1.0.34.tgz#125820e34bc842d2f2aaafafe4c2916ee32c157c"
-  dependencies:
-    core-util-is "~1.0.0"
-    inherits "~2.0.1"
-    isarray "0.0.1"
-    string_decoder "~0.10.x"
 
 readdir-scoped-modules@^1.0.0:
   version "1.1.0"
@@ -9736,7 +9631,7 @@ set-value@^2.0.0, set-value@^2.0.1:
     is-plain-object "^2.0.3"
     split-string "^3.0.1"
 
-"setimmediate@>= 1.0.2 < 2", setimmediate@^1.0.4, setimmediate@~1.0.1:
+setimmediate@^1.0.4:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/setimmediate/-/setimmediate-1.0.5.tgz#290cbb232e306942d7d7ea9b83732ab7856f8285"
 
@@ -9815,12 +9710,6 @@ slice-ansi@^2.1.0:
     ansi-styles "^3.2.0"
     astral-regex "^1.0.0"
     is-fullwidth-code-point "^2.0.0"
-
-"slice-stream@>= 1.0.0 < 2":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/slice-stream/-/slice-stream-1.0.0.tgz#5b33bd66f013b1a7f86460b03d463dec39ad3ea0"
-  dependencies:
-    readable-stream "~1.0.31"
 
 slide@~1.1.3:
   version "1.1.6"
@@ -10200,10 +10089,6 @@ string_decoder@^1.0.0, string_decoder@^1.1.1:
   resolved "https://registry.yarnpkg.com/string_decoder/-/string_decoder-1.3.0.tgz#42f114594a46cf1a8e30b0a84f56c78c3edac21e"
   dependencies:
     safe-buffer "~5.2.0"
-
-string_decoder@~0.10.x:
-  version "0.10.31"
-  resolved "https://registry.yarnpkg.com/string_decoder/-/string_decoder-0.10.31.tgz#62e203bc41766c6c28c9fc84301dab1c5310fa94"
 
 string_decoder@~1.1.1:
   version "1.1.1"
@@ -10854,10 +10739,6 @@ tr46@^1.0.1:
   dependencies:
     punycode "^2.1.0"
 
-"traverse@>=0.3.0 <0.4":
-  version "0.3.9"
-  resolved "https://registry.yarnpkg.com/traverse/-/traverse-0.3.9.tgz#717b8f220cc0bb7b44e40514c22b2e8bbc70d8b9"
-
 tree-kill@^1.1.0:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/tree-kill/-/tree-kill-1.2.1.tgz#5398f374e2f292b9dcc7b2e71e30a5c3bb6c743a"
@@ -11105,17 +10986,6 @@ unset-value@^1.0.0:
 unzip-response@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/unzip-response/-/unzip-response-2.0.1.tgz#d2f0f737d16b0615e72a6935ed04214572d56f97"
-
-unzip@0.1.8:
-  version "0.1.8"
-  resolved "https://registry.yarnpkg.com/unzip/-/unzip-0.1.8.tgz#b6ca171798242150b06fca320544592231aeb158"
-  dependencies:
-    binary "~0.3.0"
-    fstream "~0.1.21"
-    match-stream "~0.0.2"
-    pullstream "~0.4.0"
-    readable-stream "~1.0.0"
-    setimmediate "~1.0.1"
 
 upath@^1.1.1:
   version "1.2.0"

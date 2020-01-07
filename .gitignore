@@ -45,11 +45,6 @@ ngrok.yml
 tmp
 temp
 
-# Fontello Icon Fonts
-public/static/fontello/css/*
-public/static/fontello/font/*
-public/static/fontello/.fontello.session
-
 # IDEA
 .idea/
 webapp.iml

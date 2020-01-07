@@ -73,11 +73,6 @@
   margin-top: rem(2px);
 }
 
-.icon-legacy-eye,
-.icon-legacy-eye-close {
-  font-size: rem(28px);
-}
-
 .form-label-inner {
   font-size: rem(19px);
   padding-bottom: rem(6px);
@@ -176,7 +171,6 @@
   @extend .flex-columns;
 
   &::after {
-    @extend .inherits-from-fontello-icon;
     $size: rem(30px);
 
     color: $primary;

@@ -78,7 +78,6 @@
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.16.0",
     "file-loader": "^4.2.0",
-    "fontello": "^0.5.0",
     "fs-extra": "^8.1.0",
     "html-webpack-plugin": "4.0.0-alpha.2",
     "husky": "^3.0.9",
@@ -114,12 +113,10 @@
   "scripts": {
     "build": "node scripts/build.js && ./scripts/build_redirects.sh",
     "coveralls": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls",
-    "fontello": "./scripts/fontello.sh",
     "format:js": "prettier-eslint --write '{src,testcafe}/**/*.{js,jsx}'",
     "licenses": "node_modules/.bin/license-reporter save --json licenses.json",
     "lint:js": "eslint '{src,testcafe}/**/*.{js,jsx}'",
     "lint:js:fix": "yarn lint:js --fix",
-    "prebuild": "yarn fontello",
     "start": "node scripts/start.js",
     "test:cafe": "testcafe --assertion-timeout 8000 --selector-timeout 20000 -S -s testcafe_screenshots 'chrome:headless' testcafe",
     "test:unit": "jest --env=jsdom"

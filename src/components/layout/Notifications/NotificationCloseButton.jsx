@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
+import Icon from '../../layout/Icon/Icon'
 import { noopnoop } from '../../../utils/functionnals'
 
 const NotificationCloseButton = ({ closeToast }) => (
@@ -9,7 +10,10 @@ const NotificationCloseButton = ({ closeToast }) => (
     onClick={closeToast}
     type="button"
   >
-    <i className="icon-retina icon-ico-close" />
+    <Icon
+      alt="Fermer la modale"
+      svg="ico-close-b"
+    />
   </button>
 )
 

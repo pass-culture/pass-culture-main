@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
 import CopyToClipboardButton from '../CopyToClipboardButton'
+import Icon from '../../Icon/Icon'
 import MailToLink from '../../MailToLink/MailToLink'
 
 class ShareButton extends PureComponent {
@@ -89,15 +90,13 @@ class ShareButton extends PureComponent {
   render() {
     return (
       <button
-        aria-label="Partager cette offre"
         className="no-background"
         onClick={this.handleOnClickShare}
-        title="Partager cette offre"
         type="button"
       >
-        <span
-          aria-hidden
-          className="font-icon icon-ico-share"
+        <Icon
+          alt="Partager cette offre"
+          svg="ico-share-w"
         />
       </button>
     )

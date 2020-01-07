@@ -2,6 +2,7 @@ import { shallow } from 'enzyme'
 import React from 'react'
 
 import Favorite from '../Favorite'
+import Icon from '../../../../../layout/Icon/Icon'
 
 describe('src | components | layout | Verso | VersoControls | Favorite | Favorite', () => {
   let props
@@ -47,7 +48,7 @@ describe('src | components | layout | Verso | VersoControls | Favorite | Favorit
       wrapper.find('button').simulate('click')
 
       // then
-      expect(wrapper.find('button').props().title).toBe('Retirer des favoris')
+      expect(wrapper.find(Icon).props().alt).toBe('Retirer des favoris')
     })
   })
 
@@ -61,7 +62,7 @@ describe('src | components | layout | Verso | VersoControls | Favorite | Favorit
       wrapper.find('button').simulate('click')
 
       // then
-      expect(wrapper.find('button').props().title).toBe('Ajouter aux favoris')
+      expect(wrapper.find(Icon).props().alt).toBe('Ajouter aux favoris')
     })
   })
 

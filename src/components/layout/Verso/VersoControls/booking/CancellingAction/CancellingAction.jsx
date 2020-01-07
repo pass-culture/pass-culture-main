@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
-import Price from '../../../../Price/Price'
 import getIsCancelling from '../../../../../../utils/getIsCancelling'
+import Icon from '../../../../Icon/Icon'
+import Price from '../../../../Price/Price'
 
 class CancellingAction extends PureComponent {
   componentDidMount() {
@@ -48,7 +49,7 @@ class CancellingAction extends PureComponent {
             free="Gratuit"
             value={price}
           />
-          <i className="icon-ico-check ticket-reserved-icon" />
+          <Icon svg="ico-check-w" />
         </span>
         <span className="ticket-label">
           {'Annuler'}
