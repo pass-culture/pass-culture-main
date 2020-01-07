@@ -1,3 +1,4 @@
+from models.allocine_pivot import AllocinePivot
 from models.api_errors import ApiErrors
 from models.api_key import ApiKey
 from models.bank_information import BankInformation
@@ -45,6 +46,7 @@ __all__ = (
     'VersionedMixin',
     'ApiErrors',
     'ApiKey',
+    'AllocinePivot',
     'BankInformation',
     'BeneficiaryImport',
     'BeneficiaryImportStatus',
