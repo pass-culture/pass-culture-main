@@ -9,7 +9,7 @@ import Icon from '../../../layout/Icon/Icon'
 const Result = ({ result, geolocation, search }) => {
   const { _geoloc = {}, objectID, offer } = result
   const { dateRange, departementCode, id: offerId, label, name, thumbUrl } = offer
-  const { latitude : userLatitude, longitude: userLongitude } = geolocation
+  const { latitude: userLatitude, longitude: userLongitude } = geolocation
   const { lat: venueLatitude, lng: venueLongitude } = _geoloc
 
   return (
@@ -31,10 +31,7 @@ const Result = ({ result, geolocation, search }) => {
             {label}
           </label>
           <label className="result-date">
-            {formatRecommendationDates(
-              departementCode,
-              dateRange
-            )}
+            {formatRecommendationDates(departementCode, dateRange)}
           </label>
           <label className="result-distance">
             {getHumanizeRelativeDistance(
@@ -59,6 +56,7 @@ const Result = ({ result, geolocation, search }) => {
 Result.defaultProps = {
   geolocation: {},
   result: {},
+  search: '',
 }
 
 Result.propTypes = {
@@ -81,7 +79,7 @@ Result.propTypes = {
     }),
     objectID: PropTypes.string,
   }),
-  search: PropTypes.string.isRequired
+  search: PropTypes.string,
 }
 
 export default Result

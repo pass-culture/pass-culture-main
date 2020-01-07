@@ -4,40 +4,10 @@
   @extend .with-header;
 
   form {
-    margin-bottom: 40px;
-    padding-left: 12px;
-    padding-right: 12px;
+    margin-bottom: rem(40px);
+    padding-left: rem(12px);
+    padding-right: rem(12px);
   }
-}
-
-.sp-content {
-  @extend .page-content
-}
-
-.sp-input {
-  border: 0;
-  border-radius: 2rem;
-  border-bottom-right-radius: 0;
-  border-top-right-radius: 0;
-  font-family: $family-sans-serif;
-  font-size: rem(20px);
-  font-weight: 700;
-  padding: 9px 40px 9px 18px;
-  width: 100%;
-
-  &::placeholder {
-    font-style: italic;
-    font-size: rem(18px);
-    font-weight: 400;
-  }
-}
-
-.sp-container {
-  @extend .field;
-  @extend .has-addons;
-
-  border-radius: 2rem;
-  box-shadow: inset 0 0 0 0 rgba(0, 0, 0, 0), 0 2px 6px 0 rgba(0, 0, 0, 0.25);
 }
 
 .sp-button {
@@ -50,7 +20,39 @@
   box-shadow: inset 0 -2px 0 0 rgba(153, 0, 38, 0.6);
   font-size: rem(20px);
   font-weight: 500;
-  padding: 10px 16px;
+  padding: rem(10px) rem(16px);
+}
+
+.sp-content {
+  @extend .page-content;
+}
+
+.sp-container {
+  display: flex;
+  border-radius: 2rem;
+  box-shadow: inset 0 0 0 0 rgba(0, 0, 0, 0), 0 2px 6px 0 rgba(0, 0, 0, 0.25);
+}
+
+.sp-input {
+  border: 0;
+  border-radius: 2rem;
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+  font-family: $family-sans-serif;
+  font-size: rem(20px);
+  font-weight: 700;
+  padding: rem(9px) rem(40px) rem(9px) rem(18px);
+  width: 100%;
+
+  &::placeholder {
+    font-style: italic;
+    font-size: rem(18px);
+    font-weight: 400;
+  }
+}
+
+.sp-input-wrapper {
+  flex-grow: 1;
 }
 
 .sp-result-title {

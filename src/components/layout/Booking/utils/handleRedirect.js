@@ -1,11 +1,14 @@
-const handleRedirect = (booking, match) => {
+const handleRedirect = (booking, match, location) => {
   const { url } = match
-  let nextUrl = url.split(/\/reservation(\/|$|\/$)/)[0]
+  const { search } = location
+  let nextUrl
 
-  if (url.includes('reservations')) {
-    if (booking) {
-      nextUrl = `/reservations/details/${booking.id}`
-    }
+  if (url.includes('recherche-algolia')) {
+    nextUrl = url.replace('/reservation', '') + search
+  } else if (url.includes('reservations')) {
+    nextUrl = `/reservations/details/${booking.id}`
+  } else {
+    nextUrl = url.split(/\/reservation(\/|$|\/$)/)[0]
   }
   return nextUrl
 }

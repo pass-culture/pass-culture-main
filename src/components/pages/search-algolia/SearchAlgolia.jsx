@@ -10,7 +10,6 @@ import Result from './Result/Result'
 import PropTypes from 'prop-types'
 import InfiniteScroll from 'react-infinite-scroller'
 
-
 class SearchAlgolia extends PureComponent {
   constructor(props) {
     super(props)
@@ -44,11 +43,14 @@ class SearchAlgolia extends PureComponent {
     const keywords = event.target.keywords.value
     const keywordsTrimmed = keywords.trim()
 
-    if (keywordsTrimmed !== '') {
+    if (searchKeywords === keywordsTrimmed) {
+      return
+    }
 
+    if (keywordsTrimmed !== '') {
       if (searchKeywords !== keywordsTrimmed) {
         this.setState({
-          results: []
+          results: [],
         })
       }
       this.handleFetchOffers(keywordsTrimmed, page)
@@ -71,7 +73,7 @@ class SearchAlgolia extends PureComponent {
   getOffers = (keywords, page) => {
     const { query } = this.props
     this.setState({
-      isLoading: true
+      isLoading: true,
     })
 
     const response = fetch(keywords, page)
@@ -88,7 +90,7 @@ class SearchAlgolia extends PureComponent {
       })
       query.change({
         'mots-cles': keywords,
-        'page': page + 1
+        page: page + 1,
       })
     })
   }
@@ -111,8 +113,8 @@ class SearchAlgolia extends PureComponent {
     return (
       <main className="search-page">
         <HeaderContainer
-          closeTitle='Retourner à la page découverte'
-          closeTo='/decouverte'
+          closeTitle="Retourner à la page découverte"
+          closeTo="/decouverte"
           shouldBackFromDetails={this.shouldBackFromDetails()}
           title="Recherche"
         />
@@ -124,13 +126,15 @@ class SearchAlgolia extends PureComponent {
             <div className="sp-content">
               <form onSubmit={this.handleOnSubmit}>
                 <div className="sp-container">
-                  <input
-                    className="sp-input"
-                    defaultValue={searchKeywords}
-                    name="keywords"
-                    placeholder="Saisir un mot-clé"
-                    type="text"
-                  />
+                  <div className="sp-input-wrapper">
+                    <input
+                      className="sp-input"
+                      defaultValue={searchKeywords}
+                      name="keywords"
+                      placeholder="Saisir un mot-clé"
+                      type="text"
+                    />
+                  </div>
                   <button
                     className="sp-button"
                     type="submit"
@@ -139,11 +143,7 @@ class SearchAlgolia extends PureComponent {
                   </button>
                 </div>
               </form>
-              {isLoading && (
-                <Spinner
-                  label="Recherche en cours"
-                />
-              )}
+              {isLoading && <Spinner label="Recherche en cours" />}
               {searchKeywords && (
                 <h1 className="sp-result-title">
                   {`"${searchKeywords}" : ${nbResults} ${nbResults > 1 ? 'résultats' : 'résultat'}`}
@@ -159,7 +159,7 @@ class SearchAlgolia extends PureComponent {
                   threshold={-10}
                   useWindow={false}
                 >
-                  {results.map((result) => (
+                  {results.map(result => (
                     <Result
                       geolocation={geolocation}
                       key={result.objectID}
@@ -193,14 +193,14 @@ SearchAlgolia.propTypes = {
     longitude: PropTypes.number,
   }).isRequired,
   location: PropTypes.shape({
-    search: PropTypes.string
+    search: PropTypes.string,
   }).isRequired,
   match: PropTypes.shape().isRequired,
   query: PropTypes.shape({
     clear: PropTypes.func,
     change: PropTypes.func,
-    parse: PropTypes.func
-  }).isRequired
+    parse: PropTypes.func,
+  }).isRequired,
 }
 
 export default SearchAlgolia

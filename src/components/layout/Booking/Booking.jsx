@@ -83,9 +83,9 @@ class Booking extends PureComponent {
   }
 
   handleReturnToDetails = () => {
-    const { history, match } = this.props
+    const { history, location, match } = this.props
     const { bookedPayload } = this.state
-    const nextUrl = handleRedirect(bookedPayload, match)
+    const nextUrl = handleRedirect(bookedPayload, match, location)
     history.replace(nextUrl)
   }
 
@@ -235,6 +235,7 @@ Booking.propTypes = {
   extraClassName: PropTypes.string,
   handleSubmit: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
+  location: PropTypes.shape().isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
       bookings: PropTypes.string,
