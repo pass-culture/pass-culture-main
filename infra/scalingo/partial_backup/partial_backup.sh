@@ -23,23 +23,22 @@ get_tunnel_database_url $app_name
 
 echo $tunnel_database_url
 
-echo "- Backup pre-data :"
+echo "- Backup pre-data:"
 time pg_dump --no-privileges --no-owner $tunnel_database_url --section=pre-data > "$BACKUP_PATH"/pre_data.sql
 
-echo "- Backup post-data :"
+echo "- Backup post-data:"
 time pg_dump $tunnel_database_url --no-privileges --no-owner --section=post-data > "$BACKUP_PATH"/post_data.sql
 
-echo "- Backup raw data :"
+echo "- Backup raw data:"
 recommendation_seq_id=$(psql -qtAX $tunnel_database_url -c 'select last_value from public.recommendation_id_seq;')
 activity_seq_id=$(psql -qtAX $tunnel_database_url -c 'select last_value from public.activity_id_seq;')
 time pg_dump $tunnel_database_url --exclude-table=recommendation --exclude-table=activity -a -F c  > "$BACKUP_PATH"/data.pgdump
 
-echo "- Backup recommendation linked to booking"
+echo "- Backup selected activity rows:"
 time psql -Atx $tunnel_database_url -c "COPY (select * from activity where activity.id < $activity_seq_id \
-  and (table_name='booking' and verb='update') or (table_name='stock' and verb='insert') or (table_name='user' \
-  and verb='update')) TO stdout;" > /tmp/activity.csv
+  and (table_name in ('booking', 'user') and verb='update') or (table_name='stock' and verb='insert')) TO stdout;" > /tmp/activity.csv
 
-echo "- Backup selected activity rows"
+echo "- Backup recommendation linked to booking:"
 time psql -Atx $tunnel_database_url -c "COPY (select * from recommendation where recommendation.id < $recommendation_seq_id \
   AND recommendation.id in (select booking.\"recommendationId\" from booking where booking.\"recommendationId\" is not null)) \
   TO stdout;" > /tmp/reco.csv
