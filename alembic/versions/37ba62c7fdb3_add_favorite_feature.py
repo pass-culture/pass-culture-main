@@ -7,7 +7,6 @@ Create Date: 2019-07-09 09:47:32.341098
 """
 from enum import Enum
 from alembic import op
-from enum import Enum
 import sqlalchemy as sa
 from sqlalchemy.sql import expression
 
