@@ -21,8 +21,8 @@ from repository.user_queries import find_all_emails_of_user_offerers_admins
 from utils.logger import logger
 from utils.mailing import ADMINISTRATION_EMAIL_ADDRESS, \
     compute_email_html_part_and_recipients, \
-    make_reset_password_email
-from utils.mailing import make_offerer_driven_cancellation_email_for_offerer, \
+    make_reset_password_email, \
+    make_offerer_driven_cancellation_email_for_offerer, \
     make_final_recap_email_for_stock_with_event, \
     make_user_validation_email, \
     make_venue_validated_email
