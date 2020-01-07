@@ -1,7 +1,7 @@
 """remove_duo_offer_feature_flag
 
 Revision ID: 2ae0f4147390
-Revises: 75f2ccf2be82
+Revises: 2cb37da9609e
 Create Date: 2019-12-30 09:01:56.770901
 
 """
