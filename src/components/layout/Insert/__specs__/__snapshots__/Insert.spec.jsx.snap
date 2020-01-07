@@ -3,7 +3,9 @@
 exports[`src | components | layout | Insert should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <Insert>
+  Symbol(enzyme.__unrendered__): <Insert
+    icon="example-icon-name"
+  >
     {'Les'}
         &lt;b&gt;
           {' réservations d’événements '}
@@ -43,7 +45,7 @@ ShallowWrapper {
         {'La contremarque ne peut être validée qu’après ce délai.'}
         </span>,
       ],
-      "className": "insert",
+      "className": undefined,
     },
     "ref": null,
     "rendered": Array [
@@ -109,7 +111,7 @@ ShallowWrapper {
         {'La contremarque ne peut être validée qu’après ce délai.'}
           </span>,
         ],
-        "className": "insert",
+        "className": undefined,
       },
       "ref": null,
       "rendered": Array [

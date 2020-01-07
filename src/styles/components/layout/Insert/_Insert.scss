@@ -1,6 +1,6 @@
-.insert {
+.insert-blue {
   @extend .fs16;
-  
+
   align-items: center;
   background-color: $notification-background-is-info;
   color: $notification-text;
@@ -17,4 +17,8 @@
     align-self: baseline;
     height: auto;
   }
+}
+
+.yellow-insert {
+  background-color: $yellow;
 }

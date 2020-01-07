@@ -16,6 +16,7 @@ describe('src | components | layout | Insert', () => {
         <p />
         <p />
         {'La contremarque ne peut être validée qu’après ce délai.'}`,
+      icon: 'example-icon-name'
     }
   })
 

@@ -3,17 +3,25 @@ import React from 'react'
 
 import Icon from '../Icon'
 
-const Insert = ({ children }) => (
-  <div className="insert">
-    <Icon png="picto-info-solid-black" />
+const Insert = ({ icon, children, className }) => (
+  <div className={className}>
+    {
+      icon &&
+      <Icon png="picto-info-solid-black" />
+    }
     <span>
       {children}
     </span>
   </div>
 )
 
+Insert.defaultProps = {
+  icon: null
+}
+
 Insert.propTypes = {
   children: PropTypes.node.isRequired,
+  icon: PropTypes.string
 }
 
 export default Insert

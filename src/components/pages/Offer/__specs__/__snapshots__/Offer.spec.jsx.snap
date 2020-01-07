@@ -255,6 +255,30 @@ ShallowWrapper {
                 storeValue={[Function]}
                 type="select"
               />
+              <Insert
+                className="yellow-insert"
+                icon={null}
+              >
+                <p>
+                  Du texte 
+                </p>
+                <span
+                  className="icon"
+                >
+                  <Icon
+                    svg="ico-calendar"
+                  />
+                </span>
+                <p>
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    to=""
+                  >
+                    Un lien à cliquer
+                  </NavLink>
+                </p>
+              </Insert>
               <Field
                 displayValue={[Function]}
                 errors={null}
@@ -523,6 +547,30 @@ ShallowWrapper {
                   storeValue={[Function]}
                   type="select"
                 />
+                <Insert
+                  className="yellow-insert"
+                  icon={null}
+                >
+                  <p>
+                    Du texte 
+                  </p>
+                  <span
+                    className="icon"
+                  >
+                    <Icon
+                      svg="ico-calendar"
+                    />
+                  </span>
+                  <p>
+                    <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      to=""
+                    >
+                      Un lien à cliquer
+                    </NavLink>
+                  </p>
+                </Insert>
                 <Field
                   displayValue={[Function]}
                   errors={null}
@@ -1107,6 +1155,30 @@ ShallowWrapper {
                     storeValue={[Function]}
                     type="select"
                   />
+                  <Insert
+                    className="yellow-insert"
+                    icon={null}
+                  >
+                    <p>
+                      Du texte 
+                    </p>
+                    <span
+                      className="icon"
+                    >
+                      <Icon
+                        svg="ico-calendar"
+                      />
+                    </span>
+                    <p>
+                      <NavLink
+                        activeClassName="active"
+                        aria-current="page"
+                        to=""
+                      >
+                        Un lien à cliquer
+                      </NavLink>
+                    </p>
+                  </Insert>
                   <Field
                     displayValue={[Function]}
                     errors={null}
@@ -1194,6 +1266,30 @@ ShallowWrapper {
                       storeValue={[Function]}
                       type="select"
                     />,
+                    <Insert
+                      className="yellow-insert"
+                      icon={null}
+                    >
+                      <p>
+                        Du texte 
+                      </p>
+                      <span
+                        className="icon"
+                      >
+                        <Icon
+                          svg="ico-calendar"
+                        />
+                      </span>
+                      <p>
+                        <NavLink
+                          activeClassName="active"
+                          aria-current="page"
+                          to=""
+                        >
+                          Un lien à cliquer
+                        </NavLink>
+                      </p>
+                    </Insert>,
                     undefined,
                     false,
                     undefined,
@@ -1259,6 +1355,105 @@ ShallowWrapper {
                     },
                     "ref": null,
                     "rendered": null,
+                    "type": [Function],
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "children": Array [
+                        <p>
+                          Du texte 
+                        </p>,
+                        <span
+                          className="icon"
+                        >
+                          <Icon
+                            svg="ico-calendar"
+                          />
+                        </span>,
+                        <p>
+                          <NavLink
+                            activeClassName="active"
+                            aria-current="page"
+                            to=""
+                          >
+                            Un lien à cliquer
+                          </NavLink>
+                        </p>,
+                      ],
+                      "className": "yellow-insert",
+                      "icon": null,
+                    },
+                    "ref": null,
+                    "rendered": Array [
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": "Du texte ",
+                        },
+                        "ref": null,
+                        "rendered": "Du texte ",
+                        "type": "p",
+                      },
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": <Icon
+                            svg="ico-calendar"
+                          />,
+                          "className": "icon",
+                        },
+                        "ref": null,
+                        "rendered": Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "function",
+                          "props": Object {
+                            "svg": "ico-calendar",
+                          },
+                          "ref": null,
+                          "rendered": null,
+                          "type": [Function],
+                        },
+                        "type": "span",
+                      },
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": <NavLink
+                            activeClassName="active"
+                            aria-current="page"
+                            to=""
+                          >
+                            Un lien à cliquer
+                          </NavLink>,
+                        },
+                        "ref": null,
+                        "rendered": Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "function",
+                          "props": Object {
+                            "activeClassName": "active",
+                            "aria-current": "page",
+                            "children": "Un lien à cliquer",
+                            "to": "",
+                          },
+                          "ref": null,
+                          "rendered": "Un lien à cliquer",
+                          "type": [Function],
+                        },
+                        "type": "p",
+                      },
+                    ],
                     "type": [Function],
                   },
                   undefined,
@@ -1676,6 +1871,30 @@ ShallowWrapper {
                   storeValue={[Function]}
                   type="select"
                 />
+                <Insert
+                  className="yellow-insert"
+                  icon={null}
+                >
+                  <p>
+                    Du texte 
+                  </p>
+                  <span
+                    className="icon"
+                  >
+                    <Icon
+                      svg="ico-calendar"
+                    />
+                  </span>
+                  <p>
+                    <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      to=""
+                    >
+                      Un lien à cliquer
+                    </NavLink>
+                  </p>
+                </Insert>
                 <Field
                   displayValue={[Function]}
                   errors={null}
@@ -1944,6 +2163,30 @@ ShallowWrapper {
                     storeValue={[Function]}
                     type="select"
                   />
+                  <Insert
+                    className="yellow-insert"
+                    icon={null}
+                  >
+                    <p>
+                      Du texte 
+                    </p>
+                    <span
+                      className="icon"
+                    >
+                      <Icon
+                        svg="ico-calendar"
+                      />
+                    </span>
+                    <p>
+                      <NavLink
+                        activeClassName="active"
+                        aria-current="page"
+                        to=""
+                      >
+                        Un lien à cliquer
+                      </NavLink>
+                    </p>
+                  </Insert>
                   <Field
                     displayValue={[Function]}
                     errors={null}
@@ -2528,6 +2771,30 @@ ShallowWrapper {
                       storeValue={[Function]}
                       type="select"
                     />
+                    <Insert
+                      className="yellow-insert"
+                      icon={null}
+                    >
+                      <p>
+                        Du texte 
+                      </p>
+                      <span
+                        className="icon"
+                      >
+                        <Icon
+                          svg="ico-calendar"
+                        />
+                      </span>
+                      <p>
+                        <NavLink
+                          activeClassName="active"
+                          aria-current="page"
+                          to=""
+                        >
+                          Un lien à cliquer
+                        </NavLink>
+                      </p>
+                    </Insert>
                     <Field
                       displayValue={[Function]}
                       errors={null}
@@ -2615,6 +2882,30 @@ ShallowWrapper {
                         storeValue={[Function]}
                         type="select"
                       />,
+                      <Insert
+                        className="yellow-insert"
+                        icon={null}
+                      >
+                        <p>
+                          Du texte 
+                        </p>
+                        <span
+                          className="icon"
+                        >
+                          <Icon
+                            svg="ico-calendar"
+                          />
+                        </span>
+                        <p>
+                          <NavLink
+                            activeClassName="active"
+                            aria-current="page"
+                            to=""
+                          >
+                            Un lien à cliquer
+                          </NavLink>
+                        </p>
+                      </Insert>,
                       undefined,
                       false,
                       undefined,
@@ -2680,6 +2971,105 @@ ShallowWrapper {
                       },
                       "ref": null,
                       "rendered": null,
+                      "type": [Function],
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "function",
+                      "props": Object {
+                        "children": Array [
+                          <p>
+                            Du texte 
+                          </p>,
+                          <span
+                            className="icon"
+                          >
+                            <Icon
+                              svg="ico-calendar"
+                            />
+                          </span>,
+                          <p>
+                            <NavLink
+                              activeClassName="active"
+                              aria-current="page"
+                              to=""
+                            >
+                              Un lien à cliquer
+                            </NavLink>
+                          </p>,
+                        ],
+                        "className": "yellow-insert",
+                        "icon": null,
+                      },
+                      "ref": null,
+                      "rendered": Array [
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "host",
+                          "props": Object {
+                            "children": "Du texte ",
+                          },
+                          "ref": null,
+                          "rendered": "Du texte ",
+                          "type": "p",
+                        },
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "host",
+                          "props": Object {
+                            "children": <Icon
+                              svg="ico-calendar"
+                            />,
+                            "className": "icon",
+                          },
+                          "ref": null,
+                          "rendered": Object {
+                            "instance": null,
+                            "key": undefined,
+                            "nodeType": "function",
+                            "props": Object {
+                              "svg": "ico-calendar",
+                            },
+                            "ref": null,
+                            "rendered": null,
+                            "type": [Function],
+                          },
+                          "type": "span",
+                        },
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "host",
+                          "props": Object {
+                            "children": <NavLink
+                              activeClassName="active"
+                              aria-current="page"
+                              to=""
+                            >
+                              Un lien à cliquer
+                            </NavLink>,
+                          },
+                          "ref": null,
+                          "rendered": Object {
+                            "instance": null,
+                            "key": undefined,
+                            "nodeType": "function",
+                            "props": Object {
+                              "activeClassName": "active",
+                              "aria-current": "page",
+                              "children": "Un lien à cliquer",
+                              "to": "",
+                            },
+                            "ref": null,
+                            "rendered": "Un lien à cliquer",
+                            "type": [Function],
+                          },
+                          "type": "p",
+                        },
+                      ],
                       "type": [Function],
                     },
                     undefined,

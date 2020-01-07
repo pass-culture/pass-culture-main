@@ -20,7 +20,10 @@ const Bookings = ({ pathToCsvFile, showButtons, showOfferSection }) => (
         {'Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.'}
       </p>
     </HeroSection>
-    <Insert>
+    <Insert
+      className='insert-blue'
+      icon='picto-info-solid-black'
+    >
       {'Les'}
       <b>
         {' réservations d’événements '}

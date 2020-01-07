@@ -31,6 +31,7 @@ import isTiteLiveOffer from './utils/isTiteLiveOffer'
 import isAllocineOffer from './utils/isAllocineOffer'
 import LocalProviderInformation from './LocalProviderInformation/LocalProviderInformationContainer'
 import OfferPreviewLink from '../../layout/OfferPreviewLink/OfferPreviewLink'
+import Insert from '../../layout/Insert/Insert'
 
 const DURATION_LIMIT_TIME = 100
 
@@ -364,6 +365,8 @@ class Offer extends PureComponent {
 
     const formApiPath = isCreatedEntity ? '/offers' : `/offers/${offerId}`
 
+    const cguLink = ''
+
     let title
 
     if (isCreatedEntity) {
@@ -600,6 +603,23 @@ class Offer extends PureComponent {
                   required
                   type="select"
                 />
+                {
+                  <Insert className="yellow-insert">
+                    <p>
+                      {'Du texte '}
+                    </p>
+                    <span className="icon">
+                      <Icon svg="ico-calendar" />
+                    </span>
+                    <p>
+                      <NavLink
+                        to={cguLink}
+                      >
+                        {'Un lien à cliquer'}
+                      </NavLink>
+                    </p>
+                  </Insert>
+                }
                 {(get(venue, 'isVirtual') || url) && (
                   <Field
                     isExpanded
