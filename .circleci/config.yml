@@ -289,7 +289,6 @@ jobs:
             nvm use "$NODE_VERSION"
             cd webapp
             yarn install
-            ./scripts/build_with_fontello.sh "${CIRCLE_BRANCH}"
       - run:
           name: Deploy WEBAPP
           command: |
