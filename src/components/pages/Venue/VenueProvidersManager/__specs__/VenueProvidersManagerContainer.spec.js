@@ -62,10 +62,10 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         // then
         expect(dispatch.mock.calls[0][0]).toStrictEqual({
           config: {
-            apiPath: '/providers',
+            apiPath: '/providers/AE',
             method: 'GET',
           },
-          type: 'REQUEST_DATA_GET_/PROVIDERS',
+          type: 'REQUEST_DATA_GET_/PROVIDERS/AE',
         })
         expect(dispatch.mock.calls[1][0]).toStrictEqual({
           config: {

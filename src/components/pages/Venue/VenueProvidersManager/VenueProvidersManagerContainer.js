@@ -30,7 +30,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
       } = ownProps
       dispatch(
         requestData({
-          apiPath: '/providers',
+          apiPath: `/providers/${venueId}`,
         })
       )
       dispatch(
