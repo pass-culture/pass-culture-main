@@ -22,7 +22,6 @@ class ValidateNewVenueProviderInformationTest:
         payload = {
             'providerId': humanize(provider.id),
             'venueId': humanize(venue.id),
-            'venueIdAtOfferProvider': '567890'
         }
 
         # when
@@ -32,25 +31,10 @@ class ValidateNewVenueProviderInformationTest:
             # then
             assert False
 
-    def test_raise_errors_if_venue_id_at_offer_provider_is_missing(self, app):
-        # given
-        payload = {
-            'providerId': 'A1',
-            'venueId': 'B2',
-        }
-
-        # when
-        with pytest.raises(ApiErrors) as errors:
-            validate_new_venue_provider_information(payload)
-
-        # then
-        assert errors.value.errors['venueIdAtOfferProvider'] == ['Ce champ est obligatoire']
-
     def test_raise_errors_if_venue_id_is_missing(self, app):
         # given
         payload = {
             'providerId': 'A1',
-            'venueIdAtOfferProvider': '567890'
         }
 
         # when
@@ -64,7 +48,6 @@ class ValidateNewVenueProviderInformationTest:
         # given
         payload = {
             'venueId': 'B2',
-            'venueIdAtOfferProvider': '567890'
         }
 
         # when
@@ -83,17 +66,15 @@ class ValidateNewVenueProviderInformationTest:
             validate_new_venue_provider_information(payload)
 
         # then
-        assert len(errors.value.errors) == 3
+        assert len(errors.value.errors) == 2
         assert errors.value.errors['providerId'] == ['Ce champ est obligatoire']
         assert errors.value.errors['venueId'] == ['Ce champ est obligatoire']
-        assert errors.value.errors['venueIdAtOfferProvider'] == ['Ce champ est obligatoire']
 
     def test_raise_errors_if_no_provider_found(self, app):
         # given
         payload = {
             'providerId': 'B9',
             'venueId': 'B9',
-            'venueIdAtOfferProvider': '567890'
         }
 
         # when
@@ -113,7 +94,6 @@ class ValidateNewVenueProviderInformationTest:
         payload = {
             'providerId': humanize(provider.id),
             'venueId': 'B9',
-            'venueIdAtOfferProvider': '567890'
         }
 
         # when
@@ -133,7 +113,6 @@ class ValidateNewVenueProviderInformationTest:
         payload = {
             'providerId': humanize(provider.id),
             'venueId': 'B9',
-            'venueIdAtOfferProvider': '567890'
         }
 
         # when

@@ -3,10 +3,8 @@ from unittest.mock import patch
 
 from models import PcObject, ApiErrors, VenueProvider, VenueProviderPriceRule
 from tests.conftest import clean_database, TestClient
-from tests.model_creators.provider_creators import activate_provider
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_venue_provider
-from tests.model_creators.specific_creators import create_product_with_thing_type
-from utils.human_ids import humanize
+from tests.model_creators.provider_creators import activate_provider
 from utils.config import API_ROOT_PATH
 from utils.human_ids import humanize, dehumanize
 
@@ -15,11 +13,11 @@ class Post:
     class Returns201:
         @clean_database
         @patch('routes.venue_providers.subprocess.Popen')
-        def when_venue_provider_exists(self, mock_suprocess, app):
+        def when_venue_provider_is_successfully_created(self, mock_subprocess, app):
             # Given
             user = create_user(is_admin=True, can_book_free_offers=False)
-            offerer = create_offerer(siren='775671464')
-            venue = create_venue(offerer)
+            offerer = create_offerer()
+            venue = create_venue(offerer, siret='12345678912345')
             PcObject.save(venue, user)
 
             provider = activate_provider('TiteLiveStocks')
@@ -27,7 +25,6 @@ class Post:
             venue_provider_data = {
                 'providerId': humanize(provider.id),
                 'venueId': humanize(venue.id),
-                'venueIdAtOfferProvider': '77567146400110'
             }
 
             auth_request = TestClient(app.test_client()) \
@@ -39,16 +36,20 @@ class Post:
 
             # Then
             assert response.status_code == 201
+            venue_provider = VenueProvider.query.one()
+            assert venue_provider.venueId == venue.id
+            assert venue_provider.providerId == provider.id
+            assert venue_provider.venueIdAtOfferProvider == '12345678912345'
             assert 'id' in response.json
             venue_provider_id = response.json['id']
-            mock_suprocess.assert_called_once_with('PYTHONPATH="." python scripts/pc.py update_providables'
-                                                   + f' --venue-provider-id {dehumanize(venue_provider_id)}',
-                                                   cwd=API_ROOT_PATH,
-                                                   shell=True)
+            mock_subprocess.assert_called_once_with('PYTHONPATH="." python scripts/pc.py update_providables'
+                                                    + f' --venue-provider-id {dehumanize(venue_provider_id)}',
+                                                    cwd=API_ROOT_PATH,
+                                                    shell=True)
 
         @clean_database
         @patch('routes.venue_providers.subprocess.Popen')
-        def when_add_allocine_stocks_provider_with_price(self, mock_suprocess, app):
+        def when_add_allocine_stocks_provider_with_price(self, mock_subprocess, app):
             # Given
             offerer = create_offerer(siren='775671464')
             venue = create_venue(offerer)
@@ -60,7 +61,6 @@ class Post:
             venue_provider_data = {
                 'providerId': humanize(provider.id),
                 'venueId': humanize(venue.id),
-                'venueIdAtOfferProvider': '77567146400110',
                 'price': '9.99'
             }
 
@@ -96,7 +96,6 @@ class Post:
             venue_provider_data = {
                 'providerId': 'B9',
                 'venueId': 'B9',
-                'venueIdAtOfferProvider': '77567146400110',
             }
 
             # When
@@ -111,9 +110,9 @@ class Post:
             # Given
             user = create_user(is_admin=True, can_book_free_offers=False)
             offerer = create_offerer()
-            venue = create_venue(offerer)
+            venue = create_venue(offerer, siret='12345678912345')
             provider = activate_provider('TiteLiveStocks')
-            venue_provider = create_venue_provider(venue, provider, venue_id_at_offer_provider='1234567')
+            venue_provider = create_venue_provider(venue, provider, venue_id_at_offer_provider='12345678912345')
             PcObject.save(user, venue_provider)
 
             auth_request = TestClient(app.test_client()) \
@@ -121,7 +120,6 @@ class Post:
             venue_provider_data = {
                 'providerId': humanize(provider.id),
                 'venueId': humanize(venue.id),
-                'venueIdAtOfferProvider': '1234567'
             }
 
             # When
@@ -133,7 +131,7 @@ class Post:
 
         @clean_database
         @patch('routes.venue_providers.subprocess.Popen')
-        def when_add_allocine_stocks_provider_with_wrong_format_price(self, mock_suprocess, app):
+        def when_add_allocine_stocks_provider_with_wrong_format_price(self, mock_subprocess, app):
             # Given
             offerer = create_offerer(siren='775671464')
             venue = create_venue(offerer)
@@ -145,7 +143,6 @@ class Post:
             venue_provider_data = {
                 'providerId': humanize(provider.id),
                 'venueId': humanize(venue.id),
-                'venueIdAtOfferProvider': '77567146400110',
                 'price': 'wrong_price'
             }
 
@@ -160,3 +157,66 @@ class Post:
             assert response.status_code == 400
             assert response.json['global'] == ["Le prix doit être un nombre décimal"]
             assert VenueProvider.query.count() == 0
+
+        @clean_database
+        @patch('routes.venue_providers.subprocess.Popen')
+        def when_add_allocine_stocks_provider_with_no_price(self, mock_subprocess, app):
+            # Given
+            offerer = create_offerer(siren='775671464')
+            venue = create_venue(offerer)
+            user = create_user(is_admin=True, can_book_free_offers=False)
+            PcObject.save(venue, user)
+
+            provider = activate_provider('AllocineStocks')
+
+            venue_provider_data = {
+                'providerId': humanize(provider.id),
+                'venueId': humanize(venue.id),
+            }
+
+            auth_request = TestClient(app.test_client()) \
+                .with_auth(email=user.email)
+
+            # When
+            response = auth_request.post('/venueProviders',
+                                         json=venue_provider_data)
+
+            # Then
+            assert response.status_code == 400
+            assert response.json['price'] == ["Cette information est obligatoire"]
+            assert VenueProvider.query.count() == 0
+
+    class Returns401:
+        @clean_database
+        def when_user_is_not_logged_in(self, app):
+            # when
+            response = TestClient(app.test_client()).post('/venueProviders')
+
+            # then
+            assert response.status_code == 401
+
+    class Returns404:
+        @clean_database
+        def when_venue_does_not_exist(self, app):
+            # Given
+            user = create_user(is_admin=True, can_book_free_offers=False)
+            offerer = create_offerer(siren='775671464')
+            venue = create_venue(offerer)
+            PcObject.save(venue, user)
+
+            provider = activate_provider('TiteLiveStocks')
+
+            venue_provider_data = {
+                'providerId': humanize(provider.id),
+                'venueId': 'AZERT',
+            }
+
+            auth_request = TestClient(app.test_client()) \
+                .with_auth(email=user.email)
+
+            # When
+            response = auth_request.post('/venueProviders',
+                                         json=venue_provider_data)
+
+            # Then
+            assert response.status_code == 404

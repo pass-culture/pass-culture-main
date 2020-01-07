@@ -1,9 +1,11 @@
 from datetime import datetime
+
 from freezegun import freeze_time
 
 from models import EventType, ThingType
 from routes.serialization import serialize_booking
-from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+    create_venue
 from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_product_with_thing_type, \
     create_offer_with_thing_product, create_offer_with_event_product, create_event_occurrence
 from utils.human_ids import humanize
@@ -50,7 +52,8 @@ class SerializeBookingTest:
         user = create_user(email='user@example.com', public_name='John Doe')
         offerer = create_offerer()
         venue = create_venue(offerer, name='Venue name', address='Venue address')
-        product = create_product_with_thing_type(thing_name='Event Name', thing_type=ThingType.CINEMA_ABO, extra_data={'isbn': '123456789'})
+        product = create_product_with_thing_type(thing_name='Event Name', thing_type=ThingType.CINEMA_ABO,
+                                                 extra_data={'isbn': '123456789'})
         offer = create_offer_with_thing_product(venue, product=product, idx=999)
         stock = create_stock(price=12, offer=offer)
         booking = create_booking(user=user, quantity=3, stock=stock, venue=venue)
@@ -84,7 +87,8 @@ class SerializeBookingTest:
         user = create_user(email='user@example.com', public_name='John Doe')
         offerer = create_offerer()
         venue = create_venue(offerer, name='Venue name', address='Venue address')
-        product = create_product_with_thing_type(thing_name='Event Name', thing_type=ThingType.CINEMA_ABO, extra_data={})
+        product = create_product_with_thing_type(thing_name='Event Name', thing_type=ThingType.CINEMA_ABO,
+                                                 extra_data={})
         offer = create_offer_with_thing_product(venue, product=product, idx=999)
         stock = create_stock(price=12, offer=offer)
         booking = create_booking(user=user, quantity=3, stock=stock, venue=venue)

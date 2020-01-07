@@ -7,7 +7,7 @@ from models import ApiKey, BankInformation, BeneficiaryImport, \
     Email, Favorite, ImportStatus, Mediation, Offer, Offerer, \
     Payment, PaymentMessage, PaymentStatus, Provider, \
     Recommendation, RightsType, Stock, ThingType, User, \
-    UserOfferer, Venue, VenueProvider, VenueProviderPriceRule
+    UserOfferer, Venue, VenueProvider, VenueProviderPriceRule, AllocinePivot
 from models.email import EmailStatus
 from models.payment import PaymentDetails
 from models.payment_status import TransactionStatus
@@ -88,9 +88,11 @@ def create_booking(user: User,
                    token: str = None,
                    venue: Venue = None) -> Booking:
     booking = Booking()
-    offerer = create_offerer(siren='987654321', address='Test address', city='Test city', postal_code='93000', name='Test name')
+    offerer = create_offerer(siren='987654321', address='Test address', city='Test city', postal_code='93000',
+                             name='Test name')
     if venue is None:
-        venue = create_venue(offerer=offerer, name='Test offerer', booking_email='reservations@test.fr', address='123 rue test', postal_code='93000', city='Test city', departement_code='93')
+        venue = create_venue(offerer=offerer, name='Test offerer', booking_email='reservations@test.fr',
+                             address='123 rue test', postal_code='93000', city='Test city', departement_code='93')
     if stock is None:
         price = amount if amount is not None else 10
         product_with_thing_type = create_offer_with_thing_product(venue)
@@ -555,3 +557,10 @@ def create_venue_provider_price_rule(venue_provider: VenueProvider,
     venue_provider_price_rule.venueProvider = venue_provider
 
     return venue_provider_price_rule
+
+
+def create_allocine_pivot(siret: str = '12345678912345', theater_id: str = 'XXXXXXXXXXXXXXXXXX==') -> AllocinePivot:
+    allocine_pivot = AllocinePivot()
+    allocine_pivot.siret = siret
+    allocine_pivot.theaterId = theater_id
+    return allocine_pivot

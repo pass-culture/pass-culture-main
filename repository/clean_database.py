@@ -1,6 +1,4 @@
 from local_providers.install import install_local_providers
-from models.activity import load_activity
-from models.db import db
 from models import ApiKey, \
     BeneficiaryImport, \
     Booking, \
@@ -25,7 +23,9 @@ from models import ApiKey, \
     Favorite, \
     BeneficiaryImportStatus, \
     OfferCriterion, \
-    Criterion, VenueProviderPriceRule
+    Criterion, VenueProviderPriceRule, AllocinePivot
+from models.activity import load_activity
+from models.db import db
 from models.email import Email
 from models.install import install_features
 
@@ -62,6 +62,7 @@ def clean_all_database(*args, **kwargs):
     Email.query.delete()
     LocalProviderEvent.query.delete()
     Provider.query.delete()
+    AllocinePivot.query.delete()
     db.session.commit()
     install_features()
     install_local_providers()
