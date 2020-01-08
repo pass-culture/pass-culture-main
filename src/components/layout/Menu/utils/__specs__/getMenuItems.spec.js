@@ -52,7 +52,6 @@ describe('getMenuItemsFromRoutes', () => {
       },
       {
         component: MyFavoritesContainer,
-        featureName: 'FAVORITE_OFFER',
         icon: 'like-w',
         path: '/favoris',
         title: 'Mes favoris',
