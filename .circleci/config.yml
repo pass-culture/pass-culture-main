@@ -6,11 +6,13 @@ jobs:
       - image: circleci/python:3.6.6
         environment:
           DATABASE_URL_TEST: postgresql://pytest:pytest@localhost:5432/pass_culture
+          REDIS_URL: redis://localhost:6379
       - image: circleci/postgres:9.6.2
         environment:
           POSTGRES_USER: pytest
           POSTGRES_PASSWORD: pytest
           POSTGRES_DB: pass_culture
+      - image: redis
     steps:
       - checkout
       - restore_cache:
