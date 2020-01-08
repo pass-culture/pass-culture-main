@@ -11,7 +11,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
     props = {
       errors: [],
       offererName: 'super structure',
-      patch: {}
+      patch: {},
     }
   })
 
@@ -30,7 +30,8 @@ describe('src | components | pages | Signup | SignupForm', () => {
 
       // then
       const submitButton = wrapper
-        .find(SubmitButton).dive()
+        .find(SubmitButton)
+        .dive()
         .find('button')
       expect(submitButton.prop('disabled')).toBe(true)
     })
@@ -43,9 +44,9 @@ describe('src | components | pages | Signup | SignupForm', () => {
       const form = wrapper.find(Form)
       expect(form).toHaveLength(1)
       expect(form.prop('action')).toBe('/users/signup/pro')
-      expect(form.prop('BlockComponent')).toBe(null)
+      expect(form.prop('BlockComponent')).toBeNull()
       expect(form.prop('formatPatch')).toStrictEqual(expect.any(Function))
-      expect(form.prop('handleSuccessNotification')).toBe(null)
+      expect(form.prop('handleSuccessNotification')).toBeNull()
       expect(form.prop('handleSuccessRedirect')).toStrictEqual(expect.any(Function))
       expect(form.prop('layout')).toBe('vertical')
       expect(form.prop('name')).toBe('user')
@@ -71,7 +72,9 @@ describe('src | components | pages | Signup | SignupForm', () => {
       expect(field.prop('name')).toBe('email')
       expect(field.prop('placeholder')).toBe('nom@exemple.fr')
       expect(field.prop('required')).toBe(true)
-      expect(field.prop('sublabel')).toBe('pour se connecter et récupérer son mot de passe en cas d’oubli')
+      expect(field.prop('sublabel')).toBe(
+        'pour se connecter et récupérer son mot de passe en cas d’oubli'
+      )
       expect(field.prop('type')).toBe('email')
     })
 
@@ -171,7 +174,9 @@ describe('src | components | pages | Signup | SignupForm', () => {
 
       // then
       const field = wrapper.find(Field).at(7)
-      expect(field.prop('label')).toBe("J’accepte d'être contacté par e-mail pour donner mon avis sur le pass Culture")
+      expect(field.prop('label')).toBe(
+        "J’accepte d'être contacté par e-mail pour donner mon avis sur le pass Culture"
+      )
       expect(field.prop('name')).toBe('contact_ok')
       expect(field.prop('required')).toBe(true)
       expect(field.prop('type')).toBe('checkbox')
@@ -184,14 +189,18 @@ describe('src | components | pages | Signup | SignupForm', () => {
       // then
       const field = wrapper.find(Field).at(8)
       expect(field.prop('label')).toStrictEqual(
-        <React.Fragment>{'J’ai lu et j’accepte les '}
+        <React.Fragment>
+          {'J’ai lu et j’accepte les '}
           <a
-            href="https://pass-culture.gitbook.io/documents/textes-normatifs"
+            href="https://docs.passculture.app/textes-normatifs"
             id="accept-cgu-link"
             rel="noopener noreferrer"
-            target="_blank">Conditions Générales d’Utilisation
+            target="_blank"
+          >
+            {'Conditions Générales d’Utilisation'}
           </a>
-        </React.Fragment>)
+        </React.Fragment>
+      )
       expect(field.prop('name')).toBe('cgu_ok')
       expect(field.prop('required')).toBe(true)
       expect(field.prop('type')).toBe('checkbox')

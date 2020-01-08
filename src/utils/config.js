@@ -18,6 +18,7 @@ export const IS_PROD = !IS_DEV
 export const DELETE = '_delete_'
 
 export const HELP_PAGE_URL = 'https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/'
+export const CGU_URL = 'https://docs.passculture.app/textes-normatifs'
 
 export const API_URL = process.env.API_URL || 'http://localhost'
 export const {

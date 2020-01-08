@@ -2,11 +2,12 @@ import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Field, Form, SubmitButton } from 'pass-culture-shared'
+import { CGU_URL } from '../../../../utils/config'
 
 class SignupForm extends PureComponent {
   onHandleSuccessRedirect = () => '/inscription/confirmation'
 
-  onHandleFormatPatch = patch => Object.assign({publicName: patch.firstName}, patch)
+  onHandleFormatPatch = patch => Object.assign({ publicName: patch.firstName }, patch)
 
   isFieldDisabling = offererName => () => !offererName
 
@@ -14,7 +15,7 @@ class SignupForm extends PureComponent {
     <Fragment>
       {'J’ai lu et j’accepte les '}
       <a
-        href="https://pass-culture.gitbook.io/documents/textes-normatifs"
+        href={CGU_URL}
         id="accept-cgu-link"
         rel="noopener noreferrer"
         target="_blank"
@@ -37,7 +38,7 @@ class SignupForm extends PureComponent {
   }
 
   render() {
-    const {errors, patch, offererName} = this.props
+    const { errors, patch, offererName } = this.props
 
     return (
       <section>

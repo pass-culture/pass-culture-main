@@ -194,7 +194,7 @@ ShallowWrapper {
                 <React.Fragment>
                   J’ai lu et j’accepte les 
                   <a
-                    href="https://pass-culture.gitbook.io/documents/textes-normatifs"
+                    href="https://docs.passculture.app/textes-normatifs"
                     id="accept-cgu-link"
                     rel="noopener noreferrer"
                     target="_blank"
@@ -414,7 +414,7 @@ ShallowWrapper {
                   <React.Fragment>
                     J’ai lu et j’accepte les 
                     <a
-                      href="https://pass-culture.gitbook.io/documents/textes-normatifs"
+                      href="https://docs.passculture.app/textes-normatifs"
                       id="accept-cgu-link"
                       rel="noopener noreferrer"
                       target="_blank"
@@ -672,7 +672,7 @@ ShallowWrapper {
                     <React.Fragment>
                       J’ai lu et j’accepte les 
                       <a
-                        href="https://pass-culture.gitbook.io/documents/textes-normatifs"
+                        href="https://docs.passculture.app/textes-normatifs"
                         id="accept-cgu-link"
                         rel="noopener noreferrer"
                         target="_blank"
@@ -855,7 +855,7 @@ ShallowWrapper {
                       <React.Fragment>
                         J’ai lu et j’accepte les 
                         <a
-                          href="https://pass-culture.gitbook.io/documents/textes-normatifs"
+                          href="https://docs.passculture.app/textes-normatifs"
                           id="accept-cgu-link"
                           rel="noopener noreferrer"
                           target="_blank"
@@ -1059,7 +1059,7 @@ ShallowWrapper {
                     "label": <React.Fragment>
                       J’ai lu et j’accepte les 
                       <a
-                        href="https://pass-culture.gitbook.io/documents/textes-normatifs"
+                        href="https://docs.passculture.app/textes-normatifs"
                         id="accept-cgu-link"
                         rel="noopener noreferrer"
                         target="_blank"
@@ -1341,7 +1341,7 @@ ShallowWrapper {
                   <React.Fragment>
                     J’ai lu et j’accepte les 
                     <a
-                      href="https://pass-culture.gitbook.io/documents/textes-normatifs"
+                      href="https://docs.passculture.app/textes-normatifs"
                       id="accept-cgu-link"
                       rel="noopener noreferrer"
                       target="_blank"
@@ -1561,7 +1561,7 @@ ShallowWrapper {
                     <React.Fragment>
                       J’ai lu et j’accepte les 
                       <a
-                        href="https://pass-culture.gitbook.io/documents/textes-normatifs"
+                        href="https://docs.passculture.app/textes-normatifs"
                         id="accept-cgu-link"
                         rel="noopener noreferrer"
                         target="_blank"
@@ -1819,7 +1819,7 @@ ShallowWrapper {
                       <React.Fragment>
                         J’ai lu et j’accepte les 
                         <a
-                          href="https://pass-culture.gitbook.io/documents/textes-normatifs"
+                          href="https://docs.passculture.app/textes-normatifs"
                           id="accept-cgu-link"
                           rel="noopener noreferrer"
                           target="_blank"
@@ -2002,7 +2002,7 @@ ShallowWrapper {
                         <React.Fragment>
                           J’ai lu et j’accepte les 
                           <a
-                            href="https://pass-culture.gitbook.io/documents/textes-normatifs"
+                            href="https://docs.passculture.app/textes-normatifs"
                             id="accept-cgu-link"
                             rel="noopener noreferrer"
                             target="_blank"
@@ -2206,7 +2206,7 @@ ShallowWrapper {
                       "label": <React.Fragment>
                         J’ai lu et j’accepte les 
                         <a
-                          href="https://pass-culture.gitbook.io/documents/textes-normatifs"
+                          href="https://docs.passculture.app/textes-normatifs"
                           id="accept-cgu-link"
                           rel="noopener noreferrer"
                           target="_blank"

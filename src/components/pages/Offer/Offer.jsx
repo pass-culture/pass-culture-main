@@ -23,15 +23,18 @@ import HeroSection from '../../layout/HeroSection/HeroSection'
 import Main from '../../layout/Main'
 import { musicOptions, showOptions } from '../../../utils/edd'
 import { offerNormalizer } from '../../../utils/normalizers'
-import { getDurationInHours, getDurationInMinutes } from './utils/duration'
 
 import { OFFERERS_API_PATH } from '../../../config/apiPaths'
-import { buildWebappDiscoveryUrl } from '../../layout/OfferPreviewLink/buildWebappDiscoveryUrl'
+import { CGU_URL } from '../../../utils/config'
+
+import { getDurationInHours, getDurationInMinutes } from './utils/duration'
 import isTiteLiveOffer from './utils/isTiteLiveOffer'
 import isAllocineOffer from './utils/isAllocineOffer'
 import LocalProviderInformation from './LocalProviderInformation/LocalProviderInformationContainer'
+import { buildWebappDiscoveryUrl } from '../../layout/OfferPreviewLink/buildWebappDiscoveryUrl'
 import OfferPreviewLink from '../../layout/OfferPreviewLink/OfferPreviewLink'
 import Insert from '../../layout/Insert/Insert'
+
 import displayDigitalOfferInformationMessage from './domain/displayDigitalOfferInformationMessage'
 
 const DURATION_LIMIT_TIME = 100
@@ -366,8 +369,6 @@ class Offer extends PureComponent {
 
     const formApiPath = isCreatedEntity ? '/offers' : `/offers/${offerId}`
 
-    const cguLink = ''
-
     let title
 
     if (isCreatedEntity) {
@@ -395,7 +396,7 @@ class Offer extends PureComponent {
 
     const offererHasNoPhysicalVenues = offerer && get(venuesMatchingOfferType, 'length') === 0
 
-    const displayInformationInsert = displayDigitalOfferInformationMessage(selectedOfferType)
+    const displayInformationInsert = displayDigitalOfferInformationMessage(selectedOfferType, venue)
 
     return (
       <Main
@@ -609,16 +610,21 @@ class Offer extends PureComponent {
                 {displayInformationInsert && (
                   <Insert className="yellow-insert">
                     <p>
-                      {'Du texte '}
+                      {
+                        "Les offres numériques (à l'éxpection des livres numériques) ne feront pas l'objet d'un remboursement. Pour plus d'informations, merci de consulter les CGU."
+                      }
                     </p>
                     <span className="icon">
                       <Icon svg="ico-calendar" />
                     </span>
-                    <p>
-                      <NavLink to={cguLink}>
-                        {'Un lien à cliquer'}
-                      </NavLink>
-                    </p>
+                    <a
+                      href={CGU_URL}
+                      id="cgu-link"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      {"Consulter les Conditions Générales d'utilisation"}
+                    </a>
                   </Insert>
                 )}
                 {(get(venue, 'isVirtual') || url) && (
