@@ -13,7 +13,7 @@ def indexing(limit: int = 1) -> None:
     orchestrate(offer_ids)
 
 
-def index_offers() -> None:
+def algolia_index_offers() -> None:
     offer_ids = get_offer_ids()
     orchestrate(offer_ids)
     delete_offer_ids()

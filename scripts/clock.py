@@ -7,6 +7,8 @@ from io import StringIO
 from apscheduler.schedulers.blocking import BlockingScheduler
 from flask import Flask
 from mailjet_rest import Client
+
+from scripts.algolia_indexing.indexing import indexing, algolia_index_offers
 from scripts.cron_logger.cron_logger import build_cron_log_message
 from scripts.cron_logger.cron_status import CronStatus
 from sqlalchemy import orm
@@ -26,7 +28,7 @@ from repository.feature_queries import feature_cron_send_final_booking_recaps_en
     feature_cron_synchronize_titelive_descriptions, \
     feature_cron_synchronize_titelive_thumbs, \
     feature_cron_synchronize_titelive_stocks, \
-    feature_cron_synchronize_allocine_stocks
+    feature_cron_synchronize_allocine_stocks, feature_cron_algolia_indexing_offers_enabled
 from repository.provider_queries import get_provider_by_local_class
 from repository.recommendation_queries import delete_useless_recommendations
 from repository.user_queries import find_most_recent_beneficiary_creation_date
@@ -209,6 +211,12 @@ def pc_delete_useless_recommendations():
         delete_useless_recommendations()
 
 
+@log_cron
+def pc_algolia_indexing_offers():
+    with app.app_context():
+        algolia_index_offers()
+
+
 if __name__ == '__main__':
     orm.configure_mappers()
     scheduler = BlockingScheduler()
@@ -230,6 +238,9 @@ if __name__ == '__main__':
         scheduler.add_job(pc_retrieve_bank_information_for_venue_without_siret, 'cron',
                           id='retrieve_bank_information_venue_without_siret',
                           day='*')
+
+    if feature_cron_algolia_indexing_offers_enabled():
+        scheduler.add_job(pc_algolia_indexing_offers, 'cron', id='algolia_indexing_offers', minute='*')
 
     if feature_cron_synchronize_titelive_things():
         scheduler.add_job(pc_synchronize_titelive_things, 'cron', id='synchronize_titelive_things',
