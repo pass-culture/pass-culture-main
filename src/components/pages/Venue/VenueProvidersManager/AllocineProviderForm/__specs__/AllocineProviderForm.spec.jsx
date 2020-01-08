@@ -27,7 +27,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Allo
       offererId: 'CC',
       providerId: 'AA',
       venueId: 'BB',
-      isShowingConfirmationModal: false
+      isShowingConfirmationModal: false,
     }
   })
 
@@ -102,14 +102,14 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Allo
     const importButton = wrapper.find('button')
     const priceSection = wrapper.findWhere(node => node.text() === 'Prix de vente/place *')
     const priceInput = priceSection.find(NumberField).find('input')
-    priceInput.simulate('change', {target: {value: 10}})
+    priceInput.simulate('change', { target: { value: 10 } })
 
     // when
-    importButton.simulate('click');
+    importButton.simulate('click')
 
     // then
     const syncConfirmationModal = wrapper.find(SynchronisationConfirmationModal)
-    expect(syncConfirmationModal).toHaveLength(1);
+    expect(syncConfirmationModal).toHaveLength(1)
   })
 
   describe('handleSuccess', () => {
