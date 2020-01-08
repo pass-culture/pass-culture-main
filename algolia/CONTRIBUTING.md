@@ -27,7 +27,7 @@ pc python
 ```
 
 ```python
-from scripts.algolia_indexing import indexing
+from scripts.algolia_indexing.indexing import indexing
 indexing(number_of_offers)
 ```
 
