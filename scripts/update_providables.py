@@ -8,7 +8,7 @@ import local_providers
 from models import VenueProvider
 from scripts.cron_logger.cron_logger import build_cron_log_message
 from scripts.cron_logger.cron_status import CronStatus
-from utils import logger
+from utils.logger import logger
 
 
 @app.manager.option('-p',
@@ -62,7 +62,7 @@ def do_update(provider, limit):
         traceback.print_tb(e.__traceback__)
         pprint(vars(e))
         tb = traceback.format_exc()
-        logger.error(build_cron_log_message(name=provider.localClass, status=CronStatus.STARTED, traceback=tb))
+        logger.error(build_cron_log_message(name=provider.__class__.__name__, status=CronStatus.STARTED, traceback=tb))
 
 
 def get_class_by_name(class_name: str):
