@@ -14,6 +14,7 @@ export const {
   ENVIRONMENT_NAME,
   SENTRY_SERVER_URL_FOR_WEBAPP,
   URL_FOR_MAINTENANCE,
+  MAINTENANCE_PAGE_AVAILABLE = false
 } = process.env
 export const APP_VERSION = version
 export const USE_REDUX_PERSIST = false
