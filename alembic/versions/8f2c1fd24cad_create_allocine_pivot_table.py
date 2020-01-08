@@ -1,17 +1,16 @@
 """create_allocine_pivot_table
 
 Revision ID: 8f2c1fd24cad
-Revises: 2cb37da9609e
+Revises: ed5ca9bde4a9
 Create Date: 2020-01-07 09:17:24.303580
 
 """
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = '8f2c1fd24cad'
-down_revision = '2cb37da9609e'
+down_revision = 'ed5ca9bde4a9'
 branch_labels = None
 depends_on = None
 
