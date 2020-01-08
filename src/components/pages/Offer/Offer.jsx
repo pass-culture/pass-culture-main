@@ -607,15 +607,17 @@ class Offer extends PureComponent {
                   required
                   type="select"
                 />
-                {displayInformationInsert && (
+              </div>
+              {displayInformationInsert && (
+                <div className="is-horizontal">
                   <Insert className="yellow-insert">
                     <p>
                       {
-                        "Les offres numériques (à l'éxpection des livres numériques) ne feront pas l'objet d'un remboursement. Pour plus d'informations, merci de consulter les CGU."
+                        "Les offres numériques (à l'expection des livres numériques) ne feront pas l'objet d'un remboursement. Pour plus d'informations, merci de consulter les CGU."
                       }
                     </p>
                     <span className="icon">
-                      <Icon svg="ico-calendar" />
+                      <Icon svg="ico-external-site" />
                     </span>
                     <a
                       href={CGU_URL}
@@ -626,7 +628,9 @@ class Offer extends PureComponent {
                       {"Consulter les Conditions Générales d'utilisation"}
                     </a>
                   </Insert>
-                )}
+                </div>
+              )}
+              <div className="field-group">
                 {(get(venue, 'isVirtual') || url) && (
                   <Field
                     isExpanded
