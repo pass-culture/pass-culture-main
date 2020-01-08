@@ -9,7 +9,7 @@ const initialState = {
   isActivated: false,
 }
 
-function is_maintenance_available() {
+function isMaintenanceAvailable() {
   return MAINTENANCE_PAGE_AVAILABLE === true
 }
 
@@ -25,7 +25,7 @@ const maintenanceReducer = (
     })
   }
 
-  if(is_maintenance_available()) {
+  if (isMaintenanceAvailable()) {
     const serverErrorDetected =
       actionType.startsWith(FAIL_DATA_PATTERN) &&
       payload.status === MAINTENANCE_STATUS_CODE &&
