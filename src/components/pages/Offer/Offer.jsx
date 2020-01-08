@@ -32,6 +32,7 @@ import isAllocineOffer from './utils/isAllocineOffer'
 import LocalProviderInformation from './LocalProviderInformation/LocalProviderInformationContainer'
 import OfferPreviewLink from '../../layout/OfferPreviewLink/OfferPreviewLink'
 import Insert from '../../layout/Insert/Insert'
+import displayDigitalOfferInformationMessage from './domain/displayDigitalOfferInformationMessage'
 
 const DURATION_LIMIT_TIME = 100
 
@@ -394,6 +395,8 @@ class Offer extends PureComponent {
 
     const offererHasNoPhysicalVenues = offerer && get(venuesMatchingOfferType, 'length') === 0
 
+    const displayInformationInsert = displayDigitalOfferInformationMessage(selectedOfferType)
+
     return (
       <Main
         backTo={{ path: '/offres', label: 'Vos offres' }}
@@ -603,7 +606,7 @@ class Offer extends PureComponent {
                   required
                   type="select"
                 />
-                {
+                {displayInformationInsert && (
                   <Insert className="yellow-insert">
                     <p>
                       {'Du texte '}
@@ -612,14 +615,12 @@ class Offer extends PureComponent {
                       <Icon svg="ico-calendar" />
                     </span>
                     <p>
-                      <NavLink
-                        to={cguLink}
-                      >
+                      <NavLink to={cguLink}>
                         {'Un lien à cliquer'}
                       </NavLink>
                     </p>
                   </Insert>
-                }
+                )}
                 {(get(venue, 'isVirtual') || url) && (
                   <Field
                     isExpanded
