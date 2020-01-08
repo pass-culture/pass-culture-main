@@ -11,10 +11,10 @@ def delete_stock_and_cancel_bookings(stock: Stock) -> List[Booking]:
 
     if _is_thing(stock):
         stock.isSoftDeleted = True
-        _cancel_unused_bookings(stock)
 
         for booking in stock.bookings:
-            if not booking.isUsed:
+            if not booking.isUsed and not booking.isCancelled:
+                booking.isCancelled = True
                 unused_bookings.append(booking)
 
         return unused_bookings
@@ -24,11 +24,14 @@ def delete_stock_and_cancel_bookings(stock: Stock) -> List[Booking]:
 
     if now <= limit_date_for_stock_deletion:
         stock.isSoftDeleted = True
-        _cancel_all_bookings(stock)
+        for booking in stock.bookings:
+            if not booking.isCancelled:
+                booking.isCancelled = True
+                unused_bookings.append(booking)
     else:
         raise TooLateToDeleteError()
 
-    return stock.bookings
+    return unused_bookings
 
 
 class TooLateToDeleteError(ApiErrors):
@@ -40,14 +43,3 @@ class TooLateToDeleteError(ApiErrors):
 
 def _is_thing(stock: Stock) -> bool:
     return stock.beginningDatetime is None
-
-
-def _cancel_unused_bookings(stock: Stock):
-    for booking in stock.bookings:
-        if not booking.isUsed:
-            booking.isCancelled = True
-
-
-def _cancel_all_bookings(stock: Stock):
-    for booking in stock.bookings:
-        booking.isCancelled = True

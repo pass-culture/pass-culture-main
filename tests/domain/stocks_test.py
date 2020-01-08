@@ -8,6 +8,8 @@ from tests.model_creators.generic_creators import create_booking, create_user, c
 
 user1 = create_user()
 user2 = create_user()
+user3 = create_user()
+user4 = create_user()
 
 
 @freeze_time('2019-05-07 09:21:34')
@@ -37,6 +39,22 @@ class DeleteStockAndCancelBookingsTest:
             assert all(map(lambda b: b.isCancelled, bookings))
             assert all(map(lambda b: not b.isUsed, bookings))
 
+        def test_should_not_return_previously_cancelled_bookings(self):
+            # Given
+            booking1 = create_booking(user=user1, is_cancelled=False, is_used=True)
+            booking2 = create_booking(user=user2, is_cancelled=False, is_used=False)
+            booking3 = create_booking(user=user3, is_cancelled=True, is_used=False)
+            booking4 = create_booking(user=user4, is_cancelled=True, is_used=True)
+            self.stock.bookings = [
+                booking1, booking2, booking3, booking4
+            ]
+
+            # When
+            bookings = delete_stock_and_cancel_bookings(self.stock)
+
+            # Then
+            assert bookings == [booking2]
+            assert all(map(lambda b: not b.isUsed, bookings))
 
     class WhenProductIsAnEvent:
         class WhenLessThan48HoursAfterItEnds:
@@ -67,6 +85,22 @@ class DeleteStockAndCancelBookingsTest:
 
                 # then
                 assert all(map(lambda b: b.isCancelled, bookings))
+
+            def test_should_not_return_previously_cancelled_bookings(self):
+                # Given
+                booking1 = create_booking(user=user1, is_cancelled=False, is_used=True)
+                booking2 = create_booking(user=user2, is_cancelled=False, is_used=False)
+                booking3 = create_booking(user=user3, is_cancelled=True, is_used=False)
+                booking4 = create_booking(user=user4, is_cancelled=True, is_used=True)
+                self.stock.bookings = [
+                    booking1, booking2, booking3, booking4
+                ]
+
+                # When
+                bookings = delete_stock_and_cancel_bookings(self.stock)
+
+                # Then
+                assert bookings == [booking1, booking2]
 
         class WhenMoreThan48HoursAfterItEnds:
             def setup_method(self, method):
