@@ -3,3 +3,4 @@ POSTGRES_PASSWORD=passq
 POSTGRES_DB=pass_culture
 DATABASE_URL=postgresql://pass_culture:passq@postgres/pass_culture
 DATABASE_URL_TEST=postgresql://pytest:pytest@postgres-test/pass_culture
+REDIS_URL=redis://redis:6379
