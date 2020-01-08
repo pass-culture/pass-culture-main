@@ -266,7 +266,7 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
           'Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre'
         )
         expect(venueDistance.find('span').text()).toBe(`À 1 km`)
-        expect(iconComponent.prop('png')).not.toBeNull()
+        expect(iconComponent.prop('svg')).toBeDefined()
         expect(iconComponent.prop('alt')).toBe('')
       })
 
@@ -326,7 +326,7 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
           'Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre'
         )
         expect(venueItinerary.find('span').text()).toBe(`Itinéraire`)
-        expect(iconComponent.prop('png')).not.toBeNull()
+        expect(iconComponent.prop('svg')).toBeDefined()
         expect(iconComponent.prop('alt')).toBe('')
       })
 

@@ -18,7 +18,7 @@ const DatePickerCustomField = props => {
         <div className="calendar-icon">
           <Icon
             alt="Dates"
-            svg="ico-calendar"
+            svg="ico-calendar-pink"
           />
         </div>
       )}

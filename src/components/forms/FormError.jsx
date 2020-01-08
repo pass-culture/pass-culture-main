@@ -31,7 +31,7 @@ const FormError = ({ customMessage, meta }) => {
           <div className="flex-0">
             <Icon
               className="picto-error"
-              svg="picto-info-b"
+              svg="ico-info-black"
             />
           </div>
           <div className="flex-1">

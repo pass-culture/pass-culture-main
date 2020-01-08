@@ -83,8 +83,7 @@ ShallowWrapper {
                 <Icon
                   alt="Plus d'infos"
                   className=" "
-                  png={null}
-                  svg="ico-slideup-w"
+                  svg="ico-slide-up"
                 />
               </button>
               <div
@@ -173,8 +172,7 @@ ShallowWrapper {
                   <Icon
                     alt="Plus d'infos"
                     className=" "
-                    png={null}
-                    svg="ico-slideup-w"
+                    svg="ico-slide-up"
                   />
                 </button>
                 <div
@@ -268,8 +266,7 @@ ShallowWrapper {
                   <Icon
                     alt="Plus d'infos"
                     className=" "
-                    png={null}
-                    svg="ico-slideup-w"
+                    svg="ico-slide-up"
                   />
                 </button>
                 <div
@@ -325,8 +322,7 @@ ShallowWrapper {
                   <Icon
                     alt="Plus d'infos"
                     className=" "
-                    png={null}
-                    svg="ico-slideup-w"
+                    svg="ico-slide-up"
                   />
                 </button>
                 <div
@@ -388,8 +384,7 @@ ShallowWrapper {
                     <Icon
                       alt="Plus d'infos"
                       className=" "
-                      png={null}
-                      svg="ico-slideup-w"
+                      svg="ico-slide-up"
                     />
                   </button>,
                   <div
@@ -426,8 +421,7 @@ ShallowWrapper {
                     "children": <Icon
                       alt="Plus d'infos"
                       className=" "
-                      png={null}
-                      svg="ico-slideup-w"
+                      svg="ico-slide-up"
                     />,
                     "className": "button to-recto",
                     "id": "deck-open-verso-button",
@@ -443,8 +437,7 @@ ShallowWrapper {
                     "props": Object {
                       "alt": "Plus d'infos",
                       "className": " ",
-                      "png": null,
-                      "svg": "ico-slideup-w",
+                      "svg": "ico-slide-up",
                     },
                     "ref": null,
                     "rendered": null,
@@ -626,8 +619,7 @@ ShallowWrapper {
                   <Icon
                     alt="Plus d'infos"
                     className=" "
-                    png={null}
-                    svg="ico-slideup-w"
+                    svg="ico-slide-up"
                   />
                 </button>
                 <div
@@ -716,8 +708,7 @@ ShallowWrapper {
                     <Icon
                       alt="Plus d'infos"
                       className=" "
-                      png={null}
-                      svg="ico-slideup-w"
+                      svg="ico-slide-up"
                     />
                   </button>
                   <div
@@ -811,8 +802,7 @@ ShallowWrapper {
                     <Icon
                       alt="Plus d'infos"
                       className=" "
-                      png={null}
-                      svg="ico-slideup-w"
+                      svg="ico-slide-up"
                     />
                   </button>
                   <div
@@ -868,8 +858,7 @@ ShallowWrapper {
                     <Icon
                       alt="Plus d'infos"
                       className=" "
-                      png={null}
-                      svg="ico-slideup-w"
+                      svg="ico-slide-up"
                     />
                   </button>
                   <div
@@ -931,8 +920,7 @@ ShallowWrapper {
                       <Icon
                         alt="Plus d'infos"
                         className=" "
-                        png={null}
-                        svg="ico-slideup-w"
+                        svg="ico-slide-up"
                       />
                     </button>,
                     <div
@@ -969,8 +957,7 @@ ShallowWrapper {
                       "children": <Icon
                         alt="Plus d'infos"
                         className=" "
-                        png={null}
-                        svg="ico-slideup-w"
+                        svg="ico-slide-up"
                       />,
                       "className": "button to-recto",
                       "id": "deck-open-verso-button",
@@ -986,8 +973,7 @@ ShallowWrapper {
                       "props": Object {
                         "alt": "Plus d'infos",
                         "className": " ",
-                        "png": null,
-                        "svg": "ico-slideup-w",
+                        "svg": "ico-slide-up",
                       },
                       "ref": null,
                       "rendered": null,

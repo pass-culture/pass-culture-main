@@ -39,9 +39,8 @@ ShallowWrapper {
           >
             <Icon
               alt=""
-              className={null}
-              png={null}
-              svg="picto-validation"
+              className=""
+              svg="ico-validation-green"
             />
           </span>
           <span
@@ -122,9 +121,8 @@ ShallowWrapper {
             >
               <Icon
                 alt=""
-                className={null}
-                png={null}
-                svg="picto-validation"
+                className=""
+                svg="ico-validation-green"
               />
             </span>,
             <span
@@ -148,9 +146,8 @@ ShallowWrapper {
             "props": Object {
               "children": <Icon
                 alt=""
-                className={null}
-                png={null}
-                svg="picto-validation"
+                className=""
+                svg="ico-validation-green"
               />,
               "className": "is-block mb12",
             },
@@ -161,9 +158,8 @@ ShallowWrapper {
               "nodeType": "function",
               "props": Object {
                 "alt": "",
-                "className": null,
-                "png": null,
-                "svg": "picto-validation",
+                "className": "",
+                "svg": "ico-validation-green",
               },
               "ref": null,
               "rendered": null,
@@ -487,9 +483,8 @@ ShallowWrapper {
             >
               <Icon
                 alt=""
-                className={null}
-                png={null}
-                svg="picto-validation"
+                className=""
+                svg="ico-validation-green"
               />
             </span>
             <span
@@ -570,9 +565,8 @@ ShallowWrapper {
               >
                 <Icon
                   alt=""
-                  className={null}
-                  png={null}
-                  svg="picto-validation"
+                  className=""
+                  svg="ico-validation-green"
                 />
               </span>,
               <span
@@ -596,9 +590,8 @@ ShallowWrapper {
               "props": Object {
                 "children": <Icon
                   alt=""
-                  className={null}
-                  png={null}
-                  svg="picto-validation"
+                  className=""
+                  svg="ico-validation-green"
                 />,
                 "className": "is-block mb12",
               },
@@ -609,9 +602,8 @@ ShallowWrapper {
                 "nodeType": "function",
                 "props": Object {
                   "alt": "",
-                  "className": null,
-                  "png": null,
-                  "svg": "picto-validation",
+                  "className": "",
+                  "svg": "ico-validation-green",
                 },
                 "ref": null,
                 "rendered": null,
@@ -989,9 +981,8 @@ ShallowWrapper {
           >
             <Icon
               alt=""
-              className={null}
-              png={null}
-              svg="picto-validation"
+              className=""
+              svg="ico-validation-green"
             />
           </span>
           <span
@@ -1079,9 +1070,8 @@ ShallowWrapper {
             >
               <Icon
                 alt=""
-                className={null}
-                png={null}
-                svg="picto-validation"
+                className=""
+                svg="ico-validation-green"
               />
             </span>,
             <span
@@ -1112,9 +1102,8 @@ ShallowWrapper {
             "props": Object {
               "children": <Icon
                 alt=""
-                className={null}
-                png={null}
-                svg="picto-validation"
+                className=""
+                svg="ico-validation-green"
               />,
               "className": "is-block mb12",
             },
@@ -1125,9 +1114,8 @@ ShallowWrapper {
               "nodeType": "function",
               "props": Object {
                 "alt": "",
-                "className": null,
-                "png": null,
-                "svg": "picto-validation",
+                "className": "",
+                "svg": "ico-validation-green",
               },
               "ref": null,
               "rendered": null,
@@ -1496,9 +1484,8 @@ ShallowWrapper {
             >
               <Icon
                 alt=""
-                className={null}
-                png={null}
-                svg="picto-validation"
+                className=""
+                svg="ico-validation-green"
               />
             </span>
             <span
@@ -1586,9 +1573,8 @@ ShallowWrapper {
               >
                 <Icon
                   alt=""
-                  className={null}
-                  png={null}
-                  svg="picto-validation"
+                  className=""
+                  svg="ico-validation-green"
                 />
               </span>,
               <span
@@ -1619,9 +1605,8 @@ ShallowWrapper {
               "props": Object {
                 "children": <Icon
                   alt=""
-                  className={null}
-                  png={null}
-                  svg="picto-validation"
+                  className=""
+                  svg="ico-validation-green"
                 />,
                 "className": "is-block mb12",
               },
@@ -1632,9 +1617,8 @@ ShallowWrapper {
                 "nodeType": "function",
                 "props": Object {
                   "alt": "",
-                  "className": null,
-                  "png": null,
-                  "svg": "picto-validation",
+                  "className": "",
+                  "svg": "ico-validation-green",
                 },
                 "ref": null,
                 "rendered": null,
@@ -2057,9 +2041,8 @@ ShallowWrapper {
           >
             <Icon
               alt=""
-              className={null}
-              png={null}
-              svg="picto-validation"
+              className=""
+              svg="ico-validation-green"
             />
           </span>
           <span
@@ -2137,9 +2120,8 @@ ShallowWrapper {
             >
               <Icon
                 alt=""
-                className={null}
-                png={null}
-                svg="picto-validation"
+                className=""
+                svg="ico-validation-green"
               />
             </span>,
             <span
@@ -2160,9 +2142,8 @@ ShallowWrapper {
             "props": Object {
               "children": <Icon
                 alt=""
-                className={null}
-                png={null}
-                svg="picto-validation"
+                className=""
+                svg="ico-validation-green"
               />,
               "className": "is-block mb12",
             },
@@ -2173,9 +2154,8 @@ ShallowWrapper {
               "nodeType": "function",
               "props": Object {
                 "alt": "",
-                "className": null,
-                "png": null,
-                "svg": "picto-validation",
+                "className": "",
+                "svg": "ico-validation-green",
               },
               "ref": null,
               "rendered": null,
@@ -2487,9 +2467,8 @@ ShallowWrapper {
             >
               <Icon
                 alt=""
-                className={null}
-                png={null}
-                svg="picto-validation"
+                className=""
+                svg="ico-validation-green"
               />
             </span>
             <span
@@ -2567,9 +2546,8 @@ ShallowWrapper {
               >
                 <Icon
                   alt=""
-                  className={null}
-                  png={null}
-                  svg="picto-validation"
+                  className=""
+                  svg="ico-validation-green"
                 />
               </span>,
               <span
@@ -2590,9 +2568,8 @@ ShallowWrapper {
               "props": Object {
                 "children": <Icon
                   alt=""
-                  className={null}
-                  png={null}
-                  svg="picto-validation"
+                  className=""
+                  svg="ico-validation-green"
                 />,
                 "className": "is-block mb12",
               },
@@ -2603,9 +2580,8 @@ ShallowWrapper {
                 "nodeType": "function",
                 "props": Object {
                   "alt": "",
-                  "className": null,
-                  "png": null,
-                  "svg": "picto-validation",
+                  "className": "",
+                  "svg": "ico-validation-green",
                 },
                 "ref": null,
                 "rendered": null,

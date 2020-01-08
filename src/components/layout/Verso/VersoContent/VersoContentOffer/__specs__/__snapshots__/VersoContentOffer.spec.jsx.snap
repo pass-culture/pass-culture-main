@@ -123,8 +123,7 @@ ShallowWrapper {
               <Icon
                 alt=""
                 className="vco-geolocation-icon"
-                png="geoloc"
-                svg={null}
+                svg="ico-geoloc"
               />
               <span>
                 À 1
@@ -156,8 +155,7 @@ ShallowWrapper {
             <Icon
               alt=""
               className="vco-geolocation-icon"
-              png="go"
-              svg={null}
+              svg="ico-go"
             />
             <span>
               Itinéraire
@@ -410,8 +408,7 @@ ShallowWrapper {
                 <Icon
                   alt=""
                   className="vco-geolocation-icon"
-                  png="geoloc"
-                  svg={null}
+                  svg="ico-geoloc"
                 />
                 <span>
                   À 1
@@ -443,8 +440,7 @@ ShallowWrapper {
               <Icon
                 alt=""
                 className="vco-geolocation-icon"
-                png="go"
-                svg={null}
+                svg="ico-go"
               />
               <span>
                 Itinéraire
@@ -472,8 +468,7 @@ ShallowWrapper {
                   <Icon
                     alt=""
                     className="vco-geolocation-icon"
-                    png="geoloc"
-                    svg={null}
+                    svg="ico-geoloc"
                   />
                   <span>
                     À 1
@@ -504,8 +499,7 @@ ShallowWrapper {
                     <Icon
                       alt=""
                       className="vco-geolocation-icon"
-                      png="geoloc"
-                      svg={null}
+                      svg="ico-geoloc"
                     />,
                     <span>
                       À 1
@@ -526,8 +520,7 @@ ShallowWrapper {
                     "props": Object {
                       "alt": "",
                       "className": "vco-geolocation-icon",
-                      "png": "geoloc",
-                      "svg": null,
+                      "svg": "ico-geoloc",
                     },
                     "ref": null,
                     "rendered": null,
@@ -671,8 +664,7 @@ ShallowWrapper {
                 <Icon
                   alt=""
                   className="vco-geolocation-icon"
-                  png="go"
-                  svg={null}
+                  svg="ico-go"
                 />,
                 <span>
                   Itinéraire
@@ -693,8 +685,7 @@ ShallowWrapper {
                 "props": Object {
                   "alt": "",
                   "className": "vco-geolocation-icon",
-                  "png": "go",
-                  "svg": null,
+                  "svg": "ico-go",
                 },
                 "ref": null,
                 "rendered": null,
@@ -785,8 +776,7 @@ ShallowWrapper {
                 <Icon
                   alt=""
                   className="vco-geolocation-icon"
-                  png="geoloc"
-                  svg={null}
+                  svg="ico-geoloc"
                 />
                 <span>
                   À 1
@@ -818,8 +808,7 @@ ShallowWrapper {
               <Icon
                 alt=""
                 className="vco-geolocation-icon"
-                png="go"
-                svg={null}
+                svg="ico-go"
               />
               <span>
                 Itinéraire
@@ -1072,8 +1061,7 @@ ShallowWrapper {
                   <Icon
                     alt=""
                     className="vco-geolocation-icon"
-                    png="geoloc"
-                    svg={null}
+                    svg="ico-geoloc"
                   />
                   <span>
                     À 1
@@ -1105,8 +1093,7 @@ ShallowWrapper {
                 <Icon
                   alt=""
                   className="vco-geolocation-icon"
-                  png="go"
-                  svg={null}
+                  svg="ico-go"
                 />
                 <span>
                   Itinéraire
@@ -1134,8 +1121,7 @@ ShallowWrapper {
                     <Icon
                       alt=""
                       className="vco-geolocation-icon"
-                      png="geoloc"
-                      svg={null}
+                      svg="ico-geoloc"
                     />
                     <span>
                       À 1
@@ -1166,8 +1152,7 @@ ShallowWrapper {
                       <Icon
                         alt=""
                         className="vco-geolocation-icon"
-                        png="geoloc"
-                        svg={null}
+                        svg="ico-geoloc"
                       />,
                       <span>
                         À 1
@@ -1188,8 +1173,7 @@ ShallowWrapper {
                       "props": Object {
                         "alt": "",
                         "className": "vco-geolocation-icon",
-                        "png": "geoloc",
-                        "svg": null,
+                        "svg": "ico-geoloc",
                       },
                       "ref": null,
                       "rendered": null,
@@ -1333,8 +1317,7 @@ ShallowWrapper {
                   <Icon
                     alt=""
                     className="vco-geolocation-icon"
-                    png="go"
-                    svg={null}
+                    svg="ico-go"
                   />,
                   <span>
                     Itinéraire
@@ -1355,8 +1338,7 @@ ShallowWrapper {
                   "props": Object {
                     "alt": "",
                     "className": "vco-geolocation-icon",
-                    "png": "go",
-                    "svg": null,
+                    "svg": "ico-go",
                   },
                   "ref": null,
                   "rendered": null,

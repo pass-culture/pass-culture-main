@@ -35,7 +35,7 @@ ShallowWrapper {
             <img
               alt=""
               className="mb3"
-              src="/icons/avatar-default-w-XL.svg"
+              src="/icons/avatar-xl.svg"
             />
           </div>
           <div
@@ -92,7 +92,7 @@ ShallowWrapper {
               <img
                 alt=""
                 className="mb3"
-                src="/icons/avatar-default-w-XL.svg"
+                src="/icons/avatar-xl.svg"
               />
             </div>,
             <div
@@ -118,7 +118,7 @@ ShallowWrapper {
               "children": <img
                 alt=""
                 className="mb3"
-                src="/icons/avatar-default-w-XL.svg"
+                src="/icons/avatar-xl.svg"
               />,
               "id": "main-menu-header-avatar",
             },
@@ -130,7 +130,7 @@ ShallowWrapper {
               "props": Object {
                 "alt": "",
                 "className": "mb3",
-                "src": "/icons/avatar-default-w-XL.svg",
+                "src": "/icons/avatar-xl.svg",
               },
               "ref": null,
               "rendered": null,
@@ -295,7 +295,7 @@ ShallowWrapper {
               <img
                 alt=""
                 className="mb3"
-                src="/icons/avatar-default-w-XL.svg"
+                src="/icons/avatar-xl.svg"
               />
             </div>
             <div
@@ -352,7 +352,7 @@ ShallowWrapper {
                 <img
                   alt=""
                   className="mb3"
-                  src="/icons/avatar-default-w-XL.svg"
+                  src="/icons/avatar-xl.svg"
                 />
               </div>,
               <div
@@ -378,7 +378,7 @@ ShallowWrapper {
                 "children": <img
                   alt=""
                   className="mb3"
-                  src="/icons/avatar-default-w-XL.svg"
+                  src="/icons/avatar-xl.svg"
                 />,
                 "id": "main-menu-header-avatar",
               },
@@ -390,7 +390,7 @@ ShallowWrapper {
                 "props": Object {
                   "alt": "",
                   "className": "mb3",
-                  "src": "/icons/avatar-default-w-XL.svg",
+                  "src": "/icons/avatar-xl.svg",
                 },
                 "ref": null,
                 "rendered": null,

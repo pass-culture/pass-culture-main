@@ -63,48 +63,48 @@ const routes = [
    ---------------------------------------------------  */
   {
     component: DiscoveryContainer,
-    icon: 'offres-w',
+    icon: 'ico-offres',
     path:
       '/decouverte/:offerId?/:mediationId?/:details(details|transition)?/:booking(reservation)?/:bookingId?/:cancellation(annulation)?/:confirmation(confirmation)?',
     title: 'Les offres',
   },
   {
     component: SearchContainer,
-    icon: 'search-w',
+    icon: 'ico-search',
     path:
       '/recherche/:results(resultats)?/:category?/:details(details|transition)?/:offerId?/:mediationId?/:booking(reservation)?/:bookingId?/:cancellation(annulation)?/:confirmation(confirmation)?',
     title: 'Recherche',
   },
   {
     component: MyBookingsContainer,
-    icon: 'calendar-w',
+    icon: 'ico-calendar-white',
     path:
       '/reservations/:details(details|transition)?/:bookingId?/:booking(reservation)?/:cancellation(annulation)?/:confirmation(confirmation)?/:qrcode(qrcode)?',
     title: 'Mes réservations',
   },
   {
     component: MyFavoritesContainer,
-    icon: 'like-w',
+    icon: 'ico-like-empty',
     path:
       '/favoris/:details(details|transition)?/:offerId?/:mediationId?/:booking(reservation)?/:bookingId?/:cancellation(annulation)?/:confirmation(confirmation)?',
     title: 'Mes favoris',
   },
   {
     component: ProfileContainer,
-    icon: 'user-w',
+    icon: 'ico-user',
     path: '/profil/:view?/:status?',
     title: 'Mon compte',
   },
   {
     href: WEBAPP_CONTACT_EXTERNAL_PAGE,
-    icon: 'help-w',
+    icon: 'ico-help',
     target: '_blank',
     title: 'Aide',
   },
   {
     href:
       'https://pass-culture.gitbook.io/documents/textes-normatifs/mentions-legales-et-conditions-generales-dutilisation-de-lapplication-pass-culture',
-    icon: 'txt-w',
+    icon: 'ico-txt',
     target: '_blank',
     title: 'Mentions légales',
   },

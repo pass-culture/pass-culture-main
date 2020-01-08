@@ -45,7 +45,7 @@ describe('src | components | layout | Header | CloseLink', () => {
       expect(icon).toHaveLength(1)
       expect(icon.prop('alt')).toBe('fake close title')
       expect(icon.prop('className')).toBe('close-link-img')
-      expect(icon.prop('svg')).toBe('ico-close')
+      expect(icon.prop('svg')).toBe('ico-close-white')
     })
   })
 })

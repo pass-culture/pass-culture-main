@@ -68,7 +68,7 @@ const BookingItem = ({
         <div className="teaser-arrow">
           <Icon
             className="teaser-arrow-img"
-            svg="ico-next-S"
+            svg="ico-next-pink"
           />
         </div>
         {ribbon && <Ribbon

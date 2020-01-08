@@ -33,9 +33,8 @@ ShallowWrapper {
         >
           <Icon
             alt="Dates"
-            className={null}
-            png={null}
-            svg="ico-calendar"
+            className=""
+            svg="ico-calendar-pink"
           />
         </div>,
       ],
@@ -63,9 +62,8 @@ ShallowWrapper {
         "props": Object {
           "children": <Icon
             alt="Dates"
-            className={null}
-            png={null}
-            svg="ico-calendar"
+            className=""
+            svg="ico-calendar-pink"
           />,
           "className": "calendar-icon",
         },
@@ -76,9 +74,8 @@ ShallowWrapper {
           "nodeType": "function",
           "props": Object {
             "alt": "Dates",
-            "className": null,
-            "png": null,
-            "svg": "ico-calendar",
+            "className": "",
+            "svg": "ico-calendar-pink",
           },
           "ref": null,
           "rendered": null,
@@ -106,9 +103,8 @@ ShallowWrapper {
           >
             <Icon
               alt="Dates"
-              className={null}
-              png={null}
-              svg="ico-calendar"
+              className=""
+              svg="ico-calendar-pink"
             />
           </div>,
         ],
@@ -136,9 +132,8 @@ ShallowWrapper {
           "props": Object {
             "children": <Icon
               alt="Dates"
-              className={null}
-              png={null}
-              svg="ico-calendar"
+              className=""
+              svg="ico-calendar-pink"
             />,
             "className": "calendar-icon",
           },
@@ -149,9 +144,8 @@ ShallowWrapper {
             "nodeType": "function",
             "props": Object {
               "alt": "Dates",
-              "className": null,
-              "png": null,
-              "svg": "ico-calendar",
+              "className": "",
+              "svg": "ico-calendar-pink",
             },
             "ref": null,
             "rendered": null,

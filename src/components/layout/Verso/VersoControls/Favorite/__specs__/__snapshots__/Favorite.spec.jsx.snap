@@ -38,9 +38,8 @@ ShallowWrapper {
     "props": Object {
       "children": <Icon
         alt="Retirer des favoris"
-        className={null}
-        png={null}
-        svg="ico-like-w-filled"
+        className=""
+        svg="ico-like-filled"
       />,
       "className": "fav-button",
       "disabled": false,
@@ -54,9 +53,8 @@ ShallowWrapper {
       "nodeType": "function",
       "props": Object {
         "alt": "Retirer des favoris",
-        "className": null,
-        "png": null,
-        "svg": "ico-like-w-filled",
+        "className": "",
+        "svg": "ico-like-filled",
       },
       "ref": null,
       "rendered": null,
@@ -72,9 +70,8 @@ ShallowWrapper {
       "props": Object {
         "children": <Icon
           alt="Retirer des favoris"
-          className={null}
-          png={null}
-          svg="ico-like-w-filled"
+          className=""
+          svg="ico-like-filled"
         />,
         "className": "fav-button",
         "disabled": false,
@@ -88,9 +85,8 @@ ShallowWrapper {
         "nodeType": "function",
         "props": Object {
           "alt": "Retirer des favoris",
-          "className": null,
-          "png": null,
-          "svg": "ico-like-w-filled",
+          "className": "",
+          "svg": "ico-like-filled",
         },
         "ref": null,
         "rendered": null,
@@ -167,9 +163,8 @@ ShallowWrapper {
     "props": Object {
       "children": <Icon
         alt="Ajouter aux favoris"
-        className={null}
-        png={null}
-        svg="ico-like-w"
+        className=""
+        svg="ico-like-empty"
       />,
       "className": "fav-button",
       "disabled": false,
@@ -183,9 +178,8 @@ ShallowWrapper {
       "nodeType": "function",
       "props": Object {
         "alt": "Ajouter aux favoris",
-        "className": null,
-        "png": null,
-        "svg": "ico-like-w",
+        "className": "",
+        "svg": "ico-like-empty",
       },
       "ref": null,
       "rendered": null,
@@ -201,9 +195,8 @@ ShallowWrapper {
       "props": Object {
         "children": <Icon
           alt="Ajouter aux favoris"
-          className={null}
-          png={null}
-          svg="ico-like-w"
+          className=""
+          svg="ico-like-empty"
         />,
         "className": "fav-button",
         "disabled": false,
@@ -217,9 +210,8 @@ ShallowWrapper {
         "nodeType": "function",
         "props": Object {
           "alt": "Ajouter aux favoris",
-          "className": null,
-          "png": null,
-          "svg": "ico-like-w",
+          "className": "",
+          "svg": "ico-like-empty",
         },
         "ref": null,
         "rendered": null,

@@ -103,7 +103,6 @@ ShallowWrapper {
         <Icon
           alt="Réservation finie"
           className="finishable-ribbon-img"
-          png={null}
           svg="badge-termine"
         />,
       ],
@@ -129,7 +128,6 @@ ShallowWrapper {
         "props": Object {
           "alt": "Réservation finie",
           "className": "finishable-ribbon-img",
-          "png": null,
           "svg": "badge-termine",
         },
         "ref": null,
@@ -152,7 +150,6 @@ ShallowWrapper {
           <Icon
             alt="Réservation finie"
             className="finishable-ribbon-img"
-            png={null}
             svg="badge-termine"
           />,
         ],
@@ -178,7 +175,6 @@ ShallowWrapper {
           "props": Object {
             "alt": "Réservation finie",
             "className": "finishable-ribbon-img",
-            "png": null,
             "svg": "badge-termine",
           },
           "ref": null,

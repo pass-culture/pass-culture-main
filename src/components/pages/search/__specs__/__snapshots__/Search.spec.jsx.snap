@@ -200,8 +200,7 @@ ShallowWrapper {
                   >
                     <Icon
                       alt=""
-                      className={null}
-                      png={null}
+                      className=""
                       svg="ico-filter"
                     />
                   </button>
@@ -327,8 +326,7 @@ ShallowWrapper {
                     >
                       <Icon
                         alt=""
-                        className={null}
-                        png={null}
+                        className=""
                         svg="ico-filter"
                       />
                     </button>
@@ -432,8 +430,7 @@ ShallowWrapper {
                       >
                         <Icon
                           alt=""
-                          className={null}
-                          png={null}
+                          className=""
                           svg="ico-filter"
                         />
                       </button>
@@ -530,8 +527,7 @@ ShallowWrapper {
                         >
                           <Icon
                             alt=""
-                            className={null}
-                            png={null}
+                            className=""
                             svg="ico-filter"
                           />
                         </button>
@@ -596,8 +592,7 @@ ShallowWrapper {
                           >
                             <Icon
                               alt=""
-                              className={null}
-                              png={null}
+                              className=""
                               svg="ico-filter"
                             />
                           </button>
@@ -751,8 +746,7 @@ ShallowWrapper {
                           >
                             <Icon
                               alt=""
-                              className={null}
-                              png={null}
+                              className=""
                               svg="ico-filter"
                             />
                           </button>,
@@ -767,8 +761,7 @@ ShallowWrapper {
                           "props": Object {
                             "children": <Icon
                               alt=""
-                              className={null}
-                              png={null}
+                              className=""
                               svg="ico-filter"
                             />,
                             "className": "no-background",
@@ -782,8 +775,7 @@ ShallowWrapper {
                             "nodeType": "function",
                             "props": Object {
                               "alt": "",
-                              "className": null,
-                              "png": null,
+                              "className": "",
                               "svg": "ico-filter",
                             },
                             "ref": null,
@@ -1008,8 +1000,7 @@ ShallowWrapper {
                     >
                       <Icon
                         alt=""
-                        className={null}
-                        png={null}
+                        className=""
                         svg="ico-filter"
                       />
                     </button>
@@ -1135,8 +1126,7 @@ ShallowWrapper {
                       >
                         <Icon
                           alt=""
-                          className={null}
-                          png={null}
+                          className=""
                           svg="ico-filter"
                         />
                       </button>
@@ -1240,8 +1230,7 @@ ShallowWrapper {
                         >
                           <Icon
                             alt=""
-                            className={null}
-                            png={null}
+                            className=""
                             svg="ico-filter"
                           />
                         </button>
@@ -1338,8 +1327,7 @@ ShallowWrapper {
                           >
                             <Icon
                               alt=""
-                              className={null}
-                              png={null}
+                              className=""
                               svg="ico-filter"
                             />
                           </button>
@@ -1404,8 +1392,7 @@ ShallowWrapper {
                             >
                               <Icon
                                 alt=""
-                                className={null}
-                                png={null}
+                                className=""
                                 svg="ico-filter"
                               />
                             </button>
@@ -1559,8 +1546,7 @@ ShallowWrapper {
                             >
                               <Icon
                                 alt=""
-                                className={null}
-                                png={null}
+                                className=""
                                 svg="ico-filter"
                               />
                             </button>,
@@ -1575,8 +1561,7 @@ ShallowWrapper {
                             "props": Object {
                               "children": <Icon
                                 alt=""
-                                className={null}
-                                png={null}
+                                className=""
                                 svg="ico-filter"
                               />,
                               "className": "no-background",
@@ -1590,8 +1575,7 @@ ShallowWrapper {
                               "nodeType": "function",
                               "props": Object {
                                 "alt": "",
-                                "className": null,
-                                "png": null,
+                                "className": "",
                                 "svg": "ico-filter",
                               },
                               "ref": null,

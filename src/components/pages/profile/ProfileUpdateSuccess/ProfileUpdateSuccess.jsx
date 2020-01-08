@@ -22,7 +22,7 @@ const ProfileUpdateSuccess = ({ config, match }) => {
         <h2 className="is-block fs22">
           <Icon
             className="big-success"
-            svg="ico-check-w"
+            svg="ico-check"
           />
           <span className="is-block mt24">
             {`${item.title} a bien été modifié`}

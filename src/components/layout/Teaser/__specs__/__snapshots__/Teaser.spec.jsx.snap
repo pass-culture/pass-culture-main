@@ -48,7 +48,7 @@ ShallowWrapper {
           >
             <img
               alt=""
-              src="http://localhost/icons/picto-placeholder-visueloffre.png"
+              src="http://localhost/icons/placeholder.svg"
             />
           </div>
           <div
@@ -90,8 +90,7 @@ ShallowWrapper {
             <Icon
               alt=""
               className="teaser-arrow-img"
-              png={null}
-              svg="ico-next-S"
+              svg="ico-next-pink"
             />
           </div>
         </React.Fragment>
@@ -110,7 +109,7 @@ ShallowWrapper {
           >
             <img
               alt=""
-              src="http://localhost/icons/picto-placeholder-visueloffre.png"
+              src="http://localhost/icons/placeholder.svg"
             />
           </div>
           <div
@@ -152,8 +151,7 @@ ShallowWrapper {
             <Icon
               alt=""
               className="teaser-arrow-img"
-              png={null}
-              svg="ico-next-S"
+              svg="ico-next-pink"
             />
           </div>
         </React.Fragment>,
@@ -173,7 +171,7 @@ ShallowWrapper {
             >
               <img
                 alt=""
-                src="http://localhost/icons/picto-placeholder-visueloffre.png"
+                src="http://localhost/icons/placeholder.svg"
               />
             </div>,
             <div
@@ -215,8 +213,7 @@ ShallowWrapper {
               <Icon
                 alt=""
                 className="teaser-arrow-img"
-                png={null}
-                svg="ico-next-S"
+                svg="ico-next-pink"
               />
             </div>,
           ],
@@ -230,7 +227,7 @@ ShallowWrapper {
             "props": Object {
               "children": <img
                 alt=""
-                src="http://localhost/icons/picto-placeholder-visueloffre.png"
+                src="http://localhost/icons/placeholder.svg"
               />,
               "className": "teaser-thumb",
             },
@@ -241,7 +238,7 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "alt": "",
-                "src": "http://localhost/icons/picto-placeholder-visueloffre.png",
+                "src": "http://localhost/icons/placeholder.svg",
               },
               "ref": null,
               "rendered": null,
@@ -386,8 +383,7 @@ ShallowWrapper {
               "children": <Icon
                 alt=""
                 className="teaser-arrow-img"
-                png={null}
-                svg="ico-next-S"
+                svg="ico-next-pink"
               />,
               "className": "teaser-arrow",
             },
@@ -399,8 +395,7 @@ ShallowWrapper {
               "props": Object {
                 "alt": "",
                 "className": "teaser-arrow-img",
-                "png": null,
-                "svg": "ico-next-S",
+                "svg": "ico-next-pink",
               },
               "ref": null,
               "rendered": null,
@@ -443,7 +438,7 @@ ShallowWrapper {
             >
               <img
                 alt=""
-                src="http://localhost/icons/picto-placeholder-visueloffre.png"
+                src="http://localhost/icons/placeholder.svg"
               />
             </div>
             <div
@@ -485,8 +480,7 @@ ShallowWrapper {
               <Icon
                 alt=""
                 className="teaser-arrow-img"
-                png={null}
-                svg="ico-next-S"
+                svg="ico-next-pink"
               />
             </div>
           </React.Fragment>
@@ -505,7 +499,7 @@ ShallowWrapper {
             >
               <img
                 alt=""
-                src="http://localhost/icons/picto-placeholder-visueloffre.png"
+                src="http://localhost/icons/placeholder.svg"
               />
             </div>
             <div
@@ -547,8 +541,7 @@ ShallowWrapper {
               <Icon
                 alt=""
                 className="teaser-arrow-img"
-                png={null}
-                svg="ico-next-S"
+                svg="ico-next-pink"
               />
             </div>
           </React.Fragment>,
@@ -568,7 +561,7 @@ ShallowWrapper {
               >
                 <img
                   alt=""
-                  src="http://localhost/icons/picto-placeholder-visueloffre.png"
+                  src="http://localhost/icons/placeholder.svg"
                 />
               </div>,
               <div
@@ -610,8 +603,7 @@ ShallowWrapper {
                 <Icon
                   alt=""
                   className="teaser-arrow-img"
-                  png={null}
-                  svg="ico-next-S"
+                  svg="ico-next-pink"
                 />
               </div>,
             ],
@@ -625,7 +617,7 @@ ShallowWrapper {
               "props": Object {
                 "children": <img
                   alt=""
-                  src="http://localhost/icons/picto-placeholder-visueloffre.png"
+                  src="http://localhost/icons/placeholder.svg"
                 />,
                 "className": "teaser-thumb",
               },
@@ -636,7 +628,7 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "alt": "",
-                  "src": "http://localhost/icons/picto-placeholder-visueloffre.png",
+                  "src": "http://localhost/icons/placeholder.svg",
                 },
                 "ref": null,
                 "rendered": null,
@@ -781,8 +773,7 @@ ShallowWrapper {
                 "children": <Icon
                   alt=""
                   className="teaser-arrow-img"
-                  png={null}
-                  svg="ico-next-S"
+                  svg="ico-next-pink"
                 />,
                 "className": "teaser-arrow",
               },
@@ -794,8 +785,7 @@ ShallowWrapper {
                 "props": Object {
                   "alt": "",
                   "className": "teaser-arrow-img",
-                  "png": null,
-                  "svg": "ico-next-S",
+                  "svg": "ico-next-pink",
                 },
                 "ref": null,
                 "rendered": null,

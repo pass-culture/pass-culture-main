@@ -25,8 +25,7 @@ ShallowWrapper {
       "children": <Icon
         alt="fake close title"
         className="close-link-img"
-        png={null}
-        svg="ico-close"
+        svg="ico-close-white"
       />,
       "className": "close-link",
       "onClick": null,
@@ -40,8 +39,7 @@ ShallowWrapper {
       "props": Object {
         "alt": "fake close title",
         "className": "close-link-img",
-        "png": null,
-        "svg": "ico-close",
+        "svg": "ico-close-white",
       },
       "ref": null,
       "rendered": null,
@@ -69,8 +67,7 @@ ShallowWrapper {
         "children": <Icon
           alt="fake close title"
           className="close-link-img"
-          png={null}
-          svg="ico-close"
+          svg="ico-close-white"
         />,
         "className": "close-link",
         "onClick": null,
@@ -84,8 +81,7 @@ ShallowWrapper {
         "props": Object {
           "alt": "fake close title",
           "className": "close-link-img",
-          "png": null,
-          "svg": "ico-close",
+          "svg": "ico-close-white",
         },
         "ref": null,
         "rendered": null,

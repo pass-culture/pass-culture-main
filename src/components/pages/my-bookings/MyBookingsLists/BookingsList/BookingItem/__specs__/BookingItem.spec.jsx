@@ -109,7 +109,7 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
     expect(bookingToken).toHaveLength(0)
     expect(ribbon).toHaveLength(0)
     expect(arrowIcon).toHaveLength(1)
-    expect(arrowIcon.prop('svg')).toBe('ico-next-S')
+    expect(arrowIcon.prop('svg')).toBe('ico-next-pink')
   })
 
   it('should render a booking with a date when its an event', () => {

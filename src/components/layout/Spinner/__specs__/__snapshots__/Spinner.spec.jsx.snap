@@ -25,9 +25,8 @@ ShallowWrapper {
       "children": Array [
         <Icon
           alt=""
-          className={null}
-          png={null}
-          svg="ico-loader-r"
+          className=""
+          svg="ico-loader-pink"
         />,
         <span
           className="content"
@@ -46,9 +45,8 @@ ShallowWrapper {
         "nodeType": "function",
         "props": Object {
           "alt": "",
-          "className": null,
-          "png": null,
-          "svg": "ico-loader-r",
+          "className": "",
+          "svg": "ico-loader-pink",
         },
         "ref": null,
         "rendered": null,
@@ -79,9 +77,8 @@ ShallowWrapper {
         "children": Array [
           <Icon
             alt=""
-            className={null}
-            png={null}
-            svg="ico-loader-r"
+            className=""
+            svg="ico-loader-pink"
           />,
           <span
             className="content"
@@ -100,9 +97,8 @@ ShallowWrapper {
           "nodeType": "function",
           "props": Object {
             "alt": "",
-            "className": null,
-            "png": null,
-            "svg": "ico-loader-r",
+            "className": "",
+            "svg": "ico-loader-pink",
           },
           "ref": null,
           "rendered": null,

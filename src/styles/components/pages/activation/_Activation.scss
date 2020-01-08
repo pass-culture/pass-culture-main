@@ -1,11 +1,11 @@
 .page-activation {
   .form-checkbox {
-    background-image: url(/icons/checkbox-w.svg);
+    background-image: url(/icons/checkbox-white.svg);
 
     &:active,
     &:checked {
       &::after {
-        background-image: url(/icons/checkbox-check-w.svg);
+        background-image: url(/icons/checkbox-check-white.svg);
       }
     }
   }

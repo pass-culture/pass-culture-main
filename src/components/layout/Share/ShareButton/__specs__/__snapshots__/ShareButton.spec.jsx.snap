@@ -29,9 +29,8 @@ ShallowWrapper {
     "props": Object {
       "children": <Icon
         alt="Partager cette offre"
-        className={null}
-        png={null}
-        svg="ico-share-w"
+        className=""
+        svg="ico-share"
       />,
       "className": "no-background",
       "onClick": [Function],
@@ -44,9 +43,8 @@ ShallowWrapper {
       "nodeType": "function",
       "props": Object {
         "alt": "Partager cette offre",
-        "className": null,
-        "png": null,
-        "svg": "ico-share-w",
+        "className": "",
+        "svg": "ico-share",
       },
       "ref": null,
       "rendered": null,
@@ -62,9 +60,8 @@ ShallowWrapper {
       "props": Object {
         "children": <Icon
           alt="Partager cette offre"
-          className={null}
-          png={null}
-          svg="ico-share-w"
+          className=""
+          svg="ico-share"
         />,
         "className": "no-background",
         "onClick": [Function],
@@ -77,9 +74,8 @@ ShallowWrapper {
         "nodeType": "function",
         "props": Object {
           "alt": "Partager cette offre",
-          "className": null,
-          "png": null,
-          "svg": "ico-share-w",
+          "className": "",
+          "svg": "ico-share",
         },
         "ref": null,
         "rendered": null,

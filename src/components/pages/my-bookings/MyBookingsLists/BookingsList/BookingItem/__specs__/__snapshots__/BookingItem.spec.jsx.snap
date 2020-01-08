@@ -109,8 +109,7 @@ ShallowWrapper {
             <Icon
               alt=""
               className="teaser-arrow-img"
-              png={null}
-              svg="ico-next-S"
+              svg="ico-next-pink"
             />
           </div>
         </ForwardRef>,
@@ -188,8 +187,7 @@ ShallowWrapper {
               <Icon
                 alt=""
                 className="teaser-arrow-img"
-                png={null}
-                svg="ico-next-S"
+                svg="ico-next-pink"
               />
             </div>,
             null,
@@ -344,8 +342,7 @@ ShallowWrapper {
               "children": <Icon
                 alt=""
                 className="teaser-arrow-img"
-                png={null}
-                svg="ico-next-S"
+                svg="ico-next-pink"
               />,
               "className": "teaser-arrow",
             },
@@ -357,8 +354,7 @@ ShallowWrapper {
               "props": Object {
                 "alt": "",
                 "className": "teaser-arrow-img",
-                "png": null,
-                "svg": "ico-next-S",
+                "svg": "ico-next-pink",
               },
               "ref": null,
               "rendered": null,
@@ -531,8 +527,7 @@ ShallowWrapper {
               <Icon
                 alt=""
                 className="teaser-arrow-img"
-                png={null}
-                svg="ico-next-S"
+                svg="ico-next-pink"
               />
             </div>
           </ForwardRef>,
@@ -610,8 +605,7 @@ ShallowWrapper {
                 <Icon
                   alt=""
                   className="teaser-arrow-img"
-                  png={null}
-                  svg="ico-next-S"
+                  svg="ico-next-pink"
                 />
               </div>,
               null,
@@ -766,8 +760,7 @@ ShallowWrapper {
                 "children": <Icon
                   alt=""
                   className="teaser-arrow-img"
-                  png={null}
-                  svg="ico-next-S"
+                  svg="ico-next-pink"
                 />,
                 "className": "teaser-arrow",
               },
@@ -779,8 +772,7 @@ ShallowWrapper {
                 "props": Object {
                   "alt": "",
                   "className": "teaser-arrow-img",
-                  "png": null,
-                  "svg": "ico-next-S",
+                  "svg": "ico-next-pink",
                 },
                 "ref": null,
                 "rendered": null,

@@ -60,9 +60,8 @@ ShallowWrapper {
             >
               <Icon
                 alt="erreur"
-                className={null}
-                png={null}
-                svg="picto-info"
+                className=""
+                svg="ico-info-white"
               />
             </div>
             <p
@@ -114,9 +113,8 @@ ShallowWrapper {
               >
                 <Icon
                   alt="erreur"
-                  className={null}
-                  png={null}
-                  svg="picto-info"
+                  className=""
+                  svg="ico-info-white"
                 />
               </div>
               <p
@@ -201,9 +199,8 @@ ShallowWrapper {
                 >
                   <Icon
                     alt="erreur"
-                    className={null}
-                    png={null}
-                    svg="picto-info"
+                    className=""
+                    svg="ico-info-white"
                   />
                 </div>,
                 <p
@@ -223,9 +220,8 @@ ShallowWrapper {
                 "props": Object {
                   "children": <Icon
                     alt="erreur"
-                    className={null}
-                    png={null}
-                    svg="picto-info"
+                    className=""
+                    svg="ico-info-white"
                   />,
                   "className": "mb-info-picto",
                 },
@@ -236,9 +232,8 @@ ShallowWrapper {
                   "nodeType": "function",
                   "props": Object {
                     "alt": "erreur",
-                    "className": null,
-                    "png": null,
-                    "svg": "picto-info",
+                    "className": "",
+                    "svg": "ico-info-white",
                   },
                   "ref": null,
                   "rendered": null,
@@ -318,9 +313,8 @@ ShallowWrapper {
               >
                 <Icon
                   alt="erreur"
-                  className={null}
-                  png={null}
-                  svg="picto-info"
+                  className=""
+                  svg="ico-info-white"
                 />
               </div>
               <p
@@ -372,9 +366,8 @@ ShallowWrapper {
                 >
                   <Icon
                     alt="erreur"
-                    className={null}
-                    png={null}
-                    svg="picto-info"
+                    className=""
+                    svg="ico-info-white"
                   />
                 </div>
                 <p
@@ -459,9 +452,8 @@ ShallowWrapper {
                   >
                     <Icon
                       alt="erreur"
-                      className={null}
-                      png={null}
-                      svg="picto-info"
+                      className=""
+                      svg="ico-info-white"
                     />
                   </div>,
                   <p
@@ -481,9 +473,8 @@ ShallowWrapper {
                   "props": Object {
                     "children": <Icon
                       alt="erreur"
-                      className={null}
-                      png={null}
-                      svg="picto-info"
+                      className=""
+                      svg="ico-info-white"
                     />,
                     "className": "mb-info-picto",
                   },
@@ -494,9 +485,8 @@ ShallowWrapper {
                     "nodeType": "function",
                     "props": Object {
                       "alt": "erreur",
-                      "className": null,
-                      "png": null,
-                      "svg": "picto-info",
+                      "className": "",
+                      "svg": "ico-info-white",
                     },
                     "ref": null,
                     "rendered": null,
@@ -613,9 +603,8 @@ ShallowWrapper {
             >
               <Icon
                 alt="erreur"
-                className={null}
-                png={null}
-                svg="picto-info"
+                className=""
+                svg="ico-info-white"
               />
             </div>
             <p
@@ -671,9 +660,8 @@ ShallowWrapper {
               >
                 <Icon
                   alt="erreur"
-                  className={null}
-                  png={null}
-                  svg="picto-info"
+                  className=""
+                  svg="ico-info-white"
                 />
               </div>
               <p
@@ -723,9 +711,8 @@ ShallowWrapper {
                 >
                   <Icon
                     alt="erreur"
-                    className={null}
-                    png={null}
-                    svg="picto-info"
+                    className=""
+                    svg="ico-info-white"
                   />
                 </div>,
                 <p
@@ -745,9 +732,8 @@ ShallowWrapper {
                 "props": Object {
                   "children": <Icon
                     alt="erreur"
-                    className={null}
-                    png={null}
-                    svg="picto-info"
+                    className=""
+                    svg="ico-info-white"
                   />,
                   "className": "mb-info-picto",
                 },
@@ -758,9 +744,8 @@ ShallowWrapper {
                   "nodeType": "function",
                   "props": Object {
                     "alt": "erreur",
-                    "className": null,
-                    "png": null,
-                    "svg": "picto-info",
+                    "className": "",
+                    "svg": "ico-info-white",
                   },
                   "ref": null,
                   "rendered": null,
@@ -883,9 +868,8 @@ ShallowWrapper {
               >
                 <Icon
                   alt="erreur"
-                  className={null}
-                  png={null}
-                  svg="picto-info"
+                  className=""
+                  svg="ico-info-white"
                 />
               </div>
               <p
@@ -941,9 +925,8 @@ ShallowWrapper {
                 >
                   <Icon
                     alt="erreur"
-                    className={null}
-                    png={null}
-                    svg="picto-info"
+                    className=""
+                    svg="ico-info-white"
                   />
                 </div>
                 <p
@@ -993,9 +976,8 @@ ShallowWrapper {
                   >
                     <Icon
                       alt="erreur"
-                      className={null}
-                      png={null}
-                      svg="picto-info"
+                      className=""
+                      svg="ico-info-white"
                     />
                   </div>,
                   <p
@@ -1015,9 +997,8 @@ ShallowWrapper {
                   "props": Object {
                     "children": <Icon
                       alt="erreur"
-                      className={null}
-                      png={null}
-                      svg="picto-info"
+                      className=""
+                      svg="ico-info-white"
                     />,
                     "className": "mb-info-picto",
                   },
@@ -1028,9 +1009,8 @@ ShallowWrapper {
                     "nodeType": "function",
                     "props": Object {
                       "alt": "erreur",
-                      "className": null,
-                      "png": null,
-                      "svg": "picto-info",
+                      "className": "",
+                      "svg": "ico-info-white",
                     },
                     "ref": null,
                     "rendered": null,
@@ -1206,9 +1186,8 @@ ShallowWrapper {
             >
               <Icon
                 alt="erreur"
-                className={null}
-                png={null}
-                svg="picto-info"
+                className=""
+                svg="ico-info-white"
               />
             </div>
             <p
@@ -1261,9 +1240,8 @@ ShallowWrapper {
               >
                 <Icon
                   alt="erreur"
-                  className={null}
-                  png={null}
-                  svg="picto-info"
+                  className=""
+                  svg="ico-info-white"
                 />
               </div>
               <p
@@ -1310,9 +1288,8 @@ ShallowWrapper {
                 >
                   <Icon
                     alt="erreur"
-                    className={null}
-                    png={null}
-                    svg="picto-info"
+                    className=""
+                    svg="ico-info-white"
                   />
                 </div>,
                 <p
@@ -1332,9 +1309,8 @@ ShallowWrapper {
                 "props": Object {
                   "children": <Icon
                     alt="erreur"
-                    className={null}
-                    png={null}
-                    svg="picto-info"
+                    className=""
+                    svg="ico-info-white"
                   />,
                   "className": "mb-info-picto",
                 },
@@ -1345,9 +1321,8 @@ ShallowWrapper {
                   "nodeType": "function",
                   "props": Object {
                     "alt": "erreur",
-                    "className": null,
-                    "png": null,
-                    "svg": "picto-info",
+                    "className": "",
+                    "svg": "ico-info-white",
                   },
                   "ref": null,
                   "rendered": null,
@@ -1464,9 +1439,8 @@ ShallowWrapper {
               >
                 <Icon
                   alt="erreur"
-                  className={null}
-                  png={null}
-                  svg="picto-info"
+                  className=""
+                  svg="ico-info-white"
                 />
               </div>
               <p
@@ -1519,9 +1493,8 @@ ShallowWrapper {
                 >
                   <Icon
                     alt="erreur"
-                    className={null}
-                    png={null}
-                    svg="picto-info"
+                    className=""
+                    svg="ico-info-white"
                   />
                 </div>
                 <p
@@ -1568,9 +1541,8 @@ ShallowWrapper {
                   >
                     <Icon
                       alt="erreur"
-                      className={null}
-                      png={null}
-                      svg="picto-info"
+                      className=""
+                      svg="ico-info-white"
                     />
                   </div>,
                   <p
@@ -1590,9 +1562,8 @@ ShallowWrapper {
                   "props": Object {
                     "children": <Icon
                       alt="erreur"
-                      className={null}
-                      png={null}
-                      svg="picto-info"
+                      className=""
+                      svg="ico-info-white"
                     />,
                     "className": "mb-info-picto",
                   },
@@ -1603,9 +1574,8 @@ ShallowWrapper {
                     "nodeType": "function",
                     "props": Object {
                       "alt": "erreur",
-                      "className": null,
-                      "png": null,
-                      "svg": "picto-info",
+                      "className": "",
+                      "svg": "ico-info-white",
                     },
                     "ref": null,
                     "rendered": null,
@@ -1987,9 +1957,8 @@ ShallowWrapper {
             >
               <Icon
                 alt="erreur"
-                className={null}
-                png={null}
-                svg="picto-info"
+                className=""
+                svg="ico-info-white"
               />
             </div>
             <p
@@ -2041,9 +2010,8 @@ ShallowWrapper {
               >
                 <Icon
                   alt="erreur"
-                  className={null}
-                  png={null}
-                  svg="picto-info"
+                  className=""
+                  svg="ico-info-white"
                 />
               </div>
               <p
@@ -2128,9 +2096,8 @@ ShallowWrapper {
                 >
                   <Icon
                     alt="erreur"
-                    className={null}
-                    png={null}
-                    svg="picto-info"
+                    className=""
+                    svg="ico-info-white"
                   />
                 </div>,
                 <p
@@ -2150,9 +2117,8 @@ ShallowWrapper {
                 "props": Object {
                   "children": <Icon
                     alt="erreur"
-                    className={null}
-                    png={null}
-                    svg="picto-info"
+                    className=""
+                    svg="ico-info-white"
                   />,
                   "className": "mb-info-picto",
                 },
@@ -2163,9 +2129,8 @@ ShallowWrapper {
                   "nodeType": "function",
                   "props": Object {
                     "alt": "erreur",
-                    "className": null,
-                    "png": null,
-                    "svg": "picto-info",
+                    "className": "",
+                    "svg": "ico-info-white",
                   },
                   "ref": null,
                   "rendered": null,
@@ -2245,9 +2210,8 @@ ShallowWrapper {
               >
                 <Icon
                   alt="erreur"
-                  className={null}
-                  png={null}
-                  svg="picto-info"
+                  className=""
+                  svg="ico-info-white"
                 />
               </div>
               <p
@@ -2299,9 +2263,8 @@ ShallowWrapper {
                 >
                   <Icon
                     alt="erreur"
-                    className={null}
-                    png={null}
-                    svg="picto-info"
+                    className=""
+                    svg="ico-info-white"
                   />
                 </div>
                 <p
@@ -2386,9 +2349,8 @@ ShallowWrapper {
                   >
                     <Icon
                       alt="erreur"
-                      className={null}
-                      png={null}
-                      svg="picto-info"
+                      className=""
+                      svg="ico-info-white"
                     />
                   </div>,
                   <p
@@ -2408,9 +2370,8 @@ ShallowWrapper {
                   "props": Object {
                     "children": <Icon
                       alt="erreur"
-                      className={null}
-                      png={null}
-                      svg="picto-info"
+                      className=""
+                      svg="ico-info-white"
                     />,
                     "className": "mb-info-picto",
                   },
@@ -2421,9 +2382,8 @@ ShallowWrapper {
                     "nodeType": "function",
                     "props": Object {
                       "alt": "erreur",
-                      "className": null,
-                      "png": null,
-                      "svg": "picto-info",
+                      "className": "",
+                      "svg": "ico-info-white",
                     },
                     "ref": null,
                     "rendered": null,

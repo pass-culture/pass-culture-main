@@ -33,7 +33,7 @@ class BookingError extends PureComponent {
           <span className="is-block">
             <Icon
               alt="erreur"
-              svg="picto-echec"
+              svg="ico-echec"
             />
           </span>
         </h3>

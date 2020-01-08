@@ -25,8 +25,7 @@ ShallowWrapper {
       "children": <Icon
         alt="Retour"
         className="close-link-img"
-        png={null}
-        svg="ico-back-simple-w"
+        svg="ico-back"
       />,
       "className": "back-link",
       "onClick": null,
@@ -40,8 +39,7 @@ ShallowWrapper {
       "props": Object {
         "alt": "Retour",
         "className": "close-link-img",
-        "png": null,
-        "svg": "ico-back-simple-w",
+        "svg": "ico-back",
       },
       "ref": null,
       "rendered": null,
@@ -69,8 +67,7 @@ ShallowWrapper {
         "children": <Icon
           alt="Retour"
           className="close-link-img"
-          png={null}
-          svg="ico-back-simple-w"
+          svg="ico-back"
         />,
         "className": "back-link",
         "onClick": null,
@@ -84,8 +81,7 @@ ShallowWrapper {
         "props": Object {
           "alt": "Retour",
           "className": "close-link-img",
-          "png": null,
-          "svg": "ico-back-simple-w",
+          "svg": "ico-back",
         },
         "ref": null,
         "rendered": null,

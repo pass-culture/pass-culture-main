@@ -13,7 +13,7 @@ const BookingCancel = ({ isEvent, booking }) => {
     <div className={`text-center ${cssClass}`}>
       <div>
         <span className="is-block mt24 mb8">
-          <Icon svg="picto-validation" />
+          <Icon svg="ico-validation-green" />
         </span>
         <span className="is-block fs22">
           {'Votre réservation est annulée.'}

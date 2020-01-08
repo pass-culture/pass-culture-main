@@ -35,7 +35,7 @@ class Spinner extends PureComponent {
     const { nbDots } = this.state
     return (
       <Tag className="spinner">
-        <Icon svg="ico-loader-r" />
+        <Icon svg="ico-loader-pink" />
         <span
           className="content"
           data-dots={Array(nbDots)

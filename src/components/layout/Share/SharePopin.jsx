@@ -40,7 +40,7 @@ class SharePopin extends PureComponent {
     >
       <Icon
         alt="Fermer la popin de partage"
-        svg="ico-close"
+        svg="ico-close-white"
       />
     </button>
   )

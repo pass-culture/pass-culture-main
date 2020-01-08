@@ -13,7 +13,7 @@ const BackLink = ({ actionOnClick, backTitle, backTo }) => (
     <Icon
       alt={backTitle}
       className="close-link-img"
-      svg="ico-back-simple-w"
+      svg="ico-back"
     />
   </Link>
 )

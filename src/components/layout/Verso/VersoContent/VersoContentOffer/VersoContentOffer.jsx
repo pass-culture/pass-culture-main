@@ -162,7 +162,7 @@ class VersoContentOffer extends PureComponent {
             >
               <Icon
                 className="vco-geolocation-icon"
-                png="geoloc"
+                svg="ico-geoloc"
               />
               <span>
                 {distance === UNKNOWN_DISTANCE ? UNKNOWN_DISTANCE : `À ${distance}`}
@@ -202,7 +202,7 @@ class VersoContentOffer extends PureComponent {
           >
             <Icon
               className="vco-geolocation-icon"
-              png="go"
+              svg="ico-go"
             />
             <span>
               {'Itinéraire'}

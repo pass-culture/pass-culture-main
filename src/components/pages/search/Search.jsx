@@ -307,7 +307,7 @@ class Search extends PureComponent {
                       >
                         <Icon
                           alt="Supprimer les termes de la recherche"
-                          svg="ico-close-p"
+                          svg="ico-close-pink"
                         />
                       </button>
                     </span>

@@ -49,7 +49,7 @@ class CancellingAction extends PureComponent {
             free="Gratuit"
             value={price}
           />
-          <Icon svg="ico-check-w" />
+          <Icon svg="ico-check" />
         </span>
         <span className="ticket-label">
           {'Annuler'}

@@ -12,7 +12,7 @@ const NotificationCloseButton = ({ closeToast }) => (
   >
     <Icon
       alt="Fermer la modale"
-      svg="ico-close-b"
+      svg="ico-close-black"
     />
   </button>
 )

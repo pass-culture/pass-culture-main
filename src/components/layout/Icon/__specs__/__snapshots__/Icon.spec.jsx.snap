@@ -5,9 +5,8 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Icon
     alt=""
-    className={null}
-    png={null}
-    svg={null}
+    className=""
+    svg="fake-svg"
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -24,8 +23,8 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "alt": "",
-      "className": null,
-      "src": "path/to/icons/null.png",
+      "className": "",
+      "src": "path/to/icons/fake-svg.svg",
     },
     "ref": null,
     "rendered": null,
@@ -38,8 +37,8 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "alt": "",
-        "className": null,
-        "src": "path/to/icons/null.png",
+        "className": "",
+        "src": "path/to/icons/fake-svg.svg",
       },
       "ref": null,
       "rendered": null,

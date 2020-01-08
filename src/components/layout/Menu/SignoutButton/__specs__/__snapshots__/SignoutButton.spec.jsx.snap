@@ -40,9 +40,8 @@ ShallowWrapper {
         >
           <Icon
             alt=""
-            className={null}
-            png={null}
-            svg="ico-deconnect-w"
+            className=""
+            svg="ico-deconnect"
           />
         </span>,
         <span
@@ -65,9 +64,8 @@ ShallowWrapper {
         "props": Object {
           "children": <Icon
             alt=""
-            className={null}
-            png={null}
-            svg="ico-deconnect-w"
+            className=""
+            svg="ico-deconnect"
           />,
           "className": "menu-icon mr16 text-center",
         },
@@ -78,9 +76,8 @@ ShallowWrapper {
           "nodeType": "function",
           "props": Object {
             "alt": "",
-            "className": null,
-            "png": null,
-            "svg": "ico-deconnect-w",
+            "className": "",
+            "svg": "ico-deconnect",
           },
           "ref": null,
           "rendered": null,
@@ -115,9 +112,8 @@ ShallowWrapper {
           >
             <Icon
               alt=""
-              className={null}
-              png={null}
-              svg="ico-deconnect-w"
+              className=""
+              svg="ico-deconnect"
             />
           </span>,
           <span
@@ -140,9 +136,8 @@ ShallowWrapper {
           "props": Object {
             "children": <Icon
               alt=""
-              className={null}
-              png={null}
-              svg="ico-deconnect-w"
+              className=""
+              svg="ico-deconnect"
             />,
             "className": "menu-icon mr16 text-center",
           },
@@ -153,9 +148,8 @@ ShallowWrapper {
             "nodeType": "function",
             "props": Object {
               "alt": "",
-              "className": null,
-              "png": null,
-              "svg": "ico-deconnect-w",
+              "className": "",
+              "svg": "ico-deconnect",
             },
             "ref": null,
             "rendered": null,

@@ -63,7 +63,7 @@ class Teaser extends PureComponent {
           ) : (
             <Icon
               className="teaser-arrow-img"
-              svg="ico-next-S"
+              svg="ico-next-pink"
             />
           )}
         </div>

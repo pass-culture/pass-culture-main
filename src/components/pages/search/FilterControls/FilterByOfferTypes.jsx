@@ -56,7 +56,7 @@ class FilterByOfferTypes extends PureComponent {
                       <span className="is-relative">
                         <Icon
                           className="search-picto-checked"
-                          svg="picto-validation-p"
+                          svg="ico-validation-pink"
                         />
                       </span>
                     </span>

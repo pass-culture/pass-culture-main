@@ -34,44 +34,44 @@ describe('getMenuItemsFromRoutes', () => {
     const expected = [
       {
         component: DiscoveryContainer,
-        icon: 'offres-w',
+        icon: 'ico-offres',
         path: '/decouverte',
         title: 'Les offres',
       },
       {
         component: SearchContainer,
-        icon: 'search-w',
+        icon: 'ico-search',
         path: '/recherche',
         title: 'Recherche',
       },
       {
         component: MyBookingsContainer,
-        icon: 'calendar-w',
+        icon: 'ico-calendar-white',
         path: '/reservations',
         title: 'Mes réservations',
       },
       {
         component: MyFavoritesContainer,
-        icon: 'like-w',
+        icon: 'ico-like-empty',
         path: '/favoris',
         title: 'Mes favoris',
       },
       {
         component: ProfileContainer,
-        icon: 'user-w',
+        icon: 'ico-user',
         path: '/profil',
         title: 'Mon compte',
       },
       {
         href: 'https://aide.passculture.app/fr/category/18-ans-1dnil5r/',
-        icon: 'help-w',
+        icon: 'ico-help',
         target: '_blank',
         title: 'Aide',
       },
       {
         href:
           'https://pass-culture.gitbook.io/documents/textes-normatifs/mentions-legales-et-conditions-generales-dutilisation-de-lapplication-pass-culture',
-        icon: 'txt-w',
+        icon: 'ico-txt',
         target: '_blank',
         title: 'Mentions légales',
       },

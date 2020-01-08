@@ -30,7 +30,7 @@ const MyBookingsLists = ({
           <div className="mb-info-picto">
             <Icon
               alt="erreur"
-              svg="picto-info"
+              svg="ico-info-white"
             />
           </div>
           <p className="mb-infos">

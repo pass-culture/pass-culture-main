@@ -14,7 +14,7 @@ const BookingSuccess = ({ bookedPayload, isEvent }) => {
     <div className={`booked text-center ${cssClass}`}>
       <h3 className="fs22">
         <span className="is-block mb12">
-          <Icon svg="picto-validation" />
+          <Icon svg="ico-validation-green" />
         </span>
         <span className="is-block mb36">
           {isEvent && 'Votre réservation '}

@@ -13,7 +13,7 @@ const Header = ({ currentUser }) => (
         <img
           alt=""
           className="mb3"
-          src="/icons/avatar-default-w-XL.svg"
+          src="/icons/avatar-xl.svg"
         />
       </div>
       <div

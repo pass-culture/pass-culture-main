@@ -96,7 +96,7 @@ class ShareButton extends PureComponent {
       >
         <Icon
           alt="Partager cette offre"
-          svg="ico-share-w"
+          svg="ico-share"
         />
       </button>
     )

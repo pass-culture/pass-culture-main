@@ -7,63 +7,57 @@ jest.mock('../../../../utils/config', () => ({
 }))
 
 describe('src | components | layout | Icon', () => {
+  let props
+
+  beforeEach(() => {
+    props = {
+      svg: 'fake-svg',
+    }
+  })
+
   it('should match snapshot', () => {
     // when
-    const wrapper = shallow(<Icon />)
+    const wrapper = shallow(<Icon {...props} />)
 
     // then
     expect(wrapper).toMatchSnapshot()
   })
 
   it('should render img tag with given alt value', () => {
-    const alt = 'alt value'
+    props.alt = 'alt value'
 
     // When
-    const wrapper = shallow(<Icon alt={alt} />)
+    const wrapper = shallow(<Icon {...props} />)
 
     // Then
     expect(wrapper.type()).toBe('img')
-    expect(wrapper.prop('alt')).toBe(alt)
+    expect(wrapper.prop('alt')).toBe('alt value')
   })
 
   it('should render component with given className', () => {
     // Given
-    const classNameProp = 'className'
+    props.className = 'fake-class'
 
     // When
-    const wrapper = shallow(<Icon className={classNameProp} />)
+    const wrapper = shallow(<Icon {...props} />)
 
     // Then
-    expect(wrapper.prop('className')).toBe(classNameProp)
+    expect(wrapper.prop('className')).toBe('fake-class')
   })
 
   it('should set alt as empty string if no alt is given', () => {
     // When
-    const wrapper = shallow(<Icon />)
+    const wrapper = shallow(<Icon {...props} />)
 
     // Then
     expect(wrapper.prop('alt')).toBe('')
   })
 
   it('should render component with SVG file from given name as src', () => {
-    // Given
-    const fileName = 'fileName'
-
     // When
-    const wrapper = shallow(<Icon svg={fileName} />)
+    const wrapper = shallow(<Icon {...props} />)
 
     // Then
-    expect(wrapper.prop('src')).toBe(`path/to/icons/${fileName}.svg`)
-  })
-
-  it('should render component with PNG file from given name as src', () => {
-    // Given
-    const fileName = 'fileName'
-
-    // When
-    const wrapper = shallow(<Icon png={fileName} />)
-
-    // Then
-    expect(wrapper.prop('src')).toBe(`path/to/icons/${fileName}.png`)
+    expect(wrapper.prop('src')).toBe('path/to/icons/fake-svg.svg')
   })
 })

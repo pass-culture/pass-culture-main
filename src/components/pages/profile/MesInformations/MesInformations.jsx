@@ -42,7 +42,7 @@ class MesInformations extends PureComponent {
             <span className="is-block flex-0">
               <Icon
                 alt={`Modifier ${label}`}
-                svg="ico-next-S"
+                svg="ico-next-pink"
               />
             </span>
           )}

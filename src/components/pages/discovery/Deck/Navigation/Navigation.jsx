@@ -43,7 +43,7 @@ class Navigation extends PureComponent {
         >
           <Icon
             alt="Précédent"
-            svg="ico-prev-w-group"
+            svg="ico-prev"
           />
         </button>
       )) || <span />
@@ -61,7 +61,7 @@ class Navigation extends PureComponent {
         >
           <Icon
             alt="Suivant"
-            svg="ico-next-w-group"
+            svg="ico-next-white"
           />
         </button>
       )) || <span />
@@ -75,13 +75,7 @@ class Navigation extends PureComponent {
   }
 
   render() {
-    const {
-      distanceClue,
-      flipHandler,
-      offerId,
-      priceRange,
-      separator,
-    } = this.props
+    const { distanceClue, flipHandler, offerId, priceRange, separator } = this.props
 
     return (
       <div id="deck-navigation">
@@ -105,7 +99,7 @@ class Navigation extends PureComponent {
                     <Icon
                       alt="Plus d'infos"
                       className=" "
-                      svg="ico-slideup-w"
+                      svg="ico-slide-up"
                     />
                   </button>
                   <div className="clue">

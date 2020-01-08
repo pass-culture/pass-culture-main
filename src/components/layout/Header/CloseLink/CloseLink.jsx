@@ -13,7 +13,7 @@ const CloseLink = ({ actionOnClick, closeTitle, closeTo }) => (
     <Icon
       alt={closeTitle}
       className="close-link-img"
-      svg="ico-close"
+      svg="ico-close-white"
     />
   </Link>
 )

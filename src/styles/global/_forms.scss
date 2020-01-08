@@ -147,7 +147,7 @@
 
 .form-checkbox {
   -webkit-appearance: none;
-  background: url(/icons/checkbox.svg) no-repeat;
+  background: url(/icons/checkbox-pink.svg) no-repeat;
   border: none;
   border-radius: 0;
   display: inline-flex;
@@ -160,7 +160,7 @@
   &:checked {
     &::after {
       content: '';
-      background: url(/icons/checkbox-check.svg) no-repeat 5px center;
+      background: url(/icons/checkbox-check-pink.svg) no-repeat 5px center;
       height: 100%;
       width: 100%;
     }

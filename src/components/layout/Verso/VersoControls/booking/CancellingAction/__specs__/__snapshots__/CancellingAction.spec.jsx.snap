@@ -58,9 +58,8 @@ ShallowWrapper {
           />
           <Icon
             alt=""
-            className={null}
-            png={null}
-            svg="ico-check-w"
+            className=""
+            svg="ico-check"
           />
         </span>,
         <span
@@ -88,9 +87,8 @@ ShallowWrapper {
             />,
             <Icon
               alt=""
-              className={null}
-              png={null}
-              svg="ico-check-w"
+              className=""
+              svg="ico-check"
             />,
           ],
           "className": "ticket-price ticket-reserved",
@@ -116,9 +114,8 @@ ShallowWrapper {
             "nodeType": "function",
             "props": Object {
               "alt": "",
-              "className": null,
-              "png": null,
-              "svg": "ico-check-w",
+              "className": "",
+              "svg": "ico-check",
             },
             "ref": null,
             "rendered": null,
@@ -159,9 +156,8 @@ ShallowWrapper {
             />
             <Icon
               alt=""
-              className={null}
-              png={null}
-              svg="ico-check-w"
+              className=""
+              svg="ico-check"
             />
           </span>,
           <span
@@ -189,9 +185,8 @@ ShallowWrapper {
               />,
               <Icon
                 alt=""
-                className={null}
-                png={null}
-                svg="ico-check-w"
+                className=""
+                svg="ico-check"
               />,
             ],
             "className": "ticket-price ticket-reserved",
@@ -217,9 +212,8 @@ ShallowWrapper {
               "nodeType": "function",
               "props": Object {
                 "alt": "",
-                "className": null,
-                "png": null,
-                "svg": "ico-check-w",
+                "className": "",
+                "svg": "ico-check",
               },
               "ref": null,
               "rendered": null,

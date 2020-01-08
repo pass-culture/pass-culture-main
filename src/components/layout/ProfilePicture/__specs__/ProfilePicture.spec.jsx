@@ -29,7 +29,7 @@ describe('src | components | pages | ProfilePicture', () => {
       const img = wrapper.find('img').props()
 
       // then
-      expect(img.src).toBe(`${ROOT_PATH}/icons/ico-user-circled-w.svg`)
+      expect(img.src).toBe(`${ROOT_PATH}/icons/ico-user-circled-white.svg`)
       expect(img.alt).toBe('Avatar')
     })
   })

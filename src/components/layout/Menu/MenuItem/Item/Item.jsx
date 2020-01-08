@@ -8,7 +8,7 @@ const Item = ({ icon, title }) => (
     <span className="flex-0 text-center menu-icon mr16">
       <Icon
         alt=""
-        svg={`ico-${icon}`}
+        svg={icon}
       />
     </span>
     <span className="flex-1 is-medium">

@@ -21,7 +21,7 @@ class PasswordField extends PureComponent {
   renderField = ({ input, meta }) => {
     const { autoComplete, disabled, id, label, name, placeholder, required, sublabel } = this.props
     const { hidden } = this.state
-    const status = hidden ? '' : '-close'
+    const status = hidden ? 'open' : 'close'
     const inputType = hidden ? 'password' : 'text'
 
     return (
@@ -49,7 +49,7 @@ class PasswordField extends PureComponent {
           >
             <Icon
               alt="Afficher/Masquer le mot de passe"
-              svg={`ico-eye${status}`}
+              svg={`ico-eye-${status}`}
             />
           </button>
         </div>
