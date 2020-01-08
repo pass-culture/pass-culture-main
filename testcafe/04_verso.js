@@ -20,7 +20,7 @@ const closeMenu = Selector('#main-menu-fixed-container .close-link')
 const openMenuFromVerso = Selector('#verso-footer a')
 const bookingErrorReasons = Selector('#booking-error-reasons p')
 const dateSelectBox = Selector('#booking-form-date-picker-field')
-const myBookingsMenuButton = Selector('#main-menu-navigation a').nth(2)
+const myBookingsMenuButton = Selector('#main-menu-navigation a[href="/reservations"]')
 const selectableDates = Selector(
   '.react-datepicker__day--selected, .react-datepicker__day:not(.react-datepicker__day--disabled)'
 )
