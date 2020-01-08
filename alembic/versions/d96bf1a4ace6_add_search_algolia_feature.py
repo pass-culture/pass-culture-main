@@ -1,19 +1,18 @@
 """add_search_algolia_feature
 
 Revision ID: d96bf1a4ace6
-Revises: 2ae0f4147390
+Revises: ed5ca9bde4a9
 Create Date: 2020-01-03 13:24:37.563981
 
 """
-import enum
-
 from alembic import op
+import enum
 import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'd96bf1a4ace6'
-down_revision = '2ae0f4147390'
+revision = '8f2c1fd24cad'
+down_revision = 'ed5ca9bde4a9'
 branch_labels = None
 depends_on = None
 
@@ -25,13 +24,11 @@ class FeatureToggle(enum.Enum):
 def upgrade():
     new_values = ('WEBAPP_SIGNUP',
                   'DEGRESSIVE_REIMBURSEMENT_RATE',
-                  'FAVORITE_OFFER',
                   'QR_CODE',
                   'FULL_OFFERS_SEARCH_WITH_OFFERER_AND_VENUE',
                   'SEARCH_ALGOLIA')
     previous_values = ('WEBAPP_SIGNUP',
                        'DEGRESSIVE_REIMBURSEMENT_RATE',
-                       'FAVORITE_OFFER',
                        'QR_CODE',
                        'FULL_OFFERS_SEARCH_WITH_OFFERER_AND_VENUE')
 
@@ -56,12 +53,10 @@ def upgrade():
 def downgrade():
     new_values = ('WEBAPP_SIGNUP',
                   'DEGRESSIVE_REIMBURSEMENT_RATE',
-                  'FAVORITE_OFFER',
                   'QR_CODE',
                   'FULL_OFFERS_SEARCH_WITH_OFFERER_AND_VENUE')
     previous_values = ('WEBAPP_SIGNUP',
                        'DEGRESSIVE_REIMBURSEMENT_RATE',
-                       'FAVORITE_OFFER',
                        'QR_CODE',
                        'FULL_OFFERS_SEARCH_WITH_OFFERER_AND_VENUE',
                        'SEARCH_ALGOLIA')

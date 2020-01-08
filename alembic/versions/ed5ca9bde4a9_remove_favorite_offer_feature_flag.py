@@ -29,11 +29,11 @@ new_enum = sa.Enum(*new_values, name='featuretoggle')
 temporary_enum = sa.Enum(*new_values, name='tmp_featuretoggle')
 
 def upgrade():
+    op.execute("DELETE FROM feature WHERE name = 'FAVORITE_OFFER'")
     temporary_enum.create(op.get_bind(), checkfirst=False)
     op.execute('ALTER TABLE feature ALTER COLUMN name TYPE TMP_FEATURETOGGLE'
                ' USING name::TEXT::TMP_FEATURETOGGLE')
     new_enum.drop(op.get_bind(), checkfirst=False)
-    op.execute("DELETE FROM feature WHERE name = 'FAVORITE_OFFER'")
 
     previous_enum.create(op.get_bind(), checkfirst=False)
     op.execute('ALTER TABLE feature ALTER COLUMN name TYPE FEATURETOGGLE'
