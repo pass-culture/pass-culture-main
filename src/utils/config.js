@@ -24,7 +24,7 @@ export const {
   ENVIRONMENT_NAME,
   SENTRY_SERVER_URL_FOR_PRO,
   URL_FOR_MAINTENANCE,
-  MAINTENANCE_PAGE_AVAILABLE = 'false'
+  MAINTENANCE_PAGE_AVAILABLE,
 } = process.env
 
 function getMobileOperatingSystem() {
