@@ -7,3 +7,6 @@ SENTRY_SERVER_URL_FOR_PRO=https://50f5694849704813b4154c5868b73365@logs.passcult
 SENTRY_SERVER_URL_FOR_WEBAPP=https://fa24f6fffb1e42aeafc316b4c808227c@logs.passculture.app/3
 PRO_URL_FOR_MAINTENANCE=https://maintenance.passculture.app?source=https://pro.passculture-demo.beta.gouv.fr/
 WEBAPP_URL_FOR_MAINTENANCE=https://maintenance.passculture.app?source=https://app.passculture-demo.beta.gouv.fr/
+WEBAPP_ALGOLIA_APPLICATION_ID=testingHXXTDUE7H0
+WEBAPP_ALGOLIA_SEARCH_API_KEY=79e7ed4691e5047eac5e56e2a79ce29d
+WEBAPP_ALGOLIA_INDEX_NAME=DEMO
