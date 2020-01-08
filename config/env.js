@@ -63,9 +63,9 @@ function getClientEnvironment(publicUrl) {
       },
       {
         API_URL: process.env.API_URL || 'http://localhost',
-        ALGOLIA_APPLICATION_ID: process.env.ALGOLIA_APPLICATION_ID,
-        ALGOLIA_SEARCH_API_KEY: process.env.ALGOLIA_SEARCH_API_KEY,
-        ALGOLIA_INDEX_NAME: process.env.ALGOLIA_INDEX_NAME,
+        WEBAPP_ALGOLIA_APPLICATION_ID: process.env.WEBAPP_ALGOLIA_APPLICATION_ID,
+        WEBAPP_ALGOLIA_SEARCH_API_KEY: process.env.WEBAPP_ALGOLIA_SEARCH_API_KEY,
+        WEBAPP_ALGOLIA_INDEX_NAME: process.env.WEBAPP_ALGOLIA_INDEX_NAME,
         ENVIRONMENT_NAME: process.env.ENVIRONMENT_NAME,
         HAS_WORKERS: process.env.HAS_WORKERS || false,
         MATOMO_SERVER_URL: process.env.MATOMO_SERVER_URL,
