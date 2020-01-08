@@ -4,3 +4,6 @@ NODE_ENV="production"
 TYPEFORM_URL_CULTURAL_PRACTICES_POLL="https://passculture.typeform.com/to/T8rurj"
 PRO_URL_FOR_MAINTENANCE=https://maintenance.passculture.app?source=https://pro.passculture-testing.beta.gouv.fr/
 WEBAPP_URL_FOR_MAINTENANCE=https://maintenance.passculture.app?source=https://app.passculture-testing.beta.gouv.fr/
+WEBAPP_ALGOLIA_APPLICATION_ID=testingHXXTDUE7H0
+WEBAPP_ALGOLIA_SEARCH_API_KEY=79e7ed4691e5047eac5e56e2a79ce29d
+WEBAPP_ALGOLIA_INDEX_NAME=TESTING
