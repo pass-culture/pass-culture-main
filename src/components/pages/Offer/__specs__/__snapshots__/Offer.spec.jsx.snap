@@ -1194,7 +1194,7 @@ ShallowWrapper {
                       storeValue={[Function]}
                       type="select"
                     />,
-                    undefined,
+                    false,
                     undefined,
                     false,
                     undefined,
@@ -1262,7 +1262,7 @@ ShallowWrapper {
                     "rendered": null,
                     "type": [Function],
                   },
-                  undefined,
+                  false,
                   undefined,
                   false,
                   undefined,
@@ -2617,7 +2617,7 @@ ShallowWrapper {
                         storeValue={[Function]}
                         type="select"
                       />,
-                      undefined,
+                      false,
                       undefined,
                       false,
                       undefined,
@@ -2685,7 +2685,7 @@ ShallowWrapper {
                       "rendered": null,
                       "type": [Function],
                     },
-                    undefined,
+                    false,
                     undefined,
                     false,
                     undefined,
