@@ -95,6 +95,8 @@ describe('components | FormFooter', () => {
           className: 'flex-1 my-class',
           href: 'my-url',
           id: 'my-id',
+          'onClick': expect.any(Function),
+          'onKeyPress': expect.any(Function),
           target: '_blank',
           title: 'my-title'
         })

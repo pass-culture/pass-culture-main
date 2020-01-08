@@ -31,6 +31,12 @@ class FormFooter extends PureComponent {
     </Link>)
   }
 
+  handleTracking = () => {
+    if (window.location.href === 'https://app.passculture.beta.gouv.fr/beta') {
+      window.gtag_report_conversion(window.location.href)
+    }
+  }
+
   renderExternalLink = options => {
     const attributes = {
       className: `flex-1 ${options.className || ''}`,
@@ -41,6 +47,8 @@ class FormFooter extends PureComponent {
     return (
       <a
         {...attributes}
+        onClick={this.handleTracking}
+        onKeyPress={this.handleTracking}
         target="_blank"
       >
         {options.label}

@@ -66,6 +66,22 @@
     gtag('js', new Date());
     gtag('config', 'AW-706346995');
 
+    // Appelé au clique sur le lien "Créer un compte"
+    function gtag_report_conversion(url) {
+      var callback = function () {
+        if (typeof(url) != 'undefined') {
+          window.location = url;
+        }
+      };
+
+      gtag('event', 'conversion', {
+        'send_to': 'AW-706346995/DqoNCLOZ4bgBEPP_59AC',
+        'event_callback': callback
+      });
+
+      return false;
+    }
+
     var _paq = window._paq || [];
     // Code CNIL
     _paq.push([function() {
