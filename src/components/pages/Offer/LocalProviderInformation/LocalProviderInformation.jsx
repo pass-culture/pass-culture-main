@@ -57,8 +57,7 @@ class LocalProviderInformation extends PureComponent {
           <div className="provider-explanation">
             <p>
               {'Le visuel par défaut, les informations et le stock de cette offre sont synchronisés' +
-              ` avec les données ${providerInfo.name} tous les soirs. De ce fait, seuls sa description et son titre sont modifiables,` +
-              " pour vos besoins d'éditorialisation pour le pass Culture."}
+              ` avec les données ${providerInfo.name} tous les soirs.`}
             </p>
           </div>
         </div>

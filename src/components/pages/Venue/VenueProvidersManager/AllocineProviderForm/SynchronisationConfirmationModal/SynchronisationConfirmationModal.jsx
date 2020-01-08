@@ -47,6 +47,7 @@ const SynchronisationConfirmationModal = ({ handleClose, handleConfirm }) => {
 
 SynchronisationConfirmationModal.propTypes = {
   handleClose: PropTypes.func.isRequired,
+  handleConfirm: PropTypes.func.isRequired,
 }
 
 export default SynchronisationConfirmationModal

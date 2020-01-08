@@ -8,23 +8,12 @@
     color: $violet-dark;
   }
 
-  .compte-section {
-    margin-right: 20px;
-
-    .compte-section-label {
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .label-text {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-around;
-    }
-  }
-
   .price-section {
     margin-right: 20px;
+
+    .label-price {
+      margin-top: 6px;
+    }
 
     .price-section-label {
       display: flex;
@@ -38,11 +27,9 @@
   }
 
   .provider-import-button-container {
-    position: relative;
-
     button {
-      position: absolute;
-      top: 23%;
+      position: relative;
+      top: 36px;
     }
   }
 }

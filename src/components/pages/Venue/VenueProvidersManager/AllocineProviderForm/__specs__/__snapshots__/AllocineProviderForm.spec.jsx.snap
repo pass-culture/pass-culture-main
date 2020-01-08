@@ -10,11 +10,11 @@ ShallowWrapper {
         "push": [MockFunction],
       }
     }
+    isShowingConfirmationModal={false}
     notify={[MockFunction]}
     offererId="CC"
     providerId="AA"
     venueId="BB"
-    venueIdAtOfferProviderIsRequired={false}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],

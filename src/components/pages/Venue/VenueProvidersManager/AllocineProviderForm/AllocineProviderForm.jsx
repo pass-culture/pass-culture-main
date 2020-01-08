@@ -1,7 +1,6 @@
 import classNames from 'classnames'
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
-import TextField from '../../../../layout/form/fields/TextField'
 import NumberField from '../../../../layout/form/fields/NumberField'
 import Icon from '../../../../layout/Icon'
 import { Form } from 'react-final-form'
@@ -20,13 +19,12 @@ class AllocineProviderForm extends PureComponent {
   handleSubmit = (formValues) => {
     this.hideModal()
     const { createVenueProvider, providerId, venueId } = this.props
-    const { venueIdAtOfferProvider, price } = formValues
+    const { price } = formValues
 
     const payload = {
       price,
       providerId,
       venueId,
-      venueIdAtOfferProvider,
     }
 
     this.setState({ isLoadingMode: true })
@@ -66,7 +64,6 @@ class AllocineProviderForm extends PureComponent {
   }
 
   renderForm = (props) => {
-    const {venueIdAtOfferProviderIsRequired} = this.props
     const {isLoadingMode, isShowingConfirmationModal} = this.state
     const canSubmit = getCanSubmit(props)
 
@@ -74,41 +71,6 @@ class AllocineProviderForm extends PureComponent {
       <form onSubmit={props.handleSubmit}>
         <div className="allocine-provider-form">
           <div>
-            <div className="compte-section">
-              <div className="compte-section-label">
-                <label
-                  className="label-text"
-                  htmlFor="venueIdAtOfferProvider"
-                >
-                  {'Compte '}
-                  <span className="field-asterisk">
-                    {'*'}
-                  </span>
-                </label>
-                {!isLoadingMode && venueIdAtOfferProviderIsRequired && (
-                  <span
-                    data-place="bottom"
-                    data-tip="<p>Veuillez saisir un compte.</p>"
-                    data-type="info"
-                    id="compte-tooltip"
-                  >
-                    <Icon
-                      alt="image d’aide à l’information"
-                      svg="picto-info"
-                    />
-                  </span>
-                )}
-              </div>
-              <TextField
-                className={classNames('field-text', {
-                  'field-is-read-only': !venueIdAtOfferProviderIsRequired || isLoadingMode,
-                })}
-                name="venueIdAtOfferProvider"
-                readOnly={!venueIdAtOfferProviderIsRequired || isLoadingMode}
-                required
-              />
-            </div>
-
             {!isLoadingMode && (
               <div className="price-section">
                 <div className="price-section-label">
@@ -184,7 +146,6 @@ AllocineProviderForm.propTypes = {
   notify: PropTypes.func.isRequired,
   providerId: PropTypes.string.isRequired,
   venueId: PropTypes.string.isRequired,
-  venueIdAtOfferProviderIsRequired: PropTypes.bool.isRequired,
 }
 
 export default AllocineProviderForm

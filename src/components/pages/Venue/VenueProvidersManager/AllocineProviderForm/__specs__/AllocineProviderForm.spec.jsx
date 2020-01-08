@@ -2,7 +2,6 @@ import React from 'react'
 import { mount, shallow } from 'enzyme'
 
 import { Form } from 'react-final-form'
-import TextField from '../../../../../layout/form/fields/TextField'
 import NumberField from '../../../../../layout/form/fields/NumberField'
 import Icon from '../../../../../layout/Icon'
 
@@ -28,7 +27,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Allo
       offererId: 'CC',
       providerId: 'AA',
       venueId: 'BB',
-      venueIdAtOfferProviderIsRequired: false,
+      isShowingConfirmationModal: false
     }
   })
 
@@ -97,81 +96,20 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Allo
     expect(icon.prop('alt')).toBe('image d’aide à l’information')
   })
 
-  describe('when provider identifier is required', () => {
-    it('should render a account field not in read only mode', () => {
-      // given
-      props.venueIdAtOfferProviderIsRequired = true
+  it('should display a confirmation modal', () => {
+    // given
+    const wrapper = mount(<AllocineProviderForm {...props} />)
+    const importButton = wrapper.find('button')
+    const priceSection = wrapper.findWhere(node => node.text() === 'Prix de vente/place *')
+    const priceInput = priceSection.find(NumberField).find('input')
+    priceInput.simulate('change', {target: {value: 10}})
 
-      // when
-      const wrapper = mount(<AllocineProviderForm {...props} />)
+    // when
+    importButton.simulate('click');
 
-      // then
-      const form = wrapper.find(Form)
-      expect(form).toHaveLength(1)
-      const label = form.find('label[htmlFor="venueIdAtOfferProvider"]')
-      expect(label.text()).toBe('Compte *')
-      const textField = form.find('.compte-section').find(TextField)
-      expect(textField).toHaveLength(1)
-      expect(textField.prop('className')).toBe('field-text')
-      expect(textField.prop('name')).toBe('venueIdAtOfferProvider')
-      expect(textField.prop('readOnly')).toBe(false)
-      expect(textField.prop('required')).toBe(true)
-    })
-
-    it('should display a tooltip and an Icon component for account field', () => {
-      // given
-      props.isLoadingMode = false
-      props.venueIdAtOfferProviderIsRequired = true
-
-      // when
-      const wrapper = mount(<AllocineProviderForm {...props} />)
-
-      // then
-      const tooltip = wrapper.find('#compte-tooltip')
-      expect(tooltip).toHaveLength(1)
-      expect(tooltip.prop('data-place')).toBe('bottom')
-      expect(tooltip.prop('data-tip')).toBe('<p>Veuillez saisir un compte.</p>')
-      const icon = tooltip.find(Icon)
-      expect(icon).toHaveLength(1)
-      expect(icon.prop('svg')).toBe('picto-info')
-      expect(icon.prop('alt')).toBe('image d’aide à l’information')
-    })
-  })
-
-  describe('when provider identifier is not required', () => {
-    it('should render a account field in read only mode', () => {
-      // given
-      props.isLoadingMode = true
-      props.venueIdAtOfferProviderIsRequired = false
-
-      // when
-      const wrapper = mount(<AllocineProviderForm {...props} />)
-
-      // then
-      const form = wrapper.find(Form)
-      expect(form).toHaveLength(1)
-      const label = form.find('label[htmlFor="venueIdAtOfferProvider"]')
-      expect(label.text()).toBe('Compte *')
-      const textField = form.find('.compte-section').find(TextField)
-      expect(textField).toHaveLength(1)
-      expect(textField.prop('className')).toBe('field-text field-is-read-only')
-      expect(textField.prop('name')).toBe('venueIdAtOfferProvider')
-      expect(textField.prop('readOnly')).toBe(true)
-      expect(textField.prop('required')).toBe(true)
-    })
-
-    it('should not display a tooltip and an Icon component for account field', () => {
-      // given
-      props.isLoadingMode = false
-      props.venueIdAtOfferProviderIsRequired = false
-
-      // when
-      const wrapper = mount(<AllocineProviderForm {...props} />)
-
-      // then
-      const tooltip = wrapper.find('.compte-section').find('.tooltip-info')
-      expect(tooltip).toHaveLength(0)
-    })
+    // then
+    const syncConfirmationModal = wrapper.find(SynchronisationConfirmationModal)
+    expect(syncConfirmationModal).toHaveLength(1);
   })
 
   describe('handleSuccess', () => {
@@ -215,7 +153,6 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Allo
       // given
       const formValues = {
         price: 12,
-        venueIdAtOfferProvider: 'token',
       }
       const wrapper = shallow(<AllocineProviderForm {...props} />)
 
@@ -228,7 +165,6 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Allo
         price: 12,
         providerId: 'AA',
         venueId: 'BB',
-        venueIdAtOfferProvider: 'token',
       })
     })
   })
