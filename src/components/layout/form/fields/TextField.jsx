@@ -22,7 +22,7 @@ class TextField extends PureComponent {
     const { type } = this.props
 
     if (type === 'number') {
-      this.hasEnteredSignsAfterOrBeforeNumbers()
+      this.preventEnteringInvalidChars()
     }
   }
 
@@ -32,12 +32,13 @@ class TextField extends PureComponent {
     }
   }
 
-  hasEnteredSignsAfterOrBeforeNumbers = () => {
+  preventEnteringInvalidChars = () => {
     this.keypressListener = this.inputElement.addEventListener('keypress', event => {
       const hasEnteredSymbolsKeys = event.key === '*' || event.key === '%'
       const hasEnteredPlusOrMinusKeys = event.key === '-' || event.key === '+'
+      const hasEnteredLetterE = event.key === 'e' || event.key === 'E'
 
-      if (hasEnteredSymbolsKeys || hasEnteredPlusOrMinusKeys) {
+      if (hasEnteredSymbolsKeys || hasEnteredPlusOrMinusKeys || hasEnteredLetterE) {
         event.preventDefault()
       }
     })
@@ -84,10 +85,9 @@ class TextField extends PureComponent {
               <span>
                 {label}
               </span>
-              {required && !readOnly &&
-              <span className="field-asterisk">
+              {required && !readOnly && <span className="field-asterisk">
                 {'*'}
-              </span>}
+                                        </span>}
             </span>
           </label>
         )}
