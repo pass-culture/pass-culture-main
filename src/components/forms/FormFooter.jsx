@@ -33,7 +33,7 @@ class FormFooter extends PureComponent {
 
   handleTracking = () => {
     if (window.location.href === 'https://app.passculture.beta.gouv.fr/beta') {
-      window.gtag_report_conversion(window.location.href)
+      window.gtag_report_conversion('https://www.demarches-simplifiees.fr/commencer/inscription-pass-culture')
     }
   }
 
