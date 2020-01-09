@@ -147,7 +147,7 @@ class VenueProvidersManager extends PureComponent {
 
           {providerSelectedIsAllocine && (
             <Insert
-              className='insert-blue'
+              className='blue-insert'
               icon='picto-info-solid-black'
             >
               {'Pour le moment, seules les séances "classiques" peuvent être importées.'}

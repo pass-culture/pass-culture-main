@@ -396,7 +396,7 @@ class Offer extends PureComponent {
 
     const offererHasNoPhysicalVenues = offerer && get(venuesMatchingOfferType, 'length') === 0
 
-    const displayInformationInsert = displayDigitalOfferInformationMessage(selectedOfferType, venue)
+    const isDisplayDigitalOfferInformationMessage = displayDigitalOfferInformationMessage(selectedOfferType, venue)
 
     return (
       <Main
@@ -608,7 +608,7 @@ class Offer extends PureComponent {
                   type="select"
                 />
               </div>
-              {displayInformationInsert && (
+              {isDisplayDigitalOfferInformationMessage && (
                 <div className="is-horizontal">
                   <Insert className="yellow-insert">
                     <p>

@@ -21,7 +21,7 @@ const Bookings = ({ pathToCsvFile, showButtons, showOfferSection }) => (
       </p>
     </HeroSection>
     <Insert
-      className='insert-blue'
+      className='blue-insert'
       icon='picto-info-solid-black'
     >
       {'Les'}

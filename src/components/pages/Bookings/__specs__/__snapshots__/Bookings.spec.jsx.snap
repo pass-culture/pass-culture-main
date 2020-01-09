@@ -37,7 +37,7 @@ ShallowWrapper {
           </p>
         </HeroSection>,
         <Insert
-          className="insert-blue"
+          className="blue-insert"
           icon="picto-info-solid-black"
         >
           Les
@@ -132,7 +132,7 @@ ShallowWrapper {
             <p />,
             "La contremarque ne peut être validée qu’après ce délai.",
           ],
-          "className": "insert-blue",
+          "className": "blue-insert",
           "icon": "picto-info-solid-black",
         },
         "ref": null,
@@ -218,7 +218,7 @@ ShallowWrapper {
             </p>
           </HeroSection>,
           <Insert
-            className="insert-blue"
+            className="blue-insert"
             icon="picto-info-solid-black"
           >
             Les
@@ -313,7 +313,7 @@ ShallowWrapper {
               <p />,
               "La contremarque ne peut être validée qu’après ce délai.",
             ],
-            "className": "insert-blue",
+            "className": "blue-insert",
             "icon": "picto-info-solid-black",
           },
           "ref": null,

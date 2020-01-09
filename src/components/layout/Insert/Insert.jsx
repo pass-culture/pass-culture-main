@@ -16,11 +16,13 @@ const Insert = ({ icon, children, className }) => (
 )
 
 Insert.defaultProps = {
+  className: 'blue-insert',
   icon: null
 }
 
 Insert.propTypes = {
   children: PropTypes.node.isRequired,
+  className: PropTypes.node,
   icon: PropTypes.string
 }
 
