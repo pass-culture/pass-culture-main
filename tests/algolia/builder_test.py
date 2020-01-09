@@ -95,7 +95,7 @@ class BuildObjectTest:
 
         # Then
         except:
-            assert False
+            assert pytest.fail("Should not fail when book has no author")
 
     @clean_database
     def test_should_return_an_empty_date_range_when_offer_is_thing(self, app):
