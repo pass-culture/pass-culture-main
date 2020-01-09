@@ -276,9 +276,9 @@ describe('src | components | pages | Offer | Offer ', () => {
 
           // then
           const fieldGroups = wrapper.find('.field-group')
-          const fieldGroupForUsefulInformation = fieldGroups.at(1)
-          const durationField = fieldGroupForUsefulInformation.find(Field).at(2)
-          expect(fieldGroups).toHaveLength(3)
+          const fieldGroupForUsefulInformation = fieldGroups.at(2)
+          const durationField = fieldGroupForUsefulInformation.find(Field).at(0)
+          expect(fieldGroups).toHaveLength(4)
           expect(durationField.prop('name')).toStrictEqual('durationMinutes')
         })
 
@@ -320,10 +320,10 @@ describe('src | components | pages | Offer | Offer ', () => {
 
           // then
           const fieldGroups = wrapper.find('.field-group')
-          const fieldGroupForUsefulInformation = fieldGroups.at(1)
-          const durationField = fieldGroupForUsefulInformation.find(Field).at(2)
-          expect(fieldGroups).toHaveLength(3)
-          expect(durationField.prop('name')).toStrictEqual('bookingEmail')
+          const fieldGroupForUsefulInformation = fieldGroups.at(2)
+          const bookingEmailField = fieldGroupForUsefulInformation.find(Field).at(0)
+          expect(fieldGroups).toHaveLength(4)
+          expect(bookingEmailField.prop('name')).toStrictEqual('bookingEmail')
         })
 
         it('should not have the duo option', () => {
@@ -343,6 +343,36 @@ describe('src | components | pages | Offer | Offer ', () => {
 
           // then
           expect(isDuoCheckbox).toHaveLength(0)
+        })
+      })
+
+      describe('when the offer is digital only and selected venue is virtial', () => {
+        it('should display an information insert', () => {
+          // given
+          props.match = {
+            params: {
+              offerId: 'QU',
+            },
+          }
+          props.selectedOfferType = {
+            offlineOnly: false,
+            onlineOnly: true,
+            value: 'ThingType.JEUX_VIDEO',
+          }
+
+          props.venue = {
+            isVirtual: true,
+          }
+
+          // when
+          const wrapper = shallow(<Offer {...props} />)
+
+          // then
+          const insert = wrapper.find('.yellow-insert')
+          const insertLink = insert.find('a')
+          expect(insertLink.prop('href')).toStrictEqual(
+            'https://docs.passculture.app/textes-normatifs'
+          )
         })
       })
     })
@@ -383,6 +413,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         }
         props.offer = {
           id: 'VAG',
+          mediationId: 'TR',
           productId: '6GD',
           isEvent: true,
           isThing: false,
@@ -445,7 +476,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         const fieldGroups = wrapper.find('.field-group')
         const fieldGroupForUsefulInformation = fieldGroups.at(1)
         const venueField = fieldGroupForUsefulInformation.find(Field).at(1)
-        expect(fieldGroups).toHaveLength(3)
+        expect(fieldGroups).toHaveLength(4)
         expect(venueField.prop('options')).toStrictEqual(expectedOptions)
       })
 
@@ -473,7 +504,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         const fieldGroups = wrapper.find('.field-group')
         const fieldGroupForUsefulInformation = fieldGroups.at(1)
         const venueField = fieldGroupForUsefulInformation.find(Field).at(1)
-        expect(fieldGroups).toHaveLength(3)
+        expect(fieldGroups).toHaveLength(4)
         expect(venueField.prop('options')).toStrictEqual(expectedOptions)
       })
     })

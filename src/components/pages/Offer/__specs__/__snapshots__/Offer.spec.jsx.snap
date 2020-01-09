@@ -255,6 +255,10 @@ ShallowWrapper {
                 storeValue={[Function]}
                 type="select"
               />
+            </div>
+            <div
+              className="field-group"
+            >
               <Field
                 displayValue={[Function]}
                 errors={null}
@@ -523,6 +527,10 @@ ShallowWrapper {
                   storeValue={[Function]}
                   type="select"
                 />
+              </div>
+              <div
+                className="field-group"
+              >
                 <Field
                   displayValue={[Function]}
                   errors={null}
@@ -1107,6 +1115,11 @@ ShallowWrapper {
                     storeValue={[Function]}
                     type="select"
                   />
+                </div>,
+                false,
+                <div
+                  className="field-group"
+                >
                   <Field
                     displayValue={[Function]}
                     errors={null}
@@ -1194,23 +1207,6 @@ ShallowWrapper {
                       storeValue={[Function]}
                       type="select"
                     />,
-                    false,
-                    undefined,
-                    false,
-                    undefined,
-                    undefined,
-                    <Field
-                      displayValue={[Function]}
-                      errors={null}
-                      label="Email auquel envoyer les réservations"
-                      layout="horizontal"
-                      name="bookingEmail"
-                      readOnly={false}
-                      size="normal"
-                      storeValue={[Function]}
-                      sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations"
-                      type="email"
-                    />,
                   ],
                   "className": "field-group",
                 },
@@ -1262,7 +1258,37 @@ ShallowWrapper {
                     "rendered": null,
                     "type": [Function],
                   },
-                  false,
+                ],
+                "type": "div",
+              },
+              false,
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    undefined,
+                    false,
+                    undefined,
+                    undefined,
+                    <Field
+                      displayValue={[Function]}
+                      errors={null}
+                      label="Email auquel envoyer les réservations"
+                      layout="horizontal"
+                      name="bookingEmail"
+                      readOnly={false}
+                      size="normal"
+                      storeValue={[Function]}
+                      sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations"
+                      type="email"
+                    />,
+                  ],
+                  "className": "field-group",
+                },
+                "ref": null,
+                "rendered": Array [
                   undefined,
                   false,
                   undefined,
@@ -1678,6 +1704,10 @@ ShallowWrapper {
                   storeValue={[Function]}
                   type="select"
                 />
+              </div>
+              <div
+                className="field-group"
+              >
                 <Field
                   displayValue={[Function]}
                   errors={null}
@@ -1946,6 +1976,10 @@ ShallowWrapper {
                     storeValue={[Function]}
                     type="select"
                   />
+                </div>
+                <div
+                  className="field-group"
+                >
                   <Field
                     displayValue={[Function]}
                     errors={null}
@@ -2530,6 +2564,11 @@ ShallowWrapper {
                       storeValue={[Function]}
                       type="select"
                     />
+                  </div>,
+                  false,
+                  <div
+                    className="field-group"
+                  >
                     <Field
                       displayValue={[Function]}
                       errors={null}
@@ -2617,23 +2656,6 @@ ShallowWrapper {
                         storeValue={[Function]}
                         type="select"
                       />,
-                      false,
-                      undefined,
-                      false,
-                      undefined,
-                      undefined,
-                      <Field
-                        displayValue={[Function]}
-                        errors={null}
-                        label="Email auquel envoyer les réservations"
-                        layout="horizontal"
-                        name="bookingEmail"
-                        readOnly={false}
-                        size="normal"
-                        storeValue={[Function]}
-                        sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations"
-                        type="email"
-                      />,
                     ],
                     "className": "field-group",
                   },
@@ -2685,7 +2707,37 @@ ShallowWrapper {
                       "rendered": null,
                       "type": [Function],
                     },
-                    false,
+                  ],
+                  "type": "div",
+                },
+                false,
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      undefined,
+                      false,
+                      undefined,
+                      undefined,
+                      <Field
+                        displayValue={[Function]}
+                        errors={null}
+                        label="Email auquel envoyer les réservations"
+                        layout="horizontal"
+                        name="bookingEmail"
+                        readOnly={false}
+                        size="normal"
+                        storeValue={[Function]}
+                        sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations"
+                        type="email"
+                      />,
+                    ],
+                    "className": "field-group",
+                  },
+                  "ref": null,
+                  "rendered": Array [
                     undefined,
                     false,
                     undefined,
