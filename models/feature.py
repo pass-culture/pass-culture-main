@@ -15,7 +15,6 @@ class FeatureToggle(enum.Enum):
                                                 ' et lieux en plus de celles des offres'
     SEARCH_ALGOLIA = 'Permettre la recherche via Algolia'
 
-
 class Feature(PcObject, Model, DeactivableMixin):
     name = Column(Enum(FeatureToggle), index=True, unique=True, nullable=False)
     description = Column(String(300), nullable=False)

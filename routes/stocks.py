@@ -5,14 +5,16 @@ from flask_login import current_user
 
 from connectors.redis import add_to_redis
 from domain.stocks import delete_stock_and_cancel_bookings
-from domain.user_emails import send_batch_cancellation_emails_to_users, send_offerer_bookings_recap_email_after_offerer_cancellation
+from domain.user_emails import send_batch_cancellation_emails_to_users, \
+    send_offerer_bookings_recap_email_after_offerer_cancellation
 from models import Product
+from models.feature import FeatureToggle
 from models.mediation import Mediation
 from models.pc_object import PcObject
 from models.stock import Stock
 from models.user_offerer import RightsType
 from models.venue import Venue
-from repository import offerer_queries
+from repository import offerer_queries, feature_queries
 from repository.offer_queries import get_offer_by_id
 from repository.stock_queries import find_stocks_with_possible_filters
 from routes.serialization import as_dict
@@ -23,11 +25,11 @@ from utils.rest import ensure_current_user_has_rights, \
     handle_rest_get_list, \
     load_or_404, \
     login_or_api_key_required
-from validation.stocks import check_request_has_offer_id,\
-    check_dates_are_allowed_on_new_stock, \
-    check_dates_are_allowed_on_existing_stock,\
-    check_stocks_are_editable_for_offer
 from validation.offers import check_offer_is_editable
+from validation.stocks import check_request_has_offer_id, \
+    check_dates_are_allowed_on_new_stock, \
+    check_dates_are_allowed_on_existing_stock, \
+    check_stocks_are_editable_for_offer
 
 search_models = [
     # Order is important
@@ -84,7 +86,9 @@ def create_stock():
 
     new_stock = Stock(from_dict=request_data)
     PcObject.save(new_stock)
-    add_to_redis(offer_id)
+
+    if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
+        add_to_redis(offer_id)
 
     return jsonify(as_dict(new_stock)), 201
 

@@ -13,8 +13,9 @@ from utils.human_ids import dehumanize, humanize
 class Post:
     class Returns201:
         @patch('routes.stocks.add_to_redis')
+        @patch('routes.stocks.feature_queries.is_active', return_value=False)
         @clean_database
-        def when_user_has_rights(self, mock_add_to_redis, app):
+        def when_user_has_rights(self, mock_feature, mock_add_to_redis, app):
             # Given
             user = create_user(email='test@email.fr')
             offerer = create_offerer()
@@ -36,11 +37,11 @@ class Post:
 
             stock = Stock.query.filter_by(id=dehumanize(id)).first()
             assert stock.price == 1222
-            mock_add_to_redis.assert_called_once_with(offer.id)
 
         @patch('routes.stocks.add_to_redis')
+        @patch('routes.stocks.feature_queries.is_active', return_value=False)
         @clean_database
-        def when_booking_limit_datetime_is_none_for_thing(self, mock_add_to_redis, app):
+        def when_booking_limit_datetime_is_none_for_thing(self, mock_feature, mock_add_to_redis, app):
             # Given
             user = create_user(can_book_free_offers=False, email='test@email.fr', is_admin=True)
             offerer = create_offerer()
@@ -67,6 +68,50 @@ class Post:
             stock = Stock.query.filter_by(id=dehumanize(id)).first()
             assert stock.price == 0
             assert stock.bookingLimitDatetime is None
+
+        @patch('routes.stocks.add_to_redis')
+        @patch('routes.stocks.feature_queries.is_active', return_value=True)
+        @clean_database
+        def when_algolia_search_is_enabled(self, mock_feature, mock_add_to_redis, app):
+            # Given
+            user = create_user(email='test@email.fr')
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            offer = create_offer_with_thing_product(venue)
+            PcObject.save(user_offerer, offer)
+
+            stock_data = {'price': 1222, 'offerId': humanize(offer.id)}
+            PcObject.save(user)
+
+            # When
+            TestClient(app.test_client()).with_auth('test@email.fr') \
+                .post('/stocks', json=stock_data)
+
+            # Then
+            mock_add_to_redis.assert_called_once_with(offer.id)
+
+        @patch('routes.stocks.add_to_redis')
+        @patch('routes.stocks.feature_queries.is_active', return_value=False)
+        @clean_database
+        def when_algolia_search_is_disabled(self, mock_feature, mock_add_to_redis, app):
+            # Given
+            user = create_user(email='test@email.fr')
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            offer = create_offer_with_thing_product(venue)
+            PcObject.save(user_offerer, offer)
+
+            stock_data = {'price': 1222, 'offerId': humanize(offer.id)}
+            PcObject.save(user)
+
+            # When
+            TestClient(app.test_client()).with_auth('test@email.fr') \
+                .post('/stocks', json=stock_data)
+
+            # Then
+            mock_add_to_redis.assert_not_called()
 
     class Returns400:
         @clean_database
