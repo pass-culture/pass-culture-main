@@ -34,7 +34,8 @@ def build_object(offer: Offer) -> Dict:
     }
 
     if ProductType.is_book(str(offer.type)):
-        object_to_index['offer']['author'] = offer.extraData['author']
+        if offer.extraData and offer.extraData['author']:
+            object_to_index['offer']['author'] = offer.extraData['author']
 
     if has_coordinates:
         object_to_index.update({'_geoloc': {

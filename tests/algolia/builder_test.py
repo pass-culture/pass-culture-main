@@ -80,6 +80,24 @@ class BuildObjectTest:
         assert result['offer']['author'] == 'MEFA'
 
     @clean_database
+    def test_should_not_raise_an_error_when_offer_is_a_book_without_author(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer = create_offer_with_thing_product(venue=venue, thing_type=ThingType.LIVRE_EDITION)
+        offer.extraData['author'] = None
+        stock = create_stock(offer=offer)
+        PcObject.save(stock)
+
+        # When
+        try:
+            build_object(offer)
+
+        # Then
+        except:
+            assert False
+
+    @clean_database
     def test_should_return_an_empty_date_range_when_offer_is_thing(self, app):
         # Given
         offerer = create_offerer()
