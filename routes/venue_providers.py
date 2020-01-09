@@ -11,7 +11,7 @@ from models.api_errors import ApiErrors
 from models.pc_object import PcObject
 from models.venue_provider import VenueProvider
 from repository.allocine_pivot_queries import get_allocine_theaterId_for_venue
-from repository.provider_queries import find_enabled_provider_for_pro_by_id
+from repository.provider_queries import get_provider_enabled_for_pro_by_id
 from repository.venue_provider_price_rule_queries import save_venue_provider_price_rule
 from routes.serialization import as_dict
 from utils.config import API_ROOT_PATH
@@ -54,7 +54,7 @@ def create_venue_provider():
     validate_new_venue_provider_information(venue_provider_payload)
 
     provider_id = dehumanize(venue_provider_payload['providerId'])
-    provider = find_enabled_provider_for_pro_by_id(provider_id)
+    provider = get_provider_enabled_for_pro_by_id(provider_id)
     validate_existing_provider(provider)
 
     provider_type = getattr(local_providers, provider.localClass)

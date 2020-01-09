@@ -3,7 +3,7 @@ from typing import List
 from models.provider import Provider
 
 
-def find_enabled_provider_for_pro_by_id(provider_id: int) -> Provider:
+def get_provider_enabled_for_pro_by_id(provider_id: int) -> Provider:
     return Provider.query \
         .filter_by(id=provider_id) \
         .filter_by(isActive=True) \
@@ -26,7 +26,7 @@ def get_enabled_providers_for_pro() -> List[Provider]:
         .all()
 
 
-def get_enabled_providers_for_pro_excluding_provider(allocine_local_class: str) -> List[Provider]:
+def get_providers_enabled_for_pro_excluding_specific_provider(allocine_local_class: str) -> List[Provider]:
     return Provider.query \
         .filter_by(isActive=True) \
         .filter_by(enabledForPro=True) \

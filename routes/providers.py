@@ -4,7 +4,7 @@ from flask_login import login_required
 from local_providers import AllocineStocks
 from models import Venue
 from repository.allocine_pivot_queries import has_allocine_pivot_for_venue
-from repository.provider_queries import get_enabled_providers_for_pro, get_enabled_providers_for_pro_excluding_provider
+from repository.provider_queries import get_enabled_providers_for_pro, get_providers_enabled_for_pro_excluding_specific_provider
 from routes.serialization import as_dict
 from utils.rest import load_or_404
 
@@ -31,11 +31,11 @@ def get_providers_by_venue(venue_id: str):
         providers = get_enabled_providers_for_pro()
     else:
         allocine_local_class = AllocineStocks.__name__
-        providers = get_enabled_providers_for_pro_excluding_provider(allocine_local_class)
+        providers = get_providers_enabled_for_pro_excluding_specific_provider(allocine_local_class)
     result = []
     for provider in providers:
-        p_dict = as_dict(provider)
-        del p_dict['apiKey']
-        del p_dict['apiKeyGenerationDate']
-        result.append(p_dict)
+        provider_dict = as_dict(provider)
+        del provider_dict['apiKey']
+        del provider_dict['apiKeyGenerationDate']
+        result.append(provider_dict)
     return jsonify(result)
