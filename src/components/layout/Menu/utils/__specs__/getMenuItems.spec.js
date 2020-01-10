@@ -47,7 +47,7 @@ describe('getMenuItemsFromRoutes', () => {
       },
       {
         component: SearchAlgoliaContainer,
-        icon: 'search-w',
+        icon: 'ico-search',
         path: '/recherche-algolia',
         featureName: 'SEARCH_ALGOLIA',
         title: 'Recherche algolia',

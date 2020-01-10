@@ -3,11 +3,13 @@ import createCachedSelector from 're-reselect'
 import { getHumanizeRelativeDistance } from '../utils/geolocation'
 import { selectOfferById, selectOfferByRouterMatch } from './data/offersSelectors'
 
+export const selectUserGeolocation = state => state.geolocation
+
 export const selectDistanceByOfferId = createCachedSelector(
   selectOfferById,
-  state => state.geolocation.latitude,
-  state => state.geolocation.longitude,
-  (offer, userLatitude, userLongitude) => {
+  selectUserGeolocation,
+  (offer, userGeolocation) => {
+    const { latitude: userLatitude, longitude: userLongitude } = userGeolocation
     const { venue } = offer || {}
     const { latitude: venueLatitude, longitude: venueLongitude } = venue || {}
     const distance = getHumanizeRelativeDistance(
@@ -22,9 +24,9 @@ export const selectDistanceByOfferId = createCachedSelector(
 
 export const selectDistanceByRouterMatch = createCachedSelector(
   selectOfferByRouterMatch,
-  state => state.geolocation.latitude,
-  state => state.geolocation.longitude,
-  (offer, userLatitude, userLongitude) => {
+  selectUserGeolocation,
+  (offer, userGeolocation) => {
+    const { latitude: userLatitude, longitude: userLongitude } = userGeolocation
     const { venue } = offer || {}
     const { latitude: venueLatitude, longitude: venueLongitude } = venue || {}
     return getHumanizeRelativeDistance(venueLatitude, venueLongitude, userLatitude, userLongitude)
@@ -34,5 +36,3 @@ export const selectDistanceByRouterMatch = createCachedSelector(
   const { bookingId, favoriteId, offerId } = params
   return `${bookingId || ' '}${favoriteId || ' '}${offerId || ' '}`
 })
-
-export const selectUserGeolocation = state => state.geolocation

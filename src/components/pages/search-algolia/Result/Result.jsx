@@ -45,7 +45,7 @@ const Result = ({ result, geolocation, search }) => {
         <div className="result-arrow">
           <Icon
             className="teaser-arrow-img"
-            svg="ico-next-S"
+            svg="ico-next-pink"
           />
         </div>
       </div>

@@ -11,20 +11,28 @@
 }
 
 .sp-button {
-  @extend .pc-theme-primary;
-
+  background-color: $primary;
   border-color: $primary;
   border-radius: 2rem;
   border-bottom-left-radius: 0;
   border-top-left-radius: 0;
   box-shadow: inset 0 -2px 0 0 rgba(153, 0, 38, 0.6);
+  color: $white;
   font-size: rem(20px);
   font-weight: 500;
   padding: rem(10px) rem(16px);
 }
 
 .sp-content {
-  @extend .page-content;
+  background: $white;
+  display: block;
+  left: 0;
+  top: 2.8rem;
+  bottom: 3.5rem;
+  overflow-y: auto;
+  padding: 0.75rem 0 rem(30px) 0;
+  position: absolute;
+  right: 0;
 }
 
 .sp-container {
@@ -55,7 +63,7 @@
   flex-grow: 1;
 }
 
-.sp-result-title {
+.sp-results-title {
   font-size: rem(15px);
   font-style: italic;
   font-weight: 600;

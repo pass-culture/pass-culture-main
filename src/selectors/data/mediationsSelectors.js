@@ -38,4 +38,4 @@ export const selectMediationByOfferId = createCachedSelector(
   (mediations, offerId) => {
     return mediations.find(mediation => mediation.offerId === offerId)
   }
-)((state, offerId = '') => offerId)
+)((state, offerId) => offerId)

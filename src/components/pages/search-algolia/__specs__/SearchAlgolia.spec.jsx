@@ -109,7 +109,7 @@ describe('components | SearchAlgolia', () => {
       // then
       const footer = wrapper.find(RelativeFooterContainer)
       expect(footer).toHaveLength(1)
-      expect(footer.prop('className')).toBe('dotted-top-red')
+      expect(footer.prop('extraClassName')).toBe('dotted-top-red')
       expect(footer.prop('theme')).toBe('white')
     })
 
