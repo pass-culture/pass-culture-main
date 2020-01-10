@@ -1,6 +1,6 @@
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
-from scripts.algolia_indexing.indexing import algolia_index_offers
+from scripts.algolia_indexing.indexing import indexing_offers_in_algolia
 
 
 @patch('scripts.algolia_indexing.indexing.delete_offer_ids')
@@ -9,8 +9,11 @@ from scripts.algolia_indexing.indexing import algolia_index_offers
 def test_should_trigger_indexing_using_offer_ids_from_redis(mock_get_offer_ids,
                                                             mock_orchestrate,
                                                             mock_delete_offer_ids):
+    # Given
+    client = MagicMock()
+
     # When
-    algolia_index_offers()
+    indexing_offers_in_algolia(client=client)
 
     # Then
     mock_get_offer_ids.assert_called_once()

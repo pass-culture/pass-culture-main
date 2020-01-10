@@ -1,19 +1,20 @@
 #!/usr/bin/env python
 import os
 
+import redis
 from flask import Flask
 from flask_admin import Admin
 from flask_cors import CORS
 from flask_login import LoginManager
 from mailjet_rest import Client
 from werkzeug.middleware.profiler import ProfilerMiddleware
+
 from admin.install import install_admin_views
 from documentation import install_documentation
-from repository.feature_queries import feature_request_profiling_enabled
-from utils.tutorials import upsert_tuto_mediations
 from local_providers.install import install_local_providers
 from models.db import db
 from models.install import install_models, install_features, install_database_extensions
+from repository.feature_queries import feature_request_profiling_enabled
 from routes import install_routes
 from utils.config import IS_DEV
 from utils.json_encoder import EnumJSONEncoder
@@ -21,7 +22,7 @@ from utils.mailing import get_contact, \
     MAILJET_API_KEY, \
     MAILJET_API_SECRET, \
     subscribe_newsletter
-from validation.features import check_feature_consistency
+from utils.tutorials import upsert_tuto_mediations
 
 app = Flask(__name__, static_url_path='/static')
 login_manager = LoginManager()
@@ -72,13 +73,13 @@ with app.app_context():
         upsert_tuto_mediations()
         install_local_providers()
         install_features()
-    import utils.login_manager
 
     install_routes()
     install_documentation()
     install_admin_views(admin, db.session)
 
     app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
+    app.redis_client = redis.Redis(host='redis', decode_responses=True)
 
     app.get_contact = get_contact
     app.subscribe_newsletter = subscribe_newsletter

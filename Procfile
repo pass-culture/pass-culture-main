@@ -3,3 +3,4 @@ postdeploy: python scripts/pc.py install_postgres_extension &&
   alembic upgrade head &&
   python scripts/pc.py install_data
 clock: python scripts/clock.py
+redis-clock: python scripts/redis-clock.py

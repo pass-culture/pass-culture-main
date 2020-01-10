@@ -49,6 +49,7 @@ def app():
     install_routes()
     install_local_providers()
     app.mailjet_client = Mock()
+    app.redis_client = Mock()
 
     @app.route('/test/signin', methods=['POST'])
     def test_signin():

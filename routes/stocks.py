@@ -88,7 +88,7 @@ def create_stock():
     PcObject.save(new_stock)
 
     if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
-        add_to_redis(offer_id)
+        add_to_redis(client=app.redis_client, offer_id=offer_id)
 
     return jsonify(as_dict(new_stock)), 201
 

@@ -79,17 +79,17 @@ class Post:
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
-            PcObject.save(user_offerer, offer)
-
+            PcObject.save(user, user_offerer, offer)
             stock_data = {'price': 1222, 'offerId': humanize(offer.id)}
-            PcObject.save(user)
 
             # When
             TestClient(app.test_client()).with_auth('test@email.fr') \
                 .post('/stocks', json=stock_data)
 
             # Then
-            mock_add_to_redis.assert_called_once_with(offer.id)
+            mock_add_to_redis.assert_called()
+            mock_args, mock_kwargs = mock_add_to_redis.call_args
+            assert mock_kwargs['offer_id'] == offer.id
 
         @patch('routes.stocks.add_to_redis')
         @patch('routes.stocks.feature_queries.is_active', return_value=False)

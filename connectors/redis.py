@@ -2,37 +2,34 @@ import os
 from typing import List
 
 import redis
+from redis import Redis
 
 from utils.human_ids import humanize
 from utils.logger import logger
 
-REDIS_HOST = 'redis'
 REDIS_LIST_OFFER_IDS = 'offer_ids'
 REDIS_LRANGE_END = int(os.environ.get('REDIS_LRANGE_END', '1000'))
 
 
-def add_to_redis(offer_id: int) -> None:
+def add_to_redis(client: Redis, offer_id: int) -> None:
     try:
-        redis.Redis(host=REDIS_HOST) \
-            .rpush(REDIS_LIST_OFFER_IDS, offer_id)
-        logger.info(f'[REDIS] offer id "{humanize(offer_id)}" was added')
-    except redis.exceptions.ConnectionError:
-        logger.info(f'[REDIS] Connection error, offer id "{humanize(offer_id)}" was not added')
+        client.rpush(REDIS_LIST_OFFER_IDS, offer_id)
+        logger.debug(f'[REDIS] offer id "{humanize(offer_id)}" was added')
+    except redis.exceptions.RedisError as error:
+        logger.error(f'[REDIS] {error}')
 
 
-def get_offer_ids() -> List[int]:
+def get_offer_ids(client: Redis) -> List[int]:
     try:
-        offer_ids = redis.Redis(host=REDIS_HOST, decode_responses=True) \
-            .lrange(REDIS_LIST_OFFER_IDS, 0, REDIS_LRANGE_END)
+        offer_ids = client.lrange(REDIS_LIST_OFFER_IDS, 0, REDIS_LRANGE_END)
         return offer_ids
-    except redis.exceptions.ConnectionError:
-        logger.info(f'[REDIS] Connection error when attempting to retrieve offer ids')
+    except redis.exceptions.RedisError as error:
+        logger.error(f'[REDIS] {error}')
 
 
-def delete_offer_ids():
+def delete_offer_ids(client: Redis) -> None:
     try:
-        redis.Redis(host=REDIS_HOST) \
-            .ltrim(REDIS_LIST_OFFER_IDS, REDIS_LRANGE_END, -1)
-        logger.info('[REDIS] offer ids were deleted')
-    except redis.exceptions.ConnectionError:
-        logger.info('[REDIS] Connection error, offer ids were not deleted')
+        client.ltrim(REDIS_LIST_OFFER_IDS, REDIS_LRANGE_END, -1)
+        logger.debug('[REDIS] offer ids were deleted')
+    except redis.exceptions.RedisError as error:
+        logger.error(f'[REDIS] {error}')
