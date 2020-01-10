@@ -46,6 +46,8 @@ app.config['PERMANENT_SESSION_LIFETIME'] = 90 * 24 * 3600
 app.config['FLASK_ADMIN_SWATCH'] = 'flatly'
 app.config['FLASK_ADMIN_FLUID_LAYOUT'] = True
 
+REDIS_URL = os.environ.get('REDIS_URL', 'redis')
+
 
 @app.teardown_request
 def remove_db_session(exc):
@@ -79,7 +81,7 @@ with app.app_context():
     install_admin_views(admin, db.session)
 
     app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
-    app.redis_client = redis.Redis(host='redis', decode_responses=True)
+    app.redis_client = redis.from_url(url=REDIS_URL, decode_responses=True)
 
     app.get_contact = get_contact
     app.subscribe_newsletter = subscribe_newsletter
