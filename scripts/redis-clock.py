@@ -7,12 +7,12 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 from flask import Flask
 from sqlalchemy import orm
 
-from app import REDIS_URL
 from models.db import db
 from repository.feature_queries import feature_cron_algolia_indexing_offers_enabled
 from scripts.algolia_indexing.indexing import indexing_offers_in_algolia
 from scripts.cron_logger.cron_logger import build_cron_log_message
 from scripts.cron_logger.cron_status import CronStatus
+from utils.config import REDIS_URL
 from utils.logger import logger
 
 ALGOLIA_CRON_INDEXING_FREQUENCY = os.environ.get('ALGOLIA_CRON_INDEXING_FREQUENCY', '*')

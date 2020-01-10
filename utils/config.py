@@ -13,6 +13,7 @@ IS_STAGING = ENV == 'staging'
 IS_PROD = ENV == 'production'
 IS_TESTING = ENV == 'testing'
 LOG_LEVEL = int(os.environ.get('LOG_LEVEL', LOG_LEVEL_INFO))
+REDIS_URL = os.environ.get('REDIS_URL', 'redis')
 
 if IS_DEV:
     API_URL = 'http://localhost'

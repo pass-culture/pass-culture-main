@@ -16,7 +16,7 @@ from models.db import db
 from models.install import install_models, install_features, install_database_extensions
 from repository.feature_queries import feature_request_profiling_enabled
 from routes import install_routes
-from utils.config import IS_DEV
+from utils.config import IS_DEV, REDIS_URL
 from utils.json_encoder import EnumJSONEncoder
 from utils.mailing import get_contact, \
     MAILJET_API_KEY, \
@@ -45,8 +45,6 @@ app.config['REMEMBER_COOKIE_DURATION'] = 90 * 24 * 3600
 app.config['PERMANENT_SESSION_LIFETIME'] = 90 * 24 * 3600
 app.config['FLASK_ADMIN_SWATCH'] = 'flatly'
 app.config['FLASK_ADMIN_FLUID_LAYOUT'] = True
-
-REDIS_URL = os.environ.get('REDIS_URL', 'redis')
 
 
 @app.teardown_request
