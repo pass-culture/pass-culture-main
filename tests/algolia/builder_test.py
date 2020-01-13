@@ -41,7 +41,7 @@ class BuildObjectTest:
             'objectID': 'AM',
             'offer': {
                 'author': '',
-                'dateRange': [beginning_datetime, end_datetime],
+                'dateRange': ['2019-11-01 10:00:00', '2019-12-01 10:00:00'],
                 'description': 'Un lit sous une rivière',
                 'id': 'AM',
                 'label': 'Concert ou festival',
@@ -103,7 +103,7 @@ class BuildObjectTest:
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
         offer = create_offer_with_thing_product(venue=venue)
-        stock = create_stock(offer=offer)
+        stock = create_stock(offer=offer, is_soft_deleted=True)
         PcObject.save(stock)
 
         # When
