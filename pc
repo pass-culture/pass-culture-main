@@ -143,6 +143,7 @@ current_branch=${current_branch##refs/heads/}
 
 function update_deploy_branches {
   git fetch
+  git fetch --tags
   git checkout master
   git reset --hard origin/master || exit_error_restoring_branch
   git submodule update || exit_error_restoring_branch
