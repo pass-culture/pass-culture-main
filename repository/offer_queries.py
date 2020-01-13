@@ -409,3 +409,12 @@ def get_offers_by_ids(offer_ids: List[int]) -> List[Offer]:
     return Offer.query \
         .filter(Offer.id.in_(offer_ids)) \
         .all()
+
+
+def get_paginated_offer_ids(limit: int, page: int) -> List[tuple]:
+    return Offer.query\
+        .with_entities(Offer.id)\
+        .offset(page * limit)\
+        .limit(limit)\
+        .all()
+

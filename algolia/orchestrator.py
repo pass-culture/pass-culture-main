@@ -28,8 +28,8 @@ def orchestrate(offer_ids: List[int]) -> None:
 
     if len(indexing_object) > 0:
         add_objects(objects=indexing_object)
-        logger.info(f'Indexing {len(indexing_ids)} objectsID: {indexing_ids}')
+        logger.info(f'[ALGOLIA] Indexing {len(indexing_ids)} objectsID: {indexing_ids}')
 
     if len(deleting_object) > 0:
         delete_objects(object_ids=deleting_object)
-        logger.info(f'Deleting {len(deleting_ids)} objectsID: {deleting_ids}')
+        logger.info(f'[ALGOLIA] Deleting {len(deleting_ids)} objectsID: {deleting_ids}')

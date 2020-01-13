@@ -13,9 +13,10 @@ from repository.offer_queries import department_or_national_offers, \
     _has_remaining_stock, \
     find_offers_by_venue_id, \
     order_by_with_criteria, _order_by_occurs_soon_or_is_thing_then_randomize, \
-    get_offers_by_ids
+    get_offers_by_ids, get_paginated_offer_ids
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_booking, create_criterion, create_user, create_offerer, create_venue, \
+from tests.model_creators.generic_creators import create_booking, create_criterion, create_user, create_offerer, \
+    create_venue, \
     create_user_offerer, create_favorite, create_mediation
 from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_event_occurrence, \
     create_stock_from_offer, create_stock_with_thing_offer, create_product_with_thing_type, \
@@ -23,7 +24,6 @@ from tests.model_creators.specific_creators import create_stock_with_event_offer
     create_event_occurrence
 
 REFERENCE_DATE = '2017-10-15 09:21:34'
-
 
 
 class DepartmentOrNationalOffersTest:
@@ -607,9 +607,12 @@ class FindActivationOffersTest:
         # given
         user = create_user()
         offerer = create_offerer(siren='123456789')
-        venue1 = create_venue(offerer=offerer, siret=offerer.siren + '12345', postal_code='93000', departement_code='93')
-        venue2 = create_venue(offerer=offerer, siret=offerer.siren + '67890', postal_code='93000', departement_code='93')
-        venue3 = create_venue(offerer=offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
+        venue1 = create_venue(offerer=offerer, siret=offerer.siren + '12345', postal_code='93000',
+                              departement_code='93')
+        venue2 = create_venue(offerer=offerer, siret=offerer.siren + '67890', postal_code='93000',
+                              departement_code='93')
+        venue3 = create_venue(offerer=offerer, siret=offerer.siren + '54321', postal_code='93000',
+                              departement_code='93')
         offer1 = create_offer_with_event_product(venue=venue1, event_type=EventType.ACTIVATION)
         offer2 = create_offer_with_event_product(venue=venue2, event_type=EventType.ACTIVATION)
         offer3 = create_offer_with_event_product(venue=venue3, event_type=EventType.ACTIVATION)
@@ -1403,6 +1406,7 @@ def _create_event_stock_and_offer_for_date(venue, date):
     stock = create_stock_from_event_occurrence(event_occurrence, booking_limit_date=date)
     return stock
 
+
 class GetOffersByIdsTest:
     @clean_database
     def test_should_return_all_existing_offers_when_offer_ids_are_given(self, app):
@@ -1421,3 +1425,43 @@ class GetOffersByIdsTest:
         assert len(offers) == 2
         assert offers[0].id == 1
         assert offers[1].id == 2
+
+
+class GetPaginatedOfferIdsTest:
+    @clean_database
+    def test_should_return_one_offer_id_from_first_page_when_limit_is_one(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(offerer=offerer, user=user)
+        venue = create_venue(offerer=offerer)
+        offer1 = create_offer_with_event_product(venue=venue)
+        offer2 = create_offer_with_event_product(venue=venue)
+        PcObject.save(offer1, offer2, user_offerer)
+
+        # When
+        offer_ids = get_paginated_offer_ids(limit=1, page=0)
+
+        # Then
+        assert len(offer_ids) == 1
+        assert (offer1.id, ) in offer_ids
+        assert (offer2.id, ) not in offer_ids
+
+    @clean_database
+    def test_should_return_one_offer_id_from_second_page_when_limit_is_one(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(offerer=offerer, user=user)
+        venue = create_venue(offerer=offerer)
+        offer1 = create_offer_with_event_product(venue=venue)
+        offer2 = create_offer_with_event_product(venue=venue)
+        PcObject.save(offer1, offer2, user_offerer)
+
+        # When
+        offer_ids = get_paginated_offer_ids(limit=1, page=1)
+
+        # Then
+        assert len(offer_ids) == 1
+        assert (offer2.id, ) in offer_ids
+        assert (offer1.id, ) not in offer_ids
