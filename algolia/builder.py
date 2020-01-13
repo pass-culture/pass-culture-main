@@ -21,7 +21,7 @@ def build_object(offer: Offer) -> Dict:
             'id': humanize_offer_id,
             'label': offer.offerType['appLabel'],
             'name': offer.name,
-            'thumbUrl': offer.product.thumbUrl,
+            'thumbUrl': offer.thumb_url,
             'type': offer.offerType['sublabel'],
         },
         'offerer': {

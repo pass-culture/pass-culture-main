@@ -1062,3 +1062,22 @@ class IsFromProviderTest:
 
         # then
         assert offer.isFromProvider is False
+
+
+class ThumbUrlTest:
+    def test_should_return_thumb_url_with_mediation_when_mediation_exists(self):
+        # given
+        offer = Offer()
+        offer.mediations = [create_mediation(idx=1, date_created=datetime(2019, 11, 1, 10, 0, 0))]
+
+        # then
+        assert offer.thumb_url == 'http://localhost/storage/thumbs/mediations/AE'
+
+    def test_should_return_thumb_url_with_product_when_mediation_does_not_exist(self):
+        # given
+        offer = Offer()
+        offer.product = create_product_with_thing_type()
+        offer.product.id = 1
+
+        # then
+        assert offer.thumb_url == 'http://localhost/storage/thumbs/products/AE'

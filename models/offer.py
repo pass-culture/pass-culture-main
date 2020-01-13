@@ -83,9 +83,9 @@ class Offer(PcObject,
                         nullable=False)
 
     isDuo = Column(Boolean,
-                        server_default=false(),
-                        default=False,
-                        nullable=False)
+                   server_default=false(),
+                   default=False,
+                   nullable=False)
 
     dateCreated = Column(DateTime,
                          nullable=False,
@@ -229,6 +229,10 @@ class Offer(PcObject,
         if not self.isFullyBooked:
             remaining_stock_word = 'en stock' if self.isThing else pluralize(remaining_for_all_stocks, 'place')
             return f'encore {remaining_for_all_stocks} {remaining_stock_word}'
+
+    @property
+    def thumb_url(self) -> str:
+        return self.activeMediation.thumbUrl if self.hasActiveMediation else self.product.thumbUrl
 
     def _has_unlimited_stock(self):
         return any(map(lambda s: s.available is None, self.stocks))
