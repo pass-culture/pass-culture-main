@@ -14,8 +14,9 @@ from werkzeug.middleware.profiler import ProfilerMiddleware
 from admin.install import install_admin_views
 from documentation import install_documentation
 from local_providers.install import install_local_providers
+from models import RecoView
 from models.db import db
-from models.install import install_models, install_features, install_database_extensions
+from models.install import install_models, install_features, install_database_extensions, install_materialized_view
 from repository.feature_queries import feature_request_profiling_enabled
 from routes import install_routes
 from utils.config import IS_DEV, REDIS_URL, ENV
@@ -56,6 +57,7 @@ app.config['REMEMBER_COOKIE_DURATION'] = 90 * 24 * 3600
 app.config['PERMANENT_SESSION_LIFETIME'] = 90 * 24 * 3600
 app.config['FLASK_ADMIN_SWATCH'] = 'flatly'
 app.config['FLASK_ADMIN_FLUID_LAYOUT'] = True
+app.config['SQLALCHEMY_ECHO'] = False
 
 
 @app.teardown_request
@@ -77,6 +79,7 @@ cors = CORS(app,
 # make Werkzeug match routing rules with or without a trailing slash
 app.url_map.strict_slashes = False
 
+
 with app.app_context():
     if IS_DEV:
         install_database_extensions()
@@ -85,9 +88,11 @@ with app.app_context():
         install_local_providers()
         install_features()
 
+    import utils.login_manager
     install_routes()
     install_documentation()
     install_admin_views(admin, db.session)
+    install_materialized_view()
 
     app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
     app.redis_client = redis.from_url(url=REDIS_URL, decode_responses=True)

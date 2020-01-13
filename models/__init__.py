@@ -30,6 +30,7 @@ from models.product import BookFormat
 from models.product import Product
 from models.providable_mixin import ProvidableMixin
 from models.provider import Provider
+from models.reco_view import RecoView
 from models.recommendation import Recommendation
 from models.stock import Stock
 from models.stock import Stock
@@ -39,8 +40,8 @@ from models.user_offerer import UserOfferer
 from models.user_session import UserSession
 from models.venue import Venue
 from models.venue_provider import VenueProvider
-from models.versioned_mixin import VersionedMixin
 from models.venue_provider_price_rule import VenueProviderPriceRule
+from models.versioned_mixin import VersionedMixin
 
 __all__ = (
     'VersionedMixin',
@@ -79,10 +80,44 @@ __all__ = (
     'Provider',
     'Product',
     'Recommendation',
+    'RecoView',
     'RightsType',
     'ThingType',
     'UserOfferer',
     'User',
     'UserSession',
     'Venue'
+)
+
+# Order matters
+__models__ = (
+    'User',
+    'UserSession',
+    'Provider',
+    'Offerer',
+    'UserOfferer',
+    'Venue',
+    'ApiKey',
+    'AllocinePivot',
+    'BankInformation',
+    'BeneficiaryImport',
+    'BeneficiaryImportStatus',
+    'Criterion',
+    'Deposit',
+    'Email',
+    'Product',
+    'Offer',
+    'Mediation',
+    'Recommendation',
+    'Favorite',
+    'Feature',
+    'Stock',
+    'Booking',
+    'VenueProvider',
+    'VenueProviderPriceRule',
+    'LocalProviderEvent',
+    'OfferCriterion',
+    'PaymentMessage',
+    'Payment',
+    'PaymentStatus',
 )

@@ -1,3 +1,4 @@
+from models import RecoView
 from sandboxes.scripts.creators.industrial.create_industrial_activation_offers import \
     create_industrial_activation_offers
 from sandboxes.scripts.creators.industrial.create_industrial_admin_users import *
@@ -73,6 +74,7 @@ def save_industrial_sandbox():
 
     mediations_by_name = create_industrial_mediations(offers_by_name)
 
+    RecoView.refresh()
     recommendations_by_name = create_industrial_recommendations(
         mediations_by_name,
         offers_by_name,

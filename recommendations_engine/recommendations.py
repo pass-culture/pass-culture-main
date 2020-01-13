@@ -35,7 +35,7 @@ def give_requested_recommendation_to_user(user, offer_id, mediation_id):
     return recommendation
 
 
-def create_recommendations_for_discovery(user, pagination_params, limit=3):
+def create_recommendations_for_discovery(user, pagination_params, limit=3, seen_recommendation_ids=[]):
     recommendations = []
     tuto_mediations_by_index = {}
 
@@ -51,7 +51,8 @@ def create_recommendations_for_discovery(user, pagination_params, limit=3):
     offers = get_offers_for_recommendations_discovery(
         limit=limit,
         pagination_params=pagination_params,
-        user=user
+        user=user,
+        seen_recommendation_ids=seen_recommendation_ids
     )
 
     for (index, offer) in enumerate(offers):
@@ -65,7 +66,7 @@ def create_recommendations_for_discovery(user, pagination_params, limit=3):
                 tuto_mediations_by_index[tuto_mediation_index]
             )
             inserted_tuto_mediations += 1
-        recommendations.append(_create_recommendation(user, offer))
+        recommendations.append(_create_recommendation_from_dict(user, offer))
     PcObject.save(*recommendations)
     return recommendations
 
@@ -106,6 +107,25 @@ def _create_recommendation(user, offer, mediation=None):
         active_mediations = [m for m in offer.mediations if m.isActive]
         if active_mediations:
             recommendation.mediation = random.choice(active_mediations)
+
+    return recommendation
+
+def _create_recommendation_from_dict(user, reco_view, mediation=None):
+    recommendation = Recommendation()
+    recommendation.user = user
+
+    recommendation.offerId = reco_view.id
+
+    if mediation:
+        recommendation.mediation = mediation
+    else:
+        recommendation.mediationId = reco_view.mediation_id
+        # TODO: Perf de merguez
+        # mediations = db.session.execute(
+        #     f"""select id from mediation where "offerId" = {reco_view.id} and "isActive" = true""").fetchall()
+        # active_mediations = [mediation[0] for mediation in mediations]
+        # if active_mediations:
+        #     recommendation.mediationId = random.choice(active_mediations)
 
     return recommendation
 

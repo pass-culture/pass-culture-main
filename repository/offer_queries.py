@@ -3,7 +3,7 @@ from typing import List
 
 from flask_sqlalchemy import BaseQuery
 from sqlalchemy import desc, func, or_, text
-from sqlalchemy.orm import aliased, joinedload
+from sqlalchemy.orm import aliased
 from sqlalchemy.orm.query import Query
 from sqlalchemy.sql.elements import BinaryExpression
 
@@ -17,7 +17,8 @@ from models import EventType, \
     Stock, \
     ThingType, \
     Venue, \
-    Product, Favorite, Booking
+    Product, Favorite, Booking, \
+    RecoView
 from models.db import Model, db
 from models.feature import FeatureToggle
 from repository import feature_queries
@@ -79,21 +80,36 @@ def _order_by_occurs_soon_or_is_thing_then_randomize():
 
 
 def get_active_offers(user, pagination_params, departement_codes=None, offer_id=None, limit=None,
-                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize):
-    seed_number = pagination_params.get('seed')
-    page = pagination_params.get('page')
-    sql = text(f'SET SEED TO {seed_number}')
-    db.session.execute(sql)
+                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize, seen_recommendation_ids=[]):
+    # TODO: to optimize
+    favorites = Favorite.query.filter_by(userId=user.id).all()
+    favorite_ids = [favorite.offerId for favorite in favorites]
+    print(f"favorite ids: {favorite_ids}")
 
-    active_offer_ids = get_active_offers_ids_query(user, departement_codes, offer_id)
-    query = Offer.query.filter(Offer.id.in_(active_offer_ids))
-    query = query.order_by(_round_robin_by_type_onlineness_and_criteria(order_by))
-    query = query.options(joinedload('mediations'),
-                          joinedload('product'))
+    # TODO: perf de merguez
+    if '00' in departement_codes:
+        venues = Venue.query.filter().all()
+    else:
+        venues = Venue.query.filter(Venue.departementCode.in_(departement_codes)).all()
+    venue_ids = [venue.id for venue in venues]
+    print(f"venue ids: {venue_ids}")
+
+    offers_booked = Offer.query.join(Stock).join(Booking).filter_by(userId=user.id).all()
+    offer_booked_ids = [offer.id for offer in offers_booked]
+    print(f"booked: {offer_booked_ids}")
+
+    recos_query = RecoView.query \
+        .filter(RecoView.id.notin_(favorite_ids)) \
+        .filter(RecoView.id.notin_(seen_recommendation_ids)) \
+        .filter(RecoView.id.notin_(offer_booked_ids)) \
+        .filter(or_(RecoView.venueId.in_(venue_ids), RecoView.isNational == True)) \
+        .order_by(RecoView.row_number)
 
     if limit:
-        query = _get_paginated_active_offers(limit, page, query)
-    return query.all()
+        recos_query = recos_query.limit(limit)
+
+    recos = recos_query.all()
+    return recos
 
 
 def _get_paginated_active_offers(limit, page, query):

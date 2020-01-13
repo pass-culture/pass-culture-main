@@ -1,5 +1,5 @@
 import datetime
-from typing import Dict, Optional, List, Union
+from typing import Dict, Optional, List
 
 from sqlalchemy import select
 

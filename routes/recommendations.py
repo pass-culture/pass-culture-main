@@ -1,11 +1,13 @@
 import random
 
+import time
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
 from domain.build_recommendations import move_requested_recommendation_first, \
     move_tutorial_recommendations_first
-from models import PcObject, Recommendation
+from models import PcObject, Recommendation, RecoView
+from models.db import db
 from recommendations_engine import create_recommendations_for_discovery, \
     create_recommendations_for_search, \
     get_recommendation_search_params, \
@@ -85,6 +87,10 @@ def put_recommendations():
     else:
         seen_recommendation_ids = []
 
+    print("#####################################")
+    print(seen_recommendation_ids)
+    print("#####################################")
+
     offer_id = dehumanize(request.args.get('offerId'))
     mediation_id = dehumanize(request.args.get('mediationId'))
 
@@ -103,9 +109,16 @@ def put_recommendations():
         'seed': random.random() if request_seed is None else float(request_seed)
     }
 
+    start_time = time.time()
     created_recommendations = create_recommendations_for_discovery(limit=BLOB_SIZE,
                                                                    user=current_user,
-                                                                   pagination_params=pagination_params)
+                                                                   pagination_params=pagination_params,
+                                                                   seen_recommendation_ids=seen_recommendation_ids)
+    end_time = time.time()
+    print("///////////////////////")
+    print(f"Time: {end_time - start_time}")
+    print("///////////////////////")
+
     logger.debug(lambda: '(new recos)' + str([(reco, reco.mediation, reco.dateRead)
                                               for reco in created_recommendations]))
     logger.debug(lambda: '(new reco) count %i', len(created_recommendations))

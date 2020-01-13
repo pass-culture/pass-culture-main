@@ -2,7 +2,8 @@ from postgresql_audit.flask import versioning_manager
 from sqlalchemy import orm
 from sqlalchemy.exc import ProgrammingError
 
-from models import PcObject
+import models
+from models import PcObject, RecoView
 from models.db import db
 from models.feature import FeatureToggle, Feature
 
@@ -17,8 +18,18 @@ def install_models():
 
     create_versionning_tables()
 
-    db.create_all()
+    for db_model in models.__models__:
+        model_to_create = getattr(models, db_model).__table__
+        model_to_create.create(bind=db.engine, checkfirst=True)
+
     db.session.commit()
+
+
+def install_materialized_view():
+    reco_view = db.session.execute("""SELECT to_regclass('reco_view')""").fetchone()
+
+    if not all(reco_view):
+        RecoView.create(session=db.session)
 
 
 def install_features():

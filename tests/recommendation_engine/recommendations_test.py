@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from dateutil.tz import tzutc
 
-from models import PcObject, Offerer, Stock
+from models import PcObject, Offerer, Stock, RecoView
 from models.db import db
 from recommendations_engine import create_recommendations_for_discovery, \
     get_recommendation_search_params, \
@@ -28,6 +28,7 @@ class GiveRequestedRecommendationToUserTest:
         mediation = create_mediation(offer_ok, is_active=False)
         reco_ok = create_recommendation(offer=offer_ok, user=user, mediation=mediation)
         PcObject.save(reco_ok, stock)
+        RecoView.refresh(concurrently=False)
 
         # When
         result_reco = give_requested_recommendation_to_user(
@@ -48,6 +49,7 @@ class GiveRequestedRecommendationToUserTest:
         mediation = create_mediation(offer_ok, is_active=False)
         reco_ko = create_recommendation(offer=offer_ok, user=user, mediation=mediation)
         PcObject.save(reco_ko, stock, user2)
+        RecoView.refresh(concurrently=False)
 
         # When
         result_reco = give_requested_recommendation_to_user(
@@ -112,17 +114,19 @@ class CreateRecommendationsForDiscoveryTest:
         user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer1 = create_offer_with_thing_product(venue, thumb_count=0)
+        offer1 = create_offer_with_thing_product(venue)
         stock1 = create_stock_from_offer(offer1, price=0)
         mediation1 = create_mediation(offer1, is_active=False)
-        offer2 = create_offer_with_thing_product(venue, thumb_count=0)
+        offer2 = create_offer_with_thing_product(venue)
         stock2 = create_stock_from_offer(offer2, price=0)
         mediation2 = create_mediation(offer2, is_active=False)
         mediation3 = create_mediation(offer2, is_active=True)
         PcObject.save(user, stock1, mediation1, stock2, mediation2, mediation3)
+        RecoView.refresh(concurrently=False)
 
         # When
-        recommendations = create_recommendations_for_discovery(pagination_params={'page': 1, 'seed': 0.5}, user=user)
+        recommendations = create_recommendations_for_discovery(pagination_params={'page': 1, 'seed': 0.5},
+                                                               user=user)
 
         # Then
         mediations = list(map(lambda x: x.mediationId, recommendations))
@@ -149,6 +153,7 @@ class CreateRecommendationsForDiscoveryTest:
 
         PcObject.save(user, stock1, mediation1, stock2, mediation2, recommendation)
         db.session.refresh(offer2)
+        RecoView.refresh(concurrently=False)
 
         # When
         recommendations = create_recommendations_for_discovery(pagination_params={'page': 1, 'seed': 0.5}, user=user)
@@ -169,7 +174,8 @@ class CreateRecommendationsForDiscoveryTest:
         # Then
         get_offers_for_recommendations_discovery.assert_called_once_with(limit=3,
                                                                          pagination_params={'page': 1, 'seed': 0.5},
-                                                                         user=user)
+                                                                         user=user,
+                                                                         seen_recommendation_ids=[])
 
     @clean_database
     def test_returns_offer_in_all_ile_de_france_for_user_from_93(self, app):
@@ -186,10 +192,12 @@ class CreateRecommendationsForDiscoveryTest:
                                                                                              departements_ko)
         PcObject.save(user)
         PcObject.save(*(expected_stocks_recommended + expected_stocks_not_recommended))
+        RecoView.refresh(concurrently=False)
         offer_ids_in_adjacent_department = set([stock.offerId for stock in expected_stocks_recommended])
 
         #  when
-        recommendations = create_recommendations_for_discovery(pagination_params={'page': 1, 'seed': 0.5}, limit=10,
+        recommendations = create_recommendations_for_discovery(pagination_params={'page': 1, 'seed': 0.5},
+                                                               limit=10,
                                                                user=user)
 
         # then
@@ -208,6 +216,7 @@ class CreateRecommendationsForDiscoveryTest:
                                                                                          departements_ok)
         PcObject.save(user)
         PcObject.save(*expected_stocks_recommended)
+        RecoView.refresh(concurrently=False)
         offer_ids_in_all_department = set([stock.offerId for stock in expected_stocks_recommended])
 
         #  when
