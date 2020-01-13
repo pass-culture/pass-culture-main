@@ -1,7 +1,7 @@
 """add_search_algolia_feature
 
 Revision ID: d96bf1a4ace6
-Revises: ed5ca9bde4a9
+Revises: 8f2c1fd24cad
 Create Date: 2020-01-03 13:24:37.563981
 
 """
@@ -11,8 +11,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '8f2c1fd24cad'
-down_revision = 'ed5ca9bde4a9'
+revision = 'd96bf1a4ace6'
+down_revision = '8f2c1fd24cad'
 branch_labels = None
 depends_on = None
 
