@@ -97,6 +97,8 @@ describe('components | FormFooter', () => {
           id: 'my-id',
           'onClick': expect.any(Function),
           'onKeyPress': expect.any(Function),
+          role: 'button',
+          tabIndex: '0',
           target: '_blank',
           title: 'my-title'
         })

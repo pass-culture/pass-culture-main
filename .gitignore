@@ -3,8 +3,6 @@
 # dependencies
 /node_modules
 
-.env
-
 # testing
 /coverage
 /testcafe/screenshots/thumbnails
@@ -19,9 +17,8 @@ target.zip
 
 # misc
 .DS_Store
-.env.local
-.env.dev.local
 .env.development.local
+.env.dev.local
 .env.testing.local
 .env.test.local
 .env.production.local

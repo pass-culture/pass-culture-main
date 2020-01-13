@@ -49,6 +49,8 @@ class FormFooter extends PureComponent {
         {...attributes}
         onClick={this.handleTracking}
         onKeyPress={this.handleTracking}
+        role="button"
+        tabIndex="0"
         target="_blank"
       >
         {options.label}

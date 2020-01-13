@@ -2,6 +2,7 @@ import InfiniteScroll from 'react-infinite-scroller'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router'
+import { toast } from 'react-toastify'
 
 import { fetch } from './service/algoliaService'
 import HeaderContainer from '../../layout/Header/HeaderContainer'
@@ -14,12 +15,12 @@ class SearchAlgolia extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-      isLoading: false,
-      totalPagesNumber: 0,
-      resultsCount: 0,
       currentPage: 0,
+      isLoading: false,
+      resultsCount: 0,
       results: [],
       searchKeywords: '',
+      totalPagesNumber: 0,
     }
   }
 
@@ -37,6 +38,13 @@ class SearchAlgolia extends PureComponent {
     }
   }
 
+  showFailModal = () => {
+    toast.info(
+      'La recherche n\'a pas pu aboutir, veuillez ré-essayer plus tard.',
+      { autoClose: 5000 }
+    )
+  }
+
   handleOnSubmit = event => {
     event.preventDefault()
     const { currentPage, searchKeywords } = this.state
@@ -50,10 +58,15 @@ class SearchAlgolia extends PureComponent {
     if (keywordsTrimmed !== '') {
       if (searchKeywords !== keywordsTrimmed) {
         this.setState({
+          currentPage: 0,
           results: [],
+        }, () => {
+          const { currentPage } = this.state
+          this.handleFetchOffers(keywordsTrimmed, currentPage)
         })
+      } else {
+        this.handleFetchOffers(keywordsTrimmed, currentPage)
       }
-      this.handleFetchOffers(keywordsTrimmed, currentPage)
     }
   }
 
@@ -80,17 +93,22 @@ class SearchAlgolia extends PureComponent {
       const { results } = this.state
       const { hits, nbHits, nbPages } = offers
       this.setState({
-        isLoading: false,
-        totalPagesNumber: nbPages,
-        resultsCount: nbHits,
         currentPage: currentPage,
+        isLoading: false,
+        resultsCount: nbHits,
         results: [...results, ...hits],
         searchKeywords: keywords,
+        totalPagesNumber: nbPages,
       })
       query.change({
         'mots-cles': keywords,
         page: currentPage + 1,
       })
+    }).catch(() => {
+      this.setState({
+        isLoading: false
+      })
+      this.showFailModal()
     })
   }
 
@@ -106,12 +124,12 @@ class SearchAlgolia extends PureComponent {
     const { geolocation, location } = this.props
     const { search } = location
     const {
+      currentPage,
       isLoading,
       resultsCount,
-      totalPagesNumber,
-      currentPage,
       results,
       searchKeywords,
+      totalPagesNumber,
     } = this.state
 
     return (
