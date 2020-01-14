@@ -396,7 +396,10 @@ class Offer extends PureComponent {
 
     const offererHasNoPhysicalVenues = offerer && get(venuesMatchingOfferType, 'length') === 0
 
-    const isDisplayDigitalOfferInformationMessage = displayDigitalOfferInformationMessage(selectedOfferType, venue)
+    const isDisplayDigitalOfferInformationMessage = displayDigitalOfferInformationMessage(
+      selectedOfferType,
+      venue
+    )
 
     return (
       <Main
@@ -610,23 +613,26 @@ class Offer extends PureComponent {
               </div>
               {isDisplayDigitalOfferInformationMessage && (
                 <div className="is-horizontal">
-                  <Insert className="yellow-insert">
+                  <Insert className="yellow-insert ">
                     <p>
                       {
-                        "Les offres numériques (à l'expection des livres numériques) ne feront pas l'objet d'un remboursement. Pour plus d'informations, merci de consulter les CGU."
+                        "Les offres numériques (à l'exception des livres numériques) ne feront pas l'objet d'un remboursement. Pour plus d'informations, merci de consulter les CGU."
                       }
                     </p>
-                    <span className="icon">
-                      <Icon svg="ico-external-site" />
-                    </span>
-                    <a
-                      href={CGU_URL}
-                      id="cgu-link"
-                      rel="noopener noreferrer"
-                      target="_blank"
-                    >
-                      {"Consulter les Conditions Générales d'utilisation"}
-                    </a>
+
+                    <div className="insert-action-link">
+                      <a
+                        href={CGU_URL}
+                        id="cgu-link"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        <Icon svg="ico-external-site" />
+                      </a>
+                      <p>
+                        {"Consulter les Conditions Générales d'Utilisation"}
+                      </p>
+                    </div>
                   </Insert>
                 </div>
               )}
