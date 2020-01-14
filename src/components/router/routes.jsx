@@ -82,7 +82,7 @@ const routes = [
     icon: 'ico-search',
     path:
       '/recherche-algolia/:details(details|transition)?/:offerId?/:mediationId?/:booking(reservation)?/:bookingId?/:cancellation(annulation)?/:confirmation(confirmation)?',
-    title: 'Recherche algolia',
+    title: 'Recherche',
   },
   {
     component: MyBookingsContainer,

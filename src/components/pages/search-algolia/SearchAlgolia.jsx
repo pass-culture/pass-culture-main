@@ -40,8 +40,7 @@ class SearchAlgolia extends PureComponent {
 
   showFailModal = () => {
     toast.info(
-      'La recherche n\'a pas pu aboutir, veuillez ré-essayer plus tard.',
-      { autoClose: 5000 }
+      "La recherche n'a pas pu aboutir, veuillez ré-essayer plus tard."
     )
   }
 

@@ -698,8 +698,7 @@ describe('components | SearchAlgolia', () => {
       // then
       await toast.info
       expect(toast.info).toHaveBeenCalledWith(
-        'La recherche n\'a pas pu aboutir, veuillez ré-essayer plus tard.',
-        { 'autoClose': 5000 }
+        "La recherche n'a pas pu aboutir, veuillez ré-essayer plus tard.",
       )
     })
   })
