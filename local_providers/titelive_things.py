@@ -18,6 +18,8 @@ THINGS_FOLDER_NAME_TITELIVE = 'livre3_11'
 NUMBER_OF_ELEMENTS_PER_LINE = 46  # (45 elements from line + \n)
 OLD_ISBN_FORMAT_LENGTH = 10
 NEW_ISBN_FORMAT_LENGTH = 13
+PAPER_PRESS_TVA = '2,10'
+PAPER_PRESS_SUPPORT_CODE = 'R'
 SCHOOL_RELATED_CSR_CODE = [
     '2700', '2701', '2702', '2703', '2704', '2800', '2801', '2802', '2803', '2804', '2900', '2901',
     '2902', '2903', '2904', '2905', '2906', '2907', '3000', '3001', '3002', '3003', '3004', '3005',
@@ -56,11 +58,16 @@ class TiteLiveThings(LocalProvider):
             return []
 
         self.infos = get_infos_from_data_line(elements)
+
         is_school_related_product = self.infos['is_scolaire'] == '1' \
                                     or self.infos['code_csr'] in SCHOOL_RELATED_CSR_CODE
 
+        is_paper_press_product = self.infos['taux_tva'] == PAPER_PRESS_TVA \
+                                    and self.infos['code_support'] == PAPER_PRESS_SUPPORT_CODE
+
         book_unique_identifier = self.infos['ean13']
-        if is_school_related_product:
+
+        if is_school_related_product or is_paper_press_product:
             try:
                 product_queries.delete_unwanted_existing_product(book_unique_identifier)
             except ProductWithBookingsException:
@@ -192,8 +199,8 @@ def get_thing_type_and_extra_data_from_titelive_type(titelive_type):
         return None, None
 
 
-def get_infos_from_data_line(elts: []):
-    infos = {}
+def get_infos_from_data_line(elts: []) -> Dict:
+    infos = dict()
     infos['ean13'] = elts[0]
     infos['isbn'] = elts[1]
     infos['titre'] = elts[2]

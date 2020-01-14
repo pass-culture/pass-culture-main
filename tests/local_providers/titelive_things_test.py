@@ -8,7 +8,8 @@ from models.pc_object import PcObject
 from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
 from tests.model_creators.provider_creators import activate_provider
-from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+    create_venue
 from tests.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
 
 
@@ -732,3 +733,201 @@ class TiteliveThingsTest:
         # Then
         product = Product.query.one()
         assert product.extraData['isbn'] == '9782895026310'
+
+    @clean_database
+    @patch('local_providers.titelive_things.get_files_to_process_from_titelive_ftp')
+    @patch('local_providers.titelive_things.get_lines_from_thing_file')
+    def test_should_not_create_product_when_product_is_paper_press(self,
+                                                                   get_lines_from_thing_file,
+                                                                   get_files_to_process_from_titelive_ftp,
+                                                                   app):
+        # Given
+        files_list = list()
+        files_list.append('Quotidien30.tit')
+
+        get_files_to_process_from_titelive_ftp.return_value = files_list
+
+        data_line_1 = "9782895026310" \
+                      "~9136205982" \
+                      "~nouvelles du Chili" \
+                      "~" \
+                      "~0203" \
+                      "~1" \
+                      "~" \
+                      "~" \
+                      "~" \
+                      "~18,99" \
+                      "~LES EDITIONS DE L'INSTANT MEME" \
+                      "~EPAGINE" \
+                      "~11/05/2011" \
+                      "~R" \
+                      "~2" \
+                      "~0" \
+                      "~0,0" \
+                      "~0,0" \
+                      "~0,0" \
+                      "~0" \
+                      "~0" \
+                      "~0" \
+                      "~0" \
+                      "~Collectif" \
+                      "~15/01/2013" \
+                      "~02/03/2018" \
+                      "~2,10" \
+                      "~Littérature Hispano-Portugaise" \
+                      "~" \
+                      "~" \
+                      "~" \
+                      "~" \
+                      "~" \
+                      "~1" \
+                      "~3012420280013" \
+                      "~" \
+                      "~" \
+                      "~" \
+                      "~" \
+                      "~" \
+                      "~0" \
+                      "~" \
+                      "~369" \
+                      "~860" \
+                      "~3694440" \
+                      "~"
+        data_line_2 = "9782895026310" \
+                      "~2895026319" \
+                      "~nouvelles du Chili" \
+                      "~" \
+                      "~0203" \
+                      "~1" \
+                      "~" \
+                      "~" \
+                      "~" \
+                      "~18,99" \
+                      "~LES EDITIONS DE L'INSTANT MEME" \
+                      "~EPAGINE" \
+                      "~11/05/2011" \
+                      "~BL" \
+                      "~2" \
+                      "~0" \
+                      "~0,0" \
+                      "~0,0" \
+                      "~0,0" \
+                      "~0" \
+                      "~0" \
+                      "~0" \
+                      "~0" \
+                      "~Collectif" \
+                      "~15/01/2013" \
+                      "~02/03/2018" \
+                      "~2,10" \
+                      "~Littérature Hispano-Portugaise" \
+                      "~" \
+                      "~" \
+                      "~" \
+                      "~" \
+                      "~" \
+                      "~1" \
+                      "~3012420280013" \
+                      "~" \
+                      "~" \
+                      "~" \
+                      "~" \
+                      "~" \
+                      "~0" \
+                      "~" \
+                      "~369" \
+                      "~860" \
+                      "~3694440" \
+                      "~"
+
+        get_lines_from_thing_file.return_value = iter([data_line_1, data_line_2])
+
+        activate_provider('TiteLiveThings')
+        titelive_things = TiteLiveThings()
+
+        # When
+        titelive_things.updateObjects()
+        products = Product.query.all()
+        product = products[0]
+
+        # Then
+        assert len(products) == 1
+        assert product.extraData['isbn'] == '2895026319'
+
+
+    @clean_database
+    @patch('local_providers.titelive_things.get_files_to_process_from_titelive_ftp')
+    @patch('local_providers.titelive_things.get_lines_from_thing_file')
+    def test_should_delete_product_when_it_changes_to_paper_press_product(self, get_lines_from_thing_file,
+                                                                  get_files_to_process_from_titelive_ftp,
+                                                                  app):
+        # Given
+        files_list = list()
+        files_list.append('Quotidien30.tit')
+
+        data_line = "9782895026310" \
+                    "~2895026319" \
+                    "~nouvelles du Chili" \
+                    "~" \
+                    "~0203" \
+                    "~1" \
+                    "~" \
+                    "~" \
+                    "~" \
+                    "~18,99" \
+                    "~LES EDITIONS DE L'INSTANT MEME" \
+                    "~EPAGINE" \
+                    "~11/05/2011" \
+                    "~R" \
+                    "~2" \
+                    "~0" \
+                    "~0,0" \
+                    "~0,0" \
+                    "~0,0" \
+                    "~0" \
+                    "~0" \
+                    "~0" \
+                    "~0" \
+                    "~Collectif" \
+                    "~15/01/2013" \
+                    "~02/03/2018" \
+                    "~2,10" \
+                    "~Littérature Hispano-Portugaise" \
+                    "~" \
+                    "~" \
+                    "~" \
+                    "~" \
+                    "~" \
+                    "~1" \
+                    "~3012420280013" \
+                    "~" \
+                    "~" \
+                    "~" \
+                    "~" \
+                    "~" \
+                    "~0" \
+                    "~" \
+                    "~369" \
+                    "~860" \
+                    "~3694440" \
+                    "~"
+
+        get_files_to_process_from_titelive_ftp.return_value = files_list
+
+        get_lines_from_thing_file.return_value = iter([data_line])
+
+        titelive_provider = activate_provider('TiteLiveThings')
+        PcObject.save(titelive_provider)
+        product = create_product_with_thing_type(id_at_providers='9782895026310',
+                                                 thing_name='Presse papier',
+                                                 date_modified_at_last_provider=datetime(2001, 1, 1),
+                                                 last_provider_id=titelive_provider.id)
+        PcObject.save(product)
+
+        titelive_things = TiteLiveThings()
+
+        # When
+        titelive_things.updateObjects()
+
+        # Then
+        assert Product.query.count() == 0
