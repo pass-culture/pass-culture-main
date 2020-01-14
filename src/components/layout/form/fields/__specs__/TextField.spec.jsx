@@ -78,47 +78,4 @@ describe('src | components | layout | form | TextField', () => {
       }
     })
   })
-
-  it('should prevent entering invalid characters when input type is number', () => {
-    return new Promise(done => {
-      // given
-      const initialValues = {
-        foo: '1',
-      }
-      const wrapper = mount(
-        <Form
-          initialValues={initialValues}
-          onSubmit={handleOnSubmit}
-          render={({ handleSubmit }) => (
-            <form>
-              <TextField
-                name="foo"
-                type="number"
-              />
-              <button
-                onClick={handleSubmit}
-                type="submit"
-              >
-                {'Submit'}
-              </button>
-            </form>
-          )}
-        />
-      )
-
-      // when
-      wrapper
-        .find(TextField)
-        .find({ name: 'foo' })
-        .find('input')
-        .simulate('change', { target: { value: '6.7+-%*e' } })
-      wrapper.find('button[type="submit"]').simulate('click')
-
-      // then
-      function handleOnSubmit(formValues) {
-        expect(formValues.foo).toStrictEqual(6.7)
-        done()
-      }
-    })
-  })
 })

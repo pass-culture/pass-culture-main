@@ -34,11 +34,9 @@ class TextField extends PureComponent {
 
   preventEnteringInvalidChars = () => {
     this.keypressListener = this.inputElement.addEventListener('keypress', event => {
-      const hasEnteredSymbolsKeys = event.key === '*' || event.key === '%'
-      const hasEnteredPlusOrMinusKeys = event.key === '-' || event.key === '+'
-      const hasEnteredLetterE = event.key === 'e' || event.key === 'E'
+      const validCharacters = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', ',', '.']
 
-      if (hasEnteredSymbolsKeys || hasEnteredPlusOrMinusKeys || hasEnteredLetterE) {
+      if (!validCharacters.includes(event.key)) {
         event.preventDefault()
       }
     })
