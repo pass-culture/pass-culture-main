@@ -22,18 +22,34 @@ class RedisTest:
         assert str(redis_connection.get(key_to_insert), 'utf-8') == value_to_insert
 
 
-@patch('connectors.redis.REDIS_LIST_OFFER_IDS', return_value='fake_list_offer_ids')
-@patch('connectors.redis.redis')
-def test_should_add_offer_id_to_redis_set(mock_redis, mock_redis_list):
-    # Given
-    client = MagicMock()
-    client.rpush = MagicMock()
+class AddToRedisTest:
+    @patch('connectors.redis.feature_queries.is_active', return_value=True)
+    @patch('connectors.redis.REDIS_LIST_OFFER_IDS', return_value='fake_list_offer_ids')
+    @patch('connectors.redis.redis')
+    def test_should_add_offer_id_to_redis_set_when_feature_flipping_is_enable(self, mock_redis, mock_redis_list, mock_feature_active):
+        # Given
+        client = MagicMock()
+        client.rpush = MagicMock()
 
-    # When
-    add_to_redis(client=client, offer_id=1)
+        # When
+        add_to_redis(client=client, offer_id=1)
 
-    # Then
-    client.rpush.assert_called_once_with(mock_redis_list, 1)
+        # Then
+        client.rpush.assert_called_once_with(mock_redis_list, 1)
+
+    @patch('connectors.redis.feature_queries.is_active', return_value=False)
+    @patch('connectors.redis.REDIS_LIST_OFFER_IDS', return_value='fake_list_offer_ids')
+    @patch('connectors.redis.redis')
+    def test_should_not_add_offer_id_to_redis_set_when_feature_flipping_is_disable(self, mock_redis, mock_redis_list, mock_feature_active):
+        # Given
+        client = MagicMock()
+        client.rpush = MagicMock()
+
+        # When
+        add_to_redis(client=client, offer_id=1)
+
+        # Then
+        client.rpush.assert_not_called()
 
 
 @patch('connectors.redis.REDIS_LRANGE_END', return_value=500)
@@ -64,4 +80,3 @@ def test_should_delete_given_range_of_offer_ids_from_redis_list(mock_redis, mock
 
     # Then
     client.ltrim.assert_called_once_with(mock_redis_list, mock_redis_lrange_end, -1)
-

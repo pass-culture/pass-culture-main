@@ -73,7 +73,7 @@ def get_stock(stock_id, mediation_id):
 def create_stock():
     request_data = request.json
     check_request_has_offer_id(request_data)
-    offer_id = dehumanize(request_data.get('offerId', None))
+    offer_id = dehumanize(request_data.get('offerId'))
     offer = get_offer_by_id(offer_id)
 
     check_offer_is_editable(offer)
@@ -87,8 +87,7 @@ def create_stock():
     new_stock = Stock(from_dict=request_data)
     PcObject.save(new_stock)
 
-    if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
-        add_to_redis(client=app.redis_client, offer_id=offer_id)
+    add_to_redis(client=app.redis_client, offer_id=offer_id)
 
     return jsonify(as_dict(new_stock)), 201
 

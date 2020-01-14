@@ -4,6 +4,8 @@ from typing import List
 import redis
 from redis import Redis
 
+from models.feature import FeatureToggle
+from repository import feature_queries
 from utils.human_ids import humanize
 from utils.logger import logger
 
@@ -12,11 +14,12 @@ REDIS_LRANGE_END = int(os.environ.get('REDIS_LRANGE_END', '1000'))
 
 
 def add_to_redis(client: Redis, offer_id: int) -> None:
-    try:
-        client.rpush(REDIS_LIST_OFFER_IDS, offer_id)
-        logger.debug(f'[REDIS] offer id "{humanize(offer_id)}" was added')
-    except redis.exceptions.RedisError as error:
-        logger.error(f'[REDIS] {error}')
+    if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
+        try:
+            client.rpush(REDIS_LIST_OFFER_IDS, offer_id)
+            logger.debug(f'[REDIS] offer id "{humanize(offer_id)}" was added')
+        except redis.exceptions.RedisError as error:
+            logger.error(f'[REDIS] {error}')
 
 
 def get_offer_ids(client: Redis) -> List[int]:
