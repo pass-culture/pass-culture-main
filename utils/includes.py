@@ -210,7 +210,10 @@ WEBAPP_GET_BOOKING_INCLUDES = [
             },
         ]
     },
-    "mediation",
+    {
+        "key": "mediation",
+        "includes": ['thumbUrl']
+    },
     "thumbUrl"
 ]
 
@@ -246,7 +249,10 @@ WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES = [
             },
         ]
     },
-    "mediation",
+    {
+        "key": "mediation",
+        "includes": ['thumbUrl']
+    },
     "qrCode",
     "thumbUrl"
 ]
