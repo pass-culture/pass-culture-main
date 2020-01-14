@@ -713,3 +713,33 @@ class Post:
 
             # Then
             assert response.status_code == 201
+
+        @patch('routes.bookings.add_to_redis')
+        @clean_database
+        def expect_add_offer_id_to_queue(self, mock_add_to_redis, app):
+            # Given
+            beneficiary = create_user()
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            thing_offer = create_offer_with_thing_product(venue)
+            stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=50, available=1)
+            recommendation = create_recommendation(thing_offer, beneficiary)
+            create_deposit(beneficiary, amount=50)
+            PcObject.save(recommendation)
+
+            booking_json = {
+                'stockId': humanize(stock.id),
+                'recommendationId': humanize(recommendation.id),
+                'quantity': 1
+            }
+
+            # When
+            response = TestClient(app.test_client()) \
+                .with_auth(beneficiary.email) \
+                .post('/bookings', json=booking_json)
+
+            # Then
+            assert response.status_code == 201
+            mock_add_to_redis.assert_called()
+            mock_args, mock_kwargs = mock_add_to_redis.call_args
+            assert mock_kwargs['offer_id'] == stock.offerId
