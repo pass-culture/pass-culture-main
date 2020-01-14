@@ -55,7 +55,7 @@ describe('src | components | layout | Details | Details', () => {
         params: {
           offerId: 'AE'
         },
-        path: '/recherche-algolia/details/AE'
+        path: '/recherche-offres/details/AE'
       }
 
       // when

@@ -40,7 +40,7 @@ describe('components | Result', () => {
     const offerDateRange = wrapper.findWhere(node => node.text() ===  'du 2019-1-1 au 2019-1-30').first()
     const offerDistance = wrapper.findWhere(node => node.text() ===  '5879 km').first()
     const offerMediation = wrapper.find('img')
-    expect(wrapper.prop('to')).toBe('/recherche-algolia/details/AE?mots-cles=librairie&page=1')
+    expect(wrapper.prop('to')).toBe('/recherche-offres/details/AE?mots-cles=librairie&page=1')
     expect(offerName).toHaveLength(1)
     expect(offerLabel).toHaveLength(1)
     expect(offerDateRange).toHaveLength(1)

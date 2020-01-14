@@ -65,7 +65,7 @@ describe('src | components | booking | utils | handleRedirect', () => {
         id: 'ABC1',
       }
       const match = {
-        url: '/recherche-algolia/details/AUVQ/reservation',
+        url: '/recherche-offres/details/AUVQ/reservation',
       }
       const location = {
         search: '?mots-cles="librairie"&page=3',
@@ -75,7 +75,7 @@ describe('src | components | booking | utils | handleRedirect', () => {
       const result = handleRedirect(booking, match, location)
 
       // then
-      expect(result).toBe('/recherche-algolia/details/AUVQ?mots-cles="librairie"&page=3')
+      expect(result).toBe('/recherche-offres/details/AUVQ?mots-cles="librairie"&page=3')
     })
   })
 })

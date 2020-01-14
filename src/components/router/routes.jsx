@@ -71,6 +71,7 @@ const routes = [
   },
   {
     component: SearchContainer,
+    featureName: 'SEARCH_LEGACY',
     icon: 'ico-search',
     path:
       '/recherche/:results(resultats)?/:category?/:details(details|transition)?/:offerId?/:mediationId?/:booking(reservation)?/:bookingId?/:cancellation(annulation)?/:confirmation(confirmation)?',
@@ -81,7 +82,7 @@ const routes = [
     featureName: 'SEARCH_ALGOLIA',
     icon: 'ico-search',
     path:
-      '/recherche-algolia/:details(details|transition)?/:offerId?/:mediationId?/:booking(reservation)?/:bookingId?/:cancellation(annulation)?/:confirmation(confirmation)?',
+      '/recherche-offres/:details(details|transition)?/:offerId?/:mediationId?/:booking(reservation)?/:bookingId?/:cancellation(annulation)?/:confirmation(confirmation)?',
     title: 'Recherche',
   },
   {

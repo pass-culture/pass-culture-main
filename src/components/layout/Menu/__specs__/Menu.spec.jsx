@@ -16,7 +16,7 @@ jest.mock('../../../../reducers/overlay', () => ({
   toggleOverlay: jest.fn(),
 }))
 
-describe('src | components | menu | Menu', () => {
+describe('components | Menu', () => {
   let props
 
   beforeEach(() => {
@@ -54,7 +54,7 @@ describe('src | components | menu | Menu', () => {
     })
   })
 
-  describe('render()', () => {
+  describe('render', () => {
     it('should open the menu with one CloseLink, one Header, two SimpleLink, five NavLink and one SignoutButton', () => {
       // given
       const history = createBrowserHistory()
@@ -63,6 +63,10 @@ describe('src | components | menu | Menu', () => {
           features: [
             {
               nameKey: 'SEARCH_ALGOLIA',
+              isActive: true,
+            },
+            {
+              nameKey: 'SEARCH_LEGACY',
               isActive: true,
             },
             {

@@ -3,7 +3,7 @@ const handleRedirect = (booking, match, location) => {
   const { search } = location
   let nextUrl
 
-  if (url.includes('recherche-algolia')) {
+  if (url.includes('recherche-offres')) {
     nextUrl = url.replace('/reservation', '') + search
   } else if (url.includes('reservations')) {
     nextUrl = `/reservations/details/${booking.id}`

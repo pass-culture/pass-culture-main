@@ -713,9 +713,9 @@ describe('components | SearchAlgolia', () => {
       store = buildStore(state)
     })
 
-    it('should render search main page when current route is /recherche-algolia', () => {
+    it('should render search main page when current route is /recherche-offres', () => {
       // given
-      history.push('/recherche-algolia')
+      history.push('/recherche-offres')
 
       // when
       const wrapper = mount(
@@ -733,9 +733,9 @@ describe('components | SearchAlgolia', () => {
       expect(searchDetails).toHaveLength(0)
     })
 
-    it('should render item details when current route is /recherche-algolia/details/AE', () => {
+    it('should render item details when current route is /recherche-offres/details/AE', () => {
       // given
-      history.push('/recherche-algolia/details/AE')
+      history.push('/recherche-offres/details/AE')
 
       // when
       const wrapper = mount(
@@ -758,7 +758,7 @@ describe('components | SearchAlgolia', () => {
     it('should display a close button redirecting to discovery when arriving on search page', () => {
       // given
       const history = createBrowserHistory()
-      history.push('/recherche-algolia')
+      history.push('/recherche-offres')
       props.match = {
         params: {},
       }

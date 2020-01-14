@@ -42,14 +42,15 @@ describe('getMenuItemsFromRoutes', () => {
       {
         component: SearchContainer,
         icon: 'ico-search',
+        featureName: 'SEARCH_LEGACY',
         path: '/recherche',
         title: 'Recherche',
       },
       {
         component: SearchAlgoliaContainer,
-        icon: 'ico-search',
-        path: '/recherche-algolia',
         featureName: 'SEARCH_ALGOLIA',
+        icon: 'ico-search',
+        path: '/recherche-offres',
         title: 'Recherche',
       },
       {

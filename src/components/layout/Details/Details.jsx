@@ -23,7 +23,7 @@ class Details extends PureComponent {
     const { getOfferById, match } = this.props
     const { params, path = '' } = match
     const { offerId } = params
-    if (path.includes('recherche-algolia')) {
+    if (path.includes('recherche-offres')) {
       getOfferById(offerId)
     }
   }

@@ -142,7 +142,7 @@ class SearchAlgolia extends PureComponent {
         <Switch>
           <Route
             exact
-            path="/recherche-algolia"
+            path="/recherche-offres"
           >
             <div className="sp-content">
               <form onSubmit={this.handleOnSubmit}>
@@ -196,7 +196,7 @@ class SearchAlgolia extends PureComponent {
           </Route>
           <Route
             exact
-            path="/recherche-algolia/:details(details|transition)/:offerId([A-Z0-9]+)/:booking(reservation)?/:bookingId?/:cancellation(annulation)?/:confirmation(confirmation)?"
+            path="/recherche-offres/:details(details|transition)/:offerId([A-Z0-9]+)/:booking(reservation)?/:bookingId?/:cancellation(annulation)?/:confirmation(confirmation)?"
           >
             <SearchAlgoliaDetailsContainer />
           </Route>
