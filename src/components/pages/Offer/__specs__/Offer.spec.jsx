@@ -370,7 +370,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           // then
           const insert = wrapper.find('.yellow-insert')
           const insertLink = insert.find('a')
-          expect(insertLink.prop('href')).toStrictEqual(
+          expect(insertLink.at(0).prop('href')).toStrictEqual(
             'https://docs.passculture.app/textes-normatifs'
           )
         })

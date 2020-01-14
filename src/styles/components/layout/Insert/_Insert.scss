@@ -34,11 +34,13 @@
     flex-wrap: wrap;
     justify-content: start;
 
-    p {
+    span {
       align-self: normal;
-      font-weight: 700;
       padding-left: 0.5rem;
       padding-top: 0.25rem;
+      a {
+        font-weight: 700;
+      }
     }
 
     img {

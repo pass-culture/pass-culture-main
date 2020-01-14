@@ -619,7 +619,6 @@ class Offer extends PureComponent {
                         "Les offres numériques (à l'exception des livres numériques) ne feront pas l'objet d'un remboursement. Pour plus d'informations, merci de consulter les CGU."
                       }
                     </p>
-
                     <div className="insert-action-link">
                       <a
                         href={CGU_URL}
@@ -629,9 +628,15 @@ class Offer extends PureComponent {
                       >
                         <Icon svg="ico-external-site" />
                       </a>
-                      <p>
-                        {"Consulter les Conditions Générales d'Utilisation"}
-                      </p>
+                      <span>
+                        <a
+                          href={CGU_URL}
+                          rel="noopener noreferrer"
+                          target="_blank"
+                        >
+                          {"Consulter les Conditions Générales d'Utilisation"}
+                        </a>
+                      </span>
                     </div>
                   </Insert>
                 </div>
