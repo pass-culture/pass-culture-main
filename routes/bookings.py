@@ -217,6 +217,8 @@ def patch_booking(booking_id: int):
     booking.isCancelled = True
     PcObject.save(booking)
 
+    add_to_redis(client=app.redis_client, offer_id=booking.stock.offerId)
+
     try:
         send_cancellation_emails_to_user_and_offerer(booking, is_offerer_cancellation, is_user_cancellation,
                                                      send_raw_email)

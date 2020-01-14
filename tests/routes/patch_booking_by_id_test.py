@@ -81,6 +81,27 @@ class Patch:
             assert response.status_code == 200
             assert Booking.query.get(booking.id).isCancelled
 
+        @patch('routes.bookings.add_to_redis')
+        @clean_database
+        def expect_add_offer_id_to_queue(self, mock_add_to_redis, app):
+            # Given
+            admin_user = create_user(can_book_free_offers=False, is_admin=True)
+            other_user = create_user(email='test2@example.com')
+            booking = create_booking(other_user)
+            create_deposit(other_user, amount=500)
+            PcObject.save(admin_user, booking)
+
+            # When
+            response = TestClient(app.test_client()) \
+                .with_auth(admin_user.email) \
+                .patch(f'/bookings/{humanize(booking.id)}', json={'isCancelled': True})
+
+            # Then
+            assert response.status_code == 200
+            mock_add_to_redis.assert_called()
+            mock_args, mock_kwargs = mock_add_to_redis.call_args
+            assert mock_kwargs['offer_id'] == booking.stock.offerId
+
     class Returns400:
         @clean_database
         def when_the_booking_cannot_be_cancelled(self, app):
