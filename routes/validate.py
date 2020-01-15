@@ -4,7 +4,8 @@ from flask import current_app as app, jsonify, request
 from flask_login import login_required, current_user
 
 from domain.admin_emails import maybe_send_offerer_validation_email
-from domain.user_emails import send_pro_user_waiting_for_validation_by_admin_email
+from domain.user_emails import send_pro_user_waiting_for_validation_by_admin_email, \
+    send_pro_attachment_validation_by_admin_email
 from domain.payments import read_message_name_in_message_file, \
     generate_file_checksum
 from domain.user_emails import send_validation_confirmation_email_to_pro, send_venue_validation_confirmation_email
@@ -23,54 +24,27 @@ from validation.validate import check_valid_token_for_user_validation, check_val
 def validate_attachment(token):
     check_validation_request(token)
     user_offerer = UserOfferer.query.filter_by(validationToken=token).first()
-
     check_validation_token_has_been_already_user(user_offerer)
-
-
-    print('°°°°°°°°°°°° route("/validate/user-offerer"°°°°°°°°°°°°°°°°°°°°°°°°°°°')
-    print('°°°°°°°°°°°°°°°°°°°°user_offerer °°°°°°°°°°°°°°°°°°°', user_offerer)
-    print('°°°°°°°°°°°°°°°°°°°°token °°°°°°°°°°°°°°°°°°°', token)
-    print('°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°')
-    print('°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°')
-    print('°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°')
 
     user_offerer.validationToken = None
     PcObject.save(user_offerer)
 
-
-    print('°°°°°° Validate user offerer attachement route', user_offerer )
-
-
     try:
-        send_validation_confirmation_email_to_pro(user_offerer, send_raw_email)
+        send_pro_attachment_validation_by_admin_email(user_offerer, send_raw_email)
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 
-
     return "Validation du rattachement de la structure effectuée", 202
-
 
 
 @app.route("/validate/offerer/<token>", methods=["GET"])
 def validate_offerer(token):
     check_validation_request(token)
-
     offerer = Offerer.query.filter_by(validationToken=token).first()
-
-    print('----------------------------------------')
-    print('----------------------------------------')
-    print('---------------- offerer------------------------', offerer)
-    print('----------------------------------------')
-    print('----------------------------------------')
-
     check_validation_token_has_been_already_user(offerer)
-
-    # rajouter un check et renvoyer une 404
 
     offerer.validationToken = None
     PcObject.save(offerer)
-
-    print('°°°°°° Validate offerer route', offerer )
 
     try:
         send_validation_confirmation_email_to_pro(offerer, send_raw_email)
@@ -98,7 +72,6 @@ def validate_venue():
 
 @app.route("/validate/user/<token>", methods=["PATCH"])
 def validate_user(token):
-    app_origin_url = request.headers.get('origin')
     user_to_validate = user_queries.find_by_validation_token(token)
     check_valid_token_for_user_validation(user_to_validate)
     user_to_validate.validationToken = None

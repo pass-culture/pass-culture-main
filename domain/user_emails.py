@@ -12,9 +12,10 @@ from emails.new_offerer_validation import retrieve_data_for_new_offerer_validati
 from emails.offerer_booking_recap import retrieve_data_for_offerer_booking_recap_email
 from emails.offerer_bookings_recap_after_deleting_stock import \
     retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation
+from emails.pro_offerer_attachment_validation import retrieve_data_for_pro_offerer_attachment_validation_email
 from emails.pro_waiting_validation import retrieve_data_for_pro_user_waiting_offerer_validation_email
 from emails.user_reset_password import retrieve_data_for_reset_password_email
-from models import Booking, Offerer, Stock, User, Venue
+from models import Booking, Offerer, Stock, User, Venue, UserOfferer
 from repository import booking_queries
 from repository.stock_queries import set_booking_recap_sent_and_save
 from repository.user_queries import find_all_emails_of_user_offerers_admins
@@ -105,6 +106,10 @@ def send_validation_confirmation_email_to_pro(offerer: Offerer, send_email: Call
     email = retrieve_data_for_new_offerer_validation_email(offerer)
     send_email(data=email)
 
+def send_pro_attachment_validation_by_admin_email(user_offerer: UserOfferer, send_email: Callable[..., bool]):
+    email = retrieve_data_for_pro_offerer_attachment_validation_email(user_offerer)
+    return send_email(data=email)
+
 
 def send_batch_cancellation_emails_to_users(bookings: List[Booking], send_email: Callable[..., bool]) -> None:
     for booking in bookings:
@@ -149,7 +154,6 @@ def send_pro_user_waiting_for_validation_by_admin_email(user: User, send_email: 
 
 def send_activation_email(user: User, send_email: Callable[..., bool]) -> bool:
     activation_email_data = get_activation_email_data(user)
-
     return send_email(activation_email_data)
 
 
