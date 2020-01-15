@@ -7,7 +7,7 @@ from repository.offerer_queries import find_all_offerers_with_managing_user_info
     find_all_offerers_with_managing_user_information_and_not_virtual_venue, \
     find_all_offerers_with_venue, find_first_by_user_offerer_id, find_all_pending_validation, \
     find_filtered_offerers, filter_offerers_with_keywords_string, find_by_id, count_offerer, count_offerer_with_stock, \
-    count_offerer_by_departement, count_offerer_with_stock_by_departement
+    count_offerer_by_departement, count_offerer_with_stock_by_departement, find_offerer_user_email
 from repository.user_queries import find_all_emails_of_user_offerers_admins
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, create_user_offerer, \
@@ -446,6 +446,21 @@ def test_find_all_emails_of_user_offerers_admins_returns_list_of_user_emails_hav
     assert set(emails) == {'admin1@offerer.com', 'admin2@offerer.com'}
     assert type(emails) == list
 
+@clean_database
+def test_find_email_of_user_offerer_return_email(
+        app):
+    # Given
+    offerer = create_offerer()
+    pro_user = create_user(email='pro@example.com')
+    user_offerer = create_user_offerer(pro_user, offerer)
+
+    PcObject.save(pro_user, user_offerer)
+
+    # When
+    result = find_offerer_user_email(offerer.id)
+
+    # Then
+    assert result == 'pro@example.com'
 
 @clean_database
 def test_find_all_offerers_with_managing_user_information(app):

@@ -65,6 +65,14 @@ def find_all_admin_offerer_emails(offerer_id):
                 User).with_entities(User.email)]
 
 
+def find_offerer_user_email(offerer_id):
+    return UserOfferer.query \
+        .filter_by(offererId=offerer_id) \
+        .join(User) \
+        .with_entities(User.email) \
+        .first()[0]
+
+
 def find_all_recommendations_for_offerer(offerer):
     return Recommendation.query.join(Offer).join(Venue).join(Offerer).filter_by(id=offerer.id).all()
 
