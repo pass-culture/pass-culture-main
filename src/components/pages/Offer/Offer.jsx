@@ -613,7 +613,7 @@ class Offer extends PureComponent {
               </div>
               {isDisplayDigitalOfferInformationMessage && (
                 <div className="is-horizontal">
-                  <Insert className="yellow-insert ">
+                  <Insert className="yellow-insert">
                     <p>
                       {
                         "Les offres numériques (à l'exception des livres numériques) ne feront pas l'objet d'un remboursement. Pour plus d'informations, merci de consulter les CGU."
@@ -627,16 +627,10 @@ class Offer extends PureComponent {
                         target="_blank"
                       >
                         <Icon svg="ico-external-site" />
-                      </a>
-                      <span>
-                        <a
-                          href={CGU_URL}
-                          rel="noopener noreferrer"
-                          target="_blank"
-                        >
+                        <p>
                           {"Consulter les Conditions Générales d'Utilisation"}
-                        </a>
-                      </span>
+                        </p>
+                      </a>
                     </div>
                   </Insert>
                 </div>

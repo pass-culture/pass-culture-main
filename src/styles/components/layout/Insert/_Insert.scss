@@ -24,27 +24,27 @@
 
   background-color: #ffea00;
   border-radius: 6px;
-  display: flex;
+  // display: flex;
   margin-bottom: 1.5rem;
   padding: 18px;
 
   .insert-action-link {
     margin-top: 0.5rem;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: start;
+    a {
+      font-weight: 700;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: start;
 
-    span {
-      align-self: normal;
-      padding-left: 0.5rem;
-      padding-top: 0.25rem;
-      a {
-        font-weight: 700;
+      p {
+        align-self: normal;
+        padding-left: 0.5rem;
+        padding-top: 0.25rem;
       }
-    }
 
-    img {
-      align-self: center;
+      img {
+        align-self: center;
+      }
     }
   }
 }
