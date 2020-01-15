@@ -24,7 +24,7 @@ class Get:
                 .first().validationToken
 
             # When
-            response = TestClient(app.test_client()).get('/validate?modelNames=Offerer&token=' + token,
+            response = TestClient(app.test_client()).get('/validate/offerer/' + token,
                                                          headers={'origin': 'http://localhost:3000'})
 
             # Then
@@ -39,7 +39,7 @@ class Get:
         def expect_offerer_not_to_be_validated_with_unknown_token(self, app):
             # when
             response = TestClient(app.test_client()).with_auth(email='toto_pro@btmx.fr') \
-                .get('/validate?modelNames=Offerer&token=123')
+                .get('/validate/offerer/123')
 
             # then
             assert response.status_code == 404

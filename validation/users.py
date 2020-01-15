@@ -1,5 +1,6 @@
 from domain.password import check_password_strength
 from models import ApiErrors
+from models.api_errors import ResourceNotFoundError
 
 
 def check_allowed_changes_for_user(data):
@@ -90,3 +91,14 @@ def _contact_ok_is_not_checked(contact_ok):
     contact_ok_is_not_checked_as_bool = contact_ok is not True
     contact_ok_is_not_checked_as_str = str(contact_ok).lower() != 'true'
     return contact_ok_is_not_checked_as_bool and contact_ok_is_not_checked_as_str
+
+
+def check_validation_token_has_been_already_user(user):
+    if user is None:
+        errors = ResourceNotFoundError()
+        errors.add_error(
+            'validation',
+              "Aucun(e) objet ne correspond à ce code de validation" \
+               + " ou l'objet est déjà validé"
+        )
+        raise errors

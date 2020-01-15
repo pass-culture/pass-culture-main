@@ -32,14 +32,14 @@ class WriteObjectValidationEmailTest:
         div_offerer = html.select('div.offerer')[0]
         assert div_offerer.h2.text == 'Nouvelle structure :'
         assert div_offerer.h3.text == 'Infos API entreprise :'
-        assert div_offerer.strong.a['href'] == 'http://localhost/validate?modelNames=Offerer&token={}'.format(
+        assert div_offerer.strong.a['href'] == 'http://localhost/validate/offerer/{}'.format(
             offerer.validationToken)
         assert div_offerer.strong.a.text == 'cliquez ici'
 
         div_user_offerer = html.select('div.user_offerer')[0]
         assert div_user_offerer.h2.text == 'Nouveau rattachement :'
         assert div_user_offerer.h3.text == 'Utilisateur :'
-        assert div_user_offerer.strong.a['href'] == 'http://localhost/validate?modelNames=UserOfferer&token={}'.format(
+        assert div_user_offerer.strong.a['href'] == 'http://localhost/validate/user-offerer/{}'.format(
             user_offerer.validationToken)
         assert div_user_offerer.strong.a.text == 'cliquez ici'
 

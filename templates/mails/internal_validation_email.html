@@ -1,6 +1,7 @@
 <html>
     <body>
         <h1>Inscription ou rattachement PRO à valider</h1>
+
         <hr/>
         <div class="user_offerer">
 
@@ -10,7 +11,7 @@
                 <h2>Nouveau rattachement :</h2>
 
                 <strong class="validation">
-                    Pour valider, <a href="{{ api_url }}/validate?modelNames=UserOfferer&token={{ user_offerer.validationToken }}">cliquez ici</a>
+                    Pour valider, <a href="{{ api_url }}/validate/user-offerer/{{ user_offerer.validationToken }}">cliquez ici</a>
                 </strong>
             {% endif %}
 
@@ -26,7 +27,7 @@
             {% else %}
                 <h2>Nouvelle structure :</h2>
                 <strong class="validation">
-                    Pour valider, <a href="{{ api_url }}/validate?modelNames=Offerer&token={{ offerer.validationToken }}">cliquez ici</a>
+                    Pour valider, <a href="{{ api_url }}/validate/offerer/{{ offerer.validationToken }}">cliquez ici</a>
                 </strong>
             {% endif %}
 

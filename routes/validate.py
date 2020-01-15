@@ -3,7 +3,6 @@
 from flask import current_app as app, jsonify, request
 from flask_login import login_required, current_user
 
-import models
 from domain.admin_emails import maybe_send_offerer_validation_email
 from domain.user_emails import send_pro_user_waiting_for_validation_by_admin_email
 from domain.payments import read_message_name_in_message_file, \
@@ -16,43 +15,63 @@ from repository import user_offerer_queries, offerer_queries, user_queries
 from repository.payment_queries import find_message_checksum
 from utils.config import IS_INTEGRATION
 from utils.mailing import MailServiceException, send_raw_email
+from validation.users import check_validation_token_has_been_already_user
 from validation.validate import check_valid_token_for_user_validation, check_validation_request, check_venue_found
 
 
-@app.route("/validate", methods=["GET"])
-def validate():
-    token = request.args.get('token')
+@app.route("/validate/user-offerer/<token>", methods=["GET"])
+def validate_attachment(token):
+    check_validation_request(token)
+    user_offerer = UserOfferer.query.filter_by(validationToken=token).first()
 
+    check_validation_token_has_been_already_user(user_offerer)
+
+
+    print('°°°°°°°°°°°° route("/validate/user-offerer"°°°°°°°°°°°°°°°°°°°°°°°°°°°')
+    print('°°°°°°°°°°°°°°°°°°°°user_offerer °°°°°°°°°°°°°°°°°°°', user_offerer)
+    print('°°°°°°°°°°°°°°°°°°°°token °°°°°°°°°°°°°°°°°°°', token)
+    print('°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°')
+    print('°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°')
+    print('°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°')
+
+    user_offerer.validationToken = None
+    PcObject.save(user_offerer)
+
+
+    print('°°°°°° Validate user offerer attachement route', user_offerer )
+
+
+    try:
+        send_validation_confirmation_email_to_pro(user_offerer, send_raw_email)
+    except MailServiceException as e:
+        app.logger.error('Mail service failure', e)
+
+
+    return "Validation du rattachement de la structure effectuée", 202
+
+
+
+@app.route("/validate/offerer/<token>", methods=["GET"])
+def validate_offerer(token):
     check_validation_request(token)
 
-    model_names = request.args.get('modelNames')
+    offerer = Offerer.query.filter_by(validationToken=token).first()
 
-    if model_names is None:
-        e = ApiErrors()
-        e.add_error('modelNames', 'Vous devez fournir des noms de classes')
-        return jsonify(e.errors), 400
+    print('----------------------------------------')
+    print('----------------------------------------')
+    print('---------------- offerer------------------------', offerer)
+    print('----------------------------------------')
+    print('----------------------------------------')
 
-    model_names = model_names.split(',')
+    check_validation_token_has_been_already_user(offerer)
 
-    objects_to_validate = []
-    for model_name in model_names:
-        query = getattr(models, model_name) \
-            .query \
-            .filter_by(validationToken=token)
-        objects_to_validate += query.all()
+    # rajouter un check et renvoyer une 404
 
-    if len(objects_to_validate) == 0:
-        return "Aucun(e) objet ne correspond à ce code de validation" \
-               + " ou l'objet est déjà validé", \
-               404
+    offerer.validationToken = None
+    PcObject.save(offerer)
 
-    for obj in objects_to_validate:
-        obj.validationToken = None
+    print('°°°°°° Validate offerer route', offerer )
 
-    PcObject.save(*objects_to_validate)
-
-    offerers = iter([obj for obj in objects_to_validate if isinstance(obj, Offerer)])
-    offerer = next(offerers, None)
     try:
         send_validation_confirmation_email_to_pro(offerer, send_raw_email)
     except MailServiceException as e:
