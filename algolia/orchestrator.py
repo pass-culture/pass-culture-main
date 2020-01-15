@@ -1,6 +1,6 @@
 from typing import List
 
-from algolia.api import add_objects, delete_objects
+from algolia.api import add_objects, clear_objects, delete_objects
 from algolia.builder import build_object
 from algolia.rules_engine import is_eligible_for_indexing
 from repository import offer_queries
@@ -8,7 +8,10 @@ from utils.human_ids import humanize
 from utils.logger import logger
 
 
-def orchestrate(offer_ids: List[int]) -> None:
+def orchestrate(offer_ids: List[int], is_clear: bool = False) -> None:
+    if is_clear:
+        clear_objects()
+
     indexing_object = []
     deleting_object = []
     indexing_ids = []

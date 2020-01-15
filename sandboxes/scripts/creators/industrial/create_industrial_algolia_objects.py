@@ -11,5 +11,4 @@ def create_industrial_algolia_indexed_objects():
     if algolia_trigger_indexation:
         logger.info('create_industrial_algolia_objects')
         offer_ids = Offer.query.with_entities(Offer.id).all()
-        orchestrate(offer_ids)
-
+        orchestrate(offer_ids, True)

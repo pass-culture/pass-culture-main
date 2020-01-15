@@ -25,6 +25,11 @@ def add_object(object: Dict) -> None:
         .save_object(object)
 
 
+def clear_objects() -> None:
+    init_connection() \
+        .clear_objects()
+
+
 def delete_objects(object_ids: List[str]) -> None:
     init_connection() \
         .delete_objects(object_ids)
