@@ -19,6 +19,7 @@ from models.install import install_models, install_features, install_database_ex
 from repository.feature_queries import feature_request_profiling_enabled
 from routes import install_routes
 from utils.config import IS_DEV, REDIS_URL
+from utils.health_checker import read_version_from_file
 from utils.json_encoder import EnumJSONEncoder
 from utils.mailing import get_contact, \
     MAILJET_API_KEY, \
@@ -26,10 +27,13 @@ from utils.mailing import get_contact, \
     subscribe_newsletter
 from utils.tutorials import upsert_tuto_mediations
 
-sentry_sdk.init(
-    dsn="https://0470142cf8d44893be88ecded2a14e42@logs.passculture.app/5",
-    integrations=[FlaskIntegration()]
-)
+if IS_DEV is False:
+    sentry_sdk.init(
+        dsn="https://0470142cf8d44893be88ecded2a14e42@logs.passculture.app/5",
+        integrations=[FlaskIntegration()],
+        release=read_version_from_file(),
+        environment=os.environ.get('ENV', 'development')
+    )
 
 app = Flask(__name__, static_url_path='/static')
 login_manager = LoginManager()
