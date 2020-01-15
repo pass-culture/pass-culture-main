@@ -1,10 +1,10 @@
 from unittest.mock import patch, MagicMock, call
 
 from models import PcObject
-from scripts.algolia_indexing.indexing import indexing_offers_in_algolia, batch_indexing_offers_in_algolia
+from scripts.algolia_indexing.indexing import indexing_offers_in_algolia, batch_indexing_offers_in_algolia, \
+    batch_indexing_offers_in_algolia_by_venue_ids
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue, \
-    create_stock
+from tests.model_creators.generic_creators import create_offerer, create_venue
 from tests.model_creators.specific_creators import create_offer_with_event_product
 
 
@@ -31,13 +31,10 @@ class BatchIndexingOffersTest:
     @clean_database
     def test_should_index_offers_one_time_when_offers_per_page_is_one_and_only_one_page(self, mock_orchestrate, app):
         # Given
-        user = create_user()
         offerer = create_offerer()
-        user_offerer = create_user_offerer(offerer=offerer, user=user)
         venue = create_venue(offerer=offerer)
         offer = create_offer_with_event_product(venue=venue)
-        stock = create_stock(offer=offer)
-        PcObject.save(user_offerer, stock)
+        PcObject.save(offer)
 
         # When
         batch_indexing_offers_in_algolia(limit=1)
@@ -53,15 +50,11 @@ class BatchIndexingOffersTest:
     @clean_database
     def test_should_index_offers_two_times_when_offers_per_page_is_one_and_two_pages(self, mock_orchestrate, app):
         # Given
-        user = create_user()
         offerer = create_offerer()
-        user_offerer = create_user_offerer(offerer=offerer, user=user)
         venue = create_venue(offerer=offerer)
         offer1 = create_offer_with_event_product(venue=venue)
-        stock1 = create_stock(offer=offer1)
         offer2 = create_offer_with_event_product(venue=venue)
-        stock2 = create_stock(offer=offer2)
-        PcObject.save(user_offerer, stock1, stock2)
+        PcObject.save(offer1, offer2)
 
         # When
         batch_indexing_offers_in_algolia(limit=1)
@@ -73,3 +66,38 @@ class BatchIndexingOffersTest:
             call(offer_ids=[offer1.id]),
             call(offer_ids=[offer2.id])
         ]
+    # @patch('scripts.algolia_indexing.indexing.get_paginated_offer_ids_by_venue_id', return_value=[(1, ),(2, )])
+                                                                                        # mock_get_paginated_offer_ids_by_venue_id,
+
+class BatchIndexingOffersByVenueIdsTest:
+    @patch('scripts.algolia_indexing.indexing.delete_venue_ids')
+    @patch('scripts.algolia_indexing.indexing.orchestrate')
+    @patch('scripts.algolia_indexing.indexing.get_venue_ids', return_value=[13, 666])
+    @clean_database
+    def test_should_index_each_offer_of_each_venue(self,
+                                                   mock_get_venue_ids,
+                                                   mock_orchestrate,
+                                                   mock_delete_venue_ids,
+                                                   app):
+        # Given
+        client = MagicMock()
+        offerer = create_offerer()
+        venue1 = create_venue(offerer=offerer, idx=666)
+        venue2 = create_venue(offerer=offerer, idx=13, siret=123654987)
+        offer1 = create_offer_with_event_product(venue=venue1)
+        offer2 = create_offer_with_event_product(venue=venue2)
+        offer3 = create_offer_with_event_product(venue=venue2)
+        PcObject.save(offer1, offer2, offer3)
+
+        # When
+        batch_indexing_offers_in_algolia_by_venue_ids(client=client, limit=1)
+
+        # Then
+        assert mock_orchestrate.call_count == 3
+        call_args_list = mock_orchestrate.call_args_list
+        assert call_args_list == [
+            call(offer_ids=[offer2.id]),
+            call(offer_ids=[offer3.id]),
+            call(offer_ids=[offer1.id])
+        ]
+        assert mock_delete_venue_ids.call_count == 1

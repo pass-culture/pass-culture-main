@@ -7,7 +7,7 @@ from flask import current_app as app
 from flask import jsonify, request
 from flask_login import current_user, login_required
 
-from connectors.redis import add_to_redis
+from connectors.redis import add_offer_id_to_redis
 from domain.bookings import generate_bookings_details_csv
 from domain.expenses import get_expenses
 from domain.user_activation import create_initial_deposit, is_activation_booking
@@ -174,7 +174,7 @@ def create_booking():
     check_expenses_limits(expenses, new_booking)
     PcObject.save(new_booking)
 
-    add_to_redis(client=app.redis_client, offer_id=stock.offerId)
+    add_offer_id_to_redis(client=app.redis_client, offer_id=stock.offerId)
 
     try:
         send_booking_recap_emails(new_booking, send_raw_email)
@@ -217,7 +217,7 @@ def patch_booking(booking_id: int):
     booking.isCancelled = True
     PcObject.save(booking)
 
-    add_to_redis(client=app.redis_client, offer_id=booking.stock.offerId)
+    add_offer_id_to_redis(client=app.redis_client, offer_id=booking.stock.offerId)
 
     try:
         send_cancellation_emails_to_user_and_offerer(booking, is_offerer_cancellation, is_user_cancellation,

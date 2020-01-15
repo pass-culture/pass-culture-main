@@ -2,6 +2,7 @@
 from flask import current_app as app, jsonify, request
 from flask_login import login_required, current_user
 
+from connectors.redis import add_venue_id_to_redis
 from domain.admin_emails import send_venue_validation_email
 from domain.offers import update_is_active_status
 from models import PcObject
@@ -9,6 +10,7 @@ from models.user_offerer import RightsType
 from models.venue import Venue
 from repository.venue_queries import save_venue, find_by_managing_user
 from routes.serialization import as_dict
+from utils.human_ids import dehumanize
 from utils.includes import OFFER_INCLUDES, VENUE_INCLUDES
 from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, \
@@ -63,6 +65,9 @@ def edit_venue(venueId):
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
     venue.populate_from_dict(request.json)
     save_venue(venue)
+
+    add_venue_id_to_redis(client=app.redis_client, venue_id=dehumanize(venueId))
+
     return jsonify(as_dict(venue, includes=VENUE_INCLUDES)), 200
 
 

@@ -51,6 +51,10 @@ def feature_cron_algolia_indexing_offers_enabled() -> bool:
     return os.environ.get('CRON_ALGOLIA_INDEXING_OFFERS', False)
 
 
+def feature_cron_algolia_indexing_offers_by_venue_enabled() -> bool:
+    return os.environ.get('CRON_ALGOLIA_INDEXING_OFFERS_BY_VENUE', False)
+
+
 def feature_cron_synchronize_titelive_things() -> bool:
     return os.environ.get('CRON_SYNCHRONIZE_TITELIVE_THINGS', False)
 

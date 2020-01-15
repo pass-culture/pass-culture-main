@@ -393,7 +393,7 @@ def get_offer_by_id(offer_id: int):
     return Offer.query.get(offer_id)
 
 
-def find_offers_by_venue_id(venue_id: int) -> List[Offer]:
+def get_offers_by_venue_id(venue_id: int) -> List[Offer]:
     return Offer.query \
         .filter_by(venueId=venue_id) \
         .all()
@@ -414,6 +414,16 @@ def get_offers_by_ids(offer_ids: List[int]) -> List[Offer]:
 def get_paginated_offer_ids(limit: int, page: int) -> List[tuple]:
     return Offer.query\
         .with_entities(Offer.id)\
+        .order_by(Offer.id)\
+        .offset(page * limit)\
+        .limit(limit)\
+        .all()
+
+def get_paginated_offer_ids_by_venue_id(venue_id :int, limit: int, page: int):
+    return Offer.query\
+        .filter(Offer.venueId==venue_id)\
+        .with_entities(Offer.id)\
+        .order_by(Offer.id)\
         .offset(page * limit)\
         .limit(limit)\
         .all()

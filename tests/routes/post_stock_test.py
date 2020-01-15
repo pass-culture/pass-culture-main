@@ -12,9 +12,9 @@ from utils.human_ids import dehumanize, humanize
 
 class Post:
     class Returns201:
-        @patch('routes.stocks.add_to_redis')
+        @patch('routes.stocks.add_offer_id_to_redis')
         @clean_database
-        def when_user_has_rights(self, mock_add_to_redis, app):
+        def when_user_has_rights(self, mock_add_offer_id_to_redis, app):
             # Given
             user = create_user(email='test@email.fr')
             offerer = create_offerer()
@@ -37,9 +37,9 @@ class Post:
             stock = Stock.query.filter_by(id=dehumanize(id)).first()
             assert stock.price == 1222
 
-        @patch('routes.stocks.add_to_redis')
+        @patch('routes.stocks.add_offer_id_to_redis')
         @clean_database
-        def when_booking_limit_datetime_is_none_for_thing(self, mock_add_to_redis, app):
+        def when_booking_limit_datetime_is_none_for_thing(self, mock_add_offer_id_to_redis, app):
             # Given
             user = create_user(can_book_free_offers=False, email='test@email.fr', is_admin=True)
             offerer = create_offerer()
@@ -67,9 +67,9 @@ class Post:
             assert stock.price == 0
             assert stock.bookingLimitDatetime is None
 
-        @patch('routes.stocks.add_to_redis')
+        @patch('routes.stocks.add_offer_id_to_redis')
         @clean_database
-        def when_stock_is_created_expect_offer_id_to_be_added_to_redis(self, mock_add_to_redis, app):
+        def when_stock_is_created_expect_offer_id_to_be_added_to_redis(self, mock_add_offer_id_to_redis, app):
             # Given
             user = create_user()
             offerer = create_offerer()
@@ -85,8 +85,8 @@ class Post:
                 .post('/stocks', json=stock_data)
 
             # Then
-            mock_add_to_redis.assert_called()
-            mock_args, mock_kwargs = mock_add_to_redis.call_args
+            mock_add_offer_id_to_redis.assert_called()
+            mock_args, mock_kwargs = mock_add_offer_id_to_redis.call_args
             assert mock_kwargs['offer_id'] == offer.id
 
     class Returns400:

@@ -11,13 +11,15 @@ from repository.offer_queries import department_or_national_offers, \
     get_offers_for_recommendations_search, \
     get_active_offers, \
     _has_remaining_stock, \
-    find_offers_by_venue_id, \
-    order_by_with_criteria, _order_by_occurs_soon_or_is_thing_then_randomize, \
-    get_offers_by_ids, get_paginated_offer_ids
+    get_offers_by_venue_id, \
+    order_by_with_criteria, \
+    _order_by_occurs_soon_or_is_thing_then_randomize, \
+    get_offers_by_ids, \
+    get_paginated_offer_ids, \
+    get_paginated_offer_ids_by_venue_id
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_criterion, create_user, create_offerer, \
-    create_venue, \
-    create_user_offerer, create_favorite, create_mediation
+    create_venue, create_user_offerer, create_favorite, create_mediation
 from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_event_occurrence, \
     create_stock_from_offer, create_stock_with_thing_offer, create_product_with_thing_type, \
     create_product_with_event_type, create_offer_with_thing_product, create_offer_with_event_product, \
@@ -703,7 +705,7 @@ class FindOffersTest:
         assert ko_offer4.id not in offers_id
 
     @clean_database
-    def test_find_offers_by_venue_id_return_offers_matching_venue_id(self, app):
+    def test_get_offers_by_venue_id_return_offers_matching_venue_id(self, app):
         # Given
         product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
         offerer = create_offerer()
@@ -712,7 +714,7 @@ class FindOffersTest:
         PcObject.save(offer)
 
         # When
-        offers = find_offers_by_venue_id(venue.id)
+        offers = get_offers_by_venue_id(venue.id)
 
         # Then
         assert len(offers) == 1
@@ -1431,13 +1433,11 @@ class GetPaginatedOfferIdsTest:
     @clean_database
     def test_should_return_one_offer_id_from_first_page_when_limit_is_one(self, app):
         # Given
-        user = create_user()
         offerer = create_offerer()
-        user_offerer = create_user_offerer(offerer=offerer, user=user)
         venue = create_venue(offerer=offerer)
         offer1 = create_offer_with_event_product(venue=venue)
         offer2 = create_offer_with_event_product(venue=venue)
-        PcObject.save(offer1, offer2, user_offerer)
+        PcObject.save(offer1, offer2)
 
         # When
         offer_ids = get_paginated_offer_ids(limit=1, page=0)
@@ -1450,13 +1450,11 @@ class GetPaginatedOfferIdsTest:
     @clean_database
     def test_should_return_one_offer_id_from_second_page_when_limit_is_one(self, app):
         # Given
-        user = create_user()
         offerer = create_offerer()
-        user_offerer = create_user_offerer(offerer=offerer, user=user)
         venue = create_venue(offerer=offerer)
         offer1 = create_offer_with_event_product(venue=venue)
         offer2 = create_offer_with_event_product(venue=venue)
-        PcObject.save(offer1, offer2, user_offerer)
+        PcObject.save(offer1, offer2)
 
         # When
         offer_ids = get_paginated_offer_ids(limit=1, page=1)
@@ -1465,3 +1463,40 @@ class GetPaginatedOfferIdsTest:
         assert len(offer_ids) == 1
         assert (offer2.id, ) in offer_ids
         assert (offer1.id, ) not in offer_ids
+
+
+class GetPaginatedOfferIdsByVenueIdTest:
+    @clean_database
+    def test_should_return_one_offer_id_from_first_page_when_limit_is_one(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer1 = create_offer_with_event_product(venue=venue)
+        offer2 = create_offer_with_event_product(venue=venue)
+        PcObject.save(offer1, offer2)
+
+        # When
+        offer_ids = get_paginated_offer_ids_by_venue_id(venue_id=venue.id, limit=1, page=0)
+
+        # Then
+        assert len(offer_ids) == 1
+        assert (offer1.id, ) in offer_ids
+        assert (offer2.id, ) not in offer_ids
+
+    @clean_database
+    def test_should_return_one_offer_id_from_second_page_when_limit_is_one(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer1 = create_offer_with_event_product(venue=venue)
+        offer2 = create_offer_with_event_product(venue=venue)
+        PcObject.save(offer1, offer2)
+
+        # When
+        offer_ids = get_paginated_offer_ids_by_venue_id(venue_id=venue.id, limit=1, page=1)
+
+        # Then
+        assert len(offer_ids) == 1
+        assert (offer2.id, ) in offer_ids
+        assert (offer1.id, ) not in offer_ids
+

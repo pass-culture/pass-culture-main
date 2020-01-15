@@ -37,9 +37,9 @@ class Patch:
             assert response.status_code == 200
             assert Offer.query.get(offer.id).bookingEmail == 'offer@example.com'
 
-        @patch('routes.offers.add_to_redis')
+        @patch('routes.offers.add_offer_id_to_redis')
         @clean_database
-        def when_updating_an_offer_expect_offer_id_to_be_added_to_redis(self, mock_add_to_redis, app):
+        def when_updating_an_offer_expect_offer_id_to_be_added_to_redis(self, mock_add_offer_id_to_redis, app):
             # Given
             user = create_user()
             offerer = create_offerer()
@@ -60,7 +60,7 @@ class Patch:
 
             # Then
             assert response.status_code == 200
-            mock_add_to_redis.assert_called_once_with(client=app.redis_client, offer_id=offer.id)
+            mock_add_offer_id_to_redis.assert_called_once_with(client=app.redis_client, offer_id=offer.id)
 
         @clean_database
         def when_user_updating_thing_offer_is_linked_to_same_owning_offerer(self, app):

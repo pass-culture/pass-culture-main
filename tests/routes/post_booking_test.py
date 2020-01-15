@@ -714,9 +714,9 @@ class Post:
             # Then
             assert response.status_code == 201
 
-        @patch('routes.bookings.add_to_redis')
+        @patch('routes.bookings.add_offer_id_to_redis')
         @clean_database
-        def when_booking_expect_offer_id_to_be_added_to_redis(self, mock_add_to_redis, app):
+        def when_booking_expect_offer_id_to_be_added_to_redis(self, mock_add_offer_id_to_redis, app):
             # Given
             beneficiary = create_user()
             offerer = create_offerer()
@@ -740,4 +740,4 @@ class Post:
 
             # Then
             assert response.status_code == 201
-            mock_add_to_redis.assert_called_once_with(client=app.redis_client, offer_id=thing_stock.offerId)
+            mock_add_offer_id_to_redis.assert_called_once_with(client=app.redis_client, offer_id=thing_stock.offerId)

@@ -115,6 +115,9 @@ dev_env_file
 .idea/
 *.iml
 
+# VScode
+.vscode/
+
 # No data should be versioned except on test
 *.csv
 !tests/**/*.csv

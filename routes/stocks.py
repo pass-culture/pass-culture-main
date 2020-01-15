@@ -1,7 +1,7 @@
 from flask import current_app as app, jsonify, request
 from flask_login import current_user
 
-from connectors.redis import add_to_redis
+from connectors.redis import add_offer_id_to_redis
 from domain.stocks import delete_stock_and_cancel_bookings
 from domain.user_emails import send_batch_cancellation_emails_to_users, \
     send_offerer_bookings_recap_email_after_offerer_cancellation
@@ -84,7 +84,7 @@ def create_stock():
     new_stock = Stock(from_dict=request_data)
     PcObject.save(new_stock)
 
-    add_to_redis(client=app.redis_client, offer_id=offer_id)
+    add_offer_id_to_redis(client=app.redis_client, offer_id=offer_id)
 
     return jsonify(as_dict(new_stock)), 201
 

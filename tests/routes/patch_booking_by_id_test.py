@@ -81,9 +81,9 @@ class Patch:
             assert response.status_code == 200
             assert Booking.query.get(booking.id).isCancelled
 
-        @patch('routes.bookings.add_to_redis')
+        @patch('routes.bookings.add_offer_id_to_redis')
         @clean_database
-        def when_booking_expect_offer_id_to_be_added_to_redis(self, mock_add_to_redis, app):
+        def when_booking_expect_offer_id_to_be_added_to_redis(self, mock_add_offer_id_to_redis, app):
             # Given
             admin_user = create_user(can_book_free_offers=False, is_admin=True)
             other_user = create_user(email='test2@example.com')
@@ -98,7 +98,7 @@ class Patch:
 
             # Then
             assert response.status_code == 200
-            mock_add_to_redis.assert_called_once_with(client=app.redis_client, offer_id=booking.stock.offerId)
+            mock_add_offer_id_to_redis.assert_called_once_with(client=app.redis_client, offer_id=booking.stock.offerId)
 
     class Returns400:
         @clean_database
