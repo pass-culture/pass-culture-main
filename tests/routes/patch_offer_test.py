@@ -1,4 +1,5 @@
 from datetime import datetime
+from unittest.mock import patch
 
 from models import PcObject, Offer, Product, Provider
 from routes.serialization import serialize
@@ -19,12 +20,12 @@ class Patch:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue, booking_email='old@email.com')
+            offer = create_offer_with_thing_product(venue, booking_email='old@example.com')
 
             PcObject.save(offer, user, user_offerer)
 
             json = {
-                'bookingEmail': 'offer@email.com',
+                'bookingEmail': 'offer@example.com',
             }
 
             # When
@@ -34,12 +35,40 @@ class Patch:
 
             # Then
             assert response.status_code == 200
-            assert Offer.query.get(offer.id).bookingEmail == 'offer@email.com'
+            assert Offer.query.get(offer.id).bookingEmail == 'offer@example.com'
+
+        @patch('routes.offers.add_to_redis')
+        @clean_database
+        def when_updating_an_offer_expect_offer_id_to_be_added_to_redis(self, mock_add_to_redis, app):
+            # Given
+            user = create_user()
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            offer = create_offer_with_thing_product(venue, booking_email='old@example.com')
+
+            PcObject.save(offer, user, user_offerer)
+
+            json = {
+                'bookingEmail': 'offer@example.com',
+            }
+
+            # When
+            response = TestClient(app.test_client()).with_auth(user.email).patch(
+                f'{API_URL}/offers/{humanize(offer.id)}',
+                json=json)
+
+            # Then
+            assert response.status_code == 200
+            mock_add_to_redis.assert_called()
+            mock_args, mock_kwargs = mock_add_to_redis.call_args
+            assert mock_kwargs['offer_id'] == offer.id
+
 
         @clean_database
         def when_user_updating_thing_offer_is_linked_to_same_owning_offerer(self, app):
             # Given
-            user = create_user(email='editor@email.com')
+            user = create_user(email='editor@example.com')
             owning_offerer = create_offerer()
             user_offerer = create_user_offerer(user, owning_offerer)
             venue = create_venue(owning_offerer)
@@ -66,7 +95,7 @@ class Patch:
         @clean_database
         def when_user_updating_thing_offer_is_not_linked_to_owning_offerer(self, app):
             # Given
-            user = create_user(email='editor@email.com')
+            user = create_user(email='editor@example.com')
             owning_offerer = create_offerer(siren='123456789')
             editor_offerer = create_offerer(siren='123456780')
             editor_user_offerer = create_user_offerer(user, editor_offerer)
@@ -94,7 +123,7 @@ class Patch:
         @clean_database
         def when_user_updating_thing_offer_has_rights_on_offer_but_no_owningOfferer_for_thing(self, app):
             # Given
-            user = create_user(email='editor@email.com')
+            user = create_user(email='editor@example.com')
             offerer = create_offerer(siren='123456780')
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
@@ -182,12 +211,12 @@ class Patch:
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue,
-                                                    booking_email='old@email.com',
+                                                    booking_email='old@example.com',
                                                     last_provider_id=tite_live_provider.id)
 
             PcObject.save(offer, user, user_offerer)
             json = {
-                'bookingEmail': 'offer@email.com',
+                'bookingEmail': 'offer@example.com',
             }
 
             # When

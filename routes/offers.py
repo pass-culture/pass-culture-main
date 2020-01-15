@@ -1,6 +1,7 @@
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
+from connectors.redis import add_to_redis
 from domain.admin_emails import send_offer_creation_notification_to_administration
 from domain.create_offer import fill_offer_with_new_data, initialize_offer_from_product_id
 from models import Offer, PcObject, Venue, RightsType
@@ -111,4 +112,5 @@ def patch_offer(id: int):
     offer.update_with_product_data(request_data)
     PcObject.save(offer)
 
+    add_to_redis(client=app.redis_client, offer_id=offer.id)
     return jsonify(as_dict(offer, includes=OFFER_INCLUDES)), 200
