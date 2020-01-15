@@ -60,10 +60,7 @@ class Patch:
 
             # Then
             assert response.status_code == 200
-            mock_add_to_redis.assert_called()
-            mock_args, mock_kwargs = mock_add_to_redis.call_args
-            assert mock_kwargs['offer_id'] == offer.id
-
+            mock_add_to_redis.assert_called_once_with(client=app.redis_client, offer_id=offer.id)
 
         @clean_database
         def when_user_updating_thing_offer_is_linked_to_same_owning_offerer(self, app):
