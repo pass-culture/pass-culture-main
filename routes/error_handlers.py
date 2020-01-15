@@ -60,9 +60,8 @@ def restize_invalid_header_exception(e):
 @app.errorhandler(Exception)
 def internal_error(error):
     tb = traceback.format_exc()
-    oneline_stack = ''.join(tb).replace('\n', ' ### ')
     app.logger.error('500 on %s %s — %s',
-                     request.method, request.url, oneline_stack)
+                     request.method, request.url, tb)
     e = ApiErrors()
     e.add_error('global',
                "Il semble que nous ayons des problèmes techniques :("

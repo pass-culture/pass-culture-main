@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import os
 
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
 import redis
 from flask import Flask
 from flask_admin import Admin
@@ -23,6 +25,11 @@ from utils.mailing import get_contact, \
     MAILJET_API_SECRET, \
     subscribe_newsletter
 from utils.tutorials import upsert_tuto_mediations
+
+sentry_sdk.init(
+    dsn="https://0470142cf8d44893be88ecded2a14e42@logs.passculture.app/5",
+    integrations=[FlaskIntegration()]
+)
 
 app = Flask(__name__, static_url_path='/static')
 login_manager = LoginManager()
