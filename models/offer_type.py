@@ -1,9 +1,10 @@
 from enum import Enum
+from typing import List
 
 
 class SearchableType(Enum):
     @classmethod
-    def find_from_sub_labels(cls, sub_labels):
+    def find_from_sub_labels(cls, sub_labels: List[str]) -> List[Enum]:
         matching_types = []
         comparable_sub_labels = [label.lower() for label in sub_labels]
 
@@ -15,7 +16,7 @@ class SearchableType(Enum):
 
 
 class EventType(SearchableType):
-    def as_dict(self):
+    def as_dict(self) -> dict:
         dict_value = {
             'type': 'Event',
             'value': str(self),
@@ -279,7 +280,7 @@ class ThingType(SearchableType):
 
 class ProductType:
     @classmethod
-    def is_thing(cls, name: str) -> object:
+    def is_thing(cls, name: str) -> bool:
         for possible_type in list(ThingType):
             if str(possible_type) == name:
                 return True
@@ -287,11 +288,11 @@ class ProductType:
         return False
 
     @classmethod
-    def is_book(cls, type: str):
+    def is_book(cls, type: str) -> bool:
         return type == str(ThingType.LIVRE_EDITION)
 
     @classmethod
-    def is_event(cls, name: str) -> object:
+    def is_event(cls, name: str) -> bool:
         for possible_type in list(EventType):
             if str(possible_type) == name:
                 return True

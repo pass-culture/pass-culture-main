@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List, Optional
 
 from sqlalchemy import BigInteger, Column, DateTime, desc, ForeignKey, String
 from sqlalchemy import and_, ARRAY, Boolean, CheckConstraint, false, Integer, Text, TEXT
@@ -7,16 +8,17 @@ from sqlalchemy.sql import select, func
 
 from domain.bookings import filter_bookings_to_compute_remaining_stock
 from domain.keywords import create_ts_vector_and_table_args
-from models.extra_data_mixin import ExtraDataMixin
-from models.versioned_mixin import VersionedMixin
+from models import ApiErrors, Mediation
 from models.criterion import Criterion
 from models.db import db, Model
 from models.deactivable_mixin import DeactivableMixin
+from models.extra_data_mixin import ExtraDataMixin
 from models.offer_criterion import OfferCriterion
 from models.offer_type import ThingType, EventType, ProductType
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.stock import Stock
+from models.versioned_mixin import VersionedMixin
 from utils.date import DateTimes
 from utils.inflect_engine import pluralize
 
@@ -102,7 +104,7 @@ class Offer(PcObject,
                             backref=db.backref('criteria', lazy='dynamic'),
                             secondary='offer_criterion')
 
-    def errors(self):
+    def errors(self) -> ApiErrors:
         api_errors = super(Offer, self).errors()
         if self.venue:
             venue = self.venue
@@ -120,19 +122,19 @@ class Offer(PcObject,
 
         return api_errors
 
-    def update_with_product_data(self, product_dict: dict):
+    def update_with_product_data(self, product_dict: dict) -> None:
         owning_offerer = self.product.owningOfferer
         if owning_offerer and owning_offerer == self.venue.managingOfferer:
             self.product.populate_from_dict(product_dict)
 
     @property
-    def activeMediation(self):
+    def activeMediation(self) -> Optional[Mediation]:
         sorted_by_date_desc = sorted(self.mediations, key=lambda m: m.dateCreated, reverse=True)
         only_active = list(filter(lambda m: m.isActive, sorted_by_date_desc))
         return only_active[0] if only_active else None
 
     @property
-    def dateRange(self):
+    def dateRange(self) -> DateTimes:
         if ProductType.is_thing(self.type) or not self.notDeletedStocks:
             return DateTimes()
 
@@ -141,36 +143,36 @@ class Offer(PcObject,
         return DateTimes(start, end)
 
     @property
-    def hasActiveMediation(self):
+    def hasActiveMediation(self) -> bool:
         return any(map(lambda m: m.isActive, self.mediations))
 
     @property
-    def isEvent(self):
+    def isEvent(self) -> bool:
         return ProductType.is_event(self.type)
 
     @property
-    def isThing(self):
+    def isThing(self) -> bool:
         return ProductType.is_thing(self.type)
 
     @property
-    def isDigital(self):
+    def isDigital(self) -> bool:
         return self.url is not None and self.url != ''
 
     @property
-    def isEditable(self):
+    def isEditable(self) -> bool:
         local_class = self.lastProvider.localClass if self.lastProvider else ''
         return self.isFromProvider is False or 'TiteLive' in local_class
 
     @property
-    def isFromProvider(self):
+    def isFromProvider(self) -> bool:
         return self.lastProviderId is not None
 
     @property
-    def isNotBookable(self):
+    def isNotBookable(self) -> bool:
         return all(map(lambda s: not s.isBookable, self.stocks))
 
     @property
-    def isFullyBooked(self):
+    def isFullyBooked(self) -> bool:
         if self._has_unlimited_stock():
             return False
 
@@ -179,13 +181,13 @@ class Offer(PcObject,
 
         for stock in bookable_stocks:
             bookings = filter_bookings_to_compute_remaining_stock(stock)
-            total_booked_quantity += sum(map(lambda s: s.quantity, bookings))
+            total_booked_quantity += sum(map(lambda b: b.quantity, bookings))
 
-        available_stocks = sum(map(lambda s: s.available if s.isBookable else 0, self.stocks))
+        available_stocks = sum(map(lambda s: s.available, bookable_stocks))
         return total_booked_quantity >= available_stocks
 
     @property
-    def lastStock(self):
+    def lastStock(self) -> Stock:
         query = Stock.queryNotSoftDeleted()
         return query.join(Offer) \
             .filter(Offer.id == self.id) \
@@ -193,11 +195,11 @@ class Offer(PcObject,
             .first()
 
     @property
-    def notDeletedStocks(self):
+    def notDeletedStocks(self) -> List[Stock]:
         return [stock for stock in self.stocks if not stock.isSoftDeleted]
 
     @property
-    def offerType(self):
+    def offerType(self) -> Optional[dict]:
         all_types = list(ThingType) + list(EventType)
         for possible_type in all_types:
             if str(possible_type) == self.type:
