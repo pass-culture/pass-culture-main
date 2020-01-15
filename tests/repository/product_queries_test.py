@@ -55,14 +55,14 @@ class DeleteUnwantedExistingProductTest:
         assert Stock.query.count() == 0
 
     @clean_database
-    def test_should_not_delete_product_when_bookings_related_to_offer(self, app):
+    def test_should_not_delete_product_and_deactivate_offer_when_bookings_related_to_offer(self, app):
         # Given
         isbn = '1111111111111'
         user = create_user()
         offerer = create_offerer(siren='775671464')
         venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
         product = create_product_with_thing_type(id_at_providers=isbn)
-        offer = create_offer_with_thing_product(venue, product=product)
+        offer = create_offer_with_thing_product(venue, product=product, is_active=True)
         stock = create_stock(offer=offer, price=0)
         booking = create_booking(user=user, is_cancelled=True, stock=stock)
         PcObject.save(venue, product, offer, stock, booking, user)
@@ -72,6 +72,8 @@ class DeleteUnwantedExistingProductTest:
             delete_unwanted_existing_product('1111111111111')
 
         # Then
+        offer = Offer.query.one()
+        assert offer.isActive is False
         assert Product.query.one() == product
 
     @clean_database

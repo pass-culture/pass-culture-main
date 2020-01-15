@@ -2,7 +2,7 @@ from datetime import datetime
 from unittest.mock import patch
 
 from local_providers import TiteLiveThings
-from models import Product, BookFormat, LocalProviderEvent
+from models import Product, BookFormat, LocalProviderEvent, Offer
 from models.local_provider_event import LocalProviderEventType
 from models.pc_object import PcObject
 from repository.provider_queries import get_provider_by_local_class
@@ -931,3 +931,89 @@ class TiteliveThingsTest:
 
         # Then
         assert Product.query.count() == 0
+
+    @clean_database
+    @patch('local_providers.titelive_things.get_files_to_process_from_titelive_ftp')
+    @patch('local_providers.titelive_things.get_lines_from_thing_file')
+    def test_should_not_delete_product_and_deactivate_associated_offer_when_it_changes_to_paper_press_product(self, get_lines_from_thing_file,
+                                                                                                                get_files_to_process_from_titelive_ftp,
+                                                                                                                app):
+        # Given
+        files_list = list()
+        files_list.append('Quotidien30.tit')
+
+        data_line = "9782895026310" \
+                    "~2895026319" \
+                    "~nouvelles du Chili" \
+                    "~" \
+                    "~0203" \
+                    "~1" \
+                    "~" \
+                    "~" \
+                    "~" \
+                    "~18,99" \
+                    "~LES EDITIONS DE L'INSTANT MEME" \
+                    "~EPAGINE" \
+                    "~11/05/2011" \
+                    "~R" \
+                    "~2" \
+                    "~0" \
+                    "~0,0" \
+                    "~0,0" \
+                    "~0,0" \
+                    "~0" \
+                    "~0" \
+                    "~0" \
+                    "~0" \
+                    "~Collectif" \
+                    "~15/01/2013" \
+                    "~02/03/2018" \
+                    "~2,10" \
+                    "~Littérature Hispano-Portugaise" \
+                    "~" \
+                    "~" \
+                    "~" \
+                    "~" \
+                    "~" \
+                    "~1" \
+                    "~3012420280013" \
+                    "~" \
+                    "~" \
+                    "~" \
+                    "~" \
+                    "~" \
+                    "~0" \
+                    "~" \
+                    "~369" \
+                    "~860" \
+                    "~3694440" \
+                    "~"
+
+        get_files_to_process_from_titelive_ftp.return_value = files_list
+
+        get_lines_from_thing_file.return_value = iter([data_line])
+
+        titelive_provider = activate_provider('TiteLiveThings')
+        PcObject.save(titelive_provider)
+        product = create_product_with_thing_type(id_at_providers='9782895026310',
+                                                 thing_name='Presse papier',
+                                                 date_modified_at_last_provider=datetime(2001, 1, 1),
+                                                 last_provider_id=titelive_provider.id)
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue, product=product, is_active=True)
+        stock = create_stock(offer=offer, price=0)
+        booking = create_booking(user=user, stock=stock)
+
+        PcObject.save(product, offer, booking)
+
+        titelive_things = TiteLiveThings()
+
+        # When
+        titelive_things.updateObjects()
+
+        # Then
+        offer = Offer.query.one()
+        assert offer.isActive is False
+        assert Product.query.count() == 1

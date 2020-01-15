@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from unittest.mock import patch
 
-from models import Product, PcObject
+from models import Product, PcObject, Offer
 from scripts.remove_non_book_after_import import delete_product_from_isbn_file, read_isbn_from_file
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue
@@ -35,14 +35,14 @@ def test_remove_only_unwanted_book(read_isbn_from_file_mock, app):
 
 @clean_database
 @patch('scripts.remove_non_book_after_import.read_isbn_from_file')
-def test_should_not_delete_product_with_bookings(read_isbn_from_file_mock, app):
+def test_should_not_delete_product_with_bookings_and_deactivate_associated_offer(read_isbn_from_file_mock, app):
     # Given
     unwanted_isbn = '9876543211231'
     product = create_product_with_thing_type(id_at_providers=unwanted_isbn)
     user = create_user()
     offerer = create_offerer(siren='775671464')
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-    offer = create_offer_with_thing_product(venue, product=product)
+    offer = create_offer_with_thing_product(venue, product=product, is_active=True)
     stock = create_stock(offer=offer, price=0)
     booking = create_booking(user=user, stock=stock)
     PcObject.save(venue, product, offer, stock, booking, user)
@@ -59,6 +59,8 @@ def test_should_not_delete_product_with_bookings(read_isbn_from_file_mock, app):
     delete_product_from_isbn_file('mon_fichier_isbns.txt')
 
     # Then
+    offer = Offer.query.one()
+    assert offer.isActive is False
     assert Product.query.count() == 1
 
 

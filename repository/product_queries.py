@@ -1,3 +1,4 @@
+from domain.offers import update_is_active_status
 from models import Product, ThingType, Offer, Stock, Booking, PcObject
 from repository.favorite_queries import get_favorites_for_offers
 from repository.mediation_queries import get_mediations_for_offers
@@ -17,12 +18,14 @@ def delete_unwanted_existing_product(isbn: str):
                                            .join(Stock) \
                                            .join(Booking) \
                                            .count() > 0
+    product = find_thing_product_by_isbn_only_for_type_book(isbn)
 
     if product_has_at_least_one_booking:
+        offers = get_offers_by_product_id(product.id)
+        update_is_active_status(offers, False)
         raise ProductWithBookingsException
 
     objects_to_delete = []
-    product = find_thing_product_by_isbn_only_for_type_book(isbn)
     if product:
         objects_to_delete.append(product)
         offers = get_offers_by_product_id(product.id)
