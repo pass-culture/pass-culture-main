@@ -69,7 +69,7 @@ class Post:
 
         @patch('routes.stocks.add_to_redis')
         @clean_database
-        def expect_add_offer_id_to_queue(self, mock_add_to_redis, app):
+        def when_stock_is_created_expect_offer_id_to_be_added_to_redis(self, mock_add_to_redis, app):
             # Given
             user = create_user()
             offerer = create_offerer()

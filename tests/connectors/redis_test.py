@@ -26,7 +26,7 @@ class AddToRedisTest:
     @patch('connectors.redis.feature_queries.is_active', return_value=True)
     @patch('connectors.redis.REDIS_LIST_OFFER_IDS', return_value='fake_list_offer_ids')
     @patch('connectors.redis.redis')
-    def test_should_add_offer_id_to_redis_set_when_feature_flipping_is_enable(self, mock_redis, mock_redis_list, mock_feature_active):
+    def test_should_add_offer_id_to_redis_set_when_feature_flipping_is_enabled(self, mock_redis, mock_redis_list, mock_feature_active):
         # Given
         client = MagicMock()
         client.rpush = MagicMock()
@@ -40,7 +40,7 @@ class AddToRedisTest:
     @patch('connectors.redis.feature_queries.is_active', return_value=False)
     @patch('connectors.redis.REDIS_LIST_OFFER_IDS', return_value='fake_list_offer_ids')
     @patch('connectors.redis.redis')
-    def test_should_not_add_offer_id_to_redis_set_when_feature_flipping_is_disable(self, mock_redis, mock_redis_list, mock_feature_active):
+    def test_should_not_add_offer_id_to_redis_set_when_feature_flipping_is_disabled(self, mock_redis, mock_redis_list, mock_feature_active):
         # Given
         client = MagicMock()
         client.rpush = MagicMock()

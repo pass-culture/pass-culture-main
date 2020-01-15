@@ -40,9 +40,9 @@ pc python
 
 ```python
 import redis
+from app import app
 from scripts.algolia_indexing.indexing import indexing_offers_in_algolia
 with app.app_context():
-    app.redis_client = redis.from_url(url=REDIS_URL, decode_responses=True)
     indexing_offers_in_algolia(client=app.redis_client)
 ```
 

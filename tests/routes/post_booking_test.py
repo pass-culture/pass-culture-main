@@ -424,7 +424,7 @@ class Post:
             offer = create_offer_with_event_product(venue, event_name='Event Name', event_type=EventType.CINEMA)
             event_occurrence = create_event_occurrence(offer, beginning_datetime=five_days_ago, end_datetime=four_days_ago)
             stock = create_stock_from_event_occurrence(event_occurrence)
-            create_deposit(user, amount=200)
+            create_deposit(user)
             PcObject.save(stock, user)
 
             booking_json = {
@@ -450,7 +450,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, booking_limit_datetime=four_days_ago)
-            create_deposit(user, amount=200)
+            create_deposit(user)
             PcObject.save(stock, user)
 
             booking_json = {
@@ -477,7 +477,7 @@ class Post:
             thing_offer = create_offer_with_thing_product(venue)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer)
             create_booking(user=user, stock=stock, venue=venue, is_cancelled=False)
-            create_deposit(user, amount=200)
+            create_deposit(user)
             PcObject.save(stock, user)
 
             booking_json = {
@@ -560,7 +560,7 @@ class Post:
             venue = create_venue(offerer)
             thing_offer = create_offer_with_thing_product(venue)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, booking_limit_datetime=None)
-            create_deposit(user, amount=200)
+            create_deposit(user)
             PcObject.save(stock, user)
 
             booking_json = {
@@ -697,7 +697,7 @@ class Post:
             thing_offer = create_offer_with_thing_product(venue)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer)
             create_booking(user=user, stock=stock, venue=venue, is_cancelled=True)
-            create_deposit(user, amount=200)
+            create_deposit(user)
             PcObject.save(stock, user)
 
             booking_json = {
@@ -716,19 +716,19 @@ class Post:
 
         @patch('routes.bookings.add_to_redis')
         @clean_database
-        def expect_add_offer_id_to_queue(self, mock_add_to_redis, app):
+        def when_booking_expect_offer_id_to_be_added_to_redis(self, mock_add_to_redis, app):
             # Given
             beneficiary = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             thing_offer = create_offer_with_thing_product(venue)
-            stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=50, available=1)
+            thing_stock = create_stock_with_thing_offer(offerer, venue, thing_offer)
             recommendation = create_recommendation(thing_offer, beneficiary)
-            create_deposit(beneficiary, amount=50)
+            create_deposit(beneficiary)
             PcObject.save(recommendation)
 
             booking_json = {
-                'stockId': humanize(stock.id),
+                'stockId': humanize(thing_stock.id),
                 'recommendationId': humanize(recommendation.id),
                 'quantity': 1
             }
@@ -740,6 +740,4 @@ class Post:
 
             # Then
             assert response.status_code == 201
-            mock_add_to_redis.assert_called()
-            mock_args, mock_kwargs = mock_add_to_redis.call_args
-            assert mock_kwargs['offer_id'] == stock.offerId
+            mock_add_to_redis.assert_called_once_with(client=app.redis_client, offer_id=thing_stock.offerId)

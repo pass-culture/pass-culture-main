@@ -1,5 +1,3 @@
-""" stocks """
-
 from flask import current_app as app, jsonify, request
 from flask_login import current_user
 
@@ -8,13 +6,12 @@ from domain.stocks import delete_stock_and_cancel_bookings
 from domain.user_emails import send_batch_cancellation_emails_to_users, \
     send_offerer_bookings_recap_email_after_offerer_cancellation
 from models import Product
-from models.feature import FeatureToggle
 from models.mediation import Mediation
 from models.pc_object import PcObject
 from models.stock import Stock
 from models.user_offerer import RightsType
 from models.venue import Venue
-from repository import offerer_queries, feature_queries
+from repository import offerer_queries
 from repository.offer_queries import get_offer_by_id
 from repository.stock_queries import find_stocks_with_possible_filters
 from routes.serialization import as_dict
