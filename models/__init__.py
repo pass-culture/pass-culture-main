@@ -121,3 +121,7 @@ __models__ = (
     'Payment',
     'PaymentStatus',
 )
+
+__materialized_views__ = (
+    RecoView,
+)

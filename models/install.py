@@ -3,7 +3,7 @@ from sqlalchemy import orm
 from sqlalchemy.exc import ProgrammingError
 
 import models
-from models import PcObject, RecoView
+from models import PcObject
 from models.db import db
 from models.feature import FeatureToggle, Feature
 
@@ -25,11 +25,14 @@ def install_models():
     db.session.commit()
 
 
-def install_materialized_view():
-    reco_view = db.session.execute("""SELECT to_regclass('reco_view')""").fetchone()
+def install_materialized_views():
+    for materialized_view in models.__materialized_views__:
+        existing_view_in_database = db.session \
+            .execute(f"""SELECT to_regclass('{materialized_view.__tablename__}')""") \
+            .fetchone()
 
-    if not all(reco_view):
-        RecoView.create(session=db.session)
+        if not all(existing_view_in_database):
+            materialized_view.create(session=db.session)
 
 
 def install_features():

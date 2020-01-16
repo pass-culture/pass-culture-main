@@ -87,10 +87,6 @@ def put_recommendations():
     else:
         seen_recommendation_ids = []
 
-    print("#####################################")
-    print(seen_recommendation_ids)
-    print("#####################################")
-
     offer_id = dehumanize(request.args.get('offerId'))
     mediation_id = dehumanize(request.args.get('mediationId'))
 
@@ -109,15 +105,9 @@ def put_recommendations():
         'seed': random.random() if request_seed is None else float(request_seed)
     }
 
-    start_time = time.time()
     created_recommendations = create_recommendations_for_discovery(limit=BLOB_SIZE,
                                                                    user=current_user,
-                                                                   pagination_params=pagination_params,
-                                                                   seen_recommendation_ids=seen_recommendation_ids)
-    end_time = time.time()
-    print("///////////////////////")
-    print(f"Time: {end_time - start_time}")
-    print("///////////////////////")
+                                                                   pagination_params=pagination_params)
 
     logger.debug(lambda: '(new recos)' + str([(reco, reco.mediation, reco.dateRead)
                                               for reco in created_recommendations]))

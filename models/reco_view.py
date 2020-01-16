@@ -1,4 +1,4 @@
-from sqlalchemy import Column, BigInteger, ForeignKey, String, CheckConstraint, Integer, Boolean
+from sqlalchemy import Column, BigInteger, ForeignKey, String, Integer, Boolean
 from sqlalchemy_utils import refresh_materialized_view
 
 from models.db import Model, db
@@ -7,34 +7,21 @@ from models.db import Model, db
 class RecoView(Model):
     __tablename__ = "reco_view"
 
-    venueId = Column(BigInteger,
-                     ForeignKey('venue.id'),
-                     index=True,
-                     nullable=True)
+    venueId = Column(BigInteger, ForeignKey('venue.id'))
 
-    mediation_id = Column(BigInteger,
-                          ForeignKey('mediation.id'),
-                          index=True,
-                          nullable=True)
+    mediation_id = Column(BigInteger, ForeignKey('mediation.id'))
 
-    id = Column(BigInteger,
-                primary_key=True,
-                autoincrement=True)
+    id = Column(BigInteger, primary_key=True)
 
-    type = Column(String(50),
-                  CheckConstraint("type != 'None'"),
-                  index=True,
-                  nullable=False)
+    type = Column(String(50))
 
-    url = Column(String(255), nullable=True)
+    url = Column(String(255))
 
     row_number = Column(Integer)
 
-    name = Column(String(140), nullable=False)
+    name = Column(String(140))
 
-    isNational = Column(Boolean,
-                        default=False,
-                        nullable=False)
+    isNational = Column(Boolean)
 
     @classmethod
     def create(cls, session):
@@ -105,8 +92,8 @@ class RecoView(Model):
                                                 FROM stock
                                                 WHERE stock."offerId" = offer.id AND
                                                       (stock."beginningDatetime" IS NULL OR
-                                                       stock."beginningDatetime" > NOW() AND stock.
-                                                                                             "beginningDatetime" < NOW() + INTERVAL '10 DAY'))) DESC,
+                                                       stock."beginningDatetime" > NOW() AND
+                                                        stock."beginningDatetime" < NOW() + INTERVAL '10 DAY'))) DESC,
                                  (SELECT coalesce(sum(criterion."scoreDelta"), 0) AS coalesce_1
                                   FROM criterion, offer_criterion
                                   WHERE criterion.id = offer_criterion."criterionId" AND offer_criterion."offerId" = offer.id) DESC, random()
@@ -152,7 +139,6 @@ class RecoView(Model):
         session.execute(f"""
             CREATE UNIQUE INDEX ON {cls.__tablename__} (row_number);
         """)
-        # CREATE UNIQUE INDEX ON {cls.__tablename__} (id);
         session.commit()
 
     @classmethod

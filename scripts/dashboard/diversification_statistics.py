@@ -21,6 +21,8 @@ def get_offerer_with_stock_count(departement_code: str = None) -> int:
 
 
 def get_offerers_with_offer_available_on_discovery_count(departement_code: str = None) -> int:
+    # TODO: use RecoView query filter by departementCode + join offererId
+
     active_offers_ids = get_active_offers_ids_query(user=None)
     query = Offerer.query.join(Venue).join(
         Offer).filter(Offer.id.in_(active_offers_ids))
@@ -79,6 +81,7 @@ def get_offers_with_user_offerer_and_stock_count(departement_code: str = None) -
 
 
 def get_offers_available_on_discovery_count(departement_code: str = None) -> int:
+    # TODO: use RecoView query filter by departementCode
     offer_ids_subquery = get_active_offers_ids_query(user=None)
     query = Offer.query.filter(Offer.id.in_(offer_ids_subquery))
 

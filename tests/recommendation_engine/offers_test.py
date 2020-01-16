@@ -54,6 +54,5 @@ class GetOffersForRecommendationsDiscoveryTest:
                                                   limit=5,
                                                   order_by=order_by_with_criteria,
                                                   pagination_params=pagination_params,
-                                                  seen_recommendation_ids=[],
                                                   user=authenticated_user)
         assert offers == [offer]

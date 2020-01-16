@@ -174,8 +174,7 @@ class CreateRecommendationsForDiscoveryTest:
         # Then
         get_offers_for_recommendations_discovery.assert_called_once_with(limit=3,
                                                                          pagination_params={'page': 1, 'seed': 0.5},
-                                                                         user=user,
-                                                                         seen_recommendation_ids=[])
+                                                                         user=user)
 
     @clean_database
     def test_returns_offer_in_all_ile_de_france_for_user_from_93(self, app):

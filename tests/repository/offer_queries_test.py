@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 from freezegun import freeze_time
 
-from models import Offer, PcObject, Stock, Product, RecoView
+from models import Offer, PcObject, Stock, Product
 from models.offer_type import EventType, ThingType
 from repository.offer_queries import department_or_national_offers, \
     find_activation_offers, \
@@ -915,9 +915,7 @@ class GetActiveOffersTest:
         create_mediation(stock_93.offer)
         create_mediation(stock_75.offer)
 
-        PcObject.save(user, stock_34, stock_93, stock_75)
-
-        RecoView.refresh(concurrently=False)
+        PcObject.save(stock_34, stock_93, stock_75)
 
         # When
         offers = get_active_offers(departement_codes=['00'],
@@ -931,33 +929,6 @@ class GetActiveOffersTest:
         assert offer_75 in offers
 
     @clean_database
-    def test_should_return_offer_when_offer_is_national(self, app):
-        # Given
-        offerer = create_offerer(siren='123456789')
-        user = create_user()
-        venue_34 = create_venue(offerer, postal_code='34000', departement_code='34', siret=offerer.siren + '11111')
-        offer_34 = create_offer_with_thing_product(venue_34)
-        offer_national = create_offer_with_thing_product(venue_34, is_national=True)
-        stock_34 = create_stock_from_offer(offer_34)
-        stock_national = create_stock_from_offer(offer_national)
-        create_mediation(stock_34.offer)
-        create_mediation(stock_national.offer)
-
-        PcObject.save(user, stock_34, stock_national)
-
-        RecoView.refresh(concurrently=False)
-
-        # When
-        offers = get_active_offers(departement_codes=['93'],
-                                   offer_id=None,
-                                   pagination_params={'seed': 0.9, 'page': 1},
-                                   user=user)
-
-        # Then
-        assert offer_34 not in offers
-        assert offer_national in offers
-
-    @clean_database
     def test_should_not_return_activation_event(self, app):
         # Given
         offerer = create_offerer(siren='123456789')
@@ -968,12 +939,10 @@ class GetActiveOffersTest:
                                                               thumb_count=1)
         stock_93 = create_stock_from_offer(offer_93)
         stock_activation_93 = create_stock_from_offer(offer_activation_93)
-        mediation1 = create_mediation(stock_93.offer)
-        mediation2 = create_mediation(stock_activation_93.offer)
+        create_mediation(stock_93.offer)
+        create_mediation(stock_activation_93.offer)
 
-        PcObject.save(user, stock_93, stock_activation_93, mediation1, mediation2)
-
-        RecoView.refresh(concurrently=False)
+        PcObject.save(stock_93, stock_activation_93)
 
         # When
         offers = get_active_offers(departement_codes=['00'],
@@ -999,9 +968,7 @@ class GetActiveOffersTest:
         create_mediation(stock_93.offer)
         create_mediation(stock_activation_93.offer)
 
-        PcObject.save(user, stock_93, stock_activation_93)
-
-        RecoView.refresh(concurrently=False)
+        PcObject.save(stock_93, stock_activation_93)
 
         # When
         offers = get_active_offers(departement_codes=['00'],
@@ -1023,9 +990,7 @@ class GetActiveOffersTest:
         offer = create_offer_with_thing_product(venue, product)
         stock = create_stock_from_offer(offer, available=2)
         create_mediation(stock.offer)
-        PcObject.save(user, stock)
-
-        RecoView.refresh(concurrently=False)
+        PcObject.save(stock)
 
         # When
         offers = get_active_offers(departement_codes=['00'],
@@ -1045,9 +1010,7 @@ class GetActiveOffersTest:
         stock1 = create_stock_with_thing_offer(offerer, venue, name='thing_with_mediation')
         stock2 = create_stock_with_thing_offer(offerer, venue, name='thing_without_mediation')
         create_mediation(stock1.offer)
-        PcObject.save(user, stock1, stock2)
-
-        RecoView.refresh(concurrently=False)
+        PcObject.save(stock1, stock2)
 
         # When
         offers = get_active_offers(departement_codes=['00'],
@@ -1082,9 +1045,7 @@ class GetActiveOffersTest:
         create_mediation(stock1.offer)
         create_mediation(stock2.offer)
         create_mediation(stock3.offer)
-        PcObject.save(user, stock1, stock2, stock3)
-
-        RecoView.refresh(concurrently=False)
+        PcObject.save(stock1, stock2, stock3)
 
         # When
         offers = get_active_offers(departement_codes=['00'],
@@ -1119,8 +1080,7 @@ class GetActiveOffersTest:
         create_mediation(stock4.offer)
         create_mediation(stock5.offer)
         create_mediation(stock6.offer)
-        PcObject.save(user, stock1, stock2, stock3, stock4, stock5, stock6)
-        RecoView.refresh(concurrently=False)
+        PcObject.save(stock1, stock2, stock3, stock4, stock5, stock6)
 
         def first_four_offers_have_different_type_and_onlineness(offers):
             return len(set([o.type + (o.url or '')
@@ -1148,8 +1108,7 @@ class GetActiveOffersTest:
         booking1 = create_booking(user=user, stock=stock, is_cancelled=True, quantity=2, venue=venue)
         booking2 = create_booking(user=user, stock=stock, quantity=2, venue=venue)
         create_mediation(stock.offer)
-        PcObject.save(user, booking1, booking2)
-        RecoView.refresh(concurrently=False)
+        PcObject.save(booking1, booking2)
 
         # When
         offers = get_active_offers(departement_codes=['00'],
@@ -1176,8 +1135,7 @@ class GetActiveOffersTest:
         create_mediation(stock3.offer)
         create_mediation(stock4.offer)
 
-        PcObject.save(user, stock1, stock2, stock3, stock4)
-        RecoView.refresh(concurrently=False)
+        PcObject.save(stock1, stock2, stock3, stock4)
 
         # When
         offers = get_active_offers(departement_codes=['00'],
@@ -1206,8 +1164,7 @@ class GetActiveOffersTest:
         create_mediation(stock1.offer)
         create_mediation(stock2.offer)
 
-        PcObject.save(user, stock1, stock2)
-        RecoView.refresh(concurrently=False)
+        PcObject.save(stock1, stock2)
 
         # When
         offers = get_active_offers(departement_codes=['00'],
@@ -1242,8 +1199,7 @@ class GetActiveOffersTest:
         create_mediation(stock2.offer)
         create_mediation(stock3.offer)
 
-        PcObject.save(user, stock1, stock2, stock3)
-        RecoView.refresh(concurrently=False)
+        PcObject.save(stock1, stock2, stock3)
 
         # When
         offers = get_active_offers(departement_codes=['00'],
@@ -1279,8 +1235,7 @@ class GetActiveOffersTest:
         create_mediation(stock3.offer)
         create_mediation(stock4.offer)
 
-        PcObject.save(user, stock1, stock2, stock3, stock4)
-        RecoView.refresh(concurrently=False)
+        PcObject.save(stock1, stock2, stock3, stock4)
 
         pagination_params = {'seed': 0.5, 'page': 1}
         offers_1 = get_active_offers(departement_codes=['00'],
@@ -1337,16 +1292,13 @@ class GetActiveOffersTest:
         create_mediation(stock3.offer)
         create_mediation(stock4.offer)
 
-        PcObject.save(user, stock1, stock2, stock3, stock4)
-        RecoView.refresh(concurrently=False)
+        PcObject.save(stock1, stock2, stock3, stock4)
 
         offers_1 = get_active_offers(departement_codes=['00'],
                                      offer_id=None,
                                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize,
                                      pagination_params={'seed': 0.9, 'page': 1},
                                      user=user)
-
-        RecoView.refresh()
 
         # When
         offers_2 = get_active_offers(departement_codes=['00'],
@@ -1368,8 +1320,7 @@ class GetActiveOffersTest:
         user = create_user()
         booking = create_booking(user=user, stock=stock)
         create_mediation(stock.offer)
-        PcObject.save(user, booking)
-        RecoView.refresh(concurrently=False)
+        PcObject.save(booking)
 
         # When
         offers = get_active_offers(departement_codes=['00'],
@@ -1393,8 +1344,7 @@ class GetActiveOffersTest:
         mediation = create_mediation(stock.offer)
         favorite = create_favorite(mediation=mediation, offer=offer, user=user)
 
-        PcObject.save(user, favorite)
-        RecoView.refresh(concurrently=False)
+        PcObject.save(favorite)
 
         # When
         offers = get_active_offers(departement_codes=['00'],
@@ -1424,8 +1374,7 @@ class GetActiveOffersTest:
         create_mediation(offer2)
         create_mediation(offer3)
         create_mediation(offer4)
-        PcObject.save(user, stock1, stock2, stock3, stock4)
-        RecoView.refresh(concurrently=False)
+        PcObject.save(stock1, stock2, stock3, stock4)
 
         # When
         offers1 = get_active_offers(departement_codes=['00'],
@@ -1435,13 +1384,11 @@ class GetActiveOffersTest:
         offers2 = get_active_offers(departement_codes=['00'],
                                     limit=2,
                                     pagination_params={'page': 2, 'seed': 1},
-                                    user=user,
-                                    seen_recommendation_ids=[offer.id for offer in offers1])
+                                    user=user)
         offers3 = get_active_offers(departement_codes=['00'],
                                     limit=2,
                                     pagination_params={'page': 3, 'seed': 1},
-                                    user=user,
-                                    seen_recommendation_ids=[offer.id for offer in offers1 + offers2])
+                                    user=user)
 
         # Then
         assert len(offers1) == 2

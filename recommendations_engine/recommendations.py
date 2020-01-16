@@ -1,10 +1,11 @@
 import random
 from datetime import timedelta
+from typing import Dict, List
 
 import dateutil.parser
 
 from domain.types import get_active_product_type_values_from_sublabels
-from models import Recommendation, Mediation, PcObject, User
+from models import Recommendation, Mediation, PcObject, User, RecoView, Offer
 from models.db import db
 from recommendations_engine import get_offers_for_recommendations_discovery
 from repository import mediation_queries
@@ -35,7 +36,7 @@ def give_requested_recommendation_to_user(user, offer_id, mediation_id):
     return recommendation
 
 
-def create_recommendations_for_discovery(user, pagination_params, limit=3, seen_recommendation_ids=[]):
+def create_recommendations_for_discovery(user: User, pagination_params: Dict, limit: int = 3) -> List[Recommendation]:
     recommendations = []
     tuto_mediations_by_index = {}
 
@@ -52,7 +53,6 @@ def create_recommendations_for_discovery(user, pagination_params, limit=3, seen_
         limit=limit,
         pagination_params=pagination_params,
         user=user,
-        seen_recommendation_ids=seen_recommendation_ids
     )
 
     for (index, offer) in enumerate(offers):
@@ -66,7 +66,7 @@ def create_recommendations_for_discovery(user, pagination_params, limit=3, seen_
                 tuto_mediations_by_index[tuto_mediation_index]
             )
             inserted_tuto_mediations += 1
-        recommendations.append(_create_recommendation_from_dict(user, offer))
+        recommendations.append(_create_recommendation(user, offer))
     PcObject.save(*recommendations)
     return recommendations
 
@@ -95,7 +95,7 @@ def _create_recommendation_from_ids(user, offer_id, mediation_id=None):
     return _create_recommendation(user, offer, mediation=mediation)
 
 
-def _create_recommendation(user, offer, mediation=None):
+def _create_recommendation(user: User, offer: Offer, mediation: Mediation = None) -> Recommendation:
     recommendation = Recommendation()
     recommendation.user = user
 
@@ -110,7 +110,8 @@ def _create_recommendation(user, offer, mediation=None):
 
     return recommendation
 
-def _create_recommendation_from_dict(user, reco_view, mediation=None):
+
+def _create_recommendation_from_offers(user: User, reco_view: RecoView, mediation: Mediation = None) -> Recommendation:
     recommendation = Recommendation()
     recommendation.user = user
 
@@ -120,13 +121,6 @@ def _create_recommendation_from_dict(user, reco_view, mediation=None):
         recommendation.mediation = mediation
     else:
         recommendation.mediationId = reco_view.mediation_id
-        # TODO: Perf de merguez
-        # mediations = db.session.execute(
-        #     f"""select id from mediation where "offerId" = {reco_view.id} and "isActive" = true""").fetchall()
-        # active_mediations = [mediation[0] for mediation in mediations]
-        # if active_mediations:
-        #     recommendation.mediationId = random.choice(active_mediations)
-
     return recommendation
 
 
