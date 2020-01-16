@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from typing import List
 
 from flask_sqlalchemy import BaseQuery
-from sqlalchemy import desc, func, or_, text
+from sqlalchemy import desc, func, or_
 from sqlalchemy.orm import aliased
 from sqlalchemy.orm.query import Query
 from sqlalchemy.sql.elements import BinaryExpression
@@ -19,7 +19,7 @@ from models import EventType, \
     Venue, \
     Product, Favorite, Booking, \
     RecoView
-from models.db import Model, db
+from models.db import Model
 from models.feature import FeatureToggle
 from repository import feature_queries
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
@@ -84,7 +84,6 @@ def get_active_offers(user, pagination_params, departement_codes=None, offer_id=
     # TODO: to optimize
     favorites = Favorite.query.filter_by(userId=user.id).all()
     favorite_ids = [favorite.offerId for favorite in favorites]
-    print(f"favorite ids: {favorite_ids}")
 
     # TODO: perf de merguez
     if '00' in departement_codes:
@@ -92,11 +91,9 @@ def get_active_offers(user, pagination_params, departement_codes=None, offer_id=
     else:
         venues = Venue.query.filter(Venue.departementCode.in_(departement_codes)).all()
     venue_ids = [venue.id for venue in venues]
-    print(f"venue ids: {venue_ids}")
 
     offers_booked = Offer.query.join(Stock).join(Booking).filter_by(userId=user.id).all()
     offer_booked_ids = [offer.id for offer in offers_booked]
-    print(f"booked: {offer_booked_ids}")
 
     recos_query = RecoView.query \
         .filter(RecoView.id.notin_(favorite_ids)) \

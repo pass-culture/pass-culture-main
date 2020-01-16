@@ -9,6 +9,7 @@ from flask import Flask
 from mailjet_rest import Client
 from sqlalchemy import orm
 
+from models import RecoView
 from models.db import db
 from repository.feature_queries import feature_cron_send_final_booking_recaps_enabled, \
     feature_cron_generate_and_send_payments, \
@@ -24,7 +25,7 @@ from repository.feature_queries import feature_cron_send_final_booking_recaps_en
     feature_cron_synchronize_titelive_descriptions, \
     feature_cron_synchronize_titelive_thumbs, \
     feature_cron_synchronize_titelive_stocks, \
-    feature_cron_synchronize_allocine_stocks
+    feature_cron_synchronize_allocine_stocks, feature_update_recommendations_view
 from repository.provider_queries import get_provider_by_local_class
 from repository.recommendation_queries import delete_useless_recommendations
 from repository.user_queries import find_most_recent_beneficiary_creation_date
@@ -209,6 +210,12 @@ def pc_delete_useless_recommendations():
         delete_useless_recommendations()
 
 
+@log_cron
+def pc_update_recommendations_view():
+    with app.app_context():
+        RecoView.refresh()
+
+
 if __name__ == '__main__':
     orm.configure_mappers()
     scheduler = BlockingScheduler()
@@ -268,5 +275,8 @@ if __name__ == '__main__':
                           'cron',
                           id='pc_delete_useless_recommendations',
                           day_of_week='mon', hour='23')
+
+    if feature_update_recommendations_view():
+        scheduler.add_job(pc_update_recommendations_view, 'cron', id='pc_update_recommendations_view', minute='*')
 
     scheduler.start()
