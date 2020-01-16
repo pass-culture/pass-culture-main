@@ -412,19 +412,27 @@ def get_offers_by_ids(offer_ids: List[int]) -> List[Offer]:
 
 
 def get_paginated_offer_ids(limit: int, page: int) -> List[tuple]:
-    return Offer.query\
-        .with_entities(Offer.id)\
-        .order_by(Offer.id)\
-        .offset(page * limit)\
-        .limit(limit)\
+    return Offer.query \
+        .with_entities(Offer.id) \
+        .order_by(Offer.id) \
+        .offset(page * limit) \
+        .limit(limit) \
         .all()
 
-def get_paginated_offer_ids_for_venue_id(venue_id :int, limit: int, page: int) -> List[tuple]:
-    return Offer.query\
-        .filter(Offer.venueId==venue_id)\
-        .with_entities(Offer.id)\
-        .order_by(Offer.id)\
-        .offset(page * limit)\
-        .limit(limit)\
+
+def get_paginated_offer_ids_for_venue_id(venue_id: int, limit: int, page: int) -> List[tuple]:
+    return Offer.query \
+        .filter(Offer.venueId == venue_id) \
+        .with_entities(Offer.id) \
+        .order_by(Offer.id) \
+        .offset(page * limit) \
+        .limit(limit) \
         .all()
 
+
+def get_offers_by_venue_id_and_last_provider_id(last_provider_id: str, venue_id: int) -> List[int]:
+    return Offer.query \
+        .with_entities(Offer.id) \
+        .filter(Offer.venueId == venue_id) \
+        .filter(Offer.lastProviderId == last_provider_id) \
+        .all()

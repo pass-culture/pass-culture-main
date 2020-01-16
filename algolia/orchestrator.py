@@ -3,6 +3,7 @@ from typing import List
 from algolia.api import add_objects, clear_objects, delete_objects
 from algolia.builder import build_object
 from algolia.rules_engine import is_eligible_for_indexing
+from models import VenueProvider
 from repository import offer_queries
 from utils.human_ids import humanize
 from utils.logger import logger
@@ -26,7 +27,7 @@ def orchestrate(offer_ids: List[int], is_clear: bool = False) -> None:
             indexing_object.append(algolia_object)
             indexing_ids.append(humanize_offer_id)
         else:
-            deleting_object.append(humanize_offer_id)
+            deleting_object.append(humize_offer_id)
             deleting_ids.append(humanize_offer_id)
 
     if len(indexing_object) > 0:
@@ -36,3 +37,8 @@ def orchestrate(offer_ids: List[int], is_clear: bool = False) -> None:
     if len(deleting_object) > 0:
         delete_objects(object_ids=deleting_object)
         logger.info(f'[ALGOLIA] Deleting {len(deleting_ids)} objectsID: {deleting_ids}')
+
+
+def handle_indexing_from_local_providers(venue_provider: VenueProvider) -> None:
+
+    pass
