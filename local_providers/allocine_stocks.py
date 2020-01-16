@@ -11,7 +11,7 @@ from domain.allocine import get_movies_showtimes, get_movie_poster
 from local_providers.local_provider import LocalProvider
 from local_providers.price_rule import AllocineStocksPriceRule
 from local_providers.providable_info import ProvidableInfo
-from models import VenueProvider, Offer, Product, EventType, Stock
+from models import VenueProvider, Offer, Product, EventType, Stock, Venue
 from models.db import Model, db
 from models.local_provider_event import LocalProviderEventType
 from utils.date import get_dept_timezone
@@ -24,6 +24,26 @@ FRENCH_VERSION_SUFFIX = 'VF'
 ORIGINAL_VERSION_SUFFIX = 'VO'
 
 
+def _build_movie_uuid(movie_information: dict, venue: Venue) -> str:
+    return f"{movie_information['id']}%{venue.siret}"
+
+
+def _build_french_movie_uuid(movie_information: dict, venue: Venue) -> str:
+    return f"{_build_movie_uuid(movie_information, venue)}-{FRENCH_VERSION_SUFFIX}"
+
+
+def _build_original_movie_uuid(movie_information: dict, venue: Venue) -> str:
+    return f"{_build_movie_uuid(movie_information, venue)}-{ORIGINAL_VERSION_SUFFIX}"
+
+
+def _build_showtime_uuid(showtime_details: dict) -> str:
+    return f"{showtime_details['diffusionVersion']}/{showtime_details['startsAt']}"
+
+
+def _build_stock_uuid(movie_information: dict, venue: Venue, showtime_details: dict) -> str:
+    return f"{_build_movie_uuid(movie_information, venue)}#{_build_showtime_uuid(showtime_details)}"
+
+
 class AllocineStocks(LocalProvider):
     name = "Allociné"
     can_create = True
@@ -34,6 +54,7 @@ class AllocineStocks(LocalProvider):
         self.venue = venue_provider.venue
         self.theater_id = venue_provider.venueIdAtOfferProvider
         self.movies_showtimes = get_movies_showtimes(self.api_key, self.theater_id)
+
         self.movie_information = None
         self.filtered_movie_showtimes = None
         self.last_product_id = None
@@ -57,10 +78,8 @@ class AllocineStocks(LocalProvider):
                                                                    self.movie_information['id'],
                                                                    datetime.utcnow())]
 
-        venue_movie_unique_id = f"{self.movie_information['id']}%{self.venue.siret}"
-
         if _has_original_version_product(self.filtered_movie_showtimes):
-            venue_movie_original_version_unique_id = f"{venue_movie_unique_id}-{ORIGINAL_VERSION_SUFFIX}"
+            venue_movie_original_version_unique_id = _build_original_movie_uuid(self.movie_information, self.venue)
             original_version_offer_providable_information = self.create_providable_info(Offer,
                                                                                         venue_movie_original_version_unique_id,
                                                                                         datetime.utcnow())
@@ -68,16 +87,18 @@ class AllocineStocks(LocalProvider):
             providable_information_list.append(original_version_offer_providable_information)
 
         if _has_french_version_product(self.filtered_movie_showtimes):
-            venue_movie_french_version_unique_id = f"{venue_movie_unique_id}-{FRENCH_VERSION_SUFFIX}"
+            venue_movie_french_version_unique_id = _build_french_movie_uuid(self.movie_information, self.venue)
             french_version_offer_providable_information = self.create_providable_info(Offer,
                                                                                       venue_movie_french_version_unique_id,
                                                                                       datetime.utcnow())
             providable_information_list.append(french_version_offer_providable_information)
 
         for showtime_number in range(showtimes_number):
-            venue_movie_showtime_unique_id = f"{venue_movie_unique_id}-{showtime_number}"
+            showtime = self.filtered_movie_showtimes[showtime_number]
+            idAtProviders = _build_stock_uuid(self.movie_information, self.venue, showtime)
+
             stock_providable_information = self.create_providable_info(Stock,
-                                                                       venue_movie_showtime_unique_id,
+                                                                       idAtProviders,
                                                                        datetime.utcnow())
             providable_information_list.append(stock_providable_information)
 
@@ -143,8 +164,11 @@ class AllocineStocks(LocalProvider):
             self.last_vf_offer_id = allocine_offer.id
 
     def fill_stock_attributes(self, allocine_stock: Stock):
-        stock_number = _get_stock_number_from_id_at_providers(allocine_stock.idAtProviders)
-        parsed_showtimes = retrieve_showtime_information(self.filtered_movie_showtimes[stock_number])
+
+        showtime_uuid = _get_showtimes_uuid_by_idAtProvider(allocine_stock.idAtProviders)
+        showtime = _find_showtime_by_showtime_uuid(self.filtered_movie_showtimes, showtime_uuid)
+
+        parsed_showtimes = retrieve_showtime_information(showtime)
         diffusion_version = parsed_showtimes['diffusionVersion']
 
         allocine_stock.offerId = self.last_vo_offer_id if diffusion_version == ORIGINAL_VERSION else \
@@ -198,7 +222,8 @@ def retrieve_movie_information(raw_movie_information: Dict) -> Dict:
     is_stage_director_info_available = len(raw_movie_information['credits']['edges']) > 0
 
     if is_stage_director_info_available:
-        parsed_movie_information['stageDirector'] = _build_stage_director_full_name(raw_movie_information)
+        parsed_movie_information['stageDirect' \
+                                 'or'] = _build_stage_director_full_name(raw_movie_information)
 
     is_operating_visa_available = len(raw_movie_information['releases']) > 0 \
                                   and len(raw_movie_information['releases'][0]['data']) > 0
@@ -223,6 +248,10 @@ def _filter_only_digital_and_non_experience_showtimes(showtimes_information: Lis
                                         showtime['experience'] is None, showtimes_information))
 
 
+def _find_showtime_by_showtime_uuid(showtimes: List[dict], showtime_uuid: str) -> dict:
+    return next(iter(list(filter(lambda showtime: _build_showtime_uuid(showtime) == showtime_uuid, showtimes))), None)
+
+
 def _format_date_from_local_timezone_to_utc(date: datetime, local_tz: str) -> datetime:
     from_zone = tz.gettz(local_tz)
     to_zone = tz.gettz('UTC')
@@ -230,8 +259,8 @@ def _format_date_from_local_timezone_to_utc(date: datetime, local_tz: str) -> da
     return date_in_tz.astimezone(to_zone)
 
 
-def _get_stock_number_from_id_at_providers(id_at_providers: str) -> int:
-    return int(id_at_providers.split("-", 1)[1])
+def _get_showtimes_uuid_by_idAtProvider(idAtProvider: str):
+    return idAtProvider.split('#')[1]
 
 
 def _build_description(movie_info: Dict) -> str:
