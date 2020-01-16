@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from unittest.mock import patch, call
 
 from algolia.orchestrator import orchestrate, orchestrate_from_venue_providers
@@ -6,6 +7,8 @@ from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_stock, create_venue
 from tests.model_creators.specific_creators import create_offer_with_thing_product
 from utils.human_ids import humanize
+
+TOMORROW = datetime.now() + timedelta(days=1)
 
 
 class OrchestrateTest:
@@ -20,9 +23,9 @@ class OrchestrateTest:
         offerer = create_offerer(is_active=True, validation_token=None)
         venue = create_venue(offerer=offerer, validation_token=None)
         offer1 = create_offer_with_thing_product(venue=venue, is_active=True)
-        stock1 = create_stock(offer=offer1, available=10)
+        stock1 = create_stock(offer=offer1, booking_limit_datetime=TOMORROW, available=10)
         offer2 = create_offer_with_thing_product(venue=venue, is_active=True)
-        stock2 = create_stock(offer=offer2, available=10)
+        stock2 = create_stock(offer=offer2, booking_limit_datetime=TOMORROW, available=10)
         PcObject.save(stock1, stock2)
 
         # When
@@ -65,10 +68,10 @@ class OrchestrateTest:
                                             mocked_add_objects,
                                             app):
         # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer=offerer)
-        offer = create_offer_with_thing_product(venue=venue)
-        stock = create_stock(offer=offer)
+        offerer = create_offerer(is_active=True, validation_token=None)
+        venue = create_venue(offerer=offerer, validation_token=None)
+        offer = create_offer_with_thing_product(venue=venue, is_active=True)
+        stock = create_stock(offer=offer, booking_limit_datetime=TOMORROW, available=10)
         PcObject.save(stock)
 
         # When
