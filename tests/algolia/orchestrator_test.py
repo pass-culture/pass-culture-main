@@ -1,6 +1,6 @@
-from unittest.mock import patch
+from unittest.mock import patch, call
 
-from algolia.orchestrator import orchestrate
+from algolia.orchestrator import orchestrate, orchestrate_from_local_providers
 from models import PcObject
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_stock, create_venue
@@ -79,3 +79,48 @@ class OrchestrateTest:
         mocked_add_objects.assert_called_once_with(objects=[
             {'fake': 'test'}
         ])
+
+class OrchestrateFromLocalProvidersTest:
+    @clean_database
+    @patch('algolia.orchestrator.CHUNK_SIZE', return_value=3)
+    @patch('algolia.orchestrator.offer_queries.get_paginated_offers_by_venue_id_and_last_provider_id')
+    @patch('algolia.orchestrator.orchestrate')
+    def test_should_index_offers_in_a_paginated_way(self,
+                                                    mock_orchestrate,
+                                                    mock_get_paginated_offers_by_venue_id_and_last_provider_id,
+                                                    mock_chunk_size,
+                                                    app):
+        # Given
+        mock_get_paginated_offers_by_venue_id_and_last_provider_id.side_effect = [
+            [1, 2, 3],
+            [4],
+            [],
+            [5, 6, 7],
+            [8],
+            []
+        ]
+        venue_providers = [
+            {'id': 1, 'lastProviderId': '5', 'venueId': 8},
+            {'id': 2, 'lastProviderId': '6', 'venueId': 9},
+        ]
+
+        # When
+        orchestrate_from_local_providers(venue_providers=venue_providers)
+
+        # Then
+        assert mock_get_paginated_offers_by_venue_id_and_last_provider_id.call_count == 6
+        assert mock_get_paginated_offers_by_venue_id_and_last_provider_id.call_args_list == [
+            call(last_provider_id='5', limit=mock_chunk_size, page=0, venue_id=8),
+            call(last_provider_id='5', limit=mock_chunk_size, page=1, venue_id=8),
+            call(last_provider_id='5', limit=mock_chunk_size, page=2, venue_id=8),
+            call(last_provider_id='6', limit=mock_chunk_size, page=0, venue_id=9),
+            call(last_provider_id='6', limit=mock_chunk_size, page=1, venue_id=9),
+            call(last_provider_id='6', limit=mock_chunk_size, page=2, venue_id=9)]
+
+        assert mock_orchestrate.call_count == 4
+        assert mock_orchestrate.call_args_list == [
+            call([1, 2, 3]),
+            call([4]),
+            call([5, 6, 7]),
+            call([8])
+        ]

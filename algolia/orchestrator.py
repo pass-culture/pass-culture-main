@@ -3,10 +3,11 @@ from typing import List, Dict
 from algolia.api import add_objects, clear_objects, delete_objects
 from algolia.builder import build_object
 from algolia.rules_engine import is_eligible_for_indexing
-from models import VenueProvider
 from repository import offer_queries
 from utils.human_ids import humanize
 from utils.logger import logger
+
+CHUNK_SIZE = 10000
 
 
 def orchestrate(offer_ids: List[int], is_clear: bool = False) -> None:
@@ -40,5 +41,21 @@ def orchestrate(offer_ids: List[int], is_clear: bool = False) -> None:
 
 
 def orchestrate_from_local_providers(venue_providers: List[Dict]) -> None:
+    for venue_provider in venue_providers:
+        has_still_offers = True
+        page = 0
+        while has_still_offers is True:
+            last_provider_id = venue_provider['lastProviderId']
+            venue_id = int(venue_provider['venueId'])
+            offer_ids = offer_queries.get_paginated_offers_by_venue_id_and_last_provider_id(
+                last_provider_id=last_provider_id,
+                limit=CHUNK_SIZE,
+                page=page,
+                venue_id=venue_id
+            )
 
-    pass
+            if len(offer_ids) > 0:
+                orchestrate(offer_ids)
+                page += 1
+            else:
+                has_still_offers = False

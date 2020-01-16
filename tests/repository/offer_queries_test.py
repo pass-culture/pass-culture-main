@@ -10,13 +10,9 @@ from repository.offer_queries import department_or_national_offers, \
     find_offers_with_filter_parameters, \
     get_offers_for_recommendations_search, \
     get_active_offers, \
-    _has_remaining_stock, \
-    get_offers_by_venue_id, \
-    order_by_with_criteria, \
-    _order_by_occurs_soon_or_is_thing_then_randomize, \
-    get_offers_by_ids, \
-    get_paginated_offer_ids, \
-    get_paginated_offer_ids_for_venue_id, get_offers_by_venue_id_and_last_provider_id
+    _has_remaining_stock, get_paginated_offers_by_venue_id_and_last_provider_id, get_offers_by_venue_id, \
+    order_by_with_criteria, _order_by_occurs_soon_or_is_thing_then_randomize, get_offers_by_ids, \
+    get_paginated_offer_ids_for_venue_id, get_paginated_offer_ids
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_criterion, create_user, create_offerer, \
     create_venue, create_user_offerer, create_mediation, create_favorite, create_provider
@@ -1501,7 +1497,7 @@ class GetPaginatedOfferIdsForVenueIdTest:
         assert (offer1.id,) not in offer_ids
 
 
-class GetOffersByVenueIdAndLastProviderId:
+class GetPaginatedOffersByVenueIdAndLastProviderId:
     @clean_database
     def test_should_return_offer_ids_when_exist_and_venue_id_and_last_provider_id_match(self, app):
         # Given
@@ -1514,11 +1510,56 @@ class GetOffersByVenueIdAndLastProviderId:
         PcObject.save(provider1, provider2, offer1, offer2)
 
         # When
-        offers = get_offers_by_venue_id_and_last_provider_id(last_provider_id=provider1.id, venue_id=venue.id)
+        offers = get_paginated_offers_by_venue_id_and_last_provider_id(last_provider_id=provider1.id,
+                                                                       limit=2,
+                                                                       page=0,
+                                                                       venue_id=venue.id)
 
         # Then
         assert len(offers) == 1
         assert offers[0] == (offer1.id,)
+
+    @clean_database
+    def test_should_return_one_offer_id_when_exist_and_venue_id_and_last_provider_id_match_from_first_page_only(self,
+                                                                                                                app):
+        # Given
+        provider1 = create_provider(idx=1, local_class='OpenAgenda', is_active=False, is_enable_for_pro=False)
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer1 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue)
+        offer2 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue)
+        PcObject.save(provider1, offer1, offer2)
+
+        # When
+        offers = get_paginated_offers_by_venue_id_and_last_provider_id(last_provider_id=provider1.id,
+                                                                       limit=1,
+                                                                       page=0,
+                                                                       venue_id=venue.id)
+
+        # Then
+        assert len(offers) == 1
+        assert offers[0] == (offer1.id,)
+
+    @clean_database
+    def test_should_return_one_offer_id_when_exist_and_venue_id_and_last_provider_id_match_from_second_page_only(self,
+                                                                                                                 app):
+        # Given
+        provider1 = create_provider(idx=1, local_class='OpenAgenda', is_active=False, is_enable_for_pro=False)
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer1 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue)
+        offer2 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue)
+        PcObject.save(provider1, offer1, offer2)
+
+        # When
+        offers = get_paginated_offers_by_venue_id_and_last_provider_id(last_provider_id=provider1.id,
+                                                                       limit=1,
+                                                                       page=1,
+                                                                       venue_id=venue.id)
+
+        # Then
+        assert len(offers) == 1
+        assert offers[0] == (offer2.id,)
 
     @clean_database
     def test_should_not_return_offer_ids_when_venue_id_and_last_provider_id_do_not_match(self, app):
@@ -1532,7 +1573,10 @@ class GetOffersByVenueIdAndLastProviderId:
         PcObject.save(provider1, provider2, offer1, offer2)
 
         # When
-        offers = get_offers_by_venue_id_and_last_provider_id(last_provider_id='3', venue_id=10)
+        offers = get_paginated_offers_by_venue_id_and_last_provider_id(last_provider_id='3',
+                                                                       limit=2,
+                                                                       page=0,
+                                                                       venue_id=10)
 
         # Then
         assert len(offers) == 0
@@ -1549,7 +1593,10 @@ class GetOffersByVenueIdAndLastProviderId:
         PcObject.save(provider1, provider2, offer1, offer2)
 
         # When
-        offers = get_offers_by_venue_id_and_last_provider_id(last_provider_id='3', venue_id=venue.id)
+        offers = get_paginated_offers_by_venue_id_and_last_provider_id(last_provider_id='3',
+                                                                       limit=2,
+                                                                       page=0,
+                                                                       venue_id=venue.id)
 
         # Then
         assert len(offers) == 0
@@ -1566,7 +1613,10 @@ class GetOffersByVenueIdAndLastProviderId:
         PcObject.save(provider1, provider2, offer1, offer2)
 
         # When
-        offers = get_offers_by_venue_id_and_last_provider_id(last_provider_id=provider1.id, venue_id=10)
+        offers = get_paginated_offers_by_venue_id_and_last_provider_id(last_provider_id=provider1.id,
+                                                                       limit=2,
+                                                                       page=0,
+                                                                       venue_id=10)
 
         # Then
         assert len(offers) == 0
