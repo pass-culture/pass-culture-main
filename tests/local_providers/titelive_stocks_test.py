@@ -14,8 +14,11 @@ savedCounts = {}
 
 
 @clean_database
+@patch('local_providers.local_provider.add_venue_provider_to_redis')
 @patch('local_providers.titelive_stocks.get_stocks_information')
-def test_titelive_stock_provider_create_1_stock_and_1_offer_with_wanted_attributes(get_stocks_information, app):
+def test_titelive_stock_provider_create_1_stock_and_1_offer_with_wanted_attributes(get_stocks_information,
+                                                                                   mock_redis,
+                                                                                   app):
     # given
     get_stocks_information.return_value = iter([
         {
@@ -71,8 +74,9 @@ def test_titelive_stock_provider_create_1_stock_and_1_offer_with_wanted_attribut
 
 
 @clean_database
+@patch('local_providers.local_provider.add_venue_provider_to_redis')
 @patch('local_providers.titelive_stocks.get_stocks_information')
-def test_titelive_stock_provider_update_1_stock_and_1_offer(get_stocks_information, app):
+def test_titelive_stock_provider_update_1_stock_and_1_offer(get_stocks_information, mock_redis, app):
     # given
     get_stocks_information.return_value = iter([
         {
@@ -116,8 +120,9 @@ def test_titelive_stock_provider_update_1_stock_and_1_offer(get_stocks_informati
 
 
 @clean_database
+@patch('local_providers.local_provider.add_venue_provider_to_redis')
 @patch('local_providers.titelive_stocks.get_stocks_information')
-def test_titelive_stock_provider_create_1_stock_and_update_1_existing_offer(get_stocks_information, app):
+def test_titelive_stock_provider_create_1_stock_and_update_1_existing_offer(get_stocks_information, mock_redis, app):
     # given
     get_stocks_information.return_value = iter([
         {
@@ -161,9 +166,10 @@ def test_titelive_stock_provider_create_1_stock_and_update_1_existing_offer(get_
 
 
 @clean_database
+@patch('local_providers.local_provider.add_venue_provider_to_redis')
 @patch('local_providers.titelive_stocks.get_stocks_information')
 def test_titelive_stock_provider_create_2_stock_and_2_offer_even_if_existing_offer_on_same_product(
-        get_stocks_information, app):
+        get_stocks_information, mock_redis, app):
     # given
     get_stocks_information.side_effect = [
         iter([
@@ -217,8 +223,11 @@ def test_titelive_stock_provider_create_2_stock_and_2_offer_even_if_existing_off
 
 
 @clean_database
+@patch('local_providers.local_provider.add_venue_provider_to_redis')
 @patch('local_providers.titelive_stocks.get_stocks_information')
-def test_titelive_stock_provider_create_nothing_if_titelive_api_returns_no_results(get_stocks_information, app):
+def test_titelive_stock_provider_create_nothing_if_titelive_api_returns_no_results(get_stocks_information,
+                                                                                   mock_redis,
+                                                                                   app):
     # given
     get_stocks_information.return_value = iter([])
     offerer = create_offerer(siren='987654321')
@@ -254,8 +263,9 @@ def test_titelive_stock_provider_create_nothing_if_titelive_api_returns_no_resul
 
 
 @clean_database
+@patch('local_providers.local_provider.add_venue_provider_to_redis')
 @patch('local_providers.titelive_stocks.get_stocks_information')
-def test_titelive_stock_provider_deactivate_offer_if_stock_available_equals_0(get_stocks_information, app):
+def test_titelive_stock_provider_deactivate_offer_if_stock_available_equals_0(get_stocks_information, mock_redis, app):
     # given
     get_stocks_information.return_value = iter([
         {
@@ -302,8 +312,9 @@ def test_titelive_stock_provider_deactivate_offer_if_stock_available_equals_0(ge
 
 
 @clean_database
+@patch('local_providers.local_provider.add_venue_provider_to_redis')
 @patch('local_providers.titelive_stocks.get_stocks_information')
-def test_titelive_stock_provider_iterates_over_pagination(get_stocks_information, app):
+def test_titelive_stock_provider_iterates_over_pagination(get_stocks_information, mock_redis, app):
     # given
     get_stocks_information.side_effect = [
         iter([
@@ -354,8 +365,9 @@ def test_titelive_stock_provider_iterates_over_pagination(get_stocks_information
 
 
 @clean_database
+@patch('local_providers.local_provider.add_venue_provider_to_redis')
 @patch('local_providers.titelive_stocks.get_stocks_information')
-def test_titelive_stock_provider_return_last_elements_as_last_seen_isbn(get_stocks_information, app):
+def test_titelive_stock_provider_return_last_elements_as_last_seen_isbn(get_stocks_information, mock_redis, app):
     # given
     get_stocks_information.return_value = iter([
         {

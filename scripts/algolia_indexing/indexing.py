@@ -35,6 +35,12 @@ def batch_indexing_offers_in_algolia_by_venue_ids(client: Redis, limit: int = 10
     delete_venue_ids(client=client)
 
 
+def indexing_offers_in_algolia_from_local_providers(client: Redis) -> None:
+    venue_providers = get_venue_providers(client=client)
+    orchestrate_from_local_providers(venue_providers=venue_providers)
+    delete_venue_providers(client=client)
+
+
 def batch_indexing_offers_in_algolia_from_database(limit: int = 10000) -> None:
     page = 0
     has_still_offers = True
@@ -50,12 +56,6 @@ def batch_indexing_offers_in_algolia_from_database(limit: int = 10000) -> None:
             has_still_offers = False
             logger.info('[ALGOLIA] Indexing offers finished!')
         page += 1
-
-
-def indexing_offers_in_algolia_from_local_providers(client: Redis) -> None:
-    venue_providers = get_venue_providers(client=client)
-    orchestrate_from_local_providers(venue_providers=venue_providers)
-    delete_venue_providers(client=client)
 
 
 def _converter(offer_ids: List[tuple]) -> List[int]:

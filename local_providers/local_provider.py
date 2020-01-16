@@ -4,6 +4,8 @@ from collections import Iterator
 from datetime import datetime
 from pprint import pprint
 
+from flask import current_app as app
+from connectors.redis import add_venue_provider_to_redis
 from connectors.thumb_storage import save_provider_thumb
 from local_providers.chunk_manager import get_existing_pc_obj, save_chunks
 from local_providers.providable_info import ProvidableInfo
@@ -223,6 +225,7 @@ class LocalProvider(Iterator):
         if self.venue_provider is not None:
             self.venue_provider.lastSyncDate = datetime.utcnow()
             PcObject.save(self.venue_provider)
+            add_venue_provider_to_redis(client=app.redis_client, venue_provider=self.venue_provider)
 
 
 def _save_same_thumb_from_thumb_count_to_index(pc_object: Model, thumb_index: int, image_as_bytes: bytes):
