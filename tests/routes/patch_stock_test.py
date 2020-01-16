@@ -1,4 +1,5 @@
 from datetime import timedelta
+from unittest.mock import patch
 
 from models import Stock, Provider
 from models.pc_object import PcObject
@@ -87,8 +88,7 @@ class Patch:
             user_admin = create_user(can_book_free_offers=False, email='email@test.com', is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, price=0)
-            stock.available = 1
+            stock = create_stock_with_event_offer(offerer, venue, price=0, available=1)
             booking = create_booking(user=user, stock=stock, venue=venue, recommendation=None)
             PcObject.save(booking, user_admin)
 
@@ -100,6 +100,25 @@ class Patch:
             assert response.status_code == 200
             assert 'available' in response.json
 
+        @patch('routes.stocks.add_to_redis')
+        @clean_database
+        def when_stock_is_edited_expect_offer_id_to_be_added_to_redis(self, mock_add_to_redis, app):
+            # given
+            user = create_user(email='test@email.com')
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            stock = create_stock_with_event_offer(offerer, venue, price=10, available=10)
+            PcObject.save(user, user_offerer, stock)
+
+            # when
+            request_update = TestClient(app.test_client()).with_auth('test@email.com') \
+                .patch('/stocks/' + humanize(stock.id), json={'available': 5, 'price': 20})
+
+            # then
+            assert request_update.status_code == 200
+            mock_add_to_redis.assert_called_once_with(client=app.redis_client, offer_id=stock.offerId)
+
     class Returns400:
         @clean_database
         def when_wrong_type_for_available(self, app):
@@ -108,8 +127,7 @@ class Patch:
             user_admin = create_user(can_book_free_offers=False, email='email@test.com', is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, price=0)
-            stock.available = 1
+            stock = create_stock_with_event_offer(offerer, venue, price=0, available=1)
             booking = create_booking(user=user, stock=stock, venue=venue, recommendation=None)
             PcObject.save(booking, user_admin)
 
@@ -129,12 +147,11 @@ class Patch:
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue)
             PcObject.save(stock, user)
-            stockId = stock.id
             serialized_date = serialize(stock.beginningDatetime + timedelta(days=1))
 
             # when
             response = TestClient(app.test_client()).with_auth('email@test.com') \
-                .patch('/stocks/' + humanize(stockId), json={'bookingLimitDatetime': serialized_date})
+                .patch('/stocks/' + humanize(stock.id), json={'bookingLimitDatetime': serialized_date})
 
             # then
             assert response.status_code == 400

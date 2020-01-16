@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from unittest.mock import patch
 
 from models import Booking, Provider
 from models.pc_object import PcObject
@@ -52,6 +53,25 @@ class Delete:
             bookings = Booking.query.filter_by(isCancelled=True).all()
             assert booking1 in bookings
             assert booking2 in bookings
+
+        @patch('routes.stocks.add_to_redis')
+        @clean_database
+        def when_stock_is_deleted_expect_offer_id_to_be_added_to_redis(self, mock_add_to_redis, app):
+            # given
+            user = create_user(email='test@email.com')
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            stock = create_stock_with_event_offer(offerer, venue)
+            PcObject.save(user, stock, user_offerer)
+
+            # when
+            response = TestClient(app.test_client()).with_auth('test@email.com') \
+                .delete('/stocks/' + humanize(stock.id))
+
+            # then
+            assert response.status_code == 200
+            mock_add_to_redis.assert_called_once_with(client=app.redis_client, offer_id=stock.offerId)
 
     class Returns400:
         @clean_database

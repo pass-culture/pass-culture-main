@@ -108,6 +108,8 @@ def edit_stock(stock_id):
     stock.populate_from_dict(stock_data)
     PcObject.save(stock)
 
+    add_to_redis(client=app.redis_client, offer_id=stock.offerId)
+
     return jsonify(as_dict(stock)), 200
 
 
@@ -130,5 +132,7 @@ def delete_stock(id):
             app.logger.error('Mail service failure', e)
 
     PcObject.save(stock, *bookings)
+
+    add_to_redis(client=app.redis_client, offer_id=stock.offerId)
 
     return jsonify(as_dict(stock)), 200
