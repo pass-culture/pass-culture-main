@@ -1,9 +1,9 @@
-from local_providers.install import install_local_providers
-from models.install import install_models, install_database_extensions
 from flask import current_app as app
 
-from utils.tutorials import upsert_tuto_mediations
+from local_providers.install import install_local_providers
+from models.install import install_models, install_database_extensions
 from utils.logger import logger
+from utils.tutorials import upsert_tuto_mediations
 
 
 @app.manager.command

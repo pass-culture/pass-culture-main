@@ -9,7 +9,7 @@ from domain.demarches_simplifiees import get_all_application_ids_for_procedure
 from domain.user_activation import create_beneficiary_from_application
 from domain.user_emails import send_activation_email
 from models import ImportStatus
-from models import User, ApiErrors, PcObject
+from models import User, ApiErrors
 from repository.beneficiary_import_queries import is_already_imported, save_beneficiary_import_with_status, \
     find_applications_ids_to_retry
 from repository.user_queries import find_by_civility, find_user_by_email
@@ -109,7 +109,7 @@ def parse_beneficiary_information(application_detail: dict) -> dict:
 def _process_creation(error_messages, information, new_beneficiaries):
     new_beneficiary = create_beneficiary_from_application(information)
     try:
-        PcObject.save(new_beneficiary)
+        Repository.save(new_beneficiary)
     except ApiErrors as e:
         logger.warning(f"[BATCH][REMOTE IMPORT BENEFICIARIES] Could not save application "
                        f"{information['application_id']}, because of error : {str(e)}")

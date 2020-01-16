@@ -6,11 +6,8 @@ Create Date: 2018-08-10 16:07:28.782900
 
 """
 from alembic import op
-import sqlalchemy as sa
-
 
 # revision identifiers, used by Alembic.
-from models import Booking
 
 revision = '6d93c35d097b'
 down_revision = '72f3629849f0'

@@ -1,5 +1,5 @@
 """ health_check """
-from flask import current_app as app, jsonify
+from flask import current_app as app
 
 from utils.health_checker import check_database_connection, read_version_from_file
 

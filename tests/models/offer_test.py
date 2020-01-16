@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from models import Offer, PcObject, ApiErrors, ThingType, EventType, Product, Provider
+from models import Offer, ApiErrors, ThingType, EventType, Product, Provider
 from routes.serialization import as_dict
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_criterion, create_user, create_stock, \
@@ -29,7 +29,7 @@ class AddStockAlertMessageToOfferTest:
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
 
-            PcObject.save(user, offer)
+            Repository.save(user, offer)
 
             # when
             result = offer.stockAlertMessage
@@ -52,7 +52,7 @@ class AddStockAlertMessageToOfferTest:
             deposit = create_deposit(user2, amount=500)
             booking = create_booking(user=user2, stock=stock, venue=venue, recommendation=recommendation, quantity=3)
 
-            PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
+            Repository.save(booking, deposit, user, offer, stock, stock2, user2)
 
             # when
             result = offer.stockAlertMessage
@@ -75,7 +75,7 @@ class AddStockAlertMessageToOfferTest:
             deposit = create_deposit(user2, amount=500)
             booking = create_booking(user=user2, stock=stock, venue=venue, recommendation=recommendation, quantity=3)
 
-            PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
+            Repository.save(booking, deposit, user, offer, stock, stock2, user2)
 
             # when
             result = offer.stockAlertMessage
@@ -98,7 +98,7 @@ class AddStockAlertMessageToOfferTest:
             deposit = create_deposit(user2, amount=500)
             booking = create_booking(user=user2, stock=stock, venue=venue, recommendation=recommendation, quantity=3)
 
-            PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
+            Repository.save(booking, deposit, user, offer, stock, stock2, user2)
 
             # when
             result = offer.stockAlertMessage
@@ -122,7 +122,7 @@ class AddStockAlertMessageToOfferTest:
             booking = create_booking(user=user2, stock=stock, venue=venue, recommendation=recommendation, quantity=3)
             booking2 = create_booking(user=user2, stock=stock2, venue=venue, recommendation=recommendation, quantity=10)
 
-            PcObject.save(booking, booking2, deposit, user,
+            Repository.save(booking, booking2, deposit, user,
                           offer, stock, stock2, user2)
 
             # when
@@ -147,7 +147,7 @@ class AddStockAlertMessageToOfferTest:
             booking = create_booking(user=user2, stock=stock, venue=venue, recommendation=recommendation, quantity=3)
             booking2 = create_booking(user=user2, stock=stock2, venue=venue, recommendation=recommendation, quantity=20)
 
-            PcObject.save(booking, booking2, deposit, user,
+            Repository.save(booking, booking2, deposit, user,
                           offer, stock, stock2, user2)
 
             # when
@@ -171,7 +171,7 @@ class AddStockAlertMessageToOfferTest:
             deposit = create_deposit(user2, amount=500)
             booking = create_booking(user=user2, stock=stock2, venue=venue, recommendation=recommendation, quantity=10)
 
-            PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
+            Repository.save(booking, deposit, user, offer, stock, stock2, user2)
 
             # when
             result = offer.stockAlertMessage
@@ -198,7 +198,7 @@ class AddStockAlertMessageToOfferTest:
             booking = create_booking(user=user2, stock=stock2, venue=venue, recommendation=recommendation, quantity=5)
             booking2 = create_booking(user=user2, stock=stock3, venue=venue, recommendation=recommendation, quantity=1)
 
-            PcObject.save(booking, booking2, deposit, user, offer,
+            Repository.save(booking, booking2, deposit, user, offer,
                           stock, stock2, stock3, stock4, user2)
 
             # when
@@ -216,7 +216,7 @@ class AddStockAlertMessageToOfferTest:
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
 
-            PcObject.save(user, offer)
+            Repository.save(user, offer)
 
             # when
             result = offer.stockAlertMessage
@@ -239,7 +239,7 @@ class AddStockAlertMessageToOfferTest:
             deposit = create_deposit(user2, amount=500)
             booking = create_booking(user=user2, stock=stock, venue=venue, recommendation=recommendation, quantity=3)
 
-            PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
+            Repository.save(booking, deposit, user, offer, stock, stock2, user2)
 
             # when
             result = offer.stockAlertMessage
@@ -262,7 +262,7 @@ class AddStockAlertMessageToOfferTest:
             deposit = create_deposit(user2, amount=500)
             booking = create_booking(user=user2, stock=stock, venue=venue, recommendation=recommendation, quantity=3)
 
-            PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
+            Repository.save(booking, deposit, user, offer, stock, stock2, user2)
 
             # when
             result = offer.stockAlertMessage
@@ -285,7 +285,7 @@ class AddStockAlertMessageToOfferTest:
             deposit = create_deposit(user2, amount=500)
             booking = create_booking(user=user2, stock=stock, venue=venue, recommendation=recommendation, quantity=3)
 
-            PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
+            Repository.save(booking, deposit, user, offer, stock, stock2, user2)
 
             # when
             result = offer.stockAlertMessage
@@ -309,7 +309,7 @@ class AddStockAlertMessageToOfferTest:
             booking = create_booking(user=user2, stock=stock, venue=venue, recommendation=recommendation, quantity=3)
             booking2 = create_booking(user=user2, stock=stock2, venue=venue, recommendation=recommendation, quantity=10)
 
-            PcObject.save(booking, booking2, deposit, user,
+            Repository.save(booking, booking2, deposit, user,
                           offer, stock, stock2, user2)
 
             # when
@@ -334,7 +334,7 @@ class AddStockAlertMessageToOfferTest:
             booking = create_booking(user=user2, stock=stock, venue=venue, recommendation=recommendation, quantity=3)
             booking2 = create_booking(user=user2, stock=stock2, venue=venue, recommendation=recommendation, quantity=11)
 
-            PcObject.save(booking, booking2, deposit, user,
+            Repository.save(booking, booking2, deposit, user,
                           offer, stock, stock2, user2)
 
             # when
@@ -358,7 +358,7 @@ class AddStockAlertMessageToOfferTest:
             deposit = create_deposit(user2, amount=500)
             booking = create_booking(user=user2, stock=stock2, venue=venue, recommendation=recommendation, quantity=10)
 
-            PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
+            Repository.save(booking, deposit, user, offer, stock, stock2, user2)
 
             # when
             result = offer.stockAlertMessage
@@ -385,7 +385,7 @@ class AddStockAlertMessageToOfferTest:
             booking = create_booking(user=user2, stock=stock2, venue=venue, recommendation=recommendation, quantity=5)
             booking2 = create_booking(user=user2, stock=stock3, venue=venue, recommendation=recommendation, quantity=1)
 
-            PcObject.save(booking, booking2, deposit, user, offer,
+            Repository.save(booking, booking2, deposit, user, offer,
                           stock, stock2, stock3, stock4, user2)
 
             # when
@@ -411,7 +411,7 @@ class AddStockAlertMessageToOfferTest:
             booking = create_booking(user=user2, stock=stock, venue=venue, recommendation=recommendation, is_used=True,
                                      quantity=5)
 
-            PcObject.save(booking, deposit, user, offer, stock, user2)
+            Repository.save(booking, deposit, user, offer, stock, user2)
 
             # when
             result = offer.stockAlertMessage
@@ -428,7 +428,7 @@ class BaseScoreTest:
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         offer.criteria = []
-        PcObject.save(offer)
+        Repository.save(offer)
 
         # Then
         assert offer.baseScore == 0
@@ -441,7 +441,7 @@ class BaseScoreTest:
         offer = create_offer_with_event_product(venue)
         offer.criteria = [create_criterion(name='negative', score_delta=-1),
                           create_criterion(name='positive', score_delta=2)]
-        PcObject.save(offer)
+        Repository.save(offer)
 
         # Then
         assert offer.baseScore == 1
@@ -547,12 +547,12 @@ class CreateOfferTest:
             thing_type=ThingType.JEUX_VIDEO, url=url, is_national=True)
         offerer = create_offerer()
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
-        PcObject.save(virtual_venue)
+        Repository.save(virtual_venue)
 
         offer = create_offer_with_thing_product(virtual_venue, digital_thing)
 
         # When
-        PcObject.save(digital_thing, offer)
+        Repository.save(digital_thing, offer)
 
         # Then
         assert offer.url == url
@@ -565,12 +565,12 @@ class CreateOfferTest:
         offerer = create_offerer()
         physical_venue = create_venue(
             offerer, is_virtual=False, siret=offerer.siren + '12345')
-        PcObject.save(physical_venue)
+        Repository.save(physical_venue)
 
         offer = create_offer_with_thing_product(physical_venue, physical_thing)
 
         # When
-        PcObject.save(physical_thing, offer)
+        Repository.save(physical_thing, offer)
 
         # Then
         assert offer.url is None
@@ -582,12 +582,12 @@ class CreateOfferTest:
             thing_type=ThingType.JEUX_VIDEO, url='http://mygame.fr/offre')
         offerer = create_offerer()
         physical_venue = create_venue(offerer)
-        PcObject.save(physical_venue)
+        Repository.save(physical_venue)
         offer = create_offer_with_thing_product(physical_venue, digital_thing)
 
         # When
         with pytest.raises(ApiErrors) as errors:
-            PcObject.save(offer)
+            Repository.save(offer)
 
         # Then
         assert errors.value.errors['venue'] == [
@@ -600,12 +600,12 @@ class CreateOfferTest:
             thing_type=ThingType.JEUX_VIDEO, url=None)
         offerer = create_offerer()
         digital_venue = create_venue(offerer, is_virtual=True, siret=None)
-        PcObject.save(digital_venue)
+        Repository.save(digital_venue)
         offer = create_offer_with_thing_product(digital_venue, physical_thing)
 
         # When
         with pytest.raises(ApiErrors) as errors:
-            PcObject.save(offer)
+            Repository.save(offer)
 
         # Then
         assert errors.value.errors['venue'] == [
@@ -617,11 +617,11 @@ class CreateOfferTest:
         event_product = create_product_with_event_type(duration_minutes=None)
         offerer = create_offerer()
         venue = create_venue(offerer)
-        PcObject.save(venue)
+        Repository.save(venue)
         offer = create_offer_with_event_product(venue, event_product)
 
         # When
-        PcObject.save(offer)
+        Repository.save(offer)
 
         # Then
         assert offer.durationMinutes is None
@@ -677,12 +677,12 @@ class CreateOfferTest:
             thing_type=ThingType.JEUX_VIDEO, url=url, is_national=True)
         offerer = create_offerer()
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
-        PcObject.save(virtual_venue)
+        Repository.save(virtual_venue)
 
         offer = create_offer_with_thing_product(virtual_venue, digital_thing)
 
         # When
-        PcObject.save(digital_thing, offer)
+        Repository.save(digital_thing, offer)
 
         # Then
         assert offer.product.url == url
@@ -694,12 +694,12 @@ class CreateOfferTest:
             thing_type=ThingType.JEUX_VIDEO, url='http://mygame.fr/offre')
         offerer = create_offerer()
         physical_venue = create_venue(offerer)
-        PcObject.save(physical_venue)
+        Repository.save(physical_venue)
         offer = create_offer_with_thing_product(physical_venue, digital_thing)
 
         # When
         with pytest.raises(ApiErrors) as errors:
-            PcObject.save(offer)
+            Repository.save(offer)
 
         # Then
         assert errors.value.errors['venue'] == [

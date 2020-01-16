@@ -2,7 +2,7 @@ import uuid
 
 import pytest
 
-from models import UserSession, PcObject
+from models import UserSession
 from repository.user_session_queries import delete_user_session
 from tests.conftest import clean_database
 
@@ -29,7 +29,7 @@ class DeleteUserSessionTest:
         session = UserSession()
         session.userId = user_id
         session.uuid = session_id
-        PcObject.save(session)
+        Repository.save(session)
 
         # when
         delete_user_session(user_id, session_id)

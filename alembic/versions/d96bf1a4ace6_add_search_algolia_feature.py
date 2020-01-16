@@ -5,10 +5,10 @@ Revises: 8f2c1fd24cad
 Create Date: 2020-01-03 13:24:37.563981
 
 """
-from alembic import op
 import enum
-import sqlalchemy as sa
 
+import sqlalchemy as sa
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = 'd96bf1a4ace6'

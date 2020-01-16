@@ -1,5 +1,3 @@
-from models.api_errors import ApiErrors
-
 def check_distance_is_digit(distance):
     if not distance.isdigit():
         api_errors.add_error('distance', 'cela doit etre un nombre')

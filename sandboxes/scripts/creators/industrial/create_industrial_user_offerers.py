@@ -1,6 +1,5 @@
-from models.pc_object import PcObject
-from utils.logger import logger
 from tests.model_creators.generic_creators import create_user_offerer
+from utils.logger import logger
 
 
 def create_industrial_user_offerers(users_by_name, offerers_by_name):
@@ -30,7 +29,7 @@ def create_industrial_user_offerers(users_by_name, offerers_by_name):
                 user=user
             )
 
-    PcObject.save(*user_offerers_by_name.values())
+    Repository.save(*user_offerers_by_name.values())
 
     logger.info('created {} user_offerers'.format(len(user_offerers_by_name)))
 

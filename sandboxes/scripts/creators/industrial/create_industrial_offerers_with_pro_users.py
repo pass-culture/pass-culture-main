@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 
-from models.pc_object import PcObject
 from repository.offerer_queries import check_if_siren_already_exists
 from sandboxes.scripts.mocks.offerer_mocks import MOCK_NAMES
 from sandboxes.scripts.mocks.user_mocks import MOCK_DOMAINS, \
@@ -227,7 +226,7 @@ def create_industrial_offerers_with_pro_users():
                       list(users_by_name.values()) + \
                       list(user_offerers_by_name.values())
 
-    PcObject.save(*objects_to_save)
+    Repository.save(*objects_to_save)
 
     logger.info('created {} offerers with pro users'.format(
         len(offerers_by_name)

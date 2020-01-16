@@ -1,4 +1,4 @@
-from models import PcObject
+from repository.repository import Repository
 from repository.provider_queries import get_enabled_providers_for_pro, \
     get_providers_enabled_for_pro_excluding_specific_provider, \
     get_provider_enabled_for_pro_by_id, get_provider_by_local_class
@@ -12,7 +12,7 @@ class GetEnabledProvidersForProTest:
         # Given
         provider1 = create_provider(local_class='OpenAgenda', is_active=False, is_enable_for_pro=False)
         provider2 = create_provider(local_class='TiteLive', is_active=True, is_enable_for_pro=True)
-        PcObject.save(provider1, provider2)
+        Repository.save(provider1, provider2)
 
         # When
         enabled_providers = get_enabled_providers_for_pro()
@@ -27,7 +27,7 @@ class GetProvidersEnabledForProExcludingSpecificProviderTest:
         # Given
         provider1 = create_provider(local_class='OpenAgenda', is_active=False, is_enable_for_pro=False)
         provider2 = create_provider(local_class='TiteLive', is_active=True, is_enable_for_pro=True)
-        PcObject.save(provider1, provider2)
+        Repository.save(provider1, provider2)
 
         # When
         providers = get_providers_enabled_for_pro_excluding_specific_provider('AllocineStocks')
@@ -40,7 +40,7 @@ class GetProvidersEnabledForProExcludingSpecificProviderTest:
         # Given
         provider1 = create_provider(local_class='OpenAgenda', is_active=True, is_enable_for_pro=True)
         provider2 = create_provider(local_class='TiteLive', is_active=True, is_enable_for_pro=True)
-        PcObject.save(provider1, provider2)
+        Repository.save(provider1, provider2)
 
         # When
         providers = get_providers_enabled_for_pro_excluding_specific_provider('OpenAgenda')
@@ -54,7 +54,7 @@ class GetProviderEnabledForProByIdTest:
     def test_should_return_no_provider_when_provider_is_not_active(self, app):
         # Given
         provider = create_provider(local_class='OpenAgenda', is_active=False, is_enable_for_pro=True)
-        PcObject.save(provider)
+        Repository.save(provider)
 
         # When
         provider = get_provider_enabled_for_pro_by_id(provider.id)
@@ -66,7 +66,7 @@ class GetProviderEnabledForProByIdTest:
     def test_should_return_no_provider_when_provider_is_not_enabled_for_pro(self, app):
         # Given
         provider = create_provider(local_class='OpenAgenda', is_active=True, is_enable_for_pro=False)
-        PcObject.save(provider)
+        Repository.save(provider)
 
         # When
         provider = get_provider_enabled_for_pro_by_id(provider.id)
@@ -78,7 +78,7 @@ class GetProviderEnabledForProByIdTest:
     def test_should_return_provider_when_provider_is_enabled_for_pro_and_active(self, app):
         # Given
         existing_provider = create_provider(local_class='OpenAgenda', is_active=True, is_enable_for_pro=True)
-        PcObject.save(existing_provider)
+        Repository.save(existing_provider)
 
         # When
         provider = get_provider_enabled_for_pro_by_id(existing_provider.id)
@@ -92,7 +92,7 @@ class GetProviderByLocalClassTest:
     def test_should_return_provider_matching_local_class(self, app):
         # Given
         existing_provider = create_provider(local_class='OpenAgenda', is_active=True, is_enable_for_pro=True)
-        PcObject.save(existing_provider)
+        Repository.save(existing_provider)
 
         # When
         provider = get_provider_by_local_class('OpenAgenda')

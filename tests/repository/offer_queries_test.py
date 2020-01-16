@@ -3,8 +3,9 @@ from datetime import datetime, timedelta
 
 from freezegun import freeze_time
 
-from models import Offer, PcObject, Stock, Product
+from models import Offer, Stock, Product
 from models.offer_type import EventType, ThingType
+from repository.repository import Repository
 from repository.offer_queries import department_or_national_offers, \
     find_activation_offers, \
     find_offers_with_filter_parameters, \
@@ -32,7 +33,7 @@ class DepartmentOrNationalOffersTest:
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
         offer = create_offer_with_thing_product(venue, product)
-        PcObject.save(offer)
+        Repository.save(offer)
         query = Product.query.filter_by(name='Lire un livre')
 
         # when
@@ -48,7 +49,7 @@ class DepartmentOrNationalOffersTest:
         offerer = create_offerer()
         venue = create_venue(offerer, is_virtual=False, postal_code='29000', departement_code='29')
         offer = create_offer_with_event_product(venue, product)
-        PcObject.save(offer)
+        Repository.save(offer)
         query = Product.query.filter_by(name='Voir une pièce')
 
         # when
@@ -64,7 +65,7 @@ class DepartmentOrNationalOffersTest:
         offerer = create_offerer()
         venue = create_venue(offerer, is_virtual=False, postal_code='29000', departement_code='29')
         offer = create_offer_with_event_product(venue, product)
-        PcObject.save(offer)
+        Repository.save(offer)
         query = Product.query.filter_by(name='Voir une pièce')
 
         # when
@@ -80,7 +81,7 @@ class DepartmentOrNationalOffersTest:
         offerer = create_offerer()
         venue = create_venue(offerer, is_virtual=False, postal_code='29000', departement_code='29')
         offer = create_offer_with_event_product(venue, product)
-        PcObject.save(offer)
+        Repository.save(offer)
         query = Product.query.filter_by(name='Voir une pièce')
 
         # when
@@ -96,7 +97,7 @@ class DepartmentOrNationalOffersTest:
         offerer = create_offerer()
         venue = create_venue(offerer, is_virtual=False, postal_code='29000', departement_code='29')
         offer = create_offer_with_event_product(venue, product)
-        PcObject.save(offer)
+        Repository.save(offer)
         query = Product.query.filter_by(name='Voir une pièce')
 
         # when
@@ -151,7 +152,7 @@ class GetOffersForRecommendationsSearchTest:
         conference_stock2 = create_stock_from_event_occurrence(conference_event_occurrence2)
         concert_stock = create_stock_from_event_occurrence(concert_event_occurrence)
 
-        PcObject.save(conference_stock1, conference_stock2, concert_stock)
+        Repository.save(conference_stock1, conference_stock2, concert_stock)
 
         # When
         offers = get_offers_for_recommendations_search(
@@ -191,7 +192,7 @@ class GetOffersForRecommendationsSearchTest:
         ko_stock1 = create_stock_from_offer(ko_offer)
         ko_stock2 = create_stock_from_event_occurrence(ko_event_occurrence)
 
-        PcObject.save(ok_stock1, ok_stock2, ko_stock1, ko_stock2)
+        Repository.save(ok_stock1, ok_stock2, ko_stock1, ko_stock2)
 
         # When
         offers = get_offers_for_recommendations_search(
@@ -217,7 +218,7 @@ class GetOffersForRecommendationsSearchTest:
         ko_stock_after = _create_event_stock_and_offer_for_date(venue, datetime(2018, 1, 10, 12, 30))
         ok_stock_with_thing = create_stock_with_thing_offer(offerer, venue)
 
-        PcObject.save(ok_stock, ko_stock_before, ko_stock_after)
+        Repository.save(ok_stock, ko_stock_before, ko_stock_after)
 
         # When
         search_result_offers = get_offers_for_recommendations_search(
@@ -248,7 +249,7 @@ class GetOffersForRecommendationsSearchTest:
         event_ko_stock = create_stock_from_event_occurrence(event_ko_occurrence)
         thing_ok_stock = create_stock_from_offer(thing_ok_offer)
         thing_ko_stock = create_stock_from_offer(thing_ko_offer)
-        PcObject.save(event_ko_stock, thing_ok_stock, thing_ko_stock)
+        Repository.save(event_ko_stock, thing_ok_stock, thing_ko_stock)
 
         # When
         offers = get_offers_for_recommendations_search(keywords_string='renc michel')
@@ -266,7 +267,7 @@ class GetOffersForRecommendationsSearchTest:
         venue = create_venue(offerer)
         thing_ok_offer = create_offer_with_thing_product(venue, thing_product_ok)
         thing_ok_stock = create_stock_from_offer(thing_ok_offer)
-        PcObject.save(thing_ok_stock)
+        Repository.save(thing_ok_stock)
 
         # When
         offers = get_offers_for_recommendations_search(keywords_string='nez a')
@@ -282,7 +283,7 @@ class GetOffersForRecommendationsSearchTest:
         venue = create_venue(offerer)
         thing_ok_offer = create_offer_with_thing_product(venue, thing_ok)
         thing_ok_stock = create_stock_from_offer(thing_ok_offer)
-        PcObject.save(thing_ok_stock)
+        Repository.save(thing_ok_stock)
 
         # When
         offers = get_offers_for_recommendations_search(keywords_string='deja')
@@ -300,7 +301,7 @@ class GetOffersForRecommendationsSearchTest:
         offer = create_offer_with_thing_product(venue, thing_type=type_label)
         outdated_stock = create_stock_from_offer(offer, booking_limit_datetime=three_hours_ago)
 
-        PcObject.save(outdated_stock)
+        Repository.save(outdated_stock)
 
         # When
         search_result_offers = get_offers_for_recommendations_search(type_values=[
@@ -323,7 +324,7 @@ class GetOffersForRecommendationsSearchTest:
                                                             end_datetime=datetime.utcnow())
         stock = create_stock_from_event_occurrence(outdated_event_occurrence, booking_limit_date=None)
 
-        PcObject.save(stock)
+        Repository.save(stock)
 
         # When
         search_result_offers = get_offers_for_recommendations_search(type_values=[
@@ -351,7 +352,7 @@ class GetOffersForRecommendationsSearchTest:
         future_stock = create_stock_from_event_occurrence(future_event_occurrence, booking_limit_date=None)
         outdated_stock = create_stock_from_event_occurrence(outdated_event_occurrence, booking_limit_date=None)
 
-        PcObject.save(future_stock, outdated_stock)
+        Repository.save(future_stock, outdated_stock)
 
         # When
         search_result_offers = get_offers_for_recommendations_search(type_values=[
@@ -374,7 +375,7 @@ class GetOffersForRecommendationsSearchTest:
 
             things_stock.append(thing_stock)
 
-        PcObject.save(*things_stock)
+        Repository.save(*things_stock)
 
         # When
         search_result_offers = get_offers_for_recommendations_search(page=1, keywords_string='snif')
@@ -393,7 +394,7 @@ class GetOffersForRecommendationsSearchTest:
         offer = create_offer_with_thing_product(venue, thing, is_active=False)
         thing_stock = create_stock_from_offer(offer)
 
-        PcObject.save(thing_stock)
+        Repository.save(thing_stock)
 
         # When
         search_result_offers = get_offers_for_recommendations_search(page=None)
@@ -410,7 +411,7 @@ class GetOffersForRecommendationsSearchTest:
         offer = create_offer_with_thing_product(venue, thing)
         thing_stock = create_stock_from_offer(offer)
 
-        PcObject.save(thing_stock)
+        Repository.save(thing_stock)
 
         # When
         search_result_offers = get_offers_for_recommendations_search(page=None)
@@ -427,7 +428,7 @@ class GetOffersForRecommendationsSearchTest:
         offer = create_offer_with_thing_product(venue, thing)
         thing_stock = create_stock_from_offer(offer)
 
-        PcObject.save(thing_stock)
+        Repository.save(thing_stock)
 
         # When
         search_result_offers = get_offers_for_recommendations_search(page=None)
@@ -444,7 +445,7 @@ class GetOffersForRecommendationsSearchTest:
         offer = create_offer_with_thing_product(venue, thing)
         thing_stock = create_stock_from_offer(offer)
 
-        PcObject.save(thing_stock)
+        Repository.save(thing_stock)
 
         # When
         search_result_offers = get_offers_for_recommendations_search(page=None)
@@ -461,7 +462,7 @@ class GetOffersForRecommendationsSearchTest:
         offer_with_soft_deleted_stock = create_offer_with_thing_product(venue, thing)
         thing_stock = create_stock_from_offer(offer_with_soft_deleted_stock, soft_deleted=True)
 
-        PcObject.save(thing_stock)
+        Repository.save(thing_stock)
 
         # When
         search_result_offers = get_offers_for_recommendations_search(page=None)
@@ -479,7 +480,7 @@ class GetOffersForRecommendationsSearchTest:
         thing_stock = create_stock_from_offer(offer_with_passed_booking_limit_datetime,
                                               booking_limit_datetime=datetime(2010, 1, 6, 12, 30))
 
-        PcObject.save(thing_stock)
+        Repository.save(thing_stock)
 
         # When
         search_result_offers = get_offers_for_recommendations_search(page=None)
@@ -494,7 +495,7 @@ class GetOffersForRecommendationsSearchTest:
         venue = create_venue(offerer)
         offer_in_past = _create_event_stock_and_offer_for_date(venue, datetime(2018, 1, 6, 12, 30))
 
-        PcObject.save(offer_in_past)
+        Repository.save(offer_in_past)
 
         # When
         search_result_offers = get_offers_for_recommendations_search(page=None)
@@ -511,7 +512,7 @@ class GetOffersForRecommendationsSearchTest:
         offer_with_not_available_stock = create_offer_with_thing_product(venue, thing)
         thing_stock = create_stock_from_offer(offer_with_not_available_stock, available=0)
 
-        PcObject.save(thing_stock)
+        Repository.save(thing_stock)
 
         # When
         search_result_offers = get_offers_for_recommendations_search(page=None)
@@ -527,7 +528,7 @@ class GetOffersForRecommendationsSearchTest:
         venue = create_venue(offerer)
         offer_with_no_stock = create_offer_with_thing_product(venue, thing)
 
-        PcObject.save(offer_with_no_stock)
+        Repository.save(offer_with_no_stock)
 
         # When
         search_result_offers = get_offers_for_recommendations_search(page=None)
@@ -549,7 +550,7 @@ class FindActivationOffersTest:
         stock1 = create_stock_from_offer(offer1)
         stock2 = create_stock_from_offer(offer2)
         stock3 = create_stock_from_offer(offer3)
-        PcObject.save(stock1, stock2, stock3)
+        Repository.save(stock1, stock2, stock3)
 
         # when
         offers = find_activation_offers('34').all()
@@ -571,7 +572,7 @@ class FindActivationOffersTest:
         stock2 = create_stock_from_offer(offer2)
         stock3 = create_stock_from_offer(offer3)
         stock4 = create_stock_from_offer(offer4)
-        PcObject.save(stock1, stock2, stock3, stock4)
+        Repository.save(stock1, stock2, stock3, stock4)
 
         # when
         offers = find_activation_offers('34').all()
@@ -592,7 +593,7 @@ class FindActivationOffersTest:
         stock1 = create_stock_from_offer(offer1)
         stock2 = create_stock_from_offer(offer2)
         stock3 = create_stock_from_offer(offer3)
-        PcObject.save(stock1, stock2, stock3)
+        Repository.save(stock1, stock2, stock3)
 
         # when
         offers = find_activation_offers('93').all()
@@ -619,7 +620,7 @@ class FindActivationOffersTest:
         stock2 = create_stock_from_offer(offer2, price=0, available=10)
         stock3 = create_stock_from_offer(offer3, price=0, available=1)
         booking = create_booking(user=user, stock=stock3, quantity=1, venue=venue3)
-        PcObject.save(stock1, stock2, stock3, booking, offer4)
+        Repository.save(stock1, stock2, stock3, booking, offer4)
 
         # when
         offers = find_activation_offers('93').all()
@@ -643,7 +644,7 @@ class FindActivationOffersTest:
         stock1 = create_stock_from_offer(offer=offer1, price=0, booking_limit_datetime=five_days_ago)
         stock2 = create_stock_from_offer(offer=offer2, price=0, booking_limit_datetime=next_week)
         stock3 = create_stock_from_offer(offer=offer3, price=0, booking_limit_datetime=None)
-        PcObject.save(stock1, stock2, stock3)
+        Repository.save(stock1, stock2, stock3)
 
         # when
         offers = find_activation_offers('93').all()
@@ -680,7 +681,7 @@ class FindOffersTest:
         ko_offer2 = create_offer_with_event_product(venue1, event_product2)
         ko_offer3 = create_offer_with_thing_product(ko_venue3, thing1_product)
         ko_offer4 = create_offer_with_thing_product(venue2, thing2_product)
-        PcObject.save(
+        Repository.save(
             user_offerer1, user_offerer2, ko_offerer3,
             ok_offer1, ko_offer2, ko_offer3, ko_offer4
         )
@@ -707,7 +708,7 @@ class FindOffersTest:
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
         offer = create_offer_with_thing_product(venue, product)
-        PcObject.save(offer)
+        Repository.save(offer)
 
         # When
         offers = get_offers_by_venue_id(venue.id)
@@ -726,7 +727,7 @@ class HasRemainingStockTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, thing)
-        PcObject.save(offer)
+        Repository.save(offer)
 
         # When
         offers_count = Offer.query \
@@ -747,7 +748,7 @@ class HasRemainingStockTest:
         stock = create_stock_from_offer(offer, available=4, price=0)
         booking_1 = create_booking(user=user, stock=stock, quantity=2)
         booking_2 = create_booking(user=user, stock=stock, quantity=1)
-        PcObject.save(stock, booking_1, booking_2)
+        Repository.save(stock, booking_1, booking_2)
 
         # When
         offers_count = Offer.query \
@@ -769,7 +770,7 @@ class HasRemainingStockTest:
         stock = create_stock_from_offer(offer, available=3, price=0)
         booking_1 = create_booking(user=user, stock=stock, quantity=2)
         booking_2 = create_booking(user=user, stock=stock, quantity=1)
-        PcObject.save(stock, booking_1, booking_2)
+        Repository.save(stock, booking_1, booking_2)
 
         # When
         offers_count = Offer.query \
@@ -791,7 +792,7 @@ class HasRemainingStockTest:
         stock = create_stock_from_offer(offer, available=1, price=0)
         booking = create_booking(user=user, stock=stock, is_used=True, quantity=1)
         stock.dateModified = datetime.utcnow() + timedelta(days=1)
-        PcObject.save(stock, booking)
+        Repository.save(stock, booking)
 
         # When
         offers_count = Offer.query \
@@ -812,7 +813,7 @@ class HasRemainingStockTest:
         offer = create_offer_with_thing_product(venue, product)
         stock = create_stock_from_offer(offer, available=2)
         booking = create_booking(user=user, stock=stock, is_cancelled=True, quantity=2, venue=venue)
-        PcObject.save(booking)
+        Repository.save(booking)
 
         # When
         offers_count = Offer.query \
@@ -834,7 +835,7 @@ class HasRemainingStockTest:
         user = create_user()
         booking1 = create_booking(user=user, stock=stock, is_cancelled=True, quantity=2, venue=venue)
         booking2 = create_booking(user=user, stock=stock, quantity=2, venue=venue)
-        PcObject.save(booking1, booking2)
+        Repository.save(booking1, booking2)
 
         # When
         offers_count = Offer.query \
@@ -856,7 +857,7 @@ class HasRemainingStockTest:
         stock2 = create_stock_from_offer(offer, available=2, price=0)
         user = create_user()
         booking1 = create_booking(user=user, stock=stock1, quantity=2, venue=venue)
-        PcObject.save(booking1, stock2)
+        Repository.save(booking1, stock2)
 
         # When
         offers_count = Offer.query \
@@ -885,7 +886,7 @@ class BaseScoreTest:
         offer1.criteria = [criterion_negative]
         offer2.criteria = [criterion_negative, criterion_positive]
 
-        PcObject.save(offer1, offer2)
+        Repository.save(offer1, offer2)
 
         # When
         offers = Offer.query \
@@ -915,7 +916,7 @@ class GetActiveOffersTest:
         create_mediation(stock_93.offer)
         create_mediation(stock_75.offer)
 
-        PcObject.save(stock_34, stock_93, stock_75)
+        Repository.save(stock_34, stock_93, stock_75)
 
         # When
         offers = get_active_offers(departement_codes=['00'],
@@ -942,7 +943,7 @@ class GetActiveOffersTest:
         create_mediation(stock_93.offer)
         create_mediation(stock_activation_93.offer)
 
-        PcObject.save(stock_93, stock_activation_93)
+        Repository.save(stock_93, stock_activation_93)
 
         # When
         offers = get_active_offers(departement_codes=['00'],
@@ -968,7 +969,7 @@ class GetActiveOffersTest:
         create_mediation(stock_93.offer)
         create_mediation(stock_activation_93.offer)
 
-        PcObject.save(stock_93, stock_activation_93)
+        Repository.save(stock_93, stock_activation_93)
 
         # When
         offers = get_active_offers(departement_codes=['00'],
@@ -990,7 +991,7 @@ class GetActiveOffersTest:
         offer = create_offer_with_thing_product(venue, product)
         stock = create_stock_from_offer(offer, available=2)
         create_mediation(stock.offer)
-        PcObject.save(stock)
+        Repository.save(stock)
 
         # When
         offers = get_active_offers(departement_codes=['00'],
@@ -1010,7 +1011,7 @@ class GetActiveOffersTest:
         stock1 = create_stock_with_thing_offer(offerer, venue, name='thing_with_mediation')
         stock2 = create_stock_with_thing_offer(offerer, venue, name='thing_without_mediation')
         create_mediation(stock1.offer)
-        PcObject.save(stock1, stock2)
+        Repository.save(stock1, stock2)
 
         # When
         offers = get_active_offers(departement_codes=['00'],
@@ -1045,7 +1046,7 @@ class GetActiveOffersTest:
         create_mediation(stock1.offer)
         create_mediation(stock2.offer)
         create_mediation(stock3.offer)
-        PcObject.save(stock1, stock2, stock3)
+        Repository.save(stock1, stock2, stock3)
 
         # When
         offers = get_active_offers(departement_codes=['00'],
@@ -1080,7 +1081,7 @@ class GetActiveOffersTest:
         create_mediation(stock4.offer)
         create_mediation(stock5.offer)
         create_mediation(stock6.offer)
-        PcObject.save(stock1, stock2, stock3, stock4, stock5, stock6)
+        Repository.save(stock1, stock2, stock3, stock4, stock5, stock6)
 
         def _first_four_offers_have_different_type_and_onlineness(offers):
             return len(set([o.type + (o.url or '')
@@ -1108,7 +1109,7 @@ class GetActiveOffersTest:
         booking1 = create_booking(user=user, stock=stock, is_cancelled=True, quantity=2, venue=venue)
         booking2 = create_booking(user=user, stock=stock, quantity=2, venue=venue)
         create_mediation(stock.offer)
-        PcObject.save(booking1, booking2)
+        Repository.save(booking1, booking2)
 
         # When
         offers = get_active_offers(departement_codes=['00'],
@@ -1135,7 +1136,7 @@ class GetActiveOffersTest:
         create_mediation(stock3.offer)
         create_mediation(stock4.offer)
 
-        PcObject.save(stock1, stock2, stock3, stock4)
+        Repository.save(stock1, stock2, stock3, stock4)
 
         # When
         offers = get_active_offers(departement_codes=['00'],
@@ -1164,7 +1165,7 @@ class GetActiveOffersTest:
         create_mediation(stock1.offer)
         create_mediation(stock2.offer)
 
-        PcObject.save(stock1, stock2)
+        Repository.save(stock1, stock2)
 
         # When
         offers = get_active_offers(departement_codes=['00'],
@@ -1199,7 +1200,7 @@ class GetActiveOffersTest:
         create_mediation(stock2.offer)
         create_mediation(stock3.offer)
 
-        PcObject.save(stock1, stock2, stock3)
+        Repository.save(stock1, stock2, stock3)
 
         # When
         offers = get_active_offers(departement_codes=['00'],
@@ -1235,7 +1236,7 @@ class GetActiveOffersTest:
         create_mediation(stock3.offer)
         create_mediation(stock4.offer)
 
-        PcObject.save(stock1, stock2, stock3, stock4)
+        Repository.save(stock1, stock2, stock3, stock4)
 
         pagination_params = {'seed': 0.5, 'page': 1}
         offers_1 = get_active_offers(departement_codes=['00'],
@@ -1292,7 +1293,7 @@ class GetActiveOffersTest:
         create_mediation(stock3.offer)
         create_mediation(stock4.offer)
 
-        PcObject.save(stock1, stock2, stock3, stock4)
+        Repository.save(stock1, stock2, stock3, stock4)
 
         offers_1 = get_active_offers(departement_codes=['00'],
                                      offer_id=None,
@@ -1320,7 +1321,7 @@ class GetActiveOffersTest:
         user = create_user()
         booking = create_booking(user=user, stock=stock)
         create_mediation(stock.offer)
-        PcObject.save(booking)
+        Repository.save(booking)
 
         # When
         offers = get_active_offers(departement_codes=['00'],
@@ -1344,7 +1345,7 @@ class GetActiveOffersTest:
         mediation = create_mediation(stock.offer)
         favorite = create_favorite(mediation=mediation, offer=offer, user=user)
 
-        PcObject.save(favorite)
+        Repository.save(favorite)
 
         # When
         offers = get_active_offers(departement_codes=['00'],
@@ -1374,7 +1375,7 @@ class GetActiveOffersTest:
         create_mediation(offer2)
         create_mediation(offer3)
         create_mediation(offer4)
-        PcObject.save(stock1, stock2, stock3, stock4)
+        Repository.save(stock1, stock2, stock3, stock4)
 
         # When
         offers1 = get_active_offers(departement_codes=['00'],
@@ -1413,7 +1414,7 @@ class GetOffersByIdsTest:
         venue = create_venue(offerer=offerer)
         offer1 = create_offer_with_thing_product(venue=venue, idx=1)
         offer2 = create_offer_with_thing_product(venue=venue, idx=2)
-        PcObject.save(offer1, offer2)
+        Repository.save(offer1, offer2)
         offer_ids = [0, 1, 2]
 
         # when
@@ -1435,7 +1436,7 @@ class GetPaginatedActiveOfferIdsTest:
         offer2 = create_offer_with_event_product(is_active=True, venue=venue)
         offer3 = create_offer_with_thing_product(is_active=True, venue=venue)
         offer4 = create_offer_with_thing_product(is_active=True, venue=venue)
-        PcObject.save(offer1, offer2)
+        Repository.save(offer1, offer2)
 
         # When
         offer_ids = get_paginated_active_offer_ids(limit=2, page=0)
@@ -1478,7 +1479,7 @@ class GetPaginatedActiveOfferIdsTest:
         offer2 = create_offer_with_event_product(is_active=False, venue=venue)
         offer3 = create_offer_with_thing_product(is_active=True, venue=venue)
         offer4 = create_offer_with_thing_product(is_active=True, venue=venue)
-        PcObject.save(offer1, offer2)
+        Repository.save(offer1, offer2)
 
         # When
         offer_ids = get_paginated_active_offer_ids(limit=1, page=2)
@@ -1499,7 +1500,7 @@ class GetPaginatedOfferIdsByVenueIdTest:
         venue = create_venue(offerer=offerer)
         offer1 = create_offer_with_event_product(venue=venue)
         offer2 = create_offer_with_event_product(venue=venue)
-        PcObject.save(offer1, offer2)
+        Repository.save(offer1, offer2)
 
         # When
         offer_ids = get_paginated_offer_ids_by_venue_id(venue_id=venue.id, limit=1, page=0)
@@ -1516,7 +1517,7 @@ class GetPaginatedOfferIdsByVenueIdTest:
         venue = create_venue(offerer=offerer)
         offer1 = create_offer_with_event_product(venue=venue)
         offer2 = create_offer_with_event_product(venue=venue)
-        PcObject.save(offer1, offer2)
+        Repository.save(offer1, offer2)
 
         # When
         offer_ids = get_paginated_offer_ids_by_venue_id(venue_id=venue.id, limit=1, page=1)
@@ -1537,7 +1538,7 @@ class GetPaginatedOfferIdsByVenueIdAndLastProviderId:
         venue = create_venue(offerer=offerer)
         offer1 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue)
         offer2 = create_offer_with_thing_product(last_provider_id=provider2.id, venue=venue)
-        PcObject.save(provider1, provider2, offer1, offer2)
+        Repository.save(provider1, provider2, offer1, offer2)
 
         # When
         offer_ids = get_paginated_offer_ids_by_venue_id_and_last_provider_id(last_provider_id=provider1.id,
@@ -1558,7 +1559,7 @@ class GetPaginatedOfferIdsByVenueIdAndLastProviderId:
         venue = create_venue(offerer=offerer)
         offer1 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue)
         offer2 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue)
-        PcObject.save(provider1, offer1, offer2)
+        Repository.save(provider1, offer1, offer2)
 
         # When
         offer_ids = get_paginated_offer_ids_by_venue_id_and_last_provider_id(last_provider_id=provider1.id,
@@ -1579,7 +1580,7 @@ class GetPaginatedOfferIdsByVenueIdAndLastProviderId:
         venue = create_venue(offerer=offerer)
         offer1 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue)
         offer2 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue)
-        PcObject.save(provider1, offer1, offer2)
+        Repository.save(provider1, offer1, offer2)
 
         # When
         offer_ids = get_paginated_offer_ids_by_venue_id_and_last_provider_id(last_provider_id=provider1.id,
@@ -1600,7 +1601,7 @@ class GetPaginatedOfferIdsByVenueIdAndLastProviderId:
         venue = create_venue(offerer=offerer)
         offer1 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue)
         offer2 = create_offer_with_thing_product(last_provider_id=provider2.id, venue=venue)
-        PcObject.save(provider1, provider2, offer1, offer2)
+        Repository.save(provider1, provider2, offer1, offer2)
 
         # When
         offer_ids = get_paginated_offer_ids_by_venue_id_and_last_provider_id(last_provider_id='3',
@@ -1620,7 +1621,7 @@ class GetPaginatedOfferIdsByVenueIdAndLastProviderId:
         venue = create_venue(offerer=offerer)
         offer1 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue)
         offer2 = create_offer_with_thing_product(last_provider_id=provider2.id, venue=venue)
-        PcObject.save(provider1, provider2, offer1, offer2)
+        Repository.save(provider1, provider2, offer1, offer2)
 
         # When
         offer_ids = get_paginated_offer_ids_by_venue_id_and_last_provider_id(last_provider_id='3',
@@ -1640,7 +1641,7 @@ class GetPaginatedOfferIdsByVenueIdAndLastProviderId:
         venue = create_venue(offerer=offerer)
         offer1 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue)
         offer2 = create_offer_with_thing_product(last_provider_id=provider2.id, venue=venue)
-        PcObject.save(provider1, provider2, offer1, offer2)
+        Repository.save(provider1, provider2, offer1, offer2)
 
         # When
         offer_ids = get_paginated_offer_ids_by_venue_id_and_last_provider_id(last_provider_id=provider1.id,

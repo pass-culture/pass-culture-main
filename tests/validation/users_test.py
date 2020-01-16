@@ -3,7 +3,7 @@ from unittest.mock import Mock
 import pytest
 
 from models import ApiErrors
-from validation.users import check_valid_signup_webapp,\
+from validation.users import check_valid_signup_webapp, \
     check_valid_signup_pro
 
 

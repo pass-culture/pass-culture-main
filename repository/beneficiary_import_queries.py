@@ -2,7 +2,7 @@ from typing import List
 
 from sqlalchemy import asc
 
-from models import BeneficiaryImport, ImportStatus, User, PcObject
+from models import BeneficiaryImport, ImportStatus, User
 from models.db import db
 
 
@@ -31,7 +31,7 @@ def save_beneficiary_import_with_status(
     beneficiary_import.beneficiary = user
     beneficiary_import.demarcheSimplifieeApplicationId = demarche_simplifiee_application_id
     beneficiary_import.setStatus(status=status, detail=detail, author=None)
-    PcObject.save(beneficiary_import)
+    Repository.save(beneficiary_import)
 
 
 def find_applications_ids_to_retry() -> List[int]:

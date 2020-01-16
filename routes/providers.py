@@ -4,7 +4,8 @@ from flask_login import login_required
 from local_providers import AllocineStocks
 from models import Venue
 from repository.allocine_pivot_queries import has_allocine_pivot_for_venue
-from repository.provider_queries import get_enabled_providers_for_pro, get_providers_enabled_for_pro_excluding_specific_provider
+from repository.provider_queries import get_enabled_providers_for_pro, \
+    get_providers_enabled_for_pro_excluding_specific_provider
 from routes.serialization import as_dict
 from utils.rest import load_or_404
 

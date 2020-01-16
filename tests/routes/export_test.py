@@ -1,12 +1,13 @@
 import os
 from datetime import datetime
 
-from models import PcObject, Venue, Offerer
+from models import Venue, Offerer
+from repository.repository import Repository
 from routes.serialization import serialize
 from tests.conftest import clean_database, TestClient
+from tests.model_creators.activity_creators import create_venue_activity, save_all_activities
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
     create_bank_information
-from tests.model_creators.activity_creators import create_venue_activity, save_all_activities
 from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_event_occurrence, \
     create_stock_with_thing_offer, create_offer_with_event_product, create_event_occurrence
 from utils.human_ids import humanize
@@ -18,7 +19,7 @@ TOKEN = os.environ.get('EXPORT_TOKEN')
 def test_export_model_returns_200_when_given_model_is_known(app):
     # given
     user = create_user()
-    PcObject.save(user)
+    Repository.save(user)
     auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
@@ -32,7 +33,7 @@ def test_export_model_returns_200_when_given_model_is_known(app):
 def test_export_model_returns_400_when_given_model_is_not_exportable(app):
     # given
     user = create_user()
-    PcObject.save(user)
+    Repository.save(user)
     auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
@@ -57,7 +58,7 @@ def test_export_model_returns_bad_request_if_no_token_provided(app):
 def test_export_model_returns_400_when_given_model_is_unknown(app):
     # given
     user = create_user()
-    PcObject.save(user)
+    Repository.save(user)
     auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
@@ -72,7 +73,7 @@ def test_export_model_returns_400_when_given_model_is_unknown(app):
 def test_pending_validation_returns_403_when_user_is_not_admin(app):
     # given
     user = create_user(is_admin=False)
-    PcObject.save(user)
+    Repository.save(user)
     auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
@@ -86,7 +87,7 @@ def test_pending_validation_returns_403_when_user_is_not_admin(app):
 def test_pending_validation_returns_200_when_user_is_admin(app):
     # given
     user = create_user(can_book_free_offers=False, is_admin=True)
-    PcObject.save(user)
+    Repository.save(user)
     auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
@@ -102,7 +103,7 @@ def test_pending_validation_returns_403_when_user_is_structure_admin_but_not_adm
     user = create_user(can_book_free_offers=False, is_admin=False)
     offerer = create_offerer()
     user_offerer = create_user_offerer(user, offerer, is_admin=True)
-    PcObject.save(user_offerer)
+    Repository.save(user_offerer)
     auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
@@ -122,7 +123,7 @@ def test_pending_validation_return_200_and_validation_token(app):
     venue = create_venue(offerer, siret=None, comment="comment because no siret",
                          validation_token="venue_validation_token")
 
-    PcObject.save(user_offerer, user, venue)
+    Repository.save(user_offerer, user, venue)
     auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
@@ -143,7 +144,7 @@ def test_pending_validation_return_only_requested_data(app):
     user_offerer = create_user_offerer(user_pro, offerer, is_admin=True)
     venue = create_venue(offerer, siret=None, comment='comment because no siret',
                          validation_token='venue_validation_token', booking_email='john.doe@test.com')
-    PcObject.save(user, user_pro, offerer)
+    Repository.save(user, user_pro, offerer)
 
     expected_result = {
         'isActive': True,
@@ -232,7 +233,7 @@ def test_pending_validation_returns_offerers_venues_user_and_user_offerer_with_r
     venue3 = create_venue(offerer3, siret="12345678312345")
     venue4 = create_venue(offerer4, siret="12345678412345")
 
-    PcObject.save(connexion_user, user_offerer1, user_offerer2, user_offerer3, user_offerer4, venue1, venue2, venue3,
+    Repository.save(connexion_user, user_offerer1, user_offerer2, user_offerer3, user_offerer4, venue1, venue2, venue3,
                   venue4)
 
     auth_request = TestClient(app.test_client()).with_auth(email=connexion_user.email)
@@ -261,7 +262,7 @@ def test_get_venues_returns_403_when_user_is_not_admin(app):
     # given
     data = {}
     user = create_user(is_admin=False)
-    PcObject.save(user)
+    Repository.save(user)
     auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
@@ -279,7 +280,7 @@ def test_get_venues_returns_403_when_user_is_structure_admin_but_not_admin(app):
     offerer = create_offerer()
     user_offerer = create_user_offerer(user, offerer, is_admin=True)
     venue = create_venue(offerer)
-    PcObject.save(user_offerer, venue)
+    Repository.save(user_offerer, venue)
     auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
@@ -362,7 +363,7 @@ def test_get_venues_return_200_and_filtered_venues(app):
         create_stock_from_event_occurrence(create_event_occurrence(offer8)),
         create_stock_from_event_occurrence(create_event_occurrence(offer9))
     ]
-    PcObject.save(
+    Repository.save(
         user, venue_with_not_validated_offerer_in_date_range,
         venue67_without_offer_in_date_range, *stocks
     )
@@ -462,7 +463,7 @@ def test_get_venues_with_params_for_pc_reporting_return_200_and_filtered_venues(
                                                                                           name="venue_with_validated_offerer_with_siren_with_user_offerer_without_user",
                                                                                           siret="12345678912345")
 
-    PcObject.save(query_user,
+    Repository.save(query_user,
                   venue_with_validated_offerer_with_siren_with_user_offerer_with_user,
                   venue_without_validated_offerer_with_siren_with_user_offerer_with_user,
                   venue_with_validated_offerer_without_siren_with_user_offerer_with_user,
@@ -508,7 +509,7 @@ def test_get_venues_with_sirens_params_return_200_and_filtered_venues(app):
     venue_123456783 = create_venue(offerer_123456783, name="venue_123456783", siret="12345678312345")
     venue_123456784 = create_venue(offerer_123456784, name="venue_123456784", siret="12345678412345")
 
-    PcObject.save(query_user, venue_123456789, venue_123456781, venue_123456782, venue_123456783,
+    Repository.save(query_user, venue_123456789, venue_123456781, venue_123456782, venue_123456783,
                   venue_123456784)
     venue_123456781_id = venue_123456781.id
     venue_123456782_id = venue_123456782.id
@@ -535,7 +536,7 @@ def test_get_venues_return_error_when_date_param_is_wrong(app):
     data = {'from_date': wrong_date}
     user = create_user(can_book_free_offers=False, is_admin=True)
 
-    PcObject.save(user)
+    Repository.save(user)
     auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
@@ -551,7 +552,7 @@ def test_get_offerers_returns_403_when_user_is_not_admin(app):
     # given
     data = {}
     user = create_user(is_admin=False)
-    PcObject.save(user)
+    Repository.save(user)
     auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
@@ -568,7 +569,7 @@ def test_get_offerers_returns_403_when_user_is_structure_admin_but_not_admin(app
     user = create_user(can_book_free_offers=False, is_admin=False)
     offerer = create_offerer()
     user_offerer = create_user_offerer(user, offerer, is_admin=True)
-    PcObject.save(user_offerer)
+    Repository.save(user_offerer)
     auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
@@ -697,7 +698,7 @@ def test_get_offerers_return_200_and_filtered_offerers(app):
         offerer_2A450_in_date_range_with_validated_venue_with_siret_with_expired_offer_thing,
         validated_venue_with_siret_with_expired_offer_thing, available=0)
 
-    PcObject.save(query_user, stock_offer_1, stock_offer_2, stock_offer_3, stock_offer_4, stock_offer_5,
+    Repository.save(query_user, stock_offer_1, stock_offer_2, stock_offer_3, stock_offer_4, stock_offer_5,
                   stock_offer_6, stock_offer_7,
                   stock_offer_8, stock_offer_9, stock_offer_10, stock_active_offer_thing,
                   stock_expired_offer_thing, validated_venue_with_siret_without_offer)
@@ -750,7 +751,7 @@ def test_get_offerers_with_params_for_pc_reporting_return_200_and_filtered_offer
     user_offerer_not_active = create_user_offerer(user_validated, offerer_not_active)
     user_offerer_ok = create_user_offerer(user_validated, offerer_ok, validation_token=None)
 
-    PcObject.save(user_querying, user_offerer_no_siren, user_offerer_not_validated_offerer,
+    Repository.save(user_querying, user_offerer_no_siren, user_offerer_not_validated_offerer,
                   user_offerer_not_validated, user_offerer_not_validated_user, user_offerer_bank_information,
                   user_offerer_not_active, user_offerer_ok)
 
@@ -758,7 +759,7 @@ def test_get_offerers_with_params_for_pc_reporting_return_200_and_filtered_offer
                                                id_at_providers=offerer_bank_information.siren,
                                                offerer=offerer_bank_information)
 
-    PcObject.save(bank_information)
+    Repository.save(bank_information)
 
     auth_request = TestClient(app.test_client()).with_auth(email=user_querying.email)
 
@@ -787,7 +788,7 @@ def test_get_offerers_with_sirens_params_return_200_and_filtered_offerers(app):
     offerer_123456783 = create_offerer(name="offerer_123456783", siren="123456783")
     offerer_123456784 = create_offerer(name="offerer_123456784", siren="123456784")
 
-    PcObject.save(query_user, offerer_123456789, offerer_123456781, offerer_123456782, offerer_123456783,
+    Repository.save(query_user, offerer_123456789, offerer_123456781, offerer_123456782, offerer_123456783,
                   offerer_123456784)
     offerer_123456781_id = offerer_123456781.id
     offerer_123456782_id = offerer_123456782.id
@@ -814,7 +815,7 @@ def test_get_offerers_return_error_when_date_param_is_wrong(app):
     data = {'from_date': wrong_date}
     user = create_user(can_book_free_offers=False, is_admin=True)
 
-    PcObject.save(user)
+    Repository.save(user)
     auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when

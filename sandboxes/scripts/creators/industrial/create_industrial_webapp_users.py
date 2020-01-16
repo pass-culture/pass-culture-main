@@ -1,7 +1,6 @@
 import uuid
 from datetime import datetime, timedelta
 
-from models.pc_object import PcObject
 from tests.model_creators.generic_creators import create_user
 from utils.logger import logger
 
@@ -55,7 +54,7 @@ def create_industrial_webapp_users():
                 reset_password_token=reset_password_token,
                 reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24))
 
-    PcObject.save(*users_by_name.values())
+    Repository.save(*users_by_name.values())
 
     logger.info('created {} users'.format(len(users_by_name)))
 

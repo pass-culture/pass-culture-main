@@ -1,11 +1,13 @@
 from datetime import datetime
 from unittest.mock import patch
 
-from models import PcObject, Offer, Product, Provider
+from models import Offer, Product, Provider
+from repository.repository import Repository
 from routes.serialization import serialize
 from tests.conftest import clean_database, TestClient
+from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
+    API_URL
 from tests.model_creators.provider_creators import activate_provider
-from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, API_URL
 from tests.model_creators.specific_creators import create_product_with_thing_type, create_product_with_event_type, \
     create_offer_with_thing_product, create_offer_with_event_product
 from utils.human_ids import humanize
@@ -22,7 +24,7 @@ class Patch:
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue, booking_email='old@example.com')
 
-            PcObject.save(offer, user, user_offerer)
+            Repository.save(offer, user, user_offerer)
 
             json = {
                 'bookingEmail': 'offer@example.com',
@@ -47,7 +49,7 @@ class Patch:
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue, booking_email='old@example.com')
 
-            PcObject.save(offer, user, user_offerer)
+            Repository.save(offer, user, user_offerer)
 
             json = {
                 'bookingEmail': 'offer@example.com',
@@ -71,7 +73,7 @@ class Patch:
             venue = create_venue(owning_offerer)
             product = create_product_with_thing_type(thing_name='Old Name', owning_offerer=owning_offerer)
             offer = create_offer_with_thing_product(venue, product)
-            PcObject.save(offer, user_offerer)
+            Repository.save(offer, user_offerer)
             offer_id = offer.id
             product_id = product.id
 
@@ -99,7 +101,7 @@ class Patch:
             venue = create_venue(editor_offerer)
             product = create_product_with_thing_type(thing_name='Old Name', owning_offerer=owning_offerer)
             offer = create_offer_with_thing_product(venue, product)
-            PcObject.save(offer, editor_user_offerer, owning_offerer)
+            Repository.save(offer, editor_user_offerer, owning_offerer)
             offer_id = offer.id
             product_id = product.id
 
@@ -126,7 +128,7 @@ class Patch:
             venue = create_venue(offerer)
             product = create_product_with_thing_type(thing_name='Old Name', owning_offerer=None)
             offer = create_offer_with_thing_product(venue, product)
-            PcObject.save(offer, user_offerer)
+            Repository.save(offer, user_offerer)
 
             json = {
                 'name': 'New Name'
@@ -151,7 +153,7 @@ class Patch:
             venue = create_venue(offerer)
             provider = activate_provider('TiteLiveStocks')
             offer = create_offer_with_thing_product(venue, id_at_providers='id_provider', last_provider_id=provider.id)
-            PcObject.save(offer, user_offerer)
+            Repository.save(offer, user_offerer)
             offer_id = offer.id
 
             json = {
@@ -179,7 +181,7 @@ class Patch:
                                                     is_active=False,
                                                     id_at_providers='id_provider',
                                                     last_provider_id=provider.id)
-            PcObject.save(offer, user_offerer)
+            Repository.save(offer, user_offerer)
             offer_id = offer.id
 
             json = {
@@ -211,7 +213,7 @@ class Patch:
                                                     booking_email='old@example.com',
                                                     last_provider_id=tite_live_provider.id)
 
-            PcObject.save(offer, user, user_offerer)
+            Repository.save(offer, user, user_offerer)
             json = {
                 'bookingEmail': 'offer@example.com',
             }
@@ -235,7 +237,7 @@ class Patch:
             thing_product = create_product_with_thing_type(thing_name='Old Name', owning_offerer=None)
             offer = create_offer_with_thing_product(venue, thing_product)
 
-            PcObject.save(offer, user, user_offerer)
+            Repository.save(offer, user, user_offerer)
 
             forbidden_keys = ['idAtProviders', 'dateModifiedAtLastProvider', 'thumbCount',
                               'owningOffererId', 'id', 'lastProviderId', 'dateCreated']
@@ -271,7 +273,7 @@ class Patch:
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue, event_product)
 
-            PcObject.save(event_product, offer, user, venue)
+            Repository.save(event_product, offer, user, venue)
 
             json = {
                 'name': 'New name',
@@ -293,7 +295,7 @@ class Patch:
         def test_returns_404_if_offer_does_not_exist(self, app):
             # given
             user = create_user()
-            PcObject.save(user)
+            Repository.save(user)
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when

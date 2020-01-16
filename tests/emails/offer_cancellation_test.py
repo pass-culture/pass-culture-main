@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 
 from emails.beneficiary_offer_cancellation import retrieve_offerer_booking_recap_email_data_after_user_cancellation, \
     _is_offer_active_for_recap
-from models import PcObject
+from repository.repository import Repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue
 from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_from_offer, \
@@ -334,7 +334,7 @@ class IsOfferActiveForRecapTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, is_active=True)
         stock = create_stock_from_offer(offer, available=2, booking_limit_datetime=datetime.now() + timedelta(days=6))
-        PcObject.save(stock)
+        Repository.save(stock)
 
         # When
         is_active = _is_offer_active_for_recap(stock)
@@ -349,7 +349,7 @@ class IsOfferActiveForRecapTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, is_active=False)
         stock = create_stock_from_offer(offer, available=2, booking_limit_datetime=datetime.now() + timedelta(days=6))
-        PcObject.save(stock)
+        Repository.save(stock)
 
         # When
         is_active = _is_offer_active_for_recap(stock)
@@ -368,7 +368,7 @@ class IsOfferActiveForRecapTest:
                                         available=2,
                                         booking_limit_datetime=datetime.now() + timedelta(days=6))
         booking = create_booking(user=user, stock=stock, quantity=2)
-        PcObject.save(booking)
+        Repository.save(booking)
 
         # When
         is_active = _is_offer_active_for_recap(stock)
@@ -387,7 +387,7 @@ class IsOfferActiveForRecapTest:
                                         available=2,
                                         booking_limit_datetime=datetime.now() - timedelta(days=6))
         booking = create_booking(user=user, stock=stock, quantity=2)
-        PcObject.save(booking)
+        Repository.save(booking)
 
         # When
         is_active = _is_offer_active_for_recap(stock)
@@ -405,7 +405,7 @@ class IsOfferActiveForRecapTest:
         stock = create_stock_from_offer(offer, price=0,
                                         available=None)
         booking = create_booking(user=user, stock=stock, quantity=2)
-        PcObject.save(booking)
+        Repository.save(booking)
 
         # When
         is_active = _is_offer_active_for_recap(stock)
@@ -424,7 +424,7 @@ class IsOfferActiveForRecapTest:
                                         available=None,
                                         booking_limit_datetime=datetime.now() - timedelta(days=6))
         booking = create_booking(user=user, stock=stock, quantity=2)
-        PcObject.save(booking)
+        Repository.save(booking)
 
         # When
         is_active = _is_offer_active_for_recap(stock)

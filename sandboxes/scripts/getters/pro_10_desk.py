@@ -1,6 +1,5 @@
 from models.booking import Booking
 from models.offer import Offer
-from models.offer_type import ProductType
 from models.stock import Stock
 from models.user import User
 from models.venue import Venue

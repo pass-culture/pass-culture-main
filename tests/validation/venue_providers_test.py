@@ -1,6 +1,6 @@
 import pytest
 
-from models import ApiErrors, PcObject
+from models import ApiErrors
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
     create_provider
@@ -17,7 +17,7 @@ class ValidateNewVenueProviderInformationTest:
         user = create_user()
         user_offerer = create_user_offerer(user, offerer, is_admin=True)
         venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-        PcObject.save(provider, user_offerer, venue)
+        Repository.save(provider, user_offerer, venue)
 
         payload = {
             'providerId': humanize(provider.id),

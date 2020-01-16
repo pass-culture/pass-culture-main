@@ -7,7 +7,6 @@ from domain.user_emails import send_batch_cancellation_emails_to_users, \
     send_offerer_bookings_recap_email_after_offerer_cancellation
 from models import Product
 from models.mediation import Mediation
-from models.pc_object import PcObject
 from models.stock import Stock
 from models.user_offerer import RightsType
 from models.venue import Venue
@@ -82,7 +81,7 @@ def create_stock():
     check_stocks_are_editable_for_offer(offer)
 
     new_stock = Stock(from_dict=request_data)
-    PcObject.save(new_stock)
+    Repository.save(new_stock)
 
     redis.add_offer_id(client=app.redis_client, offer_id=offer_id)
 
@@ -106,7 +105,7 @@ def edit_stock(stock_id):
     check_stocks_are_editable_for_offer(stock.offer)
 
     stock.populate_from_dict(stock_data)
-    PcObject.save(stock)
+    Repository.save(stock)
 
     redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
@@ -131,7 +130,7 @@ def delete_stock(id):
         except MailServiceException as e:
             app.logger.error('Mail service failure', e)
 
-    PcObject.save(stock, *bookings)
+    Repository.save(stock, *bookings)
 
     redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 

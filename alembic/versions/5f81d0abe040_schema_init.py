@@ -5,10 +5,10 @@ Revises: ea836848f102
 Create Date: 2018-08-24 12:57:45.081918
 
 """
-from alembic import op
-import sqlalchemy as sa
 import os
 from pathlib import Path
+
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = '5f81d0abe040'

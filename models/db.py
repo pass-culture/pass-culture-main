@@ -1,6 +1,6 @@
-from flask_sqlalchemy import SQLAlchemy
 from contextlib import ContextDecorator
 
+from flask_sqlalchemy import SQLAlchemy
 from postgresql_audit.flask import versioning_manager
 
 db = SQLAlchemy()

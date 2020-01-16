@@ -1,4 +1,4 @@
-from models import PcObject
+from repository.repository import Repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
 from utils.human_ids import humanize
@@ -15,7 +15,7 @@ class Get:
             user = create_user(email='user.pro@test.com')
             user_offerer = create_user_offerer(user, offerer)
 
-            PcObject.save(user_offerer, venue)
+            Repository.save(user_offerer, venue)
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
@@ -41,7 +41,7 @@ class Get:
             bookshop_user_offerer = create_user_offerer(bookshop_user, bookshop_offerer)
             bookshop_venue = create_venue(bookshop_offerer, name='Contes et légendes', siret='12345678912345')
 
-            PcObject.save(theater_user_offerer, theater_venue, bookshop_user_offerer, bookshop_venue)
+            Repository.save(theater_user_offerer, theater_venue, bookshop_user_offerer, bookshop_venue)
 
             auth_request = TestClient(app.test_client()).with_auth(email=bookshop_user.email)
 
@@ -60,7 +60,7 @@ class Get:
             offerer = create_offerer()
             user = create_user(email='user.pro@test.com')
             venue = create_venue(offerer, name='L\'encre et la plume')
-            PcObject.save(user, venue)
+            Repository.save(user, venue)
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when

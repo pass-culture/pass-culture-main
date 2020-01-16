@@ -7,9 +7,6 @@ Create Date: 2018-08-01 06:52:54.926305
 """
 from alembic import op
 
-from models import Booking, Stock
-
-
 # revision identifiers, used by Alembic.
 revision = 'e2960d28528f'
 down_revision = '0e764b59ccbc'

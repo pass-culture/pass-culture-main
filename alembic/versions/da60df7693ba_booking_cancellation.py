@@ -6,8 +6,6 @@ Create Date: 2018-08-23 12:20:01.149618
 
 """
 from alembic import op
-from models import Booking
-
 
 # revision identifiers, used by Alembic.
 revision = 'da60df7693ba'

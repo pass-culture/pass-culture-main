@@ -4,7 +4,7 @@ from flask_login import current_user, login_required
 from connectors import redis
 from domain.admin_emails import send_offer_creation_notification_to_administration
 from domain.create_offer import fill_offer_with_new_data, initialize_offer_from_product_id
-from models import Offer, PcObject, Venue, RightsType
+from models import Offer, Venue, RightsType
 from models.api_errors import ResourceNotFoundError
 from repository import venue_queries, offer_queries
 from repository.offer_queries import find_activation_offers, \
@@ -87,7 +87,7 @@ def post_offer():
 
     offer.venue = venue
     offer.bookingEmail = request.json.get('bookingEmail', None)
-    PcObject.save(offer)
+    Repository.save(offer)
     send_offer_creation_notification_to_administration(offer, current_user, PRO_URL, send_raw_email)
 
     return jsonify(as_dict(offer, includes=OFFER_INCLUDES)), 201
@@ -110,7 +110,7 @@ def patch_offer(id: int):
         check_offer_is_editable(offer)
     offer.populate_from_dict(request_data)
     offer.update_with_product_data(request_data)
-    PcObject.save(offer)
+    Repository.save(offer)
 
     redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
     return jsonify(as_dict(offer, includes=OFFER_INCLUDES)), 200

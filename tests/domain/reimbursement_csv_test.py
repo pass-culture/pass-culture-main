@@ -4,16 +4,17 @@ from freezegun import freeze_time
 
 from domain.reimbursement import ReimbursementDetails
 from domain.reimbursement import generate_reimbursement_details_csv
-from models import Payment, PcObject
+from models import Payment
 from models.feature import FeatureToggle
 from models.payment_status import TransactionStatus, PaymentStatus
 from repository.reimbursement_queries import find_all_offerer_reimbursement_details
 from scripts.payment.batch_steps import generate_new_payments
 from tests.conftest import clean_database
-from tests.test_utils import deactivate_feature
-from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, create_deposit, \
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+    create_deposit, \
     create_user_offerer, create_bank_information
 from tests.model_creators.specific_creators import create_stock_with_thing_offer
+from tests.test_utils import deactivate_feature
 
 
 @freeze_time('2019-07-10')
@@ -45,7 +46,7 @@ class ReimbursementDetailsCSVTest:
         booking1 = create_booking(user=user, stock=stock1, is_used=True, token='ABCDEF', venue=venue1)
         booking2 = create_booking(user=user, stock=stock1, token='ABCDEG', venue=venue1)
 
-        PcObject.save(deposit, booking1, booking2, user_offerer1, bank_information1)
+        Repository.save(deposit, booking1, booking2, user_offerer1, bank_information1)
 
         generate_new_payments()
 

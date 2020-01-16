@@ -1,4 +1,4 @@
-from models import ApiErrors, RightsType, ApiKey, User
+from models import ApiErrors, RightsType, ApiKey
 from models.api_errors import ForbiddenError
 
 

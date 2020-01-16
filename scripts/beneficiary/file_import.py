@@ -1,15 +1,15 @@
-import bcrypt
-
 import csv
 import os
 import re
 from datetime import datetime
 from typing import List, Set, Iterable, Callable
 
+import bcrypt
+
 from domain.admin_emails import send_users_activation_report
 from domain.password import generate_reset_token, random_password
 from domain.user_activation import generate_activation_users_csv
-from models import User, Booking, Stock, PcObject
+from models import User, Booking, Stock
 from models.booking import ActivationUser
 from repository import booking_queries
 from repository.stock_queries import find_online_activation_stock
@@ -166,7 +166,7 @@ def run(csv_file_path: str) -> None:
         bookings = create_users_with_activation_bookings(
             chunk, stock, existing_tokens)
         if bookings:
-            PcObject.save(*bookings)
+            Repository.save(*bookings)
         all_bookings.extend(bookings)
         total += len(chunk)
         logger.info('Enregistrement de %s comptes utilisateur | %s' %

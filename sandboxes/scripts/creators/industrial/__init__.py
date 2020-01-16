@@ -2,24 +2,25 @@ from models import DiscoveryView
 from sandboxes.scripts.creators.industrial.create_industrial_activation_offers import \
     create_industrial_activation_offers
 from sandboxes.scripts.creators.industrial.create_industrial_admin_users import *
-from sandboxes.scripts.creators.industrial.create_industrial_algolia_objects import create_industrial_algolia_indexed_objects
+from sandboxes.scripts.creators.industrial.create_industrial_algolia_objects import \
+    create_industrial_algolia_indexed_objects
 from sandboxes.scripts.creators.industrial.create_industrial_bookings import *
 from sandboxes.scripts.creators.industrial.create_industrial_criterion import create_industrial_criteria, \
     associate_criterion_to_one_offer_with_mediation
 from sandboxes.scripts.creators.industrial.create_industrial_deposits import *
-from sandboxes.scripts.creators.industrial.create_industrial_event_products import *
 from sandboxes.scripts.creators.industrial.create_industrial_event_occurrences import *
 from sandboxes.scripts.creators.industrial.create_industrial_event_offers import *
+from sandboxes.scripts.creators.industrial.create_industrial_event_products import *
 from sandboxes.scripts.creators.industrial.create_industrial_event_stocks import *
 from sandboxes.scripts.creators.industrial.create_industrial_mediations import *
 from sandboxes.scripts.creators.industrial.create_industrial_offerers_with_pro_users import *
-from sandboxes.scripts.creators.industrial.create_industrial_pro_users_api_keys import *
 from sandboxes.scripts.creators.industrial.create_industrial_payments import *
 from sandboxes.scripts.creators.industrial.create_industrial_pro_users import *
+from sandboxes.scripts.creators.industrial.create_industrial_pro_users_api_keys import *
 from sandboxes.scripts.creators.industrial.create_industrial_recommendations import *
 from sandboxes.scripts.creators.industrial.create_industrial_thing_offers import *
-from sandboxes.scripts.creators.industrial.create_industrial_thing_stocks import *
 from sandboxes.scripts.creators.industrial.create_industrial_thing_products import *
+from sandboxes.scripts.creators.industrial.create_industrial_thing_stocks import *
 from sandboxes.scripts.creators.industrial.create_industrial_venues import *
 from sandboxes.scripts.creators.industrial.create_industrial_webapp_users import *
 

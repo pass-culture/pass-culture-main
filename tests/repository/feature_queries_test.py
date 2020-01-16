@@ -1,8 +1,8 @@
 import pytest
 
-from models import PcObject
 from models.api_errors import ResourceNotFoundError
 from models.feature import FeatureToggle, Feature
+from repository.repository import Repository
 from repository.feature_queries import is_active
 from tests.conftest import clean_database
 
@@ -13,7 +13,7 @@ class FeatureToggleTest:
         # Given
         feature = Feature.query.filter_by(name=FeatureToggle.WEBAPP_SIGNUP).first()
         feature.isActive = True
-        PcObject.save(feature)
+        Repository.save(feature)
 
         # When / Then
         assert is_active(FeatureToggle.WEBAPP_SIGNUP)
@@ -23,7 +23,7 @@ class FeatureToggleTest:
         # Given
         feature = Feature.query.filter_by(name=FeatureToggle.WEBAPP_SIGNUP).first()
         feature.isActive = False
-        PcObject.save(feature)
+        Repository.save(feature)
         # When / Then
         assert not is_active(FeatureToggle.WEBAPP_SIGNUP)
 

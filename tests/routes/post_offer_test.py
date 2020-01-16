@@ -1,6 +1,8 @@
-from models import PcObject, EventType, Offer, ThingType, Product, Offerer
+from models import EventType, Offer, ThingType, Product, Offerer
+from repository.repository import Repository
 from tests.conftest import clean_database, TestClient
-from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, API_URL
+from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
+    API_URL
 from tests.model_creators.specific_creators import create_product_with_thing_type, create_product_with_event_type
 from utils.human_ids import humanize, dehumanize
 
@@ -17,7 +19,7 @@ class Post:
                 'durationMinutes': 60,
                 'type': str(ThingType.AUDIOVISUEL)
             }
-            PcObject.save(user)
+            Repository.save(user)
 
             # When
             request = TestClient(app.test_client()).with_auth(user.email).post(
@@ -35,7 +37,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             user_offerer = create_user_offerer(user, offerer)
-            PcObject.save(user, user_offerer, venue)
+            Repository.save(user, user_offerer, venue)
 
             json = {
                 'bookingEmail': 'offer@email.com',
@@ -61,7 +63,7 @@ class Post:
                 'name': 'La pièce de théâtre',
                 'durationMinutes': 60
             }
-            PcObject.save(user)
+            Repository.save(user)
 
             # When
             request = TestClient(app.test_client()).with_auth(user.email).post(
@@ -80,7 +82,7 @@ class Post:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer, is_virtual=True, siret=None)
-            PcObject.save(user, venue, user_offerer)
+            Repository.save(user, venue, user_offerer)
             json = {
                 'type': 'ThingType.JEUX',
                 'name': 'Le grand jeu',
@@ -106,7 +108,7 @@ class Post:
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer, is_virtual=False)
             event_product = create_product_with_event_type()
-            PcObject.save(user, venue, event_product, user_offerer)
+            Repository.save(user, venue, event_product, user_offerer)
             json = {
                 'type': '',
                 'name': 'Les lapins crétins',
@@ -133,7 +135,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             user_offerer = create_user_offerer(user, offerer)
-            PcObject.save(user, user_offerer, venue)
+            Repository.save(user, user_offerer, venue)
             offerer_id = offerer.id
 
             json = {
@@ -172,7 +174,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             user_offerer = create_user_offerer(user, offerer)
-            PcObject.save(user, user_offerer, venue)
+            Repository.save(user, user_offerer, venue)
 
             json = {
                 'venueId': humanize(venue.id),
@@ -200,7 +202,7 @@ class Post:
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer, is_virtual=True, siret=None)
             thing_product = create_product_with_thing_type()
-            PcObject.save(user, venue, thing_product, user_offerer)
+            Repository.save(user, venue, thing_product, user_offerer)
             offerer_id = offerer.id
             json = {
                 'type': 'ThingType.JEUX_VIDEO',
@@ -244,7 +246,7 @@ class Post:
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             thing_product = create_product_with_thing_type()
-            PcObject.save(user_offerer, venue, thing_product)
+            Repository.save(user_offerer, venue, thing_product)
 
             data = {
                 'venueId': humanize(venue.id),
@@ -266,7 +268,7 @@ class Post:
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             event_product = create_product_with_event_type()
-            PcObject.save(user_offerer, venue, event_product)
+            Repository.save(user_offerer, venue, event_product)
 
             data = {
                 'venueId': humanize(venue.id),
@@ -286,7 +288,7 @@ class Post:
             user = create_user(can_book_free_offers=False, email='test@email.com', is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
-            PcObject.save(user, venue)
+            Repository.save(user, venue)
 
             json = {
                 'name': "Offre d'activation",
@@ -311,7 +313,7 @@ class Post:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer, is_admin=False)
             venue = create_venue(offerer)
-            PcObject.save(user_offerer, venue)
+            Repository.save(user_offerer, venue)
 
             json = {
                 'name': "Offre d'activation",
@@ -337,7 +339,7 @@ class Post:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer, is_admin=True)
             venue = create_venue(offerer)
-            PcObject.save(user_offerer, venue)
+            Repository.save(user_offerer, venue)
 
             json = {
                 'name': "Offre d'activation",
@@ -362,7 +364,7 @@ class Post:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            PcObject.save(user, venue)
+            Repository.save(user, venue)
 
             json = {
                 'name': 'La pièce de théâtre',

@@ -1,6 +1,6 @@
 from io import BytesIO
 
-from models import PcObject
+from repository.repository import Repository
 from tests.conftest import clean_database, TestClient
 from tests.files.images import ONE_PIXEL_PNG
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
@@ -20,7 +20,7 @@ class Post:
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
             mediation = create_mediation(offer)
-            PcObject.save(user_offerer, mediation)
+            Repository.save(user_offerer, mediation)
 
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
@@ -40,7 +40,7 @@ class Post:
             user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
-            PcObject.save(user, venue, offerer)
+            Repository.save(user, venue, offerer)
 
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
@@ -63,7 +63,7 @@ class Post:
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
             mediation = create_mediation(offer)
-            PcObject.save(user, offer, mediation, venue, offerer)
+            Repository.save(user, offer, mediation, venue, offerer)
 
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 

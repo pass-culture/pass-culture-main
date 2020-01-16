@@ -3,7 +3,7 @@ from io import BytesIO
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
-from models import PcObject
+from repository.repository import Repository
 from tests.conftest import clean_database, TestClient
 from tests.files.images import ONE_PIXEL_PNG
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
@@ -26,8 +26,8 @@ class Post:
             offer = create_offer_with_event_product(venue)
             user_offerer = create_user_offerer(user, offerer)
 
-            PcObject.save(offer)
-            PcObject.save(user, venue, offerer, user_offerer)
+            Repository.save(offer)
+            Repository.save(user, venue, offerer, user_offerer)
 
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
@@ -56,8 +56,8 @@ class Post:
             offer = create_offer_with_event_product(venue)
             user_offerer = create_user_offerer(user, offerer)
 
-            PcObject.save(offer)
-            PcObject.save(user, venue, offerer, user_offerer)
+            Repository.save(offer)
+            Repository.save(user, venue, offerer, user_offerer)
 
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
@@ -126,7 +126,7 @@ class Post:
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
             user_offerer = create_user_offerer(user, offerer)
-            PcObject.save(user, venue, user_offerer)
+            Repository.save(user, venue, user_offerer)
 
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
@@ -151,7 +151,7 @@ class Post:
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
             user_offerer = create_user_offerer(user, offerer)
-            PcObject.save(user, venue, user_offerer)
+            Repository.save(user, venue, user_offerer)
 
             data = {
                 'offerId': humanize(offer.id),
@@ -176,7 +176,7 @@ class Post:
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
             user_offerer = create_user_offerer(user, offerer)
-            PcObject.save(user, venue, user_offerer)
+            Repository.save(user, venue, user_offerer)
             with open(MODULE_PATH / '..' / 'files/mouette_small.jpg', 'rb') as f:
                 thumb = f.read()
             data = {
@@ -203,7 +203,7 @@ class Post:
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
             user_offerer = create_user_offerer(user, offerer)
-            PcObject.save(user, venue, user_offerer)
+            Repository.save(user, venue, user_offerer)
             with open(MODULE_PATH / '..' / 'files/mouette_small.jpg', 'rb') as f:
                 thumb = f.read()
             data = {
@@ -219,4 +219,4 @@ class Post:
                 .post('/mediations', form=data)
 
             # then
-            PcObject.save.assert_not_called()
+            Repository.save.assert_not_called()

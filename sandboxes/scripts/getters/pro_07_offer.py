@@ -1,17 +1,16 @@
-from models import Offerer, ThingType
 from models import Offerer
-
+from models import ThingType
 from models.offer import Offer
-from models.offer_type import ProductType, EventType
-
+from models.offer_type import EventType
 from models.user import User
 from models.venue import Venue
 from repository.offerer_queries import keep_offerers_with_at_least_one_physical_venue
 from repository.user_queries import filter_users_with_at_least_one_validated_offerer_validated_user_offerer
 from sandboxes.scripts.utils.helpers import get_offer_helper, \
-                                            get_offerer_helper, \
-                                            get_user_helper, \
-                                            get_venue_helper
+    get_offerer_helper, \
+    get_user_helper, \
+    get_venue_helper
+
 
 def get_existing_pro_validated_user_with_at_least_one_visible_offer():
     query = User.query.filter(User.validationToken == None)

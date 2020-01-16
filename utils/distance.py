@@ -1,5 +1,6 @@
 """ distance """
 import math
+
 from sqlalchemy import func
 
 EARTH_RADIUS_KM = 6378.137

@@ -1,9 +1,8 @@
 import re
 
-from models.pc_object import PcObject
 from sandboxes.scripts.mocks.venue_mocks import MOCK_NAMES
-from utils.logger import logger
 from tests.model_creators.generic_creators import create_venue, create_bank_information
+from utils.logger import logger
 
 OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO = 3
 OFFERERS_WITH_PHYSICAL_VENUE_WITH_SIRET_REMOVE_MODULO = OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO * 2
@@ -82,7 +81,7 @@ def create_industrial_venues(offerers_by_name: dict) -> dict:
             siret=None
         )
 
-    PcObject.save(*venue_by_name.values())
+    Repository.save(*venue_by_name.values())
 
     logger.info('created {} venues'.format(len(venue_by_name)))
 

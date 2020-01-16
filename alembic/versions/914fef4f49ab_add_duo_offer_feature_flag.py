@@ -6,8 +6,10 @@ Create Date: 2019-10-09 12:05:13.610887
 
 """
 from enum import Enum
-from alembic import op
+
 import sqlalchemy as sa
+from alembic import op
+
 
 class FeatureToggle(Enum):
     DUO_OFFER = 'Permettre la réservation d’une offre pour soi et un accompagnant'

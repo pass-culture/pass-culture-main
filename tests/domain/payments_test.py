@@ -14,7 +14,8 @@ from domain.reimbursement import BookingReimbursement, ReimbursementRules
 from models import Offer, Venue, Booking, Offerer
 from models.payment import Payment
 from models.payment_status import TransactionStatus
-from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue, \
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+    create_venue, \
     create_payment, create_bank_information
 from tests.model_creators.specific_creators import create_offer_with_thing_product
 

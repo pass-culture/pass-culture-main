@@ -1,8 +1,10 @@
 from unittest.mock import patch
 
-from models import PcObject, Offer
+from models import Offer
+from repository.repository import Repository
 from tests.conftest import clean_database, TestClient
-from tests.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, create_user_offerer
+from tests.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, \
+    create_user_offerer
 from tests.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product, \
     create_offer_with_event_product
 from utils.human_ids import humanize
@@ -21,7 +23,7 @@ class Put:
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
             stock = create_stock(offer=offer)
-            PcObject.save(
+            Repository.save(
                 stock, user_offerer, venue
             )
 
@@ -44,7 +46,7 @@ class Put:
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
             stock = create_stock_from_offer(offer)
-            PcObject.save(
+            Repository.save(
                 stock, user_offerer, venue, user_with_no_rights
             )
 
@@ -71,7 +73,7 @@ class Put:
             stock1 = create_stock_from_offer(offer)
             offer.isActive = False
             offer2.isActive = False
-            PcObject.save(
+            Repository.save(
                 offer2, stock1, user_offerer, venue
             )
 
@@ -97,7 +99,7 @@ class Put:
             stock1 = create_stock_from_offer(offer)
             offer.isActive = False
             offer2.isActive = False
-            PcObject.save(
+            Repository.save(
                 offer2, stock1, user_offerer, venue
             )
 
@@ -127,7 +129,7 @@ class Put:
             offer = create_offer_with_event_product(venue)
             stock = create_stock_from_offer(offer, available=22)
             offer.isActive = False
-            PcObject.save(
+            Repository.save(
                 stock, user_offerer, venue
             )
 
@@ -156,7 +158,7 @@ class Put:
             stock1 = create_stock_from_offer(offer)
             offer.isActive = False
             offer2.isActive = False
-            PcObject.save(
+            Repository.save(
                 offer2, stock1, user_offerer, venue
             )
 
@@ -182,7 +184,7 @@ class Put:
             offer = create_offer_with_event_product(venue)
             offer2 = create_offer_with_thing_product(venue)
             stock1 = create_stock_from_offer(offer)
-            PcObject.save(
+            Repository.save(
                 offer2, stock1, user_offerer, venue
             )
 
@@ -210,7 +212,7 @@ class Put:
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
             stock = create_stock_from_offer(offer, available=0)
-            PcObject.save(
+            Repository.save(
                 stock, user_offerer, venue
             )
 
@@ -236,7 +238,7 @@ class Put:
             offer = create_offer_with_event_product(venue)
             offer2 = create_offer_with_thing_product(venue)
             stock1 = create_stock_from_offer(offer)
-            PcObject.save(
+            Repository.save(
                 offer2, stock1, user_offerer, venue
             )
 

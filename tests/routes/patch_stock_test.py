@@ -2,7 +2,7 @@ from datetime import timedelta
 from unittest.mock import patch
 
 from models import Stock, Provider
-from models.pc_object import PcObject
+from repository.repository import Repository
 from routes.serialization import serialize
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
@@ -23,7 +23,7 @@ class Patch:
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=10, available=10)
-            PcObject.save(user, user_offerer, stock)
+            Repository.save(user, user_offerer, stock)
             humanized_stock_id = humanize(stock.id)
 
             # when
@@ -44,7 +44,7 @@ class Patch:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=10, available=10)
-            PcObject.save(user, stock)
+            Repository.save(user, stock)
             humanized_stock_id = humanize(stock.id)
 
             # when
@@ -65,7 +65,7 @@ class Patch:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue)
-            PcObject.save(user, stock)
+            Repository.save(user, stock)
             stock_id = stock.id
 
             data = {
@@ -91,7 +91,7 @@ class Patch:
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0, available=1)
             booking = create_booking(user=user, stock=stock, venue=venue, recommendation=None)
-            PcObject.save(booking, user_admin)
+            Repository.save(booking, user_admin)
 
             # when
             response = TestClient(app.test_client()).with_auth('email@test.com') \
@@ -110,7 +110,7 @@ class Patch:
             create_user_offerer(beneficiary, offerer)
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=10, available=10)
-            PcObject.save(stock)
+            Repository.save(stock)
 
             # when
             request_update = TestClient(app.test_client()).with_auth(beneficiary.email) \
@@ -130,7 +130,7 @@ class Patch:
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0, available=1)
             booking = create_booking(user=user, stock=stock, venue=venue, recommendation=None)
-            PcObject.save(booking, user_admin)
+            Repository.save(booking, user_admin)
 
             # when
             response = TestClient(app.test_client()).with_auth('email@test.com') \
@@ -147,7 +147,7 @@ class Patch:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue)
-            PcObject.save(stock, user)
+            Repository.save(stock, user)
             serialized_date = serialize(stock.beginningDatetime + timedelta(days=1))
 
             # when
@@ -167,7 +167,7 @@ class Patch:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue)
-            PcObject.save(stock, user)
+            Repository.save(stock, user)
 
             # when
             response = TestClient(app.test_client()).with_auth('email@test.com') \
@@ -184,7 +184,7 @@ class Patch:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue)
-            PcObject.save(user, stock)
+            Repository.save(user, stock)
 
             data = {
                 'price': 0,
@@ -214,7 +214,7 @@ class Patch:
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue, last_provider_id=tite_live_provider.id)
             stock = create_stock(offer=offer, available=10)
-            PcObject.save(user, user_offerer, stock)
+            Repository.save(user, user_offerer, stock)
             humanized_stock_id = humanize(stock.id)
 
             # when
@@ -236,7 +236,7 @@ class Patch:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue)
-            PcObject.save(user, stock)
+            Repository.save(user, stock)
 
             # when
             response = TestClient(app.test_client()).with_auth('test@email.com') \

@@ -1,6 +1,6 @@
 from random import randrange
 
-from models import Product, PcObject
+from models import Product
 from scripts.product_thumb.reset_thumb_count import reset_thumb_count
 from tests.conftest import clean_database
 from tests.model_creators.specific_creators import create_product_with_thing_type
@@ -11,7 +11,7 @@ def test_reset_thumb_count_before_processing_files(app):
     # Given
     for index in range(4):
         product = create_product_with_thing_type(thumb_count=randrange(5))
-        PcObject.save(product)
+        Repository.save(product)
 
     # When
     reset_thumb_count()
@@ -26,7 +26,7 @@ def test_reset_thumb_count_process_all_products(app):
     # Given
     for index in range(10):
         product = create_product_with_thing_type(thumb_count=5)
-        PcObject.save(product)
+        Repository.save(product)
 
     # When
     reset_thumb_count(page_size=1)

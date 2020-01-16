@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
-from models import PcObject, Mediation
+from models import Mediation
+from repository.repository import Repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
     create_mediation
@@ -19,8 +20,8 @@ class Patch:
             offer = create_offer_with_event_product(venue)
             user_offerer = create_user_offerer(user, offerer)
             mediation = create_mediation(offer)
-            PcObject.save(mediation)
-            PcObject.save(user, venue, offerer, user_offerer)
+            Repository.save(mediation)
+            Repository.save(user, venue, offerer, user_offerer)
             mediation_id = mediation.id
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
             data = {'frontText': 'new front text', 'backText': 'new back text', 'isActive': False}
@@ -76,8 +77,8 @@ class Patch:
             offer = create_offer_with_event_product(venue)
             user_offerer = create_user_offerer(other_user, offerer)
             mediation = create_mediation(offer)
-            PcObject.save(mediation)
-            PcObject.save(other_user, current_user, venue, offerer, user_offerer)
+            Repository.save(mediation)
+            Repository.save(other_user, current_user, venue, offerer, user_offerer)
 
             auth_request = TestClient(app.test_client()).with_auth(email=current_user.email)
 
@@ -92,7 +93,7 @@ class Patch:
         def when_mediation_does_not_exist(self, app):
             # given
             user = create_user()
-            PcObject.save(user)
+            Repository.save(user)
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when

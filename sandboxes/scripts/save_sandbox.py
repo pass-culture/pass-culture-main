@@ -1,6 +1,7 @@
-from utils.tutorials import upsert_tuto_mediations
 from repository.clean_database import clean_all_database
 from sandboxes import scripts
+from utils.tutorials import upsert_tuto_mediations
+
 
 def save_sandbox(name, with_clean=True):
     if with_clean:

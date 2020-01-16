@@ -1,11 +1,12 @@
 """ pc """
 import os
+
 from flask import Flask
 from flask_script import Manager
 from mailjet_rest import Client
 
-from scripts.install import install_scripts
 from models.db import db
+from scripts.install import install_scripts
 from utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET
 
 app = Flask(__name__, template_folder='../templates')

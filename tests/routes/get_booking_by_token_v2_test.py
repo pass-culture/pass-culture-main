@@ -1,9 +1,12 @@
 from datetime import datetime, timedelta
+
 from freezegun import freeze_time
 
-from models import PcObject, EventType
+from models import EventType
+from repository.repository import Repository
 from tests.conftest import clean_database, TestClient
-from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, create_deposit, \
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+    create_deposit, \
     create_user_offerer, create_api_key
 from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_event_occurrence, \
     create_stock_with_thing_offer, create_offer_with_event_product, create_event_occurrence
@@ -27,7 +30,7 @@ class Get:
             event_occurrence = create_event_occurrence(offer, beginning_datetime=datetime.utcnow())
             stock = create_stock_from_event_occurrence(event_occurrence, price=12)
             booking = create_booking(user=user, quantity=3, stock=stock, venue=venue)
-            PcObject.save(booking)
+            Repository.save(booking)
             url = f'/v2/bookings/token/{booking.token}'
 
             # When
@@ -51,9 +54,9 @@ class Get:
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            PcObject.save(user_offerer, booking)
+            Repository.save(user_offerer, booking)
             offererApiKey = create_api_key(offerer_id=offerer.id)
-            PcObject.save(offererApiKey)
+            Repository.save(offererApiKey)
             user2ApiKey = f'Bearer {offererApiKey.value}'
             booking_token = booking.token.lower()
             url = f'/v2/bookings/token/{booking_token}'
@@ -81,10 +84,10 @@ class Get:
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            PcObject.save(booking, user_offerer)
+            Repository.save(booking, user_offerer)
             url = f'/v2/bookings/token/{booking.token}'
             stock.available = 0
-            PcObject.save(stock)
+            Repository.save(stock)
 
             # When
             response = TestClient(app.test_client()) \
@@ -106,7 +109,7 @@ class Get:
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            PcObject.save(user_offerer, booking)
+            Repository.save(user_offerer, booking)
             booking_token = booking.token.lower()
             url = f'/v2/bookings/token/{booking_token}'
 
@@ -128,7 +131,7 @@ class Get:
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            PcObject.save(booking, user_offerer)
+            Repository.save(booking, user_offerer)
             url = f'/v2/bookings/token/{booking.token}'
 
             # When
@@ -156,7 +159,7 @@ class Get:
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            PcObject.save(admin_user, booking)
+            Repository.save(admin_user, booking)
             url = f'/v2/bookings/token/{booking.token}'
 
             # When
@@ -202,9 +205,9 @@ class Get:
             pro = create_user(email='offerer@example.com')
             offerer = create_offerer()
             user_offerer = create_user_offerer(pro, offerer)
-            PcObject.save(user_offerer)
+            Repository.save(user_offerer)
             offerer_api_key = create_api_key(offerer_id=offerer.id)
-            PcObject.save(offerer_api_key)
+            Repository.save(offerer_api_key)
             url = f'/v2/bookings/token/FAKETOKEN'
 
             # When
@@ -232,7 +235,7 @@ class Get:
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            PcObject.save(querying_user, booking)
+            Repository.save(querying_user, booking)
             url = f'/v2/bookings/token/{booking.token}'
 
             # When
@@ -257,9 +260,9 @@ class Get:
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            PcObject.save(admin_user, booking, user_offerer, offerer2)
+            Repository.save(admin_user, booking, user_offerer, offerer2)
             offerer2ApiKey = create_api_key(offerer_id=offerer2.id)
-            PcObject.save(offerer2ApiKey)
+            Repository.save(offerer2ApiKey)
             user2ApiKey = f'Bearer {offerer2ApiKey.value}'
             url = f'/v2/bookings/token/{booking.token}'
 
@@ -291,7 +294,7 @@ class Get:
             stock = create_stock_with_event_offer(offerer, venue, price=0, beginning_datetime=in_73_hours,
                                                   end_datetime=in_74_hours, booking_limit_datetime=in_72_hours)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            PcObject.save(admin_user, booking, user_offerer)
+            Repository.save(admin_user, booking, user_offerer)
             url = f'/v2/bookings/token/{booking.token}'
 
             # When
@@ -314,7 +317,7 @@ class Get:
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            PcObject.save(booking)
+            Repository.save(booking)
             url = '/v2/bookings/token/'
 
             # When
@@ -328,7 +331,7 @@ class Get:
         def when_token_user_has_rights_but_token_not_found(self, app):
             # Given
             admin_user = create_user(email='admin@example.com')
-            PcObject.save(admin_user)
+            Repository.save(admin_user)
             url = '/v2/bookings/token/12345'
 
             # When
@@ -352,9 +355,9 @@ class Get:
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            PcObject.save(admin_user, booking, user_offerer)
+            Repository.save(admin_user, booking, user_offerer)
             offererApiKey = create_api_key(offerer_id=offerer.id)
-            PcObject.save(offererApiKey)
+            Repository.save(offererApiKey)
             user2ApiKey = f'Bearer {offererApiKey.value}'
             url = '/v2/bookings/token/12345'
 
@@ -383,9 +386,9 @@ class Get:
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
             booking = create_booking(user=user, stock=stock, is_used=True, venue=venue)
-            PcObject.save(admin_user, booking, user_offerer)
+            Repository.save(admin_user, booking, user_offerer)
             offererApiKey = create_api_key(offerer_id=offerer.id)
-            PcObject.save(offererApiKey)
+            Repository.save(offererApiKey)
             user2ApiKey = f'Bearer {offererApiKey.value}'
             url = f'/v2/bookings/token/{booking.token}'
 
@@ -413,9 +416,9 @@ class Get:
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
             booking = create_booking(user=user, stock=stock, is_cancelled=True, venue=venue)
-            PcObject.save(admin_user, booking, user_offerer)
+            Repository.save(admin_user, booking, user_offerer)
             offererApiKey = create_api_key(offerer_id=offerer.id)
-            PcObject.save(offererApiKey)
+            Repository.save(offererApiKey)
             user2ApiKey = f'Bearer {offererApiKey.value}'
             url = f'/v2/bookings/token/{booking.token}'
 

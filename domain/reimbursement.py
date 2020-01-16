@@ -6,8 +6,6 @@ from enum import Enum
 from io import StringIO
 from typing import List
 
-from dateutil.relativedelta import relativedelta
-
 from models import Booking, Payment, ThingType
 from models.payment_status import TransactionStatus
 from utils.date import english_to_french_month

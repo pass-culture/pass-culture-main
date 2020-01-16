@@ -1,4 +1,3 @@
-from models.offerer import Offerer
 from models.user import User
 from models.user_offerer import UserOfferer
 from sandboxes.scripts.utils.helpers import get_user_helper, get_offerer_helper

@@ -1,15 +1,14 @@
 import csv
-
 from datetime import datetime
 from typing import List, Callable
 
-from models import Offerer, PcObject, User, UserOfferer
+from domain.password import random_password, generate_reset_token
+from models import Offerer, User, UserOfferer
 from models.user_offerer import RightsType
 from models.venue import create_digital_venue
-from domain.password import random_password, generate_reset_token
 from repository.offerer_queries import find_by_siren
-from repository.user_queries import find_user_by_email
 from repository.user_offerer_queries import find_one_or_none_by_user_id_and_offerer_id
+from repository.user_queries import find_user_by_email
 from repository.venue_queries import find_by_managing_offerer_id
 from utils.logger import logger
 
@@ -53,24 +52,24 @@ def create_activated_user_offerer(
     if not user:
         user = User()
     filled_user = fill_user_from(csv_row, user)
-    PcObject.save(filled_user)
+    Repository.save(filled_user)
 
     offerer = find_offerer(csv_row[OFFERER_SIREN_COLUMN_INDEX])
     if not offerer:
         offerer = Offerer()
 
     filled_offerer = fill_offerer_from(csv_row, offerer)
-    PcObject.save(filled_offerer)
+    Repository.save(filled_offerer)
 
     virtual_venue = find_by_managing_offerer_id(filled_offerer.id)
     if not virtual_venue:
         filled_virtual_venue = create_digital_venue(offerer)
-        PcObject.save(filled_virtual_venue)
+        Repository.save(filled_virtual_venue)
 
     user_offerer = find_user_offerer(filled_user.id, filled_offerer.id)
     if not user_offerer:
         filled_user_offerer = fill_user_offerer_from(UserOfferer(), filled_user, filled_offerer)
-        PcObject.save(filled_user_offerer)
+        Repository.save(filled_user_offerer)
         return filled_user_offerer
     else:
         return None

@@ -1,11 +1,13 @@
 import pandas
 
-from models import PcObject, ThingType, EventType
+from models import ThingType, EventType
+from repository.repository import Repository
 from scripts.dashboard.users_statistics import count_activated_users, count_users_having_booked, \
     get_mean_number_of_bookings_per_user_having_booked, get_mean_amount_spent_by_user, \
     _query_get_non_cancelled_bookings_by_user_departement, get_non_cancelled_bookings_by_user_departement
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue, \
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+    create_venue, \
     create_deposit
 from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 
@@ -17,7 +19,7 @@ class CountActivatedUsersTest:
         activated_user_from_74 = create_user(can_book_free_offers=True, departement_code='74')
         activated_user_from_75 = create_user(can_book_free_offers=True, departement_code='75',
                                              email='email2@test.com')
-        PcObject.save(activated_user_from_74, activated_user_from_75)
+        Repository.save(activated_user_from_74, activated_user_from_75)
 
         # When
         count = count_activated_users()
@@ -31,7 +33,7 @@ class CountActivatedUsersTest:
         activated_user_from_74 = create_user(can_book_free_offers=True, departement_code='74')
         activated_user_from_75 = create_user(can_book_free_offers=True, departement_code='75',
                                              email='email2@test.com')
-        PcObject.save(activated_user_from_74, activated_user_from_75)
+        Repository.save(activated_user_from_74, activated_user_from_75)
 
         # When
         count = count_activated_users('74')
@@ -53,8 +55,8 @@ class CountUsersHavingBookedTest:
         stock1 = create_stock(offer=offer1, price=0)
         booking1 = create_booking(activated_user_from_74, stock=stock1)
         booking2 = create_booking(activated_user_from_75, stock=stock1)
-        PcObject.save(booking1, booking2)
-        PcObject.save(activated_user_from_74, activated_user_from_75)
+        Repository.save(booking1, booking2)
+        Repository.save(activated_user_from_74, activated_user_from_75)
 
         # When
         count = count_users_having_booked()
@@ -75,7 +77,7 @@ class CountUsersHavingBookedTest:
         stock2 = create_stock(offer=offer2, price=0)
         booking1 = create_booking(user=user1, stock=stock1)
         booking2 = create_booking(user=user2, stock=stock2)
-        PcObject.save(booking1, booking2)
+        Repository.save(booking1, booking2)
 
         # When
         count = count_users_having_booked()
@@ -95,8 +97,8 @@ class CountUsersHavingBookedTest:
         stock1 = create_stock(offer=offer1, price=0)
         booking1 = create_booking(activated_user_from_74, stock=stock1)
         booking2 = create_booking(activated_user_from_75, stock=stock1)
-        PcObject.save(booking1, booking2)
-        PcObject.save(activated_user_from_74, activated_user_from_75)
+        Repository.save(booking1, booking2)
+        Repository.save(activated_user_from_74, activated_user_from_75)
 
         # When
         count = count_users_having_booked('74')
@@ -117,7 +119,7 @@ class CountUsersHavingBookedTest:
         stock2 = create_stock(offer=offer2, price=0)
         booking1 = create_booking(user=user1, stock=stock1)
         booking2 = create_booking(user=user2, stock=stock2)
-        PcObject.save(booking1, booking2)
+        Repository.save(booking1, booking2)
 
         # When
         count = count_users_having_booked('74')
@@ -144,7 +146,7 @@ class GetMeanNumberOfBookingsPerUserHavingBookedTest:
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
         booking = create_booking(user=user_having_booked, stock=stock, is_cancelled=False)
-        PcObject.save(booking)
+        Repository.save(booking)
 
         # When
         mean_bookings = get_mean_number_of_bookings_per_user_having_booked()
@@ -161,7 +163,7 @@ class GetMeanNumberOfBookingsPerUserHavingBookedTest:
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
         booking = create_booking(user=user_having_booked, stock=stock, is_cancelled=True)
-        PcObject.save(booking)
+        Repository.save(booking)
 
         # When
         mean_bookings = get_mean_number_of_bookings_per_user_having_booked()
@@ -180,7 +182,7 @@ class GetMeanNumberOfBookingsPerUserHavingBookedTest:
         stock = create_stock(offer=offer, price=0)
         booking1 = create_booking(user=user_having_booked1, stock=stock, is_cancelled=True)
         booking2 = create_booking(user=user_having_booked2, stock=stock, is_cancelled=False)
-        PcObject.save(booking1, booking2)
+        Repository.save(booking1, booking2)
 
         # When
         mean_bookings = get_mean_number_of_bookings_per_user_having_booked()
@@ -199,7 +201,7 @@ class GetMeanNumberOfBookingsPerUserHavingBookedTest:
         stock = create_stock(offer=offer, price=0)
         booking1 = create_booking(user=user_having_booked1, stock=stock, is_cancelled=False)
         booking2 = create_booking(user=user_having_booked2, stock=stock, is_cancelled=False)
-        PcObject.save(booking1, booking2)
+        Repository.save(booking1, booking2)
 
         # When
         mean_bookings = get_mean_number_of_bookings_per_user_having_booked('45')
@@ -220,7 +222,7 @@ class GetMeanNumberOfBookingsPerUserHavingBookedTest:
         stock2 = create_stock(offer=offer2, price=0)
         booking1 = create_booking(user=user1, stock=stock1, is_cancelled=False)
         booking2 = create_booking(user=user2, stock=stock2, is_cancelled=False)
-        PcObject.save(booking1, booking2)
+        Repository.save(booking1, booking2)
 
         # When
         mean_bookings = get_mean_number_of_bookings_per_user_having_booked()
@@ -241,7 +243,7 @@ class GetMeanNumberOfBookingsPerUserHavingBookedTest:
         stock2 = create_stock(offer=offer2, price=0)
         booking1 = create_booking(user=user1, stock=stock1, is_cancelled=False)
         booking2 = create_booking(user=user2, stock=stock2, is_cancelled=False)
-        PcObject.save(booking1, booking2)
+        Repository.save(booking1, booking2)
 
         # When
         mean_bookings = get_mean_number_of_bookings_per_user_having_booked()
@@ -269,7 +271,7 @@ class GetMeanAmountSpentByUserTest:
         stock = create_stock(offer=offer, price=10)
         booking = create_booking(user=user_having_booked, stock=stock, is_cancelled=False)
         deposit = create_deposit(user=user_having_booked)
-        PcObject.save(booking)
+        Repository.save(booking)
 
         # When
         mean_amount_spent = get_mean_amount_spent_by_user()
@@ -287,7 +289,7 @@ class GetMeanAmountSpentByUserTest:
         stock = create_stock(offer=offer, price=10)
         booking = create_booking(user=user_having_booked, stock=stock, is_cancelled=False, quantity=2)
         deposit = create_deposit(user=user_having_booked)
-        PcObject.save(booking)
+        Repository.save(booking)
 
         # When
         mean_amount_spent = get_mean_amount_spent_by_user()
@@ -305,7 +307,7 @@ class GetMeanAmountSpentByUserTest:
         stock = create_stock(offer=offer, price=10)
         booking = create_booking(user=user_having_booked, stock=stock, is_cancelled=True)
         deposit = create_deposit(user=user_having_booked)
-        PcObject.save(booking)
+        Repository.save(booking)
 
         # When
         mean_amount_spent = get_mean_amount_spent_by_user()
@@ -327,7 +329,7 @@ class GetMeanAmountSpentByUserTest:
         deposit1 = create_deposit(user=user_having_booked1)
         deposit2 = create_deposit(user=user_having_booked2)
 
-        PcObject.save(booking1, booking2)
+        Repository.save(booking1, booking2)
 
         # When
         mean_amount_spent = get_mean_amount_spent_by_user()
@@ -352,7 +354,7 @@ class GetMeanAmountSpentByUserTest:
         booking = create_booking(user=user, stock=stock)
         deposit = create_deposit(user=user)
 
-        PcObject.save(activation_booking1, activation_booking2, booking)
+        Repository.save(activation_booking1, activation_booking2, booking)
 
         # When
         mean_amount_spent = get_mean_amount_spent_by_user()
@@ -374,7 +376,7 @@ class GetMeanAmountSpentByUserTest:
         booking_for_user_two = create_booking(user=user_having_booked_from_63, stock=expensive_stock, is_cancelled=False)
         firstDeposit = create_deposit(user=user_having_booked_from_25)
         secondDeposit = create_deposit(user=user_having_booked_from_63)
-        PcObject.save(booking_for_user_one, booking_for_user_two)
+        Repository.save(booking_for_user_one, booking_for_user_two)
 
         # When
         mean_amount_spent = get_mean_amount_spent_by_user('25')
@@ -395,7 +397,7 @@ class QueryGetNonCancelledBookingsByDepartementTest:
         user_in_93 = create_user(departement_code='93')
         create_deposit(user_in_93, amount=500)
         booking = create_booking(user=user_in_93, stock=stock, is_cancelled=True, quantity=1)
-        PcObject.save(booking)
+        Repository.save(booking)
 
         # When
         bookings_by_departement = _query_get_non_cancelled_bookings_by_user_departement()
@@ -415,7 +417,7 @@ class QueryGetNonCancelledBookingsByDepartementTest:
         create_deposit(user_in_93, amount=500)
         booking = create_booking(user=user_in_93, stock=stock, quantity=1)
         booking2 = create_booking(user=user_in_93, stock=stock, quantity=1)
-        PcObject.save(booking, booking2)
+        Repository.save(booking, booking2)
 
         # When
         bookings_by_departement = _query_get_non_cancelled_bookings_by_user_departement()
@@ -440,7 +442,7 @@ class QueryGetNonCancelledBookingsByDepartementTest:
         create_deposit(user_in_93, amount=500)
         booking = create_booking(user=user_in_93, stock=stock93, quantity=5)
         booking2 = create_booking(user=user_in_93, stock=stock95, quantity=2)
-        PcObject.save(booking, booking2)
+        Repository.save(booking, booking2)
 
         # When
         bookings_by_departement = _query_get_non_cancelled_bookings_by_user_departement()
@@ -470,7 +472,7 @@ class QueryGetNonCancelledBookingsByDepartementTest:
         create_deposit(user_in_93, amount=500)
         booking_in_93 = create_booking(user=user_in_93, stock=stock93, quantity=2)
 
-        PcObject.save(booking_in_93, booking_in_95)
+        Repository.save(booking_in_93, booking_in_95)
 
         # When
         bookings_by_departement = _query_get_non_cancelled_bookings_by_user_departement()
@@ -493,7 +495,7 @@ class QueryGetNonCancelledBookingsByDepartementTest:
         create_deposit(user_in_93, amount=500)
         booking1 = create_booking(user=user_in_93, stock=stock1, quantity=1)
         booking2 = create_booking(user=user_in_93, stock=stock2, quantity=1)
-        PcObject.save(booking1, booking2)
+        Repository.save(booking1, booking2)
 
         # When
         bookings_by_departement = _query_get_non_cancelled_bookings_by_user_departement()
@@ -510,7 +512,7 @@ class GetNonCancelledBookingsFilteredByUserDepartementTest:
         # Given
         bookings = [('93', 2), ('95', 1), ('973', 15)]
         bookings_to_save = _create_bookings_for_departement(bookings)
-        PcObject.save(*bookings_to_save)
+        Repository.save(*bookings_to_save)
         expected_counts = [
             ('973', 15), ('93', 2), ('95', 1)
         ]
@@ -535,7 +537,7 @@ def _create_departement_booking_for_users(departement_code, user_email, booking_
     for i in range(booking_count):
         create_booking(user=user_having_booked, stock=stock, is_cancelled=False)
 
-    PcObject.save(stock)
+    Repository.save(stock)
 
 
 def _create_bookings_for_departement(bookings_by_departement):

@@ -1,5 +1,4 @@
 from models import Criterion, OfferCriterion
-from models.pc_object import PcObject
 from utils.logger import logger
 
 
@@ -26,7 +25,7 @@ def create_industrial_criteria() -> dict:
     criterion3.scoreDelta = 2
     criteria_by_name[criterion3.name] = criterion3
 
-    PcObject.save(*criteria_by_name.values())
+    Repository.save(*criteria_by_name.values())
 
     logger.info('created {} criteria'.format(len(criteria_by_name)))
 
@@ -41,4 +40,4 @@ def associate_criterion_to_one_offer_with_mediation(offers_by_name: dict, criter
     offer_criterion.offer = offer
     offer_criterion.criterion = criterion
 
-    PcObject.save(offer_criterion)
+    Repository.save(offer_criterion)

@@ -1,4 +1,3 @@
-from models.offerer import Offerer
 from models.user import User
 from repository.offerer_queries import keep_offerers_with_at_least_one_physical_venue, \
                                        keep_offerers_with_no_physical_venue

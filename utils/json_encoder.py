@@ -1,6 +1,7 @@
 """ json encoder """
-from flask.json import JSONEncoder
 from enum import Enum
+
+from flask.json import JSONEncoder
 
 
 class EnumJSONEncoder(JSONEncoder):

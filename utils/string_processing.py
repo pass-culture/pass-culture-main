@@ -1,11 +1,12 @@
 # coding=utf-8
+import re
+from datetime import datetime, timedelta
+from operator import itemgetter
+
 from babel.numbers import format_decimal as babel_format_decimal
 from dateparser import parse
-from datetime import datetime, timedelta
 from nltk import edit_distance
-from operator import itemgetter
 from psycopg2.extras import DateTimeRange
-import re
 
 from utils.inflect_engine import inflect_engine
 

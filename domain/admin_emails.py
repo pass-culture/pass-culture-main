@@ -4,7 +4,7 @@ from models import Offer, User, Offerer, UserOfferer, Venue
 from utils.mailing import make_validation_email_object, make_payment_message_email, \
     make_venue_to_validate_email, compute_email_html_part_and_recipients, make_payment_details_email, \
     make_payments_report_email, make_wallet_balances_email, make_offer_creation_notification_email, \
-    make_beneficiaries_import_email,  make_activation_users_email, \
+    make_beneficiaries_import_email, make_activation_users_email, \
     ADMINISTRATION_EMAIL_ADDRESS
 
 

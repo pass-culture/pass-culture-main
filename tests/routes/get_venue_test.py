@@ -1,4 +1,4 @@
-from models import PcObject
+from repository.repository import Repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
     create_bank_information
@@ -16,7 +16,7 @@ class Get:
             venue = create_venue(offerer, name='L\'encre et la plume')
             bank_information = create_bank_information(bic='QSDFGH8Z555', iban='FR7630006000011234567890189',
                                                        venue=venue)
-            PcObject.save(user_offerer, bank_information)
+            Repository.save(user_offerer, bank_information)
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
@@ -37,7 +37,7 @@ class Get:
             offerer = create_offerer()
             user = create_user(email='user.pro@test.com')
             venue = create_venue(offerer, name='L\'encre et la plume')
-            PcObject.save(user, venue)
+            Repository.save(user, venue)
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when

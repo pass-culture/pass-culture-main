@@ -1,13 +1,13 @@
 from uuid import UUID
 
-from models import UserSession, PcObject
+from models import UserSession
 
 
 def register_user_session(user_id: int, session_uuid: UUID):
     session = UserSession()
     session.userId = user_id
     session.uuid = session_uuid
-    PcObject.save(session)
+    Repository.save(session)
 
 
 def delete_user_session(user_id: int, session_uuid: UUID):
@@ -16,7 +16,7 @@ def delete_user_session(user_id: int, session_uuid: UUID):
         .first()
 
     if session:
-        PcObject.delete(session)
+        Repository.delete(session)
 
 
 def existing_user_session(user_id: int, session_uuid: UUID) -> bool:

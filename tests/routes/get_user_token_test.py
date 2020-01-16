@@ -1,4 +1,4 @@
-from models import PcObject
+from repository.repository import Repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user
 
@@ -10,7 +10,7 @@ class Get:
             # given
             token = 'U2NCXTNB2'
             user = create_user(reset_password_token=token)
-            PcObject.save(user)
+            Repository.save(user)
 
             # when
             request = TestClient(app.test_client()).get('/users/token/' + token)

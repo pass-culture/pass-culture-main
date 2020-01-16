@@ -1,12 +1,14 @@
-from models import PcObject, ThingType
+from models import ThingType
 from models.feature import FeatureToggle
 from models.payment import Payment
+from repository.repository import Repository
 from scripts.payment.batch_steps import generate_new_payments
 from tests.conftest import clean_database
-from tests.test_utils import deactivate_feature
-from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, create_deposit, \
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+    create_deposit, \
     create_payment, create_bank_information
 from tests.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product
+from tests.test_utils import deactivate_feature
 
 
 class GenerateNewPaymentsTest:
@@ -28,8 +30,8 @@ class GenerateNewPaymentsTest:
             booking4 = create_booking(user=user, stock=free_stock, venue=venue, is_used=True)
             payment1 = create_payment(booking2, offerer, 10, payment_message_name="ABCD123")
 
-            PcObject.save(payment1)
-            PcObject.save(deposit, booking1, booking3, booking4)
+            Repository.save(payment1)
+            Repository.save(deposit, booking1, booking3, booking4)
 
             initial_payment_count = Payment.query.count()
 
@@ -45,7 +47,7 @@ class GenerateNewPaymentsTest:
             deactivate_feature(FeatureToggle.DEGRESSIVE_REIMBURSEMENT_RATE)
             offerer1 = create_offerer(siren='123456789')
             offerer2 = create_offerer(siren='987654321')
-            PcObject.save(offerer1)
+            Repository.save(offerer1)
             bank_information = create_bank_information(bic='BDFEFR2LCCB', iban='FR7630006000011234567890189',
                                                        id_at_providers='123456789', offerer=offerer1)
             venue1 = create_venue(offerer1, siret='12345678912345')
@@ -61,7 +63,7 @@ class GenerateNewPaymentsTest:
             booking2 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True)
             booking3 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True)
             booking4 = create_booking(user=user, stock=free_stock1, venue=venue1, is_used=True)
-            PcObject.save(deposit, booking1, booking2, booking3, booking4, bank_information)
+            Repository.save(deposit, booking1, booking2, booking3, booking4, bank_information)
 
             # When
             pending, not_processable = generate_new_payments()
@@ -75,7 +77,7 @@ class GenerateNewPaymentsTest:
             # Given
             deactivate_feature(FeatureToggle.DEGRESSIVE_REIMBURSEMENT_RATE)
             offerer1 = create_offerer(siren='123456789')
-            PcObject.save(offerer1)
+            Repository.save(offerer1)
             bank_information = create_bank_information(bic='BDFEFR2LCCB', iban='FR7630006000011234567890189',
                                                        id_at_providers='123456789', offerer=offerer1)
             venue1 = create_venue(offerer1, siret='12345678912345')
@@ -92,7 +94,7 @@ class GenerateNewPaymentsTest:
             booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
             booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
             booking3 = create_booking(user=user, stock=paying_stock3, venue=venue3, is_used=True, quantity=1)
-            PcObject.save(deposit, booking1, booking2, booking3, bank_information)
+            Repository.save(deposit, booking1, booking2, booking3, bank_information)
 
             # When
             pending, not_processable = generate_new_payments()
@@ -119,8 +121,8 @@ class GenerateNewPaymentsTest:
             booking4 = create_booking(user=user, stock=free_stock, venue=venue, is_used=True)
             payment1 = create_payment(booking2, offerer, 10, payment_message_name="ABCD123")
 
-            PcObject.save(payment1)
-            PcObject.save(deposit, booking1, booking3, booking4)
+            Repository.save(payment1)
+            Repository.save(deposit, booking1, booking3, booking4)
 
             initial_payment_count = Payment.query.count()
 
@@ -135,7 +137,7 @@ class GenerateNewPaymentsTest:
             # Given
             offerer1 = create_offerer(siren='123456789')
             offerer2 = create_offerer(siren='987654321')
-            PcObject.save(offerer1)
+            Repository.save(offerer1)
             bank_information = create_bank_information(bic='BDFEFR2LCCB', iban='FR7630006000011234567890189',
                                                        id_at_providers='123456789', offerer=offerer1)
             venue1 = create_venue(offerer1, siret='12345678912345')
@@ -151,7 +153,7 @@ class GenerateNewPaymentsTest:
             booking2 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True)
             booking3 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True)
             booking4 = create_booking(user=user, stock=free_stock1, venue=venue1, is_used=True)
-            PcObject.save(deposit, booking1, booking2, booking3, booking4, bank_information)
+            Repository.save(deposit, booking1, booking2, booking3, booking4, bank_information)
 
             # When
             pending, not_processable = generate_new_payments()
@@ -164,7 +166,7 @@ class GenerateNewPaymentsTest:
         def test_reimburses_offerer_if_he_has_more_than_20000_euros_in_bookings_on_several_venues(self, app):
             # Given
             offerer1 = create_offerer(siren='123456789')
-            PcObject.save(offerer1)
+            Repository.save(offerer1)
             bank_information = create_bank_information(bic='BDFEFR2LCCB', iban='FR7630006000011234567890189',
                                                        id_at_providers='123456789', offerer=offerer1)
             venue1 = create_venue(offerer1, siret='12345678912345')
@@ -181,7 +183,7 @@ class GenerateNewPaymentsTest:
             booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
             booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
             booking3 = create_booking(user=user, stock=paying_stock3, venue=venue3, is_used=True, quantity=1)
-            PcObject.save(deposit, booking1, booking2, booking3, bank_information)
+            Repository.save(deposit, booking1, booking2, booking3, bank_information)
 
             # When
             pending, not_processable = generate_new_payments()
@@ -195,7 +197,7 @@ class GenerateNewPaymentsTest:
         def test_reimburses_offerer_with_degressive_rate_for_venues_with_bookings_exceeding_20000_euros(self, app):
             # Given
             offerer1 = create_offerer(siren='123456789')
-            PcObject.save(offerer1)
+            Repository.save(offerer1)
             bank_information = create_bank_information(bic='BDFEFR2LCCB', iban='FR7630006000011234567890189',
                                                        id_at_providers='123456789', offerer=offerer1)
             venue1 = create_venue(offerer1, siret='12345678912345')
@@ -212,7 +214,7 @@ class GenerateNewPaymentsTest:
             booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
             booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
             booking3 = create_booking(user=user, stock=paying_stock3, venue=venue3, is_used=True, quantity=1)
-            PcObject.save(deposit, booking1, booking2, booking3, bank_information)
+            Repository.save(deposit, booking1, booking2, booking3, bank_information)
 
             # When
             pending, not_processable = generate_new_payments()
@@ -226,7 +228,7 @@ class GenerateNewPaymentsTest:
         def test_full_reimburses_book_product_when_bookings_are_below_20000_euros(self, app):
             # Given
             offerer1 = create_offerer(siren='123456789')
-            PcObject.save(offerer1)
+            Repository.save(offerer1)
             bank_information = create_bank_information(bic='BDFEFR2LCCB', iban='FR7630006000011234567890189',
                                                        id_at_providers='123456789', offerer=offerer1)
             venue1 = create_venue(offerer1, siret='12345678912345')
@@ -239,7 +241,7 @@ class GenerateNewPaymentsTest:
             deposit = create_deposit(user, amount=50000)
             booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
             booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
-            PcObject.save(deposit, booking1, booking2, bank_information)
+            Repository.save(deposit, booking1, booking2, bank_information)
 
             # When
             pending, not_processable = generate_new_payments()
@@ -253,7 +255,7 @@ class GenerateNewPaymentsTest:
         def test_reimburses_95_percent_for_book_product_when_bookings_exceed_20000_euros(self, app):
             # Given
             offerer1 = create_offerer(siren='123456789')
-            PcObject.save(offerer1)
+            Repository.save(offerer1)
             bank_information = create_bank_information(bic='BDFEFR2LCCB', iban='FR7630006000011234567890189',
                                                        id_at_providers='123456789', offerer=offerer1)
             venue1 = create_venue(offerer1, siret='12345678912345')
@@ -270,7 +272,7 @@ class GenerateNewPaymentsTest:
             booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
             booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
             booking3 = create_booking(user=user, stock=paying_stock3, venue=venue3, is_used=True, quantity=1)
-            PcObject.save(deposit, booking1, booking2, booking3, bank_information)
+            Repository.save(deposit, booking1, booking2, booking3, bank_information)
 
             # When
             pending, not_processable = generate_new_payments()
@@ -284,7 +286,7 @@ class GenerateNewPaymentsTest:
         def test_reimburses_95_percent_for_book_product_when_bookings_exceed_40000_euros(self, app):
             # Given
             offerer1 = create_offerer(siren='123456789')
-            PcObject.save(offerer1)
+            Repository.save(offerer1)
             bank_information = create_bank_information(bic='BDFEFR2LCCB', iban='FR7630006000011234567890189',
                                                        id_at_providers='123456789', offerer=offerer1)
             venue1 = create_venue(offerer1, siret='12345678912345')
@@ -301,7 +303,7 @@ class GenerateNewPaymentsTest:
             booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
             booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
             booking3 = create_booking(user=user, stock=paying_stock3, venue=venue3, is_used=True, quantity=1)
-            PcObject.save(deposit, booking1, booking2, booking3, bank_information)
+            Repository.save(deposit, booking1, booking2, booking3, bank_information)
 
             # When
             pending, not_processable = generate_new_payments()
@@ -315,7 +317,7 @@ class GenerateNewPaymentsTest:
         def test_reimburses_95_percent_for_book_product_when_bookings_exceed_100000_euros(self, app):
             # Given
             offerer1 = create_offerer(siren='123456789')
-            PcObject.save(offerer1)
+            Repository.save(offerer1)
             bank_information = create_bank_information(bic='BDFEFR2LCCB', iban='FR7630006000011234567890189',
                                                        id_at_providers='123456789', offerer=offerer1)
             venue1 = create_venue(offerer1, siret='12345678912345')
@@ -332,7 +334,7 @@ class GenerateNewPaymentsTest:
             booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
             booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
             booking3 = create_booking(user=user, stock=paying_stock3, venue=venue3, is_used=True, quantity=1)
-            PcObject.save(deposit, booking1, booking2, booking3, bank_information)
+            Repository.save(deposit, booking1, booking2, booking3, bank_information)
 
             # When
             pending, not_processable = generate_new_payments()

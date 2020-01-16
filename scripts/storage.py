@@ -1,14 +1,15 @@
 """ sandbox script """
 # -*- coding: utf-8 -*-
 
-from pprint import pprint
 import traceback
+from pprint import pprint
+
 from flask import current_app as app
 
-from utils.storage_utils import do_list_content,\
+from utils.storage_utils import do_list_content, \
     do_does_file_exist, \
-    do_delete_file,\
-    do_copy_prod_container_content_to_dest_container,\
+    do_delete_file, \
+    do_copy_prod_container_content_to_dest_container, \
     do_local_backup_prod_container
 
 

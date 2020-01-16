@@ -1,6 +1,6 @@
 import pytest
 
-from models import PcObject
+from repository.repository import Repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, API_URL
 
@@ -12,7 +12,7 @@ class Get:
         def when_user_is_logged_in(self, app):
             # given
             user = create_user()
-            PcObject.save(user)
+            Repository.save(user)
 
             # when
             response = TestClient(app.test_client()).with_auth(user.email) \

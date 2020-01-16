@@ -1,4 +1,5 @@
-from models import PcObject, User
+from models import User
+from repository.repository import Repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user
 from utils.human_ids import humanize
@@ -10,7 +11,7 @@ class Patch:
         def when_changes_are_allowed(self, app):
             # given
             user = create_user()
-            PcObject.save(user)
+            Repository.save(user)
             user_id = user.id
             data = {'publicName': 'plop', 'email': 'new@email.com', 'postalCode': '93020', 'phoneNumber': '0612345678',
                     'departementCode': '97'}
@@ -40,7 +41,7 @@ class Patch:
         def when_changes_are_forbidden(self, app):
             # given
             user = create_user(can_book_free_offers=True, is_admin=False)
-            PcObject.save(user)
+            Repository.save(user)
             user_id = user.id
 
             data = {'isAdmin': True, 'canBookFreeOffers': False, 'firstName': 'Jean', 'lastName': 'Martin',

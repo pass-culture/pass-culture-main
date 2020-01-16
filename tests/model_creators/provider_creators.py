@@ -8,6 +8,7 @@ import models
 from local_providers.providable_info import ProvidableInfo
 from models import PcObject, Provider, Product
 from models.db import Model
+from repository.repository import Repository
 from repository.provider_queries import get_provider_by_local_class
 from utils.object_storage import STORAGE_DIR
 
@@ -43,7 +44,7 @@ def provider_test(app, provider, venue_provider, **counts):
     else:
         provider_object = provider(venue_provider)
     provider_object.provider.isActive = True
-    PcObject.save(provider_object.provider)
+    Repository.save(provider_object.provider)
     save_counts()
     provider_object.updateObjects()
 
@@ -64,7 +65,7 @@ def activate_provider(provider_classname: str) -> Provider:
     provider = get_provider_by_local_class(provider_classname)
     provider.isActive = True
     provider.enabledForPro = True
-    PcObject.save(provider)
+    Repository.save(provider)
     return provider
 
 

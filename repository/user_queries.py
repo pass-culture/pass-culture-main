@@ -5,7 +5,7 @@ from sqlalchemy import func, Column
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.functions import Function
 
-from models import ImportStatus, BeneficiaryImportStatus, Booking, Stock, Offer, Product, ThingType, EventType
+from models import ImportStatus, BeneficiaryImportStatus, Booking, Stock, Offer, ThingType, EventType
 from models import User, UserOfferer, Offerer, RightsType
 from models.db import db
 from models.user import WalletBalance

@@ -1,4 +1,4 @@
-from models import PcObject
+from repository.repository import Repository
 from repository.offer_queries import get_offers_for_recommendations_search
 
 from tests.conftest import clean_database
@@ -81,7 +81,7 @@ def test_get_offers_for_recommendations_search_with_distance_less_than_1km_retur
     concert_event_occurrence92 = create_event_occurrence(concert_offer92)
     concert_stock92 = create_stock_from_event_occurrence(concert_event_occurrence92)
 
-    PcObject.save(concert_stock75, concert_stock77, concert_stock78, concert_stock92)
+    Repository.save(concert_stock75, concert_stock77, concert_stock78, concert_stock92)
 
     # When
     # User in Mantes-la-jolie
@@ -238,7 +238,7 @@ def test_get_offers_for_recommendations_search_with_all_distances_should_returns
     concert_event_occurrence973 = create_event_occurrence(concert_offer973)
     concert_stock973 = create_stock_from_event_occurrence(concert_event_occurrence973)
 
-    PcObject.save(concert_stock13, concert_stock95, concert_stock91, concert_stock93, concert_stock94, concert_stock973)
+    Repository.save(concert_stock13, concert_stock95, concert_stock91, concert_stock93, concert_stock94, concert_stock973)
 
     # When
     # User in Mantes-la-jolie
@@ -382,7 +382,7 @@ def test_get_offers_for_recommendations_search_with_distance_less_than_20kms_ret
     concert_event_occurrence95 = create_event_occurrence(concert_offer95)
     concert_stock95 = create_stock_from_event_occurrence(concert_event_occurrence95)
 
-    PcObject.save(concert_stock75, concert_stock77, concert_stock78, concert_stock91, concert_stock92, concert_stock93,
+    Repository.save(concert_stock75, concert_stock77, concert_stock78, concert_stock91, concert_stock92, concert_stock93,
                   concert_stock94, concert_stock95)
 
     # When
@@ -473,7 +473,7 @@ def test_get_offers_for_recommendations_search_with_distance_less_than_50kms_ret
     concert_event_occurrence91 = create_event_occurrence(concert_offer91)
     concert_stock91 = create_stock_from_event_occurrence(concert_event_occurrence91)
 
-    PcObject.save(concert_stock45, concert_stock75, concert_stock78, concert_offer91)
+    Repository.save(concert_stock45, concert_stock75, concert_stock78, concert_offer91)
 
     # When
     # User in Paris
@@ -543,7 +543,7 @@ def test_get_offers_for_recommendations_search_with_distance_returns_offers_in_v
     concert_event_occurrence973 = create_event_occurrence(concert_offer973)
     concert_stock973 = create_stock_from_event_occurrence(concert_event_occurrence973)
 
-    PcObject.save(concert_stock13, concert_stock45, concert_stock973)
+    Repository.save(concert_stock13, concert_stock45, concert_stock973)
 
     # When
     # User in Paris
@@ -628,7 +628,7 @@ def test_get_offers_for_recommendations_search_with_specific_distance_and_keywor
     concert_event_occurrence91 = create_event_occurrence(concert_offer91)
     concert_stock91 = create_stock_from_event_occurrence(concert_event_occurrence91)
 
-    PcObject.save(concert_stock45, kiwi_concert_stock75, concert_stock78, concert_offer91)
+    Repository.save(concert_stock45, kiwi_concert_stock75, concert_stock78, concert_offer91)
 
     # When
     # User in Paris
@@ -715,7 +715,7 @@ def test_get_offers_for_recommendations_search_with_all_distance_and_keywords(ap
     concert_event_occurrence91 = create_event_occurrence(concert_offer91)
     concert_stock91 = create_stock_from_event_occurrence(concert_event_occurrence91)
 
-    PcObject.save(concert_stock45, kiwi_concert_stock75, concert_stock78, concert_offer91)
+    Repository.save(concert_stock45, kiwi_concert_stock75, concert_stock78, concert_offer91)
 
     # When
     # User in Paris

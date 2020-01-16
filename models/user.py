@@ -88,30 +88,6 @@ class User(PcObject,
     def checkPassword(self, passwordToCheck):
         return bcrypt.hashpw(passwordToCheck.encode('utf-8'), self.password) == self.password
 
-    def errors(self):
-        api_errors = super(User, self).errors()
-
-        user_count = 0
-        try:
-            user_count = User.query.filter_by(email=self.email).count()
-        except IntegrityError as ie:
-            if self.id is None:
-                api_errors.add_error('email', 'Un compte lié à cet email existe déjà')
-
-        if self.id is None and user_count > 0:
-            api_errors.add_error('email', 'Un compte lié à cet email existe déjà')
-        if self.publicName:
-            api_errors.check_min_length('publicName', self.publicName, 3)
-        if self.email:
-            api_errors.check_email('email', self.email)
-
-        if self.isAdmin and self.canBookFreeOffers:
-            api_errors.add_error('canBookFreeOffers', 'Admin ne peut pas booker')
-        if self.clearTextPassword:
-            api_errors.check_min_length('password', self.clearTextPassword, 8)
-
-        return api_errors
-
     def get_id(self):
         return str(self.id)
 

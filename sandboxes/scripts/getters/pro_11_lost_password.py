@@ -1,6 +1,7 @@
-from models.user_offerer import UserOfferer
 from models.user import User
+from models.user_offerer import UserOfferer
 from sandboxes.scripts.utils.helpers import get_user_helper
+
 
 def get_pro_validated_no_reset_password_token_user():
     query = User.query.filter(

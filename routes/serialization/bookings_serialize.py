@@ -4,6 +4,7 @@ from models import Booking, EventType, ThingType
 from routes.serialization import serialize
 from utils.human_ids import humanize
 
+
 def serialize_booking(booking: Booking) -> Dict:
     booking_id = humanize(booking.id)
     user_email = booking.user.email

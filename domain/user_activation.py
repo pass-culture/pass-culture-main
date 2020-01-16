@@ -1,7 +1,6 @@
 import csv
 from io import StringIO
 from typing import Iterable
-from urllib.parse import urlencode
 
 from domain.password import random_password, generate_reset_token
 from models import Deposit, EventType, ThingType, ApiErrors, User, ImportStatus

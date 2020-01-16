@@ -7,7 +7,7 @@ from typing import Dict, List, Union
 from flask import current_app as app, render_template
 
 from connectors import api_entreprises
-from models import Booking, Offer, Email, PcObject, Offerer, Stock, User, UserOfferer, Venue
+from models import Booking, Offer, Email, Offerer, Stock, User, UserOfferer, Venue
 from models.email import EmailStatus
 from repository import booking_queries
 from repository import email_queries
@@ -60,7 +60,7 @@ def resend_email(email: Email) -> bool:
     if response.status_code == 200:
         email.status = EmailStatus.SENT
         email.datetime = datetime.utcnow()
-        PcObject.save(email)
+        Repository.save(email)
         return True
     logger.logger.warning(
         f'[EMAIL] Trying to resend email # {email.id}, {email.content} failed with status code {response.status_code}')

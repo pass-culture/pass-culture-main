@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 
-from models.pc_object import PcObject
 from tests.model_creators.generic_creators import create_user
 from utils.logger import logger
 
@@ -29,7 +28,7 @@ def create_industrial_admin_users():
                 postal_code="{}100".format(departement_code),
                 public_name="PC Test Admin {} {}".format(departement_code, admin_count))
 
-    PcObject.save(*users_by_name.values())
+    Repository.save(*users_by_name.values())
 
     logger.info('created {} users'.format(len(users_by_name)))
 

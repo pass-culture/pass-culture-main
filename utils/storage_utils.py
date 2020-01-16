@@ -1,6 +1,7 @@
 import os
-import swiftclient
 from pathlib import Path
+
+import swiftclient
 
 
 def swift_con(dest_container_name):

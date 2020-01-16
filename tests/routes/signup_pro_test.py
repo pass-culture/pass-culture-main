@@ -1,7 +1,7 @@
-from models import PcObject
 from models.offerer import Offerer
 from models.user import User
 from models.user_offerer import UserOfferer, RightsType
+from repository.repository import Repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_user_offerer
 
@@ -137,7 +137,7 @@ class Post:
             offerer.generate_validation_token()
             user = create_user(email='bobby@test.com', public_name='bobby')
             user_offerer = create_user_offerer(user, offerer, is_admin=False)
-            PcObject.save(offerer, user_offerer)
+            Repository.save(offerer, user_offerer)
 
             data = BASE_DATA_PRO.copy()
 
@@ -176,7 +176,7 @@ class Post:
                 "city": "Paris"
             }
             offerer = Offerer(from_dict=json_offerer)
-            PcObject.save(offerer)
+            Repository.save(offerer)
 
             data = BASE_DATA_PRO.copy()
 
@@ -216,7 +216,7 @@ class Post:
                 "city": "Paris"
             }
             offerer = Offerer(from_dict=json_offerer)
-            PcObject.save(offerer)
+            Repository.save(offerer)
 
             data = BASE_DATA_PRO.copy()
 

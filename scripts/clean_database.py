@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
-from pprint import pprint
 import traceback
+from pprint import pprint
+
 from flask import current_app as app
 
 from repository.clean_database import clean_all_database
+
 
 @app.manager.command
 def clean():

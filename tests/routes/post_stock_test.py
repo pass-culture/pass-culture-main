@@ -2,7 +2,7 @@ from datetime import timedelta, datetime
 from unittest.mock import patch
 
 from models import Stock, Provider
-from models.pc_object import PcObject
+from repository.repository import Repository
 from routes.serialization import serialize
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
@@ -21,10 +21,10 @@ class Post:
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
-            PcObject.save(user_offerer, offer)
+            Repository.save(user_offerer, offer)
 
             stock_data = {'price': 1222, 'offerId': humanize(offer.id)}
-            PcObject.save(user)
+            Repository.save(user)
 
             # When
             response = TestClient(app.test_client()).with_auth('test@email.fr') \
@@ -45,7 +45,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
-            PcObject.save(user, offer)
+            Repository.save(user, offer)
 
             data = {
                 'price': 0,
@@ -76,7 +76,7 @@ class Post:
             create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
-            PcObject.save(offer)
+            Repository.save(offer)
             stock_data = {'price': 1222, 'offerId': humanize(offer.id)}
 
             # When
@@ -97,7 +97,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
-            PcObject.save(user, offer)
+            Repository.save(user, offer)
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email) \
@@ -114,7 +114,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
-            PcObject.save(user, offer)
+            Repository.save(user, offer)
 
             beginningDatetime = datetime(2019, 2, 14)
 
@@ -143,7 +143,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
-            PcObject.save(user, offer)
+            Repository.save(user, offer)
 
             data = {
                 'price': 0,
@@ -167,7 +167,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
-            PcObject.save(user, offer)
+            Repository.save(user, offer)
 
             data = {
                 'price': 0,
@@ -192,7 +192,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
-            PcObject.save(user, offer)
+            Repository.save(user, offer)
             beginningDatetime = datetime(2019, 2, 14)
 
             data = {
@@ -226,10 +226,10 @@ class Post:
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue, last_provider_id=tite_live_provider.id)
-            PcObject.save(user_offerer, offer)
+            Repository.save(user_offerer, offer)
 
             stock_data = {'price': 1222, 'offerId': humanize(offer.id)}
-            PcObject.save(user)
+            Repository.save(user)
 
             # When
             response = TestClient(app.test_client()).with_auth('test@email.fr') \
@@ -247,7 +247,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
-            PcObject.save(user, offer)
+            Repository.save(user, offer)
 
             data = {'price': 1222, 'offerId': humanize(offer.id)}
 

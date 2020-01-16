@@ -1,7 +1,8 @@
 from unittest.mock import patch
 
-from models import PcObject, DiscoveryView
+from models import DiscoveryView
 from recommendations_engine import create_recommendations_for_discovery, get_offers_for_recommendations_discovery
+from repository.repository import Repository
 from repository.offer_queries import order_by_with_criteria
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue
@@ -19,8 +20,8 @@ class GetOffersForRecommendationsDiscoveryTest:
         offerer_ok = create_offerer()
         expected_stocks_recommended = _create_and_save_stock_for_offerer_in_departements(offerer_ok,
                                                                                          departements_ok)
-        PcObject.save(user)
-        PcObject.save(*expected_stocks_recommended)
+        Repository.save(user)
+        Repository.save(*expected_stocks_recommended)
         DiscoveryView.refresh(concurrently=False)
         offer_ids_in_adjacent_department = set([stock.offerId for stock in expected_stocks_recommended])
 

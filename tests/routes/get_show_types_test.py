@@ -1,5 +1,5 @@
 from domain.show_types import show_types
-from models import PcObject
+from repository.repository import Repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user
 
@@ -10,7 +10,7 @@ class Get:
         def when_list_show_types(self, app):
             # given
             user = create_user()
-            PcObject.save(user)
+            Repository.save(user)
 
             # when
             response = TestClient(app.test_client()).with_auth(user.email) \

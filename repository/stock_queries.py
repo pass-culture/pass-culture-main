@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List
 
-from models import Stock, Offerer, User, PcObject, Offer, ThingType, Venue, Product
+from models import Stock, Offerer, User, Offer, ThingType, Venue, Product
 from utils.human_ids import dehumanize
 
 
@@ -21,7 +21,7 @@ def find_stocks_with_possible_filters(filters, user):
 
 def set_booking_recap_sent_and_save(stock):
     stock.bookingRecapSent = datetime.utcnow()
-    PcObject.save(stock)
+    Repository.save(stock)
 
 
 def find_stocks_of_finished_events_when_no_recap_sent():

@@ -3,14 +3,14 @@ from unittest.mock import Mock, patch, ANY
 
 from mailjet_rest import Client
 
-from models import BeneficiaryImport, ImportStatus, PcObject
+from models import BeneficiaryImport, ImportStatus
 from models import User, ApiErrors
 from scripts.beneficiary import remote_import
 from scripts.beneficiary.remote_import import parse_beneficiary_information
 from tests.conftest import clean_database
+from tests.model_creators.generic_creators import create_user
 from tests.scripts.beneficiary.fixture import make_application_detail, \
     APPLICATION_DETAIL_STANDARD_RESPONSE
-from tests.model_creators.generic_creators import create_user
 
 NOW = datetime.utcnow()
 datetime_pattern = '%Y-%m-%dT%H:%M:%S.%fZ'
@@ -308,7 +308,7 @@ class ProcessBeneficiaryApplicationTest:
             'activity': 'Étudiant'
         }
         create_beneficiary_from_application.side_effect = [User()]
-        PcObject.save.side_effect = [ApiErrors({'postalCode': ['baaaaad value']})]
+        Repository.save.side_effect = [ApiErrors({'postalCode': ['baaaaad value']})]
         new_beneficiaries = []
         error_messages = []
 
@@ -339,7 +339,7 @@ class ProcessBeneficiaryApplicationTest:
             'activity': 'Étudiant'
         }
         existing_user = create_user(date_of_birth=datetime(2000, 5, 1), first_name='Jane', last_name='Doe')
-        PcObject.save(existing_user)
+        Repository.save(existing_user)
         mock = Mock(return_value=[existing_user])
 
         # when
@@ -368,7 +368,7 @@ class ProcessBeneficiaryApplicationTest:
             'activity': 'Étudiant'
         }
         existing_user = create_user(date_of_birth=datetime(2000, 5, 1), first_name='Jane', last_name='Doe')
-        PcObject.save(existing_user)
+        Repository.save(existing_user)
         mock = Mock(return_value=[existing_user])
         retry_ids = [123]
 

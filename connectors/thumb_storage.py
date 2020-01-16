@@ -2,9 +2,8 @@ from typing import Callable
 
 import requests
 
-from domain.mediations import DO_NOT_CROP, standardize_image, BLACK
+from domain.mediations import DO_NOT_CROP, standardize_image
 from models import ApiErrors
-from models.pc_object import PcObject
 from utils.logger import logger
 from utils.object_storage import store_public_object
 
@@ -60,7 +59,7 @@ def save_thumb(
     model_with_thumb.thumbCount = model_with_thumb.thumbCount + 1
 
     if need_save:
-        PcObject.save(model_with_thumb)
+        Repository.save(model_with_thumb)
 
 
 def save_provider_thumb(thumb_storage_id,

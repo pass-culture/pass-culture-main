@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-from pprint import pprint
 import traceback
+from pprint import pprint
+
 from flask import current_app as app
 
-from sandboxes.scripts.testcafe_helpers import print_testcafe_helper, \
-                                               print_testcafe_helpers, \
-                                               print_all_testcafe_helpers
 from sandboxes.scripts.save_sandbox import save_sandbox
+from sandboxes.scripts.testcafe_helpers import print_testcafe_helper, \
+    print_testcafe_helpers, \
+    print_all_testcafe_helpers
 
 
 @app.manager.option('-n',

@@ -2,6 +2,7 @@ import simplejson as json
 
 from sandboxes.scripts import getters
 
+
 def get_testcafe_helper(module_name, getter_name):
     module = getattr(getters, module_name)
     getter = getattr(module, getter_name)

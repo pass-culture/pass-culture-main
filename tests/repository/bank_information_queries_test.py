@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from models import PcObject
+from repository.repository import Repository
 from repository.bank_information_queries import get_last_update_from_bank_information
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_bank_information
@@ -23,7 +23,7 @@ class GetLastUpdateForBankInformationTest:
 
         bank_information = create_bank_information(id_at_providers='79387501900056',
                                                    date_modified_at_last_provider=datetime(2019, 1, 1), venue=venue)
-        PcObject.save(bank_information)
+        Repository.save(bank_information)
 
         # when
         last_update = get_last_update_from_bank_information()

@@ -5,8 +5,6 @@ Revision ID: 67307cd6ee1b
 
 """
 from alembic import op
-import sqlalchemy as sa
-
 
 # revision identifiers, used by Alembic.
 revision = '67307cd6ee1b'

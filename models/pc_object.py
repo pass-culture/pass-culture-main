@@ -6,22 +6,17 @@ from decimal import Decimal, InvalidOperation
 from pprint import pprint
 from typing import List, Any, Iterable, Set
 
-import sqlalchemy
-from sqlalchemy import CHAR, \
-    BigInteger, \
+from sqlalchemy import BigInteger, \
     Float, \
     Integer, \
     Numeric, \
     String, DateTime
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.exc import DataError, IntegrityError, InternalError
 from sqlalchemy.sql.schema import Column
 
-from models.api_errors import ApiErrors, \
-    DecimalCastError, \
+from models.api_errors import DecimalCastError, \
     DateTimeCastError, \
     UuidCastError
-from models.db import db, Model
 from models.soft_deletable_mixin import SoftDeletableMixin
 from utils.date import match_format
 from utils.human_ids import dehumanize, humanize
@@ -89,48 +84,8 @@ class PcObject:
             else:
                 setattr(self, key, value)
 
-    def errors(self):
-        api_errors = ApiErrors()
-        columns = self.__class__.__table__.columns._data
-        for key in columns.keys():
-            column = columns[key]
-            value = getattr(self, key)
-            if not isinstance(column, Column):
-                continue
-            if not column.nullable \
-                    and not column.foreign_keys \
-                    and not column.primary_key \
-                    and column.default is None \
-                    and value is None:
-                api_errors.add_error(key, 'Cette information est obligatoire')
-            if value is None:
-                continue
-            if (isinstance(column.type, String) or isinstance(column.type, CHAR)) \
-                    and not isinstance(column.type, sqlalchemy.Enum) \
-                    and not isinstance(value, str):
-                api_errors.add_error(key, 'doit être une chaîne de caractères')
-            if (isinstance(column.type, String) or isinstance(column.type, CHAR)) \
-                    and isinstance(value, str) \
-                    and column.type.length \
-                    and len(value) > column.type.length:
-                api_errors.add_error(key,
-                                     'Vous devez saisir moins de '
-                                     + str(column.type.length)
-                                     + ' caractères')
-            if isinstance(column.type, Integer) \
-                    and not isinstance(value, int):
-                api_errors.add_error(key, 'doit être un entier')
-            if isinstance(column.type, Float) \
-                    and not isinstance(value, float):
-                api_errors.add_error(key, 'doit être un nombre')
-        return api_errors
-
     def is_soft_deleted(self):
         return issubclass(type(self), SoftDeletableMixin) and self.isSoftDeleted
-
-    def soft_delete(self):
-        self.deleted = True
-        db.session.add(self)
 
     @staticmethod
     def restize_global_error(global_error):
@@ -191,65 +146,6 @@ class PcObject:
                     ' doit etre dans cette liste : ' + ",".join(map(lambda x: '"' + x + '"', value_error.args[3]))]
         else:
             return PcObject.restize_global_error(value_error)
-
-    @staticmethod
-    def save(*objects):
-        if not objects:
-            return None
-
-        # CUMULATE ERRORS IN ONE SINGLE API ERRORS DURING ADD TIME
-        api_errors = ApiErrors()
-        for obj in objects:
-            with db.session.no_autoflush:
-                obj_api_errors = obj.errors()
-            if obj_api_errors.errors.keys():
-                api_errors.errors.update(obj_api_errors.errors)
-            else:
-                db.session.add(obj)
-
-        # CHECK BEFORE COMMIT
-        if api_errors.errors.keys():
-            raise api_errors
-
-        # COMMIT
-        try:
-            db.session.commit()
-        except DataError as de:
-            api_errors.add_error(*obj.restize_data_error(de))
-            db.session.rollback()
-            raise api_errors
-        except IntegrityError as ie:
-            for obj in objects:
-                api_errors.add_error(*obj.restize_integrity_error(ie))
-            db.session.rollback()
-            raise api_errors
-        except InternalError as ie:
-            for obj in objects:
-                api_errors.add_error(*obj.restize_internal_error(ie))
-            db.session.rollback()
-            raise api_errors
-        except TypeError as te:
-            api_errors.add_error(*PcObject.restize_type_error(te))
-            db.session.rollback()
-            raise api_errors
-        except ValueError as ve:
-            api_errors.add_error(*PcObject.restize_value_error(ve))
-            db.session.rollback()
-            raise api_errors
-
-        if api_errors.errors.keys():
-            raise api_errors
-
-    @staticmethod
-    def delete(model: Model):
-        db.session.delete(model)
-        db.session.commit()
-
-    @staticmethod
-    def delete_all(models: List[Model]):
-        for model in models:
-            db.session.delete(model)
-        db.session.commit()
 
     @staticmethod
     def _get_keys_to_populate(columns: Iterable[str], data: dict, skipped_keys: Iterable[str]) -> Set[str]:

@@ -5,10 +5,9 @@ Revises: ec50928d7331
 Create Date: 2019-06-20 07:56:06.672547
 
 """
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 from sqlalchemy.dialects.postgresql import UUID
-
 
 # revision identifiers, used by Alembic.
 revision = 'de36871d256e'

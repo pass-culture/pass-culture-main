@@ -9,10 +9,11 @@ from connectors.thumb_storage import save_provider_thumb
 from local_providers.chunk_manager import get_existing_pc_obj, save_chunks
 from local_providers.providable_info import ProvidableInfo
 from models import ApiErrors
-from models.db import db, Model
+from models.db import Model, db
 from models.has_thumb_mixin import HasThumbMixin
-from models.local_provider_event import LocalProviderEvent, LocalProviderEventType
-from models.pc_object import PcObject
+from models.local_provider_event import (LocalProviderEvent,
+                                         LocalProviderEventType)
+from repository import repository
 from repository.providable_queries import get_last_update_for_provider
 from repository.provider_queries import get_provider_by_local_class
 from utils.logger import logger
@@ -223,7 +224,7 @@ class LocalProvider(Iterator):
         if self.venue_provider is not None:
             self.venue_provider.lastSyncDate = datetime.utcnow()
             self.venue_provider.sync_worker_id = None
-            PcObject.save(self.venue_provider)
+            repository.save(self.venue_provider)
             send_venue_provider_data_to_redis(self.venue_provider)
 
 

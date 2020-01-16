@@ -1,4 +1,5 @@
 from typing import Dict
+
 from babel.dates import format_date
 
 from models import Booking

@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from models.soft_deletable_mixin import SoftDeletableMixin
 
 

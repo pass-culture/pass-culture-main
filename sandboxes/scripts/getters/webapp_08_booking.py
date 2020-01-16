@@ -1,4 +1,4 @@
-from models import Offer, Stock, EventType, ThingType, Mediation, Offer
+from models import Stock, EventType, ThingType, Mediation, Offer
 from models.user import User
 from repository.offer_queries import _filter_bookable_stocks_for_discovery
 from repository.user_queries import keep_only_webapp_users

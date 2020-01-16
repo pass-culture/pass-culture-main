@@ -1,8 +1,7 @@
-from models.api_errors import ForbiddenError
-
-from models import ApiErrors
 import re
 
+from models import ApiErrors
+from models.api_errors import ForbiddenError
 
 
 def check_user_is_admin(user):

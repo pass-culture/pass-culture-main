@@ -1,14 +1,14 @@
 from datetime import datetime
 
-from domain.expenses import is_eligible_to_physical_offers_capping, is_eligible_to_digital_offers_capping
 from domain.bookings import BOOKING_CANCELLATION_DELAY
+from domain.expenses import is_eligible_to_physical_offers_capping, is_eligible_to_digital_offers_capping
 from domain.user_activation import is_activation_booking
 from models import ApiErrors, Booking, RightsType
 from models.api_errors import ResourceGoneError, ForbiddenError
 from repository.payment_queries import get_payment_by_booking_id
 from repository.stock_queries import find_stock_by_id
-from utils.rest import ensure_current_user_has_rights
 from repository.venue_queries import find_by_id, find_by_offer_id
+from utils.rest import ensure_current_user_has_rights
 
 
 def check_has_stock_id(stock_id):

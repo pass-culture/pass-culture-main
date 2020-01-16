@@ -1,5 +1,4 @@
 from models.user import User
-from models.booking import Booking
 from repository.user_queries import keep_only_webapp_users
 from sandboxes.scripts.utils.helpers import get_user_helper
 

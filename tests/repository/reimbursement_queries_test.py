@@ -1,4 +1,4 @@
-from models import PcObject
+from repository.repository import Repository
 from repository.reimbursement_queries import find_all_offerer_reimbursement_details
 from scripts.payment.batch_steps import generate_new_payments
 from tests.conftest import clean_database
@@ -26,7 +26,7 @@ class FindReimbursementDetailsTest:
         booking1 = create_booking(user=user, stock=stock1, is_used=True, token='ABCDEF', venue=venue1)
         booking2 = create_booking(user=user, stock=stock1, token='ABCDEG', venue=venue1)
         booking3 = create_booking(user=user, stock=stock2, is_used=True, token='ABCDEH', venue=venue2)
-        PcObject.save(deposit, booking1, booking2, booking3,
+        Repository.save(deposit, booking1, booking2, booking3,
                       user_offerer1, bank_information1, bank_information2)
         generate_new_payments()
 

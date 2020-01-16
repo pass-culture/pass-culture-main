@@ -1,8 +1,7 @@
-from models.pc_object import PcObject
 from sandboxes.scripts.utils.select import remove_every
 from sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
-from utils.logger import logger
 from tests.model_creators.generic_creators import create_mediation
+from utils.logger import logger
 
 OFFERS_WITH_MEDIATION_REMOVE_MODULO = 5
 
@@ -16,7 +15,7 @@ def create_industrial_mediations(offers_by_name):
     for (offer_with_mediation_name, offer_with_mediation) in offer_items_with_mediation:
         mediations_by_name[offer_with_mediation_name] = create_mediation(offer_with_mediation)
 
-    PcObject.save(*mediations_by_name.values())
+    Repository.save(*mediations_by_name.values())
 
     logger.info('created {} mediations'.format(len(mediations_by_name)))
 

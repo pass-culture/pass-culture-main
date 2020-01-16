@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String
 
-from models.pc_object import PcObject
 from models.db import Model
+from models.pc_object import PcObject
 
 
 class AllocinePivot(PcObject, Model):

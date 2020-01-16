@@ -1,6 +1,5 @@
-from models.pc_object import PcObject
-from utils.logger import logger
 from tests.model_creators.specific_creators import create_offer_with_thing_product
+from utils.logger import logger
 
 DEACTIVATED_OFFERS_PICK_MODULO = 3
 THINGS_PER_OFFERER = 5
@@ -63,7 +62,7 @@ def create_industrial_thing_offers(
 
         thing_index += THINGS_PER_OFFERER
 
-    PcObject.save(*thing_offers_by_name.values())
+    Repository.save(*thing_offers_by_name.values())
 
     logger.info('created {} thing_offers'.format(len(thing_offers_by_name)))
 

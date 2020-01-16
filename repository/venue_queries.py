@@ -3,7 +3,7 @@ from typing import List
 
 from sqlalchemy import and_
 
-from models import PcObject, ApiErrors
+from models import ApiErrors
 from models import Venue, Offer, Stock, Offerer, UserOfferer, User
 from models.activity import load_activity
 from models.db import db
@@ -13,7 +13,7 @@ from repository.offerer_queries import _filter_by_sirens
 
 def save_venue(venue):
     try:
-        PcObject.save(venue)
+        Repository.save(venue)
     except TooManyVirtualVenuesException:
         errors = ApiErrors()
         errors.add_error('isVirtual', 'Un lieu pour les offres numériques existe déjà pour cette structure')

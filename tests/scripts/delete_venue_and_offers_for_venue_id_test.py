@@ -1,6 +1,7 @@
 import pytest
 
-from models import PcObject, Venue, Offer
+from models import Venue, Offer
+from repository.repository import Repository
 from scripts.delete_venue_and_offers_for_venue_id import delete_venue_and_offers_for_venue_id
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_stock, create_offerer, create_venue
@@ -37,7 +38,7 @@ class DeleteVenueAndOffersForVenueIdTest:
         offer1 = create_offer_with_event_product(venue1)
         offer2 = create_offer_with_event_product(venue2)
         offer3 = create_offer_with_event_product(venue1)
-        PcObject.save(offer1, offer2, offer3, venue1, venue2)
+        Repository.save(offer1, offer2, offer3, venue1, venue2)
 
         # When
         delete_venue_and_offers_for_venue_id(humanize(venue1.id))
@@ -65,7 +66,7 @@ class DeleteVenueAndOffersForVenueIdTest:
         offer2 = create_offer_with_event_product(venue)
         stock = create_stock(offer=offer1)
 
-        PcObject.save(offer1, offer2, stock, venue)
+        Repository.save(offer1, offer2, stock, venue)
 
         # When
         with pytest.raises(AttributeError) as e:

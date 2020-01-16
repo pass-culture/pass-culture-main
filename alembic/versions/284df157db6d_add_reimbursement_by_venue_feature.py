@@ -6,8 +6,10 @@ Create Date: 2019-08-14 12:37:43.969998
 
 """
 from enum import Enum
-from alembic import op
+
 import sqlalchemy as sa
+from alembic import op
+
 
 class FeatureToggle(Enum):
     DEGRESSIVE_REIMBURSEMENT_RATE = 'Permettre le remboursement avec un barème dégressif par lieu'

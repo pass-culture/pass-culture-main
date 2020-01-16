@@ -3,7 +3,7 @@ from flask import current_app as app, jsonify, request, redirect
 from connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
 from domain.departments import ILE_DE_FRANCE_DEPT_CODES
 from domain.user_emails import send_user_validation_email
-from models import ApiErrors, Deposit, Offerer, PcObject, User
+from models import ApiErrors, Deposit, Offerer, User
 from models.feature import FeatureToggle
 from models.user_offerer import RightsType
 from models.venue import create_digital_venue
@@ -42,7 +42,7 @@ def signup_webapp():
     new_user.isAdmin = False
     objects_to_save.append(new_user)
 
-    PcObject.save(*objects_to_save)
+    Repository.save(*objects_to_save)
 
     if request.json.get('contact_ok'):
         try:
@@ -79,7 +79,7 @@ def signup_pro():
     new_user.generate_validation_token()
     objects_to_save.append(new_user)
 
-    PcObject.save(*objects_to_save)
+    Repository.save(*objects_to_save)
 
     try:
         send_user_validation_email(new_user, send_raw_email, app_origin_url, is_webapp=False)

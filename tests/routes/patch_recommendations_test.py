@@ -1,4 +1,4 @@
-from models import PcObject
+from repository.repository import Repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_recommendation, \
     create_mediation
@@ -19,7 +19,7 @@ class Patch:
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             mediation = create_mediation(offer, is_active=True)
             recommendation = create_recommendation(offer=offer, user=user, mediation=mediation, is_clicked=False)
-            PcObject.save(recommendation)
+            Repository.save(recommendation)
 
             # when
             response = TestClient(app.test_client()) \

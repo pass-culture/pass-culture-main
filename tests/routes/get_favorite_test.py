@@ -1,8 +1,9 @@
 import pytest
 
-from models import PcObject
+from repository.repository import Repository
 from tests.conftest import clean_database, TestClient
-from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue, \
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+    create_venue, \
     create_favorite, create_mediation, API_URL
 from tests.model_creators.specific_creators import create_offer_with_thing_product
 from utils.human_ids import humanize
@@ -20,7 +21,7 @@ class Get:
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             mediation = create_mediation(offer, is_active=True)
             favorite = create_favorite(mediation=mediation, offer=offer, user=user)
-            PcObject.save(user, favorite)
+            Repository.save(user, favorite)
             url = f'{API_URL}/favorites/{humanize(favorite.id)}'
 
             # When
@@ -46,7 +47,7 @@ class Get:
             favorite = create_favorite(mediation=mediation, offer=offer, user=user)
             stock = create_stock(price=0, offer=offer)
             booking = create_booking(user=user, stock=stock)
-            PcObject.save(booking, favorite)
+            Repository.save(booking, favorite)
             url = f'{API_URL}/favorites/{humanize(favorite.id)}'
 
             # When
@@ -81,7 +82,7 @@ class Get:
             # Given
             url = f'{API_URL}/favorites/ABCD'
             user = create_user()
-            PcObject.save(user)
+            Repository.save(user)
 
             # When
             response = TestClient(app.test_client()) \

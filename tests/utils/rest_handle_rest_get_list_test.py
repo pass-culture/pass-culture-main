@@ -1,6 +1,6 @@
 import pytest
 
-from models import ApiErrors, PcObject, Stock
+from models import ApiErrors, Stock
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue
 from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_offer_with_event_product, \
@@ -22,7 +22,7 @@ class HandleRestGetListTest:
         stock3 = create_stock_from_event_occurrence(event_occurrence)
         stock4 = create_stock_from_event_occurrence(event_occurrence)
         stock1.isSoftDeleted = True
-        PcObject.save(stock1, stock2, stock3, stock4)
+        Repository.save(stock1, stock2, stock3, stock4)
 
         # When
         request = handle_rest_get_list(Stock)

@@ -6,8 +6,8 @@ from local_providers.price_rule import PriceRule
 from models import VenueProviderPriceRule, ApiErrors
 from repository.venue_provider_price_rule_queries import save_venue_provider_price_rule
 from tests.conftest import clean_database
-from tests.model_creators.provider_creators import activate_provider
 from tests.model_creators.generic_creators import create_venue_provider, create_offerer, create_venue
+from tests.model_creators.provider_creators import activate_provider
 
 
 class SaveVenueProviderPriceRuleTest:

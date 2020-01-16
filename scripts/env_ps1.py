@@ -1,4 +1,6 @@
-import sys, os
+import os
+import sys
+
 
 def prompt():
   try:

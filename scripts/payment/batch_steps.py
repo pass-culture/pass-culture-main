@@ -11,13 +11,13 @@ from domain.payments import filter_out_already_paid_for_bookings, create_payment
     generate_payment_message, generate_file_checksum, group_payments_by_status, filter_out_bookings_without_cost, \
     keep_only_pending_payments, keep_only_not_processable_payments
 from domain.reimbursement import find_all_booking_reimbursements, NEW_RULES, CURRENT_RULES
-from models import Offerer, PcObject
+from models import Offerer
 from models.db import db
 from models.feature import FeatureToggle
 from models.payment import Payment
 from models.payment_status import TransactionStatus
-from repository import payment_queries
 from repository import booking_queries
+from repository import payment_queries
 from repository.feature_queries import is_active
 from repository.user_queries import get_all_users_wallet_balances
 from utils.logger import logger
@@ -66,7 +66,7 @@ def generate_new_payments() -> Tuple[List[Payment], List[Payment]]:
                                 booking_reimbursements_to_pay))
 
         if payments:
-            PcObject.save(*payments)
+            Repository.save(*payments)
             all_payments.extend(payments)
         logger.info('[BATCH][PAYMENTS] Saved %s payments for offerer : %s' % (
             len(payments), offerer.name))
@@ -100,7 +100,7 @@ def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_cult
     except DocumentInvalid as e:
         for payment in payments:
             payment.setStatus(TransactionStatus.NOT_PROCESSABLE, detail=str(e))
-        PcObject.save(*payments)
+        Repository.save(*payments)
         raise
 
     checksum = generate_file_checksum(xml_file)
@@ -121,7 +121,7 @@ def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_cult
         for payment in payments:
             payment.setStatus(TransactionStatus.ERROR,
                               detail="Erreur d'envoi à MailJet")
-    PcObject.save(message, *payments)
+    Repository.save(message, *payments)
 
 
 def send_payments_details(payments: List[Payment], recipients: List[str]) -> None:
@@ -204,4 +204,4 @@ def set_not_processable_payments_with_bank_information_to_retry():
             payment.bic = payment.booking.stock.offer.venue.managingOfferer.bic
             payment.iban = payment.booking.stock.offer.venue.managingOfferer.iban
         payment.setStatus(TransactionStatus.RETRY)
-    PcObject.save(*payments_to_retry)
+    Repository.save(*payments_to_retry)

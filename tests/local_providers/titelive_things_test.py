@@ -4,12 +4,11 @@ from unittest.mock import patch
 from local_providers import TiteLiveThings
 from models import Product, BookFormat, LocalProviderEvent, Offer
 from models.local_provider_event import LocalProviderEventType
-from models.pc_object import PcObject
 from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
-from tests.model_creators.provider_creators import activate_provider
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue
+from tests.model_creators.provider_creators import activate_provider
 from tests.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
 
 
@@ -223,7 +222,7 @@ class TiteliveThingsTest:
                                                  date_modified_at_last_provider=datetime(2001, 1, 1),
                                                  last_provider_id=titelive_things_provider.id)
         activate_provider('TiteLiveThings')
-        PcObject.save(product)
+        Repository.save(product)
         titelive_things = TiteLiveThings()
 
         # When
@@ -485,12 +484,12 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
 
         titelive_provider = activate_provider('TiteLiveThings')
-        PcObject.save(titelive_provider)
+        Repository.save(titelive_provider)
         product = create_product_with_thing_type(id_at_providers='9782895026310',
                                                  thing_name='Toto à la playa',
                                                  date_modified_at_last_provider=datetime(2001, 1, 1),
                                                  last_provider_id=titelive_provider.id)
-        PcObject.save(product)
+        Repository.save(product)
 
         titelive_things = TiteLiveThings()
 
@@ -567,7 +566,7 @@ class TiteliveThingsTest:
                                                  thing_name='Toto à la playa',
                                                  date_modified_at_last_provider=datetime(2001, 1, 1),
                                                  last_provider_id=titelive_provider.id)
-        PcObject.save(product)
+        Repository.save(product)
         titelive_things = TiteLiveThings()
 
         # When
@@ -642,7 +641,7 @@ class TiteliveThingsTest:
         offerer = create_offerer(siren='775671464')
         venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
         titelive_provider = activate_provider('TiteLiveThings')
-        PcObject.save(venue)
+        Repository.save(venue)
         product = create_product_with_thing_type(id_at_providers='9782895026310',
                                                  thing_name='Toto à la playa',
                                                  date_modified_at_last_provider=datetime(2001, 1, 1),
@@ -650,7 +649,7 @@ class TiteliveThingsTest:
         offer = create_offer_with_thing_product(venue, product=product)
         stock = create_stock(offer=offer, price=0)
         booking = create_booking(user=user, stock=stock)
-        PcObject.save(product, offer, stock, booking)
+        Repository.save(product, offer, stock, booking)
 
         titelive_things = TiteLiveThings()
 
@@ -917,12 +916,12 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
 
         titelive_provider = activate_provider('TiteLiveThings')
-        PcObject.save(titelive_provider)
+        Repository.save(titelive_provider)
         product = create_product_with_thing_type(id_at_providers='9782895026310',
                                                  thing_name='Presse papier',
                                                  date_modified_at_last_provider=datetime(2001, 1, 1),
                                                  last_provider_id=titelive_provider.id)
-        PcObject.save(product)
+        Repository.save(product)
 
         titelive_things = TiteLiveThings()
 
@@ -994,7 +993,7 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
 
         titelive_provider = activate_provider('TiteLiveThings')
-        PcObject.save(titelive_provider)
+        Repository.save(titelive_provider)
         product = create_product_with_thing_type(id_at_providers='9782895026310',
                                                  thing_name='Presse papier',
                                                  date_modified_at_last_provider=datetime(2001, 1, 1),
@@ -1006,7 +1005,7 @@ class TiteliveThingsTest:
         stock = create_stock(offer=offer, price=0)
         booking = create_booking(user=user, stock=stock)
 
-        PcObject.save(product, offer, booking)
+        Repository.save(product, offer, booking)
 
         titelive_things = TiteLiveThings()
 

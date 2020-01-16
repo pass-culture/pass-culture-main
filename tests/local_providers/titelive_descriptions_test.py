@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 
 from local_providers import TiteLiveThingDescriptions
-from models import PcObject
+from repository.repository import Repository
 from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
 
@@ -17,7 +17,7 @@ class TiteLiveThingDescriptionsTest:
             # Given
             titelive_description_provider = get_provider_by_local_class('TiteLiveThingDescriptions')
             mock_get_files_to_process_from_titelive.return_value = ['Resume191012.zip', 'Resume201012.zip']
-            PcObject.save(titelive_description_provider)
+            Repository.save(titelive_description_provider)
 
             # When
             titelive_description_provider = TiteLiveThingDescriptions()
@@ -46,7 +46,7 @@ class TiteLiveThingDescriptionsTest:
                 '191013'
             }
 
-            PcObject.save(titelive_description_provider)
+            Repository.save(titelive_description_provider)
             titelive_description_provider = TiteLiveThingDescriptions()
 
             # When

@@ -1,8 +1,7 @@
 from models.offer_type import EventType
-from models.pc_object import PcObject
 from sandboxes.scripts.utils.select import remove_every
-from utils.logger import logger
 from tests.model_creators.generic_creators import create_booking
+from utils.logger import logger
 
 RECOMMENDATIONS_WITH_BOOKINGS_REMOVE_RATIO = 3
 RECOMMENDATIONS_WITH_SEVERAL_STOCKS_REMOVE_MODULO = 2
@@ -88,15 +87,15 @@ def create_industrial_bookings(
 
     bookings = bookings_by_name.values()
 
-    PcObject.save(*bookings)
+    Repository.save(*bookings)
 
     used_bookings = [b for b in bookings if b.isUsed]
     for used_booking in used_bookings:
         used_booking.isUsed = False
-    PcObject.save(*used_bookings)
+    Repository.save(*used_bookings)
     for used_booking in used_bookings:
         used_booking.isUsed = True
-    PcObject.save(*used_bookings)
+    Repository.save(*used_bookings)
 
     logger.info('created {} bookings'.format(len(bookings_by_name)))
 

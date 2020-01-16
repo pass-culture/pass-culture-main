@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
-from models import Booking, PcObject
+from models import Booking
+from repository.repository import Repository
 from tests.conftest import TestClient, clean_database
 from tests.model_creators.generic_creators import create_booking, \
     create_deposit, create_offerer, create_user, create_venue
@@ -27,7 +28,7 @@ class Patch:
             stock = create_stock_from_event_occurrence(event_occurrence)
             booking = create_booking(user=user, stock=stock, venue=venue)
             create_deposit(user, amount=500)
-            PcObject.save(booking)
+            Repository.save(booking)
 
             # When
             response = TestClient(app.test_client()) \
@@ -52,7 +53,7 @@ class Patch:
             stock = create_stock_from_event_occurrence(event_occurrence)
             booking = create_booking(user=user, stock=stock, venue=venue)
             create_deposit(user, amount=500)
-            PcObject.save(booking)
+            Repository.save(booking)
 
             # When
             response = TestClient(app.test_client()) \
@@ -70,7 +71,7 @@ class Patch:
             other_user = create_user(email='test2@example.com')
             booking = create_booking(other_user)
             create_deposit(other_user, amount=500)
-            PcObject.save(admin_user, booking)
+            Repository.save(admin_user, booking)
 
             # When
             response = TestClient(app.test_client()) \
@@ -90,7 +91,7 @@ class Patch:
 
             booking = create_booking(other_user)
             create_deposit(other_user, amount=500)
-            PcObject.save(admin_user, booking)
+            Repository.save(admin_user, booking)
 
             # When
             response = TestClient(app.test_client()) \
@@ -108,7 +109,7 @@ class Patch:
             user = create_user()
             booking = create_booking(user=user, is_used=True)
             create_deposit(user, amount=500)
-            PcObject.save(booking)
+            Repository.save(booking)
 
             # When
             response = TestClient(app.test_client()) \
@@ -126,7 +127,7 @@ class Patch:
             user = create_user()
             booking = create_booking(user=user, quantity=1)
             create_deposit(user, amount=500)
-            PcObject.save(booking)
+            Repository.save(booking)
 
             # When
             response = TestClient(app.test_client()) \
@@ -143,7 +144,7 @@ class Patch:
             user = create_user()
             booking = create_booking(user=user, is_cancelled=True)
             create_deposit(user, amount=500)
-            PcObject.save(booking)
+            Repository.save(booking)
 
             # When
             response = TestClient(app.test_client()) \
@@ -167,7 +168,7 @@ class Patch:
             stock = create_stock_from_event_occurrence(event_occurrence)
             booking = create_booking(user=user, stock=stock, venue=venue)
             create_deposit(user, amount=500)
-            PcObject.save(booking)
+            Repository.save(booking)
 
             # When
             response = TestClient(app.test_client()) \
@@ -185,7 +186,7 @@ class Patch:
             booking = create_booking(other_user)
             user = create_user()
             create_deposit(other_user, amount=500)
-            PcObject.save(user, booking)
+            Repository.save(user, booking)
 
             # When
             response = TestClient(app.test_client()) \
@@ -201,7 +202,7 @@ class Patch:
         def when_the_booking_does_not_exist(self, app):
             # Given
             user = create_user()
-            PcObject.save(user)
+            Repository.save(user)
 
             # When
             response = TestClient(app.test_client()) \

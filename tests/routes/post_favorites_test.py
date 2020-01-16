@@ -1,4 +1,5 @@
-from models import PcObject, Favorite
+from models import Favorite
+from repository.repository import Repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_recommendation, \
     create_mediation, API_URL
@@ -12,7 +13,7 @@ class Post:
         def when_offer_id_is_not_received(self, app):
             # Given
             user = create_user(email='test@email.com')
-            PcObject.save(user)
+            Repository.save(user)
 
             json = {
                 'mediationId': 'DA',
@@ -37,7 +38,7 @@ class Post:
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             mediation = create_mediation(offer, is_active=True)
             recommendation = create_recommendation(offer=offer, user=user, mediation=mediation, is_clicked=False)
-            PcObject.save(recommendation, user)
+            Repository.save(recommendation, user)
 
             json = {
                 'offerId': 'ABCD',
@@ -61,7 +62,7 @@ class Post:
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             mediation = create_mediation(offer, is_active=True)
             recommendation = create_recommendation(offer=offer, user=user, mediation=mediation, is_clicked=False)
-            PcObject.save(recommendation, user)
+            Repository.save(recommendation, user)
 
             json = {
                 'offerId': humanize(offer.id),
@@ -86,7 +87,7 @@ class Post:
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             mediation = create_mediation(offer, is_active=True)
             recommendation = create_recommendation(offer=offer, user=user, mediation=mediation, is_clicked=False)
-            PcObject.save(recommendation, user)
+            Repository.save(recommendation, user)
 
             json = {
                 'offerId': humanize(offer.id),
@@ -114,7 +115,7 @@ class Post:
             venue = create_venue(offerer, postal_code='29100', siret='12345678912341')
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             recommendation = create_recommendation(offer=offer, user=user, is_clicked=False)
-            PcObject.save(recommendation, user)
+            Repository.save(recommendation, user)
 
             json = {
                 'offerId': humanize(offer.id),

@@ -1,9 +1,10 @@
 import pytest
 
-from models import Product, PcObject, Offer, Stock, Mediation, Recommendation, Favorite
+from models import Product, Offer, Stock, Mediation, Recommendation, Favorite
 from repository.product_queries import delete_unwanted_existing_product
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue, \
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+    create_venue, \
     create_recommendation, create_favorite, create_mediation
 from tests.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
 
@@ -14,7 +15,7 @@ class DeleteUnwantedExistingProductTest:
         # Given
         isbn = '1111111111111'
         product = create_product_with_thing_type(id_at_providers=isbn)
-        PcObject.save(product)
+        Repository.save(product)
 
         # When
         delete_unwanted_existing_product('1111111111111')
@@ -27,7 +28,7 @@ class DeleteUnwantedExistingProductTest:
         # Given
         isbn = '1111111111111'
         product = create_product_with_thing_type(id_at_providers=isbn)
-        PcObject.save(product)
+        Repository.save(product)
 
         # When
         delete_unwanted_existing_product('2222222222222')
@@ -44,7 +45,7 @@ class DeleteUnwantedExistingProductTest:
         product = create_product_with_thing_type(id_at_providers=isbn)
         offer = create_offer_with_thing_product(venue, product=product)
         stock = create_stock(offer=offer, price=0)
-        PcObject.save(venue, product, offer, stock)
+        Repository.save(venue, product, offer, stock)
 
         # When
         delete_unwanted_existing_product('1111111111111')
@@ -65,7 +66,7 @@ class DeleteUnwantedExistingProductTest:
         offer = create_offer_with_thing_product(venue, product=product, is_active=True)
         stock = create_stock(offer=offer, price=0)
         booking = create_booking(user=user, is_cancelled=True, stock=stock)
-        PcObject.save(venue, product, offer, stock, booking, user)
+        Repository.save(venue, product, offer, stock, booking, user)
 
         # When
         with pytest.raises(Exception):
@@ -89,7 +90,7 @@ class DeleteUnwantedExistingProductTest:
         mediation = create_mediation(offer=offer)
         recommendation = create_recommendation(offer=offer, user=user, mediation=mediation)
 
-        PcObject.save(venue, product, offer, stock, user, mediation, recommendation)
+        Repository.save(venue, product, offer, stock, user, mediation, recommendation)
 
         # When
         delete_unwanted_existing_product('1111111111111')
@@ -115,7 +116,7 @@ class DeleteUnwantedExistingProductTest:
         recommendation = create_recommendation(offer=offer, user=user, mediation=mediation)
         favorite = create_favorite(mediation=mediation, offer=offer, user=user)
 
-        PcObject.save(venue, product, offer, stock, user, mediation, recommendation, favorite)
+        Repository.save(venue, product, offer, stock, user, mediation, recommendation, favorite)
 
         # When
         delete_unwanted_existing_product('1111111111111')

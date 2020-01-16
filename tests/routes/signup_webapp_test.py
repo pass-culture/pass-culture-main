@@ -4,7 +4,6 @@ from unittest.mock import patch
 from freezegun import freeze_time
 
 from models.feature import FeatureToggle, Feature
-from models.pc_object import PcObject
 from models.user import User
 from routes.serialization import serialize
 from tests.conftest import clean_database, TestClient
@@ -342,7 +341,7 @@ class Post:
             data = BASE_DATA.copy()
             feature = Feature.query.filter_by(name=FeatureToggle.WEBAPP_SIGNUP).first()
             feature.isActive = False
-            PcObject.save(feature)
+            Repository.save(feature)
 
             # When
             response = TestClient(app.test_client()) \

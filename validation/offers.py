@@ -1,5 +1,3 @@
-from flask import Request
-
 from models import RightsType, Offer
 from models.api_errors import ResourceNotFoundError, ApiErrors
 from models.offer_type import ProductType

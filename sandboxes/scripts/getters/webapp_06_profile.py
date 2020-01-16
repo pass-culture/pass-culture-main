@@ -1,4 +1,3 @@
-from models.recommendation import Recommendation
 from models.user import User
 from repository.user_queries import keep_only_webapp_users
 from sandboxes.scripts.utils.helpers import get_user_helper

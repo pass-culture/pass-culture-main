@@ -5,13 +5,13 @@ from typing import List
 from connectors.api_demarches_simplifiees import get_application_details
 from domain.bank_account import format_raw_iban_or_bic
 from domain.demarches_simplifiees import get_all_application_ids_for_procedure
+from local_providers.local_provider import LocalProvider
 from local_providers.providable_info import ProvidableInfo
 from models import BankInformation
-from local_providers.local_provider import LocalProvider
 from models.local_provider_event import LocalProviderEventType
 from repository import offerer_queries
-from repository.local_provider_event_queries import find_latest_sync_end_event
 from repository import venue_queries
+from repository.local_provider_event_queries import find_latest_sync_end_event
 from utils.date import DATE_ISO_FORMAT
 from utils.human_ids import dehumanize
 

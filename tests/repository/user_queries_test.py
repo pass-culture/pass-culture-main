@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, MINYEAR
 
 from models import ImportStatus, ThingType, EventType
-from models import PcObject
+from repository.repository import Repository
 from repository.user_queries import get_all_users_wallet_balances, find_by_civility, \
     find_most_recent_beneficiary_creation_date, count_all_activated_users, count_users_having_booked, \
     count_all_activated_users_by_departement, count_users_having_booked_by_departement_code
@@ -23,7 +23,7 @@ class GetAllUsersWalletBalancesTest:
         stock1 = create_stock(price=20, offer=offer)
         stock2 = create_stock(price=30, offer=offer)
         stock3 = create_stock(price=40, offer=offer)
-        PcObject.save(stock1, stock2, stock3, user1, user2)
+        Repository.save(stock1, stock2, stock3, user1, user2)
 
         _create_balances_for_user2(stock3, user2, venue)
         _create_balances_for_user1(stock1, stock2, stock3, user1, venue)
@@ -44,7 +44,7 @@ class GetAllUsersWalletBalancesTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock3 = create_stock(price=40, offer=offer)
-        PcObject.save(stock3, user1, user2)
+        Repository.save(stock3, user1, user2)
 
         _create_balances_for_user2(stock3, user2, venue)
 
@@ -65,7 +65,7 @@ class GetAllUsersWalletBalancesTest:
         stock1 = create_stock(price=20, offer=offer)
         stock2 = create_stock(price=30, offer=offer)
         stock3 = create_stock(price=40, offer=offer)
-        PcObject.save(stock1, stock2, stock3, user1, user2)
+        Repository.save(stock1, stock2, stock3, user1, user2)
 
         _create_balances_for_user1(stock1, stock2, stock3, user1, venue)
         _create_balances_for_user2(stock3, user2, venue)
@@ -88,7 +88,7 @@ class GetAllUsersWalletBalancesTest:
         stock1 = create_stock(price=20, offer=offer)
         stock2 = create_stock(price=30, offer=offer)
         stock3 = create_stock(price=40, offer=offer)
-        PcObject.save(stock1, stock2, stock3, user1, user2)
+        Repository.save(stock1, stock2, stock3, user1, user2)
 
         _create_balances_for_user1(stock1, stock2, stock3, user1, venue)
         _create_balances_for_user2(stock3, user2, venue)
@@ -109,7 +109,7 @@ class FindByCivilityTest:
                             last_name='DOe')
         user2 = create_user(date_of_birth=datetime(2000, 3, 20), email='jane@test.com', first_name="jaNE",
                             last_name='DOe')
-        PcObject.save(user1, user2)
+        Repository.save(user1, user2)
 
         # when
         users = find_by_civility('john', 'doe', datetime(2000, 5, 1))
@@ -125,7 +125,7 @@ class FindByCivilityTest:
                             last_name='DOe')
         user1 = create_user(date_of_birth=datetime(2000, 5, 1), email='john.b@test.com', first_name="john-bob",
                             last_name='doe')
-        PcObject.save(user1, user2)
+        Repository.save(user1, user2)
 
         # when
         users = find_by_civility('johnbob', 'doe', datetime(2000, 5, 1))
@@ -141,7 +141,7 @@ class FindByCivilityTest:
                             last_name='DOe')
         user1 = create_user(date_of_birth=datetime(2000, 5, 1), email='john.b@test.com', first_name="john bob",
                             last_name='doe')
-        PcObject.save(user1, user2)
+        Repository.save(user1, user2)
 
         # when
         users = find_by_civility('johnbob', 'doe', datetime(2000, 5, 1))
@@ -157,7 +157,7 @@ class FindByCivilityTest:
                             last_name='DOe')
         user1 = create_user(date_of_birth=datetime(2000, 5, 1), email='john.b@test.com', first_name="john bob",
                             last_name='doe')
-        PcObject.save(user1, user2)
+        Repository.save(user1, user2)
 
         # when
         users = find_by_civility('jöhn bób', 'doe', datetime(2000, 5, 1))
@@ -170,7 +170,7 @@ class FindByCivilityTest:
     def test_returns_nothing_if_one_criteria_does_not_match(self, app):
         # given
         user = create_user(date_of_birth=datetime(2000, 5, 1), first_name="Jean", last_name='DOe')
-        PcObject.save(user)
+        Repository.save(user)
 
         # when
         users = find_by_civility('john', 'doe', datetime(2000, 5, 1))
@@ -185,7 +185,7 @@ class FindByCivilityTest:
                             last_name='DOe')
         user2 = create_user(date_of_birth=datetime(2000, 3, 20), email='jane@test.com', first_name="jaNE",
                             last_name='DOe')
-        PcObject.save(user1, user2)
+        Repository.save(user1, user2)
 
         # when
         users = find_by_civility('john', 'doe', datetime(2000, 5, 1))
@@ -214,7 +214,7 @@ class FindMostRecentBeneficiaryCreationDateTest:
         beneficiary_import3 = create_beneficiary_import(user=user3, status=ImportStatus.CREATED, date=three_days_ago,
                                                         demarche_simplifiee_application_id=3)
 
-        PcObject.save(user1, beneficiary_import2, beneficiary_import3)
+        Repository.save(user1, beneficiary_import2, beneficiary_import3)
 
         # when
         most_recent_creation_date = find_most_recent_beneficiary_creation_date()
@@ -227,7 +227,7 @@ class FindMostRecentBeneficiaryCreationDateTest:
         # given
         yesterday = datetime.utcnow() - timedelta(days=1)
         user1 = create_user(date_created=yesterday, email='user1@test.com')
-        PcObject.save(user1)
+        Repository.save(user1)
 
         # when
         most_recent_creation_date = find_most_recent_beneficiary_creation_date()
@@ -242,7 +242,7 @@ class CountAllActivatedUsersTest:
         # Given
         user_activated = create_user(can_book_free_offers=True)
         user_not_activated = create_user(can_book_free_offers=False, email='email2@test.com')
-        PcObject.save(user_activated, user_not_activated)
+        Repository.save(user_activated, user_not_activated)
 
         # When
         number_of_active_users = count_all_activated_users()
@@ -255,7 +255,7 @@ class CountAllActivatedUsersTest:
         # Given
         user_activated = create_user(can_book_free_offers=False)
         user_not_activated = create_user(can_book_free_offers=False, email='email2@test.com')
-        PcObject.save(user_activated, user_not_activated)
+        Repository.save(user_activated, user_not_activated)
 
         # When
         number_of_active_users = count_all_activated_users()
@@ -270,7 +270,7 @@ class CountActivatedUsersByDepartementTest:
         # Given
         user_activated = create_user(can_book_free_offers=True, departement_code='74')
         user_not_activated = create_user(can_book_free_offers=False, email='email2@test.com')
-        PcObject.save(user_activated, user_not_activated)
+        Repository.save(user_activated, user_not_activated)
 
         # When
         number_of_active_users = count_all_activated_users_by_departement('74')
@@ -283,7 +283,7 @@ class CountActivatedUsersByDepartementTest:
         # Given
         user_activated = create_user(can_book_free_offers=False, departement_code='74')
         user_not_activated = create_user(can_book_free_offers=False, email='email2@test.com')
-        PcObject.save(user_activated, user_not_activated)
+        Repository.save(user_activated, user_not_activated)
 
         # When
         number_of_active_users = count_all_activated_users_by_departement('74')
@@ -296,7 +296,7 @@ class CountActivatedUsersByDepartementTest:
         # Given
         user_activated = create_user(can_book_free_offers=True, departement_code='76')
         user_not_activated = create_user(can_book_free_offers=False, email='email2@test.com')
-        PcObject.save(user_activated, user_not_activated)
+        Repository.save(user_activated, user_not_activated)
 
         # When
         number_of_active_users = count_all_activated_users_by_departement('74')
@@ -318,7 +318,7 @@ class CountUsersHavingBookedTest:
         stock2 = create_stock(offer=offer2, price=0)
         booking1 = create_booking(user=user_having_booked, stock=stock1, is_cancelled=False)
         booking2 = create_booking(user=user_having_booked, stock=stock2, is_cancelled=True)
-        PcObject.save(booking1, booking2)
+        Repository.save(booking1, booking2)
 
         # When
         number_of_users_having_booked = count_users_having_booked()
@@ -337,7 +337,7 @@ class CountUsersHavingBookedTest:
         stock = create_stock(offer=offer, price=0)
         booking1 = create_booking(user=user_having_booked1, stock=stock, is_cancelled=True)
         booking2 = create_booking(user=user_having_booked2, stock=stock, is_cancelled=True)
-        PcObject.save(booking1, booking2)
+        Repository.save(booking1, booking2)
 
         # When
         number_of_users_having_booked = count_users_having_booked()
@@ -349,7 +349,7 @@ class CountUsersHavingBookedTest:
     def test_returns_zero_when_no_user_with_booking(self, app):
         # Given
         user = create_user()
-        PcObject.save(user)
+        Repository.save(user)
 
         # When
         number_of_users_having_booked = count_users_having_booked()
@@ -366,7 +366,7 @@ class CountUsersHavingBookedTest:
         offer = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
         stock = create_stock(offer=offer, price=0)
         booking1 = create_booking(user=user_having_booked1, stock=stock, is_cancelled=True)
-        PcObject.save(booking1)
+        Repository.save(booking1)
 
         # When
         number_of_users_having_booked = count_users_having_booked()
@@ -390,7 +390,7 @@ class CountUsersHavingBookedTest:
                               end_datetime=tomorrow + timedelta(hours=3))
         booking1 = create_booking(user=user1, stock=stock1)
         booking2 = create_booking(user=user2, stock=stock2)
-        PcObject.save(booking1, booking2)
+        Repository.save(booking1, booking2)
 
         # When
         number_of_users_having_booked = count_users_having_booked()
@@ -411,7 +411,7 @@ class CountUsersHavingBookedByDepartementTest:
         stock1 = create_stock(offer=offer1, price=0)
         booking1 = create_booking(user=user_having_booked_from_73, stock=stock1)
         booking2 = create_booking(user=user_having_booked_from_32, stock=stock1)
-        PcObject.save(booking1, booking2)
+        Repository.save(booking1, booking2)
 
         # When
         number_of_users_having_booked = count_users_having_booked_by_departement_code('73')
@@ -431,7 +431,7 @@ class CountUsersHavingBookedByDepartementTest:
         stock2 = create_stock(offer=offer2, price=0)
         booking1 = create_booking(user=user_having_booked, stock=stock1, is_cancelled=False)
         booking2 = create_booking(user=user_having_booked, stock=stock2, is_cancelled=True)
-        PcObject.save(booking1, booking2)
+        Repository.save(booking1, booking2)
 
         # When
         number_of_users_having_booked = count_users_having_booked_by_departement_code('73')
@@ -450,7 +450,7 @@ class CountUsersHavingBookedByDepartementTest:
         stock = create_stock(offer=offer, price=0)
         booking1 = create_booking(user=user_having_booked1, stock=stock, is_cancelled=True)
         booking2 = create_booking(user=user_having_booked2, stock=stock, is_cancelled=True)
-        PcObject.save(booking1, booking2)
+        Repository.save(booking1, booking2)
 
         # When
         number_of_users_having_booked = count_users_having_booked_by_departement_code('87')
@@ -462,7 +462,7 @@ class CountUsersHavingBookedByDepartementTest:
     def test_returns_zero_when_no_user_with_booking(self, app):
         # Given
         user = create_user()
-        PcObject.save(user)
+        Repository.save(user)
 
         # When
         number_of_users_having_booked = count_users_having_booked_by_departement_code('73')
@@ -479,7 +479,7 @@ class CountUsersHavingBookedByDepartementTest:
         offer = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
         stock = create_stock(offer=offer, price=0)
         booking1 = create_booking(user=user_having_booked1, stock=stock, is_cancelled=True)
-        PcObject.save(booking1)
+        Repository.save(booking1)
 
         # When
         number_of_users_having_booked = count_users_having_booked_by_departement_code('73')
@@ -500,7 +500,7 @@ class CountUsersHavingBookedByDepartementTest:
         stock2 = create_stock(offer=offer2, price=0)
         booking1 = create_booking(user=user_having_booked1, stock=stock1)
         booking2 = create_booking(user=user_having_booked2, stock=stock2)
-        PcObject.save(booking1, booking2)
+        Repository.save(booking1, booking2)
 
         # When
         number_of_users_having_booked = count_users_having_booked_by_departement_code('87')
@@ -512,7 +512,7 @@ class CountUsersHavingBookedByDepartementTest:
 def _create_balances_for_user2(stock3, user2, venue):
     deposit3 = create_deposit(user2, amount=200)
     booking4 = create_booking(user=user2, is_cancelled=False, is_used=False, quantity=3, stock=stock3, venue=venue)
-    PcObject.save(deposit3, booking4)
+    Repository.save(deposit3, booking4)
 
 
 def _create_balances_for_user1(stock1, stock2, stock3, user1, venue):
@@ -521,4 +521,4 @@ def _create_balances_for_user1(stock1, stock2, stock3, user1, venue):
     booking1 = create_booking(user=user1, is_cancelled=True, is_used=False, quantity=1, stock=stock1, venue=venue)
     booking2 = create_booking(user=user1, is_cancelled=False, is_used=True, quantity=2, stock=stock2, venue=venue)
     booking3 = create_booking(user=user1, is_cancelled=False, is_used=False, quantity=1, stock=stock3, venue=venue)
-    PcObject.save(deposit1, deposit2, booking1, booking2, booking3)
+    Repository.save(deposit1, deposit2, booking1, booking2, booking3)

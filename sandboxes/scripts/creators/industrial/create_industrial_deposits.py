@@ -1,6 +1,5 @@
-from models.pc_object import PcObject
-from utils.logger import logger
 from tests.model_creators.generic_creators import create_deposit
+from utils.logger import logger
 
 
 def create_industrial_deposits(users_by_name):
@@ -19,7 +18,7 @@ def create_industrial_deposits(users_by_name):
 
         deposits_by_name['{} / public / 500'.format(user_name)] = create_deposit(user, amount=500)
 
-    PcObject.save(*deposits_by_name.values())
+    Repository.save(*deposits_by_name.values())
 
     logger.info('created {} deposits'.format(len(deposits_by_name)))
 

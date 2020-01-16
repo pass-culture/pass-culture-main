@@ -1,5 +1,5 @@
 from domain.build_recommendations import move_requested_recommendation_first
-from models import PcObject
+from repository.repository import Repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_recommendation, \
     create_mediation
@@ -25,7 +25,7 @@ class MoveRequestedRecommendationFirstTest:
             create_recommendation(offer2, user=user, mediation=mediation2),
             create_recommendation(offer3, user=user, mediation=mediation3),
         ]
-        PcObject.save(mediation1, mediation2, mediation3, *recommendations)
+        Repository.save(mediation1, mediation2, mediation3, *recommendations)
         requested_recommendation = recommendations[1]
 
         # When
@@ -55,7 +55,7 @@ class MoveRequestedRecommendationFirstTest:
             create_recommendation(offer2, user=user, mediation=mediation2),
             create_recommendation(offer3, user=user, mediation=mediation3),
         ]
-        PcObject.save(mediation1, mediation2, mediation3, *recommendations)
+        Repository.save(mediation1, mediation2, mediation3, *recommendations)
 
         # When
         requested_recommendation = recommendations[3]
@@ -85,7 +85,7 @@ class MoveRequestedRecommendationFirstTest:
             create_recommendation(offer2, user=user, mediation=mediation2),
             create_recommendation(offer3, user=user, mediation=mediation3),
         ]
-        PcObject.save(mediation1, mediation2, mediation3, *recommendations)
+        Repository.save(mediation1, mediation2, mediation3, *recommendations)
 
         # When
         requested_recommendation = recommendations[1]
@@ -120,7 +120,7 @@ class MoveRequestedRecommendationFirstTest:
 
         requested_recommendation = create_recommendation(None, user=user, mediation=tuto_mediation1)
 
-        PcObject.save(mediation1, mediation2, mediation3, *recommendations)
+        Repository.save(mediation1, mediation2, mediation3, *recommendations)
 
         # When
         ordered_recommendations = move_requested_recommendation_first(recommendations, requested_recommendation)
@@ -151,7 +151,7 @@ class MoveRequestedRecommendationFirstTest:
 
         requested_recommendation = create_recommendation(offer2, user=user, mediation=create_mediation(offer2))
 
-        PcObject.save(mediation1, mediation2, mediation3, *recommendations)
+        Repository.save(mediation1, mediation2, mediation3, *recommendations)
 
         # When
         ordered_recommendations = move_requested_recommendation_first(recommendations, requested_recommendation)

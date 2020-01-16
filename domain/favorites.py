@@ -1,4 +1,3 @@
-from typing import List
 from models import Booking, Favorite, Mediation, Offer, User
 
 

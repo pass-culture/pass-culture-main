@@ -1,7 +1,7 @@
 from models import BankInformation, Stock, ThingType
 
 from models.offer import Offer
-from models.offer_type import ProductType, EventType
+from models.offer_type import EventType
 from models.offerer import Offerer
 
 from models.user import User

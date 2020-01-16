@@ -1,12 +1,13 @@
 import uuid
 from decimal import Decimal
 
-from models import PcObject
 from models.payment_status import TransactionStatus, PaymentStatus
+from repository.repository import Repository
 from repository.payment_queries import find_message_checksum, find_error_payments, find_retry_payments, \
     find_payments_by_message, get_payments_by_message_id, find_not_processable_with_bank_information
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, create_deposit, \
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+    create_deposit, \
     create_payment, create_payment_message, create_bank_information
 from tests.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product
 
@@ -18,7 +19,7 @@ class FindMessageChecksumTest:
         # given
         message_id = 'ABCD1234'
         message = create_payment_message(name=message_id)
-        PcObject.save(message)
+        Repository.save(message)
 
         # when
         checksum = find_message_checksum(message_id)
@@ -32,7 +33,7 @@ class FindMessageChecksumTest:
         # given
         message_id = 'ABCD1234'
         message = create_payment_message(name=message_id)
-        PcObject.save(message)
+        Repository.save(message)
 
         # when
         checksum = find_message_checksum('EFGH5678')
@@ -58,7 +59,7 @@ class FindErrorPaymentsTest:
         error_status2.status = TransactionStatus.ERROR
         error_payment2.statuses.append(error_status2)
 
-        PcObject.save(error_payment1, error_payment2, pending_payment, deposit)
+        Repository.save(error_payment1, error_payment2, pending_payment, deposit)
 
         # When
         payments = find_error_payments()
@@ -82,7 +83,7 @@ class FindErrorPaymentsTest:
         sent_status.status = TransactionStatus.SENT
         error_payment.statuses.extend([error_status, sent_status])
 
-        PcObject.save(error_payment, pending_payment, deposit)
+        Repository.save(error_payment, pending_payment, deposit)
 
         # When
         payments = find_error_payments()
@@ -109,7 +110,7 @@ class FindRetryPaymentsTest:
         retry_status2.status = TransactionStatus.RETRY
         retry_payment2.statuses.append(retry_status2)
 
-        PcObject.save(retry_payment1, retry_payment2, pending_payment, deposit)
+        Repository.save(retry_payment1, retry_payment2, pending_payment, deposit)
 
         # When
         payments = find_retry_payments()
@@ -134,7 +135,7 @@ class FindRetryPaymentsTest:
         sent_status.status = TransactionStatus.SENT
         payment.statuses.extend([retry_status, sent_status])
 
-        PcObject.save(payment, pending_payment, deposit)
+        Repository.save(payment, pending_payment, deposit)
 
         # When
         payments = find_retry_payments()
@@ -166,7 +167,7 @@ class FindPaymentsByMessageTest:
             create_payment(booking, offerer, 5, transaction_end_to_end_id=uuid1, payment_message=transaction1)
         ]
 
-        PcObject.save(deposit, *payments)
+        Repository.save(deposit, *payments)
 
         # when
         matching_payments = find_payments_by_message('XML1')
@@ -196,7 +197,7 @@ class FindPaymentsByMessageTest:
             create_payment(booking, offerer, 5, transaction_end_to_end_id=uuid3, payment_message=message3)
         ]
 
-        PcObject.save(deposit, *payments)
+        Repository.save(deposit, *payments)
 
         # when
         matching_payments = find_payments_by_message('unknown message')
@@ -223,8 +224,8 @@ class GeneratePayementsByMessageIdTest:
         payment1 = create_payment(booking1, offerer, 10, payment_message_name="ABCD123")
         payment2 = create_payment(booking2, offerer, 10, payment_message_name="EFGH456")
 
-        PcObject.save(payment1, payment2)
-        PcObject.save(deposit, booking1, booking3, booking4)
+        Repository.save(payment1, payment2)
+        Repository.save(deposit, booking1, booking3, booking4)
 
         # When
         payements_by_id = get_payments_by_message_id('ABCD123')
@@ -246,7 +247,7 @@ class FindNotProcessableWithBankInformationTest:
         not_processable_payment = create_payment(booking, offerer, Decimal(10),
                                                  status=TransactionStatus.NOT_PROCESSABLE,
                                                  iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
-        PcObject.save(not_processable_payment)
+        Repository.save(not_processable_payment)
 
         # When
         payments_to_retry = find_not_processable_with_bank_information()
@@ -266,7 +267,7 @@ class FindNotProcessableWithBankInformationTest:
                                                  status=TransactionStatus.NOT_PROCESSABLE,
                                                  iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
         bank_information = create_bank_information(offerer=offerer)
-        PcObject.save(not_processable_payment, bank_information)
+        Repository.save(not_processable_payment, bank_information)
 
         # When
         payments_to_retry = find_not_processable_with_bank_information()
@@ -286,9 +287,9 @@ class FindNotProcessableWithBankInformationTest:
                                                  status=TransactionStatus.NOT_PROCESSABLE,
                                                  iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
         bank_information = create_bank_information(offerer=offerer)
-        PcObject.save(not_processable_payment, bank_information)
+        Repository.save(not_processable_payment, bank_information)
         not_processable_payment.setStatus(TransactionStatus.SENT)
-        PcObject.save(not_processable_payment)
+        Repository.save(not_processable_payment)
 
         # When
         payments_to_retry = find_not_processable_with_bank_information()
@@ -308,7 +309,7 @@ class FindNotProcessableWithBankInformationTest:
                                                  status=TransactionStatus.NOT_PROCESSABLE,
                                                  iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
         bank_information = create_bank_information(venue=venue)
-        PcObject.save(not_processable_payment, bank_information)
+        Repository.save(not_processable_payment, bank_information)
 
         # When
         payments_to_retry = find_not_processable_with_bank_information()

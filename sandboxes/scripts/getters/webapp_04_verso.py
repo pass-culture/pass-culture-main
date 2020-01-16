@@ -1,12 +1,12 @@
 from models import Mediation, Offer, Stock, User, Product
 from models.recommendation import Recommendation
 from repository.user_queries import keep_only_webapp_users
-from sandboxes.scripts.utils.helpers import get_mediation_helper, \
-                                            get_offer_helper, \
-                                            get_user_helper, \
-                                            get_recommendation_helper
 from sandboxes.scripts.utils.bookings import find_offer_compatible_with_bookings, \
-                                             get_cancellable_bookings_for_user
+    get_cancellable_bookings_for_user
+from sandboxes.scripts.utils.helpers import get_mediation_helper, \
+    get_offer_helper, \
+    get_user_helper, \
+    get_recommendation_helper
 
 
 def get_existing_webapp_user_with_at_least_one_recommendation():

@@ -6,8 +6,10 @@ Create Date: 2019-12-20 16:27:25.904572
 
 """
 from enum import Enum
+
 import sqlalchemy as sa
 from alembic import op
+
 
 # revision identifiers, used by Alembic.
 class FeatureToggle(Enum):

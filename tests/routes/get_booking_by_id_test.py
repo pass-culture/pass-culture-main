@@ -1,4 +1,4 @@
-from models import PcObject
+from repository.repository import Repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue
 from tests.model_creators.specific_creators import create_stock_with_thing_offer, create_offer_with_thing_product
@@ -18,7 +18,7 @@ class Get:
             stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, offer=offer, price=0)
             booking = create_booking(user=user, stock=stock, token='ABCDEF', venue=venue)
 
-            PcObject.save(booking)
+            Repository.save(booking)
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).get(

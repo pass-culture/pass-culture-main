@@ -1,7 +1,8 @@
 import secrets
 from datetime import datetime, timedelta
 
-from models import PcObject, Offerer, Venue, ThingType
+from models import Offerer, Venue, ThingType
+from repository.repository import Repository
 from repository.offerer_queries import find_all_offerers_with_managing_user_information, \
     find_all_offerers_with_managing_user_information_and_venue, \
     find_all_offerers_with_managing_user_information_and_not_virtual_venue, \
@@ -10,7 +11,8 @@ from repository.offerer_queries import find_all_offerers_with_managing_user_info
     count_offerer_by_departement, count_offerer_with_stock_by_departement, find_new_offerer_user_email
 from repository.user_queries import find_all_emails_of_user_offerers_admins
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, create_user_offerer, \
+from tests.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, \
+    create_user_offerer, \
     create_bank_information
 from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_with_thing_offer, \
     create_offer_with_thing_product, create_offer_with_event_product, create_event_occurrence
@@ -23,7 +25,7 @@ class OffererQueriesTest:
         id = 52325
         searched_offerer = create_offerer(idx=id, name="My sweet offerer", siren="123456789")
         other_offerer = create_offerer(siren="987654321")
-        PcObject.save(searched_offerer, other_offerer)
+        Repository.save(searched_offerer, other_offerer)
 
         # When
         offerer = find_by_id(id)
@@ -47,7 +49,7 @@ class CountOffererTest:
         user = create_user()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
-        PcObject.save(user_offerer)
+        Repository.save(user_offerer)
 
         # When
         number_of_offerers = count_offerer()
@@ -59,7 +61,7 @@ class CountOffererTest:
     def test_return_0_if_offerer_without_user_offerer(self, app):
         # Given
         offerer = create_offerer()
-        PcObject.save(offerer)
+        Repository.save(offerer)
 
         # When
         number_of_offerers = count_offerer()
@@ -75,7 +77,7 @@ class CountOffererTest:
         offerer = create_offerer()
         user_offerer1 = create_user_offerer(user1, offerer)
         user_offerer2 = create_user_offerer(user2, offerer)
-        PcObject.save(user_offerer1, user_offerer2)
+        Repository.save(user_offerer1, user_offerer2)
 
         # When
         number_of_offerers = count_offerer()
@@ -100,7 +102,7 @@ class CountOffererByDepartementTest:
         offerer = create_offerer()
         create_venue(offerer, postal_code='37160')
         user_offerer = create_user_offerer(user, offerer)
-        PcObject.save(user_offerer)
+        Repository.save(user_offerer)
 
         # When
         number_of_offerers = count_offerer_by_departement('37')
@@ -117,7 +119,7 @@ class CountOffererByDepartementTest:
         second_venue = create_venue(offerer, postal_code='76130', siret='11111111100002')
         user_offerer = create_user_offerer(user, offerer)
 
-        PcObject.save(user_offerer, first_venue, second_venue)
+        Repository.save(user_offerer, first_venue, second_venue)
 
         # When
         number_of_offerers = count_offerer_by_departement('37')
@@ -132,7 +134,7 @@ class CountOffererByDepartementTest:
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code='37160')
         user_offerer = create_user_offerer(user, offerer)
-        PcObject.save(user_offerer)
+        Repository.save(user_offerer)
 
         # When
         number_of_offerers = count_offerer_by_departement('36')
@@ -150,7 +152,7 @@ class CountOffererByDepartementTest:
         venue2 = create_venue(offerer, postal_code='37160', siret=offerer.siren + '63732')
         user_offerer1 = create_user_offerer(user1, offerer)
         user_offerer2 = create_user_offerer(user2, offerer)
-        PcObject.save(user_offerer1, user_offerer2, venue1, venue2)
+        Repository.save(user_offerer1, user_offerer2, venue1, venue2)
 
         # When
         number_of_offerers = count_offerer_by_departement('37')
@@ -176,7 +178,7 @@ class CountOffererWithStockTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer)
-        PcObject.save(user_offerer, stock)
+        Repository.save(user_offerer, stock)
 
         # When
         number_of_offerers = count_offerer_with_stock()
@@ -191,7 +193,7 @@ class CountOffererWithStockTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer)
-        PcObject.save(offerer, stock)
+        Repository.save(offerer, stock)
 
         # When
         number_of_offerers = count_offerer_with_stock()
@@ -206,7 +208,7 @@ class CountOffererWithStockTest:
         user = create_user()
         user_offerer = create_user_offerer(user, offerer)
 
-        PcObject.save(user_offerer)
+        Repository.save(user_offerer)
 
         # When
         number_of_offerers = count_offerer_with_stock()
@@ -224,7 +226,7 @@ class CountOffererWithStockTest:
         offer = create_offer_with_thing_product(venue)
         stock1 = create_stock(offer=offer)
         stock2 = create_stock(offer=offer)
-        PcObject.save(user_offerer, stock1, stock2)
+        Repository.save(user_offerer, stock1, stock2)
 
         # When
         number_of_offerers = count_offerer_with_stock()
@@ -244,7 +246,7 @@ class CountOffererWithStockTest:
         offer = create_offer_with_thing_product(venue)
         stock1 = create_stock(offer=offer)
         stock2 = create_stock(offer=offer)
-        PcObject.save(user_offerer1, user_offerer2, stock1, stock2)
+        Repository.save(user_offerer1, user_offerer2, stock1, stock2)
 
         # When
         number_of_offerers = count_offerer_with_stock()
@@ -264,7 +266,7 @@ class CountOffererWithStockTest:
         stock1 = create_stock(offer=offer1)
         stock2 = create_stock(offer=offer2)
 
-        PcObject.save(stock1, stock2)
+        Repository.save(stock1, stock2)
 
         # When
         number_of_offerers = count_offerer_with_stock()
@@ -288,7 +290,7 @@ class CountOffererWithStockByDepartementTest:
         venue = create_venue(offerer, postal_code='76214')
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer)
-        PcObject.save(offerer, stock)
+        Repository.save(offerer, stock)
 
         # When
         number_of_offerers = count_offerer_with_stock_by_departement('76')
@@ -304,7 +306,7 @@ class CountOffererWithStockByDepartementTest:
         user = create_user()
         user_offerer = create_user_offerer(user, offerer)
 
-        PcObject.save(user_offerer, venue)
+        Repository.save(user_offerer, venue)
 
         # When
         number_of_offerers = count_offerer_with_stock_by_departement('76')
@@ -322,7 +324,7 @@ class CountOffererWithStockByDepartementTest:
         offer = create_offer_with_thing_product(venue)
         stock1 = create_stock(offer=offer)
         stock2 = create_stock(offer=offer)
-        PcObject.save(user_offerer, stock1, stock2)
+        Repository.save(user_offerer, stock1, stock2)
 
         # When
         number_of_offerers = count_offerer_with_stock_by_departement('76')
@@ -342,7 +344,7 @@ class CountOffererWithStockByDepartementTest:
         offer = create_offer_with_thing_product(venue)
         stock1 = create_stock(offer=offer)
         stock2 = create_stock(offer=offer)
-        PcObject.save(user_offerer1, user_offerer2, stock1, stock2)
+        Repository.save(user_offerer1, user_offerer2, stock1, stock2)
 
         # When
         number_of_offerers = count_offerer_with_stock_by_departement('76')
@@ -367,7 +369,7 @@ class CountOffererWithStockByDepartementTest:
         second_offer = create_offer_with_thing_product(second_venue)
         second_stock = create_stock(offer=second_offer)
 
-        PcObject.save(first_stock, first_user_offerer, second_stock, second_user_offerer)
+        Repository.save(first_stock, first_user_offerer, second_stock, second_user_offerer)
 
         # When
         number_of_offerers = count_offerer_with_stock_by_departement('76')
@@ -392,7 +394,7 @@ class CountOffererWithStockByDepartementTest:
         second_offer = create_offer_with_thing_product(second_venue)
         second_stock = create_stock(offer=second_offer)
 
-        PcObject.save(first_stock, first_user_offerer, second_stock, second_user_offerer)
+        Repository.save(first_stock, first_user_offerer, second_stock, second_user_offerer)
 
         # When
         number_of_offerers = count_offerer_with_stock_by_departement('42')
@@ -412,7 +414,7 @@ class CountOffererWithStockByDepartementTest:
         stock1 = create_stock(offer=offer1)
         stock2 = create_stock(offer=offer2)
 
-        PcObject.save(stock1, stock2)
+        Repository.save(stock1, stock2)
 
         # When
         number_of_offerers = count_offerer_with_stock_by_departement('76')
@@ -436,7 +438,7 @@ def test_find_all_emails_of_user_offerers_admins_returns_list_of_user_emails_hav
     user_offerer_admin_not_validated = create_user_offerer(user_admin_not_validated, offerer,
                                                            validation_token=secrets.token_urlsafe(20), is_admin=True)
     user_offerer_editor = create_user_offerer(user_editor, offerer, is_admin=False)
-    PcObject.save(user_random, user_offerer_admin1, user_offerer_admin2, user_offerer_admin_not_validated,
+    Repository.save(user_random, user_offerer_admin1, user_offerer_admin2, user_offerer_admin_not_validated,
                   user_offerer_editor)
 
     # When
@@ -454,7 +456,7 @@ def test_find_email_of_user_offerer_should_returns_email(
     pro_user = create_user(email='pro@example.com')
     user_offerer = create_user_offerer(pro_user, offerer)
 
-    PcObject.save(pro_user, user_offerer)
+    Repository.save(pro_user, user_offerer)
 
     # When
     result = find_new_offerer_user_email(offerer.id)
@@ -474,7 +476,7 @@ def test_find_all_offerers_with_managing_user_information(app):
     user_offerer2 = create_user_offerer(user_editor1, offerer1, is_admin=False)
     user_offerer3 = create_user_offerer(user_admin1, offerer2, is_admin=True)
     user_offerer4 = create_user_offerer(user_admin2, offerer2, is_admin=True)
-    PcObject.save(user_admin1, user_admin2, user_editor1, offerer1, offerer2,
+    Repository.save(user_admin1, user_admin2, user_editor1, offerer1, offerer2,
                   user_offerer1, user_offerer2, user_offerer3, user_offerer4)
 
     # when
@@ -502,7 +504,7 @@ def test_find_all_offerers_with_managing_user_information_and_venue(app):
     user_offerer2 = create_user_offerer(user_editor1, offerer1, is_admin=False)
     user_offerer3 = create_user_offerer(user_admin1, offerer2, is_admin=True)
     user_offerer4 = create_user_offerer(user_admin2, offerer2, is_admin=True)
-    PcObject.save(venue1, venue2, venue3, user_offerer1, user_offerer2, user_offerer3,
+    Repository.save(venue1, venue2, venue3, user_offerer1, user_offerer2, user_offerer3,
                   user_offerer4)
 
     # when
@@ -529,7 +531,7 @@ def test_find_all_offerers_with_managing_user_information_and_not_virtual_venue(
     user_offerer1 = create_user_offerer(user_admin1, offerer1, is_admin=True)
     user_offerer3 = create_user_offerer(user_admin1, offerer2, is_admin=True)
     user_offerer4 = create_user_offerer(user_admin2, offerer2, is_admin=True)
-    PcObject.save(venue1, venue2, venue3, user_offerer1, user_offerer3, user_offerer4)
+    Repository.save(venue1, venue2, venue3, user_offerer1, user_offerer3, user_offerer4)
 
     # when
     offerers = find_all_offerers_with_managing_user_information_and_not_virtual_venue()
@@ -550,7 +552,7 @@ def test_find_all_offerers_with_venue(app):
     venue1 = create_venue(offerer1, is_virtual=True, siret=None, booking_email='mefa@example.com')
     venue2 = create_venue(offerer2, is_virtual=True, siret=None, booking_email='test@test.test')
     venue3 = create_venue(offerer2, is_virtual=False)
-    PcObject.save(offerer1, offerer2, venue1, venue2, venue3)
+    Repository.save(offerer1, offerer2, venue1, venue2, venue3)
 
     # when
     offerers = find_all_offerers_with_venue()
@@ -571,7 +573,7 @@ def test_get_all_pending_offerers_return_requested_tokens_in_case_only_venue_not
     user_offerer_validated = create_user_offerer(user_validated, offerer_validated)
     venue_not_validated = create_venue(offerer_validated, siret=None, comment="comment because no siret",
                                        validation_token="venue_validation_token")
-    PcObject.save(offerer_validated, user_offerer_validated, user_validated, venue_not_validated)
+    Repository.save(offerer_validated, user_offerer_validated, user_validated, venue_not_validated)
 
     # when
     offerers = find_all_pending_validation()
@@ -596,7 +598,7 @@ def test_get_all_pending_offerers_return_requested_tokens_in_case_only_user_not_
     offerer_validated = create_offerer()
     user_offerer_validated = create_user_offerer(user_not_validated, offerer_validated)
     venue_validated = create_venue(offerer_validated)
-    PcObject.save(offerer_validated, user_offerer_validated, user_not_validated, venue_validated)
+    Repository.save(offerer_validated, user_offerer_validated, user_not_validated, venue_validated)
 
     # when
     offerers = find_all_pending_validation()
@@ -621,7 +623,7 @@ def test_get_all_pending_offerers_return_requested_tokens_in_case_only_user_offe
     user_offerer_not_validated = create_user_offerer(user_validated, offerer_validated,
                                                      validation_token='user_off_token')
     venue_validated = create_venue(offerer_validated)
-    PcObject.save(offerer_validated, user_offerer_not_validated, user_validated, venue_validated)
+    Repository.save(offerer_validated, user_offerer_not_validated, user_validated, venue_validated)
 
     # when
     offerers = find_all_pending_validation()
@@ -645,7 +647,7 @@ def test_get_all_pending_offerers_return_nothing_in_case_only_offerer_not_valida
     offerer_not_validated = create_offerer(validation_token="this_offerer_has_a_token")
     user_offerer_validated = create_user_offerer(user_validated, offerer_not_validated)
     venue_validated = create_venue(offerer_not_validated)
-    PcObject.save(offerer_not_validated, user_offerer_validated, user_validated, venue_validated)
+    Repository.save(offerer_not_validated, user_offerer_validated, user_validated, venue_validated)
 
     # when
     offerers = find_all_pending_validation()
@@ -669,7 +671,7 @@ def test_get_all_pending_offerers_return_empty_list_in_case_all_validated(app):
     offerer_validated = create_offerer()
     user_offerer_validated = create_user_offerer(user_validated, offerer_validated)
     venue_validated = create_venue(offerer_validated)
-    PcObject.save(offerer_validated, user_offerer_validated, user_validated, venue_validated)
+    Repository.save(offerer_validated, user_offerer_validated, user_validated, venue_validated)
 
     # when
     offerers = find_all_pending_validation()
@@ -686,7 +688,7 @@ def test_find_first_by_user_offerer_id_returns_the_first_offerer_that_was_create
     offerer3 = create_offerer(name='offerer2', siren='987654321')
     user_offerer1 = create_user_offerer(user, offerer1)
     user_offerer2 = create_user_offerer(user, offerer2)
-    PcObject.save(user_offerer1, user_offerer2, offerer3)
+    Repository.save(user_offerer1, user_offerer2, offerer3)
 
     # when
     offerer = find_first_by_user_offerer_id(user_offerer1.id)
@@ -704,7 +706,7 @@ def test_find_filtered_offerers_with_sirens_params_return_filtered_offerers(app)
     offerer_123456783 = create_offerer(name="offerer_123456783", siren="123456783")
     offerer_123456784 = create_offerer(name="offerer_123456784", siren="123456784")
 
-    PcObject.save(offerer_123456789, offerer_123456781, offerer_123456782,
+    Repository.save(offerer_123456789, offerer_123456781, offerer_123456782,
                   offerer_123456783, offerer_123456784)
 
     # when
@@ -730,7 +732,7 @@ def test_find_filtered_offerers_with_dpts_param_return_filtered_offerers(app):
     offerer_973 = create_offerer(postal_code="97393", siren="123456786")
     offerer_2A = create_offerer(postal_code="2A793", siren="123456787")
 
-    PcObject.save(offerer_93, offerer_67, offerer_34, offerer_00, offerer_01, offerer_78,
+    Repository.save(offerer_93, offerer_67, offerer_34, offerer_00, offerer_01, offerer_78,
                   offerer_973, offerer_2A)
 
     # When
@@ -754,7 +756,7 @@ def test_find_filtered_offerers_with_zipcodes_param_return_filtered_offerers(app
     offerer_67000 = create_offerer(postal_code="67000", siren="123456781")
     offerer_34758 = create_offerer(postal_code="34758", siren="123456782")
 
-    PcObject.save(offerer_93125, offerer_67000, offerer_34758)
+    Repository.save(offerer_93125, offerer_67000, offerer_34758)
 
     # When
     query_with_zipcodes = find_filtered_offerers(zip_codes=['93125', '34758'])
@@ -774,7 +776,7 @@ def test_find_filtered_offerers_with_date_params_return_filtered_offerers(app):
     offerer_before_date_range = create_offerer(siren="123456784", date_created=datetime(2017, 7, 15))
     offerer_after_date_range = create_offerer(siren="123456785", date_created=datetime(2018, 12, 15))
 
-    PcObject.save(offerer_in_date_range, offerer_20180701, offerer_20180801,
+    Repository.save(offerer_in_date_range, offerer_20180701, offerer_20180801,
                   offerer_before_date_range, offerer_after_date_range)
 
     # When
@@ -795,7 +797,7 @@ def test_find_filtered_offerers_with_has_siren_param_return_filtered_offerers(ap
     offerer_with_siren = create_offerer(siren="123456789")
     offerer_without_siren = create_offerer(siren=None)
 
-    PcObject.save(offerer_with_siren, offerer_without_siren)
+    Repository.save(offerer_with_siren, offerer_without_siren)
 
     # When
     query_no_siren = find_filtered_offerers(has_siren=False)
@@ -811,7 +813,7 @@ def test_find_filtered_offerers_with_is_validated_param_return_filtered_offerers
     offerer_validated = create_offerer(siren="123456789", validation_token=None)
     offerer_not_validated = create_offerer(siren="123456781", validation_token="a_token")
 
-    PcObject.save(offerer_validated, offerer_not_validated)
+    Repository.save(offerer_validated, offerer_not_validated)
 
     # When
     query_only_validated = find_filtered_offerers(is_validated=True)
@@ -827,7 +829,7 @@ def test_find_filtered_offerers_with_is_active_param_return_filtered_offerers(ap
     offerer_active = create_offerer(siren="123456789", is_active=True)
     offerer_not_active = create_offerer(siren="123456781", is_active=False)
 
-    PcObject.save(offerer_active, offerer_not_active)
+    Repository.save(offerer_active, offerer_not_active)
 
     # When
     query_only_active = find_filtered_offerers(is_active=True)
@@ -847,7 +849,7 @@ def test_find_filtered_offerers_with_has_bank_information_param_return_filtered_
                                                id_at_providers=offerer_with_bank_information.siren,
                                                offerer=offerer_with_bank_information)
 
-    PcObject.save(offerer_with_bank_information, offerer_without_bank_information, bank_information)
+    Repository.save(offerer_with_bank_information, offerer_without_bank_information, bank_information)
 
     # When
     query_with_bank_information = find_filtered_offerers(has_bank_information=True)
@@ -874,7 +876,7 @@ def test_find_filtered_offerers_with_True_has_validated_user_param_return_filter
     user_offerer_not_validated_user_1 = create_user_offerer(not_validated_user_1, offerer_with_not_validated_user)
     user_offerer_not_validated_user_2 = create_user_offerer(not_validated_user_2, offerer_with_both)
 
-    PcObject.save(user_offerer_validated_user_1, user_offerer_validated_user_2,
+    Repository.save(user_offerer_validated_user_1, user_offerer_validated_user_2,
                   user_offerer_not_validated_user_1, user_offerer_not_validated_user_2)
 
     # When
@@ -903,7 +905,7 @@ def test_find_filtered_offerers_with_False_has_validated_user_param_return_filte
     user_offerer_not_validated_user_1 = create_user_offerer(not_validated_user_1, offerer_with_not_validated_user)
     user_offerer_not_validated_user_2 = create_user_offerer(not_validated_user_2, offerer_with_both)
 
-    PcObject.save(user_offerer_validated_user_1, user_offerer_validated_user_2,
+    Repository.save(user_offerer_validated_user_1, user_offerer_validated_user_2,
                   user_offerer_not_validated_user_1, user_offerer_not_validated_user_2)
 
     # When
@@ -925,7 +927,7 @@ def test_find_filtered_offerers_with_True_has_not_virtual_venue_param_return_fil
     virtual_venue_2 = create_venue(offerer_with_both_virtual_and_not_virtual_venue, is_virtual=True, siret=None)
     not_virtual_venue = create_venue(offerer_with_both_virtual_and_not_virtual_venue)
 
-    PcObject.save(virtual_venue_1, virtual_venue_2, not_virtual_venue)
+    Repository.save(virtual_venue_1, virtual_venue_2, not_virtual_venue)
 
     # When
     query_with_not_virtual = find_filtered_offerers(has_not_virtual_venue=True)
@@ -945,7 +947,7 @@ def test_find_filtered_offerers_with_False_has_not_virtual_venue_param_return_fi
     virtual_venue_2 = create_venue(offerer_with_both_virtual_and_not_virtual_venue, is_virtual=True, siret=None)
     not_virtual_venue = create_venue(offerer_with_both_virtual_and_not_virtual_venue)
 
-    PcObject.save(virtual_venue_1, virtual_venue_2, not_virtual_venue)
+    Repository.save(virtual_venue_1, virtual_venue_2, not_virtual_venue)
 
     # When
     query_only_virtual = find_filtered_offerers(has_not_virtual_venue=False)
@@ -971,7 +973,7 @@ def test_find_filtered_offerers_with_True_has_validated_venue_param_return_filte
     venue_with_validated_venue_2 = create_venue(offerer_with_both,
                                                 siret="12345678912344")
 
-    PcObject.save(venue_with_not_validated_venue_1, venue_with_validated_venue_1,
+    Repository.save(venue_with_not_validated_venue_1, venue_with_validated_venue_1,
                   venue_with_not_validated_venue_2, venue_with_validated_venue_2)
 
     # When
@@ -999,7 +1001,7 @@ def test_find_filtered_offerers_with_False_has_validated_venue_param_return_filt
     venue_with_validated_venue_2 = create_venue(offerer_with_both,
                                                 siret="12345678912344")
 
-    PcObject.save(venue_with_not_validated_venue_1, venue_with_validated_venue_1,
+    Repository.save(venue_with_not_validated_venue_1, venue_with_validated_venue_1,
                   venue_with_not_validated_venue_2, venue_with_validated_venue_2)
 
     # When
@@ -1032,7 +1034,7 @@ def test_find_filtered_offerers_with_True_has_venue_with_siret_param_return_filt
     venue_with_no_siret_virtual_2 = create_venue(offerer_with_both_virtual,
                                                  siret=None, is_virtual=True)
 
-    PcObject.save(venue_with_no_siret_comment_1, venue_with_no_siret_virtual_1, venue_with_siret_1,
+    Repository.save(venue_with_no_siret_comment_1, venue_with_no_siret_virtual_1, venue_with_siret_1,
                   venue_with_siret_2, venue_with_siret_3, venue_with_no_siret_comment_2,
                   venue_with_no_siret_virtual_2)
 
@@ -1067,7 +1069,7 @@ def test_find_filtered_offerers_with_False_has_venue_with_siret_param_return_fil
                                                  siret=None, comment="No more siret :/")
     venue_with_no_siret_virtual_2 = create_venue(offerer_with_both_virtual, siret=None, is_virtual=True)
 
-    PcObject.save(venue_with_no_siret_comment_1, venue_with_no_siret_virtual_1, venue_with_siret_1,
+    Repository.save(venue_with_no_siret_comment_1, venue_with_no_siret_virtual_1, venue_with_siret_1,
                   venue_with_siret_2, venue_with_siret_3, venue_with_no_siret_comment_2,
                   venue_with_no_siret_virtual_2)
 
@@ -1098,7 +1100,7 @@ def test_find_filtered_offerers_with_True_has_validated_user_offerer_param_retur
                                                        validation_token="a_token")
     user_offerer_not_validated_2 = create_user_offerer(user_2, offerer_with_both, validation_token="another_token")
 
-    PcObject.save(user_offerer_validated_1, user_offerer_validated_2,
+    Repository.save(user_offerer_validated_1, user_offerer_validated_2,
                   user_offerer_not_validated_1, user_offerer_not_validated_2)
 
     # When
@@ -1126,7 +1128,7 @@ def test_find_filtered_offerers_with_False_has_validated_user_offerer_param_retu
                                                        validation_token="a_token")
     user_offerer_not_validated_2 = create_user_offerer(user_2, offerer_with_both, validation_token="another_token")
 
-    PcObject.save(user_offerer_validated_1, user_offerer_validated_2, user_offerer_not_validated_1,
+    Repository.save(user_offerer_validated_1, user_offerer_validated_2, user_offerer_not_validated_1,
                   user_offerer_not_validated_2)
 
     # When
@@ -1208,7 +1210,7 @@ def test_find_filtered_offerers_with_offer_status_with_VALID_param_return_filter
                                                                    booking_limit_date=datetime.utcnow() + timedelta(
                                                                        days=3))
 
-    PcObject.save(venue_without_offer,
+    Repository.save(venue_without_offer,
                   valid_stock, expired_stock, soft_deleted_thing_stock,
                   expired_booking_limit_date_event_stock,
                   valid_booking_limit_date_event_stock, soft_deleted_event_stock, not_available_event_stock)
@@ -1292,7 +1294,7 @@ def test_find_filtered_offerers_with_offer_status_with_EXPIRED_param_return_filt
                                                                    booking_limit_date=datetime.utcnow() + timedelta(
                                                                        days=3))
 
-    PcObject.save(venue_without_offer,
+    Repository.save(venue_without_offer,
                   valid_stock, expired_stock, soft_deleted_thing_stock,
                   expired_booking_limit_date_event_stock,
                   valid_booking_limit_date_event_stock, soft_deleted_event_stock, not_available_event_stock)
@@ -1376,7 +1378,7 @@ def test_find_filtered_offerers_with_offer_status_with_WITHOUT_param_return_filt
                                                                    booking_limit_date=datetime.utcnow() + timedelta(
                                                                        days=3))
 
-    PcObject.save(venue_without_offer,
+    Repository.save(venue_without_offer,
                   valid_stock, expired_stock, soft_deleted_thing_stock,
                   expired_booking_limit_date_event_stock,
                   valid_booking_limit_date_event_stock, soft_deleted_event_stock, not_available_event_stock)
@@ -1460,7 +1462,7 @@ def test_find_filtered_offerers_with_offer_status_with_ALL_param_return_filtered
                                                                    booking_limit_date=datetime.utcnow() + timedelta(
                                                                        days=3))
 
-    PcObject.save(venue_without_offer,
+    Repository.save(venue_without_offer,
                   valid_stock, expired_stock, soft_deleted_thing_stock,
                   expired_booking_limit_date_event_stock,
                   valid_booking_limit_date_event_stock, soft_deleted_event_stock, not_available_event_stock)
@@ -1509,7 +1511,7 @@ def test_find_filtered_offerers_with_offer_status_with_ALL_param_and_False_has_n
     offer_4 = create_offer_with_thing_product(virtual_venue_with_offer_4, url='http://url.com')
     offer_5 = create_offer_with_thing_product(venue_with_offer_5, url=None)
 
-    PcObject.save(offer_1, offer_2, offer_3, offer_4, offer_5, virtual_venue_without_offer_1,
+    Repository.save(offer_1, offer_2, offer_3, offer_4, offer_5, virtual_venue_without_offer_1,
                   virtual_venue_without_offer_2,
                   venue_without_offer_2, venue_without_offer_4, virtual_venue_without_offer_5)
 
@@ -1555,7 +1557,7 @@ def test_find_filtered_offerers_with_offer_status_with_ALL_param_and_True_has_no
     offer_4 = create_offer_with_thing_product(virtual_venue_with_offer_4, url='http://url.com')
     offer_5 = create_offer_with_event_product(venue_with_offer_5)
 
-    PcObject.save(offer_1, offer_2, offer_3, offer_4, offer_5, virtual_venue_without_offer_1,
+    Repository.save(offer_1, offer_2, offer_3, offer_4, offer_5, virtual_venue_without_offer_1,
                   virtual_venue_without_offer_2,
                   venue_without_offer_2, venue_without_offer_4, virtual_venue_without_offer_5)
 
@@ -1588,7 +1590,7 @@ def test_find_filtered_offerers_with_default_param_return_all_offerers(app):
                                                id_at_providers=offerer_with_bank_information.siren,
                                                offerer=offerer_with_bank_information)
 
-    PcObject.save(bank_information)
+    Repository.save(bank_information)
 
     offerer_not_active = create_offerer(siren="123456772", is_active=False)
 
@@ -1596,7 +1598,7 @@ def test_find_filtered_offerers_with_default_param_return_all_offerers(app):
     virtual_venue_2 = create_venue(offerer_with_both_venues, siret=None, is_virtual=True)
     not_virtual_venue = create_venue(offerer_with_both_venues)
 
-    PcObject.save(offerer_67, offerer_34000, offerer_with_siren, offerer_without_siren, offerer_with_no_venue,
+    Repository.save(offerer_67, offerer_34000, offerer_with_siren, offerer_without_siren, offerer_with_no_venue,
                   offerer_with_only_virtual_venue, offerer_with_both_venues, offerer_not_validated,
                   offerer_with_bank_information,
                   offerer_not_active, virtual_venue_1, virtual_venue_2, not_virtual_venue)
@@ -1651,7 +1653,7 @@ def test_find_filtered_offerers_with_one_keyword_at_venue_public_name_level(app)
     offer_4 = create_offer_with_thing_product(virtual_venue_with_offer_4, url='http://url.com')
     offer_5 = create_offer_with_event_product(venue_with_offer_5)
 
-    PcObject.save(offer_1, offer_2, offer_3, offer_4, offer_5,
+    Repository.save(offer_1, offer_2, offer_3, offer_4, offer_5,
                   virtual_venue_without_offer_1, virtual_venue_without_offer_2, virtual_venue_without_offer_5,
                   venue_without_offer_2, venue_without_offer_4)
 
@@ -1701,7 +1703,7 @@ def test_find_filtered_offerers_with_one_partial_keyword_at_venue_public_name_le
     offer_4 = create_offer_with_thing_product(virtual_venue_with_offer_4, url='http://url.com')
     offer_5 = create_offer_with_event_product(venue_with_offer_5)
 
-    PcObject.save(offer_1, offer_2, offer_3, offer_4, offer_5,
+    Repository.save(offer_1, offer_2, offer_3, offer_4, offer_5,
                   virtual_venue_without_offer_1, virtual_venue_without_offer_2, virtual_venue_without_offer_5,
                   venue_without_offer_2, venue_without_offer_4)
 
@@ -1751,7 +1753,7 @@ def test_find_filtered_offerers_with_several_keywords_at_venue_public_name_level
     offer_4 = create_offer_with_thing_product(virtual_venue_with_offer_4, url='http://url.com')
     offer_5 = create_offer_with_event_product(venue_with_offer_5)
 
-    PcObject.save(offer_1, offer_2, offer_3, offer_4, offer_5,
+    Repository.save(offer_1, offer_2, offer_3, offer_4, offer_5,
                   virtual_venue_without_offer_1, virtual_venue_without_offer_2, virtual_venue_without_offer_5,
                   venue_without_offer_2, venue_without_offer_4)
 
@@ -1801,7 +1803,7 @@ def test_find_filtered_offerers_with_several_partial_keywords_at_venue_public_na
     offer_4 = create_offer_with_thing_product(virtual_venue_with_offer_4, url='http://url.com')
     offer_5 = create_offer_with_event_product(venue_with_offer_5)
 
-    PcObject.save(offer_1, offer_2, offer_3, offer_4, offer_5,
+    Repository.save(offer_1, offer_2, offer_3, offer_4, offer_5,
                   virtual_venue_without_offer_1, virtual_venue_without_offer_2, virtual_venue_without_offer_5,
                   venue_without_offer_2, venue_without_offer_4)
 

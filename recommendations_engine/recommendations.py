@@ -5,7 +5,7 @@ from typing import Dict, List
 import dateutil.parser
 
 from domain.types import get_active_product_type_values_from_sublabels
-from models import Recommendation, Mediation, PcObject, User, DiscoveryView, Offer
+from models import Recommendation, Mediation, User, DiscoveryView, Offer
 from models.db import db
 from recommendations_engine import get_offers_for_recommendations_discovery
 from repository import mediation_queries
@@ -30,7 +30,7 @@ def give_requested_recommendation_to_user(user, offer_id, mediation_id):
         if recommendation is None:
             with db.session.no_autoflush:
                 recommendation = _create_recommendation_from_ids(user, offer_id, mediation_id=mediation_id)
-            PcObject.save(recommendation)
+            Repository.save(recommendation)
             logger.debug(lambda: 'Creating Recommendation with offer_id=%s mediation_id=%s' % (offer_id, mediation_id))
 
     return recommendation
@@ -67,7 +67,7 @@ def create_recommendations_for_discovery(user: User, pagination_params: Dict, li
             )
             inserted_tuto_mediations += 1
         recommendations.append(_create_recommendation(user, offer))
-    PcObject.save(*recommendations)
+    Repository.save(*recommendations)
     return recommendations
 
 
@@ -81,7 +81,7 @@ def _create_tuto_mediation_if_non_existent_for_user(user: User, tuto_mediation: 
     recommendation = Recommendation()
     recommendation.user = user
     recommendation.mediation = tuto_mediation
-    PcObject.save(recommendation)
+    Repository.save(recommendation)
 
 
 def _create_recommendation_from_ids(user, offer_id, mediation_id=None):
@@ -142,7 +142,7 @@ def create_recommendations_for_search(user, **kwargs):
         recommendation.search = search
         recommendations.append(recommendation)
 
-    PcObject.save(*recommendations)
+    Repository.save(*recommendations)
     return recommendations
 
 

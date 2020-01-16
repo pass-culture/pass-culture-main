@@ -1,4 +1,4 @@
-from models import PcObject
+from repository.repository import Repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
     create_mediation
@@ -17,9 +17,9 @@ class Get:
             offer = create_offer_with_event_product(venue)
             user_offerer = create_user_offerer(user, offerer)
             mediation = create_mediation(offer)
-            PcObject.save(mediation)
-            PcObject.save(offer)
-            PcObject.save(user, venue, offerer, user_offerer)
+            Repository.save(mediation)
+            Repository.save(offer)
+            Repository.save(user, venue, offerer, user_offerer)
 
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
@@ -37,7 +37,7 @@ class Get:
         def when_the_mediation_does_not_exist(self, app):
             # given
             user = create_user()
-            PcObject.save(user)
+            Repository.save(user)
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when

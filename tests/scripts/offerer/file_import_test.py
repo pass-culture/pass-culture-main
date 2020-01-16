@@ -1,8 +1,8 @@
-import pytest
-
-from freezegun import freeze_time
 from datetime import datetime, timedelta
 from unittest.mock import Mock, patch
+
+import pytest
+from freezegun import freeze_time
 
 from models import User, UserOfferer, Offerer
 from scripts.offerer.file_import import fill_user_from, \
@@ -14,6 +14,7 @@ from scripts.offerer.file_import import fill_user_from, \
     OffererNotCreatedException
 from tests.model_creators.generic_creators import create_user, create_offerer
 from utils.token import random_token
+
 
 class IterateRowForUserOfferersTest:
     @patch('scripts.offerer.file_import.create_activated_user_offerer')

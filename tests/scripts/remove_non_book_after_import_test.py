@@ -2,10 +2,11 @@ import os
 from pathlib import Path
 from unittest.mock import patch
 
-from models import Product, PcObject, Offer
+from models import Product, Offer
 from scripts.remove_non_book_after_import import delete_product_from_isbn_file, read_isbn_from_file
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+    create_venue
 from tests.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
 
 
@@ -24,7 +25,7 @@ def test_remove_only_unwanted_book(read_isbn_from_file_mock, app):
         '4567890987652',
         '0987467896549'
     ]
-    PcObject.save(product1, product2)
+    Repository.save(product1, product2)
 
     # When
     delete_product_from_isbn_file('mon_fichier_isbns.txt')
@@ -45,7 +46,7 @@ def test_should_not_delete_product_with_bookings_and_deactivate_associated_offer
     offer = create_offer_with_thing_product(venue, product=product, is_active=True)
     stock = create_stock(offer=offer, price=0)
     booking = create_booking(user=user, stock=stock)
-    PcObject.save(venue, product, offer, stock, booking, user)
+    Repository.save(venue, product, offer, stock, booking, user)
 
     read_isbn_from_file_mock.return_value = [
         '9876543211231',
@@ -53,7 +54,7 @@ def test_should_not_delete_product_with_bookings_and_deactivate_associated_offer
         '4567890987652',
         '0987467896549'
     ]
-    PcObject.save(product)
+    Repository.save(product)
 
     # When
     delete_product_from_isbn_file('mon_fichier_isbns.txt')

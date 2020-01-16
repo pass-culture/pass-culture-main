@@ -1,4 +1,5 @@
 from itertools import chain
+
 from flask import current_app as app
 from flask_login import current_user, login_required
 

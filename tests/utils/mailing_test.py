@@ -6,12 +6,14 @@ from bs4 import BeautifulSoup
 from freezegun import freeze_time
 
 from domain.user_emails import _build_recipients_list
-from models import PcObject, ThingType
+from models import ThingType
 from models.db import db
 from models.email import Email, EmailStatus
+from repository.repository import Repository
 from tests.conftest import clean_database, mocked_mail
 from tests.files.api_entreprise import MOCKED_SIREN_ENTREPRISES_API_RETURN
-from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, create_email
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+    create_email
 from tests.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product, \
     create_offer_with_event_product
 from utils.human_ids import humanize
@@ -101,7 +103,7 @@ def test_send_content_and_update_updates_email_when_send_mail_successful(app):
         'Html-part': '<html><body>Hello World</body></html>'
     }
     email = create_email(email_content, status='ERROR', time=datetime(2018, 12, 1, 12, 0, 0))
-    PcObject.save(email)
+    Repository.save(email)
     mocked_response = MagicMock()
     mocked_response.status_code = 200
     app.mailjet_client.send.create.return_value = mocked_response
@@ -130,7 +132,7 @@ def test_send_content_and_update_does_not_update_email_when_send_mail_unsuccessf
         'Html-part': '<html><body>Hello World</body></html>'
     }
     email = create_email(email_content, status='ERROR', time=datetime(2018, 12, 1, 12, 0, 0))
-    PcObject.save(email)
+    Repository.save(email)
     mocked_response = MagicMock()
     mocked_response.status_code = 500
     app.mailjet_client.send.create.return_value = mocked_response
@@ -227,7 +229,7 @@ class BuildPcProOfferLinkTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        PcObject.save(offer)
+        Repository.save(offer)
         offer_id = humanize(offer.id)
         venue_id = humanize(venue.id)
         offerer_id = humanize(offerer.id)

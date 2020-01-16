@@ -1,14 +1,13 @@
 import os
-
 from typing import List, Tuple
 
+from models.payment import Payment
+from repository.payment_queries import get_payments_by_message_id
 from scripts.payment.batch_steps import generate_new_payments, concatenate_payments_with_errors_and_retries, \
     send_transactions, send_payments_report, send_payments_details, send_wallet_balances, \
     set_not_processable_payments_with_bank_information_to_retry
 from utils.logger import logger
 from utils.mailing import parse_email_addresses
-from models.payment import Payment
-from repository.payment_queries import get_payments_by_message_id
 
 
 def generate_and_send_payments(payment_message_id: str = None):

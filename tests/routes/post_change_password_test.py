@@ -1,4 +1,5 @@
-from models import PcObject, User
+from models import User
+from repository.repository import Repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user
 
@@ -9,7 +10,7 @@ class PostChangePassword:
         def when_current_user_changes_password(self, app):
             # given
             user = create_user(email='user@test.com')
-            PcObject.save(user)
+            Repository.save(user)
             data = {'oldPassword': user.clearTextPassword, 'newPassword': 'N3W_p4ssw0rd'}
             user_id = user.id
 
@@ -28,7 +29,7 @@ class PostChangePassword:
         def when_old_password_is_missing(self, app):
             # given
             user = create_user(email='user@test.com')
-            PcObject.save(user)
+            Repository.save(user)
             data = {'newPassword': 'N3W_p4ssw0rd'}
 
             # when
@@ -44,7 +45,7 @@ class PostChangePassword:
         def when_new_password_is_missing(self, app):
             # given
             user = create_user(email='user@test.com')
-            PcObject.save(user)
+            Repository.save(user)
             data = {'oldPassword': '0ldp4ssw0rd'}
 
             # when
@@ -60,7 +61,7 @@ class PostChangePassword:
         def when_new_password_is_not_strong_enough(self, app):
             # given
             user = create_user(email='user@test.com')
-            PcObject.save(user)
+            Repository.save(user)
             data = {'oldPassword': '0ldp4ssw0rd', 'newPassword': 'weakpassword'}
 
             # when

@@ -2,10 +2,9 @@ from postgresql_audit.flask import versioning_manager
 from sqlalchemy import orm
 from sqlalchemy.exc import ProgrammingError
 
-import models
-from models import PcObject
 from models.db import db
 from models.feature import FeatureToggle, Feature
+from repository.repository import Repository
 
 
 def install_database_extensions():
@@ -43,7 +42,7 @@ def install_features():
             }
         )
         features.append(feature)
-    PcObject.save(*features)
+    Repository.save(*features)
 
 
 def create_text_search_configuration_if_not_exists():
