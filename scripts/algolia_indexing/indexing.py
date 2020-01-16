@@ -2,21 +2,12 @@ from typing import List
 
 from redis import Redis
 
-from algolia.orchestrator import orchestrate
-from connectors.redis import get_offer_ids, delete_offer_ids, get_venue_ids, delete_venue_ids
-from models import Offer
-from repository.offer_queries import get_paginated_offer_ids, get_paginated_offer_ids_for_venue_id
+from algolia.orchestrator import orchestrate, orchestrate_from_local_providers
+from connectors.redis import get_offer_ids, delete_offer_ids, get_venue_providers, delete_venue_providers
+from connectors.redis import get_venue_ids, delete_venue_ids
+from repository.offer_queries import get_paginated_offer_ids
+from repository.offer_queries import get_paginated_offer_ids_for_venue_id
 from utils.logger import logger
-
-
-def indexing(limit: int = 1) -> None:
-    offer_ids = []
-    offers = Offer.query.limit(limit)
-
-    for offer in offers:
-        offer_ids.append(offer.id)
-
-    orchestrate(offer_ids=offer_ids)
 
 
 def indexing_offers_in_algolia(client: Redis) -> None:
@@ -43,7 +34,8 @@ def batch_indexing_offers_in_algolia_by_venue_ids(client: Redis, limit: int = 10
 
     delete_venue_ids(client=client)
 
-def batch_indexing_offers_in_algolia(limit: int = 10000) -> None:
+
+def batch_indexing_offers_in_algolia_from_database(limit: int = 10000) -> None:
     page = 0
     has_still_offers = True
 
@@ -58,6 +50,12 @@ def batch_indexing_offers_in_algolia(limit: int = 10000) -> None:
             has_still_offers = False
             logger.info('[ALGOLIA] Indexing offers finished!')
         page += 1
+
+
+def indexing_offers_in_algolia_from_local_providers(client: Redis) -> None:
+    venue_providers = get_venue_providers(client=client)
+    orchestrate_from_local_providers(venue_providers=venue_providers)
+    delete_venue_providers(client=client)
 
 
 def _converter(offer_ids: List[tuple]) -> List[int]:

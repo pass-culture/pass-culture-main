@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 from algolia.api import add_objects, clear_objects, delete_objects
 from algolia.builder import build_object
@@ -27,7 +27,7 @@ def orchestrate(offer_ids: List[int], is_clear: bool = False) -> None:
             indexing_object.append(algolia_object)
             indexing_ids.append(humanize_offer_id)
         else:
-            deleting_object.append(humize_offer_id)
+            deleting_object.append(humanize_offer_id)
             deleting_ids.append(humanize_offer_id)
 
     if len(indexing_object) > 0:
@@ -39,6 +39,6 @@ def orchestrate(offer_ids: List[int], is_clear: bool = False) -> None:
         logger.info(f'[ALGOLIA] Deleting {len(deleting_ids)} objectsID: {deleting_ids}')
 
 
-def handle_indexing_from_local_providers(venue_provider: VenueProvider) -> None:
+def orchestrate_from_local_providers(venue_providers: List[Dict]) -> None:
 
     pass

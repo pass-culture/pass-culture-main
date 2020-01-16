@@ -77,7 +77,7 @@ def add_venue_provider_to_redis(client: Redis, venue_provider: Dict) -> None:
         logger.error(f'[REDIS] {error}')
 
 
-def get_venue_providers(client: Redis) -> List[str]:
+def get_venue_providers(client: Redis) -> List[dict]:
     try:
         venue_providers_as_string = client.lrange(REDIS_LIST_VENUE_PROVIDERS_NAME, 0, REDIS_VENUES_PROVIDERS_LRANGE_END)
         venue_providers_as_dict = list(

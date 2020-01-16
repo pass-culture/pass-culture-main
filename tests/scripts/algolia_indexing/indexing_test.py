@@ -1,8 +1,8 @@
 from unittest.mock import patch, MagicMock, call
 
 from models import PcObject
-from scripts.algolia_indexing.indexing import indexing_offers_in_algolia, batch_indexing_offers_in_algolia, \
-    batch_indexing_offers_in_algolia_by_venue_ids
+from scripts.algolia_indexing.indexing import indexing_offers_in_algolia, batch_indexing_offers_in_algolia_by_venue_ids, \
+    batch_indexing_offers_in_algolia_from_database, indexing_offers_in_algolia_from_local_providers
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue
 from tests.model_creators.specific_creators import create_offer_with_event_product
@@ -37,7 +37,7 @@ class BatchIndexingOffersTest:
         PcObject.save(offer)
 
         # When
-        batch_indexing_offers_in_algolia(limit=1)
+        batch_indexing_offers_in_algolia_from_database(limit=1)
 
         # Then
         assert mock_orchestrate.call_count == 1
@@ -57,7 +57,7 @@ class BatchIndexingOffersTest:
         PcObject.save(offer1, offer2)
 
         # When
-        batch_indexing_offers_in_algolia(limit=1)
+        batch_indexing_offers_in_algolia_from_database(limit=1)
 
         # Then
         assert mock_orchestrate.call_count == 2
@@ -100,3 +100,29 @@ class BatchIndexingOffersByVenueIdsTest:
             call(offer_ids=[offer1.id])
         ]
         assert mock_delete_venue_ids.call_count == 1
+
+
+class IndexingOffersInAlgoliaFromLocalProvidersTest:
+    @patch('scripts.algolia_indexing.indexing.delete_venue_providers')
+    @patch('scripts.algolia_indexing.indexing.orchestrate_from_local_providers')
+    @patch('scripts.algolia_indexing.indexing.get_venue_providers', return_value=[
+        {'id': 1, 'lastProviderId': 2, 'venueId': 5},
+        {'id': 2, 'lastProviderId': 6, 'venueId': 7}
+    ])
+    def test_should_trigger_indexing_using_venue_providers_from_redis(self,
+                                                                      mock_get_venue_providers,
+                                                                      mock_orchestrate,
+                                                                      mock_delete_venue_providers):
+        # Given
+        client = MagicMock()
+
+        # When
+        indexing_offers_in_algolia_from_local_providers(client=client)
+
+        # Then
+        mock_get_venue_providers.assert_called_once()
+        mock_orchestrate.assert_called_once_with(venue_providers=[
+            {'id': 1, 'lastProviderId': 2, 'venueId': 5},
+            {'id': 2, 'lastProviderId': 6, 'venueId': 7}
+        ])
+        mock_delete_venue_providers.assert_called_once()
