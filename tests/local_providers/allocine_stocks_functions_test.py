@@ -3,7 +3,7 @@ from datetime import datetime
 import pytest
 
 from local_providers.allocine_stocks import _parse_movie_duration, retrieve_movie_information, \
-    retrieve_showtime_information, _format_poster_url, _get_stock_number_from_id_at_providers, \
+    retrieve_showtime_information, _format_poster_url, \
     _format_date_from_local_timezone_to_utc, _filter_only_digital_and_non_experience_showtimes
 
 
@@ -269,17 +269,6 @@ class FormatPosterUrlTest:
         # Then
         assert formatted_url == "https://fr.web.img4.acsta.net/pictures/19/07/23/15/55/2940058.jpg"
 
-
-class GetStockNumberFromStockIdTest:
-    def test_should_return_the_right_stock_number(self):
-        # Given
-        id_at_provider = 'TW92aWU6Mzc4MzI=-12'
-
-        # When
-        stock_number = _get_stock_number_from_id_at_providers(id_at_provider)
-
-        # Then
-        assert stock_number == 12
 
 
 class FormatDateFromLocalTimezoneToUtcTest:
