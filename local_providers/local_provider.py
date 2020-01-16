@@ -225,7 +225,6 @@ class LocalProvider(Iterator):
             PcObject.save(self.venue_provider)
 
 
-
 def _save_same_thumb_from_thumb_count_to_index(pc_object: Model, thumb_index: int, image_as_bytes: bytes):
     thumb_counter = pc_object.thumbCount if pc_object.thumbCount else 0
     if thumb_index <= thumb_counter:

@@ -54,6 +54,8 @@ def feature_cron_algolia_indexing_offers_enabled() -> bool:
 def feature_cron_algolia_indexing_offers_by_venue_enabled() -> bool:
     return os.environ.get('CRON_ALGOLIA_INDEXING_OFFERS_BY_VENUE', False)
 
+def feature_cron_algolia_indexing_offers_from_local_providers_enabled() -> bool:
+    return os.environ.get('CRON_ALGOLIA_INDEXING_OFFERS_FROM_LOCAL_PROVIDERS', False)
 
 def feature_cron_synchronize_titelive_things() -> bool:
     return os.environ.get('CRON_SYNCHRONIZE_TITELIVE_THINGS', False)
