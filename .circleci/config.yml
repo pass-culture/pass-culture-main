@@ -289,6 +289,7 @@ jobs:
             nvm use "$NODE_VERSION"
             cd webapp
             yarn install
+            ./scripts/build_app.sh "${CIRCLE_BRANCH}"
       - run:
           name: Deploy WEBAPP
           command: |
