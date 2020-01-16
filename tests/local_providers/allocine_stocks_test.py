@@ -16,6 +16,7 @@ from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_venue_provider, \
     create_venue_provider_price_rule
+from tests.model_creators.provider_creators import activate_provider
 from tests.model_creators.specific_creators import create_product_with_event_type, create_offer_with_event_product
 from utils.human_ids import humanize
 
@@ -257,8 +258,7 @@ class UpdateObjectsTest:
         offerer = create_offerer(siren='775671464')
         venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110', booking_email='toto@example.com')
 
-        allocine_provider = get_provider_by_local_class('AllocineStocks')
-        allocine_provider.isActive = True
+        allocine_provider = activate_provider('AllocineStocks')
         venue_provider = create_venue_provider(venue, allocine_provider, venue_id_at_offer_provider=theater_token)
         venue_provider_price_rule = create_venue_provider_price_rule(venue_provider)
         PcObject.save(venue, venue_provider, venue_provider_price_rule)
@@ -1678,14 +1678,14 @@ class UpdateObjectsTest:
             vf_offer = Offer.query.first()
 
             first_stock = created_stock[0]
-            third_stock = created_stock[1]
+            second_stock = created_stock[1]
 
             assert len(created_stock) == 2
             assert first_stock.offerId == vf_offer.id
             assert first_stock.beginningDatetime == datetime(2019, 12, 3, 9, 0)
 
-            assert third_stock.offerId == vf_offer.id
-            assert third_stock.beginningDatetime == datetime(2019, 12, 4, 17, 0)
+            assert second_stock.offerId == vf_offer.id
+            assert second_stock.beginningDatetime == datetime(2019, 12, 4, 17, 0)
 
     @patch('local_providers.allocine_stocks.get_movies_showtimes')
     @patch('local_providers.allocine_stocks.get_movie_poster')

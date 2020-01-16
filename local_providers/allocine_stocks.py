@@ -1,7 +1,7 @@
 import os
 import re
 from datetime import datetime, timedelta
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Union
 
 from dateutil import tz
 from dateutil.parser import parse
@@ -24,23 +24,23 @@ FRENCH_VERSION_SUFFIX = 'VF'
 ORIGINAL_VERSION_SUFFIX = 'VO'
 
 
-def _build_movie_uuid(movie_information: dict, venue: Venue) -> str:
+def _build_movie_uuid(movie_information: Dict, venue: Venue) -> str:
     return f"{movie_information['id']}%{venue.siret}"
 
 
-def _build_french_movie_uuid(movie_information: dict, venue: Venue) -> str:
+def _build_french_movie_uuid(movie_information: Dict, venue: Venue) -> str:
     return f"{_build_movie_uuid(movie_information, venue)}-{FRENCH_VERSION_SUFFIX}"
 
 
-def _build_original_movie_uuid(movie_information: dict, venue: Venue) -> str:
+def _build_original_movie_uuid(movie_information: Dict, venue: Venue) -> str:
     return f"{_build_movie_uuid(movie_information, venue)}-{ORIGINAL_VERSION_SUFFIX}"
 
 
-def _build_showtime_uuid(showtime_details: dict) -> str:
+def _build_showtime_uuid(showtime_details: Dict) -> str:
     return f"{showtime_details['diffusionVersion']}/{showtime_details['startsAt']}"
 
 
-def _build_stock_uuid(movie_information: dict, venue: Venue, showtime_details: dict) -> str:
+def _build_stock_uuid(movie_information: Dict, venue: Venue, showtime_details: Dict) -> str:
     return f"{_build_movie_uuid(movie_information, venue)}#{_build_showtime_uuid(showtime_details)}"
 
 
@@ -95,10 +95,10 @@ class AllocineStocks(LocalProvider):
 
         for showtime_number in range(showtimes_number):
             showtime = self.filtered_movie_showtimes[showtime_number]
-            idAtProviders = _build_stock_uuid(self.movie_information, self.venue, showtime)
+            id_at_providers = _build_stock_uuid(self.movie_information, self.venue, showtime)
 
             stock_providable_information = self.create_providable_info(Stock,
-                                                                       idAtProviders,
+                                                                       id_at_providers,
                                                                        datetime.utcnow())
             providable_information_list.append(stock_providable_information)
 
@@ -248,8 +248,11 @@ def _filter_only_digital_and_non_experience_showtimes(showtimes_information: Lis
                                         showtime['experience'] is None, showtimes_information))
 
 
-def _find_showtime_by_showtime_uuid(showtimes: List[dict], showtime_uuid: str) -> dict:
-    return next(iter(list(filter(lambda showtime: _build_showtime_uuid(showtime) == showtime_uuid, showtimes))), None)
+def _find_showtime_by_showtime_uuid(showtimes: List[Dict], showtime_uuid: str) -> Union[Dict, None]:
+    for showtime in showtimes:
+        if _build_showtime_uuid(showtime) == showtime_uuid:
+            return showtime
+    return None
 
 
 def _format_date_from_local_timezone_to_utc(date: datetime, local_tz: str) -> datetime:
@@ -259,8 +262,8 @@ def _format_date_from_local_timezone_to_utc(date: datetime, local_tz: str) -> da
     return date_in_tz.astimezone(to_zone)
 
 
-def _get_showtimes_uuid_by_idAtProvider(idAtProvider: str):
-    return idAtProvider.split('#')[1]
+def _get_showtimes_uuid_by_idAtProvider(id_at_provider: str):
+    return id_at_provider.split('#')[1]
 
 
 def _build_description(movie_info: Dict) -> str:
