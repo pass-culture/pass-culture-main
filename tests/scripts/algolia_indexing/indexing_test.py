@@ -66,8 +66,7 @@ class BatchIndexingOffersTest:
             call(offer_ids=[offer1.id]),
             call(offer_ids=[offer2.id])
         ]
-    # @patch('scripts.algolia_indexing.indexing.get_paginated_offer_ids_by_venue_id', return_value=[(1, ),(2, )])
-                                                                                        # mock_get_paginated_offer_ids_by_venue_id,
+
 
 class BatchIndexingOffersByVenueIdsTest:
     @patch('scripts.algolia_indexing.indexing.delete_venue_ids')

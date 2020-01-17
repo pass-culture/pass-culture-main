@@ -5,6 +5,7 @@ from flask_login import login_required, current_user
 from connectors.redis import add_venue_id_to_redis
 from domain.admin_emails import send_venue_validation_email
 from domain.offers import update_is_active_status
+from domain.venues import is_algolia_indexing
 from models import PcObject
 from models.user_offerer import RightsType
 from models.venue import Venue
@@ -60,13 +61,15 @@ def create_venue():
 @expect_json_data
 def edit_venue(venueId):
     venue = load_or_404(Venue, venueId)
+    previous_venue = venue
     check_valid_edition(request, venue)
     validate_coordinates(request.json.get('latitude', None), request.json.get('longitude', None))
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
     venue.populate_from_dict(request.json)
     save_venue(venue)
 
-    add_venue_id_to_redis(client=app.redis_client, venue_id=dehumanize(venueId))
+    if is_algolia_indexing(previous_venue, request.json):
+        add_venue_id_to_redis(client=app.redis_client, venue_id=dehumanize(venueId))
 
     return jsonify(as_dict(venue, includes=VENUE_INCLUDES)), 200
 
