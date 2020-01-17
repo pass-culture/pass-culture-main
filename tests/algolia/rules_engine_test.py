@@ -166,3 +166,18 @@ class IsEligibleForIndexingTest:
 
         # Then
         assert is_eligible is True
+
+    @clean_database
+    def test_should_return_true_when_offer_is_eligible_with_no_booking_datetime_limit(self, app):
+        # Given
+        offerer = create_offerer(is_active=True, validation_token=None)
+        venue = create_venue(offerer=offerer, validation_token=None)
+        offer = create_offer_with_thing_product(venue=venue, is_active=True)
+        stock = create_stock(offer=offer, booking_limit_datetime=None, available=1, is_soft_deleted=False)
+        PcObject.save(stock)
+
+        # When
+        is_eligible = is_eligible_for_indexing(offer)
+
+        # Then
+        assert is_eligible is True

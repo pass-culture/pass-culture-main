@@ -36,6 +36,6 @@ def _has_remaining_stocks(stocks: List[Stock]) -> bool:
 
 def _has_stocks_in_future(stocks: List[Stock]) -> bool:
     for stock in stocks:
-        if stock.bookingLimitDatetime and stock.bookingLimitDatetime > datetime.now():
+        if stock.bookingLimitDatetime is None or stock.bookingLimitDatetime > datetime.now():
             return True
     return False
