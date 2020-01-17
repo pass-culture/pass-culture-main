@@ -106,7 +106,7 @@ def send_validation_confirmation_email_to_pro(offerer: Offerer, send_email: Call
     email = retrieve_data_for_new_offerer_validation_email(offerer)
     send_email(data=email)
 
-def send_pro_attachment_validation_by_admin_email(user_offerer: UserOfferer, send_email: Callable[..., bool]):
+def send_attachment_validation_email_to_pro_offerer(user_offerer: UserOfferer, send_email: Callable[..., bool]):
     email = retrieve_data_for_pro_offerer_attachment_validation_email(user_offerer)
     return send_email(data=email)
 

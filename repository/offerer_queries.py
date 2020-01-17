@@ -65,7 +65,7 @@ def find_all_admin_offerer_emails(offerer_id):
                 User).with_entities(User.email)]
 
 
-def find_offerer_user_email(offerer_id):
+def find_new_offerer_user_email(offerer_id):
     return UserOfferer.query \
         .filter_by(offererId=offerer_id) \
         .join(User) \

@@ -48,7 +48,7 @@ class ProOffererAttachmentValidationEmailTest:
     @patch('emails.pro_offerer_attachment_validation.find_user_offerer_email',
            return_value='pro@example.com')
     @patch('emails.pro_offerer_attachment_validation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    def test_email_is_sent_to_pro_user__when_environment_is_production(self,
+    def test_email_is_sent_to_pro_user_when_environment_is_production(self,
                                                                        feature_send_mail_to_users_enabled,
                                                                        format_environment_for_email,
                                                                        find_user_offerer_email,

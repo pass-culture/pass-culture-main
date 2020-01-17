@@ -5,7 +5,7 @@ from flask_login import login_required, current_user
 
 from domain.admin_emails import maybe_send_offerer_validation_email
 from domain.user_emails import send_pro_user_waiting_for_validation_by_admin_email, \
-    send_pro_attachment_validation_by_admin_email
+    send_attachment_validation_email_to_pro_offerer
 from domain.payments import read_message_name_in_message_file, \
     generate_file_checksum
 from domain.user_emails import send_validation_confirmation_email_to_pro, send_venue_validation_confirmation_email
@@ -16,21 +16,21 @@ from repository import user_offerer_queries, offerer_queries, user_queries
 from repository.payment_queries import find_message_checksum
 from utils.config import IS_INTEGRATION
 from utils.mailing import MailServiceException, send_raw_email
-from validation.users import check_validation_token_has_been_already_user
+from validation.users import check_validation_token_has_been_already_used
 from validation.validate import check_valid_token_for_user_validation, check_validation_request, check_venue_found
 
 
 @app.route("/validate/user-offerer/<token>", methods=["GET"])
-def validate_attachment(token):
+def validate_offerer_attachment(token):
     check_validation_request(token)
     user_offerer = UserOfferer.query.filter_by(validationToken=token).first()
-    check_validation_token_has_been_already_user(user_offerer)
+    check_validation_token_has_been_already_used(user_offerer)
 
     user_offerer.validationToken = None
     PcObject.save(user_offerer)
 
     try:
-        send_pro_attachment_validation_by_admin_email(user_offerer, send_raw_email)
+        send_attachment_validation_email_to_pro_offerer(user_offerer, send_raw_email)
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 
@@ -38,10 +38,10 @@ def validate_attachment(token):
 
 
 @app.route("/validate/offerer/<token>", methods=["GET"])
-def validate_offerer(token):
+def validate_new_offerer(token):
     check_validation_request(token)
     offerer = Offerer.query.filter_by(validationToken=token).first()
-    check_validation_token_has_been_already_user(offerer)
+    check_validation_token_has_been_already_used(offerer)
 
     offerer.validationToken = None
     PcObject.save(offerer)
@@ -77,8 +77,10 @@ def validate_user(token):
     user_to_validate.validationToken = None
     PcObject.save(user_to_validate)
     user_offerer = user_offerer_queries.find_one_or_none_by_user_id(user_to_validate.id)
+
     if user_offerer:
         offerer = offerer_queries.find_first_by_user_offerer_id(user_offerer.id)
+
         if IS_INTEGRATION:
             _validate_offerer(offerer, user_offerer)
         else:

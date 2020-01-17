@@ -7,12 +7,14 @@ from domain.user_emails import send_beneficiary_booking_cancellation_email, \
     send_validation_confirmation_email_to_pro, send_batch_cancellation_emails_to_users, \
     send_offerer_bookings_recap_email_after_offerer_cancellation, send_user_validation_email, \
     send_venue_validation_confirmation_email, \
-    send_reset_password_email_with_mailjet_template, send_activation_email, send_reset_password_email
-from models import Offerer
-from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue
+    send_reset_password_email_with_mailjet_template, send_activation_email, send_reset_password_email, \
+    send_attachment_validation_email_to_pro_offerer
+from models import Offerer, PcObject
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, create_user_offerer
 from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_offer_with_thing_product
 from tests.test_utils import create_mocked_bookings
+from tests.conftest import clean_database
 
 
 class SendResetPasswordEmailTest:
@@ -509,3 +511,41 @@ class SendActivationEmailTest:
 
         # then
         assert activation_email is False
+
+
+class SendAttachmentValidationEmailToProOffererTest:
+    @clean_database
+    def test_should_return_true_when_email_data_are_valid(self, app):
+        # given
+        user = create_user(email='bobby@example.net')
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer)
+
+        PcObject.save(user_offerer)
+
+        mocked_send_email = Mock(return_value=True)
+
+        # when
+        attachment_validation_email = send_attachment_validation_email_to_pro_offerer(user_offerer, mocked_send_email)
+
+        # then
+        assert attachment_validation_email is True
+
+    @clean_database
+    def test_should_return_false_when_email_data_are_not_valid(self):
+        # given
+        user = create_user(email='bobby@example.net')
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer)
+
+        PcObject.save(offerer, user_offerer)
+
+        mocked_send_email = Mock(return_value=False)
+
+        # when
+        attachment_validation_email = send_attachment_validation_email_to_pro_offerer(user_offerer, mocked_send_email)
+
+        # then
+        assert attachment_validation_email is False
+
+

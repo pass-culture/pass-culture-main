@@ -93,7 +93,7 @@ def _contact_ok_is_not_checked(contact_ok):
     return contact_ok_is_not_checked_as_bool and contact_ok_is_not_checked_as_str
 
 
-def check_validation_token_has_been_already_user(user):
+def check_validation_token_has_been_already_used(user):
     if user is None:
         errors = ResourceNotFoundError()
         errors.add_error(
