@@ -176,14 +176,14 @@ class Offer(PcObject,
         if self._has_unlimited_stock():
             return False
 
-        bookable_stocks = list(filter(lambda s: s.isBookable, self.stocks))
+        bookable_stocks = list(filter(lambda stock: stock.isBookable, self.stocks))
         total_booked_quantity = 0
 
         for stock in bookable_stocks:
             bookings = filter_bookings_to_compute_remaining_stock(stock)
-            total_booked_quantity += sum(map(lambda b: b.quantity, bookings))
+            total_booked_quantity += sum(map(lambda booking: booking.quantity, bookings))
 
-        available_stocks = sum(map(lambda s: s.available, bookable_stocks))
+        available_stocks = sum(map(lambda stock: stock.available, bookable_stocks))
         return total_booked_quantity >= available_stocks
 
     @property

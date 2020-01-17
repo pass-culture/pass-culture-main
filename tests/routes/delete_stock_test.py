@@ -58,15 +58,15 @@ class Delete:
         @clean_database
         def when_stock_is_deleted_expect_offer_id_to_be_added_to_redis(self, mock_add_to_redis, app):
             # given
-            user = create_user(email='test@email.com')
+            beneficiary = create_user()
             offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
+            create_user_offerer(beneficiary, offerer)
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue)
-            PcObject.save(user, stock, user_offerer)
+            PcObject.save(stock)
 
             # when
-            response = TestClient(app.test_client()).with_auth('test@email.com') \
+            response = TestClient(app.test_client()).with_auth(beneficiary.email) \
                 .delete('/stocks/' + humanize(stock.id))
 
             # then

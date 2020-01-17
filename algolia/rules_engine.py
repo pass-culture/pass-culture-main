@@ -16,7 +16,7 @@ def is_eligible_for_indexing(offer: Offer) -> bool:
             and offerer.validationToken is None \
             and offer.isActive \
             and _has_remaining_stocks(not_deleted_stocks) \
-            and _has_stock_in_future(not_deleted_stocks) \
+            and _has_stocks_in_future(not_deleted_stocks) \
             and venue.validationToken is None:
         return True
 
@@ -34,7 +34,7 @@ def _has_remaining_stocks(stocks: List[Stock]) -> bool:
     return remaining_stocks_quantity > 0
 
 
-def _has_stock_in_future(stocks: List[Stock]) -> bool:
+def _has_stocks_in_future(stocks: List[Stock]) -> bool:
     for stock in stocks:
         if stock.bookingLimitDatetime and stock.bookingLimitDatetime > datetime.now():
             return True

@@ -5,7 +5,8 @@ from models import Stock, Provider
 from models.pc_object import PcObject
 from routes.serialization import serialize
 from tests.conftest import clean_database, TestClient
-from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue, \
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+    create_venue, \
     create_user_offerer
 from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_offer_with_thing_product
@@ -104,15 +105,15 @@ class Patch:
         @clean_database
         def when_stock_is_edited_expect_offer_id_to_be_added_to_redis(self, mock_add_to_redis, app):
             # given
-            user = create_user(email='test@email.com')
+            beneficiary = create_user()
             offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
+            create_user_offerer(beneficiary, offerer)
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=10, available=10)
-            PcObject.save(user, user_offerer, stock)
+            PcObject.save(stock)
 
             # when
-            request_update = TestClient(app.test_client()).with_auth('test@email.com') \
+            request_update = TestClient(app.test_client()).with_auth(beneficiary.email) \
                 .patch('/stocks/' + humanize(stock.id), json={'available': 5, 'price': 20})
 
             # then
