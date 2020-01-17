@@ -120,7 +120,7 @@ def _create_recommendation_from_offers(user: User, reco_view: RecoView, mediatio
     if mediation:
         recommendation.mediation = mediation
     else:
-        recommendation.mediationId = reco_view.mediation_id
+        recommendation.mediationId = reco_view.mediationId
     return recommendation
 
 

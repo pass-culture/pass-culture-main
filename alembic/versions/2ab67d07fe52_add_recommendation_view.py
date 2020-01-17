@@ -1,47 +1,38 @@
-from sqlalchemy import Column, BigInteger, ForeignKey, String, Integer, Boolean
-from sqlalchemy_utils import refresh_materialized_view
+"""add_recommendation_view
 
-from models.db import Model, db
+Revision ID: 2ab67d07fe52
+Revises: 6b76c225cc26
+Create Date: 2020-01-17 14:29:25.391443
+
+"""
+from alembic import op
+
+# revision identifiers, used by Alembic.
+from models import RecoView
+
+revision = '2ab67d07fe52'
+down_revision = '6b76c225cc26'
+branch_labels = None
+depends_on = None
 
 
-class RecoView(Model):
-    __tablename__ = "reco_view"
-
-    venueId = Column(BigInteger, ForeignKey('venue.id'))
-
-    mediationId = Column(BigInteger, ForeignKey('mediation.id'))
-
-    id = Column(BigInteger, primary_key=True)
-
-    type = Column(String(50))
-
-    url = Column(String(255))
-
-    row_number = Column(Integer)
-
-    name = Column(String(140))
-
-    isNational = Column(Boolean)
-
-    @classmethod
-    def create(cls, session):
-
-        session.execute(f"""
-            CREATE MATERIALIZED VIEW IF NOT EXISTS {cls.__tablename__}
+def upgrade():
+    op.execute(f"""
+            CREATE MATERIALIZED VIEW IF NOT EXISTS {RecoView.__tablename__}
                 AS SELECT
                    row_number() OVER () AS row_number,
-                   recommendable_offers.id                           AS id,
-                   recommendable_offers."venueId"                    AS "venueId",
-                   recommendable_offers.type                         AS type,
-                   recommendable_offers.name                         AS name,
-                   recommendable_offers.url                          AS url,
-                   recommendable_offers."isNational"                 AS "isNational",
+                   anon_1.id                           AS id,
+                   anon_1."venueId"                    AS "venueId",
+                   anon_1.type                         AS type,
+                   anon_1.name                         AS name,
+                   anon_1.url                          AS url,
+                   anon_1."isNational"                 AS "isNational",
                    mediation_1.id                      AS "mediationId"
-                FROM (SELECT
+                FROM (SELECT 
                          (SELECT coalesce(sum(criterion."scoreDelta"), 0) AS coalesce_1
                             FROM criterion, offer_criterion
-                           WHERE criterion.id = offer_criterion."criterionId"
-                             AND offer_criterion."offerId" = offer.id) AS criterion_score,
+                           WHERE criterion.id = offer_criterion."criterionId" 
+                             AND offer_criterion."offerId" = offer.id) AS anon_2,
                          offer."isActive" AS "isActive",
                          offer.id AS id,
                          offer."venueId" AS "venueId",
@@ -65,7 +56,7 @@ class RecoView(Model):
                                          AND offer_criterion."offerId" = offer.id
                                      ) DESC,
                                      random()
-                           ) AS partitioned_offers
+                           ) AS anon_3
                       FROM offer
                       WHERE offer.id IN (SELECT DISTINCT ON (offer.id) offer.id
                                           FROM offer
@@ -116,17 +107,12 @@ class RecoView(Model):
                                                                               AND offer_criterion."offerId" = offer.id) DESC,
                                                                              random()
                                                                     )
-                      ) AS recommendable_offers
-                LEFT OUTER JOIN mediation AS mediation_1 ON recommendable_offers.id = mediation_1."offerId"
+                      ) AS anon_1
+                LEFT OUTER JOIN mediation AS mediation_1 ON anon_1.id = mediation_1."offerId"
                             AND mediation_1."isActive"
-                ORDER BY recommendable_offers.partitioned_offers;
-        """)
-        session.execute(f"""
-            CREATE UNIQUE INDEX ON {cls.__tablename__} (row_number);
-        """)
-        session.commit()
+                ORDER BY anon_1.anon_3;
+    """)
 
-    @classmethod
-    def refresh(cls, concurrently=True):
-        refresh_materialized_view(db.session, cls.__tablename__, concurrently)
-        db.session.commit()
+
+def downgrade():
+    op.execute(f"""DROP MATERIALIZED VIEW {RecoView.__tablename__};""")

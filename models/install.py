@@ -27,12 +27,7 @@ def install_models():
 
 def install_materialized_views():
     for materialized_view in models.__materialized_views__:
-        existing_view_in_database = db.session \
-            .execute(f"""SELECT to_regclass('{materialized_view.__tablename__}')""") \
-            .fetchone()
-
-        if not all(existing_view_in_database):
-            materialized_view.create(session=db.session)
+        materialized_view.create(session=db.session)
 
 
 def install_features():

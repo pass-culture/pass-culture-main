@@ -1,4 +1,3 @@
-""" recommendation model """
 from datetime import datetime
 
 from sqlalchemy import BigInteger, \

@@ -81,6 +81,7 @@ with app.app_context():
     if IS_DEV:
         install_database_extensions()
         install_models()
+        install_materialized_views()
         upsert_tuto_mediations()
         install_local_providers()
         install_features()
@@ -90,7 +91,6 @@ with app.app_context():
     install_routes()
     install_documentation()
     install_admin_views(admin, db.session)
-    install_materialized_views()
 
     app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
     app.redis_client = redis.from_url(url=REDIS_URL, decode_responses=True)
