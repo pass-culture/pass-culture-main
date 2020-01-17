@@ -46,6 +46,8 @@ db.init_app(app)
 TITELIVE_STOCKS_PROVIDER_NAME = "TiteLiveStocks"
 ALLOCINE_STOCKS_PROVIDER_NAME = "AllocineStocks"
 
+RECO_VIEW_REFRESH_FREQUENCY = os.environ.get('RECO_VIEW_REFRESH_FREQUENCY', '*')
+
 
 def log_cron(func):
     @wraps(func)
@@ -277,6 +279,7 @@ if __name__ == '__main__':
                           day_of_week='mon', hour='23')
 
     if feature_update_recommendations_view():
-        scheduler.add_job(pc_update_recommendations_view, 'cron', id='pc_update_recommendations_view', minute='*')
+        scheduler.add_job(pc_update_recommendations_view, 'cron', id='pc_update_recommendations_view',
+                          minute=RECO_VIEW_REFRESH_FREQUENCY)
 
     scheduler.start()

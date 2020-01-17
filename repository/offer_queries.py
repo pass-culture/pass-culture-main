@@ -82,11 +82,10 @@ def get_offers_for_recommendation(user: User,
                                   departement_codes: List = None,
                                   limit: int = None,
                                   seen_recommendation_ids: List = []) -> List:
-    # TODO: to optimize
-    favorites = Favorite.query.filter_by(userId=user.id).all()
+    favorites = Favorite.query.filter_by(userId=user.id).with_entities(Favorite.offerId).all()
     favorite_ids = [favorite.offerId for favorite in favorites]
 
-    offers_booked = Offer.query.join(Stock).join(Booking).filter_by(userId=user.id).all()
+    offers_booked = Offer.query.join(Stock).join(Booking).filter_by(userId=user.id).with_entities(Offer.id).all()
     offer_booked_ids = [offer.id for offer in offers_booked]
 
     recos_query = RecoView.query \
@@ -95,12 +94,12 @@ def get_offers_for_recommendation(user: User,
         .filter(RecoView.id.notin_(offer_booked_ids))
 
     if '00' not in departement_codes:
-        venues = Venue.query.filter(Venue.departementCode.in_(departement_codes)).all()
+        venues = Venue.query.filter(Venue.departementCode.in_(departement_codes)).with_entities(Venue.id).all()
         venue_ids = [venue.id for venue in venues]
         recos_query = recos_query \
             .filter(or_(RecoView.venueId.in_(venue_ids), RecoView.isNational == True))
 
-    recos_query = recos_query.order_by(RecoView.row_number)
+    recos_query = recos_query.order_by(RecoView.offerRecommendedPriority)
 
     if limit:
         recos_query = recos_query.limit(limit)
