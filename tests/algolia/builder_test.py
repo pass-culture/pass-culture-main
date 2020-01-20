@@ -47,6 +47,7 @@ class BuildObjectTest:
                 'isbn': None,
                 'label': 'Concert ou festival',
                 'name': 'Event name',
+                'musicType': None,
                 'performer': None,
                 'showType': None,
                 'speaker': None,
@@ -180,6 +181,22 @@ class BuildObjectTest:
 
         # Then
         assert result['offer']['showType'] == 'dance'
+
+    @clean_database
+    def test_should_return_a_music_type_when_exists(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer = create_offer_with_thing_product(venue=venue)
+        offer.extraData = {'musicType': 'jazz'}
+        stock = create_stock(offer=offer)
+        PcObject.save(stock)
+
+        # When
+        result = build_object(offer)
+
+        # Then
+        assert result['offer']['musicType'] == 'jazz'
 
     @clean_database
     def test_should_return_an_empty_date_range_when_offer_is_thing(self, app):
