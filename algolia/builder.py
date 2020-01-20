@@ -18,6 +18,7 @@ def build_object(offer: Offer) -> Dict:
     performer = offer.extraData and offer.extraData.get('performer')
     show_type = offer.extraData and offer.extraData.get('showType')
     music_type = offer.extraData and offer.extraData.get('musicType')
+    music_sub_type = offer.extraData and offer.extraData.get('musicSubType')
 
     object_to_index = {
         'objectID': humanize_offer_id,
@@ -28,6 +29,7 @@ def build_object(offer: Offer) -> Dict:
             'id': humanize_offer_id,
             'isbn': isbn,
             'label': offer.offerType['appLabel'],
+            'musicSubType': music_sub_type,
             'musicType': music_type,
             'name': offer.name,
             'performer': performer,
