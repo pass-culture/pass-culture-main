@@ -13,6 +13,7 @@ def build_object(offer: Offer) -> Dict:
     author = offer.extraData and offer.extraData.get('author')
     stage_director = offer.extraData and offer.extraData.get('stageDirector')
     visa = offer.extraData and offer.extraData.get('visa')
+    isbn = offer.extraData and offer.extraData.get('isbn')
 
     object_to_index = {
         'objectID': humanize_offer_id,
@@ -21,6 +22,7 @@ def build_object(offer: Offer) -> Dict:
             'dateRange': list(date_range),
             'description': offer.description,
             'id': humanize_offer_id,
+            'isbn': isbn,
             'label': offer.offerType['appLabel'],
             'name': offer.name,
             'stageDirector': stage_director,

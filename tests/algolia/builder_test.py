@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from algolia.builder import build_object
-from models import EventType, PcObject, ThingType
+from models import EventType, PcObject
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_stock, create_venue
 from tests.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
@@ -44,6 +44,7 @@ class BuildObjectTest:
                 'dateRange': ['2019-11-01 10:00:00', '2019-12-01 10:00:00'],
                 'description': 'Un lit sous une rivière',
                 'id': 'AM',
+                'isbn': None,
                 'label': 'Concert ou festival',
                 'name': 'Event name',
                 'stageDirector': None,
@@ -112,6 +113,22 @@ class BuildObjectTest:
 
         # Then
         assert result['offer']['visa'] == '123456789'
+
+    @clean_database
+    def test_should_return_an_isbn_when_exists(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer = create_offer_with_thing_product(venue=venue)
+        offer.extraData = {'isbn': '123456789'}
+        stock = create_stock(offer=offer)
+        PcObject.save(stock)
+
+        # When
+        result = build_object(offer)
+
+        # Then
+        assert result['offer']['isbn'] == '123456789'
 
     @clean_database
     def test_should_return_an_empty_date_range_when_offer_is_thing(self, app):
