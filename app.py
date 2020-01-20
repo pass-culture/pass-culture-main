@@ -18,7 +18,7 @@ from models.db import db
 from models.install import install_models, install_features, install_database_extensions
 from repository.feature_queries import feature_request_profiling_enabled
 from routes import install_routes
-from utils.config import IS_DEV, REDIS_URL
+from utils.config import IS_DEV, REDIS_URL, ENV
 from utils.health_checker import read_version_from_file
 from utils.json_encoder import EnumJSONEncoder
 from utils.mailing import get_contact, \
@@ -32,7 +32,7 @@ if IS_DEV is False:
         dsn="https://0470142cf8d44893be88ecded2a14e42@logs.passculture.app/5",
         integrations=[FlaskIntegration()],
         release=read_version_from_file(),
-        environment=os.environ.get('ENV', 'development')
+        environment=ENV
     )
 
 app = Flask(__name__, static_url_path='/static')
