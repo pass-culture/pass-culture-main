@@ -47,6 +47,7 @@ class BuildObjectTest:
                 'isbn': None,
                 'label': 'Concert ou festival',
                 'name': 'Event name',
+                'performer': None,
                 'speaker': None,
                 'stageDirector': None,
                 'thumbUrl': 'http://localhost/storage/thumbs/products/AE',
@@ -146,6 +147,22 @@ class BuildObjectTest:
 
         # Then
         assert result['offer']['speaker'] == 'MEFA'
+
+    @clean_database
+    def test_should_return_a_performer_when_exists(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer = create_offer_with_thing_product(venue=venue)
+        offer.extraData = {'performer': 'MEFA'}
+        stock = create_stock(offer=offer)
+        PcObject.save(stock)
+
+        # When
+        result = build_object(offer)
+
+        # Then
+        assert result['offer']['performer'] == 'MEFA'
 
     @clean_database
     def test_should_return_an_empty_date_range_when_offer_is_thing(self, app):

@@ -15,6 +15,7 @@ def build_object(offer: Offer) -> Dict:
     visa = offer.extraData and offer.extraData.get('visa')
     isbn = offer.extraData and offer.extraData.get('isbn')
     speaker = offer.extraData and offer.extraData.get('speaker')
+    performer = offer.extraData and offer.extraData.get('performer')
 
     object_to_index = {
         'objectID': humanize_offer_id,
@@ -26,6 +27,7 @@ def build_object(offer: Offer) -> Dict:
             'isbn': isbn,
             'label': offer.offerType['appLabel'],
             'name': offer.name,
+            'performer': performer,
             'speaker': speaker,
             'stageDirector': stage_director,
             'thumbUrl': offer.thumb_url,
