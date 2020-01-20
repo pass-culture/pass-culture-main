@@ -419,7 +419,7 @@ def get_paginated_offer_ids(limit: int, page: int) -> List[tuple]:
         .limit(limit)\
         .all()
 
-def get_paginated_offer_ids_by_venue_id(venue_id :int, limit: int, page: int):
+def get_paginated_offer_ids_for_venue_id(venue_id :int, limit: int, page: int) -> List[tuple]:
     return Offer.query\
         .filter(Offer.venueId==venue_id)\
         .with_entities(Offer.id)\

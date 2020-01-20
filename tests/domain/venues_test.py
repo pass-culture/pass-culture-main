@@ -2,8 +2,9 @@ from domain.venues import is_algolia_indexing
 from tests.model_creators.generic_creators import create_offerer, create_venue
 from routes.serialization import as_dict
 
-class isAlgoliaIndexingTest:
-    def when_change_on_name_are_trigger(self):
+
+class IsAlgoliaIndexingTest:
+    def when_changes_on_name_are_triggered(self):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, name='old names')
@@ -17,7 +18,7 @@ class isAlgoliaIndexingTest:
         # Then
         assert result == True
 
-    def when_change_on_public_name_are_trigger(self):
+    def when_changes_on_public_name_are_triggered(self):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, public_name='old name')
@@ -31,7 +32,7 @@ class isAlgoliaIndexingTest:
         # Then
         assert result == True
 
-    def when_change_on_city_are_trigger(self):
+    def when_changes_on_city_are_triggered(self):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, city='old City')
@@ -45,7 +46,7 @@ class isAlgoliaIndexingTest:
         # Then
         assert result == True
 
-    def when_changes_are_not_on_algolia_fields_it_return_false(self):
+    def when_changes_are_not_on_algolia_fields_it_should_return_false(self):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -60,7 +61,7 @@ class isAlgoliaIndexingTest:
         # Then
         assert result == False
 
-    def when_changes_in_payload_are_same_as_previous(self):
+    def when_changes_in_payload_are_same_as_previous_it_should_return_false(self):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, city='old City')

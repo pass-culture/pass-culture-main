@@ -1,8 +1,8 @@
-""" venues """
+import copy
 from flask import current_app as app, jsonify, request
 from flask_login import login_required, current_user
 
-from connectors.redis import add_venue_id_to_redis
+from connectors import redis
 from domain.admin_emails import send_venue_validation_email
 from domain.offers import update_is_active_status
 from domain.venues import is_algolia_indexing
@@ -55,13 +55,12 @@ def create_venue():
 
     return jsonify(as_dict(venue, includes=VENUE_INCLUDES)), 201
 
-
 @app.route('/venues/<venueId>', methods=['PATCH'])
 @login_required
 @expect_json_data
 def edit_venue(venueId):
     venue = load_or_404(Venue, venueId)
-    previous_venue = venue
+    previous_venue = copy.deepcopy(venue)
     check_valid_edition(request, venue)
     validate_coordinates(request.json.get('latitude', None), request.json.get('longitude', None))
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
@@ -69,7 +68,7 @@ def edit_venue(venueId):
     save_venue(venue)
 
     if is_algolia_indexing(previous_venue, request.json):
-        add_venue_id_to_redis(client=app.redis_client, venue_id=dehumanize(venueId))
+        redis.add_venue_id(client=app.redis_client, venue_id=dehumanize(venueId))
 
     return jsonify(as_dict(venue, includes=VENUE_INCLUDES)), 200
 

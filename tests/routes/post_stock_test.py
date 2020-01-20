@@ -12,7 +12,7 @@ from utils.human_ids import dehumanize, humanize
 
 class Post:
     class Returns201:
-        @patch('routes.stocks.add_offer_id_to_redis')
+        @patch('routes.stocks.redis.add_offer_id')
         @clean_database
         def when_user_has_rights(self, mock_add_offer_id_to_redis, app):
             # Given
@@ -37,7 +37,7 @@ class Post:
             stock = Stock.query.filter_by(id=dehumanize(id)).first()
             assert stock.price == 1222
 
-        @patch('routes.stocks.add_offer_id_to_redis')
+        @patch('routes.stocks.redis.add_offer_id')
         @clean_database
         def when_booking_limit_datetime_is_none_for_thing(self, mock_add_offer_id_to_redis, app):
             # Given
@@ -67,7 +67,7 @@ class Post:
             assert stock.price == 0
             assert stock.bookingLimitDatetime is None
 
-        @patch('routes.stocks.add_offer_id_to_redis')
+        @patch('routes.stocks.redis.add_offer_id')
         @clean_database
         def when_stock_is_created_expect_offer_id_to_be_added_to_redis(self, mock_add_offer_id_to_redis, app):
             # Given
