@@ -156,7 +156,7 @@ class Post:
 
             # then
             assert response.status_code == 400
-            assert response.json['thumb'] == ["L'image doit faire 100 ko minimum et 400 * 400 px minimum"]
+            assert response.json['thumb'] == ["L'image doit faire 400 * 400 px minimum"]
 
         @clean_database
         @patch('routes.mediations.PcObject')
