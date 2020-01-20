@@ -3,7 +3,7 @@ from datetime import datetime
 from algolia.builder import build_object
 from models import EventType, PcObject, ThingType
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_mediation, create_offerer, create_stock, create_venue
+from tests.model_creators.generic_creators import create_offerer, create_stock, create_venue
 from tests.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
 
 
@@ -46,6 +46,7 @@ class BuildObjectTest:
                 'id': 'AM',
                 'label': 'Concert ou festival',
                 'name': 'Event name',
+                'stageDirector': None,
                 'thumbUrl': 'http://localhost/storage/thumbs/products/AE',
                 'type': 'Écouter',
             },
@@ -80,22 +81,36 @@ class BuildObjectTest:
         assert result['offer']['author'] == 'MEFA'
 
     @clean_database
+    def test_should_return_a_stage_director_when_exists(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer = create_offer_with_thing_product(venue=venue)
+        offer.extraData = {'stageDirector': 'MEFA'}
+        stock = create_stock(offer=offer)
+        PcObject.save(stock)
+
+        # When
+        result = build_object(offer)
+
+        # Then
+        assert result['offer']['stageDirector'] == 'MEFA'
+
+    @clean_database
     def test_should_not_raise_an_error_when_offer_is_a_book_without_author(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
         offer = create_offer_with_thing_product(venue=venue, thing_type=ThingType.LIVRE_EDITION)
-        offer.extraData['author'] = None
+        offer.extraData = None
         stock = create_stock(offer=offer)
         PcObject.save(stock)
 
         # When
-        try:
-            build_object(offer)
+        result = build_object(offer)
 
         # Then
-        except:
-            assert pytest.fail("Should not fail when book has no author")
+        assert result['offer']['author'] == ''
 
     @clean_database
     def test_should_return_an_empty_date_range_when_offer_is_thing(self, app):

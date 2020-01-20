@@ -11,6 +11,7 @@ def build_object(offer: Offer) -> Dict:
     humanize_offer_id = humanize(offer.id)
     has_coordinates = venue.latitude is not None and venue.longitude is not None
     date_range = map(str, offer.dateRange.datetimes)
+    stage_director = offer.extraData and offer.extraData.get('stageDirector')
 
     object_to_index = {
         'objectID': humanize_offer_id,
@@ -21,6 +22,7 @@ def build_object(offer: Offer) -> Dict:
             'id': humanize_offer_id,
             'label': offer.offerType['appLabel'],
             'name': offer.name,
+            'stageDirector': stage_director,
             'thumbUrl': offer.thumb_url,
             'type': offer.offerType['sublabel'],
         },
