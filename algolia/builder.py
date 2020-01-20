@@ -17,6 +17,7 @@ def build_object(offer: Offer) -> Dict:
     speaker = offer.extraData and offer.extraData.get('speaker')
     performer = offer.extraData and offer.extraData.get('performer')
     show_type = offer.extraData and offer.extraData.get('showType')
+    show_sub_type = offer.extraData and offer.extraData.get('showSubType')
     music_type = offer.extraData and offer.extraData.get('musicType')
     music_sub_type = offer.extraData and offer.extraData.get('musicSubType')
 
@@ -33,6 +34,7 @@ def build_object(offer: Offer) -> Dict:
             'musicType': music_type,
             'name': offer.name,
             'performer': performer,
+            'showSubType': show_sub_type,
             'showType': show_type,
             'speaker': speaker,
             'stageDirector': stage_director,

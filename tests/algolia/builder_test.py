@@ -50,6 +50,7 @@ class BuildObjectTest:
                 'musicSubType': None,
                 'musicType': None,
                 'performer': None,
+                'showSubType': None,
                 'showType': None,
                 'speaker': None,
                 'stageDirector': None,
@@ -182,6 +183,22 @@ class BuildObjectTest:
 
         # Then
         assert result['offer']['showType'] == 'dance'
+
+    @clean_database
+    def test_should_return_a_show_sub_type_when_exists(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer = create_offer_with_thing_product(venue=venue)
+        offer.extraData = {'showSubType': 'urbaine'}
+        stock = create_stock(offer=offer)
+        PcObject.save(stock)
+
+        # When
+        result = build_object(offer)
+
+        # Then
+        assert result['offer']['showSubType'] == 'urbaine'
 
     @clean_database
     def test_should_return_a_music_type_when_exists(self, app):
