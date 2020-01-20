@@ -65,11 +65,6 @@ ShallowWrapper {
             Les accroches font la spécificité du pass Culture. Prenez le temps de les choisir avec soin ! 
           </p>
           <p>
-            Le fichier doit peser 
-            <b>
-              100 Ko minimum. 
-            </b>
-            <br />
             Utilisateurs avancés : vous pouvez 
             <a
               href="https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip"
@@ -162,11 +157,6 @@ ShallowWrapper {
               Les accroches font la spécificité du pass Culture. Prenez le temps de les choisir avec soin ! 
             </p>,
             <p>
-              Le fichier doit peser 
-              <b>
-                100 Ko minimum. 
-              </b>
-              <br />
               Utilisateurs avancés : vous pouvez 
               <a
                 href="https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip"
@@ -250,11 +240,6 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": Array [
-                "Le fichier doit peser ",
-                <b>
-                  100 Ko minimum. 
-                </b>,
-                <br />,
                 "Utilisateurs avancés : vous pouvez ",
                 <a
                   href="https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip"
@@ -265,27 +250,6 @@ ShallowWrapper {
             },
             "ref": null,
             "rendered": Array [
-              "Le fichier doit peser ",
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "100 Ko minimum. ",
-                },
-                "ref": null,
-                "rendered": "100 Ko minimum. ",
-                "type": "b",
-              },
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {},
-                "ref": null,
-                "rendered": null,
-                "type": "br",
-              },
               "Utilisateurs avancés : vous pouvez ",
               Object {
                 "instance": null,
@@ -572,11 +536,6 @@ ShallowWrapper {
               Les accroches font la spécificité du pass Culture. Prenez le temps de les choisir avec soin ! 
             </p>
             <p>
-              Le fichier doit peser 
-              <b>
-                100 Ko minimum. 
-              </b>
-              <br />
               Utilisateurs avancés : vous pouvez 
               <a
                 href="https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip"
@@ -669,11 +628,6 @@ ShallowWrapper {
                 Les accroches font la spécificité du pass Culture. Prenez le temps de les choisir avec soin ! 
               </p>,
               <p>
-                Le fichier doit peser 
-                <b>
-                  100 Ko minimum. 
-                </b>
-                <br />
                 Utilisateurs avancés : vous pouvez 
                 <a
                   href="https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip"
@@ -757,11 +711,6 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  "Le fichier doit peser ",
-                  <b>
-                    100 Ko minimum. 
-                  </b>,
-                  <br />,
                   "Utilisateurs avancés : vous pouvez ",
                   <a
                     href="https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip"
@@ -772,27 +721,6 @@ ShallowWrapper {
               },
               "ref": null,
               "rendered": Array [
-                "Le fichier doit peser ",
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "100 Ko minimum. ",
-                  },
-                  "ref": null,
-                  "rendered": "100 Ko minimum. ",
-                  "type": "b",
-                },
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {},
-                  "ref": null,
-                  "rendered": null,
-                  "type": "br",
-                },
                 "Utilisateurs avancés : vous pouvez ",
                 Object {
                   "instance": null,

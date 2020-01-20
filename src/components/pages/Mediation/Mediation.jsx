@@ -99,7 +99,7 @@ class Mediation extends PureComponent {
     const purpleRectangle = {
       width: 2,
       color: '#b921d7',
-      coordinates: [ IMAGE_UPLOAD_BORDER, IMAGE_UPLOAD_BORDER, IMAGE_UPLOAD_SIZE, IMAGE_UPLOAD_SIZE ],
+      coordinates: [IMAGE_UPLOAD_BORDER, IMAGE_UPLOAD_BORDER, IMAGE_UPLOAD_SIZE, IMAGE_UPLOAD_SIZE],
     }
 
     cvs.drawArea(purpleRectangle)
@@ -167,10 +167,10 @@ class Mediation extends PureComponent {
     const { inputUrl } = this.state
 
     inputUrl &&
-    this.setState({
-      image: null,
-      imageUrl: inputUrl,
-    })
+      this.setState({
+        image: null,
+        imageUrl: inputUrl,
+      })
   }
 
   handleOnSubmit = () => {
@@ -220,7 +220,6 @@ class Mediation extends PureComponent {
     const { image, credit, imageUrl, inputUrl, isLoading, isNew } = this.state
     const backPath = `/offres/${offerId}`
 
-
     const fragment = (
       <Fragment>
         <div className="thumbnailManager">
@@ -258,7 +257,9 @@ class Mediation extends PureComponent {
                 </span>
               </li>
             </ul>
-            {'La zone en pointillés représente la partie visible de l’image dans la fiche détail de l’offre.'}
+            {
+              'La zone en pointillés représente la partie visible de l’image dans la fiche détail de l’offre.'
+            }
           </div>
           <div className="section">
             <div className="row">
@@ -395,11 +396,6 @@ class Mediation extends PureComponent {
             }
           </p>
           <p>
-            {'Le fichier doit peser '}
-            <b>
-              {'100 Ko minimum. '}
-            </b>
-            <br />
             {'Utilisateurs avancés : vous pouvez '}
             <a href="https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip">
               {'télécharger ici les gabarits Illustrator et Photoshop.'}
