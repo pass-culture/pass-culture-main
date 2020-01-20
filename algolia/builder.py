@@ -12,6 +12,7 @@ def build_object(offer: Offer) -> Dict:
     date_range = map(str, offer.dateRange.datetimes)
     author = offer.extraData and offer.extraData.get('author')
     stage_director = offer.extraData and offer.extraData.get('stageDirector')
+    visa = offer.extraData and offer.extraData.get('visa')
 
     object_to_index = {
         'objectID': humanize_offer_id,
@@ -25,6 +26,7 @@ def build_object(offer: Offer) -> Dict:
             'stageDirector': stage_director,
             'thumbUrl': offer.thumb_url,
             'type': offer.offerType['sublabel'],
+            'visa': visa,
         },
         'offerer': {
             'name': offerer.name,
