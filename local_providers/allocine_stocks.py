@@ -144,7 +144,7 @@ class AllocineStocks(LocalProvider):
             allocine_offer.extraData["visa"] = self.movie_information['visa']
         if 'stageDirector' in self.movie_information:
             allocine_offer.extraData["stageDirector"] = self.movie_information['stageDirector']
-        allocine_offer.isDuo = True
+        allocine_offer.isDuo = False
 
         movie_version = ORIGINAL_VERSION_SUFFIX if _is_original_version_offer(allocine_offer.idAtProviders) \
             else FRENCH_VERSION_SUFFIX
