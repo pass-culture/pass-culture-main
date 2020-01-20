@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from models import PcObject, RecoView
+from models import PcObject, DiscoveryView
 from models.offer_type import EventType, ThingType
 from repository.offer_queries import get_offers_for_recommendation
 from tests.conftest import clean_database
@@ -16,7 +16,7 @@ REFERENCE_DATE = '2017-10-15 09:21:34'
 
 class GetOfferForRecommendationsTest:
     @clean_database
-    def test_when_department_code_00(self, app):
+    def test_when_department_code_00_should_return_offers_of_all_departements(self, app):
         # Given
         offerer = create_offerer(siren='123456789')
         user = create_user()
@@ -35,7 +35,7 @@ class GetOfferForRecommendationsTest:
 
         PcObject.save(user, stock_34, stock_93, stock_75)
 
-        RecoView.refresh(concurrently=False)
+        DiscoveryView.refresh(concurrently=False)
 
         # When
         offers = get_offers_for_recommendation(departement_codes=['00'],
@@ -61,7 +61,7 @@ class GetOfferForRecommendationsTest:
 
         PcObject.save(user, stock_34, stock_national)
 
-        RecoView.refresh(concurrently=False)
+        DiscoveryView.refresh(concurrently=False)
 
         # When
         offers = get_offers_for_recommendation(departement_codes=['93'],
@@ -87,7 +87,7 @@ class GetOfferForRecommendationsTest:
 
         PcObject.save(user, stock_93, stock_activation_93, mediation1, mediation2)
 
-        RecoView.refresh(concurrently=False)
+        DiscoveryView.refresh(concurrently=False)
 
         # When
         offers = get_offers_for_recommendation(departement_codes=['00'],
@@ -113,7 +113,7 @@ class GetOfferForRecommendationsTest:
 
         PcObject.save(user, stock_93, stock_activation_93)
 
-        RecoView.refresh(concurrently=False)
+        DiscoveryView.refresh(concurrently=False)
 
         # When
         offers = get_offers_for_recommendation(departement_codes=['00'],
@@ -135,7 +135,7 @@ class GetOfferForRecommendationsTest:
         create_mediation(stock.offer)
         PcObject.save(user, stock)
 
-        RecoView.refresh(concurrently=False)
+        DiscoveryView.refresh(concurrently=False)
 
         # When
         offers = get_offers_for_recommendation(departement_codes=['00'],
@@ -155,7 +155,7 @@ class GetOfferForRecommendationsTest:
         create_mediation(stock1.offer)
         PcObject.save(user, stock1, stock2)
 
-        RecoView.refresh(concurrently=False)
+        DiscoveryView.refresh(concurrently=False)
 
         # When
         offers = get_offers_for_recommendation(departement_codes=['00'],
@@ -190,7 +190,7 @@ class GetOfferForRecommendationsTest:
         create_mediation(stock3.offer)
         PcObject.save(user, stock1, stock2, stock3)
 
-        RecoView.refresh(concurrently=False)
+        DiscoveryView.refresh(concurrently=False)
 
         # When
         offers = get_offers_for_recommendation(departement_codes=['00'],
@@ -224,7 +224,7 @@ class GetOfferForRecommendationsTest:
         create_mediation(stock5.offer)
         create_mediation(stock6.offer)
         PcObject.save(user, stock1, stock2, stock3, stock4, stock5, stock6)
-        RecoView.refresh(concurrently=False)
+        DiscoveryView.refresh(concurrently=False)
 
         def first_four_offers_have_different_type_and_onlineness(offers):
             return len(set([o.type + (o.url or '')
@@ -251,7 +251,7 @@ class GetOfferForRecommendationsTest:
         booking2 = create_booking(user=user, stock=stock, quantity=2, venue=venue)
         create_mediation(stock.offer)
         PcObject.save(user, booking1, booking2)
-        RecoView.refresh(concurrently=False)
+        DiscoveryView.refresh(concurrently=False)
 
         # When
         offers = get_offers_for_recommendation(departement_codes=['00'],
@@ -261,7 +261,7 @@ class GetOfferForRecommendationsTest:
         assert len(offers) == 0
 
     @clean_database
-    def test_should_return_same_number_of_recommendation(self, app):
+    def test_should_return_same_number_of_offers(self, app):
         # Given
         offerer = create_offerer()
         user = create_user()
@@ -277,7 +277,7 @@ class GetOfferForRecommendationsTest:
         create_mediation(stock4.offer)
 
         PcObject.save(user, stock1, stock2, stock3, stock4)
-        RecoView.refresh(concurrently=False)
+        DiscoveryView.refresh(concurrently=False)
 
         # When
         offers = get_offers_for_recommendation(departement_codes=['00'],
@@ -305,7 +305,7 @@ class GetOfferForRecommendationsTest:
         create_mediation(stock2.offer)
 
         PcObject.save(user, stock1, stock2)
-        RecoView.refresh(concurrently=False)
+        DiscoveryView.refresh(concurrently=False)
 
         # When
         offers = get_offers_for_recommendation(departement_codes=['00'],
@@ -338,7 +338,7 @@ class GetOfferForRecommendationsTest:
         create_mediation(stock3.offer)
 
         PcObject.save(user, stock1, stock2, stock3)
-        RecoView.refresh(concurrently=False)
+        DiscoveryView.refresh(concurrently=False)
 
         # When
         offers = get_offers_for_recommendation(departement_codes=['00'],
@@ -372,7 +372,7 @@ class GetOfferForRecommendationsTest:
         create_mediation(stock4.offer)
 
         PcObject.save(user, stock1, stock2, stock3, stock4)
-        RecoView.refresh(concurrently=False)
+        DiscoveryView.refresh(concurrently=False)
 
         pagination_params = {'seed': 0.5, 'page': 1}
         offers_1 = get_offers_for_recommendation(departement_codes=['00'],
@@ -418,12 +418,12 @@ class GetOfferForRecommendationsTest:
         create_mediation(stock4.offer)
 
         PcObject.save(user, stock1, stock2, stock3, stock4)
-        RecoView.refresh(concurrently=False)
+        DiscoveryView.refresh(concurrently=False)
 
         offers_1 = get_offers_for_recommendation(departement_codes=['00'],
                                                  user=user)
 
-        RecoView.refresh()
+        DiscoveryView.refresh()
 
         # When
         offers_2 = get_offers_for_recommendation(departement_codes=['00'],
@@ -444,7 +444,7 @@ class GetOfferForRecommendationsTest:
         booking = create_booking(user=user, stock=stock)
         create_mediation(stock.offer)
         PcObject.save(user, booking)
-        RecoView.refresh(concurrently=False)
+        DiscoveryView.refresh(concurrently=False)
 
         # When
         offers = get_offers_for_recommendation(departement_codes=['00'],
@@ -466,7 +466,7 @@ class GetOfferForRecommendationsTest:
         favorite = create_favorite(mediation=mediation, offer=offer, user=user)
 
         PcObject.save(user, favorite)
-        RecoView.refresh(concurrently=False)
+        DiscoveryView.refresh(concurrently=False)
 
         # When
         offers = get_offers_for_recommendation(departement_codes=['00'],
@@ -494,7 +494,7 @@ class GetOfferForRecommendationsTest:
         create_mediation(offer3)
         create_mediation(offer4)
         PcObject.save(user, stock1, stock2, stock3, stock4)
-        RecoView.refresh(concurrently=False)
+        DiscoveryView.refresh(concurrently=False)
 
         # When
         offers1 = get_offers_for_recommendation(departement_codes=['00'],

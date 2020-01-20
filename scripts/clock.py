@@ -9,7 +9,7 @@ from flask import Flask
 from mailjet_rest import Client
 from sqlalchemy import orm
 
-from models import RecoView
+from models import DiscoveryView
 from models.db import db
 from repository.feature_queries import feature_cron_send_final_booking_recaps_enabled, \
     feature_cron_generate_and_send_payments, \
@@ -215,7 +215,7 @@ def pc_delete_useless_recommendations():
 @log_cron
 def pc_update_recommendations_view():
     with app.app_context():
-        RecoView.refresh()
+        DiscoveryView.refresh()
 
 
 if __name__ == '__main__':

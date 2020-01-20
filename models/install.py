@@ -18,15 +18,15 @@ def install_models():
 
     create_versionning_tables()
 
-    for db_model in models.__models__:
-        model_to_create = getattr(models, db_model).__table__
+    for db_model in models.models:
+        model_to_create = db_model.__table__
         model_to_create.create(bind=db.engine, checkfirst=True)
 
     db.session.commit()
 
 
 def install_materialized_views():
-    for materialized_view in models.__materialized_views__:
+    for materialized_view in models.materialized_views:
         materialized_view.create(session=db.session)
 
 

@@ -100,5 +100,6 @@ def feature_update_booking_used():
 def feature_delete_all_unread_recommendations_older_than_one_week_enabled():
     return os.environ.get('CRON_CLEAN_USELESS_RECOMMENDATIONS', False)
 
+
 def feature_update_recommendations_view():
     return os.environ.get('CRON_UPDATE_RECOMMENDATIONS_VIEW', False)

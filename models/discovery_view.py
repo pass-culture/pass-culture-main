@@ -4,8 +4,8 @@ from sqlalchemy_utils import refresh_materialized_view
 from models.db import Model, db
 
 
-class RecoView(Model):
-    __tablename__ = "reco_view"
+class DiscoveryView(Model):
+    __tablename__ = "discovery_view"
 
     venueId = Column(BigInteger, ForeignKey('venue.id'))
 
@@ -17,7 +17,7 @@ class RecoView(Model):
 
     url = Column(String(255))
 
-    offerRecommendedPriority = Column(Integer)
+    offerDiscoveryOrder = Column(Integer)
 
     name = Column(String(140))
 
@@ -25,12 +25,12 @@ class RecoView(Model):
 
     @classmethod
     def create(cls, session):
-        recommendable_offers = cls._create_function_recommendable_offers(session)
+        get_recommendable_offers = cls._create_function_get_recommendable_offers(session)
 
         session.execute(f"""
             CREATE MATERIALIZED VIEW IF NOT EXISTS {cls.__tablename__}
                 AS SELECT
-                   row_number() OVER () AS "offerRecommendedPriority",
+                   row_number() OVER () AS "offerDiscoveryOrder",
                    recommendable_offers.id                           AS id,
                    recommendable_offers."venueId"                    AS "venueId",
                    recommendable_offers.type                         AS type,
@@ -38,21 +38,21 @@ class RecoView(Model):
                    recommendable_offers.url                          AS url,
                    recommendable_offers."isNational"                 AS "isNational",
                    offer_mediation.id                                AS "mediationId"
-                FROM (SELECT * FROM {recommendable_offers}()) AS recommendable_offers
+                FROM (SELECT * FROM {get_recommendable_offers}()) AS recommendable_offers
                 LEFT OUTER JOIN mediation AS offer_mediation ON recommendable_offers.id = offer_mediation."offerId"
                             AND offer_mediation."isActive"
                 ORDER BY recommendable_offers.partitioned_offers;
         """)
         session.execute(f"""
-            CREATE UNIQUE INDEX ON {cls.__tablename__} ("offerRecommendedPriority");
+            CREATE UNIQUE INDEX ON {cls.__tablename__} ("offerDiscoveryOrder");
         """)
         session.commit()
 
     @classmethod
-    def _create_function_recommendable_offers(cls, session):
-        function_name = 'recommendable_offers'
+    def _create_function_get_recommendable_offers(cls, session):
+        function_name = 'get_recommendable_offers'
 
-        offer_score = cls._create_function_offer_score(session)
+        get_offer_score = cls._create_function_get_offer_score(session)
         event_is_in_less_than_10_days = cls._create_function_event_is_in_less_than_10_days(session)
         offer_has_at_least_one_active_mediation = cls._create_function_offer_has_at_least_one_active_mediation(session)
         offer_has_at_least_one_bookable_stock = cls._create_function_offer_has_at_least_one_bookable_stock(session)
@@ -73,7 +73,7 @@ class RecoView(Model):
             BEGIN
                RETURN QUERY
                SELECT
-                     (SELECT * from {offer_score}(offer.id)) AS criterion_score,
+                     (SELECT * from {get_offer_score}(offer.id)) AS criterion_score,
                      offer.id AS id,
                      offer."venueId" AS "venueId",
                      offer.type AS type,
@@ -83,7 +83,7 @@ class RecoView(Model):
                      row_number() OVER (
                        PARTITION BY offer.type, offer.url IS NULL
                        ORDER BY (EXISTS(SELECT * FROM {event_is_in_less_than_10_days}(offer.id))) DESC,
-                                (SELECT * FROM {offer_score}(offer.id)) DESC,
+                                (SELECT * FROM {get_offer_score}(offer.id)) DESC,
                                 random()
                       ) AS partitioned_offers
                FROM offer
@@ -102,7 +102,7 @@ class RecoView(Model):
                                     )
                ORDER BY row_number() OVER ( PARTITION BY offer.type, offer.url IS NULL
                            ORDER BY (EXISTS (SELECT * FROM {event_is_in_less_than_10_days}(offer.id))) DESC,
-                                    (SELECT * FROM {offer_score}(offer.id)) DESC,
+                                    (SELECT * FROM {get_offer_score}(offer.id)) DESC,
                                     random()
                );
             END
@@ -129,7 +129,7 @@ class RecoView(Model):
                    AND (stock."bookingLimitDatetime" > NOW() 
                         OR stock."bookingLimitDatetime" IS NULL)
                    AND (stock.available IS NULL
-                        OR (SELECT greatest(stock.available - COALESCE(sum(booking.quantity), 0),0) AS greatest_1
+                        OR (SELECT greatest(stock.available - COALESCE(sum(booking.quantity), 0),0)
                               FROM booking
                              WHERE booking."stockId" = stock.id
                                AND (booking."isUsed" = FALSE
@@ -185,15 +185,15 @@ class RecoView(Model):
         return function_name
 
     @staticmethod
-    def _create_function_offer_score(session) -> str:
-        function_name = 'offer_score'
+    def _create_function_get_offer_score(session) -> str:
+        function_name = 'get_offer_score'
         session.execute(f"""
             CREATE OR REPLACE FUNCTION {function_name}(offer_id BIGINT)
             RETURNS SETOF BIGINT AS
             $body$
             BEGIN
                RETURN QUERY
-               SELECT coalesce(sum(criterion."scoreDelta"), 0) AS coalesce_1
+               SELECT coalesce(sum(criterion."scoreDelta"), 0)
                 FROM criterion, offer_criterion
                WHERE criterion.id = offer_criterion."criterionId"
                  AND offer_criterion."offerId" = offer_id;

@@ -30,7 +30,7 @@ from models.product import BookFormat
 from models.product import Product
 from models.providable_mixin import ProvidableMixin
 from models.provider import Provider
-from models.reco_view import RecoView
+from models.discovery_view import DiscoveryView
 from models.recommendation import Recommendation
 from models.stock import Stock
 from models.stock import Stock
@@ -80,7 +80,7 @@ __all__ = (
     'Provider',
     'Product',
     'Recommendation',
-    'RecoView',
+    'DiscoveryView',
     'RightsType',
     'ThingType',
     'UserOfferer',
@@ -90,38 +90,38 @@ __all__ = (
 )
 
 # Order matters
-__models__ = (
-    'User',
-    'UserSession',
-    'Provider',
-    'Offerer',
-    'UserOfferer',
-    'Venue',
-    'ApiKey',
-    'AllocinePivot',
-    'BankInformation',
-    'BeneficiaryImport',
-    'BeneficiaryImportStatus',
-    'Criterion',
-    'Deposit',
-    'Email',
-    'Product',
-    'Offer',
-    'Mediation',
-    'Recommendation',
-    'Favorite',
-    'Feature',
-    'Stock',
-    'Booking',
-    'VenueProvider',
-    'VenueProviderPriceRule',
-    'LocalProviderEvent',
-    'OfferCriterion',
-    'PaymentMessage',
-    'Payment',
-    'PaymentStatus',
+models = (
+    User,
+    UserSession,
+    Provider,
+    Offerer,
+    UserOfferer,
+    Venue,
+    ApiKey,
+    AllocinePivot,
+    BankInformation,
+    BeneficiaryImport,
+    BeneficiaryImportStatus,
+    Criterion,
+    Deposit,
+    Email,
+    Product,
+    Offer,
+    Mediation,
+    Recommendation,
+    Favorite,
+    Feature,
+    Stock,
+    Booking,
+    VenueProvider,
+    VenueProviderPriceRule,
+    LocalProviderEvent,
+    OfferCriterion,
+    PaymentMessage,
+    Payment,
+    PaymentStatus,
 )
 
-__materialized_views__ = (
-    RecoView,
+materialized_views = (
+    DiscoveryView,
 )

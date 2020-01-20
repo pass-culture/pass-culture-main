@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
-from models import PcObject, RecoView
+from models import PcObject, DiscoveryView
 from models.mediation import Mediation
 from models.recommendation import Recommendation
 from tests.conftest import clean_database, TestClient
@@ -284,7 +284,7 @@ class Put:
             create_mediation(thing_offer1)
             create_mediation(thing_offer2)
             PcObject.save(user, stock1, stock2)
-            RecoView.refresh(concurrently=False)
+            DiscoveryView.refresh(concurrently=False)
 
             # when
             response = TestClient(app.test_client()).with_auth(user.email) \
@@ -330,7 +330,7 @@ class Put:
             create_mediation(thing_offer2)
             create_mediation(event_offer)
             PcObject.save(user, event_stock, soft_deleted_event_stock, thing_stock, soft_deleted_thing_stock)
-            RecoView.refresh(concurrently=False)
+            DiscoveryView.refresh(concurrently=False)
             event_offer_id = event_offer.id
             thing_offer2_id = thing_offer2.id
 
@@ -355,7 +355,7 @@ class Put:
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
             PcObject.save(user, offer)
-            RecoView.refresh(concurrently=False)
+            DiscoveryView.refresh(concurrently=False)
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
@@ -376,7 +376,7 @@ class Put:
             offer = create_offer_with_thing_product(venue, thumb_count=1)
             stock = create_stock_from_offer(offer, price=0)
             PcObject.save(user, stock)
-            RecoView.refresh(concurrently=False)
+            DiscoveryView.refresh(concurrently=False)
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
@@ -397,7 +397,7 @@ class Put:
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             stock = create_stock_from_offer(offer, price=0)
             PcObject.save(user, stock)
-            RecoView.refresh(concurrently=False)
+            DiscoveryView.refresh(concurrently=False)
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
@@ -420,7 +420,7 @@ class Put:
             stock = create_stock_from_offer(offer, price=0)
             mediation = create_mediation(offer)
             PcObject.save(user, stock, mediation)
-            RecoView.refresh(concurrently=False)
+            DiscoveryView.refresh(concurrently=False)
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
@@ -450,7 +450,7 @@ class Put:
             )
             stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
             PcObject.save(user, stock)
-            RecoView.refresh(concurrently=False)
+            DiscoveryView.refresh(concurrently=False)
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
@@ -482,7 +482,7 @@ class Put:
             mediation = create_mediation(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
             PcObject.save(user, stock, mediation)
-            RecoView.refresh(concurrently=False)
+            DiscoveryView.refresh(concurrently=False)
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
@@ -513,7 +513,7 @@ class Put:
             )
             stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
             PcObject.save(user, stock)
-            RecoView.refresh(concurrently=False)
+            DiscoveryView.refresh(concurrently=False)
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
@@ -540,7 +540,7 @@ class Put:
             create_mediation(offer_venue_not_validated)
             create_mediation(offer_venue_validated)
             PcObject.save(stock_venue_not_validated, stock_venue_validated, user)
-            RecoView.refresh(concurrently=False)
+            DiscoveryView.refresh(concurrently=False)
             venue_validated_id = venue_validated.id
             venue_not_validated_id = venue_not_validated.id
             auth_request = TestClient(app.test_client()).with_auth(user.email)
@@ -571,7 +571,7 @@ class Put:
             mediation2 = create_mediation(offer2, is_active=False)
             mediation3 = create_mediation(offer2, is_active=True)
             PcObject.save(user, stock1, mediation1, stock2, mediation2, mediation3)
-            RecoView.refresh(concurrently=False)
+            DiscoveryView.refresh(concurrently=False)
             auth_request = TestClient(app.test_client()).with_auth(user.email)
             mediation3_id = mediation3.id
             mediation2_id = mediation2.id
@@ -613,7 +613,7 @@ class Put:
             stock3 = create_stock_from_offer(offer3, price=0)
             stock4 = create_stock_from_offer(offer4, price=0)
             PcObject.save(user, stock1, stock2, stock3, stock4)
-            RecoView.refresh(concurrently=False)
+            DiscoveryView.refresh(concurrently=False)
             offer1_id = offer1.id
             offer2_id = offer2.id
             offer3_id = offer3.id
@@ -660,7 +660,7 @@ class Put:
             create_mediation(offer_thing)
             create_mediation(offer_event)
             PcObject.save(user, event_stock, stock_thing)
-            RecoView.refresh(concurrently=False)
+            DiscoveryView.refresh(concurrently=False)
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
@@ -689,7 +689,7 @@ class Put:
             recommendation = create_recommendation(offer=offer2, user=user, mediation=mediation2, search="bla")
 
             PcObject.save(user, stock1, mediation1, stock2, mediation2, recommendation)
-            RecoView.refresh(concurrently=False)
+            DiscoveryView.refresh(concurrently=False)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -714,7 +714,7 @@ class Put:
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
             mediation = create_mediation(offer_thing)
             PcObject.save(user, stock_thing, mediation)
-            RecoView.refresh(concurrently=False)
+            DiscoveryView.refresh(concurrently=False)
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
@@ -738,7 +738,7 @@ class Put:
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
             mediation = create_mediation(offer_thing)
             PcObject.save(user, stock_thing, mediation)
-            RecoView.refresh(concurrently=False)
+            DiscoveryView.refresh(concurrently=False)
             mediation_id = mediation.id
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -763,7 +763,7 @@ class Put:
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
             mediation = create_mediation(offer_thing)
             PcObject.save(user, stock_thing, mediation)
-            RecoView.refresh(concurrently=False)
+            DiscoveryView.refresh(concurrently=False)
             offer_thing_id = offer_thing.id
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -792,7 +792,7 @@ class Put:
             active_mediation = create_mediation(offer1, is_active=True)
             invalid_recommendation = create_recommendation(offer=offer1, user=user, mediation=inactive_mediation)
             PcObject.save(user, stock1, inactive_mediation, active_mediation, invalid_recommendation)
-            RecoView.refresh(concurrently=False)
+            DiscoveryView.refresh(concurrently=False)
 
             active_mediation_id = active_mediation.id
             inactive_mediation_id = inactive_mediation.id
@@ -830,7 +830,7 @@ class Put:
             create_mediation(thing_offer1)
             create_mediation(thing_offer2)
             PcObject.save(stock1, stock2, stock3, stock4, user)
-            RecoView.refresh(concurrently=False)
+            DiscoveryView.refresh(concurrently=False)
             upsert_tuto_mediations()
 
             # when
@@ -867,7 +867,7 @@ class Put:
             tuto_recommendation0 = create_recommendation(user=user, mediation=tuto_mediation0)
             tuto_recommendation1 = create_recommendation(user=user, mediation=tuto_mediation1)
             PcObject.save(tuto_recommendation0, tuto_recommendation1)
-            RecoView.refresh(concurrently=False)
+            DiscoveryView.refresh(concurrently=False)
 
             humanized_tuto_recommendation0_id = humanize(tuto_recommendation0.id)
             humanized_tuto_recommendation1_id = humanize(tuto_recommendation1.id)
@@ -909,7 +909,7 @@ class Put:
             recommendation = create_recommendation(offer, user, date_read=three_days_ago)
 
             PcObject.save(stock, recommendation)
-            RecoView.refresh(concurrently=False)
+            DiscoveryView.refresh(concurrently=False)
 
             # When
             recommendations = TestClient(app.test_client()).with_auth(user.email) \
@@ -934,7 +934,7 @@ class Put:
             recommendation = create_recommendation(offer=offer, user=user, mediation=mediation, is_clicked=False)
 
             PcObject.save(stock, recommendation)
-            RecoView.refresh(concurrently=False)
+            DiscoveryView.refresh(concurrently=False)
 
             # when
             response = TestClient(app.test_client()).with_auth(user.email) \
@@ -971,7 +971,7 @@ class Put:
                 create_mediation(offer_event)
                 PcObject.save(event_stock, stock_thing)
 
-            RecoView.refresh(concurrently=False)
+            DiscoveryView.refresh(concurrently=False)
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
@@ -1007,7 +1007,7 @@ class Put:
 
             recommendation = create_recommendation(offer=offer, user=user, mediation=mediation)
             PcObject.save(user, recommendation)
-            RecoView.refresh(concurrently=False)
+            DiscoveryView.refresh(concurrently=False)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -1037,7 +1037,7 @@ class Put:
             booking = create_booking(user=user, stock=stock, venue=venue)
             create_mediation(offer)
             PcObject.save(booking)
-            RecoView.refresh(concurrently=False)
+            DiscoveryView.refresh(concurrently=False)
             booking_id = booking.id
 
             # when
@@ -1062,7 +1062,7 @@ class Put:
             booking = create_booking(user=user, stock=stock, venue=venue)
             create_mediation(offer)
             PcObject.save(booking)
-            RecoView.refresh(concurrently=False)
+            DiscoveryView.refresh(concurrently=False)
 
             # when
             TestClient(app.test_client()).with_auth(user.email) \
@@ -1091,7 +1091,7 @@ class Put:
             booking = create_booking(user=user, stock=stock, venue=venue)
             create_mediation(offer)
             PcObject.save(booking)
-            RecoView.refresh(concurrently=False)
+            DiscoveryView.refresh(concurrently=False)
 
             # when
             TestClient(app.test_client()).with_auth(user.email) \

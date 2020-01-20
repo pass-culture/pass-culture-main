@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from models import PcObject, RecoView
+from models import PcObject, DiscoveryView
 from recommendations_engine import create_recommendations_for_discovery, get_offers_for_recommendations_discovery
 from repository.offer_queries import order_by_with_criteria
 from tests.conftest import clean_database
@@ -21,7 +21,7 @@ class GetOffersForRecommendationsDiscoveryTest:
                                                                                          departements_ok)
         PcObject.save(user)
         PcObject.save(*expected_stocks_recommended)
-        RecoView.refresh(concurrently=False)
+        DiscoveryView.refresh(concurrently=False)
         offer_ids_in_adjacent_department = set([stock.offerId for stock in expected_stocks_recommended])
 
         #  when

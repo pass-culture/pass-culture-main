@@ -1,4 +1,4 @@
-"""add_recommendation_view
+"""add_discovery_view
 
 Revision ID: 2ab67d07fe52
 Revises: 6b76c225cc26
@@ -8,7 +8,6 @@ Create Date: 2020-01-17 14:29:25.391443
 from alembic import op
 
 # revision identifiers, used by Alembic.
-from models import RecoView
 
 revision = '2ab67d07fe52'
 down_revision = '6b76c225cc26'
@@ -18,12 +17,12 @@ depends_on = None
 
 def upgrade():
     op.execute(f"""
-                CREATE OR REPLACE FUNCTION offer_score(offer_id BIGINT)
+                CREATE OR REPLACE FUNCTION get_offer_score(offer_id BIGINT)
                 RETURNS SETOF BIGINT AS
                 $body$
                 BEGIN
                    RETURN QUERY
-                   SELECT coalesce(sum(criterion."scoreDelta"), 0) AS coalesce_1
+                   SELECT coalesce(sum(criterion."scoreDelta"), 0)
                     FROM criterion, offer_criterion
                    WHERE criterion.id = offer_criterion."criterionId"
                      AND offer_criterion."offerId" = offer_id;
@@ -78,7 +77,7 @@ def upgrade():
                        AND (stock."bookingLimitDatetime" > NOW() 
                             OR stock."bookingLimitDatetime" IS NULL)
                        AND (stock.available IS NULL
-                            OR (SELECT greatest(stock.available - COALESCE(sum(booking.quantity), 0),0) AS greatest_1
+                            OR (SELECT greatest(stock.available - COALESCE(sum(booking.quantity), 0),0)
                                   FROM booking
                                  WHERE booking."stockId" = stock.id
                                    AND (booking."isUsed" = FALSE
@@ -93,7 +92,7 @@ def upgrade():
             """)
 
     op.execute("""
-                CREATE OR REPLACE FUNCTION recommendable_offers()
+                CREATE OR REPLACE FUNCTION get_recommendable_offers()
                 RETURNS TABLE (
                     criterion_score BIGINT,
                     id BIGINT,
@@ -108,7 +107,7 @@ def upgrade():
                 BEGIN
                    RETURN QUERY
                    SELECT
-                         (SELECT * from offer_score(offer.id)) AS criterion_score,
+                         (SELECT * FROM get_offer_score(offer.id)) AS criterion_score,
                          offer.id AS id,
                          offer."venueId" AS "venueId",
                          offer.type AS type,
@@ -118,7 +117,7 @@ def upgrade():
                          row_number() OVER (
                            PARTITION BY offer.type, offer.url IS NULL
                            ORDER BY (EXISTS(SELECT * FROM event_is_in_less_than_10_days(offer.id))) DESC,
-                                    (SELECT * FROM offer_score(offer.id)) DESC,
+                                    (SELECT * FROM get_offer_score(offer.id)) DESC,
                                     random()
                           ) AS partitioned_offers
                    FROM offer
@@ -137,7 +136,7 @@ def upgrade():
                                         )
                    ORDER BY row_number() OVER ( PARTITION BY offer.type, offer.url IS NULL
                                ORDER BY (EXISTS (SELECT * FROM event_is_in_less_than_10_days(offer.id))) DESC,
-                                        (SELECT * FROM offer_score(offer.id)) DESC,
+                                        (SELECT * FROM get_offer_score(offer.id)) DESC,
                                         random()
                    );
                 END
@@ -146,9 +145,9 @@ def upgrade():
             """)
 
     op.execute(f"""
-            CREATE MATERIALIZED VIEW IF NOT EXISTS {RecoView.__tablename__}
+            CREATE MATERIALIZED VIEW IF NOT EXISTS discovery_view
                 AS SELECT
-                   row_number() OVER () AS "offerRecommendedPriority",
+                   row_number() OVER () AS "offerDiscoveryOrder",
                    recommendable_offers.id                           AS id,
                    recommendable_offers."venueId"                    AS "venueId",
                    recommendable_offers.type                         AS type,
@@ -156,21 +155,21 @@ def upgrade():
                    recommendable_offers.url                          AS url,
                    recommendable_offers."isNational"                 AS "isNational",
                    offer_mediation.id                                AS "mediationId"
-                FROM (SELECT * FROM recommendable_offers()) AS recommendable_offers
+                FROM (SELECT * FROM get_recommendable_offers()) AS recommendable_offers
                 LEFT OUTER JOIN mediation AS offer_mediation ON recommendable_offers.id = offer_mediation."offerId"
                             AND offer_mediation."isActive"
                 ORDER BY recommendable_offers.partitioned_offers;
         """)
 
-    op.execute(f""" CREATE UNIQUE INDEX ON {RecoView.__tablename__} ("offerRecommendedPriority"); """)
+    op.execute(f""" CREATE UNIQUE INDEX ON discovery_view ("offerDiscoveryOrder"); """)
 
 
 def downgrade():
     op.execute(f"""
-        DROP MATERIALIZED VIEW {RecoView.__tablename__};
-        DROP FUNCTION offer_score;
+        DROP MATERIALIZED VIEW discovery_view;
+        DROP FUNCTION get_offer_score;
         DROP FUNCTION event_is_in_less_than_10_days;
         DROP FUNCTION offer_has_at_least_one_bookable_stock;
         DROP FUNCTION offer_has_at_least_one_active_mediation;
-        DROP FUNCTION recommendable_offers;
+        DROP FUNCTION get_recommendable_offers;
     """)

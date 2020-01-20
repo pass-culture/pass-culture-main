@@ -17,7 +17,7 @@ from models import EventType, \
     Stock, \
     ThingType, \
     Venue, \
-    Product, Favorite, Booking, RecoView, User
+    Product, Favorite, Booking, DiscoveryView, User
 from models.db import Model, db
 from models.feature import FeatureToggle
 from repository import feature_queries
@@ -88,18 +88,18 @@ def get_offers_for_recommendation(user: User,
     offers_booked = Offer.query.join(Stock).join(Booking).filter_by(userId=user.id).with_entities(Offer.id).all()
     offer_booked_ids = [offer.id for offer in offers_booked]
 
-    recos_query = RecoView.query \
-        .filter(RecoView.id.notin_(favorite_ids)) \
-        .filter(RecoView.id.notin_(seen_recommendation_ids)) \
-        .filter(RecoView.id.notin_(offer_booked_ids))
+    recos_query = DiscoveryView.query \
+        .filter(DiscoveryView.id.notin_(favorite_ids)) \
+        .filter(DiscoveryView.id.notin_(seen_recommendation_ids)) \
+        .filter(DiscoveryView.id.notin_(offer_booked_ids))
 
     if '00' not in departement_codes:
         venues = Venue.query.filter(Venue.departementCode.in_(departement_codes)).with_entities(Venue.id).all()
         venue_ids = [venue.id for venue in venues]
         recos_query = recos_query \
-            .filter(or_(RecoView.venueId.in_(venue_ids), RecoView.isNational == True))
+            .filter(or_(DiscoveryView.venueId.in_(venue_ids), DiscoveryView.isNational == True))
 
-    recos_query = recos_query.order_by(RecoView.offerRecommendedPriority)
+    recos_query = recos_query.order_by(DiscoveryView.offerDiscoveryOrder)
 
     if limit:
         recos_query = recos_query.limit(limit)

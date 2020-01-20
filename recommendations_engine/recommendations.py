@@ -5,7 +5,7 @@ from typing import Dict, List
 import dateutil.parser
 
 from domain.types import get_active_product_type_values_from_sublabels
-from models import Recommendation, Mediation, PcObject, User, RecoView, Offer
+from models import Recommendation, Mediation, PcObject, User, DiscoveryView, Offer
 from models.db import db
 from recommendations_engine import get_offers_for_recommendations_discovery
 from repository import mediation_queries
@@ -111,7 +111,10 @@ def _create_recommendation(user: User, offer: Offer, mediation: Mediation = None
     return recommendation
 
 
-def _create_recommendation_from_offers(user: User, reco_view: RecoView, mediation: Mediation = None) -> Recommendation:
+# TODO: when using discovery view use this function instead of _create_recommedantion
+# in create_recommendations_for_discovery
+def _create_recommendation_from_offers(user: User, reco_view: DiscoveryView,
+                                       mediation: Mediation = None) -> Recommendation:
     recommendation = Recommendation()
     recommendation.user = user
 

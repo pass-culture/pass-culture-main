@@ -6,7 +6,7 @@ from flask_login import current_user, login_required
 
 from domain.build_recommendations import move_requested_recommendation_first, \
     move_tutorial_recommendations_first
-from models import PcObject, Recommendation, RecoView
+from models import PcObject, Recommendation, DiscoveryView
 from models.db import db
 from recommendations_engine import create_recommendations_for_discovery, \
     create_recommendations_for_search, \
