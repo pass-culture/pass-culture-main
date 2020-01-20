@@ -40,7 +40,7 @@ class BuildObjectTest:
         assert result == {
             'objectID': 'AM',
             'offer': {
-                'author': '',
+                'author': None,
                 'dateRange': ['2019-11-01 10:00:00', '2019-12-01 10:00:00'],
                 'description': 'Un lit sous une rivière',
                 'id': 'AM',
@@ -65,11 +65,11 @@ class BuildObjectTest:
         }
 
     @clean_database
-    def test_should_return_an_author_when_offer_is_a_book(self, app):
+    def test_should_return_an_author_when_exists(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
-        offer = create_offer_with_thing_product(venue=venue, thing_type=ThingType.LIVRE_EDITION)
+        offer = create_offer_with_thing_product(venue=venue)
         offer.extraData = {'author': 'MEFA'}
         stock = create_stock(offer=offer)
         PcObject.save(stock)
@@ -95,22 +95,6 @@ class BuildObjectTest:
 
         # Then
         assert result['offer']['stageDirector'] == 'MEFA'
-
-    @clean_database
-    def test_should_not_raise_an_error_when_offer_is_a_book_without_author(self, app):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer=offerer)
-        offer = create_offer_with_thing_product(venue=venue, thing_type=ThingType.LIVRE_EDITION)
-        offer.extraData = None
-        stock = create_stock(offer=offer)
-        PcObject.save(stock)
-
-        # When
-        result = build_object(offer)
-
-        # Then
-        assert result['offer']['author'] == ''
 
     @clean_database
     def test_should_return_an_empty_date_range_when_offer_is_thing(self, app):
