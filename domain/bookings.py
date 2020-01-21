@@ -10,9 +10,7 @@ import qrcode.image.svg
 from PIL import Image
 
 from models import Booking
-from models.offer_type import EventType, ThingType
 from models.stock import Stock
-from utils.human_ids import humanize
 
 BOOKING_CANCELLATION_DELAY = timedelta(hours=72)
 QR_CODE_PASS_CULTURE_VERSION = 'v2'
