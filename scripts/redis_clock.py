@@ -8,7 +8,7 @@ from flask import Flask
 from sqlalchemy import orm
 
 from models.db import db
-from repository.feature_queries import feature_cron_algolia_indexing_offers_enabled
+from repository.feature_queries import feature_cron_algolia_indexing_offers_enabled, feature_cron_algolia_indexing_offers_by_venue_enabled
 from scripts.algolia_indexing.indexing import indexing_offers_in_algolia, batch_indexing_offers_in_algolia_by_venue_ids
 from scripts.cron_logger.cron_logger import build_cron_log_message
 from scripts.cron_logger.cron_status import CronStatus
