@@ -11,7 +11,8 @@ from models.db import db
 from repository.feature_queries import feature_cron_algolia_indexing_offers_by_offer_enabled, \
     feature_cron_algolia_indexing_offers_by_venue_provider_enabled, \
     feature_cron_algolia_indexing_offers_by_venue_enabled
-from scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_offer, batch_indexing_offers_in_algolia_by_venue, \
+from scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_offer, \
+    batch_indexing_offers_in_algolia_by_venue, \
     batch_indexing_offers_in_algolia_by_venue_providers
 from scripts.cron_logger.cron_logger import build_cron_log_message
 from scripts.cron_logger.cron_status import CronStatus
@@ -53,7 +54,6 @@ def log_cron(func):
 def pc_indexing_offers_in_algolia_by_offer():
     with app.app_context():
         batch_indexing_offers_in_algolia_by_offer(client=app.redis_client)
-
 
 
 @log_cron
