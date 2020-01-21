@@ -14,7 +14,7 @@ from domain.user_activation import create_initial_deposit, is_activation_booking
 from domain.user_emails import send_activation_email, \
     send_booking_confirmation_email_to_beneficiary, \
     send_booking_recap_emails, send_cancellation_emails_to_user_and_offerer
-from models import ApiErrors, Booking, EventType, Offerer, PcObject, RightsType, Stock, ApiKey
+from models import ApiErrors, Booking, EventType, Offerer, PcObject, RightsType, Stock, ApiKey, User
 from models.feature import FeatureToggle
 from models.offer_type import ProductType
 from repository import booking_queries, feature_queries
@@ -173,7 +173,7 @@ def create_booking():
     check_expenses_limits(expenses, new_booking)
     PcObject.save(new_booking)
 
-    redis.add_offer_id_to_redis(client=app.redis_client, offer_id=stock.offerId)
+    redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
     try:
         send_booking_recap_emails(new_booking, send_raw_email)
@@ -216,7 +216,7 @@ def patch_booking(booking_id: int):
     booking.isCancelled = True
     PcObject.save(booking)
 
-    redis.add_offer_id_to_redis(client=app.redis_client, offer_id=booking.stock.offerId)
+    redis.add_offer_id(client=app.redis_client, offer_id=booking.stock.offerId)
 
     try:
         send_cancellation_emails_to_user_and_offerer(booking, is_offerer_cancellation, is_user_cancellation,

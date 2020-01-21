@@ -83,15 +83,15 @@ class OrchestrateTest:
 
 class OrchestrateFromLocalProvidersTest:
     @patch('algolia.orchestrator.CHUNK_SIZE', return_value=3)
-    @patch('algolia.orchestrator.offer_queries.get_paginated_offers_by_venue_id_and_last_provider_id')
+    @patch('algolia.orchestrator.offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id')
     @patch('algolia.orchestrator.orchestrate')
     def test_should_index_offers_in_a_paginated_way(self,
                                                     mock_orchestrate,
-                                                    mock_get_paginated_offers_by_venue_id_and_last_provider_id,
+                                                    mock_get_paginated_offer_ids_by_venue_id_and_last_provider_id,
                                                     mock_chunk_size,
                                                     app):
         # Given
-        mock_get_paginated_offers_by_venue_id_and_last_provider_id.side_effect = [
+        mock_get_paginated_offer_ids_by_venue_id_and_last_provider_id.side_effect = [
             [1, 2, 3],
             [4],
             [],
@@ -108,8 +108,8 @@ class OrchestrateFromLocalProvidersTest:
         orchestrate_from_local_providers(venue_providers=venue_providers)
 
         # Then
-        assert mock_get_paginated_offers_by_venue_id_and_last_provider_id.call_count == 6
-        assert mock_get_paginated_offers_by_venue_id_and_last_provider_id.call_args_list == [
+        assert mock_get_paginated_offer_ids_by_venue_id_and_last_provider_id.call_count == 6
+        assert mock_get_paginated_offer_ids_by_venue_id_and_last_provider_id.call_args_list == [
             call(last_provider_id='5', limit=mock_chunk_size, page=0, venue_id=8),
             call(last_provider_id='5', limit=mock_chunk_size, page=1, venue_id=8),
             call(last_provider_id='5', limit=mock_chunk_size, page=2, venue_id=8),

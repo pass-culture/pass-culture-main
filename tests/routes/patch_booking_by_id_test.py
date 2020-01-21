@@ -87,6 +87,7 @@ class Patch:
             # Given
             admin_user = create_user(can_book_free_offers=False, is_admin=True)
             other_user = create_user(email='test2@example.com')
+
             booking = create_booking(other_user)
             create_deposit(other_user, amount=500)
             PcObject.save(admin_user, booking)

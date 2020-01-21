@@ -2,7 +2,7 @@ from unittest.mock import patch, MagicMock, call
 
 from models import PcObject
 from scripts.algolia_indexing.indexing import indexing_offers_in_algolia, batch_indexing_offers_in_algolia_by_venue_ids, \
-    batch_indexing_offers_in_algolia_from_database, indexing_offers_in_algolia_from_local_providers
+    batch_indexing_offers_in_algolia_from_database, batch_indexing_offers_in_algolia_by_local_providers
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue
 from tests.model_creators.specific_creators import create_offer_with_event_product
@@ -117,7 +117,7 @@ class IndexingOffersInAlgoliaFromLocalProvidersTest:
         client = MagicMock()
 
         # When
-        indexing_offers_in_algolia_from_local_providers(client=client)
+        batch_indexing_offers_in_algolia_by_local_providers(client=client)
 
         # Then
         mock_get_venue_providers.assert_called_once()

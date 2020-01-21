@@ -12,7 +12,7 @@ from repository.feature_queries import feature_cron_algolia_indexing_offers_enab
     feature_cron_algolia_indexing_offers_from_local_providers_enabled, \
     feature_cron_algolia_indexing_offers_by_venue_enabled
 from scripts.algolia_indexing.indexing import indexing_offers_in_algolia, batch_indexing_offers_in_algolia_by_venue_ids, \
-    indexing_offers_in_algolia_from_local_providers
+    batch_indexing_offers_in_algolia_by_local_providers
 from scripts.cron_logger.cron_logger import build_cron_log_message
 from scripts.cron_logger.cron_status import CronStatus
 from utils.config import REDIS_URL
@@ -63,7 +63,7 @@ def pc_batch_indexing_offers_in_algolia_by_venue_ids():
 @log_cron
 def pc_indexing_offers_in_algolia_from_local_providers():
     with app.app_context():
-        indexing_offers_in_algolia_from_local_providers(client=app.redis_client)
+        batch_indexing_offers_in_algolia_by_local_providers(client=app.redis_client)
 
 
 if __name__ == '__main__':

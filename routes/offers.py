@@ -112,5 +112,5 @@ def patch_offer(id: int):
     offer.update_with_product_data(request_data)
     PcObject.save(offer)
 
-    redis.add_offer_id_to_redis(client=app.redis_client, offer_id=offer.id)
+    redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
     return jsonify(as_dict(offer, includes=OFFER_INCLUDES)), 200
