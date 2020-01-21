@@ -1,32 +1,34 @@
 from unittest.mock import patch, MagicMock, call
 
 from models import PcObject
-from scripts.algolia_indexing.indexing import indexing_offers_in_algolia, batch_indexing_offers_in_algolia_by_venue_ids, \
-    batch_indexing_offers_in_algolia_from_database, batch_indexing_offers_in_algolia_by_local_providers
+from scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_offer, batch_indexing_offers_in_algolia_by_venue, \
+    batch_indexing_offers_in_algolia_from_database, batch_indexing_offers_in_algolia_by_venue_providers
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue
 from tests.model_creators.specific_creators import create_offer_with_event_product
 
 
-@patch('scripts.algolia_indexing.indexing.delete_offer_ids')
-@patch('scripts.algolia_indexing.indexing.orchestrate')
-@patch('scripts.algolia_indexing.indexing.get_offer_ids', return_value=[1, 2, 3])
-def test_should_trigger_indexing_using_offer_ids_from_redis(mock_get_offer_ids,
-                                                            mock_orchestrate,
-                                                            mock_delete_offer_ids):
-    # Given
-    client = MagicMock()
+class BatchIndexingOffersInAlgoliaByOfferTest:
+    @patch('scripts.algolia_indexing.indexing.delete_offer_ids')
+    @patch('scripts.algolia_indexing.indexing.orchestrate')
+    @patch('scripts.algolia_indexing.indexing.get_offer_ids', return_value=[1, 2, 3])
+    def test_should_trigger_indexing_using_offer_ids_from_redis(self,
+                                                                mock_get_offer_ids,
+                                                                mock_orchestrate,
+                                                                mock_delete_offer_ids):
+        # Given
+        client = MagicMock()
 
-    # When
-    indexing_offers_in_algolia(client=client)
+        # When
+        batch_indexing_offers_in_algolia_by_offer(client=client)
 
-    # Then
-    mock_get_offer_ids.assert_called_once()
-    mock_orchestrate.assert_called_once_with(offer_ids=[1, 2, 3])
-    mock_delete_offer_ids.assert_called_once()
+        # Then
+        mock_get_offer_ids.assert_called_once()
+        mock_orchestrate.assert_called_once_with(offer_ids=[1, 2, 3])
+        mock_delete_offer_ids.assert_called_once()
 
 
-class BatchIndexingOffersTest:
+class BatchIndexingOffersInAlgoliaFromDatabaseTest:
     @patch('scripts.algolia_indexing.indexing.orchestrate')
     @clean_database
     def test_should_index_offers_one_time_when_offers_per_page_is_one_and_only_one_page(self, mock_orchestrate, app):
@@ -68,7 +70,7 @@ class BatchIndexingOffersTest:
         ]
 
 
-class BatchIndexingOffersByVenueIdsTest:
+class BatchIndexingOffersInAlgoliaByVenueTest:
     @patch('scripts.algolia_indexing.indexing.delete_venue_ids')
     @patch('scripts.algolia_indexing.indexing.orchestrate')
     @patch('scripts.algolia_indexing.indexing.get_venue_ids', return_value=[13, 666])
@@ -89,7 +91,7 @@ class BatchIndexingOffersByVenueIdsTest:
         PcObject.save(offer1, offer2, offer3)
 
         # When
-        batch_indexing_offers_in_algolia_by_venue_ids(client=client, limit=1)
+        batch_indexing_offers_in_algolia_by_venue(client=client, limit=1)
 
         # Then
         assert mock_orchestrate.call_count == 3
@@ -102,9 +104,9 @@ class BatchIndexingOffersByVenueIdsTest:
         assert mock_delete_venue_ids.call_count == 1
 
 
-class IndexingOffersInAlgoliaFromLocalProvidersTest:
+class BatchIndexingOffersInAlgoliaByVenueProvidersTest:
     @patch('scripts.algolia_indexing.indexing.delete_venue_providers')
-    @patch('scripts.algolia_indexing.indexing.orchestrate_from_local_providers')
+    @patch('scripts.algolia_indexing.indexing.orchestrate_from_venue_providers')
     @patch('scripts.algolia_indexing.indexing.get_venue_providers', return_value=[
         {'id': 1, 'lastProviderId': 2, 'venueId': 5},
         {'id': 2, 'lastProviderId': 6, 'venueId': 7}
@@ -117,7 +119,7 @@ class IndexingOffersInAlgoliaFromLocalProvidersTest:
         client = MagicMock()
 
         # When
-        batch_indexing_offers_in_algolia_by_local_providers(client=client)
+        batch_indexing_offers_in_algolia_by_venue_providers(client=client)
 
         # Then
         mock_get_venue_providers.assert_called_once()

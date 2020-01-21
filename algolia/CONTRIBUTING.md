@@ -39,11 +39,10 @@ pc python
 ```
 
 ```python
-import redis
 from app import app
-from scripts.algolia_indexing.indexing import indexing_offers_in_algolia
+from scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_offer
 with app.app_context():
-    indexing_offers_in_algolia(client=app.redis_client)
+    batch_indexing_offers_in_algolia_by_offer(client=app.redis_client)
 ```
 
 Deux réponses possible :

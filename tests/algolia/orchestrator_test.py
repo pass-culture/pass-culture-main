@@ -1,6 +1,6 @@
 from unittest.mock import patch, call
 
-from algolia.orchestrator import orchestrate, orchestrate_from_local_providers
+from algolia.orchestrator import orchestrate, orchestrate_from_venue_providers
 from models import PcObject
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_stock, create_venue
@@ -82,7 +82,7 @@ class OrchestrateTest:
 
 
 class OrchestrateFromLocalProvidersTest:
-    @patch('algolia.orchestrator.CHUNK_SIZE', return_value=3)
+    @patch('algolia.orchestrator.ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE', return_value=3)
     @patch('algolia.orchestrator.offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id')
     @patch('algolia.orchestrator.orchestrate')
     def test_should_index_offers_in_a_paginated_way(self,
@@ -105,7 +105,7 @@ class OrchestrateFromLocalProvidersTest:
         ]
 
         # When
-        orchestrate_from_local_providers(venue_providers=venue_providers)
+        orchestrate_from_venue_providers(venue_providers=venue_providers)
 
         # Then
         assert mock_get_paginated_offer_ids_by_venue_id_and_last_provider_id.call_count == 6

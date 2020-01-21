@@ -1,3 +1,4 @@
+import os
 from typing import List, Dict
 
 from algolia.api import add_objects, clear_objects, delete_objects
@@ -7,8 +8,7 @@ from repository import offer_queries
 from utils.human_ids import humanize
 from utils.logger import logger
 
-CHUNK_SIZE = 10000
-
+ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE = int(os.environ.get('ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE', 10000))
 
 def orchestrate(offer_ids: List[int], is_clear: bool = False) -> None:
     if is_clear:
@@ -40,7 +40,7 @@ def orchestrate(offer_ids: List[int], is_clear: bool = False) -> None:
         logger.info(f'[ALGOLIA] Deleting {len(deleting_ids)} objectsID: {deleting_ids}')
 
 
-def orchestrate_from_local_providers(venue_providers: List[Dict]) -> None:
+def orchestrate_from_venue_providers(venue_providers: List[Dict]) -> None:
     for venue_provider in venue_providers:
         has_still_offers = True
         page = 0
@@ -49,7 +49,7 @@ def orchestrate_from_local_providers(venue_providers: List[Dict]) -> None:
             venue_id = int(venue_provider['venueId'])
             offer_ids = offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id(
                 last_provider_id=last_provider_id,
-                limit=CHUNK_SIZE,
+                limit=ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE,
                 page=page,
                 venue_id=venue_id
             )
