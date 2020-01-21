@@ -92,11 +92,11 @@ class OrchestrateFromLocalProvidersTest:
                                                     app):
         # Given
         mock_get_paginated_offer_ids_by_venue_id_and_last_provider_id.side_effect = [
-            [1, 2, 3],
-            [4],
+            [(1,), (2,), (3,)],
+            [(4,)],
             [],
-            [5, 6, 7],
-            [8],
+            [(5,), (6,), (7,)],
+            [(8,)],
             []
         ]
         venue_providers = [
@@ -119,8 +119,8 @@ class OrchestrateFromLocalProvidersTest:
 
         assert mock_orchestrate.call_count == 4
         assert mock_orchestrate.call_args_list == [
-            call([1, 2, 3]),
-            call([4]),
-            call([5, 6, 7]),
-            call([8])
+            call(offer_ids=[1, 2, 3]),
+            call(offer_ids=[4]),
+            call(offer_ids=[5, 6, 7]),
+            call(offer_ids=[8])
         ]

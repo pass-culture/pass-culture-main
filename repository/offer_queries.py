@@ -422,8 +422,8 @@ def get_paginated_offer_ids(limit: int, page: int) -> List[tuple]:
 
 def get_paginated_offer_ids_by_venue_id(venue_id: int, limit: int, page: int) -> List[tuple]:
     return Offer.query \
-        .filter(Offer.venueId == venue_id) \
         .with_entities(Offer.id) \
+        .filter(Offer.venueId == venue_id) \
         .order_by(Offer.id) \
         .offset(page * limit) \
         .limit(limit) \
@@ -433,11 +433,11 @@ def get_paginated_offer_ids_by_venue_id(venue_id: int, limit: int, page: int) ->
 def get_paginated_offer_ids_by_venue_id_and_last_provider_id(last_provider_id: str,
                                                              limit: int,
                                                              page: int,
-                                                             venue_id: int) -> List[int]:
+                                                             venue_id: int) -> List[tuple]:
     return Offer.query \
         .with_entities(Offer.id) \
-        .filter(Offer.venueId == venue_id) \
         .filter(Offer.lastProviderId == last_provider_id) \
+        .filter(Offer.venueId == venue_id) \
         .order_by(Offer.id) \
         .offset(page * limit) \
         .limit(limit) \

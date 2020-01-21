@@ -13,7 +13,7 @@ from repository.feature_queries import feature_cron_algolia_indexing_offers_by_o
     feature_cron_algolia_indexing_offers_by_venue_enabled
 from scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_offer, \
     batch_indexing_offers_in_algolia_by_venue, \
-    batch_indexing_offers_in_algolia_by_venue_providers
+    batch_indexing_offers_in_algolia_by_venue_provider
 from scripts.cron_logger.cron_logger import build_cron_log_message
 from scripts.cron_logger.cron_status import CronStatus
 from utils.config import REDIS_URL
@@ -22,9 +22,9 @@ from utils.logger import logger
 ALGOLIA_CRON_INDEXING_OFFERS_BY_OFFER_FREQUENCY = os.environ.get(
     'ALGOLIA_CRON_INDEXING_OFFERS_BY_OFFER_FREQUENCY', '*')
 ALGOLIA_CRON_INDEXING_OFFERS_BY_VENUE_FREQUENCY = os.environ.get(
-    'ALGOLIA_CRON_INDEXING_OFFERS_BY_VENUE_FREQUENCY', '*')
-ALGOLIA_CRON_INDEXING_OFFERS_BY_VENUE_PROVIDERS_FREQUENCY = os.environ.get(
-    'ALGOLIA_CRON_INDEXING_OFFERS_BY_VENUE_PROVIDERS_FREQUENCY', '10')
+    'ALGOLIA_CRON_INDEXING_OFFERS_BY_VENUE_FREQUENCY', '10')
+ALGOLIA_CRON_INDEXING_OFFERS_BY_VENUE_PROVIDER_FREQUENCY = os.environ.get(
+    'ALGOLIA_CRON_INDEXING_OFFERS_BY_VENUE_PROVIDER_FREQUENCY', '10')
 
 app = Flask(__name__, template_folder='../templates')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
@@ -51,7 +51,7 @@ def log_cron(func):
 
 
 @log_cron
-def pc_indexing_offers_in_algolia_by_offer():
+def pc_batch_indexing_offers_in_algolia_by_offer():
     with app.app_context():
         batch_indexing_offers_in_algolia_by_offer(client=app.redis_client)
 
@@ -63,9 +63,9 @@ def pc_batch_indexing_offers_in_algolia_by_venue():
 
 
 @log_cron
-def pc_indexing_offers_in_algolia_by_venue_providers():
+def pc_batch_indexing_offers_in_algolia_by_venue_provider():
     with app.app_context():
-        batch_indexing_offers_in_algolia_by_venue_providers(client=app.redis_client)
+        batch_indexing_offers_in_algolia_by_venue_provider(client=app.redis_client)
 
 
 if __name__ == '__main__':
@@ -73,14 +73,14 @@ if __name__ == '__main__':
     scheduler = BlockingScheduler()
 
     if feature_cron_algolia_indexing_offers_by_offer_enabled():
-        scheduler.add_job(pc_indexing_offers_in_algolia_by_offer, 'cron',
-                          id='algolia_indexing_offers',
+        scheduler.add_job(pc_batch_indexing_offers_in_algolia_by_offer, 'cron',
+                          id='algolia_indexing_offers_by_offer',
                           minute=ALGOLIA_CRON_INDEXING_OFFERS_BY_OFFER_FREQUENCY)
 
     if feature_cron_algolia_indexing_offers_by_venue_provider_enabled():
-        scheduler.add_job(pc_indexing_offers_in_algolia_by_venue_providers, 'cron',
-                          id='algolia_indexing_offers_by_venue_providers',
-                          minute=ALGOLIA_CRON_INDEXING_OFFERS_BY_VENUE_PROVIDERS_FREQUENCY)
+        scheduler.add_job(pc_batch_indexing_offers_in_algolia_by_venue_provider, 'cron',
+                          id='algolia_indexing_offers_by_venue_provider',
+                          minute=ALGOLIA_CRON_INDEXING_OFFERS_BY_VENUE_PROVIDER_FREQUENCY)
 
     if feature_cron_algolia_indexing_offers_by_venue_enabled():
         scheduler.add_job(pc_batch_indexing_offers_in_algolia_by_venue, 'cron',

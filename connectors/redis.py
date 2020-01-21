@@ -14,9 +14,9 @@ from utils.logger import logger
 REDIS_LIST_OFFER_IDS_NAME = 'offer_ids'
 REDIS_LIST_VENUE_IDS_NAME = 'venue_ids'
 REDIS_LIST_VENUE_PROVIDERS_NAME = 'venue_providers'
-REDIS_OFFER_IDS_LRANGE_END = int(os.environ.get('REDIS_OFFER_IDS_LRANGE_END', '1000'))
-REDIS_VENUE_IDS_LRANGE_END = int(os.environ.get('REDIS_VENUE_IDS_LRANGE_END', '1000'))
-REDIS_VENUES_PROVIDERS_LRANGE_END = int(os.environ.get('REDIS_VENUES_PROVIDERS_LRANGE_END', '1'))
+REDIS_OFFER_IDS_CHUNK_SIZE = int(os.environ.get('REDIS_OFFER_IDS_CHUNK_SIZE', '1000'))
+REDIS_VENUE_IDS_CHUNK_SIZE = int(os.environ.get('REDIS_VENUE_IDS_CHUNK_SIZE', '1000'))
+REDIS_VENUE_PROVIDERS_CHUNK_SIZE = int(os.environ.get('REDIS_VENUE_PROVIDERS_LRANGE_END', '1'))
 
 
 def add_offer_id(client: Redis, offer_id: int) -> None:
@@ -54,7 +54,7 @@ def add_venue_provider(client: Redis, venue_provider: VenueProvider) -> None:
 
 def get_offer_ids(client: Redis) -> List[int]:
     try:
-        offer_ids = client.lrange(REDIS_LIST_OFFER_IDS_NAME, 0, REDIS_OFFER_IDS_LRANGE_END)
+        offer_ids = client.lrange(REDIS_LIST_OFFER_IDS_NAME, 0, REDIS_OFFER_IDS_CHUNK_SIZE)
         return offer_ids
     except redis.exceptions.RedisError as error:
         logger.error(f'[REDIS] {error}')
@@ -62,7 +62,7 @@ def get_offer_ids(client: Redis) -> List[int]:
 
 def get_venue_ids(client: Redis) -> List[int]:
     try:
-        venue_ids = client.lrange(REDIS_LIST_VENUE_IDS_NAME, 0, REDIS_VENUE_IDS_LRANGE_END)
+        venue_ids = client.lrange(REDIS_LIST_VENUE_IDS_NAME, 0, REDIS_VENUE_IDS_CHUNK_SIZE)
         return venue_ids
     except redis.exceptions.RedisError as error:
         logger.error(f'[REDIS] {error}')
@@ -70,7 +70,7 @@ def get_venue_ids(client: Redis) -> List[int]:
 
 def delete_offer_ids(client: Redis) -> None:
     try:
-        client.ltrim(REDIS_LIST_OFFER_IDS_NAME, REDIS_OFFER_IDS_LRANGE_END, -1)
+        client.ltrim(REDIS_LIST_OFFER_IDS_NAME, REDIS_OFFER_IDS_CHUNK_SIZE, -1)
         logger.debug('[REDIS] offer ids were deleted')
     except redis.exceptions.RedisError as error:
         logger.error(f'[REDIS] {error}')
@@ -78,7 +78,7 @@ def delete_offer_ids(client: Redis) -> None:
 
 def delete_venue_ids(client: Redis) -> None:
     try:
-        client.ltrim(REDIS_LIST_VENUE_IDS_NAME, REDIS_VENUE_IDS_LRANGE_END, -1)
+        client.ltrim(REDIS_LIST_VENUE_IDS_NAME, REDIS_VENUE_IDS_CHUNK_SIZE, -1)
         logger.debug('[REDIS] venue ids were deleted')
     except redis.exceptions.RedisError as error:
         logger.error(f'[REDIS] {error}')
@@ -86,16 +86,15 @@ def delete_venue_ids(client: Redis) -> None:
 
 def get_venue_providers(client: Redis) -> List[dict]:
     try:
-        venue_providers_as_string = client.lrange(REDIS_LIST_VENUE_PROVIDERS_NAME, 0, REDIS_VENUES_PROVIDERS_LRANGE_END)
-        venue_providers_as_dict = [json.loads(venue_provider) for venue_provider in venue_providers_as_string]
-        return venue_providers_as_dict
+        venue_providers_as_string = client.lrange(REDIS_LIST_VENUE_PROVIDERS_NAME, 0, REDIS_VENUE_PROVIDERS_CHUNK_SIZE)
+        return [json.loads(venue_provider) for venue_provider in venue_providers_as_string]
     except redis.exceptions.RedisError as error:
         logger.error(f'[REDIS] {error}')
 
 
 def delete_venue_providers(client: Redis) -> None:
     try:
-        client.ltrim(REDIS_LIST_VENUE_PROVIDERS_NAME, REDIS_VENUES_PROVIDERS_LRANGE_END, -1)
+        client.ltrim(REDIS_LIST_VENUE_PROVIDERS_NAME, REDIS_VENUE_PROVIDERS_CHUNK_SIZE, -1)
         logger.debug('[REDIS] venues providers were deleted')
     except redis.exceptions.RedisError as error:
         logger.error(f'[REDIS] {error}')

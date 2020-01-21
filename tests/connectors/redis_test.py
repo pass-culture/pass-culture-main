@@ -63,7 +63,7 @@ class HandleOfferIdsTest:
         # Then
         client.rpush.assert_not_called()
 
-    @patch('connectors.redis.REDIS_OFFER_IDS_LRANGE_END', return_value=1000)
+    @patch('connectors.redis.REDIS_OFFER_IDS_CHUNK_SIZE', return_value=1000)
     @patch('connectors.redis.REDIS_LIST_OFFER_IDS_NAME', return_value='fake_list_offer_ids')
     @patch('connectors.redis.redis')
     def test_should_return_offer_ids_from_redis(self, mock_redis, mock_redis_list, mock_redis_lrange_end):
@@ -77,7 +77,7 @@ class HandleOfferIdsTest:
         # Then
         client.lrange.assert_called_once_with(mock_redis_list, 0, mock_redis_lrange_end)
 
-    @patch('connectors.redis.REDIS_OFFER_IDS_LRANGE_END', return_value=500)
+    @patch('connectors.redis.REDIS_OFFER_IDS_CHUNK_SIZE', return_value=500)
     @patch('connectors.redis.REDIS_LIST_OFFER_IDS_NAME', return_value='fake_list_offer_ids')
     @patch('connectors.redis.redis')
     def test_should_delete_given_range_of_offer_ids_from_redis(self,
@@ -130,7 +130,7 @@ class HandleVenueIdsTest:
         # Then
         client.rpush.assert_not_called()
 
-    @patch('connectors.redis.REDIS_VENUE_IDS_LRANGE_END', return_value=1000)
+    @patch('connectors.redis.REDIS_VENUE_IDS_CHUNK_SIZE', return_value=1000)
     @patch('connectors.redis.REDIS_LIST_VENUE_IDS_NAME', return_value='fake_list_venue_ids')
     @patch('connectors.redis.redis')
     def test_should_return_venue_ids_from_redis(self, mock_redis, mock_redis_list, mock_redis_lrange_end):
@@ -144,7 +144,7 @@ class HandleVenueIdsTest:
         # Then
         client.lrange.assert_called_once_with(mock_redis_list, 0, mock_redis_lrange_end)
 
-    @patch('connectors.redis.REDIS_VENUE_IDS_LRANGE_END', return_value=1000)
+    @patch('connectors.redis.REDIS_VENUE_IDS_CHUNK_SIZE', return_value=1000)
     @patch('connectors.redis.REDIS_LIST_VENUE_IDS_NAME', return_value='fake_list_venue_ids')
     @patch('connectors.redis.redis')
     def test_should_delete_given_range_of_venue_ids_from_redis(self, mock_redis, mock_redis_list,
@@ -213,7 +213,7 @@ class HandleVenueProvidersTest:
         # Then
         client.rpush.assert_not_called()
 
-    @patch('connectors.redis.REDIS_VENUES_PROVIDERS_LRANGE_END', return_value=2)
+    @patch('connectors.redis.REDIS_VENUE_PROVIDERS_CHUNK_SIZE', return_value=2)
     @patch('connectors.redis.REDIS_LIST_VENUE_PROVIDERS_NAME', return_value='fake_list_venue_providers')
     @patch('connectors.redis.redis')
     def test_should_return_venue_providers_from_redis(self, mock_redis, mock_redis_list, mock_redis_lrange_end):
@@ -235,7 +235,7 @@ class HandleVenueProvidersTest:
             {'id': 2, 'lastProviderId': 7, 'venueId': 9}
         ]
 
-    @patch('connectors.redis.REDIS_VENUES_PROVIDERS_LRANGE_END', return_value=2)
+    @patch('connectors.redis.REDIS_VENUE_PROVIDERS_CHUNK_SIZE', return_value=2)
     @patch('connectors.redis.REDIS_LIST_VENUE_PROVIDERS_NAME', return_value='fake_list_venue_providers')
     @patch('connectors.redis.redis')
     def test_should_delete_venue_providers_from_redis(self, mock_redis, mock_redis_list, mock_redis_lrange_end):

@@ -1,5 +1,3 @@
-from typing import List
-
 from redis import Redis
 
 from algolia.orchestrator import orchestrate, orchestrate_from_venue_providers
@@ -7,6 +5,7 @@ from connectors.redis import get_offer_ids, delete_offer_ids, get_venue_ids, del
     get_venue_providers, delete_venue_providers
 from repository.offer_queries import get_paginated_offer_ids
 from repository.offer_queries import get_paginated_offer_ids_by_venue_id
+from utils.converter import from_tuple_to_int
 from utils.logger import logger
 
 
@@ -23,7 +22,8 @@ def batch_indexing_offers_in_algolia_by_venue(client: Redis, limit: int = 10000)
         has_still_offers = True
         while has_still_offers:
             offer_ids_as_tuple = get_paginated_offer_ids_by_venue_id(venue_id, limit, page)
-            offer_ids_as_int = _converter(offer_ids_as_tuple)
+            offer_ids_as_int = from_tuple_to_int(offer_ids_as_tuple)
+
             if len(offer_ids_as_int) > 0:
                 orchestrate(offer_ids=offer_ids_as_int)
                 logger.info(f'[ALGOLIA] Indexing offers for venue {venue_id} from page {page}...')
@@ -35,7 +35,7 @@ def batch_indexing_offers_in_algolia_by_venue(client: Redis, limit: int = 10000)
     delete_venue_ids(client=client)
 
 
-def batch_indexing_offers_in_algolia_by_venue_providers(client: Redis) -> None:
+def batch_indexing_offers_in_algolia_by_venue_provider(client: Redis) -> None:
     venue_providers = get_venue_providers(client=client)
     orchestrate_from_venue_providers(venue_providers=venue_providers)
     delete_venue_providers(client=client)
@@ -47,7 +47,7 @@ def batch_indexing_offers_in_algolia_from_database(limit: int = 10000) -> None:
 
     while has_still_offers:
         offer_ids_as_tuple = get_paginated_offer_ids(limit, page)
-        offer_ids_as_int = _converter(offer_ids_as_tuple)
+        offer_ids_as_int = from_tuple_to_int(offer_ids_as_tuple)
 
         if len(offer_ids_as_int) > 0:
             orchestrate(offer_ids=offer_ids_as_int)
@@ -56,7 +56,3 @@ def batch_indexing_offers_in_algolia_from_database(limit: int = 10000) -> None:
             has_still_offers = False
             logger.info('[ALGOLIA] Indexing offers finished!')
         page += 1
-
-
-def _converter(offer_ids: List[tuple]) -> List[int]:
-    return [offer[0] for offer in offer_ids]
