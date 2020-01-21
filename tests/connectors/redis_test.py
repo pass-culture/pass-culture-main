@@ -32,7 +32,7 @@ class HandleOfferIdsTest:
     @patch('connectors.redis.feature_queries.is_active', return_value=True)
     @patch('connectors.redis.REDIS_LIST_OFFER_IDS_NAME', return_value='fake_list_offer_ids')
     @patch('connectors.redis.redis')
-    def test_should_add_offer_id_to_redis_when_feature_flipping_is_enabled(self,
+    def test_should_add_offer_id_to_redis_when_algolia_feature_is_enabled(self,
                                                                            mock_redis,
                                                                            mock_redis_list,
                                                                            mock_feature_active):
@@ -49,7 +49,7 @@ class HandleOfferIdsTest:
     @patch('connectors.redis.feature_queries.is_active', return_value=False)
     @patch('connectors.redis.REDIS_LIST_OFFER_IDS_NAME', return_value='fake_list_offer_ids')
     @patch('connectors.redis.redis')
-    def test_should_not_add_offer_id_to_redis_when_feature_flipping_is_disabled(self,
+    def test_should_not_add_offer_id_to_redis_when_algolia_feature_is_disabled(self,
                                                                                 mock_redis,
                                                                                 mock_redis_list,
                                                                                 mock_feature_active):
@@ -80,7 +80,7 @@ class HandleOfferIdsTest:
     @patch('connectors.redis.REDIS_OFFER_IDS_LRANGE_END', return_value=500)
     @patch('connectors.redis.REDIS_LIST_OFFER_IDS_NAME', return_value='fake_list_offer_ids')
     @patch('connectors.redis.redis')
-    def test_should_delete_given_range_of_offer_ids_from_redis_list(self,
+    def test_should_delete_given_range_of_offer_ids_from_redis(self,
                                                                     mock_redis,
                                                                     mock_redis_list,
                                                                     mock_redis_lrange_end):
@@ -95,11 +95,11 @@ class HandleOfferIdsTest:
         client.ltrim.assert_called_once_with(mock_redis_list, mock_redis_lrange_end, -1)
 
 
-class HandleVenueTest:
+class HandleVenueIdsTest:
     @patch('connectors.redis.feature_queries.is_active', return_value=True)
     @patch('connectors.redis.REDIS_LIST_VENUE_IDS_NAME', return_value='fake_list_venue_ids')
     @patch('connectors.redis.redis')
-    def test_should_add_venue_id_to_redis_when_feature_flipping_is_enabled(self,
+    def test_should_add_venue_id_to_redis_when_algolia_feature_is_enabled(self,
                                                                            mock_redis,
                                                                            mock_redis_list,
                                                                            mock_feature_active):
@@ -116,7 +116,7 @@ class HandleVenueTest:
     @patch('connectors.redis.feature_queries.is_active', return_value=False)
     @patch('connectors.redis.REDIS_LIST_VENUE_IDS_NAME', return_value='fake_list_venue_ids')
     @patch('connectors.redis.redis')
-    def test_should_not_add_venue_id_to_redis_set_when_feature_flipping_is_disabled(self,
+    def test_should_not_add_venue_id_to_redis_when_algolia_feature_is_disabled(self,
                                                                                     mock_redis,
                                                                                     mock_redis_list,
                                                                                     mock_feature_active):
@@ -147,7 +147,7 @@ class HandleVenueTest:
     @patch('connectors.redis.REDIS_VENUE_IDS_LRANGE_END', return_value=1000)
     @patch('connectors.redis.REDIS_LIST_VENUE_IDS_NAME', return_value='fake_list_venue_ids')
     @patch('connectors.redis.redis')
-    def test_should_delete_given_range_of_venue_ids_from_redis_list(self, mock_redis, mock_redis_list,
+    def test_should_delete_given_range_of_venue_ids_from_redis(self, mock_redis, mock_redis_list,
                                                                     mock_redis_lrange_end):
         # Given
         client = MagicMock()
@@ -161,10 +161,15 @@ class HandleVenueTest:
 
 
 class HandleVenueProvidersTest:
+    @patch('connectors.redis.feature_queries.is_active', return_value=True)
     @patch('connectors.redis.REDIS_LIST_VENUE_PROVIDERS_NAME', return_value='fake_list_venue_providers')
     @patch('connectors.redis.redis')
     @clean_database
-    def test_should_add_venue_provider_to_redis_list(self, mock_redis, mock_redis_list, app):
+    def test_should_add_venue_provider_to_redis_when_algolia_feature_is_enabled(self,
+                                                                                mock_redis,
+                                                                                mock_redis_list,
+                                                                                mock_feature_active,
+                                                                                app):
         # Given
         client = MagicMock()
         client.rpush = MagicMock()
@@ -181,6 +186,32 @@ class HandleVenueProvidersTest:
 
         # Then
         client.rpush.assert_called_once_with(mock_redis_list, '{"id": 1, "lastProviderId": null, "venueId": 1}')
+
+    @patch('connectors.redis.feature_queries.is_active', return_value=False)
+    @patch('connectors.redis.REDIS_LIST_VENUE_PROVIDERS_NAME', return_value='fake_list_venue_providers')
+    @patch('connectors.redis.redis')
+    @clean_database
+    def test_should_not_add_venue_provider_to_redis_when_algolia_feature_is_disabled(self,
+                                                                                     mock_redis,
+                                                                                     mock_redis_list,
+                                                                                     mock_feature_active,
+                                                                                     app):
+        # Given
+        client = MagicMock()
+        client.rpush = MagicMock()
+        provider = create_provider(idx=1, local_class='OpenAgenda', is_active=False, is_enable_for_pro=False)
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user=user, offerer=offerer)
+        venue = create_venue(idx=1, offerer=offerer)
+        venue_provider = create_venue_provider(idx=1, provider=provider, venue=venue)
+        PcObject.save(user_offerer, venue_provider)
+
+        # When
+        add_venue_provider(client=client, venue_provider=venue_provider)
+
+        # Then
+        client.rpush.assert_not_called()
 
     @patch('connectors.redis.REDIS_VENUES_PROVIDERS_LRANGE_END', return_value=2)
     @patch('connectors.redis.REDIS_LIST_VENUE_PROVIDERS_NAME', return_value='fake_list_venue_providers')

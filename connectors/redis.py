@@ -37,6 +37,21 @@ def add_venue_id(client: Redis, venue_id: int) -> None:
             logger.error(f'[REDIS] {error}')
 
 
+def add_venue_provider(client: Redis, venue_provider: VenueProvider) -> None:
+    if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
+        try:
+            venue_provider_as_dict = {
+                'id': venue_provider.id,
+                'lastProviderId': venue_provider.lastProviderId,
+                'venueId': venue_provider.venueId
+            }
+            venue_provider_as_string = json.dumps(venue_provider_as_dict)
+            client.rpush(REDIS_LIST_VENUE_PROVIDERS_NAME, venue_provider_as_string)
+            logger.debug('[REDIS] venue provider was added')
+        except redis.exceptions.RedisError as error:
+            logger.error(f'[REDIS] {error}')
+
+
 def get_offer_ids(client: Redis) -> List[int]:
     try:
         offer_ids = client.lrange(REDIS_LIST_OFFER_IDS_NAME, 0, REDIS_OFFER_IDS_LRANGE_END)
@@ -65,20 +80,6 @@ def delete_venue_ids(client: Redis) -> None:
     try:
         client.ltrim(REDIS_LIST_VENUE_IDS_NAME, REDIS_VENUE_IDS_LRANGE_END, -1)
         logger.debug('[REDIS] venue ids were deleted')
-    except redis.exceptions.RedisError as error:
-        logger.error(f'[REDIS] {error}')
-
-
-def add_venue_provider(client: Redis, venue_provider: VenueProvider) -> None:
-    try:
-        venue_provider_as_dict = {
-            'id': venue_provider.id,
-            'lastProviderId': venue_provider.lastProviderId,
-            'venueId': venue_provider.venueId
-        }
-        venue_provider_as_string = json.dumps(venue_provider_as_dict)
-        client.rpush(REDIS_LIST_VENUE_PROVIDERS_NAME, venue_provider_as_string)
-        logger.debug('[REDIS] venue provider was added')
     except redis.exceptions.RedisError as error:
         logger.error(f'[REDIS] {error}')
 
