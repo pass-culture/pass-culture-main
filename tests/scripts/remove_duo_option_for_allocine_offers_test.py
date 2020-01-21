@@ -1,12 +1,12 @@
 from models import PcObject, Offer
 from repository.provider_queries import get_provider_by_local_class
-from scripts.update_duo_option_in_allocine_stocks import update_duo_option_in_allocine_stocks
+from scripts.remove_duo_option_for_allocine_offers import remove_duo_option_for_allocine_offers
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue
 from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 
 
-class UpdateDuoOptionInAllocineStocksTest:
+class RemoveDuoOptionForAllocineOffersTest:
     @clean_database
     def test_should_set_duo_option_as_false_only_for_allocine_offers(self, app):
         # Given
@@ -26,11 +26,11 @@ class UpdateDuoOptionInAllocineStocksTest:
         PcObject.save(allocine_offer_1, allocine_offer_2, other_offer)
 
         # When
-        update_duo_option_in_allocine_stocks()
+        remove_duo_option_for_allocine_offers()
 
         # Then
         offers = Offer.query.all()
 
-        assert offers[0].id == 999 and offers[0].isDuo is True
-        assert offers[1].isDuo is False
-        assert offers[2].isDuo is False
+        assert offers[0].id == 999 and offers[0].isDuo
+        assert not offers[1].isDuo
+        assert not offers[2].isDuo

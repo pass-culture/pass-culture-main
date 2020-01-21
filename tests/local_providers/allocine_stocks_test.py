@@ -278,7 +278,7 @@ class UpdateObjectsTest:
         assert created_offer.durationMinutes == 46
         assert created_offer.extraData["visa"] == "2009993528"
         assert created_offer.extraData["stageDirector"] == "Farkhondeh Torabi"
-        assert created_offer.isDuo is False
+        assert not created_offer.isDuo
         assert created_offer.name == "Les Contes de la mère poule - VF"
         assert created_offer.product == created_product
         assert created_offer.type == str(EventType.CINEMA)
@@ -432,7 +432,7 @@ class UpdateObjectsTest:
         assert original_version_offer.durationMinutes == 46
         assert original_version_offer.extraData["visa"] == "2009993528"
         assert original_version_offer.extraData["stageDirector"] == "Farkhondeh Torabi"
-        assert original_version_offer.isDuo is False
+        assert not original_version_offer.isDuo
         assert original_version_offer.name == "Les Contes de la mère poule - VO"
         assert original_version_offer.product == created_products[0]
         assert original_version_offer.type == str(EventType.CINEMA)
@@ -444,7 +444,7 @@ class UpdateObjectsTest:
         assert dubbed_version_offer.durationMinutes == 46
         assert dubbed_version_offer.extraData["visa"] == "2009993528"
         assert dubbed_version_offer.extraData["stageDirector"] == "Farkhondeh Torabi"
-        assert dubbed_version_offer.isDuo is False
+        assert not dubbed_version_offer.isDuo
         assert dubbed_version_offer.name == "Les Contes de la mère poule - VF"
         assert dubbed_version_offer.product == created_products[0]
         assert dubbed_version_offer.type == str(EventType.CINEMA)
