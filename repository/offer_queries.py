@@ -430,10 +430,10 @@ def get_paginated_offer_ids_for_venue_id(venue_id: int, limit: int, page: int) -
         .all()
 
 
-def get_paginated_offers_by_venue_id_and_last_provider_id(last_provider_id: str,
-                                                          limit: int,
-                                                          page: int,
-                                                          venue_id: int) -> List[int]:
+def get_paginated_offer_ids_by_venue_id_and_last_provider_id(last_provider_id: str,
+                                                             limit: int,
+                                                             page: int,
+                                                             venue_id: int) -> List[int]:
     return Offer.query \
         .with_entities(Offer.id) \
         .filter(Offer.venueId == venue_id) \

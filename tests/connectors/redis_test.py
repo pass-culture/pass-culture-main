@@ -3,9 +3,13 @@ from unittest.mock import patch, MagicMock
 
 import redis
 
-from connectors.redis import add_offer_id, get_offer_ids, delete_offer_ids, get_venue_ids, \
-    delete_venue_ids, add_venue_id, add_venue_provider_to_redis, \
-    get_venue_providers, delete_venue_providers
+from connectors.redis import add_offer_id_to_redis, get_offer_ids_from_redis, delete_offer_ids_from_redis, add_venue_id, \
+    get_venue_ids, delete_venue_ids, add_venue_provider_to_redis, get_venue_providers_from_redis, \
+    delete_venue_providers_from_redis
+from models import PcObject
+from tests.conftest import clean_database
+from tests.model_creators.generic_creators import create_venue_provider, create_venue, create_user, create_offerer, \
+    create_user_offerer, create_provider
 
 
 class RedisTest:
@@ -24,7 +28,7 @@ class RedisTest:
         assert str(redis_connection.get(key_to_insert), 'utf-8') == value_to_insert
 
 
-class HandleOfferTest:
+class HandleOfferIdsTest:
     @patch('connectors.redis.feature_queries.is_active', return_value=True)
     @patch('connectors.redis.REDIS_LIST_OFFER_IDS_NAME', return_value='fake_list_offer_ids')
     @patch('connectors.redis.redis')
@@ -37,7 +41,7 @@ class HandleOfferTest:
         client.rpush = MagicMock()
 
         # When
-        add_offer_id(client=client, offer_id=1)
+        add_offer_id_to_redis(client=client, offer_id=1)
 
         # Then
         client.rpush.assert_called_once_with(mock_redis_list, 1)
@@ -54,7 +58,7 @@ class HandleOfferTest:
         client.rpush = MagicMock()
 
         # When
-        add_offer_id(client=client, offer_id=1)
+        add_offer_id_to_redis(client=client, offer_id=1)
 
         # Then
         client.rpush.assert_not_called()
@@ -68,7 +72,7 @@ class HandleOfferTest:
         client.lrange = MagicMock()
 
         # When
-        get_offer_ids(client=client)
+        get_offer_ids_from_redis(client=client)
 
         # Then
         client.lrange.assert_called_once_with(mock_redis_list, 0, mock_redis_lrange_end)
@@ -85,7 +89,7 @@ class HandleOfferTest:
         client.ltrim = MagicMock()
 
         # When
-        delete_offer_ids(client=client)
+        delete_offer_ids_from_redis(client=client)
 
         # Then
         client.ltrim.assert_called_once_with(mock_redis_list, mock_redis_lrange_end, -1)
@@ -159,21 +163,24 @@ class HandleVenueTest:
 class HandleVenueProvidersTest:
     @patch('connectors.redis.REDIS_LIST_VENUE_PROVIDERS', return_value='fake_list_venue_providers')
     @patch('connectors.redis.redis')
-    def test_should_add_venue_provider_to_redis_list(self, mock_redis, mock_redis_list):
+    @clean_database
+    def test_should_add_venue_provider_to_redis_list(self, mock_redis, mock_redis_list, app):
         # Given
         client = MagicMock()
         client.rpush = MagicMock()
-        venue_provider = {
-            'id': 1,
-            'lastProviderId': 2,
-            'venueId': 3
-        }
+        provider = create_provider(idx=1, local_class='OpenAgenda', is_active=False, is_enable_for_pro=False)
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user=user, offerer=offerer)
+        venue = create_venue(offerer=offerer)
+        venue_provider = create_venue_provider(idx=1, provider=provider, venue=venue)
+        PcObject.save(user_offerer, venue_provider)
 
         # When
         add_venue_provider_to_redis(client=client, venue_provider=venue_provider)
 
         # Then
-        client.rpush.assert_called_once_with(mock_redis_list, '{"id": 1, "lastProviderId": 2, "venueId": 3}')
+        client.rpush.assert_called_once_with(mock_redis_list, '{"id": 1, "lastProviderId": null, "venueId": 1}')
 
     @patch('connectors.redis.REDIS_VENUES_PROVIDERS_LRANGE_END', return_value=2)
     @patch('connectors.redis.REDIS_LIST_VENUE_PROVIDERS', return_value='fake_list_venue_providers')
@@ -188,7 +195,7 @@ class HandleVenueProvidersTest:
         ]
 
         # When
-        result = get_venue_providers(client=client)
+        result = get_venue_providers_from_redis(client=client)
 
         # Then
         client.lrange.assert_called_once_with(mock_redis_list, 0, mock_redis_lrange_end)
@@ -206,7 +213,7 @@ class HandleVenueProvidersTest:
         client.ltrim = MagicMock()
 
         # When
-        delete_venue_providers(client=client)
+        delete_venue_providers_from_redis(client=client)
 
         # Then
         client.ltrim.assert_called_once_with(mock_redis_list, mock_redis_lrange_end, -1)

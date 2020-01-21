@@ -84,7 +84,7 @@ def create_stock():
     new_stock = Stock(from_dict=request_data)
     PcObject.save(new_stock)
 
-    redis.add_offer_id(client=app.redis_client, offer_id=offer_id)
+    redis.add_offer_id_to_redis(client=app.redis_client, offer_id=offer_id)
 
     return jsonify(as_dict(new_stock)), 201
 

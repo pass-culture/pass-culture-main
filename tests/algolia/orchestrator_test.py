@@ -80,8 +80,8 @@ class OrchestrateTest:
             {'fake': 'test'}
         ])
 
+
 class OrchestrateFromLocalProvidersTest:
-    @clean_database
     @patch('algolia.orchestrator.CHUNK_SIZE', return_value=3)
     @patch('algolia.orchestrator.offer_queries.get_paginated_offers_by_venue_id_and_last_provider_id')
     @patch('algolia.orchestrator.orchestrate')

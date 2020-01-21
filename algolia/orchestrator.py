@@ -47,7 +47,7 @@ def orchestrate_from_local_providers(venue_providers: List[Dict]) -> None:
         while has_still_offers is True:
             last_provider_id = venue_provider['lastProviderId']
             venue_id = int(venue_provider['venueId'])
-            offer_ids = offer_queries.get_paginated_offers_by_venue_id_and_last_provider_id(
+            offer_ids = offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id(
                 last_provider_id=last_provider_id,
                 limit=CHUNK_SIZE,
                 page=page,

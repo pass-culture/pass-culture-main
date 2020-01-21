@@ -292,7 +292,7 @@ class UpdateObjectsTest:
         assert created_product.extraData["stageDirector"] == "Farkhondeh Torabi"
         assert created_product.name == "Les Contes de la mère poule"
         assert created_product.type == str(EventType.CINEMA)
-        mock_redis.assert_called()
+        mock_redis.assert_called_once()
 
     @patch('local_providers.local_provider.add_venue_provider_to_redis')
     @patch('local_providers.allocine_stocks.get_movie_poster')
