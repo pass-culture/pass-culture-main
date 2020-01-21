@@ -1,13 +1,7 @@
-import traceback
-from pprint import pprint
-
 from flask import current_app as app
 
-import local_providers
+from local_providers.provider_manager import do_update, get_class_by_name
 from models import VenueProvider
-from scripts.cron_logger.cron_logger import build_cron_log_message
-from scripts.cron_logger.cron_status import CronStatus
-from utils.logger import logger
 
 
 @app.manager.option('-p',
@@ -51,18 +45,3 @@ def update_providables_by_provider_id(provider_id: str, limit: int):
         provider = ProviderClass(venue_provider)
         do_update(provider, limit)
     pass
-
-
-def do_update(provider, limit):
-    try:
-        provider.updateObjects(limit)
-    except Exception as e:
-        print('ERROR: ' + e.__class__.__name__ + ' ' + str(e))
-        traceback.print_tb(e.__traceback__)
-        pprint(vars(e))
-        tb = traceback.format_exc()
-        logger.error(build_cron_log_message(name=provider.__class__.__name__, status=CronStatus.STARTED, traceback=tb))
-
-
-def get_class_by_name(class_name: str):
-    return getattr(local_providers, class_name)

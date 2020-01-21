@@ -10,11 +10,10 @@ from tests.model_creators.provider_creators import activate_provider
 class UpdateVenuesForSpecificProviderTest:
     @patch('local_providers.venue_provider_worker.do_sync_venue_provider')
     @clean_database
-    def test_should_call_sync_venue_provider_for_excpected_venue_provider(self,
-                                                                          mock_do_sync_venue_provider,
-                                                                          app):
+    def test_should_call_sync_venue_provider_for_expected_venue_provider(self,
+                                                                         mock_do_sync_venue_provider,
+                                                                         app):
         # Given
-        mock_do_sync_venue_provider.return_value = {}
         titelive_provider = activate_provider('TiteLiveStocks')
         offerer = create_offerer()
         venue1 = create_venue(offerer)
@@ -27,6 +26,36 @@ class UpdateVenuesForSpecificProviderTest:
         update_venues_for_specific_provider(titelive_provider.id)
 
         # Then
+        assert mock_do_sync_venue_provider.call_count == 2
+        assert mock_do_sync_venue_provider.call_args_list == [call(venue_provider_titelive2),
+                                                              call(venue_provider_titelive1)]
+
+    @patch.dict('os.environ', {"SYNC_WORKER_POOL": '1'})
+    @patch('local_providers.venue_provider_worker.sleep')
+    @patch('local_providers.venue_provider_worker.do_sync_venue_provider')
+    @patch('local_providers.venue_provider_worker.get_nb_containers_at_work')
+    @clean_database
+    def test_should_call_sync_venue_provider_until_reaching_max_pool_size(self,
+                                                                          mock_get_nb_containers_at_work,
+                                                                          mock_do_sync_venue_provider,
+                                                                          mock_sleep,
+                                                                          app):
+        # Given
+        mock_get_nb_containers_at_work.side_effect = [0, 1, 0]
+        titelive_provider = activate_provider('TiteLiveStocks')
+        offerer = create_offerer()
+        venue1 = create_venue(offerer)
+        venue2 = create_venue(offerer, siret='12345678912356')
+        venue_provider_titelive1 = create_venue_provider(venue1, titelive_provider)
+        venue_provider_titelive2 = create_venue_provider(venue2, titelive_provider)
+        PcObject.save(venue_provider_titelive1, venue_provider_titelive2)
+
+        # When
+        update_venues_for_specific_provider(titelive_provider.id)
+
+        # Then
+        mock_sleep.assert_called_once_with(60)
+        assert mock_get_nb_containers_at_work.call_count == 3
         assert mock_do_sync_venue_provider.call_count == 2
         assert mock_do_sync_venue_provider.call_args_list == [call(venue_provider_titelive2),
                                                               call(venue_provider_titelive1)]

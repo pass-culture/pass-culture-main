@@ -8,7 +8,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 from flask import Flask
 from sqlalchemy import orm
 
-from local_providers.venue_provider_watcher import update_venues_for_specific_provider
+from local_providers.venue_provider_worker import update_venues_for_specific_provider
 from models.db import db
 from repository.feature_queries import feature_cron_synchronize_titelive_things, \
     feature_cron_synchronize_titelive_descriptions, \
