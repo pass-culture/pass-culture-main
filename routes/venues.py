@@ -81,6 +81,7 @@ def activate_venue_offers(venueId):
     offers = venue.offers
     activated_offers = update_is_active_status(offers, True)
     PcObject.save(*activated_offers)
+    redis.add_venue_id(client=app.redis_client, venue_id=venue.id)
     return jsonify([as_dict(offer, includes=OFFER_INCLUDES) for offer in activated_offers]), 200
 
 
@@ -92,4 +93,5 @@ def deactivate_venue_offers(venueId):
     offers = venue.offers
     deactivated_offers = update_is_active_status(offers, False)
     PcObject.save(*deactivated_offers)
+    redis.add_venue_id(client=app.redis_client, venue_id=venue.id)
     return jsonify([as_dict(offer, includes=OFFER_INCLUDES) for offer in deactivated_offers]), 200

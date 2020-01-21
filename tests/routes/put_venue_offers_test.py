@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from models import PcObject, Offer
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, create_user_offerer
@@ -140,6 +142,42 @@ class Put:
             assert response.status_code == 200
             assert response.json[0]['stockAlertMessage'] == 'encore 22 places'
 
+
+        @patch('routes.venues.redis.add_venue_id')
+        @clean_database
+        def when_activating_all_venue_offers_expect_venue_id_to_be_added_to_redis(self, mock_add_to_redis, app):
+            # Given
+            user = create_user(email='test@example.net')
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            offer = create_offer_with_event_product(venue)
+            offer2 = create_offer_with_thing_product(venue)
+            stock1 = create_stock_from_offer(offer)
+            offer.isActive = False
+            offer2.isActive = False
+            PcObject.save(
+                offer2, stock1, user_offerer, venue
+            )
+
+            api_url = API_URL + humanize(venue.id) + '/offers/activate'
+
+            # When
+            response = TestClient(app.test_client()) \
+                .with_auth('test@example.net') \
+                .put(api_url)
+
+            # Then
+            assert response.status_code == 200
+            assert response.json[0]['isActive'] == True
+            assert response.json[1]['isActive'] == True
+
+            offers = Offer.query.all()
+            assert offers[0].isActive == True
+            assert offers[1].isActive == True
+            mock_add_to_redis.assert_called_once_with(client=app.redis_client, venue_id=venue.id)
+
+
         @clean_database
         def when_deactivating_all_venue_offers(self, app):
             # Given
@@ -191,3 +229,36 @@ class Put:
             # Then
             assert response.status_code == 200
             assert response.json[0]['stockAlertMessage'] == 'plus de places pour toutes les dates'
+
+
+        @patch('routes.venues.redis.add_venue_id')
+        @clean_database
+        def when_deactivating_all_venue_offers_expect_venue_id_to_be_added_to_redis(self, mock_add_to_redis, app):
+            # Given
+            user = create_user(email='test@example.net')
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            offer = create_offer_with_event_product(venue)
+            offer2 = create_offer_with_thing_product(venue)
+            stock1 = create_stock_from_offer(offer)
+            PcObject.save(
+                offer2, stock1, user_offerer, venue
+            )
+
+            api_url = API_URL + humanize(venue.id) + '/offers/deactivate'
+
+            # When
+            response = TestClient(app.test_client()).with_auth('test@example.net') \
+                .put(api_url)
+
+            # Then
+            assert response.status_code == 200
+            assert response.json[0]['isActive'] == False
+            assert response.json[1]['isActive'] == False
+
+            offers = Offer.query.all()
+            assert offers[0].isActive == False
+            assert offers[1].isActive == False
+            mock_add_to_redis.assert_called_once_with(client=app.redis_client, venue_id=venue.id)
+
