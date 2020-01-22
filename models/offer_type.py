@@ -146,6 +146,16 @@ class ThingType(SearchableType):
         'conditionalFields': [],
         'isActive': True
     }
+    CINEMA_CARD = {
+        'proLabel': "Cinéma - vente à distance",
+        'appLabel': "Cinéma",
+        'offlineOnly': False,
+        'onlineOnly': False,
+        'sublabel': "Regarder",
+        'description': "Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?",
+        'conditionalFields': [],
+        'isActive': True
+    }
     JEUX = {
         'proLabel': "Jeux (support physique)",
         'appLabel': "Support physique",

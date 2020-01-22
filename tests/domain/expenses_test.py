@@ -202,6 +202,34 @@ class ExpensesTest:
                 assert expenses['digital']['actual'] == 0
                 assert expenses['physical']['actual'] == 0
 
+        class CinemaCardTest:
+            def test_offline_offer_increase_total_expense(self):
+                # Given
+                bookings = [
+                    create_booking_for_thing(amount=50, url=None, product_type=ThingType.CINEMA_CARD)
+                ]
+
+                # When
+                expenses = get_expenses(bookings)
+
+                # Then
+                assert expenses['all']['actual'] == 50
+                assert expenses['digital']['actual'] == 0
+                assert expenses['physical']['actual'] == 0
+
+            def test_online_offer_increase_total_expense(self):
+                # Given
+                bookings = [
+                    create_booking_for_thing(amount=50, url='http://on.line', product_type=ThingType.CINEMA_CARD)
+                ]
+
+                # When
+                expenses = get_expenses(bookings)
+
+                # Then
+                assert expenses['all']['actual'] == 50
+                assert expenses['digital']['actual'] == 0
+                assert expenses['physical']['actual'] == 0
 
         class InstrumentTest:
             def test_offline_offer_increase_physical_expense(self):

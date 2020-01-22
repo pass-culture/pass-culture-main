@@ -21,7 +21,7 @@ class GetFormattedEventOrThingTypesTest:
             'appLabel': 'Cinéma',
             'isActive': True
         }
-        assert len(types) == 21
+        assert len(types) == 22
 
     def test_does_not_return_inactive_product_types(self):
         # given
