@@ -25,6 +25,8 @@ from repository.user_offerer_queries import filter_query_where_user_is_user_offe
 from utils.distance import get_sql_geo_distance_in_kilometers
 from utils.logger import logger
 
+ALL_DEPARTMENTS_CODE = '00'
+
 
 def build_offer_search_base_query():
     return Offer.query.outerjoin(Product) \
@@ -33,7 +35,7 @@ def build_offer_search_base_query():
 
 
 def department_or_national_offers(query, departement_codes):
-    if '00' in departement_codes:
+    if ALL_DEPARTMENTS_CODE in departement_codes:
         return query
 
     query = query.filter(
@@ -93,7 +95,7 @@ def get_offers_for_recommendation(user: User,
         .filter(DiscoveryView.id.notin_(seen_recommendation_ids)) \
         .filter(DiscoveryView.id.notin_(offer_booked_ids))
 
-    if '00' not in departement_codes:
+    if ALL_DEPARTMENTS_CODE not in departement_codes:
         venues = Venue.query.filter(Venue.departementCode.in_(departement_codes)).with_entities(Venue.id).all()
         venue_ids = [venue.id for venue in venues]
         recos_query = recos_query \
@@ -134,7 +136,7 @@ def _get_paginated_active_offers(limit, page, query):
     return query
 
 
-def get_active_offers_ids_query(user, departement_codes=['00'], offer_id=None):
+def get_active_offers_ids_query(user, departement_codes=[ALL_DEPARTMENTS_CODE], offer_id=None):
     active_offers_query = Offer.query.distinct(Offer.id)
 
     if offer_id is not None:

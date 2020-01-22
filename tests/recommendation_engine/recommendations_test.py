@@ -4,8 +4,7 @@ from unittest.mock import patch
 
 from dateutil.tz import tzutc
 
-from models import PcObject, Offerer, Stock, DiscoveryView
-from models.db import db
+from models import PcObject, Offerer, Stock
 from recommendations_engine import create_recommendations_for_discovery, \
     get_recommendation_search_params, \
     give_requested_recommendation_to_user
@@ -28,7 +27,6 @@ class GiveRequestedRecommendationToUserTest:
         mediation = create_mediation(offer_ok, is_active=False)
         reco_ok = create_recommendation(offer=offer_ok, user=user, mediation=mediation)
         PcObject.save(reco_ok, stock)
-        DiscoveryView.refresh(concurrently=False)
 
         # When
         result_reco = give_requested_recommendation_to_user(
@@ -49,7 +47,6 @@ class GiveRequestedRecommendationToUserTest:
         mediation = create_mediation(offer_ok, is_active=False)
         reco_ko = create_recommendation(offer=offer_ok, user=user, mediation=mediation)
         PcObject.save(reco_ko, stock, user2)
-        DiscoveryView.refresh(concurrently=False)
 
         # When
         result_reco = give_requested_recommendation_to_user(
@@ -122,7 +119,6 @@ class CreateRecommendationsForDiscoveryTest:
         mediation2 = create_mediation(offer2, is_active=False)
         mediation3 = create_mediation(offer2, is_active=True)
         PcObject.save(user, stock1, mediation1, stock2, mediation2, mediation3)
-        DiscoveryView.refresh(concurrently=False)
 
         # When
         recommendations = create_recommendations_for_discovery(pagination_params={'page': 1, 'seed': 0.5},
@@ -152,8 +148,6 @@ class CreateRecommendationsForDiscoveryTest:
         recommendation = create_recommendation(offer=offer2, user=user, mediation=mediation2, search="bla")
 
         PcObject.save(user, stock1, mediation1, stock2, mediation2, recommendation)
-        db.session.refresh(offer2)
-        DiscoveryView.refresh(concurrently=False)
 
         # When
         recommendations = create_recommendations_for_discovery(pagination_params={'page': 1, 'seed': 0.5}, user=user)
@@ -191,7 +185,7 @@ class CreateRecommendationsForDiscoveryTest:
                                                                                              departements_ko)
         PcObject.save(user)
         PcObject.save(*(expected_stocks_recommended + expected_stocks_not_recommended))
-        DiscoveryView.refresh(concurrently=False)
+
         offer_ids_in_adjacent_department = set([stock.offerId for stock in expected_stocks_recommended])
 
         #  when
@@ -215,7 +209,7 @@ class CreateRecommendationsForDiscoveryTest:
                                                                                          departements_ok)
         PcObject.save(user)
         PcObject.save(*expected_stocks_recommended)
-        DiscoveryView.refresh(concurrently=False)
+
         offer_ids_in_all_department = set([stock.offerId for stock in expected_stocks_recommended])
 
         #  when

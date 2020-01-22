@@ -226,7 +226,7 @@ class GetOfferForRecommendationsTest:
         PcObject.save(user, stock1, stock2, stock3, stock4, stock5, stock6)
         DiscoveryView.refresh(concurrently=False)
 
-        def first_four_offers_have_different_type_and_onlineness(offers):
+        def _first_four_offers_have_different_type_and_onlineness(offers):
             return len(set([o.type + (o.url or '')
                             for o in offers[:4]])) == 4
 
@@ -236,7 +236,7 @@ class GetOfferForRecommendationsTest:
 
         # Then
         assert len(offers) == 6
-        assert first_four_offers_have_different_type_and_onlineness(offers)
+        assert _first_four_offers_have_different_type_and_onlineness(offers)
 
     @clean_database
     def test_should_not_return_offers_with_no_stock(self, app):
