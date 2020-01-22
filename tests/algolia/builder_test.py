@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 
 from algolia.builder import build_object
 from models import EventType, PcObject
@@ -30,7 +31,8 @@ class BuildObjectTest:
         stock = create_stock(available=10,
                              beginning_datetime=beginning_datetime,
                              end_datetime=end_datetime,
-                             offer=offer)
+                             offer=offer,
+                             price=0)
         PcObject.save(stock)
 
         # When
@@ -50,6 +52,7 @@ class BuildObjectTest:
                 'musicSubType': None,
                 'musicType': None,
                 'performer': None,
+                'price': 0,
                 'showSubType': None,
                 'showType': None,
                 'speaker': None,
@@ -231,6 +234,23 @@ class BuildObjectTest:
 
         # Then
         assert result['offer']['musicSubType'] == 'fusion'
+
+    @clean_database
+    def test_should_return_the_first_stock_price(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer = create_offer_with_thing_product(venue=venue)
+        stock1 = create_stock(offer=offer, price=7)
+        stock2 = create_stock(offer=offer, price=5)
+        stock3 = create_stock(offer=offer, price=10.3)
+        PcObject.save(stock1, stock2, stock3)
+
+        # When
+        result = build_object(offer)
+
+        # Then
+        assert result['offer']['price'] == Decimal('10.30')
 
     @clean_database
     def test_should_return_an_empty_date_range_when_offer_is_thing(self, app):

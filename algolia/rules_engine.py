@@ -1,4 +1,4 @@
-from domain.offers import has_remaining_stocks, has_stocks_in_future
+from domain.offers import has_remaining_stocks, has_at_least_one_stock_in_the_future
 from models import Offer
 
 
@@ -14,7 +14,7 @@ def is_eligible_for_indexing(offer: Offer) -> bool:
             and offerer.validationToken is None \
             and offer.isActive \
             and has_remaining_stocks(not_deleted_stocks) \
-            and has_stocks_in_future(not_deleted_stocks) \
+            and has_at_least_one_stock_in_the_future(not_deleted_stocks) \
             and venue.validationToken is None:
         return True
 

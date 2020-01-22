@@ -25,13 +25,15 @@ def has_remaining_stocks(stocks: List[Stock]) -> bool:
         is_unlimited = stock.available is None
         if is_unlimited:
             return True
-        else:
-            remaining_stocks_quantity += stock.remainingQuantity
+        remaining_stocks_quantity += stock.remainingQuantity
     return remaining_stocks_quantity > 0
 
 
-def has_stocks_in_future(stocks: List[Stock]) -> bool:
+def has_at_least_one_stock_in_the_future(stocks: List[Stock]) -> bool:
+    now = datetime.now()
+
     for stock in stocks:
-        if stock.bookingLimitDatetime is None or stock.bookingLimitDatetime > datetime.now():
+        if stock.bookingLimitDatetime is None or stock.bookingLimitDatetime > now:
             return True
+
     return False

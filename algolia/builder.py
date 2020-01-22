@@ -20,6 +20,7 @@ def build_object(offer: Offer) -> Dict:
     show_sub_type = offer.extraData and offer.extraData.get('showSubType')
     music_type = offer.extraData and offer.extraData.get('musicType')
     music_sub_type = offer.extraData and offer.extraData.get('musicSubType')
+    price = offer.stocks and offer.stocks[0].price
 
     object_to_index = {
         'objectID': humanize_offer_id,
@@ -34,6 +35,7 @@ def build_object(offer: Offer) -> Dict:
             'musicType': music_type,
             'name': offer.name,
             'performer': performer,
+            'price': price,
             'showSubType': show_sub_type,
             'showType': show_type,
             'speaker': speaker,

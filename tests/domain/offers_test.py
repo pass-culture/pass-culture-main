@@ -2,7 +2,7 @@ from datetime import datetime
 
 from freezegun import freeze_time
 
-from domain.offers import update_is_active_status, has_remaining_stocks, has_stocks_in_future
+from domain.offers import update_is_active_status, has_remaining_stocks, has_at_least_one_stock_in_the_future
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue
@@ -115,7 +115,7 @@ class HasStocksInFutureTest:
         stocks = [stock1, stock2]
 
         # When
-        result = has_stocks_in_future(stocks)
+        result = has_at_least_one_stock_in_the_future(stocks)
 
         # Then
         assert result is True
@@ -130,7 +130,7 @@ class HasStocksInFutureTest:
         stocks = [stock1, stock2]
 
         # When
-        result = has_stocks_in_future(stocks)
+        result = has_at_least_one_stock_in_the_future(stocks)
 
         # Then
         assert result is True
@@ -146,7 +146,7 @@ class HasStocksInFutureTest:
         stocks = [stock1, stock2]
 
         # When
-        result = has_stocks_in_future(stocks)
+        result = has_at_least_one_stock_in_the_future(stocks)
 
         # Then
         assert result is False

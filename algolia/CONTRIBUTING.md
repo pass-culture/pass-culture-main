@@ -57,6 +57,6 @@ pc python
 ```
 
 ```python
-from scripts.algolia_indexing.indexing import indexing
-indexing(number_of_offers)
+from scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_from_database
+batch_indexing_offers_in_algolia_from_database()
 ```
