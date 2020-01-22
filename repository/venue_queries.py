@@ -1,12 +1,13 @@
 from datetime import datetime
 from typing import List
 
+from sqlalchemy import and_
+
 from models import PcObject, ApiErrors
 from models import Venue, Offer, Stock, Offerer, UserOfferer, User
+from models.activity import load_activity
 from models.db import db
 from models.venue import TooManyVirtualVenuesException
-from models.activity import load_activity
-from sqlalchemy import and_
 from repository.offerer_queries import _filter_by_sirens
 
 
@@ -24,7 +25,7 @@ def find_by_id(venue_id: int) -> Venue:
 
 
 def find_by_offer_id(offer_id):
-    return Venue.query\
+    return Venue.query \
         .join(Offer) \
         .filter(Offer.id == offer_id) \
         .first()
@@ -51,7 +52,6 @@ def find_filtered_venues(sirens=None,
                          has_offerer_with_siren=None,
                          has_validated_user_offerer=None,
                          has_validated_user=None):
-
     query = db.session.query(Venue)
     if dpts:
         query = _filter_by_dpts(query, dpts)
@@ -75,8 +75,8 @@ def find_filtered_venues(sirens=None,
         query = _filter_by_is_validated(query, is_validated)
 
     if has_validated_offerer is not None or has_offerer_with_siren is not None \
-     or has_validated_user_offerer is not None or has_validated_user is not None \
-     or sirens is not None:
+            or has_validated_user_offerer is not None or has_validated_user is not None \
+            or sirens is not None:
         query = query.join(Offerer)
 
     if sirens is not None:
@@ -102,10 +102,10 @@ def find_filtered_venues(sirens=None,
 
 
 def find_by_managing_user(user: User) -> List[Venue]:
-    return Venue.query\
-        .join(Offerer)\
-        .join(UserOfferer)\
-        .join(User)\
+    return Venue.query \
+        .join(Offerer) \
+        .join(UserOfferer) \
+        .join(User) \
         .filter(User.id == user.id).all()
 
 
@@ -208,20 +208,33 @@ def _filter_by_offer_status(query, offer_status):
     elif offer_status == "VALID" or offer_status == "EXPIRED":
         query = query.join(Offer)
         is_not_soft_deleted_thing = Stock.isSoftDeleted == False
-        can_still_be_booked_thing = ((Stock.bookingLimitDatetime == None) | (Stock.bookingLimitDatetime >= datetime.utcnow()))
+        can_still_be_booked_thing = (
+                (Stock.bookingLimitDatetime == None) | (Stock.bookingLimitDatetime >= datetime.utcnow()))
         is_available_thing = ((Stock.available == None) | (Stock.available > 0))
 
         query_1 = query.join(Stock)
         query_2 = query.join(Stock)
 
     if offer_status == "VALID":
-        query_with_valid_event = query_1.filter(is_not_soft_deleted_thing & can_still_be_booked_thing & is_available_thing)
-        query_with_valid_thing = query_2.filter(is_not_soft_deleted_thing & can_still_be_booked_thing & is_available_thing)
+        query_with_valid_event = query_1.filter(
+            is_not_soft_deleted_thing & can_still_be_booked_thing & is_available_thing)
+        query_with_valid_thing = query_2.filter(
+            is_not_soft_deleted_thing & can_still_be_booked_thing & is_available_thing)
         query = query_with_valid_event.union_all(query_with_valid_thing)
 
     if offer_status == "EXPIRED":
-        query_with_expired_event = query_1.filter(~(is_not_soft_deleted_thing & can_still_be_booked_thing & is_available_thing))
-        query_with_expired_thing = query_2.filter(~(is_not_soft_deleted_thing & can_still_be_booked_thing & is_available_thing))
+        query_with_expired_event = query_1.filter(
+            ~(is_not_soft_deleted_thing & can_still_be_booked_thing & is_available_thing))
+        query_with_expired_thing = query_2.filter(
+            ~(is_not_soft_deleted_thing & can_still_be_booked_thing & is_available_thing))
         query = query_with_expired_event.union_all(query_with_expired_thing)
 
     return query
+
+
+def get_only_venue_ids_for_department_codes(departement_codes: List[str]) -> List[int]:
+    venues = Venue.query \
+        .filter(Venue.departementCode.in_(departement_codes)) \
+        .with_entities(Venue.id) \
+        .all()
+    return [venue.id for venue in venues]

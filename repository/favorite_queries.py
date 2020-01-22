@@ -1,8 +1,8 @@
 from typing import List
 
-from models import Favorite
-
 from sqlalchemy.orm.query import Query
+
+from models import Favorite, User
 
 
 def find_favorite_for_offer_and_user(offer_id: int, user_id: int) -> Query:
@@ -21,3 +21,11 @@ def get_favorites_for_offers(offer_ids: List[int]) -> List[Favorite]:
     return Favorite.query \
         .filter(Favorite.offerId.in_(offer_ids)) \
         .all()
+
+
+def get_only_offer_ids_from_favorites(user: User) -> List[int]:
+    favorites = Favorite.query \
+        .filter_by(userId=user.id) \
+        .with_entities(Favorite.offerId) \
+        .all()
+    return [favorite.offerId for favorite in favorites]

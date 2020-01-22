@@ -111,7 +111,7 @@ def _create_recommendation(user: User, offer: Offer, mediation: Mediation = None
     return recommendation
 
 
-# TODO: when using discovery view use this function instead of _create_recommedantion
+# TODO: when using discovery view use this function instead of _create_recommendation
 # in create_recommendations_for_discovery
 def _create_recommendation_from_offers(user: User, reco_view: DiscoveryView,
                                        mediation: Mediation = None) -> Recommendation:

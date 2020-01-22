@@ -250,3 +250,13 @@ def find_for_my_bookings_page(user_id: int) -> List[Booking]:
         .filter(Booking.userId == user_id) \
         .order_by(Booking.stockId, Booking.isCancelled, Booking.dateCreated.desc()) \
         .all()
+
+
+def get_only_offer_ids_from_bookings(user: User) -> List[int]:
+    offers_booked = Offer.query \
+        .join(Stock) \
+        .join(Booking) \
+        .filter_by(userId=user.id) \
+        .with_entities(Offer.id) \
+        .all()
+    return [offer.id for offer in offers_booked]

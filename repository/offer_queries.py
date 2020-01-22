@@ -21,7 +21,10 @@ from models import EventType, \
 from models.db import Model, db
 from models.feature import FeatureToggle
 from repository import feature_queries
+from repository.booking_queries import get_only_offer_ids_from_bookings
+from repository.favorite_queries import get_only_offer_ids_from_favorites
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
+from repository.venue_queries import get_only_venue_ids_for_department_codes
 from utils.distance import get_sql_geo_distance_in_kilometers
 from utils.logger import logger
 
@@ -81,14 +84,12 @@ def _order_by_occurs_soon_or_is_thing_then_randomize():
 
 
 def get_offers_for_recommendation(user: User,
-                                  departement_codes: List = None,
+                                  departement_codes: List[str] = None,
                                   limit: int = None,
-                                  seen_recommendation_ids: List = []) -> List:
-    favorites = Favorite.query.filter_by(userId=user.id).with_entities(Favorite.offerId).all()
-    favorite_ids = [favorite.offerId for favorite in favorites]
+                                  seen_recommendation_ids: List[int] = []) -> List:
+    favorite_ids = get_only_offer_ids_from_favorites(user)
 
-    offers_booked = Offer.query.join(Stock).join(Booking).filter_by(userId=user.id).with_entities(Offer.id).all()
-    offer_booked_ids = [offer.id for offer in offers_booked]
+    offer_booked_ids = get_only_offer_ids_from_bookings(user)
 
     recos_query = DiscoveryView.query \
         .filter(DiscoveryView.id.notin_(favorite_ids)) \
@@ -96,8 +97,7 @@ def get_offers_for_recommendation(user: User,
         .filter(DiscoveryView.id.notin_(offer_booked_ids))
 
     if ALL_DEPARTMENTS_CODE not in departement_codes:
-        venues = Venue.query.filter(Venue.departementCode.in_(departement_codes)).with_entities(Venue.id).all()
-        venue_ids = [venue.id for venue in venues]
+        venue_ids = get_only_venue_ids_for_department_codes(departement_codes)
         recos_query = recos_query \
             .filter(or_(DiscoveryView.venueId.in_(venue_ids), DiscoveryView.isNational == True))
 
