@@ -3,39 +3,40 @@ import 'moment-timezone'
 
 import { BOOKING_LIMIT_DATETIME_HOURS, BOOKING_LIMIT_DATETIME_MINUTES } from '../utils/utils'
 
+const setBookingLimitDateTimeTo23h59 = (bookingLimitDatetimeMoment, timezone) => {
+  let nextBookingLimitDatetimeMoment = bookingLimitDatetimeMoment
+
+  if (timezone) {
+    nextBookingLimitDatetimeMoment = bookingLimitDatetimeMoment.tz(timezone)
+  }
+
+  return nextBookingLimitDatetimeMoment
+    .hours(BOOKING_LIMIT_DATETIME_HOURS)
+    .minutes(BOOKING_LIMIT_DATETIME_MINUTES)
+    .toISOString()
+}
+
 const updateBookingLimitDatetime = ({
   beginningDatetime,
   bookingLimitDatetime,
   isEvent,
-  previousBeginningDatetime,
-  previousBookingLimitDatetime,
   timezone,
 }) => {
+
   const bookingLimitDatetimeMoment = moment(bookingLimitDatetime)
-  if (!isEvent || bookingLimitDatetimeMoment.isBefore(beginningDatetime, 'day')) {
-    let nextBookingLimitDatetimeMoment = bookingLimitDatetimeMoment
-    if (timezone) {
-      nextBookingLimitDatetimeMoment = bookingLimitDatetimeMoment.tz(timezone)
-    }
-    const nextBookingLimitDatetime = nextBookingLimitDatetimeMoment
-      .hours(BOOKING_LIMIT_DATETIME_HOURS)
-      .minutes(BOOKING_LIMIT_DATETIME_MINUTES)
-      .toISOString()
+
+  if (!isEvent) {
+    const nextBookingLimitDatetime = setBookingLimitDateTimeTo23h59(bookingLimitDatetimeMoment, timezone)
     return { bookingLimitDatetime: nextBookingLimitDatetime }
   }
 
-  if (isEvent && bookingLimitDatetimeMoment.isSame(beginningDatetime, 'day')) {
-    if (!previousBookingLimitDatetime || !previousBookingLimitDatetime) {
-      return {}
-    }
-    const previousBookingLimitDatetimeMoment = moment(previousBookingLimitDatetime)
-    if (previousBookingLimitDatetimeMoment.isBefore(previousBeginningDatetime, 'day')) {
-      return { bookingLimitDatetime: beginningDatetime }
-    }
-    return {}
+  if (isEvent && bookingLimitDatetimeMoment.isBefore(beginningDatetime, 'day')) {
+    const nextBookingLimitDatetime = setBookingLimitDateTimeTo23h59(bookingLimitDatetimeMoment, timezone)
+    return { bookingLimitDatetime: nextBookingLimitDatetime }
   }
 
   return { bookingLimitDatetime: beginningDatetime }
+
 }
 
 export default updateBookingLimitDatetime

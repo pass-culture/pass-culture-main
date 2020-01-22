@@ -14,7 +14,6 @@ describe('src | pages | Offer | StocksManager | StockItem | decorators | adaptaB
       bookingLimitDatetime: '2019-04-20T15:00:00.000Z',
     }
 
-
     // when
     const wrapper = mount(
       <Form
@@ -115,7 +114,7 @@ describe('src | pages | Offer | StocksManager | StockItem | decorators | adaptaB
 
 
       // then
-      expect(inputBookingLimitDatetime.props().value).toStrictEqual('2020-01-18T11:00:59.984Z')
+      expect(inputBookingLimitDatetime.props().value).toStrictEqual(initialValues.beginningDatetime)
     })
   })
 })

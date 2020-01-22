@@ -15,18 +15,12 @@ const adaptBookingLimitDatetimeGivenBeginningDatetime = createCachedSelector(
         updates: (
           bookingLimitDatetime,
           fieldName,
-          { beginningDatetime },
-          {
-            beginningDatetime: previousBeginningDatetime,
-            bookingLimitDatetime: previousBookingLimitDatetime,
-          }
+          { beginningDatetime }
         ) =>
           updateBookingLimitDatetime({
             isEvent,
             beginningDatetime,
             bookingLimitDatetime,
-            previousBeginningDatetime,
-            previousBookingLimitDatetime,
             timezone,
           }),
       },
@@ -35,18 +29,12 @@ const adaptBookingLimitDatetimeGivenBeginningDatetime = createCachedSelector(
         updates: (
           beginningDatetime,
           fieldName,
-          { bookingLimitDatetime },
-          {
-            beginningDatetime: previousBeginningDatetime,
-            bookingLimitDatetime: previousBookingLimitDatetime,
-          }
+          { bookingLimitDatetime }
         ) =>
           updateBookingLimitDatetime({
             beginningDatetime: beginningDatetime,
             bookingLimitDatetime: bookingLimitDatetime,
             isEvent,
-            previousBeginningDatetime,
-            previousBookingLimitDatetime,
             timezone,
           }),
       }
