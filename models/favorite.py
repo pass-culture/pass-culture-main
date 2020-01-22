@@ -45,5 +45,4 @@ class Favorite(PcObject, Model):
     def thumbUrl(self):
         if self.mediationId:
             return self.mediation.thumbUrl
-
         return self.offer.product.thumbUrl

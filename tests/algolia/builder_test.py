@@ -31,7 +31,8 @@ class BuildObjectTest:
                                                 idx=3,
                                                 is_active=True,
                                                 event_name='Event name',
-                                                event_type=EventType.MUSIQUE)
+                                                event_type=EventType.MUSIQUE, 
+                                                thumb_count=1)
         stock = create_stock(available=10,
                              beginning_datetime=beginning_datetime,
                              end_datetime=end_datetime,

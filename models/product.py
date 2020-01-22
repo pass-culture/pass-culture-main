@@ -1,4 +1,3 @@
-""" model product """
 import enum
 
 from sqlalchemy import BigInteger, \

@@ -1069,7 +1069,7 @@ class ThumbUrlTest:
     def test_should_return_thumb_url_with_mediation_when_mediation_exists(self):
         # given
         offer = Offer()
-        offer.mediations = [create_mediation(idx=1, date_created=datetime(2019, 11, 1, 10, 0, 0))]
+        offer.mediations = [create_mediation(idx=1, date_created=datetime(2019, 11, 1, 10, 0, 0), thumb_count=1)]
 
         # then
         assert offer.thumb_url == 'http://localhost/storage/thumbs/mediations/AE'

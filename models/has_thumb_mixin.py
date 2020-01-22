@@ -24,6 +24,8 @@ class HasThumbMixin(object):
 
     @property
     def thumbUrl(self):
+        if self.thumbCount == 0:
+            return None
         base_url = get_storage_base_url()
         thumb_url = base_url + "/thumbs"
         return '{}/{}/{}'.format(thumb_url, get_model_plural_name(self), humanize(self.id))

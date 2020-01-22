@@ -70,62 +70,99 @@ def test_raises_error_on_booking_when_existing_booking_is_used_and_booking_date_
     # Then
     assert e.value.errors['global'] == ['La quantité disponible pour cette offre est atteinte.']
 
+class BookingThumbUrlTest:
+    @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
+    def test_model_thumbUrl_should_use_mediation_of_recommendation_first_as_thumbUrl(self, get_storage_base_url):
+        # given
+        user = create_user(email='user@example.com')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        product = create_product_with_event_type(thumb_count=1)
+        offer = create_offer_with_event_product(product=product, venue=venue)
+        mediation = create_mediation(offer=offer, idx=1, thumb_count=1)
+        stock = create_stock(price=12, available=1, offer=offer)
+        recommendation = create_recommendation(idx=100, mediation=mediation, offer=offer, user=user)
+        recommendation.mediationId = mediation.id
 
-@patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
-def test_model_thumbUrl_should_use_mediation_first_as_thumbUrl(get_storage_base_url):
-    # given
-    user = create_user(email='user@example.com')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    product = create_product_with_event_type(thumb_count=1)
-    offer = create_offer_with_event_product(product=product, venue=venue)
-    mediation = create_mediation(offer=offer, idx=1)
-    stock = create_stock(price=12, available=1, offer=offer)
-    recommendation = create_recommendation(idx=100, mediation=mediation, offer=offer, user=user)
-    recommendation.mediationId = mediation.id
+        # when
+        booking = create_booking(user=user, recommendation=recommendation, stock=stock, venue=venue)
 
-    # when
-    booking = create_booking(user=user, recommendation=recommendation, stock=stock, venue=venue)
-
-    # then
-    assert booking.thumbUrl == "http://localhost/storage/thumbs/mediations/AE"
-
-
-@patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
-def test_model_thumbUrl_should_have_thumbUrl_using_productId_when_no_mediation(get_storage_base_url):
-    # given
-    user = create_user(email='user@example.com')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    product = create_product_with_event_type(thumb_count=0)
-    product.id = 2
-    offer = create_offer_with_event_product(product=product, venue=venue)
-    recommendation = create_recommendation(idx=100, offer=offer, user=user)
-    stock = create_stock(price=12, available=1, offer=offer)
-
-    # when
-    booking = create_booking(user=user, recommendation=recommendation, stock=stock, venue=venue)
-
-    # then
-    assert booking.thumbUrl == "http://localhost/storage/thumbs/products/A9"
+        # then
+        assert booking.thumbUrl == "http://localhost/storage/thumbs/mediations/AE"
 
 
-@patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
-def test_model_thumbUrl_should_have_thumbUrl_using_productId_when_no_recommendation(get_storage_base_url):
-    # given
-    user = create_user(email='user@example.com')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    product = create_product_with_event_type(thumb_count=0)
-    product.id = 2
-    offer = create_offer_with_event_product(product=product, venue=venue)
-    stock = create_stock(price=12, available=1, offer=offer)
+    @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
+    def test_model_thumbUrl_should_have_thumbUrl_using_active_mediation_when_no_recommendation(self, get_storage_base_url):
+        # given
+        user = create_user(email='user@example.com')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        product = create_product_with_event_type()
+        offer = create_offer_with_event_product(product=product, venue=venue)
+        inactive_mediation = create_mediation(offer=offer, is_active=False, idx=1, thumb_count=1)
+        active_mediation = create_mediation(offer=offer, idx=2, thumb_count=1)
+        stock = create_stock(price=12, available=1, offer=offer)
 
-    # when
-    booking = create_booking(user=user, recommendation=None, stock=stock, venue=venue)
+        # when
+        booking = create_booking(user=user, stock=stock, venue=venue)
 
-    # then
-    assert booking.thumbUrl == "http://localhost/storage/thumbs/products/A9"
+        # then
+        assert booking.thumbUrl == "http://localhost/storage/thumbs/mediations/A9"
+
+
+    @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
+    def test_model_thumbUrl_should_have_thumbUrl_using_product_when_no_mediation_nor_recommendation(self, get_storage_base_url):
+        # given
+        user = create_user(email='user@example.com')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        product = create_product_with_event_type(thumb_count=1)
+        product.id = 2
+        offer = create_offer_with_event_product(product=product, venue=venue)
+        stock = create_stock(price=12, available=1, offer=offer)
+
+        # when
+        booking = create_booking(user=user, stock=stock, venue=venue)
+
+        # then
+        assert booking.thumbUrl == "http://localhost/storage/thumbs/products/A9"
+
+
+    @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
+    def test_model_thumbUrl_should_have_default_thumb_when_no_mediation_nor_recommendation(self, get_storage_base_url):
+        # given
+        user = create_user(email='user@example.com')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        product = create_product_with_event_type(thumb_count=0)
+        offer = create_offer_with_event_product(product=product, venue=venue)
+        stock = create_stock(price=12, available=1, offer=offer)
+
+        # when
+        booking = create_booking(user=user, stock=stock, venue=venue)
+
+        # then
+        assert booking.thumbUrl is None
+
+    
+    @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
+    def test_model_thumbUrl_should_have_default_thumb_when_no_thumb_on_mediation_nor_recommendation(self, get_storage_base_url):
+        # given
+        user = create_user(email='user@example.com')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        product = create_product_with_event_type(thumb_count=0)
+        offer = create_offer_with_event_product(product=product, venue=venue)
+        mediation = create_mediation(offer=offer, idx=1, thumb_count=0)
+        stock = create_stock(price=12, available=1, offer=offer)
+        recommendation = create_recommendation(idx=100, mediation=mediation, offer=offer, user=user)
+        recommendation.mediationId = mediation.id
+
+        # when
+        booking = create_booking(user=user, recommendation=recommendation, stock=stock, venue=venue)
+
+        # then
+        assert booking.thumbUrl is None
 
 
 class BookingEventOfferQRCodeGenerationTest:

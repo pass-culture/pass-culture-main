@@ -147,7 +147,10 @@ class Booking(PcObject, Model, VersionedMixin):
     def thumbUrl(self):
         if self.recommendation:
             return self.recommendation.thumbUrl
-        return self.stock.offer.product.thumbUrl
+        elif self.stock.offer.activeMediation:
+            return self.stock.offer.activeMediation.thumbUrl
+        else:
+            return self.stock.offer.product.thumbUrl
 
     @property
     def mediation(self):
