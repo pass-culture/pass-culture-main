@@ -29,6 +29,24 @@ describe('src | components | pages | Offer | domain | getDurationInHours', () =>
         expect(displayDigitalOfferInformationMessage(bookType, venue)).toBe(false)
       })
     })
+
+    describe('when offer type is a cinema card', () => {
+      it('should not display digital offer information message', function() {
+        // given
+        const cinemaCardType = {
+          offlineOnly: false,
+          onlineOnly: false,
+          value: 'ThingType.CINEMA_CARD',
+        }
+
+        // when
+        const isMessageDisplayed = displayDigitalOfferInformationMessage(cinemaCardType, venue)
+
+        // then
+        expect(isMessageDisplayed).toBe(false)
+      })
+    })
+
     describe('when offer type is available online or offline ', () => {
       it('should display digital offer information message', () => {
         // when
@@ -74,9 +92,7 @@ describe('src | components | pages | Offer | domain | getDurationInHours', () =>
         }
 
         // then
-        expect(displayDigitalOfferInformationMessage(musicInstrumentType, venue)).toBe(
-          false
-        )
+        expect(displayDigitalOfferInformationMessage(musicInstrumentType, venue)).toBe(false)
       })
     })
 

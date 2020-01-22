@@ -616,7 +616,7 @@ class Offer extends PureComponent {
                   <Insert className="yellow-insert">
                     <p>
                       {
-                        "Les offres numériques (à l'exception des livres numériques) ne feront pas l'objet d'un remboursement. Pour plus d'informations, merci de consulter les CGU."
+                        "Cette offre numérique ne fera pas l'objet d'un remboursement. Pour plus d'informations sur les catégories éligibles au remboursement, merci de consulter les CGU."
                       }
                     </p>
                     <div className="insert-action-link">
