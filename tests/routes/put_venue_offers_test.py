@@ -145,7 +145,7 @@ class Put:
 
         @patch('routes.venues.redis.add_venue_id')
         @clean_database
-        def when_activating_all_venue_offers_expect_venue_id_to_be_added_to_redis(self, mock_add_to_redis, app):
+        def when_activating_all_venue_offers_expect_venue_id_to_be_added_to_redis(self, mock_redis, app):
             # Given
             user = create_user(email='test@example.net')
             offerer = create_offerer()
@@ -169,13 +169,7 @@ class Put:
 
             # Then
             assert response.status_code == 200
-            assert response.json[0]['isActive'] == True
-            assert response.json[1]['isActive'] == True
-
-            offers = Offer.query.all()
-            assert offers[0].isActive == True
-            assert offers[1].isActive == True
-            mock_add_to_redis.assert_called_once_with(client=app.redis_client, venue_id=venue.id)
+            mock_redis.assert_called_once_with(client=app.redis_client, venue_id=venue.id)
 
 
         @clean_database
@@ -233,7 +227,7 @@ class Put:
 
         @patch('routes.venues.redis.add_venue_id')
         @clean_database
-        def when_deactivating_all_venue_offers_expect_venue_id_to_be_added_to_redis(self, mock_add_to_redis, app):
+        def when_deactivating_all_venue_offers_expect_venue_id_to_be_added_to_redis(self, mock_redis, app):
             # Given
             user = create_user(email='test@example.net')
             offerer = create_offerer()
@@ -254,11 +248,5 @@ class Put:
 
             # Then
             assert response.status_code == 200
-            assert response.json[0]['isActive'] == False
-            assert response.json[1]['isActive'] == False
-
-            offers = Offer.query.all()
-            assert offers[0].isActive == False
-            assert offers[1].isActive == False
-            mock_add_to_redis.assert_called_once_with(client=app.redis_client, venue_id=venue.id)
+            mock_redis.assert_called_once_with(client=app.redis_client, venue_id=venue.id)
 
