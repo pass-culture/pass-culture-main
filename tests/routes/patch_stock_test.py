@@ -101,9 +101,9 @@ class Patch:
             assert response.status_code == 200
             assert 'available' in response.json
 
-        @patch('routes.stocks.add_to_redis')
+        @patch('routes.stocks.redis.add_offer_id')
         @clean_database
-        def when_stock_is_edited_expect_offer_id_to_be_added_to_redis(self, mock_add_to_redis, app):
+        def when_stock_is_edited_expect_offer_id_to_be_added_to_redis(self, mock_redis, app):
             # given
             beneficiary = create_user()
             offerer = create_offerer()
@@ -118,7 +118,7 @@ class Patch:
 
             # then
             assert request_update.status_code == 200
-            mock_add_to_redis.assert_called_once_with(client=app.redis_client, offer_id=stock.offerId)
+            mock_redis.assert_called_once_with(client=app.redis_client, offer_id=stock.offerId)
 
     class Returns400:
         @clean_database

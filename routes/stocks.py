@@ -108,7 +108,7 @@ def edit_stock(stock_id):
     stock.populate_from_dict(stock_data)
     PcObject.save(stock)
 
-    add_to_redis(client=app.redis_client, offer_id=stock.offerId)
+    redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
     return jsonify(as_dict(stock)), 200
 
@@ -133,6 +133,6 @@ def delete_stock(id):
 
     PcObject.save(stock, *bookings)
 
-    add_to_redis(client=app.redis_client, offer_id=stock.offerId)
+    redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
     return jsonify(as_dict(stock)), 200
