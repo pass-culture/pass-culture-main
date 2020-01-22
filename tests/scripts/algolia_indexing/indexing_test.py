@@ -71,6 +71,7 @@ class BatchIndexingOffersInAlgoliaFromDatabaseTest:
 
 
 class BatchIndexingOffersInAlgoliaByVenueTest:
+    @patch('scripts.algolia_indexing.indexing.ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE', 1)
     @patch('scripts.algolia_indexing.indexing.delete_venue_ids')
     @patch('scripts.algolia_indexing.indexing.orchestrate')
     @patch('scripts.algolia_indexing.indexing.get_venue_ids', return_value=[13, 666])
@@ -91,7 +92,7 @@ class BatchIndexingOffersInAlgoliaByVenueTest:
         PcObject.save(offer1, offer2, offer3)
 
         # When
-        batch_indexing_offers_in_algolia_by_venue(client=client, limit=1)
+        batch_indexing_offers_in_algolia_by_venue(client=client)
 
         # Then
         assert mock_orchestrate.call_count == 3

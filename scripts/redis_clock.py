@@ -25,8 +25,6 @@ ALGOLIA_CRON_INDEXING_OFFERS_BY_VENUE_FREQUENCY = os.environ.get(
     'ALGOLIA_CRON_INDEXING_OFFERS_BY_VENUE_FREQUENCY', '10')
 ALGOLIA_CRON_INDEXING_OFFERS_BY_VENUE_PROVIDER_FREQUENCY = os.environ.get(
     'ALGOLIA_CRON_INDEXING_OFFERS_BY_VENUE_PROVIDER_FREQUENCY', '10')
-ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE=os.environ.get(
-    'ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE', '10000')
 
 app = Flask(__name__, template_folder='../templates')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
@@ -61,7 +59,7 @@ def pc_batch_indexing_offers_in_algolia_by_offer():
 @log_cron
 def pc_batch_indexing_offers_in_algolia_by_venue():
     with app.app_context():
-        batch_indexing_offers_in_algolia_by_venue(client=app.redis_client, limit=ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE)
+        batch_indexing_offers_in_algolia_by_venue(client=app.redis_client)
 
 
 @log_cron
