@@ -6,7 +6,7 @@ from repository.offerer_queries import find_first_by_user_offerer_id
 from repository.user_offerer_queries import find_user_offerer_email
 from utils.mailing import SUPPORT_EMAIL_ADDRESS, DEV_EMAIL_ADDRESS, format_environment_for_email
 
-def retrieve_data_for_pro_offerer_attachment_validation_email(user_offerer: UserOfferer) -> Dict:
+def retrieve_data_for_offerer_attachment_validation_email(user_offerer: UserOfferer) -> Dict:
     recipient =  find_user_offerer_email(user_offerer.id)
     pro_user_email = recipient if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS
     offerer = find_first_by_user_offerer_id(user_offerer.id)

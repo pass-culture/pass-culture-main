@@ -1,19 +1,19 @@
 from unittest.mock import patch
 
-from emails.pro_offerer_attachment_validation import retrieve_data_for_pro_offerer_attachment_validation_email
 from repository import repository
+from emails.offerer_attachment_validation import retrieve_data_for_offerer_attachment_validation_email
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_user, create_user_offerer
 
 
 class ProOffererAttachmentValidationEmailTest:
     @clean_database
-    @patch('emails.pro_offerer_attachment_validation.DEV_EMAIL_ADDRESS', 'dev@passculture.app')
-    @patch('emails.pro_offerer_attachment_validation.feature_send_mail_to_users_enabled', return_value=False)
-    @patch('emails.pro_offerer_attachment_validation.format_environment_for_email', return_value='-testing')
-    @patch('emails.pro_offerer_attachment_validation.find_user_offerer_email',
+    @patch('emails.offerer_attachment_validation.DEV_EMAIL_ADDRESS', 'dev@passculture.app')
+    @patch('emails.offerer_attachment_validation.feature_send_mail_to_users_enabled', return_value=False)
+    @patch('emails.offerer_attachment_validation.format_environment_for_email', return_value='-testing')
+    @patch('emails.offerer_attachment_validation.find_user_offerer_email',
            return_value='pro@example.com')
-    @patch('emails.pro_offerer_attachment_validation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('emails.offerer_attachment_validation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     def test_email_is_sent_to_dev_at_passculture_when_not_production_environment(self,
                                                                                  feature_send_mail_to_users_enabled,
                                                                                  format_environment_for_email,
@@ -27,10 +27,10 @@ class ProOffererAttachmentValidationEmailTest:
         repository.save(pro_user, user_offerer)
 
         # When
-        pro_offerer_attachment_validation_email = retrieve_data_for_pro_offerer_attachment_validation_email(user_offerer)
+        offerer_attachment_validation_email = retrieve_data_for_offerer_attachment_validation_email(user_offerer)
 
         # Then
-        assert pro_offerer_attachment_validation_email == {
+        assert offerer_attachment_validation_email == {
             'FromEmail': 'support@example.com',
             'MJ-TemplateID': 778756,
             'MJ-TemplateLanguage': True,
@@ -43,11 +43,11 @@ class ProOffererAttachmentValidationEmailTest:
         }
 
     @clean_database
-    @patch('emails.pro_offerer_attachment_validation.feature_send_mail_to_users_enabled', return_value=True)
-    @patch('emails.pro_offerer_attachment_validation.format_environment_for_email', return_value='')
-    @patch('emails.pro_offerer_attachment_validation.find_user_offerer_email',
+    @patch('emails.offerer_attachment_validation.feature_send_mail_to_users_enabled', return_value=True)
+    @patch('emails.offerer_attachment_validation.format_environment_for_email', return_value='')
+    @patch('emails.offerer_attachment_validation.find_user_offerer_email',
            return_value='pro@example.com')
-    @patch('emails.pro_offerer_attachment_validation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('emails.offerer_attachment_validation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     def test_email_is_sent_to_pro_user_when_environment_is_production(self,
                                                                        feature_send_mail_to_users_enabled,
                                                                        format_environment_for_email,
@@ -61,10 +61,10 @@ class ProOffererAttachmentValidationEmailTest:
         repository.save(pro_user, user_offerer)
 
         # When
-        pro_offerer_attachment_validation_email = retrieve_data_for_pro_offerer_attachment_validation_email(user_offerer)
+        offerer_attachment_validation_email = retrieve_data_for_offerer_attachment_validation_email(user_offerer)
 
         # Then
-        assert pro_offerer_attachment_validation_email == {
+        assert offerer_attachment_validation_email == {
             'FromEmail': 'support@example.com',
             'MJ-TemplateID': 778756,
             'MJ-TemplateLanguage': True,
