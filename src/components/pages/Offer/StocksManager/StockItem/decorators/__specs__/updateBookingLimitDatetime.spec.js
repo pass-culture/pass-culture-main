@@ -61,6 +61,36 @@ describe('src | components | pages | Offer | StockManager | StockItem | decorato
         expect(result.bookingLimitDatetime).toStrictEqual('2019-04-20T19:00:00.000Z')
       })
     })
+
+    describe('when booking limit date is changed to be on the same day as beginning date', () => {
+      describe('when user change beginning time', () => {
+        it('should update bookingLimitDatetime with new time', () => {
+          // given
+          const isEvent = true
+          const beginningDatetime = '2020-01-18T19:00:59.984000Z'
+          const bookingLimitDatetime = 'XXXXXXX'
+          const beginningTime = '12:00'
+
+          const previousBeginningTime = '20:00'
+          const previousBeginninDatetime = beginningDatetime
+          const previousBookingLimitDatetime = '2020-01-18T19:00:59.984000Z'
+
+          // when
+          const result = updateBookingLimitDatetime({
+            beginningDatetime,
+            beginningTime,
+            bookingLimitDatetime,
+            isEvent,
+            previousBeginningTime,
+            previousBeginninDatetime,
+            previousBookingLimitDatetime,
+          })
+
+          // then
+          expect(result.bookingLimitDatetime).toStrictEqual('2020-01-18T11:00:59.984Z')
+        })
+      })
+    })
   })
 
   describe('for a thing product case', () => {
