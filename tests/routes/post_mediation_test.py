@@ -16,8 +16,9 @@ MODULE_PATH = Path(os.path.dirname(os.path.realpath(__file__)))
 class Post:
     class Returns201:
         @clean_database
+        @patch('routes.mediations.redis.add_offer_id')
         @patch('routes.mediations.read_thumb')
-        def when_mediation_is_created_with_thumb_url(self, read_thumb, app):
+        def when_mediation_is_created_with_thumb_url(self, read_thumb, mock_redis, app):
             # given
             user = create_user()
             offerer = create_offerer()
@@ -46,7 +47,8 @@ class Post:
             assert response.status_code == 201
 
         @clean_database
-        def when_mediation_is_created_with_thumb_file(self, app):
+        @patch('routes.mediations.redis.add_offer_id')
+        def when_mediation_is_created_with_thumb_file(self, mock_redis, app):
             # given
             user = create_user()
             offerer = create_offerer()
@@ -73,6 +75,40 @@ class Post:
 
             # then
             assert response.status_code == 201
+
+        @clean_database
+        @patch('routes.mediations.redis.add_offer_id')
+        def should_add_offer_id_to_redis_when_mediation_is_created_with_thumb(self, mock_redis, app):
+            # given
+            user = create_user()
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_offer_with_event_product(venue)
+            user_offerer = create_user_offerer(user, offerer)
+
+            PcObject.save(offer)
+            PcObject.save(user, venue, offerer, user_offerer)
+
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+
+            with open(MODULE_PATH / '..' / 'files/mouette_full_size.jpg', 'rb') as f:
+                thumb = f.read()
+
+            files = {
+                'offerId': humanize(offer.id),
+                'offererId': humanize(offerer.id),
+                'thumb': (BytesIO(thumb), 'image.png')
+            }
+
+            # when
+            response = auth_request.post('/mediations', files=files)
+
+            # then
+            assert response.status_code == 201
+            mock_redis.assert_called_once()
+            mock_args, mock_kwargs = mock_redis.call_args
+            assert mock_kwargs['offer_id'] == offer.id
+
 
     class Returns400:
         @patch('connectors.thumb_storage.requests.get')

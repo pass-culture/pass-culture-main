@@ -1,6 +1,7 @@
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
+from connectors import redis
 from connectors.thumb_storage import read_thumb, save_thumb
 from domain.mediations import create_new_mediation
 from models.mediation import Mediation
@@ -26,6 +27,7 @@ def create_mediation():
     check_thumb_quality(thumb)
     PcObject.save(mediation)
     save_thumb(mediation, thumb, 0, crop=_get_crop(request.form))
+    redis.add_offer_id(client=app.redis_client, offer_id=offer_id)
     return jsonify(as_dict(mediation)), 201
 
 
@@ -46,6 +48,7 @@ def update_mediation(mediation_id):
     data = request.json
     mediation.populate_from_dict(data)
     PcObject.save(mediation)
+    redis.add_offer_id(client=app.redis_client, offer_id=mediation.offerId)
     return jsonify(as_dict(mediation, includes=MEDIATION_INCLUDES)), 200
 
 
