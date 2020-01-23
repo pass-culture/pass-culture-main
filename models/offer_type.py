@@ -150,7 +150,7 @@ class ThingType(SearchableType):
         'proLabel': "Cinéma - vente à distance",
         'appLabel': "Cinéma",
         'offlineOnly': False,
-        'onlineOnly': False,
+        'onlineOnly': True,
         'sublabel': "Regarder",
         'description': "Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?",
         'conditionalFields': [],

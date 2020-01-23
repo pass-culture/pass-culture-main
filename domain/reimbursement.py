@@ -60,8 +60,8 @@ class DigitalThingsReimbursement(ReimbursementRule):
         offer = booking.stock.resolvedOffer
         book_offer = offer.type == str(ThingType.LIVRE_EDITION)
         cinema_card_offer = offer.type == str(ThingType.CINEMA_CARD)
-        offer_is_not_refundable = book_offer or cinema_card_offer
-        return offer.isDigital and not offer_is_not_refundable
+        offer_is_an_exception = book_offer or cinema_card_offer
+        return offer.isDigital and not offer_is_an_exception
 
 
 class PhysicalOffersReimbursement(ReimbursementRule):
@@ -74,8 +74,8 @@ class PhysicalOffersReimbursement(ReimbursementRule):
         offer = booking.stock.resolvedOffer
         book_offer = offer.type == str(ThingType.LIVRE_EDITION)
         cinema_card_offer = offer.type == str(ThingType.CINEMA_CARD)
-        offer_is_refundable = book_offer or cinema_card_offer
-        return offer_is_refundable or not offer.isDigital
+        offer_is_an_exception = book_offer or cinema_card_offer
+        return offer_is_an_exception or not offer.isDigital
 
 
 class MaxReimbursementByOfferer(ReimbursementRule):

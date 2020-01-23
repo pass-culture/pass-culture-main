@@ -4,7 +4,6 @@ Catégorie,Support,type
 "Cinéma - cartes d'abonnement",Physique,ThingType.CINEMA_ABO
 "Cinéma - projections et autres évènements",Physique,EventType.CINEMA
 "Cinéma - vente à distance",Numérique,ThingType.CINEMA_CARD
-"Cinéma - vente à distance",Physique,ThingType.CINEMA_CARD
 "Conférences, rencontres et découverte des métiers",Physique,EventType.CONFERENCE_DEBAT_DEDICACE
 "Jeux (support physique)",Physique,ThingType.JEUX
 "Jeux - abonnements",Numérique,ThingType.JEUX_VIDEO_ABO
