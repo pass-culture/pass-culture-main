@@ -1459,7 +1459,7 @@ class GetPaginatedActiveOfferIdsTest:
         offer2 = create_offer_with_event_product(is_active=False, venue=venue)
         offer3 = create_offer_with_thing_product(is_active=True, venue=venue)
         offer4 = create_offer_with_thing_product(is_active=True, venue=venue)
-        PcObject.save(offer1, offer2)
+        repository.save(offer1, offer2)
 
         # When
         offer_ids = get_paginated_active_offer_ids(limit=1, page=1)

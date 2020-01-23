@@ -51,8 +51,8 @@ class Patch:
             offer = create_offer_with_event_product(venue)
             user_offerer = create_user_offerer(user, offerer)
             mediation = create_mediation(offer)
-            PcObject.save(mediation)
-            PcObject.save(user, venue, offerer, user_offerer)
+            repository.save(mediation)
+            repository.save(user, venue, offerer, user_offerer)
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
             data = {'frontText': 'new front text', 'backText': 'new back text', 'isActive': False}
 

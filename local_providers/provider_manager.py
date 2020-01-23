@@ -3,7 +3,7 @@ from typing import Callable
 
 import local_providers
 from local_providers.local_provider import LocalProvider
-from models import PcObject
+from repository import repository
 from scripts.cron_logger.cron_logger import build_cron_log_message
 from scripts.cron_logger.cron_status import CronStatus
 from utils.logger import logger
@@ -24,7 +24,7 @@ def _remove_worker_id_after_venue_provider_sync_error(provider: LocalProvider):
     venue_provider_in_sync = provider.venue_provider
     if venue_provider_in_sync is not None:
         venue_provider_in_sync.syncWorkerId = None
-        PcObject.save(venue_provider_in_sync)
+        repository.save(venue_provider_in_sync)
 
 
 def get_local_provider_class_by_name(class_name: str) -> Callable:

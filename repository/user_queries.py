@@ -1,13 +1,12 @@
 from datetime import datetime, MINYEAR
 from typing import List
 
-from flask_login import current_user
 from sqlalchemy import func, Column
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.functions import Function
 
 from models import ImportStatus, BeneficiaryImportStatus, Booking, Stock, Offer, ThingType, EventType, User
-from models import User, UserOfferer, Offerer, RightsType
+from models import UserOfferer, Offerer, RightsType
 from models.db import db
 from models.user import WalletBalance
 
@@ -18,6 +17,10 @@ def count_all_activated_users() -> int:
 
 def count_all_activated_users_by_departement(department_code) -> int:
     return User.query.filter_by(canBookFreeOffers=True).filter_by(departementCode=department_code).count()
+
+
+def count_users_by_email(email: str) -> int:
+    return User.query.filter_by(email=email).count()
 
 
 def _query_user_having_booked():
@@ -155,7 +158,3 @@ def _sanitized_string(value: str) -> Function:
     sanitized = func.unaccent(sanitized)
     sanitized = func.lower(sanitized)
     return sanitized
-
-
-def find_by_id():
-    return User.query.filter_by(id=current_user.id).one()

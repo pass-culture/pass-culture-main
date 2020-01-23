@@ -2,7 +2,8 @@ import os
 from time import sleep
 
 from connectors.scalingo_api import run_process_in_one_off_container, ScalingoApiException
-from models import VenueProvider, PcObject
+from models import VenueProvider
+from repository import repository
 from repository.venue_provider_queries import get_venue_providers_to_sync, get_nb_containers_at_work
 from utils.logger import logger
 
@@ -30,7 +31,7 @@ def do_sync_venue_provider(venue_provider: VenueProvider):
     try:
         container_id = run_process_in_one_off_container(update_venue_provider_command)
         venue_provider.syncWorkerId = container_id
-        PcObject.save(venue_provider)
+        repository.save(venue_provider)
         logger.info(f"[VenueProviderWorker] VenueProvider {venue_provider.venueIdAtOfferProvider}"
                     f" synchro in container {container_id}")
     except ScalingoApiException as error:

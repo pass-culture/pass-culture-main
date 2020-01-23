@@ -12,4 +12,4 @@ def delete_corrupted_allocine_stocks():
         .filter(Stock.idAtProviders.notilike(new_stock_id_at_providers_format)) \
         .all()
 
-    repository.delete_all(stocks_to_delete)
+    repository.delete(*stocks_to_delete)

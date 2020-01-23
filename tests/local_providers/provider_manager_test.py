@@ -1,7 +1,8 @@
 from unittest.mock import MagicMock, patch, ANY
 
 from local_providers.provider_manager import do_update, _remove_worker_id_after_venue_provider_sync_error
-from models import VenueProvider, PcObject
+from models import VenueProvider
+from repository import repository
 from tests.conftest import clean_database
 from tests.local_providers.provider_test_utils import TestLocalProvider
 from tests.model_creators.generic_creators import create_venue_provider, create_venue, create_offerer, create_provider
@@ -62,7 +63,7 @@ class RemoveWorkerIdAfterVenueProviderSyncErrorTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         venue_provider = create_venue_provider(venue, provider_test, sync_worker_id='1234567')
-        PcObject.save(venue_provider)
+        repository.save(venue_provider)
 
         provider = TestLocalProvider(venue_provider)
 

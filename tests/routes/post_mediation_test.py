@@ -86,8 +86,8 @@ class Post:
             offer = create_offer_with_event_product(venue)
             user_offerer = create_user_offerer(user, offerer)
 
-            PcObject.save(offer)
-            PcObject.save(user, venue, offerer, user_offerer)
+            repository.save(offer)
+            repository.save(user, venue, offerer, user_offerer)
 
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 

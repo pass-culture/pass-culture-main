@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from models import PcObject
+from repository import repository
 from repository.venue_provider_queries import get_venue_providers_to_sync, get_nb_containers_at_work
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_venue_provider
@@ -17,7 +17,7 @@ class GetVenueProvidersToSyncTest:
         allocine_provider = activate_provider('AllocineStocks')
         venue_provider_titelive = create_venue_provider(venue, titelive_provider)
         venue_provider_allocine = create_venue_provider(venue, allocine_provider)
-        PcObject.save(venue_provider_titelive, venue_provider_allocine)
+        repository.save(venue_provider_titelive, venue_provider_allocine)
 
         # When
         venue_providers = get_venue_providers_to_sync(titelive_provider.id)
@@ -35,7 +35,7 @@ class GetVenueProvidersToSyncTest:
         venue_provider_1 = create_venue_provider(venue_1, titelive_provider, last_sync_date=datetime.utcnow())
         venue_provider_2 = create_venue_provider(venue_2, titelive_provider,
                                                  last_sync_date=datetime.utcnow() - timedelta(days=2))
-        PcObject.save(venue_provider_1, venue_provider_2)
+        repository.save(venue_provider_1, venue_provider_2)
 
         # When
         venue_providers = get_venue_providers_to_sync(titelive_provider.id)
@@ -52,7 +52,7 @@ class GetVenueProvidersToSyncTest:
         titelive_provider = activate_provider('TiteLiveStocks')
         venue_provider_1 = create_venue_provider(venue_1, titelive_provider, last_sync_date=None)
         venue_provider_2 = create_venue_provider(venue_2, titelive_provider, last_sync_date=datetime.utcnow())
-        PcObject.save(venue_provider_1, venue_provider_2)
+        repository.save(venue_provider_1, venue_provider_2)
 
         # When
         venue_providers = get_venue_providers_to_sync(titelive_provider.id)
@@ -70,7 +70,7 @@ class GetVenueProvidersToSyncTest:
         venue_provider_1 = create_venue_provider(venue_1, titelive_provider, last_sync_date=None, sync_worker_id=None)
         venue_provider_2 = create_venue_provider(venue_2, titelive_provider, last_sync_date=None,
                                                  sync_worker_id='123456789098765432345634')
-        PcObject.save(venue_provider_1, venue_provider_2)
+        repository.save(venue_provider_1, venue_provider_2)
 
         # When
         venue_providers = get_venue_providers_to_sync(titelive_provider.id)
@@ -89,7 +89,7 @@ class GetNbContainersAtWorkTest:
         titelive_provider = activate_provider('TiteLiveStocks')
         venue_provider_1 = create_venue_provider(venue_1, titelive_provider, )
         venue_provider_2 = create_venue_provider(venue_2, titelive_provider, sync_worker_id='1234567')
-        PcObject.save(venue_provider_1, venue_provider_2)
+        repository.save(venue_provider_1, venue_provider_2)
 
         # When
         nb_containers_at_work = get_nb_containers_at_work()

@@ -38,7 +38,7 @@ class BuildObjectTest:
                              offer=offer,
                              price=0)
         repository.save(stock)
-        humanized_id = humanize(offer.product.id)
+        humanized_product_id = humanize(offer.product.id)
 
         # When
         result = build_object(offer)
@@ -62,7 +62,7 @@ class BuildObjectTest:
                 'showType': None,
                 'speaker': None,
                 'stageDirector': None,
-                'thumbUrl': f'http://localhost/storage/thumbs/products/{humanized_id}',
+                'thumbUrl': f'http://localhost/storage/thumbs/products/{humanized_product_id}',
                 'type': 'Écouter',
                 'visa': None,
             },

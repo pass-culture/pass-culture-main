@@ -40,7 +40,7 @@ def delete_unwanted_existing_product(isbn: str):
         favorites = get_favorites_for_offers(offer_ids)
         objects_to_delete = objects_to_delete + favorites
         objects_to_delete = objects_to_delete + recommendations
-        repository.delete_all(objects_to_delete)
+        repository.delete(*objects_to_delete)
 
 
 def find_by_id(product_id: int) -> Product:

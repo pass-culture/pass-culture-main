@@ -220,7 +220,7 @@ class HandleVenueProvidersTest:
         offerer = create_offerer()
         venue = create_venue(idx=1, offerer=offerer)
         venue_provider = create_venue_provider(idx=1, provider=provider, venue=venue)
-        PcObject.save(venue_provider)
+        repository.save(venue_provider)
 
         # When
         send_venue_provider_data_to_redis(venue_provider=venue_provider)

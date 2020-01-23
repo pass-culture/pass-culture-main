@@ -1,7 +1,8 @@
 from unittest.mock import patch, call
 
 from local_providers.venue_provider_worker import update_venues_for_specific_provider, do_sync_venue_provider
-from models import VenueProvider, PcObject
+from models import VenueProvider
+from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_venue_provider
 from tests.model_creators.provider_creators import activate_provider
@@ -20,7 +21,7 @@ class UpdateVenuesForSpecificProviderTest:
         venue2 = create_venue(offerer, siret='12345678912356')
         venue_provider_titelive1 = create_venue_provider(venue1, titelive_provider)
         venue_provider_titelive2 = create_venue_provider(venue2, titelive_provider)
-        PcObject.save(venue_provider_titelive1, venue_provider_titelive2)
+        repository.save(venue_provider_titelive1, venue_provider_titelive2)
 
         # When
         update_venues_for_specific_provider(titelive_provider.id)
@@ -48,7 +49,7 @@ class UpdateVenuesForSpecificProviderTest:
         venue2 = create_venue(offerer, siret='12345678912356')
         venue_provider_titelive1 = create_venue_provider(venue1, titelive_provider)
         venue_provider_titelive2 = create_venue_provider(venue2, titelive_provider)
-        PcObject.save(venue_provider_titelive1, venue_provider_titelive2)
+        repository.save(venue_provider_titelive1, venue_provider_titelive2)
         expected_wait_time = 60
 
         # When
@@ -73,7 +74,7 @@ class DoSyncVenueProviderTest:
         offerer = create_offerer()
         venue1 = create_venue(offerer)
         venue_provider = create_venue_provider(venue1, titelive_provider)
-        PcObject.save(venue_provider)
+        repository.save(venue_provider)
         update_venue_provider_command = f"PYTHONPATH=. python scripts/pc.py update_providables" \
                                         f" --venue-provider-id {venue_provider.id}"
 
@@ -93,7 +94,7 @@ class DoSyncVenueProviderTest:
         offerer = create_offerer()
         venue1 = create_venue(offerer)
         venue_provider = create_venue_provider(venue1, titelive_provider, venue_id_at_offer_provider='12345')
-        PcObject.save(venue_provider)
+        repository.save(venue_provider)
 
         # When
         do_sync_venue_provider(venue_provider)

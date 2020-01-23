@@ -17,3 +17,18 @@ db.app = app
 
 # IMPORT A LOT OF TOOLS TO MAKE THEM AVAILABLE
 # IN THE PYTHON SHELL
+from domain import *
+from recommendations_engine import *
+from local_providers import *
+from models import *
+from repository.offer_queries import *
+from sandboxes import *
+from sqlalchemy import *
+from utils.config import *
+from utils.credentials import *
+from utils.distance import *
+from utils.human_ids import *
+from utils.import_module import *
+from utils.includes import *
+from utils.logger import *
+from utils.token import *
