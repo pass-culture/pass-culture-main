@@ -54,8 +54,8 @@ describe('src | pages | Offer | StocksManager | StockItem | decorators | adaptaB
     expect(input.props().value).toStrictEqual('2019-04-21T02:59:00.000Z')
   })
 
-  describe('when beginningDatetime is the same as ', () => {
-    it('should update bookingLimitDatetime when updating beginningTime', () => {
+  describe('when updating beginningTime', () => {
+    it('should update beginningDatetime and bookingLimitDatetime', () => {
       // given
       const initialValues = {
         beginningDatetime: '2020-01-18T19:00:59.984000Z',
@@ -110,11 +110,14 @@ describe('src | pages | Offer | StocksManager | StockItem | decorators | adaptaB
         .find('input')
         .simulate('change', { target: { value: '12:00' } })
 
-        wrapper.find('button[type="submit"]').simulate('click')
-
+      const inputBeginningDatetime = wrapper
+        .find(Field)
+        .find({ name: 'beginningDatetime' })
+        .find('input')
+      wrapper.find('button[type="submit"]').simulate('click')
 
       // then
-      expect(inputBookingLimitDatetime.props().value).toStrictEqual(initialValues.beginningDatetime)
+      expect(inputBookingLimitDatetime.props().value).toStrictEqual(inputBeginningDatetime.props().value)
     })
   })
 })

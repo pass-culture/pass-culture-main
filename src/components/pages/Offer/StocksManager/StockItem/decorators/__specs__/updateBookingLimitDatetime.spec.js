@@ -47,16 +47,12 @@ describe('src | components | pages | Offer | StockManager | StockItem | decorato
         const isEvent = true
         const beginningDatetime = '2019-04-20T19:00:00.000Z'
         const bookingLimitDatetime = '2019-04-20T15:00:00.000Z'
-        const previousBeginninDatetime = beginningDatetime
-        const previousBookingLimitDatetime = '2019-04-10T15:00:00.000Z'
 
         // when
         const result = updateBookingLimitDatetime({
           beginningDatetime,
           bookingLimitDatetime,
-          isEvent,
-          previousBeginninDatetime,
-          previousBookingLimitDatetime,
+          isEvent
         })
 
         // then
@@ -64,22 +60,18 @@ describe('src | components | pages | Offer | StockManager | StockItem | decorato
       })
     })
 
-    describe('when booking limit date is empty', () => {
+    describe('when bookingLimiteDateTime is empty', () => {
       it('should make bookingLimitDatetime equal to beginningDatetime (whatever the timezone)', () => {
         // given
         const isEvent = true
         const beginningDatetime = '2019-04-20T19:00:00.000Z'
         const bookingLimitDatetime = null
-        const previousBeginninDatetime = beginningDatetime
-        const previousBookingLimitDatetime = '2019-04-10T15:00:00.000Z'
 
         // when
         const result = updateBookingLimitDatetime({
           beginningDatetime,
           bookingLimitDatetime,
-          isEvent,
-          previousBeginninDatetime,
-          previousBookingLimitDatetime,
+          isEvent
         })
 
         // then
@@ -125,26 +117,20 @@ describe('src | components | pages | Offer | StockManager | StockItem | decorato
       })
     })
 
-    describe('when booking limit date is empty', () => {
-      it('should make bookingLimitDatetime equal to beginningDatetime (whatever the timezone)', () => {
+    describe('when bookingLimiteDateTime is empty', () => {
+      it('should make bookingLimitDatetime null', () => {
         // given
-        const isEvent = true
-        const beginningDatetime = '2019-04-20T19:00:00.000Z'
+        const isEvent = false
         const bookingLimitDatetime = null
-        const previousBeginninDatetime = beginningDatetime
-        const previousBookingLimitDatetime = '2019-04-10T15:00:00.000Z'
 
         // when
         const result = updateBookingLimitDatetime({
-          beginningDatetime,
           bookingLimitDatetime,
-          isEvent,
-          previousBeginninDatetime,
-          previousBookingLimitDatetime,
+          isEvent
         })
 
         // then
-        expect(result.bookingLimitDatetime).toStrictEqual('2019-04-20T19:00:00.000Z')
+        expect(result.bookingLimitDatetime).toBeNull()
       })
     })
   })

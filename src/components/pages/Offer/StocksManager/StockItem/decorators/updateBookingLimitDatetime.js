@@ -26,8 +26,12 @@ const updateBookingLimitDatetime = ({
   const bookingLimitDatetimeMoment = moment(bookingLimitDatetime)
 
   if (!isEvent) {
-    const nextBookingLimitDatetime = setBookingLimitDateTimeTo23h59(bookingLimitDatetimeMoment, timezone)
-    return { bookingLimitDatetime: nextBookingLimitDatetime }
+    if (bookingLimitDatetime && bookingLimitDatetimeMoment) {
+      const nextBookingLimitDatetime = setBookingLimitDateTimeTo23h59(bookingLimitDatetimeMoment, timezone)
+      return { bookingLimitDatetime: nextBookingLimitDatetime }
+    } else {
+      return { bookingLimitDatetime: null }
+    }
   }
 
   if (isEvent && bookingLimitDatetimeMoment.isBefore(beginningDatetime, 'day')) {
