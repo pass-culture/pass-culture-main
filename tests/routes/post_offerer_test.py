@@ -1,7 +1,7 @@
 from unittest.mock import patch, MagicMock
 
 from models import Offerer, RightsType, UserOfferer
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 
@@ -17,7 +17,7 @@ class Post:
                                                          json=MagicMock(return_value={}))
 
             user = create_user()
-            Repository.save(user)
+            repository.save(user)
             body = {
                 'name': 'Test Offerer',
                 'siren': '418166096',
@@ -48,7 +48,7 @@ class Post:
                                                          json=MagicMock(return_value={}))
 
             user = create_user()
-            Repository.save(user)
+            repository.save(user)
             body = {
                 'name': 'Test Offerer',
                 'siren': '418166096',
@@ -75,7 +75,7 @@ class Post:
                                                          json=MagicMock(return_value={}))
 
             user = create_user(can_book_free_offers=False, is_admin=True)
-            Repository.save(user)
+            repository.save(user)
             body = {
                 'name': 'Test Offerer',
                 'siren': '418166096',
@@ -101,7 +101,7 @@ class Post:
                                                          json=MagicMock(return_value={}))
 
             user = create_user(can_book_free_offers=False, is_admin=False)
-            Repository.save(user)
+            repository.save(user)
             body = {
                 'name': 'Test Offerer',
                 'siren': '418166096',
@@ -137,7 +137,7 @@ class Post:
             user_2 = create_user(email="other_offerer@mail.com", is_admin=False)
             offerer = create_offerer()
             user_offerer = create_user_offerer(user_2, offerer, validation_token=None)
-            Repository.save(user, user_2, offerer, user_offerer)
+            repository.save(user, user_2, offerer, user_offerer)
             body = {
                 'name': 'Test Offerer',
                 'siren': '123456789',
@@ -174,7 +174,7 @@ class Post:
                                                          json=MagicMock(return_value={}))
 
             user = create_user(can_book_free_offers=False, is_admin=False)
-            Repository.save(user)
+            repository.save(user)
             body = {
                 'name': 'Test Offerer',
                 'siren': '418166096',
@@ -209,7 +209,7 @@ class Post:
 
             user = create_user(can_book_free_offers=False, is_admin=False)
             offerer = create_offerer(siren='123456789')
-            Repository.save(user, offerer)
+            repository.save(user, offerer)
             body = {
                 'name': 'Test Offerer',
                 'siren': '123456789',
@@ -244,7 +244,7 @@ class Post:
 
             user = create_user(can_book_free_offers=False, is_admin=False)
             offerer = create_offerer(siren='123456789', validation_token='not_validated')
-            Repository.save(user, offerer)
+            repository.save(user, offerer)
             body = {
                 'name': 'Test Offerer',
                 'siren': '123456789',

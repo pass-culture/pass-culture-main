@@ -9,7 +9,8 @@ from flask import current_app as app, render_template
 from connectors import api_entreprises
 from models import Booking, Offer, Email, Offerer, Stock, User, UserOfferer, Venue
 from models.email import EmailStatus
-from repository import booking_queries
+from models.offer_type import ProductType
+from repository import booking_queries, repository
 from repository import email_queries
 from repository.feature_queries import feature_send_mail_to_users_enabled
 from utils import logger
@@ -60,7 +61,7 @@ def resend_email(email: Email) -> bool:
     if response.status_code == 200:
         email.status = EmailStatus.SENT
         email.datetime = datetime.utcnow()
-        Repository.save(email)
+        repository.save(email)
         return True
     logger.logger.warning(
         f'[EMAIL] Trying to resend email # {email.id}, {email.content} failed with status code {response.status_code}')

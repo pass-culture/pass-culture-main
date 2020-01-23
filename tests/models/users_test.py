@@ -3,6 +3,7 @@ from decimal import Decimal
 import pytest
 
 from models import ApiErrors, RightsType, ThingType
+from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
@@ -17,7 +18,7 @@ def test_cannot_create_admin_that_can_book(app):
 
     # When
     with pytest.raises(ApiErrors):
-        Repository.save(user)
+        repository.save(user)
 
 
 class HasRightsTest:
@@ -26,7 +27,7 @@ class HasRightsTest:
         # given
         offerer = create_offerer()
         user = create_user(is_admin=False)
-        Repository.save(offerer, user)
+        repository.save(offerer, user)
 
         # when
         has_rights = user.hasRights(RightsType.editor, offerer.id)
@@ -40,7 +41,7 @@ class HasRightsTest:
         offerer = create_offerer()
         user = create_user(is_admin=False)
         user_offerer = create_user_offerer(user, offerer)
-        Repository.save(user_offerer)
+        repository.save(user_offerer)
 
         # when
         has_rights = user.hasRights(RightsType.editor, offerer.id)
@@ -54,7 +55,7 @@ class HasRightsTest:
         offerer = create_offerer()
         user = create_user(email='bobby@test.com', is_admin=False)
         user_offerer = create_user_offerer(user, offerer, validation_token='AZEFRGTHRQFQ')
-        Repository.save(user_offerer)
+        repository.save(user_offerer)
 
         # when
         has_rights = user.hasRights(RightsType.editor, offerer.id)
@@ -67,7 +68,7 @@ class HasRightsTest:
         # given
         offerer = create_offerer()
         user = create_user(can_book_free_offers=False, is_admin=True)
-        Repository.save(offerer, user)
+        repository.save(offerer, user)
 
         # when
         has_rights = user.hasRights(RightsType.editor, offerer.id)
@@ -81,7 +82,7 @@ class WalletBalanceTest:
     def test_wallet_balance_is_0_with_no_deposits_and_no_bookings(self, app):
         # given
         user = create_user()
-        Repository.save(user)
+        repository.save(user)
 
         # when
         balance = user.wallet_balance
@@ -95,7 +96,7 @@ class WalletBalanceTest:
         user = create_user()
         deposit1 = create_deposit(user, amount=100)
         deposit2 = create_deposit(user, amount=50)
-        Repository.save(deposit1, deposit2)
+        repository.save(deposit1, deposit2)
 
         # when
         balance = user.wallet_balance
@@ -118,7 +119,7 @@ class WalletBalanceTest:
         booking1 = create_booking(user=user, quantity=1, stock=stock1, venue=venue)
         booking2 = create_booking(user=user, quantity=2, stock=stock2, venue=venue)
 
-        Repository.save(deposit1, deposit2, booking1, booking2)
+        repository.save(deposit1, deposit2, booking1, booking2)
 
         # when
         balance = user.wallet_balance
@@ -141,7 +142,7 @@ class WalletBalanceTest:
         booking1 = create_booking(user=user, is_cancelled=False, quantity=1, stock=stock1, venue=venue)
         booking2 = create_booking(user=user, is_cancelled=True, quantity=2, stock=stock2, venue=venue)
 
-        Repository.save(deposit1, deposit2, booking1, booking2)
+        repository.save(deposit1, deposit2, booking1, booking2)
 
         # when
         balance = user.wallet_balance
@@ -155,7 +156,7 @@ class RealWalletBalanceTest:
     def test_real_wallet_balance_is_0_with_no_deposits_and_no_bookings(self, app):
         # given
         user = create_user()
-        Repository.save(user)
+        repository.save(user)
 
         # when
         balance = user.real_wallet_balance
@@ -169,7 +170,7 @@ class RealWalletBalanceTest:
         user = create_user()
         deposit1 = create_deposit(user, amount=100)
         deposit2 = create_deposit(user, amount=50)
-        Repository.save(deposit1, deposit2)
+        repository.save(deposit1, deposit2)
 
         # when
         balance = user.real_wallet_balance
@@ -194,7 +195,7 @@ class RealWalletBalanceTest:
         booking2 = create_booking(user=user, is_used=True, quantity=2, stock=stock2, venue=venue)
         booking3 = create_booking(user=user, is_used=False, quantity=1, stock=stock3, venue=venue)
 
-        Repository.save(deposit1, deposit2, booking1, booking2, booking3)
+        repository.save(deposit1, deposit2, booking1, booking2, booking3)
 
         # when
         balance = user.real_wallet_balance
@@ -219,7 +220,7 @@ class RealWalletBalanceTest:
         booking2 = create_booking(user=user, is_cancelled=False, is_used=True, quantity=2, stock=stock2, venue=venue)
         booking3 = create_booking(user=user, is_cancelled=False, is_used=True, quantity=1, stock=stock3, venue=venue)
 
-        Repository.save(deposit1, deposit2, booking1, booking2, booking3)
+        repository.save(deposit1, deposit2, booking1, booking2, booking3)
 
         # when
         balance = user.real_wallet_balance
@@ -235,7 +236,7 @@ class HasPhysicalVenuesTest:
         user = create_user()
 
         # when
-        Repository.save(user)
+        repository.save(user)
 
         # then
         assert user.hasPhysicalVenues is False
@@ -249,7 +250,7 @@ class HasPhysicalVenuesTest:
         offerer_venue = create_venue(offerer, is_virtual=True, siret=None)
 
         # when
-        Repository.save(offerer_venue, user_offerer)
+        repository.save(offerer_venue, user_offerer)
 
         # then
         assert user.hasPhysicalVenues is False
@@ -262,7 +263,7 @@ class HasPhysicalVenuesTest:
         user_offerer = create_user_offerer(user, offerer)
         offerer_virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
         offerer_physical_venue = create_venue(offerer)
-        Repository.save(offerer_virtual_venue, offerer_physical_venue, user_offerer)
+        repository.save(offerer_virtual_venue, offerer_physical_venue, user_offerer)
 
         # then
         assert user.hasPhysicalVenues is True
@@ -278,7 +279,7 @@ class HasPhysicalVenuesTest:
         offerer_virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
         offerer2_physical_venue = create_venue(offerer2, siret='12345678856734')
         offerer2_virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
-        Repository.save(offerer_virtual_venue, offerer2_physical_venue, user_offerer, user_offerer2)
+        repository.save(offerer_virtual_venue, offerer2_physical_venue, user_offerer, user_offerer2)
 
         # then
         assert user.hasPhysicalVenues is True
@@ -290,7 +291,7 @@ class nOffersTest:
         # given
         user = create_user()
 
-        Repository.save(user)
+        repository.save(user)
 
         # then
         assert user.hasOffers is False
@@ -309,7 +310,7 @@ class nOffersTest:
         offer = create_offer_with_thing_product(offerer_virtual_venue, thing_type=ThingType.JEUX_VIDEO_ABO, url='http://fake.url')
         offer2 = create_offer_with_thing_product(offerer2_physical_venue)
 
-        Repository.save(offer, offer2, user_offerer, user_offerer2)
+        repository.save(offer, offer2, user_offerer, user_offerer2)
 
         # then
         assert user.hasOffers is True

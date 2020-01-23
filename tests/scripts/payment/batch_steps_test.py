@@ -6,7 +6,7 @@ from lxml.etree import DocumentInvalid
 
 from models.payment import Payment
 from models.payment_status import TransactionStatus, PaymentStatus
-from repository.repository import Repository
+from repository import repository
 from scripts.payment.batch_steps import send_transactions, send_payments_details, \
     send_wallet_balances, \
     send_payments_report, concatenate_payments_with_errors_and_retries, \
@@ -44,7 +44,7 @@ class ConcatenatePaymentsWithErrorsAndRetriesTest:
         not_processable_status.status = TransactionStatus.NOT_PROCESSABLE
         not_processable_payment.statuses.append(not_processable_status)
 
-        Repository.save(error_payment, retry_payment, pending_payment, deposit)
+        repository.save(error_payment, retry_payment, pending_payment, deposit)
 
         # When
         payments = concatenate_payments_with_errors_and_retries([pending_payment])
@@ -142,7 +142,7 @@ def test_send_transactions_should_send_an_email_with_xml_attachment(app):
     booking2 = create_booking(user=user, stock=stock1)
     booking3 = create_booking(user=user, stock=stock1)
     deposit = create_deposit(user, amount=500)
-    Repository.save(deposit)
+    repository.save(deposit)
     payments = [
         create_payment(booking1, offerer1, 10, iban='FR7630007000111234567890144', bic='BDFEFR2LCCB'),
         create_payment(booking2, offerer1, 20, iban='FR7630007000111234567890144', bic='BDFEFR2LCCB'),
@@ -179,8 +179,8 @@ def test_send_transactions_creates_a_new_payment_transaction_if_email_was_sent_p
         create_payment(booking3, offerer1, 20, iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
     ]
 
-    Repository.save(deposit)
-    Repository.save(*payments)
+    repository.save(deposit)
+    repository.save(*payments)
 
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
@@ -211,8 +211,8 @@ def test_send_transactions_set_status_to_sent_if_email_was_sent_properly(app):
         create_payment(booking3, offerer1, 20, iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
     ]
 
-    Repository.save(deposit)
-    Repository.save(*payments)
+    repository.save(deposit)
+    repository.save(*payments)
 
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
@@ -245,8 +245,8 @@ def test_send_transactions_set_status_to_error_with_details_if_email_was_not_sen
         create_payment(booking3, offerer1, 20, iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
     ]
 
-    Repository.save(deposit)
-    Repository.save(*payments)
+    repository.save(deposit)
+    repository.save(*payments)
 
     app.mailjet_client.send.create.return_value = Mock(status_code=400)
 
@@ -276,7 +276,7 @@ def test_send_transactions_with_malformed_iban_on_payments_gives_them_an_error_s
         create_payment(booking, offerer, 10, iban='CF  13QSDFGH45 qbc //', bic='QSDFGH8Z555'),
     ]
 
-    Repository.save(deposit, *payments)
+    repository.save(deposit, *payments)
     app.mailjet_client.send.create.return_value = Mock(status_code=400)
 
     # when
@@ -311,8 +311,8 @@ def test_send_payment_details_sends_a_csv_attachment(app):
         create_payment(booking3, offerer1, 20, iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
     ]
 
-    Repository.save(deposit)
-    Repository.save(*payments)
+    repository.save(deposit)
+    repository.save(*payments)
 
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
@@ -413,8 +413,8 @@ def test_send_payments_report_sends_two_csv_attachments_if_some_payments_are_not
                        iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
     ]
 
-    Repository.save(deposit)
-    Repository.save(*payments)
+    repository.save(deposit)
+    repository.save(*payments)
 
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
@@ -450,8 +450,8 @@ def test_send_payments_report_sends_two_csv_attachments_if_no_payments_are_in_er
                        bic='QSDFGH8Z555')
     ]
 
-    Repository.save(deposit)
-    Repository.save(*payments)
+    repository.save(deposit)
+    repository.save(*payments)
 
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
@@ -495,7 +495,7 @@ class SetNotProcessablePaymentsWithBankInformationToRetryTest:
         not_processable_payment = create_payment(booking, offerer, 10,
                                                  status=TransactionStatus.NOT_PROCESSABLE, iban=None, bic=None)
         sent_payment = create_payment(booking, offerer, 10, status=TransactionStatus.SENT)
-        Repository.save(bank_information, not_processable_payment, sent_payment)
+        repository.save(bank_information, not_processable_payment, sent_payment)
 
         # When
         set_not_processable_payments_with_bank_information_to_retry()
@@ -523,7 +523,7 @@ class SetNotProcessablePaymentsWithBankInformationToRetryTest:
                                                  status=TransactionStatus.NOT_PROCESSABLE, iban=None, bic=None)
         sent_payment = create_payment(booking, offerer, 10, status=TransactionStatus.SENT,
                                       iban='FR7630007000111234567890144', bic='BDFEFR2LCCB')
-        Repository.save(bank_information, not_processable_payment, sent_payment)
+        repository.save(bank_information, not_processable_payment, sent_payment)
 
         # When
         set_not_processable_payments_with_bank_information_to_retry()

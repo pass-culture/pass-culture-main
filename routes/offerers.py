@@ -4,6 +4,7 @@ from flask_login import current_user, login_required
 from domain.admin_emails import maybe_send_offerer_validation_email
 from models import Offerer, RightsType, Venue
 from models.venue import create_digital_venue
+from repository import repository
 from repository.offerer_queries import filter_offerers_with_keywords_string, \
     find_by_siren, query_filter_offerer_by_user, query_filter_offerer_is_validated, \
     query_filter_offerer_is_not_validated
@@ -85,7 +86,7 @@ def create_offerer():
     if offerer is not None:
         user_offerer = offerer.give_rights(current_user, RightsType.editor)
         user_offerer.generate_validation_token()
-        Repository.save(user_offerer)
+        repository.save(user_offerer)
 
     else:
         offerer = Offerer()
@@ -93,7 +94,7 @@ def create_offerer():
         digital_venue = create_digital_venue(offerer)
         offerer.generate_validation_token()
         user_offerer = offerer.give_rights(current_user, RightsType.editor)
-        Repository.save(offerer, digital_venue, user_offerer)
+        repository.save(offerer, digital_venue, user_offerer)
 
     try:
         maybe_send_offerer_validation_email(offerer, user_offerer, send_raw_email)
@@ -111,5 +112,5 @@ def patch_offerer(offererId):
     check_valid_edition(data)
     offerer = Offerer.query.filter_by(id=dehumanize(offererId)).first()
     offerer.populate_from_dict(data, skipped_keys=['validationToken'])
-    Repository.save(offerer)
+    repository.save(offerer)
     return jsonify(get_dict_offerer(offerer)), 200

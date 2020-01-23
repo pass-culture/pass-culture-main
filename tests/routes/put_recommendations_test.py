@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from models.mediation import Mediation
 from models.recommendation import Recommendation
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_recommendation, create_mediation
@@ -41,7 +41,7 @@ class Put:
             stock_thing_2 = create_stock_with_thing_offer(offerer, venue, offer_thing_2, price=0)
             mediation_1 = create_mediation(offer_thing_1)
             mediation_2 = create_mediation(offer_thing_2)
-            Repository.save(user, stock_thing_1, stock_thing_2, mediation_1, mediation_2)
+            repository.save(user, stock_thing_1, stock_thing_2, mediation_1, mediation_2)
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
@@ -62,7 +62,7 @@ class Put:
             offer_with_thing = create_offer_with_thing_product(venue, thumb_count=1)
             stock_with_thing = create_stock_with_thing_offer(offerer, venue, offer_with_thing, price=0)
             mediation = create_mediation(offer_with_thing)
-            Repository.save(user, stock_with_thing, mediation)
+            repository.save(user, stock_with_thing, mediation)
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
@@ -80,7 +80,7 @@ class Put:
         def when_mediation_is_unknown(self, app):
             # given
             user = create_user(email='user1@user.fr')
-            Repository.save(user)
+            repository.save(user)
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
@@ -102,7 +102,7 @@ class Put:
             offer_thing = create_offer_with_thing_product(venue, thumb_count=1)
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
             mediation = create_mediation(offer_thing)
-            Repository.save(user, stock_thing, mediation)
+            repository.save(user, stock_thing, mediation)
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
@@ -120,7 +120,7 @@ class Put:
         def when_offer_is_unknown_and_mediation_is_unknown(self, app):
             # given
             user = create_user(email='user1@user.fr')
-            Repository.save(user)
+            repository.save(user)
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
@@ -143,7 +143,7 @@ class Put:
             venue.generate_validation_token()
             offer1 = create_offer_with_thing_product(venue, thumb_count=1)
             stock1 = create_stock_from_offer(offer1, price=0)
-            Repository.save(user, stock1)
+            repository.save(user, stock1)
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             data = {'seenRecommendationIds': []}
@@ -176,7 +176,7 @@ class Put:
             recommendation1 = create_recommendation(offer, user)
             recommendation2 = create_recommendation(thing_offer1, user)
             recommendation3 = create_recommendation(thing_offer2, user)
-            Repository.save(
+            repository.save(
                 stock1, stock2, stock3, stock4,
                 recommendation1, recommendation2, recommendation3
             )
@@ -219,7 +219,7 @@ class Put:
             recommendation1 = create_recommendation(offer, user)
             recommendation2 = create_recommendation(thing_offer1, user)
             recommendation3 = create_recommendation(thing_offer2, user)
-            Repository.save(stock1, stock2, stock3, stock4, recommendation1, recommendation2, recommendation3)
+            repository.save(stock1, stock2, stock3, stock4, recommendation1, recommendation2, recommendation3)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -257,7 +257,7 @@ class Put:
             stock2 = create_stock_from_offer(thing_offer2)
             stock3 = create_stock_from_offer(thing_offer3)
             stock4 = create_stock_from_offer(thing_offer4)
-            Repository.save(user, stock1, stock2, stock3, stock4)
+            repository.save(user, stock1, stock2, stock3, stock4)
 
             # when
             response = TestClient(app.test_client()).with_auth(user.email) \
@@ -283,7 +283,7 @@ class Put:
             stock2 = create_stock_from_offer(thing_offer2)
             create_mediation(thing_offer1)
             create_mediation(thing_offer2)
-            Repository.save(user, stock1, stock2)
+            repository.save(user, stock1, stock2)
 
             # when
             response = TestClient(app.test_client()).with_auth(user.email) \
@@ -328,7 +328,7 @@ class Put:
             create_mediation(thing_offer1)
             create_mediation(thing_offer2)
             create_mediation(event_offer)
-            Repository.save(user, event_stock, soft_deleted_event_stock, thing_stock, soft_deleted_thing_stock)
+            repository.save(user, event_stock, soft_deleted_event_stock, thing_stock, soft_deleted_thing_stock)
 
             event_offer_id = event_offer.id
             thing_offer2_id = thing_offer2.id
@@ -353,7 +353,7 @@ class Put:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
-            Repository.save(user, offer)
+            repository.save(user, offer)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -374,7 +374,7 @@ class Put:
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue, thumb_count=1)
             stock = create_stock_from_offer(offer, price=0)
-            Repository.save(user, stock)
+            repository.save(user, stock)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -395,7 +395,7 @@ class Put:
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             stock = create_stock_from_offer(offer, price=0)
-            Repository.save(user, stock)
+            repository.save(user, stock)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -418,7 +418,7 @@ class Put:
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             stock = create_stock_from_offer(offer, price=0)
             mediation = create_mediation(offer)
-            Repository.save(user, stock, mediation)
+            repository.save(user, stock, mediation)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -448,7 +448,7 @@ class Put:
                 end_datetime=eight_days_from_now
             )
             stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
-            Repository.save(user, stock)
+            repository.save(user, stock)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -480,7 +480,7 @@ class Put:
             )
             mediation = create_mediation(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
-            Repository.save(user, stock, mediation)
+            repository.save(user, stock, mediation)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -511,7 +511,7 @@ class Put:
                 end_datetime=eight_days_from_now
             )
             stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
-            Repository.save(user, stock)
+            repository.save(user, stock)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -538,7 +538,7 @@ class Put:
             user = create_user(email='test@email.com')
             create_mediation(offer_venue_not_validated)
             create_mediation(offer_venue_validated)
-            Repository.save(stock_venue_not_validated, stock_venue_validated, user)
+            repository.save(stock_venue_not_validated, stock_venue_validated, user)
 
             venue_validated_id = venue_validated.id
             venue_not_validated_id = venue_not_validated.id
@@ -569,7 +569,7 @@ class Put:
             stock2 = create_stock_from_offer(offer2, price=0)
             mediation2 = create_mediation(offer2, is_active=False)
             mediation3 = create_mediation(offer2, is_active=True)
-            Repository.save(user, stock1, mediation1, stock2, mediation2, mediation3)
+            repository.save(user, stock1, mediation1, stock2, mediation2, mediation3)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
             mediation3_id = mediation3.id
@@ -611,7 +611,7 @@ class Put:
                                                         booking_limit_date=now + timedelta(days=3))
             stock3 = create_stock_from_offer(offer3, price=0)
             stock4 = create_stock_from_offer(offer4, price=0)
-            Repository.save(user, stock1, stock2, stock3, stock4)
+            repository.save(user, stock1, stock2, stock3, stock4)
 
             offer1_id = offer1.id
             offer2_id = offer2.id
@@ -658,7 +658,7 @@ class Put:
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
             create_mediation(offer_thing)
             create_mediation(offer_event)
-            Repository.save(user, event_stock, stock_thing)
+            repository.save(user, event_stock, stock_thing)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -687,7 +687,7 @@ class Put:
 
             recommendation = create_recommendation(offer=offer2, user=user, mediation=mediation2, search="bla")
 
-            Repository.save(user, stock1, mediation1, stock2, mediation2, recommendation)
+            repository.save(user, stock1, mediation1, stock2, mediation2, recommendation)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -711,7 +711,7 @@ class Put:
             offer_thing = create_offer_with_thing_product(venue, thumb_count=1)
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
             mediation = create_mediation(offer_thing)
-            Repository.save(user, stock_thing, mediation)
+            repository.save(user, stock_thing, mediation)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -735,7 +735,7 @@ class Put:
             offer_thing = create_offer_with_thing_product(venue, thumb_count=1)
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
             mediation = create_mediation(offer_thing)
-            Repository.save(user, stock_thing, mediation)
+            repository.save(user, stock_thing, mediation)
 
             mediation_id = mediation.id
             auth_request = TestClient(app.test_client()).with_auth(user.email)
@@ -760,7 +760,7 @@ class Put:
             offer_thing = create_offer_with_thing_product(venue, thumb_count=1)
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
             mediation = create_mediation(offer_thing)
-            Repository.save(user, stock_thing, mediation)
+            repository.save(user, stock_thing, mediation)
 
             offer_thing_id = offer_thing.id
             auth_request = TestClient(app.test_client()).with_auth(user.email)
@@ -789,7 +789,7 @@ class Put:
             inactive_mediation = create_mediation(offer1, is_active=False)
             active_mediation = create_mediation(offer1, is_active=True)
             invalid_recommendation = create_recommendation(offer=offer1, user=user, mediation=inactive_mediation)
-            Repository.save(user, stock1, inactive_mediation, active_mediation, invalid_recommendation)
+            repository.save(user, stock1, inactive_mediation, active_mediation, invalid_recommendation)
 
             active_mediation_id = active_mediation.id
             inactive_mediation_id = inactive_mediation.id
@@ -826,7 +826,7 @@ class Put:
             stock4 = create_stock_from_offer(thing_offer2)
             create_mediation(thing_offer1)
             create_mediation(thing_offer2)
-            Repository.save(stock1, stock2, stock3, stock4, user)
+            repository.save(stock1, stock2, stock3, stock4, user)
 
             upsert_tuto_mediations()
 
@@ -857,13 +857,13 @@ class Put:
             thing_offer2 = create_offer_with_thing_product(venue)
             stock3 = create_stock_from_offer(thing_offer1)
             stock4 = create_stock_from_offer(thing_offer2)
-            Repository.save(stock1, stock2, stock3, stock4, user)
+            repository.save(stock1, stock2, stock3, stock4, user)
             upsert_tuto_mediations()
             tuto_mediation0 = Mediation.query.filter_by(tutoIndex=0).one()
             tuto_mediation1 = Mediation.query.filter_by(tutoIndex=1).one()
             tuto_recommendation0 = create_recommendation(user=user, mediation=tuto_mediation0)
             tuto_recommendation1 = create_recommendation(user=user, mediation=tuto_mediation1)
-            Repository.save(tuto_recommendation0, tuto_recommendation1)
+            repository.save(tuto_recommendation0, tuto_recommendation1)
 
             humanized_tuto_recommendation0_id = humanize(tuto_recommendation0.id)
             humanized_tuto_recommendation1_id = humanize(tuto_recommendation1.id)
@@ -904,7 +904,7 @@ class Put:
             stock = create_stock_from_offer(offer, booking_limit_datetime=one_day_ago)
             recommendation = create_recommendation(offer, user, date_read=three_days_ago)
 
-            Repository.save(stock, recommendation)
+            repository.save(stock, recommendation)
 
             # When
             recommendations = TestClient(app.test_client()).with_auth(user.email) \
@@ -928,7 +928,7 @@ class Put:
             stock = create_stock_from_offer(offer)
             recommendation = create_recommendation(offer=offer, user=user, mediation=mediation, is_clicked=False)
 
-            Repository.save(stock, recommendation)
+            repository.save(stock, recommendation)
 
             # when
             response = TestClient(app.test_client()).with_auth(user.email) \
@@ -949,7 +949,7 @@ class Put:
             user = create_user(email='user1@user.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            Repository.save(user)
+            repository.save(user)
 
             for i in range(0, 10):
                 offer_event = create_offer_with_event_product(venue, thumb_count=1)
@@ -963,7 +963,7 @@ class Put:
                 stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
                 create_mediation(offer_thing)
                 create_mediation(offer_event)
-                Repository.save(event_stock, stock_thing)
+                repository.save(event_stock, stock_thing)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -999,7 +999,7 @@ class Put:
             create_stock_from_offer(offer, price=26, booking_limit_datetime=expired_booking_limit_date)
 
             recommendation = create_recommendation(offer=offer, user=user, mediation=mediation)
-            Repository.save(user, recommendation)
+            repository.save(user, recommendation)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -1028,7 +1028,7 @@ class Put:
             stock = create_stock_from_offer(offer, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
             create_mediation(offer)
-            Repository.save(booking)
+            repository.save(booking)
 
             booking_id = booking.id
 
@@ -1053,7 +1053,7 @@ class Put:
             stock = create_stock_from_offer(offer, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
             create_mediation(offer)
-            Repository.save(booking)
+            repository.save(booking)
 
             # when
             TestClient(app.test_client()).with_auth(user.email) \
@@ -1081,7 +1081,7 @@ class Put:
             stock = create_stock_from_offer(offer, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
             create_mediation(offer)
-            Repository.save(booking)
+            repository.save(booking)
 
             # when
             TestClient(app.test_client()).with_auth(user.email) \

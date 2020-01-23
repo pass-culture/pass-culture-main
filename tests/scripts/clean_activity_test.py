@@ -2,7 +2,7 @@ from datetime import datetime
 
 from models.activity import load_activity
 from models.db import db
-from repository.repository import Repository
+from repository import repository
 from scripts.clean_activity import delete_tables_from_activity, populate_stock_date_created_from_activity, \
     populate_cultural_survey_filled_date_from_activity
 from tests.conftest import clean_database
@@ -68,7 +68,7 @@ class PopulateStockDateCreatedFromActivityTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(date_created=None, offer=offer)
-        Repository.save(stock)
+        repository.save(stock)
         now = datetime.utcnow()
         stock_activity = create_activity(changed_data={'id': stock.id},
                                          issued_at=now,
@@ -90,7 +90,7 @@ class PopulateStockDateCreatedFromActivityTest:
         offer = create_offer_with_thing_product(venue)
         date_created = datetime(2020, 1, 1)
         stock = create_stock(date_created=date_created, offer=offer)
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         populate_stock_date_created_from_activity()
@@ -104,7 +104,7 @@ class PopulateCulturalSurveyFilledDateFromActivityTest:
     def test_fills_cultural_survey_filled_date_from_activity(self, app):
         # Given
         user = create_user(idx=1, needs_to_fill_cultural_survey=False)
-        Repository.save(user)
+        repository.save(user)
         modification_date = datetime(2019, 12, 1, 0, 0, 0)
         user_activity = create_activity(
             'user',
@@ -125,7 +125,7 @@ class PopulateCulturalSurveyFilledDateFromActivityTest:
     def test_does_not_fill_cultural_survey_filled_date_from_activity_when_user_id_does_not_match(self, app):
         # Given
         user = create_user(idx=1, needs_to_fill_cultural_survey=False)
-        Repository.save(user)
+        repository.save(user)
         modification_date = datetime(2019, 12, 1, 0, 0, 0)
         user_activity = create_activity(
             'user',
@@ -145,7 +145,7 @@ class PopulateCulturalSurveyFilledDateFromActivityTest:
     def test_does_fill_cultural_survey_filled_date_with_last_matching_activity_date(self, app):
         # Given
         user = create_user(idx=1, needs_to_fill_cultural_survey=True)
-        Repository.save(user)
+        repository.save(user)
         last_modification_date = datetime(2019, 12, 1, 0, 0, 0)
         user_activity_1 = create_activity(
             'user',

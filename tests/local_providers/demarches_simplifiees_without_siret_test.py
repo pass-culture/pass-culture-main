@@ -6,6 +6,7 @@ from local_providers.demarches_simplifiees_bank_information_without_siret import
     VenueWithoutSIRETBankInformationProvider, DemarchesSimplifieesMapper
 from models import BankInformation, LocalProviderEvent
 from models.local_provider_event import LocalProviderEventType
+from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_bank_information
 from tests.model_creators.provider_creators import provider_test, activate_provider
@@ -155,7 +156,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
         TOKEN = '4872'
         offerer = create_offerer(siren='793875030', idx=self.OFFERER_ID)
         venue = create_venue(offerer=offerer, idx=self.VENUE_ID)
-        Repository.save(venue)
+        repository.save(venue)
 
         # When
         with patch.dict(os.environ, {
@@ -236,7 +237,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
         last_provider_sync.date = datetime(2020, 1, 2)
         find_latest_sync_end_event.return_value = last_provider_sync
         offerer = create_offerer(siren='793875030', idx=49153)
-        Repository.save(offerer)
+        repository.save(offerer)
 
         get_all_application_ids_for_procedure.return_value = [self.APPLICATION_ID]
         get_application_details.return_value = _create_detail_response(self.APPLICATION_ID, self.OFFERER_ID,
@@ -274,7 +275,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
         BIC = 'BDFEFR2LCCB'
         offerer = create_offerer(siren='793875030', idx=self.OFFERER_ID)
         venue = create_venue(offerer=offerer, idx=self.VENUE_ID)
-        Repository.save(venue)
+        repository.save(venue)
         last_provider_sync = LocalProviderEvent()
         last_provider_sync.date = datetime(2020, 1, 2)
         find_latest_sync_end_event.return_value = last_provider_sync
@@ -329,7 +330,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
             venue=venue,
             id_at_providers=f"{self.OFFERER_ID}%{self.VENUE_ID}"
         )
-        Repository.save(venue, bank_information)
+        repository.save(venue, bank_information)
         last_provider_sync = LocalProviderEvent()
         last_provider_sync.date = datetime(2020, 1, 2)
         find_latest_sync_end_event.return_value = last_provider_sync

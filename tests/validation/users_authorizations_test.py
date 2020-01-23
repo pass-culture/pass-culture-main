@@ -2,6 +2,7 @@ import pytest
 from flask_login import AnonymousUserMixin
 
 from models import ApiErrors, ApiKey, User
+from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 from utils.token import random_token
@@ -18,7 +19,7 @@ class CheckUserCanValidateBookingTest:
         user = create_user()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer, None)
-        Repository.save(user, offerer, user_offerer)
+        repository.save(user, offerer, user_offerer)
 
         # When
         result = check_user_can_validate_bookings(user, offerer.id)
@@ -60,7 +61,7 @@ class CheckUserCanValidateBookingTestv2:
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer, None)
 
-        Repository.save(user, offerer, user_offerer)
+        repository.save(user, offerer, user_offerer)
 
 
         # When
@@ -94,13 +95,13 @@ class CheckApiKeyAllowsToValidateBookingTest:
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer, None)
 
-        Repository.save(user, offerer, user_offerer)
+        repository.save(user, offerer, user_offerer)
 
         validApiKey = ApiKey()
         validApiKey.value = random_token(64)
         validApiKey.offererId = offerer.id
 
-        Repository.save(validApiKey)
+        repository.save(validApiKey)
 
         # When
         try:

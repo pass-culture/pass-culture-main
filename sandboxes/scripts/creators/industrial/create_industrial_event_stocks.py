@@ -1,4 +1,5 @@
 from models.offer_type import EventType
+from repository import repository
 from sandboxes.scripts.utils.select import remove_every
 from tests.model_creators.specific_creators import create_stock_from_event_occurrence
 from tests.test_utils import get_price_by_short_name, get_occurrence_short_name
@@ -47,7 +48,7 @@ def create_industrial_event_stocks(event_occurrences_by_name):
             price=price
         )
 
-    Repository.save(*event_stocks_by_name.values())
+    repository.save(*event_stocks_by_name.values())
 
     logger.info('created {} event_stocks'.format(len(event_stocks_by_name)))
 

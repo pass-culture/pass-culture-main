@@ -1,4 +1,4 @@
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_recommendation, \
     create_mediation
@@ -18,7 +18,7 @@ class Get:
             offer = create_offer_with_event_product(venue)
             user = create_user(email='user@test.com')
             recommendation = create_recommendation(offer, user)
-            Repository.save(recommendation)
+            repository.save(recommendation)
 
             # When
             path = '/recommendations/offers/{}'.format(humanize(offer.id))
@@ -42,7 +42,7 @@ class Get:
             user = create_user(email='user@test.com')
             recommendation1 = create_recommendation(offer, user, mediation=mediation1)
             recommendation2 = create_recommendation(offer, user, mediation=mediation2)
-            Repository.save(recommendation1, recommendation2)
+            repository.save(recommendation1, recommendation2)
 
             # When
             path = '/recommendations/offers/{}?mediationId={}'.format(
@@ -65,7 +65,7 @@ class Get:
         def when_recommendation_is_not_found(self, app):
             # Given
             user = create_user(email='user@test.com')
-            Repository.save(user)
+            repository.save(user)
 
             # When
             path = '/recommendations/offers/AE'

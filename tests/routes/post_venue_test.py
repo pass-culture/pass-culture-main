@@ -1,5 +1,5 @@
 from models import Venue
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
 from utils.human_ids import humanize, dehumanize
@@ -13,7 +13,7 @@ class Post:
             offerer = create_offerer(siren='302559178')
             user = create_user(email='user.pro@test.com')
             user_offerer = create_user_offerer(user, offerer)
-            Repository.save(user_offerer)
+            repository.save(user_offerer)
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
             venue_data = {
                 'name': 'Ma venue',
@@ -47,7 +47,7 @@ class Post:
             offerer = create_offerer()
             user = create_user()
             user_offerer = create_user_offerer(user, offerer, is_admin=True)
-            Repository.save(user_offerer)
+            repository.save(user_offerer)
             venue_data = {
                 'name': 'Ma venue',
                 'comment': 'Je ne mets pas de SIRET pour une bonne raison',
@@ -80,7 +80,7 @@ class Post:
             user = create_user(email='user.pro@test.com')
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer, name='L\'encre et la plume', is_virtual=True, siret=None)
-            Repository.save(venue, user_offerer)
+            repository.save(venue, user_offerer)
 
             venue_data = {
                 'name': 'Ma venue',
@@ -111,7 +111,7 @@ class Post:
             offerer = create_offerer(siren='302559178')
             user = create_user(email='user.pro@test.com')
             user_offerer = create_user_offerer(user, offerer)
-            Repository.save(user_offerer)
+            repository.save(user_offerer)
 
             data = {
                 'name': 'Ma venue',

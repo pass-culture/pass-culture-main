@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from models import Recommendation
-from repository.repository import Repository
+from repository import repository
 from repository.recommendation_queries import keep_only_bookable_stocks, \
     update_read_recommendations, delete_useless_recommendations
 from tests.conftest import clean_database
@@ -38,7 +38,7 @@ def test_filter_out_recommendation_with_not_bookable_stocks_returns_recos_with_a
     recommendation_on_both_soft_deleted_and_active_event_stocks = create_recommendation(event_offer, user)
     recommendation_on_soft_deleted_thing_stock = create_recommendation(soft_deleted_thing_offer, user)
 
-    Repository.save(soft_deleted_event_stock, active_event_stock, soft_deleted_thing_stock, active_thing_stock,
+    repository.save(soft_deleted_event_stock, active_event_stock, soft_deleted_thing_stock, active_thing_stock,
                   recommendation_on_both_soft_deleted_and_active_event_stocks,
                   recommendation_on_soft_deleted_thing_stock, recommendation_on_active_thing_stock)
 
@@ -73,7 +73,7 @@ def test_filter_out_recommendation_with_not_bookable_stocks_returns_recos_with_v
     recommendation_on_invalid_booking_date_stock = create_recommendation(invalid_booking_date_offer, user)
     recommendation_on_valid_booking_date_stock = create_recommendation(valid_booking_date_offer, user)
 
-    Repository.save(invalid_booking_date_stock, recommendation_on_invalid_booking_date_stock,
+    repository.save(invalid_booking_date_stock, recommendation_on_invalid_booking_date_stock,
                   recommendation_on_valid_booking_date_stock, valid_booking_date_stock_valid,
                   valid_booking_date_stock_invalid)
 
@@ -104,7 +104,7 @@ def test_update_read_recommendations(app):
     recommendation1 = create_recommendation(offer, user)
     recommendation2 = create_recommendation(thing_offer1, user)
     recommendation3 = create_recommendation(thing_offer2, user)
-    Repository.save(stock1, stock2, stock3, stock4, recommendation1, recommendation2, recommendation3)
+    repository.save(stock1, stock2, stock3, stock4, recommendation1, recommendation2, recommendation3)
 
     # When
     reads = [
@@ -131,7 +131,7 @@ class DeleteUselessRecommendationsTest:
         user = create_user()
         old_recommendation = create_recommendation(offer, user, date_created=today - timedelta(days=8, hours=1), date_read=None)
         new_recommendation = create_recommendation(offer, user, date_created=today, date_read=None)
-        Repository.save(old_recommendation, new_recommendation)
+        repository.save(old_recommendation, new_recommendation)
         old_recommendation_id = old_recommendation.id
 
         # When
@@ -159,7 +159,7 @@ class DeleteUselessRecommendationsTest:
                                                                    user,
                                                                    date_created=seventeen_days_before_today,
                                                                    date_read=None))
-        Repository.save(*recommendations_to_delete)
+        repository.save(*recommendations_to_delete)
 
         # When
         delete_useless_recommendations(limit=2)
@@ -179,7 +179,7 @@ class DeleteUselessRecommendationsTest:
         user = create_user()
         recommendation_to_delete = create_recommendation(offer, user, date_created=seventeen_days_before_today, date_read=None)
         read_old_recommendation = create_recommendation(offer, user, date_created=seventeen_days_before_today, date_read=today)
-        Repository.save(recommendation_to_delete, read_old_recommendation)
+        repository.save(recommendation_to_delete, read_old_recommendation)
         recommendation_id_to_delete = recommendation_to_delete.id
 
         # When
@@ -203,7 +203,7 @@ class DeleteUselessRecommendationsTest:
                                                             date_read=None)
         read_new_recommendation = create_recommendation(offer, user, date_created=today, date_read=today)
         recommendation_to_delete = create_recommendation(offer, user, date_created=today - timedelta(days=9), date_read=None)
-        Repository.save(not_read_new_recommendation, read_new_recommendation, recommendation_to_delete)
+        repository.save(not_read_new_recommendation, read_new_recommendation, recommendation_to_delete)
         recommendation_to_delete_id = recommendation_to_delete.id
 
         # When
@@ -229,7 +229,7 @@ class DeleteUselessRecommendationsTest:
         booked_recommendation = create_recommendation(offer, user, date_created=today - timedelta(days=9), date_read=None)
         booking = create_booking(user=user, recommendation=booked_recommendation, stock=stock, venue=venue)
         recommendation_to_delete = create_recommendation(offer, user, date_created=today - timedelta(days=9), date_read=None)
-        Repository.save(booking, recommendation_to_delete)
+        repository.save(booking, recommendation_to_delete)
         recommendation_to_delete_id = recommendation_to_delete.id
 
         # When
@@ -254,7 +254,7 @@ class DeleteUselessRecommendationsTest:
         favorite = create_favorite(mediation=mediation, offer=favorite_offer, user=user)
         favorite_recommendation = create_recommendation(offer=favorite_offer, user=user, date_created=today - timedelta(days=9), date_read=None)
         recommendation_to_delete = create_recommendation(offer=offer, user=user, date_created=today - timedelta(days=9), date_read=None)
-        Repository.save(favorite_recommendation, recommendation_to_delete, favorite)
+        repository.save(favorite_recommendation, recommendation_to_delete, favorite)
         recommendation_to_delete_id = recommendation_to_delete.id
 
         # When

@@ -1,4 +1,4 @@
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer
 from utils.human_ids import humanize
@@ -11,7 +11,7 @@ class Post:
             # given
             user = create_user(email='patrick.fiori@test.com')
             offerer = create_offerer(siren='123456781')
-            Repository.save(user, offerer)
+            repository.save(user, offerer)
             payload = {
                 "userId": humanize(user.id),
                 "offererId": humanize(offerer.id)
@@ -34,7 +34,7 @@ class Post:
             # given
             user = create_user(email='patrick.fiori@test.com')
             offerer = create_offerer(siren='123456781')
-            Repository.save(user, offerer)
+            repository.save(user, offerer)
             payload = {
                 "offererId": humanize(offerer.id)
             }

@@ -6,6 +6,7 @@ from flask_login import current_user, login_required
 from domain.favorites import create_favorite
 from domain.favorites import find_first_matching_booking_from_favorite
 from models import Mediation, Offer, Favorite
+from repository import repository
 from repository.favorite_queries import find_favorite_for_offer_and_user, find_all_favorites_by_user_id
 from routes.serialization import as_dict
 from utils.human_ids import dehumanize
@@ -28,7 +29,7 @@ def add_to_favorite():
         mediation = load_or_404(Mediation, mediation_id)
 
     favorite = create_favorite(mediation, offer, current_user)
-    Repository.save(favorite)
+    repository.save(favorite)
 
     return jsonify(_serialize_favorite(favorite)), 201
 
@@ -42,7 +43,7 @@ def delete_favorite(offer_id):
                                                 current_user.id) \
         .first_or_404()
 
-    Repository.delete(favorite)
+    repository.delete(favorite)
 
     return jsonify(as_dict(favorite)), 200
 

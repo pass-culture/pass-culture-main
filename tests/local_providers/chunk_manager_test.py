@@ -3,7 +3,7 @@ from sqlalchemy import Sequence
 from local_providers.chunk_manager import save_chunks
 from models import Offer, Stock
 from models.db import db
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_stock, create_offerer, create_venue
 from tests.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
@@ -16,7 +16,7 @@ class SaveChunksTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         product = create_product_with_thing_type()
-        Repository.save(venue, product)
+        repository.save(venue, product)
 
         offer = create_offer_with_thing_product(venue,
                                                 product=product,
@@ -41,7 +41,7 @@ class SaveChunksTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         product = create_product_with_thing_type()
-        Repository.save(venue, product)
+        repository.save(venue, product)
 
         offer = create_offer_with_thing_product(venue,
                                                 product=product,
@@ -78,7 +78,7 @@ class SaveChunksTest:
         offer = create_offer_with_thing_product(venue,
                                                 product=product,
                                                 id_at_providers='1%12345678912345')
-        Repository.save(venue, product, offer)
+        repository.save(venue, product, offer)
 
         db.session.refresh(offer)
         offer.isDuo = True
@@ -108,7 +108,7 @@ class SaveChunksTest:
                                                  product=product,
                                                  id_at_providers='2%12345678912345')
         stock = create_stock(offer=offer1)
-        Repository.save(venue, product, offer1, offer2, stock)
+        repository.save(venue, product, offer1, offer2, stock)
 
         db.session.refresh(offer1)
         db.session.refresh(offer2)

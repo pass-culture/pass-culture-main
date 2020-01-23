@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from unittest.mock import patch
 
 from models import EventType, Offerer, ThingType
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import TestClient, clean_database
 from tests.model_creators.generic_creators import create_booking, \
     create_deposit, \
@@ -29,7 +29,7 @@ class Post:
             venue.generate_validation_token()
             thing_offer = create_offer_with_thing_product(venue)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=10)
-            Repository.save(stock, deposit)
+            repository.save(stock, deposit)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -56,7 +56,7 @@ class Post:
             expired_stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=0, booking_limit_datetime=datetime.utcnow() - timedelta(seconds=1))
             user = create_user()
             recommendation = create_recommendation(thing_offer, user)
-            Repository.save(expired_stock)
+            repository.save(expired_stock)
 
             booking_json = {
                 'stockId': humanize(expired_stock.id),
@@ -86,7 +86,7 @@ class Post:
             create_deposit(user2)
             recommendation = create_recommendation(offer=too_many_bookings_stock.offer, user=user)
             booking = create_booking(user=user2, stock=too_many_bookings_stock, venue=venue, quantity=2)
-            Repository.save(booking)
+            repository.save(booking)
 
             booking_json = {
                 'stockId': humanize(too_many_bookings_stock.id),
@@ -114,7 +114,7 @@ class Post:
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=0)
             recommendation = create_recommendation(thing_offer, user)
             deposit = create_deposit(user)
-            Repository.save(deposit)
+            repository.save(deposit)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -143,7 +143,7 @@ class Post:
             event_offer = stock.resolvedOffer
             recommendation = create_recommendation(event_offer, user)
             deposit = create_deposit(user, amount=0)
-            Repository.save(deposit)
+            repository.save(deposit)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -174,7 +174,7 @@ class Post:
             recommendation = create_recommendation(thing_offer, user)
             create_deposit(user)
             create_booking(user=user, stock=thing_stock_price_190, venue=venue)
-            Repository.save(recommendation)
+            repository.save(recommendation)
 
             booking_json = {
                 'stockId': humanize(thing_stock_price_12.id),
@@ -195,7 +195,7 @@ class Post:
         def when_missing_stock_id(self, app):
             # Given
             user = create_user()
-            Repository.save(user)
+            repository.save(user)
 
             booking_json = {
                 'stockId': None,
@@ -219,7 +219,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
-            Repository.save(user, stock)
+            repository.save(user, stock)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -244,7 +244,7 @@ class Post:
             venue = create_venue(offerer)
             thing_offer = create_offer_with_thing_product(venue)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer)
-            Repository.save(stock, user)
+            repository.save(stock, user)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -269,7 +269,7 @@ class Post:
             venue = create_venue(offerer)
             thing_offer = create_offer_with_thing_product(venue, is_active=False)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer)
-            Repository.save(stock, user)
+            repository.save(stock, user)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -294,7 +294,7 @@ class Post:
             venue = create_venue(offerer)
             thing_offer = create_offer_with_thing_product(venue)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer)
-            Repository.save(stock, user)
+            repository.save(stock, user)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -319,7 +319,7 @@ class Post:
             venue = create_venue(offerer)
             thing_offer = create_offer_with_thing_product(venue)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, soft_deleted=True)
-            Repository.save(stock, user)
+            repository.save(stock, user)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -344,7 +344,7 @@ class Post:
             venue = create_venue(offerer)
             thing_offer = create_offer_with_thing_product(venue)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer)
-            Repository.save(stock, user)
+            repository.save(stock, user)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -369,7 +369,7 @@ class Post:
             venue = create_venue(offerer)
             thing_offer = create_offer_with_thing_product(venue)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer)
-            Repository.save(stock, user)
+            repository.save(stock, user)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -395,7 +395,7 @@ class Post:
             venue = create_venue(offerer)
             thing_offer = create_offer_with_thing_product(venue)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer)
-            Repository.save(stock, user)
+            repository.save(stock, user)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -426,7 +426,7 @@ class Post:
             event_occurrence = create_event_occurrence(offer, beginning_datetime=five_days_ago, end_datetime=four_days_ago)
             stock = create_stock_from_event_occurrence(event_occurrence)
             create_deposit(user)
-            Repository.save(stock, user)
+            repository.save(stock, user)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -452,7 +452,7 @@ class Post:
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, booking_limit_datetime=four_days_ago)
             create_deposit(user)
-            Repository.save(stock, user)
+            repository.save(stock, user)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -479,7 +479,7 @@ class Post:
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer)
             create_booking(user=user, stock=stock, venue=venue, is_cancelled=False)
             create_deposit(user)
-            Repository.save(stock, user)
+            repository.save(stock, user)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -505,7 +505,7 @@ class Post:
             ok_stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0, booking_limit_datetime=datetime.utcnow() + timedelta(minutes=2))
             user = create_user()
             recommendation = create_recommendation(offer=ok_stock.offer, user=user)
-            Repository.save(ok_stock, user)
+            repository.save(ok_stock, user)
 
             booking_json = {
                 'stockId': humanize(ok_stock.id),
@@ -530,7 +530,7 @@ class Post:
             ok_stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0, booking_limit_datetime=datetime.utcnow() + timedelta(minutes=2))
             user = create_user()
             recommendation = create_recommendation(offer=ok_stock.offer, user=user)
-            Repository.save(ok_stock, user)
+            repository.save(ok_stock, user)
 
             booking_json = {
                 'stockId': humanize(ok_stock.id),
@@ -562,7 +562,7 @@ class Post:
             thing_offer = create_offer_with_thing_product(venue)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, booking_limit_datetime=None)
             create_deposit(user)
-            Repository.save(stock, user)
+            repository.save(stock, user)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -588,7 +588,7 @@ class Post:
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=50, available=1)
             recommendation = create_recommendation(thing_offer, user)
             create_deposit(user, amount=50)
-            Repository.save(user, stock)
+            repository.save(user, stock)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -618,7 +618,7 @@ class Post:
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=210, available=1)
             recommendation = create_recommendation(thing_offer, user)
             create_deposit(user)
-            Repository.save(user, stock)
+            repository.save(user, stock)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -645,7 +645,7 @@ class Post:
             create_mediation(stock.offer)
             create_booking(user=user, stock=stock, venue=venue, is_cancelled=True)
             create_deposit(user, amount=50)
-            Repository.save(user, stock)
+            repository.save(user, stock)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -671,7 +671,7 @@ class Post:
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=10)
             recommendation = create_recommendation(thing_offer, user)
             create_deposit(user)
-            Repository.save(user, stock)
+            repository.save(user, stock)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -699,7 +699,7 @@ class Post:
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer)
             create_booking(user=user, stock=stock, venue=venue, is_cancelled=True)
             create_deposit(user)
-            Repository.save(stock, user)
+            repository.save(stock, user)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -726,7 +726,7 @@ class Post:
             thing_stock = create_stock_with_thing_offer(offerer, venue, thing_offer)
             recommendation = create_recommendation(thing_offer, beneficiary)
             create_deposit(beneficiary)
-            Repository.save(recommendation)
+            repository.save(recommendation)
 
             booking_json = {
                 'stockId': humanize(thing_stock.id),

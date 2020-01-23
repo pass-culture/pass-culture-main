@@ -1,12 +1,15 @@
 from datetime import datetime
 from decimal import Decimal
 
+import pytest
+
 from algolia.builder import build_object
-from models import EventType
-from repository.repository import Repository
+from models import EventType, ThingType
+from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_stock, create_venue
 from tests.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
+from utils.human_ids import humanize
 
 
 class BuildObjectTest:
@@ -34,7 +37,8 @@ class BuildObjectTest:
                              end_datetime=end_datetime,
                              offer=offer,
                              price=0)
-        Repository.save(stock)
+        repository.save(stock)
+        humanized_id = humanize(offer.product.id)
 
         # When
         result = build_object(offer)
@@ -58,7 +62,7 @@ class BuildObjectTest:
                 'showType': None,
                 'speaker': None,
                 'stageDirector': None,
-                'thumbUrl': 'http://localhost/storage/thumbs/products/AE',
+                'thumbUrl': f'http://localhost/storage/thumbs/products/{humanized_id}',
                 'type': 'Écouter',
                 'visa': None,
             },
@@ -84,7 +88,7 @@ class BuildObjectTest:
         offer = create_offer_with_thing_product(venue=venue)
         offer.extraData = {'author': 'MEFA'}
         stock = create_stock(offer=offer)
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         result = build_object(offer)
@@ -100,7 +104,7 @@ class BuildObjectTest:
         offer = create_offer_with_thing_product(venue=venue)
         offer.extraData = {'stageDirector': 'MEFA'}
         stock = create_stock(offer=offer)
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         result = build_object(offer)
@@ -116,7 +120,7 @@ class BuildObjectTest:
         offer = create_offer_with_thing_product(venue=venue)
         offer.extraData = {'visa': '123456789'}
         stock = create_stock(offer=offer)
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         result = build_object(offer)
@@ -132,7 +136,7 @@ class BuildObjectTest:
         offer = create_offer_with_thing_product(venue=venue)
         offer.extraData = {'isbn': '123456789'}
         stock = create_stock(offer=offer)
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         result = build_object(offer)
@@ -148,7 +152,7 @@ class BuildObjectTest:
         offer = create_offer_with_thing_product(venue=venue)
         offer.extraData = {'speaker': 'MEFA'}
         stock = create_stock(offer=offer)
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         result = build_object(offer)
@@ -164,7 +168,7 @@ class BuildObjectTest:
         offer = create_offer_with_thing_product(venue=venue)
         offer.extraData = {'performer': 'MEFA'}
         stock = create_stock(offer=offer)
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         result = build_object(offer)
@@ -180,7 +184,7 @@ class BuildObjectTest:
         offer = create_offer_with_thing_product(venue=venue)
         offer.extraData = {'showType': 'dance'}
         stock = create_stock(offer=offer)
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         result = build_object(offer)
@@ -196,7 +200,7 @@ class BuildObjectTest:
         offer = create_offer_with_thing_product(venue=venue)
         offer.extraData = {'showSubType': 'urbaine'}
         stock = create_stock(offer=offer)
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         result = build_object(offer)
@@ -212,7 +216,7 @@ class BuildObjectTest:
         offer = create_offer_with_thing_product(venue=venue)
         offer.extraData = {'musicType': 'jazz'}
         stock = create_stock(offer=offer)
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         result = build_object(offer)
@@ -228,7 +232,7 @@ class BuildObjectTest:
         offer = create_offer_with_thing_product(venue=venue)
         offer.extraData = {'musicSubType': 'fusion'}
         stock = create_stock(offer=offer)
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         result = build_object(offer)
@@ -245,7 +249,7 @@ class BuildObjectTest:
         stock1 = create_stock(offer=offer, price=7)
         stock2 = create_stock(offer=offer, price=5)
         stock3 = create_stock(offer=offer, price=10.3)
-        Repository.save(stock1, stock2, stock3)
+        repository.save(stock1, stock2, stock3)
 
         # When
         result = build_object(offer)
@@ -260,7 +264,7 @@ class BuildObjectTest:
         venue = create_venue(offerer=offerer)
         offer = create_offer_with_thing_product(venue=venue)
         stock = create_stock(offer=offer)
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         result = build_object(offer)
@@ -275,7 +279,7 @@ class BuildObjectTest:
         venue = create_venue(offerer=offerer, latitude=None, longitude=12.13)
         offer = create_offer_with_thing_product(venue=venue)
         stock = create_stock(offer=offer)
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         result = build_object(offer)

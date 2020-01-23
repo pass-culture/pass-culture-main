@@ -1,4 +1,5 @@
 from models import Deposit
+from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user
 
@@ -14,7 +15,7 @@ def test_deposit_creation_1(app):
     deposit.source = "test money"
 
     # when
-    Repository.save(deposit)
+    repository.save(deposit)
 
     # then
     assert Deposit.query.count() == 1
@@ -31,7 +32,7 @@ def test_deposit_creation_2(app):
     deposit.source = "test money"
 
     # when
-    Repository.save(deposit)
+    repository.save(deposit)
 
     # then
     assert Deposit.query.count() == 1

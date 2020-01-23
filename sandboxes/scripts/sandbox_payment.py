@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from models import EventType, ThingType, Venue
-from repository.repository import Repository
+from repository import repository
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_deposit, create_recommendation, create_bank_information
@@ -25,7 +25,7 @@ def save_users_with_deposits():
     deposit3 = create_deposit(user3, amount=500)
     deposit4 = create_deposit(user4, amount=500)
     deposit5 = create_deposit(user5, amount=500)
-    Repository.save(deposit1, deposit2, deposit3, deposit4, deposit5)
+    repository.save(deposit1, deposit2, deposit3, deposit4, deposit5)
     logger.info('created 5 users with 500 € deposits')
     return user1, user2, user3, user4, user5
 
@@ -40,7 +40,7 @@ def save_offerer_with_iban():
         iban='FR7610071750000000100420866', application_id=1,
         id_at_providers=offerer_with_iban.siren
     )
-    Repository.save(bank_information, venue_online, venue_with_siret, venue_without_siret)
+    repository.save(bank_information, venue_online, venue_with_siret, venue_without_siret)
     logger.info('created 1 offerer with iban and 1 virtual venue, 1 venue with siret and 1 venue without siret')
     return venue_online, venue_with_siret, venue_without_siret
 
@@ -56,7 +56,7 @@ def save_offerer_without_iban():
         iban='FR733000100206C343000000066', application_id=2,
         id_at_providers=venue_with_siret_with_iban.siret
     )
-    Repository.save(bank_information, venue_online, venue_with_siret_with_iban, venue_with_siret_without_iban)
+    repository.save(bank_information, venue_online, venue_with_siret_with_iban, venue_with_siret_without_iban)
     logger.info('created 1 offerer without iban and 1 virtual venue, 1 venue with siret with iban and 1 venue with siret without iban')
     return venue_online, venue_with_siret_with_iban, venue_with_siret_without_iban
 
@@ -70,7 +70,7 @@ def save_free_event_offer_with_stocks(venue: Venue):
                                                 end_datetime=now + three_days + two_hours)
     past_free_event_stock = create_stock_from_event_occurrence(past_occurrence, price=0)
     future_free_event_stock = create_stock_from_event_occurrence(future_occurrence, price=0)
-    Repository.save(past_free_event_stock, future_free_event_stock)
+    repository.save(past_free_event_stock, future_free_event_stock)
     logger.info('created 1 event offer with 1 past and 1 future occurrence with 1 free stock each')
     return past_free_event_stock, future_free_event_stock
 
@@ -79,7 +79,7 @@ def save_non_reimbursable_thing_offer(venue: Venue):
     paid_non_reimbursable_offer = create_offer_with_thing_product(venue, thing_name='Concert en ligne',
                                                                   thing_type=ThingType.JEUX_VIDEO, url='http://my.game.fr')
     non_reimbursable_stock = create_stock(price=30, offer=paid_non_reimbursable_offer)
-    Repository.save(non_reimbursable_stock)
+    repository.save(non_reimbursable_stock)
     logger.info('created 1 non reimbursable thing offer with 1 paid stock of 30 €')
     return non_reimbursable_stock
 
@@ -88,7 +88,7 @@ def save_reimbursable_thing_offer(venue: Venue):
     paid_reimbursable_offer = create_offer_with_thing_product(venue, thing_name='Roman cool',
                                                               thing_type=ThingType.LIVRE_EDITION)
     reimbursable_stock = create_stock(price=30, offer=paid_reimbursable_offer)
-    Repository.save(reimbursable_stock)
+    repository.save(reimbursable_stock)
     logger.info('created 1 reimbursable thing offer with 1 paid stock of 30 €')
     return reimbursable_stock
 
@@ -97,7 +97,7 @@ def save_paid_online_book_offer(venue: Venue):
     paid_reimbursable_offer = create_offer_with_thing_product(venue, thing_name='Roman cool',
                                                               thing_type=ThingType.LIVRE_EDITION, url='https://mycoolbook.fr')
     reimbursable_stock = create_stock(price=20, offer=paid_reimbursable_offer)
-    Repository.save(reimbursable_stock)
+    repository.save(reimbursable_stock)
     logger.info('created 1 online book offer with 1 paid stock of 20 €')
     return reimbursable_stock
 
@@ -111,7 +111,7 @@ def save_paid_reimbursable_event_offer(venue: Venue):
                                                 end_datetime=now + three_days + two_hours)
     past_event_stock = create_stock_from_event_occurrence(past_occurrence, price=10)
     future_event_stock = create_stock_from_event_occurrence(future_occurrence, price=10)
-    Repository.save(past_event_stock, future_event_stock)
+    repository.save(past_event_stock, future_event_stock)
     logger.info('created 1 event offer with 1 past and 1 future occurrence with 1 paid stock of 10 € each')
     return past_event_stock, future_event_stock
 
@@ -275,4 +275,4 @@ def save_sandbox():
     ]
 
     logger.info('created %s bookings' % len(bookings))
-    Repository.save(*bookings)
+    repository.save(*bookings)

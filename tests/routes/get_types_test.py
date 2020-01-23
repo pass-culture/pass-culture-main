@@ -1,4 +1,4 @@
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user
 
@@ -19,7 +19,7 @@ class Get:
         def when_user_is_logged(self, app):
             # given
             user = create_user(email='test@email.com')
-            Repository.save(user)
+            repository.save(user)
 
             # when
             response = TestClient(app.test_client()) \
@@ -41,7 +41,7 @@ class Get:
         def when_user_is_admin(self, app):
             # given
             admin_user = create_user(can_book_free_offers=False, email='pctest.admin93.0@btmx.fr', is_admin=True)
-            Repository.save(admin_user)
+            repository.save(admin_user)
 
             # when
             response = TestClient(app.test_client()) \
@@ -61,7 +61,7 @@ class Get:
             # given
             user = create_user(email='test@email.com')
 
-            Repository.save(user)
+            repository.save(user)
 
             # when
             response = TestClient(app.test_client()) \

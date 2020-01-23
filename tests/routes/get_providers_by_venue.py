@@ -1,4 +1,4 @@
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_allocine_pivot
 from tests.model_creators.provider_creators import activate_provider
@@ -14,7 +14,7 @@ class Get:
             offerer = create_offerer()
             venue = create_venue(offerer, siret='12345678912345')
             allocine_pivot = create_allocine_pivot(siret='12345678912345', theater_id='XXXXXXXXXXXXXXXXXX==')
-            Repository.save(user, venue, allocine_pivot)
+            repository.save(user, venue, allocine_pivot)
 
             titelive_stocks = activate_provider('TiteLiveStocks')
             allocine_stocks = activate_provider('AllocineStocks')
@@ -53,7 +53,7 @@ class Get:
             user = create_user(email='user@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            Repository.save(user, venue)
+            repository.save(user, venue)
 
             titelive_stocks = activate_provider('TiteLiveStocks')
             activate_provider('AllocineStocks')
@@ -85,7 +85,7 @@ class Get:
                 offerer = create_offerer()
                 venue = create_venue(offerer)
                 allocine_pivot = create_allocine_pivot()
-                Repository.save(user, venue, allocine_pivot)
+                repository.save(user, venue, allocine_pivot)
 
                 activate_provider('TiteLiveStocks')
                 activate_provider('AllocineStocks')

@@ -1,3 +1,4 @@
+from repository import repository
 from tests.model_creators.specific_creators import create_offer_with_thing_product
 from utils.logger import logger
 
@@ -62,7 +63,7 @@ def create_industrial_thing_offers(
 
         thing_index += THINGS_PER_OFFERER
 
-    Repository.save(*thing_offers_by_name.values())
+    repository.save(*thing_offers_by_name.values())
 
     logger.info('created {} thing_offers'.format(len(thing_offers_by_name)))
 

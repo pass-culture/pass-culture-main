@@ -2,7 +2,7 @@ from unittest.mock import patch, Mock
 
 from domain.user_emails import send_activation_email
 from models import EventType, Deposit, Booking, User
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
@@ -24,11 +24,11 @@ class Patch:
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
                 booking = create_booking(user=user, stock=stock, venue=venue)
-                Repository.save(booking, offerer)
+                repository.save(booking, offerer)
                 booking_id = booking.id
 
                 offerer_api_key = create_api_key(offerer_id=offerer.id)
-                Repository.save(offerer_api_key)
+                repository.save(offerer_api_key)
                 user2ApiKey = 'Bearer ' + offerer_api_key.value
 
                 # When
@@ -55,11 +55,11 @@ class Patch:
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
                 booking = create_booking(user=user, stock=stock, venue=venue)
-                Repository.save(booking, user_offerer)
+                repository.save(booking, user_offerer)
                 booking_id = booking.id
 
                 offerer_api_key = create_api_key(offerer_id=offerer.id)
-                Repository.save(offerer_api_key)
+                repository.save(offerer_api_key)
                 user2ApiKey = 'Bearer ' + offerer_api_key.value
 
                 # When
@@ -87,7 +87,7 @@ class Patch:
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
                 booking = create_booking(user=user, stock=stock, venue=venue)
-                Repository.save(booking, user_offerer)
+                repository.save(booking, user_offerer)
                 booking_id = booking.id
 
                 # When
@@ -108,7 +108,7 @@ class Patch:
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
                 booking = create_booking(user=user, stock=stock, venue=venue)
-                Repository.save(booking, user_offerer)
+                repository.save(booking, user_offerer)
                 booking_id = booking.id
                 booking_token = booking.token.lower()
 
@@ -130,7 +130,7 @@ class Patch:
                 venue = create_venue(offerer, booking_email='john.doe@test.com')
                 stock = create_stock_with_event_offer(offerer, venue, price=0, event_type=EventType.ACTIVATION)
                 booking = create_booking(user=user, stock=stock, venue=venue)
-                Repository.save(booking, user_offerer)
+                repository.save(booking, user_offerer)
                 user_id = user.id
 
                 # When
@@ -153,7 +153,7 @@ class Patch:
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0, event_type=EventType.ACTIVATION)
                 booking = create_booking(user=user, stock=stock, venue=venue)
-                Repository.save(booking, user_offerer)
+                repository.save(booking, user_offerer)
                 user_id = user.id
 
                 mocked_send_email = Mock()
@@ -185,10 +185,10 @@ class Patch:
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            Repository.save(booking, user_offerer)
+            repository.save(booking, user_offerer)
 
             stock.available = 0
-            Repository.save(stock)
+            repository.save(stock)
 
             # When
             url = '/v2/bookings/use/token/{}'.format(booking.token)
@@ -208,7 +208,7 @@ class Patch:
             stock = create_stock_with_event_offer(offerer, venue, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
 
-            Repository.save(booking)
+            repository.save(booking)
 
             # When
             url = '/v2/bookings/use/token/{}'.format(booking.token)
@@ -228,7 +228,7 @@ class Patch:
             stock = create_stock(offer=offer, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
 
-            Repository.save(pro_user, booking)
+            repository.save(pro_user, booking)
 
             # When
             url = '/v2/bookings/use/token/{}'.format(booking.token)
@@ -253,10 +253,10 @@ class Patch:
                 stock = create_stock_with_event_offer(offerer, venue, price=0, event_type=EventType.ACTIVATION)
                 booking = create_booking(user=user, stock=stock, venue=venue)
 
-                Repository.save(pro_user, booking, user_offerer, offerer2)
+                repository.save(pro_user, booking, user_offerer, offerer2)
 
                 offerer_api_key = create_api_key(offerer_id=offerer2.id)
-                Repository.save(offerer_api_key)
+                repository.save(offerer_api_key)
 
                 user2ApiKey = 'Bearer ' + offerer_api_key.value
 
@@ -283,7 +283,7 @@ class Patch:
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
                 booking = create_booking(user=user, stock=stock, venue=venue)
-                Repository.save(booking, pro_user)
+                repository.save(booking, pro_user)
                 booking_id = booking.id
                 url = '/v2/bookings/use/token/{}'.format(booking.token, user.email)
 
@@ -305,7 +305,7 @@ class Patch:
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0, event_type=EventType.ACTIVATION)
                 booking = create_booking(user=user, stock=stock, venue=venue)
-                Repository.save(booking, user_offerer)
+                repository.save(booking, user_offerer)
 
                 # When
                 url = '/v2/bookings/use/token/{}'.format(booking.token)
@@ -325,7 +325,7 @@ class Patch:
             stock = create_stock_with_event_offer(offerer, venue, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
 
-            Repository.save(booking)
+            repository.save(booking)
 
             # When
             url = '/v2/bookings/use/token/'
@@ -343,10 +343,10 @@ class Patch:
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
                 booking = create_booking(user=user, stock=stock, venue=venue)
-                Repository.save(booking)
+                repository.save(booking)
 
                 offerer_api_key = create_api_key(offerer_id=offerer.id)
-                Repository.save(offerer_api_key)
+                repository.save(offerer_api_key)
 
                 user2ApiKey = 'Bearer ' + offerer_api_key.value
 
@@ -375,7 +375,7 @@ class Patch:
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
                 booking = create_booking(user=user, stock=stock, venue=venue)
-                Repository.save(booking, user_offerer)
+                repository.save(booking, user_offerer)
 
                 # When
                 url = '/v2/bookings/use/token/{}'.format('123456')
@@ -402,7 +402,7 @@ class Patch:
 
                 booking = create_booking(user=user, stock=activation_offer_stock, venue=venue)
 
-                Repository.save(booking, admin_user_offerer, deposit)
+                repository.save(booking, admin_user_offerer, deposit)
 
                 user_id = user.id
 
@@ -430,7 +430,7 @@ class Patch:
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
                 booking = create_booking(user=user, stock=stock, venue=venue)
                 booking.isCancelled = True
-                Repository.save(booking, user_offerer)
+                repository.save(booking, user_offerer)
                 booking_id = booking.id
 
                 # When
@@ -453,7 +453,7 @@ class Patch:
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
                 booking = create_booking(user=user, stock=stock, venue=venue)
                 booking.isUsed = True
-                Repository.save(booking, user_offerer)
+                repository.save(booking, user_offerer)
                 booking_id = booking.id
 
                 # When
@@ -477,7 +477,7 @@ class Patch:
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
                 booking = create_booking(user=user, stock=stock, venue=venue)
                 booking.isCancelled = True
-                Repository.save(booking, user_offerer)
+                repository.save(booking, user_offerer)
                 booking_id = booking.id
 
                 # When
@@ -500,7 +500,7 @@ class Patch:
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
                 booking = create_booking(user=user, stock=stock, venue=venue)
                 booking.isUsed = True
-                Repository.save(booking, user_offerer)
+                repository.save(booking, user_offerer)
                 booking_id = booking.id
 
                 # When

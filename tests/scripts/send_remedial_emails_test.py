@@ -5,7 +5,7 @@ from freezegun import freeze_time
 
 from models.db import db
 from models.email import EmailStatus
-from repository.repository import Repository
+from repository import repository
 from scripts.send_remedial_emails import send_remedial_emails
 from tests.conftest import clean_database, mocked_mail
 from tests.model_creators.generic_creators import create_email
@@ -23,7 +23,7 @@ def test_send_remedial_emails_sets_status_to_sent_and_datetime_to_now_only_to_em
     email2 = create_email(email_content2, status='SENT', time=datetime(2018, 12, 1, 12, 0, 0))
     email_content3 = {'Html-part': '<html><body>Hello</body></html>', 'To': ['recipient2@email']}
     email3 = create_email(email_content3, status='ERROR', time=datetime(2018, 12, 1, 12, 0, 0))
-    Repository.save(email1, email2, email3)
+    repository.save(email1, email2, email3)
     mocked_response = MagicMock()
     mocked_response.status_code = 200
     app.mailjet_client.send.create.return_value = mocked_response
@@ -54,7 +54,7 @@ def test_send_remedial_emails_does_not_change_email_when_unsuccessfully_sent_and
     email2 = create_email(email_content2, status='SENT', time=datetime(2018, 12, 1, 12, 0, 0))
     email_content3 = {'Html-part': '<html><body>Hello</body></html>', 'To': ['recipient2@email']}
     email3 = create_email(email_content3, status='ERROR', time=datetime(2018, 12, 1, 12, 0, 0))
-    Repository.save(email1, email2, email3)
+    repository.save(email1, email2, email3)
     mocked_response = MagicMock()
     mocked_response.status_code = 500
     app.mailjet_client.send.create.return_value = mocked_response

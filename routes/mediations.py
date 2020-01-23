@@ -6,6 +6,7 @@ from connectors.thumb_storage import read_thumb, save_thumb
 from domain.mediations import create_new_mediation
 from models.mediation import Mediation
 from models.user_offerer import RightsType
+from repository import repository
 from routes.serialization import as_dict
 from utils.human_ids import dehumanize
 from utils.includes import MEDIATION_INCLUDES
@@ -24,7 +25,7 @@ def create_mediation():
     mediation = create_new_mediation(offer_id, offerer_id, current_user, credit)
     thumb = read_thumb(files=request.files, form=request.form)
     check_thumb_quality(thumb)
-    Repository.save(mediation)
+    repository.save(mediation)
     save_thumb(mediation, thumb, 0, crop=_get_crop(request.form))
     redis.add_offer_id(client=app.redis_client, offer_id=offer_id)
     return jsonify(as_dict(mediation)), 201
@@ -46,7 +47,7 @@ def update_mediation(mediation_id):
     mediation = Mediation.query.filter_by(id=dehumanize(mediation_id)).first()
     data = request.json
     mediation.populate_from_dict(data)
-    Repository.save(mediation)
+    repository.save(mediation)
     redis.add_offer_id(client=app.redis_client, offer_id=mediation.offerId)
     return jsonify(as_dict(mediation, includes=MEDIATION_INCLUDES)), 200
 

@@ -1,4 +1,5 @@
 from models.offer_type import EventType
+from repository import repository
 from sandboxes.scripts.utils.select import remove_every
 from tests.model_creators.generic_creators import create_booking
 from utils.logger import logger
@@ -87,15 +88,15 @@ def create_industrial_bookings(
 
     bookings = bookings_by_name.values()
 
-    Repository.save(*bookings)
+    repository.save(*bookings)
 
     used_bookings = [b for b in bookings if b.isUsed]
     for used_booking in used_bookings:
         used_booking.isUsed = False
-    Repository.save(*used_bookings)
+    repository.save(*used_bookings)
     for used_booking in used_bookings:
         used_booking.isUsed = True
-    Repository.save(*used_bookings)
+    repository.save(*used_bookings)
 
     logger.info('created {} bookings'.format(len(bookings_by_name)))
 

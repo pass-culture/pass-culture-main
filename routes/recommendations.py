@@ -10,7 +10,7 @@ from recommendations_engine import create_recommendations_for_discovery, \
     create_recommendations_for_search, \
     get_recommendation_search_params, \
     give_requested_recommendation_to_user
-from repository.repository import Repository
+from repository import repository
 from repository.recommendation_queries import update_read_recommendations
 from routes.serialization.recommendation_serialize import serialize_recommendations, serialize_recommendation
 from utils.config import BLOB_SIZE
@@ -51,7 +51,7 @@ def patch_recommendation(recommendation_id):
     query = Recommendation.query.filter_by(id=dehumanize(recommendation_id))
     recommendation = query.first_or_404()
     recommendation.populate_from_dict(request.json)
-    Repository.save(recommendation)
+    repository.save(recommendation)
     return jsonify(serialize_recommendation(recommendation, current_user)), 200
 
 

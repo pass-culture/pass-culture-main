@@ -3,7 +3,7 @@ from io import BytesIO
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.files.images import ONE_PIXEL_PNG
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
@@ -26,8 +26,8 @@ class Post:
             offer = create_offer_with_event_product(venue)
             user_offerer = create_user_offerer(user, offerer)
 
-            Repository.save(offer)
-            Repository.save(user, venue, offerer, user_offerer)
+            repository.save(offer)
+            repository.save(user, venue, offerer, user_offerer)
 
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
@@ -56,8 +56,8 @@ class Post:
             offer = create_offer_with_event_product(venue)
             user_offerer = create_user_offerer(user, offerer)
 
-            Repository.save(offer)
-            Repository.save(user, venue, offerer, user_offerer)
+            repository.save(offer)
+            repository.save(user, venue, offerer, user_offerer)
 
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
@@ -126,7 +126,7 @@ class Post:
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
             user_offerer = create_user_offerer(user, offerer)
-            Repository.save(user, venue, user_offerer)
+            repository.save(user, venue, user_offerer)
 
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
@@ -151,7 +151,7 @@ class Post:
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
             user_offerer = create_user_offerer(user, offerer)
-            Repository.save(user, venue, user_offerer)
+            repository.save(user, venue, user_offerer)
 
             data = {
                 'offerId': humanize(offer.id),
@@ -176,7 +176,7 @@ class Post:
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
             user_offerer = create_user_offerer(user, offerer)
-            Repository.save(user, venue, user_offerer)
+            repository.save(user, venue, user_offerer)
             with open(MODULE_PATH / '..' / 'files/mouette_small.jpg', 'rb') as f:
                 thumb = f.read()
             data = {
@@ -195,15 +195,15 @@ class Post:
             assert response.json['thumb'] == ["L'image doit faire 400 * 400 px minimum"]
 
         @clean_database
-        @patch('routes.mediations.PcObject')
-        def expect_mediation_not_to_be_saved(self, PcObject, app):
+        @patch('routes.mediations.repository')
+        def expect_mediation_not_to_be_saved(self, mock_repository, app):
             # given
             user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
             user_offerer = create_user_offerer(user, offerer)
-            Repository.save(user, venue, user_offerer)
+            repository.save(user, venue, user_offerer)
             with open(MODULE_PATH / '..' / 'files/mouette_small.jpg', 'rb') as f:
                 thumb = f.read()
             data = {
@@ -211,7 +211,7 @@ class Post:
                 'offererId': humanize(offerer.id),
                 'thumb': (BytesIO(thumb), 'image.png')
             }
-            PcObject.reset_mock()
+            mock_repository.save.reset_mock()
 
             # when
             TestClient(app.test_client()) \
@@ -219,4 +219,4 @@ class Post:
                 .post('/mediations', form=data)
 
             # then
-            Repository.save.assert_not_called()
+            mock_repository.save.assert_not_called()

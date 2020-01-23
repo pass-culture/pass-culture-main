@@ -1,4 +1,4 @@
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
     create_bank_information
@@ -20,11 +20,11 @@ class Get:
             # given
             offerer1 = create_offerer(siren='123456781', name='offreur C')
             venue = create_venue(offerer1)
-            Repository.save(offerer1, venue)
+            repository.save(offerer1, venue)
 
             user = create_user()
             user.offerers = [offerer1]
-            Repository.save(user)
+            repository.save(user)
 
             # when
             response = TestClient(app.test_client()) \
@@ -43,11 +43,11 @@ class Get:
             offerer1 = create_offerer(siren='123456781', name='offreur C')
             offerer2 = create_offerer(siren='123456782', name='offreur A')
             offerer3 = create_offerer(siren='123456783', name='offreur B')
-            Repository.save(offerer1, offerer3, offerer2)
+            repository.save(offerer1, offerer3, offerer2)
 
             user = create_user()
             user.offerers = [offerer1, offerer2, offerer3]
-            Repository.save(user)
+            repository.save(user)
 
             # when
             response = TestClient(app.test_client()) \
@@ -71,7 +71,7 @@ class Get:
             user_offerer1 = create_user_offerer(user, offerer1, validation_token=None)
             user_offerer2 = create_user_offerer(user, offerer2, validation_token='AZE123')
             user_offerer3 = create_user_offerer(user, offerer3, validation_token=None)
-            Repository.save(user_offerer1, user_offerer2, user_offerer3)
+            repository.save(user_offerer1, user_offerer2, user_offerer3)
 
             # when
             response = TestClient(app.test_client()) \
@@ -95,11 +95,11 @@ class Get:
             offerer1 = create_offerer(siren='123456781', name='offreur C')
             offerer2 = create_offerer(siren='123456782', name='offreur A')
             offerer3 = create_offerer(siren='123456783', name='offreur B')
-            Repository.save(offerer1, offerer3, offerer2)
+            repository.save(offerer1, offerer3, offerer2)
 
             user = create_user(can_book_free_offers=True, is_admin=False)
             user.offerers = [offerer1, offerer2]
-            Repository.save(user)
+            repository.save(user)
 
             # when
             response = TestClient(app.test_client()) \
@@ -116,11 +116,11 @@ class Get:
             offerer1 = create_offerer(siren='123456781', name='offreur C')
             offerer2 = create_offerer(siren='123456782', name='offreur A')
             offerer3 = create_offerer(siren='123456783', name='offreur B')
-            Repository.save(offerer1, offerer3, offerer2)
+            repository.save(offerer1, offerer3, offerer2)
 
             user = create_user(can_book_free_offers=False, is_admin=True)
             user.offerers = [offerer1, offerer2]
-            Repository.save(user)
+            repository.save(user)
 
             # when
             response = TestClient(app.test_client()) \
@@ -142,7 +142,7 @@ class Get:
 
             user = create_user(can_book_free_offers=False, is_admin=True)
             user.offerers = [offerer1, offerer2]
-            Repository.save(user, bank_information1, bank_information2)
+            repository.save(user, bank_information1, bank_information2)
 
             # when
             response = TestClient(app.test_client()) \
@@ -172,7 +172,7 @@ class Get:
 
             user = create_user(can_book_free_offers=False, is_admin=True)
             user.offerers = [offerer1, offerer2]
-            Repository.save(user, bank_information1, bank_information2)
+            repository.save(user, bank_information1, bank_information2)
 
             # when
             response = TestClient(app.test_client()) \
@@ -195,7 +195,7 @@ class Get:
             user_offerer1 = create_user_offerer(user, offerer1)
             user_offerer2 = create_user_offerer(user, offerer2)
             user_offerer3 = create_user_offerer(user, offerer3)
-            Repository.save(user_offerer1, user_offerer2, user_offerer3)
+            repository.save(user_offerer1, user_offerer2, user_offerer3)
 
             # when
             response = TestClient(app.test_client()) \
@@ -216,7 +216,7 @@ class Get:
             user_offerer1 = create_user_offerer(user, offerer1)
             user_offerer2 = create_user_offerer(user, offerer2)
             user_offerer3 = create_user_offerer(user, offerer3)
-            Repository.save(user_offerer1, user_offerer2, user_offerer3)
+            repository.save(user_offerer1, user_offerer2, user_offerer3)
 
             # when
             response = TestClient(app.test_client()) \
@@ -242,7 +242,7 @@ class Get:
             bank_information1 = create_bank_information(id_at_providers='123456781', offerer=offerer1)
             bank_information2 = create_bank_information(id_at_providers='123456782', offerer=offerer2)
             bank_information3 = create_bank_information(id_at_providers='123456783', offerer=offerer3)
-            Repository.save(bank_information1, bank_information2, bank_information3, user_offerer1,
+            repository.save(bank_information1, bank_information2, bank_information3, user_offerer1,
                           user_offerer2, user_offerer3)
 
             # when
@@ -266,7 +266,7 @@ class Get:
             user = create_user()
             offerer1 = create_offerer(siren='123456781', name='offreur C')
             user_offerer1 = create_user_offerer(user, offerer1)
-            Repository.save(user_offerer1)
+            repository.save(user_offerer1)
 
             # when
             response = TestClient(app.test_client()) \
@@ -285,7 +285,7 @@ class Get:
             user = create_user(email='user@test.com')
             offerer = create_offerer(name='offreur C')
             user_offerer = create_user_offerer(user, offerer)
-            Repository.save(user_offerer)
+            repository.save(user_offerer)
             auth_request = TestClient(app.test_client()).with_auth(email='user@test.com')
 
             # when
@@ -305,7 +305,7 @@ class Get:
             user_offerer2 = create_user_offerer(user, offerer2)
             venue1 = create_venue(offerer1)
             venue2 = create_venue(siret='12345678912346', offerer=offerer1)
-            Repository.save(user_offerer1, user_offerer2, venue1, venue2)
+            repository.save(user_offerer1, user_offerer2, venue1, venue2)
             auth_request = TestClient(app.test_client()).with_auth(email='user@test.com')
 
             # when
@@ -322,11 +322,11 @@ class Get:
             offerer1 = create_offerer(siren='123456781', name='offreur C')
             offerer2 = create_offerer(siren='123456782', name='offreur A')
             offerer3 = create_offerer(siren='123456783', name='offreur B')
-            Repository.save(offerer1, offerer3, offerer2)
+            repository.save(offerer1, offerer3, offerer2)
 
             user = create_user(can_book_free_offers=False, is_admin=True)
             user.offerers = [offerer1, offerer2]
-            Repository.save(user)
+            repository.save(user)
 
             # when
             response = TestClient(app.test_client()) \

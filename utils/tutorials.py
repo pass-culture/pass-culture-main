@@ -3,7 +3,7 @@ from pathlib import Path
 
 from connectors.thumb_storage import save_thumb
 from models import Mediation
-from repository.repository import Repository
+from repository import repository
 
 TUTOS_PATH = Path(os.path.dirname(os.path.realpath(__file__))) / '..' \
              / 'static' / 'tuto_mediations'
@@ -21,7 +21,7 @@ def _upsert_tuto_mediation(index, has_back=False):
         return
     mediation = Mediation()
     mediation.tutoIndex = index
-    Repository.save(mediation)
+    repository.save(mediation)
 
     with open(TUTOS_PATH / (str(index) + '.png'), "rb") as f:
         save_thumb(
@@ -41,4 +41,4 @@ def _upsert_tuto_mediation(index, has_back=False):
                 image_type='png'
             )
 
-    Repository.save(mediation)
+    repository.save(mediation)

@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 from models import Venue, EventType
 from models.offer_type import ProductType
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
 from tests.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product, \
@@ -169,7 +169,7 @@ class Get:
         def test_list_activation_offers_returns_offers_of_event_type(self, app):
             # given
             user = create_user()
-            Repository.save(user)
+            repository.save(user)
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
             now = datetime.utcnow()
             five_days_ago = now - timedelta(days=5)
@@ -184,7 +184,7 @@ class Get:
             stock1 = create_stock_from_offer(offer1, price=0, booking_limit_datetime=five_days_ago)
             stock2 = create_stock_from_offer(offer2, price=0, booking_limit_datetime=next_week)
             stock3 = create_stock_from_offer(offer3, price=0, booking_limit_datetime=None)
-            Repository.save(stock1, stock2, stock3)
+            repository.save(stock1, stock2, stock3)
 
             # when
             response = auth_request.get('/offers/activation')
@@ -205,7 +205,7 @@ class Get:
             venue = create_venue(offerer)
             user_offerer = create_user_offerer(user, offerer, validation_token=secrets.token_urlsafe(20))
             offer = create_offer_with_thing_product(venue)
-            Repository.save(user_offerer, offer)
+            repository.save(user_offerer, offer)
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
             # when
             response = auth_request.get('/offers')
@@ -235,8 +235,8 @@ def create_offers_for(user, n, siren='123456789'):
     venue = create_venue(offerer, siret=siren + '1345')
     offers = create_n_mixed_offers_with_same_venue(venue, n=n)
 
-    Repository.save(user_offerer)
-    Repository.save(*offers)
+    repository.save(user_offerer)
+    repository.save(*offers)
 
 
 def create_n_mixed_offers_with_same_venue(venue, n=10):

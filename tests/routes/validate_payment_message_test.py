@@ -1,6 +1,6 @@
 from io import BytesIO
 
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.files.transactions import VALID_MESSAGE
 from tests.model_creators.generic_creators import create_user, create_payment_message
@@ -16,7 +16,7 @@ class Post:
                 name='passCulture-SCT-20181015-114356',
                 checksum=b'\x86\x05[(j\xfd\x111l\xd7\xca\xcd\x00\xe6\x104\xfd\xde\xdd\xa5\x0c#L\x01W\xa8\xf0\xdan0\x93\x1e'
             )
-            Repository.save(user, payment_message)
+            repository.save(user, payment_message)
 
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
@@ -39,7 +39,7 @@ class Post:
                 name='passCulture-SCT-20181015-114356',
                 checksum=b'FAKE_CHECKSUM'
             )
-            Repository.save(user, payment_message)
+            repository.save(user, payment_message)
 
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
@@ -78,7 +78,7 @@ class Post:
                 name='passCulture-SCT-20181015-114356',
                 checksum=b'\x86\x05[(j\xfd\x111l\xd7\xca\xcd\x00\xe6\x104\xfd\xde\xdd\xa5\x0c#L\x01W\xa8\xf0\xdan0\x93\x1e'
             )
-            Repository.save(user, message)
+            repository.save(user, message)
 
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
@@ -96,7 +96,7 @@ class Post:
         def when_id_from_file_is_unknown(self, app):
             # given
             user = create_user(can_book_free_offers=False, is_admin=True)
-            Repository.save(user)
+            repository.save(user)
 
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 

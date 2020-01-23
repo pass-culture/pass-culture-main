@@ -1,4 +1,4 @@
-from repository.repository import Repository
+from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 from scripts.add_isbn_in_product_extra_data import add_isbn_in_product_and_offer_extra_data, \
     _extract_isbn_from_offer_id_at_providers
@@ -20,7 +20,7 @@ class AddIsbnInProductExtraDataTest:
                                                  last_provider_id=provider.id,
                                                  extra_data=extra_data)
 
-        Repository.save(product)
+        repository.save(product)
 
         # When
         add_isbn_in_product_and_offer_extra_data()
@@ -45,7 +45,7 @@ class AddIsbnInProductExtraDataTest:
         product2 = create_product_with_thing_type(id_at_providers='1234567809865',
                                                   last_provider_id=provider.id,
                                                   extra_data=extra_data2)
-        Repository.save(product1, product2)
+        repository.save(product1, product2)
         expected_extra_data = {
             'author': 'author name',
             'isbn': '1234567809865'
@@ -85,7 +85,7 @@ class AddIsbnInProductExtraDataTest:
                                                  id_at_providers='1234567809865@12345678912345',
                                                  last_provider_id=provider.id)
 
-        Repository.save(product1, product2, offer1, offer2)
+        repository.save(product1, product2, offer1, offer2)
 
         # When
         add_isbn_in_product_and_offer_extra_data()

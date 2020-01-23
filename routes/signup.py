@@ -7,6 +7,7 @@ from models import ApiErrors, Deposit, Offerer, User
 from models.feature import FeatureToggle
 from models.user_offerer import RightsType
 from models.venue import create_digital_venue
+from repository import repository
 from routes.serialization import as_dict
 from utils.config import IS_INTEGRATION
 from utils.feature import feature_required
@@ -42,7 +43,7 @@ def signup_webapp():
     new_user.isAdmin = False
     objects_to_save.append(new_user)
 
-    Repository.save(*objects_to_save)
+    repository.save(*objects_to_save)
 
     if request.json.get('contact_ok'):
         try:
@@ -79,7 +80,7 @@ def signup_pro():
     new_user.generate_validation_token()
     objects_to_save.append(new_user)
 
-    Repository.save(*objects_to_save)
+    repository.save(*objects_to_save)
 
     try:
         send_user_validation_email(new_user, send_raw_email, app_origin_url, is_webapp=False)

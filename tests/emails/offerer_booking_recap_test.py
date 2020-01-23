@@ -6,7 +6,7 @@ from freezegun import freeze_time
 
 from emails.offerer_booking_recap import retrieve_data_for_offerer_booking_recap_email
 from models import ThingType, EventType, Offerer
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database, mocked_mail
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_deposit
@@ -33,7 +33,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         recipient = ['dev@passculture.app']
         stock.bookings = [booking]
 
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         email = retrieve_data_for_offerer_booking_recap_email(booking, recipient)
@@ -85,7 +85,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         recipient = ['dev@passculture.app']
         stock.bookings = [booking]
 
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         email = retrieve_data_for_offerer_booking_recap_email(booking, recipient)
@@ -138,7 +138,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         stock.bookings = [booking]
         recipient = ['dev@passculture.app']
 
-        Repository.save(deposit, stock)
+        repository.save(deposit, stock)
 
         # When
         email = retrieve_data_for_offerer_booking_recap_email(booking, recipient)
@@ -188,7 +188,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         recipient = ['dev@passculture.app']
         stock.bookings = [booking]
 
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         thing_offer.extraData = None
@@ -239,7 +239,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         stock.bookings = [booking]
         recipient = ['dev@passculture.app']
 
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         thing_offer.extraData = {}
@@ -293,7 +293,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         stock.bookings = [booking]
         recipient = ['dev@passculture.app', ADMINISTRATION_EMAIL_ADDRESS]
 
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         thing_offer.extraData = None
@@ -353,7 +353,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         stock.bookings = [booking_1, booking_2]
         recipient = ['dev@passculture.app', ADMINISTRATION_EMAIL_ADDRESS]
 
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         thing_offer.extraData = None
@@ -415,7 +415,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         stock.bookings = [booking]
         recipient = ['dev@passculture.app', ADMINISTRATION_EMAIL_ADDRESS]
 
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         thing_offer.extraData = None
@@ -707,7 +707,7 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         booking_1 = create_booking(user=user_1, stock=stock, venue=venue)
         booking_2 = create_booking(user=user_2, stock=stock, venue=venue)
         booking_2.isCancelled = True
-        Repository.save(booking_1, booking_2)
+        repository.save(booking_1, booking_2)
 
         # When
         with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking_1]):
@@ -744,7 +744,7 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         booking_1 = create_booking(user=user_1, stock=stock, venue=venue)
         booking_2 = create_booking(user=user_2, stock=stock, venue=venue)
         booking_2.isCancelled = True
-        Repository.save(booking_1, booking_2)
+        repository.save(booking_1, booking_2)
 
         # When
         with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking_1]):
@@ -782,7 +782,7 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         booking_1 = create_booking(user=user_1, stock=stock, venue=venue)
         booking_2 = create_booking(user=user_2, stock=stock, venue=venue)
         booking_2.isCancelled = True
-        Repository.save(booking_1, booking_2)
+        repository.save(booking_1, booking_2)
 
         # When
         with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking_1]):
@@ -809,7 +809,7 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         booking_1 = create_booking(user=user_1, stock=stock, venue=venue)
         booking_2 = create_booking(user=user_2, stock=stock, venue=venue)
         booking_2.isCancelled = True
-        Repository.save(booking_1, booking_2)
+        repository.save(booking_1, booking_2)
 
         # When
         with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking_1]):
@@ -833,7 +833,7 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         booking_1 = create_booking(user=user_1, stock=stock, venue=venue)
         booking_2 = create_booking(user=user_2, stock=stock, venue=venue)
         booking_2.isCancelled = True
-        Repository.save(booking_1, booking_2)
+        repository.save(booking_1, booking_2)
 
         # When
         with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking_1]):
@@ -856,7 +856,7 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         booking_1 = create_booking(user=user_1, stock=stock, venue=venue)
         booking_2 = create_booking(user=user_2, stock=stock, venue=venue)
         booking_2.isCancelled = True
-        Repository.save(booking_1, booking_2)
+        repository.save(booking_1, booking_2)
 
         # When
         with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking_1]):
@@ -879,7 +879,7 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         booking_1 = create_booking(user=user_1, stock=stock, venue=venue, token='12345')
         booking_2 = create_booking(user=user_2, stock=stock, venue=venue, token='56789')
         booking_2.isCancelled = True
-        Repository.save(booking_1, booking_2)
+        repository.save(booking_1, booking_2)
 
         # When
         with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking_1]):

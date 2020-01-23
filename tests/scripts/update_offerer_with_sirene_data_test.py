@@ -1,5 +1,5 @@
 from models.db import db
-from repository.repository import Repository
+from repository import repository
 from scripts.update_offerer_with_sirene_data import update_offerer_with_sirene_data
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer
@@ -25,7 +25,7 @@ def test_update_offerer_with_sirene_data_changes_given_offerer_information(app):
         name='Vieux nom',
         city='Vieilleville',
         postal_code='75001')
-    Repository.save(offerer)
+    repository.save(offerer)
 
     # When
     update_offerer_with_sirene_data(sirene_data)
@@ -58,7 +58,7 @@ def test_update_offerer_with_sirene_data_keeps_old_information_when_not_given_by
         name='Vieux nom',
         city='Vieilleville',
         postal_code='75001')
-    Repository.save(offerer)
+    repository.save(offerer)
 
     # When
     update_offerer_with_sirene_data(sirene_data)

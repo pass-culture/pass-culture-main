@@ -6,7 +6,7 @@ import redis
 from connectors.redis import add_offer_id, get_offer_ids, delete_offer_ids, add_venue_id, \
     get_venue_ids, delete_venue_ids, _add_venue_provider, get_venue_providers, \
     delete_venue_providers, send_venue_provider_data_to_redis
-from models import PcObject
+from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_venue_provider, create_venue, create_user, create_offerer, \
     create_user_offerer, create_provider
@@ -172,7 +172,7 @@ class HandleVenueProvidersTest:
         user_offerer = create_user_offerer(user=user, offerer=offerer)
         venue = create_venue(idx=1, offerer=offerer)
         venue_provider = create_venue_provider(idx=1, provider=provider, venue=venue)
-        PcObject.save(user_offerer, venue_provider)
+        repository.save(user_offerer, venue_provider)
 
         # When
         _add_venue_provider(client=client, venue_provider=venue_provider)
@@ -198,7 +198,7 @@ class HandleVenueProvidersTest:
         user_offerer = create_user_offerer(user=user, offerer=offerer)
         venue = create_venue(idx=1, offerer=offerer)
         venue_provider = create_venue_provider(idx=1, provider=provider, venue=venue)
-        PcObject.save(user_offerer, venue_provider)
+        repository.save(user_offerer, venue_provider)
 
         # When
         _add_venue_provider(client=client, venue_provider=venue_provider)

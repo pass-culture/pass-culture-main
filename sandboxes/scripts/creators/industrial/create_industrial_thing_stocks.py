@@ -1,3 +1,4 @@
+from repository import repository
 from sandboxes.scripts.utils.select import remove_every
 from tests.model_creators.specific_creators import create_stock_from_offer
 from tests.test_utils import get_price_by_short_name, get_occurrence_short_name
@@ -39,7 +40,7 @@ def create_industrial_thing_stocks(thing_offers_by_name):
             price=price
         )
 
-    Repository.save(*thing_stocks_by_name.values())
+    repository.save(*thing_stocks_by_name.values())
 
     logger.info('created {} thing_stocks'.format(len(thing_stocks_by_name)))
 

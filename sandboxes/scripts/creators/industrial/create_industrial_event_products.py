@@ -2,6 +2,7 @@ from domain.music_types import music_types
 from domain.show_types import show_types
 from domain.types import get_formatted_active_product_types
 from models.offer_type import EventType
+from repository import repository
 from sandboxes.scripts.mocks.event_mocks import MOCK_ACTIVATION_DESCRIPTION, \
     MOCK_ACTIVATION_NAME, \
     MOCK_DESCRIPTIONS, \
@@ -89,7 +90,7 @@ def create_industrial_event_products():
 
         type_index += len(event_type_dicts)
 
-    Repository.save(*event_products_by_name.values())
+    repository.save(*event_products_by_name.values())
 
     logger.info('created {} event products'.format(
         len(event_products_by_name)))

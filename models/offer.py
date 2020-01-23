@@ -104,25 +104,7 @@ class Offer(PcObject,
                             backref=db.backref('criteria', lazy='dynamic'),
                             secondary='offer_criterion')
 
-    def errors(self) -> ApiErrors:
-        api_errors = super(Offer, self).errors()
-        if self.venue:
-            venue = self.venue
-        else:
-            from models.venue import Venue
-            venue = Venue.query.get(self.venueId)
-        if self.isDigital and not venue.isVirtual:
-            api_errors.add_error('venue',
-                                 'Une offre numérique doit obligatoirement être associée au lieu "Offre numérique"')
-        elif not self.isDigital and venue.isVirtual:
-            api_errors.add_error('venue', 'Une offre physique ne peut être associée au lieu "Offre numérique"')
-        if self.isDigital and self._type_can_only_be_offline():
-            api_errors.add_error('url', 'Une offre de type {} ne peut pas être numérique'.format(
-                self._get_label_from_type_string()))
-
-        return api_errors
-
-    def update_with_product_data(self, product_dict: dict) -> None:
+    def update_with_product_data(self, product_dict: dict):
         owning_offerer = self.product.owningOfferer
         if owning_offerer and owning_offerer == self.venue.managingOfferer:
             self.product.populate_from_dict(product_dict)

@@ -9,7 +9,8 @@ from domain.user_emails import send_beneficiary_booking_cancellation_email, \
     send_venue_validation_confirmation_email, \
     send_reset_password_email_with_mailjet_template, send_activation_email, send_reset_password_email, \
     send_attachment_validation_email_to_pro_offerer
-from models import Offerer, PcObject
+from models import Offerer
+from repository import repository
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, create_user_offerer
 from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_offer_with_thing_product
@@ -531,7 +532,7 @@ class SendAttachmentValidationEmailToProOffererTest:
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
 
-        PcObject.save(user_offerer)
+        repository.save(user_offerer)
 
         mocked_send_email = Mock(return_value=True)
 
@@ -556,7 +557,7 @@ class SendAttachmentValidationEmailToProOffererTest:
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
 
-        PcObject.save(offerer, user_offerer)
+        repository.save(offerer, user_offerer)
 
         mocked_send_email = Mock(return_value=False)
 

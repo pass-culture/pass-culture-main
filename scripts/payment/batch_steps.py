@@ -16,7 +16,7 @@ from models.db import db
 from models.feature import FeatureToggle
 from models.payment import Payment
 from models.payment_status import TransactionStatus
-from repository import booking_queries
+from repository import booking_queries, repository
 from repository import payment_queries
 from repository.feature_queries import is_active
 from repository.user_queries import get_all_users_wallet_balances
@@ -66,7 +66,7 @@ def generate_new_payments() -> Tuple[List[Payment], List[Payment]]:
                                 booking_reimbursements_to_pay))
 
         if payments:
-            Repository.save(*payments)
+            repository.save(*payments)
             all_payments.extend(payments)
         logger.info('[BATCH][PAYMENTS] Saved %s payments for offerer : %s' % (
             len(payments), offerer.name))
@@ -100,7 +100,7 @@ def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_cult
     except DocumentInvalid as e:
         for payment in payments:
             payment.setStatus(TransactionStatus.NOT_PROCESSABLE, detail=str(e))
-        Repository.save(*payments)
+        repository.save(*payments)
         raise
 
     checksum = generate_file_checksum(xml_file)
@@ -121,7 +121,7 @@ def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_cult
         for payment in payments:
             payment.setStatus(TransactionStatus.ERROR,
                               detail="Erreur d'envoi à MailJet")
-    Repository.save(message, *payments)
+    repository.save(message, *payments)
 
 
 def send_payments_details(payments: List[Payment], recipients: List[str]) -> None:
@@ -204,4 +204,4 @@ def set_not_processable_payments_with_bank_information_to_retry():
             payment.bic = payment.booking.stock.offer.venue.managingOfferer.bic
             payment.iban = payment.booking.stock.offer.venue.managingOfferer.iban
         payment.setStatus(TransactionStatus.RETRY)
-    Repository.save(*payments_to_retry)
+    repository.save(*payments_to_retry)

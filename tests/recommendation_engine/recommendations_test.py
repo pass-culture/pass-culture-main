@@ -8,7 +8,7 @@ from models import Offerer, Stock
 from recommendations_engine import create_recommendations_for_discovery, \
     get_recommendation_search_params, \
     give_requested_recommendation_to_user
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, \
     create_recommendation, create_mediation
@@ -27,7 +27,7 @@ class GiveRequestedRecommendationToUserTest:
         stock = create_stock_from_offer(offer_ok, price=0)
         mediation = create_mediation(offer_ok, is_active=False)
         reco_ok = create_recommendation(offer=offer_ok, user=user, mediation=mediation)
-        Repository.save(reco_ok, stock)
+        repository.save(reco_ok, stock)
 
         # When
         result_reco = give_requested_recommendation_to_user(
@@ -47,7 +47,7 @@ class GiveRequestedRecommendationToUserTest:
         stock = create_stock_from_offer(offer_ok, price=0)
         mediation = create_mediation(offer_ok, is_active=False)
         reco_ko = create_recommendation(offer=offer_ok, user=user, mediation=mediation)
-        Repository.save(reco_ko, stock, user2)
+        repository.save(reco_ko, stock, user2)
 
         # When
         result_reco = give_requested_recommendation_to_user(
@@ -119,7 +119,7 @@ class CreateRecommendationsForDiscoveryTest:
         stock2 = create_stock_from_offer(offer2, price=0)
         mediation2 = create_mediation(offer2, is_active=False)
         mediation3 = create_mediation(offer2, is_active=True)
-        Repository.save(user, stock1, mediation1, stock2, mediation2, mediation3)
+        repository.save(user, stock1, mediation1, stock2, mediation2, mediation3)
 
         # When
         recommendations = create_recommendations_for_discovery(pagination_params={'page': 1, 'seed': 0.5},
@@ -148,7 +148,7 @@ class CreateRecommendationsForDiscoveryTest:
 
         recommendation = create_recommendation(offer=offer2, user=user, mediation=mediation2, search="bla")
 
-        Repository.save(user, stock1, mediation1, stock2, mediation2, recommendation)
+        repository.save(user, stock1, mediation1, stock2, mediation2, recommendation)
 
         # When
         recommendations = create_recommendations_for_discovery(pagination_params={'page': 1, 'seed': 0.5}, user=user)
@@ -184,8 +184,8 @@ class CreateRecommendationsForDiscoveryTest:
                                                                                          departements_ok)
         expected_stocks_not_recommended = _create_and_save_stock_for_offerer_in_departements(offerer_ko,
                                                                                              departements_ko)
-        Repository.save(user)
-        Repository.save(*(expected_stocks_recommended + expected_stocks_not_recommended))
+        repository.save(user)
+        repository.save(*(expected_stocks_recommended + expected_stocks_not_recommended))
 
         offer_ids_in_adjacent_department = set([stock.offerId for stock in expected_stocks_recommended])
 
@@ -208,8 +208,8 @@ class CreateRecommendationsForDiscoveryTest:
         offerer_ok = create_offerer()
         expected_stocks_recommended = _create_and_save_stock_for_offerer_in_departements(offerer_ok,
                                                                                          departements_ok)
-        Repository.save(user)
-        Repository.save(*expected_stocks_recommended)
+        repository.save(user)
+        repository.save(*expected_stocks_recommended)
 
         offer_ids_in_all_department = set([stock.offerId for stock in expected_stocks_recommended])
 
@@ -232,7 +232,7 @@ def _create_and_save_stock_for_offerer_in_departements(offerer: Offerer, departe
         venue = create_venue(offerer, postal_code="{:5}".format(departement_code), siret=siret)
         offer = create_offer_with_thing_product(venue)
         mediation = create_mediation(offer)
-        Repository.save(mediation)
+        repository.save(mediation)
         stock = create_stock(offer=offer, available=10)
         stock_list.append(stock)
     return stock_list

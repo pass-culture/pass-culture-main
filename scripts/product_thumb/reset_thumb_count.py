@@ -1,4 +1,5 @@
 from models import Product
+from repository import repository
 
 
 def reset_thumb_count(page_size: int = 1000):
@@ -12,7 +13,7 @@ def reset_thumb_count(page_size: int = 1000):
             .all()
         for product in products:
             product.thumbCount = 0
-        Repository.save(*products)
+        repository.save(*products)
         print(f"Page: {page_index}")
         page_index += 1
 

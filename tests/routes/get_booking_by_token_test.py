@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from urllib.parse import urlencode
 
 from models import EventType
-from repository.repository import Repository
+from repository import repository
 from routes.serialization import serialize
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
@@ -26,7 +26,7 @@ class Get:
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            Repository.save(user_offerer, booking)
+            repository.save(user_offerer, booking)
             url = f'/bookings/token/{booking.token}'
 
             # When
@@ -59,7 +59,7 @@ class Get:
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            Repository.save(user_offerer, booking)
+            repository.save(user_offerer, booking)
             booking_token = booking.token.lower()
             url = f'/bookings/token/{booking_token}'
 
@@ -93,7 +93,7 @@ class Get:
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            Repository.save(admin_user, booking)
+            repository.save(admin_user, booking)
             url = f'/bookings/token/{booking.token}'
 
             # When
@@ -128,7 +128,7 @@ class Get:
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            Repository.save(user_offerer, booking)
+            repository.save(user_offerer, booking)
             url_email = urlencode({'email': 'user+plus@example.com'})
             url = f'/bookings/token/{booking.token}?{url_email}'
 
@@ -152,7 +152,7 @@ class Get:
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            Repository.save(admin_user, booking)
+            repository.save(admin_user, booking)
             url = f'/bookings/token/{booking.token}?email=user@example.com'
 
             # When
@@ -173,7 +173,7 @@ class Get:
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            Repository.save(admin_user, booking)
+            repository.save(admin_user, booking)
             url = f'/bookings/token/{booking.token}?email=user@example.com&offer_id={humanize(offer.id)}'
 
             # When
@@ -192,7 +192,7 @@ class Get:
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            Repository.save(admin_user, booking)
+            repository.save(admin_user, booking)
             url = f'/bookings/token/{booking.token}?email=user@example.com&offer_id={humanize(stock.offerId)}'
 
             # When
@@ -207,7 +207,7 @@ class Get:
         def when_token_user_has_rights_but_token_not_found(self, app):
             # Given
             admin_user = create_user(email='admin@example.com')
-            Repository.save(admin_user)
+            repository.save(admin_user)
             url = '/bookings/token/12345'
 
             # When
@@ -230,7 +230,7 @@ class Get:
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            Repository.save(admin_user, booking)
+            repository.save(admin_user, booking)
             url = f'/bookings/token/{booking.token}?email=toto@example.com'
 
             # When
@@ -251,7 +251,7 @@ class Get:
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            Repository.save(admin_user, booking)
+            repository.save(admin_user, booking)
             url = f'/bookings/token/{booking.token}?email=user@example.com&offer_id={humanize(123)}'
 
             # When
@@ -274,7 +274,7 @@ class Get:
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            Repository.save(user_offerer, booking)
+            repository.save(user_offerer, booking)
             url = f'/bookings/token/{booking.token}?email={user.email}'
 
             # When
@@ -297,7 +297,7 @@ class Get:
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            Repository.save(admin_user, booking)
+            repository.save(admin_user, booking)
             url = f'/bookings/token/{booking.token}'
 
             # When
@@ -320,7 +320,7 @@ class Get:
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            Repository.save(querying_user, booking)
+            repository.save(querying_user, booking)
             url = f'/bookings/token/{booking.token}'
 
             # When
@@ -346,7 +346,7 @@ class Get:
             stock = create_stock_with_event_offer(offerer, venue, price=0, beginning_datetime=in_73_hours,
                                                   end_datetime=in_74_hours, booking_limit_datetime=in_72_hours)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            Repository.save(admin_user, booking)
+            repository.save(admin_user, booking)
             url = f'/bookings/token/{booking.token}?email=user@example.com&offer_id={humanize(stock.offerId)}'
 
             # When
@@ -367,7 +367,7 @@ class Get:
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
             booking = create_booking(user=user, stock=stock, is_used=True, venue=venue)
-            Repository.save(admin_user, booking)
+            repository.save(admin_user, booking)
             url = f'/bookings/token/{booking.token}?email=user@example.com&offer_id={humanize(stock.offerId)}'
 
             # When
@@ -387,7 +387,7 @@ class Get:
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
             booking = create_booking(user=user, stock=stock, is_cancelled=True, venue=venue)
-            Repository.save(admin_user, booking)
+            repository.save(admin_user, booking)
             url = f'/bookings/token/{booking.token}?email=user@example.com&offer_id={humanize(stock.offerId)}'
 
             # When

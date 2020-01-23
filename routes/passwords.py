@@ -1,10 +1,11 @@
 from flask import current_app as app, request
-from flask_login import current_user, login_required
+from flask_login import login_required
 
 from domain.password import validate_reset_request, check_reset_token_validity, validate_new_password_request, \
     check_password_strength, check_new_password_validity, generate_reset_token, validate_change_password_request
 from domain.user_emails import send_reset_password_email_with_mailjet_template, send_reset_password_email
 from models import ApiErrors
+from repository import repository, user_queries
 from repository.user_queries import find_user_by_email, find_user_by_reset_password_token
 from utils.mailing import \
     MailServiceException, send_raw_email
@@ -17,12 +18,13 @@ from utils.rest import expect_json_data
 def post_change_password():
     json = request.get_json()
     validate_change_password_request(json)
-    new_password = request.get_json()['newPassword']
+    user = user_queries.find_by_id()
+    new_password = json['newPassword']
     old_password = json.get('oldPassword')
     check_password_strength('newPassword', new_password)
-    check_new_password_validity(current_user, old_password, new_password)
-    current_user.setPassword(new_password)
-    Repository.save(current_user)
+    check_new_password_validity(user, old_password, new_password)
+    user.setPassword(new_password)
+    repository.save(user)
     return '', 204
 
 
@@ -37,7 +39,7 @@ def post_for_password_token():
         return '', 204
 
     generate_reset_token(user)
-    Repository.save(user)
+    repository.save(user)
     app_origin_url = request.headers.get('origin')
 
     try:
@@ -68,6 +70,6 @@ def post_new_password():
     check_reset_token_validity(user)
     check_password_strength('newPassword', new_password)
     user.setPassword(new_password)
-    Repository.save(user)
+    repository.save(user)
 
     return '', 204

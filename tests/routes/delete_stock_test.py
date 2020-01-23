@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from unittest.mock import patch
 
 from models import Booking, Provider
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
@@ -22,7 +23,7 @@ class Delete:
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue)
-            Repository.save(user, stock, user_offerer)
+            repository.save(user, stock, user_offerer)
 
             # when
             response = TestClient(app.test_client()).with_auth('test@email.com') \
@@ -43,7 +44,7 @@ class Delete:
             stock = create_stock_with_event_offer(offerer, venue, price=0)
             booking1 = create_booking(other_user, is_cancelled=False, stock=stock)
             booking2 = create_booking(other_user, is_cancelled=False, stock=stock)
-            Repository.save(user, stock, user_offerer, booking1, booking2)
+            repository.save(user, stock, user_offerer, booking1, booking2)
 
             # when
             response = TestClient(app.test_client()).with_auth('test@email.com').delete('/stocks/' + humanize(stock.id))
@@ -63,7 +64,7 @@ class Delete:
             create_user_offerer(beneficiary, offerer)
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue)
-            Repository.save(stock)
+            repository.save(stock)
 
             # when
             response = TestClient(app.test_client()).with_auth(beneficiary.email) \
@@ -88,7 +89,7 @@ class Delete:
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue, last_provider_id=tite_live_provider.id)
             stock = create_stock(offer=offer)
-            Repository.save(user, stock, user_offerer)
+            repository.save(user, stock, user_offerer)
 
             # when
             response = TestClient(app.test_client()).with_auth('test@email.com') \
@@ -112,7 +113,7 @@ class Delete:
                 beginning_datetime=NOW - timedelta(days=5),
                 end_datetime=NOW - timedelta(days=4)
             )
-            Repository.save(user, stock, user_offerer)
+            repository.save(user, stock, user_offerer)
 
             # when
             response = TestClient(app.test_client()).with_auth('test@email.com') \
@@ -132,7 +133,7 @@ class Delete:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue)
-            Repository.save(user, stock)
+            repository.save(user, stock)
 
             # when
             response = TestClient(app.test_client()).with_auth('test@email.com') \

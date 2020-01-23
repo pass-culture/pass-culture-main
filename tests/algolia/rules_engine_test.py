@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from algolia.rules_engine import is_eligible_for_indexing
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_stock, create_venue, create_booking, \
     create_user, create_deposit
@@ -19,7 +19,7 @@ class IsEligibleForIndexingTest:
         venue = create_venue(offerer=offerer, validation_token=None)
         offer = create_offer_with_thing_product(venue=venue, is_active=True)
         stock = create_stock(offer=offer, booking_limit_datetime=TOMORROW, available=None, is_soft_deleted=False)
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         is_eligible = is_eligible_for_indexing(None)
@@ -34,7 +34,7 @@ class IsEligibleForIndexingTest:
         venue = create_venue(offerer=offerer, validation_token=None)
         offer = create_offer_with_thing_product(venue=venue, is_active=True)
         stock = create_stock(offer=offer, booking_limit_datetime=TOMORROW, available=None, is_soft_deleted=False)
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         is_eligible = is_eligible_for_indexing(offer)
@@ -49,7 +49,7 @@ class IsEligibleForIndexingTest:
         venue = create_venue(offerer=offerer, validation_token=None)
         offer = create_offer_with_thing_product(venue=venue, is_active=True)
         stock = create_stock(offer=offer, booking_limit_datetime=TOMORROW, available=None, is_soft_deleted=False)
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         is_eligible = is_eligible_for_indexing(offer)
@@ -64,7 +64,7 @@ class IsEligibleForIndexingTest:
         venue = create_venue(offerer=offerer, validation_token=None)
         offer = create_offer_with_thing_product(venue=venue, is_active=False)
         stock = create_stock(offer=offer, booking_limit_datetime=TOMORROW, available=None, is_soft_deleted=False)
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         is_eligible = is_eligible_for_indexing(offer)
@@ -84,7 +84,7 @@ class IsEligibleForIndexingTest:
         stock2 = create_stock(offer=offer, booking_limit_datetime=TOMORROW, available=1, is_soft_deleted=False)
         booking1 = create_booking(user=beneficiary, stock=stock1)
         booking2 = create_booking(user=beneficiary, stock=stock2)
-        Repository.save(booking1, booking2)
+        repository.save(booking1, booking2)
 
         # When
         is_eligible = is_eligible_for_indexing(offer)
@@ -99,7 +99,7 @@ class IsEligibleForIndexingTest:
         venue = create_venue(offerer=offerer, validation_token=None)
         offer = create_offer_with_thing_product(venue=venue, is_active=True)
         stock = create_stock(offer=offer, booking_limit_datetime=YESTERDAY, available=None, is_soft_deleted=False)
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         is_eligible = is_eligible_for_indexing(offer)
@@ -114,7 +114,7 @@ class IsEligibleForIndexingTest:
         venue = create_venue(offerer=offerer, validation_token=None)
         offer = create_offer_with_thing_product(venue=venue, is_active=True)
         stock = create_stock(offer=offer, booking_limit_datetime=TOMORROW, available=None, is_soft_deleted=True)
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         is_eligible = is_eligible_for_indexing(offer)
@@ -129,7 +129,7 @@ class IsEligibleForIndexingTest:
         venue = create_venue(offerer=offerer, validation_token='FAKE_TOKEN')
         offer = create_offer_with_thing_product(venue=venue, is_active=True)
         stock = create_stock(offer=offer, booking_limit_datetime=TOMORROW, available=None, is_soft_deleted=False)
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         is_eligible = is_eligible_for_indexing(offer)
@@ -144,7 +144,7 @@ class IsEligibleForIndexingTest:
         venue = create_venue(offerer=offerer, validation_token=None)
         offer = create_offer_with_thing_product(venue=venue, is_active=True)
         stock = create_stock(offer=offer, booking_limit_datetime=TOMORROW, available=1, is_soft_deleted=False)
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         is_eligible = is_eligible_for_indexing(offer)
@@ -159,7 +159,7 @@ class IsEligibleForIndexingTest:
         venue = create_venue(offerer=offerer, validation_token=None)
         offer = create_offer_with_thing_product(venue=venue, is_active=True)
         stock = create_stock(offer=offer, booking_limit_datetime=TOMORROW, available=None, is_soft_deleted=False)
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         is_eligible = is_eligible_for_indexing(offer)
@@ -174,7 +174,7 @@ class IsEligibleForIndexingTest:
         venue = create_venue(offerer=offerer, validation_token=None)
         offer = create_offer_with_thing_product(venue=venue, is_active=True)
         stock = create_stock(offer=offer, booking_limit_datetime=None, available=1, is_soft_deleted=False)
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         is_eligible = is_eligible_for_indexing(offer)

@@ -1,5 +1,6 @@
 import re
 
+from repository import repository
 from sandboxes.scripts.mocks.venue_mocks import MOCK_NAMES
 from tests.model_creators.generic_creators import create_venue, create_bank_information
 from utils.logger import logger
@@ -81,7 +82,7 @@ def create_industrial_venues(offerers_by_name: dict) -> dict:
             siret=None
         )
 
-    Repository.save(*venue_by_name.values())
+    repository.save(*venue_by_name.values())
 
     logger.info('created {} venues'.format(len(venue_by_name)))
 

@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_recommendation, \
     create_favorite, create_mediation
@@ -70,7 +70,7 @@ def test_model_should_return_false_if_no_favorite_exists_for_offer_mediation_and
 
     # when
     recommendation = create_recommendation(offer, user, mediation=mediation)
-    Repository.save(recommendation)
+    repository.save(recommendation)
 
     # then
     assert recommendation.isFavorite is False
@@ -85,11 +85,11 @@ def test_model_should_return_true_if_favorite_exists_for_offer_mediation_and_use
     offer = create_offer_with_event_product(venue)
     mediation = create_mediation(offer)
     favorite = create_favorite(mediation=mediation, offer=offer, user=user)
-    Repository.save(favorite)
+    repository.save(favorite)
 
     # when
     recommendation = create_recommendation(offer, user, mediation=mediation)
-    Repository.save(recommendation)
+    repository.save(recommendation)
 
     # then
     assert recommendation.isFavorite is True
@@ -104,11 +104,11 @@ def test_model_should_return_true_if_favorite_exists_for_offer_without_mediation
     offer = create_offer_with_event_product(venue)
     mediation = None
     favorite = create_favorite(mediation=mediation, offer=offer, user=user)
-    Repository.save(favorite)
+    repository.save(favorite)
 
     # when
     recommendation = create_recommendation(offer, user, mediation=mediation)
-    Repository.save(recommendation)
+    repository.save(recommendation)
 
     # then
     assert recommendation.isFavorite is True

@@ -1,4 +1,4 @@
-from repository.repository import Repository
+from repository import repository
 from repository.allocine_pivot_queries import has_allocine_pivot_for_venue, get_allocine_theaterId_for_venue
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_allocine_pivot, create_offerer, create_venue
@@ -11,7 +11,7 @@ class HasAllocinePivotForVenueTest:
         offerer = create_offerer()
         venue = create_venue(offerer, siret=None, comment='En attente de siret')
         allocine_pivot = create_allocine_pivot(siret='12345678912345')
-        Repository.save(venue, allocine_pivot)
+        repository.save(venue, allocine_pivot)
 
         # When
         has_allocine_pivot = has_allocine_pivot_for_venue(venue)
@@ -27,7 +27,7 @@ class GetAllocineTheaterIdForVenueTest:
         offerer = create_offerer()
         venue = create_venue(offerer, siret=None, comment='En attente de siret')
         allocine_pivot = create_allocine_pivot(siret='12345678912345')
-        Repository.save(venue, allocine_pivot)
+        repository.save(venue, allocine_pivot)
 
         # When
         allocine_theater_id = get_allocine_theaterId_for_venue(venue)
@@ -41,7 +41,7 @@ class GetAllocineTheaterIdForVenueTest:
         offerer = create_offerer()
         venue = create_venue(offerer, siret='12345678912345', comment='En attente de siret')
         allocine_pivot = create_allocine_pivot(siret='12345678912345', theater_id='XXXXXXXXXXXXXXXXXX==')
-        Repository.save(venue, allocine_pivot)
+        repository.save(venue, allocine_pivot)
 
         # When
         allocine_theater_id = get_allocine_theaterId_for_venue(venue)

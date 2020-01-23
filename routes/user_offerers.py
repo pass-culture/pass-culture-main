@@ -2,6 +2,7 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
 from models.user_offerer import UserOfferer
+from repository import repository
 from routes.serialization import as_dict
 from utils.human_ids import dehumanize
 from utils.includes import USER_OFFERER_INCLUDES
@@ -21,5 +22,5 @@ def get_user_offerer(offerer_id):
 @login_required
 def create_user_offerer():
     new_user_offerer = UserOfferer(from_dict=request.json)
-    Repository.save(new_user_offerer)
+    repository.save(new_user_offerer)
     return jsonify(as_dict(new_user_offerer, includes=USER_OFFERER_INCLUDES)), 201

@@ -49,16 +49,6 @@ class Offerer(PcObject,
             user_offerer.rights = rights
             return user_offerer
 
-    def errors(self):
-        api_errors = super(Offerer, self).errors()
-        api_errors.errors.update(HasAddressMixin.errors(self).errors)
-        if self.siren is not None \
-                and (not len(self.siren) == 9):
-            # TODO: or not verify_luhn(self.siren)):
-            api_errors.add_error('siren', 'Ce code SIREN est invalide')
-
-        return api_errors
-
     @property
     def bic(self):
         return self.bankInformation.bic if self.bankInformation else None

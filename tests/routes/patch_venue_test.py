@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from models import Venue
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
 from tests.model_creators.specific_creators import create_offer_with_thing_product
@@ -18,7 +18,7 @@ class Patch:
             user_offerer = create_user_offerer(user, offerer, is_admin=True)
             siret = offerer.siren + '11111'
             venue = create_venue(offerer, comment="Pas de siret", siret=None)
-            Repository.save(user_offerer, venue)
+            repository.save(user_offerer, venue)
             venue_data = {
                 'siret': siret,
             }
@@ -40,7 +40,7 @@ class Patch:
             user = create_user()
             user_offerer = create_user_offerer(user, offerer, is_admin=True)
             venue = create_venue(offerer, public_name="My old name")
-            Repository.save(user_offerer, venue)
+            repository.save(user_offerer, venue)
             venue_data = {
                 'publicName': 'Mon nouveau nom',
             }
@@ -63,7 +63,7 @@ class Patch:
             user_offerer = create_user_offerer(user, offerer, is_admin=True)
             siret = offerer.siren + '11111'
             venue = create_venue(offerer, comment="Pas de siret", siret=None)
-            Repository.save(user_offerer, venue)
+            repository.save(user_offerer, venue)
             venue_data = {
                 'siret': siret,
             }
@@ -85,7 +85,7 @@ class Patch:
             user_offerer = create_user_offerer(user, offerer, is_admin=True)
             siret = offerer.siren + '11111'
             venue = create_venue(offerer, siret=siret)
-            Repository.save(user_offerer, venue)
+            repository.save(user_offerer, venue)
             venue_data = {
                 'siret': siret,
             }
@@ -105,7 +105,7 @@ class Patch:
             user = create_user(email='user.pro@test.com')
             venue = create_venue(offerer, name='L\'encre et la plume')
             user_offerer = create_user_offerer(user, offerer)
-            Repository.save(user_offerer, venue)
+            repository.save(user_offerer, venue)
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
             venue_id = venue.id
 
@@ -130,7 +130,7 @@ class Patch:
             user_offerer = create_user_offerer(user, offerer, is_admin=True)
             siret = offerer.siren + '11111'
             venue = create_venue(offerer, siret=siret)
-            Repository.save(user_offerer, venue)
+            repository.save(user_offerer, venue)
             venue_data = {
                 'siret': offerer.siren + '12345',
             }
@@ -151,7 +151,7 @@ class Patch:
             venue1 = create_venue(offerer, name='Les petits papiers', is_virtual=True, siret=None)
             venue2 = create_venue(offerer, name='L\'encre et la plume', is_virtual=False)
             user_offerer = create_user_offerer(user, offerer)
-            Repository.save(user_offerer, venue1, venue2)
+            repository.save(user_offerer, venue1, venue2)
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
@@ -169,7 +169,7 @@ class Patch:
             user = create_user(email='user.pro@test.com')
             venue = create_venue(offerer, name='Les petits papiers', is_virtual=False)
             user_offerer = create_user_offerer(user, offerer)
-            Repository.save(user_offerer, venue)
+            repository.save(user_offerer, venue)
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
             data = {'latitude': -98.82387, 'longitude': '112°3534'}
 
@@ -189,7 +189,7 @@ class Patch:
             user = create_user(email='user.pro@test.com')
             venue = create_venue(offerer, name='Les petits papiers', is_virtual=False)
             user_offerer = create_user_offerer(user, offerer)
-            Repository.save(user_offerer, venue, other_offerer)
+            repository.save(user_offerer, venue, other_offerer)
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # When

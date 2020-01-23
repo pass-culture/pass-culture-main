@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 from models import Feature
 from models.feature import FeatureToggle
+from repository import repository
 from scripts.payment.batch import generate_and_send_payments
 from tests.conftest import clean_database
 
@@ -35,7 +36,7 @@ class GenerateAndSendPaymentsTest:
         # Given
         feature = Feature.query.filter_by(name=FeatureToggle.DEGRESSIVE_REIMBURSEMENT_RATE).first()
         feature.isActive = False
-        Repository.save(feature)
+        repository.save(feature)
 
         # When
         generate_and_send_payments(None)

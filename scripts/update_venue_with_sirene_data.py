@@ -1,5 +1,5 @@
 from connectors import api_entreprises
-from repository.repository import Repository
+from repository import repository
 from repository import venue_queries
 
 
@@ -13,7 +13,7 @@ def update_venue_with_sirene_data(data: dict, old_siret: str):
     venue.latitude = parsed_data.get('latitude') or venue.latitude
     venue.longitude = parsed_data.get('longitude') or venue.longitude
     venue.postalCode = parsed_data.get('postalCode') or venue.postalCode
-    Repository.save(venue)
+    repository.save(venue)
 
 
 def _parse_sirene_data(data: dict) -> dict:

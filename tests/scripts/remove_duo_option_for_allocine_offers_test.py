@@ -1,4 +1,5 @@
-from models import PcObject, Offer
+from models import Offer
+from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 from scripts.remove_duo_option_for_allocine_offers import remove_duo_option_for_allocine_offers
 from tests.conftest import clean_database
@@ -23,7 +24,7 @@ class RemoveDuoOptionForAllocineOffersTest:
         allocine_offer_2.isDuo = True
         other_offer.isDuo = True
 
-        PcObject.save(allocine_offer_1, allocine_offer_2, other_offer)
+        repository.save(allocine_offer_1, allocine_offer_2, other_offer)
 
         # When
         remove_duo_option_for_allocine_offers()

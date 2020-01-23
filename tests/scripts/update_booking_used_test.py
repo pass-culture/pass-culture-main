@@ -3,6 +3,7 @@ from datetime import datetime
 from freezegun import freeze_time
 
 from models import Booking
+from repository import repository
 from scripts.update_booking_used import update_booking_used_after_stock_occurrence
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
@@ -25,7 +26,7 @@ class UpdateBookingUsedTest:
                              beginning_datetime=None,
                              end_datetime=None)
         booking = create_booking(user=user, is_used=False, stock=stock)
-        Repository.save(user, deposit, booking, stock)
+        repository.save(user, deposit, booking, stock)
 
         # When
         update_booking_used_after_stock_occurrence()
@@ -49,7 +50,7 @@ class UpdateBookingUsedTest:
                              beginning_datetime=datetime(2019, 10, 9, 10, 20, 00),
                              end_datetime=datetime(2019, 10, 9, 12, 20, 0))
         booking = create_booking(user=user, is_used=False, stock=stock)
-        Repository.save(user, deposit, booking, stock)
+        repository.save(user, deposit, booking, stock)
 
         # When
         update_booking_used_after_stock_occurrence()
@@ -73,7 +74,7 @@ class UpdateBookingUsedTest:
                              beginning_datetime=datetime(2019, 10, 9, 10, 20, 00),
                              end_datetime=datetime(2019, 10, 9, 12, 20, 0))
         booking = create_booking(user=user, is_used=False, stock=stock)
-        Repository.save(user, deposit, booking, stock)
+        repository.save(user, deposit, booking, stock)
 
         # When
         update_booking_used_after_stock_occurrence()
@@ -97,7 +98,7 @@ class UpdateBookingUsedTest:
                              end_datetime=datetime(2019, 10, 9, 12, 20, 0))
         booking_date = datetime(2019, 10, 12, 12, 20, 0)
         booking = create_booking(user=user, date_used=booking_date, is_used=True, stock=stock)
-        Repository.save(user, deposit, booking, stock)
+        repository.save(user, deposit, booking, stock)
 
         # When
         update_booking_used_after_stock_occurrence()

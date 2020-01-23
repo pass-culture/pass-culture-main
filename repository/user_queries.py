@@ -1,11 +1,12 @@
 from datetime import datetime, MINYEAR
 from typing import List
 
+from flask_login import current_user
 from sqlalchemy import func, Column
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.functions import Function
 
-from models import ImportStatus, BeneficiaryImportStatus, Booking, Stock, Offer, ThingType, EventType
+from models import ImportStatus, BeneficiaryImportStatus, Booking, Stock, Offer, ThingType, EventType, User
 from models import User, UserOfferer, Offerer, RightsType
 from models.db import db
 from models.user import WalletBalance
@@ -154,3 +155,7 @@ def _sanitized_string(value: str) -> Function:
     sanitized = func.unaccent(sanitized)
     sanitized = func.lower(sanitized)
     return sanitized
+
+
+def find_by_id():
+    return User.query.filter_by(id=current_user.id).one()

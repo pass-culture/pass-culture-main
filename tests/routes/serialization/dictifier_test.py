@@ -1,5 +1,5 @@
 from models import Stock
-from repository.repository import Repository
+from repository import repository
 from routes.serialization import as_dict
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
@@ -14,7 +14,7 @@ class AsDictTest:
         user = create_user(postal_code=None)
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
-        Repository.save(user_offerer)
+        repository.save(user_offerer)
         USER_INCLUDES = []
 
         # when
@@ -31,7 +31,7 @@ class AsDictTest:
         user = create_user(postal_code=None)
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
-        Repository.save(user_offerer)
+        repository.save(user_offerer)
         USER_INCLUDES = ['-password', '-resetPasswordToken']
 
         # when
@@ -47,7 +47,7 @@ class AsDictTest:
         user = create_user(postal_code=None)
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
-        Repository.save(user_offerer)
+        repository.save(user_offerer)
         USER_INCLUDES = []
 
         # when
@@ -63,7 +63,7 @@ class AsDictTest:
         user = create_user(postal_code=None)
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
-        Repository.save(user_offerer)
+        repository.save(user_offerer)
         USER_INCLUDES = ['hasPhysicalVenues', 'hasOffers']
 
         # when
@@ -79,7 +79,7 @@ class AsDictTest:
         user = create_user()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
-        Repository.save(user_offerer)
+        repository.save(user_offerer)
         USER_INCLUDES = ['offerers']
 
         # when
@@ -98,7 +98,7 @@ class AsDictTest:
         event_product = create_product_with_event_type(event_name='My Event')
         offer = create_offer_with_event_product(venue, product=event_product)
         mediation = create_mediation(offer)
-        Repository.save(mediation)
+        repository.save(mediation)
         EVENT_INCLUDES = [
             {
                 "key": "mediations",
@@ -120,7 +120,7 @@ class AsDictTest:
         event_product = create_product_with_event_type(event_name='My Event')
         offer = create_offer_with_event_product(venue, product=event_product)
         mediation = create_mediation(offer)
-        Repository.save(mediation)
+        repository.save(mediation)
         EVENT_INCLUDES = [
             {
                 "key": "mediations",

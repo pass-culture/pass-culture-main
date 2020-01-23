@@ -1,3 +1,4 @@
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue
 from tests.model_creators.specific_creators import create_stock_with_event_offer
@@ -13,7 +14,7 @@ class Get:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=10, available=10)
-            Repository.save(user, stock)
+            repository.save(user, stock)
             humanized_stock_id = humanize(stock.id)
 
             # when
@@ -32,7 +33,7 @@ class Get:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=10, available=10, is_soft_deleted=True)
-            Repository.save(user, stock)
+            repository.save(user, stock)
             humanized_stock_id = humanize(stock.id)
 
             # when

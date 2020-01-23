@@ -1,5 +1,5 @@
 from models.db import db
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_offerer, create_venue
 
@@ -12,7 +12,7 @@ class Get:
             offerer = create_offerer()
             venue = create_venue(offerer)
             venue.generate_validation_token()
-            Repository.save(venue)
+            repository.save(venue)
 
             token = venue.validationToken
 

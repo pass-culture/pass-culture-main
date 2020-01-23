@@ -1,4 +1,4 @@
-from repository.repository import Repository
+from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_venue_provider
@@ -14,10 +14,10 @@ class Get:
             titelive_things_provider = get_provider_by_local_class('TiteLiveThings')
             venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
             venue_provider = create_venue_provider(venue=venue, provider=titelive_things_provider)
-            Repository.save(venue_provider)
+            repository.save(venue_provider)
 
             user = create_user()
-            Repository.save(user)
+            repository.save(user)
             auth_request = TestClient(app.test_client()) \
                 .with_auth(email=user.email)
             humanized_venue_provider_id = humanize(venue_provider.id)
@@ -36,10 +36,10 @@ class Get:
             venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
             titelive_things_provider = get_provider_by_local_class('TiteLiveThings')
             venue_provider = create_venue_provider(venue=venue, provider=titelive_things_provider)
-            Repository.save(venue_provider)
+            repository.save(venue_provider)
 
             user = create_user()
-            Repository.save(user)
+            repository.save(user)
             auth_request = TestClient(app.test_client()) \
                 .with_auth(email=user.email)
             non_existing_venue_provider_id = 'ABCDEF'

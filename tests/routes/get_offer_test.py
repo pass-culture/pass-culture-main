@@ -1,4 +1,4 @@
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, create_mediation, \
     create_bank_information
@@ -19,7 +19,7 @@ class Get:
             create_bank_information(venue=venue, id_at_providers=venue.siret)
             create_bank_information(offerer=offerer, id_at_providers=offerer.siren)
 
-            Repository.save(user, stock)
+            repository.save(user, stock)
 
             # when
             response = TestClient(app.test_client()).with_auth(email='user@test.com') \
@@ -42,7 +42,7 @@ class Get:
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
             mediation = create_mediation(offer, is_active=True)
-            Repository.save(user, mediation)
+            repository.save(user, mediation)
 
             # when
             response = TestClient(app.test_client()).with_auth(email='user@test.com') \

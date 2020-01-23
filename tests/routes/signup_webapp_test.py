@@ -5,6 +5,7 @@ from freezegun import freeze_time
 
 from models.feature import FeatureToggle, Feature
 from models.user import User
+from repository import repository
 from routes.serialization import serialize
 from tests.conftest import clean_database, TestClient
 
@@ -341,7 +342,7 @@ class Post:
             data = BASE_DATA.copy()
             feature = Feature.query.filter_by(name=FeatureToggle.WEBAPP_SIGNUP).first()
             feature.isActive = False
-            Repository.save(feature)
+            repository.save(feature)
 
             # When
             response = TestClient(app.test_client()) \

@@ -1,5 +1,5 @@
 from models.email import EmailStatus
-from repository.repository import Repository
+from repository import repository
 from repository.email_queries import find_all_in_error
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_email
@@ -13,7 +13,7 @@ class FindAllInErrorTest:
         email_failed_in_error = create_email(email, status=EmailStatus.ERROR)
         email_failed_sent = create_email(email, status=EmailStatus.SENT)
 
-        Repository.save(email_failed_in_error, email_failed_sent)
+        repository.save(email_failed_in_error, email_failed_sent)
 
         # when
         email_failed_in_error = find_all_in_error()

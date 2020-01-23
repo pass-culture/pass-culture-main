@@ -1,3 +1,4 @@
+from repository import repository
 from tests.model_creators.specific_creators import create_offer_with_event_product
 from utils.logger import logger
 
@@ -57,7 +58,7 @@ def create_industrial_event_offers(
 
         event_index += EVENTS_PER_OFFERER_WITH_PHYSICAL_VENUE
 
-    Repository.save(*event_offers_by_name.values())
+    repository.save(*event_offers_by_name.values())
 
     logger.info('created {} event_offers'.format(len(event_offers_by_name)))
 

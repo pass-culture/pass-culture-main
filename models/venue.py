@@ -114,32 +114,6 @@ class Venue(PcObject,
         self.departementCode = venue_overseas_dept_code if venue_overseas_dept_code in OVERSEAS_DEPT_CODES \
             else venue_dept_code
 
-    def errors(self):
-        api_errors = super(Venue, self).errors()
-
-        if self.siret is not None \
-                and not len(self.siret) == 14:
-            api_errors.add_error('siret', 'Ce code SIRET est invalide : ' + self.siret)
-        if self.postalCode is not None \
-                and len(self.postalCode) != 5:
-            api_errors.add_error('postalCode', 'Ce code postal est invalide')
-        if self.managingOffererId is not None:
-            if self.managingOfferer is None:
-                managingOfferer = Offerer.query \
-                    .filter_by(id=self.managingOffererId).first()
-            else:
-                managingOfferer = self.managingOfferer
-            if managingOfferer.siren is None:
-                api_errors.add_error('siren',
-                                    'Ce lieu ne peut enregistrer de SIRET car la structure associée n\'a pas de'
-                                     + 'SIREN renseigné')
-            if self.siret is not None \
-                    and managingOfferer is not None \
-                    and not self.siret.startswith(managingOfferer.siren):
-                api_errors.add_error('siret', 'Le code SIRET doit correspondre à un établissement de votre structure')
-
-        return api_errors
-
     @property
     def bic(self):
         return self.bankInformation.bic if self.bankInformation else None

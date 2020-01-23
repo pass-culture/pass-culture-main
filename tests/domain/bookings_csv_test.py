@@ -2,6 +2,7 @@ from datetime import datetime
 
 from domain.bookings import generate_bookings_details_csv
 from models import Booking
+from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
@@ -42,7 +43,7 @@ class BookingsCSVTest:
         booking = create_booking(user=user, stock=stock, date_created=datetime(2010, 1, 1, 0, 0, 0, 0))
         deposit = create_deposit(user=user, amount=100)
 
-        Repository.save(user, offerer, venue, offer, stock, booking, deposit)
+        repository.save(user, offerer, venue, offer, stock, booking, deposit)
 
         bookings = Booking.query.all()
 

@@ -93,19 +93,6 @@ class Stock(PcObject,
     bookingRecapSent = Column(DateTime,
                               nullable=True)
 
-    def errors(self):
-        api_errors = super(Stock, self).errors()
-        if self.available is not None and self.available < 0:
-            api_errors.add_error('available', 'Le stock doit être positif')
-
-        if self.endDatetime \
-                and self.beginningDatetime \
-                and self.endDatetime <= self.beginningDatetime:
-            api_errors.add_error('endDatetime',
-                                 'La date de fin de l\'événement doit être postérieure à la date de début')
-
-        return api_errors
-
     @property
     def isBookable(self):
         return self.bookingLimitDatetime is None \

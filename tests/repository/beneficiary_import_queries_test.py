@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from freezegun import freeze_time
 
 from models import ImportStatus, BeneficiaryImport
-from repository.repository import Repository
+from repository import repository
 from repository.beneficiary_import_queries import is_already_imported, save_beneficiary_import_with_status, \
     find_applications_ids_to_retry
 from tests.conftest import clean_database
@@ -19,7 +19,7 @@ class IsAlreadyImportedTest:
         beneficiary_import = create_beneficiary_import(user=user1, status=ImportStatus.CREATED,
                                                        demarche_simplifiee_application_id=123)
 
-        Repository.save(beneficiary_import)
+        repository.save(beneficiary_import)
 
         # when
         result = is_already_imported(123)
@@ -35,7 +35,7 @@ class IsAlreadyImportedTest:
         beneficiary_import = create_beneficiary_import(user=user1, status=ImportStatus.DUPLICATE,
                                                        demarche_simplifiee_application_id=123)
 
-        Repository.save(beneficiary_import)
+        repository.save(beneficiary_import)
 
         # when
         result = is_already_imported(123)
@@ -51,7 +51,7 @@ class IsAlreadyImportedTest:
         beneficiary_import = create_beneficiary_import(user=user1, status=ImportStatus.REJECTED,
                                                        demarche_simplifiee_application_id=123)
 
-        Repository.save(beneficiary_import)
+        repository.save(beneficiary_import)
 
         # when
         result = is_already_imported(123)
@@ -67,7 +67,7 @@ class IsAlreadyImportedTest:
         beneficiary_import = create_beneficiary_import(user=user1, status=ImportStatus.ERROR,
                                                        demarche_simplifiee_application_id=123)
 
-        Repository.save(beneficiary_import)
+        repository.save(beneficiary_import)
 
         # when
         result = is_already_imported(123)
@@ -83,7 +83,7 @@ class IsAlreadyImportedTest:
         beneficiary_import = create_beneficiary_import(user=user1, status=ImportStatus.RETRY,
                                                        demarche_simplifiee_application_id=123)
 
-        Repository.save(beneficiary_import)
+        repository.save(beneficiary_import)
 
         # when
         result = is_already_imported(123)
@@ -99,7 +99,7 @@ class IsAlreadyImportedTest:
         beneficiary_import = create_beneficiary_import(user=user1, status=ImportStatus.CREATED,
                                                        demarche_simplifiee_application_id=123)
 
-        Repository.save(beneficiary_import)
+        repository.save(beneficiary_import)
 
         # when
         result = is_already_imported(456)
@@ -145,7 +145,7 @@ class FindApplicationsIdsToRetryTest:
         user = create_user(email='user1@test.com')
         import3 = create_beneficiary_import(user=user, status=ImportStatus.CREATED, demarche_simplifiee_application_id=789)
 
-        Repository.save(import1, import2, import3)
+        repository.save(import1, import2, import3)
 
         # when
         ids = find_applications_ids_to_retry()
@@ -161,7 +161,7 @@ class FindApplicationsIdsToRetryTest:
         user = create_user(email='user1@test.com')
         import3 = create_beneficiary_import(user=user, status=ImportStatus.CREATED, demarche_simplifiee_application_id=789)
 
-        Repository.save(import1, import2, import3)
+        repository.save(import1, import2, import3)
 
         # when
         ids = find_applications_ids_to_retry()

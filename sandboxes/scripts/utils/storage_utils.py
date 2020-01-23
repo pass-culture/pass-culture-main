@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 
 from connectors.thumb_storage import save_thumb
+from repository import repository
 from utils.human_ids import humanize
 from utils.object_storage import store_public_object
 from utils.string_processing import get_model_plural_name
@@ -35,4 +36,4 @@ def store_public_object_from_sandbox_assets(folder, obj, offer_type, index=0):
             store_public_object(folder, plural_model_name + '/' + thumb_id, thumb_file.read(), MIMES_BY_FOLDER[folder],
                                 symlink_path=thumb_path)
 
-    Repository.save(obj)
+    repository.save(obj)

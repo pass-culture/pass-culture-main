@@ -2,7 +2,7 @@
 from datetime import datetime
 
 from models import Offerer
-from repository.repository import Repository
+from repository import repository
 from routes.serialization import serialize
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
@@ -19,7 +19,7 @@ class Patch:
             user = create_user()
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer, is_admin=False)
-            Repository.save(user_offerer)
+            repository.save(user_offerer)
             body = {'isActive': False}
 
             # when
@@ -37,7 +37,7 @@ class Patch:
             user = create_user()
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer, is_admin=True)
-            Repository.save(user_offerer)
+            repository.save(user_offerer)
             body = {'thumbCount': 0, 'idAtProviders': 'zfeej',
                     'dateModifiedAtLastProvider': serialize(datetime(2016, 2, 1)), 'address': '123 nouvelle adresse',
                     'postalCode': '75001',
@@ -76,7 +76,7 @@ class Patch:
             recommendation3 = create_recommendation(offer_venue2_2, other_user)
             recommendation4 = create_recommendation(offer_venue2_2, user)
             other_recommendation = create_recommendation(other_offer, user)
-            Repository.save(recommendation1, recommendation2, recommendation3, recommendation4,
+            repository.save(recommendation1, recommendation2, recommendation3, recommendation4,
                           other_recommendation,
                           user_offerer)
             offerer_id = offerer.id

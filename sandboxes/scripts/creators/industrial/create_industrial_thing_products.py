@@ -1,5 +1,6 @@
 from domain.music_types import music_types
 from domain.types import get_formatted_active_product_types
+from repository import repository
 from sandboxes.scripts.mocks.thing_mocks import MOCK_AUTHOR_NAMES, \
     MOCK_DESCRIPTIONS, \
     MOCK_NAMES
@@ -72,7 +73,7 @@ def create_industrial_thing_products():
 
         type_index += len(thing_type_dicts)
 
-    Repository.save(*thing_products_by_name.values())
+    repository.save(*thing_products_by_name.values())
 
     logger.info('created {} thing products'.format(len(thing_products_by_name)))
 

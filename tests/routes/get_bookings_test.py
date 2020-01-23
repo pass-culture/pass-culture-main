@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue
 from tests.model_creators.specific_creators import create_stock_with_thing_offer, create_offer_with_thing_product
@@ -26,7 +26,7 @@ class Get:
             booking2 = create_booking(user=user2, stock=stock, token='GHIJK', venue=venue)
             booking3 = create_booking(user=user1, stock=stock2, token='BBBBB', venue=venue)
 
-            Repository.save(booking1, booking2, booking3)
+            repository.save(booking1, booking2, booking3)
 
             # When
             response = TestClient(app.test_client()).with_auth(
@@ -73,7 +73,7 @@ class Get:
             booking2 = create_booking(user=user2, stock=stock, venue=venue, token='GHIJK')
             booking3 = create_booking(user=user1, stock=stock2, venue=venue, token='BBBBB')
 
-            Repository.save(booking1, booking2, booking3)
+            repository.save(booking1, booking2, booking3)
 
             # When
             response = TestClient(app.test_client()).with_auth(

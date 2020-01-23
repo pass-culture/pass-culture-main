@@ -1,4 +1,5 @@
-from models import PcObject, Stock
+from models import Stock
+from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 from scripts.delete_corrupted_allocine_stocks import delete_corrupted_allocine_stocks
 from tests.conftest import clean_database
@@ -18,7 +19,7 @@ class DeleteCorruptedAllocineStocksTest:
                              last_provider_id=allocine_provider.id,
                              id_at_providers='TW92aWU6MjczNjU5%38986972800011-1',
                              is_soft_deleted=True)
-        PcObject.save(stock)
+        repository.save(stock)
 
         # When
         delete_corrupted_allocine_stocks()
@@ -37,7 +38,7 @@ class DeleteCorruptedAllocineStocksTest:
                              last_provider_id=allocine_provider.id,
                              id_at_providers='TW92aWU6MjczNTc5%31940406700021#LOCAL/2020-01-18T14:00:00',
                              is_soft_deleted=True)
-        PcObject.save(stock)
+        repository.save(stock)
 
         # When
         delete_corrupted_allocine_stocks()
@@ -56,7 +57,7 @@ class DeleteCorruptedAllocineStocksTest:
                              last_provider_id=titelive_provider.id,
                              id_at_providers='TW92aWU6MjczNjU5%38986972800011-1',
                              is_soft_deleted=True)
-        PcObject.save(stock)
+        repository.save(stock)
 
         # When
         delete_corrupted_allocine_stocks()
@@ -75,7 +76,7 @@ class DeleteCorruptedAllocineStocksTest:
                              last_provider_id=allocine_provider.id,
                              id_at_providers='TW92aWU6MjczNjU5%38986972800011-1',
                              is_soft_deleted=False)
-        PcObject.save(stock)
+        repository.save(stock)
 
         # When
         delete_corrupted_allocine_stocks()

@@ -7,6 +7,7 @@ from domain.reimbursement import generate_reimbursement_details_csv
 from models import Payment
 from models.feature import FeatureToggle
 from models.payment_status import TransactionStatus, PaymentStatus
+from repository import repository
 from repository.reimbursement_queries import find_all_offerer_reimbursement_details
 from scripts.payment.batch_steps import generate_new_payments
 from tests.conftest import clean_database
@@ -46,7 +47,7 @@ class ReimbursementDetailsCSVTest:
         booking1 = create_booking(user=user, stock=stock1, is_used=True, token='ABCDEF', venue=venue1)
         booking2 = create_booking(user=user, stock=stock1, token='ABCDEG', venue=venue1)
 
-        Repository.save(deposit, booking1, booking2, user_offerer1, bank_information1)
+        repository.save(deposit, booking1, booking2, user_offerer1, bank_information1)
 
         generate_new_payments()
 

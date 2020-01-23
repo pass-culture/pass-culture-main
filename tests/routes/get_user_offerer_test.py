@@ -1,4 +1,4 @@
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 from utils.human_ids import humanize
@@ -14,7 +14,7 @@ class Get:
             offerer = create_offerer(siren='123456781')
             user_offerer1 = create_user_offerer(user1, offerer)
             user_offerer2 = create_user_offerer(user2, offerer)
-            Repository.save(user_offerer1, user_offerer2)
+            repository.save(user_offerer1, user_offerer2)
 
             # when
             response = TestClient(app.test_client()) \
@@ -35,7 +35,7 @@ class Get:
             offerer = create_offerer(siren='123456781')
             user_offerer1 = create_user_offerer(user1, offerer)
             user_offerer2 = create_user_offerer(user2, offerer)
-            Repository.save(user_offerer1, user_offerer2)
+            repository.save(user_offerer1, user_offerer2)
             non_existing_offerer_id = 'B9'
 
             # when

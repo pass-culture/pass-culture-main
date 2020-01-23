@@ -1,7 +1,7 @@
 import pytest
 
 from models import ApiErrors, ThingType
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.specific_creators import create_product_with_thing_type
 
@@ -55,7 +55,7 @@ def test_thing_error_when_thing_type_is_offlineOnly_but_has_url(app):
 
     # When
     with pytest.raises(ApiErrors) as errors:
-        Repository.save(thing_product)
+        repository.save(thing_product)
 
     # Then
     assert errors.value.errors['url'] == ['Une offre de type Jeux (support physique) ne peut pas être numérique']

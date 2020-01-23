@@ -2,7 +2,7 @@ from decimal import Decimal
 from unittest.mock import patch
 
 from models import ApiErrors, VenueProvider, VenueProviderPriceRule
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_venue_provider
 from tests.model_creators.provider_creators import activate_provider
@@ -19,7 +19,7 @@ class Post:
             user = create_user(is_admin=True, can_book_free_offers=False)
             offerer = create_offerer()
             venue = create_venue(offerer, siret='12345678912345')
-            Repository.save(venue, user)
+            repository.save(venue, user)
 
             provider = activate_provider('TiteLiveStocks')
 
@@ -55,7 +55,7 @@ class Post:
             offerer = create_offerer(siren='775671464')
             venue = create_venue(offerer)
             user = create_user(is_admin=True, can_book_free_offers=False)
-            Repository.save(venue, user)
+            repository.save(venue, user)
 
             provider = activate_provider('AllocineStocks')
 
@@ -91,7 +91,7 @@ class Post:
             validate_new_venue_provider_information.side_effect = api_errors
 
             user = create_user(can_book_free_offers=False, is_admin=True)
-            Repository.save(user)
+            repository.save(user)
             auth_request = TestClient(app.test_client()) \
                 .with_auth(email=user.email)
             venue_provider_data = {
@@ -114,7 +114,7 @@ class Post:
             venue = create_venue(offerer, siret='12345678912345')
             provider = activate_provider('TiteLiveStocks')
             venue_provider = create_venue_provider(venue, provider, venue_id_at_offer_provider='12345678912345')
-            Repository.save(user, venue_provider)
+            repository.save(user, venue_provider)
 
             auth_request = TestClient(app.test_client()) \
                 .with_auth(email=user.email)
@@ -137,7 +137,7 @@ class Post:
             offerer = create_offerer(siren='775671464')
             venue = create_venue(offerer)
             user = create_user(is_admin=True, can_book_free_offers=False)
-            Repository.save(venue, user)
+            repository.save(venue, user)
 
             provider = activate_provider('AllocineStocks')
 
@@ -166,7 +166,7 @@ class Post:
             offerer = create_offerer(siren='775671464')
             venue = create_venue(offerer)
             user = create_user(is_admin=True, can_book_free_offers=False)
-            Repository.save(venue, user)
+            repository.save(venue, user)
 
             provider = activate_provider('AllocineStocks')
 
@@ -203,7 +203,7 @@ class Post:
             user = create_user(is_admin=True, can_book_free_offers=False)
             offerer = create_offerer(siren='775671464')
             venue = create_venue(offerer)
-            Repository.save(venue, user)
+            repository.save(venue, user)
 
             provider = activate_provider('TiteLiveStocks')
 

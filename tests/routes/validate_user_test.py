@@ -1,5 +1,5 @@
 from models import User
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user
 
@@ -11,7 +11,7 @@ class Patch:
             # Given
             user = create_user()
             user.generate_validation_token()
-            Repository.save(user)
+            repository.save(user)
             user_id = user.id
 
             # When

@@ -4,7 +4,7 @@ from sqlalchemy.orm.exc import StaleDataError
 
 from models import Product
 from models.db import db
-from repository.repository import Repository
+from repository import repository
 from scripts.performance_toolkit import get_pc_object_by_id_in_database, bulk_update_pc_objects, bulk_insert_pc_objects
 from tests.conftest import clean_database
 from tests.model_creators.specific_creators import create_product_with_thing_type
@@ -15,7 +15,7 @@ class GetPcObjectByIdInDatabaseTest:
     def test_should_return_pc_object_if_match(self, app):
         # Given
         product = create_product_with_thing_type()
-        Repository.save(product)
+        repository.save(product)
 
         # When
         existing_product = get_pc_object_by_id_in_database(product.id, Product)
@@ -27,7 +27,7 @@ class GetPcObjectByIdInDatabaseTest:
     def test_should_return_None_if_not_match(self, app):
         # Given
         product = create_product_with_thing_type()
-        Repository.save(product)
+        repository.save(product)
 
         # When
         existing_product = get_pc_object_by_id_in_database(45, Product)
@@ -46,7 +46,7 @@ class BulkUpdatePcObjectsTest:
     def test_should_update_pc_object_list_in_database(self, app):
         # Given
         product = create_product_with_thing_type()
-        Repository.save(product)
+        repository.save(product)
         existing_product = get_pc_object_by_id_in_database(product.id, Product)
         existing_product.thumbCount = 5
 
@@ -90,7 +90,7 @@ class BulkInsertPcObjectsTest:
     def test_should_raise_error_when_pc_object_already_exists(self, app):
         # Given
         product = create_product_with_thing_type()
-        Repository.save(product)
+        repository.save(product)
 
         # When / Then
         with pytest.raises(IntegrityError):

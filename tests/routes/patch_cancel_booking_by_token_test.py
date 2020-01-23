@@ -1,4 +1,5 @@
 from models import ApiKey, Booking
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue, \
     create_deposit, create_user_offerer
@@ -29,10 +30,10 @@ class Patch:
             create_deposit(user)
             booking = create_booking(user=user, stock=stock, venue=venue)
 
-            Repository.save(booking, user_offerer)
+            repository.save(booking, user_offerer)
             api_key = random_token(64)
             offerer_api_key = create_api_key_for_offerer(offerer, api_key)
-            Repository.save(offerer_api_key)
+            repository.save(offerer_api_key)
 
             # When
             response = TestClient(app.test_client()).patch(
@@ -61,10 +62,10 @@ class Patch:
             create_deposit(user)
             booking = create_booking(user=user, stock=stock, venue=venue)
 
-            Repository.save(booking, user_offerer)
+            repository.save(booking, user_offerer)
             api_key = random_token(64)
             offerer_api_key = create_api_key_for_offerer(offerer, api_key)
-            Repository.save(offerer_api_key)
+            repository.save(offerer_api_key)
 
             # When
             token = booking.token.lower()
@@ -92,7 +93,7 @@ class Patch:
             offer = create_offer_with_event_product(venue)
             stock = create_stock(offer=offer)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            Repository.save(user_offerer, booking)
+            repository.save(user_offerer, booking)
 
             # When
             url = '/v2/bookings/cancel/token/{}'.format(booking.token)
@@ -112,7 +113,7 @@ class Patch:
             offer = create_offer_with_event_product(venue)
             stock = create_stock(offer=offer)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            Repository.save(user_offerer, booking)
+            repository.save(user_offerer, booking)
 
             # When
             url = '/v2/bookings/cancel/token/{}'.format(booking.token)
@@ -139,15 +140,15 @@ class Patch:
             create_deposit(user)
             booking = create_booking(user=user, stock=stock, venue=venue)
 
-            Repository.save(booking, user_offerer)
+            repository.save(booking, user_offerer)
 
             offerer_with_api_key = create_offerer()
-            Repository.save(offerer_with_api_key)
+            repository.save(offerer_with_api_key)
 
             api_key = random_token(64)
             offerer_api_key = create_api_key_for_offerer(offerer_with_api_key, api_key)
 
-            Repository.save(offerer_api_key)
+            repository.save(offerer_api_key)
 
             # When
             response = TestClient(app.test_client()).patch(
@@ -175,15 +176,15 @@ class Patch:
             create_deposit(user)
             booking = create_booking(user=user, stock=stock, venue=venue)
 
-            Repository.save(booking, user_offerer)
+            repository.save(booking, user_offerer)
 
             offerer_with_api_key = create_offerer()
-            Repository.save(offerer_with_api_key)
+            repository.save(offerer_with_api_key)
 
             api_key = random_token(64)
             offerer_api_key = create_api_key_for_offerer(offerer_with_api_key, api_key)
 
-            Repository.save(offerer_api_key)
+            repository.save(offerer_api_key)
 
             # When
             response = TestClient(app.test_client())\
@@ -209,10 +210,10 @@ class Patch:
                 create_deposit(user)
                 booking = create_booking(user=user, stock=stock, is_used=True, venue=venue)
 
-                Repository.save(booking, user_offerer)
+                repository.save(booking, user_offerer)
                 api_key = random_token(64)
                 offerer_api_key = create_api_key_for_offerer(offerer, api_key)
-                Repository.save(offerer_api_key)
+                repository.save(offerer_api_key)
 
                 # When
                 response = TestClient(app.test_client()).patch(
@@ -241,11 +242,11 @@ class Patch:
             offer = create_offer_with_event_product(venue)
             stock = create_stock(offer=offer)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            Repository.save(user_offerer, booking)
+            repository.save(user_offerer, booking)
 
             api_key = 'A_MOCKED_API_KEY'
             offerer_api_key = create_api_key_for_offerer(offerer, api_key)
-            Repository.save(offerer_api_key)
+            repository.save(offerer_api_key)
 
             # When
             response = TestClient(app.test_client()).patch('/v2/bookings/cancel/token/FAKETOKEN',
@@ -273,10 +274,10 @@ class Patch:
             create_deposit(user)
             booking = create_booking(user=user, stock=stock, is_cancelled=True, venue=venue)
 
-            Repository.save(booking, user_offerer)
+            repository.save(booking, user_offerer)
             api_key = random_token(64)
             offerer_api_key = create_api_key_for_offerer(offerer, api_key)
-            Repository.save(offerer_api_key)
+            repository.save(offerer_api_key)
 
             # When
             response = TestClient(app.test_client()).patch(

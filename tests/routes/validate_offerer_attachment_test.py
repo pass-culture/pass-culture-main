@@ -1,6 +1,7 @@
 import secrets
 
-from models import PcObject, UserOfferer
+from models import UserOfferer
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 
@@ -16,7 +17,7 @@ class Get:
                                      validation_token=offerer_token)
             user = create_user()
             user_offerer = create_user_offerer(user, offerer, validation_token=user_offerer_token)
-            PcObject.save(offerer, user_offerer)
+            repository.save(offerer, user_offerer)
             user_offerer_id = offerer.id
 
             # When
@@ -54,7 +55,7 @@ class Get:
                                      validation_token=offerer_token)
             user = create_user()
             user_offerer = create_user_offerer(user, offerer, validation_token=user_offerer_token)
-            PcObject.save(offerer, user_offerer)
+            repository.save(offerer, user_offerer)
             user_offerer_id = offerer.id
 
 

@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from models import User
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user
 
@@ -13,7 +13,7 @@ class PostNewPassword:
             # given
             user = create_user(reset_password_token='KL89PBNG51',
                                reset_password_token_validity_limit=datetime.utcnow() - timedelta(days=2))
-            Repository.save(user)
+            repository.save(user)
 
             data = {
                 'token': 'KL89PBNG51',
@@ -34,7 +34,7 @@ class PostNewPassword:
         def when_the_token_is_unknown(self, app):
             # given
             user = create_user(reset_password_token='KL89PBNG51')
-            Repository.save(user)
+            repository.save(user)
 
             data = {
                 'token': 'AZER1QSDF2',
@@ -55,7 +55,7 @@ class PostNewPassword:
         def when_the_token_is_missing(self, app):
             # given
             user = create_user(reset_password_token='KL89PBNG51')
-            Repository.save(user)
+            repository.save(user)
 
             data = {'newPassword': 'N3W_p4ssw0rd'}
 
@@ -73,7 +73,7 @@ class PostNewPassword:
         def when_new_password_is_missing(self, app):
             # given
             user = create_user(reset_password_token='KL89PBNG51')
-            Repository.save(user)
+            repository.save(user)
 
             data = {'token': 'KL89PBNG51'}
 
@@ -91,7 +91,7 @@ class PostNewPassword:
         def when_new_password_is_not_strong_enough(self, app):
             # given
             user = create_user(reset_password_token='KL89PBNG51', reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24))
-            Repository.save(user)
+            repository.save(user)
 
             data = {'token': 'KL89PBNG51', 'newPassword': 'weak_password'}
 
@@ -111,7 +111,7 @@ class PostNewPassword:
         def when_new_password_is_valid(self, app):
             # given
             user = create_user(reset_password_token='KL89PBNG51', reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24))
-            Repository.save(user)
+            repository.save(user)
             user_id = user.id
             data = {
                 'token': 'KL89PBNG51',

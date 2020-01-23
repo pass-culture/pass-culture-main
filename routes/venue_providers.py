@@ -9,6 +9,7 @@ from local_providers import AllocineStocks, TiteLiveStocks
 from models import Venue
 from models.api_errors import ApiErrors
 from models.venue_provider import VenueProvider
+from repository import repository
 from repository.allocine_pivot_queries import get_allocine_theaterId_for_venue
 from repository.provider_queries import get_provider_enabled_for_pro_by_id
 from repository.venue_provider_price_rule_queries import save_venue_provider_price_rule
@@ -85,7 +86,7 @@ def _save_allocine_venue_provider(payload: Dict) -> VenueProvider:
 
     save_venue_provider_price_rule(venue_provider, payload.get('price'))
 
-    Repository.save(venue_provider)
+    repository.save(venue_provider)
     return venue_provider
 
 
@@ -96,5 +97,5 @@ def _save_titelive_venue_provider(payload: Dict) -> VenueProvider:
     venue_provider.providerId = dehumanize(payload['providerId'])
     venue_provider.venueIdAtOfferProvider = venue.siret
 
-    Repository.save(venue_provider)
+    repository.save(venue_provider)
     return venue_provider

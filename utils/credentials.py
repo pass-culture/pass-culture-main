@@ -4,6 +4,7 @@ from flask import session
 from models.api_errors import ApiErrors
 from models.db import auto_close_db_transaction
 from models.user import User
+from repository import repository
 from repository.user_queries import find_user_by_email
 
 
@@ -33,4 +34,4 @@ def change_password(user, password):
         user = User.query.filter_by(email=user).one()
     user.setPassword(password)
     user = session.merge(user)
-    Repository.save(user)
+    repository.save(user)

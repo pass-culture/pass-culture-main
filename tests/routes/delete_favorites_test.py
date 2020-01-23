@@ -1,5 +1,5 @@
 from models import Favorite
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_recommendation, \
     create_favorite, create_mediation, API_URL
@@ -20,7 +20,7 @@ class Delete:
             mediation = None
             recommendation = create_recommendation(offer=offer, user=user, mediation=mediation)
             favorite = create_favorite(mediation=mediation, offer=offer, user=user)
-            Repository.save(recommendation, user, favorite)
+            repository.save(recommendation, user, favorite)
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).delete(
@@ -43,7 +43,7 @@ class Delete:
             mediation = create_mediation(offer, is_active=True)
             recommendation = create_recommendation(offer=offer, user=user, mediation=mediation, is_clicked=False)
             favorite = create_favorite(mediation=mediation, offer=offer, user=user)
-            Repository.save(recommendation, user, favorite)
+            repository.save(recommendation, user, favorite)
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).delete(
@@ -62,7 +62,7 @@ class Delete:
             mediation = create_mediation(offer, is_active=True)
             recommendation = create_recommendation(offer=offer, user=user, mediation=mediation, is_clicked=False)
             favorite = create_favorite(mediation=mediation, offer=offer, user=user)
-            Repository.save(recommendation, user, favorite)
+            repository.save(recommendation, user, favorite)
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).delete(

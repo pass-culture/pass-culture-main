@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 from models.db import db
-from repository.repository import Repository
+from repository import repository
 from scripts.update_venue_with_sirene_data import update_venue_with_sirene_data
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue
@@ -35,7 +35,7 @@ class UpdateVenueWithSireneDataTest:
             latitude='48.863',
             longitude='2.36',
             postal_code='75001')
-        Repository.save(venue)
+        repository.save(venue)
 
         # When
         update_venue_with_sirene_data(sirene_data, '12345678900002')
@@ -76,7 +76,7 @@ class UpdateVenueWithSireneDataTest:
             latitude='48.863',
             longitude='2.36',
             postal_code='75001')
-        Repository.save(venue)
+        repository.save(venue)
 
         # When
         update_venue_with_sirene_data(sirene_data, old_siret='12345678900002')

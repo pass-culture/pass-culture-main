@@ -8,7 +8,7 @@ from zipfile import ZipFile
 from local_providers import TiteLiveThingThumbs
 from local_providers.titelive_thing_thumbs import extract_thumb_index
 from models import Product
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.provider_creators import provider_test
 from tests.model_creators.specific_creators import create_product_with_thing_type
@@ -46,7 +46,7 @@ class TiteliveThingThumbsTest:
         # given
         product1 = create_product_with_thing_type(id_at_providers='9780847858903', thumb_count=0)
         product2 = create_product_with_thing_type(id_at_providers='9782016261903', thumb_count=0)
-        Repository.save(product1, product2)
+        repository.save(product1, product2)
         zip_thumb_file = get_zip_with_2_usable_thumb_files()
         get_ordered_thumbs_zip_files.return_value = [zip_thumb_file]
         get_thumbs_zip_file_from_ftp.side_effect = [get_zip_file_from_sandbox(zip_thumb_file)]
@@ -75,14 +75,14 @@ class TiteliveThingThumbsTest:
                                                                    app):
         # Given
         product1 = create_product_with_thing_type(id_at_providers='9780847858903', thumb_count=0)
-        Repository.save(product1)
+        repository.save(product1)
         zip_thumb_file = get_zip_with_1_usable_thumb_file()
         get_ordered_thumbs_zip_files.return_value = [zip_thumb_file]
         get_thumbs_zip_file_from_ftp.side_effect = [get_zip_file_from_sandbox(zip_thumb_file)]
 
         provider_object = TiteLiveThingThumbs()
         provider_object.provider.isActive = True
-        Repository.save(provider_object.provider)
+        repository.save(provider_object.provider)
 
         # When
         provider_object.updateObjects()

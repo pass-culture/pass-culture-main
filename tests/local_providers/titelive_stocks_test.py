@@ -3,6 +3,7 @@ from unittest.mock import patch
 from local_providers import TiteLiveStocks
 from models import Offer, Stock
 from models.venue_provider import VenueProvider
+from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_stock, create_offerer, create_venue
@@ -30,7 +31,7 @@ def test_titelive_stock_provider_create_1_stock_and_1_offer_with_wanted_attribut
 
     offerer = create_offerer(siren='775671464')
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-    Repository.save(venue)
+    repository.save(venue)
 
     tite_live_things_provider = get_provider_by_local_class('TiteLiveThings')
     venue_provider = VenueProvider()
@@ -38,10 +39,10 @@ def test_titelive_stock_provider_create_1_stock_and_1_offer_with_wanted_attribut
     venue_provider.provider = tite_live_things_provider
     venue_provider.isActive = True
     venue_provider.venueIdAtOfferProvider = '77567146400110'
-    Repository.save(venue_provider)
+    repository.save(venue_provider)
 
     product = create_product_with_thing_type(id_at_providers='0002730757438')
-    Repository.save(product)
+    repository.save(product)
 
     # When / Then
     provider_test(app,
@@ -88,7 +89,7 @@ def test_titelive_stock_provider_update_1_stock_and_1_offer(get_stocks_informati
 
     offerer = create_offerer(siren='987654321')
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-    Repository.save(venue)
+    repository.save(venue)
 
     tite_live_things_provider = get_provider_by_local_class('TiteLiveThings')
     venue_provider = VenueProvider()
@@ -96,12 +97,12 @@ def test_titelive_stock_provider_update_1_stock_and_1_offer(get_stocks_informati
     venue_provider.provider = tite_live_things_provider
     venue_provider.isActive = True
     venue_provider.venueIdAtOfferProvider = '77567146400110'
-    Repository.save(venue_provider)
+    repository.save(venue_provider)
 
     product = create_product_with_thing_type(id_at_providers='0002730757438')
     offer = create_offer_with_thing_product(venue, product=product, id_at_providers='0002730757438@77567146400110')
     stock = create_stock(offer=offer, id_at_providers='0002730757438@77567146400110')
-    Repository.save(product, offer, stock)
+    repository.save(product, offer, stock)
 
     # When / Then
     provider_test(app,
@@ -134,7 +135,7 @@ def test_titelive_stock_provider_create_1_stock_and_update_1_existing_offer(get_
 
     offerer = create_offerer(siren='987654321')
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-    Repository.save(venue)
+    repository.save(venue)
 
     tite_live_things_provider = get_provider_by_local_class('TiteLiveThings')
     venue_provider = VenueProvider()
@@ -142,11 +143,11 @@ def test_titelive_stock_provider_create_1_stock_and_update_1_existing_offer(get_
     venue_provider.provider = tite_live_things_provider
     venue_provider.isActive = True
     venue_provider.venueIdAtOfferProvider = '77567146400110'
-    Repository.save(venue_provider)
+    repository.save(venue_provider)
 
     product = create_product_with_thing_type(id_at_providers='0002730757438')
     offer = create_offer_with_thing_product(venue, product=product, id_at_providers='0002730757438@77567146400110')
-    Repository.save(product, offer)
+    repository.save(product, offer)
 
     # When / Then
     provider_test(app,
@@ -189,7 +190,7 @@ def test_titelive_stock_provider_create_2_stock_and_2_offer_even_if_existing_off
 
     offerer = create_offerer(siren='987654321')
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-    Repository.save(venue)
+    repository.save(venue)
 
     tite_live_things_provider = get_provider_by_local_class('TiteLiveThings')
     venue_provider = VenueProvider()
@@ -197,12 +198,12 @@ def test_titelive_stock_provider_create_2_stock_and_2_offer_even_if_existing_off
     venue_provider.provider = tite_live_things_provider
     venue_provider.isActive = True
     venue_provider.venueIdAtOfferProvider = '77567146400110'
-    Repository.save(venue_provider)
+    repository.save(venue_provider)
 
     thing_1 = create_product_with_thing_type(id_at_providers='0002730757438')
     thing_2 = create_product_with_thing_type(id_at_providers='0002736409898')
     offer = create_offer_with_thing_product(venue=venue, product=thing_1, id_at_providers="not_titelive")
-    Repository.save(thing_1, offer, thing_2)
+    repository.save(thing_1, offer, thing_2)
 
     # When / Then
     provider_test(app,
@@ -231,7 +232,7 @@ def test_titelive_stock_provider_create_nothing_if_titelive_api_returns_no_resul
     get_stocks_information.return_value = iter([])
     offerer = create_offerer(siren='987654321')
     venue = create_venue(offerer, name='Librairie Titelive', siret='12345678912345')
-    Repository.save(venue)
+    repository.save(venue)
 
     tite_live_things_provider = get_provider_by_local_class('TiteLiveThings')
     venue_provider = VenueProvider()
@@ -239,11 +240,11 @@ def test_titelive_stock_provider_create_nothing_if_titelive_api_returns_no_resul
     venue_provider.provider = tite_live_things_provider
     venue_provider.isActive = True
     venue_provider.venueIdAtOfferProvider = '12345678912345'
-    Repository.save(venue_provider)
+    repository.save(venue_provider)
 
     product = create_product_with_thing_type(id_at_providers='0002730757438')
     offer = create_offer_with_thing_product(venue=venue, product=product)
-    Repository.save(product, offer)
+    repository.save(product, offer)
 
     # When / Then
     provider_test(app,
@@ -277,7 +278,7 @@ def test_titelive_stock_provider_deactivate_offer_if_stock_available_equals_0(ge
 
     offerer = create_offerer(siren='775671464')
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-    Repository.save(venue)
+    repository.save(venue)
 
     tite_live_things_provider = get_provider_by_local_class('TiteLiveThings')
     venue_provider = VenueProvider()
@@ -285,12 +286,12 @@ def test_titelive_stock_provider_deactivate_offer_if_stock_available_equals_0(ge
     venue_provider.provider = tite_live_things_provider
     venue_provider.isActive = True
     venue_provider.venueIdAtOfferProvider = '77567146400110'
-    Repository.save(venue_provider)
+    repository.save(venue_provider)
 
     product = create_product_with_thing_type(id_at_providers='0002730757438')
     offer = create_offer_with_thing_product(venue, product=product, id_at_providers='0002730757438@77567146400110')
     stock = create_stock(offer=offer, id_at_providers='0002730757438@77567146400110')
-    Repository.save(product, offer, stock)
+    repository.save(product, offer, stock)
 
     # When / Then
     provider_test(app,
@@ -336,7 +337,7 @@ def test_titelive_stock_provider_iterates_over_pagination(get_stocks_information
 
     offerer = create_offerer(siren='775671464')
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-    Repository.save(venue)
+    repository.save(venue)
 
     tite_live_things_provider = get_provider_by_local_class('TiteLiveThings')
     venue_provider = VenueProvider()
@@ -344,15 +345,15 @@ def test_titelive_stock_provider_iterates_over_pagination(get_stocks_information
     venue_provider.provider = tite_live_things_provider
     venue_provider.isActive = True
     venue_provider.venueIdAtOfferProvider = '77567146400110'
-    Repository.save(venue_provider)
+    repository.save(venue_provider)
 
     product1 = create_product_with_thing_type(id_at_providers='0002730757438')
     product2 = create_product_with_thing_type(id_at_providers='0002736409898')
-    Repository.save(product1, product2)
+    repository.save(product1, product2)
 
     titelive_stocks_provider = get_provider_by_local_class('TiteLiveStocks')
     titelive_stocks_provider.isActive = True
-    Repository.save(titelive_stocks_provider)
+    repository.save(titelive_stocks_provider)
     titelive_stocks = TiteLiveStocks(venue_provider)
 
     # When
@@ -385,7 +386,7 @@ def test_titelive_stock_provider_return_last_elements_as_last_seen_isbn(get_stoc
 
     offerer = create_offerer(siren='775671464')
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-    Repository.save(venue)
+    repository.save(venue)
 
     tite_live_things_provider = get_provider_by_local_class('TiteLiveThings')
     venue_provider = VenueProvider()
@@ -393,14 +394,14 @@ def test_titelive_stock_provider_return_last_elements_as_last_seen_isbn(get_stoc
     venue_provider.provider = tite_live_things_provider
     venue_provider.isActive = True
     venue_provider.venueIdAtOfferProvider = '77567146400110'
-    Repository.save(venue_provider)
+    repository.save(venue_provider)
 
     product1 = create_product_with_thing_type(id_at_providers='0002730757438')
     product2 = create_product_with_thing_type(id_at_providers='0002736409898')
-    Repository.save(product1, product2)
+    repository.save(product1, product2)
     titelive_stocks_provider = get_provider_by_local_class('TiteLiveStocks')
     titelive_stocks_provider.isActive = True
-    Repository.save(titelive_stocks_provider)
+    repository.save(titelive_stocks_provider)
     titelive_stocks = TiteLiveStocks(venue_provider)
 
     # When

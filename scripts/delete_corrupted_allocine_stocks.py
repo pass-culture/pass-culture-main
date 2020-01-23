@@ -1,4 +1,5 @@
-from models import Stock, PcObject
+from models import Stock
+from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 
 
@@ -11,4 +12,4 @@ def delete_corrupted_allocine_stocks():
         .filter(Stock.idAtProviders.notilike(new_stock_id_at_providers_format)) \
         .all()
 
-    PcObject.delete_all(stocks_to_delete)
+    repository.delete_all(stocks_to_delete)

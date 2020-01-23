@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 from models import Mediation
+from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_mediation
 from tests.model_creators.specific_creators import create_offer_with_thing_product
@@ -39,7 +40,7 @@ class UpsertTutoMediationTest:
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
             mediation = create_mediation(offer, tuto_index=0)
-            Repository.save(mediation)
+            repository.save(mediation)
 
             # When
             _upsert_tuto_mediation(0)

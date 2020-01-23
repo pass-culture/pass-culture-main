@@ -10,7 +10,7 @@ from models.mediation import Mediation
 from models.stock import Stock
 from models.user_offerer import RightsType
 from models.venue import Venue
-from repository import offerer_queries
+from repository import offerer_queries, feature_queries, repository
 from repository.offer_queries import get_offer_by_id
 from repository.stock_queries import find_stocks_with_possible_filters
 from routes.serialization import as_dict
@@ -81,7 +81,7 @@ def create_stock():
     check_stocks_are_editable_for_offer(offer)
 
     new_stock = Stock(from_dict=request_data)
-    Repository.save(new_stock)
+    repository.save(new_stock)
 
     redis.add_offer_id(client=app.redis_client, offer_id=offer_id)
 
@@ -105,7 +105,7 @@ def edit_stock(stock_id):
     check_stocks_are_editable_for_offer(stock.offer)
 
     stock.populate_from_dict(stock_data)
-    Repository.save(stock)
+    repository.save(stock)
 
     redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
@@ -130,7 +130,7 @@ def delete_stock(id):
         except MailServiceException as e:
             app.logger.error('Mail service failure', e)
 
-    Repository.save(stock, *bookings)
+    repository.save(stock, *bookings)
 
     redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 

@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from unittest.mock import patch, call
 
 from algolia.orchestrator import orchestrate, orchestrate_from_venue_providers
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_stock, create_venue
 from tests.model_creators.specific_creators import create_offer_with_thing_product
@@ -28,7 +28,7 @@ class OrchestrateTest:
         stock2 = create_stock(offer=offer2, booking_limit_datetime=TOMORROW, available=10)
         offer3 = create_offer_with_thing_product(venue=venue, is_active=False)
         stock3 = create_stock(offer=offer3, booking_limit_datetime=TOMORROW, available=10)
-        Repository.save(stock1, stock2, stock3)
+        repository.save(stock1, stock2, stock3)
 
         # When
         orchestrate(offer_ids=[offer1.id, offer2.id])
@@ -52,7 +52,7 @@ class OrchestrateTest:
         stock1 = create_stock(offer=offer1, available=0)
         offer2 = create_offer_with_thing_product(venue=venue)
         stock2 = create_stock(offer=offer2, available=0)
-        Repository.save(stock1, stock2)
+        repository.save(stock1, stock2)
 
         # When
         orchestrate(offer_ids=[offer1.id, offer2.id])
@@ -75,7 +75,7 @@ class OrchestrateTest:
         venue = create_venue(offerer=offerer, validation_token=None)
         offer = create_offer_with_thing_product(venue=venue, is_active=True)
         stock = create_stock(offer=offer, booking_limit_datetime=TOMORROW, available=10)
-        Repository.save(stock)
+        repository.save(stock)
 
         # When
         orchestrate(offer_ids=[offer.id], is_clear=True)

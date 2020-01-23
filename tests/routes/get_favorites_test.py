@@ -1,6 +1,6 @@
 import pytest
 
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_favorite, \
     create_mediation, \
@@ -15,7 +15,7 @@ class Get:
         def when_user_is_logged_in_but_has_no_favorites(self, app):
             # Given
             user = create_user()
-            Repository.save(user)
+            repository.save(user)
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email) \
@@ -37,7 +37,7 @@ class Get:
             offer2 = create_offer_with_thing_product(venue, thumb_count=0)
             mediation2 = create_mediation(offer2, is_active=True)
             favorite2 = create_favorite(mediation=mediation2, offer=offer2, user=user)
-            Repository.save(user, favorite1, favorite2)
+            repository.save(user, favorite1, favorite2)
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email) \

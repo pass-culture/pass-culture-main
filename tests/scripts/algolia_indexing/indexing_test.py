@@ -1,6 +1,6 @@
 from unittest.mock import patch, MagicMock, call
 
-from repository.repository import Repository
+from repository import repository
 from scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_offer, batch_indexing_offers_in_algolia_by_venue, \
     batch_indexing_offers_in_algolia_from_database, batch_indexing_offers_in_algolia_by_venue_provider
 from tests.conftest import clean_database
@@ -36,7 +36,7 @@ class BatchIndexingOffersInAlgoliaFromDatabaseTest:
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
         offer = create_offer_with_event_product(venue=venue)
-        Repository.save(offer)
+        repository.save(offer)
 
         # When
         batch_indexing_offers_in_algolia_from_database(limit=1, page=0)
@@ -56,7 +56,7 @@ class BatchIndexingOffersInAlgoliaFromDatabaseTest:
         venue = create_venue(offerer=offerer)
         offer1 = create_offer_with_event_product(venue=venue)
         offer2 = create_offer_with_event_product(venue=venue)
-        Repository.save(offer1, offer2)
+        repository.save(offer1, offer2)
 
         # When
         batch_indexing_offers_in_algolia_from_database(limit=1, page=0)
@@ -89,7 +89,7 @@ class BatchIndexingOffersInAlgoliaByVenueTest:
         offer1 = create_offer_with_event_product(venue=venue1)
         offer2 = create_offer_with_event_product(venue=venue2)
         offer3 = create_offer_with_event_product(venue=venue2)
-        Repository.save(offer1, offer2, offer3)
+        repository.save(offer1, offer2, offer3)
 
         # When
         batch_indexing_offers_in_algolia_by_venue(client=client)

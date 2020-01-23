@@ -8,7 +8,7 @@ from domain.offers import update_is_active_status
 from domain.venues import is_algolia_indexing
 from models.user_offerer import RightsType
 from models.venue import Venue
-from repository.repository import Repository
+from repository import repository
 from repository.venue_queries import save_venue, find_by_managing_user
 from routes.serialization import as_dict
 from utils.human_ids import dehumanize
@@ -80,7 +80,7 @@ def activate_venue_offers(venueId):
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
     offers = venue.offers
     activated_offers = update_is_active_status(offers, True)
-    Repository.save(*activated_offers)
+    repository.save(*activated_offers)
     redis.add_venue_id(client=app.redis_client, venue_id=venue.id)
     return jsonify([as_dict(offer, includes=OFFER_INCLUDES) for offer in activated_offers]), 200
 
@@ -92,6 +92,6 @@ def deactivate_venue_offers(venueId):
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
     offers = venue.offers
     deactivated_offers = update_is_active_status(offers, False)
-    Repository.save(*deactivated_offers)
+    repository.save(*deactivated_offers)
     redis.add_venue_id(client=app.redis_client, venue_id=venue.id)
     return jsonify([as_dict(offer, includes=OFFER_INCLUDES) for offer in deactivated_offers]), 200

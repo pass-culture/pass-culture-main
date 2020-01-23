@@ -8,7 +8,7 @@ from domain.types import get_active_product_type_values_from_sublabels
 from models import Recommendation, Mediation, User, DiscoveryView, Offer
 from models.db import db
 from recommendations_engine import get_offers_for_recommendations_discovery
-from repository import mediation_queries
+from repository import mediation_queries, repository
 from repository.mediation_queries import get_all_tuto_mediations
 from repository.offer_queries import get_offers_for_recommendations_search, find_searchable_offer
 from repository.recommendation_queries import count_read_recommendations_for_user, \
@@ -30,7 +30,7 @@ def give_requested_recommendation_to_user(user, offer_id, mediation_id):
         if recommendation is None:
             with db.session.no_autoflush:
                 recommendation = _create_recommendation_from_ids(user, offer_id, mediation_id=mediation_id)
-            Repository.save(recommendation)
+            repository.save(recommendation)
             logger.debug(lambda: 'Creating Recommendation with offer_id=%s mediation_id=%s' % (offer_id, mediation_id))
 
     return recommendation
@@ -67,7 +67,7 @@ def create_recommendations_for_discovery(user: User, pagination_params: Dict, li
             )
             inserted_tuto_mediations += 1
         recommendations.append(_create_recommendation(user, offer))
-    Repository.save(*recommendations)
+    repository.save(*recommendations)
     return recommendations
 
 
@@ -81,7 +81,7 @@ def _create_tuto_mediation_if_non_existent_for_user(user: User, tuto_mediation: 
     recommendation = Recommendation()
     recommendation.user = user
     recommendation.mediation = tuto_mediation
-    Repository.save(recommendation)
+    repository.save(recommendation)
 
 
 def _create_recommendation_from_ids(user, offer_id, mediation_id=None):
@@ -142,7 +142,7 @@ def create_recommendations_for_search(user, **kwargs):
         recommendation.search = search
         recommendations.append(recommendation)
 
-    Repository.save(*recommendations)
+    repository.save(*recommendations)
     return recommendations
 
 

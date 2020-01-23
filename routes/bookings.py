@@ -17,8 +17,7 @@ from domain.user_emails import send_activation_email, \
 from models import ApiErrors, Booking, EventType, Offerer, RightsType, Stock, ApiKey, User
 from models.feature import FeatureToggle
 from models.offer_type import ProductType
-from repository.repository import Repository
-from repository import booking_queries, feature_queries
+from repository import booking_queries, feature_queries, repository
 from repository.api_key_queries import find_api_key_by_value
 from repository.user_offerer_queries import \
     filter_query_where_user_is_user_offerer_and_is_validated
@@ -173,7 +172,7 @@ def create_booking():
     bookings = booking_queries.find_active_bookings_by_user_id(current_user.id)
     expenses = get_expenses(bookings)
     check_expenses_limits(expenses, new_booking)
-    Repository.save(new_booking)
+    repository.save(new_booking)
 
     redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
@@ -216,7 +215,7 @@ def patch_booking(booking_id: int):
         return 'Vous n’avez pas le droit d’annuler cette réservation', 403
 
     booking.isCancelled = True
-    Repository.save(booking)
+    repository.save(booking)
 
     redis.add_offer_id(client=app.redis_client, offer_id=booking.stock.offerId)
 
@@ -295,7 +294,7 @@ def patch_booking_by_token(token: str):
 
     booking.isUsed = True
     booking.dateUsed = datetime.utcnow()
-    Repository.save(booking)
+    repository.save(booking)
 
     return '', 204
 
@@ -323,7 +322,7 @@ def patch_booking_use_by_token(token: str):
     booking.isUsed = True
     booking.dateUsed = datetime.utcnow()
 
-    Repository.save(booking)
+    repository.save(booking)
 
     return '', 204
 
@@ -347,8 +346,7 @@ def patch_cancel_booking_by_token(token: str):
     check_booking_is_not_used(booking)
 
     booking.isCancelled = True
-
-    Repository.save(booking)
+    repository.save(booking)
 
     return '', 204
 
@@ -373,7 +371,7 @@ def patch_booking_keep_by_token(token: str):
     booking.isUsed = False
     booking.dateUsed = None
 
-    Repository.save(booking)
+    repository.save(booking)
 
     return '', 204
 
@@ -382,8 +380,7 @@ def _activate_user(user_to_activate: User) -> None:
     check_user_can_validate_activation_offer(current_user)
     user_to_activate.canBookFreeOffers = True
     deposit = create_initial_deposit(user_to_activate)
-
-    Repository.save(deposit)
+    repository.save(deposit)
 
 
 def _extract_api_key_from_request(received_request: Dict) -> Union[str, None]:

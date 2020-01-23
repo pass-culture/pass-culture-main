@@ -2,6 +2,7 @@ import pytest
 from sqlalchemy.orm.exc import MultipleResultsFound
 
 from models import Offer, Offerer, UserOfferer, Venue
+from repository import repository
 from repository.user_offerer_queries import find_one_or_none_by_user_id, \
     find_user_offerer_email, \
     filter_query_where_user_is_user_offerer_and_is_validated
@@ -17,7 +18,7 @@ def test_find_user_offerer_email(app):
     user = create_user(email='offerer@email.com')
     offerer = create_offerer()
     user_offerer = create_user_offerer(user, offerer)
-    Repository.save(user_offerer)
+    repository.save(user_offerer)
 
     # When
     email = find_user_offerer_email(user_offerer.id)
@@ -32,7 +33,7 @@ def test_find_one_or_none_by_user_id_should_return_one_user_offerer_with_same_us
     user = create_user(email='offerer@email.com')
     offerer = create_offerer(siren='123456789')
     user_offerer = create_user_offerer(user, offerer)
-    Repository.save(user_offerer)
+    repository.save(user_offerer)
 
     # When
     first_user_offerer = find_one_or_none_by_user_id(user.id)
@@ -50,7 +51,7 @@ def test_find_one_or_none_by_user_id_raises_exception_when_several_are_found(app
     offerer2 = create_offerer(siren='987654321')
     user_offerer1 = create_user_offerer(user, offerer1)
     user_offerer2 = create_user_offerer(user, offerer2)
-    Repository.save(user_offerer1, user_offerer2)
+    repository.save(user_offerer1, user_offerer2)
 
     # When
     with pytest.raises(MultipleResultsFound) as error:
@@ -63,7 +64,7 @@ def test_find_one_or_none_by_user_id_should_return_none_user_offerer_when_none_a
     # Given
     user = create_user(email='offerer@email.com')
     offerer = create_offerer(siren='123456789')
-    Repository.save(user, offerer)
+    repository.save(user, offerer)
 
     # When
     first_user_offerer = find_one_or_none_by_user_id(user.id)
@@ -96,7 +97,7 @@ def test_filter_query_where_user_is_user_offerer_and_is_validated(app):
     offer3 = create_offer_with_thing_product(venue2, thing1)
     offer4 = create_offer_with_thing_product(venue3, thing2)
 
-    Repository.save(
+    repository.save(
         user_offerer1, user_offerer2, offerer3,
         offer1, offer2, offer3, offer4
     )

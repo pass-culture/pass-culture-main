@@ -1,4 +1,5 @@
-from models import PcObject, Offer
+from models import Offer
+from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 
 
@@ -10,4 +11,4 @@ def remove_duo_option_for_allocine_offers():
 
     for offer in offers_to_update:
         offer.isDuo = False
-    PcObject.save(*offers_to_update)
+    repository.save(*offers_to_update)

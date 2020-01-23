@@ -1,4 +1,4 @@
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
     create_bank_information
@@ -11,7 +11,7 @@ class Get:
         def when_user_offerer_does_not_exist(self, app):
             # Given
             user = create_user()
-            Repository.save(user)
+            repository.save(user)
             invalid_id = 12
 
             # When
@@ -32,7 +32,7 @@ class Get:
             venue = create_venue(offerer)
             create_bank_information(venue=venue, id_at_providers=venue.siret)
             user_offerer = create_user_offerer(user, offerer)
-            Repository.save(user_offerer, venue)
+            repository.save(user_offerer, venue)
             # when
             response = TestClient(app.test_client()) \
                 .with_auth(user.email) \

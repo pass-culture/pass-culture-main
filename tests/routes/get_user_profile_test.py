@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from models import ThingType
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_deposit, \
@@ -15,7 +15,7 @@ class Get:
         def when_user_is_logged_in_and_has_no_deposit(self, app):
             # Given
             user = create_user(departement_code='93', email='toto@btmx.fr', public_name='Toto')
-            Repository.save(user)
+            repository.save(user)
 
             # When
             response = TestClient(app.test_client()) \
@@ -36,11 +36,11 @@ class Get:
         def when_user_is_logged_in_and_has_a_deposit(self, app):
             # Given
             user = create_user(departement_code='93', email='wallet_test@email.com', public_name='Test')
-            Repository.save(user)
+            repository.save(user)
 
             deposit = create_deposit(user, amount=10)
             deposit.dateCreated = datetime(2000,1,1,2,2)
-            Repository.save(deposit)
+            repository.save(deposit)
 
             # When
             response = TestClient(app.test_client()).with_auth('wallet_test@email.com').get('/users/current')
@@ -62,7 +62,7 @@ class Get:
             deposit_2 = create_deposit(user, amount=10)
             booking = create_booking(user=user, stock=stock, venue=venue, recommendation=recommendation, quantity=1)
 
-            Repository.save(user, venue, deposit_1, deposit_2, booking)
+            repository.save(user, venue, deposit_1, deposit_2, booking)
 
             # When
             response = TestClient(app.test_client()).with_auth('wallet_test@email.com').get('/users/current')
@@ -89,7 +89,7 @@ class Get:
             offer = create_offer_with_thing_product(offerer_virtual_venue, thing_type=ThingType.JEUX_VIDEO_ABO, url='http://fake.url')
             offer2 = create_offer_with_thing_product(offerer2_physical_venue)
 
-            Repository.save(offer, offer2, offerer2_virtual_venue, user_offerer, user_offerer2)
+            repository.save(offer, offer2, offerer2_virtual_venue, user_offerer, user_offerer2)
 
             # When
             response = TestClient(app.test_client()).with_auth('test@email.com').get('/users/current')
@@ -103,7 +103,7 @@ class Get:
         def when_header_not_in_whitelist(self, app):
             # Given
             user = create_user(can_book_free_offers=True, email='e@mail.com', is_admin=False)
-            Repository.save(user)
+            repository.save(user)
 
             # When
             response = TestClient(app.test_client()) \

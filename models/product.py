@@ -96,10 +96,3 @@ class Product(PcObject,
         matching_type_product = next(
             filter(lambda product_type: product_type.__str__() == self.type, ThingType))
         return matching_type_product.value['proLabel']
-
-    def errors(self):
-        api_errors = super(Product, self).errors()
-        if self.isDigital and self._type_can_only_be_offline():
-            api_errors.add_error('url', 'Une offre de type {} ne peut pas être numérique'.format(
-                self._get_label_from_type_string()))
-        return api_errors

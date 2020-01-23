@@ -11,7 +11,7 @@ from domain.password import generate_reset_token, random_password
 from domain.user_activation import generate_activation_users_csv
 from models import User, Booking, Stock
 from models.booking import ActivationUser
-from repository import booking_queries
+from repository import booking_queries, repository
 from repository.stock_queries import find_online_activation_stock
 from repository.user_queries import find_user_by_email
 from scripts.beneficiary import THIRTY_DAYS_IN_HOURS
@@ -166,7 +166,7 @@ def run(csv_file_path: str) -> None:
         bookings = create_users_with_activation_bookings(
             chunk, stock, existing_tokens)
         if bookings:
-            Repository.save(*bookings)
+            repository.save(*bookings)
         all_bookings.extend(bookings)
         total += len(chunk)
         logger.info('Enregistrement de %s comptes utilisateur | %s' %

@@ -1,5 +1,5 @@
 from domain.music_types import music_types
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user
 
@@ -10,7 +10,7 @@ class Get:
         def when_list_music_types(self, app):
             # given
             user = create_user()
-            Repository.save(user)
+            repository.save(user)
 
             # when
             response = TestClient(app.test_client()).with_auth(user.email) \

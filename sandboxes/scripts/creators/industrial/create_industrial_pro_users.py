@@ -1,5 +1,6 @@
 from datetime import timedelta, datetime
 
+from repository import repository
 from tests.model_creators.generic_creators import create_user
 from utils.logger import logger
 
@@ -34,7 +35,7 @@ def create_industrial_pro_users():
                     departement_code,
                     pro_count))
 
-    Repository.save(*users_by_name.values())
+    repository.save(*users_by_name.values())
 
     logger.info('created {} users'.format(len(users_by_name)))
 

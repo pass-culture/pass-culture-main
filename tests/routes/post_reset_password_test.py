@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from domain.password import RESET_PASSWORD_TOKEN_LENGTH
 from models import User
-from repository.repository import Repository
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user
 
@@ -54,7 +54,7 @@ class PostResetPassword:
             # given
             data = {'email': 'bobby@test.com'}
             user = create_user(email='bobby@test.com')
-            Repository.save(user)
+            repository.save(user)
             user_id = user.id
 
             # when
@@ -78,7 +78,7 @@ class PostResetPassword:
             data = {'email': 'bobby@example.com'}
             user = create_user(can_book_free_offers=True, email='bobby@example.com')
             app_origin_header = 'http://localhost:3000'
-            Repository.save(user)
+            repository.save(user)
 
             # when
             TestClient(app.test_client()).post('/users/reset-password', json=data,
@@ -95,7 +95,7 @@ class PostResetPassword:
             data = {'email': 'bobby@example.com'}
             user = create_user(can_book_free_offers=False, email='bobby@example.com')
             app_origin_header = 'http://localhost:3000'
-            Repository.save(user)
+            repository.save(user)
 
             # when
             TestClient(app.test_client()).post('/users/reset-password', json=data,

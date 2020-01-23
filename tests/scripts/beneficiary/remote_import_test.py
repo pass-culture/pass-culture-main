@@ -5,6 +5,7 @@ from mailjet_rest import Client
 
 from models import BeneficiaryImport, ImportStatus
 from models import User, ApiErrors
+from repository import repository
 from scripts.beneficiary import remote_import
 from scripts.beneficiary.remote_import import parse_beneficiary_information
 from tests.conftest import clean_database
@@ -260,10 +261,10 @@ class ProcessBeneficiaryApplicationTest:
         assert beneficiary_import.demarcheSimplifieeApplicationId == 123
 
     @patch('scripts.beneficiary.remote_import.create_beneficiary_from_application')
-    @patch('scripts.beneficiary.remote_import.PcObject')
+    @patch('scripts.beneficiary.remote_import.repository')
     @patch('scripts.beneficiary.remote_import.send_activation_email')
     @clean_database
-    def test_account_activation_email_is_sent(self, send_activation_email, PcObject,
+    def test_account_activation_email_is_sent(self, send_activation_email, mock_repository,
                                               create_beneficiary_from_application, app):
         # given
         information = {
@@ -288,11 +289,11 @@ class ProcessBeneficiaryApplicationTest:
         send_activation_email.assert_called()
 
     @patch('scripts.beneficiary.remote_import.create_beneficiary_from_application')
-    @patch('scripts.beneficiary.remote_import.PcObject')
+    @patch('scripts.beneficiary.remote_import.repository')
     @patch('scripts.beneficiary.remote_import.send_activation_email')
     @clean_database
     def test_error_is_collected_if_beneficiary_could_not_be_saved(self,
-                                                                  send_activation_email, PcObject,
+                                                                  send_activation_email, mock_repository,
                                                                   create_beneficiary_from_application, app):
         # given
         information = {
@@ -308,7 +309,7 @@ class ProcessBeneficiaryApplicationTest:
             'activity': 'Étudiant'
         }
         create_beneficiary_from_application.side_effect = [User()]
-        Repository.save.side_effect = [ApiErrors({'postalCode': ['baaaaad value']})]
+        mock_repository.save.side_effect = [ApiErrors({'postalCode': ['baaaaad value']})]
         new_beneficiaries = []
         error_messages = []
 
@@ -320,10 +321,10 @@ class ProcessBeneficiaryApplicationTest:
         assert error_messages == ['{\n  "postalCode": [\n    "baaaaad value"\n  ]\n}']
         assert not new_beneficiaries
 
-    @patch('scripts.beneficiary.remote_import.PcObject')
+    @patch('scripts.beneficiary.remote_import.repository')
     @patch('scripts.beneficiary.remote_import.send_activation_email')
     @clean_database
-    def test_beneficiary_is_not_created_if_duplicates_are_found(self, send_activation_email, PcObject,
+    def test_beneficiary_is_not_created_if_duplicates_are_found(self, send_activation_email, mock_repository,
                                                                 app):
         # given
         information = {
@@ -339,7 +340,7 @@ class ProcessBeneficiaryApplicationTest:
             'activity': 'Étudiant'
         }
         existing_user = create_user(date_of_birth=datetime(2000, 5, 1), first_name='Jane', last_name='Doe')
-        Repository.save(existing_user)
+        repository.save(existing_user)
         mock = Mock(return_value=[existing_user])
 
         # when
@@ -347,7 +348,7 @@ class ProcessBeneficiaryApplicationTest:
 
         # then
         send_activation_email.assert_not_called()
-        PcObject.assert_not_called()
+        mock_repository.save.assert_not_called()
         beneficiary_import = BeneficiaryImport.query.filter_by(demarcheSimplifieeApplicationId=123).first()
         assert beneficiary_import.currentStatus == ImportStatus.DUPLICATE
 
@@ -368,7 +369,7 @@ class ProcessBeneficiaryApplicationTest:
             'activity': 'Étudiant'
         }
         existing_user = create_user(date_of_birth=datetime(2000, 5, 1), first_name='Jane', last_name='Doe')
-        Repository.save(existing_user)
+        repository.save(existing_user)
         mock = Mock(return_value=[existing_user])
         retry_ids = [123]
 

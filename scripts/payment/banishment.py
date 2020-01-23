@@ -1,7 +1,7 @@
 from typing import List
 
 from domain.payments import apply_banishment, UnmatchedPayments
-from repository.repository import Repository
+from repository import repository
 from repository.payment_queries import find_payments_by_message
 from utils.logger import logger
 
@@ -20,7 +20,7 @@ def do_ban_payments(message_id: str, payment_ids_to_ban: List[int]):
                      '\nAucun paiement n\'a été mis à jour.' % (message_id, e.payment_ids))
     else:
         if banned_payments:
-            Repository.save(*(banned_payments + retry_payments))
+            repository.save(*(banned_payments + retry_payments))
 
         logger.info('Paiements bannis : %s ' % list(map(lambda p: p.id, banned_payments)))
         logger.info('Paiements à réessayer : %s ' % list(map(lambda p: p.id, retry_payments)))

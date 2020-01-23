@@ -2,6 +2,7 @@ import pytest
 from sqlalchemy import func
 
 from models import Offer, Venue, ApiErrors
+from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue
 from utils.human_ids import humanize
@@ -26,7 +27,7 @@ class TestLoadOrRaiseErrorTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        Repository.save(venue)
+        repository.save(venue)
 
         # When
         try:

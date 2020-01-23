@@ -5,6 +5,7 @@ from wtforms import Form, SelectField, StringField, TextAreaField
 from admin.base_configuration import BaseAdminView
 from domain.user_activation import is_import_status_change_allowed, IMPORT_STATUS_MODIFICATION_RULE
 from models import ImportStatus, BeneficiaryImport
+from repository import repository
 
 
 class OfferAdminView(BaseAdminView):
@@ -123,7 +124,7 @@ class BeneficiaryImportView(BaseAdminView):
         if is_import_status_change_allowed(beneficiary_import.currentStatus, new_status):
             beneficiary_import.setStatus(
                 new_status, detail=new_status_form.detail.data, author=current_user)
-            Repository.save(beneficiary_import)
+            repository.save(beneficiary_import)
         else:
             new_status_form.status.errors.append(
                 IMPORT_STATUS_MODIFICATION_RULE)

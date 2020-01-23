@@ -1,6 +1,7 @@
 import secrets
 
 from models import Offerer
+from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 
@@ -15,7 +16,7 @@ class Get:
                                      validation_token=offerer_token)
             user = create_user()
             user_offerer = create_user_offerer(user, offerer, is_admin=True)
-            Repository.save(offerer, user_offerer)
+            repository.save(offerer, user_offerer)
             offerer_id = offerer.id
             del (offerer)
 

@@ -4,6 +4,7 @@ from unittest.mock import patch
 import pytest
 
 from models import Booking, Offer, Stock, User, Product, ApiErrors
+from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
@@ -47,14 +48,14 @@ def test_raises_error_on_booking_when_existing_booking_is_used_and_booking_date_
     stock = create_stock_from_offer(offer, price=0, available=1)
     user1 = create_user(email='used_booking@example.com')
     user2 = create_user(email='booked@example.com')
-    Repository.save(stock)
+    repository.save(stock)
     date_after_stock_last_update = datetime.utcnow()
     booking1 = create_booking(user=user1,
                               stock=stock,
                               date_used=date_after_stock_last_update,
                               is_cancelled=False,
                               is_used=True)
-    Repository.save(booking1)
+    repository.save(booking1)
     date_after_last_booking = datetime.utcnow()
     booking2 = create_booking(user=user2,
                               stock=stock,
@@ -64,7 +65,7 @@ def test_raises_error_on_booking_when_existing_booking_is_used_and_booking_date_
 
     # When
     with pytest.raises(ApiErrors) as e:
-        Repository.save(booking2)
+        repository.save(booking2)
 
     # Then
     assert e.value.errors['global'] == ['La quantité disponible pour cette offre est atteinte.']

@@ -1,4 +1,4 @@
-from repository.repository import Repository
+from repository import repository
 from scripts.payment.batch_steps import generate_new_payments
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, create_deposit, \
@@ -32,7 +32,7 @@ class Get:
             booking4 = create_booking(user=user, stock=stock3, is_used=True, token='ABCDEI', venue=venue3)
             booking5 = create_booking(user=user, stock=stock4, is_used=True, token='ABCDEJ', venue=venue3)
             booking6 = create_booking(user=user, stock=stock4, is_used=True, token='ABCDEK', venue=venue3)
-            Repository.save(deposit, booking1, booking2, booking3,
+            repository.save(deposit, booking1, booking2, booking3,
                           booking4, booking5, booking6, user_offerer1,
                           user_offerer2, bank_information1, bank_information2)
             generate_new_payments()
@@ -52,7 +52,7 @@ class Get:
         def when_user_has_no_offerer_attached(self, app):
             # Given
             user = create_user(email='user+plus@email.fr')
-            Repository.save(user)
+            repository.save(user)
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).get(

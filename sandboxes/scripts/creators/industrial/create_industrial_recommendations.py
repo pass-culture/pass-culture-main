@@ -1,5 +1,6 @@
 from models.mediation import Mediation
 from recommendations_engine.offers import get_departement_codes_from_user
+from repository import repository
 from repository.offer_queries import get_active_offers
 from sandboxes.scripts.utils.select import remove_every
 from sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
@@ -91,7 +92,7 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
                 create_recommendation(
                     offer=offer, user=user, mediation=mediation)
 
-    Repository.save(*recommendations_by_name.values())
+    repository.save(*recommendations_by_name.values())
 
     for recommendation in recommendations_by_name.values():
         if recommendation.offer:

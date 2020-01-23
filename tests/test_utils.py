@@ -3,6 +3,7 @@ from unittest.mock import Mock
 
 from models import Booking
 from models.feature import Feature, FeatureToggle
+from repository import repository
 
 
 def get_occurrence_short_name(concatened_names_with_a_date):
@@ -24,7 +25,7 @@ def get_price_by_short_name(occurrence_short_name=None):
 def deactivate_feature(feature_toggle: FeatureToggle):
     feature = Feature.query.filter_by(name=feature_toggle.name).one()
     feature.isActive = False
-    Repository.save(feature)
+    repository.save(feature)
 
 
 def create_mocked_bookings(num_bookings: int,

@@ -4,6 +4,7 @@ from sqlalchemy import asc
 
 from models import BeneficiaryImport, ImportStatus, User
 from models.db import db
+from repository import repository
 
 
 def is_already_imported(application_id: int) -> bool:
@@ -31,7 +32,7 @@ def save_beneficiary_import_with_status(
     beneficiary_import.beneficiary = user
     beneficiary_import.demarcheSimplifieeApplicationId = demarche_simplifiee_application_id
     beneficiary_import.setStatus(status=status, detail=detail, author=None)
-    Repository.save(beneficiary_import)
+    repository.save(beneficiary_import)
 
 
 def find_applications_ids_to_retry() -> List[int]:

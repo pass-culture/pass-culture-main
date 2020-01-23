@@ -11,8 +11,7 @@ from local_providers.providable_info import ProvidableInfo
 from models import ApiErrors
 from models.db import Model, db
 from models.has_thumb_mixin import HasThumbMixin
-from models.local_provider_event import (LocalProviderEvent,
-                                         LocalProviderEventType)
+from models.local_provider_event import LocalProviderEvent, LocalProviderEventType
 from repository import repository
 from repository.providable_queries import get_last_update_for_provider
 from repository.provider_queries import get_provider_by_local_class
@@ -93,7 +92,7 @@ class LocalProvider(Iterator):
 
         self.fill_object_attributes(pc_object)
 
-        errors = pc_object.errors()
+        errors = repository.errors(pc_object)
         if errors and len(errors.errors) > 0:
             self.log_provider_event(LocalProviderEventType.SyncError, 'ApiErrors')
             self.erroredObjects += 1
@@ -108,7 +107,7 @@ class LocalProvider(Iterator):
         pc_object.lastProviderId = self.provider.id
         pc_object.dateModifiedAtLastProvider = providable_info.date_modified_at_provider
 
-        errors = pc_object.errors()
+        errors = repository.errors(pc_object)
         if errors and len(errors.errors) > 0:
             self.log_provider_event(LocalProviderEventType.SyncError, 'ApiErrors')
             self.erroredObjects += 1
@@ -201,7 +200,7 @@ class LocalProvider(Iterator):
                         pprint(vars(e))
                     pc_object_has_new_thumbs = pc_object.thumbCount != initial_thumb_count
                     if pc_object_has_new_thumbs:
-                        errors = pc_object.errors()
+                        errors = repository.errors(pc_object)
                         if errors and len(errors.errors) > 0:
                             self.log_provider_event(LocalProviderEventType.SyncError, 'ApiErrors')
                             continue

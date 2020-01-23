@@ -6,6 +6,7 @@ import pytest
 from local_providers.local_provider import _save_same_thumb_from_thumb_count_to_index
 from models import Product, ThingType, VenueProvider, ApiErrors, LocalProviderEvent
 from models.local_provider_event import LocalProviderEventType
+from repository import repository
 from tests.conftest import clean_database
 from tests.local_providers.provider_test_utils import TestLocalProvider, TestLocalProviderWithApiErrors, \
     TestLocalProviderNoCreation, TestLocalProviderWithThumb, TestLocalProviderWithThumbIndexAt4
@@ -21,7 +22,7 @@ class LocalProviderTest:
         def test_iterator_is_called_until_exhausted(self, next_function, app):
             # Given
             provider_test = create_provider(local_class='TestLocalProvider')
-            Repository.save(provider_test)
+            repository.save(provider_test)
 
             next_function.side_effect = [
                 [],
@@ -42,7 +43,7 @@ class LocalProviderTest:
         def test_iterator_should_log_provider_event_from_start_to_stop(self, next_function, app):
             # Given
             provider_test = create_provider(local_class='TestLocalProvider')
-            Repository.save(provider_test)
+            repository.save(provider_test)
 
             next_function.side_effect = [
                 [],
@@ -68,7 +69,7 @@ class LocalProviderTest:
                                                                app):
             # Given
             provider_test = create_provider(local_class='TestLocalProvider')
-            Repository.save(provider_test)
+            repository.save(provider_test)
 
             providable_info = create_providable_info()
 
@@ -93,7 +94,7 @@ class LocalProviderTest:
                                          app):
             # Given
             provider_test = create_provider(local_class='TestLocalProvider')
-            Repository.save(provider_test)
+            repository.save(provider_test)
 
             providable_info = create_providable_info(date_modified=datetime(2018, 1, 1))
 
@@ -106,7 +107,7 @@ class LocalProviderTest:
                                                               id_at_providers=providable_info.id_at_providers,
                                                               last_provider_id=provider_test.id,
                                                               date_modified_at_last_provider=datetime(2000, 1, 1))
-            Repository.save(existing_product)
+            repository.save(existing_product)
 
             provider = TestLocalProvider()
 
@@ -126,7 +127,7 @@ class LocalProviderTest:
                                                                                             app):
             # Given
             provider_test = create_provider(local_class='TestLocalProvider')
-            Repository.save(provider_test)
+            repository.save(provider_test)
 
             providable_info = create_providable_info(date_modified=datetime(2018, 1, 1))
 
@@ -139,7 +140,7 @@ class LocalProviderTest:
                                                               id_at_providers=providable_info.id_at_providers,
                                                               last_provider_id=provider_test.id,
                                                               date_modified_at_last_provider=datetime(2019, 1, 1))
-            Repository.save(existing_product)
+            repository.save(existing_product)
 
             provider = TestLocalProvider()
 
@@ -159,7 +160,7 @@ class LocalProviderTest:
                                                                            app):
             # Given
             provider_test = create_provider(local_class='TestLocalProvider')
-            Repository.save(provider_test)
+            repository.save(provider_test)
 
             providable_info = create_providable_info(date_modified=datetime(2018, 1, 1))
 
@@ -171,7 +172,7 @@ class LocalProviderTest:
             venue_provider.provider = provider_test
             venue_provider.venue = create_venue(create_offerer())
             venue_provider.isActive = False
-            Repository.save(venue_provider)
+            repository.save(venue_provider)
 
             provider = TestLocalProvider(venue_provider)
 
@@ -188,7 +189,7 @@ class LocalProviderTest:
                                                                      app):
             # Given
             provider_test = create_provider(local_class='TestLocalProvider', is_active=False)
-            Repository.save(provider_test)
+            repository.save(provider_test)
 
             providable_info = create_providable_info(date_modified=datetime(2018, 1, 1))
 
@@ -211,7 +212,7 @@ class LocalProviderTest:
                                                                      app):
             # Given
             provider_test = create_provider(local_class='TestLocalProviderNoCreation')
-            Repository.save(provider_test)
+            repository.save(provider_test)
 
             providable_info = create_providable_info()
 
@@ -234,7 +235,7 @@ class LocalProviderTest:
                                                            app):
             # Given
             provider_test = create_provider(local_class='TestLocalProvider')
-            Repository.save(provider_test)
+            repository.save(provider_test)
 
             providable_info1 = create_providable_info()
 
@@ -260,7 +261,7 @@ class LocalProviderTest:
         def test_returns_object_with_expected_attributes(self, app):
             # Given
             provider_test = create_provider(local_class='TestLocalProvider')
-            Repository.save(provider_test)
+            repository.save(provider_test)
 
             providable_info = create_providable_info()
 
@@ -279,7 +280,7 @@ class LocalProviderTest:
         def test_raises_api_errors_exception_when_errors_occur_on_model_and_log_error(self, app):
             # Given
             provider_test = create_provider(local_class='TestLocalProviderWithApiErrors')
-            Repository.save(provider_test)
+            repository.save(provider_test)
 
             providable_info = create_providable_info()
 
@@ -301,7 +302,7 @@ class LocalProviderTest:
         def test_returns_object_with_expected_attributes(self, app):
             # Given
             provider_test = create_provider(local_class='TestLocalProvider')
-            Repository.save(provider_test)
+            repository.save(provider_test)
 
             providable_info = create_providable_info()
 
@@ -324,7 +325,7 @@ class LocalProviderTest:
         def test_raises_api_errors_exception_when_errors_occur_on_model(self, app):
             # Given
             provider_test = create_provider(local_class='TestLocalProviderWithApiErrors')
-            Repository.save(provider_test)
+            repository.save(provider_test)
 
             providable_info = create_providable_info()
 
@@ -351,7 +352,7 @@ class LocalProviderTest:
         def test_call_save_thumb_should_increase_thumbCount_by_1(self, app):
             # Given
             provider_test = create_provider(local_class='TestLocalProviderWithThumb')
-            Repository.save(provider_test)
+            repository.save(provider_test)
 
             providable_info = create_providable_info()
 
@@ -363,7 +364,7 @@ class LocalProviderTest:
                                                               last_provider_id=provider_test.id,
                                                               date_modified_at_last_provider=datetime(2000, 1, 1),
                                                               thumb_count=0)
-            Repository.save(existing_product)
+            repository.save(existing_product)
 
             # When
             provider._handle_thumb(existing_product)
@@ -379,7 +380,7 @@ class LocalProviderTest:
         def test_call_save_thumb_once_when_thumb_count_is_0(self, mock_save_thumb, app):
             # Given
             provider_test = create_provider(local_class='TestLocalProviderWithThumb')
-            Repository.save(provider_test)
+            repository.save(provider_test)
 
             providable_info = create_providable_info()
 
@@ -408,7 +409,7 @@ class LocalProviderTest:
                                                                                          mock_save_thumb, app):
             # Given
             provider_test = create_provider(local_class='TestLocalProviderWithThumbIndexAt4')
-            Repository.save(provider_test)
+            repository.save(provider_test)
 
             providable_info = create_providable_info()
 
@@ -438,7 +439,7 @@ class LocalProviderTest:
         def test_should_iterate_from_current_thumbCount_to_thumbIndex_when_thumbCount_is_0(self, app):
             # Given
             provider_test = create_provider(local_class='TestLocalProviderWithThumb')
-            Repository.save(provider_test)
+            repository.save(provider_test)
 
             providable_info = create_providable_info()
 
@@ -450,7 +451,7 @@ class LocalProviderTest:
                                                      last_provider_id=provider_test.id,
                                                      date_modified_at_last_provider=datetime(2000, 1, 1),
                                                      thumb_count=0)
-            Repository.save(product)
+            repository.save(product)
             thumb_index = 4
             thumb = provider.get_object_thumb()
 
@@ -464,7 +465,7 @@ class LocalProviderTest:
         def test_should_iterate_from_current_thumbCount_to_thumbIndex_when_thumbCount_is_None(self, app):
             # Given
             provider_test = create_provider(local_class='TestLocalProviderWithThumb')
-            Repository.save(provider_test)
+            repository.save(provider_test)
 
             providable_info = create_providable_info()
 
@@ -476,7 +477,7 @@ class LocalProviderTest:
                                                      last_provider_id=provider_test.id,
                                                      date_modified_at_last_provider=datetime(2000, 1, 1),
                                                      thumb_count=None)
-            Repository.save(product)
+            repository.save(product)
             thumb_index = 4
             thumb = provider.get_object_thumb()
 
@@ -493,7 +494,7 @@ class LocalProviderTest:
                                                                                                             app):
             # Given
             provider_test = create_provider(local_class='TestLocalProviderWithThumb')
-            Repository.save(provider_test)
+            repository.save(provider_test)
 
             providable_info = create_providable_info()
 
@@ -505,7 +506,7 @@ class LocalProviderTest:
                                                      last_provider_id=provider_test.id,
                                                      date_modified_at_last_provider=datetime(2000, 1, 1),
                                                      thumb_count=4)
-            Repository.save(product)
+            repository.save(product)
             thumb_index = 1
             thumb = provider.get_object_thumb()
 
