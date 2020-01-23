@@ -4,6 +4,7 @@ import React, { PureComponent } from 'react'
 import CopyToClipboardButton from '../CopyToClipboardButton'
 import Icon from '../../Icon/Icon'
 import MailToLink from '../../MailToLink/MailToLink'
+import navigatorShareAPI from './NavigatorShareAPI'
 
 class ShareButton extends PureComponent {
   constructor(props) {
@@ -62,7 +63,11 @@ class ShareButton extends PureComponent {
     try {
       const nativeOptions = { text: `${text}\n`, title: text, url }
 
-      return navigator.share(nativeOptions)
+      return navigatorShareAPI.share(nativeOptions).catch(e => {
+        if (e.name !== 'AbortError') {
+          throw e
+        }
+      })
     } catch (err) {
       const { isCopied } = this.state
       const headers = {
