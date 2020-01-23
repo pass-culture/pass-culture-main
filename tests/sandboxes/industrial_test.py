@@ -32,7 +32,7 @@ def test_save_industrial_sandbox(mock_request, app):
         Mediation=86,
         Offer=106,
         Offerer=14,
-        Product=148,
+        Product=155,
         Recommendation=100,
         Stock=102,
         User=53,

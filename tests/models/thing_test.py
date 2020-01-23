@@ -35,7 +35,8 @@ def test_thing_type_find_from_sub_labels_returns_several_types_given_several_sub
     types = ThingType.find_from_sub_labels(sub_labels)
 
     # then
-    assert len(types) == 9
+    assert len(types) == 10
+    assert ThingType.CINEMA_CARD in types
     assert ThingType.AUDIOVISUEL in types
     assert ThingType.CINEMA_ABO in types
     assert ThingType.MUSEES_PATRIMOINE_ABO in types
