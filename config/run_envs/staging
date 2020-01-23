@@ -9,5 +9,5 @@ SENTRY_SERVER_URL_FOR_WEBAPP=https://fa24f6fffb1e42aeafc316b4c808227c@logs.passc
 PRO_URL_FOR_MAINTENANCE=https://maintenance.passculture.app?source=https://pro.passculture-staging.beta.gouv.fr/
 WEBAPP_URL_FOR_MAINTENANCE=https://maintenance.passculture.app?source=https://app.passculture-staging.beta.gouv.fr/
 WEBAPP_ALGOLIA_APPLICATION_ID=E2IKXJ325N
-WEBAPP_ALGOLIA_SEARCH_API_KEY=a586222ee73dc4ef302fab5aa64e3c53
+WEBAPP_ALGOLIA_SEARCH_API_KEY=5ab3c7695325219d903335c47509ccf6
 WEBAPP_ALGOLIA_INDEX_NAME=STAGING
