@@ -44,7 +44,7 @@ class RunProcessInOneOffContainerTest:
     @patch('connectors.scalingo_api.API_APPLICATION_NAME', 'pass-culture-api-app')
     @patch('connectors.scalingo_api.requests.post')
     @patch('connectors.scalingo_api._get_application_bearer_token')
-    def test_should_call_scalingo_auth_url_with_expected_parameters(self, mock_get_app_token, mock_post):
+    def test_should_call_scalingo_api_with_expected_payload(self, mock_get_app_token, mock_post):
         # Given
         mock_get_app_token.return_value = 'bearer_token123'
         response_return_value = MagicMock(status_code=200, text='')
@@ -55,7 +55,7 @@ class RunProcessInOneOffContainerTest:
         container_id = run_process_in_one_off_container('command_line')
 
         # Then
-        mock_get_app_token.assert_called_once_with()
+        mock_get_app_token.assert_called_once()
         mock_post.assert_called_once_with('https://api.osc-fr1.scalingo.com/v1/apps/pass-culture-api-app/run',
                                           json={"command": 'command_line',
                                                 "region": "osc-fr1",
@@ -79,4 +79,4 @@ class RunProcessInOneOffContainerTest:
             run_process_in_one_off_container('command_line')
 
         # Then
-        assert str(exception.value) == "Error getting bearer token  with status 400: {'error': 'error in run app'}"
+        assert str(exception.value) == "Error getting bearer token with status 400: {'error': 'error in run app'}"

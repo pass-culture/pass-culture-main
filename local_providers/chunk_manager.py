@@ -20,7 +20,7 @@ def get_existing_pc_obj(providable_info: ProvidableInfo,
 def get_object_from_current_chunks(providable_info: ProvidableInfo,
                                    chunk_to_insert: Dict,
                                    chunk_to_update: Dict) -> Optional[Model]:
-    chunk_key = providable_info.id_at_providers + '|' + str(providable_info.type.__name__)
+    chunk_key = f'{providable_info.id_at_providers}|{providable_info.type.__name__}'
     pc_object = chunk_to_insert.get(chunk_key)
     if type(pc_object) == providable_info.type:
         return pc_object

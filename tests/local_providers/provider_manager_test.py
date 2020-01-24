@@ -12,7 +12,7 @@ def mock_update_objects():
 
 
 class DoUpdateTest:
-    def test_should_call_provider_updateObjects_function(self, app):
+    def test_should_call_provider_objects_synchronization_function(self, app):
         # Given
         provider_mock = MagicMock()
         provider_mock.updateObjects = MagicMock()
@@ -25,7 +25,8 @@ class DoUpdateTest:
 
     @patch('local_providers.provider_manager.build_cron_log_message')
     @patch('local_providers.provider_manager._remove_worker_id_after_venue_provider_sync_error')
-    def test_should_call_remove_worker_id_when_exception_is_raised(self, mock_remove_worker_id,
+    def test_should_call_remove_worker_id_when_exception_is_raised(self,
+                                                                   mock_remove_worker_id,
                                                                    mock_build_cron_log_message,
                                                                    app):
         # Given
@@ -58,10 +59,9 @@ class RemoveWorkerIdAfterVenueProviderSyncErrorTest:
     def test_should_remove_worker_id_value(self, app):
         # Given
         provider_test = create_provider(local_class='TestLocalProvider')
-        PcObject.save(provider_test)
         offerer = create_offerer()
-        venue_1 = create_venue(offerer, siret='12345678901234')
-        venue_provider = create_venue_provider(venue_1, provider_test, sync_worker_id='1234567')
+        venue = create_venue(offerer)
+        venue_provider = create_venue_provider(venue, provider_test, sync_worker_id='1234567')
         PcObject.save(venue_provider)
 
         provider = TestLocalProvider(venue_provider)

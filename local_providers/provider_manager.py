@@ -1,4 +1,5 @@
 import traceback
+from typing import Callable
 
 import local_providers
 from local_providers.local_provider import LocalProvider
@@ -26,5 +27,5 @@ def _remove_worker_id_after_venue_provider_sync_error(provider: LocalProvider):
         PcObject.save(venue_provider_in_sync)
 
 
-def get_class_by_name(class_name: str):
+def get_local_provider_class_by_name(class_name: str) -> Callable:
     return getattr(local_providers, class_name)

@@ -1,7 +1,6 @@
 from unittest.mock import patch, call
 
-from local_providers.venue_provider_worker import update_venues_for_specific_provider, do_sync_venue_provider, \
-    WAIT_TIME_FOR_AVAILABLE_WORKER
+from local_providers.venue_provider_worker import update_venues_for_specific_provider, do_sync_venue_provider
 from models import VenueProvider, PcObject
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_venue_provider
@@ -31,7 +30,7 @@ class UpdateVenuesForSpecificProviderTest:
         assert mock_do_sync_venue_provider.call_args_list == [call(venue_provider_titelive2),
                                                               call(venue_provider_titelive1)]
 
-    @patch.dict('os.environ', {"SYNC_WORKER_POOL": '1'})
+    @patch.dict('os.environ', {"SYNC_WORKERS_POOL_SIZE": '1'})
     @patch('local_providers.venue_provider_worker.sleep')
     @patch('local_providers.venue_provider_worker.do_sync_venue_provider')
     @patch('local_providers.venue_provider_worker.get_nb_containers_at_work')
@@ -50,12 +49,13 @@ class UpdateVenuesForSpecificProviderTest:
         venue_provider_titelive1 = create_venue_provider(venue1, titelive_provider)
         venue_provider_titelive2 = create_venue_provider(venue2, titelive_provider)
         PcObject.save(venue_provider_titelive1, venue_provider_titelive2)
+        expected_wait_time = 60
 
         # When
         update_venues_for_specific_provider(titelive_provider.id)
 
         # Then
-        mock_sleep.assert_called_once_with(WAIT_TIME_FOR_AVAILABLE_WORKER)
+        mock_sleep.assert_called_once_with(expected_wait_time)
         assert mock_get_nb_containers_at_work.call_count == 3
         assert mock_do_sync_venue_provider.call_count == 2
         assert mock_do_sync_venue_provider.call_args_list == [call(venue_provider_titelive2),
