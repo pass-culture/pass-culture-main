@@ -346,7 +346,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         })
       })
 
-      describe('when the offer is digital only and selected venue is virtial', () => {
+      describe('when the offer is digital only and selected venue is virtual', () => {
         it('should display an information insert', () => {
           // given
           props.match = {
@@ -368,11 +368,42 @@ describe('src | components | pages | Offer | Offer ', () => {
           const wrapper = shallow(<Offer {...props} />)
 
           // then
-          const insert = wrapper.find('.yellow-insert')
-          const insertLink = insert.find('a')
+
+          const warningText = wrapper.find('.yellow-insert > p').text()
+          expect(warningText).toStrictEqual(
+            "Cette offre numérique ne fera pas l'objet d'un remboursement. Pour plus d'informations sur les catégories éligibles au remboursement, merci de consulter les CGU."
+          )
+          const insertLink = wrapper.find('.yellow-insert a')
           expect(insertLink.prop('href')).toStrictEqual(
             'https://docs.passculture.app/textes-normatifs'
           )
+        })
+      })
+
+      describe('when the offer is digital only selected venue is virtual', () => {
+        it('should not display a warning message about reimbursement of digital offers', () => {
+          // given
+          props.match = {
+            params: {
+              offerId: 'QU',
+            },
+          }
+          props.selectedOfferType = {
+            offlineOnly: false,
+            onlineOnly: true,
+            value: 'ThingType.CINEMA_CARD',
+          }
+
+          props.venue = {
+            isVirtual: true,
+          }
+
+          // when
+          const wrapper = shallow(<Offer {...props} />)
+
+          // then
+          const insert = wrapper.find('.yellow-insert')
+          expect(insert).toHaveLength(0)
         })
       })
     })

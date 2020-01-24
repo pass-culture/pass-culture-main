@@ -35,7 +35,7 @@ import { buildWebappDiscoveryUrl } from '../../layout/OfferPreviewLink/buildWeba
 import OfferPreviewLink from '../../layout/OfferPreviewLink/OfferPreviewLink'
 import Insert from '../../layout/Insert/Insert'
 
-import displayDigitalOfferInformationMessage from './domain/displayDigitalOfferInformationMessage'
+import offerIsNotRefundable from './domain/offerIsNotRefundable'
 
 const DURATION_LIMIT_TIME = 100
 
@@ -396,10 +396,7 @@ class Offer extends PureComponent {
 
     const offererHasNoPhysicalVenues = offerer && get(venuesMatchingOfferType, 'length') === 0
 
-    const isDisplayDigitalOfferInformationMessage = displayDigitalOfferInformationMessage(
-      selectedOfferType,
-      venue
-    )
+    const displayDigitalOfferInformationMessage = offerIsNotRefundable(selectedOfferType, venue)
 
     return (
       <Main
@@ -611,7 +608,7 @@ class Offer extends PureComponent {
                   type="select"
                 />
               </div>
-              {isDisplayDigitalOfferInformationMessage && (
+              {displayDigitalOfferInformationMessage && (
                 <div className="is-horizontal">
                   <Insert className="yellow-insert">
                     <p>

@@ -1,11 +1,11 @@
-import displayDigitalOfferInformationMessage from '../displayDigitalOfferInformationMessage'
+import offerIsNotRefundable from '../offerIsNotRefundable'
 
 describe('src | components | pages | Offer | domain | getDurationInHours', () => {
   let venue
 
   describe('when no type and no venue', () => {
     it('should return false by defaut', () => {
-      expect(displayDigitalOfferInformationMessage()).toBe(false)
+      expect(offerIsNotRefundable()).toBe(false)
     })
   })
 
@@ -17,7 +17,7 @@ describe('src | components | pages | Offer | domain | getDurationInHours', () =>
     })
 
     describe('when offer type is a book', () => {
-      it('should not display digital offer information message', () => {
+      it('offer is refundable', () => {
         // when
         const bookType = {
           offlineOnly: false,
@@ -26,29 +26,26 @@ describe('src | components | pages | Offer | domain | getDurationInHours', () =>
         }
 
         // then
-        expect(displayDigitalOfferInformationMessage(bookType, venue)).toBe(false)
+        expect(offerIsNotRefundable(bookType, venue)).toBe(false)
       })
     })
 
     describe('when offer type is a cinema card', () => {
-      it('should not display digital offer information message', function() {
-        // given
+      it('offer is refundable', function() {
+        // when
         const cinemaCardType = {
           offlineOnly: false,
-          onlineOnly: false,
+          onlineOnly: true,
           value: 'ThingType.CINEMA_CARD',
         }
 
-        // when
-        const isMessageDisplayed = displayDigitalOfferInformationMessage(cinemaCardType, venue)
-
         // then
-        expect(isMessageDisplayed).toBe(false)
+        expect(offerIsNotRefundable(cinemaCardType, venue)).toBe(false)
       })
     })
 
     describe('when offer type is available online or offline ', () => {
-      it('should display digital offer information message', () => {
+      it('offer is not refundable', () => {
         // when
         const musicType = {
           offlineOnly: false,
@@ -57,12 +54,12 @@ describe('src | components | pages | Offer | domain | getDurationInHours', () =>
         }
 
         // then
-        expect(displayDigitalOfferInformationMessage(musicType, venue)).toBe(true)
+        expect(offerIsNotRefundable(musicType, venue)).toBe(true)
       })
     })
 
     describe('when offer type is available online only', () => {
-      it('should display digital offer information message', () => {
+      it('offer is not refundable', () => {
         // when
         const gameType = {
           offlineOnly: false,
@@ -71,7 +68,7 @@ describe('src | components | pages | Offer | domain | getDurationInHours', () =>
         }
 
         // then
-        expect(displayDigitalOfferInformationMessage(gameType, venue)).toBe(true)
+        expect(offerIsNotRefundable(gameType, venue)).toBe(true)
       })
     })
   })
@@ -92,7 +89,7 @@ describe('src | components | pages | Offer | domain | getDurationInHours', () =>
         }
 
         // then
-        expect(displayDigitalOfferInformationMessage(musicInstrumentType, venue)).toBe(false)
+        expect(offerIsNotRefundable(musicInstrumentType, venue)).toBe(false)
       })
     })
 
@@ -106,7 +103,7 @@ describe('src | components | pages | Offer | domain | getDurationInHours', () =>
         }
 
         // then
-        expect(displayDigitalOfferInformationMessage(bookType, venue)).toBe(false)
+        expect(offerIsNotRefundable(bookType, venue)).toBe(false)
       })
     })
 
@@ -120,7 +117,7 @@ describe('src | components | pages | Offer | domain | getDurationInHours', () =>
         }
 
         // then
-        expect(displayDigitalOfferInformationMessage(audioVisualType, venue)).toBe(false)
+        expect(offerIsNotRefundable(audioVisualType, venue)).toBe(false)
       })
     })
   })
