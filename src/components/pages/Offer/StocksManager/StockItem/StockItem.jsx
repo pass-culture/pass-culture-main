@@ -1,12 +1,13 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
-import { bindTimeFieldWithDateField, getCanSubmit } from 'react-final-form-utils'
+import { getCanSubmit } from 'react-final-form-utils'
 import { requestData } from 'redux-saga-data'
 
 import EditAndDeleteControl from './sub-components/EditAndDeleteControl/EditAndDeleteControl'
 import EventFields from './sub-components/fields/EventFields/EventFields'
 import adaptBookingLimitDatetimeGivenBeginningDatetime from './decorators/adaptBookingLimitDatetimeGivenBeginningDatetime'
+import bindTimeFieldWithDateField from './decorators/bindTimeFieldWithDateField'
 import fillEndDatimeWhenUpdatingBeginningDatetime from './decorators/fillEndDatimeWhenUpdatingBeginningDatetime'
 import SubmitAndCancelControlContainer from './sub-components/SubmitAndCancelControl/SubmitAndCancelControlContainer'
 import { errorKeyToFrenchKey } from './utils/utils'
@@ -108,10 +109,14 @@ class StockItem extends PureComponent {
       venue,
       handleSetErrors,
     } = this.props
+
+
     const { isRequestPending, tbodyElement } = this.state
     const { id: stockId } = stockPatch
     const { readOnly } = query.context({ id: stockId, key: 'stock' })
     const { form, values, handleSubmit } = formProps
+
+
     const { beginningDatetime } = values
     const canSubmit = getCanSubmit(Object.assign({}, formProps, { pristine: false }))
 
@@ -119,6 +124,7 @@ class StockItem extends PureComponent {
       <tr className="stock-item">
         {isEvent && (
           <EventFields
+            beginningDatetime={beginningDatetime}
             dispatch={dispatch}
             readOnly={readOnly}
             stockPatch={stockPatch}
