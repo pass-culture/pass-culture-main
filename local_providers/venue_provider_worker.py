@@ -7,11 +7,12 @@ from repository.venue_provider_queries import get_venue_providers_to_sync, get_n
 from utils.logger import logger
 
 WAIT_TIME_FOR_AVAILABLE_WORKER = 60
+MAX_WORKERS_POOL_SIZE = 5
 
 
 def update_venues_for_specific_provider(provider_id: int):
     venue_providers_to_sync = get_venue_providers_to_sync(provider_id)
-    sync_worker_pool = int(os.environ.get('SYNC_WORKER_POOL', 5))
+    sync_worker_pool = int(os.environ.get('SYNC_WORKER_POOL', MAX_WORKERS_POOL_SIZE))
     while len(venue_providers_to_sync) > 0:
         venue_provider = venue_providers_to_sync[0]
         has_remaining_slot_in_pool = sync_worker_pool - get_nb_containers_at_work() > 0
@@ -20,6 +21,7 @@ def update_venues_for_specific_provider(provider_id: int):
             venue_providers_to_sync.remove(venue_provider)
         else:
             sleep(WAIT_TIME_FOR_AVAILABLE_WORKER)
+            logger.debug("[VenueProviderWorker] Waiting for available worker")
 
 
 def do_sync_venue_provider(venue_provider: VenueProvider):

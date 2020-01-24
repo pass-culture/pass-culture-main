@@ -1,6 +1,7 @@
 from unittest.mock import patch, call
 
-from local_providers.venue_provider_worker import update_venues_for_specific_provider, do_sync_venue_provider
+from local_providers.venue_provider_worker import update_venues_for_specific_provider, do_sync_venue_provider, \
+    WAIT_TIME_FOR_AVAILABLE_WORKER
 from models import VenueProvider, PcObject
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_venue_provider
@@ -54,7 +55,7 @@ class UpdateVenuesForSpecificProviderTest:
         update_venues_for_specific_provider(titelive_provider.id)
 
         # Then
-        mock_sleep.assert_called_once_with(60)
+        mock_sleep.assert_called_once_with(WAIT_TIME_FOR_AVAILABLE_WORKER)
         assert mock_get_nb_containers_at_work.call_count == 3
         assert mock_do_sync_venue_provider.call_count == 2
         assert mock_do_sync_venue_provider.call_args_list == [call(venue_provider_titelive2),
@@ -64,8 +65,8 @@ class UpdateVenuesForSpecificProviderTest:
 class DoSyncVenueProviderTest:
     @patch('local_providers.venue_provider_worker.run_process_in_one_off_container')
     @clean_database
-    def test_should_called_run_process_in_one_off_container_function(self,
-                                                                     mock_run_process_in_one_off_container, app):
+    def test_should_call_run_process_in_one_off_container_function(self,
+                                                                   mock_run_process_in_one_off_container, app):
         # Given
         mock_run_process_in_one_off_container.return_value = 'azertyTE7898RTYUIZERTYUI'
         titelive_provider = activate_provider('TiteLiveStocks')
