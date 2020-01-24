@@ -35,7 +35,7 @@ import { buildWebappDiscoveryUrl } from '../../layout/OfferPreviewLink/buildWeba
 import OfferPreviewLink from '../../layout/OfferPreviewLink/OfferPreviewLink'
 import Insert from '../../layout/Insert/Insert'
 
-import offerIsNotRefundable from './domain/offerIsNotRefundable'
+import offerIsRefundable from './domain/offerIsRefundable'
 
 const DURATION_LIMIT_TIME = 100
 
@@ -396,7 +396,7 @@ class Offer extends PureComponent {
 
     const offererHasNoPhysicalVenues = offerer && get(venuesMatchingOfferType, 'length') === 0
 
-    const displayDigitalOfferInformationMessage = offerIsNotRefundable(selectedOfferType, venue)
+    const displayDigitalOfferInformationMessage = !offerIsRefundable(selectedOfferType, venue)
 
     return (
       <Main
