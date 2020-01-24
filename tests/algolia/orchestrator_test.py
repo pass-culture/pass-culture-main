@@ -26,12 +26,15 @@ class OrchestrateTest:
         stock1 = create_stock(offer=offer1, booking_limit_datetime=TOMORROW, available=10)
         offer2 = create_offer_with_thing_product(venue=venue, is_active=True)
         stock2 = create_stock(offer=offer2, booking_limit_datetime=TOMORROW, available=10)
-        PcObject.save(stock1, stock2)
+        offer3 = create_offer_with_thing_product(venue=venue, is_active=False)
+        stock3 = create_stock(offer=offer3, booking_limit_datetime=TOMORROW, available=10)
+        PcObject.save(stock1, stock2, stock3)
 
         # When
         orchestrate(offer_ids=[offer1.id, offer2.id])
 
         # Then
+        assert mocked_build_object.call_count == 2
         mocked_add_objects.assert_called_once_with(objects=[
             {'fake': 'test'},
             {'fake': 'test'}

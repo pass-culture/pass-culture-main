@@ -7,38 +7,29 @@ from algolia.rules_engine import is_eligible_for_indexing
 from repository import offer_queries
 from utils.converter import from_tuple_to_int
 from utils.human_ids import humanize
-from utils.logger import logger
 
 ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE = int(os.environ.get('ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE', 10000))
+
 
 def orchestrate(offer_ids: List[int], is_clear: bool = False) -> None:
     if is_clear:
         clear_objects()
 
-    indexing_object = []
-    deleting_object = []
-    indexing_ids = []
-    deleting_ids = []
+    indexing_objects = []
+    deleting_objects = []
     offers = offer_queries.get_offers_by_ids(offer_ids)
 
     for offer in offers:
-        humanize_offer_id = humanize(offer.id)
-        algolia_object = build_object(offer=offer)
-
         if is_eligible_for_indexing(offer):
-            indexing_object.append(algolia_object)
-            indexing_ids.append(humanize_offer_id)
+            indexing_objects.append(build_object(offer=offer))
         else:
-            deleting_object.append(humanize_offer_id)
-            deleting_ids.append(humanize_offer_id)
+            deleting_objects.append(humanize(offer.id))
 
-    if len(indexing_object) > 0:
-        add_objects(objects=indexing_object)
-        logger.info(f'[ALGOLIA] Indexing {len(indexing_ids)} objectsID: {indexing_ids}')
+    if len(indexing_objects) > 0:
+        add_objects(objects=indexing_objects)
 
-    if len(deleting_object) > 0:
-        delete_objects(object_ids=deleting_object)
-        logger.info(f'[ALGOLIA] Deleting {len(deleting_ids)} objectsID: {deleting_ids}')
+    if len(deleting_objects) > 0:
+        delete_objects(object_ids=deleting_objects)
 
 
 def orchestrate_from_venue_providers(venue_providers: List[Dict]) -> None:

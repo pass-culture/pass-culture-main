@@ -4,7 +4,7 @@ import os
 from algolia.orchestrator import orchestrate, orchestrate_from_venue_providers
 from connectors.redis import get_offer_ids, delete_offer_ids, get_venue_ids, delete_venue_ids, \
     get_venue_providers, delete_venue_providers
-from repository.offer_queries import get_paginated_offer_ids
+from repository.offer_queries import get_paginated_active_offer_ids
 from repository.offer_queries import get_paginated_offer_ids_by_venue_id
 from utils.converter import from_tuple_to_int
 from utils.logger import logger
@@ -46,18 +46,17 @@ def batch_indexing_offers_in_algolia_by_venue_provider(client: Redis) -> None:
     delete_venue_providers(client=client)
 
 
-def batch_indexing_offers_in_algolia_from_database(limit: int = 10000) -> None:
-    page = 0
+def batch_indexing_offers_in_algolia_from_database(limit: int = 10000, page: int = 0) -> None:
     has_still_offers = True
-
+    page_number = page
     while has_still_offers:
-        offer_ids_as_tuple = get_paginated_offer_ids(limit, page)
-        offer_ids_as_int = from_tuple_to_int(offer_ids_as_tuple)
+        offer_ids_as_tuple = get_paginated_active_offer_ids(limit=limit, page=page_number)
+        offer_ids_as_int = from_tuple_to_int(offer_ids=offer_ids_as_tuple)
 
         if len(offer_ids_as_int) > 0:
             orchestrate(offer_ids=offer_ids_as_int)
-            logger.info(f'[ALGOLIA] Indexing offers from page {page}...')
+            logger.info(f'[ALGOLIA] Indexing offers from page {page_number}...')
         else:
             has_still_offers = False
             logger.info('[ALGOLIA] Indexing offers finished!')
-        page += 1
+        page_number += 1

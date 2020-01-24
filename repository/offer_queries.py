@@ -442,9 +442,10 @@ def get_offers_by_ids(offer_ids: List[int]) -> List[Offer]:
         .all()
 
 
-def get_paginated_offer_ids(limit: int, page: int) -> List[tuple]:
+def get_paginated_active_offer_ids(limit: int, page: int) -> List[tuple]:
     return Offer.query \
-        .with_entities(Offer.id) \
+        .with_entities(Offer.id)\
+        .filter(Offer.isActive == True)\
         .order_by(Offer.id) \
         .offset(page * limit) \
         .limit(limit) \

@@ -10,7 +10,7 @@ from repository.offer_queries import department_or_national_offers, \
     find_offers_with_filter_parameters, \
     get_offers_for_recommendations_search, \
     get_active_offers, \
-    get_offers_by_venue_id, _has_remaining_stock, order_by_with_criteria, get_paginated_offer_ids, \
+    get_offers_by_venue_id, _has_remaining_stock, order_by_with_criteria, get_paginated_active_offer_ids, \
     get_paginated_offer_ids_by_venue_id_and_last_provider_id, _order_by_occurs_soon_or_is_thing_then_randomize, \
     get_paginated_offer_ids_by_venue_id, get_offers_by_ids
 from tests.conftest import clean_database
@@ -1425,40 +1425,70 @@ class GetOffersByIdsTest:
         assert offers[1].id == 2
 
 
-class GetPaginatedOfferIdsTest:
+class GetPaginatedActiveOfferIdsTest:
     @clean_database
-    def test_should_return_one_offer_id_from_first_page_when_limit_is_one(self, app):
+    def test_should_return_two_offer_ids_from_first_page_when_limit_is_two_and_two_active_offers(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
-        offer1 = create_offer_with_event_product(venue=venue)
-        offer2 = create_offer_with_event_product(venue=venue)
+        offer1 = create_offer_with_event_product(is_active=True, venue=venue)
+        offer2 = create_offer_with_event_product(is_active=True, venue=venue)
+        offer3 = create_offer_with_thing_product(is_active=True, venue=venue)
+        offer4 = create_offer_with_thing_product(is_active=True, venue=venue)
         PcObject.save(offer1, offer2)
 
         # When
-        offer_ids = get_paginated_offer_ids(limit=1, page=0)
+        offer_ids = get_paginated_active_offer_ids(limit=2, page=0)
+        print(offer_ids)
 
         # Then
-        assert len(offer_ids) == 1
+        assert len(offer_ids) == 2
         assert (offer1.id,) in offer_ids
-        assert (offer2.id,) not in offer_ids
+        assert (offer2.id,) in offer_ids
+        assert (offer3.id,) not in offer_ids
+        assert (offer4.id,) not in offer_ids
 
     @clean_database
-    def test_should_return_one_offer_id_from_second_page_when_limit_is_one(self, app):
+    def test_should_return_one_offer_id_from_second_page_when_limit_is_1_and_three_active_offers(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
-        offer1 = create_offer_with_event_product(venue=venue)
-        offer2 = create_offer_with_event_product(venue=venue)
+        offer1 = create_offer_with_event_product(is_active=True, venue=venue)
+        offer2 = create_offer_with_event_product(is_active=False, venue=venue)
+        offer3 = create_offer_with_thing_product(is_active=True, venue=venue)
+        offer4 = create_offer_with_thing_product(is_active=True, venue=venue)
         PcObject.save(offer1, offer2)
 
         # When
-        offer_ids = get_paginated_offer_ids(limit=1, page=1)
+        offer_ids = get_paginated_active_offer_ids(limit=1, page=1)
 
         # Then
         assert len(offer_ids) == 1
-        assert (offer2.id,) in offer_ids
+        assert (offer3.id,) in offer_ids
         assert (offer1.id,) not in offer_ids
+        assert (offer2.id,) not in offer_ids
+        assert (offer4.id,) not in offer_ids
+
+    @clean_database
+    def test_should_return_one_offer_id_from_third_page_when_limit_is_1_and_three_active_offers(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer1 = create_offer_with_event_product(is_active=True, venue=venue)
+        offer2 = create_offer_with_event_product(is_active=False, venue=venue)
+        offer3 = create_offer_with_thing_product(is_active=True, venue=venue)
+        offer4 = create_offer_with_thing_product(is_active=True, venue=venue)
+        PcObject.save(offer1, offer2)
+
+        # When
+        offer_ids = get_paginated_active_offer_ids(limit=1, page=2)
+
+        # Then
+        assert len(offer_ids) == 1
+        assert (offer4.id,) in offer_ids
+        assert (offer1.id,) not in offer_ids
+        assert (offer2.id,) not in offer_ids
+        assert (offer3.id,) not in offer_ids
 
 
 class GetPaginatedOfferIdsByVenueIdTest:

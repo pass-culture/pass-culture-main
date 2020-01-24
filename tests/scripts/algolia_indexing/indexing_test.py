@@ -39,7 +39,7 @@ class BatchIndexingOffersInAlgoliaFromDatabaseTest:
         PcObject.save(offer)
 
         # When
-        batch_indexing_offers_in_algolia_from_database(limit=1)
+        batch_indexing_offers_in_algolia_from_database(limit=1, page=0)
 
         # Then
         assert mock_orchestrate.call_count == 1
@@ -59,7 +59,7 @@ class BatchIndexingOffersInAlgoliaFromDatabaseTest:
         PcObject.save(offer1, offer2)
 
         # When
-        batch_indexing_offers_in_algolia_from_database(limit=1)
+        batch_indexing_offers_in_algolia_from_database(limit=1, page=0)
 
         # Then
         assert mock_orchestrate.call_count == 2
