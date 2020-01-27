@@ -4,6 +4,7 @@ import time
 from functools import wraps
 from io import StringIO
 
+import redis
 from apscheduler.schedulers.blocking import BlockingScheduler
 from flask import Flask
 from sqlalchemy import orm
@@ -16,13 +17,14 @@ from repository.feature_queries import feature_cron_synchronize_titelive_things,
 from repository.provider_queries import get_provider_by_local_class
 from scripts.cron_logger.cron_logger import build_cron_log_message
 from scripts.cron_logger.cron_status import CronStatus
-from utils.config import API_ROOT_PATH
+from utils.config import API_ROOT_PATH, REDIS_URL
 from utils.logger import logger
 
 app = Flask(__name__, template_folder='../templates')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['DEBUG'] = True
+app.redis_client = redis.from_url(url=REDIS_URL, decode_responses=True)
 db.init_app(app)
 
 TITELIVE_STOCKS_PROVIDER_NAME = "TiteLiveStocks"
@@ -106,6 +108,6 @@ if __name__ == '__main__':
 
     if feature_cron_synchronize_titelive_stocks():
         scheduler.add_job(pc_synchronize_titelive_stocks, 'cron', id='synchronize_titelive_stocks',
-                          day='*', hour='4')
+                          day='*', hour='6')
 
     scheduler.start()
