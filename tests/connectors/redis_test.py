@@ -4,8 +4,8 @@ from unittest.mock import patch, MagicMock
 import redis
 
 from connectors.redis import add_offer_id, get_offer_ids, delete_offer_ids, add_venue_id, \
-    get_venue_ids, delete_venue_ids, add_venue_provider, get_venue_providers, \
-    delete_venue_providers
+    get_venue_ids, delete_venue_ids, _add_venue_provider, get_venue_providers, \
+    delete_venue_providers, send_venue_provider_data_to_redis
 from models import PcObject
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_venue_provider, create_venue, create_user, create_offerer, \
@@ -33,8 +33,8 @@ class HandleOfferIdsTest:
     @patch('connectors.redis.REDIS_LIST_OFFER_IDS_NAME', 'fake_list_offer_ids')
     @patch('connectors.redis.redis')
     def test_should_add_offer_id_to_redis_when_algolia_feature_is_enabled(self,
-                                                                           mock_redis,
-                                                                           mock_feature_active):
+                                                                          mock_redis,
+                                                                          mock_feature_active):
         # Given
         client = MagicMock()
         client.rpush = MagicMock()
@@ -49,8 +49,8 @@ class HandleOfferIdsTest:
     @patch('connectors.redis.REDIS_LIST_OFFER_IDS_NAME', 'fake_list_offer_ids')
     @patch('connectors.redis.redis')
     def test_should_not_add_offer_id_to_redis_when_algolia_feature_is_disabled(self,
-                                                                                mock_redis,
-                                                                                mock_feature_active):
+                                                                               mock_redis,
+                                                                               mock_feature_active):
         # Given
         client = MagicMock()
         client.rpush = MagicMock()
@@ -97,8 +97,8 @@ class HandleVenueIdsTest:
     @patch('connectors.redis.REDIS_LIST_VENUE_IDS_NAME', 'fake_list_venue_ids')
     @patch('connectors.redis.redis')
     def test_should_add_venue_id_to_redis_when_algolia_feature_is_enabled(self,
-                                                                           mock_redis,
-                                                                           mock_feature_active):
+                                                                          mock_redis,
+                                                                          mock_feature_active):
         # Given
         client = MagicMock()
         client.rpush = MagicMock()
@@ -175,10 +175,11 @@ class HandleVenueProvidersTest:
         PcObject.save(user_offerer, venue_provider)
 
         # When
-        add_venue_provider(client=client, venue_provider=venue_provider)
+        _add_venue_provider(client=client, venue_provider=venue_provider)
 
         # Then
-        client.rpush.assert_called_once_with('fake_list_venue_providers', '{"id": 1, "lastProviderId": null, "venueId": 1}')
+        client.rpush.assert_called_once_with('fake_list_venue_providers',
+                                             '{"id": 1, "lastProviderId": null, "venueId": 1}')
 
     @patch('connectors.redis.feature_queries.is_active', return_value=False)
     @patch('connectors.redis.REDIS_LIST_VENUE_PROVIDERS_NAME', 'fake_list_venue_providers')
@@ -200,10 +201,33 @@ class HandleVenueProvidersTest:
         PcObject.save(user_offerer, venue_provider)
 
         # When
-        add_venue_provider(client=client, venue_provider=venue_provider)
+        _add_venue_provider(client=client, venue_provider=venue_provider)
 
         # Then
         client.rpush.assert_not_called()
+
+    @patch('connectors.redis._add_venue_provider')
+    @patch('connectors.redis.redis')
+    @clean_database
+    def test_send_venue_provider_should_call_add_venue_provider_with_redis_client_and_venue_provider(self,
+                                                                                                     mock_redis,
+                                                                                                     mock_add_venue_provider,
+                                                                                                     app):
+        # Given
+        mock_redis.from_url = MagicMock()
+        mock_redis.from_url.return_value = MagicMock()
+        provider = create_provider(idx=1, local_class='OpenAgenda', is_active=False, is_enable_for_pro=False)
+        offerer = create_offerer()
+        venue = create_venue(idx=1, offerer=offerer)
+        venue_provider = create_venue_provider(idx=1, provider=provider, venue=venue)
+        PcObject.save(venue_provider)
+
+        # When
+        send_venue_provider_data_to_redis(venue_provider=venue_provider)
+
+        # Then
+        mock_add_venue_provider.assert_called_once_with(client=mock_redis.from_url.return_value,
+                                                        venue_provider=venue_provider)
 
     @patch('connectors.redis.REDIS_VENUE_PROVIDERS_CHUNK_SIZE', 2)
     @patch('connectors.redis.REDIS_LIST_VENUE_PROVIDERS_NAME', 'fake_list_venue_providers')
