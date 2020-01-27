@@ -8,6 +8,15 @@ def check_stocks_are_editable_for_offer(offer: Offer):
         raise api_errors
 
 
+def check_stocks_are_editable_in_patch_stock(offer: Offer):
+    local_class = offer.lastProvider.localClass if offer.lastProvider else ''
+    is_not_editable = offer.isFromProvider is True and 'TiteLive' in local_class
+    if is_not_editable:
+        api_errors = ApiErrors()
+        api_errors.add_error('global', 'Les offres importées ne sont pas modifiables')
+        raise api_errors
+
+
 def check_offer_offerer_exists(offerer):
     if offerer is None:
         api_errors = ApiErrors()

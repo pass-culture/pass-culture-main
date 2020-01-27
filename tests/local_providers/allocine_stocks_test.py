@@ -1708,123 +1708,345 @@ class UpdateObjectsTest:
             assert second_stock.offerId == vf_offer.id
             assert second_stock.beginningDatetime == datetime(2019, 12, 4, 17, 0)
 
-    @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
-    @patch('local_providers.allocine_stocks.get_movies_showtimes')
-    @patch('local_providers.allocine_stocks.get_movie_poster')
-    @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
-    @clean_database
-    def test_should_create_one_different_offer_and_stock_for_different_venues(self,
-                                                                              mock_poster_get_allocine,
-                                                                              mock_call_allocine_api,
-                                                                              mock_redis,
-                                                                              app):
-        # Given
-        theater_token1 = 'test1'
-        theater_token2 = 'test2'
-        allocine_api_response = [{
-            "node": {
-                "movie": {
-                    "id": "TW92aWU6Mzc4MzI=",
-                    "internalId": 37832,
-                    "backlink": {
-                        "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                        "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9"
-                    },
-                    "data": {
-                        "eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E",
-                        "productionYear": 2001
-                    },
-                    "title": "Les Contes de la m\u00e8re poule",
-                    "originalTitle": "Les Contes de la m\u00e8re poule",
-                    "runtime": "PT1H50M0S",
-                    "poster": {
-                        "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
-                    },
-                    "synopsis": "synopsis du film",
-                    "releases": [{
-                        "name": "Released",
-                        "releaseDate": {
-                            "date": "2001-10-03"
+        @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
+        @patch('local_providers.allocine_stocks.get_movies_showtimes')
+        @patch('local_providers.allocine_stocks.get_movie_poster')
+        @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
+        @clean_database
+        def test_should_create_one_different_offer_and_stock_for_different_venues(self,
+                                                                                  mock_poster_get_allocine,
+                                                                                  mock_call_allocine_api,
+                                                                                  mock_redis,
+                                                                                  app):
+            # Given
+            theater_token1 = 'test1'
+            theater_token2 = 'test2'
+            allocine_api_response = [{
+                "node": {
+                    "movie": {
+                        "id": "TW92aWU6Mzc4MzI=",
+                        "internalId": 37832,
+                        "backlink": {
+                            "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
+                            "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9"
                         },
                         "data": {
-                            "visa_number": "2009993528"
-                        }
-                    }],
-                    "credits": {
-                        "edges": [{
-                            "node": {
-                                "person": {
-                                    "firstName": "Farkhondeh",
-                                    "lastName": "Torabi"
-                                },
-                                "position": {
-                                    "name": "DIRECTOR"
-                                }
-                            }}
-                        ]},
-                    "cast": {
-                        "backlink": {
-                            "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                            "label": "Casting complet du film sur AlloCin\u00e9"
+                            "eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E",
+                            "productionYear": 2001
                         },
-                        "edges": []
+                        "title": "Les Contes de la m\u00e8re poule",
+                        "originalTitle": "Les Contes de la m\u00e8re poule",
+                        "runtime": "PT1H50M0S",
+                        "poster": {
+                            "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
+                        },
+                        "synopsis": "synopsis du film",
+                        "releases": [{
+                            "name": "Released",
+                            "releaseDate": {
+                                "date": "2001-10-03"
+                            },
+                            "data": {
+                                "visa_number": "2009993528"
+                            }
+                        }],
+                        "credits": {
+                            "edges": [{
+                                "node": {
+                                    "person": {
+                                        "firstName": "Farkhondeh",
+                                        "lastName": "Torabi"
+                                    },
+                                    "position": {
+                                        "name": "DIRECTOR"
+                                    }
+                                }}
+                            ]},
+                        "cast": {
+                            "backlink": {
+                                "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
+                                "label": "Casting complet du film sur AlloCin\u00e9"
+                            },
+                            "edges": []
+                        },
+                        "countries": [{
+                            "name": "Iran",
+                            "alpha3": "IRN"
+                        }],
+                        "genres": [
+                            "ANIMATION",
+                            "FAMILY"
+                        ],
+                        "companies": []
                     },
-                    "countries": [{
-                        "name": "Iran",
-                        "alpha3": "IRN"
-                    }],
-                    "genres": [
-                        "ANIMATION",
-                        "FAMILY"
-                    ],
-                    "companies": []
-                },
-                "showtimes": [{
-                    "startsAt": "2019-12-03T10:00:00",
-                    "diffusionVersion": "LOCAL",
-                    "projection": ["DIGITAL"],
-                    "experience": None
-                }]}
-        }]
-        mock_call_allocine_api.side_effect = [iter(allocine_api_response),
-                                              iter(allocine_api_response)]
-        mock_poster_get_allocine.return_value = bytes()
+                    "showtimes": [{
+                        "startsAt": "2019-12-03T10:00:00",
+                        "diffusionVersion": "LOCAL",
+                        "projection": ["DIGITAL"],
+                        "experience": None
+                    }]}
+            }]
+            mock_call_allocine_api.side_effect = [iter(allocine_api_response),
+                                                  iter(allocine_api_response)]
+            mock_poster_get_allocine.return_value = bytes()
 
-        offerer = create_offerer(siren='775671464')
-        venue1 = create_venue(offerer, name='Cinema Allocine 1',
-                              siret='77567146400110',
-                              booking_email='toto1@example.com')
-        venue2 = create_venue(offerer, name='Cinema Allocine 2',
-                              siret='98765432345677',
-                              booking_email='toto2@example.com')
-        repository.save(venue1, venue2)
+            offerer = create_offerer(siren='775671464')
+            venue1 = create_venue(offerer, name='Cinema Allocine 1',
+                                  siret='77567146400110',
+                                  booking_email='toto1@example.com')
+            venue2 = create_venue(offerer, name='Cinema Allocine 2',
+                                  siret='98765432345677',
+                                  booking_email='toto2@example.com')
+            repository.save(venue1, venue2)
 
-        allocine_provider = get_provider_by_local_class('AllocineStocks')
-        allocine_provider.isActive = True
-        venue_provider1 = create_venue_provider(venue1, allocine_provider, venue_id_at_offer_provider=theater_token1)
-        venue_provider_price_rule1 = create_venue_provider_price_rule(venue_provider1)
-        venue_provider2 = create_venue_provider(venue2, allocine_provider, venue_id_at_offer_provider=theater_token2)
-        venue_provider_price_rule2 = create_venue_provider_price_rule(venue_provider2)
-        repository.save(venue_provider1, venue_provider2, venue_provider_price_rule1, venue_provider_price_rule2)
+            allocine_provider = get_provider_by_local_class('AllocineStocks')
+            allocine_provider.isActive = True
+            venue_provider1 = create_venue_provider(venue1, allocine_provider, venue_id_at_offer_provider=theater_token1)
+            venue_provider_price_rule1 = create_venue_provider_price_rule(venue_provider1)
+            venue_provider2 = create_venue_provider(venue2, allocine_provider, venue_id_at_offer_provider=theater_token2)
+            venue_provider_price_rule2 = create_venue_provider_price_rule(venue_provider2)
+            repository.save(venue_provider1, venue_provider2, venue_provider_price_rule1, venue_provider_price_rule2)
 
-        allocine_stocks_provider1 = AllocineStocks(venue_provider1)
-        allocine_stocks_provider1.updateObjects()
+            allocine_stocks_provider1 = AllocineStocks(venue_provider1)
+            allocine_stocks_provider1.updateObjects()
 
-        allocine_stocks_provider2 = AllocineStocks(venue_provider2)
-        # When
-        allocine_stocks_provider2.updateObjects()
+            allocine_stocks_provider2 = AllocineStocks(venue_provider2)
+            # When
+            allocine_stocks_provider2.updateObjects()
 
-        # Then
-        created_product = Product.query.all()
-        created_offer = Offer.query.all()
-        created_stock = Stock.query.all()
+            # Then
+            created_product = Product.query.all()
+            created_offer = Offer.query.all()
+            created_stock = Stock.query.all()
 
-        assert mock_poster_get_allocine.call_count == 2
-        assert len(created_product) == 1
-        assert len(created_offer) == 2
-        assert created_offer[0].venueId == venue1.id
-        assert created_offer[1].venueId == venue2.id
-        assert len(created_stock) == 2
+            assert mock_poster_get_allocine.call_count == 2
+            assert len(created_product) == 1
+            assert len(created_offer) == 2
+            assert created_offer[0].venueId == venue1.id
+            assert created_offer[1].venueId == venue2.id
+            assert len(created_stock) == 2
+
+        @patch('local_providers.allocine_stocks.get_movies_showtimes')
+        @patch('local_providers.allocine_stocks.get_movie_poster')
+        @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
+        @clean_database
+        def test_should_update_stocks_info_after_pro_user_modification(self,
+                                                          mock_poster_get_allocine,
+                                                          mock_call_allocine_api,
+                                                          app):
+            # Given
+            theater_token = 'test'
+            mock_poster_get_allocine.return_value = bytes()
+            mock_call_allocine_api.side_effect = [iter([{
+                    "node": {
+                        "movie": {
+                            "id": "TW92aWU6Mzc4MzI=",
+                            "internalId": 37832,
+                            "backlink": {
+                                "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
+                                "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9"
+                            },
+                            "data": {
+                                "eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E",
+                                "productionYear": 2001
+                            },
+                            "title": "Les Contes de la m\u00e8re poule",
+                            "originalTitle": "Les Contes de la m\u00e8re poule",
+                            "runtime": "PT1H50M0S",
+                            "poster": {
+                                "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
+                            },
+                            "synopsis": "synopsis du film",
+                            "releases": [
+                                {
+                                    "name": "Released",
+                                    "releaseDate": {
+                                        "date": "2001-10-03"
+                                    },
+                                    "data": {
+                                        "visa_number": "2009993528"
+                                    }
+                                }
+                            ],
+                            "credits": {
+                                "edges": [
+                                    {
+                                        "node": {
+                                            "person": {
+                                                "firstName": "Farkhondeh",
+                                                "lastName": "Torabi"
+                                            },
+                                            "position": {
+                                                "name": "DIRECTOR"
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "cast": {
+                                "backlink": {
+                                    "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
+                                    "label": "Casting complet du film sur AlloCin\u00e9"
+                                },
+                                "edges": []
+                            },
+                            "countries": [
+                                {
+                                    "name": "Iran",
+                                    "alpha3": "IRN"
+                                }
+                            ],
+                            "genres": [
+                                "ANIMATION",
+                                "FAMILY"
+                            ],
+                            "companies": []
+                        },
+                        "showtimes": [
+                            {
+                                "startsAt": "2019-12-03T10:00:00",
+                                "diffusionVersion": "LOCAL",
+                                "projection": [
+                                    "DIGITAL"
+                                ],
+                                "experience": None
+                            },
+                            {
+                                "startsAt": "2019-12-04T18:00:00",
+                                "diffusionVersion": "LOCAL",
+                                "projection": [
+                                    "DIGITAL"
+                                ],
+                                "experience": None
+                            }
+                        ]
+                    }
+                }]),
+                iter([{
+                    "node": {
+                        "movie": {
+                            "id": "TW92aWU6Mzc4MzI=",
+                            "internalId": 37832,
+                            "backlink": {
+                                "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
+                                "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9"
+                            },
+                            "data": {
+                                "eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E",
+                                "productionYear": 2001
+                            },
+                            "title": "Les Contes de la m\u00e8re poule",
+                            "originalTitle": "Les Contes de la m\u00e8re poule",
+                            "runtime": "PT1H50M0S",
+                            "poster": {
+                                "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
+                            },
+                            "synopsis": "synopsis du film",
+                            "releases": [
+                                {
+                                    "name": "Released",
+                                    "releaseDate": {
+                                        "date": "2001-10-03"
+                                    },
+                                    "data": {
+                                        "visa_number": "2009993528"
+                                    }
+                                }
+                            ],
+                            "credits": {
+                                "edges": [
+                                    {
+                                        "node": {
+                                            "person": {
+                                                "firstName": "Farkhondeh",
+                                                "lastName": "Torabi"
+                                            },
+                                            "position": {
+                                                "name": "DIRECTOR"
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "cast": {
+                                "backlink": {
+                                    "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
+                                    "label": "Casting complet du film sur AlloCin\u00e9"
+                                },
+                                "edges": []
+                            },
+                            "countries": [
+                                {
+                                    "name": "Iran",
+                                    "alpha3": "IRN"
+                                }
+                            ],
+                            "genres": [
+                                "ANIMATION",
+                                "FAMILY"
+                            ],
+                            "companies": []
+                        },
+                        "showtimes": [
+                            {
+                                "startsAt": "2019-12-03T10:00:00",
+                                "diffusionVersion": "LOCAL",
+                                "projection": [
+                                    "DIGITAL"
+                                ],
+                                "experience": None
+                            },
+                            {
+                                "startsAt": "2019-12-04T18:00:00",
+                                "diffusionVersion": "LOCAL",
+                                "projection": [
+                                    "DIGITAL"
+                                ],
+                                "experience": None
+                            }
+                        ]
+                    }
+                }])
+            ]
+
+            offerer = create_offerer(siren='775671464')
+            venue = create_venue(offerer, name='Cinema Allocine', siret='77567146400110',
+                                 booking_email='toto@example.com')
+            repository.save(venue)
+
+            allocine_provider = get_provider_by_local_class('AllocineStocks')
+            allocine_provider.isActive = True
+            venue_provider = create_venue_provider(venue, allocine_provider, venue_id_at_offer_provider=theater_token)
+            venue_provider_price_rule = create_venue_provider_price_rule(venue_provider)
+            repository.save(venue_provider, venue_provider_price_rule)
+
+            # When
+            allocine_stocks_provider = AllocineStocks(venue_provider)
+            allocine_stocks_provider.updateObjects()
+
+            created_stocks = Stock.query.all()
+
+            first_stock = created_stocks[0]
+            first_stock.fieldsUpdated = ['available', 'price']
+            first_stock.available = 100
+            first_stock.price = 20
+
+            second_stock = created_stocks[1]
+            second_stock.fieldsUpdated = ['bookingLimitDatetime']
+            second_stock.bookingLimitDatetime = datetime(2019, 12, 4, 15, 0)
+
+            allocine_stocks_provider = AllocineStocks(venue_provider)
+            allocine_stocks_provider.updateObjects()
+
+            # Then
+            assert len(created_stocks) == 2
+            assert first_stock.available == 100
+            assert first_stock.price == 20
+            assert first_stock.bookingLimitDatetime == datetime(2019, 12, 3, 9, 0)
+
+            assert second_stock.available is None
+            assert second_stock.price == 10
+            assert second_stock.bookingLimitDatetime == datetime(2019, 12, 4, 15, 0)
 
 
 class ParseMovieDurationTest:

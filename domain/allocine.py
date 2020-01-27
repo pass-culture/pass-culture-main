@@ -1,6 +1,7 @@
-from typing import Callable
+from typing import Callable, List
 
 from connectors.api_allocine import get_movies_showtimes_from_allocine, get_movie_poster_from_allocine
+from models import Offer
 from utils.logger import logger
 
 MOVIE_SPECIAL_EVENT = 'SPECIAL_EVENT'
@@ -26,3 +27,9 @@ def get_movie_poster(poster_url: str,
 
 def _exclude_movie_showtimes_with_special_event_type(movies_showtime: list) -> list:
     return list(filter(lambda movie_showtime: movie_showtime['node']['movie']['type'] != MOVIE_SPECIAL_EVENT, movies_showtime))
+
+
+def get_editable_fields_when_offer_from_allocine(offer: Offer) -> List[str]:
+    local_class = offer.lastProvider.localClass if offer.lastProvider else ''
+    if local_class == 'AllocineStocks':
+        return ['available', 'price', 'bookingLimitDatetime']

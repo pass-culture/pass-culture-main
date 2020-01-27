@@ -24,26 +24,6 @@ FRENCH_VERSION_SUFFIX = 'VF'
 ORIGINAL_VERSION_SUFFIX = 'VO'
 
 
-def _build_movie_uuid(movie_information: Dict, venue: Venue) -> str:
-    return f"{movie_information['id']}%{venue.siret}"
-
-
-def _build_french_movie_uuid(movie_information: Dict, venue: Venue) -> str:
-    return f"{_build_movie_uuid(movie_information, venue)}-{FRENCH_VERSION_SUFFIX}"
-
-
-def _build_original_movie_uuid(movie_information: Dict, venue: Venue) -> str:
-    return f"{_build_movie_uuid(movie_information, venue)}-{ORIGINAL_VERSION_SUFFIX}"
-
-
-def _build_showtime_uuid(showtime_details: Dict) -> str:
-    return f"{showtime_details['diffusionVersion']}/{showtime_details['startsAt']}"
-
-
-def _build_stock_uuid(movie_information: Dict, venue: Venue, showtime_details: Dict) -> str:
-    return f"{_build_movie_uuid(movie_information, venue)}#{_build_showtime_uuid(showtime_details)}"
-
-
 class AllocineStocks(LocalProvider):
     name = "Allociné"
     can_create = True
@@ -176,11 +156,19 @@ class AllocineStocks(LocalProvider):
 
         local_tz = get_dept_timezone(self.venue.departementCode)
         date_in_utc = _format_date_from_local_timezone_to_utc(parsed_showtimes['startsAt'], local_tz)
-
         allocine_stock.beginningDatetime = date_in_utc
-        allocine_stock.bookingLimitDatetime = date_in_utc
-        allocine_stock.available = None
-        allocine_stock.price = self.apply_allocine_price_rule(allocine_stock)
+
+        if not allocine_stock.fieldsUpdated:
+            allocine_stock.fieldsUpdated = []
+
+        if 'bookingLimitDatetime' not in allocine_stock.fieldsUpdated:
+            allocine_stock.bookingLimitDatetime = date_in_utc
+
+        if 'available' not in allocine_stock.fieldsUpdated:
+            allocine_stock.available = None
+
+        if 'price' not in allocine_stock.fieldsUpdated:
+            allocine_stock.price = self.apply_allocine_price_rule(allocine_stock)
 
         movie_duration = self.movie_information['duration']
         stock_movie_duration = timedelta(minutes=movie_duration) if movie_duration else timedelta(seconds=1)
@@ -307,3 +295,23 @@ def _has_french_version_product(movies_showtimes: List[Dict]) -> bool:
 
 def _is_original_version_offer(id_at_providers: str) -> bool:
     return id_at_providers[-3:] == f"-{ORIGINAL_VERSION_SUFFIX}"
+
+
+def _build_movie_uuid(movie_information: Dict, venue: Venue) -> str:
+    return f"{movie_information['id']}%{venue.siret}"
+
+
+def _build_french_movie_uuid(movie_information: Dict, venue: Venue) -> str:
+    return f"{_build_movie_uuid(movie_information, venue)}-{FRENCH_VERSION_SUFFIX}"
+
+
+def _build_original_movie_uuid(movie_information: Dict, venue: Venue) -> str:
+    return f"{_build_movie_uuid(movie_information, venue)}-{ORIGINAL_VERSION_SUFFIX}"
+
+
+def _build_showtime_uuid(showtime_details: Dict) -> str:
+    return f"{showtime_details['diffusionVersion']}/{showtime_details['startsAt']}"
+
+
+def _build_stock_uuid(movie_information: Dict, venue: Venue, showtime_details: Dict) -> str:
+    return f"{_build_movie_uuid(movie_information, venue)}#{_build_showtime_uuid(showtime_details)}"

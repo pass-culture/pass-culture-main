@@ -155,9 +155,8 @@ class Get:
             offerer_response = response.json[0]
             assert offerer_response['name'] == 'offreur A'
             assert set(offerer_response.keys()) == {
-                'address', 'bic', 'city', 'dateCreated', 'dateModifiedAtLastProvider', 'iban', 'id', 'idAtProviders',
-                'isActive',
-                'isValidated', 'lastProviderId', 'managedVenues', 'modelName', 'nOffers',
+                'address', 'bic', 'city', 'dateCreated', 'dateModifiedAtLastProvider', 'fieldsUpdated', 'iban', 'id',
+                'idAtProviders', 'isActive', 'isValidated', 'lastProviderId', 'managedVenues', 'modelName', 'nOffers',
                 'name', 'postalCode', 'siren', 'thumbCount', 'userHasAccess'
             }
 
@@ -254,7 +253,7 @@ class Get:
             assert response.status_code == 200
             assert len(response.json) == 2
             assert list(response.json[0].keys()) == [
-                'address', 'bic', 'city', 'dateCreated', 'dateModifiedAtLastProvider',
+                'address', 'bic', 'city', 'dateCreated', 'dateModifiedAtLastProvider', 'fieldsUpdated',
                 'iban', 'id', 'idAtProviders', 'isActive',
                 'isValidated', 'lastProviderId', 'managedVenues', 'modelName', 'nOffers',
                 'name', 'postalCode', 'siren', 'thumbCount', 'userHasAccess'

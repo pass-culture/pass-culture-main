@@ -120,6 +120,34 @@ class Patch:
             assert request_update.status_code == 200
             mock_redis.assert_called_once_with(client=app.redis_client, offer_id=stock.offerId)
 
+        @clean_database
+        def when_offer_come_from_allocine_provider(self, app):
+            # given
+            allocine_provider = Provider \
+                .query \
+                .filter(Provider.localClass == 'AllocineStocks') \
+                .first()
+
+            user = create_user(email='test@email.com')
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            offer = create_offer_with_thing_product(venue, last_provider_id=allocine_provider.id)
+            stock = create_stock(offer=offer, available=10)
+            repository.save(user, user_offerer, stock)
+            humanized_stock_id = humanize(stock.id)
+
+            # when
+            request_update = TestClient(app.test_client()).with_auth('test@email.com') \
+                .patch('/stocks/' + humanized_stock_id, json={'available': 5, 'price': 20})
+
+            # then
+            assert request_update.status_code == 200
+            request_after_update = TestClient(app.test_client()).with_auth('test@email.com').get(
+                '/stocks/' + humanized_stock_id)
+            assert request_after_update.json['available'] == 5
+            assert request_after_update.json['price'] == 20
+
     class Returns400:
         @clean_database
         def when_wrong_type_for_available(self, app):
@@ -201,7 +229,7 @@ class Patch:
             assert response.json["bookingLimitDatetime"] == ['Ce paramètre est obligatoire']
 
         @clean_database
-        def when_offer_come_from_provider(self, app):
+        def when_offer_come_from_titelive_provider(self, app):
             # given
             tite_live_provider = Provider \
                 .query \

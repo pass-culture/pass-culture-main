@@ -149,6 +149,7 @@ def test_pending_validation_return_only_requested_data(app):
     expected_result = {
         'isActive': True,
         'dateModifiedAtLastProvider': serialize(offerer.dateModifiedAtLastProvider),
+        'fieldsUpdated': {},
         'address': '123 rue de Paris',
         'postalCode': '93100',
         'city': 'Montreuil',
@@ -191,6 +192,7 @@ def test_pending_validation_return_only_requested_data(app):
               'city': 'Montreuil',
               'comment': 'comment because no siret',
               'departementCode': '93',
+              'fieldsUpdated': {},
               'id': humanize(venue.id),
               'managingOffererId': humanize(offerer.id),
               'name': 'La petite librairie',

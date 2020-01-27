@@ -59,6 +59,16 @@ def check_offer_id_is_present_in_request(offer_id: str):
         raise errors
 
 
+def check_offer_is_editable_in_patch_stock(offer: Offer):
+    local_class = offer.lastProvider.localClass if offer.lastProvider else ''
+    is_not_editable = offer.isFromProvider is True and 'TiteLive' in local_class
+    if is_not_editable:
+        error = ApiErrors()
+        error.status_code = 400
+        error.add_error('global', "Les offres importées ne sont pas modifiables")
+        raise error
+
+
 def check_offer_is_editable(offer: Offer):
     if not offer.isEditable:
         error = ApiErrors()

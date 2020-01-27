@@ -1,12 +1,14 @@
 """ providable mixin """
 from datetime import datetime
 
+from bs4 import element
 from sqlalchemy import BigInteger, \
     CheckConstraint, \
     Column, \
     DateTime, \
     ForeignKey, \
-    String
+    String, JSON
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship
 
@@ -36,6 +38,9 @@ class ProvidableMixin:
     dateModifiedAtLastProvider = Column(DateTime,
                                         nullable=True,
                                         default=datetime.utcnow)
+
+    fieldsUpdated = Column(ARRAY(String),
+                           default=[])
 
     def ensure_can_be_updated(self):
         if self.lastProvider:

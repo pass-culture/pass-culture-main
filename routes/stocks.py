@@ -2,6 +2,7 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user
 
 from connectors import redis
+from domain.allocine import get_editable_fields_when_offer_from_allocine
 from domain.stocks import delete_stock_and_cancel_bookings
 from domain.user_emails import send_batch_cancellation_emails_to_users, \
     send_offerer_bookings_recap_email_after_offerer_cancellation
@@ -25,7 +26,7 @@ from validation.routes.offers import check_offer_is_editable
 from validation.routes.stocks import check_request_has_offer_id, \
     check_dates_are_allowed_on_new_stock, \
     check_dates_are_allowed_on_existing_stock, \
-    check_stocks_are_editable_for_offer
+    check_stocks_are_editable_for_offer, check_stocks_are_editable_in_patch_stock
 
 search_models = [
     # Order is important
