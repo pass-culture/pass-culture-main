@@ -444,8 +444,8 @@ def get_offers_by_ids(offer_ids: List[int]) -> List[Offer]:
 
 def get_paginated_active_offer_ids(limit: int, page: int) -> List[tuple]:
     return Offer.query \
-        .with_entities(Offer.id)\
-        .filter(Offer.isActive == True)\
+        .with_entities(Offer.id) \
+        .filter(Offer.isActive == True) \
         .order_by(Offer.id) \
         .offset(page * limit) \
         .limit(limit) \
@@ -470,6 +470,18 @@ def get_paginated_offer_ids_by_venue_id_and_last_provider_id(last_provider_id: s
         .with_entities(Offer.id) \
         .filter(Offer.lastProviderId == last_provider_id) \
         .filter(Offer.venueId == venue_id) \
+        .order_by(Offer.id) \
+        .offset(page * limit) \
+        .limit(limit) \
+        .all()
+
+
+def get_paginated_expired_offer_ids(limit: int, page: int) -> List[tuple]:
+    return Offer.query \
+        .join(Stock)\
+        .with_entities(Offer.id)\
+        .filter(Offer.isActive == True) \
+        .filter(Stock.bookingLimitDatetime < (datetime.utcnow() - timedelta(days=1))) \
         .order_by(Offer.id) \
         .offset(page * limit) \
         .limit(limit) \

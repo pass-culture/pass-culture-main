@@ -13,7 +13,7 @@ from repository.offer_queries import department_or_national_offers, \
     get_active_offers, \
     get_offers_by_venue_id, _has_remaining_stock, order_by_with_criteria, get_paginated_active_offer_ids, \
     get_paginated_offer_ids_by_venue_id_and_last_provider_id, _order_by_occurs_soon_or_is_thing_then_randomize, \
-    get_paginated_offer_ids_by_venue_id, get_offers_by_ids
+    get_paginated_offer_ids_by_venue_id, get_offers_by_ids, get_paginated_expired_offer_ids
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_criterion, create_user, create_offerer, \
     create_venue, create_user_offerer, create_mediation, create_favorite, create_provider
@@ -1529,7 +1529,7 @@ class GetPaginatedOfferIdsByVenueIdTest:
         assert (offer1.id,) not in offer_ids
 
 
-class GetPaginatedOfferIdsByVenueIdAndLastProviderId:
+class GetPaginatedOfferIdsByVenueIdAndLastProviderIdTest:
     @clean_database
     def test_should_return_offer_ids_when_exist_and_venue_id_and_last_provider_id_match(self, app):
         # Given
@@ -1652,3 +1652,98 @@ class GetPaginatedOfferIdsByVenueIdAndLastProviderId:
 
         # Then
         assert len(offer_ids) == 0
+
+
+@freeze_time('2020-01-01 10:00:00')
+class GetPaginatedExpiredOfferIdsTest:
+    @clean_database
+    def test_should_return_one_offer_id_from_first_page_when_offer_is_expired_and_active(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer1 = create_offer_with_event_product(is_active=True, venue=venue)
+        offer2 = create_offer_with_event_product(is_active=True, venue=venue)
+        offer3 = create_offer_with_thing_product(is_active=True, venue=venue)
+        offer4 = create_offer_with_thing_product(is_active=True, venue=venue)
+        stock1 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 31, 0, 0, 0), offer=offer1)
+        stock2 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 1, 1, 0, 0, 0), offer=offer2)
+        stock3 = create_stock_from_offer(booking_limit_datetime=datetime(2020, 1, 2, 0, 0, 0), offer=offer3)
+        stock4 = create_stock_from_offer(booking_limit_datetime=datetime(2020, 1, 3, 0, 0, 0), offer=offer4)
+        PcObject.save(stock1, stock2, stock3, stock4)
+
+        # When
+        results = get_paginated_expired_offer_ids(limit=1, page=0)
+
+        # Then
+        assert len(results) == 1
+        assert (offer1.id,) in results
+        assert (offer2.id,) not in results
+        assert (offer3.id,) not in results
+        assert (offer4.id,) not in results
+
+    @clean_database
+    def test_should_return_two_offer_ids_from_second_page_when_offers_are_expired_and_active(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer1 = create_offer_with_event_product(is_active=True, venue=venue)
+        offer2 = create_offer_with_event_product(is_active=True, venue=venue)
+        offer3 = create_offer_with_thing_product(is_active=True, venue=venue)
+        offer4 = create_offer_with_thing_product(is_active=True, venue=venue)
+        stock1 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 21, 0, 0, 0), offer=offer1)
+        stock2 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 22, 0, 0, 0), offer=offer2)
+        stock3 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 23, 0, 0, 0), offer=offer3)
+        stock4 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 24, 0, 0, 0), offer=offer4)
+        PcObject.save(stock1, stock2, stock3, stock4)
+
+        # When
+        results = get_paginated_expired_offer_ids(limit=2, page=1)
+
+        # Then
+        assert len(results) == 2
+        assert (offer1.id,) not in results
+        assert (offer2.id,) not in results
+        assert (offer3.id,) in results
+        assert (offer4.id,) in results
+
+    @clean_database
+    def test_should_not_return_offer_ids_when_offers_are_expired_and_not_active(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer1 = create_offer_with_event_product(is_active=False, venue=venue)
+        offer2 = create_offer_with_event_product(is_active=False, venue=venue)
+        offer3 = create_offer_with_thing_product(is_active=False, venue=venue)
+        offer4 = create_offer_with_thing_product(is_active=False, venue=venue)
+        stock1 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 21, 0, 0, 0), offer=offer1)
+        stock2 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 22, 0, 0, 0), offer=offer2)
+        stock3 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 23, 0, 0, 0), offer=offer3)
+        stock4 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 24, 0, 0, 0), offer=offer4)
+        PcObject.save(stock1, stock2, stock3, stock4)
+
+        # When
+        results = get_paginated_expired_offer_ids(limit=2, page=0)
+
+        # Then
+        assert len(results) == 0
+
+    @clean_database
+    def test_should_not_return_offer_ids_when_offers_are_not_expired_and_active(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer1 = create_offer_with_event_product(is_active=True, venue=venue)
+        offer2 = create_offer_with_event_product(is_active=True, venue=venue)
+        offer3 = create_offer_with_thing_product(is_active=True, venue=venue)
+        offer4 = create_offer_with_thing_product(is_active=True, venue=venue)
+        stock1 = create_stock_from_offer(booking_limit_datetime=datetime(2020, 1, 2, 0, 0, 0), offer=offer1)
+        stock2 = create_stock_from_offer(booking_limit_datetime=datetime(2020, 1, 2, 0, 0, 0), offer=offer2)
+        stock3 = create_stock_from_offer(booking_limit_datetime=datetime(2020, 1, 2, 0, 0, 0), offer=offer3)
+        stock4 = create_stock_from_offer(booking_limit_datetime=datetime(2020, 1, 2, 0, 0, 0), offer=offer4)
+        PcObject.save(stock1, stock2, stock3, stock4)
+
+        # When
+        results = get_paginated_expired_offer_ids(limit=2, page=0)
+
+        # Then
+        assert len(results) == 0
