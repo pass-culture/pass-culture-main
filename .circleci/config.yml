@@ -9,7 +9,7 @@ jobs:
       - run:
           name: Initialization environment
           command: |
-            git clone https://github.com/betagouv/pass-culture-main.git
+            git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/betagouv/pass-culture-main.git pass-culture-main || git clone https://github.com/betagouv/pass-culture-main.git pass-culture-main
             cd pass-culture-main
             rm -rf shared
             git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/betagouv/pass-culture-api.git api || git clone https://github.com/betagouv/pass-culture-api.git api
@@ -21,8 +21,8 @@ jobs:
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use v8.15.1
             cd ~/pass-culture-main/pro
+            nvm install
             yarn install
             yarn test:unit --coverage
             yarn coveralls
@@ -47,8 +47,8 @@ jobs:
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use v8.15.1
             cd ~/pass-culture-main/pro
+            nvm install
             yarn install
             yarn start
           background: true
@@ -64,8 +64,8 @@ jobs:
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use v8.15.1
             cd ~/pass-culture-main/pro
+            nvm install
             dockerize -wait http://localhost/health/api -timeout 5m -wait-retry-interval 5s
             dockerize -wait http://localhost/health/database -timeout 5m -wait-retry-interval 5s
             yarn test:cafe
@@ -88,7 +88,7 @@ jobs:
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use "$NODE_VERSION"
+            nvm install
             yarn install
             set -a; source config/run_envs/"${CIRCLE_BRANCH}" && yarn build
       - run:

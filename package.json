@@ -4,7 +4,7 @@
   "private": true,
   "homepage": "/",
   "engines": {
-    "node": ">=8.12.0 <8.16"
+    "node": ">=12 <13"
   },
   "dependencies": {
     "@sentry/browser": "^5.7.0",
