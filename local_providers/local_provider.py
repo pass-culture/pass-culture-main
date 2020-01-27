@@ -4,9 +4,9 @@ from collections import Iterator
 from datetime import datetime
 from pprint import pprint
 
-from flask import current_app as app
+import redis
 
-from connectors import redis
+from connectors import redis as redis_connector
 from connectors.thumb_storage import save_provider_thumb
 from local_providers.chunk_manager import get_existing_pc_obj, save_chunks
 from local_providers.providable_info import ProvidableInfo
@@ -17,6 +17,7 @@ from models.local_provider_event import LocalProviderEvent, LocalProviderEventTy
 from models.pc_object import PcObject
 from repository.providable_queries import get_last_update_for_provider
 from repository.provider_queries import get_provider_by_local_class
+from utils.config import REDIS_URL
 from utils.logger import logger
 from utils.object_storage import build_thumb_path
 
@@ -226,7 +227,11 @@ class LocalProvider(Iterator):
             self.venue_provider.lastSyncDate = datetime.utcnow()
             self.venue_provider.sync_worker_id = None
             PcObject.save(self.venue_provider)
-            redis.add_venue_provider(client=app.redis_client, venue_provider=self.venue_provider)
+            self._send_synchronized_data_to_redis()
+
+    def _send_synchronized_data_to_redis(self):
+        redis_client = redis.from_url(url=REDIS_URL, decode_responses=True)
+        redis_connector.add_venue_provider(client=redis_client, venue_provider=self.venue_provider)
 
 
 def _save_same_thumb_from_thumb_count_to_index(pc_object: Model, thumb_index: int, image_as_bytes: bytes):

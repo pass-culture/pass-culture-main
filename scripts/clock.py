@@ -4,7 +4,6 @@ import time
 from functools import wraps
 from io import StringIO
 
-import redis
 from apscheduler.schedulers.blocking import BlockingScheduler
 from flask import Flask
 from mailjet_rest import Client
@@ -31,7 +30,7 @@ from scripts.beneficiary import remote_import
 from scripts.cron_logger.cron_logger import build_cron_log_message
 from scripts.cron_logger.cron_status import CronStatus
 from scripts.dashboard.write_dashboard import write_dashboard
-from utils.config import API_ROOT_PATH, REDIS_URL
+from utils.config import API_ROOT_PATH
 from utils.logger import logger
 from utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET, parse_email_addresses
 
@@ -39,7 +38,6 @@ app = Flask(__name__, template_folder='../templates')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['DEBUG'] = True
-app.redis_client = redis.from_url(url=REDIS_URL, decode_responses=True)
 db.init_app(app)
 
 ALLOCINE_STOCKS_PROVIDER_NAME = "AllocineStocks"
