@@ -43,7 +43,7 @@ describe('components | Result', () => {
     const offerName = wrapper.findWhere(node => node.text() === 'Les fleurs du mal').first()
     const offerLabel = wrapper.findWhere(node => node.text() === 'Livre').first()
     const offerDateRange = wrapper
-      .findWhere(node => node.text() === 'du 2019-1-1 au 2019-1-30')
+      .findWhere(node => node.text() === 'du 1/1/2019 au 1/30/2019')
       .first()
     const offerDistance = wrapper.findWhere(node => node.text() === '5879 km').first()
     const offerMediation = wrapper.find('img')

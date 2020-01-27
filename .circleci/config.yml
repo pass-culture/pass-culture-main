@@ -9,7 +9,7 @@ jobs:
       - run:
           name: Initialization environment
           command: |
-            git clone https://github.com/betagouv/pass-culture-main.git
+            git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/betagouv/pass-culture-main.git pass-culture-main || git clone https://github.com/betagouv/pass-culture-main.git pass-culture-main
             cd pass-culture-main
             sudo curl -L "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
             sudo chmod +x /usr/local/bin/docker-compose
@@ -23,8 +23,8 @@ jobs:
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use v8.15.1
             cd ~/pass-culture-main/webapp
+            nvm install
             yarn install
             yarn test:unit --coverage
             yarn coveralls
@@ -49,8 +49,8 @@ jobs:
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use v8.15.1
             cd ~/pass-culture-main/webapp
+            nvm install
             yarn start
           background: true
       - run:
@@ -65,8 +65,8 @@ jobs:
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use v8.15.1
             cd ~/pass-culture-main/webapp
+            nvm install
             yarn test:cafe
       - store_artifacts:
           path: ~/pass-culture-main/webapp/testcafe_screenshots
@@ -87,7 +87,7 @@ jobs:
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use "$NODE_VERSION"
+            nvm install
             yarn install
             set -a; source config/run_envs/"${CIRCLE_BRANCH}" && ./scripts/build_app.sh "${CIRCLE_BRANCH}"
       - run:

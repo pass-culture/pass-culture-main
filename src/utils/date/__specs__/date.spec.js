@@ -10,7 +10,7 @@ describe('src | utils | date', () => {
       const formattedDate = computeEndValidityDate(date)
 
       // then
-      expect(formattedDate).toBe('2021 M09 10')
+      expect(formattedDate).toBe('September 10, 2021')
     })
   })
 
@@ -32,6 +32,7 @@ describe('src | utils | date', () => {
     describe('when there is a date range for Europe/Paris Timezone', () => {
       it('should return the formated date', () => {
         // given
+        process.env.TZ = 'Europe/Amsterdam'
         const departementCode = '93'
         const dateRange = ['2018-10-25T18:00:00Z', '2018-10-26T19:00:00Z']
 
@@ -40,7 +41,7 @@ describe('src | utils | date', () => {
 
         // then
         // https://github.com/nodejs/node-v0.x-archive/issues/4689
-        expect(result).toBe('du 2018-10-25 au 2018-10-26')
+        expect(result).toBe('du 10/25/2018 au 10/26/2018')
       })
     })
 
@@ -55,7 +56,7 @@ describe('src | utils | date', () => {
 
         // then
         // https://github.com/nodejs/node-v0.x-archive/issues/4689
-        expect(result).toBe('du 2018-10-25 au 2018-10-26')
+        expect(result).toBe('du 10/25/2018 au 10/26/2018')
       })
     })
   })

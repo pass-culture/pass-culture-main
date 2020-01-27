@@ -94,7 +94,7 @@ describe('src | components | layout | Teaser | TeaserContainer', () => {
 
         // then
         expect(props).toStrictEqual({
-          date: 'du 2000-7-21 au 2030-8-21',
+          date: 'du 7/21/2000 au 8/21/2030',
           detailsUrl: '//details/o1/vide',
           handleToggleTeaser: expect.any(Function),
           humanizeRelativeDistance: '10 km',
@@ -124,7 +124,7 @@ describe('src | components | layout | Teaser | TeaserContainer', () => {
 
         // then
         expect(props).toStrictEqual({
-          date: 'du 2000-7-21 au 2030-8-21',
+          date: 'du 7/21/2000 au 8/21/2030',
           detailsUrl: '//details/o1/vide',
           handleToggleTeaser: expect.any(Function),
           humanizeRelativeDistance: '10 km',

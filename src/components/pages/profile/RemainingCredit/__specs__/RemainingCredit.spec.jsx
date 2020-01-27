@@ -20,10 +20,10 @@ describe('components | RemainingCredit', () => {
         expenses: {
           all: { actual: 10, max: 300 },
           digital: { actual: 100, max: 200 },
-          physical: { actual: 100, max: 200 }
+          physical: { actual: 100, max: 200 },
         },
-        wallet_balance: 0
-      }
+        wallet_balance: 0,
+      },
     }
   })
 
@@ -59,9 +59,9 @@ describe('components | RemainingCredit', () => {
         expenses: {
           all: { actual: 10, max: 500 },
           digital: { actual: 20, max: 201 },
-          physical: { actual: 30, max: 202 }
+          physical: { actual: 30, max: 202 },
         },
-        wallet_balance: 351
+        wallet_balance: 351,
       }
 
       // When
@@ -69,7 +69,7 @@ describe('components | RemainingCredit', () => {
 
       // Then
       const gaugeTitle = wrapper.find({
-        children: `Vous pouvez encore dépenser jusqu’à${NON_BREAKING_SPACE}:`
+        children: `Vous pouvez encore dépenser jusqu’à${NON_BREAKING_SPACE}:`,
       })
 
       const gauges = wrapper.find(CreditGauge)
@@ -132,7 +132,7 @@ describe('components | RemainingCredit', () => {
 
       // Then
       const textWithEndValidityDate = wrapper.find('.rc-end-validity-date').text()
-      expect(textWithEndValidityDate).toBe('Votre crédit est valable jusqu’au 2021 M09 10.')
+      expect(textWithEndValidityDate).toBe('Votre crédit est valable jusqu’au September 10, 2021.')
     })
 
     it('should not render end validity date when user has no deposit', () => {
