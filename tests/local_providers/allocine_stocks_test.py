@@ -166,7 +166,7 @@ class AllocineStocksTest:
 
 
 class UpdateObjectsTest:
-    @patch('local_providers.local_provider.redis_connector.add_venue_provider')
+    @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
     @patch('local_providers.allocine_stocks.get_movie_poster')
     @patch('local_providers.allocine_stocks.get_movies_showtimes')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
@@ -294,7 +294,7 @@ class UpdateObjectsTest:
         assert created_product.type == str(EventType.CINEMA)
         mock_redis.assert_called_once()
 
-    @patch('local_providers.local_provider.redis_connector.add_venue_provider')
+    @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
     @patch('local_providers.allocine_stocks.get_movie_poster')
     @patch('local_providers.allocine_stocks.get_movies_showtimes')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
@@ -453,7 +453,7 @@ class UpdateObjectsTest:
         assert dubbed_version_offer.product == created_products[0]
         assert dubbed_version_offer.type == str(EventType.CINEMA)
 
-    @patch('local_providers.local_provider.redis_connector.add_venue_provider')
+    @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
     @patch('local_providers.allocine_stocks.get_movie_poster')
     @patch('local_providers.allocine_stocks.get_movies_showtimes')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
@@ -574,7 +574,7 @@ class UpdateObjectsTest:
         assert len(created_offers) == 1
         assert len(created_products) == 1
 
-    @patch('local_providers.local_provider.redis_connector.add_venue_provider')
+    @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
     @patch('local_providers.allocine_stocks.get_movie_poster')
     @patch('local_providers.allocine_stocks.get_movies_showtimes')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
@@ -712,7 +712,7 @@ class UpdateObjectsTest:
         assert existing_offers[1].durationMinutes == 110
         assert existing_product.durationMinutes == 110
 
-    @patch('local_providers.local_provider.redis_connector.add_venue_provider')
+    @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
     @patch('local_providers.allocine_stocks.get_movie_poster')
     @patch('local_providers.allocine_stocks.get_movies_showtimes')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
@@ -832,7 +832,7 @@ class UpdateObjectsTest:
         assert created_offer.type == str(EventType.CINEMA)
         assert created_offer.name == 'Les Contes de la mère poule - VF'
 
-    @patch('local_providers.local_provider.redis_connector.add_venue_provider')
+    @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
     @patch('local_providers.allocine_stocks.get_movie_poster')
     @patch('local_providers.allocine_stocks.get_movies_showtimes')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
@@ -933,7 +933,7 @@ class UpdateObjectsTest:
         assert created_offer.type == str(EventType.CINEMA)
         assert created_offer.name == 'Les Contes de la mère poule - VF'
 
-    @patch('local_providers.local_provider.redis_connector.add_venue_provider')
+    @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
     @patch('local_providers.allocine_stocks.get_movie_poster')
     @patch('local_providers.allocine_stocks.get_movies_showtimes')
     @patch('local_providers.allocine_stocks.AllocineStocks.get_object_thumb')
@@ -1043,7 +1043,7 @@ class UpdateObjectsTest:
         assert existing_product.thumbUrl == f"http://localhost/storage/thumbs/products/{humanize(existing_product.id)}"
         assert existing_product.thumbCount == 1
 
-    @patch('local_providers.local_provider.redis_connector.add_venue_provider')
+    @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
     @patch('local_providers.allocine_stocks.get_movie_poster')
     @patch('local_providers.allocine_stocks.get_movies_showtimes')
     @patch('local_providers.allocine_stocks.AllocineStocks.get_object_thumb')
@@ -1166,7 +1166,7 @@ class UpdateObjectsTest:
         assert existing_product.thumbUrl == f"http://localhost/storage/thumbs/products/{humanize(existing_product.id)}"
         assert existing_product.thumbCount == 1
 
-    @patch('local_providers.local_provider.redis_connector.add_venue_provider')
+    @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
     @patch('local_providers.allocine_stocks.get_movies_showtimes')
     @patch('local_providers.allocine_stocks.get_movie_poster')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
@@ -1318,7 +1318,7 @@ class UpdateObjectsTest:
         assert second_stock.endDatetime == datetime(2019, 12, 3, 17, 0, 1)
         assert second_stock.bookingLimitDatetime == datetime(2019, 12, 3, 17, 0)
 
-    @patch('local_providers.local_provider.redis_connector.add_venue_provider')
+    @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
     @patch('local_providers.allocine_stocks.get_movies_showtimes')
     @patch('local_providers.allocine_stocks.get_movie_poster')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
@@ -1707,7 +1707,7 @@ class UpdateObjectsTest:
             assert second_stock.offerId == vf_offer.id
             assert second_stock.beginningDatetime == datetime(2019, 12, 4, 17, 0)
 
-    @patch('local_providers.local_provider.redis_connector.add_venue_provider')
+    @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
     @patch('local_providers.allocine_stocks.get_movies_showtimes')
     @patch('local_providers.allocine_stocks.get_movie_poster')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})

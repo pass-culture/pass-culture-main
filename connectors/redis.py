@@ -3,11 +3,11 @@ import os
 from typing import List
 
 import redis
-from redis import Redis
-
 from models import VenueProvider
 from models.feature import FeatureToggle
+from redis import Redis
 from repository import feature_queries
+from utils.config import REDIS_URL
 from utils.human_ids import humanize
 from utils.logger import logger
 
@@ -35,6 +35,11 @@ def add_venue_id(client: Redis, venue_id: int) -> None:
             logger.debug(f'[REDIS] venue id "{humanize(venue_id)}" was added')
         except redis.exceptions.RedisError as error:
             logger.error(f'[REDIS] {error}')
+
+
+def send_venue_provider_data_to_redis(venue_provider: VenueProvider) -> None:
+    redis_client = redis.from_url(url=REDIS_URL, decode_responses=True)
+    add_venue_provider(client=redis_client, venue_provider=venue_provider)
 
 
 def add_venue_provider(client: Redis, venue_provider: VenueProvider) -> None:
