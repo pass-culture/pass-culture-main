@@ -13,7 +13,7 @@
 # Backup functions
 # ------------------
 15 23 * * * . $HOME/.profile; backup_prod.sh -a pass-culture-api >> /var/log/restore/backup_prod.log
-15 0 * * * . $HOME/.profile; SCALINGO_REGION=agora-fr1 partial_backup.sh -a pass-culture-api 2>&1 | tee /var/log/restore/partial_backup.log
+15 0 * * * . $HOME/.profile; SCALINGO_REGION=osc-fr1 partial_backup.sh -a pass-culture-api 2>&1 | tee /var/log/restore/partial_backup.log
 
 
 # Restore dump functions
