@@ -9,10 +9,11 @@ from emails.beneficiary_offer_cancellation import \
 from emails.beneficiary_warning_after_pro_booking_cancellation import \
     retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation
 from emails.new_offerer_validation import retrieve_data_for_new_offerer_validation_email
+from emails.offerer_attachment_validation import retrieve_data_for_offerer_attachment_validation_email
 from emails.offerer_booking_recap import retrieve_data_for_offerer_booking_recap_email
 from emails.offerer_bookings_recap_after_deleting_stock import \
     retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation
-from emails.pro_offerer_attachment_validation import retrieve_data_for_pro_offerer_attachment_validation_email
+from emails.offerer_ongoing_attachment import retrieve_data_for_offerer_ongoing_attachment_email
 from emails.pro_waiting_validation import retrieve_data_for_pro_user_waiting_offerer_validation_email
 from emails.user_reset_password import retrieve_data_for_reset_password_email
 from models import Booking, Offerer, Stock, User, Venue, UserOfferer
@@ -63,7 +64,6 @@ def send_booking_confirmation_email_to_beneficiary(booking: Booking, send_email:
 
 def send_beneficiary_booking_cancellation_email(booking: Booking, send_email: Callable[..., bool]):
     beneficiary_booking_cancellation_email_data = make_beneficiary_booking_cancellation_email_data(booking)
-
     send_email(data=beneficiary_booking_cancellation_email_data)
 
 
@@ -106,8 +106,14 @@ def send_validation_confirmation_email_to_pro(offerer: Offerer, send_email: Call
     email = retrieve_data_for_new_offerer_validation_email(offerer)
     send_email(data=email)
 
+
+def send_ongoing_offerer_attachment_information_email_to_pro(offerer: Offerer, send_email: Callable[..., bool]) -> None:
+    email = retrieve_data_for_offerer_ongoing_attachment_email(offerer)
+    send_email(data=email)
+
+
 def send_attachment_validation_email_to_pro_offerer(user_offerer: UserOfferer, send_email: Callable[..., bool]):
-    email = retrieve_data_for_pro_offerer_attachment_validation_email(user_offerer)
+    email = retrieve_data_for_offerer_attachment_validation_email(user_offerer)
     return send_email(data=email)
 
 

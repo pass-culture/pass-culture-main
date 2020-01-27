@@ -8,9 +8,10 @@ from domain.user_emails import send_beneficiary_booking_cancellation_email, \
     send_offerer_bookings_recap_email_after_offerer_cancellation, send_user_validation_email, \
     send_venue_validation_confirmation_email, \
     send_reset_password_email_with_mailjet_template, send_activation_email, send_reset_password_email, \
-    send_attachment_validation_email_to_pro_offerer
-from models import Offerer
+    send_attachment_validation_email_to_pro_offerer, send_ongoing_offerer_attachment_information_email_to_pro
+
 from repository import repository
+from models import Offerer
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, create_user_offerer
 from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_offer_with_thing_product
@@ -568,3 +569,38 @@ class SendAttachmentValidationEmailToProOffererTest:
         assert attachment_validation_email is False
 
 
+class SendOngoingOffererAttachmentInformationEmailTest:
+    @patch('emails.pro_offerer_attachment_validation.feature_send_mail_to_users_enabled', return_value=True)
+    @patch('emails.pro_offerer_attachment_validation.format_environment_for_email', return_value='')
+    @patch('emails.pro_offerer_attachment_validation.find_user_offerer_email',
+           return_value='pro@example.com')
+    @patch('emails.pro_offerer_attachment_validation.SUPPORT_EMAIL_ADDRESS', 'support@passculture.app')
+    @clean_database
+    def test_should_return_true_when_email_data_are_valid(self,
+                                                          feature_send_mail_to_users_enabled,
+                                                          format_environment_for_email,
+                                                          find_user_offerer_email,
+                                                          app):
+
+        # given
+        user = create_user(email='pro@example.com')
+        offerer = create_offerer()
+        user_offerer_1 = create_user_offerer(user, offerer)
+        user_offerer_2 = create_user_offerer(user, offerer)
+
+        repository.save(user_offerer_1, user_offerer_2))
+
+        mocked_send_email = Mock(return_value=True)
+
+        # when
+        ongoing_attachment_email = send_ongoing_offerer_attachment_information_email_to_pro(user_offerer_2, mocked_send_email)
+
+        # then
+        assert ongoing_attachment_email is True
+        mocked_send_email.assert_called_once()
+        args = mocked_send_email.call_args
+        data = args[1]['data']
+        assert data['MJ-TemplateID'] == 778756
+        assert data['FromEmail'] == 'support@passculture.app'
+        assert data['To'] == 'pro@example.com'
+        assert data['Vars']['nom_structure'] == 'Test Offerer'

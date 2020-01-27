@@ -2,6 +2,7 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
 from domain.admin_emails import maybe_send_offerer_validation_email
+from domain.user_emails import send_ongoing_offerer_attachment_information_email_to_pro
 from models import Offerer, RightsType, Venue
 from models.venue import create_digital_venue
 from repository import repository
@@ -87,6 +88,11 @@ def create_offerer():
         user_offerer = offerer.give_rights(current_user, RightsType.editor)
         user_offerer.generate_validation_token()
         repository.save(user_offerer)
+
+        try:
+            send_ongoing_offerer_attachment_information_email_to_pro(offerer)
+        except MailServiceException as e:
+            app.logger.error('Mail service failure', e)
 
     else:
         offerer = Offerer()
