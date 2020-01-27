@@ -4,10 +4,11 @@ import { requestData } from 'redux-thunk-data'
 import { compose } from 'redux'
 
 import Favorite from './Favorite'
-import { selectOfferByRouterMatch } from '../../../../../selectors/data/offersSelectors'
 import { favoriteNormalizer } from '../../../../../utils/normalizers'
 import { selectFavoriteByOfferId } from '../../../../../selectors/data/favoritesSelectors'
-import { selectMediationByRouterMatch } from '../../../../../selectors/data/mediationsSelectors'
+import { selectMediationByOfferId } from '../../../../../selectors/data/mediationsSelectors'
+import { selectBookingById } from '../../../../../selectors/data/bookingsSelectors'
+import { selectStockById } from '../../../../../selectors/data/stocksSelectors'
 
 const API_PATH_TO_FAVORITES_ENDPOINT = '/favorites'
 
@@ -19,10 +20,18 @@ export const apiPath = (isFavorite, offerId) => {
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
-  const mediation = selectMediationByRouterMatch(state, match) || {}
+  const { params } = match
+  let { bookingId, offerId } = params
+
+  if (bookingId && bookingId !== 'menu') {
+    const booking = selectBookingById(state, bookingId)
+    const { stockId } = booking
+    const stock = selectStockById(state, stockId)
+    const { offerId: offerIdFromStock } = stock
+    offerId = offerIdFromStock
+  }
+  const mediation = selectMediationByOfferId(state, offerId) || {}
   const { id: mediationId } = mediation
-  const offer = selectOfferByRouterMatch(state, match) || { id: '' }
-  const { id: offerId } = offer
   const favorite = selectFavoriteByOfferId(state, offerId)
   const isFavorite = favorite !== undefined
 

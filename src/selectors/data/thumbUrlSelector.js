@@ -3,6 +3,7 @@ import createCachedSelector from 're-reselect'
 import { selectBookingByRouterMatch } from './bookingsSelectors'
 import { selectMediationByRouterMatch } from './mediationsSelectors'
 import { selectOfferByRouterMatch } from './offersSelectors'
+import { DEFAULT_THUMB_URL } from '../../utils/thumb'
 
 export const selectThumbUrlByRouterMatch = createCachedSelector(
   selectMediationByRouterMatch,
@@ -20,6 +21,8 @@ export const selectThumbUrlByRouterMatch = createCachedSelector(
     if (offer && offer.product.thumbUrl) {
       return offer.product.thumbUrl
     }
+
+    return DEFAULT_THUMB_URL
   }
 )((state, match) => {
   const { params } = match

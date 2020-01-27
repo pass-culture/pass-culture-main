@@ -32,7 +32,8 @@ export const selectMediationByRouterMatch = createCachedSelector(
   return `${bookingId || ' '}${favoriteId || ' '}${mediationId || ' '}`
 })
 
-export const selectMediationByOfferId = createCachedSelector(
+export const
+  selectMediationByOfferId = createCachedSelector(
   state => state.data.mediations,
   (state, offerId) => offerId,
   (mediations, offerId) => {

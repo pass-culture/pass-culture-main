@@ -11,35 +11,36 @@ jest.mock('redux-thunk-data', () => {
 
 describe('src | components | layout | Verso | VersoControls | Favorite | FavoriteContainer', () => {
   describe('mapStateToProps', () => {
-    it('should return the right props', () => {
-      // given
-      const mediationId = 'AE'
-      const offerId = 'BF'
-      const mediation = {
-        id: mediationId,
-      }
-      const offer = {
-        id: offerId,
-      }
-      const favorite = { id: 'CG', offerId }
-      const state = {
+    let state
+    let ownProps
+    let offerId = 'BF'
+
+    beforeEach(() => {
+      offerId = 'BF'
+
+      state = {
         data: {
           bookings: [],
-          favorites: [favorite],
+          favorites: [],
           features: [],
-          mediations: [mediation],
-          offers: [offer],
+          mediations: [],
+          offers: [],
           recommendations: [],
         },
       }
-      const ownProps = {
+      ownProps = {
         match: {
-          params: {
-            mediationId,
-            offerId,
-          },
+          params: {},
         },
       }
+    })
+
+    it('should return the right props when mediationId is available', () => {
+      // given
+      const mediationId = 'AE'
+      state.data.favorites = [{ id: 'CG', offerId }]
+      state.data.mediations = [{ id: mediationId, offerId }]
+      ownProps.match.params.offerId = offerId
 
       // when
       const props = mapStateToProps(state, ownProps)
@@ -49,6 +50,51 @@ describe('src | components | layout | Verso | VersoControls | Favorite | Favorit
         isFavorite: true,
         mediationId,
         offerId,
+      })
+    })
+
+    it('should return the right props when bookingId is available', () => {
+      // given
+      const bookingId = 'AC'
+      const mediationId = 'AE'
+      const offerId = 'BF'
+      state.data.bookings = [{ id: bookingId, stockId: 'AG' }]
+      state.data.favorites = [{ id: 'CG', offerId }]
+      state.data.mediations = [{ id: mediationId, offerId }]
+      state.data.offers = [{ id: offerId }]
+      state.data.stocks = [{ id: 'AG', offerId }]
+      ownProps.match.params.bookingId = bookingId
+
+      // when
+      const props = mapStateToProps(state, ownProps)
+
+      // then
+      expect(props).toStrictEqual({
+        isFavorite: true,
+        mediationId,
+        offerId,
+      })
+    })
+
+    it('should return the right props when on menu', () => {
+      // given
+      const bookingId = 'menu'
+      const mediationId = 'AE'
+      const offerId = 'BF'
+      state.data.mediations = [{ id: mediationId, offerId }]
+      state.data.offers = [{ id: offerId }]
+      state.data.favorites = [{ id: 'CG', offerId }]
+      ownProps.match.params.offerId = offerId
+      ownProps.match.params.bookingId = bookingId
+
+      // when
+      const props = mapStateToProps(state, ownProps)
+
+      // then
+      expect(props).toStrictEqual({
+        isFavorite: true,
+        mediationId: 'AE',
+        offerId: 'BF',
       })
     })
 

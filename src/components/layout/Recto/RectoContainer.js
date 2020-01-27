@@ -2,6 +2,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
+import { DEFAULT_THUMB_URL } from '../../../utils/thumb'
 import Recto from './Recto'
 import { selectMediationByOfferId } from '../../../selectors/data/mediationsSelectors'
 import { selectThumbUrlByRouterMatch } from '../../../selectors/data/thumbUrlSelector'
@@ -14,14 +15,14 @@ export const mapStateToProps = (state, ownProps) => {
   const { bookingId, offerId } = params
 
   let result
-  bookingId ?
-    result = findThumbByBookingId(state, bookingId, match) :
-    result = findThumbByOfferId(state, offerId, match)
+  bookingId
+    ? (result = findThumbByBookingId(state, bookingId))
+    : (result = findThumbByOfferId(state, offerId, match))
 
   return result
 }
 
-export const findThumbByBookingId = (state, bookingId, match) => {
+export const findThumbByBookingId = (state, bookingId) => {
   let frontText = ''
   let thumbUrl = ''
   let withMediation = false
@@ -33,19 +34,17 @@ export const findThumbByBookingId = (state, bookingId, match) => {
     const { offerId = '' } = stock || {}
     const mediation = selectMediationByOfferId(state, offerId)
 
-    if (!mediation) {
-      thumbUrl = selectThumbUrlByRouterMatch(state, match)
-    } else {
+    if (mediation) {
       frontText = mediation.frontText
-      thumbUrl = mediation.thumbUrl
       withMediation = true
     }
+    thumbUrl = booking.thumbUrl ? booking.thumbUrl : DEFAULT_THUMB_URL
   }
 
   return {
     frontText,
     thumbUrl,
-    withMediation
+    withMediation,
   }
 }
 
@@ -66,7 +65,7 @@ export const findThumbByOfferId = (state, offerId, match) => {
   return {
     frontText,
     thumbUrl,
-    withMediation
+    withMediation,
   }
 }
 

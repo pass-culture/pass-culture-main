@@ -1,6 +1,11 @@
 import { shallow } from 'enzyme'
 import React from 'react'
+
 import Result from '../Result'
+
+jest.mock('../../../../../utils/thumb', () => ({
+  DEFAULT_THUMB_URL: '/default/thumb/url',
+}))
 
 describe('components | Result', () => {
   let props
@@ -26,7 +31,7 @@ describe('components | Result', () => {
         },
         objectID: 'AE',
       },
-      search: '?mots-cles=librairie&page=1'
+      search: '?mots-cles=librairie&page=1',
     }
   })
 
@@ -35,10 +40,12 @@ describe('components | Result', () => {
     const wrapper = shallow(<Result {...props} />)
 
     // then
-    const offerName = wrapper.findWhere(node => node.text() ===  'Les fleurs du mal').first()
-    const offerLabel = wrapper.findWhere(node => node.text() ===  'Livre').first()
-    const offerDateRange = wrapper.findWhere(node => node.text() ===  'du 2019-1-1 au 2019-1-30').first()
-    const offerDistance = wrapper.findWhere(node => node.text() ===  '5879 km').first()
+    const offerName = wrapper.findWhere(node => node.text() === 'Les fleurs du mal').first()
+    const offerLabel = wrapper.findWhere(node => node.text() === 'Livre').first()
+    const offerDateRange = wrapper
+      .findWhere(node => node.text() === 'du 2019-1-1 au 2019-1-30')
+      .first()
+    const offerDistance = wrapper.findWhere(node => node.text() === '5879 km').first()
     const offerMediation = wrapper.find('img')
     expect(wrapper.prop('to')).toBe('/recherche-offres/details/AE?mots-cles=librairie&page=1')
     expect(offerName).toHaveLength(1)
@@ -47,5 +54,17 @@ describe('components | Result', () => {
     expect(offerDistance).toHaveLength(1)
     expect(offerMediation).toHaveLength(1)
     expect(offerMediation.prop('src')).toBe('/lien-vers-mon-image')
+  })
+
+  it('should render default thumb if no thumb url are specified', () => {
+    // given
+    props.result.offer.thumbUrl = null
+
+    // when
+    const wrapper = shallow(<Result {...props} />)
+
+    // then
+    const offerMediation = wrapper.find('img')
+    expect(offerMediation.prop('src')).toBe('/default/thumb/url')
   })
 })

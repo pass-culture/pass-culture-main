@@ -28,7 +28,7 @@ ShallowWrapper {
           className="background"
           style={
             Object {
-              "backgroundColor": "white",
+              "backgroundColor": "grey",
               "backgroundSize": null,
             }
           }
@@ -37,7 +37,7 @@ ShallowWrapper {
           className="image translatable "
           style={
             Object {
-              "backgroundColor": "white",
+              "backgroundColor": "grey",
               "backgroundSize": null,
             }
           }
@@ -54,7 +54,7 @@ ShallowWrapper {
         "props": Object {
           "className": "background",
           "style": Object {
-            "backgroundColor": "white",
+            "backgroundColor": "grey",
             "backgroundSize": null,
           },
         },
@@ -69,7 +69,7 @@ ShallowWrapper {
         "props": Object {
           "className": "image translatable ",
           "style": Object {
-            "backgroundColor": "white",
+            "backgroundColor": "grey",
             "backgroundSize": null,
           },
         },
@@ -91,7 +91,7 @@ ShallowWrapper {
             className="background"
             style={
               Object {
-                "backgroundColor": "white",
+                "backgroundColor": "grey",
                 "backgroundSize": null,
               }
             }
@@ -100,7 +100,7 @@ ShallowWrapper {
             className="image translatable "
             style={
               Object {
-                "backgroundColor": "white",
+                "backgroundColor": "grey",
                 "backgroundSize": null,
               }
             }
@@ -117,7 +117,7 @@ ShallowWrapper {
           "props": Object {
             "className": "background",
             "style": Object {
-              "backgroundColor": "white",
+              "backgroundColor": "grey",
               "backgroundSize": null,
             },
           },
@@ -132,7 +132,7 @@ ShallowWrapper {
           "props": Object {
             "className": "image translatable ",
             "style": Object {
-              "backgroundColor": "white",
+              "backgroundColor": "grey",
               "backgroundSize": null,
             },
           },

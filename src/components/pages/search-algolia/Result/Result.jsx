@@ -5,6 +5,7 @@ import React from 'react'
 import { formatRecommendationDates } from '../../../../utils/date/date'
 import { getHumanizeRelativeDistance } from '../../../../utils/geolocation'
 import Icon from '../../../layout/Icon/Icon'
+import { DEFAULT_THUMB_URL } from '../../../../utils/thumb'
 
 const Result = ({ result, geolocation, search }) => {
   const { _geoloc = {}, objectID, offer } = result
@@ -21,7 +22,7 @@ const Result = ({ result, geolocation, search }) => {
         <img
           alt=""
           className="result-image"
-          src={thumbUrl}
+          src={thumbUrl !== null ? thumbUrl : DEFAULT_THUMB_URL}
         />
         <div className="result-container">
           <h1 className="result-title">

@@ -1,5 +1,9 @@
 import { selectThumbUrlByRouterMatch } from '../thumbUrlSelector'
 
+jest.mock('../../../utils/thumb', () => ({
+  DEFAULT_THUMB_URL: '/default/thumb/url',
+}))
+
 describe('selectThumbUrlByRouterMatch', () => {
   let booking
   let bookingId
@@ -117,5 +121,27 @@ describe('selectThumbUrlByRouterMatch', () => {
 
     // then
     expect(result).toBe(mediationThumbUrl)
+  })
+
+  it('should return default thumb when no thumb are found', () => {
+    // given
+    const state = {
+      data: {
+        bookings: [],
+        favorites: [],
+        mediations: [],
+        offers: [],
+        stocks: [],
+      },
+    }
+    const match = {
+      params: {},
+    }
+
+    // when
+    const result = selectThumbUrlByRouterMatch(state, match)
+
+    // then
+    expect(result).toBe('/default/thumb/url')
   })
 })
