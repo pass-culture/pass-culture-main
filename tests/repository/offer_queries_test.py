@@ -1722,13 +1722,13 @@ class GetPaginatedExpiredOfferIdsTest:
         repository.save(stock1, stock2, stock3, stock4)
 
         # When
-        results = get_paginated_expired_offer_ids(limit=2, page=0)
+        results = get_paginated_expired_offer_ids(limit=4, page=0)
 
         # Then
         assert len(results) == 0
 
     @clean_database
-    def test_should_not_return_offer_ids_when_active_and_booking_limit_datetime_is_not_not_expired(self, app):
+    def test_should_not_return_offer_ids_when_active_and_booking_limit_datetime_is_not_expired(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
@@ -1743,13 +1743,13 @@ class GetPaginatedExpiredOfferIdsTest:
         repository.save(stock1, stock2, stock3, stock4)
 
         # When
-        results = get_paginated_expired_offer_ids(limit=2, page=0)
+        results = get_paginated_expired_offer_ids(limit=4, page=0)
 
         # Then
         assert len(results) == 0
 
     @clean_database
-    def test_should_return_one_offer_id_from_first_page_when_active_and_beginning_datetime_is_null_(self, app):
+    def test_should_return_one_offer_id_from_first_page_when_active_and_beginning_datetime_is_null(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
