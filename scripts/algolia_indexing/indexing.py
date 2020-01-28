@@ -12,6 +12,9 @@ from utils.logger import logger
 ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE = int(os.environ.get(
     'ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE', '10000'))
 
+ALGOLIA_DELETING_OFFERS_CHUNK_SIZE = int(os.environ.get(
+    'ALGOLIA_DELETING_OFFERS_CHUNK_SIZE', '10000'))
+
 
 def batch_indexing_offers_in_algolia_by_offer(client: Redis) -> None:
     offer_ids = get_offer_ids(client=client)
@@ -25,9 +28,11 @@ def batch_indexing_offers_in_algolia_by_venue(client: Redis) -> None:
         page = 0
         has_still_offers = True
         while has_still_offers:
-            offer_ids_as_tuple = offer_queries.get_paginated_offer_ids_by_venue_id(venue_id=venue_id,
-                                                                     limit=ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE,
-                                                                     page=page)
+            offer_ids_as_tuple = offer_queries.get_paginated_offer_ids_by_venue_id(
+                limit=ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE,
+                page=page,
+                venue_id=venue_id
+            )
             offer_ids_as_int = from_tuple_to_int(offer_ids_as_tuple)
 
             if len(offer_ids_as_int) > 0:
@@ -63,11 +68,14 @@ def batch_indexing_offers_in_algolia_from_database(limit: int = 10000, page: int
         page_number += 1
 
 
-def batch_delete_obsolete_offers_in_algolia(limit: int = 10000) -> None:
+def batch_deleting_expired_offers_in_algolia() -> None:
     page = 0
     has_still_offers = True
     while has_still_offers:
-        expired_offer_ids_as_tuple = offer_queries.get_paginated_expired_offer_ids(limit=limit, page=page)
+        expired_offer_ids_as_tuple = offer_queries.get_paginated_expired_offer_ids(
+            limit=ALGOLIA_DELETING_OFFERS_CHUNK_SIZE,
+            page=page
+        )
         expired_offer_ids_as_int = from_tuple_to_int(offer_ids=expired_offer_ids_as_tuple)
 
         if len(expired_offer_ids_as_int) > 0:

@@ -7,7 +7,7 @@ from repository import repository
 from scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_offer, \
     batch_indexing_offers_in_algolia_by_venue, \
     batch_indexing_offers_in_algolia_from_database, batch_indexing_offers_in_algolia_by_venue_provider, \
-    batch_delete_obsolete_offers_in_algolia
+    batch_deleting_expired_offers_in_algolia
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue
 from tests.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product, \
@@ -139,6 +139,7 @@ class BatchIndexingOffersInAlgoliaByVenueProviderTest:
 
 @freeze_time('2020-01-01 10:00:00')
 class BatchDeletingExpiredOffersInAlgoliaTest:
+    @patch('scripts.algolia_indexing.indexing.ALGOLIA_DELETING_OFFERS_CHUNK_SIZE', 1)
     @patch('scripts.algolia_indexing.indexing.orchestrate_delete_expired_offers')
     @clean_database
     def test_should_delete_expired_offers_in_a_paginated_way(self,
@@ -158,7 +159,7 @@ class BatchDeletingExpiredOffersInAlgoliaTest:
         repository.save(stock1, stock2, stock3, stock4)
 
         # When
-        batch_delete_obsolete_offers_in_algolia(limit=1)
+        batch_deleting_expired_offers_in_algolia()
 
         # Then
         assert mock_orchestrate_delete_expired_offers.call_count == 4
