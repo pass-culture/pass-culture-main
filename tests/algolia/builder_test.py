@@ -72,6 +72,7 @@ class BuildObjectTest:
             },
             'venue': {
                 'city': 'Paris',
+                'departementCode': '93',
                 'name': 'Venue name',
                 'publicName': 'Venue public name'
             },

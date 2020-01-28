@@ -49,6 +49,7 @@ def build_object(offer: Offer) -> Dict:
         },
         'venue': {
             'city': venue.city,
+            'departementCode': venue.departementCode,
             'name': venue.name,
             'publicName': venue.publicName
         }
