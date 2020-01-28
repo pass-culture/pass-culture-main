@@ -1,4 +1,8 @@
-import { selectMediationById, selectMediationByRouterMatch } from '../mediationsSelectors'
+import {
+  selectMediationById,
+  selectMediationByRouterMatch,
+  selectMediationByOfferId,
+} from '../mediationsSelectors'
 
 describe('selectMediationById', () => {
   it('should return undefined when no match', () => {
@@ -103,5 +107,42 @@ describe('selectMediationByRouterMatch', () => {
 
     // then
     expect(result).toStrictEqual({ id: 'AE' })
+  })
+})
+
+describe('selectMediationByOfferId', () => {
+  it('should return undefined when no match', () => {
+    // given
+    const state = {
+      data: {
+        mediations: [{ id: 'AE', offerId: 'AC' }],
+      },
+    }
+
+    // when
+    const result = selectMediationByOfferId(state, 'wrong')
+
+    // then
+    expect(result).toBeUndefined()
+  })
+
+  it('should return mediation matching id', () => {
+    // given
+    const state = {
+      data: {
+        mediations: [
+          { id: 'AB', offerId: 'foo' },
+          { id: 'AC', offerId: 'bar' },
+          { id: 'AD', offerId: 'baz' },
+        ],
+      },
+    }
+
+    // when
+    const result = selectMediationByOfferId(state, 'bar')
+
+    // then
+    expect(result).toStrictEqual({ id: 'AC', offerId: 'bar' })
+    expect(result).toBe(state.data.mediations[1])
   })
 })

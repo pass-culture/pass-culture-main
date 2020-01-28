@@ -12,6 +12,7 @@ const Result = ({ result, geolocation, search }) => {
   const { dateRange, departementCode, id: offerId, label, name, thumbUrl } = offer
   const { latitude: userLatitude, longitude: userLongitude } = geolocation
   const { lat: venueLatitude, lng: venueLongitude } = _geoloc
+  const thumbSrc = thumbUrl !== null ? thumbUrl : DEFAULT_THUMB_URL
 
   return (
     <Link
@@ -22,7 +23,7 @@ const Result = ({ result, geolocation, search }) => {
         <img
           alt=""
           className="result-image"
-          src={thumbUrl !== null ? thumbUrl : DEFAULT_THUMB_URL}
+          src={thumbSrc}
         />
         <div className="result-container">
           <h1 className="result-title">

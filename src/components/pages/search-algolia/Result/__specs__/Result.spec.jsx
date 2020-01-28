@@ -56,7 +56,7 @@ describe('components | Result', () => {
     expect(offerMediation.prop('src')).toBe('/lien-vers-mon-image')
   })
 
-  it('should render default thumb if no thumb url are specified', () => {
+  it('should render default thumb if no thumb url is specified', () => {
     // given
     props.result.offer.thumbUrl = null
 

@@ -92,7 +92,7 @@ describe('components | RectoContainer', () => {
       })
     })
 
-    it('should return front text from mediation & thumb url from bookling when booking has a mediation', () => {
+    it('should return front text from mediation & thumb url from booking when booking has a mediation', () => {
       // given
       const match = {
         params: {

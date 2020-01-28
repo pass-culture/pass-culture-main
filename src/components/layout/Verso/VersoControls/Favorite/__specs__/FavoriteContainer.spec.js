@@ -9,15 +9,12 @@ jest.mock('redux-thunk-data', () => {
   }
 })
 
-describe('src | components | layout | Verso | VersoControls | Favorite | FavoriteContainer', () => {
+describe('components | FavoriteContainer', () => {
   describe('mapStateToProps', () => {
     let state
     let ownProps
-    let offerId = 'BF'
 
     beforeEach(() => {
-      offerId = 'BF'
-
       state = {
         data: {
           bookings: [],
@@ -37,6 +34,7 @@ describe('src | components | layout | Verso | VersoControls | Favorite | Favorit
 
     it('should return the right props when mediationId is available', () => {
       // given
+      const offerId = 'BF'
       const mediationId = 'AE'
       state.data.favorites = [{ id: 'CG', offerId }]
       state.data.mediations = [{ id: mediationId, offerId }]

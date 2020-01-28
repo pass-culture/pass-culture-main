@@ -123,7 +123,7 @@ describe('selectThumbUrlByRouterMatch', () => {
     expect(result).toBe(mediationThumbUrl)
   })
 
-  it('should return default thumb when no thumb are found', () => {
+  it('should return default thumb when no thumb is found', () => {
     // given
     const state = {
       data: {
