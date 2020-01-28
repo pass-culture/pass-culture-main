@@ -4,7 +4,7 @@ import React from 'react'
 import ShareButton from '../ShareButton'
 import NavigatorShareAPI from '../NavigatorShareAPI'
 
-describe('src | components | layout | Share | ShareButton | ShareButton', () => {
+describe('components | ShareButton', () => {
   it('should match the snapshot', () => {
     // given
     const props = {

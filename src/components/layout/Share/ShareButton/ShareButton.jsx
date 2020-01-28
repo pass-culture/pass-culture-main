@@ -63,9 +63,9 @@ class ShareButton extends PureComponent {
     try {
       const nativeOptions = { text: `${text}\n`, title: text, url }
 
-      return navigatorShareAPI.share(nativeOptions).catch(e => {
-        if (e.name !== 'AbortError') {
-          throw e
+      return navigatorShareAPI.share(nativeOptions).catch(error => {
+        if (error.name !== 'AbortError') {
+          throw error
         }
       })
     } catch (err) {

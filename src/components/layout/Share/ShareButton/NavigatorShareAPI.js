@@ -1,7 +1,5 @@
-export const share = nativeOptions => {
-  return navigator.share(nativeOptions)
-}
+const share = nativeOptions => navigator.share(nativeOptions)
 
 export default {
-  share,
+  share
 }
