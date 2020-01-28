@@ -227,7 +227,7 @@ describe('components | SearchAlgolia', () => {
           shallow(<SearchAlgolia {...props} />)
 
           // then
-          expect(fetch).toHaveBeenCalledWith('une librairie', 0)
+          expect(fetch).toHaveBeenCalledWith('une librairie', 0, '40.1, 41.1')
         })
 
         it('should fetch data using page 0 when page query param value is negative', async () => {
@@ -250,7 +250,7 @@ describe('components | SearchAlgolia', () => {
           await shallow(<SearchAlgolia {...props} />)
 
           // then
-          expect(fetch).toHaveBeenCalledWith('une librairie', 0)
+          expect(fetch).toHaveBeenCalledWith('une librairie', 0, '40.1, 41.1')
         })
 
         it('should fetch data using page 0 when page query param value is not a valid value', async () => {
@@ -273,7 +273,7 @@ describe('components | SearchAlgolia', () => {
           await shallow(<SearchAlgolia {...props} />)
 
           // then
-          expect(fetch).toHaveBeenCalledWith('une librairie', 0)
+          expect(fetch).toHaveBeenCalledWith('une librairie', 0, '40.1, 41.1')
         })
       })
     })
@@ -362,7 +362,7 @@ describe('components | SearchAlgolia', () => {
       })
 
       // then
-      expect(fetch).toHaveBeenCalledWith('un livre très cherché', 0)
+      expect(fetch).toHaveBeenCalledWith('un livre très cherché', 0, '40.1, 41.1')
     })
 
     it('should display search keywords and number of results when 0 result', async () => {

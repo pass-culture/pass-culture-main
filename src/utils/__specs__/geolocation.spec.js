@@ -1,5 +1,5 @@
 import {
-  computeDistanceInMeters,
+  computeDistanceInMeters, computeToAroundLatLng,
   getHumanizeRelativeDistance,
   humanizeDistance,
 } from '../geolocation'
@@ -143,6 +143,36 @@ describe('src | utils | geolocation', () => {
         // then
         expect(distance).toBe('13 km')
       })
+    })
+  })
+
+  describe('computeToAroundLatLng', () => {
+    it('should return computed value when latitude and longitude are provided', () => {
+      // given
+      const geolocation = {
+        latitude: 42,
+        longitude: 43
+      }
+
+      // when
+      const result = computeToAroundLatLng(geolocation)
+
+      // then
+      expect(result).toStrictEqual('42, 43')
+    })
+
+    it('should return empty value when latitude and longitude are not provided', () => {
+      // given
+      const geolocation = {
+        latitude: null,
+        longitude: null
+      }
+
+      // when
+      const result = computeToAroundLatLng(geolocation)
+
+      // then
+      expect(result).toStrictEqual('')
     })
   })
 })

@@ -10,6 +10,7 @@ import RelativeFooterContainer from '../../layout/RelativeFooter/RelativeFooterC
 import SearchAlgoliaDetailsContainer from './Result/ResultDetail/ResultDetailContainer'
 import Spinner from '../../layout/Spinner/Spinner'
 import Result from './Result/Result'
+import { computeToAroundLatLng } from '../../../utils/geolocation'
 
 class SearchAlgolia extends PureComponent {
   constructor(props) {
@@ -40,7 +41,7 @@ class SearchAlgolia extends PureComponent {
 
   showFailModal = () => {
     toast.info(
-      "La recherche n'a pas pu aboutir, veuillez ré-essayer plus tard."
+      'La recherche n\'a pas pu aboutir, veuillez ré-essayer plus tard.'
     )
   }
 
@@ -83,12 +84,13 @@ class SearchAlgolia extends PureComponent {
   }
 
   fetchOffers = (keywords, currentPage) => {
-    const { query } = this.props
+    const { geolocation, query } = this.props
     this.setState({
       isLoading: true,
     })
+    const aroundLatLng = computeToAroundLatLng(geolocation)
 
-    fetch(keywords, currentPage).then(offers => {
+    fetch(keywords, currentPage, aroundLatLng).then(offers => {
       const { results } = this.state
       const { hits, nbHits, nbPages } = offers
       this.setState({

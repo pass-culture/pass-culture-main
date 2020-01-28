@@ -38,9 +38,9 @@ export const computeDistanceInMeters = (latitudeA, longitudeA, latitudeB, longit
   const a =
     Math.sin(newLatitude / 2) * Math.sin(newLatitude / 2) +
     Math.cos((latitudeA * Math.PI) / 180) *
-      Math.cos((latitudeB * Math.PI) / 180) *
-      Math.sin(newLongitude / 2) *
-      Math.sin(newLongitude / 2)
+    Math.cos((latitudeB * Math.PI) / 180) *
+    Math.sin(newLongitude / 2) *
+    Math.sin(newLongitude / 2)
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 
   return earthRadiusKm * c * 1000
@@ -64,4 +64,14 @@ export const humanizeDistance = distance => {
   }
 
   return `${Math.round(distance / 1000)} km`
+}
+
+export const computeToAroundLatLng = geolocation => {
+  const { latitude, longitude } = geolocation
+
+  let aroundLatLng = ''
+  if (latitude && longitude) {
+    aroundLatLng = `${latitude}, ${longitude}`
+  }
+  return aroundLatLng
 }
