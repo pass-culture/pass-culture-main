@@ -3,7 +3,6 @@ from unittest.mock import patch, MagicMock, call
 
 from freezegun import freeze_time
 
-from models import PcObject
 from repository import repository
 from scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_offer, \
     batch_indexing_offers_in_algolia_by_venue, \
@@ -156,7 +155,7 @@ class BatchDeletingExpiredOffersInAlgoliaTest:
         stock2 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 22, 0, 0, 0), offer=offer2)
         stock3 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 23, 0, 0, 0), offer=offer3)
         stock4 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 24, 0, 0, 0), offer=offer4)
-        PcObject.save(stock1, stock2, stock3, stock4)
+        repository.save(stock1, stock2, stock3, stock4)
 
         # When
         batch_delete_obsolete_offers_in_algolia(limit=1)

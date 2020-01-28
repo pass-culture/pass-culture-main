@@ -1669,7 +1669,7 @@ class GetPaginatedExpiredOfferIdsTest:
         stock2 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 1, 1, 0, 0, 0), offer=offer2)
         stock3 = create_stock_from_offer(booking_limit_datetime=datetime(2020, 1, 2, 0, 0, 0), offer=offer3)
         stock4 = create_stock_from_offer(booking_limit_datetime=datetime(2020, 1, 3, 0, 0, 0), offer=offer4)
-        PcObject.save(stock1, stock2, stock3, stock4)
+        repository.save(stock1, stock2, stock3, stock4)
 
         # When
         results = get_paginated_expired_offer_ids(limit=1, page=0)
@@ -1694,7 +1694,7 @@ class GetPaginatedExpiredOfferIdsTest:
         stock2 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 22, 0, 0, 0), offer=offer2)
         stock3 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 23, 0, 0, 0), offer=offer3)
         stock4 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 24, 0, 0, 0), offer=offer4)
-        PcObject.save(stock1, stock2, stock3, stock4)
+        repository.save(stock1, stock2, stock3, stock4)
 
         # When
         results = get_paginated_expired_offer_ids(limit=2, page=1)
@@ -1719,7 +1719,7 @@ class GetPaginatedExpiredOfferIdsTest:
         stock2 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 22, 0, 0, 0), offer=offer2)
         stock3 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 23, 0, 0, 0), offer=offer3)
         stock4 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 24, 0, 0, 0), offer=offer4)
-        PcObject.save(stock1, stock2, stock3, stock4)
+        repository.save(stock1, stock2, stock3, stock4)
 
         # When
         results = get_paginated_expired_offer_ids(limit=2, page=0)
@@ -1740,7 +1740,7 @@ class GetPaginatedExpiredOfferIdsTest:
         stock2 = create_stock_from_offer(booking_limit_datetime=datetime(2020, 1, 2, 0, 0, 0), offer=offer2)
         stock3 = create_stock_from_offer(booking_limit_datetime=datetime(2020, 1, 2, 0, 0, 0), offer=offer3)
         stock4 = create_stock_from_offer(booking_limit_datetime=datetime(2020, 1, 2, 0, 0, 0), offer=offer4)
-        PcObject.save(stock1, stock2, stock3, stock4)
+        repository.save(stock1, stock2, stock3, stock4)
 
         # When
         results = get_paginated_expired_offer_ids(limit=2, page=0)
@@ -1761,7 +1761,7 @@ class GetPaginatedExpiredOfferIdsTest:
         stock2 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 1, 1, 0, 0, 0), offer=offer2)
         stock3 = create_stock_from_offer(beginning_datetime=None, booking_limit_datetime=datetime(2020, 1, 2, 0, 0, 0), offer=offer3)
         stock4 = create_stock_from_offer(beginning_datetime=None, booking_limit_datetime=datetime(2020, 1, 3, 0, 0, 0), offer=offer4)
-        PcObject.save(stock1, stock2, stock3, stock4)
+        repository.save(stock1, stock2, stock3, stock4)
 
         # When
         results = get_paginated_expired_offer_ids(limit=1, page=0)
