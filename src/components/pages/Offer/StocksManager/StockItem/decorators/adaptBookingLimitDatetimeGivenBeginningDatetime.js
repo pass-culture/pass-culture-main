@@ -18,9 +18,9 @@ const adaptBookingLimitDatetimeGivenBeginningDatetime = createCachedSelector(
           { beginningDatetime }
         ) =>
           updateBookingLimitDatetime({
-            isEvent,
             beginningDatetime,
             bookingLimitDatetime,
+            isEvent,
             timezone,
           }),
       },
@@ -32,8 +32,8 @@ const adaptBookingLimitDatetimeGivenBeginningDatetime = createCachedSelector(
           { bookingLimitDatetime }
         ) =>
           updateBookingLimitDatetime({
-            beginningDatetime: beginningDatetime,
-            bookingLimitDatetime: bookingLimitDatetime,
+            beginningDatetime,
+            bookingLimitDatetime,
             isEvent,
             timezone,
           }),

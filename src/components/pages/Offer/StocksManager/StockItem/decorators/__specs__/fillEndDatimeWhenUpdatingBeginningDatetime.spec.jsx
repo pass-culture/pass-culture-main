@@ -4,7 +4,7 @@ import { Field, Form } from 'react-final-form'
 
 import fillEndDatimeWhenUpdatingBeginningDatetime from '../fillEndDatimeWhenUpdatingBeginningDatetime'
 
-describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdatingBeginningDatetime', () => {
+describe('src | components | pages | Offer | StockItem | decorators | fillEndDatimeWhenUpdatingBeginningDatetime', () => {
   it('should update the endDateTime date to the beginningDateTime with keeping hours and minute of previous target date, when both dates are already initialized', () => {
     // given
     const dateModified = '2022-08-28T23:37:00.000Z'
