@@ -42,7 +42,7 @@ def test_model_thumbUrl_should_have_thumbUrl_using_productId_when_no_mediation(g
 
 
 @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
-def test_model_thumbUrl_should_have_default_thumb_when_no_thumb_on_mediation_nor_product(get_storage_base_url):
+def test_model_thumbUrl_should_have_no_thumb_when_no_thumb_on_mediation_nor_product_and_product_thumb_count_is_0(get_storage_base_url):
     # given
     user = create_user(email='user@booking.com')
     product = create_product_with_thing_type(thumb_count=0)

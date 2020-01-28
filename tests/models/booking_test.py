@@ -129,7 +129,7 @@ class BookingThumbUrlTest:
 
 
     @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
-    def test_model_thumbUrl_should_have_default_thumb_when_no_mediation_nor_recommendation(self, get_storage_base_url):
+    def test_model_thumbUrl_should_have_no_thumb_when_no_mediation_nor_recommendation_and_product_thumb_count_is_0(self, get_storage_base_url):
         # given
         user = create_user(email='user@example.com')
         offerer = create_offerer()
@@ -146,7 +146,7 @@ class BookingThumbUrlTest:
 
     
     @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
-    def test_model_thumbUrl_should_have_default_thumb_when_no_thumb_on_mediation_nor_recommendation(self, get_storage_base_url):
+    def test_model_thumbUrl_should_have_no_thumb_when_no_thumb_on_mediation_nor_recommendation_and_mediation_thumb_count_is_0(self, get_storage_base_url):
         # given
         user = create_user(email='user@example.com')
         offerer = create_offerer()
