@@ -67,7 +67,7 @@ describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdati
     }
   })
 
-  it('should update the endDateTime to null ? when beginningDateTime is null', () => {
+  it('should update the endDateTime to null  when beginningDateTime is null', () => {
     // given
     const beginningDateTime = '2019-09-27T10:01:00Z'
     const endDateTime = '2019-11-01T12:02:00Z'

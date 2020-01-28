@@ -51,6 +51,8 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
       let eventFieldComponent
       let productFieldsContainerComponent
       let wrapper
+
+      // given
       beforeEach(() => {
         const history = createBrowserHistory()
         history.push(`/offres/EM?gestion&lieu=CE`)
@@ -171,62 +173,63 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
           expect(remainingStockInput.text()).toStrictEqual('9')
         })
       })
+
     describe('with product', () => {
       it('should display product fields informations', () => {
-          const history = createBrowserHistory()
-          history.push(`/offres/EM?gestion&lieu=CE`)
-          const middleWares = []
-          const mockStore = configureStore(middleWares)
+        // when
+        const history = createBrowserHistory()
+        history.push(`/offres/EM?gestion&lieu=CE`)
+        const middleWares = []
+        const mockStore = configureStore(middleWares)
 
-          const stock = {
-            id: 'G9',
-            available: 56,
-            beginningDatetime: null,
-            bookingLimitDatetime: '2020-01-27T20:00:00Z',
-            offerId: 'EM',
-            price: 12,
-            remainingQuantity: 31
-          }
+        const stock = {
+          id: 'G9',
+          available: 56,
+          beginningDatetime: null,
+          bookingLimitDatetime: '2020-01-27T20:00:00Z',
+          offerId: 'EM',
+          price: 12,
+          remainingQuantity: 31
+        }
 
-          props.isEvent = false
-          props.stock = stock
+        props.isEvent = false
+        props.stock = stock
 
-          const store = mockStore({
-            data: {
-              offers: [
-                {
-                  id: 'EM',
-                  productId: 'EM',
-                  venueId: 'CE',
-                  isEvent: true
-                }
-              ],
-              offerers: [
-                { id: 'BQ', postalCode: '97300' }
-              ],
-              products: [{ id: 'AE' }],
-              stocks: [stock],
-              venues: [{ id: 'CE', managingOffererId:'BQ' }],
-            },
-          })
+        const store = mockStore({
+          data: {
+            offers: [
+              {
+                id: 'EM',
+                productId: 'EM',
+                venueId: 'CE',
+                isEvent: true
+              }
+            ],
+            offerers: [
+              { id: 'BQ', postalCode: '97300' }
+            ],
+            products: [{ id: 'AE' }],
+            stocks: [stock],
+            venues: [{ id: 'CE', managingOffererId:'BQ' }],
+          },
+        })
 
-          const wrapper = mount(
-            <Provider store={store}>
-              <Router history={history}>
-                <Switch>
-                  <Route path='/offres/:offerId'>
-                    <StockItemContainer {...props} />
-                  </Route>
-                </Switch>
-              </Router>
-            </Provider>
-          )
+        const wrapper = mount(
+          <Provider store={store}>
+            <Router history={history}>
+              <Switch>
+                <Route path='/offres/:offerId'>
+                  <StockItemContainer {...props} />
+                </Route>
+              </Switch>
+            </Router>
+          </Provider>
+        )
 
-          const eventFieldComponent = wrapper.find(EventFields)
-          const productFieldsContainerComponent = wrapper.find(ProductFieldsContainer)
+        const eventFieldComponent = wrapper.find(EventFields)
+        const productFieldsContainerComponent = wrapper.find(ProductFieldsContainer)
 
         // then
-
         const bookingLimitDatetimeInput = productFieldsContainerComponent
           .find(Field)
           .find({ name: 'bookingLimitDatetime' })

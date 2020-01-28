@@ -56,7 +56,7 @@ describe('src | pages | Offer | StocksManager | StockItem | decorators | adaptaB
   })
 
   describe('when beginningDatetime is the same day that bookingLimitDatetime', () => {
-    it('should not bookingLimitDatetime no matter the timezone', () => {
+    it('should put bookingLimitDatetime the same value than beginningDatetime no matter the timezone', () => {
       // given
       const initialValues = {
         beginningDatetime: '2020-01-18T19:00:59.984000Z',
