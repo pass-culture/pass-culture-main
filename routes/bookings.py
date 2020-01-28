@@ -54,7 +54,6 @@ from validation.users_authorizations import \
     check_user_can_validate_bookings_v2
 
 
-
 @app.route('/bookings/csv', methods=['GET'])
 @login_required
 def get_bookings_csv():

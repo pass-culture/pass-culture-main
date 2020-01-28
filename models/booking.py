@@ -16,7 +16,6 @@ from models.db import Model
 from models.pc_object import PcObject
 from models.versioned_mixin import VersionedMixin
 from utils.human_ids import humanize
-from utils.string_processing import format_decimal
 
 
 class Booking(PcObject, Model, VersionedMixin):
@@ -118,30 +117,6 @@ class Booking(PcObject, Model, VersionedMixin):
             return event_start_time_is_over
         else:
             return False
-
-    @property
-    def statusLabel(self):
-        if self.isCancelled:
-            return "Réservation annulée"
-        elif self.isUsed:
-            return "Contremarque validée"
-        elif self.isEventExpired:
-            return "Validé"
-        else:
-            return "En attente"
-
-    def as_csv_row(self):
-        return [
-            self.stock.offer.venue.name,
-            self.stock.offer.name,
-            self.user.lastName,
-            self.user.firstName,
-            self.user.email,
-            self.dateCreated,
-            self.quantity,
-            format_decimal(self.amount),
-            self.statusLabel
-        ]
 
     @property
     def thumbUrl(self):

@@ -11,6 +11,7 @@ from PIL import Image
 
 from models import Booking
 from models.stock import Stock
+from utils.string_processing import format_decimal
 
 BOOKING_CANCELLATION_DELAY = timedelta(hours=72)
 QR_CODE_PASS_CULTURE_VERSION = 'v2'
@@ -30,13 +31,45 @@ CSV_HEADER = [
 ]
 
 
-def generate_bookings_details_csv(bookings: List[Booking]) -> str:
+def generate_bookings_details_csv(bookings: List[object]) -> str:
     output = StringIO()
-    csv_lines = [booking.as_csv_row() for booking in bookings]
+
+    csv_lines = _generate_csv_lines(bookings)
+
     writer = csv.writer(output, dialect=csv.excel, delimiter=";")
     writer.writerow(CSV_HEADER)
     writer.writerows(csv_lines)
     return output.getvalue()
+
+
+def _generate_csv_lines(bookings: List[object]) -> List[List]:
+    csv_lines = []
+    for booking in bookings:
+        status_label = _compute_booking_status_label(booking)
+
+        booking_details = [
+            booking.venue_name,
+            booking.offer_name,
+            booking.user_lastname,
+            booking.user_firstname,
+            booking.user_email,
+            booking.date_created,
+            format_decimal(booking.quantity),
+            booking.amount,
+            status_label
+        ]
+        csv_lines.append(booking_details)
+    return csv_lines
+
+
+def _compute_booking_status_label(booking: object) -> str:
+    if booking.isCancelled:
+        status_label = "Réservation annulée"
+    elif booking.isUsed:
+        status_label = "Contremarque validée"
+    else:
+        status_label = "En attente"
+    return status_label
 
 
 def filter_bookings_to_compute_remaining_stock(stock: Stock) -> Iterator:

@@ -1,13 +1,14 @@
+from collections import namedtuple
 from datetime import datetime
 
 from domain.bookings import generate_bookings_details_csv
-from models import Booking
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_deposit
 from tests.model_creators.specific_creators import create_offer_with_thing_product
+from utils.string_processing import format_decimal
 
 
 class BookingsCSVTest:
@@ -45,12 +46,32 @@ class BookingsCSVTest:
 
         repository.save(user, offerer, venue, offer, stock, booking, deposit)
 
-        bookings = Booking.query.all()
+        booking_info = namedtuple(typename='booking_info',
+                                  field_names=['venue_name',
+                                               'offer_name',
+                                               'user_lastname',
+                                               'user_firstname',
+                                               'user_email',
+                                               'date_created',
+                                               'quantity',
+                                               'amount',
+                                               'isCancelled',
+                                               'isUsed'])
+        booking_info.venue_name = booking.stock.offer.venue.name
+        booking_info.offer_name = booking.stock.offer.name
+        booking_info.user_lastname = booking.user.lastName
+        booking_info.user_firstname = booking.user.firstName
+        booking_info.user_email = booking.user.email
+        booking_info.date_created = booking.dateCreated
+        booking_info.quantity = booking.quantity
+        booking_info.amount = format_decimal(booking.amount)
+        booking_info.isCancelled = booking.isCancelled
+        booking_info.isUsed = booking.isUsed
 
         expected_line = 'La petite librairie;Test Book;Doe;John;jane.doe@test.com;2010-01-01 00:00:00;1;12;En attente'
 
         # when
-        csv = generate_bookings_details_csv(bookings)
+        csv = generate_bookings_details_csv([booking_info])
 
         # then
         assert _count_non_empty_lines(csv) == 2

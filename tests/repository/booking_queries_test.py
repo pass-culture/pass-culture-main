@@ -1,11 +1,12 @@
 from datetime import datetime, timedelta
+from decimal import Decimal
 
 import pytest
 
 from models import ThingType, Booking, EventType
 from models.api_errors import ResourceNotFoundError, ApiErrors
-from repository import repository
 from repository import booking_queries
+from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.activity_creators import create_booking_activity, save_all_activities
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
@@ -66,8 +67,8 @@ class FindAllOffererBookingsByVenueIdTest:
         stock2 = create_stock_from_offer(offer2, available=150, price=16)
         stock3 = create_stock_from_offer(offer3, available=150, price=16)
         booking1 = create_booking(user=user, stock=stock1, venue=venue1, quantity=2, recommendation=None)
-        booking2 = create_booking(user=user, stock=stock2, venue=venue1, quantity=2, recommendation=None)
-        booking3 = create_booking(user=user, stock=stock3, venue=venue2, quantity=2, recommendation=None)
+        booking2 = create_booking(user=user, stock=stock2, venue=venue1, quantity=3, recommendation=None)
+        booking3 = create_booking(user=user, stock=stock3, venue=venue2, quantity=4, recommendation=None)
         repository.save(booking1, booking2, booking3)
 
         # when
@@ -75,8 +76,8 @@ class FindAllOffererBookingsByVenueIdTest:
 
         # then
         assert len(bookings) == 2
-        assert booking1 in bookings
-        assert booking2 in bookings
+        assert any(booking.quantity == booking1.quantity for booking in bookings)
+        assert any(booking.quantity == booking2.quantity for booking in bookings)
 
     @clean_database
     def test_returns_bookings_on_given_venue_and_thing_offer_and_date(self, app):
@@ -98,13 +99,13 @@ class FindAllOffererBookingsByVenueIdTest:
         target_booking_1 = create_booking(user=user,
                                           stock=target_stock,
                                           venue=venue,
-                                          quantity=2,
+                                          quantity=3,
                                           recommendation=None,
                                           date_created=datetime(2020, 6, 1))
         target_booking_2 = create_booking(user=user,
                                           stock=target_stock,
                                           venue=venue,
-                                          quantity=2,
+                                          quantity=4,
                                           recommendation=None,
                                           date_created=datetime(2020, 6, 30))
         other_booking_2 = create_booking(user=user,
@@ -130,8 +131,8 @@ class FindAllOffererBookingsByVenueIdTest:
 
         # then
         assert len(bookings) == 2
-        assert target_booking_1 in bookings
-        assert target_booking_2 in bookings
+        assert any(booking.quantity == target_booking_1.quantity for booking in bookings)
+        assert any(booking.quantity == target_booking_2.quantity for booking in bookings)
 
     @clean_database
     def test_returns_bookings_on_given_venue_and_event_offer_and_date(self, app):
@@ -158,13 +159,13 @@ class FindAllOffererBookingsByVenueIdTest:
                                                 beginning_datetime=datetime.strptime("2020-07-02T20:00:00.000Z",
                                                                                      "%Y-%m-%dT%H:%M:%S.%fZ"))
 
-        target_booking = create_booking(user=user, stock=target_stock, venue=venue, quantity=2, recommendation=None)
+        target_booking = create_booking(user=user, stock=target_stock, venue=venue, quantity=3, recommendation=None)
         other_booking_1 = create_booking(user=user, stock=other_stock_1, venue=venue, quantity=2, recommendation=None)
         other_booking_2 = create_booking(user=user, stock=other_stock_2, venue=venue, quantity=2, recommendation=None)
         other_booking_3 = create_booking(user=user, stock=other_stock_3, venue=venue, quantity=2, recommendation=None)
 
         repository.save(other_booking_1, other_booking_2,
-                      target_booking, other_booking_3)
+                        target_booking, other_booking_3)
 
         target_offer_id = target_offer.id
 
@@ -175,7 +176,36 @@ class FindAllOffererBookingsByVenueIdTest:
 
         # then
         assert len(bookings) == 1
-        assert target_booking in bookings
+        assert any(booking.quantity == target_booking.quantity for booking in bookings)
+
+    @clean_database
+    def test_should_return_only_expected_attributes(self, app):
+        # Given
+        user = create_user(last_name='Doe', first_name='John')
+        deposit = create_deposit(user)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock_from_offer(offer)
+        booking = create_booking(user, stock=stock, is_used=True, date_created=datetime(2018, 1, 29))
+
+        repository.save(deposit, booking)
+
+        # When
+        bookings = booking_queries.find_offerer_bookings(offerer.id)
+
+        # Then
+        assert len(bookings) == 1
+        assert bookings[0] == (datetime(2018, 1, 29),
+                               1,
+                               Decimal('9.90'),
+                               False,
+                               True,
+                               'La petite librairie',
+                               'Test Book',
+                               'Doe',
+                               'John',
+                               'john.doe@example.com')
 
 
 class FindAllDigitalBookingsForOffererTest:
@@ -192,7 +222,7 @@ class FindAllDigitalBookingsForOffererTest:
             offerer1, digital_venue, price=2, available=100)
         stock2 = create_stock_with_thing_offer(
             offerer1, physical_venue, price=3, available=100)
-        booking_for_digital = create_booking(user=user, stock=stock1, venue=digital_venue, quantity=2,
+        booking_for_digital = create_booking(user=user, stock=stock1, venue=digital_venue, quantity=3,
                                              recommendation=None)
         booking_for_physical = create_booking(user=user, stock=stock2, venue=physical_venue, quantity=2,
                                               recommendation=None)
@@ -204,7 +234,7 @@ class FindAllDigitalBookingsForOffererTest:
 
         # then
         assert len(bookings) == 1
-        assert bookings[0] == booking_for_digital
+        assert any(booking.quantity == booking_for_digital.quantity for booking in bookings)
 
     @clean_database
     def test_returns_only_bookings_for_specified_offerer(self, app):
@@ -226,19 +256,19 @@ class FindAllDigitalBookingsForOffererTest:
         other_stock = create_stock_with_thing_offer(
             other_offerer, other_digital_venue, price=3, available=100)
 
-        targeet_booking = create_booking(user=user, stock=target_stock, venue=target_digital_venue, quantity=2,
-                                         recommendation=None)
+        target_booking = create_booking(user=user, stock=target_stock, venue=target_digital_venue, quantity=3,
+                                        recommendation=None)
         other_booking = create_booking(user=user, stock=other_stock, venue=other_digital_venue, quantity=2,
                                        recommendation=None)
 
-        repository.save(targeet_booking, other_booking)
+        repository.save(target_booking, other_booking)
 
         # when
         bookings = booking_queries.find_digital_bookings_for_offerer(target_offerer.id)
 
         # then
         assert len(bookings) == 1
-        assert bookings[0] == targeet_booking
+        assert any(booking.quantity == target_booking.quantity for booking in bookings)
 
     @clean_database
     def test_returns_only_bookings_for_specified_offerer_and_offer(self, app):
@@ -255,7 +285,7 @@ class FindAllDigitalBookingsForOffererTest:
             offerer1, digital_venue_for_offerer1, price=3, available=100)
         booking_for_offerer1 = create_booking(user=user, stock=stock1, venue=digital_venue_for_offerer1, quantity=2,
                                               recommendation=None)
-        booking_for_offerer2 = create_booking(user=user, stock=stock2, venue=digital_venue_for_offerer1, quantity=2,
+        booking_for_offerer2 = create_booking(user=user, stock=stock2, venue=digital_venue_for_offerer1, quantity=3,
                                               recommendation=None)
 
         repository.save(booking_for_offerer1, booking_for_offerer2)
@@ -266,7 +296,7 @@ class FindAllDigitalBookingsForOffererTest:
 
         # then
         assert len(bookings) == 1
-        assert bookings[0] == booking_for_offerer2
+        assert any(booking.quantity == booking_for_offerer2.quantity for booking in bookings)
 
     @clean_database
     def test_returns_only_bookings_for_specified_offerer_and_thing_offer_and_booking_date(self, app):
@@ -283,9 +313,9 @@ class FindAllDigitalBookingsForOffererTest:
             offerer1, digital_venue_for_offerer1, price=3, available=100)
         booking_for_offerer1 = create_booking(user=user, stock=stock2, venue=digital_venue_for_offerer1, quantity=2,
                                               recommendation=None, date_created=datetime(2020, 5, 30))
-        booking_for_offerer2 = create_booking(user=user, stock=stock2, venue=digital_venue_for_offerer1, quantity=2,
+        booking_for_offerer2 = create_booking(user=user, stock=stock2, venue=digital_venue_for_offerer1, quantity=3,
                                               recommendation=None, date_created=datetime(2020, 6, 1))
-        booking_for_offerer3 = create_booking(user=user, stock=stock2, venue=digital_venue_for_offerer1, quantity=2,
+        booking_for_offerer3 = create_booking(user=user, stock=stock2, venue=digital_venue_for_offerer1, quantity=4,
                                               recommendation=None, date_created=datetime(2020, 6, 30))
         booking_for_offerer4 = create_booking(user=user, stock=stock2, venue=digital_venue_for_offerer1, quantity=2,
                                               recommendation=None, date_created=datetime(2020, 7, 31))
@@ -293,7 +323,7 @@ class FindAllDigitalBookingsForOffererTest:
                                               recommendation=None, date_created=datetime(2020, 6, 30))
 
         repository.save(booking_for_offerer1, booking_for_offerer2, booking_for_offerer3, booking_for_offerer4,
-                      booking_for_offerer5)
+                        booking_for_offerer5)
 
         # when
         bookings = booking_queries.find_digital_bookings_for_offerer(offerer1.id, stock2.offer.id,
@@ -302,8 +332,8 @@ class FindAllDigitalBookingsForOffererTest:
 
         # then
         assert len(bookings) == 2
-        assert bookings[0] == booking_for_offerer2
-        assert bookings[1] == booking_for_offerer3
+        assert any(booking.quantity == booking_for_offerer2.quantity for booking in bookings)
+        assert any(booking.quantity == booking_for_offerer3.quantity for booking in bookings)
 
 
 @clean_database
@@ -376,7 +406,7 @@ class FindFinalOffererBookingsTest:
         payment2 = create_payment(booking3, offerer, 5)
 
         repository.save(deposit, booking1, booking2, booking3,
-                      booking4, payment1, payment2)
+                        booking4, payment1, payment2)
 
         # When
         bookings = booking_queries.find_eligible_bookings_for_offerer(offerer.id)
@@ -1513,9 +1543,12 @@ class GetValidBookingsByUserId:
         offer3 = create_offer_with_event_product(venue)
         stock3 = create_stock(offer=offer3, beginning_datetime=two_days_bis, end_datetime=five_days,
                               booking_limit_datetime=NOW)
-        booking1 = create_booking(user=user, stock=stock1, recommendation=create_recommendation(user=user, offer=offer1))
-        booking2 = create_booking(user=user, stock=stock2, recommendation=create_recommendation(user=user, offer=offer2))
-        booking3 = create_booking(user=user, stock=stock3, recommendation=create_recommendation(user=user, offer=offer3))
+        booking1 = create_booking(user=user, stock=stock1,
+                                  recommendation=create_recommendation(user=user, offer=offer1))
+        booking2 = create_booking(user=user, stock=stock2,
+                                  recommendation=create_recommendation(user=user, offer=offer2))
+        booking3 = create_booking(user=user, stock=stock3,
+                                  recommendation=create_recommendation(user=user, offer=offer3))
         repository.save(user, deposit, booking1, booking2, booking3)
 
         # When

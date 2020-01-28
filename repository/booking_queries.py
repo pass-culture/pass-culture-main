@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Set, List, Union
 
 from sqlalchemy import and_, func
-from sqlalchemy.orm import Query
+from sqlalchemy.orm import Query, joinedload
 
 from domain.keywords import create_get_filter_matching_ts_query_in_any_model
 from domain.stocks import STOCK_DELETION_DELAY
@@ -95,6 +95,16 @@ def find_offerer_bookings(offerer_id: int, venue_id: int = None, offer_id: int =
             if date_to:
                 query = query.filter(Booking.dateCreated <= date_to)
 
+    query = query.with_entities(Booking.dateCreated.label('date_created'),
+                                Booking.quantity.label('quantity'),
+                                Booking.amount.label('amount'),
+                                Booking.isCancelled.label('isCancelled'),
+                                Booking.isUsed.label('isUsed'),
+                                Venue.name.label('venue_name'),
+                                Offer.name.label('offer_name'),
+                                User.lastName.label('user_lastname'),
+                                User.firstName.label('user_firstname'),
+                                User.email.label('user_email'))
     return query.all()
 
 
@@ -112,6 +122,17 @@ def find_digital_bookings_for_offerer(offerer_id: int, offer_id: int = None, dat
 
     if date_to:
         query = query.filter(Booking.dateCreated <= date_to)
+
+    query = query.with_entities(Booking.dateCreated.label('date_created'),
+                                Booking.quantity.label('quantity'),
+                                Booking.amount.label('amount'),
+                                Booking.isCancelled.label('isCancelled'),
+                                Booking.isUsed.label('isUsed'),
+                                Venue.name.label('venue_name'),
+                                Offer.name.label('offer_name'),
+                                User.lastName.label('user_lastname'),
+                                User.firstName.label('user_firstname'),
+                                User.email.label('user_email'))
 
     return query.all()
 
@@ -217,7 +238,7 @@ def _filter_bookings_by_offerer_id(offerer_id: int) -> Query:
         .join(Stock) \
         .join(Offer) \
         .join(Venue) \
-        .outerjoin(Product, and_(Offer.productId == Product.id)) \
+        .join(User) \
         .filter(Venue.managingOffererId == offerer_id) \
         .reset_joinpoint()
 
