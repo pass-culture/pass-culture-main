@@ -1,11 +1,18 @@
+from datetime import datetime
 from unittest.mock import patch, MagicMock, call
 
+from freezegun import freeze_time
+
+from models import PcObject
 from repository import repository
-from scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_offer, batch_indexing_offers_in_algolia_by_venue, \
-    batch_indexing_offers_in_algolia_from_database, batch_indexing_offers_in_algolia_by_venue_provider
+from scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_offer, \
+    batch_indexing_offers_in_algolia_by_venue, \
+    batch_indexing_offers_in_algolia_from_database, batch_indexing_offers_in_algolia_by_venue_provider, \
+    batch_delete_obsolete_offers_in_algolia
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue
-from tests.model_creators.specific_creators import create_offer_with_event_product
+from tests.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product, \
+    create_stock_from_offer
 
 
 class BatchIndexingOffersInAlgoliaByOfferTest:
@@ -85,7 +92,7 @@ class BatchIndexingOffersInAlgoliaByVenueTest:
         client = MagicMock()
         offerer = create_offerer()
         venue1 = create_venue(offerer=offerer, idx=666)
-        venue2 = create_venue(offerer=offerer, idx=13, siret=123654987)
+        venue2 = create_venue(offerer=offerer, idx=13, siret='123654987')
         offer1 = create_offer_with_event_product(venue=venue1)
         offer2 = create_offer_with_event_product(venue=venue2)
         offer3 = create_offer_with_event_product(venue=venue2)
@@ -129,3 +136,37 @@ class BatchIndexingOffersInAlgoliaByVenueProviderTest:
             {'id': 2, 'lastProviderId': 6, 'venueId': 7}
         ])
         mock_delete_venue_providers.assert_called_once()
+
+
+@freeze_time('2020-01-01 10:00:00')
+class BatchDeletingExpiredOffersInAlgoliaTest:
+    @patch('scripts.algolia_indexing.indexing.orchestrate_delete_expired_offers')
+    @clean_database
+    def test_should_delete_expired_offers_in_a_paginated_way(self,
+                                                             mock_orchestrate_delete_expired_offers,
+                                                             app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer1 = create_offer_with_event_product(is_active=True, venue=venue)
+        offer2 = create_offer_with_event_product(is_active=True, venue=venue)
+        offer3 = create_offer_with_thing_product(is_active=True, venue=venue)
+        offer4 = create_offer_with_thing_product(is_active=True, venue=venue)
+        stock1 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 21, 0, 0, 0), offer=offer1)
+        stock2 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 22, 0, 0, 0), offer=offer2)
+        stock3 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 23, 0, 0, 0), offer=offer3)
+        stock4 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 24, 0, 0, 0), offer=offer4)
+        PcObject.save(stock1, stock2, stock3, stock4)
+
+        # When
+        batch_delete_obsolete_offers_in_algolia(limit=1)
+
+        # Then
+        assert mock_orchestrate_delete_expired_offers.call_count == 4
+        call_args_list = mock_orchestrate_delete_expired_offers.call_args_list
+        assert call_args_list == [
+            call(offer_ids=[offer1.id]),
+            call(offer_ids=[offer2.id]),
+            call(offer_ids=[offer3.id]),
+            call(offer_ids=[offer4.id])
+        ]

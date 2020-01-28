@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch, call
 
-from algolia.orchestrator import orchestrate, orchestrate_from_venue_providers
 from repository import repository
+from algolia.orchestrator import orchestrate, orchestrate_from_venue_providers, orchestrate_delete_expired_offers
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_stock, create_venue
 from tests.model_creators.specific_creators import create_offer_with_thing_product
@@ -130,3 +130,28 @@ class OrchestrateFromLocalProvidersTest:
             call(offer_ids=[5, 6, 7]),
             call(offer_ids=[8])
         ]
+
+
+class OrchestrateCleanExpiredOffersTest:
+    @patch('algolia.orchestrator.delete_objects')
+    def test_should_delete_expired_offers_from_algolia_when_at_least_one_offer_id(self,
+                                                                                  mock_delete_objects,
+                                                                                  app):
+        # When
+        orchestrate_delete_expired_offers(offer_ids=[1, 2, 3])
+
+        # Then
+        assert mock_delete_objects.call_count == 1
+        assert mock_delete_objects.call_args_list == [
+            call(object_ids=['AE', 'A9', 'AM'])
+        ]
+
+    @patch('algolia.orchestrator.delete_objects')
+    def test_should_not_delete_expired_offers_from_algolia_when_no_offer_id(self,
+                                                                            mock_delete_objects,
+                                                                            app):
+        # When
+        orchestrate_delete_expired_offers(offer_ids=[])
+
+        # Then
+        assert mock_delete_objects.call_count == 0

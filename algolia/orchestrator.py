@@ -7,6 +7,7 @@ from algolia.rules_engine import is_eligible_for_indexing
 from repository import offer_queries
 from utils.converter import from_tuple_to_int
 from utils.human_ids import humanize
+from utils.logger import logger
 
 ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE = int(os.environ.get('ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE', 10000))
 
@@ -27,9 +28,11 @@ def orchestrate(offer_ids: List[int], is_clear: bool = False) -> None:
 
     if len(indexing_objects) > 0:
         add_objects(objects=indexing_objects)
+        logger.info(f'[ALGOLIA] indexed {len(indexing_objects)} objects')
 
     if len(deleting_objects) > 0:
         delete_objects(object_ids=deleting_objects)
+        logger.info(f'[ALGOLIA] deleted {len(deleting_objects)} objects from index')
 
 
 def orchestrate_from_venue_providers(venue_providers: List[Dict]) -> None:
@@ -52,3 +55,13 @@ def orchestrate_from_venue_providers(venue_providers: List[Dict]) -> None:
                 page += 1
             else:
                 has_still_offers = False
+
+
+def orchestrate_delete_expired_offers(offer_ids: List[int]) -> None:
+    deleting_objects = []
+    for offer_id in offer_ids:
+        deleting_objects.append(humanize(offer_id))
+
+    if len(deleting_objects) > 0:
+        delete_objects(object_ids=deleting_objects)
+        logger.info(f'[ALGOLIA] deleted {len(deleting_objects)} objects from index')

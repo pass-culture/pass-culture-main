@@ -481,6 +481,7 @@ def get_paginated_expired_offer_ids(limit: int, page: int) -> List[tuple]:
         .join(Stock)\
         .with_entities(Offer.id)\
         .filter(Offer.isActive == True) \
+        .filter(Stock.bookingLimitDatetime is not None)\
         .filter(Stock.bookingLimitDatetime < (datetime.utcnow() - timedelta(days=1))) \
         .order_by(Offer.id) \
         .offset(page * limit) \
