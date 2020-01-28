@@ -4,7 +4,6 @@ import {
   Field,
   Form,
   Icon,
-  mergeErrors,
   mergeForm,
   pluralize,
   resetForm,
@@ -76,12 +75,10 @@ class Offer extends PureComponent {
   componentDidUpdate(prevProps) {
     const {
       dispatch,
-      formInitialValues,
       formOffererId,
       formVenueId,
       location,
       offerer,
-      offerTypeError,
       selectedOfferType,
       venue,
     } = this.props
@@ -115,15 +112,6 @@ class Offer extends PureComponent {
 
     this.setDefaultBookingEmailIfNew(prevProps)
 
-    if (get(formInitialValues, 'type') && !selectedOfferType && !offerTypeError) {
-      dispatch(
-        mergeErrors('offer', {
-          type: [
-            'Il y a eu un problème avec la création de cette offre : son type est incompatible avec le lieu enregistré.',
-          ],
-        })
-      )
-    }
     this.setDefaultIsDuoIfNewAndEvent()
 
     this.forceReactToolTip()
