@@ -106,8 +106,8 @@ class OrchestrateFromLocalProvidersTest:
             []
         ]
         venue_providers = [
-            {'id': 1, 'lastProviderId': '5', 'venueId': 8},
-            {'id': 2, 'lastProviderId': '6', 'venueId': 9},
+            {'id': 1, 'providerId': '5', 'venueId': 8},
+            {'id': 2, 'providerId': '6', 'venueId': 9},
         ]
 
         # When

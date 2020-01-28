@@ -47,7 +47,7 @@ def _add_venue_provider(client: Redis, venue_provider: VenueProvider) -> None:
         try:
             venue_provider_as_dict = {
                 'id': venue_provider.id,
-                'lastProviderId': venue_provider.lastProviderId,
+                'providerId': venue_provider.providerId,
                 'venueId': venue_provider.venueId
             }
             venue_provider_as_string = json.dumps(venue_provider_as_dict)

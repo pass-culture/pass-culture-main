@@ -179,7 +179,7 @@ class HandleVenueProvidersTest:
 
         # Then
         client.rpush.assert_called_once_with('fake_list_venue_providers',
-                                             '{"id": 1, "lastProviderId": null, "venueId": 1}')
+                                             '{"id": 1, "providerId": 1, "venueId": 1}')
 
     @patch('connectors.redis.feature_queries.is_active', return_value=False)
     @patch('connectors.redis.REDIS_LIST_VENUE_PROVIDERS_NAME', 'fake_list_venue_providers')
@@ -237,8 +237,8 @@ class HandleVenueProvidersTest:
         client = MagicMock()
         client.lrange = MagicMock()
         client.lrange.return_value = [
-            '{"id": 1, "lastProviderId": 2, "venueId": 3}',
-            '{"id": 2, "lastProviderId": 7, "venueId": 9}'
+            '{"id": 1, "providerId": 2, "venueId": 3}',
+            '{"id": 2, "providerId": 7, "venueId": 9}'
         ]
 
         # When
@@ -247,8 +247,8 @@ class HandleVenueProvidersTest:
         # Then
         client.lrange.assert_called_once_with('fake_list_venue_providers', 0, 2)
         assert result == [
-            {'id': 1, 'lastProviderId': 2, 'venueId': 3},
-            {'id': 2, 'lastProviderId': 7, 'venueId': 9}
+            {'id': 1, 'providerId': 2, 'venueId': 3},
+            {'id': 2, 'providerId': 7, 'venueId': 9}
         ]
 
     @patch('connectors.redis.REDIS_VENUE_PROVIDERS_CHUNK_SIZE', 2)

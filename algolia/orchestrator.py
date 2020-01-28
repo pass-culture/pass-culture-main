@@ -37,10 +37,10 @@ def orchestrate_from_venue_providers(venue_providers: List[Dict]) -> None:
         has_still_offers = True
         page = 0
         while has_still_offers is True:
-            last_provider_id = venue_provider['lastProviderId']
+            provider_id = venue_provider['providerId']
             venue_id = int(venue_provider['venueId'])
             offer_ids_as_tuple = offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id(
-                last_provider_id=last_provider_id,
+                last_provider_id=provider_id,
                 limit=ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE,
                 page=page,
                 venue_id=venue_id
