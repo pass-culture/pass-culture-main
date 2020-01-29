@@ -353,27 +353,29 @@ class GetOfferIdsFromSetTest:
     @patch('connectors.redis.redis')
     @clean_database
     def test_should_get_offer_ids_from_redis_set_when_algolia_feature_is_enabled(self,
-                                                                                    mock_redis,
-                                                                                    mock_feature_active,
-                                                                                    app):
+                                                                                 mock_redis,
+                                                                                 mock_feature_active,
+                                                                                 app):
         # Given
         client = MagicMock()
         client.smembers = MagicMock()
+        client.smembers.return_value = {'1', '2'}
 
         # When
-        get_offer_ids_from_set(client=client)
+        result = get_offer_ids_from_set(client=client)
 
         # Then
         client.smembers.assert_called_once_with('fake_redis_set_indexed_offers')
+        assert result == {1, 2}
 
     @patch('connectors.redis.feature_queries.is_active', return_value=False)
     @patch('connectors.redis.REDIS_SET_INDEXED_OFFER_IDS_NAME', 'fake_redis_set_indexed_offers')
     @patch('connectors.redis.redis')
     @clean_database
     def test_should_not_get_offer_ids_from_redis_set_when_algolia_feature_is_disabled(self,
-                                                                                         mock_redis,
-                                                                                         mock_feature_active,
-                                                                                         app):
+                                                                                      mock_redis,
+                                                                                      mock_feature_active,
+                                                                                      app):
         # Given
         client = MagicMock()
         client.smembers = MagicMock()

@@ -62,7 +62,7 @@ def test_all_helpers_are_returning_actual_sandbox_data(mock_request, app):
 
 
 class AlgoliaIndexingTest:
-    @patch('sandboxes.scripts.creators.industrial.create_industrial_algolia_objects.orchestrate')
+    @patch('sandboxes.scripts.creators.industrial.create_industrial_algolia_objects.orchestrate_from_offer')
     @patch('sandboxes.scripts.utils.ban.requests.get')
     @clean_database
     def test_should_not_index_offers_to_algolia_when_indexation_is_disabled(self, mock_request, mock_orchestrate, app):
@@ -77,7 +77,7 @@ class AlgoliaIndexingTest:
         # Then
         mock_orchestrate.assert_not_called()
 
-    @patch('sandboxes.scripts.creators.industrial.create_industrial_algolia_objects.orchestrate')
+    @patch('sandboxes.scripts.creators.industrial.create_industrial_algolia_objects.orchestrate_from_offer')
     @patch('sandboxes.scripts.utils.ban.requests.get')
     @clean_database
     def test_should_index_offers_to_algolia_when_indexation_is_enabled(self, mock_request, mock_orchestrate, app):

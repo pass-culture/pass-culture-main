@@ -73,7 +73,7 @@ def pc_batch_indexing_offers_in_algolia_by_venue_provider():
 @log_cron
 def pc_batch_deleting_expired_offers_in_algolia():
     with app.app_context():
-        batch_deleting_expired_offers_in_algolia()
+        batch_deleting_expired_offers_in_algolia(client=app.redis_client)
 
 
 if __name__ == '__main__':

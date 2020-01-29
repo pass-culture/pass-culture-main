@@ -16,9 +16,9 @@ REDIS_LIST_OFFER_IDS_NAME = 'offer_ids'
 REDIS_LIST_VENUE_IDS_NAME = 'venue_ids'
 REDIS_LIST_VENUE_PROVIDERS_NAME = 'venue_providers'
 REDIS_SET_INDEXED_OFFER_IDS_NAME = 'indexed_offer_ids'
-REDIS_OFFER_IDS_CHUNK_SIZE = int(os.environ.get('REDIS_OFFER_IDS_CHUNK_SIZE', '1000'))
-REDIS_VENUE_IDS_CHUNK_SIZE = int(os.environ.get('REDIS_VENUE_IDS_CHUNK_SIZE', '1000'))
-REDIS_VENUE_PROVIDERS_CHUNK_SIZE = int(os.environ.get('REDIS_VENUE_PROVIDERS_LRANGE_END', '1'))
+REDIS_OFFER_IDS_CHUNK_SIZE = int(os.environ.get('REDIS_OFFER_IDS_CHUNK_SIZE', 1000))
+REDIS_VENUE_IDS_CHUNK_SIZE = int(os.environ.get('REDIS_VENUE_IDS_CHUNK_SIZE', 1000))
+REDIS_VENUE_PROVIDERS_CHUNK_SIZE = int(os.environ.get('REDIS_VENUE_PROVIDERS_LRANGE_END', 1))
 
 
 def add_offer_id(client: Redis, offer_id: int) -> None:
@@ -129,6 +129,6 @@ def get_offer_ids_from_set(client: Redis) -> Set:
     if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
         try:
             indexed_offer_ids = client.smembers(REDIS_SET_INDEXED_OFFER_IDS_NAME)
-            return indexed_offer_ids
+            return set(map(int, indexed_offer_ids))
         except redis.exceptions.RedisError as error:
             logger.error(f'[REDIS] {error}')

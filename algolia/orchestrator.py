@@ -1,21 +1,20 @@
-import os
-from typing import List, Dict
+from typing import List, Set, Tuple
 
 from algolia.api import add_objects, clear_objects, delete_objects
 from algolia.builder import build_object
 from algolia.rules_engine import is_eligible_for_indexing
 from repository import offer_queries
-from utils.converter import from_tuple_to_int
 from utils.human_ids import humanize
 from utils.logger import logger
 
-ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE = int(os.environ.get('ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE', 10000))
 
-
-def orchestrate(offer_ids: List[int], is_clear: bool = False) -> None:
+def orchestrate_from_offer(offer_ids: List[int],
+                           is_clear: bool = False,
+                           indexed_offer_ids: Set = None) -> Tuple[List[int], List[int]]:
     if is_clear:
         clear_objects()
-
+    indexing_offer_ids = []
+    deleting_offer_ids = []
     indexing_objects = []
     deleting_objects = []
     offers = offer_queries.get_offers_by_ids(offer_ids)
@@ -23,8 +22,40 @@ def orchestrate(offer_ids: List[int], is_clear: bool = False) -> None:
     for offer in offers:
         if is_eligible_for_indexing(offer):
             indexing_objects.append(build_object(offer=offer))
+            indexing_offer_ids.append(offer.id)
         else:
-            deleting_objects.append(humanize(offer.id))
+            if offer.id in indexed_offer_ids:
+                deleting_objects.append(humanize(offer.id))
+                deleting_offer_ids.append(offer.id)
+
+    if len(indexing_objects) > 0:
+        add_objects(objects=indexing_objects)
+        logger.info(f'[ALGOLIA] indexed {len(indexing_objects)} objects')
+
+    if len(deleting_objects) > 0:
+        delete_objects(object_ids=deleting_objects)
+        logger.info(f'[ALGOLIA] deleted {len(deleting_objects)} objects')
+
+    return indexing_offer_ids, deleting_offer_ids
+
+
+def orchestrate_from_venue_provider(offer_ids: List[int],
+                                    indexed_offer_ids: Set = None) -> Tuple[List[int], List[int]]:
+    indexing_offer_ids = []
+    deleting_offer_ids = []
+    indexing_objects = []
+    deleting_objects = []
+    offers = offer_queries.get_offers_by_ids(offer_ids)
+
+    for offer in offers:
+        if is_eligible_for_indexing(offer):
+            if offer.id not in indexed_offer_ids:
+                indexing_objects.append(build_object(offer=offer))
+                indexing_offer_ids.append(offer.id)
+        else:
+            if offer.id in indexed_offer_ids:
+                deleting_objects.append(humanize(offer.id))
+                deleting_offer_ids.append(offer.id)
 
     if len(indexing_objects) > 0:
         add_objects(objects=indexing_objects)
@@ -34,27 +65,7 @@ def orchestrate(offer_ids: List[int], is_clear: bool = False) -> None:
         delete_objects(object_ids=deleting_objects)
         logger.info(f'[ALGOLIA] deleted {len(deleting_objects)} objects from index')
 
-
-def orchestrate_from_venue_providers(venue_providers: List[Dict]) -> None:
-    for venue_provider in venue_providers:
-        has_still_offers = True
-        page = 0
-        while has_still_offers is True:
-            provider_id = venue_provider['providerId']
-            venue_id = int(venue_provider['venueId'])
-            offer_ids_as_tuple = offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id(
-                last_provider_id=provider_id,
-                limit=ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE,
-                page=page,
-                venue_id=venue_id
-            )
-            offer_ids_as_int = from_tuple_to_int(offer_ids_as_tuple)
-
-            if len(offer_ids_as_tuple) > 0:
-                orchestrate(offer_ids=offer_ids_as_int)
-                page += 1
-            else:
-                has_still_offers = False
+    return indexing_offer_ids, deleting_offer_ids
 
 
 def orchestrate_delete_expired_offers(offer_ids: List[int]) -> None:
