@@ -110,12 +110,10 @@ class StockItem extends PureComponent {
       handleSetErrors,
     } = this.props
 
-
     const { isRequestPending, tbodyElement } = this.state
     const { id: stockId } = stockPatch
     const { readOnly } = query.context({ id: stockId, key: 'stock' })
     const { form, values, handleSubmit } = formProps
-
 
     const { beginningDatetime } = values
     const canSubmit = getCanSubmit(Object.assign({}, formProps, { pristine: false }))
@@ -171,7 +169,6 @@ class StockItem extends PureComponent {
 
   render() {
     const { isEvent, stockPatch, timezone } = this.props
-
     let decorators = [
       adaptBookingLimitDatetimeGivenBeginningDatetime({
         isEvent,

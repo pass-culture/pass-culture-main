@@ -9,7 +9,6 @@ import { createBrowserHistory } from 'history'
 
 import { Provider } from 'react-redux'
 import { Route, Router, Switch } from 'react-router-dom'
-import StockItemContainer from '../StockItemContainer'
 import { Field } from 'react-final-form'
 
 describe('src | components | pages | Offer | StocksManager | StockItem', () => {
@@ -67,11 +66,23 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
           endDatetime: '2020-01-27T22:00:00Z',
           offerId: 'EM',
           price: 48,
-          remainingQuantity: 9
+          remainingQuantity: 9,
+        }
+
+        props.stockPatch = {
+          id: 'G9',
+          available: 10,
+          beginningDatetime: '2020-01-20T20:00:00Z',
+          bookingLimitDatetime: '2020-01-27T20:00:00Z',
+          endDatetime: '2020-01-27T22:00:00Z',
+          offerId: 'EM',
+          price: 48,
+          remainingQuantity: 9,
         }
 
         props.isEvent = true
         props.stock = stock
+        props.timezone = 'Europe/Paris'
 
         const store = mockStore({
           data: {
@@ -80,15 +91,13 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
                 id: 'EM',
                 productId: 'EM',
                 venueId: 'CE',
-                isEvent: true
-              }
+                isEvent: true,
+              },
             ],
-            offerers: [
-              { id: 'BQ', postalCode: '97300' }
-            ],
+            offerers: [{ id: 'BQ', postalCode: '97300' }],
             products: [{ id: 'AE' }],
             stocks: [stock],
-            venues: [{ id: 'CE', managingOffererId:'BQ' }],
+            venues: [{ id: 'CE', managingOffererId: 'BQ' }],
           },
         })
 
@@ -96,8 +105,8 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
           <Provider store={store}>
             <Router history={history}>
               <Switch>
-                <Route path='/offres/:offerId'>
-                  <StockItemContainer {...props} />
+                <Route path="/offres/:offerId">
+                  <StockItem {...props} />
                 </Route>
               </Switch>
             </Router>
@@ -108,75 +117,108 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
         productFieldsContainerComponent = wrapper.find(ProductFieldsContainer)
       })
 
-        it('should display event fields informations', () => {
-          // when
-          const expected = {
-            "available": 10,
-            "beginningDatetime": "2020-01-20T20:00:00Z",
-            "beginningTime": "21:00",
-            "bookingLimitDatetime": "2020-01-20T20:00:00Z",
-            "endDatetime": "2020-01-27T22:00:00Z",
-            "endTime": "23:00",
-            "id": "G9",
-            "offerId": "EM",
-            "offererId": "BQ",
-            "price": 48
-          }
+      it('should display event fields and product fields informations', () => {
+        // when
+        const expected = {
+          available: 10,
+          beginningDatetime: '2020-01-20T20:00:00Z',
+          beginningTime: '21:00',
+          bookingLimitDatetime: '2020-01-20T20:00:00Z',
+          endDatetime: '2020-01-27T22:00:00Z',
+          endTime: '23:00',
+          id: 'G9',
+          offerId: 'EM',
+          price: 48,
+          remainingQuantity: 9,
+        }
 
-          // then
-          expect(eventFieldComponent).toHaveLength(1)
-          expect(productFieldsContainerComponent).toHaveLength(1)
-          expect(eventFieldComponent.prop('values')).toStrictEqual(expected)
-
-          const beginningTimeInput = eventFieldComponent
-            .find(Field)
-            .find({ name: 'beginningTime' })
-            .find('input')
-
-          const endDatetimeInput = eventFieldComponent
-            .find(Field)
-            .find({ name: 'endDatetime' })
-            .find('input')
-
-          const beginningDatetimeInput = eventFieldComponent
-            .find(Field)
-            .find({ name: 'beginningDatetime' })
-            .find('input')
-
-          expect(beginningDatetimeInput.props().value).toStrictEqual('20/01/2020')
-          expect(beginningTimeInput.props().value).toStrictEqual('21:00')
-          expect(endDatetimeInput.props().value).toStrictEqual('2020-01-27T22:00:00Z')
-        })
-
-        it('should display product fields informations', () => {
-          // then
-          const priceInput = wrapper
-            .find(Field)
-            .find({ name: 'price' })
-            .find('input')
-
-          const availableInput = wrapper
-            .find(Field)
-            .find({ name: 'available' })
-            .find('input')
-
-          const remainingStockInput = wrapper.find('#remaining-stock')
-
-          const bookingLimitDatetimeInput = wrapper
-            .find(Field)
-            .find({ name: 'bookingLimitDatetime' })
-            .find('input')
-
-          expect(priceInput.props().value).toStrictEqual(48)
-          expect(availableInput.props().value).toStrictEqual(10)
-          expect(bookingLimitDatetimeInput.props().value).toStrictEqual('20/01/2020')
-          expect(remainingStockInput.text()).toStrictEqual('9')
-        })
+        // then
+        expect(eventFieldComponent).toHaveLength(1)
+        expect(productFieldsContainerComponent).toHaveLength(1)
+        expect(eventFieldComponent.prop('values')).toStrictEqual(expected)
       })
 
-    describe('with product', () => {
-      it('should display product fields informations', () => {
+      it('should fill the beginningTime input when beginningDatetime e is updated', () => {
         // when
+        const beginningTimeInput = eventFieldComponent
+          .find(Field)
+          .find({ name: 'beginningTime' })
+          .find('input')
+
+        // then
+        expect(beginningTimeInput.props().value).toStrictEqual('21:00')
+      })
+
+      it('should fill the endDatetimeInput input when endTime is updated', () => {
+        // when
+        const endDatetimeInput = eventFieldComponent
+          .find(Field)
+          .find({ name: 'endDatetime' })
+          .find('input')
+
+        // then
+        expect(endDatetimeInput.props().value).toStrictEqual('2020-01-27T22:00:00Z')
+      })
+
+      it('should fill the beginningDatetimeInput input when beginningDatetime is updated', () => {
+        // when
+        const beginningDatetimeInput = eventFieldComponent
+          .find(Field)
+          .find({ name: 'beginningDatetime' })
+          .find('input')
+
+        // then
+        expect(beginningDatetimeInput.props().value).toStrictEqual('20/01/2020')
+      })
+
+      it('should fill the price input when price is provided', () => {
+        // when
+        const priceInput = wrapper
+          .find(Field)
+          .find({ name: 'price' })
+          .find('input')
+
+        // then
+        expect(priceInput.props().value).toStrictEqual(48)
+      })
+
+      it('should fill the available input when available stock is provided', () => {
+        // when
+        const availableInput = wrapper
+          .find(Field)
+          .find({ name: 'available' })
+          .find('input')
+
+        // then
+        expect(availableInput.props().value).toStrictEqual(10)
+      })
+
+      it('should fill the remaining input when remaining stock is provided', () => {
+        // when
+        const remainingStockInput = wrapper.find('#remaining-stock')
+
+        // then
+        expect(remainingStockInput.text()).toStrictEqual('9')
+      })
+
+      it('should fill the bookingLimitDatetimeInput input when booking limit date is provided', () => {
+        // when
+        const bookingLimitDatetimeInput = wrapper
+          .find(Field)
+          .find({ name: 'bookingLimitDatetime' })
+          .find('input')
+
+        // then
+        expect(bookingLimitDatetimeInput.props().value).toStrictEqual('20/01/2020')
+      })
+    })
+
+    describe('with product', () => {
+      let eventFieldComponent
+      let productFieldsContainerComponent
+      let wrapper
+
+      beforeEach(() => {
         const history = createBrowserHistory()
         history.push(`/offres/EM?gestion&lieu=CE`)
         const middleWares = []
@@ -189,11 +231,22 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
           bookingLimitDatetime: '2020-01-27T20:00:00Z',
           offerId: 'EM',
           price: 12,
-          remainingQuantity: 31
+          remainingQuantity: 31,
         }
 
         props.isEvent = false
         props.stock = stock
+        props.timezone = 'Europe/Paris'
+
+        props.stockPatch = {
+          id: 'G9',
+          available: 56,
+          beginningDatetime: null,
+          bookingLimitDatetime: '2020-01-27T20:00:00Z',
+          offerId: 'EM',
+          price: 12,
+          remainingQuantity: 31,
+        }
 
         const store = mockStore({
           data: {
@@ -202,58 +255,91 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
                 id: 'EM',
                 productId: 'EM',
                 venueId: 'CE',
-                isEvent: true
-              }
+                isEvent: true,
+              },
             ],
-            offerers: [
-              { id: 'BQ', postalCode: '97300' }
-            ],
+            offerers: [{ id: 'BQ', postalCode: '97300' }],
             products: [{ id: 'AE' }],
             stocks: [stock],
-            venues: [{ id: 'CE', managingOffererId:'BQ' }],
+            venues: [{ id: 'CE', managingOffererId: 'BQ' }],
           },
         })
 
-        const wrapper = mount(
+        wrapper = mount(
           <Provider store={store}>
             <Router history={history}>
               <Switch>
-                <Route path='/offres/:offerId'>
-                  <StockItemContainer {...props} />
+                <Route path="/offres/:offerId">
+                  <StockItem {...props} />
                 </Route>
               </Switch>
             </Router>
           </Provider>
         )
 
-        const eventFieldComponent = wrapper.find(EventFields)
-        const productFieldsContainerComponent = wrapper.find(ProductFieldsContainer)
+        eventFieldComponent = wrapper.find(EventFields)
+        productFieldsContainerComponent = wrapper.find(ProductFieldsContainer)
+      })
+
+      it('should display product fields informations', () => {
+        // when
+        const expected = {
+          available: 56,
+          beginningDatetime: null,
+          bookingLimitDatetime: '2020-01-27T20:00:00Z',
+          id: 'G9',
+          offerId: 'EM',
+          price: 12,
+          remainingQuantity: 31,
+        }
 
         // then
+        expect(eventFieldComponent).toHaveLength(0)
+        expect(productFieldsContainerComponent).toHaveLength(1)
+        expect(productFieldsContainerComponent.prop('stock')).toStrictEqual(expected)
+        expect(productFieldsContainerComponent.prop('beginningDatetime')).toBeNull()
+      })
+
+      it('should fill the  bookingLimitDatetime input when bookingLimitDatetime is updated', () => {
+        // when
         const bookingLimitDatetimeInput = productFieldsContainerComponent
           .find(Field)
           .find({ name: 'bookingLimitDatetime' })
           .find('input')
+
+        // then
+        expect(bookingLimitDatetimeInput.props().value).toStrictEqual('27/01/2020')
+      })
+
+      it('should fill the price input when price is provided', () => {
+        // when
 
         const priceInput = productFieldsContainerComponent
           .find(Field)
           .find({ name: 'price' })
           .find('input')
 
+        // then
+        expect(priceInput.props().value).toStrictEqual(12)
+      })
+
+      it('should fill the available input when available stock is provided', () => {
+        // when
         const availableInput = productFieldsContainerComponent
           .find(Field)
           .find({ name: 'available' })
           .find('input')
 
+        // then
+        expect(availableInput.props().value).toStrictEqual(56)
+      })
+
+      it('should fill the remaining input when remaining stock is provided', () => {
+        // when
         const remainingStockInput = productFieldsContainerComponent.find('#remaining-stock')
 
-        expect(eventFieldComponent).toHaveLength(0)
-        expect(productFieldsContainerComponent).toHaveLength(1)
-
-        expect(priceInput.props().value).toStrictEqual(12)
-        expect(availableInput.props().value).toStrictEqual(56)
+        // then
         expect(remainingStockInput.text()).toStrictEqual('31')
-        expect(bookingLimitDatetimeInput.props().value).toStrictEqual('27/01/2020')
       })
     })
   })
