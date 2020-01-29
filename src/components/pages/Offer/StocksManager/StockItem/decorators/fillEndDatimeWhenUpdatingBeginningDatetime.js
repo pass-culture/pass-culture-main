@@ -7,7 +7,7 @@ function mapArgsToCacheKey({ triggerDateName, targetDateName, targetTimeName, ti
   return `${triggerDateName || ''}${targetDateName || ''}${targetTimeName || ''}${timezone || ''}`
 }
 
-function getNewTargetDateThatPreserveOldHourAndMinutes(newDate, oldDate, timezone) {
+const getNewTargetDateThatPreserveOldHourAndMinutes = (newDate, oldDate, timezone) => {
   const targetMoment = moment(newDate).utc()
   const targetDateHourMinutes = targetMoment.format('HH:mm')
 
@@ -25,6 +25,39 @@ function getNewTargetDateThatPreserveOldHourAndMinutes(newDate, oldDate, timezon
     .toISOString()
 }
 
+export const updateEndDateTimeField = (
+  triggerDate,
+  doublonTriggerDateName,
+  allValues,
+  prevValues,
+  targetDateName,
+  targetTimeName,
+  timezone
+) => {
+  const targetDate = allValues[targetDateName]
+  const targetTime = allValues[targetTimeName]
+  const shouldNotFillEndDateTimeAtMount = Object.keys(prevValues).length === 0
+
+  if (shouldNotFillEndDateTimeAtMount) {
+    return {}
+  }
+
+  if (!targetDate && !targetTime) {
+    return {}
+  }
+
+  const nextTargetDate = targetDate ? targetDate : triggerDate
+  const updatedTargetDate = getNewTargetDateThatPreserveOldHourAndMinutes(
+    nextTargetDate,
+    triggerDate,
+    timezone
+  )
+
+  return {
+    [targetDateName]: updatedTargetDate,
+  }
+}
+
 const fillEndDatimeWhenUpdatingBeginningDatetime = createCachedSelector(
   ({ triggerDateName }) => triggerDateName,
   ({ targetDateName }) => targetDateName,
@@ -33,30 +66,16 @@ const fillEndDatimeWhenUpdatingBeginningDatetime = createCachedSelector(
   (triggerDateName, targetDateName, targetTimeName, timezone) =>
     createDecorator({
       field: triggerDateName,
-      updates: (triggerDate, doublonTriggerDateName, allValues, prevValues) => {
-        const targetDate = allValues[targetDateName]
-        const targetTime = allValues[targetTimeName]
-        const shouldNotFillEndDateTimeAtMount = Object.keys(prevValues).length === 0
-
-        if (shouldNotFillEndDateTimeAtMount) {
-          return {}
-        }
-
-        if (!targetDate && !targetTime) {
-          return {}
-        }
-
-        const nextTargetDate = targetDate ? targetDate : triggerDate
-        const updatedTargetDate = getNewTargetDateThatPreserveOldHourAndMinutes(
-          nextTargetDate,
+      updates: (triggerDate, doublonTriggerDateName, allValues, prevValues) =>
+        updateEndDateTimeField(
           triggerDate,
+          doublonTriggerDateName,
+          allValues,
+          prevValues,
+          targetDateName,
+          targetTimeName,
           timezone
-        )
-
-        return {
-          [targetDateName]: updatedTargetDate,
-        }
-      },
+        ),
     })
 )(mapArgsToCacheKey)
 

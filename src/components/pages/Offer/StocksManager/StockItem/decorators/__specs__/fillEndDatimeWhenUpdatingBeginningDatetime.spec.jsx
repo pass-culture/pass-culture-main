@@ -1,200 +1,82 @@
-import { mount } from 'enzyme'
-import React from 'react'
-import { Field, Form } from 'react-final-form'
+import { updateEndDateTimeField } from '../fillEndDatimeWhenUpdatingBeginningDatetime'
 
-import fillEndDatimeWhenUpdatingBeginningDatetime from '../fillEndDatimeWhenUpdatingBeginningDatetime'
+const europeTimezone = 'Europe/Paris'
+const americaTimezone = 'America/Cayenne'
 
 describe('src | components | pages | Offer | StockItem | decorators | fillEndDatimeWhenUpdatingBeginningDatetime', () => {
-  it('should update the endDateTime date to the beginningDateTime with keeping hours and minute of previous target date, when both dates are already initialized', () => {
-    // given
-    const dateModified = '2022-08-28T23:37:00.000Z'
-    const beginningDateTime = '2019-05-27T10:01:00Z'
-    const endDateTime = '2019-06-05T12:02:00Z'
-    const endTime = '14:16'
+  let allValues
+  let triggerDate
+  let doublonTriggerDateName
+  let prevValues
+  let targetDateName
+  let targetTimeName
 
-    const initialValues = {
-      beginningDateTime,
-      endDateTime,
-      endTime,
+  beforeEach(() => {
+    triggerDate = '2020-02-02T19:00:59.000Z'
+    doublonTriggerDateName = 'beginningDatetime'
+    allValues = {
+      bookingLimitDatetime: '2020-01-29T22:59:59.805Z',
+      beginningDatetime: '2020-02-02T19:00:59.000Z',
+      endDatetime: '2020-01-31T22:00:59.000Z',
+      beginningTime: '20:00',
+      endTime: '23:00',
     }
-    const wrapper = mount(
-      <Form
-        decorators={[
-          fillEndDatimeWhenUpdatingBeginningDatetime({
-            triggerDateName: 'beginningDateTime',
-            targetDateName: 'endDateTime',
-            targetTimeName: 'endTime',
-          }),
-        ]}
-        initialValues={initialValues}
-        onSubmit={handleOnSubmit}
-        render={({ handleSubmit }) => (
-          <form>
-            <Field
-              name="beginningDateTime"
-              render={({ input }) => <input {...input} />}
-            />
-            <Field
-              name="endDateTime"
-              render={({ input }) => <input {...input} />}
-            />
-            <Field
-              name="endTime"
-              render={({ input }) => <input {...input} />}
-            />
-            <button
-              onClick={handleSubmit}
-              type="submit"
-            >
-              {'Submit'}
-            </button>
-          </form>
-        )}
-      />
-    )
-    // when
-    wrapper
-      .find(Field)
-      .find({ name: 'beginningDateTime' })
-      .find('input')
-      .simulate('change', { target: { value: dateModified } })
-    wrapper.find('button[type="submit"]').simulate('click')
-
-    // then
-    function handleOnSubmit(formValues) {
-      expect(formValues.beginningDateTime).toStrictEqual(dateModified)
-      expect(formValues.endDateTime).toStrictEqual('2022-08-28T12:02:00.000Z')
+    prevValues = {
+      bookingLimitDatetime: '2020-01-29T22:59:59.805Z',
+      beginningDatetime: '2020-01-31T19:00:59.000Z',
+      endDatetime: '2020-01-31T22:00:59.000Z',
+      beginningTime: '20:00',
+      endTime: '23:00',
     }
+    targetDateName = 'endDatetime'
+    targetTimeName = 'endTime'
   })
 
-  it('should update the endDateTime to null  when beginningDateTime is null', () => {
-    // given
-    const beginningDateTime = '2019-09-27T10:01:00Z'
-    const endDateTime = '2019-11-01T12:02:00Z'
-    const endTime = '14:16'
-    const initialValues = {
-      beginningDateTime,
-      endDateTime,
-      endTime,
-    }
+  describe('with time zone europe', () => {
+    it('should update the endDateTime date to the beginningDateTime with keeping hours and minute of previous target date, when both dates are already initialized', () => {
+      // given
+      const timezone = europeTimezone
 
-    const wrapper = mount(
-      <Form
-        decorators={[
-          fillEndDatimeWhenUpdatingBeginningDatetime({
-            triggerDateName: 'beginningDateTime',
-            targetDateName: 'endDateTime',
-            targetTimeName: 'endTime',
-          }),
-        ]}
-        initialValues={initialValues}
-        onSubmit={handleOnSubmit}
-        render={({ handleSubmit }) => (
-          <form>
-            <Field
-              name="beginningDateTime"
-              render={({ input }) => <input {...input} />}
-            />
-            <Field
-              name="endDateTime"
-              render={({ input }) => <input {...input} />}
-            />
-            <Field
-              name="endTime"
-              render={({ input }) => <input {...input} />}
-            />
-            <button
-              onClick={handleSubmit}
-              type="submit"
-            >
-              {'Submit'}
-            </button>
-          </form>
-        )}
-      />
-    )
+      // when
+      const result = updateEndDateTimeField(
+        triggerDate,
+        doublonTriggerDateName,
+        allValues,
+        prevValues,
+        targetDateName,
+        targetTimeName,
+        timezone
+      )
+      const expected = {
+        endDatetime: '2020-02-02T21:00:59.000Z',
+      }
 
-    // when
-    wrapper
-      .find({ name: 'beginningDateTime' })
-      .find('input')
-      .simulate('change', { target: { value: null } })
-    wrapper.find('button[type="submit"]').simulate('click')
-
-    // then
-    function handleOnSubmit(formValues) {
-      expect(formValues.endDateTime).toBeNull()
-      expect(formValues.beginningDateTime).toBeNull()
-    }
+      // then
+      expect(result).toStrictEqual(expected)
+    })
   })
 
-  it('should update the endDateTime to the beginningDateTime even after beginningDateTime was null', () => {
-    // given
-    const dateModified = '2022-04-28T13:37:00.000Z'
-    const beginningDateTime = '2019-09-27T10:01:00Z'
-    const endDateTime = '2019-11-01T12:02:00Z'
-    const endTime = '14:16'
-    const initialValues = {
-      beginningDateTime,
-      endDateTime,
-      endTime,
-    }
+  describe('with time zone americ', () => {
+    it('should update the endDateTime date to the beginningDateTime with keeping hours and minute of previous target date, when both dates are already initialized', () => {
+      // given
+      const timezone = americaTimezone
 
-    const wrapper = mount(
-      <Form
-        decorators={[
-          fillEndDatimeWhenUpdatingBeginningDatetime({
-            triggerDateName: 'beginningDateTime',
-            targetDateName: 'endDateTime',
-            targetTimeName: 'endTime',
-          }),
-        ]}
-        initialValues={initialValues}
-        onSubmit={handleOnSubmit}
-        render={({ handleSubmit }) => (
-          <form>
-            <Field
-              name="beginningDateTime"
-              render={({ input }) => <input {...input} />}
-            />
-            <Field
-              name="endDateTime"
-              render={({ input }) => <input {...input} />}
-            />
-            <Field
-              name="endTime"
-              render={({ input }) => <input {...input} />}
-            />
-            <button
-              onClick={handleSubmit}
-              type="submit"
-            >
-              {'Submit'}
-            </button>
-          </form>
-        )}
-      />
-    )
+      // when
+      const result = updateEndDateTimeField(
+        triggerDate,
+        doublonTriggerDateName,
+        allValues,
+        prevValues,
+        targetDateName,
+        targetTimeName,
+        timezone
+      )
+      const expected = {
+        endDatetime: '2020-02-03T01:00:59.000Z',
+      }
 
-    // when
-    wrapper
-      .find({ name: 'beginningDateTime' })
-      .find('input')
-      .simulate('change', { target: { value: null } })
-
-    wrapper.update()
-
-    wrapper
-      .find(Field)
-      .find({ name: 'beginningDateTime' })
-      .find('input')
-      .simulate('change', { target: { value: dateModified } })
-    wrapper.find('button[type="submit"]').simulate('click')
-
-    // then
-    function handleOnSubmit(formValues) {
-      expect(formValues.beginningDateTime).toStrictEqual(dateModified)
-      expect(formValues.endDateTime).toStrictEqual(dateModified)
-    }
+      // then
+      expect(result).toStrictEqual(expected)
+    })
   })
 })
