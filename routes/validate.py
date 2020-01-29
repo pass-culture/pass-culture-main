@@ -4,12 +4,12 @@ from flask import current_app as app, jsonify, request
 from flask_login import login_required, current_user
 
 from domain.admin_emails import maybe_send_offerer_validation_email
-from domain.user_emails import send_pro_user_waiting_for_validation_by_admin_email, \
-    send_attachment_validation_email_to_pro_offerer
 from domain.payments import read_message_name_in_message_file, \
     generate_file_checksum
-from domain.user_emails import send_pro_user_waiting_for_validation_by_admin_email
-from domain.user_emails import send_validation_confirmation_email_to_pro, send_venue_validation_confirmation_email
+from domain.user_emails import send_validation_confirmation_email_to_pro, \
+    send_venue_validation_confirmation_email,\
+    send_attachment_validation_email_to_pro_offerer,\
+    send_pro_user_waiting_for_validation_by_admin_email
 from models import ApiErrors, \
     UserOfferer, Offerer, Venue
 from models.api_errors import ResourceNotFoundError, ForbiddenError
