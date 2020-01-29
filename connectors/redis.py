@@ -1,11 +1,12 @@
 import json
 import os
-from typing import List
+from typing import List, Set
 
 import redis
+from redis import Redis
+
 from models import VenueProvider
 from models.feature import FeatureToggle
-from redis import Redis
 from repository import feature_queries
 from utils.config import REDIS_URL
 from utils.human_ids import humanize
@@ -14,6 +15,7 @@ from utils.logger import logger
 REDIS_LIST_OFFER_IDS_NAME = 'offer_ids'
 REDIS_LIST_VENUE_IDS_NAME = 'venue_ids'
 REDIS_LIST_VENUE_PROVIDERS_NAME = 'venue_providers'
+REDIS_SET_INDEXED_OFFER_IDS_NAME = 'indexed_offer_ids'
 REDIS_OFFER_IDS_CHUNK_SIZE = int(os.environ.get('REDIS_OFFER_IDS_CHUNK_SIZE', '1000'))
 REDIS_VENUE_IDS_CHUNK_SIZE = int(os.environ.get('REDIS_VENUE_IDS_CHUNK_SIZE', '1000'))
 REDIS_VENUE_PROVIDERS_CHUNK_SIZE = int(os.environ.get('REDIS_VENUE_PROVIDERS_LRANGE_END', '1'))
@@ -73,6 +75,14 @@ def get_venue_ids(client: Redis) -> List[int]:
         logger.error(f'[REDIS] {error}')
 
 
+def get_venue_providers(client: Redis) -> List[dict]:
+    try:
+        venue_providers_as_string = client.lrange(REDIS_LIST_VENUE_PROVIDERS_NAME, 0, REDIS_VENUE_PROVIDERS_CHUNK_SIZE)
+        return [json.loads(venue_provider) for venue_provider in venue_providers_as_string]
+    except redis.exceptions.RedisError as error:
+        logger.error(f'[REDIS] {error}')
+
+
 def delete_offer_ids(client: Redis) -> None:
     try:
         client.ltrim(REDIS_LIST_OFFER_IDS_NAME, REDIS_OFFER_IDS_CHUNK_SIZE, -1)
@@ -89,17 +99,36 @@ def delete_venue_ids(client: Redis) -> None:
         logger.error(f'[REDIS] {error}')
 
 
-def get_venue_providers(client: Redis) -> List[dict]:
-    try:
-        venue_providers_as_string = client.lrange(REDIS_LIST_VENUE_PROVIDERS_NAME, 0, REDIS_VENUE_PROVIDERS_CHUNK_SIZE)
-        return [json.loads(venue_provider) for venue_provider in venue_providers_as_string]
-    except redis.exceptions.RedisError as error:
-        logger.error(f'[REDIS] {error}')
-
-
 def delete_venue_providers(client: Redis) -> None:
     try:
         client.ltrim(REDIS_LIST_VENUE_PROVIDERS_NAME, REDIS_VENUE_PROVIDERS_CHUNK_SIZE, -1)
         logger.debug('[REDIS] venues providers were deleted')
     except redis.exceptions.RedisError as error:
         logger.error(f'[REDIS] {error}')
+
+
+def add_offer_ids_to_set(client: Redis, offer_ids: List[int]) -> None:
+    if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
+        try:
+            client.sadd(REDIS_SET_INDEXED_OFFER_IDS_NAME, *offer_ids)
+            logger.debug(f'[REDIS] "{len(offer_ids)}" were added to indexed offers set')
+        except redis.exceptions.RedisError as error:
+            logger.error(f'[REDIS] {error}')
+
+
+def delete_offer_ids_from_set(client: Redis, offer_ids: List[int]) -> None:
+    if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
+        try:
+            client.srem(REDIS_SET_INDEXED_OFFER_IDS_NAME, *offer_ids)
+            logger.debug(f'[REDIS] "{len(offer_ids)}" were deleted from indexed offers set')
+        except redis.exceptions.RedisError as error:
+            logger.error(f'[REDIS] {error}')
+
+
+def get_offer_ids_from_set(client: Redis) -> Set:
+    if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
+        try:
+            indexed_offer_ids = client.smembers(REDIS_SET_INDEXED_OFFER_IDS_NAME)
+            return indexed_offer_ids
+        except redis.exceptions.RedisError as error:
+            logger.error(f'[REDIS] {error}')

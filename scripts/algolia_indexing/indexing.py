@@ -9,11 +9,8 @@ from repository import offer_queries
 from utils.converter import from_tuple_to_int
 from utils.logger import logger
 
-ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE = int(os.environ.get(
-    'ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE', '10000'))
-
-ALGOLIA_DELETING_OFFERS_CHUNK_SIZE = int(os.environ.get(
-    'ALGOLIA_DELETING_OFFERS_CHUNK_SIZE', '10000'))
+ALGOLIA_DELETING_OFFERS_CHUNK_SIZE = int(os.environ.get('ALGOLIA_DELETING_OFFERS_CHUNK_SIZE', '10000'))
+ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE = int(os.environ.get('ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE', '10000'))
 
 
 def batch_indexing_offers_in_algolia_by_offer(client: Redis) -> None:
