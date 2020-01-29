@@ -161,7 +161,7 @@ describe('src | utils | geolocation', () => {
       expect(result).toStrictEqual('42, 43')
     })
 
-    it('should return empty value when latitude and longitude are not provided', () => {
+    it('should return empty value when latitude or longitude are not provided', () => {
       // given
       const geolocation = {
         latitude: null,
