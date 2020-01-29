@@ -1,0 +1,810 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`components | RemainingCredit should match the snapshot with required props 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <RemainingCredit
+    currentUser={
+      Object {
+        "expenses": Object {
+          "digital": Object {
+            "actual": 0,
+            "max": 200,
+          },
+          "physical": Object {
+            "actual": 0,
+            "max": 200,
+          },
+        },
+        "wallet_balance": 500,
+        "wallet_date_created": "2019-09-10T08:05:45.778894Z",
+      }
+    }
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <h3
+          className="dotted-bottom-primary pb8 px12 is-italic is-uppercase is-primary-text fs15 is-normal"
+        >
+          Crédit restant
+        </h3>,
+        <div
+          className="mt12 px12"
+        >
+          <div
+            className="jauges py12 text-center"
+            id="profile-page-user-wallet"
+          >
+            <div
+              className="text overall"
+            >
+              <b
+                className="is-block"
+                id="profile-wallet-balance-value"
+              >
+                Il reste 500 €
+              </b>
+              <span
+                className="is-block fs14"
+              >
+                sur votre pass Culture
+              </span>
+            </div>
+            <div
+              className="text-containers mt12 py12 mr8"
+            >
+              <div
+                className="fs15"
+                id="profile-physical-wallet-value"
+              >
+                Jusqu’à 
+                <b>
+                  200 €
+                </b>
+                 pour les biens culturels
+              </div>
+              <div
+                className="fs15 mt12"
+                id="profile-digital-wallet-value"
+              >
+                Jusqu’à 
+                <b>
+                  200 €
+                </b>
+                 pour les offres numériques
+              </div>
+              <div
+                className="fs15 mt12"
+                id="profile-end-validity-date"
+              >
+                Votre crédit est valable jusqu’au 2020 M09 10.
+              </div>
+            </div>
+          </div>
+        </div>,
+      ],
+      "id": "profile-page-remaining-credit",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Crédit restant",
+          "className": "dotted-bottom-primary pb8 px12 is-italic is-uppercase is-primary-text fs15 is-normal",
+        },
+        "ref": null,
+        "rendered": "Crédit restant",
+        "type": "h3",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": <div
+            className="jauges py12 text-center"
+            id="profile-page-user-wallet"
+          >
+            <div
+              className="text overall"
+            >
+              <b
+                className="is-block"
+                id="profile-wallet-balance-value"
+              >
+                Il reste 500 €
+              </b>
+              <span
+                className="is-block fs14"
+              >
+                sur votre pass Culture
+              </span>
+            </div>
+            <div
+              className="text-containers mt12 py12 mr8"
+            >
+              <div
+                className="fs15"
+                id="profile-physical-wallet-value"
+              >
+                Jusqu’à 
+                <b>
+                  200 €
+                </b>
+                 pour les biens culturels
+              </div>
+              <div
+                className="fs15 mt12"
+                id="profile-digital-wallet-value"
+              >
+                Jusqu’à 
+                <b>
+                  200 €
+                </b>
+                 pour les offres numériques
+              </div>
+              <div
+                className="fs15 mt12"
+                id="profile-end-validity-date"
+              >
+                Votre crédit est valable jusqu’au 2020 M09 10.
+              </div>
+            </div>
+          </div>,
+          "className": "mt12 px12",
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <div
+                className="text overall"
+              >
+                <b
+                  className="is-block"
+                  id="profile-wallet-balance-value"
+                >
+                  Il reste 500 €
+                </b>
+                <span
+                  className="is-block fs14"
+                >
+                  sur votre pass Culture
+                </span>
+              </div>,
+              <div
+                className="text-containers mt12 py12 mr8"
+              >
+                <div
+                  className="fs15"
+                  id="profile-physical-wallet-value"
+                >
+                  Jusqu’à 
+                  <b>
+                    200 €
+                  </b>
+                   pour les biens culturels
+                </div>
+                <div
+                  className="fs15 mt12"
+                  id="profile-digital-wallet-value"
+                >
+                  Jusqu’à 
+                  <b>
+                    200 €
+                  </b>
+                   pour les offres numériques
+                </div>
+                <div
+                  className="fs15 mt12"
+                  id="profile-end-validity-date"
+                >
+                  Votre crédit est valable jusqu’au 2020 M09 10.
+                </div>
+              </div>,
+            ],
+            "className": "jauges py12 text-center",
+            "id": "profile-page-user-wallet",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <b
+                    className="is-block"
+                    id="profile-wallet-balance-value"
+                  >
+                    Il reste 500 €
+                  </b>,
+                  <span
+                    className="is-block fs14"
+                  >
+                    sur votre pass Culture
+                  </span>,
+                ],
+                "className": "text overall",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "Il reste 500 €",
+                    "className": "is-block",
+                    "id": "profile-wallet-balance-value",
+                  },
+                  "ref": null,
+                  "rendered": "Il reste 500 €",
+                  "type": "b",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "sur votre pass Culture",
+                    "className": "is-block fs14",
+                  },
+                  "ref": null,
+                  "rendered": "sur votre pass Culture",
+                  "type": "span",
+                },
+              ],
+              "type": "div",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <div
+                    className="fs15"
+                    id="profile-physical-wallet-value"
+                  >
+                    Jusqu’à 
+                    <b>
+                      200 €
+                    </b>
+                     pour les biens culturels
+                  </div>,
+                  <div
+                    className="fs15 mt12"
+                    id="profile-digital-wallet-value"
+                  >
+                    Jusqu’à 
+                    <b>
+                      200 €
+                    </b>
+                     pour les offres numériques
+                  </div>,
+                  <div
+                    className="fs15 mt12"
+                    id="profile-end-validity-date"
+                  >
+                    Votre crédit est valable jusqu’au 2020 M09 10.
+                  </div>,
+                ],
+                "className": "text-containers mt12 py12 mr8",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      "Jusqu’à ",
+                      <b>
+                        200 €
+                      </b>,
+                      " pour les biens culturels",
+                    ],
+                    "className": "fs15",
+                    "id": "profile-physical-wallet-value",
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    "Jusqu’à ",
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "200 €",
+                      },
+                      "ref": null,
+                      "rendered": "200 €",
+                      "type": "b",
+                    },
+                    " pour les biens culturels",
+                  ],
+                  "type": "div",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      "Jusqu’à ",
+                      <b>
+                        200 €
+                      </b>,
+                      " pour les offres numériques",
+                    ],
+                    "className": "fs15 mt12",
+                    "id": "profile-digital-wallet-value",
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    "Jusqu’à ",
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "200 €",
+                      },
+                      "ref": null,
+                      "rendered": "200 €",
+                      "type": "b",
+                    },
+                    " pour les offres numériques",
+                  ],
+                  "type": "div",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "Votre crédit est valable jusqu’au 2020 M09 10.",
+                    "className": "fs15 mt12",
+                    "id": "profile-end-validity-date",
+                  },
+                  "ref": null,
+                  "rendered": "Votre crédit est valable jusqu’au 2020 M09 10.",
+                  "type": "div",
+                },
+              ],
+              "type": "div",
+            },
+          ],
+          "type": "div",
+        },
+        "type": "div",
+      },
+    ],
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <h3
+            className="dotted-bottom-primary pb8 px12 is-italic is-uppercase is-primary-text fs15 is-normal"
+          >
+            Crédit restant
+          </h3>,
+          <div
+            className="mt12 px12"
+          >
+            <div
+              className="jauges py12 text-center"
+              id="profile-page-user-wallet"
+            >
+              <div
+                className="text overall"
+              >
+                <b
+                  className="is-block"
+                  id="profile-wallet-balance-value"
+                >
+                  Il reste 500 €
+                </b>
+                <span
+                  className="is-block fs14"
+                >
+                  sur votre pass Culture
+                </span>
+              </div>
+              <div
+                className="text-containers mt12 py12 mr8"
+              >
+                <div
+                  className="fs15"
+                  id="profile-physical-wallet-value"
+                >
+                  Jusqu’à 
+                  <b>
+                    200 €
+                  </b>
+                   pour les biens culturels
+                </div>
+                <div
+                  className="fs15 mt12"
+                  id="profile-digital-wallet-value"
+                >
+                  Jusqu’à 
+                  <b>
+                    200 €
+                  </b>
+                   pour les offres numériques
+                </div>
+                <div
+                  className="fs15 mt12"
+                  id="profile-end-validity-date"
+                >
+                  Votre crédit est valable jusqu’au 2020 M09 10.
+                </div>
+              </div>
+            </div>
+          </div>,
+        ],
+        "id": "profile-page-remaining-credit",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Crédit restant",
+            "className": "dotted-bottom-primary pb8 px12 is-italic is-uppercase is-primary-text fs15 is-normal",
+          },
+          "ref": null,
+          "rendered": "Crédit restant",
+          "type": "h3",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <div
+              className="jauges py12 text-center"
+              id="profile-page-user-wallet"
+            >
+              <div
+                className="text overall"
+              >
+                <b
+                  className="is-block"
+                  id="profile-wallet-balance-value"
+                >
+                  Il reste 500 €
+                </b>
+                <span
+                  className="is-block fs14"
+                >
+                  sur votre pass Culture
+                </span>
+              </div>
+              <div
+                className="text-containers mt12 py12 mr8"
+              >
+                <div
+                  className="fs15"
+                  id="profile-physical-wallet-value"
+                >
+                  Jusqu’à 
+                  <b>
+                    200 €
+                  </b>
+                   pour les biens culturels
+                </div>
+                <div
+                  className="fs15 mt12"
+                  id="profile-digital-wallet-value"
+                >
+                  Jusqu’à 
+                  <b>
+                    200 €
+                  </b>
+                   pour les offres numériques
+                </div>
+                <div
+                  className="fs15 mt12"
+                  id="profile-end-validity-date"
+                >
+                  Votre crédit est valable jusqu’au 2020 M09 10.
+                </div>
+              </div>
+            </div>,
+            "className": "mt12 px12",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <div
+                  className="text overall"
+                >
+                  <b
+                    className="is-block"
+                    id="profile-wallet-balance-value"
+                  >
+                    Il reste 500 €
+                  </b>
+                  <span
+                    className="is-block fs14"
+                  >
+                    sur votre pass Culture
+                  </span>
+                </div>,
+                <div
+                  className="text-containers mt12 py12 mr8"
+                >
+                  <div
+                    className="fs15"
+                    id="profile-physical-wallet-value"
+                  >
+                    Jusqu’à 
+                    <b>
+                      200 €
+                    </b>
+                     pour les biens culturels
+                  </div>
+                  <div
+                    className="fs15 mt12"
+                    id="profile-digital-wallet-value"
+                  >
+                    Jusqu’à 
+                    <b>
+                      200 €
+                    </b>
+                     pour les offres numériques
+                  </div>
+                  <div
+                    className="fs15 mt12"
+                    id="profile-end-validity-date"
+                  >
+                    Votre crédit est valable jusqu’au 2020 M09 10.
+                  </div>
+                </div>,
+              ],
+              "className": "jauges py12 text-center",
+              "id": "profile-page-user-wallet",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <b
+                      className="is-block"
+                      id="profile-wallet-balance-value"
+                    >
+                      Il reste 500 €
+                    </b>,
+                    <span
+                      className="is-block fs14"
+                    >
+                      sur votre pass Culture
+                    </span>,
+                  ],
+                  "className": "text overall",
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "Il reste 500 €",
+                      "className": "is-block",
+                      "id": "profile-wallet-balance-value",
+                    },
+                    "ref": null,
+                    "rendered": "Il reste 500 €",
+                    "type": "b",
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "sur votre pass Culture",
+                      "className": "is-block fs14",
+                    },
+                    "ref": null,
+                    "rendered": "sur votre pass Culture",
+                    "type": "span",
+                  },
+                ],
+                "type": "div",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <div
+                      className="fs15"
+                      id="profile-physical-wallet-value"
+                    >
+                      Jusqu’à 
+                      <b>
+                        200 €
+                      </b>
+                       pour les biens culturels
+                    </div>,
+                    <div
+                      className="fs15 mt12"
+                      id="profile-digital-wallet-value"
+                    >
+                      Jusqu’à 
+                      <b>
+                        200 €
+                      </b>
+                       pour les offres numériques
+                    </div>,
+                    <div
+                      className="fs15 mt12"
+                      id="profile-end-validity-date"
+                    >
+                      Votre crédit est valable jusqu’au 2020 M09 10.
+                    </div>,
+                  ],
+                  "className": "text-containers mt12 py12 mr8",
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": Array [
+                        "Jusqu’à ",
+                        <b>
+                          200 €
+                        </b>,
+                        " pour les biens culturels",
+                      ],
+                      "className": "fs15",
+                      "id": "profile-physical-wallet-value",
+                    },
+                    "ref": null,
+                    "rendered": Array [
+                      "Jusqu’à ",
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": "200 €",
+                        },
+                        "ref": null,
+                        "rendered": "200 €",
+                        "type": "b",
+                      },
+                      " pour les biens culturels",
+                    ],
+                    "type": "div",
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": Array [
+                        "Jusqu’à ",
+                        <b>
+                          200 €
+                        </b>,
+                        " pour les offres numériques",
+                      ],
+                      "className": "fs15 mt12",
+                      "id": "profile-digital-wallet-value",
+                    },
+                    "ref": null,
+                    "rendered": Array [
+                      "Jusqu’à ",
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": "200 €",
+                        },
+                        "ref": null,
+                        "rendered": "200 €",
+                        "type": "b",
+                      },
+                      " pour les offres numériques",
+                    ],
+                    "type": "div",
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "Votre crédit est valable jusqu’au 2020 M09 10.",
+                      "className": "fs15 mt12",
+                      "id": "profile-end-validity-date",
+                    },
+                    "ref": null,
+                    "rendered": "Votre crédit est valable jusqu’au 2020 M09 10.",
+                    "type": "div",
+                  },
+                ],
+                "type": "div",
+              },
+            ],
+            "type": "div",
+          },
+          "type": "div",
+        },
+      ],
+      "type": "div",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+    Symbol(enzyme.__providerValues__): undefined,
+  },
+  Symbol(enzyme.__providerValues__): Map {},
+}
+`;

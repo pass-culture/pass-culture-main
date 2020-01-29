@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import MesInformations from '../MesInformations/MesInformations'
-import MonPassCulture from '../MonPassCulture/MonPassCulture'
+import RemainingCredit from '../RemainingCredit/RemainingCredit'
 
 const ProfileMainView = ({ config, currentUser }) => (
   <div
@@ -14,14 +14,7 @@ const ProfileMainView = ({ config, currentUser }) => (
     <HeaderContainer title="Mon compte" />
     <main className="mosaic-background pc-main is-clipped is-relative">
       <div className="pc-scroll-container">
-        <div id="profile-page-user-passculture">
-          <h3 className="dotted-bottom-primary pb8 px12 is-italic is-uppercase is-primary-text fs15 is-normal">
-            {'Mon pass Culture'}
-          </h3>
-          <div className="mt12 px12">
-            {currentUser && <MonPassCulture currentUser={currentUser} />}
-          </div>
-        </div>
+        {currentUser && <RemainingCredit currentUser={currentUser} />}
         <MesInformations
           fields={config}
           user={currentUser}

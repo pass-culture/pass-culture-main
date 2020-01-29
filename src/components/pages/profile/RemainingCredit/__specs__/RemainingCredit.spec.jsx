@@ -1,14 +1,14 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import MonPassCulture from '../MonPassCulture'
+import RemainingCredit from '../RemainingCredit'
 
 const walletId = '#profile-wallet-balance-value'
 const digitalId = '#profile-digital-wallet-value'
 const physicalId = '#profile-physical-wallet-value'
 const endValidityDateId = '#profile-end-validity-date'
 
-describe('src | components | MonPassCulture', () => {
+describe('components | RemainingCredit', () => {
   it('should match the snapshot with required props', () => {
     // given
     const props = {
@@ -23,13 +23,33 @@ describe('src | components | MonPassCulture', () => {
     }
 
     // when
-    const wrapper = shallow(<MonPassCulture {...props} />)
+    const wrapper = shallow(<RemainingCredit {...props} />)
 
     // then
     expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {
+    it('should include Crédit restant title', () => {
+      // given
+      const props = {
+        currentUser: {
+          expenses: {
+            digital: { actual: 100, max: 200 },
+            physical: { actual: 100, max: 200 },
+          },
+          wallet_balance: 0,
+        },
+      }
+
+      // when
+      const wrapper = shallow(<RemainingCredit {...props} />)
+
+      // then
+      const title = wrapper.find('h3').text()
+      expect(title).toBe('Crédit restant')
+    })
+
     it('with wallet value set to 0', () => {
       // given
       const props = {
@@ -43,7 +63,7 @@ describe('src | components | MonPassCulture', () => {
       }
 
       // when
-      const wrapper = shallow(<MonPassCulture {...props} />)
+      const wrapper = shallow(<RemainingCredit {...props} />)
       const walletElement = wrapper.find(walletId)
       const digitalElement = wrapper.find(digitalId)
       const physicalElement = wrapper.find(physicalId)
@@ -75,7 +95,7 @@ describe('src | components | MonPassCulture', () => {
       }
 
       // when
-      const wrapper = shallow(<MonPassCulture {...props} />)
+      const wrapper = shallow(<RemainingCredit {...props} />)
       const walletElement = wrapper.find(walletId)
       const digitalElement = wrapper.find(digitalId)
       const physicalElement = wrapper.find(physicalId)
@@ -107,7 +127,7 @@ describe('src | components | MonPassCulture', () => {
       }
 
       // when
-      const wrapper = shallow(<MonPassCulture {...props} />)
+      const wrapper = shallow(<RemainingCredit {...props} />)
       const walletElement = wrapper.find(walletId)
       const digitalElement = wrapper.find(digitalId)
       const physicalElement = wrapper.find(physicalId)
@@ -140,7 +160,7 @@ describe('src | components | MonPassCulture', () => {
       }
 
       // when
-      const wrapper = shallow(<MonPassCulture {...props} />)
+      const wrapper = shallow(<RemainingCredit {...props} />)
 
       // then
       const textWithEndValidityDate = wrapper.find(endValidityDateId).text()
@@ -161,7 +181,7 @@ describe('src | components | MonPassCulture', () => {
       }
 
       // when
-      const wrapper = shallow(<MonPassCulture {...props} />)
+      const wrapper = shallow(<RemainingCredit {...props} />)
       const wrapperWithEndValidityDate = wrapper.find(endValidityDateId)
 
       // then
