@@ -1,28 +1,67 @@
-from domain.reimbursement import ReimbursementDetails
+from typing import List
 
+from sqlalchemy import subquery
+from sqlalchemy.orm import aliased
+
+from domain.reimbursement_details import ReimbursementDetails
+from models import User, Offerer, PaymentStatus
 from models.booking import Booking
 from models.offer import Offer
 from models.payment import Payment
 from models.stock import Stock
 from models.venue import Venue
-from repository import booking_queries
 
 
-def find_all_offerer_payments(offerer_id):
-    return Payment.query.join(Booking) \
+def find_all_offerer_payments(offerer_id: int) -> List[object]:
+    payment_status_query = _build_payment_status_subquery()
+
+    return Payment.query \
+        .join(payment_status_query) \
+        .reset_joinpoint() \
+        .join(Booking) \
+        .join(User) \
+        .reset_joinpoint() \
         .join(Stock) \
         .join(Offer) \
         .join(Venue) \
         .filter(Venue.managingOffererId == offerer_id) \
+        .join(Offerer) \
+        .distinct(payment_status_query.c.paymentId) \
+        .with_entities(User.lastName.label('user_lastName'),
+                       User.firstName.label('user_firstName'),
+                       Booking.token.label('booking_token'),
+                       Booking.dateUsed.label('booking_dateUsed'),
+                       Offer.name.label('offer_name'),
+                       Offerer.address.label('offerer_address'),
+                       Venue.name.label('venue_name'),
+                       Venue.siret.label('venue_siret'),
+                       Venue.address.label('venue_address'),
+                       Payment.amount.label('amount'),
+                       Payment.iban.label('iban'),
+                       Payment.transactionLabel.label('transactionLabel'),
+                       payment_status_query.c.status.label('status'),
+                       payment_status_query.c.detail.label('detail')) \
         .all()
 
 
-def find_all_offerer_reimbursement_details(offerer_id):
+def _build_payment_status_subquery() -> subquery:
+    payment_alias = aliased(Payment)
+    payment_status_query = PaymentStatus.query \
+        .filter(PaymentStatus.paymentId == payment_alias.id) \
+        .order_by(PaymentStatus.date.desc()) \
+        .with_entities(PaymentStatus.paymentId.label('paymentId'),
+                       PaymentStatus.status.label('status'),
+                       PaymentStatus.detail) \
+        .subquery()
+    return payment_status_query
+
+
+def find_all_offerer_reimbursement_details(offerer_id: int) -> List[ReimbursementDetails]:
     offerer_payments = find_all_offerer_payments(offerer_id)
     reimbursement_details = [
         ReimbursementDetails(
             offerer_payment,
-            booking_queries.find_date_used(offerer_payment.booking)
+            offerer_payment.booking_dateUsed
         )
         for offerer_payment in offerer_payments
     ]

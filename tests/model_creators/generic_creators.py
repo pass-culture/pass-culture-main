@@ -246,11 +246,14 @@ def create_payment(booking: Booking,
                    reimbursement_rate: float = 0.5,
                    reimbursement_rule: str = 'remboursement à 100%',
                    status: TransactionStatus = TransactionStatus.PENDING,
+                   detail: str = None,
+                   status_date: datetime = datetime.utcnow(),
                    transaction_end_to_end_id: str = None,
                    transaction_label: str = None) -> Payment:
     payment_status = PaymentStatus()
     payment_status.status = status
-    payment_status.date = datetime.utcnow()
+    payment_status.date = status_date
+    payment_status.detail = detail
 
     payment = Payment()
     payment.amount = amount
@@ -564,3 +567,13 @@ def create_allocine_pivot(siret: str = '12345678912345', theater_id: str = 'XXXX
     allocine_pivot.siret = siret
     allocine_pivot.theaterId = theater_id
     return allocine_pivot
+
+
+def create_payment_status(payment: Payment, detail: str = None, status: TransactionStatus = TransactionStatus.PENDING,
+                          date: datetime = datetime.utcnow()) -> PaymentStatus:
+    payment_status = PaymentStatus()
+    payment_status.payment = payment
+    payment_status.detail = detail
+    payment_status.status = status
+    payment_status.date = date
+    return payment_status

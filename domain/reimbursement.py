@@ -6,9 +6,8 @@ from enum import Enum
 from io import StringIO
 from typing import List
 
-from models import Booking, Payment, ThingType
-from models.payment_status import TransactionStatus
-from utils.date import english_to_french_month
+from domain.reimbursement_details import ReimbursementDetails
+from models import Booking, ThingType
 
 MIN_DATETIME = datetime.datetime(datetime.MINYEAR, 1, 1)
 MAX_DATETIME = datetime.datetime(datetime.MAXYEAR, 1, 1)
@@ -181,103 +180,6 @@ class BookingReimbursement:
         self.reimbursed_amount = reimbursed_amount
 
 
-class ReimbursementDetails:
-    CSV_HEADER = [
-        "Année",
-        "Virement",
-        "Créditeur",
-        "SIRET créditeur",
-        "Adresse créditeur",
-        "IBAN",
-        "Raison sociale du lieu",
-        "Nom de l'offre",
-        "Nom utilisateur",
-        "Prénom utilisateur",
-        "Contremarque",
-        "Date de validation de la réservation",
-        "Montant remboursé",
-        "Statut du remboursement"
-    ]
-
-    TRANSACTION_STATUSES_DETAILS = {
-        TransactionStatus.PENDING: 'Remboursement initié',
-        TransactionStatus.NOT_PROCESSABLE: 'Remboursement impossible',
-        TransactionStatus.SENT: 'Remboursement envoyé',
-        TransactionStatus.ERROR: 'Erreur d\'envoi du remboursement',
-        TransactionStatus.RETRY: 'Remboursement à renvoyer',
-        TransactionStatus.BANNED: 'Remboursement rejeté'
-    }
-
-    def _get_reimbursement_current_status_in_details(self, current_status: str, current_status_details: str):
-        human_friendly_status = ReimbursementDetails.TRANSACTION_STATUSES_DETAILS.get(current_status)
-
-        if current_status_details is None:
-            return human_friendly_status
-
-        return f"{human_friendly_status} : {current_status_details}"
-
-    def __init__(self, payment: Payment = None, booking_used_date: datetime = None):
-
-        if payment is not None:
-            booking = payment.booking
-            user = booking.user
-            offer = booking.stock.resolvedOffer
-
-            venue = offer.venue
-            offerer = venue.managingOfferer
-
-            transfer_infos = payment.transactionLabel \
-                .replace('pass Culture Pro - ', '') \
-                .split(' ')
-            transfer_label = " ".join(transfer_infos[:-1])
-
-            date = transfer_infos[-1]
-            [month_number, year] = date.split('-')
-            french_month = english_to_french_month(int(year), int(month_number))
-
-            payment_current_status = payment.currentStatus.status
-            payment_current_status_details = payment.currentStatus.detail
-
-            human_friendly_status = self._get_reimbursement_current_status_in_details(payment_current_status,
-                                                                                      payment_current_status_details)
-
-            self.year = year
-            self.transfer_name = "{} : {}".format(
-                french_month,
-                transfer_label
-            )
-            self.venue_name = venue.name
-            self.venue_siret = venue.siret
-            self.venue_address = venue.address or offerer.address
-            self.payment_iban = payment.iban
-            self.venue_name = venue.name
-            self.offer_name = offer.name
-            self.user_last_name = user.lastName
-            self.user_first_name = user.firstName
-            self.booking_token = booking.token
-            self.booking_used_date = booking_used_date
-            self.reimbursed_amount = payment.amount
-            self.status = human_friendly_status
-
-    def as_csv_row(self):
-        return [
-            self.year,
-            self.transfer_name,
-            self.venue_name,
-            self.venue_siret,
-            self.venue_address,
-            self.payment_iban,
-            self.venue_name,
-            self.offer_name,
-            self.user_last_name,
-            self.user_first_name,
-            self.booking_token,
-            self.booking_used_date,
-            self.reimbursed_amount,
-            self.status
-        ]
-
-
 def find_all_booking_reimbursements(bookings: List[Booking],
                                     active_rules: List[ReimbursementRules]) -> List[BookingReimbursement]:
     reimbursements = []
@@ -290,7 +192,7 @@ def find_all_booking_reimbursements(bookings: List[Booking],
 
         if ReimbursementRules.PHYSICAL_OFFERS.value.is_relevant(booking):
             cumulative_bookings_value_by_year[booking_civil_year] = cumulative_bookings_value_by_year[
-                                                                booking_civil_year] + booking.value
+                                                                        booking_civil_year] + booking.value
 
         potential_rules = _find_potential_rules(booking, active_rules,
                                                 cumulative_bookings_value_by_year[booking_civil_year])

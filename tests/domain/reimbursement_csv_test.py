@@ -1,19 +1,16 @@
-from datetime import datetime
-
 from freezegun import freeze_time
 
-from domain.reimbursement import ReimbursementDetails
 from domain.reimbursement import generate_reimbursement_details_csv
-from models import Payment
+from domain.reimbursement_details import ReimbursementDetails
 from models.feature import FeatureToggle
-from models.payment_status import TransactionStatus, PaymentStatus
+from models.payment_status import TransactionStatus
 from repository import repository
-from repository.reimbursement_queries import find_all_offerer_reimbursement_details
+from repository.reimbursement_queries import find_all_offerer_reimbursement_details, find_all_offerer_payments
 from scripts.payment.batch_steps import generate_new_payments
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_deposit, \
-    create_user_offerer, create_bank_information
+    create_user_offerer, create_bank_information, create_payment
 from tests.model_creators.specific_creators import create_stock_with_thing_offer
 from tests.test_utils import deactivate_feature
 
@@ -66,25 +63,23 @@ class AsCsvRowTest:
     @clean_database
     def test_generate_payment_csv_raw_contains_human_readable_status_with_details(self, app):
         # given
-        payment = Payment()
         user = create_user(email='user+plus@email.fr')
+        deposit = create_deposit(user)
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=10)
         booking = create_booking(user=user, stock=stock, is_used=True, token='ABCDEF', venue=venue)
-        payment.booking = booking
-        payment.booking.stock = stock
+        payment = create_payment(booking, offerer,
+                                 transaction_label='pass Culture Pro - remboursement 1ère quinzaine 07-2019',
+                                 status=TransactionStatus.ERROR,
+                                 amount=50,
+                                 detail='Iban non fourni')
+        repository.save(deposit, payment)
 
-        payment_status = PaymentStatus()
-        payment.transactionLabel = 'pass Culture Pro - remboursement 1ère quinzaine 07-2019'
-        payment.amount = 50
-        payment_status.status = TransactionStatus.ERROR
-        payment_status.detail = 'Iban non fourni'
-        payment_status.date = datetime.utcnow()
-        payment.statuses = [payment_status]
+        payments = find_all_offerer_payments(offerer.id)
 
         # when
-        raw_csv = ReimbursementDetails(payment).as_csv_row()
+        raw_csv = ReimbursementDetails(payments[0]).as_csv_row()
 
         # then
         assert raw_csv[13] == 'Erreur d\'envoi du remboursement : Iban non fourni'
