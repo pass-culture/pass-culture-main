@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from emails.offerer_ongoing_attachment import retrieve_data_for_offerer_ongoing_attachment_email
-from models import PcObject
+from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_user, create_user_offerer
 
@@ -24,7 +24,7 @@ class ProOffererAttachmentValidationEmailTest:
         pro_user = create_user(email='pro@example.com')
         user_offerer = create_user_offerer(pro_user, offerer)
 
-        PcObject.save(pro_user, user_offerer)
+        repository.save(pro_user, user_offerer)
 
         # When
         offerer_attachment_validation_email = retrieve_data_for_offerer_ongoing_attachment_email(user_offerer)
@@ -58,7 +58,7 @@ class ProOffererAttachmentValidationEmailTest:
         pro_user = create_user(email='pro@example.com')
         user_offerer = create_user_offerer(pro_user, offerer)
 
-        PcObject.save(pro_user, user_offerer)
+        repository.save(pro_user, user_offerer)
 
         # When
         offerer_attachment_validation_email = retrieve_data_for_offerer_ongoing_attachment_email(user_offerer)
