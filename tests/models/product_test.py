@@ -1,5 +1,6 @@
 from unittest.mock import patch
-from models import PcObject
+
+from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.specific_creators import create_product_with_thing_type
 from utils.human_ids import humanize
@@ -10,7 +11,7 @@ from utils.human_ids import humanize
 def when_product_has_one_thumb(mock_get_storage_base, app):
     # Given
     product = create_product_with_thing_type(thumb_count=1)
-    PcObject.save(product)
+    repository.save(product)
     product_id = humanize(product.id)
 
     # When
@@ -24,7 +25,7 @@ def when_product_has_one_thumb(mock_get_storage_base, app):
 def when_product_has_no_thumb(app):
     # Given
     product = create_product_with_thing_type(thumb_count=0)
-    PcObject.save(product)
+    repository.save(product)
 
     # When
     thumb_url = product.thumbUrl
