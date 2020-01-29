@@ -521,7 +521,7 @@ class Offer extends PureComponent {
                     </span>
                     <button
                       className="button is-primary is-outlined is-small manage-stock"
-                      disabled={isEditableOffer && !offerFromLocalProvider ? '' : 'disabled'}
+                      disabled={offerFromTiteLive ? 'disabled' : ''}
                       id="manage-stocks"
                       onClick={this.handleOnClick(query)}
                       type="button"

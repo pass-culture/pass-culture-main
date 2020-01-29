@@ -541,18 +541,6 @@ describe('src | components | pages | Offer | Offer ', () => {
     })
 
     describe('when offer is not editable', () => {
-      it('should not be possible to manage stocks', () => {
-        // given
-        props.isEditableOffer = false
-
-        // when
-        const wrapper = shallow(<Offer {...props} />)
-
-        // then
-        const manageStockButton = wrapper.find('#manage-stocks')
-        expect(manageStockButton.prop('disabled')).toStrictEqual('disabled')
-      })
-
       it('should not be possible to modify offer', () => {
         // given
         props.query.context = () => ({
@@ -639,61 +627,109 @@ describe('src | components | pages | Offer | Offer ', () => {
         expect(modifyOfferButton.prop('disabled')).toStrictEqual('')
       })
     })
-  })
 
-  describe('event tracking', () => {
-    it('should track offer creation', () => {
-      // given
-      const state = {}
+    describe('stock management button', () => {
+      describe('when offer is from Titelive provider', () => {
+        it('should not be possible to change management stock button', () => {
+          // given
+          props.offer.lastProvider = {
+            name: 'Titelive',
+          }
 
-      const action = {
-        payload: {
-          datum: {
-            id: 'Ty5645dgfd',
-          },
-        },
-      }
-      jest.spyOn(props.query, 'context').mockReturnValue({
-        isCreatedEntity: true,
+          // when
+          const wrapper = shallow(<Offer {...props} />)
+
+          // then
+          const manageStockButton = wrapper.find('#manage-stocks')
+          expect(manageStockButton.prop('disabled')).toStrictEqual('disabled')
+        })
       })
-      const wrapper = shallow(<Offer {...props} />)
 
-      // when
-      wrapper.instance().onHandleFormSuccess(state, action)
+      describe('when offer is not from Allociné provider', () => {
+        it('should be possible to change management stock button', () => {
+          // given
+          props.offer.lastProvider = {
+            name: 'Allociné',
+          }
 
-      // then
-      expect(props.trackCreateOffer).toHaveBeenCalledWith('Ty5645dgfd')
+          // when
+          const wrapper = shallow(<Offer {...props} />)
+
+          // then
+          const manageStockButton = wrapper.find('#manage-stocks')
+          expect(manageStockButton.prop('disabled')).toStrictEqual('')
+        })
+      })
+
+      describe('when offer has been created manually', () => {
+        it('should be possible to change management stock button', () => {
+          // given
+          props.offer.lastProvider = null
+
+          // when
+          const wrapper = shallow(<Offer {...props} />)
+
+          // then
+          const manageStockButton = wrapper.find('#manage-stocks')
+          expect(manageStockButton.prop('disabled')).toStrictEqual('')
+        })
+      })
     })
 
-    it('should track offer update', () => {
-      // given
-      const state = {}
+    describe('event tracking', () => {
+      it('should track offer creation', () => {
+        // given
+        const state = {}
 
-      props.offer = {
-        id: 'RTgYD45',
-        lastProvider: null,
-      }
+        const action = {
+          payload: {
+            datum: {
+              id: 'Ty5645dgfd',
+            },
+          },
+        }
+        jest.spyOn(props.query, 'context').mockReturnValue({
+          isCreatedEntity: true,
+        })
+        const wrapper = shallow(<Offer {...props} />)
 
-      jest.spyOn(props.query, 'context').mockReturnValue({
-        isCreatedEntity: false,
-        isModifiedEntity: false,
-        readOnly: false,
+        // when
+        wrapper.instance().onHandleFormSuccess(state, action)
+
+        // then
+        expect(props.trackCreateOffer).toHaveBeenCalledWith('Ty5645dgfd')
       })
 
-      const action = {
-        payload: {
-          datum: {
-            id: 'Ty5645dgfd',
+      it('should track offer update', () => {
+        // given
+        const state = {}
+
+        props.offer = {
+          id: 'RTgYD45',
+          lastProvider: null,
+        }
+
+        jest.spyOn(props.query, 'context').mockReturnValue({
+          isCreatedEntity: false,
+          isModifiedEntity: false,
+          readOnly: false,
+        })
+
+        const action = {
+          payload: {
+            datum: {
+              id: 'Ty5645dgfd',
+            },
           },
-        },
-      }
-      const wrapper = shallow(<Offer {...props} />)
+        }
+        const wrapper = shallow(<Offer {...props} />)
 
-      // when
-      wrapper.instance().onHandleFormSuccess(state, action)
+        // when
+        wrapper.instance().onHandleFormSuccess(state, action)
 
-      // then
-      expect(props.trackModifyOffer).toHaveBeenCalledWith('RTgYD45')
+        // then
+        expect(props.trackModifyOffer).toHaveBeenCalledWith('RTgYD45')
+      })
     })
   })
 })
