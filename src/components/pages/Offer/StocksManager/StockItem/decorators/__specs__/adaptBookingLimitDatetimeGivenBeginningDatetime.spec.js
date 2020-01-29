@@ -1,4 +1,4 @@
-import updateBookingLimitDatetime from '../updateBookingLimitDatetime'
+import { updateBookingLimitDatetime } from '../adaptBookingLimitDatetimeGivenBeginningDatetime'
 
 describe('src | components | pages | Offer | StockManager | StockItem | decorators | updateBookingLimitDatetime', () => {
 
