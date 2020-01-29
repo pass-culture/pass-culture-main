@@ -107,8 +107,8 @@ def send_validation_confirmation_email_to_pro(offerer: Offerer, send_email: Call
     send_email(data=email)
 
 
-def send_ongoing_offerer_attachment_information_email_to_pro(offerer: Offerer, send_email: Callable[..., bool]) -> None:
-    email = retrieve_data_for_offerer_ongoing_attachment_email(offerer)
+def send_ongoing_offerer_attachment_information_email_to_pro(user_offerer: UserOfferer, send_email: Callable[..., bool]) -> None:
+    email = retrieve_data_for_offerer_ongoing_attachment_email(user_offerer)
     return send_email(data=email)
 
 

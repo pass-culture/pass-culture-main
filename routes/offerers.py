@@ -90,7 +90,8 @@ def create_offerer():
         repository.save(user_offerer)
 
         try:
-            send_ongoing_offerer_attachment_information_email_to_pro(offerer)
+            send_ongoing_offerer_attachment_information_email_to_pro(user_offerer, send_raw_email)
+
         except MailServiceException as e:
             app.logger.error('Mail service failure', e)
 
