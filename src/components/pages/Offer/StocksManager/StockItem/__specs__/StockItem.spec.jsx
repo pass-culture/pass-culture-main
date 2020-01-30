@@ -24,6 +24,9 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
       isEvent: true,
       offer: {
         id: 'TY',
+        lastProvider: {
+          name: '',
+        },
       },
       query: {
         changeToReadOnly: jest.fn(),
@@ -46,6 +49,50 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
   })
 
   describe('renderForm', () => {
+    describe('when offer is an event', () => {
+      beforeEach(() => {
+        props.isEvent = true
+        props.offer.lastProvider = null
+      })
+
+      it('should render event fields', () => {
+        // When
+        const stockItemWrapper = shallow(<StockItem {...props} />)
+        const formWrapper = shallow(stockItemWrapper.instance().renderForm({ values: {} }))
+
+        // Then
+        const eventFields = formWrapper.find(EventFields)
+        expect(eventFields).toHaveLength(1)
+      })
+
+      it('should render product fields', () => {
+        // When
+        const stockItemWrapper = shallow(<StockItem {...props} />)
+        const formWrapper = shallow(stockItemWrapper.instance().renderForm({ values: {} }))
+
+        // Then
+        const eventFields = formWrapper.find(ProductFieldsContainer)
+        expect(eventFields).toHaveLength(1)
+      })
+
+      describe('when the stocks are attached to an gffer provided from Allociné', () => {
+        beforeEach(() => {
+          props.offer.lastProvider = { name: 'Allociné' }
+          props.query = { context: () => ({ readOnly: false }) }
+        })
+
+        it('event fields should not be alterable', () => {
+          // When
+          const stockItemWrapper = shallow(<StockItem {...props} />)
+          const formWrapper = shallow(stockItemWrapper.instance().renderForm({ values: {} }))
+
+          // Then
+          const eventFields = formWrapper.find(EventFields)
+          expect(eventFields.props().readOnly).toBe(true)
+        })
+      })
+    })
+
     describe('with event', () => {
       let eventFieldComponent
       let productFieldsContainerComponent

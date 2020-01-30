@@ -114,7 +114,11 @@ class StockItem extends PureComponent {
 
     const { isRequestPending, tbodyElement } = this.state
     const { id: stockId } = stockPatch
+    // créer un état updating et ne plus passer par l'URL
     const { readOnly } = query.context({ id: stockId, key: 'stock' })
+    const userIsNotUpdatingStock = readOnly
+    const stockAssociatingToAllocineOffer =
+      offer.lastProvider && offer.lastProvider.name === 'Allociné'
     const { form, values, handleSubmit } = formProps
 
     const { beginningDatetime } = values
@@ -126,7 +130,7 @@ class StockItem extends PureComponent {
           <EventFields
             beginningDatetime={beginningDatetime}
             dispatch={dispatch}
-            readOnly={readOnly}
+            readOnly={userIsNotUpdatingStock || stockAssociatingToAllocineOffer}
             stockPatch={stockPatch}
             stocks={stocks}
             timezone={timezone}
@@ -139,7 +143,7 @@ class StockItem extends PureComponent {
           hasIban={hasIban}
           isEvent={isEvent}
           offer={offer}
-          readOnly={readOnly}
+          readOnly={userIsNotUpdatingStock}
           showInfo={showInfo}
           stock={stock}
           timezone={timezone}
