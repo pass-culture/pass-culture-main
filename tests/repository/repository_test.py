@@ -1,4 +1,4 @@
-from repository import repository
+from validation.models import handler
 from tests.model_creators.generic_creators import create_bank_information
 
 
@@ -7,7 +7,7 @@ def test_offerer_errors_raises_an_error_if_both_iban_and_bic_are_empty():
     bank_information = create_bank_information(bic='', iban='')
 
     # when
-    errors = repository.errors(bank_information)
+    errors = handler.errors(bank_information)
 
     # then
     assert errors.errors['iban'] == ["L'IBAN renseigné (\"\") est invalide"]
@@ -19,7 +19,7 @@ def test_offerer_errors_raises_an_error_if_both_iban_and_bic_are_none():
     bank_information = create_bank_information(bic=None, iban=None)
 
     # when
-    errors = repository.errors(bank_information)
+    errors = handler.errors(bank_information)
 
     # then
     assert errors.errors['iban'] == ['Cette information est obligatoire']
@@ -31,7 +31,7 @@ def test_validate_bank_information_raises_an_error_if_both_iban_and_bic_are_inva
     bank_information = create_bank_information(bic='fake_bic', iban='fake_iban')
 
     # when
-    errors = repository.errors(bank_information)
+    errors = handler.errors(bank_information)
 
     # then
     assert errors.errors['iban'] == ["L'IBAN renseigné (\"fake_iban\") est invalide"]
@@ -43,7 +43,7 @@ def test_validate_bank_information_raises_an_error_if_iban_is_valid_but_bic_is_n
     bank_information = create_bank_information(bic='fake_bic', iban='FR7630006000011234567890189')
 
     # when
-    errors = repository.errors(bank_information)
+    errors = handler.errors(bank_information)
 
     # then
     assert errors.errors['bic'] == ['Le BIC renseigné ("fake_bic") est invalide']
@@ -55,7 +55,7 @@ def test_validate_bank_information_raises_an_error_if_bic_is_valid_but_iban_is_n
     bank_information = create_bank_information(bic='BDFEFR2LCCB', iban='fake_iban')
 
     # when
-    errors = repository.errors(bank_information)
+    errors = handler.errors(bank_information)
 
     # then
     assert errors.errors['iban'] == ["L'IBAN renseigné (\"fake_iban\") est invalide"]
@@ -67,7 +67,7 @@ def test_validate_bank_information_raises_an_error_if_iban_looks_correct_but_doe
     bank_information = create_bank_information(bic='BDFEFR2LCCB', iban='FR7630006000011234567890180')
 
     # when
-    errors = repository.errors(bank_information)
+    errors = handler.errors(bank_information)
 
     # then
     assert errors.errors['iban'] == ["L'IBAN renseigné (\"FR7630006000011234567890180\") est invalide"]
@@ -78,7 +78,7 @@ def test_validate_bank_information_raises_an_error_if_bic_has_correct_length_of_
     bank_information = create_bank_information(bic='fake_bic', iban='FR7630006000011234567890189')
 
     # when
-    errors = repository.errors(bank_information)
+    errors = handler.errors(bank_information)
 
     # then
     assert errors.errors['bic'] == ['Le BIC renseigné ("fake_bic") est invalide']
@@ -89,7 +89,7 @@ def test_validate_bank_information_raises_an_error_if_bic_is_missing():
     bank_information = create_bank_information(bic=None, iban='FR7630006000011234567890189')
 
     # when
-    errors = repository.errors(bank_information)
+    errors = handler.errors(bank_information)
 
     # then
     assert errors.errors['bic'] == ['Cette information est obligatoire']
@@ -100,7 +100,7 @@ def test_validate_bank_information_raises_an_error_if_iban_is_missing():
     bank_information = create_bank_information(bic='BDFEFR2LCCB', iban=None)
 
     # when
-    errors = repository.errors(bank_information)
+    errors = handler.errors(bank_information)
 
     # then
     assert errors.errors['iban'] == ['Cette information est obligatoire']

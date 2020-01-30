@@ -11,7 +11,7 @@ from routes.serialization import as_dict
 from utils.human_ids import dehumanize
 from utils.includes import MEDIATION_INCLUDES
 from utils.rest import ensure_current_user_has_rights, load_or_404, expect_json_data
-from validation.mediations import check_thumb_in_request, check_thumb_quality
+from validation.routes.mediations import check_thumb_in_request, check_thumb_quality
 
 
 @app.route('/mediations', methods=['POST'])

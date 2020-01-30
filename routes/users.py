@@ -1,5 +1,3 @@
-"""users routes"""
-
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required, logout_user, login_user
 
@@ -11,7 +9,7 @@ from utils.includes import USER_INCLUDES
 from utils.login_manager import stamp_session, discard_session
 from utils.rest import expect_json_data, \
     login_or_api_key_required
-from validation.users import check_allowed_changes_for_user, check_valid_signin
+from validation.routes.users import check_allowed_changes_for_user, check_valid_signin
 
 
 @app.route("/users/current", methods=["GET"])

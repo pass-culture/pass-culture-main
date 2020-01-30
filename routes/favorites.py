@@ -13,7 +13,7 @@ from utils.human_ids import dehumanize
 from utils.includes import FAVORITE_INCLUDES, \
     WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES
 from utils.rest import load_or_404
-from validation.offers import check_offer_id_is_present_in_request
+from validation.routes.offers import check_offer_id_is_present_in_request
 
 
 @app.route('/favorites', methods=['POST'])

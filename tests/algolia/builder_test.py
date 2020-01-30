@@ -1,10 +1,8 @@
 from datetime import datetime
 from decimal import Decimal
 
-import pytest
-
 from algolia.builder import build_object
-from models import EventType, ThingType
+from models import EventType
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_stock, create_venue

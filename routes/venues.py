@@ -1,4 +1,5 @@
 import copy
+
 from flask import current_app as app, jsonify, request
 from flask_login import login_required, current_user
 
@@ -9,7 +10,7 @@ from domain.venues import is_algolia_indexing
 from models.user_offerer import RightsType
 from models.venue import Venue
 from repository import repository
-from repository.venue_queries import save_venue, find_by_managing_user
+from repository.venue_queries import find_by_managing_user
 from routes.serialization import as_dict
 from utils.human_ids import dehumanize
 from utils.includes import OFFER_INCLUDES, VENUE_INCLUDES
@@ -17,7 +18,7 @@ from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, \
     expect_json_data, \
     load_or_404
-from validation.venues import validate_coordinates, check_valid_edition
+from validation.routes.venues import validate_coordinates, check_valid_edition
 
 
 @app.route('/venues/<venueId>', methods=['GET'])
@@ -45,7 +46,8 @@ def create_venue():
     siret = request.json.get('siret')
     if not siret:
         venue.generate_validation_token()
-    save_venue(venue)
+
+    repository.save(venue)
 
     if not venue.isValidated:
         try:
@@ -54,6 +56,7 @@ def create_venue():
             app.logger.error('Mail service failure', e)
 
     return jsonify(as_dict(venue, includes=VENUE_INCLUDES)), 201
+
 
 @app.route('/venues/<venueId>', methods=['PATCH'])
 @login_required
@@ -65,7 +68,8 @@ def edit_venue(venueId):
     validate_coordinates(request.json.get('latitude', None), request.json.get('longitude', None))
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
     venue.populate_from_dict(request.json)
-    save_venue(venue)
+
+    repository.save(venue)
 
     if is_algolia_indexing(previous_venue, request.json):
         redis.add_venue_id(client=app.redis_client, venue_id=dehumanize(venueId))

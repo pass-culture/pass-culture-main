@@ -1,7 +1,7 @@
 import pytest
 
 from models import ApiErrors
-from validation.url import is_url_safe
+from validation.routes.url import is_url_safe
 
 
 def test_is_url_safe_does_not_raise_an_error_if_url_is_none():

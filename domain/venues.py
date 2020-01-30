@@ -11,3 +11,7 @@ def is_algolia_indexing(previous_venue: Venue, payload: Dict) -> bool:
         if field in payload.keys() and previous_venue_as_dict[field] != payload[field]:
             return True
     return False
+
+
+class TooManyVirtualVenuesException(Exception):
+    pass

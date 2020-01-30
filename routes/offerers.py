@@ -18,7 +18,7 @@ from utils.rest import ensure_current_user_has_rights, \
     handle_rest_get_list, \
     load_or_404, \
     login_or_api_key_required
-from validation.offerers import check_valid_edition, parse_boolean_param_validated
+from validation.routes.offerers import check_valid_edition, parse_boolean_param_validated
 
 
 def get_dict_offerer(offerer):

@@ -11,7 +11,6 @@ class MoveRequestedRecommendationFirstTest:
     def test_move_requested_recommendation_first_when_second_reco_requested(self, app):
         # Given
         user = create_user()
-
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer1 = create_offer_with_thing_product(venue)

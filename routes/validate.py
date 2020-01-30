@@ -18,8 +18,8 @@ from repository.payment_queries import find_message_checksum
 from repository.user_offerer_queries import count_pro_attached_to_offerer
 from utils.config import IS_INTEGRATION
 from utils.mailing import MailServiceException, send_raw_email
-from validation.users import check_validation_token_has_been_already_used
-from validation.validate import check_valid_token_for_user_validation, check_validation_request, check_venue_found
+from validation.routes.users import check_validation_token_has_been_already_used
+from validation.routes.validate import check_valid_token_for_user_validation, check_validation_request, check_venue_found
 
 
 @app.route("/validate/user-offerer/<token>", methods=["GET"])

@@ -14,7 +14,7 @@ from repository.offer_queries import get_offers_for_recommendations_search, find
 from repository.recommendation_queries import count_read_recommendations_for_user, \
     find_recommendation_already_created_on_discovery
 from utils.logger import logger
-from validation.recommendations import check_distance_is_digit, \
+from validation.routes.recommendations import check_distance_is_digit, \
     check_latitude_is_defined, \
     check_longitude_is_defined
 

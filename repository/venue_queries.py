@@ -3,22 +3,10 @@ from typing import List
 
 from sqlalchemy import and_
 
-from models import ApiErrors
 from models import Venue, Offer, Stock, Offerer, UserOfferer, User
 from models.activity import load_activity
 from models.db import db
-from models.venue import TooManyVirtualVenuesException
-from repository import repository
 from repository.offerer_queries import _filter_by_sirens
-
-
-def save_venue(venue):
-    try:
-        repository.save(venue)
-    except TooManyVirtualVenuesException:
-        errors = ApiErrors()
-        errors.add_error('isVirtual', 'Un lieu pour les offres numériques existe déjà pour cette structure')
-        raise errors
 
 
 def find_by_id(venue_id: int) -> Venue:

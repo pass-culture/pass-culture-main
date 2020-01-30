@@ -1,7 +1,7 @@
 from flask import current_app as app
 from flask import request
 
-from validation.headers import check_origin_header_validity
+from validation.routes.headers import check_origin_header_validity
 
 
 class InvalidOriginHeader(Exception):

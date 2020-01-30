@@ -15,7 +15,7 @@ from utils.includes import USER_INCLUDES
 from utils.logger import logger
 from utils.mailing import \
     subscribe_newsletter, MailServiceException, send_raw_email
-from validation.users import check_valid_signup_webapp, check_valid_signup_pro
+from validation.routes.users import check_valid_signup_webapp, check_valid_signup_pro
 
 
 @app.route("/users/signup", methods=["POST"])

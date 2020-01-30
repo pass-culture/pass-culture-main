@@ -18,7 +18,7 @@ from repository.venue_queries import find_filtered_venues
 from routes.serialization import as_dict
 from utils.includes import OFFERER_FOR_PENDING_VALIDATION_INCLUDES
 from utils.rest import expect_json_data
-from validation.exports import check_user_is_admin, check_get_venues_params, \
+from validation.routes.exports import check_user_is_admin, check_get_venues_params, \
     check_get_offerers_params
 
 Activity = versioning_manager.activity_cls

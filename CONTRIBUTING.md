@@ -8,13 +8,16 @@ On utilise trois niveaux de validation des données entrantes.
 
 Les critères utilisés pour définir à quel niveau il faut placer des règles de validation sont :
 
-1. On utilisera `validation` : 
+1. On utilisera `validation.routes` : 
     - lorsqu'on cherche à éviter les usages malveillants, par exemple pour accéder à la liste de réservations d'un autre offreur;
     - si on a besoin de renvoyer des status HTTP précis (autre que 200, 400);
     - lorsque les règles de validation sont spécifiques à une seule route.
     
-2. On utilisera les méthodes `errors` :
+    
+2. On utilisera `validation.models` :
     - Lorsque la règle de validation est partagée par plusieurs points d'entrée (route API, script);
+    - Lorsqu'on effectue des opérations en base de données via l'ORM et qu'on souhaite valider la cohérence de celles-ci 
+        - exemple : tentative d'enregistrement d'un lieu avec un siret non conforme (dont les premiers chiffres ne correspondent pas au siren) 
 
 3. On utilisera les `constraints` et `triggers`:
     - Si avoir les données incohérentes met en péril la continuité du service;

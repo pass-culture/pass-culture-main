@@ -19,7 +19,7 @@ from utils.human_ids import dehumanize
 from utils.includes import VENUE_PROVIDER_INCLUDES
 from utils.rest import expect_json_data, \
     load_or_404
-from validation.venue_providers import validate_new_venue_provider_information, validate_existing_provider
+from validation.routes.venue_providers import validate_new_venue_provider_information, validate_existing_provider
 
 
 @app.route('/venueProviders', methods=['GET'])

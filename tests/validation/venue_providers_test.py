@@ -6,7 +6,7 @@ from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
     create_provider
 from utils.human_ids import humanize
-from validation.venue_providers import validate_new_venue_provider_information
+from validation.routes.venue_providers import validate_new_venue_provider_information
 
 
 class ValidateNewVenueProviderInformationTest:

@@ -15,7 +15,6 @@ from models.has_address_mixin import HasAddressMixin
 from models.has_thumb_mixin import HasThumbMixin
 from models.needs_validation_mixin import NeedsValidationMixin
 from models.offer import Offer
-from models.offerer import Offerer
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.versioned_mixin import VersionedMixin
@@ -129,34 +128,18 @@ class Venue(PcObject,
 
 @listens_for(Venue, 'before_insert')
 def before_insert(mapper, connect, self):
-    _check_if_existing_virtual_venue(self)
     _fill_departement_code_from_postal_code(self)
 
 @listens_for(Venue, 'before_update')
 def before_update(mapper, connect, self):
-    _check_if_existing_virtual_venue(self)
     _fill_departement_code_from_postal_code(self)
 
-def _check_if_existing_virtual_venue(self):
-    if self.isVirtual:
-        already_existing_virtual_venue = Venue.query \
-                                    .filter_by(
-                                        managingOffererId=self.managingOffererId,
-                                        isVirtual=True
-                                    ).first()
-        if already_existing_virtual_venue is not None:
-            if already_existing_virtual_venue.id != self.id:
-                raise TooManyVirtualVenuesException()
 
 def _fill_departement_code_from_postal_code(self):
     if not self.isVirtual:
         if not self.postalCode:
             raise IntegrityError(None, None, None)
         self.store_departement_code()
-
-
-class TooManyVirtualVenuesException(Exception):
-    pass
 
 
 def create_digital_venue(offerer):

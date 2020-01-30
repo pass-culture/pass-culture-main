@@ -17,7 +17,7 @@ from utils.mailing import send_raw_email
 from utils.rest import expect_json_data, \
     handle_rest_get_list, \
     load_or_404, login_or_api_key_required, load_or_raise_error, ensure_current_user_has_rights
-from validation.offers import check_venue_exists_when_requested, check_user_has_rights_for_query, check_valid_edition, \
+from validation.routes.offers import check_venue_exists_when_requested, check_user_has_rights_for_query, check_valid_edition, \
     check_has_venue_id, check_offer_type_is_valid, check_offer_is_editable
 
 

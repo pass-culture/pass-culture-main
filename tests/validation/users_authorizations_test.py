@@ -6,7 +6,7 @@ from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 from utils.token import random_token
-from validation.users_authorizations import check_user_can_validate_bookings, \
+from validation.routes.users_authorizations import check_user_can_validate_bookings, \
     check_user_can_validate_bookings_v2, \
     check_api_key_allows_to_validate_booking, check_user_can_validate_activation_offer
 

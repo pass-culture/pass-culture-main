@@ -16,7 +16,7 @@ from tests.model_creators.specific_creators import create_booking_for_thing, cre
     create_product_with_thing_type, create_product_with_event_type, create_offer_with_thing_product, \
     create_offer_with_event_product
 from utils.human_ids import humanize
-from validation.bookings import check_expenses_limits, \
+from validation.routes.bookings import check_expenses_limits, \
     check_booking_is_cancellable, \
     check_booking_quantity_limit, \
     check_rights_to_get_bookings_csv, \

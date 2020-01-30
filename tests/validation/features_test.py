@@ -4,7 +4,7 @@ import pytest
 
 from models.feature import FeatureToggle, Feature
 from tests.conftest import clean_database
-from validation.features import InconsistentFeaturesException, check_feature_consistency
+from validation.routes.features import InconsistentFeaturesException, check_feature_consistency
 
 
 class CheckFeatureConsistencyTest:

@@ -29,7 +29,7 @@ from utils.includes import WEBAPP_GET_BOOKING_INCLUDES, \
 from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, expect_json_data
 from utils.token import random_token
-from validation.bookings import check_already_booked, \
+from validation.routes.bookings import check_already_booked, \
     check_booking_is_cancellable, \
     check_booking_is_not_already_cancelled, \
     check_booking_is_not_used, \
@@ -45,9 +45,9 @@ from validation.bookings import check_already_booked, \
     check_rights_to_get_bookings_csv, \
     check_stock_booking_limit_date, \
     check_stock_venue_is_validated
-from validation.users_authentifications import check_user_is_logged_in_or_email_is_provided, \
+from validation.routes.users_authentifications import check_user_is_logged_in_or_email_is_provided, \
     login_or_api_key_required_v2
-from validation.users_authorizations import \
+from validation.routes.users_authorizations import \
     check_api_key_allows_to_cancel_booking, \
     check_api_key_allows_to_validate_booking, check_can_book_free_offer, \
     check_user_can_validate_activation_offer, check_user_can_validate_bookings, \

@@ -1,7 +1,7 @@
 import pytest
 
 from models import ApiErrors
-from validation.venues import validate_coordinates
+from validation.routes.venues import validate_coordinates
 
 
 def test_validate_coordinates_raises_an_api_errors_if_latitude_is_not_a_decimal():

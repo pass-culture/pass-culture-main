@@ -1,7 +1,7 @@
 import pytest
 
 from models import ApiErrors
-from validation.exports import check_get_venues_params, check_get_offerers_params
+from validation.routes.exports import check_get_venues_params, check_get_offerers_params
 
 
 def test_check_get_venues_params_raises_api_error_if_not_valid_date(app):

@@ -7,7 +7,7 @@ from routes.serialization import serialize
 from tests.model_creators.generic_creators import create_offerer, create_venue
 from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 from utils.human_ids import humanize
-from validation.stocks import check_dates_are_allowed_on_new_stock, \
+from validation.routes.stocks import check_dates_are_allowed_on_new_stock, \
     check_dates_are_allowed_on_existing_stock, \
     check_stocks_are_editable_for_offer
 

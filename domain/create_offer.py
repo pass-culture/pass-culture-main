@@ -1,7 +1,7 @@
 from models import Offer, Product, User
 from repository import product_queries
-from validation.events import check_user_can_create_activation_event
-from validation.url import is_url_safe
+from validation.routes.events import check_user_can_create_activation_event
+from validation.routes.url import is_url_safe
 
 
 def initialize_offer_from_product_id(product_id: str) -> Offer:

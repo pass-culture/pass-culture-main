@@ -10,7 +10,7 @@ from models.mediation import Mediation
 from models.stock import Stock
 from models.user_offerer import RightsType
 from models.venue import Venue
-from repository import offerer_queries, feature_queries, repository
+from repository import offerer_queries, repository
 from repository.offer_queries import get_offer_by_id
 from repository.stock_queries import find_stocks_with_possible_filters
 from routes.serialization import as_dict
@@ -21,8 +21,8 @@ from utils.rest import ensure_current_user_has_rights, \
     handle_rest_get_list, \
     load_or_404, \
     login_or_api_key_required
-from validation.offers import check_offer_is_editable
-from validation.stocks import check_request_has_offer_id, \
+from validation.routes.offers import check_offer_is_editable
+from validation.routes.stocks import check_request_has_offer_id, \
     check_dates_are_allowed_on_new_stock, \
     check_dates_are_allowed_on_existing_stock, \
     check_stocks_are_editable_for_offer

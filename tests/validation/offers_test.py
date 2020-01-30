@@ -1,7 +1,7 @@
 import pytest
 
 from models import ApiErrors, ThingType, EventType, Offer
-from validation.offers import check_has_venue_id, check_offer_type_is_valid, check_offer_is_editable
+from validation.routes.offers import check_has_venue_id, check_offer_type_is_valid, check_offer_is_editable
 
 
 class CheckHasVenueIdTest:
