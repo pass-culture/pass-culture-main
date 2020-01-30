@@ -1,12 +1,9 @@
-import csv
 import datetime
 from abc import ABC, abstractmethod
 from decimal import Decimal
 from enum import Enum
-from io import StringIO
 from typing import List
 
-from domain.reimbursement_details import ReimbursementDetails
 from models import Booking, ThingType
 
 MIN_DATETIME = datetime.datetime(datetime.MINYEAR, 1, 1)
@@ -220,15 +217,3 @@ def _find_potential_rules(booking: Booking,
             reimbursed_amount = rule.value.apply(booking)
             relevant_rules.append(AppliedReimbursement(rule, reimbursed_amount))
     return relevant_rules
-
-
-def generate_reimbursement_details_csv(reimbursement_details: List[ReimbursementDetails]):
-    output = StringIO()
-    csv_lines = [
-        reimbursement_detail.as_csv_row()
-        for reimbursement_detail in reimbursement_details
-    ]
-    writer = csv.writer(output, dialect=csv.excel, delimiter=';')
-    writer.writerow(ReimbursementDetails.CSV_HEADER)
-    writer.writerows(csv_lines)
-    return output.getvalue()

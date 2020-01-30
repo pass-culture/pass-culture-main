@@ -1,9 +1,9 @@
+from collections import namedtuple
 from typing import List
 
 from sqlalchemy import subquery
 from sqlalchemy.orm import aliased
 
-from domain.reimbursement_details import ReimbursementDetails
 from models import User, Offerer, PaymentStatus
 from models.booking import Booking
 from models.offer import Offer
@@ -12,7 +12,7 @@ from models.stock import Stock
 from models.venue import Venue
 
 
-def find_all_offerer_payments(offerer_id: int) -> List[object]:
+def find_all_offerer_payments(offerer_id: int) -> List[namedtuple]:
     payment_status_query = _build_payment_status_subquery()
 
     return Payment.query \
@@ -54,16 +54,3 @@ def _build_payment_status_subquery() -> subquery:
                        PaymentStatus.detail) \
         .subquery()
     return payment_status_query
-
-
-def find_all_offerer_reimbursement_details(offerer_id: int) -> List[ReimbursementDetails]:
-    offerer_payments = find_all_offerer_payments(offerer_id)
-    reimbursement_details = [
-        ReimbursementDetails(
-            offerer_payment,
-            offerer_payment.booking_dateUsed
-        )
-        for offerer_payment in offerer_payments
-    ]
-
-    return reimbursement_details
