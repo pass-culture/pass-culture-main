@@ -15,6 +15,7 @@ from models import ApiErrors, \
 from models.api_errors import ResourceNotFoundError, ForbiddenError
 from repository import user_offerer_queries, user_queries, repository
 from repository.payment_queries import find_message_checksum
+from repository.user_offerer_queries import count_pro_attached_to_offerer
 from utils.config import IS_INTEGRATION
 from utils.mailing import MailServiceException, send_raw_email
 from validation.users import check_validation_token_has_been_already_used
@@ -74,17 +75,15 @@ def validate_venue():
 @app.route("/validate/user/<token>", methods=["PATCH"])
 def validate_user(token):
     user_to_validate = user_queries.find_by_validation_token(token)
-
     check_valid_token_for_user_validation(user_to_validate)
 
     user_to_validate.validationToken = None
-
     repository.save(user_to_validate)
 
     user_offerer = user_offerer_queries.find_one_or_none_by_user_id(user_to_validate.id)
 
     if user_offerer:
-        number_of_rattached_user_offerers = UserOfferer.query.filter_by(offererId=user_offerer.offererId).count()
+        number_of_pro_attached_to_offerer = count_pro_attached_to_offerer(user_offerer.offererId)
         offerer = user_offerer.offerer
 
         if IS_INTEGRATION:
@@ -92,16 +91,18 @@ def validate_user(token):
         else:
             _ask_for_validation(offerer, user_offerer)
 
-        if number_of_rattached_user_offerers > 1:
+        if number_of_pro_attached_to_offerer > 1:
             try:
                 send_ongoing_offerer_attachment_information_email_to_pro(user_offerer, send_raw_email)
-            except MailServiceException as e:
-                app.logger.error('Mail service failure', e)
+            except MailServiceException as mail_service_exception:
+                app.logger.error('[send_ongoing_offerer_attachment_information_email_to_pro] '
+                                 'Mail service failure', mail_service_exception)
         else:
             try:
                 send_pro_user_waiting_for_validation_by_admin_email(user_to_validate, send_raw_email, offerer)
-            except MailServiceException as e:
-                app.logger.error('Mail service failure', e)
+            except MailServiceException as mail_service_exception:
+                app.logger.error('[send_pro_user_waiting_for_validation_by_admin_email] '
+                                 'Mail service failure', mail_service_exception)
 
     return '', 204
 

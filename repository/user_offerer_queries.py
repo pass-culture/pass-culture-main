@@ -41,3 +41,7 @@ def find_one_or_none_by_user_id_and_offerer_id(user_id: int, offerer_id: int) ->
     return UserOfferer.query \
         .filter_by(userId=user_id, offererId=offerer_id) \
         .one_or_none()
+
+
+def count_pro_attached_to_offerer(offerer_id: int) -> int:
+    return UserOfferer.query.filter_by(offererId=offerer_id).count()

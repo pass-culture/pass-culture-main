@@ -8,20 +8,19 @@ from tests.model_creators.generic_creators import create_offerer, create_user, c
 
 class ProOffererAttachmentValidationEmailTest:
     @clean_database
-    @patch('emails.offerer_ongoing_attachment.DEV_EMAIL_ADDRESS', 'dev@passculture.app')
+    @patch('emails.offerer_ongoing_attachment.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @patch('emails.offerer_ongoing_attachment.feature_send_mail_to_users_enabled', return_value=False)
     @patch('emails.offerer_ongoing_attachment.format_environment_for_email', return_value='-testing')
-    @patch('emails.offerer_ongoing_attachment.find_user_offerer_email',
-           return_value='pro@example.com')
+    @patch('emails.offerer_ongoing_attachment.find_user_offerer_email', return_value='pro@example.com')
     @patch('emails.offerer_ongoing_attachment.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    def test_email_is_sent_to_dev_at_passculture_when_not_production_environment(self,
-                                                                                 feature_send_mail_to_users_enabled,
-                                                                                 format_environment_for_email,
-                                                                                 find_user_offerer_email,
-                                                                                 app):
+    def test_should_return_data_email_with_dev_email_address_when_not_in_production(self,
+                                                                                    feature_send_mail_to_users_enabled,
+                                                                                    format_environment_for_email,
+                                                                                    find_user_offerer_email,
+                                                                                    app):
         # Given
         offerer = create_offerer(name='Le Théâtre SAS')
-        pro_user = create_user(email='pro@example.com')
+        pro_user = create_user()
         user_offerer = create_user_offerer(pro_user, offerer)
 
         repository.save(pro_user, user_offerer)
@@ -34,7 +33,7 @@ class ProOffererAttachmentValidationEmailTest:
             'FromEmail': 'support@example.com',
             'MJ-TemplateID': 778749,
             'MJ-TemplateLanguage': True,
-            'To': 'dev@passculture.app',
+            'To': 'dev@example.com',
             'Vars':
                 {
                     'nom_structure': 'Le Théâtre SAS',
@@ -48,17 +47,17 @@ class ProOffererAttachmentValidationEmailTest:
     @patch('emails.offerer_ongoing_attachment.find_user_offerer_email',
            return_value='pro@example.com')
     @patch('emails.offerer_ongoing_attachment.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    def test_email_is_sent_to_pro_user_when_environment_is_production(self,
-                                                                       feature_send_mail_to_users_enabled,
-                                                                       format_environment_for_email,
-                                                                       find_user_offerer_email,
-                                                                       app):
+    def test_should_return_data_email_with_pro_email_address_when_environment_is_production(self,
+                                                                                            feature_send_mail_to_users_enabled,
+                                                                                            format_environment_for_email,
+                                                                                            find_user_offerer_email,
+                                                                                            app):
         # Given
         offerer = create_offerer(name='Le Théâtre SAS')
         pro_user = create_user(email='pro@example.com')
         user_offerer = create_user_offerer(pro_user, offerer)
 
-        repository.save(pro_user, user_offerer)
+        repository.save(user_offerer)
 
         # When
         offerer_attachment_validation_email = retrieve_data_for_offerer_ongoing_attachment_email(user_offerer)
@@ -75,4 +74,3 @@ class ProOffererAttachmentValidationEmailTest:
                     'env': ''
                 }
         }
-

@@ -30,7 +30,6 @@ def get_dict_offerer(offerer):
 @app.route('/offerers', methods=['GET'])
 @login_required
 def list_offerers():
-
     is_filtered_by_offerer_status = (request.args.get('validated') is not None)
     only_validated_offerers = parse_boolean_param_validated(request)
 
@@ -48,15 +47,14 @@ def list_offerers():
     keywords = request.args.get('keywords')
     if keywords is not None:
         query = filter_offerers_with_keywords_string(query.join(Venue), keywords)
-        should_distinct_offerers=True
+        should_distinct_offerers = True
     else:
-        should_distinct_offerers =False
+        should_distinct_offerers = False
 
     offerers = query.all()
 
     for offerer in offerers:
         offerer.append_user_has_access_attribute(current_user)
-
 
     return handle_rest_get_list(Offerer,
                                 should_distinct=should_distinct_offerers,
@@ -91,10 +89,9 @@ def create_offerer():
 
         try:
             send_ongoing_offerer_attachment_information_email_to_pro(user_offerer, send_raw_email)
-
-        except MailServiceException as e:
-            app.logger.error('Mail service failure', e)
-
+        except MailServiceException as mail_service_exception:
+            app.logger.error('[send_ongoing_offerer_attachment_information_email_to_pro] '
+                             'Mail service failure', mail_service_exception)
     else:
         offerer = Offerer()
         offerer.populate_from_dict(request.json)
@@ -105,8 +102,9 @@ def create_offerer():
 
     try:
         maybe_send_offerer_validation_email(offerer, user_offerer, send_raw_email)
-    except MailServiceException as e:
-        app.logger.error('Mail service failure', e)
+    except MailServiceException as mail_service_exception:
+        app.logger.error('[maybe_send_offerer_validation_email] '
+                         'Mail service failure', mail_service_exception)
     return jsonify(get_dict_offerer(offerer)), 201
 
 

@@ -1,4 +1,5 @@
-from unittest.mock import patch, Mock, call
+from unittest.mock import patch
+
 from models import User, Offerer, UserOfferer
 from repository import repository
 from tests.conftest import clean_database, TestClient
@@ -16,8 +17,8 @@ class Patch:
             user_id = user.id
 
             # When
-            response = TestClient(app.test_client()).patch('/validate/user/' + user.validationToken,
-                                                           headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()) \
+                .patch(f'/validate/user/{user.validationToken}', headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 204
@@ -32,9 +33,9 @@ class Patch:
                                                                           mock_send_ongoing_offerer_attachment_information_email_to_pro,
                                                                           app):
             # Given
-            user = create_user(email='pro@example.com')
-            user2 = create_user()
-            offerer = create_offerer(siren='775671464')
+            user = create_user()
+            user2 = create_user(email='pro2@example.com')
+            offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             user_offerer2 = create_user_offerer(user2, offerer)
 
@@ -43,8 +44,8 @@ class Patch:
             repository.save(user_offerer, user_offerer2)
 
             # When
-            response = TestClient(app.test_client()).patch('/validate/user/' + user.validationToken,
-                                                           headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()) \
+                .patch(f'/validate/user/{user.validationToken}', headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 204
@@ -60,8 +61,8 @@ class Patch:
                                                                      mock_send_pro_user_waiting_for_validation_by_admin_email,
                                                                      app):
             # Given
-            user = create_user(email='pro@example.com')
-            offerer = create_offerer(siren='775671464')
+            user = create_user()
+            offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
 
             user.generate_validation_token()
@@ -69,12 +70,13 @@ class Patch:
             repository.save(user_offerer)
 
             # When
-            response = TestClient(app.test_client()).patch('/validate/user/' + user.validationToken,
-                                                           headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()) \
+                .patch(f'/validate/user/{user.validationToken}', headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 204
-            mock_send_pro_user_waiting_for_validation_by_admin_email.assert_called_once_with(user, mock_send_raw_email, offerer)
+            mock_send_pro_user_waiting_for_validation_by_admin_email.assert_called_once_with(user, mock_send_raw_email,
+                                                                                             offerer)
 
         @clean_database
         @patch('routes.validate.IS_INTEGRATION', False)
@@ -86,17 +88,17 @@ class Patch:
                                                                                  mock_maybe_send_offerer_validation_email,
                                                                                  app):
             # Given
-            user = create_user(email='pro@example.com')
+            pro = create_user()
             offerer = create_offerer(siren='775671464')
-            user_offerer = create_user_offerer(user, offerer)
+            user_offerer = create_user_offerer(pro, offerer)
 
-            user.generate_validation_token()
+            pro.generate_validation_token()
 
             repository.save(user_offerer)
 
             # When
-            response = TestClient(app.test_client()).patch('/validate/user/' + user.validationToken,
-                                                           headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()) \
+                .patch(f'/validate/user/{pro.validationToken}', headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 204
@@ -110,17 +112,17 @@ class Patch:
                                                                            mock_maybe_send_offerer_validation_email,
                                                                            app):
             # Given
-            user = create_user(email='pro@example.com')
-            offerer = create_offerer(siren='775671464')
-            user_offerer = create_user_offerer(user, offerer)
+            pro = create_user()
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(pro, offerer)
 
-            user.generate_validation_token()
+            pro.generate_validation_token()
 
             repository.save(user_offerer)
 
             # When
-            response = TestClient(app.test_client()).patch('/validate/user/' + user.validationToken,
-                                                           headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()) \
+                .patch(f'/validate/user/{pro.validationToken}', headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 204
@@ -132,15 +134,15 @@ class Patch:
 
 
 class Returns404:
-        @clean_database
-        def when_validation_token_is_not_found(self, app):
-            # Given
-            random_token = '0987TYGHHJMJ'
+    @clean_database
+    def when_validation_token_is_not_found(self, app):
+        # Given
+        random_token = '0987TYGHHJMJ'
 
-            # When
-            response = TestClient(app.test_client()).patch('/validate/user/' + random_token,
-                                                           headers={'origin': 'http://localhost:3000'})
+        # When
+        response = TestClient(app.test_client()) \
+            .patch(f'/validate/user/{random_token}', headers={'origin': 'http://localhost:3000'})
 
-            # Then
-            assert response.status_code == 404
-            assert response.json['global'] == ['Ce lien est invalide']
+        # Then
+        assert response.status_code == 404
+        assert response.json['global'] == ['Ce lien est invalide']
