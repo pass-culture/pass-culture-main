@@ -9,7 +9,7 @@ from tests.model_creators.generic_creators import create_booking, create_user, c
     create_venue, \
     create_user_offerer
 from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_with_thing_offer, \
-    create_offer_with_thing_product
+    create_offer_with_thing_product, create_offer_with_event_product
 from utils.human_ids import humanize
 
 
@@ -121,7 +121,7 @@ class Patch:
             mock_redis.assert_called_once_with(client=app.redis_client, offer_id=stock.offerId)
 
         @clean_database
-        def when_offer_come_from_allocine_provider(self, app):
+        def when_offer_come_from_allocine_provider_and_fields_updated_in_stock_are_editable(self, app):
             # given
             allocine_provider = Provider \
                 .query \
@@ -132,8 +132,9 @@ class Patch:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue, last_provider_id=allocine_provider.id)
-            stock = create_stock(offer=offer, available=10)
+            offer = create_offer_with_event_product(venue, last_provider_id=allocine_provider.id,
+                                                    id_at_providers='allo')
+            stock = create_stock(offer=offer, available=10, id_at_providers='allo-cine')
             repository.save(user, user_offerer, stock)
             humanized_stock_id = humanize(stock.id)
 
@@ -255,6 +256,37 @@ class Patch:
                 '/stocks/' + humanized_stock_id)
             assert request_after_update.json['available'] == 10
             assert request_update.json["global"] == ["Les offres importées ne sont pas modifiables"]
+
+        @clean_database
+        def when_offer_come_from_allocine_provider_and_some_fields_updated_are_not_editable(self, app):
+            # given
+            allocine_provider = Provider \
+                .query \
+                .filter(Provider.localClass == 'AllocineStocks') \
+                .first()
+
+            user = create_user(email='test@email.com')
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            offer = create_offer_with_event_product(venue, last_provider_id=allocine_provider.id,
+                                                    id_at_providers='test')
+            stock = create_stock(offer=offer, available=10, id_at_providers='test-test')
+            repository.save(user, user_offerer, stock)
+            humanized_stock_id = humanize(stock.id)
+
+            # when
+            request_update = TestClient(app.test_client()).with_auth('test@email.com') \
+                .patch('/stocks/' + humanized_stock_id,
+                       json={'available': 5, 'price': 20, 'endDatetime': '2020-02-08T14:30:00Z'})
+
+            # then
+            assert request_update.status_code == 400
+            request_after_update = TestClient(app.test_client()).with_auth('test@email.com').get(
+                '/stocks/' + humanized_stock_id)
+            assert request_after_update.json['available'] == 10
+            assert request_update.json['global'] == [
+                'Pour les offres importées, certains champs ne sont pas modifiables']
 
     class Returns403:
         @clean_database

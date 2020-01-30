@@ -27,6 +27,7 @@ ORIGINAL_VERSION_SUFFIX = 'VO'
 class AllocineStocks(LocalProvider):
     name = "Allociné"
     can_create = True
+    editable_fields = ['available', 'price', 'bookingLimitDatetime']
 
     def __init__(self, venue_provider: VenueProvider):
         super().__init__(venue_provider)

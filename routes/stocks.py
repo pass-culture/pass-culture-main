@@ -26,7 +26,8 @@ from validation.routes.offers import check_offer_is_editable
 from validation.routes.stocks import check_request_has_offer_id, \
     check_dates_are_allowed_on_new_stock, \
     check_dates_are_allowed_on_existing_stock, \
-    check_stocks_are_editable_for_offer, check_stocks_are_editable_in_patch_stock
+    check_stocks_are_editable_for_offer, check_stocks_are_editable_in_patch_stock, get_updated_fields_after_patch, \
+    check_only_editable_fields_will_be_updated
 
 search_models = [
     # Order is important
@@ -102,6 +103,14 @@ def edit_stock(stock_id):
     check_dates_are_allowed_on_existing_stock(stock_data, stock.offer)
     offerer_id = stock.resolvedOffer.venue.managingOffererId
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
+    check_stocks_are_editable_in_patch_stock(stock.offer)
+
+    if stock.idAtProviders:
+        stock_editable_fields = get_editable_fields_when_offer_from_allocine(stock.offer)
+        db_stock = jsonify(as_dict(stock)).json
+        fields_to_update = get_updated_fields_after_patch(db_stock, stock_data)
+        check_only_editable_fields_will_be_updated(fields_to_update, stock_editable_fields)
+        stock.fieldsUpdated = fields_to_update
 
     check_stocks_are_editable_for_offer(stock.offer)
 

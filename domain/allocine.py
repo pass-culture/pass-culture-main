@@ -1,6 +1,7 @@
 from typing import Callable, List
 
 from connectors.api_allocine import get_movies_showtimes_from_allocine, get_movie_poster_from_allocine
+from local_providers.provider_manager import get_local_provider_class_by_name
 from models import Offer
 from utils.logger import logger
 
@@ -30,6 +31,7 @@ def _exclude_movie_showtimes_with_special_event_type(movies_showtime: list) -> l
 
 
 def get_editable_fields_when_offer_from_allocine(offer: Offer) -> List[str]:
-    local_class = offer.lastProvider.localClass if offer.lastProvider else ''
+    local_class = offer.lastProvider.localClass
+    provider_class = get_local_provider_class_by_name(local_class)
     if local_class == 'AllocineStocks':
-        return ['available', 'price', 'bookingLimitDatetime']
+        return provider_class.editable_fields

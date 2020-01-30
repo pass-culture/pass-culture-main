@@ -9,7 +9,8 @@ from tests.model_creators.specific_creators import create_offer_with_thing_produ
 from utils.human_ids import humanize
 from validation.routes.stocks import check_dates_are_allowed_on_new_stock, \
     check_dates_are_allowed_on_existing_stock, \
-    check_stocks_are_editable_for_offer, check_stocks_are_editable_in_patch_stock
+    check_stocks_are_editable_for_offer, check_stocks_are_editable_in_patch_stock, get_updated_fields_after_patch, \
+    check_only_editable_fields_will_be_updated
 
 
 class CheckDatesAreAllowedOnNewStockTest:
@@ -426,3 +427,82 @@ class CheckStocksAreEditableInPatchStockTest:
 
         # when
         check_stocks_are_editable_in_patch_stock(offer)
+
+
+class CheckOnlyEditableFieldsWillBeUpdatedTest:
+    def test_raise_an_error_when_trying_to_update_a_non_editable_field_in_stock(self):
+        # given
+        editable_fields = ['price', 'bookingLimitDatetime', 'available']
+
+        updated_fields = ['price', 'endDatetime']
+
+        # When
+        with pytest.raises(ApiErrors) as e:
+            check_only_editable_fields_will_be_updated(updated_fields, editable_fields)
+
+        # Then
+        assert e.value.errors['global'] == [
+            'Pour les offres importées, certains champs ne sont pas modifiables'
+        ]
+
+    def test_does_not_raise_an_error_when_trying_to_update_an_editable_field_in_stock(self):
+        # given
+        editable_fields = ['price', 'bookingLimitDatetime', 'available']
+
+        updated_fields = ['price', 'bookingLimitDatetime']
+
+        # then
+        check_only_editable_fields_will_be_updated(updated_fields, editable_fields)
+
+    def test_does_not_raise_an_error_when_there_is_no_update(self):
+        # given
+        editable_fields = ['price', 'bookingLimitDatetime', 'available']
+
+        updated_fields = []
+
+        # then
+        check_only_editable_fields_will_be_updated(updated_fields, editable_fields)
+
+
+class GetUpdatedFieldsAfterPatchTest:
+    def test_should_return_updated_fields_after_pro_user_changes_one_field_in_stock(self):
+        # given
+        stock_before_update = {'available': None, 'beginningDatetime': '2020-02-08T14:30:00Z',
+                               'bookingLimitDatetime': '2020-02-08T14:30:00Z', 'bookingRecapSent': None,
+                               'dateCreated': '2020-01-29T14:33:08.746369Z',
+                               'dateModified': '2020-01-29T14:33:08.746382Z',
+                               'dateModifiedAtLastProvider': '2020-01-29T14:33:07.803374Z',
+                               'endDatetime': '2020-02-08T14:30:01Z', 'fieldsUpdated': [], 'groupSize': 1, 'id': 'AGXA',
+                               'idAtProviders': 'TW92aWU6MjY1NTcy%22222222311111#LOCAL/2020-02-08T15:30:00',
+                               'isSoftDeleted': False, 'lastProviderId': 'BY', 'modelName': 'Stock', 'offerId': 'QY',
+                               'price': 22.0, 'remainingQuantity': 0}
+
+        stock_data = {'bookingLimitDatetime': '2020-02-08T12:30:00Z', 'id': 'AGXA'}
+
+        # when
+        stock_updated_fields = get_updated_fields_after_patch(stock_before_update, stock_data)
+
+        # then
+        assert set(stock_updated_fields) == {'bookingLimitDatetime'}
+
+    def test_should_return_updated_fields_after_pro_user_action_in_stock(self):
+        # given
+        stock_before_update = {'available': None, 'beginningDatetime': '2020-02-08T14:30:00Z',
+                               'bookingLimitDatetime': '2020-02-08T14:30:00Z', 'bookingRecapSent': None,
+                               'dateCreated': '2020-01-29T14:33:08.746369Z',
+                               'dateModified': '2020-01-29T14:33:08.746382Z',
+                               'dateModifiedAtLastProvider': '2020-01-29T14:33:07.803374Z',
+                               'endDatetime': '2020-02-08T14:30:01Z', 'fieldsUpdated': [], 'groupSize': 1, 'id': 'AGXA',
+                               'idAtProviders': 'TW92aWU6MjY1NTcy%22222222311111#LOCAL/2020-02-08T15:30:00',
+                               'isSoftDeleted': False, 'lastProviderId': 'BY', 'modelName': 'Stock', 'offerId': 'QY',
+                               'price': 22.0, 'remainingQuantity': 0}
+
+        stock_data = {'available': None, 'bookingLimitDatetime': '2020-02-08T12:30:00Z', 'id': 'AGXA', 'offerId': 'QY',
+                      'offererId': 'A4', 'price': 25, 'beginningDatetime': '2020-02-08T14:30:00Z',
+                      'endDatetime': '2020-02-08T14:30:01Z', 'beginningTime': '15:30', 'endTime': '15:30'}
+
+        # when
+        stock_updated_fields = get_updated_fields_after_patch(stock_before_update, stock_data)
+
+        # then
+        assert set(stock_updated_fields) == {'price', 'bookingLimitDatetime'}

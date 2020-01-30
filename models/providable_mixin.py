@@ -7,7 +7,7 @@ from sqlalchemy import BigInteger, \
     Column, \
     DateTime, \
     ForeignKey, \
-    String, JSON
+    String
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship
@@ -39,7 +39,8 @@ class ProvidableMixin:
                                         nullable=True,
                                         default=datetime.utcnow)
 
-    fieldsUpdated = Column(ARRAY(String),
+    fieldsUpdated = Column(ARRAY(String(100)),
+                           nullable=True,
                            default=[])
 
     def ensure_can_be_updated(self):

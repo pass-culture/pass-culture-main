@@ -1,3 +1,5 @@
+from typing import Dict, List
+
 from models import ApiErrors, Offer
 
 
@@ -71,3 +73,18 @@ def _forbid_dates_on_stock_for_thing_offer(request_data):
                 'Impossible de mettre des dates de début et fin si l\'offre ne porte pas sur un évenement'
             ]})
 
+
+def check_only_editable_fields_will_be_updated(stock_updated_fields: List, stock_editable_fields: List):
+    if not set(stock_updated_fields).issubset(stock_editable_fields):
+        api_errors = ApiErrors()
+        api_errors.status_code = 400
+        api_errors.add_error('global', 'Pour les offres importées, certains champs ne sont pas modifiables')
+        raise api_errors
+
+
+def get_updated_fields_after_patch(old_stock: Dict, new_stock: Dict) -> List:
+    common_keys = set(old_stock).intersection(set(new_stock))
+    filtered_old_dict = {key: old_stock[key] for key in common_keys}
+    filtered_new_dict = {key: new_stock[key] for key in common_keys}
+    updated_fields = [key for key in common_keys if filtered_new_dict[key] != filtered_old_dict[key]]
+    return updated_fields
