@@ -13,7 +13,7 @@ from domain.user_emails import send_validation_confirmation_email_to_pro, \
 from models import ApiErrors, \
     UserOfferer, Offerer, Venue
 from models.api_errors import ResourceNotFoundError, ForbiddenError
-from repository import user_offerer_queries, offerer_queries, user_queries, repository
+from repository import user_offerer_queries, user_queries, repository
 from repository.payment_queries import find_message_checksum
 from utils.config import IS_INTEGRATION
 from utils.mailing import MailServiceException, send_raw_email
@@ -30,11 +30,8 @@ def validate_offerer_attachment(token):
     user_offerer.validationToken = None
     repository.save(user_offerer)
 
-
-
     try:
         send_attachment_validation_email_to_pro_offerer(user_offerer, send_raw_email)
-        send_ongoing_offerer_attachment_information_email_to_pro(user_offerer, send_raw_email)
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 
@@ -77,23 +74,34 @@ def validate_venue():
 @app.route("/validate/user/<token>", methods=["PATCH"])
 def validate_user(token):
     user_to_validate = user_queries.find_by_validation_token(token)
+
     check_valid_token_for_user_validation(user_to_validate)
+
     user_to_validate.validationToken = None
+
     repository.save(user_to_validate)
+
     user_offerer = user_offerer_queries.find_one_or_none_by_user_id(user_to_validate.id)
 
     if user_offerer:
-        offerer = offerer_queries.find_first_by_user_offerer_id(user_offerer.id)
+        number_of_rattached_user_offerers = UserOfferer.query.filter_by(offererId=user_offerer.offererId).count()
+        offerer = user_offerer.offerer
 
         if IS_INTEGRATION:
             _validate_offerer(offerer, user_offerer)
         else:
             _ask_for_validation(offerer, user_offerer)
 
-        try:
-            send_pro_user_waiting_for_validation_by_admin_email(user_to_validate, send_raw_email, offerer)
-        except MailServiceException as e:
-            app.logger.error('Mail service failure', e)
+        if number_of_rattached_user_offerers > 1:
+            try:
+                send_ongoing_offerer_attachment_information_email_to_pro(user_offerer, send_raw_email)
+            except MailServiceException as e:
+                app.logger.error('Mail service failure', e)
+        else:
+            try:
+                send_pro_user_waiting_for_validation_by_admin_email(user_to_validate, send_raw_email, offerer)
+            except MailServiceException as e:
+                app.logger.error('Mail service failure', e)
 
     return '', 204
 
