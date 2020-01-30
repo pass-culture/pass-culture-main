@@ -8,7 +8,7 @@ def get_bank_information_errors(model: Model, api_errors: ApiErrors) -> ApiError
     try:
         IBAN(model.iban)
     except (ValueError, TypeError):
-        api_errors.add_error('iban', f"L'IBAN renseigné (\"{model.iban}\") est invalide")
+        api_errors.add_error('iban', f'L’IBAN renseigné ("{model.iban}") est invalide')
 
     try:
         BIC(model.bic)

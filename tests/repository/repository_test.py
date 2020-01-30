@@ -10,7 +10,7 @@ def test_offerer_errors_raises_an_error_if_both_iban_and_bic_are_empty():
     errors = handler.errors(bank_information)
 
     # then
-    assert errors.errors['iban'] == ["L'IBAN renseigné (\"\") est invalide"]
+    assert errors.errors['iban'] == ['L’IBAN renseigné ("") est invalide']
     assert errors.errors['bic'] == ['Le BIC renseigné ("") est invalide']
 
 
@@ -34,7 +34,7 @@ def test_validate_bank_information_raises_an_error_if_both_iban_and_bic_are_inva
     errors = handler.errors(bank_information)
 
     # then
-    assert errors.errors['iban'] == ["L'IBAN renseigné (\"fake_iban\") est invalide"]
+    assert errors.errors['iban'] == ['L’IBAN renseigné ("fake_iban") est invalide']
     assert errors.errors['bic'] == ['Le BIC renseigné ("fake_bic") est invalide']
 
 
@@ -58,7 +58,7 @@ def test_validate_bank_information_raises_an_error_if_bic_is_valid_but_iban_is_n
     errors = handler.errors(bank_information)
 
     # then
-    assert errors.errors['iban'] == ["L'IBAN renseigné (\"fake_iban\") est invalide"]
+    assert errors.errors['iban'] == ['L’IBAN renseigné ("fake_iban") est invalide']
     assert 'bic' not in errors.errors
 
 
@@ -70,7 +70,7 @@ def test_validate_bank_information_raises_an_error_if_iban_looks_correct_but_doe
     errors = handler.errors(bank_information)
 
     # then
-    assert errors.errors['iban'] == ["L'IBAN renseigné (\"FR7630006000011234567890180\") est invalide"]
+    assert errors.errors['iban'] == ['L’IBAN renseigné ("FR7630006000011234567890180") est invalide']
 
 
 def test_validate_bank_information_raises_an_error_if_bic_has_correct_length_of_11_but_is_unknown():

@@ -227,3 +227,9 @@ def get_only_venue_ids_for_department_codes(departement_codes: List[str]) -> Lis
         .with_entities(Venue.id) \
         .all()
     return [venue.id for venue in venues]
+
+
+def find_by_offrer_id_and_is_virtual(offrer_id: int):
+    return Venue.query \
+        .filter_by(managingOffererId=offrer_id, isVirtual=True) \
+        .first()

@@ -30,7 +30,7 @@ def test_beginning_datetime_cannot_be_after_end_datetime(app):
 
     # then
     assert e.value.errors['endDatetime'] == [
-        'La date de fin de l\'événement doit être postérieure à la date de début'
+        'La date de fin de l’événement doit être postérieure à la date de début'
     ]
 
 
