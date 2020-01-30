@@ -2,7 +2,7 @@ from flask import current_app as app, jsonify, request, redirect
 
 from connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
 from domain.departments import ILE_DE_FRANCE_DEPT_CODES
-from domain.user_emails import send_user_validation_email, send_ongoing_offerer_attachment_information_email_to_pro
+from domain.user_emails import send_user_validation_email
 from models import ApiErrors, Deposit, Offerer, User
 from models.feature import FeatureToggle
 from models.user_offerer import RightsType
@@ -82,12 +82,6 @@ def signup_pro():
     objects_to_save.append(new_user)
 
     repository.save(*objects_to_save)
-    
-    if existing_offerer:
-        try:
-            send_ongoing_offerer_attachment_information_email_to_pro(user_offerer, send_raw_email)
-        except MailServiceException as e:
-            app.logger.error('Mail service failure', e)
 
     try:
         send_user_validation_email(new_user, send_raw_email, app_origin_url, is_webapp=False)

@@ -7,9 +7,9 @@ from domain.admin_emails import maybe_send_offerer_validation_email
 from domain.payments import read_message_name_in_message_file, \
     generate_file_checksum
 from domain.user_emails import send_validation_confirmation_email_to_pro, \
-    send_venue_validation_confirmation_email,\
-    send_attachment_validation_email_to_pro_offerer,\
-    send_pro_user_waiting_for_validation_by_admin_email
+    send_venue_validation_confirmation_email, \
+    send_attachment_validation_email_to_pro_offerer, \
+    send_pro_user_waiting_for_validation_by_admin_email, send_ongoing_offerer_attachment_information_email_to_pro
 from models import ApiErrors, \
     UserOfferer, Offerer, Venue
 from models.api_errors import ResourceNotFoundError, ForbiddenError
@@ -30,8 +30,11 @@ def validate_offerer_attachment(token):
     user_offerer.validationToken = None
     repository.save(user_offerer)
 
+
+
     try:
         send_attachment_validation_email_to_pro_offerer(user_offerer, send_raw_email)
+        send_ongoing_offerer_attachment_information_email_to_pro(user_offerer, send_raw_email)
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 
