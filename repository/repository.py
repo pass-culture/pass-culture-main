@@ -26,7 +26,8 @@ def errors(model: Model) -> ApiErrors:
 
     if isinstance(model, HasAddressMixin):
         api_errors = _get_has_address_mixin_errors(model, api_errors)
-    elif isinstance(model, BankInformation):
+
+    if isinstance(model, BankInformation):
         api_errors = _get_bank_information_errors(model, api_errors)
     elif isinstance(model, Offer):
         api_errors = _get_offer_errors(model, api_errors)
