@@ -55,7 +55,7 @@ class Delete:
             assert booking1 in bookings
             assert booking2 in bookings
 
-        @patch('routes.stocks.redis.add_offer_id')
+        @patch('routes.stocks.redis.add_offer_id_to_list')
         @clean_database
         def when_stock_is_deleted_expect_offer_id_to_be_added_to_redis(self, mock_redis, app):
             # given

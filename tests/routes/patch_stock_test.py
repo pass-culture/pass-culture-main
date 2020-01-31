@@ -102,7 +102,7 @@ class Patch:
             assert response.status_code == 200
             assert 'available' in response.json
 
-        @patch('routes.stocks.redis.add_offer_id')
+        @patch('routes.stocks.redis.add_offer_id_to_list')
         @clean_database
         def when_stock_is_edited_expect_offer_id_to_be_added_to_redis(self, mock_redis, app):
             # given

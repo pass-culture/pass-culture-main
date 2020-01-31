@@ -42,7 +42,7 @@ class Patch:
             assert mediation.backText == data['backText']
 
         @clean_database
-        @patch('routes.mediations.redis.add_offer_id')
+        @patch('routes.mediations.redis.add_offer_id_to_list')
         def should_add_offer_id_to_redis_when_mediation_is_edited(self, mock_redis, app):
             # given
             user = create_user()

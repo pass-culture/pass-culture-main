@@ -3,10 +3,12 @@ from unittest.mock import patch, MagicMock
 
 import redis
 
-from connectors.redis import add_offer_id, get_offer_ids, delete_offer_ids, add_venue_id, \
-    get_venue_ids, delete_venue_ids, _add_venue_provider, get_venue_providers, \
-    delete_venue_providers, send_venue_provider_data_to_redis, add_offer_ids_to_set, delete_offer_ids_from_set, \
-    get_offer_ids_from_set
+from connectors.redis import add_offer_id_to_list, get_offer_ids_from_list, delete_offer_ids_from_list, \
+    add_venue_id_to_list, \
+    get_venue_ids_from_list, delete_venue_ids_from_list, _add_venue_provider_to_list, get_venue_providers_from_list, \
+    delete_venue_providers_from_list, send_venue_provider_data_to_redis, add_offer_to_hashmap, \
+    delete_offers_from_hashmap, \
+    get_offer_from_hashmap, get_offer_details_from_hashmap
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_venue_provider, create_venue, create_user, create_offerer, \
@@ -29,19 +31,19 @@ class RedisTest:
         assert str(redis_connection.get(key_to_insert), 'utf-8') == value_to_insert
 
 
-class HandleOfferIdsTest:
+class AddOfferIdToListTest:
     @patch('connectors.redis.feature_queries.is_active', return_value=True)
     @patch('connectors.redis.REDIS_LIST_OFFER_IDS_NAME', 'fake_list_offer_ids')
     @patch('connectors.redis.redis')
-    def test_should_add_offer_id_to_redis_when_algolia_feature_is_enabled(self,
-                                                                          mock_redis,
-                                                                          mock_feature_active):
+    def test_should_add_offer_id_to_list_when_algolia_feature_is_enabled(self,
+                                                                         mock_redis,
+                                                                         mock_feature_active):
         # Given
         client = MagicMock()
         client.rpush = MagicMock()
 
         # When
-        add_offer_id(client=client, offer_id=1)
+        add_offer_id_to_list(client=client, offer_id=1)
 
         # Then
         client.rpush.assert_called_once_with('fake_list_offer_ids', 1)
@@ -49,33 +51,37 @@ class HandleOfferIdsTest:
     @patch('connectors.redis.feature_queries.is_active', return_value=False)
     @patch('connectors.redis.REDIS_LIST_OFFER_IDS_NAME', 'fake_list_offer_ids')
     @patch('connectors.redis.redis')
-    def test_should_not_add_offer_id_to_redis_when_algolia_feature_is_disabled(self,
-                                                                               mock_redis,
-                                                                               mock_feature_active):
+    def test_should_not_add_offer_id_to_list_when_algolia_feature_is_disabled(self,
+                                                                              mock_redis,
+                                                                              mock_feature_active):
         # Given
         client = MagicMock()
         client.rpush = MagicMock()
 
         # When
-        add_offer_id(client=client, offer_id=1)
+        add_offer_id_to_list(client=client, offer_id=1)
 
         # Then
         client.rpush.assert_not_called()
 
+
+class GetOfferIdsFromListTest:
     @patch('connectors.redis.REDIS_OFFER_IDS_CHUNK_SIZE', return_value=1000)
     @patch('connectors.redis.REDIS_LIST_OFFER_IDS_NAME', 'fake_list_offer_ids')
     @patch('connectors.redis.redis')
-    def test_should_return_offer_ids_from_redis(self, mock_redis, mock_redis_lrange_end):
+    def test_should_return_offer_ids_from_list(self, mock_redis, mock_redis_lrange_end):
         # Given
         client = MagicMock()
         client.lrange = MagicMock()
 
         # When
-        get_offer_ids(client=client)
+        get_offer_ids_from_list(client=client)
 
         # Then
         client.lrange.assert_called_once_with('fake_list_offer_ids', 0, mock_redis_lrange_end)
 
+
+class DeleteOfferIdsFromListTest:
     @patch('connectors.redis.REDIS_OFFER_IDS_CHUNK_SIZE', return_value=500)
     @patch('connectors.redis.REDIS_LIST_OFFER_IDS_NAME', 'fake_list_offer_ids')
     @patch('connectors.redis.redis')
@@ -87,25 +93,25 @@ class HandleOfferIdsTest:
         client.ltrim = MagicMock()
 
         # When
-        delete_offer_ids(client=client)
+        delete_offer_ids_from_list(client=client)
 
         # Then
         client.ltrim.assert_called_once_with('fake_list_offer_ids', mock_redis_lrange_end, -1)
 
 
-class HandleVenueIdsTest:
+class AddVenueIdToListTest:
     @patch('connectors.redis.feature_queries.is_active', return_value=True)
     @patch('connectors.redis.REDIS_LIST_VENUE_IDS_NAME', 'fake_list_venue_ids')
     @patch('connectors.redis.redis')
-    def test_should_add_venue_id_to_redis_when_algolia_feature_is_enabled(self,
-                                                                          mock_redis,
-                                                                          mock_feature_active):
+    def test_should_add_venue_id_to_list_when_algolia_feature_is_enabled(self,
+                                                                         mock_redis,
+                                                                         mock_feature_active):
         # Given
         client = MagicMock()
         client.rpush = MagicMock()
 
         # When
-        add_venue_id(client=client, venue_id=1)
+        add_venue_id_to_list(client=client, venue_id=1)
 
         # Then
         client.rpush.assert_called_once_with('fake_list_venue_ids', 1)
@@ -113,57 +119,61 @@ class HandleVenueIdsTest:
     @patch('connectors.redis.feature_queries.is_active', return_value=False)
     @patch('connectors.redis.REDIS_LIST_VENUE_IDS_NAME', 'fake_list_venue_ids')
     @patch('connectors.redis.redis')
-    def test_should_not_add_venue_id_to_redis_when_algolia_feature_is_disabled(self,
-                                                                               mock_redis,
-                                                                               mock_feature_active):
+    def test_should_not_add_venue_id_to_list_when_algolia_feature_is_disabled(self,
+                                                                              mock_redis,
+                                                                              mock_feature_active):
         # Given
         client = MagicMock()
         client.rpush = MagicMock()
 
         # When
-        add_venue_id(client=client, venue_id=1)
+        add_venue_id_to_list(client=client, venue_id=1)
 
         # Then
         client.rpush.assert_not_called()
 
+
+class GetVenueIdsFromListTest:
     @patch('connectors.redis.REDIS_VENUE_IDS_CHUNK_SIZE', return_value=1000)
     @patch('connectors.redis.REDIS_LIST_VENUE_IDS_NAME', 'fake_list_venue_ids')
     @patch('connectors.redis.redis')
-    def test_should_return_venue_ids_from_redis(self, mock_redis, mock_redis_lrange_end):
+    def test_should_return_venue_ids_from_list(self, mock_redis, mock_redis_lrange_end):
         # Given
         client = MagicMock()
         client.lrange = MagicMock()
 
         # When
-        get_venue_ids(client=client)
+        get_venue_ids_from_list(client=client)
 
         # Then
         client.lrange.assert_called_once_with('fake_list_venue_ids', 0, mock_redis_lrange_end)
 
+
+class DeleteVenueIdsFromListTest:
     @patch('connectors.redis.REDIS_VENUE_IDS_CHUNK_SIZE', return_value=1000)
     @patch('connectors.redis.REDIS_LIST_VENUE_IDS_NAME', 'fake_list_venue_ids')
     @patch('connectors.redis.redis')
-    def test_should_delete_given_range_of_venue_ids_from_redis(self, mock_redis, mock_redis_lrange_end):
+    def test_should_delete_given_venue_ids_from_list(self, mock_redis, mock_redis_lrange_end):
         # Given
         client = MagicMock()
         client.ltrim = MagicMock()
 
         # When
-        delete_venue_ids(client=client)
+        delete_venue_ids_from_list(client=client)
 
         # Then
         client.ltrim.assert_called_once_with('fake_list_venue_ids', mock_redis_lrange_end, -1)
 
 
-class HandleVenueProvidersTest:
+class AddVenueProviderToListTest:
     @patch('connectors.redis.feature_queries.is_active', return_value=True)
     @patch('connectors.redis.REDIS_LIST_VENUE_PROVIDERS_NAME', 'fake_list_venue_providers')
     @patch('connectors.redis.redis')
     @clean_database
-    def test_should_add_venue_provider_to_redis_when_algolia_feature_is_enabled(self,
-                                                                                mock_redis,
-                                                                                mock_feature_active,
-                                                                                app):
+    def test_should_add_venue_provider_to_list_when_algolia_feature_is_enabled(self,
+                                                                               mock_redis,
+                                                                               mock_feature_active,
+                                                                               app):
         # Given
         client = MagicMock()
         client.rpush = MagicMock()
@@ -176,7 +186,7 @@ class HandleVenueProvidersTest:
         repository.save(user_offerer, venue_provider)
 
         # When
-        _add_venue_provider(client=client, venue_provider=venue_provider)
+        _add_venue_provider_to_list(client=client, venue_provider=venue_provider)
 
         # Then
         client.rpush.assert_called_once_with('fake_list_venue_providers',
@@ -186,10 +196,10 @@ class HandleVenueProvidersTest:
     @patch('connectors.redis.REDIS_LIST_VENUE_PROVIDERS_NAME', 'fake_list_venue_providers')
     @patch('connectors.redis.redis')
     @clean_database
-    def test_should_not_add_venue_provider_to_redis_when_algolia_feature_is_disabled(self,
-                                                                                     mock_redis,
-                                                                                     mock_feature_active,
-                                                                                     app):
+    def test_should_not_add_venue_provider_to_list_when_algolia_feature_is_disabled(self,
+                                                                                    mock_redis,
+                                                                                    mock_feature_active,
+                                                                                    app):
         # Given
         client = MagicMock()
         client.rpush = MagicMock()
@@ -202,17 +212,17 @@ class HandleVenueProvidersTest:
         repository.save(user_offerer, venue_provider)
 
         # When
-        _add_venue_provider(client=client, venue_provider=venue_provider)
+        _add_venue_provider_to_list(client=client, venue_provider=venue_provider)
 
         # Then
         client.rpush.assert_not_called()
 
-    @patch('connectors.redis._add_venue_provider')
+    @patch('connectors.redis._add_venue_provider_to_list')
     @patch('connectors.redis.redis')
     @clean_database
     def test_send_venue_provider_should_call_add_venue_provider_with_redis_client_and_venue_provider(self,
                                                                                                      mock_redis,
-                                                                                                     mock_add_venue_provider,
+                                                                                                     mock_add_venue_provider_to_list,
                                                                                                      app):
         # Given
         mock_redis.from_url = MagicMock()
@@ -227,13 +237,15 @@ class HandleVenueProvidersTest:
         send_venue_provider_data_to_redis(venue_provider=venue_provider)
 
         # Then
-        mock_add_venue_provider.assert_called_once_with(client=mock_redis.from_url.return_value,
-                                                        venue_provider=venue_provider)
+        mock_add_venue_provider_to_list.assert_called_once_with(client=mock_redis.from_url.return_value,
+                                                                venue_provider=venue_provider)
 
+
+class GetVenueProvidersFromListTest:
     @patch('connectors.redis.REDIS_VENUE_PROVIDERS_CHUNK_SIZE', 2)
     @patch('connectors.redis.REDIS_LIST_VENUE_PROVIDERS_NAME', 'fake_list_venue_providers')
     @patch('connectors.redis.redis')
-    def test_should_return_venue_providers_from_redis(self, mock_redis):
+    def test_should_return_venue_providers_from_list(self, mock_redis):
         # Given
         client = MagicMock()
         client.lrange = MagicMock()
@@ -243,7 +255,7 @@ class HandleVenueProvidersTest:
         ]
 
         # When
-        result = get_venue_providers(client=client)
+        result = get_venue_providers_from_list(client=client)
 
         # Then
         client.lrange.assert_called_once_with('fake_list_venue_providers', 0, 2)
@@ -252,136 +264,206 @@ class HandleVenueProvidersTest:
             {'id': 2, 'providerId': 7, 'venueId': 9}
         ]
 
+
+class DeleteVenueProvidersFromListTest:
     @patch('connectors.redis.REDIS_VENUE_PROVIDERS_CHUNK_SIZE', 2)
     @patch('connectors.redis.REDIS_LIST_VENUE_PROVIDERS_NAME', 'fake_list_venue_providers')
     @patch('connectors.redis.redis')
-    def test_should_delete_venue_providers_from_redis(self, mock_redis):
+    def test_should_delete_venue_providers_from_list(self, mock_redis):
         # Given
         client = MagicMock()
         client.ltrim = MagicMock()
 
         # When
-        delete_venue_providers(client=client)
+        delete_venue_providers_from_list(client=client)
 
         # Then
         client.ltrim.assert_called_once_with('fake_list_venue_providers', 2, -1)
 
 
-class AddOfferIdsToSetTest:
+class AddOfferIdToHashmapTest:
     @patch('connectors.redis.feature_queries.is_active', return_value=True)
-    @patch('connectors.redis.REDIS_SET_INDEXED_OFFER_IDS_NAME', 'fake_redis_set_indexed_offers')
+    @patch('connectors.redis.REDIS_HASHMAP_INDEXED_OFFERS_NAME', 'fake_redis_hashmap_indexed_offers')
     @patch('connectors.redis.redis')
     @clean_database
-    def test_should_add_offer_ids_to_redis_set_when_algolia_feature_is_enabled(self,
+    def test_should_add_offer_to_hashmap_when_algolia_feature_is_enabled(self,
+                                                                         mock_redis,
+                                                                         mock_feature_active,
+                                                                         app):
+        # Given
+        client = MagicMock()
+        client.hset = MagicMock()
+
+        # When
+        add_offer_to_hashmap(pipeline=client,
+                             offer_id=1,
+                             offer_details={'dateRange': ['2020-01-01 10:00:00', '2020-01-06 12:00:00'],
+                                            'name': 'super offre'})
+
+        # Then
+        client.hset.assert_called_once_with(
+            'fake_redis_hashmap_indexed_offers',
+            1,
+            '{"dateRange": ["2020-01-01 10:00:00", "2020-01-06 12:00:00"], "name": "super offre"}'
+        )
+
+    @patch('connectors.redis.feature_queries.is_active', return_value=False)
+    @patch('connectors.redis.REDIS_HASHMAP_INDEXED_OFFERS_NAME', 'fake_redis_hashmap_indexed_offers')
+    @patch('connectors.redis.redis')
+    @clean_database
+    def test_should_not_add_offer_to_hashmap_when_algolia_feature_is_disabled(self,
+                                                                              mock_redis,
+                                                                              mock_feature_active,
+                                                                              app):
+        # Given
+        client = MagicMock()
+        client.hset = MagicMock()
+
+        # When
+        add_offer_to_hashmap(pipeline=client,
+                             offer_id=1,
+                             offer_details={'dateRange': ['2020-01-01 10:00:00', '2020-01-06 12:00:00'],
+                                            'name': 'super offre'})
+
+        # Then
+        client.hset.assert_not_called()
+
+
+class DeleteOffersFromHashmapTest:
+    @patch('connectors.redis.feature_queries.is_active', return_value=True)
+    @patch('connectors.redis.REDIS_HASHMAP_INDEXED_OFFERS_NAME', 'fake_redis_hashmap_indexed_offers')
+    @patch('connectors.redis.redis')
+    @clean_database
+    def test_should_delete_offers_from_hashmap_when_algolia_feature_is_enabled(self,
                                                                                mock_redis,
                                                                                mock_feature_active,
                                                                                app):
         # Given
         client = MagicMock()
-        client.sadd = MagicMock()
+        client.hdel = MagicMock()
         offer_ids = [1, 2, 3]
 
         # When
-        add_offer_ids_to_set(client=client, offer_ids=offer_ids)
+        delete_offers_from_hashmap(client=client, offer_ids=offer_ids)
 
         # Then
-        client.sadd.assert_called_once_with('fake_redis_set_indexed_offers', *offer_ids)
+        client.hdel.assert_called_once_with('fake_redis_hashmap_indexed_offers', *offer_ids)
 
     @patch('connectors.redis.feature_queries.is_active', return_value=False)
-    @patch('connectors.redis.REDIS_SET_INDEXED_OFFER_IDS_NAME', 'fake_redis_set_indexed_offers')
+    @patch('connectors.redis.REDIS_HASHMAP_INDEXED_OFFERS_NAME', 'fake_redis_hashmap_indexed_offers')
     @patch('connectors.redis.redis')
     @clean_database
-    def test_should_not_add_offer_ids_to_redis_set_when_algolia_feature_is_disabled(self,
+    def test_should_not_delete_offers_from_hashmap_when_algolia_feature_is_disabled(self,
                                                                                     mock_redis,
                                                                                     mock_feature_active,
                                                                                     app):
         # Given
         client = MagicMock()
-        client.sadd = MagicMock()
+        client.hdel = MagicMock()
         offer_ids = [1, 2, 3]
 
         # When
-        add_offer_ids_to_set(client=client, offer_ids=offer_ids)
+        delete_offers_from_hashmap(client=client, offer_ids=offer_ids)
 
         # Then
-        client.sadd.assert_not_called()
+        client.hdel.assert_not_called()
 
 
-class DeleteOfferIdsFromSetTest:
+class GetOfferFromHashmapTest:
     @patch('connectors.redis.feature_queries.is_active', return_value=True)
-    @patch('connectors.redis.REDIS_SET_INDEXED_OFFER_IDS_NAME', 'fake_redis_set_indexed_offers')
+    @patch('connectors.redis.REDIS_HASHMAP_INDEXED_OFFERS_NAME', 'fake_redis_hashmap_indexed_offers')
     @patch('connectors.redis.redis')
     @clean_database
-    def test_should_delete_offer_ids_from_redis_set_when_algolia_feature_is_enabled(self,
-                                                                                    mock_redis,
-                                                                                    mock_feature_active,
-                                                                                    app):
-        # Given
-        client = MagicMock()
-        client.srem = MagicMock()
-        offer_ids = [1, 2, 3]
-
-        # When
-        delete_offer_ids_from_set(client=client, offer_ids=offer_ids)
-
-        # Then
-        client.srem.assert_called_once_with('fake_redis_set_indexed_offers', *offer_ids)
-
-    @patch('connectors.redis.feature_queries.is_active', return_value=False)
-    @patch('connectors.redis.REDIS_SET_INDEXED_OFFER_IDS_NAME', 'fake_redis_set_indexed_offers')
-    @patch('connectors.redis.redis')
-    @clean_database
-    def test_should_not_delete_offer_ids_from_redis_set_when_algolia_feature_is_disabled(self,
-                                                                                         mock_redis,
-                                                                                         mock_feature_active,
-                                                                                         app):
-        # Given
-        client = MagicMock()
-        client.srem = MagicMock()
-        offer_ids = [1, 2, 3]
-
-        # When
-        delete_offer_ids_from_set(client=client, offer_ids=offer_ids)
-
-        # Then
-        client.srem.assert_not_called()
-
-
-class GetOfferIdsFromSetTest:
-    @patch('connectors.redis.feature_queries.is_active', return_value=True)
-    @patch('connectors.redis.REDIS_SET_INDEXED_OFFER_IDS_NAME', 'fake_redis_set_indexed_offers')
-    @patch('connectors.redis.redis')
-    @clean_database
-    def test_should_get_offer_ids_from_redis_set_when_algolia_feature_is_enabled(self,
+    def test_should_return_true_when_offer_exists_and_algolia_feature_is_enabled(self,
                                                                                  mock_redis,
                                                                                  mock_feature_active,
                                                                                  app):
         # Given
         client = MagicMock()
-        client.smembers = MagicMock()
-        client.smembers.return_value = {'1', '2'}
+        client.hexists = MagicMock()
+        client.hexists.return_value = True
 
         # When
-        result = get_offer_ids_from_set(client=client)
+        result = get_offer_from_hashmap(client=client, offer_id=1)
 
         # Then
-        client.smembers.assert_called_once_with('fake_redis_set_indexed_offers')
-        assert result == {1, 2}
+        client.hexists.assert_called_once_with('fake_redis_hashmap_indexed_offers', 1)
+        assert result == True
 
-    @patch('connectors.redis.feature_queries.is_active', return_value=False)
-    @patch('connectors.redis.REDIS_SET_INDEXED_OFFER_IDS_NAME', 'fake_redis_set_indexed_offers')
+    @patch('connectors.redis.feature_queries.is_active', return_value=True)
+    @patch('connectors.redis.REDIS_HASHMAP_INDEXED_OFFERS_NAME', 'fake_redis_hashmap_indexed_offers')
     @patch('connectors.redis.redis')
     @clean_database
-    def test_should_not_get_offer_ids_from_redis_set_when_algolia_feature_is_disabled(self,
+    def test_should_return_false_when_offer_not_exists_and_algolia_feature_is_enabled(self,
                                                                                       mock_redis,
                                                                                       mock_feature_active,
                                                                                       app):
         # Given
         client = MagicMock()
-        client.smembers = MagicMock()
+        client.hexists = MagicMock()
+        client.hexists.return_value = False
 
         # When
-        get_offer_ids_from_set(client=client)
+        result = get_offer_from_hashmap(client=client, offer_id=1)
 
         # Then
-        client.smembers.assert_not_called()
+        client.hexists.assert_called_once_with('fake_redis_hashmap_indexed_offers', 1)
+        assert result == False
+
+    @patch('connectors.redis.feature_queries.is_active', return_value=False)
+    @patch('connectors.redis.REDIS_HASHMAP_INDEXED_OFFERS_NAME', 'fake_redis_hashmap_indexed_offers')
+    @patch('connectors.redis.redis')
+    @clean_database
+    def test_should_not_get_offer_from_hashmap_when_algolia_feature_is_disabled(self,
+                                                                                mock_redis,
+                                                                                mock_feature_active,
+                                                                                app):
+        # Given
+        client = MagicMock()
+        client.hexists = MagicMock()
+
+        # When
+        get_offer_from_hashmap(client=client, offer_id=1)
+
+        # Then
+        client.hexists.assert_not_called()
+
+
+class GetOfferDetailsFromHashmapTest:
+    @patch('connectors.redis.feature_queries.is_active', return_value=True)
+    @patch('connectors.redis.REDIS_HASHMAP_INDEXED_OFFERS_NAME', 'fake_redis_hashmap_indexed_offers')
+    @patch('connectors.redis.redis')
+    @clean_database
+    def test_should_return_offer_details_when_offer_exists_and_algolia_feature_is_enabled(self,
+                                                                                          mock_redis,
+                                                                                          mock_feature_active,
+                                                                                          app):
+        # Given
+        client = MagicMock()
+        client.hget = MagicMock()
+        client.hget.return_value = '{"dateRange": ["2020-01-01 10:00:00", "2020-01-06 12:00:00"], "name": "super offre"}'
+
+        # When
+        result = get_offer_details_from_hashmap(client=client, offer_id=1)
+
+        # Then
+        client.hget.assert_called_once_with('fake_redis_hashmap_indexed_offers', 1)
+        assert result == {'dateRange': ["2020-01-01 10:00:00", "2020-01-06 12:00:00"], 'name': 'super offre'}
+
+    @patch('connectors.redis.feature_queries.is_active', return_value=False)
+    @patch('connectors.redis.REDIS_HASHMAP_INDEXED_OFFERS_NAME', 'fake_redis_hashmap_indexed_offers')
+    @patch('connectors.redis.redis')
+    @clean_database
+    def test_should_not_return_offer_details_when_algolia_feature_is_disabled(self,
+                                                                              mock_redis,
+                                                                              mock_feature_active,
+                                                                              app):
+        # Given
+        client = MagicMock()
+        client.hget = MagicMock()
+
+        # When
+        get_offer_details_from_hashmap(client=client, offer_id=1)
+
+        # Then
+        client.hget.assert_not_called()

@@ -82,7 +82,7 @@ class Patch:
             assert response.status_code == 200
             assert Booking.query.get(booking.id).isCancelled
 
-        @patch('routes.bookings.redis.add_offer_id')
+        @patch('routes.bookings.redis.add_offer_id_to_list')
         @clean_database
         def when_booking_expect_offer_id_to_be_added_to_redis(self, mock_add_offer_id_to_redis, app):
             # Given

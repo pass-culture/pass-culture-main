@@ -111,5 +111,4 @@ def patch_offer(offer_id: int) -> (str, int):
 
     repository.save(offer)
     redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
-
     return jsonify(as_dict(offer, includes=OFFER_INCLUDES)), 200
