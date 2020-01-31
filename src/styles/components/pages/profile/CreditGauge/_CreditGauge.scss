@@ -1,0 +1,141 @@
+.cg-amount {
+  font-size: rem(18px);
+  font-weight: 500;
+  margin-top: rem(8px);
+  margin-bottom: rem(4px);
+}
+
+.cg-container {
+  flex: 1 1 0px;
+}
+
+.cg-current {
+  height: rem(16px);
+}
+
+.cg-dot {
+  align-items: center;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  width: rem(32px);
+  height: rem(32px);
+  z-index: 1;  
+}
+
+.cg-gauge {
+  align-items: center;
+  display: flex;
+}
+
+.cg-max {
+  background: $grey-even-more-light;
+  border: 2px solid $grey-border-cg;
+  border-radius: rem(10px);
+  box-shadow: 2px 2px 3px $grey-shadow-cg;
+  height: rem(20px);
+  margin-left: rem(-9px);
+  width: rem(56px);
+}
+
+
+.gauge-digital {
+  margin-right: rem(3px);
+
+  .cg-dot {
+    background: $primary;
+  }
+
+  .cg-current {
+    background: $primary;
+  }
+
+  .cg-amount {
+    color: $primary;
+  }
+}
+
+.gauge-physical {
+  margin-right: rem(3px);
+
+  .cg-dot {
+    background: $purple-blue;
+  }
+
+  .cg-current {
+    background: $purple-blue;
+  }
+
+  .cg-amount {
+    color: $purple-blue; 
+  }
+}
+
+.gauge-total {
+  .cg-dot {
+    background: $ribbon-blue;
+  }
+
+  .cg-current {
+    background: $ribbon-blue;
+  }
+
+  .cg-amount {
+    color: $ribbon-blue;
+  }
+}
+
+.cg-container-empty-gauge {
+  .cg-dot {
+    background: $grey;
+  }
+
+  .cg-amount {
+    color: $grey; 
+  }
+}
+
+.cg-gauge-width-00 {
+  width: 10%;
+}
+
+.cg-gauge-width-10 {
+  width: 19%;
+}
+
+.cg-gauge-width-20 {
+  width: 28%;
+}
+
+.cg-gauge-width-30 {
+  width: 37%;
+}
+
+.cg-gauge-width-40 {
+  width: 46%;
+}
+
+.cg-gauge-width-50 {
+  width: 55%;
+}
+
+.cg-gauge-width-60 {
+  width: 64%;
+}
+
+.cg-gauge-width-70 {
+  width: 73%;
+}
+
+.cg-gauge-width-80 {
+  width: 82%;
+}
+
+.cg-gauge-width-90 {
+  width: 91%;
+}
+
+.cg-gauge-width-100 {
+  border-radius: rem(10px);
+  width: 100%;
+}

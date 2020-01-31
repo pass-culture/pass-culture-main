@@ -58,9 +58,11 @@ class MesInformations extends PureComponent {
         className="pb40 pt20"
         id="mes-informations"
       >
-        <h3 className="dotted-bottom-primary is-primary-text is-uppercase pb6 px12 fs15 is-italic fs15 is-normal">
-          {'Mes Informations'}
-        </h3>
+        <div className="mes-informations-title-container">
+          <h3 className="mes-informations-title">
+            {'Mes Informations'}
+          </h3>
+        </div>
         <div className="px12 pc-list">
           {fields.map(this.renderInformation)}
         </div>
@@ -74,7 +76,7 @@ class MesInformations extends PureComponent {
 
 MesInformations.propTypes = {
   fields: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  user: PropTypes.oneOfType([PropTypes.bool, PropTypes.shape()]).isRequired,
+  user: PropTypes.oneOfType([PropTypes.bool, PropTypes.shape()]).isRequired
 }
 
 export default MesInformations

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import getWalletValue from '../../../../utils/user/getWalletValue'
+import formatDecimals from '../../../../utils/numbers/formatDecimals'
 
 const Header = ({ currentUser }) => (
   <div
@@ -33,7 +33,7 @@ const Header = ({ currentUser }) => (
       </div>
       <div id="main-menu-header-wallet-value">
         <span className="fs44 is-semi-bold wallet-value">
-          {getWalletValue(currentUser)}
+          {currentUser && formatDecimals(currentUser.wallet_balance)}
         </span>
         <span className="fs30 currency">
           {'\u00A0€'}
@@ -44,7 +44,7 @@ const Header = ({ currentUser }) => (
 )
 
 Header.propTypes = {
-  currentUser: PropTypes.shape().isRequired,
+  currentUser: PropTypes.shape().isRequired
 }
 
 export default Header

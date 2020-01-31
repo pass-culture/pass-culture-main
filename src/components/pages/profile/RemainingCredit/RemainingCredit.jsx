@@ -1,77 +1,132 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { PureComponent } from 'react'
 
 import getAvailableBalanceByType from '../utils/utils'
-import getWalletValue from '../../../../utils/user/getWalletValue'
 import { formatEndValidityDate } from '../../../../utils/date/date'
+import CreditGauge from './CreditGauge/CreditGauge'
+import Icon from '../../../layout/Icon/Icon'
+import formatDecimals from '../../../../utils/numbers/formatDecimals'
 
-const RemainingCredit = ({ currentUser }) => {
-  const { expenses, wallet_date_created } = currentUser || {}
-  const allWallet = getWalletValue(currentUser)
-  const { digital, physical } = expenses
-  const [digitalAvailable, physicalAvailable] = [digital, physical].map(
-    getAvailableBalanceByType(allWallet)
-  )
-  let endValidityDate = null
-  if (wallet_date_created) {
-    endValidityDate = formatEndValidityDate(new Date(wallet_date_created))
+class RemainingCredit extends PureComponent {
+  constructor(props) {
+    super(props)
+    this.state = {
+      readMoreIsVisible: false
+    }
   }
 
-  return (
-    <div id="profile-page-remaining-credit">
-      <h3 className="dotted-bottom-primary pb8 px12 is-italic is-uppercase is-primary-text fs15 is-normal">
-        {'Crédit restant'}
-      </h3>
-      <div className="mt12 px12">
-        <div
-          className="jauges py12 text-center"
-          id="profile-page-user-wallet"
-        >
-          <div className="text overall">
-            <b
-              className="is-block"
-              id="profile-wallet-balance-value"
-            >
-              {`Il reste ${allWallet} €`}
-            </b>
-            <span className="is-block fs14">
-              {'sur votre pass Culture'}
-            </span>
+  handleToggleReadMore = () => {
+    this.setState(previousState => ({ readMoreIsVisible: !previousState.readMoreIsVisible }))
+  }
+
+  render() {
+    const { currentUser } = this.props
+    const { readMoreIsVisible } = this.state
+    const { expenses, wallet_date_created, wallet_balance: walletBalance } = currentUser || {}
+    const formattedWalletBalance = formatDecimals(walletBalance)
+    const { digital, physical, all } = expenses
+    const maxAmountDigital = digital.max
+    const maxAmountPhysical = physical.max
+    const maxAmountAll = all.max
+    const [digitalAvailable, physicalAvailable] = [digital, physical].map(
+      getAvailableBalanceByType(walletBalance)
+    )
+    let endValidityDate = null
+    if (wallet_date_created) {
+      endValidityDate = formatEndValidityDate(new Date(wallet_date_created))
+    }
+
+    return (
+      <div>
+        <div className="rc-title-container">
+          <h2 className="rc-title">
+            {'Crédit restant'}
+          </h2>
+        </div>
+
+        <div className="rc-informations-container">
+          <div className="rc-header">
+            <Icon svg="picto-money" />
+            <div>
+              <h3>
+                {'Mon crédit'}
+              </h3>
+              <p>
+                {formattedWalletBalance}
+                &nbsp;
+                {'€'}
+              </p>
+            </div>
           </div>
-          <div className="text-containers mt12 py12 mr8">
-            <div
-              className="fs15"
-              id="profile-physical-wallet-value"
-            >
-              {'Jusqu’à '}
-              <b>
-                {`${physicalAvailable} €`}
-              </b>
-              {' pour les biens culturels'}
+          <div className="rc-gauges-container">
+            <div className="rc-gauges-title">
+              {'Vous pouvez encore dépenser jusqu’à'}
+              &nbsp;
+              {':'}
             </div>
-            <div
-              className="fs15 mt12"
-              id="profile-digital-wallet-value"
-            >
-              {'Jusqu’à '}
-              <b>
-                {`${digitalAvailable} €`}
-              </b>
-              {' pour les offres numériques'}
+            <div className="rc-gauges">
+              <CreditGauge
+                className="gauge-digital"
+                currentAmount={digitalAvailable}
+                detailsText="en offres numériques (streaming, …)"
+                maxAmount={maxAmountDigital}
+                picto="picto-digital-good"
+              />
+              <CreditGauge
+                className="gauge-physical"
+                currentAmount={physicalAvailable}
+                detailsText="en offres physiques (livres, …)"
+                maxAmount={maxAmountPhysical}
+                picto="picto-physical-good"
+              />
+              <CreditGauge
+                className="gauge-total"
+                currentAmount={walletBalance}
+                detailsText="en autres offres (concerts, …)"
+                maxAmount={maxAmountAll}
+                picto="picto-ticket"
+              />
             </div>
-            {endValidityDate && (
-              <div
-                className="fs15 mt12"
-                id="profile-end-validity-date"
-              >
-                {`Votre crédit est valable jusqu’au ${endValidityDate}.`}
+          </div>
+          <div className="rc-read-more">
+            <button
+              className="rc-read-more-button"
+              onClick={this.handleToggleReadMore}
+              type="button"
+            >
+              <div className="rc-read-more-title">
+                {'Pourquoi les biens physiques et numériques sont-ils limités'}
+                &nbsp;
+                {'?'}
               </div>
-            )}
+              <Icon
+                className={`rc-read-more-arrow ${
+                  readMoreIsVisible ? 'rc-read-more-arrow-is-flipped' : ''
+                }`}
+                svg="picto-drop-down"
+              />
+            </button>
+            <p
+              className={`rc-read-more-content ${
+                readMoreIsVisible ? 'rc-read-more-content-is-visible' : ''
+              }`}
+            >
+              {'Le but du pass Culture est de renforcer vos pratiques culturelles, '}
+              {'mais aussi d’en créer de nouvelles. Ces plafonds ont été mis en place '}
+              {'pour favoriser la diversification des pratiques culturelles.'}
+            </p>
           </div>
         </div>
+        <div>
+          {endValidityDate && (
+            <p className="rc-end-validity-date">
+              {`Votre crédit est valable jusqu’au ${endValidityDate}.`}
+            </p>
+          )}
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
 }
 
 RemainingCredit.propTypes = {

@@ -53,3 +53,17 @@
 .react-embed-typeform-container iframe {
   @extend .is-full-layout;
 }
+
+.mes-informations-title {
+  @extend .is-primary-text;
+
+  font-size: rem(18px);
+  font-weight: 500;
+  margin-top: rem(25px);
+  margin-left: rem(21px);
+  padding-bottom: rem(8px);
+}
+
+.mes-informations-title-container {
+  @extend .dotted-bottom-primary;
+}
