@@ -342,3 +342,39 @@ class Post:
 
             mock_send_ongoing_offerer_attachment_information_email_to_pro.assert_called_once_with(user_offerer,
                                                                                                   mock_send_raw_email)
+
+    @patch('routes.offerers.send_pro_user_waiting_for_validation_by_admin_email', return_value=True)
+    @patch('connectors.api_entreprises.requests.get')
+    @patch('routes.offerers.send_raw_email', return_value=True)
+    @clean_database
+    def expect_send_pro_user_waiting_for_validation_by_admin_email_to_be_called_when_offerer_not_existing_yet(self,
+                                                                mock_send_raw_email,
+                                                                mock_api_entreprise,
+                                                                mock_send_pro_user_waiting_for_validation_by_admin_email,
+                                                                app):
+        # Given
+        mock_api_entreprise.return_value = MagicMock(status_code=200,
+                                                     text='',
+                                                     json=MagicMock(return_value={}))
+
+        user = create_user(can_book_free_offers=False, is_admin=False)
+
+        repository.save(user)
+        body = {
+            'name': 'Test Offerer',
+            'siren': '123456789',
+            'address': '123 rue de Paris',
+            'postalCode': '93100',
+            'city': 'Montreuil'
+        }
+
+        # When
+        response = TestClient(app.test_client()) \
+            .with_auth(user.email) \
+            .post('/offerers', json=body)
+
+        # Then
+        assert response.status_code == 201
+        offerer = Offerer.query.first()
+
+        mock_send_pro_user_waiting_for_validation_by_admin_email.assert_called_once_with(user, mock_send_raw_email, offerer)
