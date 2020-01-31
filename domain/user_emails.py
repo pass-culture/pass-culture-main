@@ -15,7 +15,8 @@ from emails.offerer_bookings_recap_after_deleting_stock import \
     retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation
 from emails.offerer_ongoing_attachment import retrieve_data_for_offerer_ongoing_attachment_email
 from emails.pro_waiting_validation import retrieve_data_for_pro_user_waiting_offerer_validation_email
-from emails.user_reset_password import retrieve_data_for_reset_password_email
+from emails.pro_reset_password import retrieve_data_for_reset_password_pro_email
+from emails.user_reset_password import retrieve_data_for_reset_password_user_email
 from models import Booking, Offerer, Stock, User, Venue, UserOfferer
 from repository import booking_queries
 from repository.stock_queries import set_booking_recap_sent_and_save
@@ -89,18 +90,13 @@ def send_offerer_driven_cancellation_email_to_offerer(booking: Booking, send_ema
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     return send_email(data=email)
 
-
-def send_reset_password_email(user: User, send_email: Callable[..., bool], app_origin_url: str) -> bool:
-    email = make_reset_password_email(user, app_origin_url)
-    recipients = [user.email]
-    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
+def send_reset_password_email_to_user(user: User, send_email: Callable[..., bool]) -> bool:
+    email = retrieve_data_for_reset_password_user_email(user)
     return send_email(data=email)
 
-
-def send_reset_password_email_with_mailjet_template(user: User, send_email: Callable[..., bool]) -> bool:
-    email = retrieve_data_for_reset_password_email(user)
+def send_reset_password_email_to_pro(user: User, send_email: Callable[..., bool]) -> bool:
+    email = retrieve_data_for_reset_password_pro_email(user)
     return send_email(data=email)
-
 
 def send_validation_confirmation_email_to_pro(offerer: Offerer, send_email: Callable[..., bool]) -> None:
     email = retrieve_data_for_new_offerer_validation_email(offerer)

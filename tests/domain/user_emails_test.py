@@ -7,7 +7,7 @@ from domain.user_emails import send_beneficiary_booking_cancellation_email, \
     send_validation_confirmation_email_to_pro, send_batch_cancellation_emails_to_users, \
     send_offerer_bookings_recap_email_after_offerer_cancellation, send_user_validation_email, \
     send_venue_validation_confirmation_email, \
-    send_reset_password_email_with_mailjet_template, send_activation_email, send_reset_password_email, \
+    send_reset_password_email_to_user, send_activation_email, send_reset_password_email_to_pro, \
     send_attachment_validation_email_to_pro_offerer, send_ongoing_offerer_attachment_information_email_to_pro
 from models import Offerer
 from repository import repository
@@ -18,8 +18,11 @@ from tests.model_creators.specific_creators import create_stock_with_event_offer
     create_offer_with_thing_product
 from tests.test_utils import create_mocked_bookings
 
+class SendResetPasswordProEmailTest:
+    # TODO
+    # send_reset_password_email_to_pro
 
-class SendResetPasswordEmailTest:
+class SendResetPasswordUserEmailTest:
     @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
     def when_feature_send_emails_enabled_sends_a_reset_password_email_to_user(self,
                                                                               feature_send_mail_to_users_enabled,
@@ -463,7 +466,7 @@ class SendResetPasswordEmailWithMailjetTemplateTest:
         mocked_send_email = Mock()
 
         # when
-        send_reset_password_email_with_mailjet_template(user, mocked_send_email)
+        send_reset_password_email_to_user(user, mocked_send_email)
 
         # then
         mocked_send_email.assert_called_once()
@@ -480,7 +483,7 @@ class SendResetPasswordEmailWithMailjetTemplateTest:
         mocked_send_email = Mock()
 
         # when
-        send_reset_password_email_with_mailjet_template(user, mocked_send_email)
+        send_reset_password_email_to_user(user, mocked_send_email)
 
         # then
         mocked_send_email.assert_called_once()

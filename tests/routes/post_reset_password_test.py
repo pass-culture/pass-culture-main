@@ -69,11 +69,12 @@ class PostResetPassword:
             assert (now + timedelta(hours=23)) < user.resetPasswordTokenValidityLimit < (now + timedelta(hours=25))
 
         @clean_database
-        @patch('routes.passwords.send_reset_password_email_with_mailjet_template')
+        @patch('routes.passwords.send_reset_password_email_to_user')
         @patch('routes.passwords.send_raw_email')
-        def test_should_send_reset_password_with_mailjet_template_when_user_is_a_beneficiary(self, send_raw_email_mock,
-                                                                                             send_reset_password_email_with_mailjet_template_mock,
-                                                                                             app):
+        def test_should_send_reset_password_email_when_user_is_a_beneficiary(self,
+                                                                             send_raw_email_mock,
+                                                                             send_reset_password_email_to_user_mock,
+                                                                             app):
             # given
             data = {'email': 'bobby@example.com'}
             user = create_user(can_book_free_offers=True, email='bobby@example.com')
@@ -82,15 +83,18 @@ class PostResetPassword:
 
             # when
             TestClient(app.test_client()).post('/users/reset-password', json=data,
-                                                          headers={'origin': app_origin_header})
+                                               headers={'origin': app_origin_header})
 
             # then
-            send_reset_password_email_with_mailjet_template_mock.assert_called_once_with(user, send_raw_email_mock)
+            send_reset_password_email_to_user_mock.assert_called_once_with(user, send_raw_email_mock)
 
         @clean_database
-        @patch('routes.passwords.send_reset_password_email')
+        @patch('routes.passwords.send_reset_password_email_to_pro')
         @patch('routes.passwords.send_raw_email')
-        def test_should_send_reset_password_when_user_is_an_offerer(self, send_raw_email_mock, send_reset_password_email_mock, app):
+        def test_should_send_reset_password_email_when_user_is_an_offerer(self,
+                                                                          send_raw_email_mock,
+                                                                          send_reset_password_email_to_pro_mock,
+                                                                          app):
             # given
             data = {'email': 'bobby@example.com'}
             user = create_user(can_book_free_offers=False, email='bobby@example.com')
@@ -99,7 +103,7 @@ class PostResetPassword:
 
             # when
             TestClient(app.test_client()).post('/users/reset-password', json=data,
-                                                          headers={'origin': app_origin_header})
+                                               headers={'origin': app_origin_header})
 
             # then
-            send_reset_password_email_mock.assert_called_once_with(user, send_raw_email_mock, app_origin_header)
+            send_reset_password_email_to_pro_mock.assert_called_once_with(user, send_raw_email_mock)

@@ -3,7 +3,8 @@ from flask_login import current_user, login_required
 
 from domain.password import validate_reset_request, check_reset_token_validity, validate_new_password_request, \
     check_password_strength, check_new_password_validity, generate_reset_token, validate_change_password_request
-from domain.user_emails import send_reset_password_email_with_mailjet_template, send_reset_password_email
+from domain.user_emails import send_reset_password_email_to_user, \
+    send_reset_password_email_to_pro
 from models import ApiErrors
 from repository import repository
 from repository.user_queries import find_user_by_email, find_user_by_reset_password_token
@@ -35,21 +36,29 @@ def post_for_password_token():
     email = request.get_json()['email']
     user = find_user_by_email(email)
 
+    # is_offerer = UserOfferer.query.filter_by(userId=user.id).first()
+    # TODO
+
     if not user:
         return '', 204
 
     generate_reset_token(user)
     repository.save(user)
-    app_origin_url = request.headers.get('origin')
 
-    try:
-        if user.canBookFreeOffers:
-            send_reset_password_email_with_mailjet_template(user, send_raw_email)
-        else:
-            send_reset_password_email(user, send_raw_email, app_origin_url)
+    is_not_pro_user = user.canBookFreeOffers
 
-    except MailServiceException as e:
-        app.logger.error('Mail service failure', e)
+    if is_not_pro_user:
+        try:
+            send_reset_password_email_to_user(user, send_raw_email)
+        except MailServiceException as mail_service_exception:
+            app.logger.error('[send_reset_password_email_to_user] '
+                             'Mail service failure', mail_service_exception)
+    else:
+        try:
+            send_reset_password_email_to_pro(user, send_raw_email)
+        except MailServiceException as mail_service_exception:
+            app.logger.error('[send_reset_password_email_to_pro] '
+                             'Mail service failure', mail_service_exception)
 
     return '', 204
 
