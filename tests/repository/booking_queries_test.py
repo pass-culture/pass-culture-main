@@ -45,7 +45,7 @@ class FindAllOffererBookingsByVenueIdTest:
         repository.save(booking1, booking2, booking3)
 
         # when
-        bookings = booking_queries.find_offerer_bookings(offerer1.id)
+        bookings = booking_queries.find_all_bookings_info(offerer1.id)
 
         # then
         assert len(bookings) == 2
@@ -72,12 +72,12 @@ class FindAllOffererBookingsByVenueIdTest:
         repository.save(booking1, booking2, booking3)
 
         # when
-        bookings = booking_queries.find_offerer_bookings(offerer1.id, venue_id=venue1.id)
+        bookings = booking_queries.find_all_bookings_info(offerer1.id, venue_id=venue1.id)
 
         # then
         assert len(bookings) == 2
-        assert any(booking.quantity == booking1.quantity for booking in bookings)
-        assert any(booking.quantity == booking2.quantity for booking in bookings)
+        assert bookings[0].quantity == booking2.quantity
+        assert bookings[1].quantity == booking1.quantity
 
     @clean_database
     def test_returns_bookings_on_given_venue_and_thing_offer_and_date(self, app):
@@ -126,13 +126,13 @@ class FindAllOffererBookingsByVenueIdTest:
         target_offer_id = target_offer.id
 
         # when
-        bookings = booking_queries.find_offerer_bookings(offerer.id, venue_id=venue.id, offer_id=target_offer_id,
-                                                         date_from=datetime(2020, 6, 1), date_to=datetime(2020, 6, 30))
+        bookings = booking_queries.find_all_bookings_info(offerer.id, venue_id=venue.id, offer_id=target_offer_id,
+                                                          date_from=datetime(2020, 6, 1), date_to=datetime(2020, 6, 30))
 
         # then
         assert len(bookings) == 2
-        assert any(booking.quantity == target_booking_1.quantity for booking in bookings)
-        assert any(booking.quantity == target_booking_2.quantity for booking in bookings)
+        assert bookings[0].quantity == target_booking_1.quantity
+        assert bookings[1].quantity == target_booking_2.quantity
 
     @clean_database
     def test_returns_bookings_on_given_venue_and_event_offer_and_date(self, app):
@@ -170,29 +170,31 @@ class FindAllOffererBookingsByVenueIdTest:
         target_offer_id = target_offer.id
 
         # when
-        bookings = booking_queries.find_offerer_bookings(offerer.id, venue_id=venue.id, offer_id=target_offer_id,
-                                                         date_from='2020-06-01T20:00:00.000Z',
-                                                         date_to='2020-05-01T20:00:00.000Z')
+        bookings = booking_queries.find_all_bookings_info(offerer.id, venue_id=venue.id, offer_id=target_offer_id,
+                                                          date_from='2020-06-01T20:00:00.000Z',
+                                                          date_to='2020-05-01T20:00:00.000Z')
 
         # then
         assert len(bookings) == 1
-        assert any(booking.quantity == target_booking.quantity for booking in bookings)
+        assert bookings[0].quantity == target_booking.quantity
 
     @clean_database
     def test_should_return_only_expected_attributes(self, app):
         # Given
-        user = create_user(last_name='Doe', first_name='John')
+        user = create_user(last_name='Doe', first_name='John', email='john.doe@example.com')
         deposit = create_deposit(user)
         offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
+        venue = create_venue(offerer, name='La petite librairie')
+        offer = create_offer_with_thing_product(venue, thing_name='Test Book')
         stock = create_stock_from_offer(offer)
-        booking = create_booking(user, stock=stock, is_used=True, date_created=datetime(2018, 1, 29))
+        booking = create_booking(user, stock=stock, is_used=True,
+                                 date_created=datetime(2018, 1, 29),
+                                 amount=Decimal(9.90))
 
         repository.save(deposit, booking)
 
         # When
-        bookings = booking_queries.find_offerer_bookings(offerer.id)
+        bookings = booking_queries.find_all_bookings_info(offerer.id)
 
         # Then
         assert len(bookings) == 1
@@ -230,11 +232,11 @@ class FindAllDigitalBookingsForOffererTest:
         repository.save(booking_for_digital, booking_for_physical)
 
         # when
-        bookings = booking_queries.find_digital_bookings_for_offerer(offerer1.id)
+        bookings = booking_queries.find_all_bookings_info(offerer1.id, only_digital_venues=True)
 
         # then
         assert len(bookings) == 1
-        assert any(booking.quantity == booking_for_digital.quantity for booking in bookings)
+        assert bookings[0].quantity == booking_for_digital.quantity
 
     @clean_database
     def test_returns_only_bookings_for_specified_offerer(self, app):
@@ -246,15 +248,11 @@ class FindAllDigitalBookingsForOffererTest:
         target_offerer = create_offerer(siren='123456789')
         other_offerer = create_offerer(siren='567891234')
 
-        target_digital_venue = create_venue(
-            target_offerer, siret=None, is_virtual=True)
-        other_digital_venue = create_venue(
-            other_offerer, siret=None, is_virtual=True)
+        target_digital_venue = create_venue(target_offerer, siret=None, is_virtual=True)
+        other_digital_venue = create_venue(other_offerer, siret=None, is_virtual=True)
 
-        target_stock = create_stock_with_event_offer(
-            target_offerer, target_digital_venue, price=2, available=100)
-        other_stock = create_stock_with_thing_offer(
-            other_offerer, other_digital_venue, price=3, available=100)
+        target_stock = create_stock_with_event_offer(target_offerer, target_digital_venue, price=2, available=100)
+        other_stock = create_stock_with_thing_offer(other_offerer, other_digital_venue, price=3, available=100)
 
         target_booking = create_booking(user=user, stock=target_stock, venue=target_digital_venue, quantity=3,
                                         recommendation=None)
@@ -264,39 +262,34 @@ class FindAllDigitalBookingsForOffererTest:
         repository.save(target_booking, other_booking)
 
         # when
-        bookings = booking_queries.find_digital_bookings_for_offerer(target_offerer.id)
+        bookings = booking_queries.find_all_bookings_info(target_offerer.id, only_digital_venues=True)
 
         # then
         assert len(bookings) == 1
-        assert any(booking.quantity == target_booking.quantity for booking in bookings)
+        assert bookings[0].quantity == target_booking.quantity
 
     @clean_database
     def test_returns_only_bookings_for_specified_offerer_and_offer(self, app):
-        # given
+        # Given
         user = create_user()
-        now = datetime.utcnow()
-        create_deposit(user, amount=1600)
-        offerer1 = create_offerer(siren='123456789')
-        digital_venue_for_offerer1 = create_venue(
-            offerer1, siret=None, is_virtual=True)
-        stock1 = create_stock_with_event_offer(
-            offerer1, digital_venue_for_offerer1, price=2, available=100)
-        stock2 = create_stock_with_thing_offer(
-            offerer1, digital_venue_for_offerer1, price=3, available=100)
-        booking_for_offerer1 = create_booking(user=user, stock=stock1, venue=digital_venue_for_offerer1, quantity=2,
-                                              recommendation=None)
-        booking_for_offerer2 = create_booking(user=user, stock=stock2, venue=digital_venue_for_offerer1, quantity=3,
-                                              recommendation=None)
+        deposit = create_deposit(user, amount=1600)
+        offerer = create_offerer(siren='123456789')
+        digital_venue = create_venue(offerer, siret=None, is_virtual=True)
+        stock1 = create_stock_with_event_offer(offerer, digital_venue, price=2, available=100)
+        stock2 = create_stock_with_thing_offer(offerer, digital_venue, price=3, available=100)
+        booking1 = create_booking(user=user, stock=stock1, venue=digital_venue, quantity=2)
+        booking2 = create_booking(user=user, stock=stock2, venue=digital_venue, quantity=3)
 
-        repository.save(booking_for_offerer1, booking_for_offerer2)
+        repository.save(deposit, booking1, booking2)
 
-        # when
-        bookings = booking_queries.find_digital_bookings_for_offerer(
-            offerer1.id, stock2.offer.id)
+        # When
+        bookings = booking_queries.find_all_bookings_info(offerer.id,
+                                                          offer_id=stock2.offer.id,
+                                                          only_digital_venues=True)
 
-        # then
+        # Then
         assert len(bookings) == 1
-        assert any(booking.quantity == booking_for_offerer2.quantity for booking in bookings)
+        assert bookings[0].quantity == booking2.quantity
 
     @clean_database
     def test_returns_only_bookings_for_specified_offerer_and_thing_offer_and_booking_date(self, app):
@@ -305,12 +298,9 @@ class FindAllDigitalBookingsForOffererTest:
         now = datetime.utcnow()
         create_deposit(user, amount=1600)
         offerer1 = create_offerer(siren='123456789')
-        digital_venue_for_offerer1 = create_venue(
-            offerer1, siret=None, is_virtual=True)
-        stock1 = create_stock_with_event_offer(
-            offerer1, digital_venue_for_offerer1, price=2, available=100)
-        stock2 = create_stock_with_thing_offer(
-            offerer1, digital_venue_for_offerer1, price=3, available=100)
+        digital_venue_for_offerer1 = create_venue(offerer1, siret=None, is_virtual=True)
+        stock1 = create_stock_with_event_offer(offerer1, digital_venue_for_offerer1, price=2, available=100)
+        stock2 = create_stock_with_thing_offer(offerer1, digital_venue_for_offerer1, price=3, available=100)
         booking_for_offerer1 = create_booking(user=user, stock=stock2, venue=digital_venue_for_offerer1, quantity=2,
                                               recommendation=None, date_created=datetime(2020, 5, 30))
         booking_for_offerer2 = create_booking(user=user, stock=stock2, venue=digital_venue_for_offerer1, quantity=3,
@@ -326,14 +316,16 @@ class FindAllDigitalBookingsForOffererTest:
                         booking_for_offerer5)
 
         # when
-        bookings = booking_queries.find_digital_bookings_for_offerer(offerer1.id, stock2.offer.id,
-                                                                     date_from=datetime(2020, 6, 1),
-                                                                     date_to=datetime(2020, 6, 30))
+        bookings = booking_queries.find_all_bookings_info(offerer1.id,
+                                                          offer_id=stock2.offer.id,
+                                                          date_from=datetime(2020, 6, 1),
+                                                          date_to=datetime(2020, 6, 30),
+                                                          only_digital_venues=True)
 
         # then
         assert len(bookings) == 2
-        assert any(booking.quantity == booking_for_offerer2.quantity for booking in bookings)
-        assert any(booking.quantity == booking_for_offerer3.quantity for booking in bookings)
+        assert bookings[0].quantity == booking_for_offerer2.quantity
+        assert bookings[1].quantity == booking_for_offerer3.quantity
 
 
 @clean_database

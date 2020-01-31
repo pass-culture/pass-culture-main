@@ -1,6 +1,7 @@
 import base64
 import csv
 import io
+from collections import namedtuple
 from datetime import timedelta
 from io import StringIO
 from typing import List, Iterator
@@ -31,10 +32,10 @@ CSV_HEADER = [
 ]
 
 
-def generate_bookings_details_csv(bookings: List[object]) -> str:
+def generate_bookings_details_csv(bookings_info: List[namedtuple]) -> str:
     output = StringIO()
 
-    csv_lines = _generate_csv_lines(bookings)
+    csv_lines = _generate_csv_lines(bookings_info)
 
     writer = csv.writer(output, dialect=csv.excel, delimiter=";")
     writer.writerow(CSV_HEADER)
@@ -42,9 +43,9 @@ def generate_bookings_details_csv(bookings: List[object]) -> str:
     return output.getvalue()
 
 
-def _generate_csv_lines(bookings: List[object]) -> List[List]:
+def _generate_csv_lines(bookings_info: List[namedtuple]) -> List[List]:
     csv_lines = []
-    for booking in bookings:
+    for booking in bookings_info:
         status_label = _compute_booking_status_label(booking)
 
         booking_details = [
@@ -62,14 +63,12 @@ def _generate_csv_lines(bookings: List[object]) -> List[List]:
     return csv_lines
 
 
-def _compute_booking_status_label(booking: object) -> str:
-    if booking.isCancelled:
-        status_label = "Réservation annulée"
-    elif booking.isUsed:
-        status_label = "Contremarque validée"
-    else:
-        status_label = "En attente"
-    return status_label
+def _compute_booking_status_label(booking_info: namedtuple) -> str:
+    if booking_info.isCancelled:
+        return "Réservation annulée"
+    elif booking_info.isUsed:
+        return "Contremarque validée"
+    return "En attente"
 
 
 def filter_bookings_to_compute_remaining_stock(stock: Stock) -> Iterator:

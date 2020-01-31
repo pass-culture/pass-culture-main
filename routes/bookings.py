@@ -93,16 +93,13 @@ def get_bookings_csv():
 
     query = filter_query_where_user_is_user_offerer_and_is_validated(Offerer.query,
                                                                      current_user)
-    if only_digital_venues:
-        bookings = chain(
-            *list(map(lambda offerer: booking_queries.find_digital_bookings_for_offerer(offerer.id, offer_id, date_from,
-                                                                                        date_to),
-                      query)))
-    else:
-        bookings = chain(
-            *list(map(lambda offerer: booking_queries.find_offerer_bookings(offerer.id, venue_id, offer_id, date_from,
-                                                                            date_to),
-                      query)))
+    bookings = chain(*list(map(lambda offerer: booking_queries.find_all_bookings_info(offerer.id,
+                                                                                      venue_id,
+                                                                                      offer_id,
+                                                                                      date_from,
+                                                                                      date_to,
+                                                                                      only_digital_venues),
+                               query)))
 
     bookings_csv = generate_bookings_details_csv(bookings)
 

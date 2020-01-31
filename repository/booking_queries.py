@@ -1,14 +1,16 @@
+from collections import namedtuple
 from datetime import datetime
 from typing import Set, List, Union
 
-from sqlalchemy import and_, func
-from sqlalchemy.orm import Query, joinedload
+from sqlalchemy import func
+from sqlalchemy.orm import Query
 
 from domain.keywords import create_get_filter_matching_ts_query_in_any_model
 from domain.stocks import STOCK_DELETION_DELAY
 from models import Booking, EventType, Offer, Offerer, Payment, Product, Recommendation, Stock, ThingType, User, Venue
 from models.api_errors import ResourceNotFoundError
 from models.db import db
+from repository import offer_queries
 
 get_filter_matching_ts_query_for_booking = create_get_filter_matching_ts_query_in_any_model(
     Product,
@@ -73,68 +75,54 @@ def find_active_bookings_by_user_id(user_id: int) -> List[Booking]:
         .all()
 
 
-def find_offerer_bookings(offerer_id: int, venue_id: int = None, offer_id: int = None,
-                          date_from: Union[datetime, str] = None, date_to: Union[datetime, str] = None) -> List[
-    Booking]:
+def find_all_bookings_info(offerer_id: int,
+                           venue_id: int = None,
+                           offer_id: int = None,
+                           date_from: Union[datetime, str] = None,
+                           date_to: Union[datetime, str] = None,
+                           only_digital_venues: bool = False) -> List[namedtuple]:
     query = _filter_bookings_by_offerer_id(offerer_id)
-
-    if venue_id:
-        query = query.filter(Venue.id == venue_id)
 
     if offer_id:
         query = query.filter(Offer.id == offer_id)
-
-        offer = Offer.query.filter(Offer.id == offer_id).first()
-
+        offer = offer_queries.get_offer_by_id(offer_id)
         if offer and offer.isEvent and date_from:
             query = query.filter(Stock.beginningDatetime == date_from)
 
         if offer and offer.isThing:
-            if date_from:
-                query = query.filter(Booking.dateCreated >= date_from)
-            if date_to:
-                query = query.filter(Booking.dateCreated <= date_to)
+            query = _filter_bookings_by_dates(query, date_from, date_to)
 
-    query = query.with_entities(Booking.dateCreated.label('date_created'),
-                                Booking.quantity.label('quantity'),
-                                Booking.amount.label('amount'),
-                                Booking.isCancelled.label('isCancelled'),
-                                Booking.isUsed.label('isUsed'),
-                                Venue.name.label('venue_name'),
-                                Offer.name.label('offer_name'),
-                                User.lastName.label('user_lastname'),
-                                User.firstName.label('user_firstname'),
-                                User.email.label('user_email'))
+    if only_digital_venues:
+        query = query.filter(Venue.isVirtual == True)
+        query = _filter_bookings_by_dates(query, date_from, date_to)
+
+    if venue_id:
+        query = query.filter(Venue.id == venue_id)
+
+    query = _select_only_needed_fields_for_bookings_info(query)
     return query.all()
 
 
-def find_digital_bookings_for_offerer(offerer_id: int, offer_id: int = None, date_from: Union[datetime, str] = None,
-                                      date_to: Union[datetime, str] = None) -> List[Booking]:
-    query = _filter_bookings_by_offerer_id(offerer_id)
-
-    query = query.filter(Venue.isVirtual == True)
-
-    if offer_id:
-        query = query.filter(Offer.id == offer_id)
-
+def _filter_bookings_by_dates(query: Query, date_from: Union[datetime, str] = None,
+                              date_to: Union[datetime, str] = None) -> Query:
     if date_from:
         query = query.filter(Booking.dateCreated >= date_from)
-
     if date_to:
         query = query.filter(Booking.dateCreated <= date_to)
+    return query
 
-    query = query.with_entities(Booking.dateCreated.label('date_created'),
-                                Booking.quantity.label('quantity'),
-                                Booking.amount.label('amount'),
-                                Booking.isCancelled.label('isCancelled'),
-                                Booking.isUsed.label('isUsed'),
-                                Venue.name.label('venue_name'),
-                                Offer.name.label('offer_name'),
-                                User.lastName.label('user_lastname'),
-                                User.firstName.label('user_firstname'),
-                                User.email.label('user_email'))
 
-    return query.all()
+def _select_only_needed_fields_for_bookings_info(query: Query) -> Query:
+    return query.with_entities(Booking.dateCreated.label('date_created'),
+                               Booking.quantity.label('quantity'),
+                               Booking.amount.label('amount'),
+                               Booking.isCancelled.label('isCancelled'),
+                               Booking.isUsed.label('isUsed'),
+                               Venue.name.label('venue_name'),
+                               Offer.name.label('offer_name'),
+                               User.lastName.label('user_lastname'),
+                               User.firstName.label('user_firstname'),
+                               User.email.label('user_email'))
 
 
 def find_from_recommendation(recommendation: Recommendation, user: User) -> List[Booking]:

@@ -38,8 +38,8 @@ class Get:
             booking6 = create_booking(user=user, stock=stock4, token='ABCDEK', venue=venue3)
 
             repository.save(deposit, booking1, booking2, booking3,
-                          booking4, booking5, booking6, user_offerer1,
-                          user_offerer2)
+                            booking4, booking5, booking6, user_offerer1,
+                            user_offerer2)
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).get(
@@ -91,7 +91,7 @@ class Get:
             booking4 = create_booking(user=user, stock=stock3, token='ABCDEI', venue=venue3)
 
             repository.save(deposit, booking1, booking2, booking3,
-                          booking4, user_offerer1, user_offerer2)
+                            booking4, user_offerer1, user_offerer2)
 
             url = '/bookings/csv?venueId=%s' % (humanize(venue1.id))
 
@@ -126,10 +126,10 @@ class Get:
 
             repository.save(deposit, booking_on_physical_venue, booking_on_digital_venue, user_offerer1)
 
-            url = '/bookings/csv?onlyDigitalVenues=true'
-
             # When
-            response = TestClient(app.test_client()).with_auth(user.email).get(url)
+            response = TestClient(app.test_client()) \
+                .with_auth(user.email) \
+                .get('/bookings/csv?onlyDigitalVenues=true')
 
             # Then
             content_lines = response.data.decode('utf-8').split('\n')[1:-1]
@@ -164,13 +164,15 @@ class Get:
                                                                                   "%Y-%m-%dT%H:%M:%S.%fZ"),
                                                    token='ABCDEG', venue=venue)
 
-            repository.save(deposit, booking_on_other_offer, booking_on_target_offer_and_date, booking_on_other_date, user_offerer1)
+            repository.save(deposit, booking_on_other_offer, booking_on_target_offer_and_date, booking_on_other_date,
+                            user_offerer1)
 
             target_offer_id = humanize(target_offer.id)
-            url = f'/bookings/csv?onlyDigitalVenues=true&offerId={target_offer_id}&dateFrom=2020-05-01T00:00:00.000Z&dateTo=2020-05-01T00:00:00.000Z'
-
             # When
-            response = TestClient(app.test_client()).with_auth(user.email).get(url)
+            response = TestClient(app.test_client()) \
+                .with_auth(user.email) \
+                .get(f'/bookings/csv?onlyDigitalVenues=true&offerId={target_offer_id}' \
+                     '&dateFrom=2020-05-01T00:00:00.000Z&dateTo=2020-05-01T00:00:00.000Z')
 
             # Then
             content_lines = response.data.decode('utf-8').split('\n')[1:-1]
