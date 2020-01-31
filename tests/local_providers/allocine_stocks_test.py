@@ -2014,13 +2014,11 @@ class UpdateObjectsTest:
                                  booking_email='toto@example.com')
             repository.save(venue)
 
-            allocine_provider = get_provider_by_local_class('AllocineStocks')
-            allocine_provider.isActive = True
+            allocine_provider = activate_provider('AllocineStocks')
             venue_provider = create_venue_provider(venue, allocine_provider, venue_id_at_offer_provider=theater_token)
             venue_provider_price_rule = create_venue_provider_price_rule(venue_provider)
             repository.save(venue_provider, venue_provider_price_rule)
 
-            # When
             allocine_stocks_provider = AllocineStocks(venue_provider)
             allocine_stocks_provider.updateObjects()
 
@@ -2035,6 +2033,9 @@ class UpdateObjectsTest:
             second_stock.fieldsUpdated = ['bookingLimitDatetime']
             second_stock.bookingLimitDatetime = datetime(2019, 12, 4, 15, 0)
 
+            repository.save(first_stock, second_stock)
+
+            # When
             allocine_stocks_provider = AllocineStocks(venue_provider)
             allocine_stocks_provider.updateObjects()
 

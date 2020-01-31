@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from models import ApiErrors, Offer
+from models import ApiErrors, Offer, Stock
 
 
 def check_stocks_are_editable_for_offer(offer: Offer):
@@ -10,10 +10,10 @@ def check_stocks_are_editable_for_offer(offer: Offer):
         raise api_errors
 
 
-def check_stocks_are_editable_in_patch_stock(offer: Offer):
-    local_class = offer.lastProvider.localClass if offer.lastProvider else ''
-    is_not_editable = offer.isFromProvider is True and 'TiteLive' in local_class
-    if is_not_editable:
+def check_stock_is_updatable(stock: Stock) -> None:
+    local_class = stock.offer.lastProvider.localClass if stock.offer.lastProvider else ''
+    is_titelive_generated_offer = stock.offer.isFromProvider is True and 'TiteLive' in local_class
+    if is_titelive_generated_offer:
         api_errors = ApiErrors()
         api_errors.add_error('global', 'Les offres importées ne sont pas modifiables')
         raise api_errors
@@ -74,17 +74,19 @@ def _forbid_dates_on_stock_for_thing_offer(request_data):
             ]})
 
 
-def check_only_editable_fields_will_be_updated(stock_updated_fields: List, stock_editable_fields: List):
-    if not set(stock_updated_fields).issubset(stock_editable_fields):
+def check_only_editable_fields_will_be_updated(stock_updated_fields: List, stock_editable_fields: List) -> None:
+    fields_to_update_are_editable = set(stock_updated_fields).issubset(stock_editable_fields)
+    if not fields_to_update_are_editable:
         api_errors = ApiErrors()
         api_errors.status_code = 400
         api_errors.add_error('global', 'Pour les offres importées, certains champs ne sont pas modifiables')
         raise api_errors
 
 
-def get_updated_fields_after_patch(old_stock: Dict, new_stock: Dict) -> List:
-    common_keys = set(old_stock).intersection(set(new_stock))
-    filtered_old_dict = {key: old_stock[key] for key in common_keys}
-    filtered_new_dict = {key: new_stock[key] for key in common_keys}
-    updated_fields = [key for key in common_keys if filtered_new_dict[key] != filtered_old_dict[key]]
-    return updated_fields
+def get_only_fields_with_value_to_be_updated(existing_stock_data: Dict, new_stock_data: Dict) -> List:
+    stock_related_keys = set(existing_stock_data).intersection(set(new_stock_data))
+    filtered_existing_stock_data = {key: existing_stock_data[key] for key in stock_related_keys}
+    filtered_new_stock_data = {key: new_stock_data[key] for key in stock_related_keys}
+    fields_with_changed_data = [key for key in stock_related_keys if
+                                filtered_new_stock_data[key] != filtered_existing_stock_data[key]]
+    return fields_with_changed_data

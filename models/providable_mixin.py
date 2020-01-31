@@ -1,7 +1,6 @@
 """ providable mixin """
 from datetime import datetime
 
-from bs4 import element
 from sqlalchemy import BigInteger, \
     CheckConstraint, \
     Column, \

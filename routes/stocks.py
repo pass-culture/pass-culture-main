@@ -2,10 +2,11 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user
 
 from connectors import redis
-from domain.allocine import get_editable_fields_when_offer_from_allocine
+from domain.allocine import get_editable_fields_for_allocine_offer
 from domain.stocks import delete_stock_and_cancel_bookings
 from domain.user_emails import send_batch_cancellation_emails_to_users, \
     send_offerer_bookings_recap_email_after_offerer_cancellation
+from local_providers import AllocineStocks
 from models import Product
 from models.mediation import Mediation
 from models.stock import Stock
@@ -26,7 +27,7 @@ from validation.routes.offers import check_offer_is_editable
 from validation.routes.stocks import check_request_has_offer_id, \
     check_dates_are_allowed_on_new_stock, \
     check_dates_are_allowed_on_existing_stock, \
-    check_stocks_are_editable_for_offer, check_stocks_are_editable_in_patch_stock, get_updated_fields_after_patch, \
+    check_stocks_are_editable_for_offer, check_stock_is_updatable, get_only_fields_with_value_to_be_updated, \
     check_only_editable_fields_will_be_updated
 
 search_models = [
@@ -99,20 +100,20 @@ def edit_stock(stock_id):
     stock_data = request.json
     query = Stock.queryNotSoftDeleted().filter_by(id=dehumanize(stock_id))
     stock = query.first_or_404()
-    check_offer_is_editable(stock.offer)
+
+    check_stock_is_updatable(stock)
     check_dates_are_allowed_on_existing_stock(stock_data, stock.offer)
     offerer_id = stock.resolvedOffer.venue.managingOffererId
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
-    check_stocks_are_editable_in_patch_stock(stock.offer)
 
-    if stock.idAtProviders:
-        stock_editable_fields = get_editable_fields_when_offer_from_allocine(stock.offer)
-        db_stock = jsonify(as_dict(stock)).json
-        fields_to_update = get_updated_fields_after_patch(db_stock, stock_data)
+    stock_from_allocine_provider = stock.idAtProviders is not None
+
+    if stock_from_allocine_provider:
+        stock_editable_fields = get_editable_fields_for_allocine_offer(stock.offer, AllocineStocks.__name__)
+        existing_stock_data = jsonify(as_dict(stock)).json
+        fields_to_update = get_only_fields_with_value_to_be_updated(existing_stock_data, stock_data)
         check_only_editable_fields_will_be_updated(fields_to_update, stock_editable_fields)
         stock.fieldsUpdated = fields_to_update
-
-    check_stocks_are_editable_for_offer(stock.offer)
 
     stock.populate_from_dict(stock_data)
     repository.save(stock)

@@ -1,8 +1,9 @@
 from unittest.mock import Mock, MagicMock
 
 from domain.allocine import get_movies_showtimes, get_movie_poster, _exclude_movie_showtimes_with_special_event_type, \
-    get_editable_fields_when_offer_from_allocine
+    get_editable_fields_for_allocine_offer
 from models import Provider
+from repository.provider_queries import get_provider_by_local_class
 from tests.model_creators.generic_creators import create_offerer, create_venue
 from tests.model_creators.specific_creators import create_offer_with_thing_product
 
@@ -135,20 +136,17 @@ class RemoveMovieShowsWithSpecialEventTypeTest:
             }]
 
 
-class GetEditableFieldsWhenOfferFromAllocine:
+class GetEditableFieldsForAllocineOfferTest:
     def test_should_return_editable_fields_when_offer_from_allocine(self, app):
         # Given
-        provider = Provider()
-        provider.name = 'myProvider'
-        provider.localClass = 'AllocineStocks'
+        provider = get_provider_by_local_class('AllocineStocks')
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        offer.lastProviderId = 21
+        offer = create_offer_with_thing_product(venue, id_at_providers=provider.id)
         offer.lastProvider = provider
 
         # When
-        editable_fields = get_editable_fields_when_offer_from_allocine(offer)
+        manually_editable_fields = get_editable_fields_for_allocine_offer(offer, 'AllocineStocks')
 
         # Then
-        assert editable_fields == ['available', 'price', 'bookingLimitDatetime']
+        assert manually_editable_fields == ['available', 'price', 'bookingLimitDatetime']

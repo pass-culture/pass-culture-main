@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 from models import Stock, Provider
 from repository import repository
+from repository.provider_queries import get_provider_by_local_class
 from routes.serialization import serialize
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
@@ -123,31 +124,28 @@ class Patch:
         @clean_database
         def when_offer_come_from_allocine_provider_and_fields_updated_in_stock_are_editable(self, app):
             # given
-            allocine_provider = Provider \
-                .query \
-                .filter(Provider.localClass == 'AllocineStocks') \
-                .first()
-
-            user = create_user(email='test@email.com')
+            allocine_provider = get_provider_by_local_class('AllocineStocks')
+            pro = create_user()
             offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
+            user_offerer = create_user_offerer(pro, offerer)
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue, last_provider_id=allocine_provider.id,
                                                     id_at_providers='allo')
             stock = create_stock(offer=offer, available=10, id_at_providers='allo-cine')
-            repository.save(user, user_offerer, stock)
+
+            repository.save(pro, user_offerer, stock)
             humanized_stock_id = humanize(stock.id)
 
             # when
-            request_update = TestClient(app.test_client()).with_auth('test@email.com') \
-                .patch('/stocks/' + humanized_stock_id, json={'available': 5, 'price': 20})
+            request_update = TestClient(app.test_client()).with_auth(pro.email) \
+                .patch(f'/stocks/{humanized_stock_id}', json={'available': 5, 'price': 20})
 
             # then
             assert request_update.status_code == 200
-            request_after_update = TestClient(app.test_client()).with_auth('test@email.com').get(
-                '/stocks/' + humanized_stock_id)
-            assert request_after_update.json['available'] == 5
-            assert request_after_update.json['price'] == 20
+
+            updated_stock = Stock.query.one()
+            assert updated_stock.available == 5
+            assert updated_stock.price == 20
 
     class Returns400:
         @clean_database
@@ -258,13 +256,9 @@ class Patch:
             assert request_update.json["global"] == ["Les offres importées ne sont pas modifiables"]
 
         @clean_database
-        def when_offer_come_from_allocine_provider_and_some_fields_updated_are_not_editable(self, app):
+        def when_update_allocine_offer_with_new_values_for_non_editable_fields(self, app):
             # given
-            allocine_provider = Provider \
-                .query \
-                .filter(Provider.localClass == 'AllocineStocks') \
-                .first()
-
+            allocine_provider = get_provider_by_local_class('AllocineStocks')
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
@@ -277,16 +271,16 @@ class Patch:
 
             # when
             request_update = TestClient(app.test_client()).with_auth('test@email.com') \
-                .patch('/stocks/' + humanized_stock_id,
+                .patch(f'/stocks/{humanized_stock_id}',
                        json={'available': 5, 'price': 20, 'endDatetime': '2020-02-08T14:30:00Z'})
 
             # then
             assert request_update.status_code == 400
-            request_after_update = TestClient(app.test_client()).with_auth('test@email.com').get(
-                '/stocks/' + humanized_stock_id)
-            assert request_after_update.json['available'] == 10
             assert request_update.json['global'] == [
                 'Pour les offres importées, certains champs ne sont pas modifiables']
+
+            existing_stock = Stock.query.one()
+            assert existing_stock.available == 10
 
     class Returns403:
         @clean_database

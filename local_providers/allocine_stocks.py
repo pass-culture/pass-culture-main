@@ -27,7 +27,7 @@ ORIGINAL_VERSION_SUFFIX = 'VO'
 class AllocineStocks(LocalProvider):
     name = "Allociné"
     can_create = True
-    editable_fields = ['available', 'price', 'bookingLimitDatetime']
+    manually_editable_fields = ['available', 'price', 'bookingLimitDatetime']
 
     def __init__(self, venue_provider: VenueProvider):
         super().__init__(venue_provider)
@@ -159,7 +159,8 @@ class AllocineStocks(LocalProvider):
         date_in_utc = _format_date_from_local_timezone_to_utc(parsed_showtimes['startsAt'], local_tz)
         allocine_stock.beginningDatetime = date_in_utc
 
-        if not allocine_stock.fieldsUpdated:
+        is_new_stock_to_insert = allocine_stock.id is None
+        if is_new_stock_to_insert:
             allocine_stock.fieldsUpdated = []
 
         if 'bookingLimitDatetime' not in allocine_stock.fieldsUpdated:
