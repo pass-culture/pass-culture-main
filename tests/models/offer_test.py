@@ -1026,6 +1026,20 @@ class IsEditableTest:
         # then
         assert offer.isEditable is True
 
+    def test_returns_true_if_offer_is_coming_from_Allocine_provider(self, app):
+        # given
+        provider = Provider()
+        provider.name = 'my allocine provider'
+        provider.localClass = 'AllocineStocks'
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        offer.lastProviderId = 22
+        offer.lastProvider = provider
+
+        # then
+        assert offer.isEditable is True
+
     def test_returns_true_if_offer_is_not_coming_from_provider(self, app):
         # given
         offer = Offer()
