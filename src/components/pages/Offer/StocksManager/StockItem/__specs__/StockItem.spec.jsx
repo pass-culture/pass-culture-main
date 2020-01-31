@@ -10,6 +10,7 @@ import { createBrowserHistory } from 'history'
 import { Provider } from 'react-redux'
 import { Route, Router, Switch } from 'react-router-dom'
 import { Field } from 'react-final-form'
+import OfferObject from '../../../OfferObject'
 
 describe('src | components | pages | Offer | StocksManager | StockItem', () => {
   let props
@@ -22,12 +23,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
       hasIban: false,
       history: { push: jest.fn() },
       isEvent: true,
-      offer: {
-        id: 'TY',
-        lastProvider: {
-          name: '',
-        },
-      },
+      offer: new OfferObject(),
       query: {
         changeToReadOnly: jest.fn(),
         context: () => ({ method: 'POST' }),
@@ -52,7 +48,6 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
     describe('when offer is an event', () => {
       beforeEach(() => {
         props.isEvent = true
-        props.offer.lastProvider = null
       })
 
       it('should render event fields', () => {
@@ -75,9 +70,9 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
         expect(eventFields).toHaveLength(1)
       })
 
-      describe('when the stocks are attached to an gffer provided from Allociné', () => {
+      describe('when the stocks are attached to an offer provided from Allociné', () => {
         beforeEach(() => {
-          props.offer.lastProvider = { name: 'Allociné' }
+          props.offer = new OfferObject({ lastProvider: { name: 'Allociné' } })
           props.query = { context: () => ({ readOnly: false }) }
         })
 
