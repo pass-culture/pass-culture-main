@@ -120,7 +120,7 @@ class GetOffererCountWithStockTest:
 class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
     @clean_database
     @patch('repository.offer_queries._exclude_booked_and_favorite')
-    def test_should_not_filter_for_favorites_and_bookings_if_no_user(self, exclude_booked_and_favorite,app):
+    def test_should_not_filter_for_favorites_and_bookings_if_no_user(self, exclude_booked_and_favorite, app):
         # When
         get_offerers_with_offer_available_on_discovery_count()
 
@@ -322,6 +322,42 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         # Then
         assert number_of_offerers == 1
 
+    @clean_database
+    def test_should_not_return_virtual_offer_if_is_not_national(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer, is_virtual=True, departement_code=None, address=None,
+                             postal_code=None,
+                             city=None, siret=None)
+        offer = create_offer_with_thing_product(venue=venue, url='http://test.com', thing_type=ThingType.JEUX_VIDEO,
+                                                is_national=False)
+        stock = create_stock(offer=offer)
+        mediation = create_mediation(offer)
+        repository.save(stock, mediation)
+
+        # When
+
+        # Then
+        assert get_offerers_with_offer_available_on_discovery_count(None) == 0
+
+    @clean_database
+    def test_should_return_virtual_offer_if_is_national(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer, is_virtual=True, departement_code=None, address=None,
+                             postal_code=None,
+                             city=None, siret=None)
+        offer = create_offer_with_thing_product(venue=venue, url='http://test.com', thing_type=ThingType.JEUX_VIDEO,
+                                                is_national=True)
+        stock = create_stock(offer=offer)
+        mediation = create_mediation(offer)
+        repository.save(stock, mediation)
+
+        # When
+
+        # Then
+        assert get_offerers_with_offer_available_on_discovery_count(None) == 1
+
 
 class GetOfferersWithOffersAvailableOnSearchCountTest:
     @clean_database
@@ -448,7 +484,6 @@ class GetOfferersWithOffersAvailableOnSearchCountTest:
 
         # Then
         assert number_of_offers == 1
-
 
 
 class GetOfferersWithNonCancelledBookingsCountTest:
@@ -913,12 +948,46 @@ class GetOffersAvailableOnDiscoveryCountTest:
 
     @clean_database
     @patch('repository.offer_queries._exclude_booked_and_favorite')
-    def test_should_not_filter_favorites_and_bookings_if_no_user(self, exclude_booked_and_favorite,app):
+    def test_should_not_filter_favorites_and_bookings_if_no_user(self, exclude_booked_and_favorite, app):
         # When
         get_offers_available_on_discovery_count()
 
         # Then
         exclude_booked_and_favorite.assert_not_called()
+
+    @clean_database
+    def test_should_not_return_virtual_offer_if_is_not_national(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer, is_virtual=True, departement_code=None, address=None, postal_code=None,
+                             city=None, siret=None)
+        offer = create_offer_with_thing_product(venue=venue, url='http://test.com', thing_type=ThingType.JEUX_VIDEO,
+                                                is_national=False)
+        stock = create_stock(offer=offer)
+        mediation = create_mediation(offer)
+        repository.save(stock, mediation)
+
+        # When
+
+        # Then
+        assert get_offers_available_on_discovery_count(None) == 0
+
+    @clean_database
+    def test_should_return_virtual_offer_if_is_national(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer, is_virtual=True, departement_code=None, address=None, postal_code=None,
+                             city=None, siret=None)
+        offer = create_offer_with_thing_product(venue=venue, url='http://test.com', thing_type=ThingType.JEUX_VIDEO,
+                                                is_national=True)
+        stock = create_stock(offer=offer)
+        mediation = create_mediation(offer)
+        repository.save(stock, mediation)
+
+        # When
+
+        # Then
+        assert get_offers_available_on_discovery_count(None) == 1
 
 
 class GetOffersAvailableOnSearchCountTest:
@@ -1047,6 +1116,7 @@ class GetOffersAvailableOnSearchCountTest:
 
         # Then
         assert number_of_offers == 1
+
 
 class GetOffersWithNonCancelledBookingsCountTest:
     @clean_database
@@ -1232,7 +1302,7 @@ class QueryGetOfferCountsByTypeAndMediumTest:
         stock_musique_digital = create_stock(offer=offer_musique_digital)
         stock_musique_physical = create_stock(offer=offer_musique_physical)
         repository.save(stock_cinema1, stock_cinema2, stock_musique_digital, stock_musique_physical, user_offerer1,
-                      user_offerer2)
+                        user_offerer2)
 
         # When
         offer_counts = query_get_offer_counts_grouped_by_type_and_medium().fetchall()
@@ -1310,7 +1380,7 @@ class QueryGetOfferCountsPerTypeAndMediumForDepartementTest:
         stock_musique_digital = create_stock(offer=offer_musique_digital)
         stock_musique_physical = create_stock(offer=offer_musique_physical)
         repository.save(stock_cinema1, stock_cinema2, stock_musique_digital, stock_musique_physical, user_offerer1,
-                      user_offerer2)
+                        user_offerer2)
 
         # When
         offer_counts = query_get_offer_counts_grouped_by_type_and_medium_for_departement('33').fetchall()
@@ -1441,7 +1511,7 @@ class GetCountsByTypeAndDigitalCountsTest:
         booking_musique_physical2 = create_booking(user=user_booking, stock=stock_musique_physical, quantity=2)
         booking_musique_digital = create_booking(user=user_booking, stock=stock_musique_digital)
         repository.save(stock_cinema1, stock_cinema2, booking_musique_physical1, booking_musique_physical2,
-                      booking_musique_digital, user_offerer)
+                        booking_musique_digital, user_offerer)
 
         expected_dataframe = pandas.read_csv('tests/scripts/dashboard/bookings_by_type_and_medium_counts.csv')
 
@@ -1464,7 +1534,7 @@ class GetCountsByTypeAndDigitalCountsTest:
         offer_musique_digital = create_offer_with_thing_product(virtual_venue, url='http://url.test',
                                                                 thing_type="pizza")
         offer_pizza_digital = create_offer_with_thing_product(virtual_venue, url='http://url.test',
-                                                                thing_type="lili's")
+                                                              thing_type="lili's")
         offer_musique_physical = create_offer_with_thing_product(physical_venue, thing_type="sport")
         stock_pizza_digital = create_stock(offer=offer_pizza_digital, price=0)
         stock_musique_digital = create_stock(offer=offer_musique_digital, price=0)
@@ -1474,9 +1544,10 @@ class GetCountsByTypeAndDigitalCountsTest:
         booking_musique_physical2 = create_booking(user=user_booking, stock=stock_musique_physical, quantity=2)
         booking_musique_digital = create_booking(user=user_booking, stock=stock_musique_digital)
         repository.save(booking_pizza_digital, booking_musique_physical1, booking_musique_physical2,
-                      booking_musique_digital, user_offerer)
+                        booking_musique_digital, user_offerer)
 
-        expected_dataframe = pandas.read_csv('tests/scripts/dashboard/bookings_by_type_and_medium_counts_with_non_standard_offer_types.csv')
+        expected_dataframe = pandas.read_csv(
+            'tests/scripts/dashboard/bookings_by_type_and_medium_counts_with_non_standard_offer_types.csv')
 
         # When
         bookings_by_type_and_digital_counts = get_offer_counts_grouped_by_type_and_medium(
@@ -1508,7 +1579,7 @@ class QueryGetBookingCountsPerTypeAndDigitalTest:
         booking_musique_physical2 = create_booking(user=user, stock=stock_musique_physical, quantity=2)
         booking_musique_digital = create_booking(user=user, stock=stock_musique_digital)
         repository.save(stock_cinema1, stock_cinema2, booking_musique_physical1, booking_musique_physical2,
-                      booking_musique_digital)
+                        booking_musique_digital)
 
         # When
         booking_counts = query_get_booking_counts_grouped_by_type_and_medium().fetchall()
@@ -1559,7 +1630,7 @@ class QueryGetBookingCountsPerTypeAndMediumForDepartementTest:
         booking_musique_physical2 = create_booking(user=user, stock=stock_musique_physical, quantity=2)
         booking_musique_digital = create_booking(user=user, stock=stock_musique_digital)
         repository.save(stock_cinema1, stock_cinema2, booking_musique_physical1, booking_musique_physical2,
-                      booking_musique_digital)
+                        booking_musique_digital)
 
         # When
         booking_counts = query_get_booking_counts_grouped_by_type_and_medium_for_departement('33').fetchall()

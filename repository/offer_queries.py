@@ -39,7 +39,7 @@ def build_offer_search_base_query():
 
 def department_or_national_offers(query, departement_codes):
     if ALL_DEPARTMENTS_CODE in departement_codes:
-        return query
+        return query.filter((Venue.departementCode != None) | (Offer.isNational == True))
 
     query = query.filter(
         Venue.departementCode.in_(departement_codes) | (Offer.isNational == True)

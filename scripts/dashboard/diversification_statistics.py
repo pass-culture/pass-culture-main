@@ -24,8 +24,10 @@ def get_offerers_with_offer_available_on_discovery_count(departement_code: str =
     # TODO: use RecoView query filter by departementCode + join offererId
 
     active_offers_ids = get_active_offers_ids_query(user=None)
-    query = Offerer.query.join(Venue).join(
-        Offer).filter(Offer.id.in_(active_offers_ids))
+    query = Offerer.query\
+        .join(Venue)\
+        .join(Offer)\
+        .filter(Offer.id.in_(active_offers_ids))
 
     if departement_code:
         query = query \
