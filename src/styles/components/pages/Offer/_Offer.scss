@@ -65,7 +65,7 @@
     }
   }
 
-  .pc-checkbox {
+  .offer-duo-checkbox {
     background: url(/icons/checkbox.svg) no-repeat;
     background-size: 20px;
     border: none;
@@ -75,7 +75,6 @@
     border-radius: 0;
     margin-bottom: rem(12px);
 
-    &:active,
     &:checked {
       &::after {
         content: '';

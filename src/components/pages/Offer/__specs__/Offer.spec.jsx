@@ -572,6 +572,26 @@ describe('src | components | pages | Offer | Offer ', () => {
         expect(modifyOfferButton.prop('disabled')).toStrictEqual('disabled')
       })
 
+      describe('when the offer is an event', () => {
+        it('should disable the duo option', () => {
+          // given
+          props.query.context = () => ({
+            isCreatedEntity: false,
+            isModifiedEntity: false,
+            readOnly: true,
+          })
+          props.isEditableOffer = false
+          props.offer.isEvent = true
+
+          // when
+          const wrapper = shallow(<Offer {...props} />)
+
+          // then
+          const isDuoCheckbox = wrapper.find('#isDuo')
+          expect(isDuoCheckbox.prop('disabled')).toStrictEqual('disabled')
+        })
+      })
+
       it('should display LocalProviderInformation if offer was generated from local provider', () => {
         // given
         props.query.context = () => ({

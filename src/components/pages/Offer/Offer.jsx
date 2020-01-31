@@ -655,8 +655,9 @@ class Offer extends PureComponent {
                 {isEventType && (
                   <div className="select-duo-offer">
                     <input
-                      className="pc-checkbox input"
+                      className="offer-duo-checkbox input"
                       defaultChecked={isDuoDefaultStatus}
+                      disabled={readOnly ? 'disabled' : ''}
                       id="isDuo"
                       onClick={this.handleCheckIsDuo}
                       type="checkbox"
