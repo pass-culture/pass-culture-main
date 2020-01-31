@@ -4,7 +4,7 @@ from repository import offerer_queries
 from repository import venue_queries
 
 
-def get_venue_errors(model: Model, api_errors: ApiErrors) -> ApiErrors:
+def validate_venue(model: Model, api_errors: ApiErrors) -> ApiErrors:
     if model.siret is not None and not len(model.siret) == 14:
         api_errors.add_error('siret', f'Ce code SIRET est invalide : {model.siret}')
 
@@ -33,8 +33,8 @@ def get_venue_errors(model: Model, api_errors: ApiErrors) -> ApiErrors:
 
         already_existing_virtual_venue = venue_queries.find_by_offrer_id_and_is_virtual(offerer_id)
 
-        if already_existing_virtual_venue is not None:
-            if already_existing_virtual_venue.id != model.id:
-                api_errors.add_error('isVirtual', 'Un lieu pour les offres numériques existe déjà pour cette structure')
+        if already_existing_virtual_venue is not None \
+                and already_existing_virtual_venue.id != model.id:
+            api_errors.add_error('isVirtual', 'Un lieu pour les offres numériques existe déjà pour cette structure')
 
     return api_errors

@@ -4,7 +4,7 @@ from models import ApiErrors
 from models.db import Model
 
 
-def get_bank_information_errors(model: Model, api_errors: ApiErrors) -> ApiErrors:
+def validate_bank_information(model: Model, api_errors: ApiErrors) -> ApiErrors:
     try:
         IBAN(model.iban)
     except (ValueError, TypeError):

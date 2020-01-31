@@ -4,7 +4,7 @@ from collections import Iterator
 from datetime import datetime
 from pprint import pprint
 
-from validation.models import handler
+from validation.models import entity_validator
 from connectors.redis import send_venue_provider_data_to_redis
 from connectors.thumb_storage import save_provider_thumb
 from local_providers.chunk_manager import get_existing_pc_obj, save_chunks
@@ -93,7 +93,7 @@ class LocalProvider(Iterator):
 
         self.fill_object_attributes(pc_object)
 
-        errors = handler.errors(pc_object)
+        errors = entity_validator.validate(pc_object)
         if errors and len(errors.errors) > 0:
             self.log_provider_event(LocalProviderEventType.SyncError, 'ApiErrors')
             self.erroredObjects += 1
@@ -108,7 +108,7 @@ class LocalProvider(Iterator):
         pc_object.lastProviderId = self.provider.id
         pc_object.dateModifiedAtLastProvider = providable_info.date_modified_at_provider
 
-        errors = handler.errors(pc_object)
+        errors = entity_validator.validate(pc_object)
         if errors and len(errors.errors) > 0:
             self.log_provider_event(LocalProviderEventType.SyncError, 'ApiErrors')
             self.erroredObjects += 1
@@ -201,7 +201,7 @@ class LocalProvider(Iterator):
                         pprint(vars(e))
                     pc_object_has_new_thumbs = pc_object.thumbCount != initial_thumb_count
                     if pc_object_has_new_thumbs:
-                        errors = handler.errors(pc_object)
+                        errors = entity_validator.validate(pc_object)
                         if errors and len(errors.errors) > 0:
                             self.log_provider_event(LocalProviderEventType.SyncError, 'ApiErrors')
                             continue

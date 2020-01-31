@@ -2,7 +2,7 @@ from models import ApiErrors
 from models.db import Model
 
 
-def get_stock_errors(model: Model, api_errors: ApiErrors) -> ApiErrors:
+def validate_stock(model: Model, api_errors: ApiErrors) -> ApiErrors:
     if model.available is not None and model.available < 0:
         api_errors.add_error('available', 'Le stock doit être positif')
 

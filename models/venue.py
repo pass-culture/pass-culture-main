@@ -130,6 +130,7 @@ class Venue(PcObject,
 def before_insert(mapper, connect, self):
     _fill_departement_code_from_postal_code(self)
 
+
 @listens_for(Venue, 'before_update')
 def before_update(mapper, connect, self):
     _fill_departement_code_from_postal_code(self)

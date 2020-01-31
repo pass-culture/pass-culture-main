@@ -5,7 +5,7 @@ from models.db import Model
 from repository import user_queries
 
 
-def get_user_errors(model: Model, api_errors: ApiErrors) -> ApiErrors:
+def validate_user(model: Model, api_errors: ApiErrors) -> ApiErrors:
     user_count = 0
     try:
         user_count = user_queries.count_users_by_email(model.email)

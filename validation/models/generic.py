@@ -5,7 +5,7 @@ from models import ApiErrors
 from models.db import Model
 
 
-def generic_errors(model: Model) -> ApiErrors:
+def validate_generic(model: Model) -> ApiErrors:
     api_errors = ApiErrors()
     columns = model.__class__.__table__.columns._data
 

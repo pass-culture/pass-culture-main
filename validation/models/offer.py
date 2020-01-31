@@ -3,7 +3,7 @@ from models.db import Model
 from repository import venue_queries
 
 
-def get_offer_errors(model: Model, api_errors: ApiErrors) -> ApiErrors:
+def validate_offer(model: Model, api_errors: ApiErrors) -> ApiErrors:
     venue = model.venue if model.venue else venue_queries.find_by_id(model.venueId)
 
     if model.isDigital:

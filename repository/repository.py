@@ -4,7 +4,7 @@ from sqlalchemy.exc import DataError, IntegrityError, InternalError
 
 from models import (ApiErrors, PcObject)
 from models.db import Model, db
-from validation.models import handler
+from validation.models import entity_validator
 
 
 def delete(*models: List[Model]) -> None:
@@ -20,7 +20,7 @@ def save(*models: List[Model]) -> None:
     api_errors = ApiErrors()
     for model in models:
         with db.session.no_autoflush:
-            model_api_errors = handler.errors(model)
+            model_api_errors = entity_validator.validate(model)
         if model_api_errors.errors.keys():
             api_errors.errors.update(model_api_errors.errors)
         else:
