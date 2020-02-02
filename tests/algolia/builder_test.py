@@ -48,6 +48,7 @@ class BuildObjectTest:
             'offer': {
                 'author': None,
                 'dateRange': ['2019-11-01 10:00:00', '2019-12-01 10:00:00'],
+                'dates': [1572602400.0],
                 'description': 'Un lit sous une rivière',
                 'id': 'AM',
                 'isbn': None,
@@ -286,3 +287,19 @@ class BuildObjectTest:
 
         # Then
         assert '_geoloc' not in result
+
+    @clean_database
+    def test_should_return_event_beginning_datetimes_as_timestamp_when_exist(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer = create_offer_with_event_product(venue=venue)
+        stock1 = create_stock(beginning_datetime=datetime(2019, 1, 1), end_datetime=datetime(2019, 1, 10), offer=offer)
+        stock2 = create_stock(beginning_datetime=datetime(2019, 1, 2), end_datetime=datetime(2019, 1, 11), offer=offer)
+        repository.save(stock1, stock2)
+
+        # When
+        result = build_object(offer)
+
+        # Then
+        assert result['offer']['dates'] == [1546387200.0, 1546300800.0]

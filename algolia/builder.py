@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Dict
 
 from models import Offer
@@ -21,12 +22,17 @@ def build_object(offer: Offer) -> Dict:
     music_type = offer.extraData and offer.extraData.get('musicType')
     music_sub_type = offer.extraData and offer.extraData.get('musicSubType')
     price = offer.stocks and offer.stocks[0].price
+    dates = []
+    if offer.isEvent:
+        stocks = offer.notDeletedStocks
+        dates = map(lambda stock: datetime.timestamp(stock.beginningDatetime), stocks)
 
     object_to_index = {
         'objectID': humanize_offer_id,
         'offer': {
             'author': author,
             'dateRange': list(date_range),
+            'dates': list(dates),
             'description': offer.description,
             'id': humanize_offer_id,
             'isbn': isbn,
