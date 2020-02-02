@@ -20,13 +20,13 @@ def batch_indexing_offers_in_algolia_by_offer(client: Redis) -> None:
 
     if len(offer_ids) > 0:
         orchestrate_from_offer(client=client, offer_ids=offer_ids)
-        logger.info(f'[ALGOLIA] indexing of {len(offer_ids)} offers finished!')
 
 
 def batch_indexing_offers_in_algolia_by_venue_provider(client: Redis) -> None:
     venue_providers = get_venue_providers_from_list(client=client)
 
     if len(venue_providers) > 0:
+        delete_venue_providers_from_list(client=client)
         for venue_provider in venue_providers:
             has_still_offers = True
             page = 0
@@ -51,13 +51,13 @@ def batch_indexing_offers_in_algolia_by_venue_provider(client: Redis) -> None:
                     has_still_offers = False
                     logger.info(
                         f'[ALGOLIA] indexing offers for (venue {venue_id} / provider {provider_id}) finished!')
-        delete_venue_providers_from_list(client=client)
 
 
 def batch_indexing_offers_in_algolia_by_venue(client: Redis) -> None:
     venue_ids = get_venue_ids_from_list(client=client)
 
     if len(venue_ids) > 0:
+        delete_venue_ids_from_list(client=client)
         for venue_id in venue_ids:
             page = 0
             has_still_offers = True
@@ -77,7 +77,6 @@ def batch_indexing_offers_in_algolia_by_venue(client: Redis) -> None:
                     has_still_offers = False
                     logger.info(f'[ALGOLIA] indexing offers for venue {venue_id} finished!')
                 page += 1
-        delete_venue_ids_from_list(client=client)
 
 
 def batch_indexing_offers_in_algolia_from_database(client: Redis, limit: int = 10000, page: int = 0) -> None:
