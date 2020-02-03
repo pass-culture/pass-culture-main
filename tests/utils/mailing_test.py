@@ -21,7 +21,7 @@ from utils.mailing import parse_email_addresses, \
     send_raw_email, resend_email, \
     compute_email_html_part_and_recipients, \
     extract_users_information_from_bookings, build_pc_pro_offer_link, format_booking_date_for_email, \
-    format_booking_hours_for_email, make_reset_password_email
+    format_booking_hours_for_email
 
 
 def get_mocked_response_status_200(entity):
@@ -352,22 +352,6 @@ class FormatBookingHoursForEmailTest:
 
         # Then
         assert formatted_date == ''
-
-
-class MakeResetPasswordTest:
-    def test_make_reset_password_email_generates_an_html_email_with_a_reset_link(app):
-        # given
-        user = create_user(email='bobby@test.com', public_name='bobby', reset_password_token='AZ45KNB99H')
-
-        # when
-        email = make_reset_password_email(user, 'app-jeune')
-
-        # then
-        html = BeautifulSoup(email['Html-part'], features="html.parser")
-        assert html.select('a.reset-password-link')[
-                   0].text.strip() == 'app-jeune/mot-de-passe-perdu?token=AZ45KNB99H'
-        assert html.select('div.validity-info')[
-                   0].text.strip() == 'Le lien est valable 24h. Au delà de ce délai, vous devrez demander une nouvelle réinitialisation.'
 
 
 def _remove_whitespaces(text):
