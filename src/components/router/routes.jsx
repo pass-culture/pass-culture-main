@@ -7,6 +7,7 @@ import MyBookingsContainer from '../pages/my-bookings/MyBookingsContainer'
 import DiscoveryContainer from '../pages/discovery/DiscoveryContainer'
 import MyFavoritesContainer from '../pages/my-favorites/MyFavoritesContainer'
 import ForgotPassword from '../pages/forgot-password/ForgotPassword'
+import OfferContainer from '../pages/offer/OfferContainer'
 import ProfileContainer from '../pages/profile/ProfileContainer'
 import TypeFormContainer from '../pages/typeform/TypeformContainer'
 import SearchContainer from '../pages/search/SearchContainer'
@@ -54,6 +55,12 @@ const routes = [
     component: TypeFormContainer,
     path: '/typeform',
     title: 'Questionnaire',
+  },
+  {
+    component: OfferContainer,
+    path:
+      '/offre/:details(details|transition)?/:offerId?/:mediationId?/:booking(reservation)?/:bookingId?/:cancellation(annulation)?/:confirmation(confirmation)?',
+    title: 'Détail de l’offre',
   },
   /* ---------------------------------------------------
    *

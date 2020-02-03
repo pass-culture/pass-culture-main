@@ -52,9 +52,12 @@ export const recommendationNormalizer = {
 
 export const offerNormalizer = {
   activeMediation: {
-    stateKey: 'mediations'
+    stateKey: 'mediations',
   },
   stocks: {
     stateKey: 'stocks',
+    normalizer: {
+      bookings: 'bookings',
+    },
   },
 }

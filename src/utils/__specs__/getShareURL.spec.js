@@ -55,7 +55,7 @@ describe('src | helpers | getShareURL', () => {
           const offerId = 'AB'
 
           expect(getShareURL(user, offerId)).toBe(
-            'http://localhost/decouverte/AB/vide?shared_by=myId'
+            'http://localhost/offre/details/AB/vide?shared_by=myId'
           )
         })
       })
@@ -66,8 +66,9 @@ describe('src | helpers | getShareURL', () => {
           const offerId = 'AB'
           const mediationId = 'CD'
 
-          const expected = 'http://localhost/decouverte/AB/CD?shared_by=v9'
-          expect(getShareURL(user, offerId, mediationId)).toBe(expected)
+          expect(getShareURL(user, offerId, mediationId)).toBe(
+            'http://localhost/offre/details/AB/CD?shared_by=v9'
+          )
         })
       })
     })

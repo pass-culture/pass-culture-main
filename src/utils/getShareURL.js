@@ -8,7 +8,7 @@ const getShareURL = (user = {}, offerId = '', mediationId = 'vide') => {
 
   const { id } = user
   const origin = window.location.origin
-  return `${origin}/decouverte/${offerId}/${mediationId}?shared_by=${id}`
+  return `${origin}/offre/details/${offerId}/${mediationId}?shared_by=${id}`
 }
 
 export default getShareURL

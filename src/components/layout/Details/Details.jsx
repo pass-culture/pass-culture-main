@@ -21,11 +21,9 @@ class Details extends PureComponent {
   componentDidMount() {
     this.handleSetIsDetailsView()
     const { getOfferById, match } = this.props
-    const { params, path = '' } = match
+    const { params } = match
     const { offerId } = params
-    if (path.includes('recherche-offres')) {
-      getOfferById(offerId)
-    }
+    getOfferById(offerId)
   }
 
   componentDidUpdate() {
@@ -80,7 +78,7 @@ class Details extends PureComponent {
 Details.defaultProps = {
   bookingPath: '',
   cancelView: false,
-  getOfferById: () => {}
+  getOfferById: () => null,
 }
 
 Details.propTypes = {
@@ -91,7 +89,7 @@ Details.propTypes = {
     path: PropTypes.string,
     params: PropTypes.shape({
       details: PropTypes.string,
-      offerId: PropTypes.string
+      offerId: PropTypes.string,
     }),
   }).isRequired,
 }

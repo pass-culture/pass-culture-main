@@ -49,13 +49,13 @@ describe('src | components | layout | Details | Details', () => {
       })
     })
 
-    it('should fetch offer using offer id when coming from search', () => {
+    it('should fetch offer using offer id when getOfferById props is given', () => {
       // given
       props.match = {
+        getOfferById: jest.fn(),
         params: {
-          offerId: 'AE'
+          offerId: 'AE',
         },
-        path: '/recherche-offres/details/AE'
       }
 
       // when
@@ -65,13 +65,12 @@ describe('src | components | layout | Details | Details', () => {
       expect(props.getOfferById).toHaveBeenCalledWith('AE')
     })
 
-    it('should not fetch offer when not coming from search', () => {
+    it('should not fetch offer when getOfferById props is not given', () => {
       // given
       props.match = {
         params: {
-          offerId: 'AE'
+          offerId: 'AE',
         },
-        path: '/decouverte/details/AE'
       }
 
       // when
