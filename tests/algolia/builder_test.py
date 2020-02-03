@@ -289,7 +289,7 @@ class BuildObjectTest:
         assert '_geoloc' not in result
 
     @clean_database
-    def test_should_return_event_beginning_datetimes_as_timestamp_when_exist(self, app):
+    def test_should_return_event_beginning_datetimes_as_timestamp_when_event(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
@@ -303,3 +303,19 @@ class BuildObjectTest:
 
         # Then
         assert result['offer']['dates'] == [1546387200.0, 1546300800.0]
+
+    @clean_database
+    def test_should_not_return_event_beginning_datetimes_as_timestamp_when_thing(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer = create_offer_with_thing_product(venue=venue)
+        stock1 = create_stock(offer=offer)
+        stock2 = create_stock(offer=offer)
+        repository.save(stock1, stock2)
+
+        # When
+        result = build_object(offer)
+
+        # Then
+        assert result['offer']['dates'] == []
