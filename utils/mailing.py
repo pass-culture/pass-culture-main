@@ -241,22 +241,6 @@ def make_venue_to_validate_email(venue: Venue) -> Dict:
         'Html-part': html
     }
 
-
-def make_reset_password_email(user, app_origin_url):
-    email_html = render_template(
-        'mails/user_reset_password_email.html',
-        user=user,
-        app_origin_url=app_origin_url
-    )
-
-    return {
-        'FromName': 'pass Culture',
-        'FromEmail': SUPPORT_EMAIL_ADDRESS,
-        'Subject': 'Réinitialisation de votre mot de passe',
-        'Html-part': email_html
-    }
-
-
 def make_user_validation_email(user: User, app_origin_url: str, is_webapp: bool) -> Dict:
     if is_webapp:
         data = make_webapp_user_validation_email(user, app_origin_url)
