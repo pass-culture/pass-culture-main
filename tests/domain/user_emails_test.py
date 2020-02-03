@@ -7,8 +7,11 @@ from domain.user_emails import send_beneficiary_booking_cancellation_email, \
     send_validation_confirmation_email_to_pro, send_batch_cancellation_emails_to_users, \
     send_offerer_bookings_recap_email_after_offerer_cancellation, send_user_validation_email, \
     send_venue_validation_confirmation_email, \
-    send_reset_password_email_to_user, send_activation_email, send_reset_password_email_to_pro, \
-    send_attachment_validation_email_to_pro_offerer, send_ongoing_offerer_attachment_information_email_to_pro
+    send_reset_password_email_to_user, \
+    send_activation_email, \
+    send_reset_password_email_to_pro, \
+    send_attachment_validation_email_to_pro_offerer, \
+    send_ongoing_offerer_attachment_information_email_to_pro
 from models import Offerer
 from repository import repository
 from tests.conftest import clean_database
@@ -17,48 +20,7 @@ from tests.model_creators.generic_creators import create_booking, create_user, c
 from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_offer_with_thing_product
 from tests.test_utils import create_mocked_bookings
-
-class SendResetPasswordProEmailTest:
-    # TODO
-    # send_reset_password_email_to_pro
-
-class SendResetPasswordUserEmailTest:
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
-    def when_feature_send_emails_enabled_sends_a_reset_password_email_to_user(self,
-                                                                              feature_send_mail_to_users_enabled,
-                                                                              app):
-        # given
-        user = create_user(email='bobby@test.com', public_name='bobby', reset_password_token='AZ45KNB99H')
-        mocked_send_email = Mock()
-
-        # when
-        send_reset_password_email(user, mocked_send_email, 'localhost')
-
-        # then
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        data = args[1]['data']
-        assert data['FromName'] == 'pass Culture'
-        assert data['FromEmail'] == 'support@passculture.app'
-        assert data['Subject'] == 'Réinitialisation de votre mot de passe'
-        assert data['To'] == 'bobby@test.com'
-
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False)
-    def when_feature_send_emails_disabled_sends_email_to_pass_culture_dev(self, feature_send_mail_to_users_enabled,
-                                                                          app):
-        # given
-        user = create_user(email='bobby@test.com', public_name='bobby', reset_password_token='AZ45KNB99H')
-        mocked_send_email = Mock()
-
-        # when
-        send_reset_password_email(user, mocked_send_email, 'localhost')
-
-        # then
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        email = args[1]['data']
-        assert email['To'] == 'dev@passculture.app'
-        assert 'This is a test' in email['Html-part']
+from utils.config import API_URL
 
 
 class SendBeneficiaryBookingCancellationEmailTest:
@@ -183,8 +145,10 @@ class SendBookingConfirmationEmailToBeneficiaryTest:
 
 class SendBookingRecapEmailsTest:
     @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False)
+    @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
     def when_feature_send_mail_to_users_disabled_sends_email_to_pass_culture_dev(self,
-                                                                                 feature_send_mail_to_users_enabled):
+                                                                                 mock_feature_send_mail_to_users_enabled,
+                                                                                 app):
         # given
         user = create_user()
         offerer = create_offerer()
@@ -201,11 +165,12 @@ class SendBookingRecapEmailsTest:
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
         data = args[1]['data']
-        assert data['To'] == 'dev@passculture.app'
+        assert data['To'] == 'dev@example.com'
 
     @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
     def when_feature_send_mail_to_users_enabled_and_offer_booking_email_sends_to_offerer_and_administration(self,
-                                                                                                            feature_send_mail_to_users_enabled):
+                                                                                                            mock_feature_send_mail_to_users_enabled,
+                                                                                                            app):
         # given
         user = create_user()
         offerer = create_offerer()
@@ -227,7 +192,8 @@ class SendBookingRecapEmailsTest:
 
     @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
     def when_feature_send_mail_to_users_enabled_and_not_offer_booking_email_sends_only_to_administration(
-            self, feature_send_mail_to_users_enabled):
+            self,
+            feature_send_mail_to_users_enabled):
         # given
         user = create_user()
         offerer = create_offerer()
@@ -250,9 +216,11 @@ class SendBookingRecapEmailsTest:
 class SendFinalBookingRecapEmailTest:
     @patch('domain.user_emails.set_booking_recap_sent_and_save')
     @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False)
+    @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
     def when_feature_send_mail_to_users_disabled_sends_email_to_pass_culture_dev(self,
-                                                                                 feature_send_mail_to_users_enabled,
-                                                                                 set_booking_recap_sent_and_save):
+                                                                                 mock_feature_send_mail_to_users_enabled,
+                                                                                 mock_set_booking_recap_sent_and_save,
+                                                                                 app):
         # given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -265,14 +233,14 @@ class SendFinalBookingRecapEmailTest:
         # then
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'dev@passculture.app'
-        set_booking_recap_sent_and_save.assert_called_once_with(stock)
+        assert args[1]['data']['To'] == 'dev@example.com'
+        mock_set_booking_recap_sent_and_save.assert_called_once_with(stock)
 
     @patch('domain.user_emails.set_booking_recap_sent_and_save')
     @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
     def when_feature_send_mail_to_users_enabled_and_offer_booking_email_sends_to_offerer_and_support(self,
                                                                                                      feature_send_mail_to_users_enabled,
-                                                                                                     set_booking_recap_sent_and_save):
+                                                                                                     mock_set_booking_recap_sent_and_save):
         # given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -287,12 +255,13 @@ class SendFinalBookingRecapEmailTest:
         args = mocked_send_email.call_args
         assert 'offer.booking.email@example.net' in args[1]['data']['To']
         assert 'administration@passculture.app' in args[1]['data']['To']
-        set_booking_recap_sent_and_save.assert_called_once_with(stock)
+        mock_set_booking_recap_sent_and_save.assert_called_once_with(stock)
 
     @patch('domain.user_emails.set_booking_recap_sent_and_save')
     @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
-    def when_feature_send_mail_to_users_enabled_and_not_offer_booking_email_sends_only_to_administration(
-            self, feature_send_mail_to_users_enabled, set_booking_recap_sent_and_save):
+    def when_feature_send_mail_to_users_enabled_and_not_offer_booking_email_sends_only_to_administration(self,
+                                                                                                         feature_send_mail_to_users_enabled,
+                                                                                                         mock_set_booking_recap_sent_and_save):
         # given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -306,7 +275,7 @@ class SendFinalBookingRecapEmailTest:
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
         assert args[1]['data']['To'] == 'administration@passculture.app'
-        set_booking_recap_sent_and_save.assert_called_once_with(stock)
+        mock_set_booking_recap_sent_and_save.assert_called_once_with(stock)
 
 
 class SendValidationConfirmationEmailTest:
@@ -395,9 +364,10 @@ class SendVenueValidationConfirmationEmailTest:
     @patch('domain.user_emails.make_venue_validated_email', return_value={'Html-part': ''})
     @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
     def when_feature_send_mail_to_users_enabled_sends_email_to_all_users_linked_to_offerer(self,
-                                                                                           feature_send_mail_to_users_enabled,
-                                                                                           make_venue_validated_email,
-                                                                                           find_all_emails_of_user_offerers_admins):
+                                                                                           mock_feature_send_mail_to_users_enabled,
+                                                                                           mock_make_venue_validated_email,
+                                                                                           mock_find_all_emails_of_user_offerers_admins,
+                                                                                           app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -407,7 +377,7 @@ class SendVenueValidationConfirmationEmailTest:
         send_venue_validation_confirmation_email(venue, mocked_send_email)
 
         # Then
-        make_venue_validated_email.assert_called_once_with(venue)
+        mock_make_venue_validated_email.assert_called_once_with(venue)
 
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
@@ -417,10 +387,12 @@ class SendVenueValidationConfirmationEmailTest:
            return_value=['admin1@example.com', 'admin2@example.com'])
     @patch('domain.user_emails.make_venue_validated_email', return_value={'Html-part': ''})
     @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False)
+    @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
     def when_feature_send_mail_to_users_enabled_sends_email_to_pass_culutre_dev(self,
-                                                                                feature_send_mail_to_users_enabled,
-                                                                                make_venue_validated_email,
-                                                                                find_all_emails_of_user_offerers_admins):
+                                                                                mock_feature_send_mail_to_users_enabled,
+                                                                                mock_make_venue_validated_email,
+                                                                                mock_find_all_emails_of_user_offerers_admins,
+                                                                                app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -430,11 +402,11 @@ class SendVenueValidationConfirmationEmailTest:
         send_venue_validation_confirmation_email(venue, mocked_send_email)
 
         # Then
-        make_venue_validated_email.assert_called_once_with(venue)
+        mock_make_venue_validated_email.assert_called_once_with(venue)
 
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'dev@passculture.app'
+        assert args[1]['data']['To'] == 'dev@example.com'
 
 
 class SendUserValidationEmailTest:
@@ -455,41 +427,6 @@ class SendUserValidationEmailTest:
         mocked_send_email.assert_called_once()
         make_user_validation_email.assert_called_once()
         mocked_send_email.call_args[1]['To'] = user.email
-
-
-class SendResetPasswordEmailWithMailjetTemplateTest:
-    @patch('emails.user_reset_password.feature_send_mail_to_users_enabled', return_value=True)
-    def when_feature_send_emails_enabled_sends_a_reset_password_email_to_user(self,
-                                                                              feature_send_mail_to_users_enabled):
-        # given
-        user = create_user(email='bobby@example.net', public_name='bobby', reset_password_token='AZ45KNB99H')
-        mocked_send_email = Mock()
-
-        # when
-        send_reset_password_email_to_user(user, mocked_send_email)
-
-        # then
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        data = args[1]['data']
-        assert data['FromEmail'] == 'support@passculture.app'
-        assert data['To'] == 'bobby@example.net'
-
-    @patch('emails.user_reset_password.feature_send_mail_to_users_enabled', return_value=False)
-    def when_feature_send_emails_disabled_sends_email_to_pass_culture_dev(self,
-                                                                          feature_send_mail_to_users_enabled):
-        # given
-        user = create_user(email='bobby@example.net', public_name='bobby', reset_password_token='AZ45KNB99H')
-        mocked_send_email = Mock()
-
-        # when
-        send_reset_password_email_to_user(user, mocked_send_email)
-
-        # then
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        email = args[1]['data']
-        assert email['To'] == 'dev@passculture.app'
 
 
 class SendActivationEmailTest:
@@ -526,9 +463,9 @@ class SendAttachmentValidationEmailToProOffererTest:
     @patch('emails.offerer_attachment_validation.SUPPORT_EMAIL_ADDRESS', 'support@passculture.app')
     @clean_database
     def test_should_return_true_when_email_data_are_valid(self,
-                                                          feature_send_mail_to_users_enabled,
-                                                          format_environment_for_email,
-                                                          find_user_offerer_email,
+                                                          mock_feature_send_mail_to_users_enabled,
+                                                          mock_format_environment_for_email,
+                                                          mock_find_user_offerer_email,
                                                           app):
         # given
         user = create_user(email='pro@example.com')
@@ -594,3 +531,93 @@ class SendOngoingOffererAttachmentInformationEmailTest:
         # then
         mock_retrieve_data_for_offerer_ongoing_attachment_email.assert_called_once_with(user_offerer_2)
         mocked_send_email.assert_called_once_with(data={'Mj-TemplateID': 778749})
+
+
+class SendResetPasswordProEmailTest:
+    @patch('emails.pro_reset_password.feature_send_mail_to_users_enabled', return_value=True)
+    @patch('emails.pro_reset_password.format_environment_for_email', return_value='fake-env')
+    def when_feature_send_emails_enabled_sends_a_reset_password_email_to_pro_user(self,
+                                                                                  mock_format_environment_for_email,
+                                                                                  mock_feature_send_mail_to_users_enabled,
+                                                                                  app):
+        # given
+        user = create_user(email='pro@example.com', reset_password_token='AZ45KNB99H')
+        mocked_send_email = Mock()
+
+        # when
+        send_reset_password_email_to_pro(user, mocked_send_email)
+
+        # then
+        mocked_send_email.assert_called_once()
+        args = mocked_send_email.call_args
+        data = args[1]['data']
+        user_reset_password_token = user.resetPasswordToken
+        reinit_password_url = f'{API_URL}/mot-de-passe-perdu?token=?token{user_reset_password_token}'
+
+        assert data['FromEmail'] == 'support@passculture.app'
+        assert data['MJ-TemplateID'] == 779295
+        assert data['To'] == 'pro@example.com'
+        assert data['Vars']['lien_nouveau_mdp'] == reinit_password_url
+        assert data['Vars']['env'] == 'fake-env'
+
+    @patch('emails.pro_reset_password.feature_send_mail_to_users_enabled', return_value=False)
+    @patch('emails.pro_reset_password.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    def when_feature_send_emails_disabled_sends_email_to_pass_culture_dev(self,
+                                                                          mock_feature_send_mail_to_users_enabled,
+                                                                          app):
+        # given
+        user = create_user(email='pro@example.com', reset_password_token='AZ45KNB99H')
+        mocked_send_email = Mock()
+
+        # when
+        send_reset_password_email_to_pro(user, mocked_send_email)
+
+        # then
+        mocked_send_email.assert_called_once()
+        args = mocked_send_email.call_args
+        email = args[1]['data']
+        assert email['To'] == 'dev@example.com'
+
+
+class SendResetPasswordUserEmailTest:
+    @patch('emails.user_reset_password.feature_send_mail_to_users_enabled', return_value=True)
+    @patch('emails.user_reset_password.format_environment_for_email', return_value='fake-env')
+    def when_feature_send_emails_enabled_sends_a_reset_password_email_to_user(self,
+                                                                              mock_feature_send_mail_to_users_enabled,
+                                                                              app):
+        # given
+        user = create_user(email='bobby@example.com', first_name='Bobby', reset_password_token='AZ45KNB99H')
+        mocked_send_email = Mock()
+
+        # when
+        send_reset_password_email_to_user(user, mocked_send_email)
+
+        # then
+        mocked_send_email.assert_called_once()
+        args = mocked_send_email.call_args
+        data = args[1]['data']
+        user_reset_password_token = user.resetPasswordToken
+        assert data['FromEmail'] == 'support@passculture.app'
+        assert data['MJ-TemplateID'] == 912168
+        assert data['To'] == 'bobby@example.com'
+        assert data['Vars']['prenom_user'] == 'Bobby'
+        assert data['Vars']['token'] == user_reset_password_token
+        assert data['Vars']['env'] == 'fake-env'
+
+    @patch('emails.user_reset_password.feature_send_mail_to_users_enabled', return_value=False)
+    @patch('emails.user_reset_password.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    def when_feature_send_emails_disabled_sends_email_to_pass_culture_dev(self,
+                                                                          mock_feature_send_mail_to_users_enabled,
+                                                                          app):
+        # given
+        user = create_user(email='bobby@example.com', first_name='bobby', reset_password_token='AZ45KNB99H')
+        mocked_send_email = Mock()
+
+        # when
+        send_reset_password_email_to_user(user, mocked_send_email)
+
+        # then
+        mocked_send_email.assert_called_once()
+        args = mocked_send_email.call_args
+        email = args[1]['data']
+        assert email['To'] == 'dev@example.com'
