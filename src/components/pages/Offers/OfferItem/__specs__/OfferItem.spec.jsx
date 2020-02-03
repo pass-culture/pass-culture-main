@@ -168,7 +168,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
           // then
           expect(offerPreviewLink).toHaveLength(1)
-          expect(offerPreviewLink.prop('href')).toMatch('/decouverte/M4/HA')
+          expect(offerPreviewLink.prop('href')).toMatch('/offre/details/M4/HA')
         })
 
         it('should open a new window with correct link', () => {
@@ -182,7 +182,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
           jest.spyOn(global.window, 'focus').mockImplementation(() => {})
 
-          const url = 'http://localhost/decouverte/M4/HA'
+          const url = 'http://localhost/offre/details/M4/HA'
 
           // when
           offerPreviewLink.simulate('click', { preventDefault: jest.fn() })

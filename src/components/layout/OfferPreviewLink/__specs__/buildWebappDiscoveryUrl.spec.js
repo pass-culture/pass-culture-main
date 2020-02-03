@@ -27,7 +27,7 @@ describe('src | components | pages | Offer | utils | buildWebappDiscoveryUrl', (
     const discoveryUrl = buildWebappDiscoveryUrl(offerId, mediationId)
 
     // then
-    expect(discoveryUrl).toStrictEqual('http://localhost:3000/decouverte/AN/AM')
+    expect(discoveryUrl).toStrictEqual('http://localhost:3000/offre/details/AN/AM')
   })
 
   it('should return webapp URL with same domain when app is on remote env', () => {
@@ -47,6 +47,6 @@ describe('src | components | pages | Offer | utils | buildWebappDiscoveryUrl', (
     const discoveryUrl = buildWebappDiscoveryUrl(offerId, mediationId)
 
     // then
-    expect(discoveryUrl).toStrictEqual('https://app.passculture-test.beta.gouv.fr/decouverte/AN/AM')
+    expect(discoveryUrl).toStrictEqual('https://app.passculture-test.beta.gouv.fr/offre/details/AN/AM')
   })
 })

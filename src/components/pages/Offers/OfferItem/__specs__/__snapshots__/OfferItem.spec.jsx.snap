@@ -180,7 +180,7 @@ ShallowWrapper {
             <li>
               <OfferPreviewLink
                 className="button is-secondary is-small offer-preview-link"
-                href="http://localhost/decouverte/M4/HA"
+                href="http://localhost/offre/details/M4/HA"
                 onClick={[Function]}
               />
             </li>
@@ -329,7 +329,7 @@ ShallowWrapper {
               <li>
                 <OfferPreviewLink
                   className="button is-secondary is-small offer-preview-link"
-                  href="http://localhost/decouverte/M4/HA"
+                  href="http://localhost/offre/details/M4/HA"
                   onClick={[Function]}
                 />
               </li>
@@ -683,7 +683,7 @@ ShallowWrapper {
                 <li>
                   <OfferPreviewLink
                     className="button is-secondary is-small offer-preview-link"
-                    href="http://localhost/decouverte/M4/HA"
+                    href="http://localhost/offre/details/M4/HA"
                     onClick={[Function]}
                   />
                 </li>,
@@ -814,7 +814,7 @@ ShallowWrapper {
                 "props": Object {
                   "children": <OfferPreviewLink
                     className="button is-secondary is-small offer-preview-link"
-                    href="http://localhost/decouverte/M4/HA"
+                    href="http://localhost/offre/details/M4/HA"
                     onClick={[Function]}
                   />,
                 },
@@ -825,7 +825,7 @@ ShallowWrapper {
                   "nodeType": "function",
                   "props": Object {
                     "className": "button is-secondary is-small offer-preview-link",
-                    "href": "http://localhost/decouverte/M4/HA",
+                    "href": "http://localhost/offre/details/M4/HA",
                     "onClick": [Function],
                   },
                   "ref": null,
@@ -1071,7 +1071,7 @@ ShallowWrapper {
               <li>
                 <OfferPreviewLink
                   className="button is-secondary is-small offer-preview-link"
-                  href="http://localhost/decouverte/M4/HA"
+                  href="http://localhost/offre/details/M4/HA"
                   onClick={[Function]}
                 />
               </li>
@@ -1220,7 +1220,7 @@ ShallowWrapper {
                 <li>
                   <OfferPreviewLink
                     className="button is-secondary is-small offer-preview-link"
-                    href="http://localhost/decouverte/M4/HA"
+                    href="http://localhost/offre/details/M4/HA"
                     onClick={[Function]}
                   />
                 </li>
@@ -1574,7 +1574,7 @@ ShallowWrapper {
                   <li>
                     <OfferPreviewLink
                       className="button is-secondary is-small offer-preview-link"
-                      href="http://localhost/decouverte/M4/HA"
+                      href="http://localhost/offre/details/M4/HA"
                       onClick={[Function]}
                     />
                   </li>,
@@ -1705,7 +1705,7 @@ ShallowWrapper {
                   "props": Object {
                     "children": <OfferPreviewLink
                       className="button is-secondary is-small offer-preview-link"
-                      href="http://localhost/decouverte/M4/HA"
+                      href="http://localhost/offre/details/M4/HA"
                       onClick={[Function]}
                     />,
                   },
@@ -1716,7 +1716,7 @@ ShallowWrapper {
                     "nodeType": "function",
                     "props": Object {
                       "className": "button is-secondary is-small offer-preview-link",
-                      "href": "http://localhost/decouverte/M4/HA",
+                      "href": "http://localhost/offre/details/M4/HA",
                       "onClick": [Function],
                     },
                     "ref": null,

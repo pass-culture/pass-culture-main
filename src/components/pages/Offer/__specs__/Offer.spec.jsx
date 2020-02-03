@@ -485,7 +485,7 @@ describe('src | components | pages | Offer | Offer ', () => {
 
         // then
         const preview_link = preview_section.find('OfferPreviewLink')
-        expect(preview_link.prop('href')).toMatch('/decouverte/VAG/MED')
+        expect(preview_link.prop('href')).toMatch('/offre/details/VAG/MED')
       })
     })
 
