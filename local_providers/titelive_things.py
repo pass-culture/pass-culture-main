@@ -39,7 +39,8 @@ class TiteLiveThings(LocalProvider):
         self.thing_files = self.get_remaining_files_to_check(ordered_thing_files)
 
         self.data_lines = None
-        self.thing_file = None
+        self.products_file = None
+        self.product_extra_data = {}
 
     def __next__(self) -> Optional[List[ProvidableInfo]]:
         if self.data_lines is None:
@@ -57,66 +58,58 @@ class TiteLiveThings(LocalProvider):
                                     "number of elements mismatch")
             return []
 
-        self.infos = get_infos_from_data_line(elements)
+        self.product_infos = get_infos_from_data_line(elements)
 
-        is_school_related_product = self.infos['is_scolaire'] == '1' \
-                                    or self.infos['code_csr'] in SCHOOL_RELATED_CSR_CODE
+        self.product_type, self.product_extra_data['bookFormat'] = get_thing_type_and_extra_data_from_titelive_type(
+            self.product_infos['code_support'])
+        book_unique_identifier = self.product_infos['ean13']
 
-        is_paper_press_product = self.infos['taux_tva'] == PAPER_PRESS_TVA \
-                                    and self.infos['code_support'] == PAPER_PRESS_SUPPORT_CODE
-
-        book_unique_identifier = self.infos['ean13']
-
-        if is_school_related_product or is_paper_press_product:
+        if self.product_is_not_eligible_for_offer_creation():
             try:
                 product_queries.delete_unwanted_existing_product(book_unique_identifier)
             except ProductWithBookingsException:
                 self.log_provider_event(LocalProviderEventType.SyncError,
-                                        f"Error deleting product with ISBN: {self.infos['ean13']}")
+                                        f"Error deleting product with ISBN: {self.product_infos['ean13']}")
             return []
 
-        self.extraData = {}
-        self.product_type, self.extraData['bookFormat'] = get_thing_type_and_extra_data_from_titelive_type(
-            self.infos['code_support'])
-
-        if not self.product_type:
-            try:
-                product_queries.delete_unwanted_existing_product(book_unique_identifier)
-            except ProductWithBookingsException:
-                self.log_provider_event(LocalProviderEventType.SyncError,
-                                        f"Error deleting product with ISBN: {self.infos['ean13']}")
-            return []
-
-        book_information_last_update = read_things_date(self.infos['date_updated'])
+        book_information_last_update = read_things_date(self.product_infos['date_updated'])
         providable_info = self.create_providable_info(Product,
                                                       book_unique_identifier,
                                                       book_information_last_update)
         return [providable_info]
 
-    def fill_object_attributes(self, product: Product):
-        product.name = trim_with_elipsis(self.infos['titre'], 140)
-        product.datePublished = read_things_date(self.infos['date_parution'])
-        product.type = self.product_type
-        product.extraData = self.extraData.copy()
-        product.extraData.update(get_extra_data_from_infos(self.infos))
+    def product_is_not_eligible_for_offer_creation(self) -> bool:
+        is_school_related_product = self.product_infos['is_scolaire'] == '1' \
+                                    or self.product_infos['code_csr'] in SCHOOL_RELATED_CSR_CODE
 
-        if self.infos['url_extrait_pdf'] != '':
+        is_paper_press_product = self.product_infos['taux_tva'] == PAPER_PRESS_TVA \
+                                 and self.product_infos['code_support'] == PAPER_PRESS_SUPPORT_CODE
+        return is_school_related_product or is_paper_press_product or not self.product_type
+
+    def fill_object_attributes(self, product: Product):
+        product.name = trim_with_elipsis(self.product_infos['titre'], 140)
+        product.datePublished = read_things_date(self.product_infos['date_parution'])
+        product.type = self.product_type
+        product.extraData = self.product_extra_data.copy()
+        product.extraData.update(get_extra_data_from_infos(self.product_infos))
+
+        if self.product_infos['url_extrait_pdf'] != '':
             if product.mediaUrls is None:
                 product.mediaUrls = []
 
-            product.mediaUrls.append(self.infos['url_extrait_pdf'])
+            product.mediaUrls.append(self.product_infos['url_extrait_pdf'])
 
     def open_next_file(self):
-        if self.thing_file:
-            file_date = get_date_from_filename(self.thing_file, DATE_REGEXP)
+        if self.products_file:
+            file_date = get_date_from_filename(self.products_file, DATE_REGEXP)
             self.log_provider_event(LocalProviderEventType.SyncPartEnd,
                                     file_date)
-        self.thing_file = next(self.thing_files)
-        file_date = get_date_from_filename(self.thing_file, DATE_REGEXP)
+        self.products_file = next(self.thing_files)
+        file_date = get_date_from_filename(self.products_file, DATE_REGEXP)
         self.log_provider_event(LocalProviderEventType.SyncPartStart,
                                 file_date)
 
-        self.data_lines = get_lines_from_thing_file(str(self.thing_file))
+        self.data_lines = get_lines_from_thing_file(str(self.products_file))
 
     def get_remaining_files_to_check(self, ordered_thing_files: list) -> iter:
         latest_sync_part_end_event = local_provider_event_queries.find_latest_sync_part_end_event(self.provider)
