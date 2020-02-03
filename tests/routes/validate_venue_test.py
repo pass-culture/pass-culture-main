@@ -35,10 +35,8 @@ class Get:
             venue.generate_validation_token()
             repository.save(venue)
 
-            token = venue.validationToken
-
             # When
-            response = TestClient(app.test_client()).get('/validate/venue?token={}'.format(token))
+            response = TestClient(app.test_client()).get('/validate/venue?token={}'.format(venue.validationToken))
 
             # Then
             assert response.status_code == 202
