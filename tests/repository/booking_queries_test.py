@@ -51,10 +51,9 @@ class FindAllOffererBookingsByVenueIdTest:
         assert len(bookings) == 2
 
     @clean_database
-    def test_returns_bookings_on_given_venue(self, app):
+    def test_returns_expected_bookings_on_given_venue(self, app):
         # given
         user = create_user()
-        now = datetime.utcnow()
         create_deposit(user, amount=1600)
         offerer1 = create_offerer(siren='123456789')
         offerer2 = create_offerer(siren='987654321')
@@ -75,9 +74,10 @@ class FindAllOffererBookingsByVenueIdTest:
         bookings = booking_queries.find_all_bookings_info(offerer1.id, venue_id=venue1.id)
 
         # then
-        assert len(bookings) == 2
-        assert bookings[0].quantity == booking2.quantity
-        assert bookings[1].quantity == booking1.quantity
+        ordered_bookings_by_quantity = sorted(bookings, key=lambda booking: booking.quantity)
+        assert len(ordered_bookings_by_quantity) == 2
+        assert ordered_bookings_by_quantity[0].quantity == booking1.quantity
+        assert ordered_bookings_by_quantity[1].quantity == booking2.quantity
 
     @clean_database
     def test_returns_bookings_on_given_venue_and_thing_offer_and_date(self, app):
