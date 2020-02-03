@@ -36,9 +36,6 @@ def post_for_password_token():
     email = request.get_json()['email']
     user = find_user_by_email(email)
 
-    # is_offerer = UserOfferer.query.filter_by(userId=user.id).first()
-    # TODO
-
     if not user:
         return '', 204
 
