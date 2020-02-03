@@ -33,7 +33,7 @@ class Patch:
             assert response.json['siret'] == siret
 
         @clean_database
-        @patch('routes.venues.redis.add_venue_id_to_list')
+        @patch('routes.venues.redis.add_venue_id')
         def when_updating_a_venue_on_public_name_expect_relative_venue_id_to_be_added_to_redis(self, mock_add_venue_id_to_redis, app):
             # Given
             offerer = create_offerer()
@@ -55,7 +55,7 @@ class Patch:
             mock_add_venue_id_to_redis.assert_called_once_with(client=app.redis_client, venue_id=venue.id)
 
         @clean_database
-        @patch('routes.venues.redis.add_venue_id_to_list')
+        @patch('routes.venues.redis.add_venue_id')
         def when_updating_a_venue_on_siret_expect_relative_venue_id_to_not_be_added_to_redis(self, mock_add_venue_id_to_redis, app):
             # Given
             offerer = create_offerer()

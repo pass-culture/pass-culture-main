@@ -16,7 +16,7 @@ MODULE_PATH = Path(os.path.dirname(os.path.realpath(__file__)))
 class Post:
     class Returns201:
         @clean_database
-        @patch('routes.mediations.redis.add_offer_id_to_list')
+        @patch('routes.mediations.redis.add_offer_id')
         @patch('routes.mediations.read_thumb')
         def when_mediation_is_created_with_thumb_url(self, read_thumb, mock_redis, app):
             # given
@@ -47,7 +47,7 @@ class Post:
             assert response.status_code == 201
 
         @clean_database
-        @patch('routes.mediations.redis.add_offer_id_to_list')
+        @patch('routes.mediations.redis.add_offer_id')
         def when_mediation_is_created_with_thumb_file(self, mock_redis, app):
             # given
             user = create_user()
@@ -77,7 +77,7 @@ class Post:
             assert response.status_code == 201
 
         @clean_database
-        @patch('routes.mediations.redis.add_offer_id_to_list')
+        @patch('routes.mediations.redis.add_offer_id')
         def should_add_offer_id_to_redis_when_mediation_is_created_with_thumb(self, mock_redis, app):
             # given
             user = create_user()

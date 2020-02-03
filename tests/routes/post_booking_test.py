@@ -715,7 +715,7 @@ class Post:
             # Then
             assert response.status_code == 201
 
-        @patch('routes.bookings.redis.add_offer_id_to_list')
+        @patch('routes.bookings.redis.add_offer_id')
         @clean_database
         def when_booking_expect_offer_id_to_be_added_to_redis(self, mock_add_offer_id_to_redis, app):
             # Given

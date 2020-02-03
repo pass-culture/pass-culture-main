@@ -27,7 +27,7 @@ def create_mediation():
     check_thumb_quality(thumb)
     repository.save(mediation)
     save_thumb(mediation, thumb, 0, crop=_get_crop(request.form))
-    redis.add_offer_id_to_list(client=app.redis_client, offer_id=offer_id)
+    redis.add_offer_id(client=app.redis_client, offer_id=offer_id)
     return jsonify(as_dict(mediation)), 201
 
 
@@ -48,7 +48,7 @@ def update_mediation(mediation_id):
     data = request.json
     mediation.populate_from_dict(data)
     repository.save(mediation)
-    redis.add_offer_id_to_list(client=app.redis_client, offer_id=mediation.offerId)
+    redis.add_offer_id(client=app.redis_client, offer_id=mediation.offerId)
     return jsonify(as_dict(mediation, includes=MEDIATION_INCLUDES)), 200
 
 

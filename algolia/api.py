@@ -25,7 +25,7 @@ def add_object(object: Dict) -> None:
         .save_object(object)
 
 
-def clear_objects() -> None:
+def clean_algolia_index() -> None:
     init_connection() \
         .clear_objects()
 

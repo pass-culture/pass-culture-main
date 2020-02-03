@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
 
-from algolia.rules_engine import is_eligible_for_indexing
+from algolia.rules_engine import is_eligible_for_indexing, is_eligible_for_reindexing
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_stock, create_venue, create_booking, \
     create_user, create_deposit
-from tests.model_creators.specific_creators import create_offer_with_thing_product
+from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 
 YESTERDAY = datetime.now() - timedelta(days=1)
 TOMORROW = datetime.now() + timedelta(days=1)
@@ -181,3 +181,69 @@ class IsEligibleForIndexingTest:
 
         # Then
         assert is_eligible is True
+
+
+class IsEligibleForReindexingTest:
+    @clean_database
+    def test_should_return_false_when_offer_name_has_not_changed(self, app):
+        # Given
+        offerer = create_offerer(is_active=True, validation_token=None)
+        venue = create_venue(offerer=offerer, validation_token=None)
+        offer = create_offer_with_thing_product(thing_name='super offre', venue=venue)
+        stock = create_stock(offer=offer)
+        repository.save(stock)
+
+        # When
+        result = is_eligible_for_reindexing(offer=offer, offer_details={'name': 'super offre', 'dateRange': []})
+
+        # Then
+        assert result is False
+
+    @clean_database
+    def test_should_return_true_when_offer_name_has_changed(self, app):
+        # Given
+        offerer = create_offerer(is_active=True, validation_token=None)
+        venue = create_venue(offerer=offerer, validation_token=None)
+        offer = create_offer_with_thing_product(thing_name='super offre de dingue', venue=venue)
+        stock = create_stock(offer=offer)
+        repository.save(stock)
+
+        # When
+        result = is_eligible_for_reindexing(offer=offer, offer_details={'name': 'super offre', 'dateRange': []})
+
+        # Then
+        assert result is True
+
+    @clean_database
+    def test_should_return_false_when_stocks_have_not_changed(self, app):
+        # Given
+        offerer = create_offerer(is_active=True, validation_token=None)
+        venue = create_venue(offerer=offerer, validation_token=None)
+        offer = create_offer_with_event_product(event_name='super offre', venue=venue)
+        stock = create_stock(beginning_datetime=datetime(2020, 1, 1), end_datetime=datetime(2020, 1, 2), offer=offer)
+        repository.save(stock)
+
+        # When
+        result = is_eligible_for_reindexing(offer=offer,
+                                            offer_details={'name': 'super offre',
+                                                           'dateRange': ['2020-01-01 00:00:00', '2020-01-02 00:00:00']})
+
+        # Then
+        assert result is False
+
+    @clean_database
+    def test_should_return_true_when_stocks_have_changed(self, app):
+        # Given
+        offerer = create_offerer(is_active=True, validation_token=None)
+        venue = create_venue(offerer=offerer, validation_token=None)
+        offer = create_offer_with_event_product(event_name='super offre', venue=venue)
+        stock = create_stock(beginning_datetime=datetime(2020, 1, 1), end_datetime=datetime(2020, 1, 2), offer=offer)
+        repository.save(stock)
+
+        # When
+        result = is_eligible_for_reindexing(offer=offer,
+                                            offer_details={'name': 'super offre',
+                                                           'dateRange': ['2019-01-01 00:00:00', '2019-01-02 00:00:00']})
+
+        # Then
+        assert result is True

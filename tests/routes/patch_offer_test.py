@@ -39,7 +39,7 @@ class Patch:
             assert response.status_code == 200
             assert Offer.query.get(offer.id).bookingEmail == 'offer@example.com'
 
-        @patch('routes.offers.redis.add_offer_id_to_list')
+        @patch('routes.offers.redis.add_offer_id')
         @clean_database
         def when_updating_an_offer_expect_offer_id_to_be_added_to_redis(self, mock_add_offer_id_to_redis, app):
             # Given

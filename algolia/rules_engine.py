@@ -19,3 +19,14 @@ def is_eligible_for_indexing(offer: Offer) -> bool:
         return True
 
     return False
+
+
+def is_eligible_for_reindexing(offer: Offer, offer_details: dict) -> bool:
+    offer_name = offer.name
+    offer_date_range = list(map(str, offer.dateRange.datetimes))
+    indexed_offer_name = offer_details['name']
+    indexed_offer_date_range = offer_details['dateRange']
+    offer_name_has_changed = offer_name != indexed_offer_name
+    stocks_have_changed = offer_date_range != indexed_offer_date_range
+
+    return offer_name_has_changed or stocks_have_changed

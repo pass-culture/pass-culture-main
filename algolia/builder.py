@@ -10,7 +10,7 @@ def build_object(offer: Offer) -> Dict:
     offerer = venue.managingOfferer
     humanize_offer_id = humanize(offer.id)
     has_coordinates = venue.latitude is not None and venue.longitude is not None
-    date_range = map(str, offer.dateRange.datetimes)
+    date_range = list(map(str, offer.dateRange.datetimes))
     author = offer.extraData and offer.extraData.get('author')
     stage_director = offer.extraData and offer.extraData.get('stageDirector')
     visa = offer.extraData and offer.extraData.get('visa')
@@ -25,14 +25,14 @@ def build_object(offer: Offer) -> Dict:
     dates = []
     if offer.isEvent:
         stocks = offer.notDeletedStocks
-        dates = map(lambda stock: datetime.timestamp(stock.beginningDatetime), stocks)
+        dates = list(map(lambda stock: datetime.timestamp(stock.beginningDatetime), stocks))
 
     object_to_index = {
         'objectID': humanize_offer_id,
         'offer': {
             'author': author,
-            'dateRange': list(date_range),
-            'dates': list(dates),
+            'dateRange': date_range,
+            'dates': dates,
             'description': offer.description,
             'id': humanize_offer_id,
             'isbn': isbn,

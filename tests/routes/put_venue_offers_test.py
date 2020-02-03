@@ -145,7 +145,7 @@ class Put:
             assert response.json[0]['stockAlertMessage'] == 'encore 22 places'
 
 
-        @patch('routes.venues.redis.add_venue_id_to_list')
+        @patch('routes.venues.redis.add_venue_id')
         @clean_database
         def when_activating_all_venue_offers_expect_venue_id_to_be_added_to_redis(self, mock_redis, app):
             # Given
@@ -227,7 +227,7 @@ class Put:
             assert response.json[0]['stockAlertMessage'] == 'plus de places pour toutes les dates'
 
 
-        @patch('routes.venues.redis.add_venue_id_to_list')
+        @patch('routes.venues.redis.add_venue_id')
         @clean_database
         def when_deactivating_all_venue_offers_expect_venue_id_to_be_added_to_redis(self, mock_redis, app):
             # Given

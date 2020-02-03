@@ -86,7 +86,7 @@ def create_stock():
     new_stock = Stock(from_dict=request_data)
     repository.save(new_stock)
 
-    redis.add_offer_id_to_list(client=app.redis_client, offer_id=offer_id)
+    redis.add_offer_id(client=app.redis_client, offer_id=offer_id)
 
     return jsonify(as_dict(new_stock)), 201
 
@@ -118,7 +118,7 @@ def edit_stock(stock_id):
     stock.populate_from_dict(stock_data)
     repository.save(stock)
 
-    redis.add_offer_id_to_list(client=app.redis_client, offer_id=stock.offerId)
+    redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
     return jsonify(as_dict(stock)), 200
 
@@ -143,6 +143,6 @@ def delete_stock(id):
 
     repository.save(stock, *bookings)
 
-    redis.add_offer_id_to_list(client=app.redis_client, offer_id=stock.offerId)
+    redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
     return jsonify(as_dict(stock)), 200
