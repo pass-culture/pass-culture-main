@@ -43,8 +43,16 @@ EVENT_INCLUDES = [
 ]
 
 OFFER_INCLUDES = [
-    'isNotBookable',
+    "isDigital",
+    "isDuo",
+    "isEditable",
+    "isEvent",
     'isFullyBooked',
+    'isNotBookable',
+    "isThing",
+    "lastProvider",
+    "offerType",
+    "stockAlertMessage",
     {
         "key": "activeMediation",
         "includes": ["thumbUrl"]
@@ -53,14 +61,6 @@ OFFER_INCLUDES = [
         "key": "mediations",
         "includes": ["thumbUrl"]
     },
-    "stockAlertMessage",
-    "isEditable",
-    "isEvent",
-    "isDigital",
-    "isDuo",
-    "isThing",
-    "stockAlertMessage",
-    "lastProvider",
     {
         "key": "product",
         "includes": [
