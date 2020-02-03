@@ -2,6 +2,7 @@ const OFFER_TYPE_PICTO = {
   AUDIOVISUEL: 'visite',
   CINEMA: 'visite',
   CINEMA_ABO: 'visite',
+  CINEMA_CARD: 'visite',
   CONFERENCE_DEBAT_DEDICACE: 'conference',
   INSTRUMENT: 'atelier',
   JEUX: 'jeu',
@@ -18,7 +19,7 @@ const OFFER_TYPE_PICTO = {
   PRATIQUE_ARTISTIQUE: 'atelier',
   PRESSE_ABO: 'livre',
   SPECTACLE_VIVANT: 'spectacle',
-  SPECTACLE_VIVANT_ABO: 'spectacle',
+  SPECTACLE_VIVANT_ABO: 'spectacle'
 }
 
 export default OFFER_TYPE_PICTO
