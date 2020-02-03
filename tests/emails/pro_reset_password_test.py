@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from emails.user_reset_password import retrieve_data_for_reset_password_pro_email
+from emails.pro_reset_password import retrieve_data_for_reset_password_pro_email
 from repository import repository
 from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 from tests.conftest import clean_database
@@ -24,8 +24,6 @@ class MakeProResetPasswordEmailDataTest:
         user_offerer = create_user_offerer(pro, offerer)
 
         repository.save(user_offerer)
-
-        print('------------------- pro.canBookFreeOffers', pro.canBookFreeOffers)
 
         # When
         reset_password_email_data = retrieve_data_for_reset_password_pro_email(user=pro)
