@@ -30,7 +30,7 @@ export const formatEndValidityDate = date => {
     month: 'long',
     day: 'numeric',
   }
-  date.setFullYear(date.getFullYear() + 1)
+  date.setFullYear(date.getFullYear() + 2)
 
   return `${date.toLocaleDateString('fr-FR', options)}`
 }

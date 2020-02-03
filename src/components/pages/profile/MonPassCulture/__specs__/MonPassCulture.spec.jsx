@@ -144,7 +144,7 @@ describe('src | components | MonPassCulture', () => {
       const textWithEndValidityDate = wrapper.find(endValidityDateId).text()
 
       // then
-      expect(textWithEndValidityDate).toBe('Votre crédit est valable jusqu’au 2020 M09 10.')
+      expect(textWithEndValidityDate).toBe('Votre crédit est valable jusqu’au 2021 M09 10.')
     })
 
     it('should not render end validity date when user has no deposit', () => {

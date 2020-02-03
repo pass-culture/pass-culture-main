@@ -78,7 +78,7 @@ ShallowWrapper {
             className="fs15 mt12"
             id="profile-end-validity-date"
           >
-            Votre crédit est valable jusqu’au 2020 M09 10.
+            Votre crédit est valable jusqu’au 2021 M09 10.
           </div>
         </div>,
       ],
@@ -167,7 +167,7 @@ ShallowWrapper {
               className="fs15 mt12"
               id="profile-end-validity-date"
             >
-              Votre crédit est valable jusqu’au 2020 M09 10.
+              Votre crédit est valable jusqu’au 2021 M09 10.
             </div>,
           ],
           "className": "text-containers mt12 py12 mr8",
@@ -245,12 +245,12 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": "Votre crédit est valable jusqu’au 2020 M09 10.",
+              "children": "Votre crédit est valable jusqu’au 2021 M09 10.",
               "className": "fs15 mt12",
               "id": "profile-end-validity-date",
             },
             "ref": null,
-            "rendered": "Votre crédit est valable jusqu’au 2020 M09 10.",
+            "rendered": "Votre crédit est valable jusqu’au 2021 M09 10.",
             "type": "div",
           },
         ],
@@ -308,7 +308,7 @@ ShallowWrapper {
               className="fs15 mt12"
               id="profile-end-validity-date"
             >
-              Votre crédit est valable jusqu’au 2020 M09 10.
+              Votre crédit est valable jusqu’au 2021 M09 10.
             </div>
           </div>,
         ],
@@ -397,7 +397,7 @@ ShallowWrapper {
                 className="fs15 mt12"
                 id="profile-end-validity-date"
               >
-                Votre crédit est valable jusqu’au 2020 M09 10.
+                Votre crédit est valable jusqu’au 2021 M09 10.
               </div>,
             ],
             "className": "text-containers mt12 py12 mr8",
@@ -475,12 +475,12 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": "Votre crédit est valable jusqu’au 2020 M09 10.",
+                "children": "Votre crédit est valable jusqu’au 2021 M09 10.",
                 "className": "fs15 mt12",
                 "id": "profile-end-validity-date",
               },
               "ref": null,
-              "rendered": "Votre crédit est valable jusqu’au 2020 M09 10.",
+              "rendered": "Votre crédit est valable jusqu’au 2021 M09 10.",
               "type": "div",
             },
           ],

@@ -1,7 +1,7 @@
 import { dateStringPlusTimeZone, formatEndValidityDate, formatRecommendationDates } from '../date'
 
-describe('src | utils | date | date', () => {
-  describe('formatEndValidityDate()', () => {
+describe('src | utils | date', () => {
+  describe('formatEndValidityDate', () => {
     it('should return formatted date', () => {
       // given
       const date = new Date('2019-09-10T08:05:45.778894Z')
@@ -10,11 +10,11 @@ describe('src | utils | date | date', () => {
       const formattedDate = formatEndValidityDate(date)
 
       // then
-      expect(formattedDate).toBe('2020 M09 10')
+      expect(formattedDate).toBe('2021 M09 10')
     })
   })
 
-  describe('formatRecommendationDates()', () => {
+  describe('formatRecommendationDates', () => {
     describe('when there is no date given', () => {
       it('should return permanent', () => {
         // given
@@ -60,7 +60,7 @@ describe('src | utils | date | date', () => {
     })
   })
 
-  describe('dateStringPlusTimeZone()', () => {
+  describe('dateStringPlusTimeZone', () => {
     it('should return date string plus the time zone', () => {
       // given
       const dateString = '2019-10-10T20:00:00Z'
