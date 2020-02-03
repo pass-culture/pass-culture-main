@@ -33,6 +33,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
         id: 'DG',
       },
       stocks: [],
+      updateStockInformations: jest.fn(),
     }
   })
 
@@ -409,7 +410,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
       expect(props.handleSetErrors).toHaveBeenCalledWith()
     })
 
-    it('should dispatch request data', () => {
+    it('should call updateStockInformations', () => {
       // given
       const wrapper = shallow(<StockItem {...props} />)
       const formValues = {
@@ -423,25 +424,20 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
       wrapper.instance().handleOnFormSubmit(formValues)
 
       // then
-      const result = {
-        config: {
-          apiPath: '/stocks/DG',
-          body: {
-            available: null,
-            price: 0,
-            bookingLimitDatetime: '2019-03-13T22:00:00Z',
-            beginningDatetime: '2019-03-13T22:00:00Z',
-          },
-          handleFail: expect.any(Function),
-          handleSuccess: expect.any(Function),
-          method: 'POST',
+      expect(props.updateStockInformations).toHaveBeenCalledWith(
+        'DG',
+        {
+          available: null,
+          price: 0,
+          bookingLimitDatetime: '2019-03-13T22:00:00Z',
+          beginningDatetime: '2019-03-13T22:00:00Z',
         },
-        type: 'REQUEST_DATA_POST_/STOCKS/DG',
-      }
-      expect(props.dispatch).toHaveBeenCalledWith(result)
+        expect.any(Function),
+        expect.any(Function)
+      )
     })
 
-    it('should dispatch request data when offer is Event and booking limit date time is not provided', () => {
+    it('should call updateStockInformations when offer is Event and booking limit date time is not provided', () => {
       // given
       const wrapper = shallow(<StockItem {...props} />)
       const formValues = {
@@ -453,20 +449,14 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
       wrapper.instance().handleOnFormSubmit(formValues)
 
       // then
-      const result = {
-        config: {
-          apiPath: '/stocks/DG',
-          body: {
-            bookingLimitDatetime: '2019-03-13T23:00:00Z',
-            beginningDatetime: '2019-03-13T23:00:00Z',
+
+      expect(props.updateStockInformations).toHaveBeenCalledWith('DG',
+          {
+            bookingLimitDatetime: '2019-03-13T22:00:00Z',
+            beginningDatetime: '2019-03-13T22:00:00Z',
           },
-          handleFail: expect.any(Function),
-          handleSuccess: expect.any(Function),
-          method: 'POST',
-        },
-        type: 'REQUEST_DATA_POST_/STOCKS/DG',
-      }
-      expect(props.dispatch).toHaveBeenCalledWith(result)
+          expect.any(Function),
+          expect.any(Function))
     })
   })
 
@@ -476,7 +466,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
       const wrapper = shallow(<StockItem {...props} />)
 
       // when
-      wrapper.instance().handleRequestSuccess(jest.fn())()
+      wrapper.instance().handleRequestSuccess(jest.fn())
 
       // then
       expect(props.query.changeToReadOnly).toHaveBeenCalledWith(null, {

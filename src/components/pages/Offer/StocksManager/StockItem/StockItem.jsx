@@ -34,12 +34,12 @@ class StockItem extends PureComponent {
     this.tbodyElement = element
   }
 
-  handleRequestFail = formResolver => (state, action) => {
+  handleRequestFail = (state, action) => {
     const { handleSetErrors } = this.props
     const {
       payload: { errors },
     } = action
-    const nextState = { isRequestPending: false }
+    this.setState({ isRequestPending: false })
     const frenchErrors = Object.keys(errors)
       .filter(errorKeyToFrenchKey)
       .reduce(
@@ -47,20 +47,15 @@ class StockItem extends PureComponent {
           Object.assign({ [errorKeyToFrenchKey(errorKey)]: errors[errorKey] }, result),
         null
       )
-    this.setState(nextState, () => {
-      handleSetErrors(frenchErrors)
-      formResolver
-    })
+    handleSetErrors(frenchErrors)
   }
 
-  handleRequestSuccess = formResolver => () => {
+  handleRequestSuccess = () => {
     const { query, stockPatch } = this.props
     const { id: stockId } = stockPatch
-    const nextState = { isRequestPending: false }
-    this.setState(nextState, () => {
-      query.changeToReadOnly(null, { id: stockId, key: 'stock' })
-      formResolver()
-    })
+
+    this.setState({ isRequestPending: false })
+    query.changeToReadOnly(null, { id: stockId, key: 'stock' })
   }
 
   handleOnFormSubmit = formValues => {
@@ -212,7 +207,6 @@ StockItem.defaultProps = {
 
 StockItem.propTypes = {
   closeInfo: PropTypes.func.isRequired,
-  dispatch: PropTypes.func.isRequired,
   hasIban: PropTypes.bool.isRequired,
   history: PropTypes.shape().isRequired,
   isEvent: PropTypes.bool.isRequired,

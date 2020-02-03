@@ -86,8 +86,8 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
         requestData({
           apiPath: `/stocks/${stockId || ''}`,
           body,
-          handleSuccess: handleSuccess(Promise.resolve()),
-          handleFail: handleFail(Promise.resolve()),
+          handleSuccess: handleSuccess,
+          handleFail: handleFail,
           method,
         })
       )

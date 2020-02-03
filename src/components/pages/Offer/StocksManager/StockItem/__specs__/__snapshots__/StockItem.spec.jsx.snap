@@ -15,8 +15,9 @@ ShallowWrapper {
     }
     isEvent={true}
     offer={
-      Object {
-        "id": "TY",
+      OfferObject {
+        "id": undefined,
+        "lastProvider": null,
       }
     }
     query={
@@ -33,6 +34,7 @@ ShallowWrapper {
     }
     stocks={Array []}
     timezone={null}
+    updateStockInformations={[MockFunction]}
     venue={Object {}}
   />,
   Symbol(enzyme.__renderer__): Object {

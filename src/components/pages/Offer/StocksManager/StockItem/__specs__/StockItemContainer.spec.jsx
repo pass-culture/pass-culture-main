@@ -1,64 +1,7 @@
-import { mount } from 'enzyme'
-import { createBrowserHistory } from 'history'
-import React from 'react'
-import { Provider } from 'react-redux'
-import { Route, Router, Switch } from 'react-router-dom'
-import configureStore from 'redux-mock-store'
-
-import StockItemContainer, { mapStateToProps } from '../StockItemContainer'
+import { mapStateToProps, mapDispatchToProps } from '../StockItemContainer'
 import state from '../../../../../utils/mocks/state'
-import { mapDispatchToProps } from '../StockItemContainer'
 
-describe('mount', () => {
-  it('should reset the form when click on cancel button', () => {
-    // given
-    const history = createBrowserHistory()
-    history.push(`/offres/AE?gestion&stockAE=modification`)
-    const middleWares = []
-    const mockStore = configureStore(middleWares)
-    const stock = { offerId: 'AE', id: 'AE' }
-    const store = mockStore({
-      data: {
-        offers: [{ id: 'AE', venueId: 'AE' }],
-        offerers: [{ id: 'AE' }],
-        products: [{ id: 'AE' }],
-        stocks: [stock],
-        venues: [{ id: 'AE', managingOffererId: 'AE' }],
-      },
-    })
-
-    const props = {
-      closeInfo: jest.fn(),
-      isEvent: true,
-      showInfo: jest.fn(),
-      stock,
-    }
-
-    const wrapper = mount(
-      <Provider store={store}>
-        <Router history={history}>
-          <Switch>
-            <Route path="/offres/:offerId">
-              <StockItemContainer {...props} />
-            </Route>
-          </Switch>
-        </Router>
-      </Provider>
-    )
-
-    // when
-    wrapper.find("input[name='beginningTime']").simulate('change', { target: { value: '12:13' } })
-
-    expect(wrapper.find("input[name='beginningTime']").props().value).toStrictEqual('12:13')
-
-    // when
-    const cancelButton = wrapper.find('button[type="reset"]')
-    cancelButton.simulate('click')
-
-    // then
-    expect(wrapper.find("input[name='beginningTime']").props().value).toStrictEqual('')
-  })
-
+describe('stockItemContainer', () => {
   describe('mapStateToProps', () => {
     describe('when adding stock to one offer', () => {
       it('should map correctly the state', () => {
@@ -165,15 +108,17 @@ describe('mount', () => {
       const ownProps = {
         query: {
           context: jest.fn().mockReturnValue({
-            method: '',
+            method: 'PATCH',
           }),
         },
         stockPatch: {
-          id: '',
-          stockId: '',
+          id: 'stockId',
+          stockId: 'stockId',
         },
       }
-      const body = ''
+      const body = {
+        updatedField: 'updatedValue',
+      }
       const stockId = 'stockId'
 
       // when
@@ -188,12 +133,14 @@ describe('mount', () => {
       expect(dispatch).toHaveBeenCalledWith({
         config: {
           apiPath: '/stocks/stockId',
-          body: '',
-          handleSuccess,
-          handleFail,
-          method: '',
+          body: {
+            updatedField: 'updatedValue',
+          },
+          handleSuccess: handleSuccess,
+          handleFail: handleFail,
+          method: 'PATCH',
         },
-        type: 'REQUEST_DATA__/STOCKS/STOCKID',
+        type: 'REQUEST_DATA_PATCH_/STOCKS/STOCKID',
       })
     })
   })
