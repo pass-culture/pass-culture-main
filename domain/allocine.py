@@ -35,5 +35,4 @@ def get_editable_fields_for_allocine_offer(offer: Offer, allocine_class_name: st
     provider_class = get_local_provider_class_by_name(local_class)
     if local_class == allocine_class_name:
         return provider_class.manually_editable_fields
-    else:
-        return []
+    return []

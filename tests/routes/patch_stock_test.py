@@ -259,18 +259,18 @@ class Patch:
         def when_update_allocine_offer_with_new_values_for_non_editable_fields(self, app):
             # given
             allocine_provider = get_provider_by_local_class('AllocineStocks')
-            user = create_user(email='test@email.com')
+            pro = create_user()
             offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
+            user_offerer = create_user_offerer(pro, offerer)
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue, last_provider_id=allocine_provider.id,
                                                     id_at_providers='test')
             stock = create_stock(offer=offer, available=10, id_at_providers='test-test')
-            repository.save(user, user_offerer, stock)
+            repository.save(pro, user_offerer, stock)
             humanized_stock_id = humanize(stock.id)
 
             # when
-            request_update = TestClient(app.test_client()).with_auth('test@email.com') \
+            request_update = TestClient(app.test_client()).with_auth(pro.email) \
                 .patch(f'/stocks/{humanized_stock_id}',
                        json={'available': 5, 'price': 20, 'endDatetime': '2020-02-08T14:30:00Z'})
 
