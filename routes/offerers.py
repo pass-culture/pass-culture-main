@@ -4,7 +4,7 @@ from flask_login import current_user, login_required
 from domain.admin_emails import maybe_send_offerer_validation_email
 from domain.user_emails import send_ongoing_offerer_attachment_information_email_to_pro, \
     send_pro_user_waiting_for_validation_by_admin_email
-from models import Offerer, RightsType, Venue, User
+from models import Offerer, RightsType, Venue, User, UserOfferer
 from models.venue import create_digital_venue
 from repository import repository
 from repository.offerer_queries import filter_offerers_with_keywords_string, \
@@ -102,9 +102,9 @@ def create_offerer():
         repository.save(offerer, digital_venue, user_offerer)
         user = User.query.filter_by(id=user_offerer.userId).first()
 
-        _send_to_pro_offer_validation_in_progress_email(user, send_raw_email, offerer)
+        _send_to_pro_offer_validation_in_progress_email(user, offerer)
 
-    _send_to_pc_admin_offerer_validation_email(offerer, user_offerer, send_raw_email)
+    _send_to_pc_admin_offerer_to_validate_email(offerer, user_offerer)
 
     return jsonify(get_dict_offerer(offerer)), 201
 
@@ -121,17 +121,18 @@ def patch_offerer(offererId):
     repository.save(offerer)
     return jsonify(get_dict_offerer(offerer)), 200
 
-def _send_to_pro_offer_validation_in_progress_email(user, send_raw_email, offerer):
+
+def _send_to_pro_offer_validation_in_progress_email(user: User, offerer: Offerer) -> bool:
     try:
         send_pro_user_waiting_for_validation_by_admin_email(user, send_raw_email, offerer)
     except MailServiceException as mail_service_exception:
         app.logger.error('[send_pro_user_waiting_for_validation_by_admin_email] '
                          'Mail service failure', mail_service_exception)
 
-def _send_to_pc_admin_offerer_validation_email(offerer, user_offerer, send_raw_email):
+
+def _send_to_pc_admin_offerer_to_validate_email(offerer: Offerer, user_offerer: UserOfferer) -> bool:
     try:
         maybe_send_offerer_validation_email(offerer, user_offerer, send_raw_email)
     except MailServiceException as mail_service_exception:
         app.logger.error('[maybe_send_offerer_validation_email] '
                          'Mail service failure', mail_service_exception)
-
