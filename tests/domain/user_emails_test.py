@@ -20,7 +20,7 @@ from tests.model_creators.generic_creators import create_booking, create_user, c
 from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_offer_with_thing_product
 from tests.test_utils import create_mocked_bookings
-from utils.config import API_URL
+from utils.config import PRO_URL
 
 
 class SendBeneficiaryBookingCancellationEmailTest:
@@ -552,7 +552,7 @@ class SendResetPasswordProEmailTest:
         args = mocked_send_email.call_args
         data = args[1]['data']
         user_reset_password_token = user.resetPasswordToken
-        reinit_password_url = f'{API_URL}/mot-de-passe-perdu?token=?token{user_reset_password_token}'
+        reinit_password_url = f'{PRO_URL}/mot-de-passe-perdu?token=?token{user_reset_password_token}'
 
         assert data['FromEmail'] == 'support@passculture.app'
         assert data['MJ-TemplateID'] == 779295
