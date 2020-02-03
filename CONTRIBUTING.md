@@ -15,7 +15,7 @@ Les critères utilisés pour définir à quel niveau il faut placer des règles 
 
 2. On utilisera `validation.models` :
     - Lorsque la règle de validation est partagée par plusieurs points d'entrée (route API, script) ;
-    - Lorsqu'on effectue des opérations en base de données via l'ORM et qu'on souhaite valider la cohérence de celles-ci ;
+    - Lorsqu'on souhaite que certaines conditions soient respectées lors des opérations manuelles effectuées via l'ORM pour assurer la cohérence de nos données ;
         - exemple : tentative d'enregistrement d'un lieu avec un siret non conforme (dont les premiers chiffres ne correspondent pas au siren).
 
 3. On utilisera les `constraints` et `triggers` :
