@@ -36,11 +36,10 @@ class Get:
             repository.save(venue)
 
             # When
-            response = TestClient(app.test_client()).get('/validate/venue?token={}'.format(venue.validationToken))
+            response = TestClient(app.test_client()).get(f'/validate/venue?token={venue.validationToken}')
 
             # Then
             assert response.status_code == 202
-            db.session.refresh(venue)
             assert mock_redis_add_venue_id.call_count == 1
             assert mock_redis_add_venue_id.call_args_list == [
                 call(client=app.redis_client, venue_id=venue.id)
