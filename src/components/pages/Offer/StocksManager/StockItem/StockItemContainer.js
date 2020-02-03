@@ -9,6 +9,7 @@ import { translateQueryParamsToApiParams } from '../../../../../utils/translate'
 import { selectVenueById } from '../../../../../selectors/data/venuesSelectors'
 import { selectOffererById } from '../../../../../selectors/data/offerersSelectors'
 import { selectOfferById } from '../../../../../selectors/data/offersSelectors'
+import { requestData } from 'redux-saga-data'
 
 const getTimezoneFromDepartementCode = departementCode => {
   switch (departementCode) {
@@ -74,7 +75,30 @@ export const mapStateToProps = (state, ownProps) => {
   }
 }
 
+export const mapDispatchToProps = (dispatch, ownProps) => {
+  const { query } = ownProps
+
+  return {
+    updateStockInformations: (stockId, body, handleSuccess, handleFail) => {
+      const context = query.context({ id: stockId, key: 'stock' })
+      const { method } = context
+      dispatch(
+        requestData({
+          apiPath: `/stocks/${stockId || ''}`,
+          body,
+          handleSuccess: handleSuccess(Promise.resolve()),
+          handleFail: handleFail(Promise.resolve()),
+          method,
+        })
+      )
+    },
+  }
+}
+
 export default compose(
   withFrenchQueryRouter,
-  connect(mapStateToProps)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
 )(StockItem)

@@ -7,6 +7,7 @@ import configureStore from 'redux-mock-store'
 
 import StockItemContainer, { mapStateToProps } from '../StockItemContainer'
 import state from '../../../../../utils/mocks/state'
+import { mapDispatchToProps } from '../StockItemContainer'
 
 describe('mount', () => {
   it('should reset the form when click on cancel button', () => {
@@ -146,6 +147,53 @@ describe('mount', () => {
 
         // then
         expect(result.offer).toStrictEqual(expected.offer)
+      })
+    })
+  })
+
+  describe('mapDispatchToProps', () => {
+    let dispatch
+
+    beforeEach(() => {
+      dispatch = jest.fn()
+    })
+
+    it('should submit stock item modification', () => {
+      // given
+      const handleSuccess = jest.fn()
+      const handleFail = jest.fn()
+      const ownProps = {
+        query: {
+          context: jest.fn().mockReturnValue({
+            method: '',
+          }),
+        },
+        stockPatch: {
+          id: '',
+          stockId: '',
+        },
+      }
+      const body = ''
+      const stockId = 'stockId'
+
+      // when
+      mapDispatchToProps(dispatch, ownProps).updateStockInformations(
+        stockId,
+        body,
+        handleSuccess,
+        handleFail
+      )
+
+      // then
+      expect(dispatch).toHaveBeenCalledWith({
+        config: {
+          apiPath: '/stocks/stockId',
+          body: '',
+          handleSuccess,
+          handleFail,
+          method: '',
+        },
+        type: 'REQUEST_DATA__/STOCKS/STOCKID',
       })
     })
   })

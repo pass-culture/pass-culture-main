@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
 import { getCanSubmit } from 'react-final-form-utils'
-import { requestData } from 'redux-saga-data'
 
 import EditAndDeleteControl from './sub-components/EditAndDeleteControl/EditAndDeleteControl'
 import EventFields from './sub-components/fields/EventFields/EventFields'
@@ -35,7 +34,7 @@ class StockItem extends PureComponent {
     this.tbodyElement = element
   }
 
-  handleRequestFail = () => (state, action) => {
+  handleRequestFail = formResolver => (state, action) => {
     const { handleSetErrors } = this.props
     const {
       payload: { errors },
@@ -48,7 +47,10 @@ class StockItem extends PureComponent {
           Object.assign({ [errorKeyToFrenchKey(errorKey)]: errors[errorKey] }, result),
         null
       )
-    this.setState(nextState, () => handleSetErrors(frenchErrors))
+    this.setState(nextState, () => {
+      handleSetErrors(frenchErrors)
+      formResolver
+    })
   }
 
   handleRequestSuccess = formResolver => () => {
@@ -62,11 +64,8 @@ class StockItem extends PureComponent {
   }
 
   handleOnFormSubmit = formValues => {
-    const { dispatch, handleSetErrors, query, stockPatch, isEvent } = this.props
+    const { updateStockInformations, handleSetErrors, stockPatch, isEvent } = this.props
     const { id: stockId } = stockPatch
-    const context = query.context({ id: stockId, key: 'stock' })
-    const { method } = context
-    const apiPath = `/stocks/${stockId || ''}`
     this.setState({ isRequestPending: true })
 
     handleSetErrors()
@@ -81,18 +80,7 @@ class StockItem extends PureComponent {
     if (isEvent && body.bookingLimitDatetime === '') {
       body.bookingLimitDatetime = body.beginningDatetime
     }
-    const formSubmitPromise = new Promise(resolve => {
-      dispatch(
-        requestData({
-          apiPath,
-          body,
-          handleFail: this.handleRequestFail(resolve),
-          handleSuccess: this.handleRequestSuccess(resolve),
-          method,
-        })
-      )
-    })
-    return formSubmitPromise
+    return updateStockInformations(stockId, body, this.handleRequestSuccess, this.handleRequestFail)
   }
 
   renderForm = formProps => {
@@ -115,7 +103,6 @@ class StockItem extends PureComponent {
 
     const { isRequestPending, tbodyElement } = this.state
     const { id: stockId } = stockPatch
-    // créer un état updating et ne plus passer par l'URL
     const { readOnly } = query.context({ id: stockId, key: 'stock' })
     const userIsNotUpdatingStock = readOnly
     const stockAssociatingToAllocineOffer = offer.hasBeenProvidedByAllocine
@@ -149,7 +136,7 @@ class StockItem extends PureComponent {
           timezone={timezone}
           venue={venue}
         />
-        {readOnly ? (
+        {userIsNotUpdatingStock ? (
           <EditAndDeleteControl
             dispatch={dispatch}
             formInitialValues={stockPatch}
@@ -235,6 +222,7 @@ StockItem.propTypes = {
   stockPatch: PropTypes.shape().isRequired,
   stocks: PropTypes.arrayOf(PropTypes.shape()),
   timezone: PropTypes.string,
+  updateStockInformations: PropTypes.func.isRequired,
   venue: PropTypes.shape(),
 }
 
