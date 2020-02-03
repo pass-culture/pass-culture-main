@@ -1,3 +1,5 @@
+from unittest.mock import patch, call
+
 from models.db import db
 from repository import repository
 from tests.conftest import clean_database, TestClient
@@ -23,6 +25,28 @@ class Get:
             assert response.status_code == 202
             db.session.refresh(venue)
             assert venue.isValidated
+
+        @patch('routes.validate.redis.add_venue_id')
+        @clean_database
+        def expect_venue_id_to_be_added_to_redis(self, mock_redis_add_venue_id, app):
+            # Given
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            venue.generate_validation_token()
+            repository.save(venue)
+
+            token = venue.validationToken
+
+            # When
+            response = TestClient(app.test_client()).get('/validate/venue?token={}'.format(token))
+
+            # Then
+            assert response.status_code == 202
+            db.session.refresh(venue)
+            assert mock_redis_add_venue_id.call_count == 1
+            assert mock_redis_add_venue_id.call_args_list == [
+                call(client=app.redis_client, venue_id=venue.id)
+            ]
 
     class Returns400:
         @clean_database

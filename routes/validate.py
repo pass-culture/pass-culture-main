@@ -3,6 +3,7 @@
 from flask import current_app as app, jsonify, request
 from flask_login import login_required, current_user
 
+from connectors import redis
 from domain.admin_emails import maybe_send_offerer_validation_email
 from domain.payments import read_message_name_in_message_file, \
     generate_file_checksum
@@ -63,6 +64,7 @@ def validate_venue():
     check_venue_found(venue)
     venue.validationToken = None
     repository.save(venue)
+    redis.add_venue_id(client=app.redis_client, venue_id=venue.id)
 
     try:
         send_venue_validation_confirmation_email(venue, send_raw_email)
