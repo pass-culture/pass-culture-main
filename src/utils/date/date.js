@@ -4,6 +4,8 @@ import 'moment-timezone'
 import { getTimezone } from '../timezone'
 import { capitalize } from 'react-final-form-utils'
 
+const PASS_CULTURE_YEARS_VALIDITY = 2
+
 const formatDate = (date, timeZone) => {
   const options = {
     timeZone,
@@ -30,7 +32,7 @@ export const formatEndValidityDate = date => {
     month: 'long',
     day: 'numeric',
   }
-  date.setFullYear(date.getFullYear() + 2)
+  date.setFullYear(date.getFullYear() + PASS_CULTURE_YEARS_VALIDITY)
 
   return `${date.toLocaleDateString('fr-FR', options)}`
 }

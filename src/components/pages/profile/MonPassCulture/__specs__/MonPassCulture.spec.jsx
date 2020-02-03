@@ -141,9 +141,9 @@ describe('src | components | MonPassCulture', () => {
 
       // when
       const wrapper = shallow(<MonPassCulture {...props} />)
-      const textWithEndValidityDate = wrapper.find(endValidityDateId).text()
 
       // then
+      const textWithEndValidityDate = wrapper.find(endValidityDateId).text()
       expect(textWithEndValidityDate).toBe('Votre crédit est valable jusqu’au 2021 M09 10.')
     })
 
