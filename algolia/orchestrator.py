@@ -83,8 +83,15 @@ def orchestrate_from_venue_provider(client: Redis, offer_ids: List[int]) -> None
 
 def orchestrate_delete_expired_offers(client: Redis, offer_ids: List[int]) -> None:
     if len(offer_ids) > 0:
-        humanized_offer_ids = list(map(lambda offer_id: humanize(offer_id), offer_ids))
-        _process_deleting(client=client, deleting_objects=humanized_offer_ids, offer_ids=offer_ids)
+        humanized_offer_ids = []
+        for offer_id in offer_ids:
+            offer_exists = get_offer_from_hashmap(client=client, offer_id=offer_id)
+
+            if offer_exists:
+                humanized_offer_ids.append(humanize(offer_id))
+
+        if len(humanized_offer_ids) > 0:
+            _process_deleting(client=client, deleting_objects=humanized_offer_ids, offer_ids=offer_ids)
 
 
 def _is_eligible_to_reindexing(offer: Offer, offer_details: dict) -> bool:

@@ -400,14 +400,14 @@ class OrchestrateFromVenueProviderTest:
     @patch('algolia.orchestrator.add_objects')
     @clean_database
     def test_should_not_reindex_offers_that_are_already_indexed_if_offer_name_has_not_changed(self,
-                                                                                             mock_add_objects,
-                                                                                             mock_build_object,
-                                                                                             mock_delete_objects,
-                                                                                             mock_get_offer_from_hashmap,
-                                                                                             mock_get_offer_details_from_hashmap,
-                                                                                             mock_add_offer_to_hashmap,
-                                                                                             mock_delete_offer_ids_from_list,
-                                                                                             app):
+                                                                                              mock_add_objects,
+                                                                                              mock_build_object,
+                                                                                              mock_delete_objects,
+                                                                                              mock_get_offer_from_hashmap,
+                                                                                              mock_get_offer_details_from_hashmap,
+                                                                                              mock_add_offer_to_hashmap,
+                                                                                              mock_delete_offer_ids_from_list,
+                                                                                              app):
         # Given
         client = MagicMock()
         client.pipeline = MagicMock()
@@ -567,13 +567,16 @@ class OrchestrateFromVenueProviderTest:
 
 class OrchestrateDeleteExpiredOffersTest:
     @patch('algolia.orchestrator.delete_offers_from_hashmap')
+    @patch('algolia.orchestrator.get_offer_from_hashmap')
     @patch('algolia.orchestrator.delete_objects')
-    def test_should_delete_expired_offers_from_algolia_when_at_least_one_offer_id(self,
-                                                                                  mock_delete_objects,
-                                                                                  mock_delete_offers_from_hashmap,
-                                                                                  app):
+    def test_should_delete_expired_offers_from_algolia_when_at_least_one_offer_id_and_offers_were_indexed(self,
+                                                                                                          mock_delete_objects,
+                                                                                                          mock_get_offer_from_hashmap,
+                                                                                                          mock_delete_offers_from_hashmap,
+                                                                                                          app):
         # Given
         client = MagicMock()
+        mock_get_offer_from_hashmap.side_effect = [True, True, True]
 
         # When
         orchestrate_delete_expired_offers(client=client, offer_ids=[1, 2, 3])
@@ -596,6 +599,25 @@ class OrchestrateDeleteExpiredOffersTest:
                                                                             app):
         # Given
         client = MagicMock()
+
+        # When
+        orchestrate_delete_expired_offers(client=client, offer_ids=[])
+
+        # Then
+        assert mock_delete_objects.call_count == 0
+        assert mock_delete_offers_from_hashmap.call_count == 0
+
+    @patch('algolia.orchestrator.delete_offers_from_hashmap')
+    @patch('algolia.orchestrator.get_offer_from_hashmap')
+    @patch('algolia.orchestrator.delete_objects')
+    def test_should_not_delete_expired_offers_from_algolia_when_at_least_one_offer_id_but_offers_were_not_indexed(self,
+                                                                                                                  mock_delete_objects,
+                                                                                                                  mock_get_offer_from_hashmap,
+                                                                                                                  mock_delete_offers_from_hashmap,
+                                                                                                                  app):
+        # Given
+        client = MagicMock()
+        mock_get_offer_from_hashmap.side_effect = [False, False, False]
 
         # When
         orchestrate_delete_expired_offers(client=client, offer_ids=[])
