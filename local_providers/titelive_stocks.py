@@ -75,8 +75,8 @@ class TiteLiveStocks(LocalProvider):
 
         self.offer_id = offer.id
 
-        if int(stock_information['available']) == 0:
-            offer.isActive = False
+        offer_has_available_stock = int(stock_information['available']) > 0
+        offer.isActive = offer_has_available_stock
 
     def get_next_offer_id_from_sequence(self):
         sequence = Sequence('offer_id_seq')

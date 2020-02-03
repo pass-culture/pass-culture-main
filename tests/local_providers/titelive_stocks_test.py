@@ -412,3 +412,52 @@ def test_titelive_stock_provider_return_last_elements_as_last_seen_isbn(get_stoc
     assert titelive_stocks.last_seen_isbn == "0002736409898"
     assert Offer.query.count() == 2
     assert Stock.query.count() == 2
+
+
+@clean_database
+@patch('local_providers.local_provider.send_venue_provider_data_to_redis')
+@patch('local_providers.titelive_stocks.get_stocks_information')
+def test_should_activate_offer_when_stocks_are_refilled(get_stocks_information, mock_redis, app):
+    # given
+    get_stocks_information.side_effect = [iter([
+        {
+            "ref": "0002730757438",
+            "available": 0,
+            "price": 4500,
+            "validUntil": "2019-10-31T15:10:27Z"
+        }
+    ]), iter([
+        {
+            "ref": "0002730757438",
+            "available": 2,
+            "price": 4500,
+            "validUntil": "2020-10-31T15:10:27Z"
+        }
+    ])
+    ]
+
+    offerer = create_offerer(siren='775671464')
+    venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
+    repository.save(venue)
+
+    tite_live_things_provider = get_provider_by_local_class('TiteLiveThings')
+    venue_provider = VenueProvider()
+    venue_provider.venue = venue
+    venue_provider.provider = tite_live_things_provider
+    venue_provider.isActive = True
+    venue_provider.venueIdAtOfferProvider = '77567146400110'
+    repository.save(venue_provider)
+
+    product1 = create_product_with_thing_type(id_at_providers='0002730757438')
+    repository.save(product1)
+    titelive_stocks_provider = get_provider_by_local_class('TiteLiveStocks')
+    titelive_stocks_provider.isActive = True
+    repository.save(titelive_stocks_provider)
+    titelive_stocks = TiteLiveStocks(venue_provider)
+
+    # When
+    titelive_stocks.updateObjects()
+
+    # Then
+    offer = Offer.query.one()
+    assert offer.isActive
