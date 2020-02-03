@@ -13,7 +13,7 @@ ShallowWrapper {
         "push": [MockFunction],
       }
     }
-    isEvent={false}
+    isEvent={true}
     offer={
       Object {
         "id": "TY",
@@ -53,6 +53,9 @@ ShallowWrapper {
         decorators={
           Array [
             [Function],
+            [Function],
+            [Function],
+            [Function],
           ]
         }
         initialValues={
@@ -71,6 +74,9 @@ ShallowWrapper {
       "nodeType": "function",
       "props": Object {
         "decorators": Array [
+          [Function],
+          [Function],
+          [Function],
           [Function],
         ],
         "initialValues": Object {
@@ -95,6 +101,9 @@ ShallowWrapper {
           decorators={
             Array [
               [Function],
+              [Function],
+              [Function],
+              [Function],
             ]
           }
           initialValues={
@@ -113,6 +122,9 @@ ShallowWrapper {
         "nodeType": "function",
         "props": Object {
           "decorators": Array [
+            [Function],
+            [Function],
+            [Function],
             [Function],
           ],
           "initialValues": Object {

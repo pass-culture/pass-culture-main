@@ -21,7 +21,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
       handleSetErrors: jest.fn(),
       hasIban: false,
       history: { push: jest.fn() },
-      isEvent: false,
+      isEvent: true,
       offer: {
         id: 'TY',
       },
@@ -138,7 +138,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
         expect(eventFieldComponent.prop('values')).toStrictEqual(expected)
       })
 
-      it('should fill the beginningTime input when beginningDatetime e is updated', () => {
+      it('should fill the beginningTime input when beginningDatetime is updated', () => {
         // when
         const beginningTimeInput = eventFieldComponent
           .find(Field)
@@ -373,6 +373,8 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
       const formValues = {
         available: '',
         price: '',
+        bookingLimitDatetime: '2019-03-13T22:00:00Z',
+        beginningDatetime: '2019-03-13T22:00:00Z',
       }
 
       // when
@@ -385,6 +387,36 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
           body: {
             available: null,
             price: 0,
+            bookingLimitDatetime: '2019-03-13T22:00:00Z',
+            beginningDatetime: '2019-03-13T22:00:00Z',
+          },
+          handleFail: expect.any(Function),
+          handleSuccess: expect.any(Function),
+          method: 'POST',
+        },
+        type: 'REQUEST_DATA_POST_/STOCKS/DG',
+      }
+      expect(props.dispatch).toHaveBeenCalledWith(result)
+    })
+
+    it('should dispatch request data when offer is Event and booking limit date time is not provided', () => {
+      // given
+      const wrapper = shallow(<StockItem {...props} />)
+      const formValues = {
+        bookingLimitDatetime: '',
+        beginningDatetime: '2019-03-13T23:00:00Z',
+      }
+
+      // when
+      wrapper.instance().handleOnFormSubmit(formValues)
+
+      // then
+      const result = {
+        config: {
+          apiPath: '/stocks/DG',
+          body: {
+            bookingLimitDatetime: '2019-03-13T23:00:00Z',
+            beginningDatetime: '2019-03-13T23:00:00Z',
           },
           handleFail: expect.any(Function),
           handleSuccess: expect.any(Function),

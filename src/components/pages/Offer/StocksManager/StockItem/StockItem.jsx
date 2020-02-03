@@ -61,7 +61,7 @@ class StockItem extends PureComponent {
   }
 
   handleOnFormSubmit = formValues => {
-    const { dispatch, handleSetErrors, query, stockPatch } = this.props
+    const { dispatch, handleSetErrors, query, stockPatch, isEvent } = this.props
     const { id: stockId } = stockPatch
     const context = query.context({ id: stockId, key: 'stock' })
     const { method } = context
@@ -77,7 +77,9 @@ class StockItem extends PureComponent {
     if (body.available === '') {
       body.available = null
     }
-
+    if (isEvent && body.bookingLimitDatetime === '') {
+      body.bookingLimitDatetime = body.beginningDatetime
+    }
     const formSubmitPromise = new Promise(resolve => {
       dispatch(
         requestData({

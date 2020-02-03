@@ -122,7 +122,7 @@ class ProductFields extends PureComponent {
         </td>
         <td
           className="tooltiped"
-          title="Laissez vide si pas de limite"
+          title="Si ce champ est vide, les réservations seront possibles jusqu'à l'heure de début de l'événement. S'il est rempli, les réservations seront bloquées à 23h59 à la date saisie."
         >
           <DateField
             maxDate={isEvent ? moment(beginningDatetime) : undefined}

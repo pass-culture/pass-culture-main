@@ -60,7 +60,7 @@ ShallowWrapper {
         </td>,
         <td
           className="tooltiped"
-          title="Laissez vide si pas de limite"
+          title="Si ce champ est vide, les réservations seront possibles jusqu'à l'heure de début de l'événement. S'il est rempli, les réservations seront bloquées à 23h59 à la date saisie."
         >
           <DateField
             className=""
@@ -202,7 +202,7 @@ ShallowWrapper {
             validate={null}
           />,
           "className": "tooltiped",
-          "title": "Laissez vide si pas de limite",
+          "title": "Si ce champ est vide, les réservations seront possibles jusqu'à l'heure de début de l'événement. S'il est rempli, les réservations seront bloquées à 23h59 à la date saisie.",
         },
         "ref": null,
         "rendered": Object {
@@ -317,7 +317,7 @@ ShallowWrapper {
           </td>,
           <td
             className="tooltiped"
-            title="Laissez vide si pas de limite"
+            title="Si ce champ est vide, les réservations seront possibles jusqu'à l'heure de début de l'événement. S'il est rempli, les réservations seront bloquées à 23h59 à la date saisie."
           >
             <DateField
               className=""
@@ -459,7 +459,7 @@ ShallowWrapper {
               validate={null}
             />,
             "className": "tooltiped",
-            "title": "Laissez vide si pas de limite",
+            "title": "Si ce champ est vide, les réservations seront possibles jusqu'à l'heure de début de l'événement. S'il est rempli, les réservations seront bloquées à 23h59 à la date saisie.",
           },
           "ref": null,
           "rendered": Object {

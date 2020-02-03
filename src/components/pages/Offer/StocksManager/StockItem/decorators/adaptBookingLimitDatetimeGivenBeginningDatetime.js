@@ -25,7 +25,7 @@ export const updateBookingLimitDatetime = ({
   beginningDatetime,
   bookingLimitDatetime,
   isEvent,
-  timezone,
+  timezone = null,
 }) => {
   const bookingLimitDatetimeMoment = moment(bookingLimitDatetime)
 
@@ -40,7 +40,9 @@ export const updateBookingLimitDatetime = ({
       return { bookingLimitDatetime: null }
     }
   }
-
+  if (isEvent && bookingLimitDatetime === '') {
+    return { bookingLimitDatetime: '' }
+  }
   if (isEvent && bookingLimitDatetimeMoment.isBefore(beginningDatetime, 'day')) {
     const nextBookingLimitDatetime = setBookingLimitDateTimeTo23h59(
       bookingLimitDatetimeMoment,
