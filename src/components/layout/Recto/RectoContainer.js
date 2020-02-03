@@ -10,16 +10,15 @@ import { selectBookingById } from '../../../selectors/data/bookingsSelectors'
 import { selectStockById } from '../../../selectors/data/stocksSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
-  const { match } = ownProps
+  const { match, recommendation } = ownProps
   const { params } = match
   const { bookingId, offerId } = params
 
-  let result
-  bookingId
-    ? (result = findThumbByBookingId(state, bookingId))
-    : (result = findThumbByOfferId(state, offerId, match))
-
-  return result
+  if (bookingId) {
+    return findThumbByBookingId(state, bookingId)
+  } else {
+    return findThumbByOfferId(state, offerId, match, recommendation)
+  }
 }
 
 export const findThumbByBookingId = (state, bookingId) => {
@@ -44,11 +43,11 @@ export const findThumbByBookingId = (state, bookingId) => {
   return {
     frontText,
     thumbUrl,
-    withMediation,
+    withMediation
   }
 }
 
-export const findThumbByOfferId = (state, offerId, match) => {
+export const findThumbByOfferId = (state, offerId, match, recommendation) => {
   let frontText = ''
   let thumbUrl = ''
   let withMediation = false
@@ -58,14 +57,14 @@ export const findThumbByOfferId = (state, offerId, match) => {
     thumbUrl = selectThumbUrlByRouterMatch(state, match)
   } else {
     frontText = mediation.frontText
-    thumbUrl = mediation.thumbUrl
+    thumbUrl = recommendation ? recommendation.thumbUrl : mediation.thumbUrl
     withMediation = true
   }
 
   return {
     frontText,
     thumbUrl,
-    withMediation,
+    withMediation
   }
 }
 
