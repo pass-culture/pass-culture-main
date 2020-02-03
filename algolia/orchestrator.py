@@ -27,7 +27,9 @@ def orchestrate_from_offer(client: Redis, offer_ids: List[int], is_clear: bool =
     for offer in offers:
         if is_eligible_for_indexing(offer):
             adding_objects.append(build_object(offer=offer))
-            add_offer_to_hashmap(pipeline=pipeline, offer_id=offer.id, offer_details={})
+            add_offer_to_hashmap(pipeline=pipeline,
+                                 offer_id=offer.id,
+                                 offer_details=_build_offer_details_to_be_indexed(offer))
         else:
             offer_exists = get_offer_from_hashmap(client=client, offer_id=offer.id)
             if offer_exists:

@@ -56,8 +56,8 @@ class OrchestrateFromOfferTest:
         ])
         assert mock_add_offer_to_hashmap.call_count == 2
         assert mock_add_offer_to_hashmap.call_args_list == [
-            call(pipeline=mock_pipeline, offer_details={}, offer_id=offer1.id),
-            call(pipeline=mock_pipeline, offer_details={}, offer_id=offer2.id),
+            call(pipeline=mock_pipeline, offer_details={'name': 'Test Book', 'dateRange': []}, offer_id=offer1.id),
+            call(pipeline=mock_pipeline, offer_details={'name': 'Test Book', 'dateRange': []}, offer_id=offer2.id),
         ]
         mock_delete_offers_from_hashmap.assert_not_called()
         mock_delete_objects.assert_not_called()
