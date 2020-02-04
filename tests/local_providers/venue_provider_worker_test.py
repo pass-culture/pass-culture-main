@@ -28,8 +28,8 @@ class UpdateVenuesForSpecificProviderTest:
 
         # Then
         assert mock_do_sync_venue_provider.call_count == 2
-        assert mock_do_sync_venue_provider.call_args_list == [call(venue_provider_titelive2),
-                                                              call(venue_provider_titelive1)]
+        assert call(venue_provider_titelive1) in mock_do_sync_venue_provider.call_args_list
+        assert call(venue_provider_titelive2) in mock_do_sync_venue_provider.call_args_list
 
     @patch.dict('os.environ', {"SYNC_WORKERS_POOL_SIZE": '1'})
     @patch('local_providers.venue_provider_worker.sleep')

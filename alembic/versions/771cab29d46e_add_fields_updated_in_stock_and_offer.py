@@ -1,4 +1,4 @@
-"""add_fields_updated_in_stock_and_offer
+"""add_fieldsupdated_in_models_inheriting_from_providablemixin
 
 Revision ID: 771cab29d46e
 Revises: 5a092d53ee0a
@@ -19,8 +19,21 @@ depends_on = None
 def upgrade():
     op.add_column('stock', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=True))
     op.add_column('offer', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=True))
+    op.add_column('product', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=True))
+    op.add_column('venue', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=True))
+    op.add_column('venue_provider', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=True))
+    op.add_column('bank_information', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=True))
+    op.add_column('offerer', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=True))
+    op.add_column('mediation', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=True))
 
 
 def downgrade():
     op.drop_column('stock', 'fieldsUpdated')
     op.drop_column('offer', 'fieldsUpdated')
+    op.drop_column('product', 'fieldsUpdated')
+    op.drop_column('venue', 'fieldsUpdated')
+    op.drop_column('venue_provider', 'fieldsUpdated')
+    op.drop_column('bank_information', 'fieldsUpdated')
+    op.drop_column('offerer', 'fieldsUpdated')
+    op.drop_column('mediation', 'fieldsUpdated')
+
