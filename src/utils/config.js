@@ -4,7 +4,6 @@ import 'moment-duration-format'
 import 'moment-timezone'
 
 import { version } from '../../package.json'
-import getMobileOperatingSystem from './getMobileOperatingSystem'
 
 moment.locale('fr-fr')
 
@@ -17,13 +16,12 @@ export const {
   URL_FOR_MAINTENANCE,
   WEBAPP_ALGOLIA_APPLICATION_ID,
   WEBAPP_ALGOLIA_SEARCH_API_KEY,
-  WEBAPP_ALGOLIA_INDEX_NAME,
+  WEBAPP_ALGOLIA_INDEX_NAME
 } = process.env
 export const APP_VERSION = version
 export const PROJECT_NAME = 'pass Culture'
 export const IS_DEV = NODE_ENV === 'development'
 export const IS_PROD = !IS_DEV
-export const MOBILE_OS = getMobileOperatingSystem()
 export const WEBAPP_CONTACT_EXTERNAL_PAGE =
   'https://aide.passculture.app/fr/category/18-ans-1dnil5r/'
 

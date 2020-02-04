@@ -1,8 +1,13 @@
 import {
-  computeDistanceInMeters, computeToAroundLatLng,
+  computeDistanceInMeters,
+  computeToAroundLatLng,
   getHumanizeRelativeDistance,
   humanizeDistance,
+  navigationLink
 } from '../geolocation'
+import getMobileOperatingSystem from '../../utils/getMobileOperatingSystem'
+
+jest.mock('../../utils/getMobileOperatingSystem')
 
 describe('src | utils | geolocation', () => {
   describe('getHumanizeRelativeDistance()', () => {
@@ -158,7 +163,7 @@ describe('src | utils | geolocation', () => {
       const result = computeToAroundLatLng(geolocation)
 
       // then
-      expect(result).toStrictEqual('42, 43')
+      expect(result).toBe('42, 43')
     })
 
     it('should return empty value when latitude or longitude are not provided', () => {
@@ -172,7 +177,79 @@ describe('src | utils | geolocation', () => {
       const result = computeToAroundLatLng(geolocation)
 
       // then
-      expect(result).toStrictEqual('')
+      expect(result).toBe('')
+    })
+  })
+
+  describe('navigationLink', () => {
+    describe('when OS is iOS', () => {
+      it('should return google map link', () => {
+        // given
+        const venueLatitude = 10
+        const venueLongitude = 20
+        getMobileOperatingSystem.mockReturnValue('ios')
+
+        // when
+        const link = navigationLink(venueLatitude, venueLongitude)
+
+        // then
+        expect(link).toBe('maps://maps.google.com/maps?daddr=10,20')
+      })
+    })
+
+    describe('when OS is Android', () => {
+      it('should return google map link', () => {
+        // given
+        const venueLatitude = 10
+        const venueLongitude = 20
+        getMobileOperatingSystem.mockReturnValue('android')
+
+        // when
+        const link = navigationLink(venueLatitude, venueLongitude)
+
+        // then
+        expect(link).toBe('http://maps.google.com/maps?daddr=10,20')
+      })
+    })
+
+    describe('when on desktop', () => {
+      describe('when beneficiary is geolocated', () => {
+        it('should return open street map link with itenary', () => {
+          // given
+          const venueLatitude = 10
+          const venueLongitude = 20
+          const userGeolocation = {
+            latitude: 1,
+            longitude: 2
+          }
+          getMobileOperatingSystem.mockReturnValue(null)
+
+          // when
+          const link = navigationLink(venueLatitude, venueLongitude, userGeolocation)
+
+          // then
+          expect(link).toBe('https://www.openstreetmap.org/directions?route=1,2;10,20')
+        })
+      })
+
+      describe('when beneficiary is not geolocated', () => {
+        it('should return open street map link with just venue geolocation', () => {
+          // given
+          const venueLatitude = 10
+          const venueLongitude = 20
+          const userGeolocation = {
+            latitude: null,
+            longitude: null
+          }
+          getMobileOperatingSystem.mockReturnValue(null)
+
+          // when
+          const link = navigationLink(venueLatitude, venueLongitude, userGeolocation)
+
+          // then
+          expect(link).toBe('https://www.openstreetmap.org/directions?route=;10,20')
+        })
+      })
     })
   })
 })

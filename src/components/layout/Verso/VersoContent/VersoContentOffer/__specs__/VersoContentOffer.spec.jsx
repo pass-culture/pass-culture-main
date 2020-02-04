@@ -7,7 +7,7 @@ import VersoActionsBar from '../VersoActionsBar/VersoActionsBar'
 import VersoContentOffer from '../VersoContentOffer'
 
 jest.mock('../../../../../../utils/geolocation', () => ({
-  navigationLink: jest.fn(),
+  navigationLink: jest.fn()
 }))
 
 describe('src | components | layout | Verso | verso-content | VersoContentOffer | VersoContentOffer', () => {
@@ -20,10 +20,10 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
       isEvent: false,
       isThing: true,
       offerType: {
-        appLabel: 'Presse — Abonnements',
+        appLabel: 'Presse — Abonnements'
       },
       product: {
-        description: 'fake description do not use',
+        description: 'fake description do not use'
       },
       productId: 'QE',
       venue: {
@@ -34,8 +34,8 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
         longitude: 48.88381,
         name: 'fake name',
         postalCode: '93230',
-        publicName: 'fake publicName',
-      },
+        publicName: 'fake publicName'
+      }
     }
   })
 
@@ -52,6 +52,10 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
       maxShownDates: 7,
       offer,
       style: 'Rap / Contenders',
+      userGeolocation: {
+        latitude: null,
+        longitude: null
+      }
     }
 
     // when
@@ -70,6 +74,10 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
       isNotBookable: false,
       maxShownDates: 7,
       offer,
+      userGeolocation: {
+        latitude: null,
+        longitude: null
+      }
     }
 
     // when
@@ -88,6 +96,10 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
       isNotBookable: false,
       maxShownDates: 7,
       offer,
+      userGeolocation: {
+        latitude: null,
+        longitude: null
+      }
     }
 
     // when
@@ -109,6 +121,10 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
       isNotBookable: false,
       maxShownDates: 1,
       offer,
+      userGeolocation: {
+        latitude: null,
+        longitude: null
+      }
     }
 
     // when
@@ -124,13 +140,17 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
     const props = {
       bookables: [
         { bookinglimitDatetime: '2019-04-01', id: 1 },
-        { bookinglimitDatetime: '2019-04-01', id: 2 },
+        { bookinglimitDatetime: '2019-04-01', id: 2 }
       ],
       distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
       isNotBookable: false,
       maxShownDates: 1,
       offer,
+      userGeolocation: {
+        latitude: null,
+        longitude: null
+      }
     }
 
     // when
@@ -146,13 +166,17 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
     const props = {
       bookables: [
         { bookinglimitDatetime: undefined, id: 1 },
-        { bookinglimitDatetime: undefined, id: 2 },
+        { bookinglimitDatetime: undefined, id: 2 }
       ],
       distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
       isNotBookable: false,
       maxShownDates: 1,
       offer,
+      userGeolocation: {
+        latitude: null,
+        longitude: null
+      }
     }
 
     // when
@@ -172,6 +196,10 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
       isNotBookable: true,
       maxShownDates: 1,
       offer,
+      userGeolocation: {
+        latitude: null,
+        longitude: null
+      }
     }
 
     // when
@@ -191,6 +219,10 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
       isNotBookable: true,
       maxShownDates: 1,
       offer,
+      userGeolocation: {
+        latitude: null,
+        longitude: null
+      }
     }
 
     // when
@@ -214,6 +246,10 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
       isNotBookable: true,
       maxShownDates: 1,
       offer,
+      userGeolocation: {
+        latitude: null,
+        longitude: null
+      }
     }
 
     // when
@@ -229,20 +265,24 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
 
   describe('distance informations', () => {
     describe('when it is an event or a cultural thing', () => {
-      it('should render distance and itinerary links to the venue', () => {
+      it('should render distance and itinerary link to the venue', () => {
         // given
         const props = {
           bookables: [{ id: 1 }, { id: 2 }],
           distance: '1',
           handleRequestMusicAndShowTypes: jest.fn(),
           offer,
+          userGeolocation: {
+            latitude: null,
+            longitude: null
+          }
         }
 
         // when
         const wrapper = shallow(<VersoContentOffer {...props} />)
 
         // then
-        expect(wrapper.find('a')).toHaveLength(2)
+        expect(wrapper.find('a')).toHaveLength(1)
       })
 
       it('should render distance to the venue', () => {
@@ -252,6 +292,10 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
           distance: '1 km',
           handleRequestMusicAndShowTypes: jest.fn(),
           offer,
+          userGeolocation: {
+            latitude: null,
+            longitude: null
+          }
         }
         navigationLink.mockReturnValue('this is a fake url')
 
@@ -259,13 +303,12 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
         const wrapper = shallow(<VersoContentOffer {...props} />)
 
         // then
-        const venueDistance = wrapper.find('a').first()
-        const iconComponent = venueDistance.find(Icon)
-        expect(venueDistance.prop('href')).toBe('this is a fake url')
-        expect(venueDistance.prop('title')).toBe(
-          'Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre'
-        )
-        expect(venueDistance.find('span').text()).toBe(`À 1 km`)
+        const venueDistance = wrapper.find({ children: 'À 1 km' })
+        const iconComponent = wrapper
+          .find(Icon)
+          .at(0)
+          .find(Icon)
+        expect(venueDistance).toHaveLength(1)
         expect(iconComponent.prop('svg')).toBeDefined()
         expect(iconComponent.prop('alt')).toBe('')
       })
@@ -277,6 +320,10 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
           distance: '1',
           handleRequestMusicAndShowTypes: jest.fn(),
           offer,
+          userGeolocation: {
+            latitude: null,
+            longitude: null
+          }
         }
 
         // when
@@ -294,6 +341,10 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
           distance: '-',
           handleRequestMusicAndShowTypes: jest.fn(),
           offer,
+          userGeolocation: {
+            latitude: null,
+            longitude: null
+          }
         }
         navigationLink.mockReturnValue('this is a fake url')
 
@@ -301,8 +352,8 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
         const wrapper = shallow(<VersoContentOffer {...props} />)
 
         // then
-        const venueDistance = wrapper.find('a').first()
-        expect(venueDistance.find('span').text()).toBe('-')
+        const venueDistance = wrapper.find({ children: '-' })
+        expect(venueDistance).toHaveLength(1)
       })
 
       it('should render itinerary link', () => {
@@ -312,6 +363,10 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
           distance: '1',
           handleRequestMusicAndShowTypes: jest.fn(),
           offer,
+          userGeolocation: {
+            latitude: null,
+            longitude: null
+          }
         }
         navigationLink.mockReturnValue('this is a fake url')
 
@@ -319,7 +374,7 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
         const wrapper = shallow(<VersoContentOffer {...props} />)
 
         // then
-        const venueItinerary = wrapper.find('a').at(1)
+        const venueItinerary = wrapper.find('a').at(0)
         const iconComponent = venueItinerary.find(Icon)
         expect(venueItinerary.prop('href')).toBe('this is a fake url')
         expect(venueItinerary.prop('title')).toBe(
@@ -337,13 +392,17 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
           distance: '1',
           handleRequestMusicAndShowTypes: jest.fn(),
           offer,
+          userGeolocation: {
+            latitude: null,
+            longitude: null
+          }
         }
 
         // when
         const wrapper = shallow(<VersoContentOffer {...props} />)
 
         // then
-        const venueItinerary = wrapper.find('a').at(1)
+        const venueItinerary = wrapper.find('a').at(0)
         expect(venueItinerary.props()).toHaveProperty('target', '_blank')
       })
     })
@@ -361,6 +420,10 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
           distance: '1',
           handleRequestMusicAndShowTypes: jest.fn(),
           offer: offerWithoutCoordinates,
+          userGeolocation: {
+            latitude: null,
+            longitude: null
+          }
         }
 
         // when
@@ -377,15 +440,19 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
       // given
       const props = {
         booking: {
-          completedUrl: 'http://fake-url.com',
+          completedUrl: 'http://fake-url.com'
         },
         bookables: [],
         isCancelled: false,
         distance: '1',
         handleRequestMusicAndShowTypes: jest.fn(),
         offer: {
-          id: 'ID',
+          id: 'ID'
         },
+        userGeolocation: {
+          latitude: null,
+          longitude: null
+        }
       }
 
       // when
@@ -407,8 +474,12 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
         distance: '1',
         handleRequestMusicAndShowTypes: jest.fn(),
         offer: {
-          id: 'ID',
+          id: 'ID'
         },
+        userGeolocation: {
+          latitude: null,
+          longitude: null
+        }
       }
 
       // when
@@ -430,8 +501,12 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
         distance: '1',
         handleRequestMusicAndShowTypes: jest.fn(),
         offer: {
-          id: 'ID',
+          id: 'ID'
         },
+        userGeolocation: {
+          latitude: null,
+          longitude: null
+        }
       }
 
       // when

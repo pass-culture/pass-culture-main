@@ -1,4 +1,4 @@
-import { MOBILE_OS } from './config'
+import getMobileOperatingSystem from '../utils/getMobileOperatingSystem'
 
 export const getHumanizeRelativeDistance = (
   venueLatitude = null,
@@ -18,17 +18,22 @@ export const getHumanizeRelativeDistance = (
   return humanizeDistance(distanceInMeters)
 }
 
-export function navigationLink(lat, long) {
-  // see https://stackoverflow.com/questions/9688607/how-to-open-a-mobile-devices-map-app-when-a-user-clicks-on-a-link
-  if (MOBILE_OS === 'ios') {
-    return `maps://maps.google.com/maps?daddr=${lat},${long}`
+export function navigationLink(venueLatitude, venueLongitude, userGeolocation = {}) {
+  const mobileOs = getMobileOperatingSystem()
+
+  if (mobileOs === 'ios') {
+    return `maps://maps.google.com/maps?daddr=${venueLatitude},${venueLongitude}`
   }
 
-  if (MOBILE_OS === 'android') {
-    return `http://maps.google.com/maps?daddr=${lat},${long}`
+  if (mobileOs === 'android') {
+    return `http://maps.google.com/maps?daddr=${venueLatitude},${venueLongitude}`
   }
 
-  return `https://www.openstreetmap.org/#map=18/${lat}/${long}`
+  if (userGeolocation.latitude !== null && userGeolocation.longitude !== null) {
+    return `https://www.openstreetmap.org/directions?route=${userGeolocation.latitude},${userGeolocation.longitude};${venueLatitude},${venueLongitude}`
+  } else {
+    return `https://www.openstreetmap.org/directions?route=;${venueLatitude},${venueLongitude}`
+  }
 }
 
 export const computeDistanceInMeters = (latitudeA, longitudeA, latitudeB, longitudeB) => {
@@ -38,9 +43,9 @@ export const computeDistanceInMeters = (latitudeA, longitudeA, latitudeB, longit
   const a =
     Math.sin(newLatitude / 2) * Math.sin(newLatitude / 2) +
     Math.cos((latitudeA * Math.PI) / 180) *
-    Math.cos((latitudeB * Math.PI) / 180) *
-    Math.sin(newLongitude / 2) *
-    Math.sin(newLongitude / 2)
+      Math.cos((latitudeB * Math.PI) / 180) *
+      Math.sin(newLongitude / 2) *
+      Math.sin(newLongitude / 2)
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 
   return earthRadiusKm * c * 1000

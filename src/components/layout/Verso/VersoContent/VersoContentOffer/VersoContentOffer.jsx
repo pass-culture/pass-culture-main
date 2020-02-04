@@ -141,7 +141,7 @@ class VersoContentOffer extends PureComponent {
   }
 
   renderOfferWhere() {
-    const { distance, offer } = this.props
+    const { distance, offer, userGeolocation } = this.props
     const { venue } = offer || {}
     const { address, city, latitude, longitude, name, postalCode, publicName } = venue || {}
     const isNotDigitalOffer = latitude && longitude
@@ -153,13 +153,7 @@ class VersoContentOffer extends PureComponent {
             {'Où ?'}
           </h3>
           {isNotDigitalOffer && (
-            <a
-              className="vco-distance"
-              href={navigationLink(latitude, longitude)}
-              rel="noopener noreferrer"
-              target="_blank"
-              title="Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre"
-            >
+            <span className="vco-distance">
               <Icon
                 className="vco-geolocation-icon"
                 svg="ico-geoloc"
@@ -167,7 +161,7 @@ class VersoContentOffer extends PureComponent {
               <span>
                 {distance === UNKNOWN_DISTANCE ? UNKNOWN_DISTANCE : `À ${distance}`}
               </span>
-            </a>
+            </span>
           )}
         </div>
         <address>
@@ -195,7 +189,7 @@ class VersoContentOffer extends PureComponent {
         {isNotDigitalOffer && (
           <a
             className="vco-itinerary"
-            href={navigationLink(latitude, longitude)}
+            href={navigationLink(latitude, longitude, userGeolocation)}
             rel="noopener noreferrer"
             target="_blank"
             title="Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre"
@@ -235,7 +229,7 @@ VersoContentOffer.defaultProps = {
   isNotBookable: false,
   maxShownDates: 7,
   offer: null,
-  style: '',
+  style: ''
 }
 
 VersoContentOffer.propTypes = {
@@ -248,9 +242,10 @@ VersoContentOffer.propTypes = {
   maxShownDates: PropTypes.number,
   offer: PropTypes.shape({
     id: PropTypes.string,
-    product: PropTypes.shape(),
+    product: PropTypes.shape()
   }),
   style: PropTypes.string,
+  userGeolocation: PropTypes.shape().isRequired
 }
 
 export default VersoContentOffer

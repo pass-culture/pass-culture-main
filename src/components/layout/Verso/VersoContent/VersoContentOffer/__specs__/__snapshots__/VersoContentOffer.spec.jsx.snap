@@ -49,6 +49,12 @@ ShallowWrapper {
       }
     }
     style="Rap / Contenders"
+    userGeolocation={
+      Object {
+        "latitude": null,
+        "longitude": null,
+      }
+    }
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -114,11 +120,8 @@ ShallowWrapper {
             <h3>
               Où ?
             </h3>
-            <a
+            <span
               className="vco-distance"
-              rel="noopener noreferrer"
-              target="_blank"
-              title="Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre"
             >
               <Icon
                 alt=""
@@ -128,7 +131,7 @@ ShallowWrapper {
               <span>
                 À 1
               </span>
-            </a>
+            </span>
           </div>
           <address>
             fake publicName
@@ -399,11 +402,8 @@ ShallowWrapper {
               <h3>
                 Où ?
               </h3>
-              <a
+              <span
                 className="vco-distance"
-                rel="noopener noreferrer"
-                target="_blank"
-                title="Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre"
               >
                 <Icon
                   alt=""
@@ -413,7 +413,7 @@ ShallowWrapper {
                 <span>
                   À 1
                 </span>
-              </a>
+              </span>
             </div>,
             <address>
               fake publicName
@@ -459,11 +459,8 @@ ShallowWrapper {
                 <h3>
                   Où ?
                 </h3>,
-                <a
+                <span
                   className="vco-distance"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                  title="Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre"
                 >
                   <Icon
                     alt=""
@@ -473,7 +470,7 @@ ShallowWrapper {
                   <span>
                     À 1
                   </span>
-                </a>,
+                </span>,
               ],
               "className": "flex-columns flex-between",
             },
@@ -506,10 +503,6 @@ ShallowWrapper {
                     </span>,
                   ],
                   "className": "vco-distance",
-                  "href": undefined,
-                  "rel": "noopener noreferrer",
-                  "target": "_blank",
-                  "title": "Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre",
                 },
                 "ref": null,
                 "rendered": Array [
@@ -538,7 +531,7 @@ ShallowWrapper {
                     "type": "span",
                   },
                 ],
-                "type": "a",
+                "type": "span",
               },
             ],
             "type": "div",
@@ -767,11 +760,8 @@ ShallowWrapper {
               <h3>
                 Où ?
               </h3>
-              <a
+              <span
                 className="vco-distance"
-                rel="noopener noreferrer"
-                target="_blank"
-                title="Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre"
               >
                 <Icon
                   alt=""
@@ -781,7 +771,7 @@ ShallowWrapper {
                 <span>
                   À 1
                 </span>
-              </a>
+              </span>
             </div>
             <address>
               fake publicName
@@ -1052,11 +1042,8 @@ ShallowWrapper {
                 <h3>
                   Où ?
                 </h3>
-                <a
+                <span
                   className="vco-distance"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                  title="Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre"
                 >
                   <Icon
                     alt=""
@@ -1066,7 +1053,7 @@ ShallowWrapper {
                   <span>
                     À 1
                   </span>
-                </a>
+                </span>
               </div>,
               <address>
                 fake publicName
@@ -1112,11 +1099,8 @@ ShallowWrapper {
                   <h3>
                     Où ?
                   </h3>,
-                  <a
+                  <span
                     className="vco-distance"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                    title="Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre"
                   >
                     <Icon
                       alt=""
@@ -1126,7 +1110,7 @@ ShallowWrapper {
                     <span>
                       À 1
                     </span>
-                  </a>,
+                  </span>,
                 ],
                 "className": "flex-columns flex-between",
               },
@@ -1159,10 +1143,6 @@ ShallowWrapper {
                       </span>,
                     ],
                     "className": "vco-distance",
-                    "href": undefined,
-                    "rel": "noopener noreferrer",
-                    "target": "_blank",
-                    "title": "Ouverture de votre gestionnaire de carte dans une nouvelle fenêtre",
                   },
                   "ref": null,
                   "rendered": Array [
@@ -1191,7 +1171,7 @@ ShallowWrapper {
                       "type": "span",
                     },
                   ],
-                  "type": "a",
+                  "type": "span",
                 },
               ],
               "type": "div",
