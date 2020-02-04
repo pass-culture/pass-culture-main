@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 
 from redis import Redis
@@ -62,10 +63,16 @@ def delete_expired_offers(client: Redis, offer_ids: List[int]) -> None:
 
 
 def _build_offer_details_to_be_indexed(offer: Offer) -> dict:
-    return {
+    offer_details = {
         'name': offer.name,
-        'dateRange': list(map(str, offer.dateRange.datetimes))
+        'dateRange': list(map(str, offer.dateRange.datetimes)),
+        'dates': []
     }
+
+    if offer.isEvent:
+        offer_details['dates'] = list(map(lambda stock: datetime.timestamp(stock.beginningDatetime), offer.notDeletedStocks))
+
+    return offer_details
 
 
 def _process_adding(pipeline: Pipeline, adding_objects: List[dict]) -> None:
