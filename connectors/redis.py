@@ -113,7 +113,7 @@ def add_to_indexed_offers(pipeline: Pipeline, offer_id: int, offer_details: dict
         try:
             offer_details_as_string = json.dumps(offer_details)
             pipeline.hset(REDIS_HASHMAP_INDEXED_OFFERS_NAME, offer_id, offer_details_as_string)
-            logger.debug(f'[REDIS] "{offer_id}" was added to indexed offers map')
+            logger.debug(f'[REDIS] "{offer_id}" was added to indexed offers')
         except redis.exceptions.RedisError as error:
             logger.error(f'[REDIS] {error}')
 
@@ -122,7 +122,7 @@ def delete_indexed_offers(client: Redis, offer_ids: List[int]) -> None:
     if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
         try:
             client.hdel(REDIS_HASHMAP_INDEXED_OFFERS_NAME, *offer_ids)
-            logger.debug(f'[REDIS] "{len(offer_ids)}" were deleted from indexed offers map')
+            logger.debug(f'[REDIS] "{len(offer_ids)}" were deleted from indexed offers')
         except redis.exceptions.RedisError as error:
             logger.error(f'[REDIS] {error}')
 
@@ -144,5 +144,14 @@ def get_offer_details(client: Redis, offer_id: int) -> Dict:
             if offer_details:
                 return json.loads(offer_details)
             return dict()
+        except redis.exceptions.RedisError as error:
+            logger.error(f'[REDIS] {error}')
+
+
+def delete_all_indexed_offers(client: Redis) -> None:
+    if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
+        try:
+            client.delete(REDIS_HASHMAP_INDEXED_OFFERS_NAME)
+            logger.debug(f'[REDIS] indexed offers were deleted')
         except redis.exceptions.RedisError as error:
             logger.error(f'[REDIS] {error}')

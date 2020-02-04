@@ -63,12 +63,15 @@ def test_all_helpers_are_returning_actual_sandbox_data(mock_request, app):
 
 class AlgoliaIndexingTest:
     @patch('sandboxes.scripts.creators.industrial.create_industrial_algolia_objects.clean_algolia_index')
+    @patch('sandboxes.scripts.creators.industrial.create_industrial_algolia_objects.delete_all_indexed_offers')
     @patch('sandboxes.scripts.creators.industrial.create_industrial_algolia_objects.process_eligible_offers')
     @patch('sandboxes.scripts.utils.ban.requests.get')
     @clean_database
     def test_should_not_index_offers_to_algolia_when_indexation_is_disabled(self,
                                                                             mock_request,
                                                                             mock_process_eligible_offers,
+                                                                            mock_delete_all_indexed_offers,
+                                                                            mock_clean_algolia_index,
                                                                             app):
         # Given
         response_return_value = MagicMock(status_code=200, text='')
@@ -79,8 +82,11 @@ class AlgoliaIndexingTest:
         save_sandbox('industrial')
 
         # Then
+        mock_delete_all_indexed_offers.assert_not_called()
+        mock_clean_algolia_index.assert_not_called()
         mock_process_eligible_offers.assert_not_called()
 
+    @patch('sandboxes.scripts.creators.industrial.create_industrial_algolia_objects.delete_all_indexed_offers')
     @patch('sandboxes.scripts.creators.industrial.create_industrial_algolia_objects.clean_algolia_index')
     @patch('sandboxes.scripts.creators.industrial.create_industrial_algolia_objects.process_eligible_offers')
     @patch('sandboxes.scripts.utils.ban.requests.get')
@@ -88,6 +94,7 @@ class AlgoliaIndexingTest:
     def test_should_index_offers_to_algolia_when_indexation_is_enabled(self,
                                                                        mock_request,
                                                                        mock_process_eligible_offers,
+                                                                       mock_delete_all_indexed_offers,
                                                                        mock_clean_algolia_index,
                                                                        app):
         # Given
@@ -100,5 +107,6 @@ class AlgoliaIndexingTest:
             save_sandbox('industrial')
 
         # Then
+        mock_delete_all_indexed_offers.assert_called()
         mock_clean_algolia_index.assert_called()
         mock_process_eligible_offers.assert_called()
