@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import List
 
+from local_providers import AllocineStocks
 from models import Offer, Stock
 
 
@@ -37,3 +38,7 @@ def has_at_least_one_stock_in_the_future(stocks: List[Stock]) -> bool:
             return True
 
     return False
+
+
+def is_from_allocine(offer: Offer) -> bool:
+    return offer.isFromProvider and offer.lastProvider.localClass == AllocineStocks.__name__

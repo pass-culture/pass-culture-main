@@ -2,10 +2,12 @@ from datetime import datetime
 
 from freezegun import freeze_time
 
-from domain.offers import update_is_active_status, has_remaining_stocks, has_at_least_one_stock_in_the_future
+from domain.offers import update_is_active_status, has_remaining_stocks, has_at_least_one_stock_in_the_future, \
+    is_from_allocine
+from models import Offer
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
-    create_venue
+    create_venue, create_provider
 from tests.model_creators.specific_creators import create_offer_with_event_product
 
 
@@ -147,6 +149,43 @@ class HasStocksInFutureTest:
 
         # When
         result = has_at_least_one_stock_in_the_future(stocks)
+
+        # Then
+        assert result is False
+
+
+class IsFromAllocineTest:
+    def test_should_return_true_when_offer_is_from_allocine_provider(self):
+        # Given
+        offer = Offer()
+        offer.lastProviderId = 1
+        offer.lastProvider = create_provider(local_class='AllocineStocks')
+
+        # When
+        result = is_from_allocine(offer)
+
+        # Then
+        assert result is True
+
+    def test_should_return_false_when_offer_is_from_open_agenda(self):
+        # Given
+        offer = Offer()
+        offer.lastProviderId = 2
+        offer.lastProvider = create_provider(local_class='OpenAgenda')
+
+        # When
+        result = is_from_allocine(offer)
+
+        # Then
+        assert result is False
+
+    def test_should_return_false_when_offer_is_not_imported(self):
+        # Given
+        offer = Offer()
+        offer.lastProvider = None
+
+        # When
+        result = is_from_allocine(offer)
 
         # Then
         assert result is False
