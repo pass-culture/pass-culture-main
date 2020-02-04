@@ -92,7 +92,7 @@ def post_offer() -> (str, int):
 @app.route('/offers/<offer_id>', methods=['PATCH'])
 @login_or_api_key_required
 @expect_json_data
-def patch_offer(offer_id: int) -> (str, int):
+def patch_offer(offer_id: str) -> (str, int):
     request_data = request.json
     check_valid_edition(request_data)
     offer = offer_queries.get_offer_by_id(dehumanize(offer_id))
