@@ -29,9 +29,9 @@ def update_an_offer(offer: Offer, modifications: dict) -> Offer:
         return offer
 
 
-def _update_offer(offer: Offer, request_payload) -> Offer:
-    offer.populate_from_dict(request_payload)
-    offer.update_with_product_data(request_payload)
+def _update_offer(offer: Offer, modifications) -> Offer:
+    offer.populate_from_dict(modifications)
+    offer.update_with_product_data(modifications)
 
     repository.save(offer)
     redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
@@ -39,11 +39,12 @@ def _update_offer(offer: Offer, request_payload) -> Offer:
     return offer
 
 
-def _update_offer_for_allocine_offers(offer: Offer, request_payload) -> Offer:
-    check_edition_for_allocine_offer_is_valid(request_payload)
+def _update_offer_for_allocine_offers(offer: Offer, modifications) -> Offer:
+    check_edition_for_allocine_offer_is_valid(modifications)
 
-    offer.populate_from_dict(request_payload)
-    offer.update_with_product_data(request_payload)
+    offer.populate_from_dict(modifications)
+    offer.update_with_product_data(modifications)
+    offer.fieldsUpdated = modifications.keys()
 
     repository.save(offer)
     redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
@@ -51,9 +52,9 @@ def _update_offer_for_allocine_offers(offer: Offer, request_payload) -> Offer:
     return offer
 
 
-def _update_offer_when_updating_isActive_field(offer: Offer, request_payload) -> Offer:
-    offer.populate_from_dict(request_payload)
-    offer.update_with_product_data(request_payload)
+def _update_offer_when_updating_isActive_field(offer: Offer, modifications) -> Offer:
+    offer.populate_from_dict(modifications)
+    offer.update_with_product_data(modifications)
 
     repository.save(offer)
     redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
