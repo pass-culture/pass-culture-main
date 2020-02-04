@@ -575,15 +575,15 @@ class ProcessEligibleOffersTest:
     @patch('algolia.orchestrator.add_objects')
     @clean_database
     @freeze_time('2019-01-01 12:00:00')
-    def test_should_reindex_offers_that_are_already_indexed_only_if_stocks_beginning_datetime_are_changed(self,
-                                                                                                          mock_add_objects,
-                                                                                                          mock_build_object,
-                                                                                                          mock_delete_objects,
-                                                                                                          mock_check_offer_exists,
-                                                                                                          mock_get_offer_details,
-                                                                                                          mock_add_to_indexed_offers,
-                                                                                                          mock_delete_offer_ids,
-                                                                                                          app):
+    def test_should_reindex_offers_only_when_stocks_beginning_datetime_have_changed(self,
+                                                                                    mock_add_objects,
+                                                                                    mock_build_object,
+                                                                                    mock_delete_objects,
+                                                                                    mock_check_offer_exists,
+                                                                                    mock_get_offer_details,
+                                                                                    mock_add_to_indexed_offers,
+                                                                                    mock_delete_offer_ids,
+                                                                                    app):
         # Given
         client = MagicMock()
         client.pipeline = MagicMock()
