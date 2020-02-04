@@ -323,7 +323,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         assert number_of_offerers == 1
 
     @clean_database
-    def test_should_not_return_virtual_offer_if_is_not_national(self, app):
+    def test_should_not_return_offerer_with_only_virtual_offer_if_is_not_national(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer=offerer, is_virtual=True, departement_code=None, address=None,
@@ -336,12 +336,13 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         repository.save(stock, mediation)
 
         # When
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count(None)
 
         # Then
-        assert get_offerers_with_offer_available_on_discovery_count(None) == 0
+        assert number_of_offerers == 0
 
     @clean_database
-    def test_should_return_virtual_offer_if_is_national(self, app):
+    def test_should_return_offerer_with_virtual_offer_if_is_national(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer=offerer, is_virtual=True, departement_code=None, address=None,
@@ -354,9 +355,10 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         repository.save(stock, mediation)
 
         # When
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count(None)
 
         # Then
-        assert get_offerers_with_offer_available_on_discovery_count(None) == 1
+        assert number_of_offerers == 1
 
 
 class GetOfferersWithOffersAvailableOnSearchCountTest:
