@@ -20,7 +20,6 @@ from tests.model_creators.generic_creators import create_booking, create_user, c
 from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_offer_with_thing_product
 from tests.test_utils import create_mocked_bookings
-from utils.config import PRO_URL
 
 
 class SendBeneficiaryBookingCancellationEmailTest:
@@ -534,11 +533,10 @@ class SendOngoingOffererAttachmentInformationEmailTest:
 
 
 class SendResetPasswordProEmailTest:
-    @patch('emails.pro_reset_password.feature_send_mail_to_users_enabled', return_value=True)
-    @patch('emails.pro_reset_password.format_environment_for_email', return_value='fake-env')
+    @patch('domain.user_emails.retrieve_data_for_reset_password_pro_email',
+           return_value={'MJ-TemplateID': 779295})
     def when_feature_send_emails_enabled_sends_a_reset_password_email_to_pro_user(self,
-                                                                                  mock_format_environment_for_email,
-                                                                                  mock_feature_send_mail_to_users_enabled,
+                                                                                  mock_retrieve_data_for_reset_password_pro_email,
                                                                                   app):
         # given
         user = create_user(email='pro@example.com', reset_password_token='AZ45KNB99H')
@@ -548,42 +546,15 @@ class SendResetPasswordProEmailTest:
         send_reset_password_email_to_pro(user, mocked_send_email)
 
         # then
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        data = args[1]['data']
-        user_reset_password_token = user.resetPasswordToken
-        reinit_password_url = f'{PRO_URL}/mot-de-passe-perdu?token=?token{user_reset_password_token}'
-
-        assert data['FromEmail'] == 'support@passculture.app'
-        assert data['MJ-TemplateID'] == 779295
-        assert data['To'] == 'pro@example.com'
-        assert data['Vars']['lien_nouveau_mdp'] == reinit_password_url
-        assert data['Vars']['env'] == 'fake-env'
-
-    @patch('emails.pro_reset_password.feature_send_mail_to_users_enabled', return_value=False)
-    @patch('emails.pro_reset_password.DEV_EMAIL_ADDRESS', 'dev@example.com')
-    def when_feature_send_emails_disabled_sends_email_to_pass_culture_dev(self,
-                                                                          mock_feature_send_mail_to_users_enabled,
-                                                                          app):
-        # given
-        user = create_user(email='pro@example.com', reset_password_token='AZ45KNB99H')
-        mocked_send_email = Mock()
-
-        # when
-        send_reset_password_email_to_pro(user, mocked_send_email)
-
-        # then
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        email = args[1]['data']
-        assert email['To'] == 'dev@example.com'
+        mock_retrieve_data_for_reset_password_pro_email.assert_called_once_with(user)
+        mocked_send_email.assert_called_once_with(data={'MJ-TemplateID': 779295})
 
 
 class SendResetPasswordUserEmailTest:
-    @patch('emails.user_reset_password.feature_send_mail_to_users_enabled', return_value=True)
-    @patch('emails.user_reset_password.format_environment_for_email', return_value='fake-env')
+    @patch('domain.user_emails.retrieve_data_for_reset_password_user_email',
+           return_value={'MJ-TemplateID': 912168})
     def when_feature_send_emails_enabled_sends_a_reset_password_email_to_user(self,
-                                                                              mock_feature_send_mail_to_users_enabled,
+                                                                              mock_retrieve_data_for_reset_password_user_email,
                                                                               app):
         # given
         user = create_user(email='bobby@example.com', first_name='Bobby', reset_password_token='AZ45KNB99H')
@@ -593,31 +564,5 @@ class SendResetPasswordUserEmailTest:
         send_reset_password_email_to_user(user, mocked_send_email)
 
         # then
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        data = args[1]['data']
-        user_reset_password_token = user.resetPasswordToken
-        assert data['FromEmail'] == 'support@passculture.app'
-        assert data['MJ-TemplateID'] == 912168
-        assert data['To'] == 'bobby@example.com'
-        assert data['Vars']['prenom_user'] == 'Bobby'
-        assert data['Vars']['token'] == user_reset_password_token
-        assert data['Vars']['env'] == 'fake-env'
-
-    @patch('emails.user_reset_password.feature_send_mail_to_users_enabled', return_value=False)
-    @patch('emails.user_reset_password.DEV_EMAIL_ADDRESS', 'dev@example.com')
-    def when_feature_send_emails_disabled_sends_email_to_pass_culture_dev(self,
-                                                                          mock_feature_send_mail_to_users_enabled,
-                                                                          app):
-        # given
-        user = create_user(email='bobby@example.com', first_name='bobby', reset_password_token='AZ45KNB99H')
-        mocked_send_email = Mock()
-
-        # when
-        send_reset_password_email_to_user(user, mocked_send_email)
-
-        # then
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        email = args[1]['data']
-        assert email['To'] == 'dev@example.com'
+        mock_retrieve_data_for_reset_password_user_email.assert_called_once_with(user)
+        mocked_send_email.assert_called_once_with(data={'MJ-TemplateID': 912168})

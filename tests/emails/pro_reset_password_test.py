@@ -36,7 +36,7 @@ class MakeProResetPasswordEmailDataTest:
             'To': 'dev@example.com',
             'Vars':
                 {
-                    'lien_nouveau_mdp': 'http://example.net/mot-de-passe-perdu?token=?tokenABCDEFG',
+                    'lien_nouveau_mdp': 'http://example.net/mot-de-passe-perdu?token=ABCDEFG',
                     'env': '-testing'
                 }
         }
@@ -69,7 +69,7 @@ class MakeProResetPasswordEmailDataTest:
             'To': 'pro@example.com',
             'Vars':
                 {
-                    'lien_nouveau_mdp': 'http://example.net/mot-de-passe-perdu?token=?tokenABCDEFG',
+                    'lien_nouveau_mdp': 'http://example.net/mot-de-passe-perdu?token=ABCDEFG',
                     'env': ''
                 }
         }
