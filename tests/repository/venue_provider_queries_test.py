@@ -1,5 +1,3 @@
-from datetime import datetime, timedelta
-
 from repository import repository
 from repository.venue_provider_queries import get_venue_providers_to_sync, get_nb_containers_at_work
 from tests.conftest import clean_database
@@ -24,41 +22,6 @@ class GetVenueProvidersToSyncTest:
 
         # Then
         assert venue_providers == [venue_provider_titelive]
-
-    @clean_database
-    def test_should_return_venue_provider_sync_before_yesterday(self, app):
-        # Given
-        offerer = create_offerer()
-        venue_1 = create_venue(offerer, siret='12345678901234')
-        venue_2 = create_venue(offerer)
-        titelive_provider = activate_provider('TiteLiveStocks')
-        venue_provider_1 = create_venue_provider(venue_1, titelive_provider, last_sync_date=datetime.utcnow())
-        venue_provider_2 = create_venue_provider(venue_2, titelive_provider,
-                                                 last_sync_date=datetime.utcnow() - timedelta(days=2))
-        repository.save(venue_provider_1, venue_provider_2)
-
-        # When
-        venue_providers = get_venue_providers_to_sync(titelive_provider.id)
-
-        # Then
-        assert venue_providers == [venue_provider_2]
-
-    @clean_database
-    def test_should_return_venue_provider_never_synced(self, app):
-        # Given
-        offerer = create_offerer()
-        venue_1 = create_venue(offerer, siret='12345678901234')
-        venue_2 = create_venue(offerer)
-        titelive_provider = activate_provider('TiteLiveStocks')
-        venue_provider_1 = create_venue_provider(venue_1, titelive_provider, last_sync_date=None)
-        venue_provider_2 = create_venue_provider(venue_2, titelive_provider, last_sync_date=datetime.utcnow())
-        repository.save(venue_provider_1, venue_provider_2)
-
-        # When
-        venue_providers = get_venue_providers_to_sync(titelive_provider.id)
-
-        # Then
-        assert venue_providers == [venue_provider_1]
 
     @clean_database
     def test_should_return_venue_provider_with_no_worker_id(self, app):
