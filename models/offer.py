@@ -8,7 +8,7 @@ from sqlalchemy.sql import select, func
 
 from domain.bookings import filter_bookings_to_compute_remaining_stock
 from domain.keywords import create_ts_vector_and_table_args
-from models import ApiErrors, Mediation
+from models import Mediation
 from models.criterion import Criterion
 from models.db import db, Model
 from models.deactivable_mixin import DeactivableMixin
