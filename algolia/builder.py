@@ -36,6 +36,7 @@ def build_object(offer: Offer) -> Dict:
             'description': offer.description,
             'id': humanize_offer_id,
             'isbn': isbn,
+            'isDuo': offer.isDuo,
             'label': offer.offerType['appLabel'],
             'musicSubType': music_sub_type,
             'musicType': music_type,

@@ -52,6 +52,7 @@ class BuildObjectTest:
                 'description': 'Un lit sous une rivière',
                 'id': 'AM',
                 'isbn': None,
+                'isDuo': False,
                 'label': 'Concert ou festival',
                 'name': 'Event name',
                 'musicSubType': None,
