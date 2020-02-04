@@ -2,14 +2,14 @@ from flask import current_app as app
 from flask import jsonify, request
 from flask_login import current_user, login_required
 
-from connectors import redis
 from domain.admin_emails import send_offer_creation_notification_to_administration
 from domain.create_offer import fill_offer_with_new_data, initialize_offer_from_product_id
 from models import Offer, RightsType, Venue
 from models.api_errors import ResourceNotFoundError
-from repository import offer_queries, repository, venue_queries
+from repository import repository, venue_queries, offer_queries
 from repository.offer_queries import find_activation_offers, find_offers_with_filter_parameters
 from routes.serialization import as_dict
+from use_cases.update_an_offer import update_an_offer
 from utils.config import PRO_URL
 from utils.human_ids import dehumanize
 from utils.includes import OFFER_INCLUDES
@@ -95,26 +95,19 @@ def post_offer() -> (str, int):
 @login_or_api_key_required
 @expect_json_data
 def patch_offer(offer_id: str) -> (str, int):
-    request_data = request.json
-    check_valid_edition(request_data)
+    payload = request.json
+    check_valid_edition(payload)
     offer = offer_queries.get_offer_by_id(dehumanize(offer_id))
 
     if not offer:
         raise ResourceNotFoundError
 
     ensure_current_user_has_rights(RightsType.editor, offer.venue.managingOffererId)
-    request_only_contains_is_active = 'isActive' in request_data and len(request_data) == 1
-
-    if not request_only_contains_is_active:
-        check_offer_is_editable(offer)
 
     offer_name = request.json.get('name')
     if offer_name:
         check_offer_name_length_is_valid(offer_name)
 
-    offer.populate_from_dict(request_data)
-    offer.update_with_product_data(request_data)
+    offer = update_an_offer(offer, modifications=payload)
 
-    repository.save(offer)
-    redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
     return jsonify(as_dict(offer, includes=OFFER_INCLUDES)), 200

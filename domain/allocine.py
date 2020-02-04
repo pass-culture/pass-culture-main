@@ -30,9 +30,9 @@ def _exclude_movie_showtimes_with_special_event_type(movies_showtime: list) -> l
     return list(filter(lambda movie_showtime: movie_showtime['node']['movie']['type'] != MOVIE_SPECIAL_EVENT, movies_showtime))
 
 
-def get_editable_fields_for_allocine_offer(offer: Offer, allocine_class_name: str) -> List:
-    local_class = offer.lastProvider.localClass
-    provider_class = get_local_provider_class_by_name(local_class)
-    if local_class == allocine_class_name:
-        return provider_class.manually_editable_fields
-    return []
+def get_editable_fields_for_allocine_stocks() -> List:
+    return ['available', 'price', 'bookingLimitDatetime']
+
+
+def get_editable_fields_for_allocine_offers() -> dict:
+    return {'isDuo'}

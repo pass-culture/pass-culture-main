@@ -87,7 +87,7 @@ class Delete:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue, last_provider_id=tite_live_provider.id)
+            offer = create_offer_with_thing_product(venue, last_provider_id=tite_live_provider.id, last_provider=tite_live_provider)
             stock = create_stock(offer=offer)
             repository.save(user, stock, user_offerer)
 

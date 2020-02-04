@@ -1536,8 +1536,8 @@ class GetPaginatedOfferIdsByVenueIdAndLastProviderIdTest:
         provider2 = create_provider(idx=2, local_class='TiteLive', is_active=False, is_enable_for_pro=False)
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
-        offer1 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue)
-        offer2 = create_offer_with_thing_product(last_provider_id=provider2.id, venue=venue)
+        offer1 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue, last_provider=provider1)
+        offer2 = create_offer_with_thing_product(last_provider_id=provider2.id, venue=venue, last_provider=provider2)
         repository.save(provider1, provider2, offer1, offer2)
 
         # When
@@ -1557,8 +1557,8 @@ class GetPaginatedOfferIdsByVenueIdAndLastProviderIdTest:
         provider1 = create_provider(idx=1, local_class='OpenAgenda', is_active=False, is_enable_for_pro=False)
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
-        offer1 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue)
-        offer2 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue)
+        offer1 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue, last_provider=provider1)
+        offer2 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue, last_provider=provider1)
         repository.save(provider1, offer1, offer2)
 
         # When
@@ -1578,8 +1578,8 @@ class GetPaginatedOfferIdsByVenueIdAndLastProviderIdTest:
         provider1 = create_provider(idx=1, local_class='OpenAgenda', is_active=False, is_enable_for_pro=False)
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
-        offer1 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue)
-        offer2 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue)
+        offer1 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue, last_provider=provider1)
+        offer2 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue, last_provider=provider1)
         repository.save(provider1, offer1, offer2)
 
         # When

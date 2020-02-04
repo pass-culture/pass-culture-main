@@ -17,10 +17,10 @@ def test_nOffers_with_one_venue_provider(app):
     offerer = create_offerer()
     venue = create_venue(offerer)
     venue_provider = create_venue_provider(venue, provider)
-    offer_1 = create_offer_with_thing_product(venue, last_provider_id=provider.id, id_at_providers='offer1')
-    offer_2 = create_offer_with_event_product(venue, last_provider_id=provider.id, id_at_providers='offer2')
-    offer_3 = create_offer_with_event_product(venue, last_provider_id=provider.id, id_at_providers='offer3')
-    offer_4 = create_offer_with_thing_product(venue, last_provider_id=provider.id, id_at_providers='offer4')
+    offer_1 = create_offer_with_thing_product(venue, last_provider_id=provider.id, id_at_providers='offer1', last_provider=provider)
+    offer_2 = create_offer_with_event_product(venue, last_provider_id=provider.id, id_at_providers='offer2', last_provider=provider)
+    offer_3 = create_offer_with_event_product(venue, last_provider_id=provider.id, id_at_providers='offer3', last_provider=provider)
+    offer_4 = create_offer_with_thing_product(venue, last_provider_id=provider.id, id_at_providers='offer4', last_provider=provider)
     repository.save(offer_1, offer_2, offer_3, offer_4, venue_provider)
 
     # when
@@ -41,10 +41,10 @@ def test_nOffers_with_two_venue_providers_from_different_providers(app):
     venue = create_venue(offerer)
     venue_provider1 = create_venue_provider(venue, provider1)
     venue_provider2 = create_venue_provider(venue, provider2)
-    offer_1 = create_offer_with_thing_product(venue, last_provider_id=provider1.id, id_at_providers='offer1')
-    offer_2 = create_offer_with_event_product(venue, last_provider_id=provider2.id, id_at_providers='offer2')
-    offer_3 = create_offer_with_event_product(venue, last_provider_id=provider1.id, id_at_providers='offer3')
-    offer_4 = create_offer_with_thing_product(venue, last_provider_id=provider1.id, id_at_providers='offer4')
+    offer_1 = create_offer_with_thing_product(venue, last_provider_id=provider1.id, id_at_providers='offer1', last_provider=provider1)
+    offer_2 = create_offer_with_event_product(venue, last_provider_id=provider2.id, id_at_providers='offer2', last_provider=provider2)
+    offer_3 = create_offer_with_event_product(venue, last_provider_id=provider1.id, id_at_providers='offer3', last_provider=provider1)
+    offer_4 = create_offer_with_thing_product(venue, last_provider_id=provider1.id, id_at_providers='offer4', last_provider=provider1)
     repository.save(offer_1, offer_2, offer_3, offer_4, venue_provider1, venue_provider2)
 
     # when

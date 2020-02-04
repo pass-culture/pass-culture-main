@@ -3,10 +3,11 @@ from unittest.mock import patch
 
 from models import Offer, Product, Provider
 from repository import repository
+from repository.provider_queries import get_provider_by_local_class
 from routes.serialization import serialize
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
-    API_URL
+    API_URL, create_provider
 from tests.model_creators.provider_creators import activate_provider
 from tests.model_creators.specific_creators import create_product_with_thing_type, create_product_with_event_type, \
     create_offer_with_thing_product, create_offer_with_event_product
@@ -39,7 +40,7 @@ class Patch:
             assert response.status_code == 200
             assert Offer.query.get(offer.id).bookingEmail == 'offer@example.com'
 
-        @patch('routes.offers.redis.add_offer_id')
+        @patch('use_cases.update_an_offer.redis.add_offer_id')
         @clean_database
         def when_updating_an_offer_expect_offer_id_to_be_added_to_redis(self, mock_add_offer_id_to_redis, app):
             # Given
@@ -198,7 +199,7 @@ class Patch:
             assert Offer.query.get(offer_id).isActive
 
         @clean_database
-        def when_patch_an_offer_that_is_imported_with_local_provider(self, app):
+        def when_patch_an_offer_that_is_imported_from_titelive(self, app):
             # given
             tite_live_provider = Provider \
                 .query \
@@ -216,6 +217,35 @@ class Patch:
             repository.save(offer, user, user_offerer)
             json = {
                 'bookingEmail': 'offer@example.com',
+            }
+
+            # When
+            response = TestClient(app.test_client()).with_auth(user.email).patch(
+                f'{API_URL}/offers/{humanize(offer.id)}',
+                json=json)
+
+            # then
+            assert response.status_code == 200
+
+        @clean_database
+        def when_patch_an_offer_that_is_imported_from_allocine(self, app):
+            # given
+            allocine_provider = Provider \
+                .query \
+                .filter(Provider.localClass == 'AllocineStocks') \
+                .first()
+
+            user = create_user()
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            offer = create_offer_with_thing_product(venue,
+                                                    booking_email='old@example.com',
+                                                    last_provider_id=allocine_provider.id)
+
+            repository.save(offer, user, user_offerer)
+            json = {
+                'isDuo': 'true',
             }
 
             # When
@@ -288,6 +318,63 @@ class Patch:
             assert response.status_code == 400
             assert response.json['name'] == ['Le titre de l’offre doit faire au maximum 90 caractères.']
 
+        @clean_database
+        def when_trying_to_patch_an_imported_offer(self, app):
+            # Given
+            user = create_user()
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            thing_product = create_product_with_thing_type(thing_name='Old Name', owning_offerer=None)
+            provider = create_provider(idx=1, local_class='OpenAgenda', is_active=True, is_enable_for_pro=True)
+            offer = create_offer_with_event_product(venue, thing_product, id_at_providers='24561461', last_provider=provider)
+
+            repository.save(offer, user, user_offerer)
+
+            json = {
+                'isDuo': False,
+                'isActive': True,
+                'bookingEmail': 'offer@example.com'
+            }
+
+            # When
+            response = TestClient(app.test_client()).with_auth(user.email).patch(
+                f'{API_URL}/offers/{humanize(offer.id)}',
+                json=json)
+
+            # Then
+            assert response.status_code == 400
+            assert response.json['global'] == ['Les offres importées ne sont pas modifiables']
+
+        @clean_database
+        def when_trying_to_patch_any_allocine_offer_field_except_is_duo(self, app):
+            # Given
+            user = create_user()
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            thing_product = create_product_with_thing_type(thing_name='Old Name', owning_offerer=None)
+            provider = get_provider_by_local_class('AllocineStocks')
+            offer = create_offer_with_event_product(venue, thing_product, id_at_providers='24561461', last_provider=provider)
+
+            repository.save(offer, user, user_offerer)
+
+            json = {
+                'isNational': True,
+                'bookingEmail': 'offer@example.com',
+                'name': 'Nouvelle offre',
+            }
+
+            # When
+            response = TestClient(app.test_client()).with_auth(user.email).patch(
+                f'{API_URL}/offers/{humanize(offer.id)}',
+                json=json)
+
+            # Then
+            assert response.status_code == 400
+            assert response.json['isNational'] == ['Vous ne pouvez pas modifier ce champ']
+            assert response.json['bookingEmail'] == ['Vous ne pouvez pas modifier ce champ']
+            assert response.json['name'] == ['Vous ne pouvez pas modifier ce champ']
 
     class Returns403:
         @clean_database

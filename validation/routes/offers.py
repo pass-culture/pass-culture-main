@@ -1,3 +1,6 @@
+from pprint import pprint
+
+from domain.allocine import get_editable_fields_for_allocine_offers
 from models import RightsType, Offer
 from models.api_errors import ResourceNotFoundError, ApiErrors
 from models.offer_type import ProductType
@@ -46,7 +49,7 @@ def check_offer_type_is_valid(offer_type_name):
     if not ProductType.is_thing(offer_type_name) and not ProductType.is_event(offer_type_name):
         api_error = ApiErrors()
         api_error.add_error('type',
-                           'Le type de cette offre est inconnu')
+                            'Le type de cette offre est inconnu')
         raise api_error
 
 
@@ -73,3 +76,18 @@ def check_offer_is_editable(offer: Offer):
         error.status_code = 400
         error.add_error('global', "Les offres importées ne sont pas modifiables")
         raise error
+
+
+def check_edition_for_allocine_offer_is_valid(payload: dict):
+    editable_fields_for_offer = get_editable_fields_for_allocine_offers()
+
+    all_payload_fields_are_editable = set(payload).issubset(editable_fields_for_offer)
+
+    if not all_payload_fields_are_editable:
+        list_of_non_editable_fields = set(payload).difference(editable_fields_for_offer)
+
+        api_error = ApiErrors()
+        for non_editable_field in list_of_non_editable_fields:
+            api_error.add_error(non_editable_field, 'Vous ne pouvez pas modifier ce champ')
+
+        raise api_error

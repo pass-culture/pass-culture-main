@@ -1,7 +1,7 @@
 from unittest.mock import Mock, MagicMock
 
 from domain.allocine import get_movies_showtimes, get_movie_poster, _exclude_movie_showtimes_with_special_event_type, \
-    get_editable_fields_for_allocine_offer
+    get_editable_fields_for_allocine_stocks, get_editable_fields_for_allocine_offers
 from models import Provider
 from repository.provider_queries import get_provider_by_local_class
 from tests.model_creators.generic_creators import create_offerer, create_venue
@@ -117,7 +117,7 @@ class RemoveMovieShowsWithSpecialEventTypeTest:
                     }
                 }
             }
-            ]
+        ]
 
         # When
         filtered_movies_list = _exclude_movie_showtimes_with_special_event_type(movies_list)
@@ -125,28 +125,28 @@ class RemoveMovieShowsWithSpecialEventTypeTest:
         # Then
         assert len(filtered_movies_list) == 1
         assert filtered_movies_list == [{
-                "node": {
-                    "movie": {
-                        "id": "TW92aWU6Mzc4MzI=",
-                        "internalId": 37832,
-                        "title": "Les Contes de la m\u00e8re poule",
-                        "type": "COMMERCIAL"
-                    }
+            "node": {
+                "movie": {
+                    "id": "TW92aWU6Mzc4MzI=",
+                    "internalId": 37832,
+                    "title": "Les Contes de la m\u00e8re poule",
+                    "type": "COMMERCIAL"
                 }
-            }]
+            }
+        }]
 
 
-class GetEditableFieldsForAllocineOfferTest:
-    def test_should_return_editable_fields_when_offer_from_allocine(self, app):
-        # Given
-        provider = get_provider_by_local_class('AllocineStocks')
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, id_at_providers=provider.id)
-        offer.lastProvider = provider
-
-        # When
-        manually_editable_fields = get_editable_fields_for_allocine_offer(offer, 'AllocineStocks')
+class GetEditableFieldsForAllocineStocksTest:
+    def test_should_return_editable_fields_for_stocks_from_allocine(self, app):
+        manually_editable_fields = get_editable_fields_for_allocine_stocks()
 
         # Then
         assert manually_editable_fields == ['available', 'price', 'bookingLimitDatetime']
+
+
+class GetEditableFieldsForAllocineOfferTest:
+    def test_should_return_editable_fields_for_offers_from_allocine(self, app):
+        manually_editable_fields = get_editable_fields_for_allocine_offers()
+
+        # Then
+        assert manually_editable_fields == {'isDuo'}

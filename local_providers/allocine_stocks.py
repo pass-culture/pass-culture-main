@@ -163,6 +163,8 @@ class AllocineStocks(LocalProvider):
         if is_new_stock_to_insert:
             allocine_stock.fieldsUpdated = []
 
+
+
         if 'bookingLimitDatetime' not in allocine_stock.fieldsUpdated:
             allocine_stock.bookingLimitDatetime = date_in_utc
 

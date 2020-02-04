@@ -1,8 +1,10 @@
+from pprint import pprint
+
 from flask import current_app as app, jsonify, request
 from flask_login import current_user
 
 from connectors import redis
-from domain.allocine import get_editable_fields_for_allocine_offer
+from domain.allocine import get_editable_fields_for_allocine_stocks
 from domain.stocks import delete_stock_and_cancel_bookings
 from domain.user_emails import send_batch_cancellation_emails_to_users, \
     send_offerer_bookings_recap_email_after_offerer_cancellation
@@ -108,11 +110,14 @@ def edit_stock(stock_id):
 
     stock_from_allocine_provider = stock.idAtProviders is not None
 
+    pprint(stock_from_allocine_provider)
+
     if stock_from_allocine_provider:
-        stock_editable_fields = get_editable_fields_for_allocine_offer(stock.offer, AllocineStocks.__name__)
+        stock_editable_fields = get_editable_fields_for_allocine_stocks()
         existing_stock_data = jsonify(as_dict(stock)).json
         fields_to_update = get_only_fields_with_value_to_be_updated(existing_stock_data, stock_data)
         check_only_editable_fields_will_be_updated(fields_to_update, stock_editable_fields)
+
         stock.fieldsUpdated = fields_to_update
 
     stock.populate_from_dict(stock_data)

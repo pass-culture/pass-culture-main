@@ -3,7 +3,7 @@ import string
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 
-from models import Booking, EventType, Offer, Offerer, Product, Stock, ThingType, User, Venue
+from models import Booking, EventType, Offer, Offerer, Product, Stock, ThingType, User, Venue, Provider
 from utils.token import random_token
 
 
@@ -77,6 +77,10 @@ def create_offer_with_event_product(venue: Venue = None,
                                     is_national: bool = False,
                                     last_provider_id: int = None,
                                     product: Product = None,
+                                    last_provider: Provider = None,
+                                    id_at_providers: str = None,
+                                    description: str = None,
+                                    is_duo: bool = False,
                                     thumb_count: int = 0) -> Offer:
     offer = Offer()
     if product is None:
@@ -95,6 +99,7 @@ def create_offer_with_event_product(venue: Venue = None,
     offer.isActive = is_active
     offer.id = idx
     offer.lastProviderId = last_provider_id
+    offer.lastProvider = last_provider
     offer.idAtProviders = id_at_providers
     offer.isDuo = is_duo
 
@@ -112,13 +117,14 @@ def create_offer_with_thing_product(venue: Venue,
                                     is_digital: bool = False,
                                     is_national: bool = False,
                                     is_offline_only: bool = False,
-                                    last_provider_id: int = None,
                                     media_urls: List[str] = ['test/urls'],
                                     product: Product = None,
                                     thing_name: str = 'Test Book',
                                     thing_type: ThingType = ThingType.AUDIOVISUEL,
                                     thumb_count: int = 0,
-                                    url: Optional[str] = None) -> Offer:
+                                    url: Optional[str] = None,
+                                    last_provider_id: int = None,
+                                    last_provider: Provider = None) -> Offer:
     offer = Offer()
     if product:
         offer.product = product
@@ -153,6 +159,7 @@ def create_offer_with_thing_product(venue: Venue,
     offer.bookingEmail = booking_email
     offer.isActive = is_active
     offer.lastProviderId = last_provider_id
+    offer.lastProvider = last_provider
     offer.id = idx
 
     if id_at_providers:

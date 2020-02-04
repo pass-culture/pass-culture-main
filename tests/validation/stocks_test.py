@@ -392,7 +392,7 @@ class CheckStockIsUpdatableTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         provider = get_provider_by_local_class('TiteLiveStocks')
-        offer = create_offer_with_thing_product(venue, last_provider_id=provider.id)
+        offer = create_offer_with_thing_product(venue, last_provider_id=provider.id, last_provider=provider)
         stock = create_stock(offer=offer, available=10, id_at_providers='test')
 
         repository.save(stock)
