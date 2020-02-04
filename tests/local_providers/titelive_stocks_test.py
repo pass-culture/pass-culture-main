@@ -6,7 +6,7 @@ from models.venue_provider import VenueProvider
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_stock, create_offerer, create_venue
+from tests.model_creators.generic_creators import create_stock, create_offerer, create_venue, create_venue_provider
 from tests.model_creators.provider_creators import provider_test
 from tests.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
 
@@ -417,42 +417,34 @@ def test_titelive_stock_provider_return_last_elements_as_last_seen_isbn(get_stoc
 @clean_database
 @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
 @patch('local_providers.titelive_stocks.get_stocks_information')
-def test_should_activate_offer_when_stocks_are_refilled(get_stocks_information, mock_redis, app):
+def test_should_activate_offer_when_stocks_are_refilled(stub_get_stocks_information, stub_redis, app):
     # given
-    get_stocks_information.side_effect = [iter([
-        {
+    stub_get_stocks_information.side_effect = [
+        iter([{
             "ref": "0002730757438",
             "available": 0,
             "price": 4500,
             "validUntil": "2019-10-31T15:10:27Z"
-        }
-    ]), iter([
-        {
+        }]),
+        iter([{
             "ref": "0002730757438",
             "available": 2,
             "price": 4500,
             "validUntil": "2020-10-31T15:10:27Z"
-        }
-    ])
+        }])
     ]
 
-    offerer = create_offerer(siren='775671464')
-    venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-    repository.save(venue)
+    offerer = create_offerer()
+    venue = create_venue(offerer)
 
     tite_live_things_provider = get_provider_by_local_class('TiteLiveThings')
-    venue_provider = VenueProvider()
-    venue_provider.venue = venue
-    venue_provider.provider = tite_live_things_provider
-    venue_provider.isActive = True
-    venue_provider.venueIdAtOfferProvider = '77567146400110'
-    repository.save(venue_provider)
+    venue_provider = create_venue_provider(venue, tite_live_things_provider, is_active=True,
+                                           venue_id_at_offer_provider='77567146400110')
 
-    product1 = create_product_with_thing_type(id_at_providers='0002730757438')
-    repository.save(product1)
+    product = create_product_with_thing_type(id_at_providers='0002730757438')
     titelive_stocks_provider = get_provider_by_local_class('TiteLiveStocks')
     titelive_stocks_provider.isActive = True
-    repository.save(titelive_stocks_provider)
+    repository.save(product, titelive_stocks_provider, venue_provider)
     titelive_stocks = TiteLiveStocks(venue_provider)
 
     # When

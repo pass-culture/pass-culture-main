@@ -1,9 +1,9 @@
 from repository import booking_queries, repository
 
 
-def manage_titelive_school_related_bookings_and_offers(file_path: str):
+def update_offer_and_booking_status(booking_tokens_file_path: str):
     print("[BOOKINGS TOKEN SCAN] START")
-    bookings_token = _read_token_from_file(file_path)
+    bookings_token = _read_booking_tokens_from_file(booking_tokens_file_path)
     print(f"[BOOKINGS TOKEN SCAN] Getting {len(bookings_token)} bookings token to check")
     progress = 0
 
@@ -25,7 +25,6 @@ def manage_titelive_school_related_bookings_and_offers(file_path: str):
     print("[BOOKINGS TOKEN SCAN] END")
 
 
-def _read_token_from_file(file_path: str) -> [str]:
+def _read_booking_tokens_from_file(file_path: str) -> [str]:
     with open(file_path, mode='r', newline='\n') as file:
-        bookings_token = file.read().splitlines()
-    return bookings_token
+        return file.read().splitlines()

@@ -66,10 +66,10 @@ def test_should_not_delete_product_with_bookings_and_deactivate_associated_offer
     assert Product.query.count() == 1
 
 
-def test_read_isbn_from_file(app):
+def test_read_isbn_from_file():
     # Given
-    file_path = Path(os.path.dirname(os.path.realpath(__file__))) \
-                / '..' / '..' / 'sandboxes' / 'scripts' / 'isbn_test_file.txt'
+    current_directory = Path(os.path.dirname(os.path.realpath(__file__)))
+    file_path = f'{current_directory}/../files/isbn_test_file.txt'
 
     # When
     book_isbns = read_isbn_from_file(file_path)
