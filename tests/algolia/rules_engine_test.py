@@ -195,10 +195,10 @@ class IsEligibleForReindexingTest:
 
         # When
         is_offer_eligible = is_eligible_for_reindexing(offer=offer,
-                                                       offer_details={'name': 'super offre',
-                                                                      'dateRange': [],
-                                                                      'dates': [],
-                                                                      'prices': [10.0]})
+                                                 offer_details={'name': 'super offre',
+                                                                'dateRange': [],
+                                                                'dates': [],
+                                                                'prices': [10.0]})
 
         # Then
         assert not is_offer_eligible
@@ -214,10 +214,10 @@ class IsEligibleForReindexingTest:
 
         # When
         is_offer_eligible = is_eligible_for_reindexing(offer=offer,
-                                                       offer_details={'name': 'super offre',
-                                                                      'dateRange': [],
-                                                                      'dates': [],
-                                                                      'prices': [10.0]})
+                                                 offer_details={'name': 'super offre',
+                                                                'dateRange': [],
+                                                                'dates': [],
+                                                                'prices': [10.0]})
 
         # Then
         assert is_offer_eligible
@@ -233,11 +233,11 @@ class IsEligibleForReindexingTest:
 
         # When
         is_offer_eligible = is_eligible_for_reindexing(offer=offer,
-                                                       offer_details={'name': 'super offre',
-                                                                      'dateRange': ['2020-01-01 00:00:00',
-                                                                                    '2020-01-02 00:00:00'],
-                                                                      'dates': [1577836800.0],
-                                                                      'prices': [10.0]})
+                                                 offer_details={'name': 'super offre',
+                                                                'dateRange': ['2020-01-01 00:00:00',
+                                                                              '2020-01-02 00:00:00'],
+                                                                'dates': [1577836800.0],
+                                                                'prices': [10.0]})
 
         # Then
         assert not is_offer_eligible
@@ -253,11 +253,11 @@ class IsEligibleForReindexingTest:
 
         # When
         is_offer_eligible = is_eligible_for_reindexing(offer=offer,
-                                                       offer_details={'name': 'super offre',
-                                                                      'dateRange': ['2019-01-01 00:00:00',
-                                                                                    '2019-01-02 00:00:00'],
-                                                                      'dates': [1577836800.0],
-                                                                      'prices': [10.0]})
+                                                 offer_details={'name': 'super offre',
+                                                                'dateRange': ['2019-01-01 00:00:00',
+                                                                              '2019-01-02 00:00:00'],
+                                                                'dates': [1577836800.0],
+                                                                'prices': [10.0]})
 
         # Then
         assert is_offer_eligible
@@ -273,11 +273,11 @@ class IsEligibleForReindexingTest:
 
         # When
         is_offer_eligible = is_eligible_for_reindexing(offer=offer,
-                                                       offer_details={'name': 'super offre',
-                                                                      'dateRange': ['2020-01-01 00:00:00',
-                                                                                    '2020-01-02 00:00:00'],
-                                                                      'dates': [1578614400.0],
-                                                                      'prices': [10.0]})
+                                                 offer_details={'name': 'super offre',
+                                                                'dateRange': ['2020-01-01 00:00:00',
+                                                                              '2020-01-02 00:00:00'],
+                                                                'dates': [1578614400.0],
+                                                                'prices': [10.0]})
 
         # Then
         assert is_offer_eligible
@@ -293,11 +293,11 @@ class IsEligibleForReindexingTest:
 
         # When
         is_offer_eligible = is_eligible_for_reindexing(offer=offer,
-                                                       offer_details={'name': 'super offre',
-                                                                      'dateRange': ['2020-01-01 00:00:00',
-                                                                                    '2020-01-02 00:00:00'],
-                                                                      'dates': [1577836800.0],
-                                                                      'prices': [10.0]})
+                                                 offer_details={'name': 'super offre',
+                                                                'dateRange': ['2020-01-01 00:00:00',
+                                                                              '2020-01-02 00:00:00'],
+                                                                'dates': [1577836800.0],
+                                                                'prices': [10.0]})
 
         # Then
         assert not is_offer_eligible
@@ -316,11 +316,11 @@ class IsEligibleForReindexingTest:
 
         # When
         is_offer_eligible = is_eligible_for_reindexing(offer=offer,
-                                                       offer_details={'name': 'super offre',
-                                                                      'dateRange': ['2020-01-01 00:00:00',
-                                                                                    '2020-01-02 00:00:00'],
-                                                                      'dates': [1577836800],
-                                                                      'prices': [11.0]})
+                                                 offer_details={'name': 'super offre',
+                                                                'dateRange': ['2020-01-01 00:00:00',
+                                                                              '2020-01-02 00:00:00'],
+                                                                'dates': [1577836800],
+                                                                'prices': [11.0]})
 
         # Then
         assert is_offer_eligible
@@ -339,11 +339,11 @@ class IsEligibleForReindexingTest:
 
         # When
         is_offer_eligible = is_eligible_for_reindexing(offer=offer,
-                                                       offer_details={'name': 'super offre',
-                                                                      'dateRange': ['2020-01-01 00:00:00',
-                                                                                    '2020-01-02 00:00:00'],
-                                                                      'dates': [1577836800],
-                                                                      'prices': [10.0]})
+                                                 offer_details={'name': 'super offre',
+                                                                'dateRange': ['2020-01-01 00:00:00',
+                                                                              '2020-01-02 00:00:00'],
+                                                                'dates': [1577836800],
+                                                                'prices': [10.0]})
 
         # Then
         assert not is_offer_eligible

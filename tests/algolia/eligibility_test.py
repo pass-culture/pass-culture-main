@@ -1,0 +1,179 @@
+from datetime import datetime
+
+from algolia.eligibility import EligibilityRules
+from repository import repository
+from tests.conftest import clean_database
+from tests.model_creators.generic_creators import create_offerer, create_venue, create_stock
+from tests.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
+
+
+class NameHasChangedTest:
+    @staticmethod
+    def test_should_return_true_when_name_has_changed():
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer = create_offer_with_event_product(event_name='super offre', venue=venue)
+        offer_details = {'name': 'ancienne super offre'}
+
+        # When
+        name_has_changed = EligibilityRules.NAME_HAS_CHANGED.value.apply(offer=offer, offer_details=offer_details)
+
+        # Then
+        assert name_has_changed
+
+    @staticmethod
+    def test_should_return_false_when_name_has_not_changed():
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer = create_offer_with_event_product(event_name='super offre', venue=venue)
+        offer_details = {'name': 'super offre'}
+
+        # When
+        name_has_changed = EligibilityRules.NAME_HAS_CHANGED.value.apply(offer=offer, offer_details=offer_details)
+
+        # Then
+        assert not name_has_changed
+
+
+class DateRangeHasChangedTest:
+    @clean_database
+    def test_should_return_true_when_date_range_has_changed(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer = create_offer_with_event_product(event_name='super offre', venue=venue)
+        stock = create_stock(beginning_datetime=datetime(2020, 1, 1),
+                             end_datetime=datetime(2020, 1, 2),
+                             offer=offer,
+                             price=10)
+        repository.save(stock)
+        offer_details = {'dateRange': ['2011-01-01 00:00:00', '2011-01-05 00:00:00']}
+
+        # When
+        date_range_has_changed = EligibilityRules.DATE_RANGE_HAS_CHANGED.value.apply(offer=offer,
+                                                                                     offer_details=offer_details)
+
+        # Then
+        assert date_range_has_changed
+
+    @clean_database
+    def test_should_return_false_when_date_range_has_not_changed(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer = create_offer_with_event_product(event_name='super offre', venue=venue)
+        stock = create_stock(beginning_datetime=datetime(2020, 1, 1),
+                             end_datetime=datetime(2020, 1, 2),
+                             offer=offer,
+                             price=10)
+        repository.save(stock)
+        offer_details = {'dateRange': ['2020-01-01 00:00:00', '2020-01-02 00:00:00']}
+
+        # When
+        date_range_has_changed = EligibilityRules.DATE_RANGE_HAS_CHANGED.value.apply(offer=offer,
+                                                                                     offer_details=offer_details)
+
+        # Then
+        assert not date_range_has_changed
+
+
+class DatesHaveChangedTest:
+    @clean_database
+    def test_should_return_false_when_offer_is_not_an_event(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer = create_offer_with_thing_product(thing_name='super offre', venue=venue)
+        stock = create_stock(offer=offer,
+                             price=10)
+        repository.save(stock)
+        offer_details = {'dates': []}
+
+        # When
+        dates_have_changed = EligibilityRules.DATES_HAVE_CHANGED.value.apply(offer=offer,
+                                                                             offer_details=offer_details)
+
+        # Then
+        assert not dates_have_changed
+
+    @clean_database
+    def test_should_return_true_when_dates_have_changed(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer = create_offer_with_event_product(event_name='super offre', venue=venue)
+        stock = create_stock(beginning_datetime=datetime(2020, 1, 1),
+                             end_datetime=datetime(2020, 1, 2),
+                             offer=offer,
+                             price=10)
+        repository.save(stock)
+        offer_details = {'dates': [1486290387]}
+
+        # When
+        dates_have_changed = EligibilityRules.DATES_HAVE_CHANGED.value.apply(offer=offer,
+                                                                             offer_details=offer_details)
+
+        # Then
+        assert dates_have_changed
+
+    @clean_database
+    def test_should_false_when_dates_have_not_changed(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer = create_offer_with_event_product(event_name='super offre', venue=venue)
+        stock = create_stock(beginning_datetime=datetime(2020, 1, 1),
+                             end_datetime=datetime(2020, 1, 2),
+                             offer=offer,
+                             price=10)
+        repository.save(stock)
+        offer_details = {'dates': [1577836800]}
+
+        # When
+        dates_have_changed = EligibilityRules.DATES_HAVE_CHANGED.value.apply(offer=offer,
+                                                                             offer_details=offer_details)
+
+        # Then
+        assert not dates_have_changed
+
+
+class PricesHaveChangedTest:
+    @clean_database
+    def test_should_return_false_when_prices_have_not_changed(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer = create_offer_with_thing_product(thing_name='super offre', venue=venue)
+        stock = create_stock(offer=offer,
+                             price=10)
+        repository.save(stock)
+        offer_details = {'prices': [10]}
+
+        # When
+        prices_have_changed = EligibilityRules.PRICES_HAVE_CHANGED.value.apply(offer=offer,
+                                                                               offer_details=offer_details)
+
+        # Then
+        assert not prices_have_changed
+
+    @clean_database
+    def test_should_return_true_when_prices_have_changed(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer = create_offer_with_event_product(event_name='super offre', venue=venue)
+        stock = create_stock(beginning_datetime=datetime(2020, 1, 1),
+                             end_datetime=datetime(2020, 1, 2),
+                             offer=offer,
+                             price=12)
+        repository.save(stock)
+        offer_details = {'prices': [10]}
+
+        # When
+        prices_have_changed = EligibilityRules.PRICES_HAVE_CHANGED.value.apply(offer=offer,
+                                                                               offer_details=offer_details)
+
+        # Then
+        assert prices_have_changed
