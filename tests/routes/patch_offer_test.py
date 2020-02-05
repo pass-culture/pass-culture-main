@@ -361,8 +361,8 @@ class Patch:
 
             json = {
                 'isNational': True,
-                'bookingEmail': 'offer@example.com',
-                'name': 'Nouvelle offre',
+                'bookingEmail': 'new-email@example.com',
+                'name': 'Autre nom pour mon offre',
             }
 
             # When

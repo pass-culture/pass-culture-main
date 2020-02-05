@@ -1,5 +1,3 @@
-from pprint import pprint
-
 from flask import current_app as app
 
 from connectors import redis
@@ -40,6 +38,9 @@ def _update_offer(offer: Offer, modifications) -> Offer:
 
 
 def _update_offer_for_allocine_offers(offer: Offer, modifications) -> Offer:
+
+    modifications = _exclude_modifications_where_offer_value_wont_change(offer, modifications)
+
     check_edition_for_allocine_offer_is_valid(modifications)
 
     offer.populate_from_dict(modifications)
@@ -66,5 +67,17 @@ def _update_offer_when_updating_isActive_field(offer: Offer, modifications) -> O
 
     return offer
 
+
 def _is_request_only_updating_isActive_status(payload) -> bool:
     return 'isActive' in payload and len(payload) == 1
+
+
+def _exclude_modifications_where_offer_value_wont_change(offer: Offer, modifications):
+
+    modifications_to_keep = dict()
+
+    for (field, new_value) in modifications.items():
+        if getattr(offer, field, None) != new_value:
+            modifications_to_keep[field] = new_value
+
+    return modifications_to_keep

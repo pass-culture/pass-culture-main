@@ -1,6 +1,8 @@
 from unittest.mock import patch
 
-from models import Offer
+import pytest
+
+from models import Offer, ApiErrors
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
@@ -49,4 +51,70 @@ class UseCaseTest:
                 # Then
                 offer = Offer.query.one()
                 assert offer.fieldsUpdated == ['isDuo', 'isActive']
+
+            class WhenUpdatingForbiddenFields:
+                @clean_database
+                @patch('use_cases.update_an_offer.redis.add_offer_id')
+                def test_should_raise_an_error_when_field_has_changed(self, mock_redis, app):
+                    # Given
+                    provider = get_provider_by_local_class('AllocineStocks')
+                    offerer = create_offerer()
+                    venue = create_venue(offerer)
+                    offer = create_offer_with_thing_product(venue, last_provider=provider)
+                    offer.fieldsUpdated = ['isActive']
+
+                    repository.save(offer)
+
+                    # When
+                    modifications = {'bookingEmail': 'company@example.net'}
+
+                    with pytest.raises(ApiErrors) as error:
+                        update_an_offer(offer, modifications)
+
+                    # Then
+                    assert error.value.errors['bookingEmail'] == ['Vous ne pouvez pas modifier ce champ']
+
+                @clean_database
+                @patch('use_cases.update_an_offer.redis.add_offer_id')
+                def test_should_not_raise_an_error_when_field_has_not_changed(self, mock_redis, app):
+                    # Given
+                    booking_email = 'company@example.net'
+                    provider = get_provider_by_local_class('AllocineStocks')
+                    offerer = create_offerer()
+                    venue = create_venue(offerer)
+                    offer = create_offer_with_thing_product(venue, last_provider=provider, booking_email=booking_email)
+                    offer.fieldsUpdated = ['isActive']
+
+                    repository.save(offer)
+
+                    # When
+
+                    modifications = {'bookingEmail': booking_email}
+
+                    try:
+                        update_an_offer(offer, modifications)
+                    except:
+                        assert False
+
+
+                @clean_database
+                @patch('use_cases.update_an_offer.redis.add_offer_id')
+                def test_should_not_raise_an_error_when_field_does_not_exist(self, mock_redis, app):
+                    # Given
+                    provider = get_provider_by_local_class('AllocineStocks')
+                    offerer = create_offerer()
+                    venue = create_venue(offerer)
+                    offer = create_offer_with_thing_product(venue, last_provider=provider)
+                    offer.fieldsUpdated = ['isActive']
+
+                    repository.save(offer)
+
+                    # When
+
+                    modifications = {'offererId': '1546'}
+
+                    try:
+                        update_an_offer(offer, modifications)
+                    except:
+                        assert False
 
