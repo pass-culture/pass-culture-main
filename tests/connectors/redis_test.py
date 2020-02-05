@@ -270,13 +270,11 @@ class DeleteVenueProvidersTest:
 
 
 class AddToIndexedOffersTest:
-    @patch('connectors.redis.feature_queries.is_active', return_value=True)
     @patch('connectors.redis.redis')
     @clean_database
-    def test_should_add_to_indexed_offers_when_algolia_feature_is_enabled(self,
-                                                                          mock_redis,
-                                                                          mock_feature_active,
-                                                                          app):
+    def test_should_add_to_indexed_offers(self,
+                                          mock_redis,
+                                          app):
         # Given
         client = MagicMock()
         client.hset = MagicMock()
@@ -294,35 +292,13 @@ class AddToIndexedOffersTest:
             '{"dateRange": ["2020-01-01 10:00:00", "2020-01-06 12:00:00"], "name": "super offre"}'
         )
 
-    @patch('connectors.redis.feature_queries.is_active', return_value=False)
-    @patch('connectors.redis.redis')
-    @clean_database
-    def test_should_not_add_to_indexed_offers_when_algolia_feature_is_disabled(self,
-                                                                               mock_redis,
-                                                                               mock_feature_active,
-                                                                               app):
-        # Given
-        client = MagicMock()
-        client.hset = MagicMock()
-
-        # When
-        add_to_indexed_offers(pipeline=client,
-                              offer_id=1,
-                              offer_details={'dateRange': ['2020-01-01 10:00:00', '2020-01-06 12:00:00'],
-                                             'name': 'super offre'})
-
-        # Then
-        client.hset.assert_not_called()
-
 
 class DeleteIndexedOffersTest:
-    @patch('connectors.redis.feature_queries.is_active', return_value=True)
     @patch('connectors.redis.redis')
     @clean_database
-    def test_should_delete_indexed_offers_when_algolia_feature_is_enabled(self,
-                                                                          mock_redis,
-                                                                          mock_feature_active,
-                                                                          app):
+    def test_should_delete_indexed_offers(self,
+                                          mock_redis,
+                                          app):
         # Given
         client = MagicMock()
         client.hdel = MagicMock()
@@ -334,33 +310,13 @@ class DeleteIndexedOffersTest:
         # Then
         client.hdel.assert_called_once_with('indexed_offers', *offer_ids)
 
-    @patch('connectors.redis.feature_queries.is_active', return_value=False)
-    @patch('connectors.redis.redis')
-    @clean_database
-    def test_should_not_delete_indexed_offers_when_algolia_feature_is_disabled(self,
-                                                                               mock_redis,
-                                                                               mock_feature_active,
-                                                                               app):
-        # Given
-        client = MagicMock()
-        client.hdel = MagicMock()
-        offer_ids = [1, 2, 3]
-
-        # When
-        delete_indexed_offers(client=client, offer_ids=offer_ids)
-
-        # Then
-        client.hdel.assert_not_called()
-
 
 class CheckOfferExistsTest:
-    @patch('connectors.redis.feature_queries.is_active', return_value=True)
     @patch('connectors.redis.redis')
     @clean_database
-    def test_should_return_true_when_offer_exists_and_algolia_feature_is_enabled(self,
-                                                                                 mock_redis,
-                                                                                 mock_feature_active,
-                                                                                 app):
+    def test_should_return_true_when_offer_exists(self,
+                                                  mock_redis,
+                                                  app):
         # Given
         client = MagicMock()
         client.hexists = MagicMock()
@@ -373,13 +329,11 @@ class CheckOfferExistsTest:
         client.hexists.assert_called_once_with('indexed_offers', 1)
         assert result == True
 
-    @patch('connectors.redis.feature_queries.is_active', return_value=True)
     @patch('connectors.redis.redis')
     @clean_database
-    def test_should_return_false_when_offer_not_exists_and_algolia_feature_is_enabled(self,
-                                                                                      mock_redis,
-                                                                                      mock_feature_active,
-                                                                                      app):
+    def test_should_return_false_when_offer_not_exists(self,
+                                                       mock_redis,
+                                                       app):
         # Given
         client = MagicMock()
         client.hexists = MagicMock()
@@ -392,32 +346,13 @@ class CheckOfferExistsTest:
         client.hexists.assert_called_once_with('indexed_offers', 1)
         assert result == False
 
-    @patch('connectors.redis.feature_queries.is_active', return_value=False)
-    @patch('connectors.redis.redis')
-    @clean_database
-    def test_should_not_check_offer_exists_when_algolia_feature_is_disabled(self,
-                                                                            mock_redis,
-                                                                            mock_feature_active,
-                                                                            app):
-        # Given
-        client = MagicMock()
-        client.hexists = MagicMock()
-
-        # When
-        check_offer_exists(client=client, offer_id=1)
-
-        # Then
-        client.hexists.assert_not_called()
-
 
 class GetOfferDetailsTest:
-    @patch('connectors.redis.feature_queries.is_active', return_value=True)
     @patch('connectors.redis.redis')
     @clean_database
-    def test_should_return_offer_details_when_offer_exists_and_algolia_feature_is_enabled(self,
-                                                                                          mock_redis,
-                                                                                          mock_feature_active,
-                                                                                          app):
+    def test_should_return_offer_details_when_offer_exists(self,
+                                                           mock_redis,
+                                                           app):
         # Given
         client = MagicMock()
         client.hget = MagicMock()
@@ -430,13 +365,11 @@ class GetOfferDetailsTest:
         client.hget.assert_called_once_with('indexed_offers', 1)
         assert result == {'dateRange': ["2020-01-01 10:00:00", "2020-01-06 12:00:00"], 'name': 'super offre'}
 
-    @patch('connectors.redis.feature_queries.is_active', return_value=True)
     @patch('connectors.redis.redis')
     @clean_database
-    def test_should_return_empty_dict_when_offer_does_exists_and_algolia_feature_is_enabled(self,
-                                                                                            mock_redis,
-                                                                                            mock_feature_active,
-                                                                                            app):
+    def test_should_return_empty_dict_when_offer_does_exists(self,
+                                                             mock_redis,
+                                                             app):
         # Given
         client = MagicMock()
         client.hget = MagicMock()
@@ -449,32 +382,13 @@ class GetOfferDetailsTest:
         client.hget.assert_called_once_with('indexed_offers', 1)
         assert result == {}
 
-    @patch('connectors.redis.feature_queries.is_active', return_value=False)
-    @patch('connectors.redis.redis')
-    @clean_database
-    def test_should_not_return_offer_details_when_algolia_feature_is_disabled(self,
-                                                                              mock_redis,
-                                                                              mock_feature_active,
-                                                                              app):
-        # Given
-        client = MagicMock()
-        client.hget = MagicMock()
-
-        # When
-        get_offer_details(client=client, offer_id=1)
-
-        # Then
-        client.hget.assert_not_called()
-
 
 class DeleteAllIndexedOffersTest:
-    @patch('connectors.redis.feature_queries.is_active', return_value=True)
     @patch('connectors.redis.redis')
     @clean_database
-    def test_should_delete_all_indexed_offers_when_algolia_feature_is_enabled(self,
-                                                                              mock_redis,
-                                                                              mock_feature_active,
-                                                                              app):
+    def test_should_delete_all_indexed_offers(self,
+                                              mock_redis,
+                                              app):
         # Given
         client = MagicMock()
         client.delete = MagicMock()
@@ -484,20 +398,3 @@ class DeleteAllIndexedOffersTest:
 
         # Then
         client.delete.assert_called_once_with('indexed_offers')
-
-    @patch('connectors.redis.feature_queries.is_active', return_value=False)
-    @patch('connectors.redis.redis')
-    @clean_database
-    def test_should_not_delete_all_indexed_offers_when_algolia_feature_is_disabled(self,
-                                                                                   mock_redis,
-                                                                                   mock_feature_active,
-                                                                                   app):
-        # Given
-        client = MagicMock()
-        client.delete = MagicMock()
-
-        # When
-        delete_all_indexed_offers(client=client)
-
-        # Then
-        client.delete.assert_not_called()

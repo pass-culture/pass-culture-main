@@ -23,10 +23,10 @@ def is_eligible_for_indexing(offer: Offer) -> bool:
 
 
 def is_eligible_for_reindexing(offer: Offer, offer_details: dict) -> bool:
-    rules = [rule.value for rule in EligibilityRules]
+    eligibility_rules = [rule.value for rule in EligibilityRules]
 
-    for rule in rules:
-        something_has_changed = rule.apply(offer=offer, offer_details=offer_details)
-        if something_has_changed:
+    for rule in eligibility_rules:
+        offer_data_has_changed = rule.apply(offer=offer, offer_details=offer_details)
+        if offer_data_has_changed:
             return True
     return False
