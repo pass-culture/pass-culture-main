@@ -3,6 +3,7 @@ import { mount } from 'enzyme'
 import { Provider } from 'react-redux'
 import React from 'react'
 import { Router } from 'react-router'
+import { getCurrentUserUUID } from 'with-react-redux-login'
 
 import AbsoluteFooterContainer from '../../../layout/AbsoluteFooter/AbsoluteFooterContainer'
 import DetailsContainer from '../../../layout/Details/DetailsContainer'
@@ -41,7 +42,13 @@ describe('offerContainer', () => {
             offers: [],
             stocks: [],
             recommendations: [],
-            users: [],
+            users: [
+              {
+                id: 'Rt4R45ETEs',
+                currentUserUUID: getCurrentUserUUID(),
+                wallet_balance: 0,
+              },
+            ],
           }
         ) => state,
         geolocation: (
