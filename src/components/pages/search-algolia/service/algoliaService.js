@@ -1,4 +1,5 @@
 import algoliasearch from 'algoliasearch'
+
 import {
   WEBAPP_ALGOLIA_APPLICATION_ID,
   WEBAPP_ALGOLIA_INDEX_NAME,
@@ -14,7 +15,8 @@ export const fetch = (keywords = '', page = 0, aroundLatLng = '') => {
 
   return index.search({
     aroundLatLng: aroundLatLng,
+    aroundRadius: 'all',
     query: keywords,
-    page: page
+    page: page,
   })
 }
