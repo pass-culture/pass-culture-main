@@ -17,14 +17,14 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column('stock', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=True))
-    op.add_column('offer', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=True))
-    op.add_column('product', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=True))
-    op.add_column('venue', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=True))
-    op.add_column('venue_provider', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=True))
-    op.add_column('bank_information', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=True))
-    op.add_column('offerer', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=True))
-    op.add_column('mediation', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=True))
+    op.add_column('stock', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=False, server_default="{}"))
+    op.add_column('offer', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=False, server_default="{}"))
+    op.add_column('product', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=False, server_default="{}"))
+    op.add_column('venue', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=False, server_default="{}"))
+    op.add_column('venue_provider', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=False, server_default="{}"))
+    op.add_column('bank_information', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=False, server_default="{}"))
+    op.add_column('offerer', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=False, server_default="{}"))
+    op.add_column('mediation', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=False, server_default="{}"))
 
 
 def downgrade():

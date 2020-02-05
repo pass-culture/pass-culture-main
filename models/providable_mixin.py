@@ -39,7 +39,7 @@ class ProvidableMixin:
                                         default=datetime.utcnow)
 
     fieldsUpdated = Column(ARRAY(String(100)),
-                           nullable=True,
+                           nullable=False,
                            default=[])
 
     def ensure_can_be_updated(self):
