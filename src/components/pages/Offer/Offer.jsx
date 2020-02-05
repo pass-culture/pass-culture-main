@@ -412,12 +412,6 @@ class Offer extends PureComponent {
               'Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.'
             }
           </p>
-
-          <p className="fs13 pb30">
-            {
-              'Les offres payantes seront visibles dans l’application, toutefois les utilisateurs ne pourront les réserver que s’ils ont activé leur portefeuille numérique de 500 € sur Internet ou lors d’un des événements d’activation.'
-            }
-          </p>
         </HeroSection>
         <Form
           action={formApiPath}

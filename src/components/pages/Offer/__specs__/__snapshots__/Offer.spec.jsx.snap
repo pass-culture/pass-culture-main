@@ -95,11 +95,6 @@ ShallowWrapper {
           >
             Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.
           </p>
-          <p
-            className="fs13 pb30"
-          >
-            Les offres payantes seront visibles dans l’application, toutefois les utilisateurs ne pourront les réserver que s’ils ont activé leur portefeuille numérique de 500 € sur Internet ou lors d’un des événements d’activation.
-          </p>
         </HeroSection>,
         <withRouter(Connect(_Form))
           BlockComponent={null}
@@ -351,11 +346,6 @@ ShallowWrapper {
             >
               Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.
             </p>,
-            <p
-              className="fs13 pb30"
-            >
-              Les offres payantes seront visibles dans l’application, toutefois les utilisateurs ne pourront les réserver que s’ils ont activé leur portefeuille numérique de 500 € sur Internet ou lors d’un des événements d’activation.
-            </p>,
           ],
           "subtitle": "Super Livre",
           "title": "Détails de l’offre",
@@ -373,18 +363,6 @@ ShallowWrapper {
             },
             "ref": null,
             "rendered": "Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.",
-            "type": "p",
-          },
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": "Les offres payantes seront visibles dans l’application, toutefois les utilisateurs ne pourront les réserver que s’ils ont activé leur portefeuille numérique de 500 € sur Internet ou lors d’un des événements d’activation.",
-              "className": "fs13 pb30",
-            },
-            "ref": null,
-            "rendered": "Les offres payantes seront visibles dans l’application, toutefois les utilisateurs ne pourront les réserver que s’ils ont activé leur portefeuille numérique de 500 € sur Internet ou lors d’un des événements d’activation.",
             "type": "p",
           },
         ],
@@ -1544,11 +1522,6 @@ ShallowWrapper {
             >
               Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.
             </p>
-            <p
-              className="fs13 pb30"
-            >
-              Les offres payantes seront visibles dans l’application, toutefois les utilisateurs ne pourront les réserver que s’ils ont activé leur portefeuille numérique de 500 € sur Internet ou lors d’un des événements d’activation.
-            </p>
           </HeroSection>,
           <withRouter(Connect(_Form))
             BlockComponent={null}
@@ -1800,11 +1773,6 @@ ShallowWrapper {
               >
                 Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.
               </p>,
-              <p
-                className="fs13 pb30"
-              >
-                Les offres payantes seront visibles dans l’application, toutefois les utilisateurs ne pourront les réserver que s’ils ont activé leur portefeuille numérique de 500 € sur Internet ou lors d’un des événements d’activation.
-              </p>,
             ],
             "subtitle": "Super Livre",
             "title": "Détails de l’offre",
@@ -1822,18 +1790,6 @@ ShallowWrapper {
               },
               "ref": null,
               "rendered": "Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.",
-              "type": "p",
-            },
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": "Les offres payantes seront visibles dans l’application, toutefois les utilisateurs ne pourront les réserver que s’ils ont activé leur portefeuille numérique de 500 € sur Internet ou lors d’un des événements d’activation.",
-                "className": "fs13 pb30",
-              },
-              "ref": null,
-              "rendered": "Les offres payantes seront visibles dans l’application, toutefois les utilisateurs ne pourront les réserver que s’ils ont activé leur portefeuille numérique de 500 € sur Internet ou lors d’un des événements d’activation.",
               "type": "p",
             },
           ],
