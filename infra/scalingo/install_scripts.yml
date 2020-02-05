@@ -71,5 +71,5 @@
     - name: Ensure cronfile file is active.
       become: false
       shell: crontab /tmp/cronfile
-      when: result|changed
+      when: result.changed
       tags: cron
