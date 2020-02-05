@@ -1,5 +1,18 @@
 #!/bin/bash
 
+kill_tunnel_if_exist() {
+  local app_name=$1
+  local db_tunnel_pid ="$(ps -ef | awk '/'"${app_name}"'\ db-tunnel/{print $2}' | head -n 1)"
+
+  if [ -z "$db_tunnel_pid" ]
+  then
+    echo "No existing tunnel"
+  else
+    echo "Terminating tunnel"
+    kill -9 "$db_tunnel_pid"
+  fi
+}
+
 get_tunnel_database_url() {
   app_name=$1
 
@@ -15,7 +28,6 @@ get_tunnel_database_url() {
 
   echo $PG_DATABASE
   DB_TUNNEL_PID="$(pgrep -f $PG_DATABASE | tail -1)"
-  DB_TUNNEL_HAS_TO_BE_TERMINATED=false
 
   if [ -z "$DB_TUNNEL_PID" ]
   then
@@ -23,7 +35,6 @@ get_tunnel_database_url() {
     /usr/local/bin/scalingo --region $SCALINGO_REGION -a "$app_name" db-tunnel postgres://"$POSTGRESQL_URL" &
     sleep 3
     DB_TUNNEL_PID=$!
-    DB_TUNNEL_HAS_TO_BE_TERMINATED=true
   fi
 
   echo $DB_TUNNEL_PID
