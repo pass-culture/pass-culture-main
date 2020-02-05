@@ -438,7 +438,8 @@ def get_offers_by_product_id(product_id: int) -> List[Offer]:
 
 def get_offers_by_ids(offer_ids: List[int]) -> List[Offer]:
     return Offer.query \
-        .filter(Offer.id.in_(offer_ids)) \
+        .filter(Offer.id.in_(offer_ids))\
+        .options(joinedload('stocks'))\
         .all()
 
 

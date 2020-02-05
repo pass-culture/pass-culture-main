@@ -1410,21 +1410,21 @@ def _create_event_stock_and_offer_for_date(venue, date):
 class GetOffersByIdsTest:
     @clean_database
     def test_should_return_all_existing_offers_when_offer_ids_are_given(self, app):
-        # given
+        # Given
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
-        offer1 = create_offer_with_thing_product(venue=venue, idx=1)
-        offer2 = create_offer_with_thing_product(venue=venue, idx=2)
+        offer1 = create_offer_with_thing_product(venue=venue)
+        offer2 = create_offer_with_thing_product(venue=venue)
         repository.save(offer1, offer2)
-        offer_ids = [0, 1, 2]
+        offer_ids = [0, offer1.id, offer2.id]
 
-        # when
+        # When
         offers = get_offers_by_ids(offer_ids)
 
-        # then
+        # Then
         assert len(offers) == 2
-        assert offers[0].id == 1
-        assert offers[1].id == 2
+        assert offer1 in offers
+        assert offer2 in offers
 
 
 class GetPaginatedActiveOfferIdsTest:
@@ -1759,8 +1759,10 @@ class GetPaginatedExpiredOfferIdsTest:
         offer4 = create_offer_with_thing_product(is_active=True, venue=venue)
         stock1 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 1, 1, 0, 0, 0), offer=offer1)
         stock2 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 1, 1, 0, 0, 0), offer=offer2)
-        stock3 = create_stock_from_offer(beginning_datetime=None, booking_limit_datetime=datetime(2020, 1, 2, 0, 0, 0), offer=offer3)
-        stock4 = create_stock_from_offer(beginning_datetime=None, booking_limit_datetime=datetime(2020, 1, 3, 0, 0, 0), offer=offer4)
+        stock3 = create_stock_from_offer(beginning_datetime=None, booking_limit_datetime=datetime(2020, 1, 2, 0, 0, 0),
+                                         offer=offer3)
+        stock4 = create_stock_from_offer(beginning_datetime=None, booking_limit_datetime=datetime(2020, 1, 3, 0, 0, 0),
+                                         offer=offer4)
         repository.save(stock1, stock2, stock3, stock4)
 
         # When
