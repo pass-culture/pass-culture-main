@@ -4,9 +4,9 @@ from typing import List
 from redis import Redis
 from redis.client import Pipeline
 
-from algolia.api import add_objects, delete_objects
-from algolia.builder import build_object
-from algolia.rules_engine import is_eligible_for_indexing, is_eligible_for_reindexing
+from algolia.infrastructure.api import add_objects, delete_objects
+from algolia.infrastructure.builder import build_object
+from algolia.domain.rules_engine import is_eligible_for_indexing, is_eligible_for_reindexing
 from connectors.redis import add_to_indexed_offers, check_offer_exists, delete_offer_ids, \
     delete_indexed_offers, get_offer_details
 from models import Offer

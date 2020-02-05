@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from algolia.eligibility import EligibilityRules
+from algolia.domain.eligibility import EligibilityRules
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_stock

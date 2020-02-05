@@ -1,4 +1,4 @@
-from algolia.eligibility import EligibilityRules
+from algolia.domain.eligibility import EligibilityRules
 from domain.offers import has_remaining_stocks, has_at_least_one_stock_in_the_future
 from models import Offer
 

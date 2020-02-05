@@ -2,7 +2,7 @@ import os
 
 from redis import Redis
 
-from algolia.orchestrator import process_eligible_offers, delete_expired_offers
+from algolia.usecase.orchestrator import process_eligible_offers, delete_expired_offers
 from connectors.redis import get_venue_ids, delete_venue_ids, \
     get_venue_providers, delete_venue_providers, get_offer_ids
 from repository import offer_queries

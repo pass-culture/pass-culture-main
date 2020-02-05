@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from algolia.rules_engine import is_eligible_for_indexing, is_eligible_for_reindexing
+from algolia.domain.rules_engine import is_eligible_for_indexing, is_eligible_for_reindexing
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_stock, create_venue, create_booking, \

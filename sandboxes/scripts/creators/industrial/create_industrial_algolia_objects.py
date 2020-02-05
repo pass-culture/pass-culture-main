@@ -2,8 +2,8 @@ import os
 
 from flask import current_app as app
 
-from algolia.api import clean_algolia_index
-from algolia.orchestrator import process_eligible_offers
+from algolia.infrastructure.api import clean_algolia_index
+from algolia.usecase.orchestrator import process_eligible_offers
 from connectors.redis import delete_all_indexed_offers
 from models import Offer
 from utils.logger import logger

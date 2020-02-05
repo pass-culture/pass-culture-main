@@ -1,7 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 
-from algolia.builder import build_object
+from algolia.infrastructure.builder import build_object
 from models import EventType
 from repository import repository
 from tests.conftest import clean_database

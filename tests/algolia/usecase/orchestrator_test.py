@@ -3,7 +3,7 @@ from unittest.mock import patch, call, MagicMock
 
 from freezegun import freeze_time
 
-from algolia.orchestrator import delete_expired_offers, process_eligible_offers
+from algolia.usecase.orchestrator import delete_expired_offers, process_eligible_offers
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_stock, create_venue
@@ -15,12 +15,12 @@ TOMORROW = datetime.now() + timedelta(days=1)
 
 class ProcessEligibleOffersTest:
     @clean_database
-    @patch('algolia.orchestrator.delete_indexed_offers')
-    @patch('algolia.orchestrator.add_to_indexed_offers')
-    @patch('algolia.orchestrator.delete_objects')
-    @patch('algolia.orchestrator.add_objects')
-    @patch('algolia.orchestrator.check_offer_exists')
-    @patch('algolia.orchestrator.build_object', return_value={'fake': 'test'})
+    @patch('algolia.usecase.orchestrator.delete_indexed_offers')
+    @patch('algolia.usecase.orchestrator.add_to_indexed_offers')
+    @patch('algolia.usecase.orchestrator.delete_objects')
+    @patch('algolia.usecase.orchestrator.add_objects')
+    @patch('algolia.usecase.orchestrator.check_offer_exists')
+    @patch('algolia.usecase.orchestrator.build_object', return_value={'fake': 'test'})
     def test_should_add_objects_when_objects_are_eligible_and_not_already_indexed(self,
                                                                                   mock_build_object,
                                                                                   mock_check_offer_exists,
@@ -71,12 +71,12 @@ class ProcessEligibleOffersTest:
         mock_pipeline.reset.assert_called_once()
 
     @clean_database
-    @patch('algolia.orchestrator.delete_indexed_offers')
-    @patch('algolia.orchestrator.check_offer_exists')
-    @patch('algolia.orchestrator.add_to_indexed_offers')
-    @patch('algolia.orchestrator.delete_objects')
-    @patch('algolia.orchestrator.add_objects')
-    @patch('algolia.orchestrator.build_object', return_value={'fake': 'test'})
+    @patch('algolia.usecase.orchestrator.delete_indexed_offers')
+    @patch('algolia.usecase.orchestrator.check_offer_exists')
+    @patch('algolia.usecase.orchestrator.add_to_indexed_offers')
+    @patch('algolia.usecase.orchestrator.delete_objects')
+    @patch('algolia.usecase.orchestrator.add_objects')
+    @patch('algolia.usecase.orchestrator.build_object', return_value={'fake': 'test'})
     def test_should_delete_objects_when_objects_are_not_eligible_and_were_already_indexed(self,
                                                                                           mock_build_object,
                                                                                           mock_add_objects,
@@ -123,12 +123,12 @@ class ProcessEligibleOffersTest:
         mock_pipeline.reset.assert_not_called()
 
     @clean_database
-    @patch('algolia.orchestrator.delete_indexed_offers')
-    @patch('algolia.orchestrator.check_offer_exists')
-    @patch('algolia.orchestrator.add_to_indexed_offers')
-    @patch('algolia.orchestrator.delete_objects')
-    @patch('algolia.orchestrator.add_objects')
-    @patch('algolia.orchestrator.build_object', return_value={'fake': 'test'})
+    @patch('algolia.usecase.orchestrator.delete_indexed_offers')
+    @patch('algolia.usecase.orchestrator.check_offer_exists')
+    @patch('algolia.usecase.orchestrator.add_to_indexed_offers')
+    @patch('algolia.usecase.orchestrator.delete_objects')
+    @patch('algolia.usecase.orchestrator.add_objects')
+    @patch('algolia.usecase.orchestrator.build_object', return_value={'fake': 'test'})
     def test_should_not_delete_objects_when_objects_are_not_eligible_and_were_not_indexed(self,
                                                                                           mock_build_object,
                                                                                           mock_add_objects,
@@ -168,13 +168,13 @@ class ProcessEligibleOffersTest:
         mock_pipeline.execute.assert_not_called()
         mock_pipeline.reset.assert_not_called()
 
-    @patch('algolia.orchestrator.delete_offer_ids')
-    @patch('algolia.orchestrator.add_to_indexed_offers')
-    @patch('algolia.orchestrator.get_offer_details')
-    @patch('algolia.orchestrator.check_offer_exists')
-    @patch('algolia.orchestrator.delete_objects')
-    @patch('algolia.orchestrator.build_object')
-    @patch('algolia.orchestrator.add_objects')
+    @patch('algolia.usecase.orchestrator.delete_offer_ids')
+    @patch('algolia.usecase.orchestrator.add_to_indexed_offers')
+    @patch('algolia.usecase.orchestrator.get_offer_details')
+    @patch('algolia.usecase.orchestrator.check_offer_exists')
+    @patch('algolia.usecase.orchestrator.delete_objects')
+    @patch('algolia.usecase.orchestrator.build_object')
+    @patch('algolia.usecase.orchestrator.add_objects')
     @clean_database
     def test_should_index_offers_that_are_not_already_indexed(self,
                                                               mock_add_objects,
@@ -236,14 +236,14 @@ class ProcessEligibleOffersTest:
         assert mock_delete_objects.call_count == 0
         assert mock_delete_offer_ids.call_count == 1
 
-    @patch('algolia.orchestrator.delete_offer_ids')
-    @patch('algolia.orchestrator.delete_indexed_offers')
-    @patch('algolia.orchestrator.add_to_indexed_offers')
-    @patch('algolia.orchestrator.get_offer_details')
-    @patch('algolia.orchestrator.check_offer_exists')
-    @patch('algolia.orchestrator.delete_objects')
-    @patch('algolia.orchestrator.build_object')
-    @patch('algolia.orchestrator.add_objects')
+    @patch('algolia.usecase.orchestrator.delete_offer_ids')
+    @patch('algolia.usecase.orchestrator.delete_indexed_offers')
+    @patch('algolia.usecase.orchestrator.add_to_indexed_offers')
+    @patch('algolia.usecase.orchestrator.get_offer_details')
+    @patch('algolia.usecase.orchestrator.check_offer_exists')
+    @patch('algolia.usecase.orchestrator.delete_objects')
+    @patch('algolia.usecase.orchestrator.build_object')
+    @patch('algolia.usecase.orchestrator.add_objects')
     @clean_database
     def test_should_delete_offers_that_are_already_indexed(self,
                                                            mock_add_objects,
@@ -295,10 +295,10 @@ class ProcessEligibleOffersTest:
         assert mock_pipeline.reset.call_count == 0
         assert mock_delete_offer_ids.call_count == 1
 
-    @patch('algolia.orchestrator.delete_offer_ids')
-    @patch('algolia.orchestrator.delete_indexed_offers')
-    @patch('algolia.orchestrator.check_offer_exists')
-    @patch('algolia.orchestrator.delete_objects')
+    @patch('algolia.usecase.orchestrator.delete_offer_ids')
+    @patch('algolia.usecase.orchestrator.delete_indexed_offers')
+    @patch('algolia.usecase.orchestrator.check_offer_exists')
+    @patch('algolia.usecase.orchestrator.delete_objects')
     @clean_database
     def test_should_not_delete_offers_that_are_not_already_indexed(self,
                                                                    mock_delete_objects,
@@ -332,13 +332,13 @@ class ProcessEligibleOffersTest:
         assert mock_delete_indexed_offers.call_count == 0
         assert mock_delete_offer_ids.call_count == 1
 
-    @patch('algolia.orchestrator.delete_offer_ids')
-    @patch('algolia.orchestrator.add_to_indexed_offers')
-    @patch('algolia.orchestrator.get_offer_details')
-    @patch('algolia.orchestrator.check_offer_exists')
-    @patch('algolia.orchestrator.delete_objects')
-    @patch('algolia.orchestrator.build_object')
-    @patch('algolia.orchestrator.add_objects')
+    @patch('algolia.usecase.orchestrator.delete_offer_ids')
+    @patch('algolia.usecase.orchestrator.add_to_indexed_offers')
+    @patch('algolia.usecase.orchestrator.get_offer_details')
+    @patch('algolia.usecase.orchestrator.check_offer_exists')
+    @patch('algolia.usecase.orchestrator.delete_objects')
+    @patch('algolia.usecase.orchestrator.build_object')
+    @patch('algolia.usecase.orchestrator.add_objects')
     @clean_database
     def test_should_reindex_offers_that_are_already_indexed_only_if_offer_name_changed(self,
                                                                                        mock_add_objects,
@@ -392,13 +392,13 @@ class ProcessEligibleOffersTest:
         assert mock_delete_objects.call_count == 0
         assert mock_delete_offer_ids.call_count == 1
 
-    @patch('algolia.orchestrator.delete_offer_ids')
-    @patch('algolia.orchestrator.add_to_indexed_offers')
-    @patch('algolia.orchestrator.get_offer_details')
-    @patch('algolia.orchestrator.check_offer_exists')
-    @patch('algolia.orchestrator.delete_objects')
-    @patch('algolia.orchestrator.build_object')
-    @patch('algolia.orchestrator.add_objects')
+    @patch('algolia.usecase.orchestrator.delete_offer_ids')
+    @patch('algolia.usecase.orchestrator.add_to_indexed_offers')
+    @patch('algolia.usecase.orchestrator.get_offer_details')
+    @patch('algolia.usecase.orchestrator.check_offer_exists')
+    @patch('algolia.usecase.orchestrator.delete_objects')
+    @patch('algolia.usecase.orchestrator.build_object')
+    @patch('algolia.usecase.orchestrator.add_objects')
     @clean_database
     def test_should_not_reindex_offers_that_are_already_indexed_if_offer_name_has_not_changed(self,
                                                                                               mock_add_objects,
@@ -441,13 +441,13 @@ class ProcessEligibleOffersTest:
         assert mock_delete_objects.call_count == 0
         assert mock_delete_offer_ids.call_count == 1
 
-    @patch('algolia.orchestrator.delete_offer_ids')
-    @patch('algolia.orchestrator.add_to_indexed_offers')
-    @patch('algolia.orchestrator.get_offer_details')
-    @patch('algolia.orchestrator.check_offer_exists')
-    @patch('algolia.orchestrator.delete_objects')
-    @patch('algolia.orchestrator.build_object')
-    @patch('algolia.orchestrator.add_objects')
+    @patch('algolia.usecase.orchestrator.delete_offer_ids')
+    @patch('algolia.usecase.orchestrator.add_to_indexed_offers')
+    @patch('algolia.usecase.orchestrator.get_offer_details')
+    @patch('algolia.usecase.orchestrator.check_offer_exists')
+    @patch('algolia.usecase.orchestrator.delete_objects')
+    @patch('algolia.usecase.orchestrator.build_object')
+    @patch('algolia.usecase.orchestrator.add_objects')
     @clean_database
     @freeze_time('2019-01-01 12:00:00')
     def test_should_reindex_offers_that_are_already_indexed_only_if_stocks_are_changed(self,
@@ -512,13 +512,13 @@ class ProcessEligibleOffersTest:
         assert mock_delete_objects.call_count == 0
         assert mock_delete_offer_ids.call_count == 1
 
-    @patch('algolia.orchestrator.delete_offer_ids')
-    @patch('algolia.orchestrator.add_to_indexed_offers')
-    @patch('algolia.orchestrator.get_offer_details')
-    @patch('algolia.orchestrator.check_offer_exists')
-    @patch('algolia.orchestrator.delete_objects')
-    @patch('algolia.orchestrator.build_object')
-    @patch('algolia.orchestrator.add_objects')
+    @patch('algolia.usecase.orchestrator.delete_offer_ids')
+    @patch('algolia.usecase.orchestrator.add_to_indexed_offers')
+    @patch('algolia.usecase.orchestrator.get_offer_details')
+    @patch('algolia.usecase.orchestrator.check_offer_exists')
+    @patch('algolia.usecase.orchestrator.delete_objects')
+    @patch('algolia.usecase.orchestrator.build_object')
+    @patch('algolia.usecase.orchestrator.add_objects')
     @clean_database
     @freeze_time('2019-01-01 12:00:00')
     def test_should_not_reindex_offers_that_are_already_indexed_if_stocks_are_not_changed(self,
@@ -572,13 +572,13 @@ class ProcessEligibleOffersTest:
         assert mock_delete_objects.call_count == 0
         assert mock_delete_offer_ids.call_count == 1
 
-    @patch('algolia.orchestrator.delete_offer_ids')
-    @patch('algolia.orchestrator.add_to_indexed_offers')
-    @patch('algolia.orchestrator.get_offer_details')
-    @patch('algolia.orchestrator.check_offer_exists')
-    @patch('algolia.orchestrator.delete_objects')
-    @patch('algolia.orchestrator.build_object')
-    @patch('algolia.orchestrator.add_objects')
+    @patch('algolia.usecase.orchestrator.delete_offer_ids')
+    @patch('algolia.usecase.orchestrator.add_to_indexed_offers')
+    @patch('algolia.usecase.orchestrator.get_offer_details')
+    @patch('algolia.usecase.orchestrator.check_offer_exists')
+    @patch('algolia.usecase.orchestrator.delete_objects')
+    @patch('algolia.usecase.orchestrator.build_object')
+    @patch('algolia.usecase.orchestrator.add_objects')
     @clean_database
     @freeze_time('2019-01-01 12:00:00')
     def test_should_reindex_offers_only_when_stocks_beginning_datetime_have_changed(self,
@@ -645,9 +645,9 @@ class ProcessEligibleOffersTest:
 
 
 class OrchestrateDeleteExpiredOffersTest:
-    @patch('algolia.orchestrator.delete_indexed_offers')
-    @patch('algolia.orchestrator.check_offer_exists')
-    @patch('algolia.orchestrator.delete_objects')
+    @patch('algolia.usecase.orchestrator.delete_indexed_offers')
+    @patch('algolia.usecase.orchestrator.check_offer_exists')
+    @patch('algolia.usecase.orchestrator.delete_objects')
     def test_should_delete_expired_offers_from_algolia_when_at_least_one_offer_id_and_offers_were_indexed(self,
                                                                                                           mock_delete_objects,
                                                                                                           mock_check_offer_exists,
@@ -670,8 +670,8 @@ class OrchestrateDeleteExpiredOffersTest:
             call(client=client, offer_ids=[1, 2, 3])
         ]
 
-    @patch('algolia.orchestrator.delete_indexed_offers')
-    @patch('algolia.orchestrator.delete_objects')
+    @patch('algolia.usecase.orchestrator.delete_indexed_offers')
+    @patch('algolia.usecase.orchestrator.delete_objects')
     def test_should_not_delete_expired_offers_from_algolia_when_no_offer_id(self,
                                                                             mock_delete_objects,
                                                                             mock_delete_indexed_offers,
@@ -686,9 +686,9 @@ class OrchestrateDeleteExpiredOffersTest:
         assert mock_delete_objects.call_count == 0
         assert mock_delete_indexed_offers.call_count == 0
 
-    @patch('algolia.orchestrator.delete_indexed_offers')
-    @patch('algolia.orchestrator.check_offer_exists')
-    @patch('algolia.orchestrator.delete_objects')
+    @patch('algolia.usecase.orchestrator.delete_indexed_offers')
+    @patch('algolia.usecase.orchestrator.check_offer_exists')
+    @patch('algolia.usecase.orchestrator.delete_objects')
     def test_should_not_delete_expired_offers_from_algolia_when_at_least_one_offer_id_but_offers_were_not_indexed(self,
                                                                                                                   mock_delete_objects,
                                                                                                                   mock_check_offer_exists,
