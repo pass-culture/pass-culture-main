@@ -101,7 +101,6 @@ class StockItem extends PureComponent {
     const { id: stockId } = stockPatch
     const { readOnly } = query.context({ id: stockId, key: 'stock' })
     const userIsNotUpdatingStock = readOnly
-    const stockAssociatedToAllocineOffer = offer.hasBeenProvidedByAllocine
     const { form, values, handleSubmit } = formProps
 
     const { beginningDatetime } = values
@@ -112,7 +111,7 @@ class StockItem extends PureComponent {
         {isEvent && (
           <EventFields
             beginningDatetime={beginningDatetime}
-            readOnly={userIsNotUpdatingStock || stockAssociatedToAllocineOffer}
+            readOnly={userIsNotUpdatingStock || offer.hasBeenProvidedByAllocine}
             stockPatch={stockPatch}
             stocks={stocks}
             timezone={timezone}
