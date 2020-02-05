@@ -127,6 +127,33 @@ class Post:
             assert response.status_code == 400
             assert response.json['type'] == ['Le type de cette offre est inconnu']
 
+        @clean_database
+        def when_offer_name_is_too_long(self, app):
+            # Given
+            user = create_user(email='test@email.com')
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer, is_virtual=False)
+            event_product = create_product_with_event_type()
+            repository.save(user, venue, event_product, user_offerer)
+            json = {
+                'type': str(EventType.ACTIVATION),
+                'name': 'Nom vraiment très long excédant la taille maximale (nom de plus de quatre-vingt-dix caractères)',
+                'mediaUrls': ['http://media.url'],
+                'durationMinutes': 200,
+                'venueId': humanize(venue.id),
+                'bookingEmail': 'offer@email.com'
+            }
+
+            # When
+            response = TestClient(app.test_client()).with_auth(user.email).post(
+                f'{API_URL}/offers',
+                json=json)
+
+            # Then
+            assert response.status_code == 400
+            assert response.json['name'] == ['Le titre de l’offre doit faire au maximum 90 caractères.']
+
     class Returns201:
         @clean_database
         def when_creating_a_new_event_offer(self, app):

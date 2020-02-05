@@ -263,6 +263,32 @@ class Patch:
             for key in forbidden_keys:
                 assert key in response.json
 
+        @clean_database
+        def when_offer_name_is_too_long(self, app):
+            # Given
+            user = create_user()
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            thing_product = create_product_with_thing_type(thing_name='Old Name', owning_offerer=None)
+            offer = create_offer_with_thing_product(venue, thing_product)
+
+            repository.save(offer, user, user_offerer)
+
+            json = {
+                'name': 'Nom vraiment très long excédant la taille maximale (nom de plus de quatre-vingt-dix caractères)',
+            }
+
+            # When
+            response = TestClient(app.test_client()).with_auth(user.email).patch(
+                f'{API_URL}/offers/{humanize(offer.id)}',
+                json=json)
+
+            # Then
+            assert response.status_code == 400
+            assert response.json['name'] == ['Le titre de l’offre doit faire au maximum 90 caractères.']
+
+
     class Returns403:
         @clean_database
         def when_user_is_not_attached_to_offerer(self, app):

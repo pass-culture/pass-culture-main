@@ -19,7 +19,7 @@ from utils.rest import ensure_current_user_has_rights, expect_json_data, \
     login_or_api_key_required
 from validation.routes.offers import check_has_venue_id, check_offer_is_editable, \
     check_offer_type_is_valid, check_user_has_rights_for_query, check_valid_edition, \
-    check_venue_exists_when_requested
+    check_venue_exists_when_requested, check_offer_name_length_is_valid
 
 
 @app.route('/offers', methods=['GET'])
@@ -78,6 +78,8 @@ def post_offer() -> (str, int):
     else:
         offer_type_name = request.json.get('type')
         check_offer_type_is_valid(offer_type_name)
+        offer_name = request.json.get('name')
+        check_offer_name_length_is_valid(offer_name)
         offer = fill_offer_with_new_data(request.json, current_user)
         offer.product.owningOfferer = venue.managingOfferer
 
@@ -105,6 +107,10 @@ def patch_offer(offer_id: str) -> (str, int):
 
     if not request_only_contains_is_active:
         check_offer_is_editable(offer)
+
+    offer_name = request.json.get('name')
+    if offer_name:
+        check_offer_name_length_is_valid(offer_name)
 
     offer.populate_from_dict(request_data)
     offer.update_with_product_data(request_data)

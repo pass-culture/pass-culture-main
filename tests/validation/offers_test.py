@@ -1,7 +1,8 @@
 import pytest
 
 from models import ApiErrors, ThingType, EventType, Offer
-from validation.routes.offers import check_has_venue_id, check_offer_type_is_valid, check_offer_is_editable
+from validation.routes.offers import check_has_venue_id, check_offer_type_is_valid, check_offer_is_editable, \
+    check_offer_name_length_is_valid
 
 
 class CheckHasVenueIdTest:
@@ -47,6 +48,23 @@ class CheckOfferTypeIsValidTest:
         # When
         try:
             check_offer_type_is_valid(str(EventType.ACTIVATION))
+        except:
+            assert False
+
+
+class CheckOfferNameIsValidTest:
+    def test_raises_api_error_when_offer_name_is_too_long(self):
+        # When
+        with pytest.raises(ApiErrors) as error:
+            check_offer_name_length_is_valid('Nom vraiment très long excédant la taille maximale (nom de plus de quatre-vingt-dix caractères)')
+
+        # Then
+        assert error.value.errors['name'] == ['Le titre de l’offre doit faire au maximum 90 caractères.']
+
+    def test_does_not_raise_exception_when_offer_name_length_is_valid(self):
+        # When
+        try:
+            check_offer_name_length_is_valid('Nom de moins de quatre-vingt-dix caractères')
         except:
             assert False
 

@@ -50,6 +50,14 @@ def check_offer_type_is_valid(offer_type_name):
         raise api_error
 
 
+def check_offer_name_length_is_valid(offer_name):
+    max_offer_name_length = 90
+    if len(offer_name) > max_offer_name_length:
+        api_error = ApiErrors()
+        api_error.add_error('name', 'Le titre de l’offre doit faire au maximum 90 caractères.')
+        raise api_error
+
+
 def check_offer_id_is_present_in_request(offer_id: str):
     if offer_id is None:
         errors = ApiErrors()
