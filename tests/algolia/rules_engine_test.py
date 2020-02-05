@@ -187,78 +187,80 @@ class IsEligibleForReindexingTest:
     @clean_database
     def test_should_return_false_when_offer_name_has_not_changed(self, app):
         # Given
-        offerer = create_offerer(is_active=True, validation_token=None)
-        venue = create_venue(offerer=offerer, validation_token=None)
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
         offer = create_offer_with_thing_product(thing_name='super offre', venue=venue)
         stock = create_stock(offer=offer)
         repository.save(stock)
 
         # When
-        result = is_eligible_for_reindexing(offer=offer,
-                                            offer_details={'name': 'super offre',
-                                                           'dateRange': [],
-                                                           'dates': [],
-                                                           'prices': [10.0]})
+        is_offer_eligible = is_eligible_for_reindexing(offer=offer,
+                                                       offer_details={'name': 'super offre',
+                                                                      'dateRange': [],
+                                                                      'dates': [],
+                                                                      'prices': [10.0]})
 
         # Then
-        assert result is False
+        assert not is_offer_eligible
 
     @clean_database
     def test_should_return_true_when_offer_name_has_changed(self, app):
         # Given
-        offerer = create_offerer(is_active=True, validation_token=None)
-        venue = create_venue(offerer=offerer, validation_token=None)
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
         offer = create_offer_with_thing_product(thing_name='super offre de dingue', venue=venue)
         stock = create_stock(offer=offer)
         repository.save(stock)
 
         # When
-        result = is_eligible_for_reindexing(offer=offer,
-                                            offer_details={'name': 'super offre',
-                                                           'dateRange': [],
-                                                           'dates': [],
-                                                           'prices': [10.0]})
+        is_offer_eligible = is_eligible_for_reindexing(offer=offer,
+                                                       offer_details={'name': 'super offre',
+                                                                      'dateRange': [],
+                                                                      'dates': [],
+                                                                      'prices': [10.0]})
 
         # Then
-        assert result is True
+        assert is_offer_eligible
 
     @clean_database
     def test_should_return_false_when_stocks_have_not_changed(self, app):
         # Given
-        offerer = create_offerer(is_active=True, validation_token=None)
-        venue = create_venue(offerer=offerer, validation_token=None)
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
         offer = create_offer_with_event_product(event_name='super offre', venue=venue)
         stock = create_stock(beginning_datetime=datetime(2020, 1, 1), end_datetime=datetime(2020, 1, 2), offer=offer)
         repository.save(stock)
 
         # When
-        result = is_eligible_for_reindexing(offer=offer,
-                                            offer_details={'name': 'super offre',
-                                                           'dateRange': ['2020-01-01 00:00:00', '2020-01-02 00:00:00'],
-                                                           'dates': [1577836800.0],
-                                                           'prices': [10.0]})
+        is_offer_eligible = is_eligible_for_reindexing(offer=offer,
+                                                       offer_details={'name': 'super offre',
+                                                                      'dateRange': ['2020-01-01 00:00:00',
+                                                                                    '2020-01-02 00:00:00'],
+                                                                      'dates': [1577836800.0],
+                                                                      'prices': [10.0]})
 
         # Then
-        assert result is False
+        assert not is_offer_eligible
 
     @clean_database
     def test_should_return_true_when_stocks_have_changed(self, app):
         # Given
-        offerer = create_offerer(is_active=True, validation_token=None)
-        venue = create_venue(offerer=offerer, validation_token=None)
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
         offer = create_offer_with_event_product(event_name='super offre', venue=venue)
         stock = create_stock(beginning_datetime=datetime(2020, 1, 1), end_datetime=datetime(2020, 1, 2), offer=offer)
         repository.save(stock)
 
         # When
-        result = is_eligible_for_reindexing(offer=offer,
-                                            offer_details={'name': 'super offre',
-                                                           'dateRange': ['2019-01-01 00:00:00', '2019-01-02 00:00:00'],
-                                                           'dates': [1577836800.0],
-                                                           'prices': [10.0]})
+        is_offer_eligible = is_eligible_for_reindexing(offer=offer,
+                                                       offer_details={'name': 'super offre',
+                                                                      'dateRange': ['2019-01-01 00:00:00',
+                                                                                    '2019-01-02 00:00:00'],
+                                                                      'dates': [1577836800.0],
+                                                                      'prices': [10.0]})
 
         # Then
-        assert result is True
+        assert is_offer_eligible
 
     @clean_database
     def test_should_return_true_when_stocks_beginning_datetime_have_changed(self, app):
@@ -270,14 +272,15 @@ class IsEligibleForReindexingTest:
         repository.save(stock)
 
         # When
-        result = is_eligible_for_reindexing(offer=offer,
-                                            offer_details={'name': 'super offre',
-                                                           'dateRange': ['2020-01-01 00:00:00', '2020-01-02 00:00:00'],
-                                                           'dates': [1578614400.0],
-                                                           'prices': [10.0]})
+        is_offer_eligible = is_eligible_for_reindexing(offer=offer,
+                                                       offer_details={'name': 'super offre',
+                                                                      'dateRange': ['2020-01-01 00:00:00',
+                                                                                    '2020-01-02 00:00:00'],
+                                                                      'dates': [1578614400.0],
+                                                                      'prices': [10.0]})
 
         # Then
-        assert result is True
+        assert is_offer_eligible
 
     @clean_database
     def test_should_return_false_when_stocks_beginning_datetime_have_not_changed(self, app):
@@ -289,20 +292,21 @@ class IsEligibleForReindexingTest:
         repository.save(stock)
 
         # When
-        result = is_eligible_for_reindexing(offer=offer,
-                                            offer_details={'name': 'super offre',
-                                                           'dateRange': ['2020-01-01 00:00:00', '2020-01-02 00:00:00'],
-                                                           'dates': [1577836800.0],
-                                                           'prices': [10.0]})
+        is_offer_eligible = is_eligible_for_reindexing(offer=offer,
+                                                       offer_details={'name': 'super offre',
+                                                                      'dateRange': ['2020-01-01 00:00:00',
+                                                                                    '2020-01-02 00:00:00'],
+                                                                      'dates': [1577836800.0],
+                                                                      'prices': [10.0]})
 
         # Then
-        assert result is False
+        assert not is_offer_eligible
 
     @clean_database
     def test_should_return_true_when_stocks_prices_have_changed(self, app):
         # Given
-        offerer = create_offerer(is_active=True, validation_token=None)
-        venue = create_venue(offerer=offerer, validation_token=None)
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
         offer = create_offer_with_event_product(event_name='super offre', venue=venue)
         stock = create_stock(beginning_datetime=datetime(2020, 1, 1),
                              end_datetime=datetime(2020, 1, 2),
@@ -311,14 +315,15 @@ class IsEligibleForReindexingTest:
         repository.save(stock)
 
         # When
-        result = is_eligible_for_reindexing(offer=offer,
-                                            offer_details={'name': 'super offre',
-                                                           'dateRange': ['2020-01-01 00:00:00', '2020-01-02 00:00:00'],
-                                                           'dates': [1577836800],
-                                                           'prices': [11.0]})
+        is_offer_eligible = is_eligible_for_reindexing(offer=offer,
+                                                       offer_details={'name': 'super offre',
+                                                                      'dateRange': ['2020-01-01 00:00:00',
+                                                                                    '2020-01-02 00:00:00'],
+                                                                      'dates': [1577836800],
+                                                                      'prices': [11.0]})
 
         # Then
-        assert result is True
+        assert is_offer_eligible
 
     @clean_database
     def test_should_return_true_when_stocks_prices_have_not_changed(self, app):
@@ -333,11 +338,12 @@ class IsEligibleForReindexingTest:
         repository.save(stock)
 
         # When
-        result = is_eligible_for_reindexing(offer=offer,
-                                            offer_details={'name': 'super offre',
-                                                           'dateRange': ['2020-01-01 00:00:00', '2020-01-02 00:00:00'],
-                                                           'dates': [1577836800],
-                                                           'prices': [10.0]})
+        is_offer_eligible = is_eligible_for_reindexing(offer=offer,
+                                                       offer_details={'name': 'super offre',
+                                                                      'dateRange': ['2020-01-01 00:00:00',
+                                                                                    '2020-01-02 00:00:00'],
+                                                                      'dates': [1577836800],
+                                                                      'prices': [10.0]})
 
         # Then
-        assert result is False
+        assert not is_offer_eligible
