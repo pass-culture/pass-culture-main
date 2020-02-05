@@ -430,6 +430,7 @@ class Offer extends PureComponent {
               label="Titre de l’offre"
               maxLength={90}
               name="name"
+              readOnly={offerFromAllocine}
               required
               type="textarea"
             />
@@ -649,6 +650,7 @@ class Offer extends PureComponent {
                     limitTimeInHours={DURATION_LIMIT_TIME}
                     name="durationMinutes"
                     placeholder="HH:MM"
+                    readOnly={offerFromAllocine}
                     type="duration"
                   />
                 )}
@@ -702,6 +704,7 @@ class Offer extends PureComponent {
                   label="Description"
                   maxLength={1000}
                   name="description"
+                  readOnly={offerFromAllocine}
                   rows={readOnly ? 1 : 5}
                   type="textarea"
                 />

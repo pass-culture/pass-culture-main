@@ -136,6 +136,7 @@ ShallowWrapper {
               layout="horizontal"
               maxLength={90}
               name="name"
+              readOnly={false}
               required={true}
               size="normal"
               storeValue={[Function]}
@@ -288,6 +289,7 @@ ShallowWrapper {
                 layout="horizontal"
                 maxLength={1000}
                 name="description"
+                readOnly={false}
                 rows={5}
                 size="normal"
                 storeValue={[Function]}
@@ -394,6 +396,7 @@ ShallowWrapper {
                 layout="horizontal"
                 maxLength={90}
                 name="name"
+                readOnly={false}
                 required={true}
                 size="normal"
                 storeValue={[Function]}
@@ -547,6 +550,7 @@ ShallowWrapper {
                   layout="horizontal"
                   maxLength={1000}
                   name="description"
+                  readOnly={false}
                   rows={5}
                   size="normal"
                   storeValue={[Function]}
@@ -631,6 +635,7 @@ ShallowWrapper {
                   layout="horizontal"
                   maxLength={90}
                   name="name"
+                  readOnly={false}
                   required={true}
                   size="normal"
                   storeValue={[Function]}
@@ -731,6 +736,7 @@ ShallowWrapper {
                   "layout": "horizontal",
                   "maxLength": 90,
                   "name": "name",
+                  "readOnly": false,
                   "required": true,
                   "size": "normal",
                   "storeValue": [Function],
@@ -1144,6 +1150,7 @@ ShallowWrapper {
                     layout="horizontal"
                     maxLength={1000}
                     name="description"
+                    readOnly={false}
                     rows={5}
                     size="normal"
                     storeValue={[Function]}
@@ -1337,6 +1344,7 @@ ShallowWrapper {
                       layout="horizontal"
                       maxLength={1000}
                       name="description"
+                      readOnly={false}
                       rows={5}
                       size="normal"
                       storeValue={[Function]}
@@ -1366,6 +1374,7 @@ ShallowWrapper {
                       "layout": "horizontal",
                       "maxLength": 1000,
                       "name": "description",
+                      "readOnly": false,
                       "rows": 5,
                       "size": "normal",
                       "storeValue": [Function],
@@ -1579,6 +1588,7 @@ ShallowWrapper {
                 layout="horizontal"
                 maxLength={90}
                 name="name"
+                readOnly={false}
                 required={true}
                 size="normal"
                 storeValue={[Function]}
@@ -1731,6 +1741,7 @@ ShallowWrapper {
                   layout="horizontal"
                   maxLength={1000}
                   name="description"
+                  readOnly={false}
                   rows={5}
                   size="normal"
                   storeValue={[Function]}
@@ -1837,6 +1848,7 @@ ShallowWrapper {
                   layout="horizontal"
                   maxLength={90}
                   name="name"
+                  readOnly={false}
                   required={true}
                   size="normal"
                   storeValue={[Function]}
@@ -1990,6 +2002,7 @@ ShallowWrapper {
                     layout="horizontal"
                     maxLength={1000}
                     name="description"
+                    readOnly={false}
                     rows={5}
                     size="normal"
                     storeValue={[Function]}
@@ -2074,6 +2087,7 @@ ShallowWrapper {
                     layout="horizontal"
                     maxLength={90}
                     name="name"
+                    readOnly={false}
                     required={true}
                     size="normal"
                     storeValue={[Function]}
@@ -2174,6 +2188,7 @@ ShallowWrapper {
                     "layout": "horizontal",
                     "maxLength": 90,
                     "name": "name",
+                    "readOnly": false,
                     "required": true,
                     "size": "normal",
                     "storeValue": [Function],
@@ -2587,6 +2602,7 @@ ShallowWrapper {
                       layout="horizontal"
                       maxLength={1000}
                       name="description"
+                      readOnly={false}
                       rows={5}
                       size="normal"
                       storeValue={[Function]}
@@ -2780,6 +2796,7 @@ ShallowWrapper {
                         layout="horizontal"
                         maxLength={1000}
                         name="description"
+                        readOnly={false}
                         rows={5}
                         size="normal"
                         storeValue={[Function]}
@@ -2809,6 +2826,7 @@ ShallowWrapper {
                         "layout": "horizontal",
                         "maxLength": 1000,
                         "name": "description",
+                        "readOnly": false,
                         "rows": 5,
                         "size": "normal",
                         "storeValue": [Function],

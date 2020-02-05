@@ -423,83 +423,157 @@ describe('src | components | pages | Offer | Offer ', () => {
     })
 
     describe('when updating the offer', () => {
-      it('should update a product when no offer type', () => {
-        // given
-        props.match.params = {
-          offerId: 'VAG',
-        }
-        props.query.context = () => ({
-          isCreatedEntity: false,
-          isModifiedEntity: false,
-          readOnly: true,
+      describe('when the offer is imported from Allocine', () => {
+        it('should allow to update isDuo but no other fields', () => {
+          // given
+          props.match.params = {
+            offerId: 'VAG',
+          }
+          props.selectedOfferType = {
+            type: 'Event',
+          }
+          props.offer = {
+            id: 'VAG',
+            productId: '6GD',
+            isEvent: true,
+            isThing: false,
+            lastProvider: {
+              name: 'Allociné',
+            },
+            activeMediation: {
+              id: 'MED',
+              isActive: true,
+            },
+            mediationsIds: ['MED'],
+          }
+
+          // when
+          const wrapper = shallow(<Offer {...props} />)
+
+          // then
+          const form_fields = wrapper.find(Field)
+          expect(form_fields.find("[label='Titre de l’offre']").prop('readOnly')).toBe(true)
+          expect(form_fields.find("[label='Durée']").prop('readOnly')).toBe(true)
+          expect(
+            form_fields.find("[label='Email auquel envoyer les réservations']").prop('readOnly')
+          ).toBe(true)
+          expect(form_fields.find("[label='Description']").prop('readOnly')).toBe(true)
         })
-        props.offer = {
-          id: 'VAG',
-          productId: 'V24',
-          lastProvider: {
-            name: 'Open Agenda',
-          },
-        }
-
-        // when
-        const wrapper = shallow(<Offer {...props} />)
-
-        // then
-        expect(wrapper.find(Form).prop('action')).toStrictEqual('/offers/VAG')
       })
 
-      it('should create a new Event when event type given', () => {
-        // given
-        props.match.params = {
-          offerId: 'VAG',
-        }
-        props.selectedOfferType = {
-          type: 'Event',
-        }
-        props.offer = {
-          id: 'VAG',
-          mediationId: 'TR',
-          productId: '6GD',
-          isEvent: true,
-          isThing: false,
-          lastProvider: null,
-        }
+      describe('when the offer is not imported', () => {
+        it('should update a product when no offer type', () => {
+          // given
+          props.match.params = {
+            offerId: 'VAG',
+          }
+          props.query.context = () => ({
+            isCreatedEntity: false,
+            isModifiedEntity: false,
+            readOnly: true,
+          })
+          props.offer = {
+            id: 'VAG',
+            productId: 'V24',
+            lastProvider: {
+              name: 'Open Agenda',
+            },
+          }
 
-        // when
-        const wrapper = shallow(<Offer {...props} />)
+          // when
+          const wrapper = shallow(<Offer {...props} />)
 
-        // then
-        expect(wrapper.find(Form).prop('action')).toStrictEqual('/offers/VAG')
-      })
+          // then
+          expect(wrapper.find(Form).prop('action')).toStrictEqual('/offers/VAG')
+        })
 
-      it('should display preview link', () => {
-        // given
-        props.match.params = {
-          offerId: 'VAG',
-        }
-        props.selectedOfferType = {
-          type: 'Event',
-        }
-        props.offer = {
-          id: 'VAG',
-          productId: '6GD',
-          isEvent: true,
-          isThing: false,
-          lastProvider: null,
-          activeMediation: {
-            id: 'MED',
-            isActive: true,
-          },
-          mediationsIds: ['MED'],
-        }
-        const wrapper = shallow(<Offer {...props} />)
+        it('should create a new Event when event type given', () => {
+          // given
+          props.match.params = {
+            offerId: 'VAG',
+          }
+          props.selectedOfferType = {
+            type: 'Event',
+          }
+          props.offer = {
+            id: 'VAG',
+            mediationId: 'TR',
+            productId: '6GD',
+            isEvent: true,
+            isThing: false,
+            lastProvider: null,
+          }
 
-        // when
-        const preview_section = wrapper.find(HeroSection)
+          // when
+          const wrapper = shallow(<Offer {...props} />)
 
-        // then
-        const preview_link = preview_section.find('OfferPreviewLink')
-        expect(preview_link.prop('href')).toMatch('/offre/details/VAG/MED')
+          // then
+          expect(wrapper.find(Form).prop('action')).toStrictEqual('/offers/VAG')
+        })
+
+        it('should display preview link', () => {
+          // given
+          props.match.params = {
+            offerId: 'VAG',
+          }
+          props.selectedOfferType = {
+            type: 'Event',
+          }
+          props.offer = {
+            id: 'VAG',
+            productId: '6GD',
+            isEvent: true,
+            isThing: false,
+            lastProvider: null,
+            activeMediation: {
+              id: 'MED',
+              isActive: true,
+            },
+            mediationsIds: ['MED'],
+          }
+          const wrapper = shallow(<Offer {...props} />)
+
+          // when
+          const preview_section = wrapper.find(HeroSection)
+
+          // then
+          const preview_link = preview_section.find('OfferPreviewLink')
+          expect(preview_link.prop('href')).toMatch('/offre/details/VAG/MED')
+        })
+
+        it('should allow to update every fields', () => {
+          // given
+          props.match.params = {
+            offerId: 'VAG',
+          }
+          props.selectedOfferType = {
+            type: 'Event',
+          }
+          props.offer = {
+            id: 'VAG',
+            productId: '6GD',
+            isEvent: true,
+            isThing: false,
+            lastProvider: null,
+            activeMediation: {
+              id: 'MED',
+              isActive: true,
+            },
+            mediationsIds: ['MED'],
+          }
+
+          // when
+          const wrapper = shallow(<Offer {...props} />)
+
+          // then
+          const form_fields = wrapper.find(Field)
+          expect(form_fields.find("[label='Titre de l’offre']").prop('readOnly')).toBe(false)
+          expect(form_fields.find("[label='Durée']").prop('readOnly')).toBe(false)
+          expect(
+            form_fields.find("[label='Email auquel envoyer les réservations']").prop('readOnly')
+          ).toBe(false)
+          expect(form_fields.find("[label='Description']").prop('readOnly')).toBe(false)
+        })
       })
     })
 
