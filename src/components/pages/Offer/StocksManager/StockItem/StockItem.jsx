@@ -82,7 +82,7 @@ class StockItem extends PureComponent {
   renderForm = formProps => {
     const {
       closeInfo,
-      dispatch,
+      deleteStock,
       hasIban,
       history,
       isEvent,
@@ -112,7 +112,6 @@ class StockItem extends PureComponent {
         {isEvent && (
           <EventFields
             beginningDatetime={beginningDatetime}
-            dispatch={dispatch}
             readOnly={userIsNotUpdatingStock || stockAssociatedToAllocineOffer}
             stockPatch={stockPatch}
             stocks={stocks}
@@ -134,7 +133,7 @@ class StockItem extends PureComponent {
         />
         {userIsNotUpdatingStock ? (
           <EditAndDeleteControl
-            dispatch={dispatch}
+            deleteStock={deleteStock}
             formInitialValues={stockPatch}
             handleSetErrors={handleSetErrors}
             history={history}
@@ -208,6 +207,7 @@ StockItem.defaultProps = {
 
 StockItem.propTypes = {
   closeInfo: PropTypes.func.isRequired,
+  deleteStock: PropTypes.func.isRequired,
   hasIban: PropTypes.bool.isRequired,
   history: PropTypes.shape().isRequired,
   isEvent: PropTypes.bool.isRequired,

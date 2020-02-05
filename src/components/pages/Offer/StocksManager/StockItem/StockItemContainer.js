@@ -79,10 +79,9 @@ export const mapStateToProps = (state, ownProps) => {
 }
 
 export const mapDispatchToProps = (dispatch, ownProps) => {
-  const { query } = ownProps
-
   return {
     updateStockInformations: (stockId, body, handleSuccess, handleFail) => {
+      const { query } = ownProps
       const context = query.context({ id: stockId, key: 'stock' })
       const { method } = context
       dispatch(
@@ -92,6 +91,16 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
           handleSuccess: handleSuccess,
           handleFail: handleFail,
           method,
+        })
+      )
+    },
+
+    deleteStock: (stockId, handleFail) => {
+      dispatch(
+        requestData({
+          apiPath: `stocks/${stockId}`,
+          handleFail: handleFail,
+          method: 'DELETE',
         })
       )
     },

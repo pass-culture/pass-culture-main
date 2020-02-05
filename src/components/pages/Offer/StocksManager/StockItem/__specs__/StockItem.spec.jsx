@@ -77,7 +77,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
           props.query = { context: () => ({ readOnly: false }) }
         })
 
-        it('event fields should not be alterable', () => {
+        it('beginning time and end time should not be alterable', () => {
           // When
           const stockItemWrapper = shallow(<StockItem {...props} />)
           const formWrapper = shallow(stockItemWrapper.instance().renderForm({ values: {} }))
@@ -94,7 +94,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
           props.query = { context: () => ({ readOnly: false }) }
         })
 
-        it('event fields should be alterable', () => {
+        it('beginning time and end time should be alterable', () => {
           // When
           const stockItemWrapper = shallow(<StockItem {...props} />)
           const formWrapper = shallow(stockItemWrapper.instance().renderForm({ values: {} }))

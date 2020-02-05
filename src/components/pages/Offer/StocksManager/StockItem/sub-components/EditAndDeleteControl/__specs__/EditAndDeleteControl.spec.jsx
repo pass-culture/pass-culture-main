@@ -18,7 +18,7 @@ describe('src | components | pages | Offer | StockManager | StockItem | sub-comp
 
   beforeEach(() => {
     props = {
-      dispatch: jest.fn(),
+      deleteStock: jest.fn(),
       handleSetErrors: jest.fn(),
       formInitialValues: {
         id: 'EA',
@@ -60,10 +60,10 @@ describe('src | components | pages | Offer | StockManager | StockItem | sub-comp
       wrapper.instance().handleOnConfirmDeleteClick()
 
       // then
-      const requestDataArguments = requestData.mock.calls[0][0]
-      expect(requestDataArguments.apiPath).toBe(`stocks/${props.formInitialValues.id}`)
-      expect(requestDataArguments.method).toBe('DELETE')
-      expect(props.dispatch).toHaveBeenCalledWith(expectedAction)
+      expect(props.deleteStock).toHaveBeenCalledWith(
+        props.formInitialValues.id,
+        expect.any(Function)
+      )
     })
   })
 })

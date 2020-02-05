@@ -16,7 +16,7 @@ ShallowWrapper {
     }
   >
     <withRouter(_withQueryRouter)
-      dispatch={[MockFunction]}
+      deleteStock={[MockFunction]}
       formInitialValues={
         Object {
           "id": "EA",
@@ -46,7 +46,7 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "function",
     "props": Object {
-      "dispatch": [MockFunction],
+      "deleteStock": [MockFunction],
       "formInitialValues": Object {
         "id": "EA",
       },
@@ -67,7 +67,7 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "function",
       "props": Object {
-        "dispatch": [MockFunction],
+        "deleteStock": [MockFunction],
         "formInitialValues": Object {
           "id": "EA",
         },

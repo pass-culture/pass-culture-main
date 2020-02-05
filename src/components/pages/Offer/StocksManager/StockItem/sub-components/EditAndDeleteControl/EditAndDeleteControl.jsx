@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent, Fragment } from 'react'
 import { Portal } from 'react-portal'
-import { requestData } from 'redux-saga-data'
 
 import DeleteDialog from '../DeleteDialog/DeleteDialog'
 import withFrenchQueryRouter from '../../../../../../hocs/withFrenchQueryRouter'
@@ -44,16 +43,10 @@ class EditAndDeleteControl extends PureComponent {
     query.changeToModification(null, { id: stockId, key: 'stock' })
 
   handleOnConfirmDeleteClick = () => {
-    const { dispatch, formInitialValues } = this.props
+    const { deleteStock, formInitialValues } = this.props
 
     const formSubmitPromise = new Promise(resolve => {
-      dispatch(
-        requestData({
-          apiPath: `stocks/${formInitialValues.id}`,
-          handleFail: this.handleRequestFail(resolve),
-          method: 'DELETE',
-        })
-      )
+      deleteStock(formInitialValues.id, this.handleRequestFail(resolve))
     })
     return formSubmitPromise
   }
@@ -116,7 +109,7 @@ class EditAndDeleteControl extends PureComponent {
 }
 
 EditAndDeleteControl.propTypes = {
-  dispatch: PropTypes.func.isRequired,
+  deleteStock: PropTypes.func.isRequired,
   formInitialValues: PropTypes.shape().isRequired,
   handleSetErrors: PropTypes.func.isRequired,
   isEvent: PropTypes.bool.isRequired,

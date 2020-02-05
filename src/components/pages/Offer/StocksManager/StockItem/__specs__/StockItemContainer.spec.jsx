@@ -104,46 +104,69 @@ describe('stockItemContainer', () => {
       dispatch = jest.fn()
     })
 
-    it('should submit stock item modification', () => {
-      // given
-      const handleSuccess = jest.fn()
-      const handleFail = jest.fn()
-      const ownProps = {
-        query: {
-          context: jest.fn().mockReturnValue({
-            method: 'PATCH',
-          }),
-        },
-        stockPatch: {
-          id: 'stockId',
-          stockId: 'stockId',
-        },
-      }
-      const body = {
-        updatedField: 'updatedValue',
-      }
-      const stockId = 'stockId'
-
-      // when
-      mapDispatchToProps(dispatch, ownProps).updateStockInformations(
-        stockId,
-        body,
-        handleSuccess,
-        handleFail
-      )
-
-      // then
-      expect(dispatch).toHaveBeenCalledWith({
-        config: {
-          apiPath: '/stocks/stockId',
-          body: {
-            updatedField: 'updatedValue',
+    describe('updateStockInformations', () => {
+      it('should submit stock item modification', () => {
+        // given
+        const handleSuccess = jest.fn()
+        const handleFail = jest.fn()
+        const ownProps = {
+          query: {
+            context: jest.fn().mockReturnValue({
+              method: 'PATCH',
+            }),
           },
-          handleSuccess: handleSuccess,
-          handleFail: handleFail,
-          method: 'PATCH',
-        },
-        type: 'REQUEST_DATA_PATCH_/STOCKS/STOCKID',
+          stockPatch: {
+            id: 'stockId',
+            stockId: 'stockId',
+          },
+        }
+        const body = {
+          updatedField: 'updatedValue',
+        }
+        const stockId = 'stockId'
+
+        // when
+        mapDispatchToProps(dispatch, ownProps).updateStockInformations(
+          stockId,
+          body,
+          handleSuccess,
+          handleFail
+        )
+
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          config: {
+            apiPath: '/stocks/stockId',
+            body: {
+              updatedField: 'updatedValue',
+            },
+            handleSuccess: handleSuccess,
+            handleFail: handleFail,
+            method: 'PATCH',
+          },
+          type: 'REQUEST_DATA_PATCH_/STOCKS/STOCKID',
+        })
+      })
+    })
+
+    describe('deleteStock', () => {
+      it('should submit stock deletion', () => {
+        // given
+        const handleFail = jest.fn()
+        const stockId = 'stockId'
+
+        // when
+        mapDispatchToProps(dispatch).deleteStock(stockId, handleFail)
+
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          config: {
+            apiPath: 'stocks/stockId',
+            handleFail: handleFail,
+            method: 'DELETE',
+          },
+          type: 'REQUEST_DATA_DELETE_STOCKS/STOCKID',
+        })
       })
     })
   })
