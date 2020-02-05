@@ -26,7 +26,7 @@ export const formatRecommendationDates = (departementCode, dateRange = []) => {
   return `du ${fromFormated} au ${toFormated}`
 }
 
-export const formatEndValidityDate = date => {
+export const computeEndValidityDate = date => {
   const options = {
     year: 'numeric',
     month: 'long',

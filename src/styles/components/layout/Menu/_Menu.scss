@@ -54,11 +54,14 @@ $main-menu-height-with-padding: (592px + 24px);
   }
 
   .wallet-value {
+    font-size: rem(44px);
+    font-weight: 600;
     letter-spacing: -0.1rem;
     line-height: 42px;
   }
 
   .currency {
+    font-size: rem(30px);
     line-height: 42px;
   }
 }

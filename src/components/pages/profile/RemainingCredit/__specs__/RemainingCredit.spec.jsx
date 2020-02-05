@@ -5,200 +5,145 @@ import RemainingCredit from '../RemainingCredit'
 import CreditGauge from '../CreditGauge/CreditGauge'
 import Icon from '../../../../layout/Icon/Icon'
 
-const nonBreakingSpace = '\u00A0'
+const NON_BREAKING_SPACE = '\u00A0'
+
+const READ_MORE_TEXT = `Le but du pass Culture est de renforcer vos pratiques culturelles,
+                mais aussi d’en créer de nouvelles. Ces plafonds ont été mis en place
+                pour favoriser la diversification des pratiques culturelles.`
 
 describe('components | RemainingCredit', () => {
-  it('should match the snapshot with required props', () => {
-    // given
-    const props = {
+  let props
+
+  beforeEach(() => {
+    props = {
       currentUser: {
         expenses: {
           all: { actual: 10, max: 300 },
-          digital: { actual: 0, max: 200 },
-          physical: { actual: 0, max: 200 }
+          digital: { actual: 100, max: 200 },
+          physical: { actual: 100, max: 200 }
         },
-        wallet_balance: 500,
-        wallet_date_created: '2019-09-10T08:05:45.778894Z'
+        wallet_balance: 0
       }
     }
-
-    // when
-    const wrapper = shallow(<RemainingCredit {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {
     it('should include Crédit restant title', () => {
-      // given
-      const props = {
-        currentUser: {
-          expenses: {
-            all: { actual: 10, max: 300 },
-            digital: { actual: 100, max: 200 },
-            physical: { actual: 100, max: 200 }
-          },
-          wallet_balance: 0
-        }
-      }
-
-      // when
+      // When
       const wrapper = shallow(<RemainingCredit {...props} />)
 
-      // then
+      // Then
       const title = wrapper.find('h2').text()
       expect(title).toBe('Crédit restant')
     })
 
     it('should include a title, a money icon and wallet ballance in header', () => {
-      // given
-      const props = {
-        currentUser: {
-          expenses: {
-            all: { actual: 10, max: 300 },
-            digital: { actual: 100, max: 200 },
-            physical: { actual: 100, max: 200 }
-          },
-          wallet_balance: 666
-        }
-      }
+      // Given
+      props.currentUser.wallet_balance = 666
 
-      // when
+      // When
       const wrapper = shallow(<RemainingCredit {...props} />)
 
-      // then
+      // Then
       const moneyPicto = wrapper.find(Icon).first()
-      const headerTitle = wrapper.find('h3').first()
-      const headerAmount = wrapper.find('p').first()
-      const nonBreakingSpace = '\u00A0'
+      const headerTitle = wrapper.find({ children: 'Mon crédit' })
+      const headerRemainingCredit = wrapper.find('p').first()
       expect(moneyPicto.prop('svg')).toBe('picto-money')
-      expect(headerTitle.text()).toBe('Mon crédit')
-      expect(headerAmount.text()).toBe(`666${nonBreakingSpace}€`)
+      expect(headerTitle).toHaveLength(1)
+      expect(headerRemainingCredit.text()).toBe(`666${NON_BREAKING_SPACE}€`)
     })
 
     it('should include three gauges', () => {
-      // given
-      const props = {
-        currentUser: {
-          expenses: {
-            all: { actual: 10, max: 500 },
-            digital: { actual: 20, max: 201 },
-            physical: { actual: 30, max: 202 }
-          },
-          wallet_balance: 351
-        }
+      // Given
+      props.currentUser = {
+        expenses: {
+          all: { actual: 10, max: 500 },
+          digital: { actual: 20, max: 201 },
+          physical: { actual: 30, max: 202 }
+        },
+        wallet_balance: 351
       }
 
-      // when
+      // When
       const wrapper = shallow(<RemainingCredit {...props} />)
 
-      // then
+      // Then
+      const gaugeTitle = wrapper.find({
+        children: `Vous pouvez encore dépenser jusqu’à${NON_BREAKING_SPACE}:`
+      })
 
-      const gaugeTitle = wrapper
-        .findWhere(
-          node => node.text() === `Vous pouvez encore dépenser jusqu’à${nonBreakingSpace}:`
-        )
-        .first()
       const gauges = wrapper.find(CreditGauge)
       const digitalGauge = gauges.at(0)
-      const digitalAmount = digitalGauge.prop('currentAmount')
-      const maxDigitalAmount = digitalGauge.prop('maxAmount')
       const physicalGauge = gauges.at(1)
-      const physicalAmount = physicalGauge.prop('currentAmount')
-      const maxPhysicalAmount = physicalGauge.prop('maxAmount')
-      const totalGauge = gauges.at(2)
-      const totalAmount = totalGauge.prop('currentAmount')
-      const maxTotalAmount = totalGauge.prop('maxAmount')
+      const initialDepositGauge = gauges.at(2)
+
+      const digitalRemainingCredit = digitalGauge.prop('remainingCredit')
+      const physicalRemainingCredit = physicalGauge.prop('remainingCredit')
+      const remainingCredit = initialDepositGauge.prop('remainingCredit')
+
+      const digitalCreditLimit = digitalGauge.prop('creditLimit')
+      const physicalCreditLimit = physicalGauge.prop('creditLimit')
+      const initialDeposit = initialDepositGauge.prop('creditLimit')
 
       expect(gaugeTitle).toHaveLength(1)
       expect(digitalGauge).toHaveLength(1)
-      expect(digitalAmount).toBe(181)
-      expect(maxDigitalAmount).toBe(201)
       expect(physicalGauge).toHaveLength(1)
-      expect(physicalAmount).toBe(172)
-      expect(maxPhysicalAmount).toBe(202)
-      expect(totalGauge).toHaveLength(1)
-      expect(totalAmount).toBe(351)
-      expect(maxTotalAmount).toBe(500)
+      expect(initialDepositGauge).toHaveLength(1)
+
+      expect(digitalRemainingCredit).toBe(181)
+      expect(physicalRemainingCredit).toBe(172)
+      expect(remainingCredit).toBe(351)
+
+      expect(digitalCreditLimit).toBe(201)
+      expect(physicalCreditLimit).toBe(202)
+      expect(initialDeposit).toBe(500)
     })
 
-    it('should hide readMore with title and explanation', () => {
-      // given
-      const props = {
-        currentUser: {
-          expenses: {
-            all: { actual: 10, max: 300 },
-            digital: { actual: 20, max: 200 },
-            physical: { actual: 30, max: 200 }
-          },
-          wallet_balance: 351
-        }
-      }
+    describe('readMore', () => {
+      it('should render hidden readMore explanation', () => {
+        // When
+        const wrapper = shallow(<RemainingCredit {...props} />)
 
-      // when
-      const wrapper = shallow(<RemainingCredit {...props} />)
+        // Then
+        const readMoreExplanationNode = wrapper.find({ children: READ_MORE_TEXT })
+        expect(readMoreExplanationNode).toHaveLength(0)
+      })
 
-      // then
-      const readMoreTitle = wrapper
-        .findWhere(
-          node =>
-            node.text() ===
-            `Pourquoi les biens physiques et numériques sont-ils limités${nonBreakingSpace}?`
-        )
-        .first()
-      const readMorePicto = wrapper.find(Icon).at(1)
-      const expectedText =
-        'Le but du pass Culture est de renforcer vos pratiques culturelles, ' +
-        'mais aussi d’en créer de nouvelles. Ces plafonds ont été mis en place ' +
-        'pour favoriser la diversification des pratiques culturelles.'
-      const readMoreText = wrapper.findWhere(node => node.text() === expectedText).first()
-      expect(readMoreTitle).toHaveLength(1)
-      expect(readMoreText).toHaveLength(1)
-      expect(readMorePicto.prop('svg')).toBe('picto-drop-down')
+      it('should display readMore explanation on title click', () => {
+        // When
+        const wrapper = shallow(<RemainingCredit {...props} />)
+        const readMoreTitle = `Pourquoi les biens physiques et numériques sont-ils limités${NON_BREAKING_SPACE}?`
+        const readMoreTitleNode = wrapper.find({ children: readMoreTitle })
+        readMoreTitleNode.simulate('click')
+
+        // Then
+        const readMoreExplanationNode = wrapper.find({ children: READ_MORE_TEXT })
+
+        expect(readMoreExplanationNode).toHaveLength(1)
+      })
     })
 
     it('should render end validity date', () => {
-      // given
-      const props = {
-        currentUser: {
-          expenses: {
-            all: { actual: 10, max: 300 },
-            digital: { actual: 120, max: 200 },
-            physical: { actual: 140, max: 200 }
-          },
-          wallet_balance: 90,
-          wallet_date_created: '2019-09-10T08:05:45.778894Z'
-        }
-      }
+      // Given
+      props.currentUser.wallet_date_created = '2019-09-10T08:05:45.778894Z'
 
-      // when
+      // When
       const wrapper = shallow(<RemainingCredit {...props} />)
-      
-      // then
+
+      // Then
       const textWithEndValidityDate = wrapper.find('.rc-end-validity-date').text()
       expect(textWithEndValidityDate).toBe('Votre crédit est valable jusqu’au 2021 M09 10.')
     })
 
     it('should not render end validity date when user has no deposit', () => {
-      // given
-      const props = {
-        currentUser: {
-          expenses: {
-            all: { actual: 10, max: 300 },
-            digital: { actual: 0, max: 200 },
-            physical: { actual: 0, max: 200 }
-          },
-          wallet_balance: 0,
-          wallet_date_created: null
-        }
-      }
+      // Given
+      props.currentUser.wallet_date_created = null
 
-      // when
+      // When
       const wrapper = shallow(<RemainingCredit {...props} />)
       const wrapperWithEndValidityDate = wrapper.find('.rc-end-validity-date')
 
-      // then
+      // Then
       expect(wrapperWithEndValidityDate).toHaveLength(0)
     })
   })

@@ -1,14 +1,14 @@
-import getAvailableBalanceByType from '../utils'
+import getRemainingCreditForGivenCreditLimit from '../utils'
 
 describe('src | components | pages | profile | utils', () => {
-  describe('getAvailableBalanceByType', () => {
+  describe('getRemainingCreditForGivenCreditLimit', () => {
     it('returns wallet balance if lower than max minus actual', () => {
       // given
       const wallet = 100
       const expense = { actual: 0, max: 200 }
 
       // then
-      const result = getAvailableBalanceByType(wallet)(expense)
+      const result = getRemainingCreditForGivenCreditLimit(wallet)(expense)
 
       // when
       expect(result).toStrictEqual(100)
@@ -20,7 +20,7 @@ describe('src | components | pages | profile | utils', () => {
       const expense = { actual: 90, max: 200 }
 
       // then
-      const result = getAvailableBalanceByType(wallet)(expense)
+      const result = getRemainingCreditForGivenCreditLimit(wallet)(expense)
 
       // when
       expect(result).toStrictEqual(110)

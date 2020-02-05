@@ -1,13 +1,13 @@
-import { dateStringPlusTimeZone, formatEndValidityDate, formatRecommendationDates } from '../date'
+import { computeEndValidityDate, dateStringPlusTimeZone, formatRecommendationDates } from '../date'
 
 describe('src | utils | date', () => {
-  describe('formatEndValidityDate', () => {
+  describe('computeEndValidityDate', () => {
     it('should return formatted date', () => {
       // given
       const date = new Date('2019-09-10T08:05:45.778894Z')
 
       // when
-      const formattedDate = formatEndValidityDate(date)
+      const formattedDate = computeEndValidityDate(date)
 
       // then
       expect(formattedDate).toBe('2021 M09 10')

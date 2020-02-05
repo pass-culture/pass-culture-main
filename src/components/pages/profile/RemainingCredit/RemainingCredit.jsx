@@ -1,39 +1,44 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
-import getAvailableBalanceByType from '../utils/utils'
-import { formatEndValidityDate } from '../../../../utils/date/date'
-import CreditGauge from './CreditGauge/CreditGauge'
-import Icon from '../../../layout/Icon/Icon'
+import { computeEndValidityDate } from '../../../../utils/date/date'
 import formatDecimals from '../../../../utils/numbers/formatDecimals'
+import Icon from '../../../layout/Icon/Icon'
+import getRemainingCreditForGivenCreditLimit from '../utils/utils'
+import CreditGauge from './CreditGauge/CreditGauge'
+
+const NON_BREAKING_SPACE = '\u00A0'
 
 class RemainingCredit extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-      readMoreIsVisible: false
+      isReadMoreVisible: false,
     }
   }
 
   handleToggleReadMore = () => {
-    this.setState(previousState => ({ readMoreIsVisible: !previousState.readMoreIsVisible }))
+    this.setState(previousState => ({ isReadMoreVisible: !previousState.isReadMoreVisible }))
   }
 
   render() {
     const { currentUser } = this.props
-    const { readMoreIsVisible } = this.state
-    const { expenses, wallet_date_created, wallet_balance: walletBalance } = currentUser || {}
+    const { isReadMoreVisible } = this.state
+    const {
+      expenses,
+      wallet_date_created: walletDateCreated,
+      wallet_balance: walletBalance,
+    } = currentUser
     const formattedWalletBalance = formatDecimals(walletBalance)
     const { digital, physical, all } = expenses
-    const maxAmountDigital = digital.max
-    const maxAmountPhysical = physical.max
-    const maxAmountAll = all.max
-    const [digitalAvailable, physicalAvailable] = [digital, physical].map(
-      getAvailableBalanceByType(walletBalance)
-    )
+    const digitalCreditLimit = digital.max
+    const physicalCreditLimit = physical.max
+    const initialDeposit = all.max
+    const digitalRemainingCredit = getRemainingCreditForGivenCreditLimit(walletBalance)(digital)
+    const physicalRemainingCredit = getRemainingCreditForGivenCreditLimit(walletBalance)(physical)
     let endValidityDate = null
-    if (wallet_date_created) {
-      endValidityDate = formatEndValidityDate(new Date(wallet_date_created))
+    if (walletDateCreated) {
+      endValidityDate = computeEndValidityDate(new Date(walletDateCreated))
     }
 
     return (
@@ -48,89 +53,75 @@ class RemainingCredit extends PureComponent {
           <div className="rc-header">
             <Icon svg="picto-money" />
             <div>
-              <h3>
+              <div className="rc-header-title">
                 {'Mon crédit'}
-              </h3>
+              </div>
               <p>
-                {formattedWalletBalance}
-                &nbsp;
-                {'€'}
+                {`${formattedWalletBalance}${NON_BREAKING_SPACE}€`}
               </p>
             </div>
           </div>
           <div className="rc-gauges-container">
             <div className="rc-gauges-title">
-              {'Vous pouvez encore dépenser jusqu’à'}
-              &nbsp;
-              {':'}
+              {`Vous pouvez encore dépenser jusqu’à${NON_BREAKING_SPACE}:`}
             </div>
             <div className="rc-gauges">
               <CreditGauge
-                className="gauge-digital"
-                currentAmount={digitalAvailable}
+                creditLimit={digitalCreditLimit}
                 detailsText="en offres numériques (streaming, …)"
-                maxAmount={maxAmountDigital}
+                extraClassName="gauge-digital"
                 picto="picto-digital-good"
+                remainingCredit={digitalRemainingCredit}
               />
               <CreditGauge
-                className="gauge-physical"
-                currentAmount={physicalAvailable}
+                creditLimit={physicalCreditLimit}
                 detailsText="en offres physiques (livres, …)"
-                maxAmount={maxAmountPhysical}
+                extraClassName="gauge-physical"
                 picto="picto-physical-good"
+                remainingCredit={physicalRemainingCredit}
               />
               <CreditGauge
-                className="gauge-total"
-                currentAmount={walletBalance}
+                creditLimit={initialDeposit}
                 detailsText="en autres offres (concerts, …)"
-                maxAmount={maxAmountAll}
+                extraClassName="gauge-total"
                 picto="picto-ticket"
+                remainingCredit={walletBalance}
               />
             </div>
           </div>
           <div className="rc-read-more">
             <button
-              className="rc-read-more-button"
+              className={`rc-read-more-button ${
+                isReadMoreVisible ? 'rc-read-more-drop-down' : 'rc-read-more-drop-down-flipped'
+              }`}
               onClick={this.handleToggleReadMore}
               type="button"
             >
-              <div className="rc-read-more-title">
-                {'Pourquoi les biens physiques et numériques sont-ils limités'}
-                &nbsp;
-                {'?'}
-              </div>
-              <Icon
-                className={`rc-read-more-arrow ${
-                  readMoreIsVisible ? 'rc-read-more-arrow-is-flipped' : ''
-                }`}
-                svg="picto-drop-down"
-              />
+              {`Pourquoi les biens physiques et numériques sont-ils limités${NON_BREAKING_SPACE}?`}
             </button>
-            <p
-              className={`rc-read-more-content ${
-                readMoreIsVisible ? 'rc-read-more-content-is-visible' : ''
-              }`}
-            >
-              {'Le but du pass Culture est de renforcer vos pratiques culturelles, '}
-              {'mais aussi d’en créer de nouvelles. Ces plafonds ont été mis en place '}
-              {'pour favoriser la diversification des pratiques culturelles.'}
-            </p>
+            {isReadMoreVisible && (
+              <p>
+                {`Le but du pass Culture est de renforcer vos pratiques culturelles,
+                mais aussi d’en créer de nouvelles. Ces plafonds ont été mis en place
+                pour favoriser la diversification des pratiques culturelles.`}
+              </p>
+            )}
           </div>
         </div>
-        <div>
-          {endValidityDate && (
+        {endValidityDate && (
+          <div>
             <p className="rc-end-validity-date">
               {`Votre crédit est valable jusqu’au ${endValidityDate}.`}
             </p>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     )
   }
 }
 
 RemainingCredit.propTypes = {
-  currentUser: PropTypes.shape().isRequired
+  currentUser: PropTypes.shape().isRequired,
 }
 
 export default RemainingCredit

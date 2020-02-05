@@ -1,4 +1,4 @@
-.cg-amount {
+.cg-written-remaining {
   font-size: rem(18px);
   font-weight: 500;
   margin-top: rem(8px);
@@ -9,11 +9,11 @@
   flex: 1 1 0px;
 }
 
-.cg-current {
+.cg-remaining {
   height: rem(16px);
 }
 
-.cg-dot {
+.cg-circle {
   align-items: center;
   border-radius: 50%;
   display: flex;
@@ -28,7 +28,7 @@
   display: flex;
 }
 
-.cg-max {
+.cg-limit {
   background: $grey-even-more-light;
   border: 2px solid $grey-border-cg;
   border-radius: rem(10px);
@@ -42,15 +42,15 @@
 .gauge-digital {
   margin-right: rem(3px);
 
-  .cg-dot {
+  .cg-circle {
     background: $primary;
   }
 
-  .cg-current {
+  .cg-remaining {
     background: $primary;
   }
 
-  .cg-amount {
+  .cg-written-remaining {
     color: $primary;
   }
 }
@@ -58,84 +58,84 @@
 .gauge-physical {
   margin-right: rem(3px);
 
-  .cg-dot {
+  .cg-circle {
     background: $purple-blue;
   }
 
-  .cg-current {
+  .cg-remaining {
     background: $purple-blue;
   }
 
-  .cg-amount {
+  .cg-written-remaining {
     color: $purple-blue; 
   }
 }
 
 .gauge-total {
-  .cg-dot {
+  .cg-circle {
     background: $ribbon-blue;
   }
 
-  .cg-current {
+  .cg-remaining {
     background: $ribbon-blue;
   }
 
-  .cg-amount {
+  .cg-written-remaining {
     color: $ribbon-blue;
   }
 }
 
 .cg-container-empty-gauge {
-  .cg-dot {
+  .cg-circle {
     background: $grey;
   }
 
-  .cg-amount {
+  .cg-written-remaining {
     color: $grey; 
   }
 }
 
-.cg-gauge-width-00 {
+.cg-gauge-width-0 {
   width: 10%;
 }
 
-.cg-gauge-width-10 {
+.cg-gauge-width-1 {
   width: 19%;
 }
 
-.cg-gauge-width-20 {
+.cg-gauge-width-2 {
   width: 28%;
 }
 
-.cg-gauge-width-30 {
+.cg-gauge-width-3 {
   width: 37%;
 }
 
-.cg-gauge-width-40 {
+.cg-gauge-width-4 {
   width: 46%;
 }
 
-.cg-gauge-width-50 {
+.cg-gauge-width-5 {
   width: 55%;
 }
 
-.cg-gauge-width-60 {
+.cg-gauge-width-6 {
   width: 64%;
 }
 
-.cg-gauge-width-70 {
+.cg-gauge-width-7 {
   width: 73%;
 }
 
-.cg-gauge-width-80 {
+.cg-gauge-width-8 {
   width: 82%;
 }
 
-.cg-gauge-width-90 {
+.cg-gauge-width-9 {
   width: 91%;
 }
 
-.cg-gauge-width-100 {
+.cg-gauge-width-10 {
   border-radius: rem(10px);
   width: 100%;
 }

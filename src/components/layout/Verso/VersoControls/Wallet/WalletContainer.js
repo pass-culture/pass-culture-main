@@ -6,9 +6,9 @@ import formatDecimals from '../../../../../utils/numbers/formatDecimals'
 
 export const mapStateToProps = state => {
   const currentUser = selectCurrentUser(state)
-  const { wallet_balance } = currentUser
+  const { wallet_balance: walletBalance } = currentUser
+  const value = formatDecimals(walletBalance)
 
-  const value = formatDecimals(wallet_balance)
   return { value }
 }
 

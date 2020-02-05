@@ -32,10 +32,10 @@ const Header = ({ currentUser }) => (
         </span>
       </div>
       <div id="main-menu-header-wallet-value">
-        <span className="fs44 is-semi-bold wallet-value">
+        <span className="wallet-value">
           {currentUser && formatDecimals(currentUser.wallet_balance)}
         </span>
-        <span className="fs30 currency">
+        <span className="currency">
           {'\u00A0€'}
         </span>
       </div>
@@ -44,7 +44,7 @@ const Header = ({ currentUser }) => (
 )
 
 Header.propTypes = {
-  currentUser: PropTypes.shape().isRequired
+  currentUser: PropTypes.shape().isRequired,
 }
 
 export default Header

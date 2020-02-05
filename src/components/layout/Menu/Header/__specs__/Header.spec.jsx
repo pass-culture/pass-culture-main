@@ -15,14 +15,6 @@ describe('src | components | menu | Header', () => {
     }
   })
 
-  it('should match the snapshot', () => {
-    // given
-    const wrapper = shallow(<Header {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
   describe('render()', () => {
     it('should render the username and his wallet', () => {
       // given

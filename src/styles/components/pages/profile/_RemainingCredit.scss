@@ -1,13 +1,12 @@
 .rc-end-validity-date {
-  margin: 0 rem(21px);   
+  margin: 0 rem(21px);
 }
-
 
 .rc-gauges {
   display: flex;
 }
 
-.rc-gauges-container{
+.rc-gauges-container {
   @extend .dotted-bottom-black;
 
   padding: 0 rem(17px) rem(17px) rem(17px);
@@ -28,52 +27,49 @@
 
 .rc-header {
   background-image: linear-gradient(to right, $primary, $purple-blue);
-  box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.2);
   border-top-left-radius: rem(6px);
   border-top-right-radius: rem(6px);
+  box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.2);
   display: flex;
   padding: rem(17px);
-
-  div {
-    padding-left: rem(24px);
-  }
-
-  h3 {
-    color: $white;
-    font-size: rem(16px);
-    font-weight: 400;
-  }
 
   p {
     color: $white;
     font-weight: 500;
     font-size: rem(40px);
+    padding-left: rem(24px);
   }
+}
+
+.rc-header-title {
+  color: $white;
+  font-size: rem(16px);
+  font-weight: 400;
+  padding-left: rem(24px);
 }
 
 .rc-read-more {
   padding: rem(17px);
 }
 
-.rc-read-more-arrow {
-  transform: rotate(180deg);
-}
-
-.rc-read-more-arrow-is-flipped {
-  transform: rotate(0deg);
-}
-
-.rc-read-more-button{
+.rc-read-more-button {
   @extend .no-decoration;
 
   color: $black;
   display: flex;
   font-size: rem(16px);
   font-weight: 700;
+  margin-bottom: rem(8px);
+  padding-right: rem(28px);
+  text-align: left;
 }
 
-.rc-read-more-button{
-  text-align: left;
+.rc-read-more-drop-down {
+  background: no-repeat right url('/icons/picto-drop-down.svg');
+}
+
+.rc-read-more-drop-down-flipped {
+  background: no-repeat right url('/icons/picto-drop-down-flipped.svg');
 }
 
 .rc-read-more-content {
@@ -87,7 +83,7 @@
 
 .rc-title {
   @extend .is-primary-text;
-  
+
   font-size: rem(18px);
   font-weight: 500;
   margin-left: rem(21px);
@@ -110,4 +106,3 @@
     background: $white;
   }
 }
-
