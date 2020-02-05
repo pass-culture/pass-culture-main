@@ -645,7 +645,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         })
       })
 
-      describe('when offer is not from Allociné provider', () => {
+      describe('when offer is from Allociné provider', () => {
         it('should be possible to change management stock button', () => {
           // given
           props.offer.lastProvider = {
@@ -705,7 +705,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         const state = {}
 
         props.offer = {
-          id: 'RTgYD45',
+          id: 'A9',
           lastProvider: null,
         }
 
@@ -728,7 +728,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         wrapper.instance().onHandleFormSuccess(state, action)
 
         // then
-        expect(props.trackModifyOffer).toHaveBeenCalledWith('RTgYD45')
+        expect(props.trackModifyOffer).toHaveBeenCalledWith('A9')
       })
     })
   })

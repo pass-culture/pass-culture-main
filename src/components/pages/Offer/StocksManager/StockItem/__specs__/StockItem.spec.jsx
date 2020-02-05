@@ -87,6 +87,23 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
           expect(eventFields.props().readOnly).toBe(true)
         })
       })
+
+      describe('when the stocks are attached to an event offer', () => {
+        beforeEach(() => {
+          props.offer = new OfferObject({ id: 'AE', lastProvider: null })
+          props.query = { context: () => ({ readOnly: false }) }
+        })
+
+        it('event fields should be alterable', () => {
+          // When
+          const stockItemWrapper = shallow(<StockItem {...props} />)
+          const formWrapper = shallow(stockItemWrapper.instance().renderForm({ values: {} }))
+
+          // Then
+          const eventFields = formWrapper.find(EventFields)
+          expect(eventFields.props().readOnly).toBe(false)
+        })
+      })
     })
 
     describe('with event', () => {

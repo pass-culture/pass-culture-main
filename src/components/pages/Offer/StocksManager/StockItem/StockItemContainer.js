@@ -10,6 +10,7 @@ import { selectVenueById } from '../../../../../selectors/data/venuesSelectors'
 import { selectOffererById } from '../../../../../selectors/data/offerersSelectors'
 import { selectOfferById } from '../../../../../selectors/data/offersSelectors'
 import { requestData } from 'redux-saga-data'
+import OfferObject from '../../OfferObject'
 
 const getTimezoneFromDepartementCode = departementCode => {
   switch (departementCode) {
@@ -44,8 +45,8 @@ export const mapStateToProps = (state, ownProps) => {
   const { stockIdOrNew } = translateQueryParamsToApiParams(query.parse())
 
   const offerId = params.offerId
-  const offer = selectOfferById(state, offerId)
-  const { venueId } = offer || {}
+  const associatedOffer = selectOfferById(state, offerId)
+  const { venueId } = associatedOffer || {}
 
   const venue = selectVenueById(state, venueId)
   const managingOffererId = venue && venue.managingOffererId
@@ -63,6 +64,8 @@ export const mapStateToProps = (state, ownProps) => {
     managingOffererId,
     timezone
   )
+
+  const offer = new OfferObject(associatedOffer)
 
   return {
     hasIban,

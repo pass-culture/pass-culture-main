@@ -16,8 +16,21 @@ ShallowWrapper {
     isEvent={true}
     offer={
       OfferObject {
+        "bookingEmail": undefined,
+        "dateCreated": undefined,
+        "dateModifiedAtLastProvider": undefined,
         "id": undefined,
+        "idAtProviders": undefined,
+        "isActive": undefined,
+        "isEvent": undefined,
+        "isThing": undefined,
         "lastProvider": null,
+        "lastProviderId": undefined,
+        "mediationsIds": undefined,
+        "modelName": undefined,
+        "productId": undefined,
+        "stocksIds": undefined,
+        "venueId": undefined,
       }
     }
     query={

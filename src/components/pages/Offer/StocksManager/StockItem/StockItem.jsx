@@ -59,7 +59,7 @@ class StockItem extends PureComponent {
   }
 
   handleOnFormSubmit = formValues => {
-    const { updateStockInformations, handleSetErrors, stockPatch, isEvent } = this.props
+    const { handleSetErrors, stockPatch, isEvent, updateStockInformations } = this.props
     const { id: stockId } = stockPatch
     this.setState({ isRequestPending: true })
 
@@ -75,6 +75,7 @@ class StockItem extends PureComponent {
     if (isEvent && body.bookingLimitDatetime === '') {
       body.bookingLimitDatetime = body.beginningDatetime
     }
+
     return updateStockInformations(stockId, body, this.handleRequestSuccess, this.handleRequestFail)
   }
 
@@ -100,7 +101,7 @@ class StockItem extends PureComponent {
     const { id: stockId } = stockPatch
     const { readOnly } = query.context({ id: stockId, key: 'stock' })
     const userIsNotUpdatingStock = readOnly
-    const stockAssociatingToAllocineOffer = offer.hasBeenProvidedByAllocine
+    const stockAssociatedToAllocineOffer = offer.hasBeenProvidedByAllocine
     const { form, values, handleSubmit } = formProps
 
     const { beginningDatetime } = values
@@ -112,7 +113,7 @@ class StockItem extends PureComponent {
           <EventFields
             beginningDatetime={beginningDatetime}
             dispatch={dispatch}
-            readOnly={userIsNotUpdatingStock || stockAssociatingToAllocineOffer}
+            readOnly={userIsNotUpdatingStock || stockAssociatedToAllocineOffer}
             stockPatch={stockPatch}
             stocks={stocks}
             timezone={timezone}
