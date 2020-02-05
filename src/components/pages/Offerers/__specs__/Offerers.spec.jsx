@@ -74,22 +74,6 @@ describe('src | components | pages | Offerers | Offerers', () => {
         })
       })
 
-      describe('when the current user is an admin', () => {
-        it('should load all the offerers', () => {
-          // given
-          props.currentUser = { isAdmin: true }
-
-          // when
-          shallow(<Offerers {...props} />)
-
-          // then
-          expect(props.loadOfferers).toHaveBeenCalledWith(expect.anything(), expect.anything(), {
-            isValidated: true,
-            keywords: 'keywords',
-          })
-        })
-      })
-
       describe('when the current user is pro user but not admin', () => {
         it('should load all the offerers without validated filter', () => {
           // given

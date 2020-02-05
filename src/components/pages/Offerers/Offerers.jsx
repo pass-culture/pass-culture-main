@@ -59,7 +59,7 @@ class Offerers extends PureComponent {
   }
 
   handleRequestData = () => {
-    const { currentUser, loadOfferers, query } = this.props
+    const { loadOfferers, query } = this.props
 
     const queryParams = query.parse()
     const apiParams = translateQueryParamsToApiParams(queryParams)
@@ -67,10 +67,6 @@ class Offerers extends PureComponent {
 
     let loadOffererParameters = {
       keywords: apiParamsString,
-    }
-
-    if (currentUser.isAdmin === true) {
-      loadOffererParameters.isValidated = true
     }
 
     const handleSuccess = (state, action) => {

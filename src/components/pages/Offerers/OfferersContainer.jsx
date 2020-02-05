@@ -10,6 +10,29 @@ import { selectOfferers } from '../../../selectors/data/offerersSelectors'
 
 import { OFFERERS_API_PATH } from '../../../config/apiPaths'
 
+export const createApiPath = loadOffererParameters => {
+  let apiPath = OFFERERS_API_PATH
+  const { keywords, isValidated } = loadOffererParameters
+  const isKeywordValidParam = keywords !== undefined && keywords !== ''
+  const isValidatedValidParam = isValidated !== undefined
+
+  if (isKeywordValidParam && isValidatedValidParam) {
+    apiPath += `?validated=${isValidated}&${keywords}`
+    return apiPath
+  }
+
+  if (isValidatedValidParam) {
+    apiPath += `?validated=${isValidated}`
+    return apiPath
+  }
+
+  if (isKeywordValidParam) {
+    apiPath += `?${keywords}`
+    return apiPath
+  }
+  return apiPath
+}
+
 export const mapStateToProps = state => {
   return {
     offerers: selectOfferers(state),
@@ -21,17 +44,7 @@ export const mapDispatchToProps = dispatch => ({
   closeNotification: () => dispatch(closeNotification()),
 
   loadOfferers: (handleSuccess, handleFail, loadOffererParameters = {}) => {
-    let apiPath = OFFERERS_API_PATH
-    let isValidated = loadOffererParameters.isValidated
-    let keywords = loadOffererParameters.keywords
-
-    if (isValidated !== undefined) {
-      apiPath += `?validated=${isValidated}`
-    }
-
-    if (keywords !== undefined && keywords !== '') {
-      apiPath += `&${keywords}`
-    }
+    const apiPath = createApiPath(loadOffererParameters)
 
     dispatch(
       requestData({

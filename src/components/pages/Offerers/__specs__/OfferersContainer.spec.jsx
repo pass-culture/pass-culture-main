@@ -1,5 +1,5 @@
 import state from '../../../utils/mocks/state'
-import { mapStateToProps, mapDispatchToProps } from '../OfferersContainer'
+import { mapStateToProps, mapDispatchToProps, createApiPath } from '../OfferersContainer'
 
 describe('src | components | pages | Offerers | OfferersContainer', () => {
   describe('mapStateToProps', () => {
@@ -233,6 +233,58 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
           type: 'ASSIGN_DATA',
         })
       })
+    })
+  })
+
+  describe('createApiPath', () => {
+    it('should create api url with no params', () => {
+      // given
+      const loadOffererParameters = {}
+      // when
+      const result = createApiPath(loadOffererParameters)
+
+      // then
+      expect(result).toStrictEqual('/offerers')
+    })
+
+    it('should create api url with keywords params only', () => {
+      // given
+      const loadOffererParameters = {
+        keywords: 'keywords=example',
+      }
+
+      // when
+      const result = createApiPath(loadOffererParameters)
+
+      // then
+      expect(result).toStrictEqual('/offerers?keywords=example')
+    })
+
+    it('should create api url with isValidated params only', () => {
+      // given
+      const loadOffererParameters = {
+        isValidated: true,
+      }
+
+      // when
+      const result = createApiPath(loadOffererParameters)
+
+      // then
+      expect(result).toStrictEqual('/offerers?validated=true')
+    })
+
+    it('should create api url with keywords and isValidated params even if is value is false', () => {
+      // given
+      const loadOffererParameters = {
+        isValidated: false,
+        keywords: 'keywords=example',
+      }
+
+      // when
+      const result = createApiPath(loadOffererParameters)
+
+      // then
+      expect(result).toStrictEqual('/offerers?validated=false&keywords=example')
     })
   })
 })
