@@ -19,6 +19,7 @@ source /usr/local/bin/open_tunnel.sh
 script_start_time=$(date +%s)
 echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : Start partial backup DB"
 
+kill_tunnel_if_exist $app_name
 get_tunnel_database_url $app_name
 
 echo $tunnel_database_url
@@ -46,10 +47,7 @@ time psql -Atx $tunnel_database_url -c "COPY (select * from recommendation where
 mv /tmp/reco.csv $BACKUP_PATH/reco.csv
 mv /tmp/activity.csv $BACKUP_PATH/activity.csv
 
-if [ "$DB_TUNNEL_HAS_TO_BE_TERMINATED" = true ]; then
-  echo terminating tunnel
-  kill -9 "$DB_TUNNEL_PID"
-fi
+kill_tunnel_if_exist $app_name
 
 script_duration=$((`date +%s`-$script_start_time))
 echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : End of script, script duration $script_duration seconds"
