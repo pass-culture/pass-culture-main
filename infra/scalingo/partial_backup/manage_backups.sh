@@ -1,12 +1,5 @@
 #!/bin/bash
 
-end_script() {
-  if [ "$DB_TUNNEL_HAS_TO_BE_TERMINATED" = true ]; then
-    echo Terminating tunnel
-    kill -9 "$DB_TUNNEL_PID"
-  fi
-}
-
 failure_alert() {
   message="$app_name backup restore failed at step: $1"
   curl -X POST -H 'Content-type: application/json' --data "{'text': '$message'}" $SLACK_OPS_BOT_URL
@@ -76,6 +69,7 @@ then
 fi
 
 source open_tunnel.sh
+kill_tunnel_if_exist $app_name
 get_tunnel_database_url $app_name
 
 if [ -z "$TUNNEL_PORT" ]; then
@@ -116,7 +110,7 @@ if "$create_users" ; then
      && echo "User imported" || failure_alert "User importation"
 fi
 
-end_script
+kill_tunnel_if_exist $app_name
 
 echo "$(date -u +"%Y-%m-%dT%H:%M:%S") : End of backup operations"
 exit 0
