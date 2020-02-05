@@ -125,7 +125,7 @@ class AllocineStocks(LocalProvider):
             allocine_offer.extraData["visa"] = self.movie_information['visa']
         if 'stageDirector' in self.movie_information:
             allocine_offer.extraData["stageDirector"] = self.movie_information['stageDirector']
-        allocine_offer.isDuo = False
+
 
         movie_version = ORIGINAL_VERSION_SUFFIX if _is_original_version_offer(allocine_offer.idAtProviders) \
             else FRENCH_VERSION_SUFFIX
@@ -138,6 +138,10 @@ class AllocineStocks(LocalProvider):
 
         if is_new_offer_to_insert:
             allocine_offer.id = get_next_offer_id_from_database()
+
+        if not is_new_offer_to_insert:
+            if 'isDuo' not in allocine_offer.fieldsUpdated:
+                allocine_offer.isDuo = False
 
         if movie_version == ORIGINAL_VERSION_SUFFIX:
             self.last_vo_offer_id = allocine_offer.id
@@ -162,8 +166,6 @@ class AllocineStocks(LocalProvider):
         is_new_stock_to_insert = allocine_stock.id is None
         if is_new_stock_to_insert:
             allocine_stock.fieldsUpdated = []
-
-
 
         if 'bookingLimitDatetime' not in allocine_stock.fieldsUpdated:
             allocine_stock.bookingLimitDatetime = date_in_utc

@@ -44,7 +44,12 @@ def _update_offer_for_allocine_offers(offer: Offer, modifications) -> Offer:
 
     offer.populate_from_dict(modifications)
     offer.update_with_product_data(modifications)
-    offer.fieldsUpdated = modifications.keys()
+
+    previously_updated_fields = set(offer.fieldsUpdated)
+    updated_fields = set(modifications.keys())
+    new_updated_fields = list(previously_updated_fields.union(updated_fields))
+
+    offer.fieldsUpdated = new_updated_fields
 
     repository.save(offer)
     redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
