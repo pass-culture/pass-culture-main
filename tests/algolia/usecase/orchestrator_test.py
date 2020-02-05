@@ -59,10 +59,10 @@ class ProcessEligibleOffersTest:
         assert mock_add_to_indexed_offers.call_count == 2
         assert mock_add_to_indexed_offers.call_args_list == [
             call(pipeline=mock_pipeline,
-                 offer_details={'name': 'Test Book', 'dateRange': [], 'dates': [], 'prices': [10.0]},
+                 offer_details={'name': 'Test Book', 'dates': [], 'prices': [10.0]},
                  offer_id=offer1.id),
             call(pipeline=mock_pipeline,
-                 offer_details={'name': 'Test Book', 'dateRange': [], 'dates': [], 'prices': [10.0]},
+                 offer_details={'name': 'Test Book', 'dates': [], 'prices': [10.0]},
                  offer_id=offer2.id),
         ]
         mock_delete_indexed_offers.assert_not_called()
@@ -218,13 +218,13 @@ class ProcessEligibleOffersTest:
         assert mock_add_to_indexed_offers.call_count == 3
         assert mock_add_to_indexed_offers.call_args_list == [
             call(pipeline=mock_pipeline,
-                 offer_details={'name': 'super offre 1', 'dateRange': [], 'dates': [], 'prices': [10.0]},
+                 offer_details={'name': 'super offre 1', 'dates': [], 'prices': [10.0]},
                  offer_id=offer1.id),
             call(pipeline=mock_pipeline,
-                 offer_details={'name': 'super offre 2', 'dateRange': [], 'dates': [], 'prices': [10.0]},
+                 offer_details={'name': 'super offre 2', 'dates': [], 'prices': [10.0]},
                  offer_id=offer2.id),
             call(pipeline=mock_pipeline,
-                 offer_details={'name': 'super offre 3', 'dateRange': [], 'dates': [], 'prices': [10.0]},
+                 offer_details={'name': 'super offre 3', 'dates': [], 'prices': [10.0]},
                  offer_id=offer3.id),
         ]
         assert mock_add_objects.call_count == 1
@@ -367,7 +367,6 @@ class ProcessEligibleOffersTest:
         ]
         mock_check_offer_exists.return_value = True
         mock_get_offer_details.return_value = {'name': 'une autre super offre',
-                                               'dateRange': [],
                                                'dates': [],
                                                'prices': [11.0]}
 
@@ -380,7 +379,7 @@ class ProcessEligibleOffersTest:
         assert mock_add_to_indexed_offers.call_count == 1
         assert mock_add_to_indexed_offers.call_args_list == [
             call(pipeline=mock_pipeline,
-                 offer_details={'name': 'super offre 1', 'dateRange': [], 'dates': [], 'prices': [10.0]},
+                 offer_details={'name': 'super offre 1', 'dates': [], 'prices': [10.0]},
                  offer_id=offer1.id),
         ]
         assert mock_add_objects.call_count == 1
@@ -426,138 +425,7 @@ class ProcessEligibleOffersTest:
             {'fake': 'object'},
         ]
         mock_check_offer_exists.return_value = True
-        mock_get_offer_details.return_value = {'name': 'super offre 1', 'dateRange': [], 'dates': [], 'prices': [10.0]}
-
-        # When
-        process_eligible_offers(client=client, offer_ids=offer_ids, from_provider_update=True)
-
-        # Then
-        assert mock_check_offer_exists.call_count == 1
-        assert mock_get_offer_details.call_count == 1
-        assert mock_add_to_indexed_offers.call_count == 0
-        assert mock_add_objects.call_count == 0
-        assert mock_pipeline.execute.call_count == 0
-        assert mock_pipeline.reset.call_count == 0
-        assert mock_delete_objects.call_count == 0
-        assert mock_delete_offer_ids.call_count == 1
-
-    @patch('algolia.usecase.orchestrator.delete_offer_ids')
-    @patch('algolia.usecase.orchestrator.add_to_indexed_offers')
-    @patch('algolia.usecase.orchestrator.get_offer_details')
-    @patch('algolia.usecase.orchestrator.check_offer_exists')
-    @patch('algolia.usecase.orchestrator.delete_objects')
-    @patch('algolia.usecase.orchestrator.build_object')
-    @patch('algolia.usecase.orchestrator.add_objects')
-    @clean_database
-    @freeze_time('2019-01-01 12:00:00')
-    def test_should_reindex_offers_that_are_already_indexed_only_if_stocks_are_changed(self,
-                                                                                       mock_add_objects,
-                                                                                       mock_build_object,
-                                                                                       mock_delete_objects,
-                                                                                       mock_check_offer_exists,
-                                                                                       mock_get_offer_details,
-                                                                                       mock_add_to_indexed_offers,
-                                                                                       mock_delete_offer_ids,
-                                                                                       app):
-        # Given
-        client = MagicMock()
-        client.pipeline = MagicMock()
-        client.pipeline.return_value = MagicMock()
-        mock_pipeline = client.pipeline()
-        mock_pipeline.execute = MagicMock()
-        mock_pipeline.reset = MagicMock()
-        offerer = create_offerer(is_active=True, validation_token=None)
-        venue = create_venue(offerer=offerer, validation_token=None)
-        offer = create_offer_with_event_product(date_created=datetime(2019, 1, 1),
-                                                event_name='super offre 1',
-                                                venue=venue,
-                                                is_active=True)
-        stock = create_stock(available=1,
-                             beginning_datetime=datetime(2019, 1, 5),
-                             booking_limit_datetime=datetime(2019, 1, 3),
-                             end_datetime=datetime(2019, 1, 7),
-                             offer=offer)
-        repository.save(stock)
-        offer_ids = [offer.id]
-        mock_build_object.side_effect = [
-            {'fake': 'object'},
-        ]
-        mock_check_offer_exists.return_value = True
-        mock_get_offer_details.return_value = {'name': 'super offre 1',
-                                               'dateRange': ['2018-01-01 10:00:00', '2018-01-05 12:00:00'],
-                                               'dates': [],
-                                               'prices': [10.0]}
-
-        # When
-        process_eligible_offers(client=client, offer_ids=offer_ids, from_provider_update=True)
-
-        # Then
-        assert mock_check_offer_exists.call_count == 1
-        assert mock_get_offer_details.call_count == 1
-        assert mock_add_to_indexed_offers.call_count == 1
-        assert mock_add_to_indexed_offers.call_args_list == [
-            call(pipeline=mock_pipeline,
-                 offer_details={'name': 'super offre 1',
-                                'dateRange': ['2019-01-05 00:00:00', '2019-01-07 00:00:00'],
-                                'dates': [1546646400.0],
-                                'prices': [10.0]},
-                 offer_id=offer.id),
-        ]
-        assert mock_add_objects.call_count == 1
-        assert mock_add_objects.call_args_list == [
-            call(objects=[{'fake': 'object'}])
-        ]
-        assert mock_pipeline.execute.call_count == 1
-        assert mock_pipeline.reset.call_count == 1
-        assert mock_delete_objects.call_count == 0
-        assert mock_delete_offer_ids.call_count == 1
-
-    @patch('algolia.usecase.orchestrator.delete_offer_ids')
-    @patch('algolia.usecase.orchestrator.add_to_indexed_offers')
-    @patch('algolia.usecase.orchestrator.get_offer_details')
-    @patch('algolia.usecase.orchestrator.check_offer_exists')
-    @patch('algolia.usecase.orchestrator.delete_objects')
-    @patch('algolia.usecase.orchestrator.build_object')
-    @patch('algolia.usecase.orchestrator.add_objects')
-    @clean_database
-    @freeze_time('2019-01-01 12:00:00')
-    def test_should_not_reindex_offers_that_are_already_indexed_if_stocks_are_not_changed(self,
-                                                                                          mock_add_objects,
-                                                                                          mock_build_object,
-                                                                                          mock_delete_objects,
-                                                                                          mock_check_offer_exists,
-                                                                                          mock_get_offer_details,
-                                                                                          mock_add_to_indexed_offers,
-                                                                                          mock_delete_offer_ids,
-                                                                                          app):
-        # Given
-        client = MagicMock()
-        client.pipeline = MagicMock()
-        client.pipeline.return_value = MagicMock()
-        mock_pipeline = client.pipeline()
-        mock_pipeline.execute = MagicMock()
-        mock_pipeline.reset = MagicMock()
-        offerer = create_offerer(is_active=True, validation_token=None)
-        venue = create_venue(offerer=offerer, validation_token=None)
-        offer = create_offer_with_event_product(date_created=datetime(2019, 1, 1),
-                                                event_name='super offre 1',
-                                                venue=venue,
-                                                is_active=True)
-        stock = create_stock(available=1,
-                             beginning_datetime=datetime(2019, 1, 5),
-                             booking_limit_datetime=datetime(2019, 1, 3),
-                             end_datetime=datetime(2019, 1, 7),
-                             offer=offer)
-        repository.save(stock)
-        offer_ids = [offer.id]
-        mock_build_object.side_effect = [
-            {'fake': 'object'},
-        ]
-        mock_check_offer_exists.return_value = True
-        mock_get_offer_details.return_value = {'name': 'super offre 1',
-                                               'dateRange': ['2019-01-05 00:00:00', '2019-01-07 00:00:00'],
-                                               'dates': [1546646400.0],
-                                               'prices': [10.0]}
+        mock_get_offer_details.return_value = {'name': 'super offre 1', 'dates': [], 'prices': [10.0]}
 
         # When
         process_eligible_offers(client=client, offer_ids=offer_ids, from_provider_update=True)
@@ -615,7 +483,6 @@ class ProcessEligibleOffersTest:
         ]
         mock_check_offer_exists.return_value = True
         mock_get_offer_details.return_value = {'name': 'super offre 1',
-                                               'dateRange': ['2018-01-01 10:00:00', '2018-01-05 12:00:00'],
                                                'dates': [1515542400.0],
                                                'prices': [10.0]}
 
@@ -629,7 +496,6 @@ class ProcessEligibleOffersTest:
         assert mock_add_to_indexed_offers.call_args_list == [
             call(pipeline=mock_pipeline,
                  offer_details={'name': 'super offre 1',
-                                'dateRange': ['2019-01-05 00:00:00', '2019-01-07 00:00:00'],
                                 'dates': [1546646400.0],
                                 'prices': [10.0]},
                  offer_id=offer.id),

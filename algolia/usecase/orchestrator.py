@@ -72,7 +72,6 @@ def _build_offer_details_to_be_indexed(offer: Offer) -> dict:
 
     return {
         'name': offer.name,
-        'dateRange': list(map(str, offer.dateRange.datetimes)),
         'dates': event_dates,
         'prices': prices
     }

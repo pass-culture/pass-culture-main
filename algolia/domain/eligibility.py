@@ -19,14 +19,6 @@ class NameHasChanged(EligibilityRule):
         return offer_name != indexed_offer_name
 
 
-class DateRangeHasChanged(EligibilityRule):
-    def apply(self, offer: Offer, offer_details: dict):
-        offer_date_range = list(map(str, offer.dateRange.datetimes))
-        indexed_offer_date_range = offer_details['dateRange']
-
-        return offer_date_range != indexed_offer_date_range
-
-
 class DatesHaveChanged(EligibilityRule):
     def apply(self, offer: Offer, offer_details: dict):
         if not offer.isEvent:
@@ -48,6 +40,5 @@ class PricesHaveChanged(EligibilityRule):
 
 class EligibilityRules(Enum):
     NAME_HAS_CHANGED = NameHasChanged()
-    DATE_RANGE_HAS_CHANGED = DateRangeHasChanged()
     DATES_HAVE_CHANGED = DatesHaveChanged()
     PRICES_HAVE_CHANGED = PricesHaveChanged()

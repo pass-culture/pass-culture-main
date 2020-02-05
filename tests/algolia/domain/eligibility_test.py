@@ -8,8 +8,7 @@ from tests.model_creators.specific_creators import create_offer_with_event_produ
 
 
 class NameHasChangedTest:
-    @staticmethod
-    def test_should_return_true_when_name_has_changed():
+    def test_should_return_true_when_name_has_changed(self):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
@@ -22,8 +21,7 @@ class NameHasChangedTest:
         # Then
         assert name_has_changed
 
-    @staticmethod
-    def test_should_return_false_when_name_has_not_changed():
+    def test_should_return_false_when_name_has_not_changed(self):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
@@ -35,48 +33,6 @@ class NameHasChangedTest:
 
         # Then
         assert not name_has_changed
-
-
-class DateRangeHasChangedTest:
-    @clean_database
-    def test_should_return_true_when_date_range_has_changed(self, app):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer=offerer)
-        offer = create_offer_with_event_product(event_name='super offre', venue=venue)
-        stock = create_stock(beginning_datetime=datetime(2020, 1, 1),
-                             end_datetime=datetime(2020, 1, 2),
-                             offer=offer,
-                             price=10)
-        repository.save(stock)
-        offer_details = {'dateRange': ['2011-01-01 00:00:00', '2011-01-05 00:00:00']}
-
-        # When
-        date_range_has_changed = EligibilityRules.DATE_RANGE_HAS_CHANGED.value.apply(offer=offer,
-                                                                                     offer_details=offer_details)
-
-        # Then
-        assert date_range_has_changed
-
-    @clean_database
-    def test_should_return_false_when_date_range_has_not_changed(self, app):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer=offerer)
-        offer = create_offer_with_event_product(event_name='super offre', venue=venue)
-        stock = create_stock(beginning_datetime=datetime(2020, 1, 1),
-                             end_datetime=datetime(2020, 1, 2),
-                             offer=offer,
-                             price=10)
-        repository.save(stock)
-        offer_details = {'dateRange': ['2020-01-01 00:00:00', '2020-01-02 00:00:00']}
-
-        # When
-        date_range_has_changed = EligibilityRules.DATE_RANGE_HAS_CHANGED.value.apply(offer=offer,
-                                                                                     offer_details=offer_details)
-
-        # Then
-        assert not date_range_has_changed
 
 
 class DatesHaveChangedTest:
