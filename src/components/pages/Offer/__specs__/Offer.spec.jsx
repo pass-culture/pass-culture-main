@@ -630,7 +630,7 @@ describe('src | components | pages | Offer | Offer ', () => {
 
     describe('stock management button', () => {
       describe('when offer is from Titelive provider', () => {
-        it('should not be possible to change management stock button', () => {
+        it('should not be possible to change stock values', () => {
           // given
           props.offer.lastProvider = {
             name: 'Titelive',
@@ -646,7 +646,7 @@ describe('src | components | pages | Offer | Offer ', () => {
       })
 
       describe('when offer is from Allociné provider', () => {
-        it('should be possible to change management stock button', () => {
+        it('should be possible to change stock values', () => {
           // given
           props.offer.lastProvider = {
             name: 'Allociné',
@@ -662,7 +662,7 @@ describe('src | components | pages | Offer | Offer ', () => {
       })
 
       describe('when offer has been created manually', () => {
-        it('should be possible to change management stock button', () => {
+        it('should be possible to change stock values', () => {
           // given
           props.offer.lastProvider = null
 

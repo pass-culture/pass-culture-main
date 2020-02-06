@@ -89,7 +89,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
         })
       })
 
-      describe('when the stocks are attached to an event offer', () => {
+      describe('when the stocks are attached to an event offer created by the user', () => {
         beforeEach(() => {
           props.offer = new Offer({ id: 'AE', lastProvider: null })
           props.query = { context: () => ({ readOnly: false }) }
