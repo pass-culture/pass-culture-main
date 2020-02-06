@@ -96,25 +96,3 @@ class UseCaseTest:
                     except:
                         assert False
 
-
-                @clean_database
-                @patch('use_cases.update_an_offer.redis.add_offer_id')
-                def test_should_not_raise_an_error_when_field_does_not_exist(self, mock_redis, app):
-                    # Given
-                    provider = get_provider_by_local_class('AllocineStocks')
-                    offerer = create_offerer()
-                    venue = create_venue(offerer)
-                    offer = create_offer_with_thing_product(venue, last_provider=provider)
-                    offer.fieldsUpdated = ['isActive']
-
-                    repository.save(offer)
-
-                    # When
-
-                    modifications = {'offererId': '1546'}
-
-                    try:
-                        update_an_offer(offer, modifications)
-                    except:
-                        assert False
-
