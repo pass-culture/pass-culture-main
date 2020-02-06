@@ -10,7 +10,7 @@ const valueToNumber = value => {
   return (!isString && value) || parseFloat(value, 10)
 }
 
-export const valueToPrice = value => {
+export const formatToFrenchDecimal = value => {
   if (value === 0) return '0'
   return (value && `${value.toString().replace('.', ',')}`) || ''
 }
@@ -40,7 +40,7 @@ const getDisplayPrice = (simplePriceOrPriceRange, freeValue = null) => {
   const isFree = isEqual(priceRange, 0) || isEqual(priceRange, [0])
   if (isFree && freeValue) return freeValue
 
-  const pricesWithComma = parsedPrices.map(value => valueToPrice(value))
+  const pricesWithComma = parsedPrices.map(value => formatToFrenchDecimal(value))
   return formatPrice(pricesWithComma)
 }
 
