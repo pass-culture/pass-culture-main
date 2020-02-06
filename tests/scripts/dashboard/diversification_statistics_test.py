@@ -14,7 +14,7 @@ from scripts.dashboard.diversification_statistics import get_offerers_with_offer
     query_get_offer_counts_grouped_by_type_and_medium_for_departement, \
     query_get_booking_counts_grouped_by_type_and_medium_for_departement, get_all_used_or_finished_bookings, \
     get_offers_available_on_search_count, get_offerers_with_offers_available_on_search_count, \
-    get_offers_available_on_discovery_count_v2
+    get_offers_available_on_discovery_count_v2, get_offerers_with_offer_available_on_discovery_count_v2
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
@@ -357,6 +357,254 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
 
         # When
         number_of_offerers = get_offerers_with_offer_available_on_discovery_count(None)
+
+        # Then
+        assert number_of_offerers == 1
+
+class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
+    @clean_database
+    def test_returns_0_if_only_offerer_with_inactive_offer(self, app):
+        # Given
+        offerer = create_offerer()
+        user = create_user()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue, is_active=False)
+        mediation = create_mediation(offer)
+        stock = create_stock(offer=offer)
+        repository.save(stock)
+        DiscoveryView.refresh(concurrently=False)
+
+        # When
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count_v2()
+
+        # Then
+        assert number_of_offerers == 0
+
+    @clean_database
+    def test_returns_0_if_only_offerer_with_offer_without_stock(self, app):
+        # Given
+        offerer = create_offerer()
+        user = create_user()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue, is_active=True)
+        mediation = create_mediation(offer)
+        repository.save(offer)
+        DiscoveryView.refresh(concurrently=False)
+        DiscoveryView.refresh(concurrently=False)
+
+        # When
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count_v2()
+
+        # Then
+        assert number_of_offerers == 0
+
+    @clean_database
+    def test_returns_0_if_only_offerer_with_unvalidated_venue(self, app):
+        # Given
+        offerer = create_offerer()
+        user = create_user()
+        venue = create_venue(offerer, validation_token='XDFCGHVJBK')
+        offer = create_offer_with_thing_product(venue, is_active=True)
+        stock = create_stock(offer=offer)
+        mediation = create_mediation(offer)
+        repository.save(stock)
+        DiscoveryView.refresh(concurrently=False)
+
+        # When
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count_v2()
+
+        # Then
+        assert number_of_offerers == 0
+
+    @clean_database
+    def test_returns_0_if_only_offerer_without_mediation(self, app):
+        # Given
+        offerer = create_offerer()
+        user = create_user()
+        venue = create_venue(offerer, validation_token='XDFCGHVJBK')
+        offer = create_offer_with_thing_product(venue, is_active=True)
+        stock = create_stock(offer=offer)
+        repository.save(stock)
+        DiscoveryView.refresh(concurrently=False)
+
+        # When
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count_v2()
+
+        # Then
+        assert number_of_offerers == 0
+
+    @clean_database
+    def test_returns_0_if_stock_passed(self, app):
+        # Given
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        offerer = create_offerer()
+        user = create_user()
+        venue = create_venue(offerer, validation_token='XDFCGHVJBK')
+        offer = create_offer_with_event_product(venue, is_active=True)
+        stock = create_stock(offer=offer, beginning_datetime=yesterday)
+        repository.save(stock)
+        DiscoveryView.refresh(concurrently=False)
+
+        # When
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count_v2()
+
+        # Then
+        assert number_of_offerers == 0
+
+    @clean_database
+    def test_returns_0_if_offerer_not_active(self, app):
+        # Given
+        offerer = create_offerer(is_active=False)
+        user = create_user()
+        venue = create_venue(offerer, validation_token='XDFCGHVJBK')
+        offer = create_offer_with_event_product(venue, is_active=True)
+        stock = create_stock(offer=offer)
+        repository.save(stock)
+        DiscoveryView.refresh(concurrently=False)
+
+        # When
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count_v2()
+
+        # Then
+        assert number_of_offerers == 0
+
+    @clean_database
+    def test_returns_0_if_offerer_not_validated(self, app):
+        # Given
+        offerer = create_offerer(validation_token='XDFCGHVJBKNL')
+        user = create_user()
+        venue = create_venue(offerer, validation_token='XDFCGHVJBK')
+        offer = create_offer_with_event_product(venue, is_active=True)
+        stock = create_stock(offer=offer)
+        repository.save(stock)
+        DiscoveryView.refresh(concurrently=False)
+
+        # When
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count_v2()
+
+        # Then
+        assert number_of_offerers == 0
+
+    @clean_database
+    def test_returns_0_if_only_offerer_with_activation_offer(self, app):
+        # Given
+        offerer = create_offerer(validation_token='XDFCGHVJBKNL')
+        user = create_user()
+        venue = create_venue(offerer, validation_token='XDFCGHVJBK')
+        offer = create_offer_with_thing_product(venue, is_active=True, thing_type='ThingType.ACTIVATION')
+        stock = create_stock(offer=offer)
+        repository.save(stock)
+        DiscoveryView.refresh(concurrently=False)
+
+        # When
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count_v2()
+
+        # Then
+        assert number_of_offerers == 0
+
+    @clean_database
+    def test_returns_1_if_offerer_with_offer_stock_and_mediation(self, app):
+        # Given
+        offerer = create_offerer()
+        user = create_user()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue, is_active=True)
+        stock = create_stock(offer=offer)
+        mediation = create_mediation(offer)
+        repository.save(stock)
+        DiscoveryView.refresh(concurrently=False)
+
+        # When
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count_v2()
+
+        # Then
+        assert number_of_offerers == 1
+
+    @clean_database
+    def test_counts_the_offerer_only_once_even_if_has_2_offers_with_stock_and_mediation(self, app):
+        # Given
+        offerer = create_offerer()
+        user = create_user()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue, is_active=True)
+        offer2 = create_offer_with_thing_product(venue, is_active=True)
+        stock1 = create_stock(offer=offer1)
+        stock2 = create_stock(offer=offer2)
+        mediation1 = create_mediation(offer1)
+        mediation2 = create_mediation(offer2)
+        repository.save(stock1, stock2, offer2)
+        DiscoveryView.refresh(concurrently=False)
+
+        # When
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count_v2()
+
+        # Then
+        assert number_of_offerers == 1
+
+    @clean_database
+    def test_counts_only_offerers_with_venues_in_the_departement_when_filtered_by_departement_code(self, app):
+        # Given
+        first_user = create_user(email='first@example.net')
+        first_offerer = create_offerer(siren='111111111')
+        first_venue = create_venue(first_offerer, postal_code='76130', siret='11111111100001')
+        first_offer = create_offer_with_thing_product(first_venue)
+        first_stock = create_stock(offer=first_offer)
+        first_user_offerer = create_user_offerer(first_user, first_offerer)
+        mediation1 = create_mediation(first_offer)
+
+        second_user = create_user(email='second@example.net')
+        second_offerer = create_offerer(siren='222222222')
+        second_venue = create_venue(second_offerer, postal_code='37150', siret='22222222200002')
+        second_offer = create_offer_with_thing_product(second_venue)
+        second_stock = create_stock(offer=second_offer)
+        create_user_offerer(second_user, second_offerer)
+        mediation2 = create_mediation(second_offer)
+        repository.save(first_offerer, first_venue, second_offerer, second_venue)
+        DiscoveryView.refresh(concurrently=False)
+
+
+        # When
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count_v2(departement_code='76')
+
+        # Then
+        assert number_of_offerers == 1
+
+    @clean_database
+    def test_should_not_return_offerer_with_only_virtual_offer_if_is_not_national(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer, is_virtual=True, departement_code=None, address=None,
+                             postal_code=None,
+                             city=None, siret=None)
+        offer = create_offer_with_thing_product(venue=venue, url='http://test.com', thing_type=ThingType.JEUX_VIDEO,
+                                                is_national=False)
+        stock = create_stock(offer=offer)
+        mediation = create_mediation(offer)
+        repository.save(stock, mediation)
+        DiscoveryView.refresh(concurrently=False)
+
+        # When
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count_v2(None)
+
+        # Then
+        assert number_of_offerers == 0
+
+    @clean_database
+    def test_should_return_offerer_with_virtual_offer_if_is_national(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer, is_virtual=True, departement_code=None, address=None,
+                             postal_code=None,
+                             city=None, siret=None)
+        offer = create_offer_with_thing_product(venue=venue, url='http://test.com', thing_type=ThingType.JEUX_VIDEO,
+                                                is_national=True)
+        stock = create_stock(offer=offer)
+        mediation = create_mediation(offer)
+        repository.save(stock, mediation)
+        DiscoveryView.refresh(concurrently=False)
+
+        # When
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count_v2(None)
 
         # Then
         assert number_of_offerers == 1
@@ -994,7 +1242,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
 
 class GetOffersAvailableOnDiscoveryCountV2Test:
     @clean_database
-    def test_returns_0_if_only_offerer_with_inactive_offer(self, app):
+    def test_returns_0_if_only_inactive_offer(self, app):
         # Given
         offerer = create_offerer()
         user = create_user()
@@ -1012,7 +1260,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
         assert number_of_offers == 0
 
     @clean_database
-    def test_returns_0_if_only_offerer_with_offer_without_stock(self, app):
+    def test_returns_0_if_only_offer_without_stock(self, app):
         # Given
         offerer = create_offerer()
         user = create_user()
@@ -1029,7 +1277,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
         assert number_of_offers == 0
 
     @clean_database
-    def test_returns_0_if_only_offerer_with_unvalidated_venue(self, app):
+    def test_returns_0_if_only_offer_with_unvalidated_venue(self, app):
         # Given
         offerer = create_offerer()
         user = create_user()
@@ -1047,7 +1295,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
         assert number_of_offers == 0
 
     @clean_database
-    def test_returns_0_if_only_offerer_without_mediation(self, app):
+    def test_returns_0_if_only_offer_without_mediation(self, app):
         # Given
         offerer = create_offerer()
         user = create_user()
@@ -1064,24 +1312,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
         assert number_of_offers == 0
 
     @clean_database
-    def test_returns_0_if_only_offerer_without_mediation_and_thumb_count(self, app):
-        # Given
-        offerer = create_offerer()
-        user = create_user()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, is_active=True, thumb_count=0)
-        stock = create_stock(offer=offer)
-        repository.save(stock)
-        DiscoveryView.refresh(concurrently=False)
-
-        # When
-        number_of_offers = get_offers_available_on_discovery_count_v2()
-
-        # Then
-        assert number_of_offers == 0
-
-    @clean_database
-    def test_returns_0_if_stock_passed(self, app):
+    def test_returns_0_if_stock_s_beginning_date_time_has_passed(self, app):
         # Given
         yesterday = datetime.utcnow() - timedelta(days=1)
         offerer = create_offerer()
@@ -1099,7 +1330,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
         assert number_of_offers == 0
 
     @clean_database
-    def test_returns_0_if_offerer_not_active(self, app):
+    def test_returns_0_if_offer_s_offerer_is_not_active(self, app):
         # Given
         offerer = create_offerer(is_active=False)
         user = create_user()
@@ -1116,7 +1347,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
         assert number_of_offers == 0
 
     @clean_database
-    def test_returns_0_if_offerer_not_validated(self, app):
+    def test_returns_0_if_offer_s_offerer_is_not_validated(self, app):
         # Given
         offerer = create_offerer(validation_token='XDFCGHVJBKNL')
         user = create_user()
@@ -1133,7 +1364,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
         assert number_of_offers == 0
 
     @clean_database
-    def test_returns_0_if_only_offerer_with_activation_offer(self, app):
+    def test_returns_0_if_only_activation_offer(self, app):
         # Given
         offerer = create_offerer()
         user = create_user()
@@ -1150,7 +1381,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
         assert number_of_offers == 0
 
     @clean_database
-    def test_returns_1_if_offerer_with_offer_returned_by_get_active_offers(self, app):
+    def test_returns_1_if_offer_with_stock_and_mediation(self, app):
         # Given
         offerer = create_offerer()
         user = create_user()
@@ -1168,7 +1399,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
         assert number_of_offers == 1
 
     @clean_database
-    def test_returns_2_if_2_offers_returned_by_get_active_offers(self, app):
+    def test_returns_2_if_2_offers_with_stock_and_mediation(self, app):
         # Given
         offerer = create_offerer()
         user = create_user()
@@ -1189,7 +1420,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
         assert number_of_offers == 2
 
     @clean_database
-    def test_returns_1_if_2_offers_returned_by_get_active_offers_but_only_one_in_departement(self, app):
+    def test_returns_1_if_2_offers_with_stock_and_mediation_but_only_one_in_departement(self, app):
         # Given
         first_user = create_user(email='user76@example.net')
         first_offerer = create_offerer(siren='111111111')

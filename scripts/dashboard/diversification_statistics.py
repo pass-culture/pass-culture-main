@@ -22,8 +22,6 @@ def get_offerer_with_stock_count(departement_code: str = None) -> int:
 
 
 def get_offerers_with_offer_available_on_discovery_count(departement_code: str = None) -> int:
-    # TODO: use RecoView query filter by departementCode + join offererId
-
     active_offers_ids = get_active_offers_ids_query(user=None)
     query = Offerer.query\
         .join(Venue)\
@@ -36,6 +34,32 @@ def get_offerers_with_offer_available_on_discovery_count(departement_code: str =
 
     return query \
         .distinct(Offerer.id) \
+        .count()
+
+
+def get_offerers_with_offer_available_on_discovery_count_v2(departement_code: str = None) -> int:
+    discovery_offer_venue_ids = DiscoveryView.query
+
+    if departement_code:
+        visible_venues_ids = Venue.query\
+            .filter_by(departementCode=departement_code)\
+            .with_entities(Venue.id)\
+            .subquery()
+
+    else:
+        visible_venues_ids = Venue.query\
+            .filter(Venue.departementCode != None)\
+            .with_entities(Venue.id) \
+            .subquery()
+
+    discovery_offer_venue_ids = keep_only_in_venues_or_is_national(discovery_offer_venue_ids, visible_venues_ids) \
+        .with_entities(DiscoveryView.venueId)\
+        .subquery()
+
+
+    return Venue.query\
+        .filter(Venue.id.in_(discovery_offer_venue_ids))\
+        .distinct(Venue.managingOffererId)\
         .count()
 
 
@@ -98,10 +122,16 @@ def get_offers_available_on_discovery_count_v2(departement_code: str = None) -> 
     query = DiscoveryView.query
 
     if departement_code:
-        visible_venues_ids = Venue.query.filter_by(departementCode=departement_code).with_entities(Venue.id).subquery()
+        visible_venues_ids = Venue.query\
+            .filter_by(departementCode=departement_code)\
+            .with_entities(Venue.id)\
+            .subquery()
 
     else:
-        visible_venues_ids = Venue.query.filter(Venue.departementCode != None).with_entities(Venue.id).subquery()
+        visible_venues_ids = Venue.query\
+            .filter(Venue.departementCode != None)\
+            .with_entities(Venue.id)\
+            .subquery()
 
     query = keep_only_in_venues_or_is_national(query, visible_venues_ids)
 
