@@ -1,6 +1,6 @@
 import { mapStateToProps, mapDispatchToProps } from '../StockItemContainer'
 import state from '../../../../../utils/mocks/state'
-import OfferObject from '../../../OfferObject'
+import Offer from '../../../ValueObjects/Offer'
 
 describe('stockItemContainer', () => {
   describe('mapStateToProps', () => {
@@ -21,7 +21,7 @@ describe('stockItemContainer', () => {
 
         // when
         const result = mapStateToProps(state, ownProps)
-        const expectedOffer = new OfferObject({
+        const expectedOffer = new Offer({
           bookingEmail: 'booking.email@test.com',
           dateCreated: '2019-03-07T10:39:23.560392Z',
           dateModifiedAtLastProvider: '2019-03-07T10:40:05.443621Z',

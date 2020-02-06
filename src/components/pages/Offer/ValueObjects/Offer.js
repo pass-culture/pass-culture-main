@@ -1,4 +1,4 @@
-export default class OfferObject {
+export default class Offer {
   constructor(offer = {}) {
     this.bookingEmail = offer.bookingEmail
     this.dateCreated = offer.dateCreated

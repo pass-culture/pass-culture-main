@@ -5,6 +5,7 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <StockItem
     closeInfo={[MockFunction]}
+    deleteStock={[MockFunction]}
     dispatch={[MockFunction]}
     handleSetErrors={[MockFunction]}
     hasIban={false}
@@ -15,7 +16,7 @@ ShallowWrapper {
     }
     isEvent={true}
     offer={
-      OfferObject {
+      Offer {
         "bookingEmail": undefined,
         "dateCreated": undefined,
         "dateModifiedAtLastProvider": undefined,

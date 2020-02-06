@@ -10,7 +10,7 @@ import { createBrowserHistory } from 'history'
 import { Provider } from 'react-redux'
 import { Route, Router, Switch } from 'react-router-dom'
 import { Field } from 'react-final-form'
-import OfferObject from '../../../OfferObject'
+import Offer from '../../../ValueObjects/Offer'
 
 describe('src | components | pages | Offer | StocksManager | StockItem', () => {
   let props
@@ -23,7 +23,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
       hasIban: false,
       history: { push: jest.fn() },
       isEvent: true,
-      offer: new OfferObject(),
+      offer: new Offer(),
       query: {
         changeToReadOnly: jest.fn(),
         context: () => ({ method: 'POST' }),
@@ -34,6 +34,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
       },
       stocks: [],
       updateStockInformations: jest.fn(),
+      deleteStock: jest.fn(),
     }
   })
 
@@ -73,7 +74,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
 
       describe('when the stocks are attached to an offer provided from Allociné', () => {
         beforeEach(() => {
-          props.offer = new OfferObject({ lastProvider: { name: 'Allociné' } })
+          props.offer = new Offer({ lastProvider: { name: 'Allociné' } })
           props.query = { context: () => ({ readOnly: false }) }
         })
 
@@ -90,7 +91,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
 
       describe('when the stocks are attached to an event offer', () => {
         beforeEach(() => {
-          props.offer = new OfferObject({ id: 'AE', lastProvider: null })
+          props.offer = new Offer({ id: 'AE', lastProvider: null })
           props.query = { context: () => ({ readOnly: false }) }
         })
 

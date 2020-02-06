@@ -11,7 +11,7 @@ import fillEndDatimeWhenUpdatingBeginningDatetime from './decorators/fillEndDati
 import SubmitAndCancelControlContainer from './sub-components/SubmitAndCancelControl/SubmitAndCancelControlContainer'
 import { errorKeyToFrenchKey } from './utils/utils'
 import ProductFieldsContainer from './sub-components/fields/ProductFields/ProductFieldsContainer'
-import OfferObject from '../../OfferObject'
+import Offer from '../../ValueObjects/Offer'
 
 class StockItem extends PureComponent {
   constructor(props) {
@@ -210,7 +210,7 @@ StockItem.propTypes = {
   hasIban: PropTypes.bool.isRequired,
   history: PropTypes.shape().isRequired,
   isEvent: PropTypes.bool.isRequired,
-  offer: PropTypes.instanceOf(OfferObject),
+  offer: PropTypes.instanceOf(Offer),
   query: PropTypes.shape().isRequired,
   showInfo: PropTypes.func.isRequired,
   stockPatch: PropTypes.shape().isRequired,
