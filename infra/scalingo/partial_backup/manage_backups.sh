@@ -68,7 +68,7 @@ then
   exit 1
 fi
 
-source open_tunnel.sh
+source manage_tunnel.sh
 kill_tunnel_if_exist $app_name
 get_tunnel_database_url $app_name
 

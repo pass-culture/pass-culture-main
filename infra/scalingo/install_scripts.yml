@@ -15,7 +15,7 @@
         - partial_backup/manage_backups.sh
         - partial_backup/partial_backup_restore.sh
         - partial_backup/partial_backup.sh
-        - partial_backup/open_tunnel.sh
+        - partial_backup/manage_tunnel.sh
         - backup_prod.sh
         - anonymize.sql
         - anonymize_database.sh
