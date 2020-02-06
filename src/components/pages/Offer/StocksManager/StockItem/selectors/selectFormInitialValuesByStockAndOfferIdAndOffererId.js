@@ -51,7 +51,7 @@ const selectFormInitialValuesByStockAndOfferIdAndOffererId = createCachedSelecto
         : getDatetimeOneHourAfter(beginningDatetime)
     }
 
-    if (offer.isEvent && bookingLimitDatetime === null) {
+    if (offer.isEvent && bookingLimitDatetime == null) {
       bookingLimitDatetime = ''
     }
 
