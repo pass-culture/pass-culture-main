@@ -35,6 +35,8 @@ import OfferPreviewLink from '../../layout/OfferPreviewLink/OfferPreviewLink'
 import Insert from '../../layout/Insert/Insert'
 
 import offerIsRefundable from './domain/offerIsRefundable'
+import { OffererName } from './OffererName'
+import { VenueName } from './VenueName'
 
 const DURATION_LIMIT_TIME = 100
 
@@ -555,27 +557,9 @@ class Offer extends PureComponent {
                 {'Infos pratiques'}
               </h2>
               <div className="field-group">
-                {offerer && (
-                  <div className="field field-select is-horizontal readonly">
-                    <div className="field-label is-normal readonly">
-                      {'Structure :'}
-                    </div>
-                    <div className="field-body field-content">
-                      {offerer.name}
-                    </div>
-                  </div>
-                )}
+                {offerer && <OffererName name={offerer.name} />}
 
-                {venue && (
-                  <div className="field field-select is-horizontal readonly">
-                    <div className="field-label is-normal readonly">
-                      {'Lieu :'}
-                    </div>
-                    <div className="field-body field-content">
-                      {venue.name}
-                    </div>
-                  </div>
-                )}
+                {venue && <VenueName name={venue.publicName || venue.name} />}
 
                 {offererHasNoPhysicalVenues && (
                   <div className="field is-horizontal">
