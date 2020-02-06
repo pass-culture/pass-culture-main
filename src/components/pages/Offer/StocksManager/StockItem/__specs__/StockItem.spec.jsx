@@ -468,13 +468,15 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
 
       // then
 
-      expect(props.updateStockInformations).toHaveBeenCalledWith('DG',
-          {
-            bookingLimitDatetime: '2019-03-13T22:00:00Z',
-            beginningDatetime: '2019-03-13T22:00:00Z',
-          },
-          expect.any(Function),
-          expect.any(Function))
+      expect(props.updateStockInformations).toHaveBeenCalledWith(
+        'DG',
+        {
+          bookingLimitDatetime: '2019-03-13T23:00:00Z',
+          beginningDatetime: '2019-03-13T23:00:00Z',
+        },
+        expect.any(Function),
+        expect.any(Function)
+      )
     })
   })
 
