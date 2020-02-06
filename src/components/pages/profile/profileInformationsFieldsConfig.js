@@ -2,11 +2,11 @@ import getDepartementByCode from '../../../utils/getDepartementByCode'
 import IdentifiantForm from './forms/fields/UserIdentifierField'
 import UserPasswordField from './forms/fields/UserPasswordField'
 
-export const config = [
+export const profileInformationsFieldsConfig = [
   // TODO: passer par une lib type https://github.com/yahoo/react-intl
   // pour gérer les pluralize et féminin des labels depuis un dictionnaire
   // FIXME -> ajouter une proptypes custom pour pouvoir vérifier dans les vues
-  // que l'objet recu pour les définitions des fields du formulaires est valide
+  // que l'objet reçu pour les définitions des fields du formulaires est valide
   {
     component: IdentifiantForm,
     key: 'publicName',
@@ -19,10 +19,10 @@ export const config = [
     // si la propriété `component` n'est pas définie
     // on considère la route comme disabled
     // component: ProfileFirstLastNameForm,
-    // utiliser par le resolver
+    // utilisé par le resolver
     // et la creation des items de type liste dans la vue main
     key: ['firstName', 'lastName'],
-    // Utilise pour afficher au dessus d'un field dans la vue main
+    // Utilisé pour afficher au dessus d'un field dans la vue main
     label: 'Nom et prénom',
     // ce champ est utile lorqu'on veut mettre un mainPlaceholder
     // dans la partie mes identifiants et qu'il n'y a pas de valeur par défaut
@@ -60,5 +60,3 @@ export const config = [
     title: 'Votre Département de résidence',
   },
 ]
-
-export default config

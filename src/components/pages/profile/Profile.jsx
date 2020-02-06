@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router-dom'
 
-import { config } from './config'
+import { profileInformationsFieldsConfig } from './profileInformationsFieldsConfig'
 import ProfileMainView from './ProfileMainView/ProfileMainView'
 import ProfileUpdateSuccess from './ProfileUpdateSuccess/ProfileUpdateSuccess'
 import NotMatch from '../not-match/NotMatch'
@@ -10,15 +10,15 @@ import LoaderContainer from '../../layout/Loader/LoaderContainer'
 
 class Profile extends PureComponent {
   parseRoutesWithComponent = () => {
-    const components = config.filter(o => o.component)
+    const components = profileInformationsFieldsConfig.filter(o => o.component)
     const routes = components.reduce((acc, o) => ({ ...acc, [o.routeName]: o }), {})
     return routes
   }
 
   renderProfileMainView = currentUser => () => (
     <ProfileMainView
-      config={config}
       currentUser={currentUser}
+      informationsFields={profileInformationsFieldsConfig}
     />
   )
 

@@ -13,7 +13,7 @@ class MesInformations extends PureComponent {
     const { key, label, mainPlaceholder, resolver, routeName } = field
     const disabled = !field.component
     // NOTE: par défaut on sette la valeur sur la clé de l'objet user
-    // pour le password on ne souhaite pas affiché la valeur
+    // pour le password on ne souhaite pas afficher la valeur
     // pour cela on utilise le resolver retournant une valeur falsey
     const value = (resolver && resolver(user, key)) || user[key]
     return (
@@ -76,7 +76,7 @@ class MesInformations extends PureComponent {
 
 MesInformations.propTypes = {
   fields: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  user: PropTypes.oneOfType([PropTypes.bool, PropTypes.shape()]).isRequired
+  user: PropTypes.oneOfType([PropTypes.bool, PropTypes.shape()]).isRequired,
 }
 
 export default MesInformations

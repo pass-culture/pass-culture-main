@@ -6,7 +6,7 @@ import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import MesInformations from '../MesInformations/MesInformations'
 import RemainingCredit from '../RemainingCredit/RemainingCredit'
 
-const ProfileMainView = ({ config, currentUser }) => (
+const ProfileMainView = ({ informationsFields, currentUser }) => (
   <div
     className="pc-page-view pc-theme-default flex-rows with-header"
     id="profile-page-main-view"
@@ -16,7 +16,7 @@ const ProfileMainView = ({ config, currentUser }) => (
       <div className="pc-scroll-container">
         {currentUser && <RemainingCredit currentUser={currentUser} />}
         <MesInformations
-          fields={config}
+          fields={informationsFields}
           user={currentUser}
         />
       </div>
@@ -29,8 +29,8 @@ const ProfileMainView = ({ config, currentUser }) => (
 )
 
 ProfileMainView.propTypes = {
-  config: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  currentUser: PropTypes.oneOfType([PropTypes.bool, PropTypes.shape()]).isRequired
+  currentUser: PropTypes.oneOfType([PropTypes.bool, PropTypes.shape()]).isRequired,
+  informationsFields: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
 
 export default ProfileMainView
