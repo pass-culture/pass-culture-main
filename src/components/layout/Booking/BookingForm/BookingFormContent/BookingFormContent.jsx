@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent, Fragment } from 'react'
 import { Field } from 'react-final-form'
 
+import formatDecimals from '../../../../../utils/numbers/formatDecimals'
 import getCalendarProvider from '../../utils/getCalendarProvider'
 import parseHoursByStockId from '../../utils/parseHoursByStockId'
 import CheckBoxField from '../../../../forms/inputs/CheckBoxField'
@@ -84,6 +85,7 @@ class BookingFormContent extends PureComponent {
     const hourLabel = hasOneBookableTime ? '' : 'Choisissez une heure :'
     const displayPriceWarning = !isEvent || (bookableTimes && hasBookableTimes)
     const computedPrice = isDuo ? price * 2 : price
+    const formattedComputedPrice = formatDecimals(computedPrice)
     return (
       <form
         className={`${extraClassName} ${isReadOnly ? 'is-read-only' : ''}`}
@@ -126,7 +128,7 @@ class BookingFormContent extends PureComponent {
               {'Vous êtes sur le point de réserver'}
             </span>
             <span className="is-block">
-              {`cette offre pour ${computedPrice} €.`}
+              {`cette offre pour ${formattedComputedPrice} €.`}
             </span>
           </p>
         )}

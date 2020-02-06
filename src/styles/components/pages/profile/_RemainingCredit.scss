@@ -14,9 +14,9 @@
 
 .rc-informations-container {
   background: $grey-even-more-light;
-  border-top-left-radius: rem(6px);
-  border-top-right-radius: rem(6px);
-  margin: rem(21px) rem(21px) rem(21px) rem(21px);
+  border-radius: rem(6px);
+  margin: rem(21px);
+  padding-bottom: rem(24px);
 }
 
 .rc-gauges-title {
@@ -49,7 +49,7 @@
 }
 
 .rc-read-more {
-  padding: rem(17px);
+  padding: rem(17px) rem(17px) 0 rem(17px);
 }
 
 .rc-read-more-button {
@@ -59,7 +59,6 @@
   display: flex;
   font-size: rem(16px);
   font-weight: 700;
-  margin-bottom: rem(8px);
   padding-right: rem(28px);
   text-align: left;
 }
@@ -73,13 +72,9 @@
 }
 
 .rc-read-more-content {
-  display: none;
   padding-top: rem(8px);
 }
 
-.rc-read-more-content-is-visible {
-  display: block;
-}
 
 .rc-title {
   @extend .is-primary-text;

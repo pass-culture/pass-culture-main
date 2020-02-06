@@ -1,6 +1,9 @@
+import { valueToPrice } from '../getDisplayPrice'
+
 const formatDecimals = number => {
-  const numberWithTwoDecimals = number.toFixed(2)
-  return numberWithTwoDecimals.replace('.00', '')
+  const numberWithTwoDecimals = number ? number.toFixed(2) : 0
+  const numberWithCommaNotDot = valueToPrice(numberWithTwoDecimals)
+  return numberWithCommaNotDot.replace(',00', '')
 }
 
 export default formatDecimals

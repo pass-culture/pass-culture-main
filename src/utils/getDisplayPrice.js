@@ -10,7 +10,7 @@ const valueToNumber = value => {
   return (!isString && value) || parseFloat(value, 10)
 }
 
-const valueToPrice = value => {
+export const valueToPrice = value => {
   if (value === 0) return '0'
   return (value && `${value.toString().replace('.', ',')}`) || ''
 }

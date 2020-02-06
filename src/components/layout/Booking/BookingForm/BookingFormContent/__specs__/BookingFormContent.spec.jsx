@@ -48,7 +48,7 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
         },
       ],
       date: '21/10/2001',
-      price: '5',
+      price: 5,
     }
 
     // when
@@ -69,7 +69,7 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
         },
       ],
       date: '21/10/2001',
-      price: '5',
+      price: 5,
     }
 
     // when
