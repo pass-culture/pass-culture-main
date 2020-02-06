@@ -5,6 +5,7 @@ from flask_sqlalchemy import BaseQuery
 from sqlalchemy import desc, func, or_, text
 from sqlalchemy.orm import aliased, joinedload
 from sqlalchemy.orm.query import Query
+from sqlalchemy.sql import selectable
 from sqlalchemy.sql.elements import BinaryExpression
 
 from domain.departments import ILE_DE_FRANCE_DEPT_CODES
@@ -98,8 +99,7 @@ def get_offers_for_recommendation(user: User,
 
     if ALL_DEPARTMENTS_CODE not in departement_codes:
         venue_ids = get_only_venue_ids_for_department_codes(departement_codes)
-        recos_query = recos_query \
-            .filter(or_(DiscoveryView.venueId.in_(venue_ids), DiscoveryView.isNational == True))
+        recos_query = keep_only_in_venues_or_is_national(recos_query, venue_ids)
 
     recos_query = recos_query.order_by(DiscoveryView.offerDiscoveryOrder)
 
@@ -107,6 +107,11 @@ def get_offers_for_recommendation(user: User,
         recos_query = recos_query.limit(limit)
 
     return recos_query.all()
+
+
+def keep_only_in_venues_or_is_national(query: BaseQuery, venue_ids: selectable.Alias) -> BaseQuery:
+    return query \
+        .filter(or_(DiscoveryView.venueId.in_(venue_ids), DiscoveryView.isNational == True))
 
 
 def get_active_offers(user, pagination_params, departement_codes=None, offer_id=None, limit=None,

@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import List
 
 from sqlalchemy import and_
+from sqlalchemy.sql import selectable
 
 from models import Venue, Offer, Stock, Offerer, UserOfferer, User
 from models.activity import load_activity
@@ -221,12 +222,11 @@ def _filter_by_offer_status(query, offer_status):
     return query
 
 
-def get_only_venue_ids_for_department_codes(departement_codes: List[str]) -> List[int]:
-    venues = Venue.query \
+def get_only_venue_ids_for_department_codes(departement_codes: List[str]) -> selectable.Alias:
+    return Venue.query \
         .filter(Venue.departementCode.in_(departement_codes)) \
         .with_entities(Venue.id) \
-        .all()
-    return [venue.id for venue in venues]
+        .subquery()
 
 
 def find_by_offrer_id_and_is_virtual(offrer_id: int):

@@ -3,11 +3,12 @@ from typing import List, Tuple
 import pandas
 from sqlalchemy import text
 
-from models import Offerer, UserOfferer, Venue, Offer, Stock, Booking, EventType, ThingType, User
+from models import Offerer, UserOfferer, Venue, Offer, Stock, Booking, EventType, ThingType, User, DiscoveryView
 from models.db import db
 from repository import booking_queries
 from repository.booking_queries import count_cancelled as query_count_all_cancelled_bookings
-from repository.offer_queries import get_active_offers_ids_query, _filter_recommendable_offers_for_search
+from repository.offer_queries import get_active_offers_ids_query, _filter_recommendable_offers_for_search, \
+    keep_only_in_venues_or_is_national
 from repository.offerer_queries import count_offerer, count_offerer_with_stock, count_offerer_by_departement, \
     count_offerer_with_stock_by_departement
 
@@ -83,13 +84,26 @@ def get_offers_with_user_offerer_and_stock_count(departement_code: str = None) -
 
 
 def get_offers_available_on_discovery_count(departement_code: str = None) -> int:
-    # TODO: use RecoView query filter by departementCode
     offer_ids_subquery = get_active_offers_ids_query(user=None)
     query = Offer.query.filter(Offer.id.in_(offer_ids_subquery))
 
     if departement_code:
         query = query.join(Venue).filter(
             Venue.departementCode == departement_code)
+
+    return query.count()
+
+
+def get_offers_available_on_discovery_count_v2(departement_code: str = None) -> int:
+    query = DiscoveryView.query
+
+    if departement_code:
+        visible_venues_ids = Venue.query.filter_by(departementCode=departement_code).with_entities(Venue.id).subquery()
+
+    else:
+        visible_venues_ids = Venue.query.filter(Venue.departementCode != None).with_entities(Venue.id).subquery()
+
+    query = keep_only_in_venues_or_is_national(query, visible_venues_ids)
 
     return query.count()
 
