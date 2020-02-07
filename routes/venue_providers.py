@@ -5,7 +5,7 @@ from flask import current_app as app, jsonify, request
 from flask_login import login_required
 
 import local_providers
-from local_providers import AllocineStocks, TiteLiveStocks
+from local_providers import AllocineStocks, TiteLiveStocks, LibrairesStocks
 from models import Venue
 from models.api_errors import ApiErrors
 from models.venue_provider import VenueProvider
@@ -60,8 +60,8 @@ def create_venue_provider():
     provider_type = getattr(local_providers, provider.localClass)
     if provider_type == AllocineStocks:
         new_venue_provider = _save_allocine_venue_provider(venue_provider_payload)
-    elif provider_type == TiteLiveStocks:
-        new_venue_provider = _save_titelive_venue_provider(venue_provider_payload)
+    elif provider_type == LibrairesStocks or TiteLiveStocks:
+        new_venue_provider = _save_titelive_or_libraires_venue_provider(venue_provider_payload)
 
     _run_first_synchronization(new_venue_provider)
 
@@ -90,7 +90,7 @@ def _save_allocine_venue_provider(payload: Dict) -> VenueProvider:
     return venue_provider
 
 
-def _save_titelive_venue_provider(payload: Dict) -> VenueProvider:
+def _save_titelive_or_libraires_venue_provider(payload: Dict) -> VenueProvider:
     venue = load_or_404(Venue, payload['venueId'])
     venue_provider = VenueProvider()
     venue_provider.venueId = venue.id

@@ -112,7 +112,7 @@ class Post:
             user = create_user(is_admin=True, can_book_free_offers=False)
             offerer = create_offerer()
             venue = create_venue(offerer, siret='12345678912345')
-            provider = activate_provider('TiteLiveStocks')
+            provider = activate_provider('LibrairesStocks')
             venue_provider = create_venue_provider(venue, provider, venue_id_at_offer_provider='12345678912345')
             repository.save(user, venue_provider)
 
