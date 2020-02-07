@@ -65,10 +65,6 @@ class Offerers extends PureComponent {
     const apiParams = translateQueryParamsToApiParams(queryParams)
     const apiParamsString = stringify(apiParams)
 
-    let loadOffererParameters = {
-      keywords: apiParamsString,
-    }
-
     const handleSuccess = (state, action) => {
       const { payload } = action
       const { headers } = payload
@@ -91,7 +87,7 @@ class Offerers extends PureComponent {
 
     this.setState(
       { isLoading: true, hasMore: true },
-      loadOfferers(handleSuccess, handleFail, loadOffererParameters)
+      loadOfferers(handleSuccess, handleFail, apiParamsString)
     )
   }
 

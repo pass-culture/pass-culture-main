@@ -69,9 +69,11 @@ describe('src | components | pages | Offerers | Offerers', () => {
         shallow(<Offerers {...props} />)
 
         // then
-        expect(props.loadOfferers).toHaveBeenCalledWith(expect.anything(), expect.anything(), {
-          keywords: 'from=Balzac&keywords=Honor%C3%A9&keywords=Justice&venueId=B3',
-        })
+        expect(props.loadOfferers).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.anything(),
+          'from=Balzac&keywords=Honor%C3%A9&keywords=Justice&venueId=B3'
+        )
       })
 
       describe('when the current user is pro user but not admin', () => {
@@ -83,9 +85,11 @@ describe('src | components | pages | Offerers | Offerers', () => {
           shallow(<Offerers {...props} />)
 
           // then
-          expect(props.loadOfferers).toHaveBeenCalledWith(expect.anything(), expect.anything(), {
-            keywords: 'keywords',
-          })
+          expect(props.loadOfferers).toHaveBeenCalledWith(
+            expect.anything(),
+            expect.anything(),
+            'keywords'
+          )
         })
       })
     })

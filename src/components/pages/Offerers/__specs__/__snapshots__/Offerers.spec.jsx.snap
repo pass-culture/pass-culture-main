@@ -12,9 +12,7 @@ ShallowWrapper {
           Array [
             [Function],
             [Function],
-            Object {
-              "keywords": "keywords",
-            },
+            "keywords",
           ],
         ],
         "results": Array [
