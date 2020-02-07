@@ -106,34 +106,6 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
         })
       })
 
-      it('can load only validated offerers', () => {
-        // given
-        const handleFail = jest.fn()
-        const handleSuccess = jest.fn()
-
-        // when
-        mapDispatchToProps(dispatch).loadOfferers(handleSuccess, handleFail, { isValidated: true })
-
-        // then
-        expect(dispatch).toHaveBeenCalledWith({
-          config: {
-            apiPath: '/offerers?validated=true',
-            handleFail: expect.any(Function),
-            handleSuccess: expect.any(Function),
-            method: 'GET',
-            normalizer: {
-              managedVenues: {
-                normalizer: {
-                  offers: 'offers',
-                },
-                stateKey: 'venues',
-              },
-            },
-          },
-          type: 'REQUEST_DATA_GET_/OFFERERS?VALIDATED=TRUE',
-        })
-      })
-
       it('can load offerers by keywords', () => {
         // given
         const handleFail = jest.fn()
@@ -141,14 +113,13 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
 
         // when
         mapDispatchToProps(dispatch).loadOfferers(handleSuccess, handleFail, {
-          isValidated: true,
           keywords: 'keywords=nice%20words',
         })
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
           config: {
-            apiPath: '/offerers?validated=true&keywords=nice%20words',
+            apiPath: '/offerers?keywords=nice%20words',
             handleFail: expect.any(Function),
             handleSuccess: expect.any(Function),
             method: 'GET',
@@ -161,35 +132,7 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
               },
             },
           },
-          type: 'REQUEST_DATA_GET_/OFFERERS?VALIDATED=TRUE&KEYWORDS=NICE%20WORDS',
-        })
-      })
-
-      it('can load only offerers that are not validated yet', () => {
-        // given
-        const handleFail = jest.fn()
-        const handleSuccess = jest.fn()
-
-        // when
-        mapDispatchToProps(dispatch).loadOfferers(handleSuccess, handleFail, { isValidated: false })
-
-        // then
-        expect(dispatch).toHaveBeenCalledWith({
-          config: {
-            apiPath: '/offerers?validated=false',
-            handleFail: expect.any(Function),
-            handleSuccess: expect.any(Function),
-            method: 'GET',
-            normalizer: {
-              managedVenues: {
-                normalizer: {
-                  offers: 'offers',
-                },
-                stateKey: 'venues',
-              },
-            },
-          },
-          type: 'REQUEST_DATA_GET_/OFFERERS?VALIDATED=FALSE',
+          type: 'REQUEST_DATA_GET_/OFFERERS?KEYWORDS=NICE%20WORDS',
         })
       })
     })
@@ -258,33 +201,6 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
 
       // then
       expect(result).toStrictEqual('/offerers?keywords=example')
-    })
-
-    it('should create api url with isValidated params only', () => {
-      // given
-      const loadOffererParameters = {
-        isValidated: true,
-      }
-
-      // when
-      const result = createApiPath(loadOffererParameters)
-
-      // then
-      expect(result).toStrictEqual('/offerers?validated=true')
-    })
-
-    it('should create api url with keywords and isValidated params even if is value is false', () => {
-      // given
-      const loadOffererParameters = {
-        isValidated: false,
-        keywords: 'keywords=example',
-      }
-
-      // when
-      const result = createApiPath(loadOffererParameters)
-
-      // then
-      expect(result).toStrictEqual('/offerers?validated=false&keywords=example')
     })
   })
 })

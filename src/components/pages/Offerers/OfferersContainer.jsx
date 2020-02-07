@@ -12,24 +12,13 @@ import { OFFERERS_API_PATH } from '../../../config/apiPaths'
 
 export const createApiPath = loadOffererParameters => {
   let apiPath = OFFERERS_API_PATH
-  const { keywords, isValidated } = loadOffererParameters
+  const { keywords } = loadOffererParameters
   const isKeywordValidParam = keywords !== undefined && keywords !== ''
-  const isValidatedValidParam = isValidated !== undefined
-
-  if (isKeywordValidParam && isValidatedValidParam) {
-    apiPath += `?validated=${isValidated}&${keywords}`
-    return apiPath
-  }
-
-  if (isValidatedValidParam) {
-    apiPath += `?validated=${isValidated}`
-    return apiPath
-  }
 
   if (isKeywordValidParam) {
     apiPath += `?${keywords}`
-    return apiPath
   }
+
   return apiPath
 }
 
