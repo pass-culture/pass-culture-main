@@ -68,5 +68,6 @@ sqlparse==0.3.0
 simplejson==3.16.0
 schwifty==2018.9.1
 urllib3==1.25.7
+werkzeug==0.16.0
 wetransferpy==0.2.3
 xlrd==1.2.0
