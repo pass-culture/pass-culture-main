@@ -1,0 +1,59 @@
+.mi-field {
+  color: $black-light;
+  display: flex;
+  flex-direction: column;
+  font-size: rem(16px);
+  margin: rem(14px) rem(21px);
+}
+
+.mi-field-input {
+  background-color: $white;
+  border: none;
+  border-radius: rem(22px);
+  box-shadow: 0 rem(2px) rem(6px) 0 rgba(0, 0, 0, 0.25);
+  font-size: inherit;
+  height: rem(40px);
+  margin: rem(9px) 0 rem(10px) 0;
+  padding-left: rem(16px);
+
+  &:disabled {
+    background-color: $grey-even-more-light;
+  }
+
+  &:focus {
+    border: rem(2px) solid $primary;
+    box-shadow: none;
+    outline: none;
+  }
+}
+
+.mi-field-error {
+  align-items: center;
+  color: $primary;
+  display: flex;
+  font-size: rem(14px);
+  font-weight: 500;
+  margin-bottom: rem(10px);
+
+  img {
+    height: rem(17px);
+    margin-right: rem(9px);
+    width: rem(17px);
+  }
+}
+
+.mi-change-password {
+  @extend .mi-field;
+
+  a {
+    @extend .mi-field-input;
+
+    align-items: center;
+    border: rem(2px) solid $primary;
+    box-shadow: none;
+    color: $primary;
+    display: flex;
+    font-weight: bold;
+    justify-content: center;
+  }
+}

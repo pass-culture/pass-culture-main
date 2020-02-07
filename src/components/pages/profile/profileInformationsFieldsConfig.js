@@ -40,15 +40,6 @@ export const profileInformationsFieldsConfig = [
     title: 'Votre adresse e-mail',
   },
   {
-    component: UserPasswordField,
-    key: 'password',
-    label: 'Mot de passe',
-    mainPlaceholder: 'Changer mon mot de passe',
-    resolver: () => false,
-    routeName: 'password',
-    title: 'Votre mot de passe',
-  },
-  {
     key: 'departementCode',
     label: 'Département de résidence',
     resolver: (user, key) => {
@@ -58,5 +49,14 @@ export const profileInformationsFieldsConfig = [
     },
     routeName: 'departement',
     title: 'Votre Département de résidence',
+  },
+  {
+    component: UserPasswordField,
+    key: 'password',
+    label: 'Mot de passe',
+    mainPlaceholder: 'Changer mon mot de passe',
+    resolver: () => false,
+    routeName: 'password',
+    title: 'Votre mot de passe',
   },
 ]

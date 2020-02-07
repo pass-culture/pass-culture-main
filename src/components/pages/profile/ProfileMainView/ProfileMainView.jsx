@@ -1,9 +1,10 @@
-import React from 'react'
 import PropTypes from 'prop-types'
+import React from 'react'
 
-import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
+import { version } from '../../../../../package.json'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
-import MesInformations from '../MesInformations/MesInformations'
+import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
+import MesInformationsContainer from '../MesInformations/MesInformationsContainer'
 import RemainingCredit from '../RemainingCredit/RemainingCredit'
 
 const ProfileMainView = ({ informationsFields, currentUser }) => (
@@ -15,10 +16,13 @@ const ProfileMainView = ({ informationsFields, currentUser }) => (
     <main className="mosaic-background pc-main is-clipped is-relative">
       <div className="pc-scroll-container">
         {currentUser && <RemainingCredit currentUser={currentUser} />}
-        <MesInformations
+        <MesInformationsContainer
           fields={informationsFields}
           user={currentUser}
         />
+        <div className="app-version">
+          {`v${version}`}
+        </div>
       </div>
     </main>
     <RelativeFooterContainer

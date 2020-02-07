@@ -1,81 +1,111 @@
-import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
-import { NavLink } from 'react-router-dom'
+import React, { Fragment, PureComponent } from 'react'
+import { Link } from 'react-router-dom'
 
-import { version } from '../../../../../package.json'
-import Icon from '../../../layout/Icon/Icon'
-
-const EMPTY_FIELD_PLACEHOLDER = 'Non renseigné'
+import getDepartementByCode from '../../../../utils/getDepartementByCode'
+import { MesInformationsField } from './MesInformationsField'
 
 class MesInformations extends PureComponent {
-  renderInformation = field => {
-    const { user } = this.props
-    const { key, label, mainPlaceholder, resolver, routeName } = field
-    const disabled = !field.component
-    // NOTE: par défaut on sette la valeur sur la clé de l'objet user
-    // pour le password on ne souhaite pas afficher la valeur
-    // pour cela on utilise le resolver retournant une valeur falsey
-    const value = (resolver && resolver(user, key)) || user[key]
-    return (
-      <div
-        className="item dotted-bottom-black"
-        key={key}
-      >
-        <NavLink
-          className="pc-text-button text-left no-decoration flex-columns items-center pt20 pb22"
-          to={disabled ? '#' : `/profil/${routeName}`}
-        >
-          <span className="is-block flex-1">
-            <span className="pc-label pb3 is-block is-grey-text is-uppercase fs13 is-medium">
-              {label}
-            </span>
-            {value && <span className="is-block is-black-text fs18 is-bold">
-              {value}
-            </span>}
-            {!value && (
-              <span className="is-block is-grey-text fs18">
-                {mainPlaceholder || EMPTY_FIELD_PLACEHOLDER}
-              </span>
-            )}
-          </span>
-          {!disabled && (
-            <span className="is-block flex-0">
-              <Icon
-                alt={`Modifier ${label}`}
-                svg="ico-next-pink"
-              />
-            </span>
-          )}
-        </NavLink>
-      </div>
-    )
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      publicName: props.user.publicName,
+      errors: null,
+    }
+    this.publicNameInputRef = React.createRef()
+  }
+
+  handlePublicNameChange = event => {
+    const newValue = event.target.value
+    this.setState({ publicName: newValue })
+  }
+
+  handleBlur = event => {
+    const { handleSubmit } = this.props
+    const formValuesByNames = Array.from(event.target.form)
+      .filter(input => !input.disabled)
+      .reduce((fields, input) => {
+        fields[input.name] = input.value
+        return fields
+      }, {})
+
+    handleSubmit(formValuesByNames, this.handleSubmitFail, this.handleSubmitSuccess)
+  }
+
+  handleSubmitFail = (state, action) => {
+    this.setState({ errors: { ...action.payload.errors } })
+    this.publicNameInputRef.current.focus()
+  }
+
+  handleSubmitSuccess = () => {
+    this.setState({ errors: null })
+  }
+
+  getDepartment(departmentCode) {
+    const departmentName = getDepartementByCode(departmentCode)
+    return `${departmentName} (${departmentCode})`
   }
 
   render() {
-    const { fields } = this.props
+    const { user } = this.props
+    const { errors, publicName } = this.state
     return (
-      <div
-        className="pb40 pt20"
-        id="mes-informations"
-      >
+      <Fragment>
         <div className="mes-informations-title-container">
-          <h3 className="mes-informations-title">
-            {'Mes Informations'}
-          </h3>
+          <h2 className="mes-informations-title">
+            {'Mes informations'}
+          </h2>
         </div>
-        <div className="px12 pc-list">
-          {fields.map(this.renderInformation)}
+        <form>
+          <MesInformationsField
+            errors={errors && errors.publicName}
+            id="identifiant"
+            label="Identifiant"
+            name="publicName"
+            onBlur={this.handleBlur}
+            onChange={this.handlePublicNameChange}
+            ref={this.publicNameInputRef}
+            required
+            value={publicName}
+          />
+          <MesInformationsField
+            disabled
+            id="name"
+            label="Nom et prénom"
+            name="name"
+            value={`${user.firstName} ${user.lastName}`}
+          />
+          <MesInformationsField
+            disabled
+            id="email"
+            label="Adresse e-mail"
+            name="email"
+            value={user.email}
+          />
+          <MesInformationsField
+            disabled
+            id="departmentCode"
+            label="Département de résidence"
+            name="departementCode"
+            value={this.getDepartment(user.departementCode)}
+          />
+        </form>
+        <div className="mi-change-password">
+          <label>
+            {'Mot de passe'}
+          </label>
+          <Link to="/profil/password">
+            {'Changer mon mot de passe'}
+          </Link>
         </div>
-        <div className="app-version">
-          {`v${version}`}
-        </div>
-      </div>
+      </Fragment>
     )
   }
 }
 
 MesInformations.propTypes = {
-  fields: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  handleSubmit: PropTypes.func.isRequired,
   user: PropTypes.oneOfType([PropTypes.bool, PropTypes.shape()]).isRequired,
 }
 

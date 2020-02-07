@@ -1,0 +1,82 @@
+import React, { PureComponent } from 'react'
+import PropTypes from 'prop-types'
+import { NavLink } from 'react-router-dom'
+
+import { version } from '../../../../../package.json'
+import Icon from '../../../layout/Icon/Icon'
+
+const EMPTY_FIELD_PLACEHOLDER = 'Non renseigné'
+
+class MesInformations extends PureComponent {
+  renderInformation = field => {
+    const { user } = this.props
+    const { key, label, mainPlaceholder, resolver, routeName } = field
+    const disabled = !field.component
+    // NOTE: par défaut on sette la valeur sur la clé de l'objet user
+    // pour le password on ne souhaite pas afficher la valeur
+    // pour cela on utilise le resolver retournant une valeur falsey
+    const value = (resolver && resolver(user, key)) || user[key]
+    return (
+      <div
+        className="item dotted-bottom-black"
+        key={key}
+      >
+        <NavLink
+          className="pc-text-button text-left no-decoration flex-columns items-center pt20 pb22"
+          to={disabled ? '#' : `/profil/${routeName}`}
+        >
+          <span className="is-block flex-1">
+            <span className="pc-label pb3 is-block is-grey-text is-uppercase fs13 is-medium">
+              {label}
+            </span>
+            {value && <span className="is-block is-black-text fs18 is-bold">
+              {value}
+            </span>}
+            {!value && (
+              <span className="is-block is-grey-text fs18">
+                {mainPlaceholder || EMPTY_FIELD_PLACEHOLDER}
+              </span>
+            )}
+          </span>
+          {!disabled && (
+            <span className="is-block flex-0">
+              <Icon
+                alt={`Modifier ${label}`}
+                svg="ico-next-pink"
+              />
+            </span>
+          )}
+        </NavLink>
+      </div>
+    )
+  }
+
+  render() {
+    const { fields } = this.props
+    return (
+      <div
+        className="pb40 pt20"
+        id="mes-informations"
+      >
+        <div className="mes-informations-title-container">
+          <h3 className="mes-informations-title">
+            {'Mes Informations'}
+          </h3>
+        </div>
+        <div className="px12 pc-list">
+          {fields.map(this.renderInformation)}
+        </div>
+        <div className="app-version">
+          {`v${version}`}
+        </div>
+      </div>
+    )
+  }
+}
+
+MesInformations.propTypes = {
+  fields: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  user: PropTypes.oneOfType([PropTypes.bool, PropTypes.shape()]).isRequired,
+}
+
+export default MesInformations
