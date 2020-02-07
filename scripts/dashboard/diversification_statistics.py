@@ -2,13 +2,14 @@ from typing import List, Tuple
 
 import pandas
 from sqlalchemy import text
+from sqlalchemy.sql import selectable
 
 from models import Offerer, UserOfferer, Venue, Offer, Stock, Booking, EventType, ThingType, User, DiscoveryView
 from models.db import db
 from repository import booking_queries
 from repository.booking_queries import count_cancelled as query_count_all_cancelled_bookings
 from repository.offer_queries import get_active_offers_ids_query, _filter_recommendable_offers_for_search, \
-    keep_only_in_venues_or_is_national
+    keep_only_offers_in_venues_or_national
 from repository.offerer_queries import count_offerer, count_offerer_with_stock, count_offerer_by_departement, \
     count_offerer_with_stock_by_departement
 
@@ -38,29 +39,36 @@ def get_offerers_with_offer_available_on_discovery_count(departement_code: str =
 
 
 def get_offerers_with_offer_available_on_discovery_count_v2(departement_code: str = None) -> int:
-    discovery_offer_venue_ids = DiscoveryView.query
+    discovery_view_query = DiscoveryView.query
 
     if departement_code:
-        visible_venues_ids = Venue.query\
-            .filter_by(departementCode=departement_code)\
-            .with_entities(Venue.id)\
-            .subquery()
-
+        venues_ids = _get_physical_venue_ids_for_departement(departement_code)
     else:
-        visible_venues_ids = Venue.query\
-            .filter(Venue.departementCode != None)\
-            .with_entities(Venue.id) \
-            .subquery()
+        venues_ids = _get_all_physical_venue_ids()
 
-    discovery_offer_venue_ids = keep_only_in_venues_or_is_national(discovery_offer_venue_ids, visible_venues_ids) \
+    discovery_view_query = keep_only_offers_in_venues_or_national(discovery_view_query, venues_ids) \
         .with_entities(DiscoveryView.venueId)\
         .subquery()
 
 
     return Venue.query\
-        .filter(Venue.id.in_(discovery_offer_venue_ids))\
+        .filter(Venue.id.in_(discovery_view_query))\
         .distinct(Venue.managingOffererId)\
         .count()
+
+
+def _get_all_physical_venue_ids() -> selectable.Alias:
+    return Venue.query \
+        .filter(Venue.departementCode != None) \
+        .with_entities(Venue.id) \
+        .subquery()
+
+
+def _get_physical_venue_ids_for_departement(departement_code: str) -> selectable.Alias:
+    return Venue.query \
+        .filter_by(departementCode=departement_code) \
+        .with_entities(Venue.id) \
+        .subquery()
 
 
 def get_offerers_with_offers_available_on_search_count(departement_code: str = None) -> int:
@@ -122,18 +130,11 @@ def get_offers_available_on_discovery_count_v2(departement_code: str = None) -> 
     query = DiscoveryView.query
 
     if departement_code:
-        visible_venues_ids = Venue.query\
-            .filter_by(departementCode=departement_code)\
-            .with_entities(Venue.id)\
-            .subquery()
-
+        visible_venues_ids = _get_physical_venue_ids_for_departement(departement_code)
     else:
-        visible_venues_ids = Venue.query\
-            .filter(Venue.departementCode != None)\
-            .with_entities(Venue.id)\
-            .subquery()
+        visible_venues_ids = _get_all_physical_venue_ids()
 
-    query = keep_only_in_venues_or_is_national(query, visible_venues_ids)
+    query = keep_only_offers_in_venues_or_national(query, visible_venues_ids)
 
     return query.count()
 

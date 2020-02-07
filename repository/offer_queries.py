@@ -92,24 +92,24 @@ def get_offers_for_recommendation(user: User,
 
     offer_booked_ids = get_only_offer_ids_from_bookings(user)
 
-    recos_query = DiscoveryView.query \
+    discovery_view_query = DiscoveryView.query \
         .filter(DiscoveryView.id.notin_(favorite_ids)) \
         .filter(DiscoveryView.id.notin_(seen_recommendation_ids)) \
         .filter(DiscoveryView.id.notin_(offer_booked_ids))
 
     if ALL_DEPARTMENTS_CODE not in departement_codes:
         venue_ids = get_only_venue_ids_for_department_codes(departement_codes)
-        recos_query = keep_only_in_venues_or_is_national(recos_query, venue_ids)
+        discovery_view_query = keep_only_offers_in_venues_or_national(discovery_view_query, venue_ids)
 
-    recos_query = recos_query.order_by(DiscoveryView.offerDiscoveryOrder)
+    discovery_view_query = discovery_view_query.order_by(DiscoveryView.offerDiscoveryOrder)
 
     if limit:
-        recos_query = recos_query.limit(limit)
+        discovery_view_query = discovery_view_query.limit(limit)
 
-    return recos_query.all()
+    return discovery_view_query.all()
 
 
-def keep_only_in_venues_or_is_national(query: BaseQuery, venue_ids: selectable.Alias) -> BaseQuery:
+def keep_only_offers_in_venues_or_national(query: BaseQuery, venue_ids: selectable.Alias) -> BaseQuery:
     return query \
         .filter(or_(DiscoveryView.venueId.in_(venue_ids), DiscoveryView.isNational == True))
 

@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from hashlib import sha256
+from typing import Optional
 
 from local_providers.price_rule import PriceRule
 from models import ApiKey, BankInformation, BeneficiaryImport, \
@@ -479,24 +480,24 @@ def create_user_offerer(user: User,
 
 
 def create_venue(offerer: Offerer,
-                 address: str = '123 rue de Paris',
-                 booking_email: str = None,
-                 city: str = 'Montreuil',
-                 comment: str = None,
-                 date_modified_at_last_provider: datetime = None,
-                 departement_code: str = '93',
-                 idx: int = None,
-                 id_at_providers: str = None,
+                 address: Optional[str] = '123 rue de Paris',
+                 booking_email: Optional[str] = None,
+                 city: Optional[str] = 'Montreuil',
+                 comment: Optional[str] = None,
+                 date_modified_at_last_provider: Optional[datetime] = None,
+                 departement_code: Optional[str] = '93',
+                 idx: Optional[int] = None,
+                 id_at_providers: Optional[str] = None,
                  is_virtual: bool = False,
-                 last_provider_id: int = None,
-                 latitude: float = None,
-                 longitude: float = None,
+                 last_provider_id: Optional[int] = None,
+                 latitude: Optional[float] = None,
+                 longitude: Optional[float] = None,
                  name: str = 'La petite librairie',
-                 postal_code: str = '93100',
-                 public_name: str = None,
-                 siret: str = '12345678912345',
+                 postal_code: Optional[str] = '93100',
+                 public_name: Optional[str] = None,
+                 siret: Optional[str] = '12345678912345',
                  thumb_count: int = 0,
-                 validation_token: str = None) -> Venue:
+                 validation_token: Optional[str] = None) -> Venue:
     venue = Venue()
     venue.bookingEmail = booking_email
     venue.comment = comment
