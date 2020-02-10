@@ -19,9 +19,9 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_e
     ok_thing = create_product_with_thing_type(thing_name='Rencontre avec Belle du Seigneur')
     offerer = create_offerer()
     venue = create_venue(offerer)
-    ok_offer1 = create_offer_with_event_product(venue, ok_event1)
-    ko_offer2 = create_offer_with_event_product(venue, event2)
-    ok_offer3 = create_offer_with_thing_product(venue, ok_thing)
+    ok_offer1 = create_offer_with_event_product(venue=venue, product=ok_event1)
+    ko_offer2 = create_offer_with_event_product(venue=venue, product=event2)
+    ok_offer3 = create_offer_with_thing_product(venue=venue, product=ok_thing)
     repository.save(ok_offer1, ko_offer2, ok_offer3)
 
     # when
@@ -43,9 +43,9 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyw
     ok_thing = create_product_with_thing_type(thing_name='Rencontre avec Belle du Seigneur')
     offerer = create_offerer()
     venue = create_venue(offerer)
-    ok_offer1 = create_offer_with_event_product(venue, ok_event1)
-    ko_offer2 = create_offer_with_event_product(venue, event2)
-    ok_offer3 = create_offer_with_thing_product(venue, ok_thing)
+    ok_offer1 = create_offer_with_event_product(venue=venue, product=ok_event1)
+    ko_offer2 = create_offer_with_event_product(venue=venue, product=event2)
+    ok_offer3 = create_offer_with_thing_product(venue=venue, product=ok_thing)
     repository.save(ok_offer1, ko_offer2, ok_offer3)
 
     # when
@@ -69,10 +69,10 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords
     thing2 = create_product_with_thing_type(thing_name='Rencontre avec Belle du Seigneur')
     offerer = create_offerer()
     venue = create_venue(offerer)
-    ok_offer1 = create_offer_with_event_product(venue, ok_event1)
-    ko_offer2 = create_offer_with_event_product(venue, event2)
-    ok_offer3 = create_offer_with_thing_product(venue, ok_thing1)
-    ko_offer4 = create_offer_with_thing_product(venue, thing2)
+    ok_offer1 = create_offer_with_event_product(venue=venue, product=ok_event1)
+    ko_offer2 = create_offer_with_event_product(venue=venue, product=event2)
+    ok_offer3 = create_offer_with_thing_product(venue=venue, product=ok_thing1)
+    ko_offer4 = create_offer_with_thing_product(venue=venue, product=thing2)
     repository.save(ok_offer1, ko_offer2, ok_offer3, ko_offer4)
 
     # when
@@ -98,10 +98,10 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_
     thing2 = create_product_with_thing_type(thing_name='Rencontre avec Belle du Seigneur')
     offerer = create_offerer()
     venue = create_venue(offerer)
-    ok_offer1 = create_offer_with_event_product(venue, ok_event1)
-    ko_offer2 = create_offer_with_event_product(venue, event2)
-    ok_offer3 = create_offer_with_thing_product(venue, ok_thing1)
-    ko_offer4 = create_offer_with_thing_product(venue, thing2)
+    ok_offer1 = create_offer_with_event_product(venue=venue, product=ok_event1)
+    ko_offer2 = create_offer_with_event_product(venue=venue, product=event2)
+    ok_offer3 = create_offer_with_thing_product(venue=venue, product=ok_thing1)
+    ko_offer4 = create_offer_with_thing_product(venue=venue, product=thing2)
     repository.save(ok_offer1, ko_offer2, ok_offer3, ko_offer4)
 
     # when
@@ -130,14 +130,14 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_v
     ok_venue3 = create_venue(offerer3, name='Librairie la Rencontre', city='Saint Denis',
                              siret=offerer3.siren + '54321')
     venue4 = create_venue(offerer4, name='Bataclan', city='Paris', siret=offerer4.siren + '12345')
-    ok_offer1 = create_offer_with_event_product(ok_venue1, event_product)
-    ko_offer2 = create_offer_with_event_product(venue2, event_product)
-    ok_offer3 = create_offer_with_thing_product(ok_venue1, thing_product)
-    ko_offer4 = create_offer_with_thing_product(venue2, thing_product)
-    ok_offer5 = create_offer_with_event_product(ok_venue3, event_product)
-    ko_offer6 = create_offer_with_event_product(venue4, event_product)
-    ok_offer7 = create_offer_with_thing_product(ok_venue3, thing_product)
-    ko_offer8 = create_offer_with_thing_product(venue4, thing_product)
+    ok_offer1 = create_offer_with_event_product(venue=ok_venue1, product=event_product)
+    ko_offer2 = create_offer_with_event_product(venue=venue2, product=event_product)
+    ok_offer3 = create_offer_with_thing_product(venue=ok_venue1, product=thing_product)
+    ko_offer4 = create_offer_with_thing_product(venue=venue2, product=thing_product)
+    ok_offer5 = create_offer_with_event_product(venue=ok_venue3, product=event_product)
+    ko_offer6 = create_offer_with_event_product(venue=venue4, product=event_product)
+    ok_offer7 = create_offer_with_thing_product(venue=ok_venue3, product=thing_product)
+    ko_offer8 = create_offer_with_thing_product(venue=venue4, product=thing_product)
     repository.save(
         ok_offer1, ko_offer2, ok_offer3, ko_offer4,
         ok_offer5, ko_offer6, ok_offer7, ko_offer8
@@ -172,14 +172,14 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_v
     venue2 = create_venue(offerer=offerer2, siret=offerer2.siren + '12345')
     ok_venue3 = create_venue(offerer=offerer3, name='Librairie la Rencontre', city='Saint Denis', siret=offerer3.siren + '54321', public_name='chouette endroit de ouf')
     venue4 = create_venue(offerer=offerer4, name='Bataclan', city='Paris', siret=offerer4.siren + '12345')
-    ok_offer1 = create_offer_with_event_product(ok_venue1, event)
-    ko_offer2 = create_offer_with_event_product(venue2, event)
-    ok_offer3 = create_offer_with_thing_product(ok_venue1, thing)
-    ko_offer4 = create_offer_with_thing_product(venue2, thing)
-    ok_offer5 = create_offer_with_event_product(ok_venue3, event)
-    ko_offer6 = create_offer_with_event_product(venue4, event)
-    ok_offer7 = create_offer_with_thing_product(ok_venue3, thing)
-    ko_offer8 = create_offer_with_thing_product(venue4, thing)
+    ok_offer1 = create_offer_with_event_product(venue=ok_venue1, product=event)
+    ko_offer2 = create_offer_with_event_product(venue=venue2, product=event)
+    ok_offer3 = create_offer_with_thing_product(venue=ok_venue1, product=thing)
+    ko_offer4 = create_offer_with_thing_product(venue=venue2, product=thing)
+    ok_offer5 = create_offer_with_event_product(venue=ok_venue3, product=event)
+    ko_offer6 = create_offer_with_event_product(venue=venue4, product=event)
+    ok_offer7 = create_offer_with_thing_product(venue=ok_venue3, product=thing)
+    ko_offer8 = create_offer_with_thing_product(venue=venue4, product=thing)
     repository.save(
         ok_offer1, ko_offer2, ok_offer3, ko_offer4,
         ok_offer5, ko_offer6, ok_offer7, ko_offer8
@@ -215,14 +215,14 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyw
     ok_venue3 = create_venue(offerer3, name='Librairie la Rencontre', city='Saint Denis',
                              siret=offerer3.siren + '54321', public_name='chouette endroit de ouf')
     venue4 = create_venue(offerer4, name='Bataclan', city='Paris', siret=offerer4.siren + '12345')
-    ok_offer1 = create_offer_with_event_product(ok_venue1, event)
-    ko_offer2 = create_offer_with_event_product(venue2, event)
-    ok_offer3 = create_offer_with_thing_product(ok_venue1, thing)
-    ko_offer4 = create_offer_with_thing_product(venue2, thing)
-    ok_offer5 = create_offer_with_event_product(ok_venue3, event)
-    ko_offer6 = create_offer_with_event_product(venue4, event)
-    ok_offer7 = create_offer_with_thing_product(ok_venue3, thing)
-    ko_offer8 = create_offer_with_thing_product(venue4, thing)
+    ok_offer1 = create_offer_with_event_product(venue=ok_venue1, product=event)
+    ko_offer2 = create_offer_with_event_product(venue=venue2, product=event)
+    ok_offer3 = create_offer_with_thing_product(venue=ok_venue1, product=thing)
+    ko_offer4 = create_offer_with_thing_product(venue=venue2, product=thing)
+    ok_offer5 = create_offer_with_event_product(venue=ok_venue3, product=event)
+    ko_offer6 = create_offer_with_event_product(venue=venue4, product=event)
+    ok_offer7 = create_offer_with_thing_product(venue=ok_venue3, product=thing)
+    ko_offer8 = create_offer_with_thing_product(venue=venue4, product=thing)
     repository.save(
         ok_offer1, ko_offer2, ok_offer3, ko_offer4,
         ok_offer5, ko_offer6, ok_offer7, ko_offer8
@@ -258,14 +258,14 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords
     ok_venue3 = create_venue(offerer3, name='Librairie la Rencontre', city='Saint Denis',
                              siret=offerer3.siren + '54321', public_name='chouette endroit de ouf')
     venue4 = create_venue(offerer4, name='Bataclan', city='Paris', siret=offerer4.siren + '12345')
-    ok_offer1 = create_offer_with_event_product(ok_venue1, event)
-    ko_offer2 = create_offer_with_event_product(venue2, event)
-    ok_offer3 = create_offer_with_thing_product(ok_venue1, thing)
-    ko_offer4 = create_offer_with_thing_product(venue2, thing)
-    ok_offer5 = create_offer_with_event_product(ok_venue3, event)
-    ko_offer6 = create_offer_with_event_product(venue4, event)
-    ok_offer7 = create_offer_with_thing_product(ok_venue3, thing)
-    ko_offer8 = create_offer_with_thing_product(venue4, thing)
+    ok_offer1 = create_offer_with_event_product(venue=ok_venue1, product=event)
+    ko_offer2 = create_offer_with_event_product(venue=venue2, product=event)
+    ok_offer3 = create_offer_with_thing_product(venue=ok_venue1, product=thing)
+    ko_offer4 = create_offer_with_thing_product(venue=venue2, product=thing)
+    ok_offer5 = create_offer_with_event_product(venue=ok_venue3, product=event)
+    ko_offer6 = create_offer_with_event_product(venue=venue4, product=event)
+    ok_offer7 = create_offer_with_thing_product(venue=ok_venue3, product=thing)
+    ko_offer8 = create_offer_with_thing_product(venue=venue4, product=thing)
     repository.save(
         ok_offer1, ko_offer2, ok_offer3, ko_offer4,
         ok_offer5, ko_offer6, ok_offer7, ko_offer8
@@ -302,14 +302,14 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_
     ok_venue3 = create_venue(offerer3, name='Librairie la Rencontre', city='Saint Denis',
                              siret=offerer3.siren + '54321', public_name='chouette endroit de ouf')
     venue4 = create_venue(offerer4, name='Bataclan', city='Paris', siret=offerer4.siren + '12345')
-    ok_offer1 = create_offer_with_event_product(ok_venue1, event)
-    ko_offer2 = create_offer_with_event_product(venue2, event)
-    ok_offer3 = create_offer_with_thing_product(ok_venue1, thing)
-    ko_offer4 = create_offer_with_thing_product(venue2, thing)
-    ok_offer5 = create_offer_with_event_product(ok_venue3, event)
-    ko_offer6 = create_offer_with_event_product(venue4, event)
-    ok_offer7 = create_offer_with_thing_product(ok_venue3, thing)
-    ko_offer8 = create_offer_with_thing_product(venue4, thing)
+    ok_offer1 = create_offer_with_event_product(venue=ok_venue1, product=event)
+    ko_offer2 = create_offer_with_event_product(venue=venue2, product=event)
+    ok_offer3 = create_offer_with_thing_product(venue=ok_venue1, product=thing)
+    ko_offer4 = create_offer_with_thing_product(venue=venue2, product=thing)
+    ok_offer5 = create_offer_with_event_product(venue=ok_venue3, product=event)
+    ko_offer6 = create_offer_with_event_product(venue=venue4, product=event)
+    ok_offer7 = create_offer_with_thing_product(venue=ok_venue3, product=thing)
+    ko_offer8 = create_offer_with_thing_product(venue=venue4, product=thing)
     repository.save(
         ok_offer1, ko_offer2, ok_offer3, ko_offer4,
         ok_offer5, ko_offer6, ok_offer7, ko_offer8
@@ -348,14 +348,14 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_v
     ok_venue3 = create_venue(offerer3, name='Librairie la Rencontre', city='Saint-Denis',
                              siret=offerer3.siren + '54321', public_name='chouette endroit de ouf')
     venue4 = create_venue(offerer4, name='Bataclan', city='Paris', siret=offerer4.siren + '12345')
-    ok_offer1 = create_offer_with_event_product(ok_venue1, event)
-    ko_offer2 = create_offer_with_event_product(venue2, event)
-    ok_offer3 = create_offer_with_thing_product(ok_venue1, thing)
-    ko_offer4 = create_offer_with_thing_product(venue2, thing)
-    ok_offer5 = create_offer_with_event_product(ok_venue3, event)
-    ko_offer6 = create_offer_with_event_product(venue4, event)
-    ok_offer7 = create_offer_with_thing_product(ok_venue3, thing)
-    ko_offer8 = create_offer_with_thing_product(venue4, thing)
+    ok_offer1 = create_offer_with_event_product(venue=ok_venue1, product=event)
+    ko_offer2 = create_offer_with_event_product(venue=venue2, product=event)
+    ok_offer3 = create_offer_with_thing_product(venue=ok_venue1, product=thing)
+    ko_offer4 = create_offer_with_thing_product(venue=venue2, product=thing)
+    ok_offer5 = create_offer_with_event_product(venue=ok_venue3, product=event)
+    ko_offer6 = create_offer_with_event_product(venue=venue4, product=event)
+    ok_offer7 = create_offer_with_thing_product(venue=ok_venue3, product=thing)
+    ko_offer8 = create_offer_with_thing_product(venue=venue4, product=thing)
     repository.save(
         ok_offer1, ko_offer2, ok_offer3, ko_offer4,
         ok_offer5, ko_offer6, ok_offer7, ko_offer8
@@ -391,14 +391,14 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyw
     ok_venue3 = create_venue(offerer3, name='Librairie la Rencontre', city='Saint Denis',
                              siret=offerer3.siren + '54321')
     venue4 = create_venue(offerer4, name='Bataclan', city='Paris', siret=offerer4.siren + '12345')
-    ok_offer1 = create_offer_with_event_product(ok_venue1, event_product)
-    ko_offer2 = create_offer_with_event_product(venue2, event_product)
-    ok_offer3 = create_offer_with_thing_product(ok_venue1, thing_product)
-    ko_offer4 = create_offer_with_thing_product(venue2, thing_product)
-    ok_offer5 = create_offer_with_event_product(ok_venue3, event_product)
-    ko_offer6 = create_offer_with_event_product(venue4, event_product)
-    ok_offer7 = create_offer_with_thing_product(ok_venue3, thing_product)
-    ko_offer8 = create_offer_with_thing_product(venue4, thing_product)
+    ok_offer1 = create_offer_with_event_product(venue=ok_venue1, product=event_product)
+    ko_offer2 = create_offer_with_event_product(venue=venue2, product=event_product)
+    ok_offer3 = create_offer_with_thing_product(venue=ok_venue1, product=thing_product)
+    ko_offer4 = create_offer_with_thing_product(venue=venue2, product=thing_product)
+    ok_offer5 = create_offer_with_event_product(venue=ok_venue3, product=event_product)
+    ko_offer6 = create_offer_with_event_product(venue=venue4, product=event_product)
+    ok_offer7 = create_offer_with_thing_product(venue=ok_venue3, product=thing_product)
+    ko_offer8 = create_offer_with_thing_product(venue=venue4, product=thing_product)
     repository.save(
         ok_offer1, ko_offer2, ok_offer3, ko_offer4,
         ok_offer5, ko_offer6, ok_offer7, ko_offer8
@@ -435,14 +435,14 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords
     ok_venue3 = create_venue(offerer3, name='Librairie la Rencontre', city='Saint Denis',
                              siret=offerer3.siren + '54321')
     venue4 = create_venue(offerer4, name='Bataclan', city='Paris', siret=offerer4.siren + '12345')
-    ok_offer1 = create_offer_with_event_product(ok_venue1, event_product)
-    ko_offer2 = create_offer_with_event_product(venue2, event_product)
-    ok_offer3 = create_offer_with_thing_product(ok_venue1, thing_product)
-    ko_offer4 = create_offer_with_thing_product(venue2, thing_product)
-    ok_offer5 = create_offer_with_event_product(ok_venue3, event_product)
-    ko_offer6 = create_offer_with_event_product(venue4, event_product)
-    ok_offer7 = create_offer_with_thing_product(ok_venue3, thing_product)
-    ko_offer8 = create_offer_with_thing_product(venue4, thing_product)
+    ok_offer1 = create_offer_with_event_product(venue=ok_venue1, product=event_product)
+    ko_offer2 = create_offer_with_event_product(venue=venue2, product=event_product)
+    ok_offer3 = create_offer_with_thing_product(venue=ok_venue1, product=thing_product)
+    ko_offer4 = create_offer_with_thing_product(venue=venue2, product=thing_product)
+    ok_offer5 = create_offer_with_event_product(venue=ok_venue3, product=event_product)
+    ko_offer6 = create_offer_with_event_product(venue=venue4, product=event_product)
+    ok_offer7 = create_offer_with_thing_product(venue=ok_venue3, product=thing_product)
+    ko_offer8 = create_offer_with_thing_product(venue=venue4, product=thing_product)
     repository.save(
         ok_offer1, ko_offer2, ok_offer3, ko_offer4,
         ok_offer5, ko_offer6, ok_offer7, ko_offer8
@@ -473,9 +473,9 @@ def test_create_filter_matching_all_keywords_with_one_keyword_at_mixed_event_or_
     offerer = create_offerer(siren='123456789')
     venue1 = create_venue(offerer, name='Bataclan', city='Paris', siret=offerer.siren + '12345')
     ok_venue2 = create_venue(offerer, name='Librairie la Rencontre', city='Saint Denis', siret=offerer.siren + '54321')
-    ok_offer1 = create_offer_with_event_product(venue1, ok_event1)
-    ko_offer2 = create_offer_with_event_product(venue1, event2)
-    ok_offer3 = create_offer_with_thing_product(ok_venue2, thing_product)
+    ok_offer1 = create_offer_with_event_product(venue=venue1, product=ok_event1)
+    ko_offer2 = create_offer_with_event_product(venue=venue1, product=event2)
+    ok_offer3 = create_offer_with_thing_product(venue=ok_venue2, product=thing_product)
     repository.save(ok_offer1, ko_offer2, ok_offer3)
 
     # when
@@ -499,9 +499,9 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyw
     offerer = create_offerer(siren='123456789')
     venue1 = create_venue(offerer, name='Bataclan', city='Paris', siret=offerer.siren + '12345')
     ok_venue2 = create_venue(offerer, name='Librairie la Rencontre', city='Saint Denis', siret=offerer.siren + '54321')
-    ok_offer1 = create_offer_with_event_product(venue1, ok_event1)
-    ko_offer2 = create_offer_with_event_product(venue1, event2)
-    ok_offer3 = create_offer_with_thing_product(ok_venue2, thing_product)
+    ok_offer1 = create_offer_with_event_product(venue=venue1, product=ok_event1)
+    ko_offer2 = create_offer_with_event_product(venue=venue1, product=event2)
+    ok_offer3 = create_offer_with_thing_product(venue=ok_venue2, product=thing_product)
     repository.save(ok_offer1, ko_offer2, ok_offer3)
 
     # when
@@ -524,10 +524,10 @@ def test_get_offers_for_recommendations_search_only_return_available_offers(app)
     offerer = create_offerer()
     venue = create_venue(offerer)
     thing_product = create_product_with_thing_type(thing_name='Lire un livre de Jazz')
-    offer_available = create_offer_with_thing_product(venue, thing_product)
+    offer_available = create_offer_with_thing_product(venue=venue, product=thing_product)
     stock_available = create_stock(price=12, available=5, offer=offer_available)
 
-    offer_not_available = create_offer_with_event_product(venue, event_name='Training in Modern Jazz')
+    offer_not_available = create_offer_with_event_product(venue=venue, event_name='Training in Modern Jazz')
     event_occurrence = create_event_occurrence(offer_not_available, beginning_datetime=in_one_hour,
                                                end_datetime=in_two_hours)
     stock_with_no_available = create_stock_from_event_occurrence(event_occurrence, available=0)

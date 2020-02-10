@@ -32,8 +32,7 @@ class DepartmentOrNationalOffersTest:
         product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
-        offer = create_offer_with_thing_product(venue, product)
-        from repository import repository
+        offer = create_offer_with_thing_product(venue=venue, product=product)
         repository.save(offer)
         query = Product.query.filter_by(name='Lire un livre')
 
@@ -49,7 +48,7 @@ class DepartmentOrNationalOffersTest:
         product = create_product_with_event_type('Voir une pièce', is_national=True)
         offerer = create_offerer()
         venue = create_venue(offerer, is_virtual=False, postal_code='29000', departement_code='29')
-        offer = create_offer_with_event_product(venue, product)
+        offer = create_offer_with_event_product(venue=venue, product=product)
         repository.save(offer)
         query = Product.query.filter_by(name='Voir une pièce')
 
@@ -65,7 +64,7 @@ class DepartmentOrNationalOffersTest:
         product = create_product_with_event_type('Voir une pièce', is_national=False)
         offerer = create_offerer()
         venue = create_venue(offerer, is_virtual=False, postal_code='29000', departement_code='29')
-        offer = create_offer_with_event_product(venue, product)
+        offer = create_offer_with_event_product(venue=venue, product=product)
         repository.save(offer)
         query = Product.query.filter_by(name='Voir une pièce')
 
@@ -81,7 +80,7 @@ class DepartmentOrNationalOffersTest:
         product = create_product_with_event_type('Voir une pièce', is_national=False)
         offerer = create_offerer()
         venue = create_venue(offerer, is_virtual=False, postal_code='29000', departement_code='29')
-        offer = create_offer_with_event_product(venue, product)
+        offer = create_offer_with_event_product(venue=venue, product=product)
         repository.save(offer)
         query = Product.query.filter_by(name='Voir une pièce')
 
@@ -97,7 +96,7 @@ class DepartmentOrNationalOffersTest:
         product = create_product_with_event_type('Voir une pièce', is_national=False)
         offerer = create_offerer()
         venue = create_venue(offerer, is_virtual=False, postal_code='29000', departement_code='29')
-        offer = create_offer_with_event_product(venue, product)
+        offer = create_offer_with_event_product(venue=venue, product=product)
         repository.save(offer)
         query = Product.query.filter_by(name='Voir une pièce')
 
@@ -141,9 +140,9 @@ class GetOffersForRecommendationsSearchTest:
             siret="50763357600016"
         )
 
-        conference_offer1 = create_offer_with_event_product(venue, conference_event1)
-        conference_offer2 = create_offer_with_event_product(venue, conference_event2)
-        concert_offer = create_offer_with_event_product(venue, concert_event)
+        conference_offer1 = create_offer_with_event_product(venue=venue, product=conference_event1)
+        conference_offer2 = create_offer_with_event_product(venue=venue, product=conference_event2)
+        concert_offer = create_offer_with_event_product(venue=venue, product=concert_event)
 
         conference_event_occurrence1 = create_event_occurrence(conference_offer1)
         conference_event_occurrence2 = create_event_occurrence(conference_offer2)
@@ -181,10 +180,10 @@ class GetOffersForRecommendationsSearchTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
 
-        ok_offer_1 = create_offer_with_thing_product(venue, thing_ok1)
-        ok_offer_2 = create_offer_with_thing_product(venue, thing_ok2)
-        ko_offer = create_offer_with_thing_product(venue, thing_ko)
-        ko_event_offer = create_offer_with_event_product(venue, event_ko)
+        ok_offer_1 = create_offer_with_thing_product(venue=venue, product=thing_ok1)
+        ok_offer_2 = create_offer_with_thing_product(venue=venue, product=thing_ok2)
+        ko_offer = create_offer_with_thing_product(venue=venue, product=thing_ko)
+        ko_event_offer = create_offer_with_event_product(venue=venue, product=event_ko)
 
         ko_event_occurrence = create_event_occurrence(ko_event_offer)
 
@@ -243,9 +242,9 @@ class GetOffersForRecommendationsSearchTest:
         event_product = create_product_with_event_type(event_name='Rencontre avec jean-mimi chelou')
         offerer = create_offerer()
         venue = create_venue(offerer)
-        thing_ok_offer = create_offer_with_thing_product(venue, thing_ok)
-        thing_ko_offer = create_offer_with_thing_product(venue, thing_product)
-        event_ko_offer = create_offer_with_event_product(venue, event_product)
+        thing_ok_offer = create_offer_with_thing_product(venue=venue, product=thing_ok)
+        thing_ko_offer = create_offer_with_thing_product(venue=venue, product=thing_product)
+        event_ko_offer = create_offer_with_event_product(venue=venue, product=event_product)
         event_ko_occurrence = create_event_occurrence(event_ko_offer)
         event_ko_stock = create_stock_from_event_occurrence(event_ko_occurrence)
         thing_ok_stock = create_stock_from_offer(thing_ok_offer)
@@ -266,7 +265,7 @@ class GetOffersForRecommendationsSearchTest:
         thing_product_ok = create_product_with_thing_type(thing_name='Nez à nez')
         offerer = create_offerer()
         venue = create_venue(offerer)
-        thing_ok_offer = create_offer_with_thing_product(venue, thing_product_ok)
+        thing_ok_offer = create_offer_with_thing_product(venue=venue, product=thing_product_ok)
         thing_ok_stock = create_stock_from_offer(thing_ok_offer)
         repository.save(thing_ok_stock)
 
@@ -282,7 +281,7 @@ class GetOffersForRecommendationsSearchTest:
         thing_ok = create_product_with_thing_type(thing_name='Déjà')
         offerer = create_offerer()
         venue = create_venue(offerer)
-        thing_ok_offer = create_offer_with_thing_product(venue, thing_ok)
+        thing_ok_offer = create_offer_with_thing_product(venue=venue, product=thing_ok)
         thing_ok_stock = create_stock_from_offer(thing_ok_offer)
         repository.save(thing_ok_stock)
 
@@ -299,7 +298,7 @@ class GetOffersForRecommendationsSearchTest:
         type_label = ThingType.JEUX_VIDEO
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, thing_type=type_label)
+        offer = create_offer_with_thing_product(venue=venue, thing_type=type_label)
         outdated_stock = create_stock_from_offer(offer, booking_limit_datetime=three_hours_ago)
 
         repository.save(outdated_stock)
@@ -320,7 +319,7 @@ class GetOffersForRecommendationsSearchTest:
         type_label = EventType.MUSEES_PATRIMOINE
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue, event_type=type_label)
+        offer = create_offer_with_event_product(venue=venue, event_type=type_label)
         outdated_event_occurrence = create_event_occurrence(offer, beginning_datetime=three_hours_ago,
                                                             end_datetime=datetime.utcnow())
         stock = create_stock_from_event_occurrence(outdated_event_occurrence, booking_limit_date=None)
@@ -345,7 +344,7 @@ class GetOffersForRecommendationsSearchTest:
         type_label = EventType.MUSEES_PATRIMOINE
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue, event_type=type_label)
+        offer = create_offer_with_event_product(venue=venue, event_type=type_label)
         outdated_event_occurrence = create_event_occurrence(offer, beginning_datetime=three_hours_ago,
                                                             end_datetime=datetime.utcnow())
         future_event_occurrence = create_event_occurrence(offer, beginning_datetime=in_three_hours,
@@ -371,7 +370,7 @@ class GetOffersForRecommendationsSearchTest:
             thing = create_product_with_thing_type(thing_name='snif')
             offerer = create_offerer(siren=str(random.randrange(123456789, 923456789)))
             venue = create_venue(offerer, siret=str(random.randrange(123123456789, 999923456789)))
-            thing_offer = create_offer_with_thing_product(venue, thing)
+            thing_offer = create_offer_with_thing_product(venue=venue, product=thing)
             thing_stock = create_stock_from_offer(thing_offer)
 
             things_stock.append(thing_stock)
@@ -392,7 +391,7 @@ class GetOffersForRecommendationsSearchTest:
         thing = create_product_with_thing_type()
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, thing, is_active=False)
+        offer = create_offer_with_thing_product(venue=venue, product=thing, is_active=False)
         thing_stock = create_stock_from_offer(offer)
 
         repository.save(thing_stock)
@@ -409,7 +408,7 @@ class GetOffersForRecommendationsSearchTest:
         thing = create_product_with_thing_type()
         offerer = create_offerer(validation_token='not_validated')
         venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, thing)
+        offer = create_offer_with_thing_product(venue=venue, product=thing)
         thing_stock = create_stock_from_offer(offer)
 
         repository.save(thing_stock)
@@ -426,7 +425,7 @@ class GetOffersForRecommendationsSearchTest:
         thing = create_product_with_thing_type()
         offerer = create_offerer(is_active=False)
         venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, thing)
+        offer = create_offer_with_thing_product(venue=venue, product=thing)
         thing_stock = create_stock_from_offer(offer)
 
         repository.save(thing_stock)
@@ -443,7 +442,7 @@ class GetOffersForRecommendationsSearchTest:
         thing = create_product_with_thing_type()
         offerer = create_offerer()
         venue = create_venue(offerer, validation_token='not_validated')
-        offer = create_offer_with_thing_product(venue, thing)
+        offer = create_offer_with_thing_product(venue=venue, product=thing)
         thing_stock = create_stock_from_offer(offer)
 
         repository.save(thing_stock)
@@ -460,7 +459,7 @@ class GetOffersForRecommendationsSearchTest:
         thing = create_product_with_thing_type()
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer_with_soft_deleted_stock = create_offer_with_thing_product(venue, thing)
+        offer_with_soft_deleted_stock = create_offer_with_thing_product(venue=venue, product=thing)
         thing_stock = create_stock_from_offer(offer_with_soft_deleted_stock, soft_deleted=True)
 
         repository.save(thing_stock)
@@ -477,7 +476,7 @@ class GetOffersForRecommendationsSearchTest:
         thing = create_product_with_thing_type()
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer_with_passed_booking_limit_datetime = create_offer_with_thing_product(venue, thing)
+        offer_with_passed_booking_limit_datetime = create_offer_with_thing_product(venue=venue, product=thing)
         thing_stock = create_stock_from_offer(offer_with_passed_booking_limit_datetime,
                                               booking_limit_datetime=datetime(2010, 1, 6, 12, 30))
 
@@ -510,7 +509,7 @@ class GetOffersForRecommendationsSearchTest:
         thing = create_product_with_thing_type()
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer_with_not_available_stock = create_offer_with_thing_product(venue, thing)
+        offer_with_not_available_stock = create_offer_with_thing_product(venue=venue, product=thing)
         thing_stock = create_stock_from_offer(offer_with_not_available_stock, available=0)
 
         repository.save(thing_stock)
@@ -527,7 +526,7 @@ class GetOffersForRecommendationsSearchTest:
         thing = create_product_with_thing_type()
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer_with_no_stock = create_offer_with_thing_product(venue, thing)
+        offer_with_no_stock = create_offer_with_thing_product(venue=venue, product=thing)
 
         repository.save(offer_with_no_stock)
 
@@ -566,7 +565,7 @@ class FindActivationOffersTest:
         venue1 = create_venue(offerer, siret=offerer.siren + '12345', postal_code='34000', departement_code='34')
         venue2 = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
         offer1 = create_offer_with_event_product(venue1, event_type=EventType.ACTIVATION)
-        offer2 = create_offer_with_thing_product(venue1, thing_type=ThingType.AUDIOVISUEL)
+        offer2 = create_offer_with_thing_product(venue=venue1, thing_type=ThingType.AUDIOVISUEL)
         offer3 = create_offer_with_event_product(venue2, event_type=EventType.ACTIVATION, is_national=True)
         offer4 = create_offer_with_event_product(venue2, event_type=EventType.ACTIVATION, is_national=True)
         stock1 = create_stock_from_offer(offer1)
@@ -677,11 +676,11 @@ class FindOffersTest:
                               siret=offerer.siren + '54321')
         ko_venue3 = create_venue(ko_offerer3, name='Une librairie du méchant concurrent gripsou', city='Saint Denis',
                                  siret=ko_offerer3.siren + '54321')
-        ok_offer1 = create_offer_with_event_product(venue1, ok_product_event)
-        ok_offer2 = create_offer_with_thing_product(venue1, ok_product_thing)
-        ko_offer2 = create_offer_with_event_product(venue1, event_product2)
-        ko_offer3 = create_offer_with_thing_product(ko_venue3, thing1_product)
-        ko_offer4 = create_offer_with_thing_product(venue2, thing2_product)
+        ok_offer1 = create_offer_with_event_product(venue=venue1, product=ok_product_event)
+        ok_offer2 = create_offer_with_thing_product(venue=venue1, product=ok_product_thing)
+        ko_offer2 = create_offer_with_event_product(venue=venue1, product=event_product2)
+        ko_offer3 = create_offer_with_thing_product(venue=ko_venue3, product=thing1_product)
+        ko_offer4 = create_offer_with_thing_product(venue=venue2, product=thing2_product)
         repository.save(
             user_offerer1, user_offerer2, ko_offerer3,
             ok_offer1, ko_offer2, ko_offer3, ko_offer4
@@ -708,7 +707,7 @@ class FindOffersTest:
         product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
-        offer = create_offer_with_thing_product(venue, product)
+        offer = create_offer_with_thing_product(venue=venue, product=product)
         repository.save(offer)
 
         # When
@@ -727,7 +726,7 @@ class HasRemainingStockTest:
         user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, thing)
+        offer = create_offer_with_thing_product(venue=venue, product=thing)
         repository.save(offer)
 
         # When
@@ -745,7 +744,7 @@ class HasRemainingStockTest:
         user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, thing)
+        offer = create_offer_with_thing_product(venue=venue, product=thing)
         stock = create_stock_from_offer(offer, available=4, price=0)
         booking_1 = create_booking(user=user, stock=stock, quantity=2)
         booking_2 = create_booking(user=user, stock=stock, quantity=1)
@@ -767,7 +766,7 @@ class HasRemainingStockTest:
         user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, thing)
+        offer = create_offer_with_thing_product(venue=venue, product=thing)
         stock = create_stock_from_offer(offer, available=3, price=0)
         booking_1 = create_booking(user=user, stock=stock, quantity=2)
         booking_2 = create_booking(user=user, stock=stock, quantity=1)
@@ -789,7 +788,7 @@ class HasRemainingStockTest:
         user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, thing)
+        offer = create_offer_with_thing_product(venue=venue, product=thing)
         stock = create_stock_from_offer(offer, available=1, price=0)
         booking = create_booking(user=user, stock=stock, is_used=True, quantity=1)
         stock.dateModified = datetime.utcnow() + timedelta(days=1)
@@ -811,7 +810,7 @@ class HasRemainingStockTest:
         product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
-        offer = create_offer_with_thing_product(venue, product)
+        offer = create_offer_with_thing_product(venue=venue, product=product)
         stock = create_stock_from_offer(offer, available=2)
         booking = create_booking(user=user, stock=stock, is_cancelled=True, quantity=2, venue=venue)
         repository.save(booking)
@@ -831,7 +830,7 @@ class HasRemainingStockTest:
         product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
-        offer = create_offer_with_thing_product(venue, product)
+        offer = create_offer_with_thing_product(venue=venue, product=product)
         stock = create_stock_from_offer(offer, available=2, price=0)
         user = create_user()
         booking1 = create_booking(user=user, stock=stock, is_cancelled=True, quantity=2, venue=venue)
@@ -853,7 +852,7 @@ class HasRemainingStockTest:
         product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
-        offer = create_offer_with_thing_product(venue, product)
+        offer = create_offer_with_thing_product(venue=venue, product=product)
         stock1 = create_stock_from_offer(offer, available=2, price=0)
         stock2 = create_stock_from_offer(offer, available=2, price=0)
         user = create_user()
@@ -881,8 +880,8 @@ class BaseScoreTest:
         criterion_negative = create_criterion(name='negative', score_delta=-1)
         criterion_positive = create_criterion(name='positive', score_delta=1)
 
-        offer1 = create_offer_with_thing_product(venue)
-        offer2 = create_offer_with_thing_product(venue)
+        offer1 = create_offer_with_thing_product(venue=venue)
+        offer2 = create_offer_with_thing_product(venue=venue)
 
         offer1.criteria = [criterion_negative]
         offer2.criteria = [criterion_negative, criterion_positive]
@@ -907,9 +906,9 @@ class GetActiveOffersTest:
         venue_34 = create_venue(offerer, postal_code='34000', departement_code='34', siret=offerer.siren + '11111')
         venue_93 = create_venue(offerer, postal_code='93000', departement_code='93', siret=offerer.siren + '22222')
         venue_75 = create_venue(offerer, postal_code='75000', departement_code='75', siret=offerer.siren + '33333')
-        offer_34 = create_offer_with_thing_product(venue_34)
-        offer_93 = create_offer_with_thing_product(venue_93)
-        offer_75 = create_offer_with_thing_product(venue_75)
+        offer_34 = create_offer_with_thing_product(venue=venue_34)
+        offer_93 = create_offer_with_thing_product(venue=venue_93)
+        offer_75 = create_offer_with_thing_product(venue=venue_75)
         stock_34 = create_stock_from_offer(offer_34)
         stock_93 = create_stock_from_offer(offer_93)
         stock_75 = create_stock_from_offer(offer_75)
@@ -962,8 +961,8 @@ class GetActiveOffersTest:
         offerer = create_offerer(siren='123456789')
         user = create_user()
         venue_93 = create_venue(offerer, postal_code='93000', departement_code='93', siret=offerer.siren + '33333')
-        offer_93 = create_offer_with_thing_product(venue_93, thumb_count=1)
-        offer_activation_93 = create_offer_with_thing_product(venue_93, thing_type=ThingType.ACTIVATION,
+        offer_93 = create_offer_with_thing_product(venue=venue_93, thumb_count=1)
+        offer_activation_93 = create_offer_with_thing_product(venue=venue_93, thing_type=ThingType.ACTIVATION,
                                                               thumb_count=1)
         stock_93 = create_stock_from_offer(offer_93)
         stock_activation_93 = create_stock_from_offer(offer_activation_93)
@@ -989,7 +988,7 @@ class GetActiveOffersTest:
         offerer = create_offerer()
         user = create_user()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
-        offer = create_offer_with_thing_product(venue, product)
+        offer = create_offer_with_thing_product(venue=venue, product=product)
         stock = create_stock_from_offer(offer, available=2)
         create_mediation(stock.offer)
         repository.save(stock)
@@ -1105,7 +1104,7 @@ class GetActiveOffersTest:
         offerer = create_offerer()
         user = create_user()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
-        offer = create_offer_with_thing_product(venue, product)
+        offer = create_offer_with_thing_product(venue=venue, product=product)
         stock = create_stock_from_offer(offer, available=2, price=0)
         booking1 = create_booking(user=user, stock=stock, is_cancelled=True, quantity=2, venue=venue)
         booking2 = create_booking(user=user, stock=stock, quantity=2, venue=venue)
@@ -1155,11 +1154,11 @@ class GetActiveOffersTest:
         user = create_user()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
 
-        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.JEUX_VIDEO, thumb_count=1)
+        offer1 = create_offer_with_thing_product(venue=venue, thing_type=ThingType.JEUX_VIDEO, thumb_count=1)
         stock1 = create_stock_from_offer(offer1, price=0)
         offer1.criteria = [create_criterion(name='negative', score_delta=-1)]
 
-        offer2 = create_offer_with_thing_product(venue, thing_type=ThingType.JEUX_VIDEO, thumb_count=1)
+        offer2 = create_offer_with_thing_product(venue=venue, thing_type=ThingType.JEUX_VIDEO, thumb_count=1)
         stock2 = create_stock_from_offer(offer2, price=0)
         offer2.criteria = [create_criterion(name='positive', score_delta=1)]
 
@@ -1185,15 +1184,15 @@ class GetActiveOffersTest:
         user = create_user()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
 
-        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO, thumb_count=1)
+        offer1 = create_offer_with_thing_product(venue=venue, thing_type=ThingType.CINEMA_ABO, thumb_count=1)
         stock1 = create_stock_from_offer(offer1, price=0)
         offer1.criteria = [create_criterion(name='negative', score_delta=1)]
 
-        offer2 = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO, thumb_count=1)
+        offer2 = create_offer_with_thing_product(venue=venue, thing_type=ThingType.CINEMA_ABO, thumb_count=1)
         stock2 = create_stock_from_offer(offer2, price=0)
         offer2.criteria = [create_criterion(name='positive', score_delta=2)]
 
-        offer3 = create_offer_with_thing_product(venue, thing_type=ThingType.JEUX_VIDEO, thumb_count=1)
+        offer3 = create_offer_with_thing_product(venue=venue, thing_type=ThingType.JEUX_VIDEO, thumb_count=1)
         stock3 = create_stock_from_offer(offer3, price=0)
         offer3.criteria = []
 
@@ -1220,16 +1219,16 @@ class GetActiveOffersTest:
         user = create_user()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
 
-        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
+        offer1 = create_offer_with_thing_product(venue=venue, thing_type=ThingType.CINEMA_ABO)
         stock1 = create_stock_from_offer(offer1, price=0)
 
-        offer2 = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
+        offer2 = create_offer_with_thing_product(venue=venue, thing_type=ThingType.CINEMA_ABO)
         stock2 = create_stock_from_offer(offer2, price=0)
 
-        offer3 = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
+        offer3 = create_offer_with_thing_product(venue=venue, thing_type=ThingType.CINEMA_ABO)
         stock3 = create_stock_from_offer(offer3, price=0)
 
-        offer4 = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
+        offer4 = create_offer_with_thing_product(venue=venue, thing_type=ThingType.CINEMA_ABO)
         stock4 = create_stock_from_offer(offer4, price=0)
 
         create_mediation(stock1.offer)
@@ -1277,16 +1276,16 @@ class GetActiveOffersTest:
         user = create_user()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
 
-        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
+        offer1 = create_offer_with_thing_product(venue=venue, thing_type=ThingType.CINEMA_ABO)
         stock1 = create_stock_from_offer(offer1, price=0)
 
-        offer2 = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
+        offer2 = create_offer_with_thing_product(venue=venue, thing_type=ThingType.CINEMA_ABO)
         stock2 = create_stock_from_offer(offer2, price=0)
 
-        offer3 = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
+        offer3 = create_offer_with_thing_product(venue=venue, thing_type=ThingType.CINEMA_ABO)
         stock3 = create_stock_from_offer(offer3, price=0)
 
-        offer4 = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
+        offer4 = create_offer_with_thing_product(venue=venue, thing_type=ThingType.CINEMA_ABO)
         stock4 = create_stock_from_offer(offer4, price=0)
 
         create_mediation(stock1.offer)
@@ -1317,7 +1316,7 @@ class GetActiveOffersTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
-        offer = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
+        offer = create_offer_with_thing_product(venue=venue, thing_type=ThingType.CINEMA_ABO)
         stock = create_stock_from_offer(offer, price=0)
         user = create_user()
         booking = create_booking(user=user, stock=stock)
@@ -1341,7 +1340,7 @@ class GetActiveOffersTest:
         user = create_user()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
 
-        offer = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO)
+        offer = create_offer_with_thing_product(venue=venue, thing_type=ThingType.CINEMA_ABO)
         stock = create_stock_from_offer(offer, price=0)
         mediation = create_mediation(stock.offer)
         favorite = create_favorite(mediation=mediation, offer=offer, user=user)
@@ -1401,7 +1400,7 @@ class GetActiveOffersTest:
 
 def _create_event_stock_and_offer_for_date(venue, date):
     product = create_product_with_event_type()
-    offer = create_offer_with_event_product(venue, product)
+    offer = create_offer_with_event_product(venue=venue, product=product)
     event_occurrence = create_event_occurrence(offer, beginning_datetime=date, end_datetime=date + timedelta(hours=1))
     stock = create_stock_from_event_occurrence(event_occurrence, booking_limit_date=date)
     return stock

@@ -64,20 +64,20 @@ def create_event_occurrence(offer: Offer,
 
 
 def create_offer_with_event_product(venue: Venue = None,
-                                    product: Product = None,
-                                    event_name: str = 'Test event',
-                                    duration_minutes: int = 60,
+                                    booking_email: str = None,
                                     date_created: datetime = datetime.utcnow(),
-                                    booking_email: str = 'booking.email@example.com',
-                                    thumb_count: int = 0,
-                                    event_type: EventType = EventType.SPECTACLE_VIVANT,
-                                    is_national: bool = False,
-                                    is_active: bool = True,
-                                    idx: int = None,
-                                    last_provider_id: int = None,
-                                    id_at_providers: str = None,
                                     description: str = None,
-                                    is_duo: bool = False) -> Offer:
+                                    duration_minutes: int = 60,
+                                    event_name: str = 'Test event',
+                                    event_type: EventType = EventType.SPECTACLE_VIVANT,
+                                    is_active: bool = True,
+                                    id_at_providers: str = None,
+                                    idx: int = None,
+                                    is_duo: bool = False,
+                                    is_national: bool = False,
+                                    last_provider_id: int = None,
+                                    product: Product = None,
+                                    thumb_count: int = 0) -> Offer:
     offer = Offer()
     if product is None:
         product = create_product_with_event_type(event_name=event_name, event_type=event_type,
@@ -102,21 +102,21 @@ def create_offer_with_event_product(venue: Venue = None,
 
 
 def create_offer_with_thing_product(venue: Venue,
-                                    product: Product = None,
-                                    date_created: datetime = datetime.utcnow(),
-                                    booking_email: str = 'booking.email@example.com',
-                                    thing_type: ThingType = ThingType.AUDIOVISUEL,
-                                    thing_name: str = 'Test Book',
-                                    media_urls: List[str] = ['test/urls'],
                                     author_name: str = 'Test Author',
+                                    booking_email: str = None,
+                                    date_created: datetime = datetime.utcnow(),
                                     description: str = None,
-                                    thumb_count: int = 1,
-                                    url: str = None,
-                                    is_national: bool = False,
                                     is_active: bool = True,
                                     id_at_providers: str = None,
                                     idx: int = None,
-                                    last_provider_id: int = None) -> Offer:
+                                    is_national: bool = False,
+                                    last_provider_id: int = None,
+                                    media_urls: List[str] = ['test/urls'],
+                                    product: Product = None,
+                                    thing_name: str = 'Test Book',
+                                    thing_type: ThingType = ThingType.AUDIOVISUEL,
+                                    thumb_count: int = 0,
+                                    url: str = None) -> Offer:
     offer = Offer()
     if product:
         offer.product = product

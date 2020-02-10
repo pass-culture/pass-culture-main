@@ -28,7 +28,7 @@ class AddStockAlertMessageToOfferTest:
             user = create_user(email='user@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue)
+            offer = create_offer_with_thing_product(venue=venue)
 
             repository.save(user, offer)
 
@@ -45,7 +45,7 @@ class AddStockAlertMessageToOfferTest:
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue)
+            offer = create_offer_with_thing_product(venue=venue)
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_offer(offer, available=None)
             stock2 = create_stock_from_offer(offer, available=None)
@@ -68,7 +68,7 @@ class AddStockAlertMessageToOfferTest:
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue)
+            offer = create_offer_with_thing_product(venue=venue)
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_offer(offer, available=None)
             stock2 = create_stock_from_offer(offer, available=0)
@@ -91,7 +91,7 @@ class AddStockAlertMessageToOfferTest:
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue)
+            offer = create_offer_with_thing_product(venue=venue)
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_offer(offer, available=3)
             stock2 = create_stock_from_offer(offer, available=0)
@@ -114,7 +114,7 @@ class AddStockAlertMessageToOfferTest:
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue)
+            offer = create_offer_with_thing_product(venue=venue)
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_offer(offer, available=3)
             stock2 = create_stock_from_offer(offer, available=10)
@@ -139,7 +139,7 @@ class AddStockAlertMessageToOfferTest:
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue)
+            offer = create_offer_with_thing_product(venue=venue)
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_offer(offer, available=10)
             stock2 = create_stock_from_offer(offer, available=150)
@@ -164,7 +164,7 @@ class AddStockAlertMessageToOfferTest:
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue)
+            offer = create_offer_with_thing_product(venue=venue)
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_offer(offer, available=8)
             stock2 = create_stock_from_offer(offer, available=10)
@@ -187,7 +187,7 @@ class AddStockAlertMessageToOfferTest:
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue)
+            offer = create_offer_with_thing_product(venue=venue)
             recommendation = create_recommendation(offer, user)
 
             stock = create_stock_from_offer(offer, available=10)
@@ -469,7 +469,7 @@ class DateRangeTest:
         # given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
+        offer = create_offer_with_thing_product(venue=venue)
 
         # then
         assert offer.dateRange == DateTimes()
@@ -550,7 +550,7 @@ class CreateOfferTest:
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
         repository.save(virtual_venue)
 
-        offer = create_offer_with_thing_product(virtual_venue, digital_thing)
+        offer = create_offer_with_thing_product(venue=virtual_venue, product=digital_thing)
 
         # When
         repository.save(digital_thing, offer)
@@ -568,7 +568,7 @@ class CreateOfferTest:
             offerer, is_virtual=False, siret=offerer.siren + '12345')
         repository.save(physical_venue)
 
-        offer = create_offer_with_thing_product(physical_venue, physical_thing)
+        offer = create_offer_with_thing_product(venue=physical_venue, product=physical_thing)
 
         # When
         repository.save(physical_thing, offer)
@@ -584,7 +584,7 @@ class CreateOfferTest:
         offerer = create_offerer()
         physical_venue = create_venue(offerer)
         repository.save(physical_venue)
-        offer = create_offer_with_thing_product(physical_venue, digital_thing)
+        offer = create_offer_with_thing_product(venue=physical_venue, product=digital_thing)
 
         # When
         with pytest.raises(ApiErrors) as errors:
@@ -602,7 +602,7 @@ class CreateOfferTest:
         offerer = create_offerer()
         digital_venue = create_venue(offerer, is_virtual=True, siret=None)
         repository.save(digital_venue)
-        offer = create_offer_with_thing_product(digital_venue, physical_thing)
+        offer = create_offer_with_thing_product(venue=digital_venue, product=physical_thing)
 
         # When
         with pytest.raises(ApiErrors) as errors:
@@ -619,7 +619,7 @@ class CreateOfferTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         repository.save(venue)
-        offer = create_offer_with_event_product(venue, event_product)
+        offer = create_offer_with_event_product(venue=venue, product=event_product)
 
         # When
         repository.save(offer)
@@ -637,7 +637,7 @@ class CreateOfferTest:
         digital_venue = create_venue(offerer, is_virtual=True, siret=None)
 
         # When
-        offer = create_offer_with_thing_product(digital_venue, physical_thing)
+        offer = create_offer_with_thing_product(venue=digital_venue, product=physical_thing)
 
         # Then
         assert offer.isEvent == False
@@ -651,7 +651,7 @@ class CreateOfferTest:
         digital_venue = create_venue(offerer, is_virtual=False, siret=None)
 
         # When
-        offer = create_offer_with_thing_product(digital_venue, event_product)
+        offer = create_offer_with_thing_product(venue=digital_venue, product=event_product)
 
         # Then
         assert offer.isEvent == True
@@ -664,7 +664,7 @@ class CreateOfferTest:
         digital_venue = create_venue(offerer, is_virtual=False, siret=None)
 
         # When
-        offer = create_offer_with_thing_product(digital_venue, event_product)
+        offer = create_offer_with_thing_product(venue=digital_venue, product=event_product)
 
         # Then
         assert offer.isEvent == False
@@ -680,7 +680,7 @@ class CreateOfferTest:
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
         repository.save(virtual_venue)
 
-        offer = create_offer_with_thing_product(virtual_venue, digital_thing)
+        offer = create_offer_with_thing_product(venue=virtual_venue, product=digital_thing)
 
         # When
         repository.save(digital_thing, offer)
@@ -696,7 +696,7 @@ class CreateOfferTest:
         offerer = create_offerer()
         physical_venue = create_venue(offerer)
         repository.save(physical_venue)
-        offer = create_offer_with_thing_product(physical_venue, digital_thing)
+        offer = create_offer_with_thing_product(venue=physical_venue, product=digital_thing)
 
         # When
         with pytest.raises(ApiErrors) as errors:
@@ -721,7 +721,7 @@ def test_thing_offer_offerType_returns_dict_matching_ThingType_enum():
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_offer_with_thing_product(
-        venue, thing_type=ThingType.LIVRE_EDITION)
+        venue=venue, thing_type=ThingType.LIVRE_EDITION)
     expected_value = {
         'conditionalFields': ["author", "isbn"],
         'proLabel': 'Livres papier ou numérique, abonnements lecture',
@@ -779,7 +779,7 @@ def test_thing_offer_offerType_returns_None_if_type_does_not_match_ThingType_enu
     # given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_offer_with_thing_product(venue, thing_type='')
+    offer = create_offer_with_thing_product(venue=venue, thing_type='')
 
     # when
     offer_type = offer.offerType
@@ -806,7 +806,7 @@ class IsFullyBookedTest:
         # given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
+        offer = create_offer_with_thing_product(venue=venue)
         user = create_user()
         stock1 = create_stock(available=2, date_modified=datetime(2019, 1, 1))
         stock2 = create_stock(available=1, date_modified=datetime(2019, 1, 1))
@@ -822,7 +822,7 @@ class IsFullyBookedTest:
         # given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
+        offer = create_offer_with_thing_product(venue=venue)
         user = create_user()
         stock1 = create_stock(available=2)
         stock2 = create_stock(available=1)
@@ -866,7 +866,7 @@ class IsFullyBookedTest:
         # given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
+        offer = create_offer_with_thing_product(venue=venue)
         user = create_user()
         stock1 = create_stock(available=2, date_modified=datetime(2019, 1, 1))
         create_booking(user=user, date_used=datetime(2018, 1, 1), is_used=True, quantity=1, stock=stock1)
@@ -1019,7 +1019,7 @@ class IsEditableTest:
         provider.localClass = 'TiteLive is my class'
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
+        offer = create_offer_with_thing_product(venue=venue)
         offer.lastProviderId = 21
         offer.lastProvider = provider
 
@@ -1050,7 +1050,7 @@ class IsFromProviderTest:
         provider.localClass = 'TiteLive is my class'
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
+        offer = create_offer_with_thing_product(venue=venue)
         offer.lastProviderId = 21
         offer.lastProvider = provider
 

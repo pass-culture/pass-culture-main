@@ -248,7 +248,7 @@ class BuildRecipientsListTest:
         user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
+        offer = create_offer_with_thing_product(venue=venue, booking_email='booking.email@example.com')
         stock = create_stock_from_offer(offer)
         booking = create_booking(user=user, stock=stock)
 

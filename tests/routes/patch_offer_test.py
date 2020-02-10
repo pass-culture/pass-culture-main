@@ -72,7 +72,7 @@ class Patch:
             user_offerer = create_user_offerer(user, owning_offerer)
             venue = create_venue(owning_offerer)
             product = create_product_with_thing_type(thing_name='Old Name', owning_offerer=owning_offerer)
-            offer = create_offer_with_thing_product(venue, product)
+            offer = create_offer_with_thing_product(venue=venue, product=product)
             repository.save(offer, user_offerer)
             offer_id = offer.id
             product_id = product.id
@@ -100,7 +100,7 @@ class Patch:
             editor_user_offerer = create_user_offerer(user, editor_offerer)
             venue = create_venue(editor_offerer)
             product = create_product_with_thing_type(thing_name='Old Name', owning_offerer=owning_offerer)
-            offer = create_offer_with_thing_product(venue, product)
+            offer = create_offer_with_thing_product(venue=venue, product=product)
             repository.save(offer, editor_user_offerer, owning_offerer)
             offer_id = offer.id
             product_id = product.id
@@ -127,7 +127,7 @@ class Patch:
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             product = create_product_with_thing_type(thing_name='Old Name', owning_offerer=None)
-            offer = create_offer_with_thing_product(venue, product)
+            offer = create_offer_with_thing_product(venue=venue, product=product)
             repository.save(offer, user_offerer)
 
             json = {
@@ -235,7 +235,7 @@ class Patch:
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             thing_product = create_product_with_thing_type(thing_name='Old Name', owning_offerer=None)
-            offer = create_offer_with_thing_product(venue, thing_product)
+            offer = create_offer_with_thing_product(venue=venue, product=thing_product)
 
             repository.save(offer, user, user_offerer)
 
@@ -271,7 +271,7 @@ class Patch:
             offerer = create_offerer()
             event_product = create_product_with_event_type(event_name='Old name')
             venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event_product)
+            offer = create_offer_with_event_product(venue=venue, product=event_product)
 
             repository.save(event_product, offer, user, venue)
 

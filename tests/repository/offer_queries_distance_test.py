@@ -64,10 +64,10 @@ def test_get_offers_for_recommendations_search_with_distance_less_than_1km_retur
 
     concert_event = create_product_with_event_type('Concert de Gael Faye')
 
-    concert_offer75 = create_offer_with_event_product(venue75, concert_event)
-    concert_offer78 = create_offer_with_event_product(venue78, concert_event)
-    concert_offer77 = create_offer_with_event_product(venue77, concert_event)
-    concert_offer92 = create_offer_with_event_product(venue92, concert_event)
+    concert_offer75 = create_offer_with_event_product(venue=venue75, product=concert_event)
+    concert_offer78 = create_offer_with_event_product(venue=venue78, product=concert_event)
+    concert_offer77 = create_offer_with_event_product(venue=venue77, product=concert_event)
+    concert_offer92 = create_offer_with_event_product(venue=venue92, product=concert_event)
 
     concert_event_occurrence75 = create_event_occurrence(concert_offer75)
     concert_stock75 = create_stock_from_event_occurrence(concert_event_occurrence75)
@@ -209,16 +209,16 @@ def test_get_offers_for_recommendations_search_with_all_distances_should_returns
 
     concert_event = create_product_with_event_type('Concert de Gael Faye')
 
-    concert_offer13 = create_offer_with_event_product(venue13, concert_event)
-    concert_offer75 = create_offer_with_event_product(venue75, concert_event)
-    concert_offer77 = create_offer_with_event_product(venue77, concert_event)
-    concert_offer78 = create_offer_with_event_product(venue78, concert_event)
-    concert_offer91 = create_offer_with_event_product(venue91, concert_event)
-    concert_offer92 = create_offer_with_event_product(venue92, concert_event)
-    concert_offer93 = create_offer_with_event_product(venue93, concert_event)
-    concert_offer94 = create_offer_with_event_product(venue94, concert_event)
-    concert_offer95 = create_offer_with_event_product(venue95, concert_event)
-    concert_offer973 = create_offer_with_event_product(venue973, concert_event)
+    concert_offer13 = create_offer_with_event_product(venue=venue13, product=concert_event)
+    concert_offer75 = create_offer_with_event_product(venue=venue75, product=concert_event)
+    concert_offer77 = create_offer_with_event_product(venue=venue77, product=concert_event)
+    concert_offer78 = create_offer_with_event_product(venue=venue78, product=concert_event)
+    concert_offer91 = create_offer_with_event_product(venue=venue91, product=concert_event)
+    concert_offer92 = create_offer_with_event_product(venue=venue92, product=concert_event)
+    concert_offer93 = create_offer_with_event_product(venue=venue93, product=concert_event)
+    concert_offer94 = create_offer_with_event_product(venue=venue94, product=concert_event)
+    concert_offer95 = create_offer_with_event_product(venue=venue95, product=concert_event)
+    concert_offer973 = create_offer_with_event_product(venue=venue973, product=concert_event)
 
     concert_event_occurrence13 = create_event_occurrence(concert_offer13)
     concert_stock13 = create_stock_from_event_occurrence(concert_event_occurrence13)
@@ -349,14 +349,14 @@ def test_get_offers_for_recommendations_search_with_distance_less_than_20kms_ret
 
     concert_event = create_product_with_event_type('Concert de Gael Faye')
 
-    concert_offer75 = create_offer_with_event_product(venue75, concert_event)
-    concert_offer77 = create_offer_with_event_product(venue77, concert_event)
-    concert_offer78 = create_offer_with_event_product(venue78, concert_event)
-    concert_offer91 = create_offer_with_event_product(venue91, concert_event)
-    concert_offer92 = create_offer_with_event_product(venue92, concert_event)
-    concert_offer93 = create_offer_with_event_product(venue93, concert_event)
-    concert_offer94 = create_offer_with_event_product(venue94, concert_event)
-    concert_offer95 = create_offer_with_event_product(venue95, concert_event)
+    concert_offer75 = create_offer_with_event_product(venue=venue75, product=concert_event)
+    concert_offer77 = create_offer_with_event_product(venue=venue77, product=concert_event)
+    concert_offer78 = create_offer_with_event_product(venue=venue78, product=concert_event)
+    concert_offer91 = create_offer_with_event_product(venue=venue91, product=concert_event)
+    concert_offer92 = create_offer_with_event_product(venue=venue92, product=concert_event)
+    concert_offer93 = create_offer_with_event_product(venue=venue93, product=concert_event)
+    concert_offer94 = create_offer_with_event_product(venue=venue94, product=concert_event)
+    concert_offer95 = create_offer_with_event_product(venue=venue95, product=concert_event)
 
     concert_event_occurrence75 = create_event_occurrence(concert_offer75)
     concert_stock75 = create_stock_from_event_occurrence(concert_event_occurrence75)
@@ -456,10 +456,10 @@ def test_get_offers_for_recommendations_search_with_distance_less_than_50kms_ret
 
     concert_event = create_product_with_event_type('Concert de Gael Faye')
 
-    concert_offer45 = create_offer_with_event_product(venue45, concert_event)
-    concert_offer75 = create_offer_with_event_product(venue75, concert_event)
-    concert_offer78 = create_offer_with_event_product(venue78, concert_event)
-    concert_offer91 = create_offer_with_event_product(venue91, concert_event)
+    concert_offer45 = create_offer_with_event_product(venue=venue45, product=concert_event)
+    concert_offer75 = create_offer_with_event_product(venue=venue75, product=concert_event)
+    concert_offer78 = create_offer_with_event_product(venue=venue78, product=concert_event)
+    concert_offer91 = create_offer_with_event_product(venue=venue91, product=concert_event)
 
     concert_event_occurrence45 = create_event_occurrence(concert_offer45)
     concert_stock45 = create_stock_from_event_occurrence(concert_event_occurrence45)
@@ -530,9 +530,9 @@ def test_get_offers_for_recommendations_search_with_distance_returns_offers_in_v
 
     concert_event = create_product_with_event_type('Concert de Gael Faye')
 
-    concert_offer13 = create_offer_with_event_product(venue13, concert_event)
-    concert_offer45 = create_offer_with_event_product(venue45, concert_event)
-    concert_offer973 = create_offer_with_event_product(venue973, concert_event)
+    concert_offer13 = create_offer_with_event_product(venue=venue13, product=concert_event)
+    concert_offer45 = create_offer_with_event_product(venue=venue45, product=concert_event)
+    concert_offer973 = create_offer_with_event_product(venue=venue973, product=concert_event)
 
     concert_event_occurrence13 = create_event_occurrence(concert_offer13)
     concert_stock13 = create_stock_from_event_occurrence(concert_event_occurrence13)
@@ -611,10 +611,10 @@ def test_get_offers_for_recommendations_search_with_specific_distance_and_keywor
     concert_event = create_product_with_event_type('Concert de Gael Faye')
     concert_event2 = create_product_with_event_type('Kiwi')
 
-    concert_offer45 = create_offer_with_event_product(venue45, concert_event)
-    kiwi_concert_offer75 = create_offer_with_event_product(venue75, concert_event2)
-    concert_offer78 = create_offer_with_event_product(venue78, concert_event)
-    concert_offer91 = create_offer_with_event_product(venue91, concert_event)
+    concert_offer45 = create_offer_with_event_product(venue=venue45, product=concert_event)
+    kiwi_concert_offer75 = create_offer_with_event_product(venue=venue75, product=concert_event2)
+    concert_offer78 = create_offer_with_event_product(venue=venue78, product=concert_event)
+    concert_offer91 = create_offer_with_event_product(venue=venue91, product=concert_event)
 
     concert_event_occurrence45 = create_event_occurrence(concert_offer45)
     concert_stock45 = create_stock_from_event_occurrence(concert_event_occurrence45)
@@ -698,10 +698,10 @@ def test_get_offers_for_recommendations_search_with_all_distance_and_keywords(ap
     concert_event = create_product_with_event_type('Concert de Gael Faye')
     concert_event2 = create_product_with_event_type('Kiwi')
 
-    concert_offer45 = create_offer_with_event_product(venue45, concert_event)
-    kiwi_concert_offer75 = create_offer_with_event_product(venue75, concert_event2)
-    concert_offer78 = create_offer_with_event_product(venue78, concert_event)
-    concert_offer91 = create_offer_with_event_product(venue91, concert_event)
+    concert_offer45 = create_offer_with_event_product(venue=venue45, product=concert_event)
+    kiwi_concert_offer75 = create_offer_with_event_product(venue=venue75, product=concert_event2)
+    concert_offer78 = create_offer_with_event_product(venue=venue78, product=concert_event)
+    concert_offer91 = create_offer_with_event_product(venue=venue91, product=concert_event)
 
     concert_event_occurrence45 = create_event_occurrence(concert_offer45)
     concert_stock45 = create_stock_from_event_occurrence(concert_event_occurrence45)

@@ -92,10 +92,10 @@ def test_filter_query_where_user_is_user_offerer_and_is_validated(app):
     venue2 = create_venue(offerer2, name='Librairie la Rencontre', city='Saint Denis', siret=offerer2.siren + '54321')
     venue3 = create_venue(offerer3, name='Une librairie du méchant concurrent gripsou', city='Saint Denis',
                           siret=offerer3.siren + '54321')
-    offer1 = create_offer_with_event_product(venue1, event1)
-    offer2 = create_offer_with_event_product(venue1, event2)
-    offer3 = create_offer_with_thing_product(venue2, thing1)
-    offer4 = create_offer_with_thing_product(venue3, thing2)
+    offer1 = create_offer_with_event_product(venue=venue1, product=event1)
+    offer2 = create_offer_with_event_product(venue=venue1, product=event2)
+    offer3 = create_offer_with_thing_product(venue=venue2, product=thing1)
+    offer4 = create_offer_with_thing_product(venue=venue3, product=thing2)
 
     repository.save(
         user_offerer1, user_offerer2, offerer3,
