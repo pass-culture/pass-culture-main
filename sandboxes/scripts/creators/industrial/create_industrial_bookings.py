@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from models.offer_type import EventType
 from repository import repository
 from sandboxes.scripts.utils.select import remove_every
@@ -8,10 +10,8 @@ RECOMMENDATIONS_WITH_BOOKINGS_REMOVE_RATIO = 3
 RECOMMENDATIONS_WITH_SEVERAL_STOCKS_REMOVE_MODULO = 2
 BOOKINGS_USED_REMOVE_MODULO = 3
 
-def create_industrial_bookings(
-    recommendations_by_name,
-    stocks_by_name
-):
+
+def create_industrial_bookings(recommendations_by_name):
     logger.info('create_industrial_bookings')
 
     bookings_by_name = {}
@@ -57,19 +57,19 @@ def create_industrial_bookings(
         for (index, stock) in enumerate(offer.stocks):
 
             # every STOCK_MODULO RECO will have several stocks
-            if index > 0 and recommendation_index%(RECOMMENDATIONS_WITH_SEVERAL_STOCKS_REMOVE_MODULO + index):
+            if index > 0 and recommendation_index % (RECOMMENDATIONS_WITH_SEVERAL_STOCKS_REMOVE_MODULO + index):
                 continue
 
             booking_name = "{} / {}".format(recommendation_name, str(token))
 
             is_used = False
             if is_activation_offer:
-                is_used = True if "has-confirmed-activation" in user.email or \
-                                  "has-booked-some" in user.email or \
-                                  "has-no-more-money" in user.email else False
+                is_used = "has-confirmed-activation" in user.email or \
+                          "has-booked-some" in user.email or \
+                          "has-no-more-money" in user.email
             else:
                 # (BOOKINGS_USED_REMOVE_MODULO-1)/BOOKINGS_USED_REMOVE_MODULO are used
-                is_used = recommendation_index%BOOKINGS_USED_REMOVE_MODULO != 0
+                is_used = recommendation_index % BOOKINGS_USED_REMOVE_MODULO != 0
 
             if user_should_have_no_more_money and user not in list_of_users_with_no_more_money:
                 booking_amount = 500
@@ -79,25 +79,19 @@ def create_industrial_bookings(
             else:
                 booking_amount = None
 
-            booking = create_booking(user=user, amount=booking_amount, is_used=is_used, recommendation=recommendation,
-                                     stock=stock, token=str(token), venue=recommendation.offer.venue)
+            bookings_by_name[booking_name] = create_booking(user=user,
+                                                            amount=booking_amount,
+                                                            is_used=is_used,
+                                                            recommendation=recommendation,
+                                                            stock=stock,
+                                                            token=str(token),
+                                                            venue=recommendation.offer.venue)
 
             token += 1
 
-            bookings_by_name[booking_name] = booking
+            # if bookings_by_name[booking_name].isUsed:
+            #     bookings_by_name[booking_name].dateUsed = datetime.now()
 
-    bookings = bookings_by_name.values()
-
-    repository.save(*bookings)
-
-    used_bookings = [b for b in bookings if b.isUsed]
-    for used_booking in used_bookings:
-        used_booking.isUsed = False
-    repository.save(*used_bookings)
-    for used_booking in used_bookings:
-        used_booking.isUsed = True
-    repository.save(*used_bookings)
+    repository.save(*bookings_by_name.values())
 
     logger.info('created {} bookings'.format(len(bookings_by_name)))
-
-    return bookings_by_name

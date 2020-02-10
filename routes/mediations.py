@@ -2,7 +2,7 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
 from connectors import redis
-from connectors.thumb_storage import read_thumb, save_thumb
+from connectors.thumb_storage import read_thumb, create_thumb
 from domain.mediations import create_new_mediation
 from models.mediation import Mediation
 from models.user_offerer import RightsType
@@ -26,7 +26,8 @@ def create_mediation():
     thumb = read_thumb(files=request.files, form=request.form)
     check_thumb_quality(thumb)
     repository.save(mediation)
-    save_thumb(mediation, thumb, 0, crop=_get_crop(request.form))
+    mediation = create_thumb(mediation, thumb, 0, crop=_get_crop(request.form))
+    repository.save(mediation)
     redis.add_offer_id(client=app.redis_client, offer_id=offer_id)
     return jsonify(as_dict(mediation)), 201
 

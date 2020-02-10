@@ -4,7 +4,6 @@ import requests
 
 from domain.mediations import DO_NOT_CROP, standardize_image
 from models import ApiErrors
-from repository import repository
 from utils.logger import logger
 from utils.object_storage import store_public_object
 
@@ -27,12 +26,12 @@ def read_thumb(files=None, form=None):
     if 'thumbUrl' in form:
         try:
             return _fetch_image(form['thumbUrl'])
-        except ValueError as e:
-            logger.error(e)
+        except ValueError as value_error:
+            logger.error(value_error)
             raise ApiErrors({'thumbUrl': ["L'adresse saisie n'est pas valide"]})
 
 
-def save_thumb(
+def create_thumb(
         model_with_thumb,
         thumb,
         image_index,
@@ -60,7 +59,7 @@ def save_thumb(
     model_with_thumb.thumbCount = model_with_thumb.thumbCount + 1
 
     if need_save:
-        repository.save(model_with_thumb)
+        return model_with_thumb
 
 
 def save_provider_thumb(thumb_storage_id,
@@ -82,15 +81,15 @@ def _fetch_image(thumb_url: str) -> bytes:
 
     try:
         response = requests.get(thumb_url)
-    except Exception as e:
-        logger.error(e)
+    except Exception as error:
+        logger.error(error)
         raise ApiErrors({'thumbUrl': ["Impossible de télécharger l'image à cette adresse"]})
     content_type = response.headers['Content-type']
     is_an_image = content_type.split('/')[0] == 'image'
 
     if response.status_code == 200 and is_an_image:
         return response.content
-    else:
-        raise ValueError(
-            'Error downloading thumb from url %s (status_code : %s)'
-            % (thumb_url, str(response.status_code)))
+
+    raise ValueError(
+        'Error downloading thumb from url %s (status_code : %s)'
+        % (thumb_url, str(response.status_code)))

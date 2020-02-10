@@ -5,8 +5,9 @@ from flask import current_app as app, jsonify, request, send_file
 from flask_login import login_required
 
 import models
-from connectors.thumb_storage import save_thumb
+from connectors.thumb_storage import create_thumb
 from models import RightsType
+from repository import repository
 from routes.serialization import as_dict
 from utils.human_ids import dehumanize
 from utils.inflect_engine import inflect_engine
@@ -47,5 +48,6 @@ def post_storage_file(collectionName, id, index):
         offerer_id = entity.offer.venue.managingOffererId
         ensure_current_user_has_rights(RightsType.editor, offerer_id)
 
-    save_thumb(entity, request.files['file'].read(), int(index))
+    entity = create_thumb(entity, request.files['file'].read(), int(index))
+    repository.save(entity)
     return jsonify(as_dict(entity)), 200

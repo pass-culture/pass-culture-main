@@ -10,10 +10,11 @@ from utils.logger import logger
 ACTIVE_OFFERS_WITH_RECOMMENDATION_PER_USER_REMOVE_MODULO = 2
 
 
-def create_industrial_recommendations(mediations_by_name, offers_by_name, users_by_name):
+def create_industrial_recommendations(offers_by_name, users_by_name):
     logger.info('create_industrial_recommendations')
 
     recommendations_by_name = {}
+    recommendations_with_asset = {}
 
     first_mediation = Mediation.query.filter_by(tutoIndex=0).one()
     second_mediation = Mediation.query.filter_by(tutoIndex=1).one()
@@ -98,11 +99,13 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
         if recommendation.offer:
             offer = recommendation.offer
             if not offer.mediations:
-                store_public_object_from_sandbox_assets(
+                recommendations_with_asset[recommendation.id] = store_public_object_from_sandbox_assets(
                     "thumbs",
                     offer.product,
                     offer.type
                 )
+
+    repository.save(*recommendations_with_asset.values())
 
     logger.info('created {} recommendations'.format(
         len(recommendations_by_name)))

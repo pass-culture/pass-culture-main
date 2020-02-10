@@ -1,12 +1,8 @@
 import os
-from pathlib import Path
 
-from connectors.thumb_storage import save_thumb
+from connectors.thumb_storage import create_thumb
 from models import Mediation
 from repository import repository
-
-TUTOS_PATH = Path(os.path.dirname(os.path.realpath(__file__))) / '..' \
-             / 'static' / 'tuto_mediations'
 
 
 def upsert_tuto_mediations():
@@ -15,30 +11,30 @@ def upsert_tuto_mediations():
 
 
 def _upsert_tuto_mediation(index, has_back=False):
-    existing_mediation = Mediation.query.filter_by(tutoIndex=index) \
-        .first()
+    tutos_path = f'{os.path.dirname(os.path.realpath(__file__))}/../static/tuto_mediations'
+    existing_mediation = Mediation.query.filter_by(tutoIndex=index).first()
+
     if existing_mediation:
         return
+
     mediation = Mediation()
     mediation.tutoIndex = index
     repository.save(mediation)
+    image_name_path = f'{tutos_path}/{str(index)}'
 
-    with open(TUTOS_PATH / (str(index) + '.png'), "rb") as f:
-        save_thumb(
-            mediation,
-            f.read(),
-            0,
-            convert=False,
-            image_type='png'
-        )
+    with open(f'{image_name_path}.png', 'rb') as file:
+        mediation = create_thumb(mediation,
+                                 file.read(),
+                                 0,
+                                 convert=False,
+                                 image_type='png')
 
     if has_back:
-        with open(TUTOS_PATH / (str(index) + '_verso.png'), "rb") as f:
-            save_thumb(
-                mediation, f.read(),
-                1,
-                convert=False,
-                image_type='png'
-            )
+        with open(f'{image_name_path}_verso.png', 'rb') as file:
+            mediation = create_thumb(mediation,
+                                     file.read(),
+                                     1,
+                                     convert=False,
+                                     image_type='png')
 
     repository.save(mediation)

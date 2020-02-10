@@ -28,8 +28,7 @@ from sandboxes.scripts.creators.industrial.create_industrial_webapp_users import
 def save_industrial_sandbox():
     (
         offerers_by_name,
-        pro_users_by_name,
-        user_offerers_by_name
+        pro_users_by_name
     ) = create_industrial_offerers_with_pro_users()
 
     admin_users_by_name = create_industrial_admin_users()
@@ -64,20 +63,14 @@ def save_industrial_sandbox():
 
     event_occurrences_by_name = create_industrial_event_occurrences(event_offers_by_name)
 
-    event_stocks_by_name = create_industrial_event_stocks(event_occurrences_by_name)
+    create_industrial_event_stocks(event_occurrences_by_name)
 
-    thing_stocks_by_name = create_industrial_thing_stocks(thing_offers_by_name)
+    create_industrial_thing_stocks(thing_offers_by_name)
 
-    stocks_by_name = dict(
-        event_stocks_by_name,
-        **thing_stocks_by_name
-    )
-
-    mediations_by_name = create_industrial_mediations(offers_by_name)
+    create_industrial_mediations(offers_by_name)
 
     DiscoveryView.refresh()
     recommendations_by_name = create_industrial_recommendations(
-        mediations_by_name,
         offers_by_name,
         users_by_name
     )
@@ -86,7 +79,7 @@ def save_industrial_sandbox():
 
     associate_criterion_to_one_offer_with_mediation(offers_by_name, criteria_by_name)
 
-    create_industrial_bookings(recommendations_by_name, stocks_by_name)
+    create_industrial_bookings(recommendations_by_name)
 
     create_industrial_payments()
 
@@ -95,7 +88,3 @@ def save_industrial_sandbox():
     create_industrial_activation_offers()
 
     create_industrial_algolia_indexed_objects()
-
-
-
-

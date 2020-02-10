@@ -32,9 +32,9 @@ def create_industrial_event_stocks(event_occurrences_by_name):
             event_occurrence_with_stocks_name
         )
         price = get_price_by_short_name(short_name)
-        fcount = short_names_to_increase_price.count(short_name)
-        if (fcount > 2):
-            price = price + fcount
+        price_counter = short_names_to_increase_price.count(short_name)
+        if price_counter > 2:
+            price = price + price_counter
         short_names_to_increase_price.append(short_name)
 
         if event_occurrence_with_stocks['offer'].product.offerType['value'] == str(EventType.ACTIVATION):
@@ -51,5 +51,3 @@ def create_industrial_event_stocks(event_occurrences_by_name):
     repository.save(*event_stocks_by_name.values())
 
     logger.info('created {} event_stocks'.format(len(event_stocks_by_name)))
-
-    return event_stocks_by_name

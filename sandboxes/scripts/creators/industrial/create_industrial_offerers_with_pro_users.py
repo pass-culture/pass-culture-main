@@ -9,8 +9,6 @@ from sandboxes.scripts.mocks.user_mocks import MOCK_DOMAINS, \
 from sandboxes.scripts.utils.helpers import get_email
 from sandboxes.scripts.utils.locations import create_locations_from_places, \
     OFFERER_PLACES
-
-OFFERER_PLACES
 from sandboxes.scripts.utils.select import pick_every
 from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer, \
     create_bank_information
@@ -106,8 +104,8 @@ def create_industrial_offerers_with_pro_users():
 
         # create every OFFERERS_WITH_IBAN_REMOVE_MODULO an offerer with no iban
         if location_index % OFFERERS_WITH_IBAN_REMOVE_MODULO:
-            bank_information = create_bank_information(bic=bic_prefix + str(bic_suffix), iban=iban_prefix,
-                                                       id_at_providers=offerer.siren, offerer=offerer)
+            create_bank_information(bic=bic_prefix + str(bic_suffix), iban=iban_prefix,
+                                    id_at_providers=offerer.siren, offerer=offerer)
 
         offerers_by_name[offerer_name] = offerer
 
@@ -207,7 +205,7 @@ def create_industrial_offerers_with_pro_users():
             if user_offerer_name in user_offerers_by_name:
                 continue
 
-            if offerer.validationToken == None \
+            if offerer.validationToken is None \
                     and user_offerer_index % VALIDATED_USER_OFFERER_REMOVE_MODULO == 0:
                 user_offerer_validation_token = None
             else:
@@ -233,4 +231,4 @@ def create_industrial_offerers_with_pro_users():
         len(offerers_by_name)
     ))
 
-    return (offerers_by_name, users_by_name, user_offerers_by_name)
+    return (offerers_by_name, users_by_name)

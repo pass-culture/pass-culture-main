@@ -6,9 +6,11 @@ from utils.logger import logger
 
 OFFERS_WITH_MEDIATION_REMOVE_MODULO = 5
 
+
 def create_industrial_mediations(offers_by_name):
     logger.info('create_industrial_mediations')
 
+    mediations_with_asset = {}
     mediations_by_name = {}
 
     offer_items = list(offers_by_name.items())
@@ -18,13 +20,13 @@ def create_industrial_mediations(offers_by_name):
 
     repository.save(*mediations_by_name.values())
 
-    logger.info('created {} mediations'.format(len(mediations_by_name)))
-
     for mediation in mediations_by_name.values():
-        store_public_object_from_sandbox_assets(
+        mediations_with_asset[mediation.id] = store_public_object_from_sandbox_assets(
             "thumbs",
             mediation,
             mediation.offer.type
         )
 
-    return mediations_by_name
+    repository.save(*mediations_with_asset.values())
+
+    logger.info('created {} mediations'.format(len(mediations_by_name)))

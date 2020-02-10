@@ -22,10 +22,12 @@ API_KEYS_VALUES = [
 
 def create_industrial_pro_users_api_keys(offerers_by_name):
     logger.info('create_industrial_pro_users_api_keys')
+    api_key = {}
     counter = 0
+
     for offerer in offerers_by_name.items():
-        api_key = create_api_key(offerer_id=offerer[1].id, value=API_KEYS_VALUES[counter])
-        repository.save(api_key)
+        api_key[counter] = create_api_key(offerer_id=offerer[1].id, value=API_KEYS_VALUES[counter])
         counter += 1
 
+    repository.save(*api_key.values())
     logger.info('created {} offerers with api key'.format(len(offerers_by_name)))
