@@ -59,8 +59,8 @@ class UpdateVenuesForSpecificProviderTest:
         mock_sleep.assert_called_once_with(expected_wait_time)
         assert mock_get_nb_containers_at_work.call_count == 3
         assert mock_do_sync_venue_provider.call_count == 2
-        assert mock_do_sync_venue_provider.call_args_list == [call(venue_provider_titelive2),
-                                                              call(venue_provider_titelive1)]
+        assert call(venue_provider_titelive1) in mock_do_sync_venue_provider.call_args_list
+        assert call(venue_provider_titelive2) in mock_do_sync_venue_provider.call_args_list
 
 
 class DoSyncVenueProviderTest:
