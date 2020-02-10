@@ -1,11 +1,16 @@
 import PropTypes from 'prop-types'
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import { Form } from 'react-final-form'
 
 import BookingFormContentContainer from './BookingFormContent/BookingFormContentContainer'
 import eventDecorators from './decorators/eventDecorators'
 
-class BookingForm extends PureComponent {
+class BookingForm extends Component {
+  shouldComponentUpdate(nextProps) {
+    const { offerId } = this.props
+    return offerId !== nextProps.offerId
+  }
+
   renderBookingFormContent = formParams => {
     const { className, formId, isEvent, isReadOnly, offerId, onSetCanSubmitForm } = this.props
     const { handleSubmit, invalid, values } = formParams

@@ -13,8 +13,6 @@ import { priceIsDefined } from '../../../utils/getDisplayPrice'
 import getIsBooking from '../../../utils/getIsBooking'
 import handleRedirect from './utils/handleRedirect'
 
-const BOOKING_FORM_ID = 'form-create-booking'
-
 class Booking extends PureComponent {
   constructor(props) {
     super(props)
@@ -114,7 +112,7 @@ class Booking extends PureComponent {
           <button
             className="has-text-centered my5"
             id="booking-validation-button"
-            onClick={externalSubmitForm(BOOKING_FORM_ID)}
+            onClick={externalSubmitForm('form-create-booking')}
             type="submit"
           >
             <b>
@@ -201,7 +199,7 @@ class Booking extends PureComponent {
                     <BookingForm
                       canSubmitForm={canSubmitForm}
                       className="flex-1 flex-rows flex-center items-center"
-                      formId={BOOKING_FORM_ID}
+                      formId='form-create-booking'
                       initialValues={formInitialValues}
                       isEvent={isEvent}
                       isReadOnly={isReadOnly}
