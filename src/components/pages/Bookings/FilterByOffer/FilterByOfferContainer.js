@@ -12,10 +12,16 @@ import { offerNormalizer } from '../../../../utils/normalizers'
 const PAGINATION_LIMIT = 1000
 
 export const mapDispatchToProps = dispatch => ({
-  loadOffers: () => {
+  loadOffers: venueId => {
+    let getOffersApiPath = ''
+    if (venueId !== undefined && venueId !== '') {
+      getOffersApiPath = `/offers?venueId=${venueId}&paginate=${PAGINATION_LIMIT}`
+    } else {
+      getOffersApiPath = `/offers?paginate=${PAGINATION_LIMIT}`
+    }
     dispatch(
       requestData({
-        apiPath: `/offers?paginate=${PAGINATION_LIMIT}`,
+        apiPath: getOffersApiPath,
         method: 'GET',
         stateKey: 'offers',
         normalizer: offerNormalizer,

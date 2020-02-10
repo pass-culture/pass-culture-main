@@ -307,8 +307,8 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
       dispatch = jest.fn()
     })
 
-    describe('loadOffers', () => {
-      it('should load all offers with pagination at 1000 using API', () => {
+    describe('loadOffers from API', () => {
+      it('should get all 1000 offers for offerer', () => {
         // given
         const functions = mapDispatchToProps(dispatch)
         const { loadOffers } = functions
@@ -320,6 +320,39 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
         expect(dispatch).toHaveBeenCalledWith({
           config: {
             apiPath: '/offers?paginate=1000',
+            method: 'GET',
+            normalizer: {
+              mediations: 'mediations',
+              product: {
+                normalizer: { offers: 'offers' },
+                stateKey: 'products',
+              },
+              stocks: 'stocks',
+              venue: {
+                normalizer: {
+                  managingOfferer: 'offerers',
+                },
+                stateKey: 'venues',
+              },
+            },
+            stateKey: 'offers',
+          },
+          type: 'REQUEST_DATA_GET_OFFERS',
+        })
+      })
+      it('should get all 1000 offers for specific venue', () => {
+        // given
+        const functions = mapDispatchToProps(dispatch)
+        const { loadOffers } = functions
+        const venueId = 'AE'
+
+        //when
+        loadOffers(venueId)
+
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          config: {
+            apiPath: '/offers?venueId=AE&paginate=1000',
             method: 'GET',
             normalizer: {
               mediations: 'mediations',

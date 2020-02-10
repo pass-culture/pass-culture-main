@@ -5,8 +5,16 @@ import FilterByDateContainer from '../FilterByDate/FilterByDateContainer'
 
 class FilterByOffer extends PureComponent {
   componentDidMount() {
-    const { loadOffers } = this.props
-    loadOffers()
+    const { loadOffers, venueId } = this.props
+    loadOffers(venueId)
+  }
+
+  componentDidUpdate(prevProps) {
+    const { loadOffers, venueId } = this.props
+
+    if (prevProps.venueId !== venueId) {
+      loadOffers(venueId)
+    }
   }
 
   render() {
@@ -61,6 +69,7 @@ class FilterByOffer extends PureComponent {
 
 FilterByOffer.defaultProps = {
   offerId: '',
+  venueId: '',
 }
 
 FilterByOffer.propTypes = {
@@ -70,6 +79,7 @@ FilterByOffer.propTypes = {
   offersOptions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   showDateSection: PropTypes.bool.isRequired,
   updateOfferId: PropTypes.func.isRequired,
+  venueId: PropTypes.string,
 }
 
 export default FilterByOffer
