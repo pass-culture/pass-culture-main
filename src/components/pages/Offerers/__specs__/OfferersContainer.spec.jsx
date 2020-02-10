@@ -112,9 +112,7 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
         const handleSuccess = jest.fn()
 
         // when
-        mapDispatchToProps(dispatch).loadOfferers(handleSuccess, handleFail, {
-          keywords: 'keywords=nice%20words',
-        })
+        mapDispatchToProps(dispatch).loadOfferers(handleSuccess, handleFail, 'nice words')
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
@@ -182,9 +180,9 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
   describe('createApiPath', () => {
     it('should create api url with no params', () => {
       // given
-      const loadOffererParameters = {}
+      const loadOffererKeyWords = null
       // when
-      const result = createApiPath(loadOffererParameters)
+      const result = createApiPath(loadOffererKeyWords)
 
       // then
       expect(result).toStrictEqual('/offerers')
@@ -192,9 +190,7 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
 
     it('should create api url with keywords params only', () => {
       // given
-      const loadOffererParameters = {
-        keywords: 'keywords=example',
-      }
+      const loadOffererParameters = 'example'
 
       // when
       const result = createApiPath(loadOffererParameters)

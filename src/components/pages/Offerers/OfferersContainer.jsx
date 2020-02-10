@@ -2,6 +2,7 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { assignData, requestData } from 'redux-saga-data'
 import { closeNotification, showNotification } from 'pass-culture-shared'
+import { stringify } from 'query-string'
 
 import Offerers from './Offerers'
 import { withRequiredLogin } from '../../hocs'
@@ -10,13 +11,17 @@ import { selectOfferers } from '../../../selectors/data/offerersSelectors'
 
 import { OFFERERS_API_PATH } from '../../../config/apiPaths'
 
-export const createApiPath = loadOffererParameters => {
+export const createApiPath = searchKeyWords => {
   let apiPath = OFFERERS_API_PATH
-  const { keywords } = loadOffererParameters
-  const isKeywordValidParam = keywords !== undefined && keywords !== ''
+  if (Array.isArray(searchKeyWords)) {
+    searchKeyWords = searchKeyWords.join(' ')
+  }
+  const isKeywordValidParam =
+    searchKeyWords !== undefined && searchKeyWords !== null && searchKeyWords !== ''
 
   if (isKeywordValidParam) {
-    apiPath += `?${keywords}`
+    const urlSearchKeyWords = stringify({ keywords: searchKeyWords })
+    apiPath += `?${urlSearchKeyWords}`
   }
 
   return apiPath
@@ -32,8 +37,8 @@ export const mapStateToProps = state => {
 export const mapDispatchToProps = dispatch => ({
   closeNotification: () => dispatch(closeNotification()),
 
-  loadOfferers: (handleSuccess, handleFail, loadOffererParameters = {}) => {
-    const apiPath = createApiPath(loadOffererParameters)
+  loadOfferers: (handleSuccess, handleFail, searchKeyWords) => {
+    const apiPath = createApiPath(searchKeyWords)
 
     dispatch(
       requestData({

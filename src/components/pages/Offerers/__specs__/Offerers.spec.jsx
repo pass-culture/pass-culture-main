@@ -57,29 +57,34 @@ describe('src | components | pages | Offerers | Offerers', () => {
     })
 
     describe('when loading the offerer list', () => {
-      it('should transmit keywords', () => {
-        // given
-        jest.spyOn(props.query, 'parse').mockReturnValue({
-          de: 'Balzac',
-          lieu: 'B3',
-          'mots-cles': ['Honoré', 'Justice'],
+      describe('when there is multiple keywords in the url', () => {
+        it('should transmit keywords', () => {
+          // given
+          jest.spyOn(props.query, 'parse').mockReturnValue({
+            de: 'Balzac',
+            lieu: 'B3',
+            'mots-cles': ['Honoré', 'Justice'],
+          })
+
+          // when
+          shallow(<Offerers {...props} />)
+
+          // then
+          expect(props.loadOfferers).toHaveBeenCalledWith(expect.anything(), expect.anything(), [
+            'Honoré',
+            'Justice',
+          ])
         })
-
-        // when
-        shallow(<Offerers {...props} />)
-
-        // then
-        expect(props.loadOfferers).toHaveBeenCalledWith(
-          expect.anything(),
-          expect.anything(),
-          'from=Balzac&keywords=Honor%C3%A9&keywords=Justice&venueId=B3'
-        )
       })
 
-      describe('when the current user is pro user but not admin', () => {
-        it('should load all the offerers without validated filter', () => {
+      describe('when there is one keyword in the url', () => {
+        it('should transmit keywords', () => {
           // given
-          props.currentUser = { isAdmin: false }
+          jest.spyOn(props.query, 'parse').mockReturnValue({
+            de: 'Balzac',
+            lieu: 'B3',
+            'mots-cles': 'Club Dorothy',
+          })
 
           // when
           shallow(<Offerers {...props} />)
@@ -88,7 +93,26 @@ describe('src | components | pages | Offerers | Offerers', () => {
           expect(props.loadOfferers).toHaveBeenCalledWith(
             expect.anything(),
             expect.anything(),
-            'keywords'
+            'Club Dorothy'
+          )
+        })
+      })
+
+      describe('when there is no keywords', () => {
+        it('should load all the offerers ', () => {
+          // given
+          jest.spyOn(props.query, 'parse').mockReturnValue({
+            'mots-cles': undefined,
+          })
+
+          // when
+          shallow(<Offerers {...props} />)
+
+          // then
+          expect(props.loadOfferers).toHaveBeenCalledWith(
+            expect.anything(),
+            expect.anything(),
+            null
           )
         })
       })

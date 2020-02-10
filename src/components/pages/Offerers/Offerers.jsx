@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types'
-import { stringify } from 'query-string'
 import React, { PureComponent, Fragment } from 'react'
 import { Form } from 'react-final-form'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
@@ -12,7 +11,7 @@ import Icon from '../../layout/Icon'
 import Main from '../../layout/Main'
 import Spinner from '../../layout/Spinner'
 import TextField from '../../layout/form/fields/TextField'
-import { mapApiToBrowser, translateQueryParamsToApiParams } from '../../../utils/translate'
+import { mapApiToBrowser } from '../../../utils/translate'
 import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
 import userHasNoOffersInAPhysicalVenueYet from './utils/userHasNoOffersInAPhysicalVenueYet'
 import { selectOfferers } from '../../../selectors/data/offerersSelectors'
@@ -62,8 +61,7 @@ class Offerers extends PureComponent {
     const { loadOfferers, query } = this.props
 
     const queryParams = query.parse()
-    const apiParams = translateQueryParamsToApiParams(queryParams)
-    const apiParamsString = stringify(apiParams)
+    const searchKeyWords = queryParams['mots-cles'] || null
 
     const handleSuccess = (state, action) => {
       const { payload } = action
@@ -87,7 +85,7 @@ class Offerers extends PureComponent {
 
     this.setState(
       { isLoading: true, hasMore: true },
-      loadOfferers(handleSuccess, handleFail, apiParamsString)
+      loadOfferers(handleSuccess, handleFail, searchKeyWords)
     )
   }
 
