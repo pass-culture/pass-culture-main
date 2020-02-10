@@ -70,9 +70,9 @@ def create_offer_with_event_product(venue: Venue = None,
                                     duration_minutes: int = 60,
                                     event_name: str = 'Test event',
                                     event_type: EventType = EventType.SPECTACLE_VIVANT,
-                                    is_active: bool = True,
                                     id_at_providers: str = None,
                                     idx: int = None,
+                                    is_active: bool = True,
                                     is_duo: bool = False,
                                     is_national: bool = False,
                                     last_provider_id: int = None,
@@ -106,9 +106,10 @@ def create_offer_with_thing_product(venue: Venue,
                                     booking_email: str = None,
                                     date_created: datetime = datetime.utcnow(),
                                     description: str = None,
-                                    is_active: bool = True,
                                     id_at_providers: str = None,
                                     idx: int = None,
+                                    is_active: bool = True,
+                                    is_digital: bool = False,
                                     is_national: bool = False,
                                     last_provider_id: int = None,
                                     media_urls: List[str] = ['test/urls'],
@@ -129,6 +130,9 @@ def create_offer_with_thing_product(venue: Venue,
         offer.isNational = product.isNational
         offer.description = product.description
     else:
+        if is_digital:
+            url = 'fake/url'
+
         offer.product = create_product_with_thing_type(thing_name=thing_name, thing_type=thing_type,
                                                        media_urls=media_urls,
                                                        author_name=author_name, url=url, thumb_count=thumb_count,

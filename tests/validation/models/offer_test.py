@@ -10,7 +10,7 @@ def test_should_return_error_message_when_offer_is_digital_and_his_venue_is_not_
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer, is_virtual=False)
-    thing_offer = create_offer_with_thing_product(venue, url='fake/url')
+    thing_offer = create_offer_with_thing_product(venue, is_digital=True)
     api_errors = ApiErrors()
 
     # When
@@ -24,7 +24,7 @@ def test_should_return_error_message_when_offer_is_digital_and_type_can_only_be_
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer, is_virtual=True)
-    thing_offer = create_offer_with_thing_product(venue, url='fake/url', thing_type=ThingType.CINEMA_ABO)
+    thing_offer = create_offer_with_thing_product(venue, is_digital=True, thing_type=ThingType.CINEMA_ABO)
     api_errors = ApiErrors()
 
     # When
