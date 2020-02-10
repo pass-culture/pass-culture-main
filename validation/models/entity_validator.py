@@ -3,7 +3,7 @@ from models.db import Model
 from validation.models.bank_information import validate_bank_information
 from validation.models.generic import validate_generic
 from validation.models.has_address_mixin import validate_has_address_mixin
-from validation.models.offer import validate_offer
+from validation.models import offer
 from validation.models.offerer import validate_offerer
 from validation.models.product import validate_product
 from validation.models.stock import validate_stock
@@ -23,7 +23,7 @@ def validate(model: Model) -> ApiErrors:
     if isinstance(model, BankInformation):
         api_errors = validate_bank_information(model, api_errors)
     elif isinstance(model, Offer):
-        api_errors = validate_offer(model, api_errors)
+        api_errors = offer.validate(model, api_errors)
     elif isinstance(model, Offerer):
         api_errors = validate_offerer(model, api_errors)
     elif isinstance(model, Product):
