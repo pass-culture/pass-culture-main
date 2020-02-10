@@ -2,7 +2,7 @@
 
 kill_tunnel_if_exist() {
   local app_name=$1
-  local db_tunnel_pid ="$(ps -ef | awk '/'"${app_name}"'\ db-tunnel/{print $2}' | head -n 1)"
+  local db_tunnel_pid="$(ps -ef | awk '/'"${app_name}"'\ db-tunnel/{print $2}' | head -n 1)"
 
   if [ -z "$db_tunnel_pid" ]
   then
