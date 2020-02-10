@@ -62,6 +62,7 @@ def test_all_helpers_are_returning_actual_sandbox_data(mock_request, app):
 
 
 class AlgoliaIndexingTest:
+    @patch.dict('os.environ', {'ALGOLIA_TRIGGER_INDEXATION': '0'})
     @patch('sandboxes.scripts.creators.industrial.create_industrial_algolia_objects.clean_algolia_index')
     @patch('sandboxes.scripts.creators.industrial.create_industrial_algolia_objects.delete_all_indexed_offers')
     @patch('sandboxes.scripts.creators.industrial.create_industrial_algolia_objects.process_eligible_offers')
@@ -86,6 +87,7 @@ class AlgoliaIndexingTest:
         mock_clean_algolia_index.assert_not_called()
         mock_process_eligible_offers.assert_not_called()
 
+    @patch.dict('os.environ', {'ALGOLIA_TRIGGER_INDEXATION': '1'})
     @patch('sandboxes.scripts.creators.industrial.create_industrial_algolia_objects.delete_all_indexed_offers')
     @patch('sandboxes.scripts.creators.industrial.create_industrial_algolia_objects.clean_algolia_index')
     @patch('sandboxes.scripts.creators.industrial.create_industrial_algolia_objects.process_eligible_offers')
@@ -103,8 +105,7 @@ class AlgoliaIndexingTest:
         mock_request.return_value = response_return_value
 
         # When
-        with mock.patch.dict('os.environ', {'ALGOLIA_TRIGGER_INDEXATION': 'True'}):
-            save_sandbox('industrial')
+        save_sandbox('industrial')
 
         # Then
         mock_delete_all_indexed_offers.assert_called()

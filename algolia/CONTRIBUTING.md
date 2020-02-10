@@ -23,6 +23,7 @@ Fonction qui indexe ou supprime un objet.
 
 ## Tester
 
+Il faut ajouter `ALGOLIA_TRIGGER_INDEXATION='1'` si vous voulez indexer votre local.
 Faire ce que vous voulez sur l'application. Cela va remplir Redis.
 On peut vérifier que Redis est remplie en conséquence :
 
