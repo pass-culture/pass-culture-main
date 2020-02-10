@@ -149,9 +149,6 @@ function update_deploy_branches {
   git checkout staging
   git reset --hard origin/staging || exit_error_restoring_branch
   git submodule update || exit_error_restoring_branch
-  git checkout demo
-  git reset --hard origin/demo || exit_error_restoring_branch
-  git submodule update || exit_error_restoring_branch
   git checkout integration
   git reset --hard origin/integration || exit_error_restoring_branch
   git submodule update || exit_error_restoring_branch
@@ -429,10 +426,9 @@ elif [[ "$CMD" == "deploy" ]]; then
 
   if [[ ! "$ENV" == 'production' ]] \
   && [[ ! "$ENV" == 'staging' ]] \
-  && [[ ! "$ENV" == 'demo' ]] \
   && [[ ! "$ENV" == 'datalake' ]] \
   && [[ ! "$ENV" == 'integration' ]]; then
-     echo_error "Can only deploy in datalake, staging, demo, integration and production"
+     echo_error "Can only deploy in datalake, staging, integration and production"
      exit 1
   fi
 
@@ -470,7 +466,7 @@ elif [[ "$CMD" == "deploy" ]]; then
   open_build_status_page "$ENV" "$commit_to_deploy"
 
   if [[ "$ENV" == 'production' ]]; then
-    echo -e "$WARNING_COLOR""/!\\ You just deployed to production. Was the version also delivered to integration and demo ?""${NO_COLOR}"
+    echo -e "$WARNING_COLOR""/!\\ You just deployed to production. Was the version also delivered to integration ?""${NO_COLOR}"
   fi
 
   exit_success_restoring_branch
@@ -484,9 +480,8 @@ elif [[ "$CMD" == "deploy-backend" ]] \
 
   if [[ ! "$ENV" == 'production' ]] \
   && [[ ! "$ENV" == 'staging' ]] \
-  && [[ ! "$ENV" == 'demo' ]] \
   && [[ ! "$ENV" == 'integration' ]]; then
-    echo_error "Can only deploy-backend in staging, demo, integration and production"
+    echo_error "Can only deploy-backend in staging, integration and production"
     exit 1
   fi
 
