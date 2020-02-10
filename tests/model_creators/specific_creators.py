@@ -1,7 +1,7 @@
 import random
 import string
 from datetime import datetime, timedelta
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from models import Booking, EventType, Offer, Offerer, Product, Stock, ThingType, User, Venue
 from utils.token import random_token
@@ -64,10 +64,10 @@ def create_event_occurrence(offer: Offer,
 
 
 def create_offer_with_event_product(venue: Venue = None,
-                                    booking_email: str = None,
+                                    booking_email: Optional[str] = None,
                                     date_created: datetime = datetime.utcnow(),
-                                    description: str = None,
-                                    duration_minutes: int = 60,
+                                    description: Optional[str] = None,
+                                    duration_minutes: Optional[int] = 60,
                                     event_name: str = 'Test event',
                                     event_type: EventType = EventType.SPECTACLE_VIVANT,
                                     id_at_providers: str = None,
@@ -103,22 +103,22 @@ def create_offer_with_event_product(venue: Venue = None,
 
 def create_offer_with_thing_product(venue: Venue,
                                     author_name: str = 'Test Author',
-                                    booking_email: str = None,
+                                    booking_email: Optional[str] = None,
                                     date_created: datetime = datetime.utcnow(),
-                                    description: str = None,
+                                    description: Optional[str] = None,
                                     id_at_providers: str = None,
                                     idx: int = None,
                                     is_active: bool = True,
                                     is_digital: bool = False,
                                     is_national: bool = False,
-                                    is_offline_thing: bool = False,
+                                    is_offline_only: bool = False,
                                     last_provider_id: int = None,
                                     media_urls: List[str] = ['test/urls'],
                                     product: Product = None,
                                     thing_name: str = 'Test Book',
                                     thing_type: ThingType = ThingType.AUDIOVISUEL,
                                     thumb_count: int = 0,
-                                    url: str = None) -> Offer:
+                                    url: Optional[str] = None) -> Offer:
     offer = Offer()
     if product:
         offer.product = product
@@ -133,7 +133,7 @@ def create_offer_with_thing_product(venue: Venue,
     else:
         if is_digital:
             url = 'fake/url'
-        if is_offline_thing:
+        if is_offline_only:
             thing_type = ThingType.CINEMA_ABO
 
         offer.product = create_product_with_thing_type(thing_name=thing_name, thing_type=thing_type,

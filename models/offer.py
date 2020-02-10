@@ -222,10 +222,16 @@ class Offer(PcObject,
         return any(map(lambda s: s.available is None, self.stocks))
 
     @property
-    def is_offline_thing(self) -> bool:
-        offline_thing = filter(lambda thing_type: thing_type.__str__() == self.type and thing_type.value['offlineOnly'], ThingType)
+    def is_offline_only(self) -> bool:
+        offline_thing = [thing_type for thing_type in ThingType if self._is_same_type(thing_type) and self._is_offline_type_only(thing_type)]
 
         return len(list(offline_thing)) == 1
+
+    def _is_same_type(self, thing_type):
+        return str(thing_type) == self.type
+
+    def _is_offline_type_only(self, thing_type):
+        return thing_type.value['offlineOnly']
 
     def get_label_from_type_string(self):
         matching_type_thing = next(filter(lambda thing_type: str(thing_type) == self.type, ThingType))
