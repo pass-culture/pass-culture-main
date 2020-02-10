@@ -6,6 +6,7 @@ import FilterByDate from './FilterByDate'
 import { selectStocksByOfferId } from '../../../../selectors/data/stocksSelectors'
 import { selectOfferById } from '../../../../selectors/data/offersSelectors'
 import { selectVenueById } from '../../../../selectors/data/venuesSelectors'
+import { getTimezoneFromDepartementCode } from '../../Offer/StocksManager/StockItem/utils/utils'
 
 export const mapDispatchToProps = dispatch => ({
   updateBookingsFrom: date => {
@@ -21,16 +22,6 @@ export const mapDispatchToProps = dispatch => ({
     })
   },
 })
-
-const getTimezoneFromDepartementCode = departementCode => {
-  switch (departementCode) {
-    case '97':
-    case '973':
-      return 'America/Cayenne'
-    default:
-      return 'Europe/Paris'
-  }
-}
 
 export const mapStateToProps = state => {
   const { bookingSummary = {} } = state

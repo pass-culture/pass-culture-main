@@ -7,10 +7,46 @@ import {
   getDatetimeOneHourAfter,
   getDatetimeAtSpecificHoursAndMinutes,
   getRemainingStocksCount,
+  getTimezoneFromDepartementCode,
   formatPrice,
 } from '../utils'
 
 describe('src | components | pages | Offer | StockItem | utils', () => {
+  describe('getTimezoneFromDepartementCode', () => {
+    it('should return Paris timezone for Paris', () => {
+      // given
+      const departementCode = '75'
+
+      // when
+      const timezone = getTimezoneFromDepartementCode(departementCode)
+
+      // then
+      expect(timezone).toBe('Europe/Paris')
+    })
+
+    it('should return Cayenne timezone for 973', () => {
+      // given
+      const departementCode = '973'
+
+      // when
+      const timezone = getTimezoneFromDepartementCode(departementCode)
+
+      // then
+      expect(timezone).toBe('America/Cayenne')
+    })
+
+    it('should return Cayenne timezone for 97', () => {
+      // given
+      const departementCode = '97'
+
+      // when
+      const timezone = getTimezoneFromDepartementCode(departementCode)
+
+      // then
+      expect(timezone).toBe('America/Cayenne')
+    })
+  })
+
   describe('getRemainingStocksCount', () => {
     it('should return `Illimité` when available stock is unlimited', () => {
       // given

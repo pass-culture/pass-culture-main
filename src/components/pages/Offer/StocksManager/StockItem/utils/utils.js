@@ -1,5 +1,15 @@
 import moment from 'moment'
 
+export const getTimezoneFromDepartementCode = departementCode => {
+  switch (departementCode) {
+    case '97':
+    case '973':
+      return 'America/Cayenne'
+    default:
+      return 'Europe/Paris'
+  }
+}
+
 export const getRemainingStocksCount = (available, remainingQuantity) => {
   const isUnlimitedWithoutTypingValue = available === null
   const isUnlimitedAfterRemovingValue = available === ''

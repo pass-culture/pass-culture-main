@@ -11,16 +11,7 @@ import { selectOffererById } from '../../../../../selectors/data/offerersSelecto
 import { selectOfferById } from '../../../../../selectors/data/offersSelectors'
 import { requestData } from 'redux-saga-data'
 import Offer from '../../ValueObjects/Offer'
-
-const getTimezoneFromDepartementCode = departementCode => {
-  switch (departementCode) {
-    case '97':
-    case '973':
-      return 'America/Cayenne'
-    default:
-      return 'Europe/Paris'
-  }
-}
+import { getTimezoneFromDepartementCode } from './utils/utils'
 
 export const selectTimezoneByVenueIdAndOffererId = createCachedSelector(
   selectVenueById,
