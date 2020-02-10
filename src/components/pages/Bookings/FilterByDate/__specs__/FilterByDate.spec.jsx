@@ -15,6 +15,7 @@ describe('src | components | pages | FilterByDate | FilterByDate', () => {
         { beginningDatetime: '2019-07-28T21:59:00Z' },
         { beginningDatetime: '2019-08-16T21:59:00Z' },
       ],
+      timezone: 'Europe/Paris',
     }
   })
 
@@ -129,6 +130,10 @@ describe('src | components | pages | FilterByDate | FilterByDate', () => {
       it('should render a select input for date with 3 options', () => {
         // given
         props.showEventDateSection = true
+        props.stocks = [
+          { beginningDatetime: '2019-02-28T21:59:00Z' },
+          { beginningDatetime: '2019-08-16T21:59:00Z' },
+        ]
 
         // when
         const wrapper = shallow(<FilterByDate {...props} />)
@@ -144,10 +149,31 @@ describe('src | components | pages | FilterByDate | FilterByDate', () => {
         expect(options.at(0).prop('disabled')).toBe(true)
         expect(options.at(0).prop('label')).toBe(' - Choisissez une date - ')
         expect(options.at(0).prop('selected')).toBe(true)
-        expect(options.at(1).key()).toBe('2019-07-28T21:59:00Z')
-        expect(options.at(1).prop('value')).toBe('2019-07-28T21:59:00Z')
+        expect(options.at(1).key()).toBe('2019-02-28T21:59:00Z')
+        expect(options.at(1).prop('value')).toBe('2019-02-28T21:59:00Z')
+        expect(options.at(1).text()).toBe('jeudi 28 février 2019, 22:59')
         expect(options.at(2).key()).toBe('2019-08-16T21:59:00Z')
         expect(options.at(2).prop('value')).toBe('2019-08-16T21:59:00Z')
+        expect(options.at(2).text()).toBe('vendredi 16 août 2019, 23:59')
+      })
+
+      it('should render a select input for date with correct timezone', () => {
+        // given
+        props.showEventDateSection = true
+        props.stocks = [
+          { beginningDatetime: '2019-02-28T21:59:00Z' },
+          { beginningDatetime: '2019-08-16T18:59:00Z' },
+        ]
+        props.timezone = 'America/Cayenne'
+
+        // when
+        const wrapper = shallow(<FilterByDate {...props} />)
+
+        // then
+        const selectDate = wrapper.find('#event-date')
+        const options = selectDate.find('option')
+        expect(options.at(1).text()).toBe('jeudi 28 février 2019, 18:59')
+        expect(options.at(2).text()).toBe('vendredi 16 août 2019, 15:59')
       })
     })
   })

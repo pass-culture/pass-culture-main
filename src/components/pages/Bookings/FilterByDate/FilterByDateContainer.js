@@ -5,6 +5,7 @@ import { withFrenchQueryRouter } from '../../../hocs'
 import FilterByDate from './FilterByDate'
 import { selectStocksByOfferId } from '../../../../selectors/data/stocksSelectors'
 import { selectOfferById } from '../../../../selectors/data/offersSelectors'
+import { selectVenueById } from '../../../../selectors/data/venuesSelectors'
 
 export const mapDispatchToProps = dispatch => ({
   updateBookingsFrom: date => {
@@ -21,13 +22,24 @@ export const mapDispatchToProps = dispatch => ({
   },
 })
 
+const getTimezoneFromDepartementCode = departementCode => {
+  switch (departementCode) {
+    case '97':
+    case '973':
+      return 'America/Cayenne'
+    default:
+      return 'Europe/Paris'
+  }
+}
+
 export const mapStateToProps = state => {
   const { bookingSummary = {} } = state
-  const { offerId } = bookingSummary
+  const { offerId, venueId } = bookingSummary
 
   let stocks = []
   let showEventDateSection = false
   let showThingDateSection = false
+  let timezone = 'Europe/Paris'
 
   if (offerId && offerId !== 'all') {
     const offer = selectOfferById(state, offerId)
@@ -37,6 +49,10 @@ export const mapStateToProps = state => {
     }
 
     if (offer.isEvent) {
+      const venue = selectVenueById(state, venueId)
+      if (!venue.isVirtual) {
+        timezone = getTimezoneFromDepartementCode(venue.departementCode)
+      }
       stocks = selectStocksByOfferId(state, offerId)
       showEventDateSection = true
     }
@@ -46,6 +62,7 @@ export const mapStateToProps = state => {
     showEventDateSection,
     showThingDateSection,
     stocks,
+    timezone,
   }
 }
 

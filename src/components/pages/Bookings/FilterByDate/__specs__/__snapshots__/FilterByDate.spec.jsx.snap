@@ -16,6 +16,7 @@ ShallowWrapper {
         },
       ]
     }
+    timezone="Europe/Paris"
     updateBookingsFrom={[MockFunction]}
     updateBookingsTo={[MockFunction]}
   />,

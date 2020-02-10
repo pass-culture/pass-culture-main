@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
-import moment from 'moment'
+import moment from 'moment-timezone'
 
 import MONTH_OPTIONS from '../utils/months'
 import YEAR_OPTIONS from '../utils/years'
@@ -60,7 +60,7 @@ class FilterByDate extends PureComponent {
   }
 
   render() {
-    const { showEventDateSection, showThingDateSection, stocks } = this.props
+    const { showEventDateSection, showThingDateSection, stocks, timezone } = this.props
 
     if (showThingDateSection) {
       return (
@@ -148,7 +148,7 @@ class FilterByDate extends PureComponent {
                 value={beginningDatetime}
               >
                 {moment(beginningDatetime)
-                  .utc()
+                  .tz(timezone)
                   .format(FRENCH_DATE_FORMAT)}
               </option>
             ))}
@@ -167,6 +167,7 @@ FilterByDate.propTypes = {
   showEventDateSection: PropTypes.bool.isRequired,
   showThingDateSection: PropTypes.bool.isRequired,
   stocks: PropTypes.arrayOf(PropTypes.shape()),
+  timezone: PropTypes.string.isRequired,
   updateBookingsFrom: PropTypes.func.isRequired,
   updateBookingsTo: PropTypes.func.isRequired,
 }

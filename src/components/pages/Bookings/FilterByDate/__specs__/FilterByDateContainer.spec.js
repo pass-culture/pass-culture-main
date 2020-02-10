@@ -12,6 +12,7 @@ describe('src | components | pages | Bookings | FilterByDateContainer', () => {
         data: {
           offers: [],
           stocks: [],
+          venues: [],
         },
       }
 
@@ -23,6 +24,7 @@ describe('src | components | pages | Bookings | FilterByDateContainer', () => {
         showEventDateSection: false,
         showThingDateSection: false,
         stocks: [],
+        timezone: 'Europe/Paris',
       })
     })
 
@@ -54,7 +56,7 @@ describe('src | components | pages | Bookings | FilterByDateContainer', () => {
           bookingSummary: {
             isFilteredByDigitalVenues: true,
             offerId: 'DA',
-            venueId: '',
+            venueId: 'BA',
           },
           data: {
             offers: [
@@ -70,6 +72,12 @@ describe('src | components | pages | Bookings | FilterByDateContainer', () => {
               },
             ],
             stocks: [],
+            venues: [
+              {
+                id: 'BA',
+                departementCode: '92',
+              },
+            ],
           },
         }
 
@@ -114,6 +122,7 @@ describe('src | components | pages | Bookings | FilterByDateContainer', () => {
           data: {
             offers: [],
             stocks: [],
+            venues: [],
           },
         }
 
@@ -130,7 +139,7 @@ describe('src | components | pages | Bookings | FilterByDateContainer', () => {
           bookingSummary: {
             isFilteredByDigitalVenues: true,
             offerId: 'DA',
-            venueId: '',
+            venueId: 'BA',
           },
           data: {
             offers: [
@@ -146,6 +155,12 @@ describe('src | components | pages | Bookings | FilterByDateContainer', () => {
               },
             ],
             stocks: [],
+            venues: [
+              {
+                id: 'BA',
+                departementCode: '75',
+              },
+            ],
           },
         }
 
@@ -185,9 +200,15 @@ describe('src | components | pages | Bookings | FilterByDateContainer', () => {
           bookingSummary: {
             isFilteredByDigitalVenues: true,
             offerId: 'DA',
-            venueId: '',
+            venueId: 'BA',
           },
           data: {
+            venues: [
+              {
+                id: 'BA',
+                departementCode: '75',
+              },
+            ],
             offers: [
               {
                 id: 'DA',
@@ -216,6 +237,56 @@ describe('src | components | pages | Bookings | FilterByDateContainer', () => {
             offerId: 'DA',
           },
         ])
+      })
+
+      it('should return an array of stocks and venue timezone when offer is event', () => {
+        // given
+        const state = {
+          bookingSummary: {
+            isFilteredByDigitalVenues: true,
+            offerId: 'DA',
+            venueId: 'BA',
+          },
+          data: {
+            venues: [
+              {
+                id: 'BA',
+                departementCode: '97',
+              },
+            ],
+            offers: [
+              {
+                id: 'DA',
+                isThing: false,
+                isEvent: true,
+              },
+            ],
+            stocks: [
+              {
+                beginningDatetime: '2019-08-08T21:59:00Z',
+                id: 'ZY',
+                offerId: 'DA',
+              },
+            ],
+          },
+        }
+
+        // when
+        const props = mapStateToProps(state)
+
+        // then
+        expect(props).toStrictEqual({
+          showEventDateSection: true,
+          showThingDateSection: false,
+          stocks: [
+            {
+              beginningDatetime: '2019-08-08T21:59:00Z',
+              id: 'ZY',
+              offerId: 'DA',
+            },
+          ],
+          timezone: 'America/Cayenne',
+        })
       })
 
       it('should return an empty array when offer is thing', () => {
