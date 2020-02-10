@@ -20,7 +20,7 @@ def test_should_return_error_message_when_offer_is_digital_and_his_venue_is_not_
     assert api_error.errors['venue'] == ['Une offre numérique doit obligatoirement être associée au lieu "Offre numérique"']
 
 
-def test_should_return_error_message_when_offer_is_digital_and_type_can_only_be_offline():
+def test_should_return_error_message_when_offer_is_digital_and_is_offline_thing():
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer, is_virtual=True)

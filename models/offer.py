@@ -221,7 +221,8 @@ class Offer(PcObject,
     def _has_unlimited_stock(self):
         return any(map(lambda s: s.available is None, self.stocks))
 
-    def type_can_only_be_offline(self) -> bool:
+    @property
+    def is_offline_thing(self) -> bool:
         offline_thing = filter(lambda thing_type: thing_type.__str__() == self.type and thing_type.value['offlineOnly'], ThingType)
 
         return len(list(offline_thing)) == 1

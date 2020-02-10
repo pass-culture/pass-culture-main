@@ -111,6 +111,7 @@ def create_offer_with_thing_product(venue: Venue,
                                     is_active: bool = True,
                                     is_digital: bool = False,
                                     is_national: bool = False,
+                                    is_offline_thing: bool = False,
                                     last_provider_id: int = None,
                                     media_urls: List[str] = ['test/urls'],
                                     product: Product = None,
@@ -132,6 +133,8 @@ def create_offer_with_thing_product(venue: Venue,
     else:
         if is_digital:
             url = 'fake/url'
+        if is_offline_thing:
+            thing_type = ThingType.CINEMA_ABO
 
         offer.product = create_product_with_thing_type(thing_name=thing_name, thing_type=thing_type,
                                                        media_urls=media_urls,
