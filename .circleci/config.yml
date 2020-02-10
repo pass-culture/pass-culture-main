@@ -364,7 +364,6 @@ workflows:
                 - production
                 - staging
                 - integration
-                - demo
       - deploy-api-datalake:
           filters:
             branches:
