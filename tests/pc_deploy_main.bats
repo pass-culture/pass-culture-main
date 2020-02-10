@@ -98,7 +98,7 @@ teardown(){
 @test "Deploy on unknown environment is not allowed" {
     # Given
     environment='unexisting-env'
-    expected_output='Can only deploy in datalake, staging, demo, integration and production'
+    expected_output='Can only deploy in datalake, staging, integration and production'
 
     # When
     run pc -e "$environment" deploy
@@ -171,12 +171,6 @@ teardown(){
     mock_set_output "${mock_git}" "pull staging" 7
     # git submodule update || exit_error_restoring_branch
     mock_set_output "${mock_git}" "submodule update" 8
-    # git checkout demo
-    mock_set_output "${mock_git}" "checkout demo" 9
-    # git reset --hard origin/demo || exit_error_restoring_branch
-    mock_set_output "${mock_git}" "pull demo" 10
-    # git submodule update || exit_error_restoring_branch
-    mock_set_output "${mock_git}" "submodule update" 11
     # git checkout integration
     mock_set_output "${mock_git}" "checkout integration" 12
     # git reset --hard origin/integration || exit_error_restoring_branch
@@ -235,12 +229,6 @@ teardown(){
     mock_set_output "${mock_git}" "pull staging" 7
     # git submodule update || exit_error_restoring_branch
     mock_set_output "${mock_git}" "submodule update" 8
-    # git checkout demo
-    mock_set_output "${mock_git}" "checkout demo" 9
-    # git reset --hard origin/demo || exit_error_restoring_branch
-    mock_set_output "${mock_git}" "pull demo" 10
-    # git submodule update || exit_error_restoring_branch
-    mock_set_output "${mock_git}" "submodule update" 11
     # git checkout integration
     mock_set_output "${mock_git}" "checkout integration" 12
     # git reset --hard origin/integration || exit_error_restoring_branch
@@ -308,12 +296,6 @@ teardown(){
     mock_set_output "${mock_git}" "pull staging" 7
     # git submodule update || exit_error_restoring_branch
     mock_set_output "${mock_git}" "submodule update" 8
-    # git checkout demo
-    mock_set_output "${mock_git}" "checkout demo" 9
-    # git reset --hard origin/demo || exit_error_restoring_branch
-    mock_set_output "${mock_git}" "pull demo" 10
-    # git submodule update || exit_error_restoring_branch
-    mock_set_output "${mock_git}" "submodule update" 11
     # git checkout integration
     mock_set_output "${mock_git}" "checkout integration" 12
     # git reset --hard origin/integration || exit_error_restoring_branch
@@ -406,12 +388,6 @@ teardown(){
     mock_set_output "${mock_git}" "pull staging" 7
     # git submodule update || exit_error_restoring_branch
     mock_set_output "${mock_git}" "submodule update" 8
-    # git checkout demo
-    mock_set_output "${mock_git}" "checkout demo" 9
-    # git reset --hard origin/demo || exit_error_restoring_branch
-    mock_set_output "${mock_git}" "pull demo" 10
-    # git submodule update || exit_error_restoring_branch
-    mock_set_output "${mock_git}" "submodule update" 11
     # git checkout integration
     mock_set_output "${mock_git}" "checkout integration" 12
     # git reset --hard origin/integration || exit_error_restoring_branch
