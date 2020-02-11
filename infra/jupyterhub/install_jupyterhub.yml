@@ -116,6 +116,7 @@
         state: started
         name: connect_to_database.service
         enabled: yes
+      tags: 'start-db-connection'
 
   handlers:
     - name: Reload tljh config
