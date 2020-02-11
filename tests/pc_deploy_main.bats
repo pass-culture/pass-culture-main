@@ -172,21 +172,21 @@ teardown(){
     # git submodule update || exit_error_restoring_branch
     mock_set_output "${mock_git}" "submodule update" 8
     # git checkout integration
-    mock_set_output "${mock_git}" "checkout integration" 12
+    mock_set_output "${mock_git}" "checkout integration" 9
     # git reset --hard origin/integration || exit_error_restoring_branch
-    mock_set_output "${mock_git}" "pull integration" 13
+    mock_set_output "${mock_git}" "pull integration" 10
+    # git submodule update || exit_error_restoring_branch
+    mock_set_output "${mock_git}" "submodule update" 11
+    # git checkout production
+    mock_set_output "${mock_git}" "checkout production" 12
+    # git reset --hard origin/production || exit_error_restoring_branch
+    mock_set_output "${mock_git}" "pull production" 13
     # git submodule update || exit_error_restoring_branch
     mock_set_output "${mock_git}" "submodule update" 14
-    # git checkout production
-    mock_set_output "${mock_git}" "checkout production" 15
-    # git reset --hard origin/production || exit_error_restoring_branch
-    mock_set_output "${mock_git}" "pull production" 16
-    # git submodule update || exit_error_restoring_branch
-    mock_set_output "${mock_git}" "submodule update" 17
     # git ls-remote --tags origin refs/tags/v0.0.0
-    mock_set_output "${mock_git}" "" 18
+    mock_set_output "${mock_git}" "" 15
     # git checkout current branch
-    mock_set_output "${mock_git}" "checkout current branch" 19
+    mock_set_output "${mock_git}" "checkout current branch" 16
 
     # Test mock is set up properly
     [[ "$(readlink -e $(which git))" == "$(readlink -e ${mock_git})" ]]
@@ -196,7 +196,7 @@ teardown(){
 
     # Then
     echo "Number of calls: $(mock_get_call_num ${mock_git})"
-    [[ "$(mock_get_call_num ${mock_git})" -eq 19 ]]
+    [[ "$(mock_get_call_num ${mock_git})" -eq 16 ]]
 
     # Allow to follow last steps
     for index in ${!lines[@]}; do
@@ -230,29 +230,29 @@ teardown(){
     # git submodule update || exit_error_restoring_branch
     mock_set_output "${mock_git}" "submodule update" 8
     # git checkout integration
-    mock_set_output "${mock_git}" "checkout integration" 12
+    mock_set_output "${mock_git}" "checkout integration" 9
     # git reset --hard origin/integration || exit_error_restoring_branch
-    mock_set_output "${mock_git}" "pull integration" 13
+    mock_set_output "${mock_git}" "pull integration" 10
+    # git submodule update || exit_error_restoring_branch
+    mock_set_output "${mock_git}" "submodule update" 11
+    # git checkout production
+    mock_set_output "${mock_git}" "checkout production" 12
+    # git reset --hard origin/production || exit_error_restoring_branch
+    mock_set_output "${mock_git}" "pull production" 13
     # git submodule update || exit_error_restoring_branch
     mock_set_output "${mock_git}" "submodule update" 14
-    # git checkout production
-    mock_set_output "${mock_git}" "checkout production" 15
-    # git reset --hard origin/production || exit_error_restoring_branch
-    mock_set_output "${mock_git}" "pull production" 16
-    # git submodule update || exit_error_restoring_branch
-    mock_set_output "${mock_git}" "submodule update" 17
     # git ls-remote --tags origin refs/tags/v0.0.0
-    mock_set_output "${mock_git}" "v0.0.0" 18
+    mock_set_output "${mock_git}" "v0.0.0" 15
     # git checkout "v$TAG_NAME"
-    mock_set_output "${mock_git}" "checkout TAG_NAME" 19
+    mock_set_output "${mock_git}" "checkout TAG_NAME" 16
     # git submodule update
-    mock_set_output "${mock_git}" "submodule update" 20
+    mock_set_output "${mock_git}" "submodule update" 17
     # git log -n 1 --pretty=format:%H
-    mock_set_output "${mock_git}" "commit_hash" 21
+    mock_set_output "${mock_git}" "commit_hash" 18
     # git log -n 1 --pretty=format:%H staging
-    mock_set_output "${mock_git}" "commit_hash_staging" 22
+    mock_set_output "${mock_git}" "commit_hash_staging" 19
     # git checkout current branch
-    mock_set_output "${mock_git}" "checkout current branch" 23
+    mock_set_output "${mock_git}" "checkout current branch" 20
 
     # Test mock is set up properly
     [[ "$(readlink -e $(which git))" == "$(readlink -e ${mock_git})" ]]
@@ -262,7 +262,7 @@ teardown(){
 
     # Then
     echo "Number of calls: $(mock_get_call_num ${mock_git})"
-    [[ "$(mock_get_call_num ${mock_git})" -eq 23 ]]
+    [[ "$(mock_get_call_num ${mock_git})" -eq 20 ]]
 
     # Allow to follow last steps
     for index in ${!lines[@]}; do
@@ -297,31 +297,31 @@ teardown(){
     # git submodule update || exit_error_restoring_branch
     mock_set_output "${mock_git}" "submodule update" 8
     # git checkout integration
-    mock_set_output "${mock_git}" "checkout integration" 12
+    mock_set_output "${mock_git}" "checkout integration" 9
     # git reset --hard origin/integration || exit_error_restoring_branch
-    mock_set_output "${mock_git}" "pull integration" 13
+    mock_set_output "${mock_git}" "pull integration" 10
+    # git submodule update || exit_error_restoring_branch
+    mock_set_output "${mock_git}" "submodule update" 11
+    # git checkout production
+    mock_set_output "${mock_git}" "checkout production" 12
+    # git reset --hard origin/production || exit_error_restoring_branch
+    mock_set_output "${mock_git}" "pull production" 13
     # git submodule update || exit_error_restoring_branch
     mock_set_output "${mock_git}" "submodule update" 14
-    # git checkout production
-    mock_set_output "${mock_git}" "checkout production" 15
-    # git reset --hard origin/production || exit_error_restoring_branch
-    mock_set_output "${mock_git}" "pull production" 16
-    # git submodule update || exit_error_restoring_branch
-    mock_set_output "${mock_git}" "submodule update" 17
     # git ls-remote --tags origin refs/tags/v0.0.0
-    mock_set_output "${mock_git}" "v0.0.0" 18
+    mock_set_output "${mock_git}" "v0.0.0" 15
     # git checkout "v$TAG_NAME"
-    mock_set_output "${mock_git}" "checkout TAG_NAME" 19
+    mock_set_output "${mock_git}" "checkout TAG_NAME" 16
     # git submodule update
-    mock_set_output "${mock_git}" "submodule update" 20
+    mock_set_output "${mock_git}" "submodule update" 17
     # git log -n 1 --pretty=format:%H
-    mock_set_output "${mock_git}" "commit_hash" 21
+    mock_set_output "${mock_git}" "commit_hash" 18
     # git log -n 1 --pretty=format:%H staging
-    mock_set_output "${mock_git}" "commit_hash" 22
+    mock_set_output "${mock_git}" "commit_hash" 19
     # git push -f origin HEAD:"$ENV"
-    mock_set_output "${mock_git}" "push origin HEAD" 23
+    mock_set_output "${mock_git}" "push origin HEAD" 20
     # git checkout current branch
-    mock_set_output "${mock_git}" "Exit success !" 24
+    mock_set_output "${mock_git}" "Exit success !" 21
 
     # curl https://circleci.com/api/v1.1/project/github/betagouv/pass-culture-main/tree/production
     mock_set_output "${mock_curl}" '[{ "vcs_revision" : "commit_hash",
@@ -352,7 +352,7 @@ teardown(){
     echo "Number of calls: $(mock_get_call_num ${mock_git})"
     echo "Number of calls: $(mock_get_call_num ${mock_curl})"
     echo "Number of calls: $(mock_get_call_num ${mock_xdg})"
-    [[ "$(mock_get_call_num ${mock_git})" -eq 24 ]]
+    [[ "$(mock_get_call_num ${mock_git})" -eq 21 ]]
     [[ "$(mock_get_call_num ${mock_curl})" -eq 1 ]]
     [[ "$(mock_get_call_num ${mock_xdg})" -eq 1 ]]
 
@@ -389,31 +389,31 @@ teardown(){
     # git submodule update || exit_error_restoring_branch
     mock_set_output "${mock_git}" "submodule update" 8
     # git checkout integration
-    mock_set_output "${mock_git}" "checkout integration" 12
+    mock_set_output "${mock_git}" "checkout integration" 9
     # git reset --hard origin/integration || exit_error_restoring_branch
-    mock_set_output "${mock_git}" "pull integration" 13
+    mock_set_output "${mock_git}" "pull integration" 10
+    # git submodule update || exit_error_restoring_branch
+    mock_set_output "${mock_git}" "submodule update" 11
+    # git checkout production
+    mock_set_output "${mock_git}" "checkout production" 12
+    # git reset --hard origin/production || exit_error_restoring_branch
+    mock_set_output "${mock_git}" "pull production" 13
     # git submodule update || exit_error_restoring_branch
     mock_set_output "${mock_git}" "submodule update" 14
-    # git checkout production
-    mock_set_output "${mock_git}" "checkout production" 15
-    # git reset --hard origin/production || exit_error_restoring_branch
-    mock_set_output "${mock_git}" "pull production" 16
-    # git submodule update || exit_error_restoring_branch
-    mock_set_output "${mock_git}" "submodule update" 17
     # git ls-remote --tags origin refs/tags/v0.0.0
-    mock_set_output "${mock_git}" "v0.0.0" 18
+    mock_set_output "${mock_git}" "v0.0.0" 15
     # git checkout "v$TAG_NAME"
-    mock_set_output "${mock_git}" "checkout TAG_NAME" 19
+    mock_set_output "${mock_git}" "checkout TAG_NAME" 16
     # git submodule update
-    mock_set_output "${mock_git}" "submodule update" 20
+    mock_set_output "${mock_git}" "submodule update" 17
     # git log -n 1 --pretty=format:%H
-    mock_set_output "${mock_git}" "commit_hash" 21
+    mock_set_output "${mock_git}" "commit_hash" 18
     # git log -n 1 --pretty=format:%H staging
-    mock_set_output "${mock_git}" "commit_hash" 22
+    mock_set_output "${mock_git}" "commit_hash" 19
     # git push -f origin HEAD:"$ENV"
-    mock_set_output "${mock_git}" "push origin HEAD" 23
+    mock_set_output "${mock_git}" "push origin HEAD" 20
     # git checkout current branch
-    mock_set_output "${mock_git}" "Exit success !" 24
+    mock_set_output "${mock_git}" "Exit success !" 21
 
     # curl https://circleci.com/api/v1.1/project/github/betagouv/pass-culture-main/tree/production
     mock_set_output "${mock_curl}" '[{ "vcs_revision" : "other_commit_hash",
@@ -457,7 +457,7 @@ teardown(){
     echo "Number of calls: $(mock_get_call_num ${mock_git})"
     echo "Number of calls: $(mock_get_call_num ${mock_curl})"
     echo "Number of calls: $(mock_get_call_num ${mock_xdg})"
-    [[ "$(mock_get_call_num ${mock_git})" -eq 24 ]]
+    [[ "$(mock_get_call_num ${mock_git})" -eq 21 ]]
     [[ "$(mock_get_call_num ${mock_curl})" -eq 2 ]]
     [[ "$(mock_get_call_num ${mock_xdg})" -eq 1 ]]
 
