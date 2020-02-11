@@ -1,0 +1,607 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | pages | Offer | StockItem | DeleteDialog snapshot should match the snapshot when isEvent = false 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <DeleteDialog
+    isEvent={false}
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <td
+          className="is-size-7"
+          colSpan="6"
+        >
+          En confirmant l’annulation de 
+          ce stock
+          , 
+          vous supprimerez aussi toutes les réservations associées. 
+          Êtes-vous sûr de vouloir continuer ?
+        </td>,
+        <td>
+          <button
+            className="button is-primary"
+            type="button"
+          >
+            Oui
+          </button>
+        </td>,
+        <td>
+          <button
+            className="button is-primary"
+            type="button"
+          >
+            Non
+          </button>
+        </td>,
+      ],
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            "En confirmant l’annulation de ",
+            "ce stock",
+            ", ",
+            "vous supprimerez aussi toutes les réservations associées. ",
+            false,
+            "Êtes-vous sûr de vouloir continuer ?",
+          ],
+          "className": "is-size-7",
+          "colSpan": "6",
+        },
+        "ref": null,
+        "rendered": Array [
+          "En confirmant l’annulation de ",
+          "ce stock",
+          ", ",
+          "vous supprimerez aussi toutes les réservations associées. ",
+          false,
+          "Êtes-vous sûr de vouloir continuer ?",
+        ],
+        "type": "td",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": <button
+            className="button is-primary"
+            type="button"
+          >
+            Oui
+          </button>,
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Oui",
+            "className": "button is-primary",
+            "onClick": undefined,
+            "type": "button",
+          },
+          "ref": null,
+          "rendered": "Oui",
+          "type": "button",
+        },
+        "type": "td",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": <button
+            className="button is-primary"
+            type="button"
+          >
+            Non
+          </button>,
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Non",
+            "className": "button is-primary",
+            "onClick": undefined,
+            "type": "button",
+          },
+          "ref": null,
+          "rendered": "Non",
+          "type": "button",
+        },
+        "type": "td",
+      },
+    ],
+    "type": "tr",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <td
+            className="is-size-7"
+            colSpan="6"
+          >
+            En confirmant l’annulation de 
+            ce stock
+            , 
+            vous supprimerez aussi toutes les réservations associées. 
+            Êtes-vous sûr de vouloir continuer ?
+          </td>,
+          <td>
+            <button
+              className="button is-primary"
+              type="button"
+            >
+              Oui
+            </button>
+          </td>,
+          <td>
+            <button
+              className="button is-primary"
+              type="button"
+            >
+              Non
+            </button>
+          </td>,
+        ],
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              "En confirmant l’annulation de ",
+              "ce stock",
+              ", ",
+              "vous supprimerez aussi toutes les réservations associées. ",
+              false,
+              "Êtes-vous sûr de vouloir continuer ?",
+            ],
+            "className": "is-size-7",
+            "colSpan": "6",
+          },
+          "ref": null,
+          "rendered": Array [
+            "En confirmant l’annulation de ",
+            "ce stock",
+            ", ",
+            "vous supprimerez aussi toutes les réservations associées. ",
+            false,
+            "Êtes-vous sûr de vouloir continuer ?",
+          ],
+          "type": "td",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <button
+              className="button is-primary"
+              type="button"
+            >
+              Oui
+            </button>,
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Oui",
+              "className": "button is-primary",
+              "onClick": undefined,
+              "type": "button",
+            },
+            "ref": null,
+            "rendered": "Oui",
+            "type": "button",
+          },
+          "type": "td",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <button
+              className="button is-primary"
+              type="button"
+            >
+              Non
+            </button>,
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Non",
+              "className": "button is-primary",
+              "onClick": undefined,
+              "type": "button",
+            },
+            "ref": null,
+            "rendered": "Non",
+            "type": "button",
+          },
+          "type": "td",
+        },
+      ],
+      "type": "tr",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+    Symbol(enzyme.__providerValues__): undefined,
+  },
+  Symbol(enzyme.__providerValues__): Map {},
+}
+`;
+
+exports[`src | components | pages | Offer | StockItem | DeleteDialog snapshot should match the snapshot when isEvent = true 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <DeleteDialog
+    isEvent={true}
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <td
+          className="is-size-7"
+          colSpan="6"
+        >
+          En confirmant l’annulation de 
+          cette date
+          , 
+          vous supprimerez aussi toutes les réservations associées. 
+          <br />
+          Êtes-vous sûr de vouloir continuer ?
+        </td>,
+        <td>
+          <button
+            className="button is-primary"
+            type="button"
+          >
+            Oui
+          </button>
+        </td>,
+        <td>
+          <button
+            className="button is-primary"
+            type="button"
+          >
+            Non
+          </button>
+        </td>,
+      ],
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            "En confirmant l’annulation de ",
+            "cette date",
+            ", ",
+            "vous supprimerez aussi toutes les réservations associées. ",
+            <br />,
+            "Êtes-vous sûr de vouloir continuer ?",
+          ],
+          "className": "is-size-7",
+          "colSpan": "6",
+        },
+        "ref": null,
+        "rendered": Array [
+          "En confirmant l’annulation de ",
+          "cette date",
+          ", ",
+          "vous supprimerez aussi toutes les réservations associées. ",
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {},
+            "ref": null,
+            "rendered": null,
+            "type": "br",
+          },
+          "Êtes-vous sûr de vouloir continuer ?",
+        ],
+        "type": "td",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": <button
+            className="button is-primary"
+            type="button"
+          >
+            Oui
+          </button>,
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Oui",
+            "className": "button is-primary",
+            "onClick": undefined,
+            "type": "button",
+          },
+          "ref": null,
+          "rendered": "Oui",
+          "type": "button",
+        },
+        "type": "td",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": <button
+            className="button is-primary"
+            type="button"
+          >
+            Non
+          </button>,
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Non",
+            "className": "button is-primary",
+            "onClick": undefined,
+            "type": "button",
+          },
+          "ref": null,
+          "rendered": "Non",
+          "type": "button",
+        },
+        "type": "td",
+      },
+    ],
+    "type": "tr",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <td
+            className="is-size-7"
+            colSpan="6"
+          >
+            En confirmant l’annulation de 
+            cette date
+            , 
+            vous supprimerez aussi toutes les réservations associées. 
+            <br />
+            Êtes-vous sûr de vouloir continuer ?
+          </td>,
+          <td>
+            <button
+              className="button is-primary"
+              type="button"
+            >
+              Oui
+            </button>
+          </td>,
+          <td>
+            <button
+              className="button is-primary"
+              type="button"
+            >
+              Non
+            </button>
+          </td>,
+        ],
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              "En confirmant l’annulation de ",
+              "cette date",
+              ", ",
+              "vous supprimerez aussi toutes les réservations associées. ",
+              <br />,
+              "Êtes-vous sûr de vouloir continuer ?",
+            ],
+            "className": "is-size-7",
+            "colSpan": "6",
+          },
+          "ref": null,
+          "rendered": Array [
+            "En confirmant l’annulation de ",
+            "cette date",
+            ", ",
+            "vous supprimerez aussi toutes les réservations associées. ",
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {},
+              "ref": null,
+              "rendered": null,
+              "type": "br",
+            },
+            "Êtes-vous sûr de vouloir continuer ?",
+          ],
+          "type": "td",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <button
+              className="button is-primary"
+              type="button"
+            >
+              Oui
+            </button>,
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Oui",
+              "className": "button is-primary",
+              "onClick": undefined,
+              "type": "button",
+            },
+            "ref": null,
+            "rendered": "Oui",
+            "type": "button",
+          },
+          "type": "td",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <button
+              className="button is-primary"
+              type="button"
+            >
+              Non
+            </button>,
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Non",
+              "className": "button is-primary",
+              "onClick": undefined,
+              "type": "button",
+            },
+            "ref": null,
+            "rendered": "Non",
+            "type": "button",
+          },
+          "type": "td",
+        },
+      ],
+      "type": "tr",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+    Symbol(enzyme.__providerValues__): undefined,
+  },
+  Symbol(enzyme.__providerValues__): Map {},
+}
+`;

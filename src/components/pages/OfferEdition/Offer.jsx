@@ -35,6 +35,8 @@ import OfferPreviewLink from '../../layout/OfferPreviewLink/OfferPreviewLink'
 import Insert from '../../layout/Insert/Insert'
 
 import offerIsRefundable from './domain/offerIsRefundable'
+import { OffererName } from './OffererName'
+import { VenueName } from './VenueName'
 
 const DURATION_LIMIT_TIME = 100
 
@@ -51,12 +53,12 @@ const CONDITIONAL_FIELDS = {
     'EventType.SPECTACLE_VIVANT',
     'ThingType.LIVRE_EDITION',
   ],
-  visa: ['EventType.CINEMA'],
-  isbn: ['ThingType.LIVRE_EDITION'],
-  musicType: ['EventType.MUSIQUE', 'ThingType.MUSIQUE', 'ThingType.MUSIQUE_ABO'],
-  showType: ['EventType.SPECTACLE_VIVANT', 'ThingType.SPECTACLE_VIVANT_ABO'],
-  stageDirector: ['EventType.CINEMA', 'EventType.SPECTACLE_VIVANT'],
-  performer: ['EventType.MUSIQUE', 'ThingType.MUSIQUE', 'EventType.SPECTACLE_VIVANT'],
+  visa: [ 'EventType.CINEMA' ],
+  isbn: [ 'ThingType.LIVRE_EDITION' ],
+  musicType: [ 'EventType.MUSIQUE', 'ThingType.MUSIQUE', 'ThingType.MUSIQUE_ABO' ],
+  showType: [ 'EventType.SPECTACLE_VIVANT', 'ThingType.SPECTACLE_VIVANT_ABO' ],
+  stageDirector: [ 'EventType.CINEMA', 'EventType.SPECTACLE_VIVANT' ],
+  performer: [ 'EventType.MUSIQUE', 'ThingType.MUSIQUE', 'EventType.SPECTACLE_VIVANT' ],
 }
 
 class Offer extends PureComponent {
@@ -67,9 +69,7 @@ class Offer extends PureComponent {
   }
 
   componentDidMount() {
-    this.handleVenueRedirect()
     this.handleShowStocksManager()
-    this.setDefaultBookingEmailIfNew()
   }
 
   componentDidUpdate(prevProps) {
@@ -109,10 +109,6 @@ class Offer extends PureComponent {
         })
       )
     }
-
-    this.setDefaultBookingEmailIfNew(prevProps)
-
-    this.setDefaultIsDuoIfNewAndEvent()
 
     this.forceReactToolTip()
   }
@@ -208,34 +204,11 @@ class Offer extends PureComponent {
     query.change({ gestion: '' })
   }
 
-  onHandleFormSuccess = (state, action) => {
-    const { offer, query, trackCreateOffer, trackModifyOffer } = this.props
+  onHandleFormSuccess = () => {
+    const { offer, trackModifyOffer, history } = this.props
 
-    const { isCreatedEntity } = query.context()
-    const previousOfferId = offer && offer.id
-    const {
-      payload: { datum },
-    } = action
-    const offerId = datum.id
-
-    const queryParams = previousOfferId ? {} : { gestion: '' }
-    query.changeToReadOnly(queryParams, { id: offerId })
-
-    if (isCreatedEntity) {
-      trackCreateOffer(offerId)
-    } else {
-      trackModifyOffer(previousOfferId)
-    }
-  }
-
-  handleVenueRedirect = () => {
-    const { offer, query } = this.props
-    const translatedQueryParams = query.translate()
-    const venueId = get(offer, 'venueId')
-    if (venueId && !translatedQueryParams.venueId) {
-      query.change({ venueId })
-      return
-    }
+    trackModifyOffer(offer.id)
+    history.push(`/offres/${offer.id}`)
   }
 
   handleShowStocksManager = () => {
@@ -251,34 +224,6 @@ class Offer extends PureComponent {
     )
   }
 
-  setDefaultBookingEmailIfNew(prevProps) {
-    const { currentUser, dispatch, query, venue } = this.props
-    const { isCreatedEntity } = query.context()
-    if (!isCreatedEntity) {
-      return
-    }
-    if (!venue) return
-    if (!prevProps || !prevProps.venue || venue.id !== prevProps.venue.id) {
-      dispatch(
-        mergeForm('offer', {
-          bookingEmail: (venue && venue.bookingEmail) || currentUser.email,
-        })
-      )
-    }
-  }
-
-  setDefaultIsDuoIfNewAndEvent() {
-    const { query, updateFormSetIsDuo, selectedOfferType } = this.props
-
-    const { isCreatedEntity } = query.context()
-    if (!isCreatedEntity) return
-
-    const isEventType = get(selectedOfferType, 'type') === 'Event'
-    if (!isEventType) return
-
-    updateFormSetIsDuo(true)
-  }
-
   hasConditionalField(fieldName) {
     const { selectedOfferType } = this.props
     if (!selectedOfferType) {
@@ -288,13 +233,7 @@ class Offer extends PureComponent {
     return CONDITIONAL_FIELDS[fieldName].indexOf(selectedOfferType.value) > -1
   }
 
-  replaceVenueNameByPublicName = venues => {
-    return venues.map(venue => {
-      return venue.publicName ? { ...venue, name: venue.publicName } : { ...venue }
-    })
-  }
-
-  handleHrefClick = () => event => {
+  handlePreviewClick = () => event => {
     event.preventDefault()
     const { offer } = this.props
     const offerId = get(offer, 'id')
@@ -314,11 +253,9 @@ class Offer extends PureComponent {
     const {
       currentUser,
       formInitialValues,
-      isEditableOffer,
       musicSubOptions,
       offer,
       offerer,
-      offerers,
       query,
       stocks,
       selectedOfferType,
@@ -330,7 +267,10 @@ class Offer extends PureComponent {
     } = this.props
 
     const { isEvent } = offer || {}
-    const { isCreatedEntity, isModifiedEntity, method, readOnly } = query.context()
+    const { isCreatedEntity, isModifiedEntity } = query.context()
+
+    const readOnly = false
+
     const isEventType = get(selectedOfferType, 'type') === 'Event' || isEvent
 
     const offerId = get(offer, 'id')
@@ -343,32 +283,11 @@ class Offer extends PureComponent {
     const offerWebappUrl = buildWebappDiscoveryUrl(offerId, mediationId)
     const offererId = get(offerer, 'id')
     const offerName = get(offer, 'name')
-    const showAllForm = selectedOfferType || !isCreatedEntity
-
-    const venueId = get(venue, 'id')
+    const showAllForm = selectedOfferType
     const isOfferActive = get(offer, 'isActive')
-    const isOffererSelectReadOnly = typeof offererId !== 'undefined' || offerFromLocalProvider
-    const isVenueSelectReadOnly = typeof venueId !== 'undefined' || offerFromLocalProvider
-    const isVenueVirtual = get(venue, 'isVirtual')
 
-    const formApiPath = isCreatedEntity ? '/offers' : `/offers/${offerId}`
-
-    let title
-
-    if (isCreatedEntity) {
-      title = 'Ajouter une offre'
-      if (venueId) {
-        if (isVenueVirtual) {
-          title = title + ' numérique'
-        } else {
-          title = title + ` pour ${get(venue, 'name')}`
-        }
-      } else if (offererId) {
-        title = title + ` pour ${get(offerer, 'name')}`
-      }
-    } else {
-      title = 'Détails de l’offre'
-    }
+    const formApiPath = `/offers/${offerId}`
+    const title = 'Détails de l’offre'
 
     let isDuoDefaultStatus
 
@@ -381,6 +300,7 @@ class Offer extends PureComponent {
     const offererHasNoPhysicalVenues = offerer && get(venuesMatchingOfferType, 'length') === 0
 
     const displayDigitalOfferInformationMessage = !offerIsRefundable(selectedOfferType, venue)
+
 
     return (
       <Main
@@ -398,7 +318,7 @@ class Offer extends PureComponent {
               <OfferPreviewLink
                 className="cta button"
                 href={offerWebappUrl}
-                onClick={this.handleHrefClick()}
+                onClick={this.handlePreviewClick()}
               />
             </div>
           )}
@@ -412,22 +332,18 @@ class Offer extends PureComponent {
         <Form
           action={formApiPath}
           handleSuccess={this.onHandleFormSuccess}
-          method={method}
+          method='PATCH'
           name="offer"
           patch={formInitialValues}
-          readOnly={readOnly}
           Tag={null}
         >
           <div className="field-group offer-form">
             <Field
-              className="title-field"
-              displayMaxLength
               isExpanded
               label="Titre de l’offre"
-              maxLength={90}
               name="name"
+              readOnly={offerFromLocalProvider}
               required
-              type="textarea"
             />
             <Field
               label="Type"
@@ -521,7 +437,7 @@ class Offer extends PureComponent {
                     </span>
                     <button
                       className="button is-primary is-outlined is-small manage-stock"
-                      disabled={offerFromTiteLive ? 'disabled' : ''}
+                      disabled={(!offerFromLocalProvider || offerFromAllocine) ? '' : 'disabled'}
                       id="manage-stocks"
                       onClick={this.handleOnClick(query)}
                       type="button"
@@ -545,7 +461,7 @@ class Offer extends PureComponent {
               offererId={offererId}
             />
           )}
-          {!isCreatedEntity && offer && <MediationsManager />}
+          {offer && <MediationsManager />}
 
           {showAllForm && (
             <div>
@@ -553,16 +469,10 @@ class Offer extends PureComponent {
                 {'Infos pratiques'}
               </h2>
               <div className="field-group">
-                <Field
-                  debug
-                  label="Structure"
-                  name="offererId"
-                  options={offerers}
-                  placeholder="Sélectionnez une structure"
-                  readOnly={isOffererSelectReadOnly}
-                  required
-                  type="select"
-                />
+                {offerer && <OffererName name={offerer.name} />}
+
+                {venue && <VenueName name={venue.publicName || venue.name} />}
+
                 {offererHasNoPhysicalVenues && (
                   <div className="field is-horizontal">
                     <div className="field-label" />
@@ -580,15 +490,6 @@ class Offer extends PureComponent {
                     </div>
                   </div>
                 )}
-                <Field
-                  label="Lieu"
-                  name="venueId"
-                  options={this.replaceVenueNameByPublicName(venuesMatchingOfferType)}
-                  placeholder="Sélectionnez un lieu"
-                  readOnly={isVenueSelectReadOnly}
-                  required
-                  type="select"
-                />
               </div>
               {displayDigitalOfferInformationMessage && (
                 <div className="is-horizontal">
@@ -623,7 +524,6 @@ class Offer extends PureComponent {
                     readOnly={offerFromLocalProvider}
                     required
                     sublabel={
-                      !readOnly &&
                       'Vous pouvez inclure {token} {email} et {offerId} dans l’URL, qui seront remplacés respectivement par le code de la contremarque, l’e-mail de la personne ayant reservé et l’identifiant de l’offre'
                     }
                     type="text"
@@ -645,6 +545,7 @@ class Offer extends PureComponent {
                     limitTimeInHours={DURATION_LIMIT_TIME}
                     name="durationMinutes"
                     placeholder="HH:MM"
+                    readOnly={offerFromAllocine}
                     type="duration"
                   />
                 )}
@@ -653,7 +554,6 @@ class Offer extends PureComponent {
                     <input
                       className="offer-duo-checkbox input"
                       defaultChecked={isDuoDefaultStatus}
-                      disabled={readOnly ? 'disabled' : ''}
                       id="isDuo"
                       onClick={this.handleCheckIsDuo}
                       type="checkbox"
@@ -698,6 +598,7 @@ class Offer extends PureComponent {
                   label="Description"
                   maxLength={1000}
                   name="description"
+                  readOnly={offerFromLocalProvider}
                   rows={readOnly ? 1 : 5}
                   type="textarea"
                 />
@@ -775,16 +676,14 @@ class Offer extends PureComponent {
             style={{ justifyContent: 'space-between' }}
           >
             <div className="control">
-              {readOnly && (
-                <NavLink
-                  className="button is-secondary is-medium"
-                  disabled={isEditableOffer ? '' : 'disabled'}
-                  id="modify-offer-button"
-                  to={"/offres/" + offerId + "/edition"}
-                >
-                  {'Modifier l’offre'}
-                </NavLink>
-              )}
+              <Link
+                className="button is-secondary is-medium"
+                id="cancel-button"
+                to={"/offres/" + offerId}
+                type="button"
+              >
+                {'Annuler'}
+              </Link>
             </div>
             <div className="control">
               {readOnly ? (
@@ -818,11 +717,9 @@ Offer.defaultProps = {
 Offer.propTypes = {
   currentUser: PropTypes.shape().isRequired,
   dispatch: PropTypes.func.isRequired,
-  isEditableOffer: PropTypes.bool.isRequired,
   location: PropTypes.shape().isRequired,
   query: PropTypes.shape().isRequired,
   selectedOfferType: PropTypes.shape().isRequired,
-  trackCreateOffer: PropTypes.func.isRequired,
   trackModifyOffer: PropTypes.func.isRequired,
   venuesMatchingOfferType: PropTypes.arrayOf(PropTypes.shape()),
 }

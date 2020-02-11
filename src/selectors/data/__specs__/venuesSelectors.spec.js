@@ -19,6 +19,16 @@ describe('src | selectors | data | venuesSelectors', () => {
         expect(selectVenues(store)).toStrictEqual([{ id: 1 }, { id: 2 }])
       })
     })
+
+    describe('when venues attribute does not not', () => {
+      it('should return an empty array', () => {
+        const store = {
+          data: {
+          },
+        }
+        expect(selectVenues(store)).toStrictEqual([])
+      })
+    })
   })
 
   describe('selectVenuesByOfferIdAndOfferType', () => {

@@ -6,8 +6,6 @@ import Offer from '../Offer'
 import MediationsManager from '../MediationsManager/MediationsManagerContainer'
 import HeroSection from '../../../layout/HeroSection/HeroSection'
 import LocalProviderInformation from '../LocalProviderInformation/LocalProviderInformationContainer'
-import { VenueName } from '../VenueName'
-import { OffererName } from '../OffererName'
 
 describe('src | components | pages | Offer | Offer ', () => {
   let dispatch
@@ -425,196 +423,135 @@ describe('src | components | pages | Offer | Offer ', () => {
     })
 
     describe('when updating the offer', () => {
-      describe('when the offer is imported from Allocine', () => {
-        it('should allow to update isDuo but no other fields', () => {
-          // given
-          props.match.params = {
-            offerId: 'VAG',
-          }
-          props.selectedOfferType = {
-            type: 'Event',
-          }
-          props.offer = {
-            id: 'VAG',
-            productId: '6GD',
-            isEvent: true,
-            isThing: false,
-            lastProvider: {
-              name: 'Allociné',
-            },
-            activeMediation: {
-              id: 'MED',
-              isActive: true,
-            },
-            mediationsIds: ['MED'],
-          }
-
-          // when
-          const wrapper = shallow(<Offer {...props} />)
-
-          // then
-          const form_fields = wrapper.find(Field)
-          expect(form_fields.find("[label='Titre de l’offre']").prop('readOnly')).toBe(true)
-          expect(form_fields.find("[label='Durée']").prop('readOnly')).toBe(true)
-          expect(
-            form_fields.find("[label='Email auquel envoyer les réservations']").prop('readOnly')
-          ).toBe(true)
-          expect(form_fields.find("[label='Description']").prop('readOnly')).toBe(true)
+      it('should update a product when no offer type', () => {
+        // given
+        props.match.params = {
+          offerId: 'VAG',
+        }
+        props.query.context = () => ({
+          isCreatedEntity: false,
+          isModifiedEntity: false,
+          readOnly: true,
         })
+        props.offer = {
+          id: 'VAG',
+          productId: 'V24',
+          lastProvider: {
+            name: 'Open Agenda',
+          },
+        }
+
+        // when
+        const wrapper = shallow(<Offer {...props} />)
+
+        // then
+        expect(wrapper.find(Form).prop('action')).toStrictEqual('/offers/VAG')
       })
 
-      describe('when the offer is not imported', () => {
-        it('should update a product when no offer type', () => {
-          // given
-          props.match.params = {
-            offerId: 'VAG',
-          }
-          props.query.context = () => ({
-            isCreatedEntity: false,
-            isModifiedEntity: false,
-            readOnly: true,
-          })
-          props.offer = {
-            id: 'VAG',
-            productId: 'V24',
-            lastProvider: {
-              name: 'Open Agenda',
-            },
-          }
+      it('should create a new Event when event type given', () => {
+        // given
+        props.match.params = {
+          offerId: 'VAG',
+        }
+        props.selectedOfferType = {
+          type: 'Event',
+        }
+        props.offer = {
+          id: 'VAG',
+          mediationId: 'TR',
+          productId: '6GD',
+          isEvent: true,
+          isThing: false,
+          lastProvider: null,
+        }
 
-          // when
-          const wrapper = shallow(<Offer {...props} />)
+        // when
+        const wrapper = shallow(<Offer {...props} />)
 
-          // then
-          expect(wrapper.find(Form).prop('action')).toStrictEqual('/offers/VAG')
-        })
+        // then
+        expect(wrapper.find(Form).prop('action')).toStrictEqual('/offers/VAG')
+      })
 
-        it('should create a new Event when event type given', () => {
-          // given
-          props.match.params = {
-            offerId: 'VAG',
-          }
-          props.selectedOfferType = {
-            type: 'Event',
-          }
-          props.offer = {
-            id: 'VAG',
-            mediationId: 'TR',
-            productId: '6GD',
-            isEvent: true,
-            isThing: false,
-            lastProvider: null,
-          }
+      it('should display preview link', () => {
+        // given
+        props.match.params = {
+          offerId: 'VAG',
+        }
+        props.selectedOfferType = {
+          type: 'Event',
+        }
+        props.offer = {
+          id: 'VAG',
+          productId: '6GD',
+          isEvent: true,
+          isThing: false,
+          lastProvider: null,
+          activeMediation: {
+            id: 'MED',
+            isActive: true,
+          },
+          mediationsIds: ['MED'],
+        }
+        const wrapper = shallow(<Offer {...props} />)
 
-          // when
-          const wrapper = shallow(<Offer {...props} />)
+        // when
+        const preview_section = wrapper.find(HeroSection)
 
-          // then
-          expect(wrapper.find(Form).prop('action')).toStrictEqual('/offers/VAG')
-        })
-
-        it('should display preview link', () => {
-          // given
-          props.match.params = {
-            offerId: 'VAG',
-          }
-          props.selectedOfferType = {
-            type: 'Event',
-          }
-          props.offer = {
-            id: 'VAG',
-            productId: '6GD',
-            isEvent: true,
-            isThing: false,
-            lastProvider: null,
-            activeMediation: {
-              id: 'MED',
-              isActive: true,
-            },
-            mediationsIds: ['MED'],
-          }
-          const wrapper = shallow(<Offer {...props} />)
-
-          // when
-          const preview_section = wrapper.find(HeroSection)
-
-          // then
-          const preview_link = preview_section.find('OfferPreviewLink')
-          expect(preview_link.prop('href')).toMatch('/offre/details/VAG/MED')
-        })
-
-        it('should allow to update every fields', () => {
-          // given
-          props.match.params = {
-            offerId: 'VAG',
-          }
-          props.selectedOfferType = {
-            type: 'Event',
-          }
-          props.offer = {
-            id: 'VAG',
-            productId: '6GD',
-            isEvent: true,
-            isThing: false,
-            lastProvider: null,
-            activeMediation: {
-              id: 'MED',
-              isActive: true,
-            },
-            mediationsIds: ['MED'],
-          }
-
-          // when
-          const wrapper = shallow(<Offer {...props} />)
-
-          // then
-          const form_fields = wrapper.find(Field)
-          expect(form_fields.find("[label='Titre de l’offre']").prop('readOnly')).toBe(false)
-          expect(form_fields.find("[label='Durée']").prop('readOnly')).toBe(false)
-          expect(
-            form_fields.find("[label='Email auquel envoyer les réservations']").prop('readOnly')
-          ).toBe(false)
-          expect(form_fields.find("[label='Description']").prop('readOnly')).toBe(false)
-        })
+        // then
+        const preview_link = preview_section.find('OfferPreviewLink')
+        expect(preview_link.prop('href')).toMatch('/offre/details/VAG/MED')
       })
     })
 
     describe('display venue informations', () => {
       it('should display venue name when venue publicName is not provided', () => {
         // given
-        props.venue = { name: 'Théatre 12', publicName: null }
+        props.query.context = () => ({
+          isCreatedEntity: true,
+          isModifiedEntity: false,
+          readOnly: false,
+        })
+        props.venuesMatchingOfferType = [{ name: 'quel beau théâtre' }, { name: 'quel beau musée' }]
+        const expectedOptions = [{ name: 'quel beau théâtre' }, { name: 'quel beau musée' }]
 
         // when
         const wrapper = shallow(<Offer {...props} />)
 
         // then
-        const venueName = wrapper.find(VenueName)
-        expect(venueName.prop('name')).toStrictEqual('Théatre 12')
+        const fieldGroups = wrapper.find('.field-group')
+        const fieldGroupForUsefulInformation = fieldGroups.at(1)
+        const venueField = fieldGroupForUsefulInformation.find(Field).at(1)
+        expect(fieldGroups).toHaveLength(4)
+        expect(venueField.prop('options')).toStrictEqual(expectedOptions)
       })
 
       it('should display venue public name when venue public name is provided', () => {
         // given
-        props.venue = { name: 'Théatre 12', publicName: 'Théâtre de la nouvelle êre' }
+        props.venuesMatchingOfferType = [
+          { name: 'quel beau théâtre', publicName: 'quel beau théâtre public' },
+          { name: 'quel beau musée', publicName: 'quel beau musée public' },
+        ]
+        const expectedOptions = [
+          {
+            name: 'quel beau théâtre public',
+            publicName: 'quel beau théâtre public',
+          },
+          {
+            name: 'quel beau musée public',
+            publicName: 'quel beau musée public',
+          },
+        ]
 
         // when
         const wrapper = shallow(<Offer {...props} />)
 
         // then
-        const venueName = wrapper.find(VenueName)
-        expect(venueName.prop('name')).toStrictEqual('Théâtre de la nouvelle êre')
+        const fieldGroups = wrapper.find('.field-group')
+        const fieldGroupForUsefulInformation = fieldGroups.at(1)
+        const venueField = fieldGroupForUsefulInformation.find(Field).at(1)
+        expect(fieldGroups).toHaveLength(4)
+        expect(venueField.prop('options')).toStrictEqual(expectedOptions)
       })
-    })
-
-    it('should display offerer', () => {
-      // given
-      props.offerer = { name: 'Nom de la structure' }
-
-      // when
-      const wrapper = shallow(<Offer {...props} />)
-
-      // then
-      const offererName = wrapper.find(OffererName)
-      expect(offererName.prop('name')).toStrictEqual('Nom de la structure')
     })
 
     describe('when offer is not editable', () => {
@@ -633,26 +570,6 @@ describe('src | components | pages | Offer | Offer ', () => {
         // then
         const modifyOfferButton = wrapper.find('#modify-offer-button')
         expect(modifyOfferButton.prop('disabled')).toStrictEqual('disabled')
-      })
-
-      describe('when the offer is an event', () => {
-        it('should disable the duo option', () => {
-          // given
-          props.query.context = () => ({
-            isCreatedEntity: false,
-            isModifiedEntity: false,
-            readOnly: true,
-          })
-          props.isEditableOffer = false
-          props.offer.isEvent = true
-
-          // when
-          const wrapper = shallow(<Offer {...props} />)
-
-          // then
-          const isDuoCheckbox = wrapper.find('#isDuo')
-          expect(isDuoCheckbox.prop('disabled')).toStrictEqual('disabled')
-        })
       })
 
       it('should display LocalProviderInformation if offer was generated from local provider', () => {

@@ -9,6 +9,7 @@ import LostPasswordContainer from '../components/pages/LostPassword/LostPassword
 import Mediation from '../components/pages/Mediation/MediationContainer'
 import Offers from '../components/pages/Offers/OffersContainer'
 import Offer from '../components/pages/Offer/OfferContainer'
+import OfferEdition from '../components/pages/OfferEdition/OfferContainer'
 import OffererContainer from '../components/pages/Offerer/OffererContainer'
 import Offerers from '../components/pages/Offerers/OfferersContainer'
 import ProfilContainer from '../components/pages/Profil/ProfilContainer'
@@ -101,6 +102,11 @@ const routes = [
     component: Offer,
     path: '/offres/:offerId',
     title: 'Offre',
+  },
+  {
+    component: OfferEdition,
+    path: '/offres/:offerId/edition',
+    title: 'Edition d\'une offre',
   },
   {
     component: Mediation,

@@ -1,0 +1,552 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | pages | Offer | StockItem | EventFields should match the snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <EventFields
+    beginningMinDate="2019-03-29T01:56:55.610Z"
+    dispatch={[MockFunction]}
+    parseFormChild={[MockFunction]}
+    readOnly={true}
+    stocks={null}
+    timezone={null}
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "function",
+    "props": Object {
+      "children": Array [
+        <td>
+          <DateField
+            className=""
+            clearable={false}
+            dateFormat="DD/MM/YYYY"
+            datePickerClassName="date"
+            disabled={false}
+            highlightDates={Array []}
+            id={null}
+            label=""
+            locale="fr"
+            minDate="2019-03-29T01:56:55.610Z"
+            name="beginningDatetime"
+            placeholder="Please enter a value"
+            readOnly={true}
+            renderValue={[Function]}
+            required={true}
+            timezone={null}
+            title="Date"
+            validate={null}
+          />
+        </td>,
+        <td>
+          <TimeField
+            autoComplete={false}
+            className=""
+            disabled={false}
+            id={null}
+            label=""
+            locale="fr"
+            name="beginningTime"
+            patchKey="beginningDatetime"
+            placeholder="Please enter a value"
+            readOnly={true}
+            renderValue={[Function]}
+            required={true}
+            title="Heure"
+            validate={null}
+          />
+        </td>,
+        <td>
+          <HiddenField
+            name="endDatetime"
+            validator={[Function]}
+          />
+          <TimeField
+            autoComplete={false}
+            className=""
+            disabled={false}
+            id={null}
+            label=""
+            locale="fr"
+            name="endTime"
+            patchKey="endDatetime"
+            placeholder="Please enter a value"
+            readOnly={true}
+            renderValue={[Function]}
+            required={true}
+            title="Heure de fin"
+            validate={null}
+          />
+        </td>,
+      ],
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": <DateField
+            className=""
+            clearable={false}
+            dateFormat="DD/MM/YYYY"
+            datePickerClassName="date"
+            disabled={false}
+            highlightDates={Array []}
+            id={null}
+            label=""
+            locale="fr"
+            minDate="2019-03-29T01:56:55.610Z"
+            name="beginningDatetime"
+            placeholder="Please enter a value"
+            readOnly={true}
+            renderValue={[Function]}
+            required={true}
+            timezone={null}
+            title="Date"
+            validate={null}
+          />,
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "class",
+          "props": Object {
+            "className": "",
+            "clearable": false,
+            "dateFormat": "DD/MM/YYYY",
+            "datePickerClassName": "date",
+            "disabled": false,
+            "highlightDates": Array [],
+            "id": null,
+            "label": "",
+            "locale": "fr",
+            "minDate": "2019-03-29T01:56:55.610Z",
+            "name": "beginningDatetime",
+            "placeholder": "Please enter a value",
+            "readOnly": true,
+            "renderValue": [Function],
+            "required": true,
+            "timezone": null,
+            "title": "Date",
+            "validate": null,
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        "type": "td",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": <TimeField
+            autoComplete={false}
+            className=""
+            disabled={false}
+            id={null}
+            label=""
+            locale="fr"
+            name="beginningTime"
+            patchKey="beginningDatetime"
+            placeholder="Please enter a value"
+            readOnly={true}
+            renderValue={[Function]}
+            required={true}
+            title="Heure"
+            validate={null}
+          />,
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "class",
+          "props": Object {
+            "autoComplete": false,
+            "className": "",
+            "disabled": false,
+            "id": null,
+            "label": "",
+            "locale": "fr",
+            "name": "beginningTime",
+            "patchKey": "beginningDatetime",
+            "placeholder": "Please enter a value",
+            "readOnly": true,
+            "renderValue": [Function],
+            "required": true,
+            "title": "Heure",
+            "validate": null,
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        "type": "td",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <HiddenField
+              name="endDatetime"
+              validator={[Function]}
+            />,
+            <TimeField
+              autoComplete={false}
+              className=""
+              disabled={false}
+              id={null}
+              label=""
+              locale="fr"
+              name="endTime"
+              patchKey="endDatetime"
+              placeholder="Please enter a value"
+              readOnly={true}
+              renderValue={[Function]}
+              required={true}
+              title="Heure de fin"
+              validate={null}
+            />,
+          ],
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "class",
+            "props": Object {
+              "name": "endDatetime",
+              "validator": [Function],
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "class",
+            "props": Object {
+              "autoComplete": false,
+              "className": "",
+              "disabled": false,
+              "id": null,
+              "label": "",
+              "locale": "fr",
+              "name": "endTime",
+              "patchKey": "endDatetime",
+              "placeholder": "Please enter a value",
+              "readOnly": true,
+              "renderValue": [Function],
+              "required": true,
+              "title": "Heure de fin",
+              "validate": null,
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+        ],
+        "type": "td",
+      },
+    ],
+    "type": Symbol(react.fragment),
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "function",
+      "props": Object {
+        "children": Array [
+          <td>
+            <DateField
+              className=""
+              clearable={false}
+              dateFormat="DD/MM/YYYY"
+              datePickerClassName="date"
+              disabled={false}
+              highlightDates={Array []}
+              id={null}
+              label=""
+              locale="fr"
+              minDate="2019-03-29T01:56:55.610Z"
+              name="beginningDatetime"
+              placeholder="Please enter a value"
+              readOnly={true}
+              renderValue={[Function]}
+              required={true}
+              timezone={null}
+              title="Date"
+              validate={null}
+            />
+          </td>,
+          <td>
+            <TimeField
+              autoComplete={false}
+              className=""
+              disabled={false}
+              id={null}
+              label=""
+              locale="fr"
+              name="beginningTime"
+              patchKey="beginningDatetime"
+              placeholder="Please enter a value"
+              readOnly={true}
+              renderValue={[Function]}
+              required={true}
+              title="Heure"
+              validate={null}
+            />
+          </td>,
+          <td>
+            <HiddenField
+              name="endDatetime"
+              validator={[Function]}
+            />
+            <TimeField
+              autoComplete={false}
+              className=""
+              disabled={false}
+              id={null}
+              label=""
+              locale="fr"
+              name="endTime"
+              patchKey="endDatetime"
+              placeholder="Please enter a value"
+              readOnly={true}
+              renderValue={[Function]}
+              required={true}
+              title="Heure de fin"
+              validate={null}
+            />
+          </td>,
+        ],
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <DateField
+              className=""
+              clearable={false}
+              dateFormat="DD/MM/YYYY"
+              datePickerClassName="date"
+              disabled={false}
+              highlightDates={Array []}
+              id={null}
+              label=""
+              locale="fr"
+              minDate="2019-03-29T01:56:55.610Z"
+              name="beginningDatetime"
+              placeholder="Please enter a value"
+              readOnly={true}
+              renderValue={[Function]}
+              required={true}
+              timezone={null}
+              title="Date"
+              validate={null}
+            />,
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "class",
+            "props": Object {
+              "className": "",
+              "clearable": false,
+              "dateFormat": "DD/MM/YYYY",
+              "datePickerClassName": "date",
+              "disabled": false,
+              "highlightDates": Array [],
+              "id": null,
+              "label": "",
+              "locale": "fr",
+              "minDate": "2019-03-29T01:56:55.610Z",
+              "name": "beginningDatetime",
+              "placeholder": "Please enter a value",
+              "readOnly": true,
+              "renderValue": [Function],
+              "required": true,
+              "timezone": null,
+              "title": "Date",
+              "validate": null,
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          "type": "td",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <TimeField
+              autoComplete={false}
+              className=""
+              disabled={false}
+              id={null}
+              label=""
+              locale="fr"
+              name="beginningTime"
+              patchKey="beginningDatetime"
+              placeholder="Please enter a value"
+              readOnly={true}
+              renderValue={[Function]}
+              required={true}
+              title="Heure"
+              validate={null}
+            />,
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "class",
+            "props": Object {
+              "autoComplete": false,
+              "className": "",
+              "disabled": false,
+              "id": null,
+              "label": "",
+              "locale": "fr",
+              "name": "beginningTime",
+              "patchKey": "beginningDatetime",
+              "placeholder": "Please enter a value",
+              "readOnly": true,
+              "renderValue": [Function],
+              "required": true,
+              "title": "Heure",
+              "validate": null,
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          "type": "td",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <HiddenField
+                name="endDatetime"
+                validator={[Function]}
+              />,
+              <TimeField
+                autoComplete={false}
+                className=""
+                disabled={false}
+                id={null}
+                label=""
+                locale="fr"
+                name="endTime"
+                patchKey="endDatetime"
+                placeholder="Please enter a value"
+                readOnly={true}
+                renderValue={[Function]}
+                required={true}
+                title="Heure de fin"
+                validate={null}
+              />,
+            ],
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "class",
+              "props": Object {
+                "name": "endDatetime",
+                "validator": [Function],
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "class",
+              "props": Object {
+                "autoComplete": false,
+                "className": "",
+                "disabled": false,
+                "id": null,
+                "label": "",
+                "locale": "fr",
+                "name": "endTime",
+                "patchKey": "endDatetime",
+                "placeholder": "Please enter a value",
+                "readOnly": true,
+                "renderValue": [Function],
+                "required": true,
+                "title": "Heure de fin",
+                "validate": null,
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+          ],
+          "type": "td",
+        },
+      ],
+      "type": Symbol(react.fragment),
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+    Symbol(enzyme.__providerValues__): undefined,
+  },
+  Symbol(enzyme.__providerValues__): Map {},
+}
+`;
