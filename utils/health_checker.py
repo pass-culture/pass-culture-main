@@ -1,4 +1,3 @@
-""" health_checker """
 from models.user import User
 from utils.logger import logger
 
