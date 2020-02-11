@@ -11,7 +11,7 @@ import { selectOffererById } from '../../../../../selectors/data/offerersSelecto
 import { selectOfferById } from '../../../../../selectors/data/offersSelectors'
 import { requestData } from 'redux-saga-data'
 import Offer from '../../ValueObjects/Offer'
-import { getTimezoneFromDepartementCode } from './utils/utils'
+import { getTimezone } from '../../../../../utils/timezone'
 
 export const selectTimezoneByVenueIdAndOffererId = createCachedSelector(
   selectVenueById,
@@ -19,11 +19,11 @@ export const selectTimezoneByVenueIdAndOffererId = createCachedSelector(
   (venue, offerer) => {
     if (!venue) return
 
-    if (!venue.isVirtual) return getTimezoneFromDepartementCode(venue.departementCode)
+    if (!venue.isVirtual) return getTimezone(venue.departementCode)
 
     if (!offerer) return
 
-    return getTimezoneFromDepartementCode(offerer.postalCode.slice(0, 2))
+    return getTimezone(offerer.postalCode.slice(0, 2))
   }
 )((state, venueId = '', offererId = '') => `${venueId}${offererId}`)
 

@@ -4,6 +4,7 @@ exports[`src | components | pages | FilterByDate | FilterByDate should match sna
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <FilterByDate
+    departementCode="75"
     showEventDateSection={false}
     showThingDateSection={false}
     stocks={
@@ -16,7 +17,6 @@ ShallowWrapper {
         },
       ]
     }
-    timezone="Europe/Paris"
     updateBookingsFrom={[MockFunction]}
     updateBookingsTo={[MockFunction]}
   />,

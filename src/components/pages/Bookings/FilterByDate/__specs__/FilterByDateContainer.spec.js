@@ -24,7 +24,7 @@ describe('src | components | pages | Bookings | FilterByDateContainer', () => {
         showEventDateSection: false,
         showThingDateSection: false,
         stocks: [],
-        timezone: 'Europe/Paris',
+        departementCode: '75',
       })
     })
 
@@ -239,7 +239,7 @@ describe('src | components | pages | Bookings | FilterByDateContainer', () => {
         ])
       })
 
-      it('should return an array of stocks and venue timezone when offer is event', () => {
+      it('should return an array of stocks and venue departement code when offer is event', () => {
         // given
         const state = {
           bookingSummary: {
@@ -285,7 +285,7 @@ describe('src | components | pages | Bookings | FilterByDateContainer', () => {
               offerId: 'DA',
             },
           ],
-          timezone: 'America/Cayenne',
+          departementCode: '97',
         })
       })
 

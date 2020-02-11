@@ -1,13 +1,17 @@
-import moment from 'moment'
+import moment from 'moment-timezone'
 
-export function formatLocalTimeDateString(date, departementCode) {
+export const formatLocalTimeDateString = (
+  date,
+  departementCode,
+  dateFormat = 'dddd DD/MM/YYYY à HH:mm'
+) => {
   const tz = getTimezone(departementCode)
   return moment(date)
     .tz(tz)
-    .format('dddd DD/MM/YYYY à HH:mm')
+    .format(dateFormat)
 }
 
-export function getTimezone(departementCode) {
+export const getTimezone = departementCode => {
   switch (departementCode) {
     case '97':
       return 'America/Cayenne'
@@ -17,5 +21,3 @@ export function getTimezone(departementCode) {
       return 'Europe/Paris'
   }
 }
-
-export default getTimezone

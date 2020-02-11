@@ -6,7 +6,6 @@ import FilterByDate from './FilterByDate'
 import { selectStocksByOfferId } from '../../../../selectors/data/stocksSelectors'
 import { selectOfferById } from '../../../../selectors/data/offersSelectors'
 import { selectVenueById } from '../../../../selectors/data/venuesSelectors'
-import { getTimezoneFromDepartementCode } from '../../Offer/StocksManager/StockItem/utils/utils'
 
 export const mapDispatchToProps = dispatch => ({
   updateBookingsFrom: date => {
@@ -30,7 +29,7 @@ export const mapStateToProps = state => {
   let stocks = []
   let showEventDateSection = false
   let showThingDateSection = false
-  let timezone = 'Europe/Paris'
+  let departementCode = '75'
 
   if (offerId && offerId !== 'all') {
     const offer = selectOfferById(state, offerId)
@@ -41,19 +40,17 @@ export const mapStateToProps = state => {
 
     if (offer.isEvent) {
       const venue = selectVenueById(state, venueId)
-      if (!venue.isVirtual) {
-        timezone = getTimezoneFromDepartementCode(venue.departementCode)
-      }
+      departementCode = venue.departementCode
       stocks = selectStocksByOfferId(state, offerId)
       showEventDateSection = true
     }
   }
 
   return {
+    departementCode,
     showEventDateSection,
     showThingDateSection,
     stocks,
-    timezone,
   }
 }
 

@@ -13,11 +13,9 @@ const PAGINATION_LIMIT = 1000
 
 export const mapDispatchToProps = dispatch => ({
   loadOffers: venueId => {
-    let getOffersApiPath = ''
-    if (venueId !== undefined && venueId !== '') {
-      getOffersApiPath = `/offers?venueId=${venueId}&paginate=${PAGINATION_LIMIT}`
-    } else {
-      getOffersApiPath = `/offers?paginate=${PAGINATION_LIMIT}`
+    let getOffersApiPath = `/offers?paginate=${PAGINATION_LIMIT}`
+    if (venueId !== undefined && venueId !== 'all') {
+      getOffersApiPath += `&venueId=${venueId}`
     }
     dispatch(
       requestData({

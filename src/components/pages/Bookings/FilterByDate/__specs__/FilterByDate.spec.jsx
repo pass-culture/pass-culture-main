@@ -15,7 +15,7 @@ describe('src | components | pages | FilterByDate | FilterByDate', () => {
         { beginningDatetime: '2019-07-28T21:59:00Z' },
         { beginningDatetime: '2019-08-16T21:59:00Z' },
       ],
-      timezone: 'Europe/Paris',
+      departementCode: '75',
     }
   })
 
@@ -164,7 +164,7 @@ describe('src | components | pages | FilterByDate | FilterByDate', () => {
           { beginningDatetime: '2019-02-28T21:59:00Z' },
           { beginningDatetime: '2019-08-16T18:59:00Z' },
         ]
-        props.timezone = 'America/Cayenne'
+        props.departementCode = '973'
 
         // when
         const wrapper = shallow(<FilterByDate {...props} />)

@@ -9,7 +9,7 @@ ShallowWrapper {
       [MockFunction] {
         "calls": Array [
           Array [
-            "",
+            "all",
           ],
         ],
         "results": Array [
@@ -36,7 +36,7 @@ ShallowWrapper {
     }
     showDateSection={false}
     updateOfferId={[MockFunction]}
-    venueId=""
+    venueId="all"
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],

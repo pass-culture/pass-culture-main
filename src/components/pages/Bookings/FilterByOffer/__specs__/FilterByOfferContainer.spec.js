@@ -308,13 +308,13 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
     })
 
     describe('loadOffers from API', () => {
-      it('should get all 1000 offers for offerer', () => {
+      it('should get all 1000 offers for offerer with all venues', () => {
         // given
-        const functions = mapDispatchToProps(dispatch)
-        const { loadOffers } = functions
+        const { loadOffers } = mapDispatchToProps(dispatch)
+        const venueId = 'all'
 
-        //when
-        loadOffers()
+        // when
+        loadOffers(venueId)
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
@@ -340,19 +340,19 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
           type: 'REQUEST_DATA_GET_OFFERS',
         })
       })
+
       it('should get all 1000 offers for specific venue', () => {
         // given
-        const functions = mapDispatchToProps(dispatch)
-        const { loadOffers } = functions
+        const { loadOffers } = mapDispatchToProps(dispatch)
         const venueId = 'AE'
 
-        //when
+        // when
         loadOffers(venueId)
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
           config: {
-            apiPath: '/offers?venueId=AE&paginate=1000',
+            apiPath: '/offers?paginate=1000&venueId=AE',
             method: 'GET',
             normalizer: {
               mediations: 'mediations',

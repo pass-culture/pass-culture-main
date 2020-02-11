@@ -69,7 +69,7 @@ class FilterByOffer extends PureComponent {
 
 FilterByOffer.defaultProps = {
   offerId: '',
-  venueId: '',
+  venueId: 'all',
 }
 
 FilterByOffer.propTypes = {

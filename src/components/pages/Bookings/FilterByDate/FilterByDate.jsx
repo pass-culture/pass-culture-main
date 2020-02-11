@@ -4,6 +4,7 @@ import moment from 'moment-timezone'
 
 import MONTH_OPTIONS from '../utils/months'
 import YEAR_OPTIONS from '../utils/years'
+import { formatLocalTimeDateString } from '../../../../utils/timezone'
 
 const FRENCH_DATE_FORMAT = 'dddd D MMMM YYYY, HH:mm'
 
@@ -60,7 +61,7 @@ class FilterByDate extends PureComponent {
   }
 
   render() {
-    const { showEventDateSection, showThingDateSection, stocks, timezone } = this.props
+    const { showEventDateSection, showThingDateSection, stocks, departementCode } = this.props
 
     if (showThingDateSection) {
       return (
@@ -147,9 +148,7 @@ class FilterByDate extends PureComponent {
                 key={beginningDatetime}
                 value={beginningDatetime}
               >
-                {moment(beginningDatetime)
-                  .tz(timezone)
-                  .format(FRENCH_DATE_FORMAT)}
+                {formatLocalTimeDateString(beginningDatetime, departementCode, FRENCH_DATE_FORMAT)}
               </option>
             ))}
           </select>
@@ -164,10 +163,10 @@ FilterByDate.defaultProps = {
 }
 
 FilterByDate.propTypes = {
+  departementCode: PropTypes.string.isRequired,
   showEventDateSection: PropTypes.bool.isRequired,
   showThingDateSection: PropTypes.bool.isRequired,
   stocks: PropTypes.arrayOf(PropTypes.shape()),
-  timezone: PropTypes.string.isRequired,
   updateBookingsFrom: PropTypes.func.isRequired,
   updateBookingsTo: PropTypes.func.isRequired,
 }
