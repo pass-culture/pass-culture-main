@@ -127,6 +127,4 @@ const routes = [
   },
 ]
 
-export const getRouteByName = (routes, nameKey) => routes.find(route => route.nameKey === nameKey)
-
 export default routes

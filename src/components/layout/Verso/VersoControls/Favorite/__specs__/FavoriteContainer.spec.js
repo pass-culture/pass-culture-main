@@ -74,28 +74,6 @@ describe('components | FavoriteContainer', () => {
       })
     })
 
-    it('should return the right props when on menu', () => {
-      // given
-      const bookingId = 'menu'
-      const mediationId = 'AE'
-      const offerId = 'BF'
-      state.data.mediations = [{ id: mediationId, offerId }]
-      state.data.offers = [{ id: offerId }]
-      state.data.favorites = [{ id: 'CG', offerId }]
-      ownProps.match.params.offerId = offerId
-      ownProps.match.params.bookingId = bookingId
-
-      // when
-      const props = mapStateToProps(state, ownProps)
-
-      // then
-      expect(props).toStrictEqual({
-        isFavorite: true,
-        mediationId: 'AE',
-        offerId: 'BF',
-      })
-    })
-
     describe('isFavorite', () => {
       it('should be false when no offer marked as favorite', () => {
         // given

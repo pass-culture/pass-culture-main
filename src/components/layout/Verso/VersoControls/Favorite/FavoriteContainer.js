@@ -23,7 +23,7 @@ export const mapStateToProps = (state, ownProps) => {
   const { params } = match
   let { bookingId, offerId } = params
 
-  if (bookingId && bookingId !== 'menu') {
+  if (bookingId) {
     const booking = selectBookingById(state, bookingId)
     const { stockId } = booking
     const stock = selectStockById(state, stockId)

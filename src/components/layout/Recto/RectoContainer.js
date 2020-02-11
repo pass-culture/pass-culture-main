@@ -26,24 +26,22 @@ export const findThumbByBookingId = (state, bookingId) => {
   let thumbUrl = ''
   let withMediation = false
 
-  if (bookingId !== 'menu') {
-    const booking = selectBookingById(state, bookingId)
-    const { stockId = '' } = booking
-    const stock = selectStockById(state, stockId)
-    const { offerId = '' } = stock || {}
-    const mediation = selectMediationByOfferId(state, offerId)
+  const booking = selectBookingById(state, bookingId)
+  const { stockId = '' } = booking
+  const stock = selectStockById(state, stockId)
+  const { offerId = '' } = stock || {}
+  const mediation = selectMediationByOfferId(state, offerId)
 
-    if (mediation) {
-      frontText = mediation.frontText
-      withMediation = true
-    }
-    thumbUrl = booking.thumbUrl ? booking.thumbUrl : DEFAULT_THUMB_URL
+  if (mediation) {
+    frontText = mediation.frontText
+    withMediation = true
   }
+  thumbUrl = booking.thumbUrl ? booking.thumbUrl : DEFAULT_THUMB_URL
 
   return {
     frontText,
     thumbUrl,
-    withMediation
+    withMediation,
   }
 }
 
@@ -64,7 +62,7 @@ export const findThumbByOfferId = (state, offerId, match, recommendation) => {
   return {
     frontText,
     thumbUrl,
-    withMediation
+    withMediation,
   }
 }
 
