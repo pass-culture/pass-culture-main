@@ -384,7 +384,7 @@ class Search extends PureComponent {
           title={this.getHeaderTitle()}
         />
         {this.renderControlsAndResults()}
-        <RecommendationDetailsContainer bookingPath="/recherche/resultats/:category?/:details(details|transition)/:offerId([A-Z0-9]+)/:mediationId(vide|[A-Z0-9]+)?/:booking(reservation)/:bookingId?/:cancellation(annulation)?/:confirmation(confirmation)?" />
+        <RecommendationDetailsContainer bookingPath="/recherche/resultats/:category?/:details(details|transition)/:offerId([A-Z0-9]+)/:mediationId(vide|[A-Z0-9]+)?/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?" />
       </main>
     )
   }

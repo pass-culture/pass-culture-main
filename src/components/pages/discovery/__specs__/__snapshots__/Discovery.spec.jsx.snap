@@ -69,10 +69,12 @@ ShallowWrapper {
             <Route
               path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?"
               render={[Function]}
+              sensitive={true}
             />
             <Route
               path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
               render={[Function]}
+              sensitive={true}
             />
           </React.Fragment>
           <withRouter(AbsoluteFooter)
@@ -100,10 +102,12 @@ ShallowWrapper {
               <Route
                 path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?"
                 render={[Function]}
+                sensitive={true}
               />
               <Route
                 path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
                 render={[Function]}
+                sensitive={true}
               />
             </React.Fragment>,
             <withRouter(AbsoluteFooter)
@@ -125,10 +129,12 @@ ShallowWrapper {
                 <Route
                   path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?"
                   render={[Function]}
+                  sensitive={true}
                 />,
                 <Route
                   path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
                   render={[Function]}
+                  sensitive={true}
                 />,
               ],
             },
@@ -141,6 +147,7 @@ ShallowWrapper {
                 "props": Object {
                   "path": "/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?",
                   "render": [Function],
+                  "sensitive": true,
                 },
                 "ref": null,
                 "rendered": null,
@@ -153,6 +160,7 @@ ShallowWrapper {
                 "props": Object {
                   "path": "/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?",
                   "render": [Function],
+                  "sensitive": true,
                 },
                 "ref": null,
                 "rendered": null,
@@ -207,10 +215,12 @@ ShallowWrapper {
               <Route
                 path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?"
                 render={[Function]}
+                sensitive={true}
               />
               <Route
                 path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
                 render={[Function]}
+                sensitive={true}
               />
             </React.Fragment>
             <withRouter(AbsoluteFooter)
@@ -238,10 +248,12 @@ ShallowWrapper {
                 <Route
                   path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?"
                   render={[Function]}
+                  sensitive={true}
                 />
                 <Route
                   path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
                   render={[Function]}
+                  sensitive={true}
                 />
               </React.Fragment>,
               <withRouter(AbsoluteFooter)
@@ -263,10 +275,12 @@ ShallowWrapper {
                   <Route
                     path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?"
                     render={[Function]}
+                    sensitive={true}
                   />,
                   <Route
                     path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
                     render={[Function]}
+                    sensitive={true}
                   />,
                 ],
               },
@@ -279,6 +293,7 @@ ShallowWrapper {
                   "props": Object {
                     "path": "/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?",
                     "render": [Function],
+                    "sensitive": true,
                   },
                   "ref": null,
                   "rendered": null,
@@ -291,6 +306,7 @@ ShallowWrapper {
                   "props": Object {
                     "path": "/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?",
                     "render": [Function],
+                    "sensitive": true,
                   },
                   "ref": null,
                   "rendered": null,

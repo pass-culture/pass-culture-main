@@ -64,6 +64,7 @@ class Details extends PureComponent {
         <Route
           path={bookingPath}
           render={this.renderBookingOrCancellation}
+          sensitive
         />
         <VersoContainer
           areDetailsVisible={isDetailsView}

@@ -64,12 +64,14 @@ class MyBookings extends PureComponent {
           <Route
             exact
             path="/reservations/:details(details|transition)/:bookingId([A-Z0-9]+)/:booking(reservation)?/:cancellation(annulation)?/:confirmation(confirmation)?"
+            sensitive
           >
             <MyBookingDetailsContainer bookingPath="/reservations/:details(details|transition)/:bookingId([A-Z0-9]+)/:booking(reservation)/:cancellation(annulation)?/:confirmation(confirmation)?" />
           </Route>
           <Route
             exact
             path="/reservations/:details(details)/:bookingId([A-Z0-9]+)/:qrcode(qrcode)"
+            sensitive
           >
             {!isQrCodeFeatureDisabled && <QrCodeContainer />}
           </Route>

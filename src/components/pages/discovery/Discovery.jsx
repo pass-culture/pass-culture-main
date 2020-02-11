@@ -141,11 +141,13 @@ class Discovery extends PureComponent {
                 key="route-discovery-deck"
                 path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?"
                 render={this.renderDeck}
+                sensitive
               />
               <Route
                 key="route-discovery-booking"
                 path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
                 render={cancelView ? this.renderBookingCancellation : this.renderBooking}
+                sensitive
               />
             </Fragment>
           )}

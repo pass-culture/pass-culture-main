@@ -40,9 +40,7 @@ class SearchAlgolia extends PureComponent {
   }
 
   showFailModal = () => {
-    toast.info(
-      'La recherche n\'a pas pu aboutir, veuillez ré-essayer plus tard.'
-    )
+    toast.info("La recherche n'a pas pu aboutir, veuillez ré-essayer plus tard.")
   }
 
   handleOnSubmit = event => {
@@ -57,13 +55,16 @@ class SearchAlgolia extends PureComponent {
 
     if (keywordsTrimmed !== '') {
       if (searchKeywords !== keywordsTrimmed) {
-        this.setState({
-          currentPage: 0,
-          results: [],
-        }, () => {
-          const { currentPage } = this.state
-          this.handleFetchOffers(keywordsTrimmed, currentPage)
-        })
+        this.setState(
+          {
+            currentPage: 0,
+            results: [],
+          },
+          () => {
+            const { currentPage } = this.state
+            this.handleFetchOffers(keywordsTrimmed, currentPage)
+          }
+        )
       } else {
         this.handleFetchOffers(keywordsTrimmed, currentPage)
       }
@@ -90,27 +91,29 @@ class SearchAlgolia extends PureComponent {
     })
     const aroundLatLng = computeToAroundLatLng(geolocation)
 
-    fetch(keywords, currentPage, aroundLatLng).then(offers => {
-      const { results } = this.state
-      const { hits, nbHits, nbPages } = offers
-      this.setState({
-        currentPage: currentPage,
-        isLoading: false,
-        resultsCount: nbHits,
-        results: [...results, ...hits],
-        searchKeywords: keywords,
-        totalPagesNumber: nbPages,
+    fetch(keywords, currentPage, aroundLatLng)
+      .then(offers => {
+        const { results } = this.state
+        const { hits, nbHits, nbPages } = offers
+        this.setState({
+          currentPage: currentPage,
+          isLoading: false,
+          resultsCount: nbHits,
+          results: [...results, ...hits],
+          searchKeywords: keywords,
+          totalPagesNumber: nbPages,
+        })
+        query.change({
+          'mots-cles': keywords,
+          page: currentPage + 1,
+        })
       })
-      query.change({
-        'mots-cles': keywords,
-        page: currentPage + 1,
+      .catch(() => {
+        this.setState({
+          isLoading: false,
+        })
+        this.showFailModal()
       })
-    }).catch(() => {
-      this.setState({
-        isLoading: false
-      })
-      this.showFailModal()
-    })
   }
 
   getScrollParent = () => document.querySelector('.sp-content')
@@ -198,7 +201,8 @@ class SearchAlgolia extends PureComponent {
           </Route>
           <Route
             exact
-            path="/recherche-offres/:details(details|transition)/:offerId([A-Z0-9]+)/:booking(reservation)?/:bookingId?/:cancellation(annulation)?/:confirmation(confirmation)?"
+            path="/recherche-offres/:details(details|transition)/:offerId([A-Z0-9]+)/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
+            sensitive
           >
             <SearchAlgoliaDetailsContainer />
           </Route>
