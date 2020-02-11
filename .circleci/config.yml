@@ -189,6 +189,7 @@ jobs:
       - run: git submodule update --init
       - run:
           name: Deploy API
+          no_output_timeout: 30m
           command: |
             env_remote_origin="$CIRCLE_BRANCH"_remote_origin
             SCALINGO_APP_NAME=$(./scripts/compute_app_name.sh ${CIRCLE_BRANCH})
