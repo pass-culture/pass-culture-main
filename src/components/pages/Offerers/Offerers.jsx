@@ -58,10 +58,7 @@ class Offerers extends PureComponent {
   }
 
   handleRequestData = () => {
-    const { loadOfferers, query } = this.props
-
-    const queryParams = query.parse()
-    const searchKeyWords = queryParams['mots-cles'] || null
+    const { loadOfferers } = this.props
 
     const handleSuccess = (state, action) => {
       const { payload } = action
@@ -83,10 +80,7 @@ class Offerers extends PureComponent {
       })
     }
 
-    this.setState(
-      { isLoading: true, hasMore: true },
-      loadOfferers(handleSuccess, handleFail, searchKeyWords)
-    )
+    this.setState({ isLoading: true, hasMore: true }, loadOfferers(handleSuccess, handleFail))
   }
 
   handleOnKeywordsSubmit = values => {

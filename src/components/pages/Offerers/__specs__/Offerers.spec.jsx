@@ -56,68 +56,6 @@ describe('src | components | pages | Offerers | Offerers', () => {
       })
     })
 
-    describe('when loading the offerer list', () => {
-      describe('when there is multiple keywords in the url', () => {
-        it('should transmit keywords', () => {
-          // given
-          jest.spyOn(props.query, 'parse').mockReturnValue({
-            de: 'Balzac',
-            lieu: 'B3',
-            'mots-cles': ['Honoré', 'Justice'],
-          })
-
-          // when
-          shallow(<Offerers {...props} />)
-
-          // then
-          expect(props.loadOfferers).toHaveBeenCalledWith(expect.anything(), expect.anything(), [
-            'Honoré',
-            'Justice',
-          ])
-        })
-      })
-
-      describe('when there is one keyword in the url', () => {
-        it('should transmit keywords', () => {
-          // given
-          jest.spyOn(props.query, 'parse').mockReturnValue({
-            de: 'Balzac',
-            lieu: 'B3',
-            'mots-cles': 'Club Dorothy',
-          })
-
-          // when
-          shallow(<Offerers {...props} />)
-
-          // then
-          expect(props.loadOfferers).toHaveBeenCalledWith(
-            expect.anything(),
-            expect.anything(),
-            'Club Dorothy'
-          )
-        })
-      })
-
-      describe('when there is no keywords', () => {
-        it('should load all the offerers ', () => {
-          // given
-          jest.spyOn(props.query, 'parse').mockReturnValue({
-            'mots-cles': undefined,
-          })
-
-          // when
-          shallow(<Offerers {...props} />)
-
-          // then
-          expect(props.loadOfferers).toHaveBeenCalledWith(
-            expect.anything(),
-            expect.anything(),
-            null
-          )
-        })
-      })
-    })
-
     describe('should pluralize offerers menu link', () => {
       it('should display Votre structure when one offerer', () => {
         // given

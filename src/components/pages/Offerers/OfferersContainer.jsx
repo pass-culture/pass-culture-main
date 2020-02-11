@@ -13,14 +13,10 @@ import { OFFERERS_API_PATH } from '../../../config/apiPaths'
 
 export const createApiPath = searchKeyWords => {
   let apiPath = OFFERERS_API_PATH
-  if (Array.isArray(searchKeyWords)) {
-    searchKeyWords = searchKeyWords.join(' ')
-  }
-  const isKeywordValidParam =
-    searchKeyWords !== undefined && searchKeyWords !== null && searchKeyWords !== ''
 
-  if (isKeywordValidParam) {
-    const urlSearchKeyWords = stringify({ keywords: searchKeyWords })
+  if (searchKeyWords.length > 0) {
+    const joinedSearchkeyWords = searchKeyWords.join(' ')
+    const urlSearchKeyWords = stringify({ keywords: joinedSearchkeyWords })
     apiPath += `?${urlSearchKeyWords}`
   }
 
@@ -34,10 +30,16 @@ export const mapStateToProps = state => {
   }
 }
 
-export const mapDispatchToProps = dispatch => ({
+export const mapDispatchToProps = (dispatch, ownProps) => ({
   closeNotification: () => dispatch(closeNotification()),
 
-  loadOfferers: (handleSuccess, handleFail, searchKeyWords) => {
+  loadOfferers: (handleSuccess, handleFail) => {
+    const { query } = ownProps
+
+    const queryParams = query.parse()
+    let searchKeyWords = queryParams['mots-cles'] || []
+    if (typeof searchKeyWords === 'string') searchKeyWords = [searchKeyWords]
+
     const apiPath = createApiPath(searchKeyWords)
 
     dispatch(

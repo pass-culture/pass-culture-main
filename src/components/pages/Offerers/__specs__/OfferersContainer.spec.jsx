@@ -80,11 +80,16 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
     describe('loadOfferers', () => {
       it('should load all offerers by default', () => {
         // given
+        const ownProps = {
+          query: {
+            parse: jest.fn().mockReturnValue({}),
+          },
+        }
         const handleFail = jest.fn()
         const handleSuccess = jest.fn()
 
         // when
-        mapDispatchToProps(dispatch).loadOfferers(handleSuccess, handleFail)
+        mapDispatchToProps(dispatch, ownProps).loadOfferers(handleSuccess, handleFail)
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
@@ -106,31 +111,119 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
         })
       })
 
-      it('can load offerers by keywords', () => {
-        // given
-        const handleFail = jest.fn()
-        const handleSuccess = jest.fn()
+      describe('when there is multiple keywords in the url', () => {
+        it('should transmit keywords', () => {
+          // given
+          const ownProps = {
+            query: {
+              parse: jest.fn().mockReturnValue({
+                de: 'Balzac',
+                lieu: 'B3',
+                'mots-cles': ['Honoré', 'Justice'],
+              }),
+            },
+          }
+          const handleFail = jest.fn()
+          const handleSuccess = jest.fn()
 
-        // when
-        mapDispatchToProps(dispatch).loadOfferers(handleSuccess, handleFail, 'nice words')
+          // when
+          mapDispatchToProps(dispatch, ownProps).loadOfferers(handleSuccess, handleFail)
 
-        // then
-        expect(dispatch).toHaveBeenCalledWith({
-          config: {
-            apiPath: '/offerers?keywords=nice%20words',
-            handleFail: expect.any(Function),
-            handleSuccess: expect.any(Function),
-            method: 'GET',
-            normalizer: {
-              managedVenues: {
-                normalizer: {
-                  offers: 'offers',
+          // then
+          expect(dispatch).toHaveBeenCalledWith({
+            config: {
+              apiPath: '/offerers?keywords=Honor%C3%A9%20Justice',
+              handleFail,
+              handleSuccess,
+              method: 'GET',
+              normalizer: {
+                managedVenues: {
+                  normalizer: {
+                    offers: 'offers',
+                  },
+                  stateKey: 'venues',
                 },
-                stateKey: 'venues',
               },
             },
-          },
-          type: 'REQUEST_DATA_GET_/OFFERERS?KEYWORDS=NICE%20WORDS',
+            type: 'REQUEST_DATA_GET_/OFFERERS?KEYWORDS=HONOR%C3%A9%20JUSTICE',
+          })
+        })
+      })
+
+      describe('when there is one keyword in the url', () => {
+        it('should transmit keywords', () => {
+          // given
+          const ownProps = {
+            query: {
+              parse: jest.fn().mockReturnValue({
+                de: 'Balzac',
+                lieu: 'B3',
+                'mots-cles': 'Club Dorothy',
+              }),
+            },
+          }
+          const handleFail = jest.fn()
+          const handleSuccess = jest.fn()
+
+          // when
+          mapDispatchToProps(dispatch, ownProps).loadOfferers(handleSuccess, handleFail)
+
+          // then
+          expect(dispatch).toHaveBeenCalledWith({
+            config: {
+              apiPath: '/offerers?keywords=Club%20Dorothy',
+              handleFail,
+              handleSuccess,
+              method: 'GET',
+              normalizer: {
+                managedVenues: {
+                  normalizer: {
+                    offers: 'offers',
+                  },
+                  stateKey: 'venues',
+                },
+              },
+            },
+            type: 'REQUEST_DATA_GET_/OFFERERS?KEYWORDS=CLUB%20DOROTHY',
+          })
+        })
+      })
+
+      describe('createApiPath', () => {
+        it('should create api url with no params', () => {
+          // given
+          const loadOffererKeyWords = []
+          // when
+          const result = createApiPath(loadOffererKeyWords)
+
+          // then
+          expect(result).toStrictEqual('/offerers')
+        })
+
+        describe('when there is one keyword', () => {
+          it('should create api url with keywords params only', () => {
+            // given
+            const loadOffererParameters = ['example']
+
+            // when
+            const result = createApiPath(loadOffererParameters)
+
+            // then
+            expect(result).toStrictEqual('/offerers?keywords=example')
+          })
+        })
+
+        describe('when there is multiple keywords', () => {
+          it('should create api url with keywords params only', () => {
+            // given
+            const loadOffererParameters = ['example', 'keyword']
+
+            // when
+            const result = createApiPath(loadOffererParameters)
+
+            // then
+            expect(result).toStrictEqual('/offerers?keywords=example%20keyword')
+          })
         })
       })
     })
@@ -174,29 +267,6 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
           type: 'ASSIGN_DATA',
         })
       })
-    })
-  })
-
-  describe('createApiPath', () => {
-    it('should create api url with no params', () => {
-      // given
-      const loadOffererKeyWords = null
-      // when
-      const result = createApiPath(loadOffererKeyWords)
-
-      // then
-      expect(result).toStrictEqual('/offerers')
-    })
-
-    it('should create api url with keywords params only', () => {
-      // given
-      const loadOffererParameters = 'example'
-
-      // when
-      const result = createApiPath(loadOffererParameters)
-
-      // then
-      expect(result).toStrictEqual('/offerers?keywords=example')
     })
   })
 })
