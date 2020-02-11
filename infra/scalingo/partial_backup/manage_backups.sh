@@ -3,7 +3,7 @@
 failure_alert() {
   message="$app_name backup restore failed at step: $1"
   curl -X POST -H 'Content-type: application/json' --data "{'text': '$message'}" $SLACK_OPS_BOT_URL
-  end_script
+  kill_tunnel_if_exist $app_name
   exit 1
 }
 
