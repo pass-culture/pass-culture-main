@@ -239,6 +239,20 @@ describe('src | components | pages | Offer | Offer ', () => {
         expect(wrapper.find(Form).prop('action')).toStrictEqual('/offers')
       })
 
+      it('should display a limited textarea field to define name of the offer', () => {
+        // when
+        const wrapper = shallow(<Offer {...props} />)
+
+        // then
+        const field = wrapper.find(Field).at(0)
+        expect(field).toHaveLength(1)
+        expect(field.prop('label')).toBe('Titre de l’offre')
+        expect(field.prop('required')).toBe(true)
+        expect(field.prop('maxLength')).toBe(90)
+        expect(field.prop('displayMaxLength')).toBe(true)
+        expect(field.prop('type')).toBe('textarea')
+      })
+
       it('should not display preview link', () => {
         // given
         props.query.context = () => ({

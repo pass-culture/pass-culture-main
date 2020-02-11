@@ -424,10 +424,14 @@ class Offer extends PureComponent {
         >
           <div className="field-group offer-form">
             <Field
+              className="title-field"
+              displayMaxLength
               isExpanded
               label="Titre de l’offre"
+              maxLength={90}
               name="name"
               required
+              type="textarea"
             />
             <Field
               label="Type"
