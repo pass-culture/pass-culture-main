@@ -1,5 +1,4 @@
 admin_users: "{{ vault_admin_users }}"
-datalake_postgres_url: "{{ vault_datalake_postgres_url }}"
 google_auth_client_id: "{{ vault_google_auth_client_id }}"
 google_auth_client_secret: "{{ vault_google_auth_client_secret }}"
 allowed_users: "{{ vault_allowed_users }}"
