@@ -30,7 +30,7 @@ services:
       - db_nw
 
   flask:
-    image: passcultureapp/api-flask:latest
+    image: python:3.7.6
     container_name: pc-flask
     command: >
       bash -c "set -x;
