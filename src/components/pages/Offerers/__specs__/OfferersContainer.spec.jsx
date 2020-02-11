@@ -78,36 +78,79 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
     })
 
     describe('loadOfferers', () => {
-      it('should load all offerers by default', () => {
-        // given
-        const ownProps = {
-          query: {
-            parse: jest.fn().mockReturnValue({}),
-          },
-        }
-        const handleFail = jest.fn()
-        const handleSuccess = jest.fn()
+      describe('when user is not an admin', () => {
+        it('should request for validated offerers only', () => {
+          // given
+          const ownProps = {
+            query: {
+              parse: jest.fn().mockReturnValue({}),
+            },
+            currentUser: {
+              isAdmin: false,
+            },
+          }
+          const handleFail = jest.fn()
+          const handleSuccess = jest.fn()
 
-        // when
-        mapDispatchToProps(dispatch, ownProps).loadOfferers(handleSuccess, handleFail)
+          // when
+          mapDispatchToProps(dispatch, ownProps).loadOfferers(handleSuccess, handleFail)
 
-        // then
-        expect(dispatch).toHaveBeenCalledWith({
-          config: {
-            apiPath: '/offerers',
-            handleFail: expect.any(Function),
-            handleSuccess: expect.any(Function),
-            method: 'GET',
-            normalizer: {
-              managedVenues: {
-                normalizer: {
-                  offers: 'offers',
+          // then
+          expect(dispatch).toHaveBeenCalledWith({
+            config: {
+              apiPath: '/offerers?validated=true',
+              handleFail,
+              handleSuccess,
+              method: 'GET',
+              normalizer: {
+                managedVenues: {
+                  normalizer: {
+                    offers: 'offers',
+                  },
+                  stateKey: 'venues',
                 },
-                stateKey: 'venues',
               },
             },
-          },
-          type: 'REQUEST_DATA_GET_/OFFERERS',
+            type: 'REQUEST_DATA_GET_/OFFERERS?VALIDATED=TRUE',
+          })
+        })
+      })
+
+      describe('when current user is an admin', () => {
+        it('should request for all offerers', () => {
+          // given
+          const ownProps = {
+            query: {
+              parse: jest.fn().mockReturnValue({}),
+            },
+            currentUser: {
+              isAdmin: true,
+            },
+          }
+          const handleFail = jest.fn()
+          const handleSuccess = jest.fn()
+
+          // when
+          mapDispatchToProps(dispatch, ownProps).loadOfferers(handleSuccess, handleFail)
+
+          // then
+          expect(dispatch).toHaveBeenCalledWith({
+            config: {
+              apiPath: '/offerers',
+              handleFail,
+              handleSuccess,
+              method: 'GET',
+              normalizer: {
+                managedVenues: {
+                  normalizer: {
+                    offers: 'offers',
+                  },
+                  stateKey: 'venues',
+                },
+              },
+            },
+            type: 'REQUEST_DATA_GET_/OFFERERS',
+          })
         })
       })
 
@@ -121,6 +164,9 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
                 lieu: 'B3',
                 'mots-cles': ['Honoré', 'Justice'],
               }),
+            },
+            currentUser: {
+              isAdmin: true,
             },
           }
           const handleFail = jest.fn()
@@ -161,6 +207,9 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
                 'mots-cles': 'Club Dorothy',
               }),
             },
+            currentUser: {
+              isAdmin: true,
+            },
           }
           const handleFail = jest.fn()
           const handleSuccess = jest.fn()
@@ -185,6 +234,46 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
               },
             },
             type: 'REQUEST_DATA_GET_/OFFERERS?KEYWORDS=CLUB%20DOROTHY',
+          })
+        })
+      })
+
+      describe('when current user is not an admin and search by keywords', () => {
+        it('should transmit keywords', () => {
+          // given
+          const ownProps = {
+            query: {
+              parse: jest.fn().mockReturnValue({
+                'mots-cles': 'Club Dorothy',
+              }),
+            },
+            currentUser: {
+              isAdmin: false,
+            },
+          }
+          const handleFail = jest.fn()
+          const handleSuccess = jest.fn()
+
+          // when
+          mapDispatchToProps(dispatch, ownProps).loadOfferers(handleSuccess, handleFail)
+
+          // then
+          expect(dispatch).toHaveBeenCalledWith({
+            config: {
+              apiPath: '/offerers?keywords=Club%20Dorothy&validated=true',
+              handleFail,
+              handleSuccess,
+              method: 'GET',
+              normalizer: {
+                managedVenues: {
+                  normalizer: {
+                    offers: 'offers',
+                  },
+                  stateKey: 'venues',
+                },
+              },
+            },
+            type: 'REQUEST_DATA_GET_/OFFERERS?KEYWORDS=CLUB%20DOROTHY&VALIDATED=TRUE',
           })
         })
       })
