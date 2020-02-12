@@ -271,7 +271,7 @@ class Patch:
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             thing_product = create_product_with_thing_type(thing_name='Old Name', owning_offerer=None)
-            offer = create_offer_with_thing_product(venue, thing_product)
+            offer = create_offer_with_thing_product(venue, product=thing_product)
 
             repository.save(offer, user, user_offerer)
 
