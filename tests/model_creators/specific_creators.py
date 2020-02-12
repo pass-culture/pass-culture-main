@@ -51,20 +51,8 @@ def create_booking_for_thing(amount: int = 50,
     return booking
 
 
-def create_event_occurrence(offer: Offer,
-                            beginning_datetime: datetime = datetime.utcnow() + timedelta(hours=2),
-                            end_datetime: datetime = datetime.utcnow() + timedelta(hours=5)) -> Dict:
-    event_occurrence = {}
-    event_occurrence['offer'] = offer
-    event_occurrence['offerId'] = offer.id
-    event_occurrence['beginningDatetime'] = beginning_datetime
-    event_occurrence['endDatetime'] = end_datetime
-
-    return event_occurrence
-
-
 def create_offer_with_event_product(venue: Venue = None,
-                                    booking_email: Optional[str] = None,
+                                    booking_email: str = 'booking@example.net',
                                     date_created: datetime = datetime.utcnow(),
                                     description: Optional[str] = None,
                                     duration_minutes: Optional[int] = 60,
@@ -78,9 +66,6 @@ def create_offer_with_event_product(venue: Venue = None,
                                     last_provider_id: int = None,
                                     product: Product = None,
                                     last_provider: Provider = None,
-                                    id_at_providers: str = None,
-                                    description: str = None,
-                                    is_duo: bool = False,
                                     thumb_count: int = 0) -> Offer:
     offer = Offer()
     if product is None:
@@ -106,9 +91,21 @@ def create_offer_with_event_product(venue: Venue = None,
     return offer
 
 
+def create_event_occurrence(offer: Offer,
+                            beginning_datetime: datetime = datetime.utcnow() + timedelta(hours=2),
+                            end_datetime: datetime = datetime.utcnow() + timedelta(hours=5)) -> Dict:
+    event_occurrence = {}
+    event_occurrence['offer'] = offer
+    event_occurrence['offerId'] = offer.id
+    event_occurrence['beginningDatetime'] = beginning_datetime
+    event_occurrence['endDatetime'] = end_datetime
+
+    return event_occurrence
+
+
 def create_offer_with_thing_product(venue: Venue,
                                     author_name: str = 'Test Author',
-                                    booking_email: Optional[str] = None,
+                                    booking_email: Optional[str] = 'booking@example.net',
                                     date_created: datetime = datetime.utcnow(),
                                     description: Optional[str] = None,
                                     id_at_providers: str = None,

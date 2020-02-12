@@ -327,7 +327,13 @@ class Patch:
             venue = create_venue(offerer)
             thing_product = create_product_with_thing_type(thing_name='Old Name', owning_offerer=None)
             provider = create_provider(idx=1, local_class='OpenAgenda', is_active=True, is_enable_for_pro=True)
-            offer = create_offer_with_event_product(venue, thing_product, id_at_providers='24561461', last_provider=provider)
+            offer = create_offer_with_event_product(
+                booking_email='wrong-email@example.net',
+                venue=venue,
+                product=thing_product,
+                id_at_providers='24561461',
+                last_provider=provider
+            )
 
             repository.save(offer, user, user_offerer)
 
@@ -355,7 +361,8 @@ class Patch:
             venue = create_venue(offerer)
             thing_product = create_product_with_thing_type(thing_name='Old Name', owning_offerer=None)
             provider = get_provider_by_local_class('AllocineStocks')
-            offer = create_offer_with_event_product(venue, thing_product, id_at_providers='24561461', last_provider=provider)
+            offer = create_offer_with_event_product(venue, thing_product, id_at_providers='24561461',
+                                                    last_provider=provider)
 
             repository.save(offer, user, user_offerer)
 
