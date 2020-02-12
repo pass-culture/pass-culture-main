@@ -11,17 +11,14 @@ import { selectOfferers } from '../../../selectors/data/offerersSelectors'
 
 import { OFFERERS_API_PATH } from '../../../config/apiPaths'
 
-export const createApiPath = (searchKeyWords, onlyValidatedOfferers) => {
+export const createApiPath = searchKeyWords => {
   let apiPath = OFFERERS_API_PATH
   let apiQueryParams = {}
 
-  if (searchKeyWords.length > 0 || onlyValidatedOfferers) apiPath += '?'
-
   if (searchKeyWords.length > 0) {
+    apiPath += '?'
     apiQueryParams.keywords = searchKeyWords.join(' ')
   }
-
-  if (onlyValidatedOfferers) apiQueryParams.validated = true
 
   const queryParams = stringify(apiQueryParams)
 
@@ -39,16 +36,14 @@ export const mapDispatchToProps = (dispatch, ownProps) => ({
   closeNotification: () => dispatch(closeNotification()),
 
   loadOfferers: (handleSuccess, handleFail) => {
-    const { query, currentUser } = ownProps
+    const { query } = ownProps
 
     const queryParams = query.parse()
     let searchKeyWords = queryParams['mots-cles'] || []
 
     if (typeof searchKeyWords === 'string') searchKeyWords = [searchKeyWords]
 
-    const onlyValidatedOfferers = !currentUser.isAdmin
-
-    const apiPath = createApiPath(searchKeyWords, onlyValidatedOfferers)
+    const apiPath = createApiPath(searchKeyWords)
 
     dispatch(
       requestData({

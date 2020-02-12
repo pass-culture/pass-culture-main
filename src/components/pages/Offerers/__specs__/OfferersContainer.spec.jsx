@@ -90,67 +90,30 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
           query: {
             parse: jest.fn().mockReturnValue({}),
           },
-          currentUser: {
-            isAdmin: true,
-          },
         }
       })
 
-      describe('when user is not an admin', () => {
-        it('should request for validated offerers only', () => {
-          // given
-          ownProps.currentUser.isAdmin = false
+      it('should request for all offerers by default', () => {
+        // when
+        mapDispatchToProps(dispatch, ownProps).loadOfferers(handleSuccess, handleFail)
 
-          // when
-          mapDispatchToProps(dispatch, ownProps).loadOfferers(handleSuccess, handleFail)
-
-          // then
-          expect(dispatch).toHaveBeenCalledWith({
-            config: {
-              apiPath: '/offerers?validated=true',
-              handleFail,
-              handleSuccess,
-              method: 'GET',
-              normalizer: {
-                managedVenues: {
-                  normalizer: {
-                    offers: 'offers',
-                  },
-                  stateKey: 'venues',
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          config: {
+            apiPath: '/offerers',
+            handleFail,
+            handleSuccess,
+            method: 'GET',
+            normalizer: {
+              managedVenues: {
+                normalizer: {
+                  offers: 'offers',
                 },
+                stateKey: 'venues',
               },
             },
-            type: 'REQUEST_DATA_GET_/OFFERERS?VALIDATED=TRUE',
-          })
-        })
-      })
-
-      describe('when current user is an admin', () => {
-        it('should request for all offerers', () => {
-          // given
-          ownProps.currentUser.isAdmin = true
-
-          // when
-          mapDispatchToProps(dispatch, ownProps).loadOfferers(handleSuccess, handleFail)
-
-          // then
-          expect(dispatch).toHaveBeenCalledWith({
-            config: {
-              apiPath: '/offerers',
-              handleFail,
-              handleSuccess,
-              method: 'GET',
-              normalizer: {
-                managedVenues: {
-                  normalizer: {
-                    offers: 'offers',
-                  },
-                  stateKey: 'venues',
-                },
-              },
-            },
-            type: 'REQUEST_DATA_GET_/OFFERERS',
-          })
+          },
+          type: 'REQUEST_DATA_GET_/OFFERERS',
         })
       })
 
@@ -188,7 +151,7 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
       })
 
       describe('when there is one keyword in the url', () => {
-        it('should transmit keywords', () => {
+        it('should transmit keyword', () => {
           // given
           ownProps.query.parse.mockReturnValue({
             de: 'Balzac',
@@ -216,38 +179,6 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
               },
             },
             type: 'REQUEST_DATA_GET_/OFFERERS?KEYWORDS=CLUB%20DOROTHY',
-          })
-        })
-      })
-
-      describe('when current user is not an admin and search by keywords', () => {
-        it('should transmit keywords and ask for validated offerers', () => {
-          // given
-          ownProps.query.parse.mockReturnValue({
-            'mots-cles': 'Club Dorothy',
-          })
-          ownProps.currentUser.isAdmin = false
-
-          // when
-          mapDispatchToProps(dispatch, ownProps).loadOfferers(handleSuccess, handleFail)
-
-          // then
-          expect(dispatch).toHaveBeenCalledWith({
-            config: {
-              apiPath: '/offerers?keywords=Club%20Dorothy&validated=true',
-              handleFail,
-              handleSuccess,
-              method: 'GET',
-              normalizer: {
-                managedVenues: {
-                  normalizer: {
-                    offers: 'offers',
-                  },
-                  stateKey: 'venues',
-                },
-              },
-            },
-            type: 'REQUEST_DATA_GET_/OFFERERS?KEYWORDS=CLUB%20DOROTHY&VALIDATED=TRUE',
           })
         })
       })
