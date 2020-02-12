@@ -57,7 +57,8 @@ jobs:
           name: Running industrial sandbox
           command: |
             cd pass-culture-main
-            dockerize -wait http://localhost/health -timeout 3m -wait-retry-interval 5s
+            dockerize -wait http://localhost/health/api -timeout 3m -wait-retry-interval 5s
+            dockerize -wait http://localhost/health/database -timeout 3m -wait-retry-interval 5s
             ./pc sandbox --name=industrial
       - run:
           name: Running end2end tests
