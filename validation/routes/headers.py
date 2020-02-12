@@ -54,7 +54,7 @@ def _get_origin_header_whitelist():
 
 
 def _get_endpoint_exceptions():
-    return ['patch_booking_by_token', 'get_booking_by_token', 'send_storage_file', 'health',
+    return ['patch_booking_by_token', 'get_booking_by_token', 'send_storage_file',
             'list_export_urls', 'export_table', 'validate_offerer_attachment', 'validate_venue', 'validate_new_offerer',
             'get_all_offerers_with_managing_user_information',
             'get_all_offerers_with_managing_user_information_and_venue',
@@ -66,7 +66,9 @@ def _get_endpoint_exceptions():
             'get_booking_by_token_v2',
             'patch_booking_keep_by_token',
             'api_documentation',
-            'static_files'
+            'static_files',
+            'health_api',
+            'health_database'
             ]
 
 

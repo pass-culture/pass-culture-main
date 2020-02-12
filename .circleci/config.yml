@@ -110,7 +110,8 @@ jobs:
           name: Running Sandbox
           command: |
             cd pass-culture-main
-            dockerize -wait http://localhost/health -timeout 5m -wait-retry-interval 5s
+            dockerize -wait http://localhost/health/api -timeout 5m -wait-retry-interval 5s
+            dockerize -wait http://localhost/health/database -timeout 5m -wait-retry-interval 5s
             ./pc sandbox --name=industrial
       - run:
           name: Running end2end tests WEBAPP
@@ -180,7 +181,8 @@ jobs:
           name: Running Sandbox
           command: |
             cd pass-culture-main
-            dockerize -wait http://localhost/health -timeout 5m -wait-retry-interval 5s
+            dockerize -wait http://localhost/health/api -timeout 5m -wait-retry-interval 5s
+            dockerize -wait http://localhost/health/database -timeout 5m -wait-retry-interval 5s
             ./pc sandbox --name=industrial
       - run:
           name: Running end2end tests PRO
