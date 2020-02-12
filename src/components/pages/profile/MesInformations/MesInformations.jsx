@@ -3,7 +3,7 @@ import React, { Fragment, PureComponent } from 'react'
 import { Link } from 'react-router-dom'
 
 import getDepartementByCode from '../../../../utils/getDepartementByCode'
-import { MesInformationsField } from './MesInformationsField'
+import { MesInformationsField } from '../forms/fields/MesInformationsField'
 
 class MesInformations extends PureComponent {
   constructor(props) {

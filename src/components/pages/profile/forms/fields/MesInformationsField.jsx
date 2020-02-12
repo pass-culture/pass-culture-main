@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { forwardRef } from 'react'
-import Icon from '../../../layout/Icon/Icon'
+import Icon from '../../../../layout/Icon/Icon'
 
 const NOOP = () => {}
 

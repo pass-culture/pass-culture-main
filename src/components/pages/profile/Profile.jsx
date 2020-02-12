@@ -2,46 +2,28 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router-dom'
 
-import { profileInformationsFieldsConfig } from './profileInformationsFieldsConfig'
+import LoaderContainer from '../../layout/Loader/LoaderContainer'
+import NotMatch from '../not-match/NotMatch'
+import UserPasswordField from './forms/fields/UserPasswordField'
 import ProfileMainView from './ProfileMainView/ProfileMainView'
 import ProfileUpdateSuccess from './ProfileUpdateSuccess/ProfileUpdateSuccess'
-import NotMatch from '../not-match/NotMatch'
-import LoaderContainer from '../../layout/Loader/LoaderContainer'
 
 class Profile extends PureComponent {
-  parseRoutesWithComponent = () => {
-    const components = profileInformationsFieldsConfig.filter(o => o.component)
-    const routes = components.reduce((acc, o) => ({ ...acc, [o.routeName]: o }), {})
-    return routes
-  }
+  renderProfileMainView = currentUser => () => <ProfileMainView currentUser={currentUser} />
 
-  renderProfileMainView = currentUser => () => (
-    <ProfileMainView
-      currentUser={currentUser}
-      informationsFields={profileInformationsFieldsConfig}
-    />
-  )
-
-  renderProfileUpdateSuccess = routes => routeProps => (
+  renderPasswordUpdateSuccess = routeProps => (
     <ProfileUpdateSuccess
       {...routeProps}
-      config={routes}
+      title="Votre mot de passe"
     />
   )
 
-  renderProfileEditForm = routes => routeProps => {
-    const { view } = routeProps.match.params
-    const Component = routes[view].component
-
-    if (!Component) return null
-
-    const { title } = routes[view]
-
-    return (<Component
+  renderPasswordEditForm = routeProps => (
+    <UserPasswordField
       {...routeProps}
-      title={title}
-            />)
-  }
+      title="Votre mot de passe"
+    />
+  )
 
   renderNoMatch = routeProps => (<NotMatch
     {...routeProps}
@@ -51,8 +33,6 @@ class Profile extends PureComponent {
 
   render() {
     const { currentUser, location } = this.props
-    const routes = this.parseRoutesWithComponent()
-    const possibleRoutes = Object.keys(routes).join('|')
 
     return (
       <div
@@ -70,14 +50,14 @@ class Profile extends PureComponent {
             <Route
               exact
               key="route-profile-update-success"
-              path={`/profil/:view(${possibleRoutes})/success/:menu(menu)?`}
-              render={this.renderProfileUpdateSuccess(routes)}
+              path="/profil/:view(password)/success/:menu(menu)?"
+              render={this.renderPasswordUpdateSuccess}
             />
             <Route
               exact
               key="route-profile-edit-form"
-              path={`/profil/:view(${possibleRoutes})/:menu(menu)?`}
-              render={this.renderProfileEditForm(routes)}
+              path="/profil/:view(password)/:menu(menu)?"
+              render={this.renderPasswordEditForm}
             />
             <Route component={this.renderNoMatch} />
           </Switch>

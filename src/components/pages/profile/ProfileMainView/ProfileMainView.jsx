@@ -7,7 +7,7 @@ import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFoot
 import MesInformationsContainer from '../MesInformations/MesInformationsContainer'
 import RemainingCredit from '../RemainingCredit/RemainingCredit'
 
-const ProfileMainView = ({ informationsFields, currentUser }) => (
+const ProfileMainView = ({ currentUser }) => (
   <div
     className="pc-page-view pc-theme-default flex-rows with-header"
     id="profile-page-main-view"
@@ -16,10 +16,7 @@ const ProfileMainView = ({ informationsFields, currentUser }) => (
     <main className="mosaic-background pc-main is-clipped is-relative">
       <div className="pc-scroll-container">
         {currentUser && <RemainingCredit currentUser={currentUser} />}
-        <MesInformationsContainer
-          fields={informationsFields}
-          user={currentUser}
-        />
+        <MesInformationsContainer user={currentUser} />
         <div className="app-version">
           {`v${version}`}
         </div>
@@ -34,7 +31,6 @@ const ProfileMainView = ({ informationsFields, currentUser }) => (
 
 ProfileMainView.propTypes = {
   currentUser: PropTypes.oneOfType([PropTypes.bool, PropTypes.shape()]).isRequired,
-  informationsFields: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
 
 export default ProfileMainView
