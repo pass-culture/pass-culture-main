@@ -42,7 +42,8 @@ jobs:
       - run:
           name: Running API tests
           command: |
-            dockerize -wait http://localhost/health -timeout 4m -wait-retry-interval 2s
+            dockerize -wait http://localhost/health/api -timeout 4m -wait-retry-interval 2s
+            dockerize -wait http://localhost/health/database -timeout 4m -wait-retry-interval 2s
             echo 'y' | pc test-backend
 
   tests-webapp:
@@ -85,7 +86,8 @@ jobs:
       - run:
           name: Running Sandbox
           command: |
-            dockerize -wait http://localhost/health -timeout 5m -wait-retry-interval 5s
+            dockerize -wait http://localhost/health/api -timeout 5m -wait-retry-interval 5s
+            dockerize -wait http://localhost/health/database -timeout 5m -wait-retry-interval 5s
             pc sandbox --name=industrial
       - run:
           name: Running functional tests WEBAPP
@@ -144,7 +146,8 @@ jobs:
       - run:
           name: Running Sandbox
           command: |
-            dockerize -wait http://localhost/health -timeout 5m -wait-retry-interval 5s
+            dockerize -wait http://localhost/health/api -timeout 5m -wait-retry-interval 5s
+            dockerize -wait http://localhost/health/database -timeout 5m -wait-retry-interval 5s
             pc sandbox --name=industrial
       - run:
           name: Running functional tests PRO
