@@ -100,8 +100,8 @@ jobs:
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use v8.15.1
             cd ~/pass-culture-main/webapp
+            nvm install
             git checkout master
             yarn install
             yarn start
@@ -118,8 +118,8 @@ jobs:
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use v8.15.1
             cd ~/pass-culture-main/webapp
+            nvm install
             dockerize -wait http://localhost:3000 -timeout 5m -wait-retry-interval 5s
             yarn test:cafe
       - store_artifacts:
@@ -171,8 +171,8 @@ jobs:
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use v8.15.1
             cd ~/pass-culture-main/pro
+            nvm install
             git checkout master
             yarn install
             yarn start
@@ -189,8 +189,8 @@ jobs:
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use v8.15.1
             cd ~/pass-culture-main/pro
+            nvm install
             dockerize -wait http://localhost:3001 -timeout 5m -wait-retry-interval 5s
             yarn test:cafe
       - store_artifacts:
