@@ -1,6 +1,6 @@
 import { updateBookingLimitDatetime } from '../adaptBookingLimitDatetimeGivenBeginningDatetime'
 
-describe('src | components | pages | Offer | StockManager | StockItem | decorators | updateBookingLimitDatetime', () => {
+describe('components | OfferEdition | updateBookingLimitDatetime', () => {
   describe('for an event product case', () => {
     describe('when booking limit date is at least one day before beginning date', () => {
       it('should return 23h59 minus 1 or 2 hours for europe/paris (because utc)', () => {

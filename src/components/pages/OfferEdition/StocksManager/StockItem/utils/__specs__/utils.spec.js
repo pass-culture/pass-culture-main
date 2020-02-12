@@ -10,7 +10,7 @@ import {
   formatPrice,
 } from '../utils'
 
-describe('src | components | pages | Offer | StockItem | utils', () => {
+describe('components | OfferEdition | utils', () => {
   describe('getRemainingStocksCount', () => {
     it('should return `Illimité` when available stock is unlimited', () => {
       // given

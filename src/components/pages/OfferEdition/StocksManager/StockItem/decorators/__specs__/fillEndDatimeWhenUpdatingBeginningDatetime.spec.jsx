@@ -3,7 +3,7 @@ import { updateEndDateTimeField } from '../fillEndDatimeWhenUpdatingBeginningDat
 const europeTimezone = 'Europe/Paris'
 const americaTimezone = 'America/Cayenne'
 
-describe('src | components | pages | Offer | StockItem | decorators | fillEndDatimeWhenUpdatingBeginningDatetime', () => {
+describe('components | OfferEdition | fillEndDatimeWhenUpdatingBeginningDatetime', () => {
   let allValues
   let triggerDate
   let doublonTriggerDateName

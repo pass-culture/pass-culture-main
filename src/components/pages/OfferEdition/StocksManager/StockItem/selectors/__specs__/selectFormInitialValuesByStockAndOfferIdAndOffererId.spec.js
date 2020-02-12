@@ -1,6 +1,6 @@
 import selectFormInitialValuesByStockAndOfferIdAndOffererId from '../selectFormInitialValuesByStockAndOfferIdAndOffererId'
 
-describe('src | components | pages | Offer | StocksManager | StockItem | selectors | selectFormInitialValuesByStockAndOfferIdAndOffererId', () => {
+describe('components | OfferEdition | selectFormInitialValuesByStockAndOfferIdAndOffererId', () => {
   it('should select the global state', () => {
     // given
     const offerId = 'UU'

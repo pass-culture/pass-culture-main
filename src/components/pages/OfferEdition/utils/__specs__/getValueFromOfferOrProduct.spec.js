@@ -1,6 +1,6 @@
 import { getValueFromOfferOrProduct } from '../getValueFromOfferOrProduct'
 
-describe('src | components | pages | Offer | utils | getValueFromOfferOrProduct', () => {
+describe('components | OfferEdition | getValueFromOfferOrProduct', () => {
   it('should take info from product when creating a new offer from existing product', () => {
     // given
     const offer = {}

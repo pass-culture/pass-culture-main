@@ -3,7 +3,7 @@ import React from 'react'
 import PropTypes from "prop-types"
 
 const MediationItem = ({ mediation }) => {
-  const { id, isActive, thumbUrl } = mediation || {}
+  const { id, isActive, thumbUrl } = mediation
   return (
     <Form
       action={`/mediations/${id}`}

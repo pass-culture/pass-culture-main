@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | Offer | StockItem | DeleteDialog snapshot should match the snapshot when isEvent = false 1`] = `
+exports[`components | OfferEdition | DeleteDialog snapshot should match the snapshot when isEvent = false 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <DeleteDialog
@@ -294,7 +294,7 @@ ShallowWrapper {
 }
 `;
 
-exports[`src | components | pages | Offer | StockItem | DeleteDialog snapshot should match the snapshot when isEvent = true 1`] = `
+exports[`components | OfferEdition | DeleteDialog snapshot should match the snapshot when isEvent = true 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <DeleteDialog

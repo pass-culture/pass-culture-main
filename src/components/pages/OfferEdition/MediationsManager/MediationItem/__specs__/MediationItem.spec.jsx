@@ -4,7 +4,7 @@ import { shallow } from 'enzyme'
 import MediationItem from '../MediationItem'
 import { Field, Form } from 'pass-culture-shared'
 
-describe('src | components | pages | Offer | MediationItem', () => {
+describe('components | OfferEdition | MediationItem', () => {
   let props
 
   beforeEach(() => {

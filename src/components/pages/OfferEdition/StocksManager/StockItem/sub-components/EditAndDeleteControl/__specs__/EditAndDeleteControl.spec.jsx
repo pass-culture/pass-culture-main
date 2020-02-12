@@ -13,7 +13,7 @@ jest.mock('redux-saga-data', () => ({
   requestData: jest.fn(),
 }))
 
-describe('src | components | pages | Offer | StockManager | StockItem | sub-components | EditAndDeleteControl', () => {
+describe('components | OfferEdition | EditAndDeleteControl', () => {
   let props
 
   beforeEach(() => {

@@ -1,6 +1,6 @@
 import { mapDispatchToProps } from '../ProductFieldsContainer'
 
-describe('src | components | pages | Offer | StocksManager | StockItem | sub-components | fields | ProductFieldsContainer', () => {
+describe('components | OfferEdition | ProductFieldsContainer', () => {
   describe('mapDispatchToProps', () => {
     let dispatch
 

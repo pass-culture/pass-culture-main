@@ -1,7 +1,7 @@
 import { mapDispatchToProps, mapStateToProps, mergeProps } from '../OfferContainer'
 import state from '../../../utils/mocks/state'
 
-describe('src | components | pages | OfferEdition | Offer | OfferContainer ', () => {
+describe('components | OfferEdition | OfferContainer ', () => {
   let props
 
   beforeEach(() => {

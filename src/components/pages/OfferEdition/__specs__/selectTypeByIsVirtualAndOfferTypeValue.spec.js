@@ -1,7 +1,7 @@
 import selectTypeByIsVenueVirtualAndOfferTypeValue from '../selectTypeByIsVenueVirtualAndOfferTypeValue'
 import state from '../../../../selectors/data/__specs__/mockState.json'
 
-describe('selectTypeByIsVenueVirtualAndOfferTypeValue', () => {
+describe('components | OfferEdition | selectTypeByIsVenueVirtualAndOfferTypeValue', () => {
   describe('when offer type is consistent with isVirtual', () => {
     it('returns an offer type given its value', () => {
       // given

@@ -4,7 +4,7 @@ import { Field, Form } from 'react-final-form'
 
 import SubmitAndCancelControl from '../SubmitAndCancelControl'
 
-describe('src | components | pages | Offer | StocksManagerContainer | StockItem | SubmitAndCancelControl ', () => {
+describe('components | OfferEdition | SubmitAndCancelControl ', () => {
   it('should match the snapshot', () => {
     // given
     const initialProps = {
@@ -30,10 +30,12 @@ describe('src | components | pages | Offer | StocksManagerContainer | StockItem 
       const stockId = 'AE'
 
       const onSubmitMock = () => jest.fn()
-      const renderField = ({ input }) => (<input
-        name="foo"
-        {...input}
-      />);
+      const renderField = ({ input }) => (
+        <input
+          name="foo"
+          {...input}
+        />
+      )
       const renderForm = ({ form, handleSubmit }) => (
         <Fragment>
           <Field

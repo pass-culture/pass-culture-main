@@ -3,7 +3,7 @@ import { shallow } from 'enzyme'
 
 import StocksManager from '../StocksManager'
 
-describe('src | components | pages | Offer | StocksManager | StocksManager', () => {
+describe('components | OfferEdition | StocksManager', () => {
   let props
   let query
   const stock = {

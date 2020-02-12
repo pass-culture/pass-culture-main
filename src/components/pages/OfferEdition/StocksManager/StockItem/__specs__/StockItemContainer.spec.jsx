@@ -2,7 +2,7 @@ import { mapStateToProps, mapDispatchToProps } from '../StockItemContainer'
 import state from '../../../../../utils/mocks/state'
 import Offer from '../../../ValueObjects/Offer'
 
-describe('stockItemContainer', () => {
+describe('components | OfferEdition | stockItemContainer', () => {
   describe('mapStateToProps', () => {
     describe('when adding stock to one offer', () => {
       it('should map correctly the state', () => {

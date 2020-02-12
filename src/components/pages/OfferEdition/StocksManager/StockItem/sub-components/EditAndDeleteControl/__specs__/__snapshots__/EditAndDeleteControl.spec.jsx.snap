@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | Offer | StockManager | StockItem | sub-components | EditAndDeleteControl should match the snapshot 1`] = `
+exports[`components | OfferEdition | EditAndDeleteControl should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Provider

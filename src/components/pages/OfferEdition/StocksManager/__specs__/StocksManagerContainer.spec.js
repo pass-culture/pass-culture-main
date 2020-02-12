@@ -1,6 +1,6 @@
 import { mapStateToProps } from '../StocksManagerContainer'
 
-describe('src | components | pages | Offer | StocksManagerContainer | mapStateToProps', () => {
+describe('components | OfferEdition | StocksManagerContainer', () => {
   let state
   let props
 

@@ -26,7 +26,7 @@ const state = {
   },
 }
 
-describe('selectTimezoneByVenueIdAndOffererId', () => {
+describe('components | OfferEdition | selectTimezoneByVenueIdAndOffererId', () => {
   it('should return undefined when no venue', () => {
     // given
     const venueId = 'not-valid-id'
@@ -35,7 +35,7 @@ describe('selectTimezoneByVenueIdAndOffererId', () => {
     const result = selectTimezoneByVenueIdAndOffererId(state, venueId)
 
     // then
-    expect(result).toStrictEqual(undefined)
+    expect(result).toBeUndefined()
   })
 
   it('should return undefined when virtual venue and no offerer', () => {
@@ -47,7 +47,7 @@ describe('selectTimezoneByVenueIdAndOffererId', () => {
     const result = selectTimezoneByVenueIdAndOffererId(state, venueId, offererId)
 
     // then
-    expect(result).toStrictEqual(undefined)
+    expect(result).toBeUndefined()
   })
 
   it('should return the timezone of the venue when physical', () => {

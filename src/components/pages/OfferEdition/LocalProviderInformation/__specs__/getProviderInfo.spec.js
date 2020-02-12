@@ -1,7 +1,7 @@
 import { getProviderInfo } from '../getProviderInfo'
 import { PROVIDER_ICONS } from '../../../../utils/providers'
 
-describe('src | components | pages | Offer | LocalProviderInformation | getProviderInfo', () => {
+describe('components | OfferEdition | getProviderInfo', () => {
   describe('when offer came from Tite live', () => {
     it('should compute a provider info object accordingly', () => {
       // given

@@ -1,6 +1,6 @@
 import selectFormInitialValuesByProductAndOfferAndOffererAndVenue from '../selectFormInitialValuesByProductAndOfferAndOffererAndVenue'
 
-describe('src | components | pages | Offer | utils | selectFormInitialValuesByProductAndOfferAndOffererAndVenue', () => {
+describe('components | OfferEdition | selectFormInitialValuesByProductAndOfferAndOffererAndVenue', () => {
   it('should build an object using initial values from offer or product (given POST or PATCH context), venue and offerer', () => {
     // given
     const state = {}

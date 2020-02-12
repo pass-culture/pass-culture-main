@@ -5,7 +5,7 @@ import MediationsManager, { NO_MEDIATION_TOOLTIP } from '../MediationsManager'
 import { NavLink } from 'react-router-dom'
 import { Icon } from 'pass-culture-shared'
 
-describe('src | components | pages | Offer | MediationsManager | MediationsManager', () => {
+describe('components | OfferEdition | MediationsManager', () => {
   let showNotification
   let closeNotification
   let props
@@ -48,9 +48,11 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
         text:
           'Cette offre ne sera pas mise en avant dans l’application pass Culture mais sera accessible via la recherche par mots-clés.',
         tooltip: {
-          children: <span>
-            {'Pourquoi ?'}
-                    </span>,
+          children: (
+            <span>
+              {'Pourquoi ?'}
+            </span>
+          ),
           place: 'bottom',
           tip: NO_MEDIATION_TOOLTIP,
           type: 'info',
@@ -74,9 +76,11 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
         text:
           'Cette offre ne sera pas mise en avant dans l’application pass Culture mais sera accessible via la recherche par mots-clés.',
         tooltip: {
-          children: <span>
-            {'Pourquoi ?'}
-                    </span>,
+          children: (
+            <span>
+              {'Pourquoi ?'}
+            </span>
+          ),
           place: 'bottom',
           tip: NO_MEDIATION_TOOLTIP,
           type: 'info',
@@ -117,7 +121,7 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
       props.offer = {
         id: 'ABC',
       }
-      props.mediations = [{ id: 'A' }, { id: 'B' }]
+      props.mediations = [ { id: 'A' }, { id: 'B' } ]
 
       // when
       const wrapper = shallow(<MediationsManager {...props} />)
@@ -169,7 +173,7 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
       props.offer = {
         id: 'ABC',
       }
-      props.mediations = [{ id: 'A' }, { id: 'B' }]
+      props.mediations = [ { id: 'A' }, { id: 'B' } ]
 
       // when
       const wrapper = shallow(<MediationsManager {...props} />)

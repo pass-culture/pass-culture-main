@@ -6,7 +6,7 @@ import HiddenField from '../../../../../../../../layout/form/fields/HiddenField'
 import NumberField from '../../../../../../../../layout/form/fields/NumberField'
 import DateField from '../../../../../../../../layout/form/fields/DateField'
 
-describe('src | components | pages | Offer | StocksManager | StockItem | sub-components | fields | ProductFields', () => {
+describe('components | OfferEdition | ProductFields', () => {
   let props
 
   beforeEach(() => {

@@ -3,7 +3,7 @@ import React from 'react'
 
 import DeleteDialog from '../DeleteDialog'
 
-describe('src | components | pages | Offer | StockItem | DeleteDialog', () => {
+describe('components | OfferEdition | DeleteDialog', () => {
   describe('snapshot', () => {
     it('should match the snapshot when isEvent = true', () => {
       // given

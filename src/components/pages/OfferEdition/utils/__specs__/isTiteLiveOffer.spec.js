@@ -1,6 +1,6 @@
 import isTiteLiveOffer from '../isTiteLiveOffer'
 
-describe('src | components | pages | Offer | utils | isTiteLiveOffer', () => {
+describe('components | OfferEdition | isTiteLiveOffer', () => {
   it('should return true if last provider name contains titelive', () => {
     // given
     const offer = {

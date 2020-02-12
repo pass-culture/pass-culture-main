@@ -9,7 +9,7 @@ import LocalProviderInformation from '../LocalProviderInformation/LocalProviderI
 import { VenueName } from '../VenueName'
 import { OffererName } from '../OffererName'
 
-describe('src | components | pages | OfferEdition | Offer ', () => {
+describe('components | OfferEdition | Offer ', () => {
   let dispatch
   let props
   let history
@@ -192,6 +192,10 @@ describe('src | components | pages | OfferEdition | Offer ', () => {
 
           // then
           const form_fields = wrapper.find(Field)
+          const isDuoForm = wrapper.find("#isDuo")
+          expect(isDuoForm.props()).not.toHaveProperty('disabled')
+          expect(isDuoForm.props()).not.toHaveProperty('readOnly')
+
           expect(form_fields.find("[label='Titre de l’offre']").prop('readOnly')).toBe(true)
           expect(form_fields.find("[label='Durée']").prop('readOnly')).toBe(true)
           expect(

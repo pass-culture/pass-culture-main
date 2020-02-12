@@ -44,10 +44,10 @@ describe('src | components | pages | Offer | LocalProviderInformationContainer |
       const wrapper = shallow(<LocalProviderInformation {...props} />)
 
       // then
-      const link = wrapper.find(Thumb)
-      expect(link).toHaveLength(1)
-      expect(link.prop('alt')).toBe('couverture du livre Super Livre')
-      expect(link.prop('src')).toBe('http://localhost/storage/thumbs/products/AERTR')
+      const thumb = wrapper.find(Thumb)
+      expect(thumb).toHaveLength(1)
+      expect(thumb.prop('alt')).toBe('couverture du livre Super Livre')
+      expect(thumb.prop('src')).toBe('http://localhost/storage/thumbs/products/AERTR')
     })
   })
 })

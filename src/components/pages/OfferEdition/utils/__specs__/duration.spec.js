@@ -1,6 +1,6 @@
 import { getDurationInHours, getDurationInMinutes } from '../duration'
 
-describe('src | components | pages | Offer | utils | getDurationInHours', () => {
+describe('components | OfferEdition | getDurationInHours', () => {
   it('should return correct hour when minutes are not defined', () => {
     // when
     const value = getDurationInHours()

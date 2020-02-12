@@ -1,6 +1,6 @@
 import { mapStateToProps } from '../LocalProviderInformationContainer'
 
-describe('src | components | pages | Offer | LocalProviderInformation | LocalProviderInformationContainer', () => {
+describe('components | OfferEdition | LocalProviderInformationContainer', () => {
   let state
   let props
 

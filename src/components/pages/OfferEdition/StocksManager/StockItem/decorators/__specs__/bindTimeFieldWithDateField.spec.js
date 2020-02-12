@@ -5,7 +5,7 @@ import { updateDateFieldWithTime, updateTimeField } from '../bindTimeFieldWithDa
 const europeTimezone = 'Europe/Paris'
 const americaTimezone = 'America/Cayenne'
 
-describe('src | components | pages | Offer | StockItem | decorators | bindTimeFieldWithDateField', () => {
+describe('components | OfferEdition | bindTimeFieldWithDateField', () => {
   describe('updateDateFieldWithTime', () => {
     let allValues
     let doublonDateName

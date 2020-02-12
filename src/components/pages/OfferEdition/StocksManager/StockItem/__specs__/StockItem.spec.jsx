@@ -12,7 +12,7 @@ import { Route, Router, Switch } from 'react-router-dom'
 import { Field } from 'react-final-form'
 import Offer from '../../../ValueObjects/Offer'
 
-describe('src | components | pages | Offer | StocksManager | StockItem', () => {
+describe('components | OfferEdition | StockItem', () => {
   let props
 
   beforeEach(() => {
