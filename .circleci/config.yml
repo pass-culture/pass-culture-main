@@ -42,8 +42,8 @@ jobs:
       - run:
           name: Running API tests
           command: |
-            dockerize -wait http://localhost/health/api -timeout 4m -wait-retry-interval 2s
-            dockerize -wait http://localhost/health/database -timeout 4m -wait-retry-interval 2s
+            dockerize -wait http://localhost/health/api -timeout 5m -wait-retry-interval 5s
+            dockerize -wait http://localhost/health/database -timeout 5m -wait-retry-interval 5s
             echo 'y' | pc test-backend
 
   tests-webapp:
