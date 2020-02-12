@@ -20,7 +20,7 @@
 # ------------------
 0 23 * * 1 . $HOME/.profile; cd ~/pass-culture-main && ./pc_new_region -e testing sandbox --name=testing
 
-45 1 * * * . $HOME/.profile; SCALINGO_REGION=agora-fr1 manage_backups.sh -a pass-culture-datalake -r agora-fr1 -dz 2>&1 | tee /var/log/restore/pass-culture-datalake.log
+45 1 * * * . $HOME/.profile; SCALINGO_REGION=osc-fr1 manage_backups.sh -a pass-culture-api-datalake -r osc-fr1 -dz 2>&1 | tee /var/log/restore/pass-culture-api-datalake.log
 
 45 2 * * * . $HOME/.profile; manage_backups.sh -a pass-culture-metabase-produit -dz 2>&1 | tee /var/log/restore/pass-culture-metabase-produit.log && curl -X POST $METABASE_PRODUIT_URL?token=$METABASE_TOKEN
 
