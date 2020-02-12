@@ -61,4 +61,5 @@ test('je peux accéder à la contremarque en cliquant sur le lien "Accéder à m
     .click(tokenLink)
     // then
     .expect(token.exists)
+    .ok()
 })

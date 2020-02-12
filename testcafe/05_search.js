@@ -88,4 +88,5 @@ test('je peux revenir en arrière en cliquant sur le bouton retour', async t => 
     .ok()
     .click(backLink)
     .expect(searchItem.exists)
+    .ok()
 })
