@@ -62,8 +62,8 @@ jobs:
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use "$NODE_VERSION"
             cd webapp
+            nvm install
             yarn install
             yarn test:unit
       - run:
@@ -79,8 +79,8 @@ jobs:
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use "$NODE_VERSION"
             cd webapp
+            nvm install
             yarn start
           background: true
       - run:
@@ -94,8 +94,8 @@ jobs:
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use "$NODE_VERSION"
             cd webapp
+            nvm install
             yarn test:cafe
       - store_artifacts:
           path: ~/pass-culture/webapp/testcafe_screenshots
@@ -122,8 +122,8 @@ jobs:
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use "$NODE_VERSION"
             cd pro
+            nvm install
             yarn install
             yarn test:unit
       - run:
@@ -139,8 +139,8 @@ jobs:
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use "$NODE_VERSION"
             cd pro
+            nvm install
             yarn start
           background: true
       - run:
@@ -154,8 +154,8 @@ jobs:
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use "$NODE_VERSION"
             cd pro
+            nvm install
             yarn test:cafe
       - store_artifacts:
           path: ~/pass-culture/pro/testcafe_screenshots
@@ -250,8 +250,8 @@ jobs:
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use "$NODE_VERSION"
             cd pro
+            nvm install
             yarn install
             set -a; source ~/pass-culture/config/run_envs/"${CIRCLE_BRANCH}" && yarn build
       - run:
@@ -290,8 +290,8 @@ jobs:
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use "$NODE_VERSION"
             cd webapp
+            nvm install
             yarn install
             ./scripts/build_app.sh "${CIRCLE_BRANCH}"
       - run:
