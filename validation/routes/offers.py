@@ -1,5 +1,3 @@
-from pprint import pprint
-
 from domain.allocine import get_editable_fields_for_allocine_offers
 from models import RightsType, Offer
 from models.api_errors import ResourceNotFoundError, ApiErrors

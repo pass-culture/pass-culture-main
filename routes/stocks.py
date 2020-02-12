@@ -1,4 +1,3 @@
-from pprint import pprint
 
 from flask import current_app as app, jsonify, request
 from flask_login import current_user
@@ -8,7 +7,6 @@ from domain.allocine import get_editable_fields_for_allocine_stocks
 from domain.stocks import delete_stock_and_cancel_bookings
 from domain.user_emails import send_batch_cancellation_emails_to_users, \
     send_offerer_bookings_recap_email_after_offerer_cancellation
-from local_providers import AllocineStocks
 from models import Product
 from models.mediation import Mediation
 from models.stock import Stock
@@ -109,8 +107,6 @@ def edit_stock(stock_id):
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
 
     stock_from_allocine_provider = stock.idAtProviders is not None
-
-    pprint(stock_from_allocine_provider)
 
     if stock_from_allocine_provider:
         stock_editable_fields = get_editable_fields_for_allocine_stocks()

@@ -1,5 +1,4 @@
 from datetime import datetime
-from pprint import pprint
 from typing import List
 
 from local_providers import AllocineStocks

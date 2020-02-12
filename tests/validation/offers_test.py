@@ -102,8 +102,7 @@ class CheckOfferIsEditableTest:
 class CheckEditionForAllocineOfferIsValidTest:
     def test_pass_when_fields_edited(self):
         # Given
-        payload = {
-        }
+        payload = {}
 
         # Then
         try:

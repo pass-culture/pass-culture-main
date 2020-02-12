@@ -34,7 +34,7 @@ class UseCaseTest:
 
             @clean_database
             @patch('use_cases.update_an_offer.redis.add_offer_id')
-            def test_preserve_updated_fields_so_they_wont_be_overriden(self, mock_redis, app):
+            def test_preserve_already_updated_fields_so_they_wont_be_overriden(self, mock_redis, app):
                 # Given
                 provider = get_provider_by_local_class('AllocineStocks')
                 offerer = create_offerer()
@@ -50,7 +50,7 @@ class UseCaseTest:
 
                 # Then
                 offer = Offer.query.one()
-                assert offer.fieldsUpdated == ['isDuo', 'isActive']
+                assert set(offer.fieldsUpdated) == set(['isDuo', 'isActive'])
 
             class WhenUpdatingForbiddenFields:
                 @clean_database
@@ -61,7 +61,6 @@ class UseCaseTest:
                     offerer = create_offerer()
                     venue = create_venue(offerer)
                     offer = create_offer_with_thing_product(venue, last_provider=provider)
-                    offer.fieldsUpdated = ['isActive']
 
                     repository.save(offer)
 
@@ -83,8 +82,6 @@ class UseCaseTest:
                     offerer = create_offerer()
                     venue = create_venue(offerer)
                     offer = create_offer_with_thing_product(venue, last_provider=provider, booking_email=booking_email)
-                    offer.fieldsUpdated = ['isActive']
-
                     repository.save(offer)
 
                     # When

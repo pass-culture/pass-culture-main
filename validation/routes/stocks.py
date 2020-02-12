@@ -1,4 +1,3 @@
-from pprint import pprint
 from typing import Dict, List
 
 from models import ApiErrors, Offer, Stock
@@ -14,10 +13,6 @@ def check_stocks_are_editable_for_offer(offer: Offer):
 def check_stock_is_updatable(stock: Stock) -> None:
     local_class = stock.offer.lastProvider.localClass if stock.offer.lastProvider else ''
     is_titelive_generated_offer = stock.offer.isFromProvider is True and 'TiteLive' in local_class
-
-    pprint('----')
-    pprint(is_titelive_generated_offer)
-    pprint(stock.offer.isFromProvider)
 
     if is_titelive_generated_offer:
         api_errors = ApiErrors()

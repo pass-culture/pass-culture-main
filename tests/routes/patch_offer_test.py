@@ -359,9 +359,8 @@ class Patch:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
-            thing_product = create_product_with_thing_type(thing_name='Old Name', owning_offerer=None)
             provider = get_provider_by_local_class('AllocineStocks')
-            offer = create_offer_with_event_product(venue, thing_product, id_at_providers='24561461',
+            offer = create_offer_with_event_product(venue, id_at_providers='24561461',
                                                     last_provider=provider)
 
             repository.save(offer, user, user_offerer)

@@ -8,10 +8,6 @@ from validation.routes.offers import check_edition_for_allocine_offer_is_valid, 
 
 
 def update_an_offer(offer: Offer, modifications: dict) -> Offer:
-
-    if offer_name:
-        check_offer_name_length_is_valid(offer_name)
-
     request_is_only_updating_isActive_status = _is_request_only_updating_isActive_status(modifications)
 
     if request_is_only_updating_isActive_status:
@@ -73,7 +69,6 @@ def _is_request_only_updating_isActive_status(payload) -> bool:
 
 
 def _exclude_modifications_where_offer_value_wont_change(offer: Offer, modifications):
-
     modifications_to_keep = dict()
 
     for (field, new_value) in modifications.items():
