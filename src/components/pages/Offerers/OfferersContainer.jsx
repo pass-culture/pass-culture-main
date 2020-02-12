@@ -43,6 +43,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => ({
 
     const queryParams = query.parse()
     let searchKeyWords = queryParams['mots-cles'] || []
+
     if (typeof searchKeyWords === 'string') searchKeyWords = [searchKeyWords]
 
     const onlyValidatedOfferers = !currentUser.isAdmin

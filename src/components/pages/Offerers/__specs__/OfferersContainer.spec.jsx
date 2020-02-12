@@ -78,19 +78,28 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
     })
 
     describe('loadOfferers', () => {
+      let handleFail
+      let handleSuccess
+      let ownProps
+
+      beforeEach(() => {
+        handleFail = jest.fn()
+        handleSuccess = jest.fn()
+
+        ownProps = {
+          query: {
+            parse: jest.fn().mockReturnValue({}),
+          },
+          currentUser: {
+            isAdmin: true,
+          },
+        }
+      })
+
       describe('when user is not an admin', () => {
         it('should request for validated offerers only', () => {
           // given
-          const ownProps = {
-            query: {
-              parse: jest.fn().mockReturnValue({}),
-            },
-            currentUser: {
-              isAdmin: false,
-            },
-          }
-          const handleFail = jest.fn()
-          const handleSuccess = jest.fn()
+          ownProps.currentUser.isAdmin = false
 
           // when
           mapDispatchToProps(dispatch, ownProps).loadOfferers(handleSuccess, handleFail)
@@ -119,16 +128,7 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
       describe('when current user is an admin', () => {
         it('should request for all offerers', () => {
           // given
-          const ownProps = {
-            query: {
-              parse: jest.fn().mockReturnValue({}),
-            },
-            currentUser: {
-              isAdmin: true,
-            },
-          }
-          const handleFail = jest.fn()
-          const handleSuccess = jest.fn()
+          ownProps.currentUser.isAdmin = true
 
           // when
           mapDispatchToProps(dispatch, ownProps).loadOfferers(handleSuccess, handleFail)
@@ -157,20 +157,11 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
       describe('when there is multiple keywords in the url', () => {
         it('should transmit keywords', () => {
           // given
-          const ownProps = {
-            query: {
-              parse: jest.fn().mockReturnValue({
-                de: 'Balzac',
-                lieu: 'B3',
-                'mots-cles': ['Honoré', 'Justice'],
-              }),
-            },
-            currentUser: {
-              isAdmin: true,
-            },
-          }
-          const handleFail = jest.fn()
-          const handleSuccess = jest.fn()
+          ownProps.query.parse.mockReturnValue({
+            de: 'Balzac',
+            lieu: 'B3',
+            'mots-cles': ['Honoré', 'Justice'],
+          })
 
           // when
           mapDispatchToProps(dispatch, ownProps).loadOfferers(handleSuccess, handleFail)
@@ -199,20 +190,11 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
       describe('when there is one keyword in the url', () => {
         it('should transmit keywords', () => {
           // given
-          const ownProps = {
-            query: {
-              parse: jest.fn().mockReturnValue({
-                de: 'Balzac',
-                lieu: 'B3',
-                'mots-cles': 'Club Dorothy',
-              }),
-            },
-            currentUser: {
-              isAdmin: true,
-            },
-          }
-          const handleFail = jest.fn()
-          const handleSuccess = jest.fn()
+          ownProps.query.parse.mockReturnValue({
+            de: 'Balzac',
+            lieu: 'B3',
+            'mots-cles': 'Club Dorothy',
+          })
 
           // when
           mapDispatchToProps(dispatch, ownProps).loadOfferers(handleSuccess, handleFail)
@@ -239,20 +221,12 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
       })
 
       describe('when current user is not an admin and search by keywords', () => {
-        it('should transmit keywords', () => {
+        it('should transmit keywords and ask for validated offerers', () => {
           // given
-          const ownProps = {
-            query: {
-              parse: jest.fn().mockReturnValue({
-                'mots-cles': 'Club Dorothy',
-              }),
-            },
-            currentUser: {
-              isAdmin: false,
-            },
-          }
-          const handleFail = jest.fn()
-          const handleSuccess = jest.fn()
+          ownProps.query.parse.mockReturnValue({
+            'mots-cles': 'Club Dorothy',
+          })
+          ownProps.currentUser.isAdmin = false
 
           // when
           mapDispatchToProps(dispatch, ownProps).loadOfferers(handleSuccess, handleFail)
