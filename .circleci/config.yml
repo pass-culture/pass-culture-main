@@ -56,7 +56,8 @@ jobs:
           name: Running industrial sandbox
           command: |
             cd pass-culture-main
-            dockerize -wait http://localhost/health -timeout 5m -wait-retry-interval 5s
+            dockerize -wait http://localhost/health/api -timeout 5m -wait-retry-interval 5s
+            dockerize -wait http://localhost/health/database -timeout 5m -wait-retry-interval 5s
             ./pc sandbox --name=industrial
       - run:
           name: Running end2end tests
@@ -65,7 +66,8 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             nvm use v8.15.1
             cd ~/pass-culture-main/pro
-            dockerize -wait http://localhost/health -timeout 5m -wait-retry-interval 5s
+            dockerize -wait http://localhost/health/api -timeout 5m -wait-retry-interval 5s
+            dockerize -wait http://localhost/health/database -timeout 5m -wait-retry-interval 5s
             yarn test:cafe
       - store_artifacts:
          path: ~/pass-culture-main/pro/testcafe_screenshots
