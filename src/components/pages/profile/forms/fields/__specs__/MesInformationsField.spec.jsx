@@ -2,10 +2,13 @@ import { shallow } from 'enzyme'
 import React from 'react'
 import { MesInformationsField } from '../MesInformationsField'
 
-describe('src | components | pages | profile | MesInformations | MesInformationsField', () => {
-  it('should display error message when there is validation errors', () => {
+const ERROR_MESSAGE = 'Vous devez renseigner au moins 3 caractères'
+
+describe('src | components | pages | profile | forms | fields | MesInformationsField', () => {
+  it('should display error messages when there are validation errors', () => {
     // Given
-    const errors = ['input validation error', 'another error']
+    const secondErrorMessage = 'Vous ne devez pas renseigner plus de 10 caractères'
+    const errors = [ERROR_MESSAGE, secondErrorMessage]
 
     // When
     const wrapper = shallow(
@@ -18,15 +21,15 @@ describe('src | components | pages | profile | MesInformations | MesInformations
     )
 
     // Then
-    const errorMessage = wrapper.find({ children: 'input validation error' })
-    const otherErrorMessage = wrapper.find({ children: 'another error' })
+    const errorMessage = wrapper.find({ children: ERROR_MESSAGE })
+    const otherErrorMessage = wrapper.find({ children: secondErrorMessage })
     expect(errorMessage).toHaveLength(1)
     expect(otherErrorMessage).toHaveLength(1)
   })
 
-  it('should set aria-invalid to true on input field when there is validation errors', () => {
+  it('should set aria-invalid to true on input field when there is validation error', () => {
     // Given
-    const errors = ['input validation error']
+    const errors = [ERROR_MESSAGE]
 
     // When
     const wrapper = shallow(
@@ -43,7 +46,7 @@ describe('src | components | pages | profile | MesInformations | MesInformations
     expect(publicNameInput.props()['aria-invalid']).toBe(true)
   })
 
-  it('should not display error message when there is no validation errors', () => {
+  it('should not display error message when there is no validation error', () => {
     // Given
     const errors = null
 
@@ -58,11 +61,11 @@ describe('src | components | pages | profile | MesInformations | MesInformations
     )
 
     // Then
-    const errorMessage = wrapper.find({ children: 'input validation error' })
+    const errorMessage = wrapper.find({ children: ERROR_MESSAGE })
     expect(errorMessage).toHaveLength(0)
   })
 
-  it('should set aria-invalid to false on input field when there is no validation errors', () => {
+  it('should set aria-invalid to false on input field when there is no validation error', () => {
     // Given
     const errors = null
 

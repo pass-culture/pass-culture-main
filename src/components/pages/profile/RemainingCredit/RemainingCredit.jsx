@@ -42,12 +42,12 @@ class RemainingCredit extends PureComponent {
     }
 
     return (
-      <div>
-        <div className="rc-title-container">
+      <section>
+        <header className="rc-title-container">
           <h2 className="rc-title">
             {'Crédit restant'}
           </h2>
-        </div>
+        </header>
 
         <div className="rc-informations-container">
           <div className="rc-header">
@@ -115,7 +115,7 @@ class RemainingCredit extends PureComponent {
             </p>
           </div>
         )}
-      </div>
+      </section>
     )
   }
 }

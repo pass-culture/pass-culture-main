@@ -1,4 +1,11 @@
-import { mapDispatchToProps, mapStateToProps } from '../MesInformationsContainer'
+import { getCurrentUserUUID, resolveCurrentUser } from 'with-react-redux-login'
+import getDepartementByCode from '../../../../../utils/getDepartementByCode'
+import {
+  getDepartment,
+  getFormValuesByNames,
+  mapDispatchToProps,
+  mapStateToProps,
+} from '../MesInformationsContainer'
 
 jest.mock('redux-thunk-data', () => {
   const { requestData } = jest.requireActual('fetch-normalize-data')
@@ -9,35 +16,83 @@ jest.mock('redux-thunk-data', () => {
 })
 
 jest.mock('with-react-redux-login', () => ({
-  resolveCurrentUser: 'current beneficiary',
+  resolveCurrentUser: jest.fn(),
+  selectCurrentUser: jest.requireActual('with-react-redux-login').selectCurrentUser,
+  getCurrentUserUUID: jest.requireActual('with-react-redux-login').getCurrentUserUUID,
 }))
 
+jest.mock('../../../../../utils/getDepartementByCode')
+
 describe('src | components | pages | profile | MesInformations | MesInformationsContainer', () => {
-  describe('mapStateToProps', () => {
-    it('should return given props', () => {
+  describe('getFormValuesByNames', () => {
+    it('should get form values for non disabled fields', () => {
       // Given
-      const givenProps = {
-        existing: 'prop',
+      const formInputEvent = {
+        target: {
+          form: [
+            {
+              name: 'identifiant',
+              value: 'Martino',
+              disabled: false,
+            },
+            {
+              name: 'name',
+              value: 'Martin',
+              disabled: true,
+            },
+            {
+              name: 'departementCode',
+              value: '94',
+              disabled: false,
+            },
+          ],
+        },
       }
 
       // When
-      const props = mapStateToProps({}, givenProps)
+      const formValuesByNames = getFormValuesByNames(formInputEvent)
 
       // Then
-      expect(props).toStrictEqual(givenProps)
+      expect(formValuesByNames).toStrictEqual({
+        identifiant: 'Martino',
+        departementCode: '94',
+      })
+    })
+  })
+
+  describe('getDepartment', () => {
+    it('should return department name and department code given the department code', () => {
+      // Given
+      const departmentCode = '93'
+      getDepartementByCode.mockReturnValue('Seine-Saint-Denis')
+
+      // When
+      const result = getDepartment(departmentCode)
+
+      // Then
+      expect(result).toBe('Seine-Saint-Denis (93)')
+    })
+  })
+
+  describe('mapStateToProps', () => {
+    it('should pass user to MesInformations component', () => {
+      // Given
+      const user = { id: 'userId', currentUserUUID: getCurrentUserUUID() }
+      const state = { data: { users: [user] } }
+
+      // When
+      const props = mapStateToProps(state)
+
+      // Then
+      expect(props).toStrictEqual({
+        getDepartment: expect.any(Function),
+        getFormValuesByNames: expect.any(Function),
+        user,
+      })
     })
   })
 
   describe('mapDispatchToProps', () => {
-    it('should return props containing a handleSubmit function', () => {
-      // When
-      const props = mapDispatchToProps()
-
-      // Then
-      expect(props.handleSubmit).toBeDefined()
-      expect(typeof props.handleSubmit).toBe('function')
-    })
-
     describe('handleSubmit', () => {
       it('should call dispatch with request data', () => {
         // Given
@@ -62,7 +117,7 @@ describe('src | components | pages | profile | MesInformations | MesInformations
             handleSuccess: successCallback,
             method: 'PATCH',
             key: 'user',
-            resolve: 'current beneficiary',
+            resolve: resolveCurrentUser,
           },
           type: 'REQUEST_DATA_PATCH_USERS/CURRENT',
         })

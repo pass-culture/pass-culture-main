@@ -4,10 +4,7 @@ import React from 'react'
 import { Router } from 'react-router'
 
 import state from '../../../../../mocks/state'
-import getDepartementByCode from '../../../../../utils/getDepartementByCode'
 import MesInformations from '../MesInformations'
-
-jest.mock('../../../../../utils/getDepartementByCode')
 
 describe('src | components | pages | profile | MesInformations | MesInformations', () => {
   it('should display profile informations', () => {
@@ -15,6 +12,8 @@ describe('src | components | pages | profile | MesInformations | MesInformations
     const wrapper = mount(
       <Router history={createBrowserHistory()}>
         <MesInformations
+          getDepartment={jest.fn()}
+          getFormValuesByNames={jest.fn()}
           handleSubmit={jest.fn()}
           user={state.user}
         />
@@ -42,12 +41,14 @@ describe('src | components | pages | profile | MesInformations | MesInformations
     user.lastName = 'Dupont'
     user.email = 'm.dupont@test.com'
     user.departementCode = '93'
-    getDepartementByCode.mockReturnValue('Seine-Saint-Denis')
+    const mockedGetDepartment = jest.fn().mockReturnValue('Seine-Saint-Denis (93)')
 
     // When
     const wrapper = mount(
       <Router history={createBrowserHistory()}>
         <MesInformations
+          getDepartment={mockedGetDepartment}
+          getFormValuesByNames={jest.fn()}
           handleSubmit={jest.fn()}
           user={user}
         />
@@ -59,10 +60,10 @@ describe('src | components | pages | profile | MesInformations | MesInformations
     const name = wrapper.find("input[value='Martin Dupont']")
     const email = wrapper.find("input[value='m.dupont@test.com']")
     const departmentCode = wrapper.find("input[value='Seine-Saint-Denis (93)']")
-    expect(publicName).not.toHaveLength(0)
-    expect(name).not.toHaveLength(0)
-    expect(email).not.toHaveLength(0)
-    expect(departmentCode).not.toHaveLength(0)
+    expect(publicName).toHaveLength(1)
+    expect(name).toHaveLength(1)
+    expect(email).toHaveLength(1)
+    expect(departmentCode).toHaveLength(1)
   })
 
   it('should prevent name, email and departmentCode modifications', () => {
@@ -73,12 +74,14 @@ describe('src | components | pages | profile | MesInformations | MesInformations
     user.lastName = 'Dupont'
     user.email = 'm.dupont@test.com'
     user.departementCode = '93'
-    getDepartementByCode.mockReturnValue('Seine-Saint-Denis')
+    const mockedGetDepartment = jest.fn().mockReturnValue('Seine-Saint-Denis (93)')
 
     // When
     const wrapper = mount(
       <Router history={createBrowserHistory()}>
         <MesInformations
+          getDepartment={mockedGetDepartment}
+          getFormValuesByNames={jest.fn()}
           handleSubmit={jest.fn()}
           user={user}
         />
@@ -96,12 +99,16 @@ describe('src | components | pages | profile | MesInformations | MesInformations
     expect(departmentCode.props().disabled).toBe(true)
   })
 
-  it('should redirect to password modification page on button click', () => {
+  it('should go to password modification page on button click', () => {
     // When
-    const wrapper = shallow(<MesInformations
-      handleSubmit={jest.fn()}
-      user={state.user}
-                            />)
+    const wrapper = shallow(
+      <MesInformations
+        getDepartment={jest.fn()}
+        getFormValuesByNames={jest.fn()}
+        handleSubmit={jest.fn()}
+        user={state.user}
+      />
+    )
 
     // Then
     const passwordChangeButton = wrapper.find({ children: 'Changer mon mot de passe' })
@@ -115,9 +122,13 @@ describe('src | components | pages | profile | MesInformations | MesInformations
     const mockedHandleSubmit = jest.fn()
     const user = { ...state.user }
     user.publicName = 'Martino'
+    const mockedFormValues = jest.fn().mockReturnValue({ publicName: user.publicName })
+
     const wrapper = mount(
       <Router history={createBrowserHistory()}>
         <MesInformations
+          getDepartment={jest.fn()}
+          getFormValuesByNames={mockedFormValues}
           handleSubmit={mockedHandleSubmit}
           user={user}
         />
@@ -131,5 +142,12 @@ describe('src | components | pages | profile | MesInformations | MesInformations
 
     // Then
     expect(mockedHandleSubmit).toHaveBeenCalledTimes(1)
+    expect(mockedHandleSubmit).toHaveBeenCalledWith(
+      {
+        publicName: user.publicName,
+      },
+      expect.any(Function),
+      expect.any(Function)
+    )
   })
 })

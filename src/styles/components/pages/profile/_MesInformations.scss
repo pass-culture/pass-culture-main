@@ -4,6 +4,11 @@
   flex-direction: column;
   font-size: rem(16px);
   margin: rem(14px) rem(21px);
+
+  label {
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 .mi-field-input {

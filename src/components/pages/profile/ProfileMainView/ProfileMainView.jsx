@@ -16,7 +16,7 @@ const ProfileMainView = ({ currentUser }) => (
     <main className="mosaic-background pc-main is-clipped is-relative">
       <div className="pc-scroll-container">
         {currentUser && <RemainingCredit currentUser={currentUser} />}
-        <MesInformationsContainer user={currentUser} />
+        <MesInformationsContainer />
         <div className="app-version">
           {`v${version}`}
         </div>

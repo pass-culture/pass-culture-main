@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types'
-import React, { Fragment, PureComponent } from 'react'
+import React, { PureComponent } from 'react'
 import { Link } from 'react-router-dom'
 
-import getDepartementByCode from '../../../../utils/getDepartementByCode'
 import { MesInformationsField } from '../forms/fields/MesInformationsField'
 
 class MesInformations extends PureComponent {
@@ -22,46 +21,38 @@ class MesInformations extends PureComponent {
   }
 
   handleBlur = event => {
-    const { handleSubmit } = this.props
-    const formValuesByNames = Array.from(event.target.form)
-      .filter(input => !input.disabled)
-      .reduce((fields, input) => {
-        fields[input.name] = input.value
-        return fields
-      }, {})
-
+    const { handleSubmit, getFormValuesByNames } = this.props
+    const formValuesByNames = getFormValuesByNames(event)
     handleSubmit(formValuesByNames, this.handleSubmitFail, this.handleSubmitSuccess)
   }
 
   handleSubmitFail = (state, action) => {
     this.setState({ errors: { ...action.payload.errors } })
     this.publicNameInputRef.current.focus()
+    this.publicNameInputRef.current.select()
   }
 
   handleSubmitSuccess = () => {
     this.setState({ errors: null })
   }
 
-  getDepartment(departmentCode) {
-    const departmentName = getDepartementByCode(departmentCode)
-    return `${departmentName} (${departmentCode})`
-  }
-
   render() {
-    const { user } = this.props
+    const { user, getDepartment } = this.props
     const { errors, publicName } = this.state
     return (
-      <Fragment>
-        <div className="mes-informations-title-container">
+      <section>
+        <header className="mes-informations-title-container">
           <h2 className="mes-informations-title">
             {'Mes informations'}
           </h2>
-        </div>
+        </header>
         <form>
           <MesInformationsField
             errors={errors && errors.publicName}
             id="identifiant"
             label="Identifiant"
+            maxlength={255}
+            minlength={3}
             name="publicName"
             onBlur={this.handleBlur}
             onChange={this.handlePublicNameChange}
@@ -85,10 +76,10 @@ class MesInformations extends PureComponent {
           />
           <MesInformationsField
             disabled
-            id="departmentCode"
+            id="departementCode"
             label="Département de résidence"
             name="departementCode"
-            value={this.getDepartment(user.departementCode)}
+            value={getDepartment(user.departementCode)}
           />
         </form>
         <div className="mi-change-password">
@@ -99,12 +90,14 @@ class MesInformations extends PureComponent {
             {'Changer mon mot de passe'}
           </Link>
         </div>
-      </Fragment>
+      </section>
     )
   }
 }
 
 MesInformations.propTypes = {
+  getDepartment: PropTypes.func.isRequired,
+  getFormValuesByNames: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   user: PropTypes.oneOfType([PropTypes.bool, PropTypes.shape()]).isRequired,
 }

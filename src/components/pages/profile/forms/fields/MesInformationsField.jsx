@@ -5,7 +5,19 @@ import Icon from '../../../../layout/Icon/Icon'
 const NOOP = () => {}
 
 export const MesInformationsField = forwardRef(function MesInformationsField(props, ref) {
-  const { disabled, errors, id, label, onBlur, onChange, name, required, value } = props
+  const {
+    disabled,
+    errors,
+    id,
+    label,
+    onBlur,
+    onChange,
+    maxLength,
+    minLength,
+    name,
+    required,
+    value,
+  } = props
 
   return (
     <div className="mi-field">
@@ -17,6 +29,8 @@ export const MesInformationsField = forwardRef(function MesInformationsField(pro
         className="mi-field-input"
         disabled={disabled}
         id={id}
+        maxLength={maxLength}
+        minLength={minLength}
         name={name}
         onBlur={onBlur}
         onChange={onChange}
@@ -49,6 +63,8 @@ export const MesInformationsField = forwardRef(function MesInformationsField(pro
 MesInformationsField.defaultProps = {
   disabled: false,
   errors: null,
+  maxLength: -1,
+  minLength: 0,
   onBlur: NOOP,
   onChange: NOOP,
   required: false,
@@ -60,6 +76,8 @@ MesInformationsField.propTypes = {
   errors: PropTypes.arrayOf(PropTypes.string),
   id: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
+  maxLength: PropTypes.number,
+  minLength: PropTypes.number,
   name: PropTypes.string.isRequired,
   onBlur: PropTypes.func,
   onChange: PropTypes.func,
