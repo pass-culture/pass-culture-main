@@ -13,6 +13,7 @@ export const mapStateToProps = (state, ownProps) => {
       params: { offerId },
     },
     isAllocine,
+    isLibraires,
     isTitelive,
     offererId,
   } = ownProps
@@ -22,7 +23,7 @@ export const mapStateToProps = (state, ownProps) => {
   const { venueId } = offer
   const { name: offerName } = offer
   const { thumbUrl } = product
-  const providerInfo = getProviderInfo(isTitelive, isAllocine)
+  const providerInfo = getProviderInfo(isTitelive, isAllocine, isLibraires)
 
   return {
     offererId,

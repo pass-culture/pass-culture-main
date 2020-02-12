@@ -27,8 +27,9 @@ import { OFFERERS_API_PATH } from '../../../config/apiPaths'
 import { CGU_URL } from '../../../utils/config'
 
 import { getDurationInHours, getDurationInMinutes } from './utils/duration'
-import isTiteLiveOffer from './utils/isTiteLiveOffer'
 import isAllocineOffer from './utils/isAllocineOffer'
+import isLibrairesOffer from './utils/isLibrairesOffer'
+import isTiteLiveOffer from './utils/isTiteLiveOffer'
 import LocalProviderInformation from './LocalProviderInformation/LocalProviderInformationContainer'
 import { buildWebappDiscoveryUrl } from '../../layout/OfferPreviewLink/buildWebappDiscoveryUrl'
 import OfferPreviewLink from '../../layout/OfferPreviewLink/OfferPreviewLink'
@@ -336,9 +337,10 @@ class Offer extends PureComponent {
     const offerId = get(offer, 'id')
     const mediationId = get(get(offer, 'activeMediation'), 'id')
 
-    const offerFromTiteLive = isTiteLiveOffer(offer)
     const offerFromAllocine = isAllocineOffer(offer)
-    const offerFromLocalProvider = offerFromTiteLive || offerFromAllocine
+    const offerFromLibraires = isLibrairesOffer(offer)
+    const offerFromTiteLive = isTiteLiveOffer(offer)
+    const offerFromLocalProvider = offerFromTiteLive || offerFromAllocine || offerFromLibraires
 
     const offerWebappUrl = buildWebappDiscoveryUrl(offerId, mediationId)
     const offererId = get(offerer, 'id')
@@ -521,7 +523,7 @@ class Offer extends PureComponent {
                     </span>
                     <button
                       className="button is-primary is-outlined is-small manage-stock"
-                      disabled={offerFromTiteLive ? 'disabled' : ''}
+                      disabled={offerFromTiteLive || offerFromLibraires ? 'disabled' : ''}
                       id="manage-stocks"
                       onClick={this.handleOnClick(query)}
                       type="button"
@@ -541,6 +543,7 @@ class Offer extends PureComponent {
           {offerFromLocalProvider && (
             <LocalProviderInformation
               isAllocine={offerFromAllocine}
+              isLibraires={offerFromLibraires}
               isTiteLive={offerFromTiteLive}
               offererId={offererId}
             />

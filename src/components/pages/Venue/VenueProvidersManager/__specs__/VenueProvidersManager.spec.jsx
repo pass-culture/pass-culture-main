@@ -5,6 +5,7 @@ import VenueProvidersManager from '../VenueProvidersManager'
 import VenueProviderItem from '../VenueProviderItem/VenueProviderItem'
 import AllocineProviderFormContainer from '../AllocineProviderForm/AllocineProviderFormContainer'
 import TiteliveProviderFormContainer from '../TiteliveProviderForm/TiteliveProviderFormContainer'
+import LibrairesProviderForm from '../LibrairesProviderForm/LibrairesProviderFormContainer'
 
 describe('src | components | pages | Venue | VenueProvidersManager', () => {
   let props
@@ -52,6 +53,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       providerId: null,
       providerSelectedIsAllocine: false,
       providerSelectedIsTitelive: false,
+      providerSelectedIsLibraires: false,
       venueIdAtOfferProviderIsRequired: true,
     })
   })
@@ -207,6 +209,28 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       // then
       const titeliveProviderForm = wrapper.find(TiteliveProviderFormContainer)
       expect(titeliveProviderForm).toHaveLength(1)
+    })
+
+    it('should display the libraires form when the user choose Libraires', () => {
+      // given
+      props.providers = [
+        { id: 'EM', name: 'Leslibraires.fr' },
+        { id: 'EM', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' },
+      ]
+      const chooseLibrairesEvent = {
+        target: {
+          value: '{"id":"EM","name":"Leslibraires.fr"}',
+        },
+      }
+      const wrapper = shallow(<VenueProvidersManager {...props} />)
+
+      // when
+      wrapper.find('#add-venue-provider-btn').simulate('click')
+      wrapper.find('#provider-options').simulate('change', chooseLibrairesEvent)
+
+      // then
+      const librairesProviderForm = wrapper.find(LibrairesProviderForm)
+      expect(librairesProviderForm).toHaveLength(1)
     })
 
     it('should update state values when selected option is valid and different from default value', () => {

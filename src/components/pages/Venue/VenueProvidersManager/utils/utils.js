@@ -8,6 +8,11 @@ export const ALLOCINE_PROVIDER_OPTION = {
   name: 'Allociné',
 }
 
+export const LIBRAIRES_PROVIDER_OPTION = {
+  id: 'libraires',
+  name: 'Leslibraires.fr',
+}
+
 export const TITELIVE_PROVIDER_OPTION = {
   id: 'titelive',
   name: 'TiteLive Stocks (Epagine / Place des libraires.com)',

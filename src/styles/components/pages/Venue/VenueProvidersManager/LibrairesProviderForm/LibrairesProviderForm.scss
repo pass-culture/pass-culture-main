@@ -1,0 +1,31 @@
+.libraires-provider-form {
+  display: flex;
+  flex-direction: row;
+
+  .compte-section {
+    flex-direction: column;
+    max-width: 250px;
+    margin-right: 25px;
+
+    .account-label {
+      margin-top: 6px;
+      margin-bottom: 15px;
+    }
+
+    .account-value {
+      font-size: 1.2rem;
+      font-weight: 500;
+      height: 36px;
+    }
+
+  }
+
+  .provider-import-button-container {
+    position: relative;
+
+    button {
+      position: absolute;
+      top: 50%;
+    }
+  }
+}

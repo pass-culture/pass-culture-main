@@ -4,12 +4,14 @@ import VenueProviderItem from './VenueProviderItem/VenueProviderItem'
 import {
   ALLOCINE_PROVIDER_OPTION,
   DEFAULT_PROVIDER_OPTION,
+  LIBRAIRES_PROVIDER_OPTION,
   TITELIVE_PROVIDER_OPTION,
 } from './utils/utils'
 import AllocineProviderForm from './AllocineProviderForm/AllocineProviderFormContainer'
 import TiteliveProviderForm from './TiteliveProviderForm/TiteliveProviderFormContainer'
 import ReactTooltip from 'react-tooltip'
 import Insert from '../../../layout/Insert/Insert'
+import LibrairesProviderForm from './LibrairesProviderForm/LibrairesProviderFormContainer'
 
 class VenueProvidersManager extends PureComponent {
   constructor(props) {
@@ -19,6 +21,7 @@ class VenueProvidersManager extends PureComponent {
       providerId: null,
       providerSelectedIsAllocine: false,
       providerSelectedIsTitelive: false,
+      providerSelectedIsLibraires: false,
       venueIdAtOfferProviderIsRequired: true,
     }
   }
@@ -56,9 +59,13 @@ class VenueProvidersManager extends PureComponent {
         venueIdAtOfferProviderIsRequired: valueParsed.requireProviderIdentifier,
       })
     } else if (valueParsed && valueParsed.name === TITELIVE_PROVIDER_OPTION.name) {
-      this.setState({
-        providerSelectedIsTitelive: true,
-      })
+        this.setState({
+          providerSelectedIsTitelive: true,
+        })
+    } else if (valueParsed && valueParsed.name === LIBRAIRES_PROVIDER_OPTION.name) {
+        this.setState({
+          providerSelectedIsLibraires: true,
+        })
     }
 
     this.setState({
@@ -73,6 +80,7 @@ class VenueProvidersManager extends PureComponent {
       providerId,
       providerSelectedIsAllocine,
       providerSelectedIsTitelive,
+      providerSelectedIsLibraires,
       venueIdAtOfferProviderIsRequired,
     } = this.state
     const hasAtLeastOneProvider = providers.length > 0
@@ -135,6 +143,15 @@ class VenueProvidersManager extends PureComponent {
 
                 {providerSelectedIsTitelive && (
                   <TiteliveProviderForm
+                    offererId={match.params.offererId}
+                    providerId={providerId}
+                    venueId={match.params.venueId}
+                    venueSiret={venueSiret}
+                  />
+                )}
+
+                {providerSelectedIsLibraires && (
+                  <LibrairesProviderForm
                     offererId={match.params.offererId}
                     providerId={providerId}
                     venueId={match.params.venueId}
