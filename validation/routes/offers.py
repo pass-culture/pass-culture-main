@@ -50,7 +50,7 @@ def check_offer_type_is_valid(offer_type_name):
         raise api_error
 
 
-def check_offer_name_length_is_valid(offer_name):
+def check_offer_name_length_is_valid(offer_name: str):
     max_offer_name_length = 90
     if len(offer_name) > max_offer_name_length:
         api_error = ApiErrors()
