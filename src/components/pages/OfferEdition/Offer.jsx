@@ -53,12 +53,12 @@ const CONDITIONAL_FIELDS = {
     'EventType.SPECTACLE_VIVANT',
     'ThingType.LIVRE_EDITION',
   ],
-  visa: [ 'EventType.CINEMA' ],
-  isbn: [ 'ThingType.LIVRE_EDITION' ],
-  musicType: [ 'EventType.MUSIQUE', 'ThingType.MUSIQUE', 'ThingType.MUSIQUE_ABO' ],
-  showType: [ 'EventType.SPECTACLE_VIVANT', 'ThingType.SPECTACLE_VIVANT_ABO' ],
-  stageDirector: [ 'EventType.CINEMA', 'EventType.SPECTACLE_VIVANT' ],
-  performer: [ 'EventType.MUSIQUE', 'ThingType.MUSIQUE', 'EventType.SPECTACLE_VIVANT' ],
+  visa: ['EventType.CINEMA'],
+  isbn: ['ThingType.LIVRE_EDITION'],
+  musicType: ['EventType.MUSIQUE', 'ThingType.MUSIQUE', 'ThingType.MUSIQUE_ABO'],
+  showType: ['EventType.SPECTACLE_VIVANT', 'ThingType.SPECTACLE_VIVANT_ABO'],
+  stageDirector: ['EventType.CINEMA', 'EventType.SPECTACLE_VIVANT'],
+  performer: ['EventType.MUSIQUE', 'ThingType.MUSIQUE', 'EventType.SPECTACLE_VIVANT'],
 }
 
 class Offer extends PureComponent {
@@ -301,7 +301,6 @@ class Offer extends PureComponent {
 
     const displayDigitalOfferInformationMessage = !offerIsRefundable(selectedOfferType, venue)
 
-
     return (
       <Main
         backTo={{ path: '/offres', label: 'Vos offres' }}
@@ -332,18 +331,22 @@ class Offer extends PureComponent {
         <Form
           action={formApiPath}
           handleSuccess={this.onHandleFormSuccess}
-          method='PATCH'
+          method="PATCH"
           name="offer"
           patch={formInitialValues}
           Tag={null}
         >
           <div className="field-group offer-form">
             <Field
+              className="title-field"
+              displayMaxLength
               isExpanded
               label="Titre de l’offre"
+              maxLength={90}
               name="name"
               readOnly={offerFromLocalProvider}
               required
+              type="textarea"
             />
             <Field
               label="Type"
@@ -437,7 +440,7 @@ class Offer extends PureComponent {
                     </span>
                     <button
                       className="button is-primary is-outlined is-small manage-stock"
-                      disabled={(!offerFromLocalProvider || offerFromAllocine) ? '' : 'disabled'}
+                      disabled={!offerFromLocalProvider || offerFromAllocine ? '' : 'disabled'}
                       id="manage-stocks"
                       onClick={this.handleOnClick(query)}
                       type="button"
@@ -679,7 +682,7 @@ class Offer extends PureComponent {
               <Link
                 className="button is-secondary is-medium"
                 id="cancel-button"
-                to={"/offres/" + offerId}
+                to={'/offres/' + offerId}
                 type="button"
               >
                 {'Annuler'}

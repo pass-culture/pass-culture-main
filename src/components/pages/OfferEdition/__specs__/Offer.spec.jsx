@@ -163,6 +163,20 @@ describe('components | OfferEdition | Offer ', () => {
     })
 
     describe('when updating the offer', () => {
+      it('should display a limited textarea field to define name of the offer', () => {
+        // when
+        const wrapper = shallow(<Offer {...props} />)
+
+        // then
+        const field = wrapper.find(Field).at(0)
+        expect(field).toHaveLength(1)
+        expect(field.prop('label')).toBe('Titre de l’offre')
+        expect(field.prop('required')).toBe(true)
+        expect(field.prop('maxLength')).toBe(90)
+        expect(field.prop('displayMaxLength')).toBe(true)
+        expect(field.prop('type')).toBe('textarea')
+      })
+
       describe('when the offer is imported from Allocine', () => {
         it('should allow to update isDuo but no other fields', () => {
           // given
@@ -192,7 +206,7 @@ describe('components | OfferEdition | Offer ', () => {
 
           // then
           const form_fields = wrapper.find(Field)
-          const isDuoForm = wrapper.find("#isDuo")
+          const isDuoForm = wrapper.find('#isDuo')
           expect(isDuoForm.props()).not.toHaveProperty('disabled')
           expect(isDuoForm.props()).not.toHaveProperty('readOnly')
 
@@ -291,7 +305,6 @@ describe('components | OfferEdition | Offer ', () => {
             mediationsIds: ['MED'],
           }
         })
-
 
         it('should update a product when no offer type', () => {
           // given

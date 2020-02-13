@@ -133,16 +133,20 @@ ShallowWrapper {
             className="field-group offer-form"
           >
             <Field
+              className="title-field"
+              displayMaxLength={true}
               displayValue={[Function]}
               errors={null}
               isExpanded={true}
               label="Titre de l’offre"
               layout="horizontal"
+              maxLength={90}
               name="name"
               readOnly={false}
               required={true}
               size="normal"
               storeValue={[Function]}
+              type="textarea"
             />
             <Field
               displayValue={[Function]}
@@ -362,16 +366,20 @@ ShallowWrapper {
               className="field-group offer-form"
             >
               <Field
+                className="title-field"
+                displayMaxLength={true}
                 displayValue={[Function]}
                 errors={null}
                 isExpanded={true}
                 label="Titre de l’offre"
                 layout="horizontal"
+                maxLength={90}
                 name="name"
                 readOnly={false}
                 required={true}
                 size="normal"
                 storeValue={[Function]}
+                type="textarea"
               />
               <Field
                 displayValue={[Function]}
@@ -569,16 +577,20 @@ ShallowWrapper {
             "props": Object {
               "children": Array [
                 <Field
+                  className="title-field"
+                  displayMaxLength={true}
                   displayValue={[Function]}
                   errors={null}
                   isExpanded={true}
                   label="Titre de l’offre"
                   layout="horizontal"
+                  maxLength={90}
                   name="name"
                   readOnly={false}
                   required={true}
                   size="normal"
                   storeValue={[Function]}
+                  type="textarea"
                 />,
                 <Field
                   displayValue={[Function]}
@@ -667,16 +679,20 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "class",
                 "props": Object {
+                  "className": "title-field",
+                  "displayMaxLength": true,
                   "displayValue": [Function],
                   "errors": null,
                   "isExpanded": true,
                   "label": "Titre de l’offre",
                   "layout": "horizontal",
+                  "maxLength": 90,
                   "name": "name",
                   "readOnly": false,
                   "required": true,
                   "size": "normal",
                   "storeValue": [Function],
+                  "type": "textarea",
                 },
                 "ref": null,
                 "rendered": null,
@@ -1421,16 +1437,20 @@ ShallowWrapper {
               className="field-group offer-form"
             >
               <Field
+                className="title-field"
+                displayMaxLength={true}
                 displayValue={[Function]}
                 errors={null}
                 isExpanded={true}
                 label="Titre de l’offre"
                 layout="horizontal"
+                maxLength={90}
                 name="name"
                 readOnly={false}
                 required={true}
                 size="normal"
                 storeValue={[Function]}
+                type="textarea"
               />
               <Field
                 displayValue={[Function]}
@@ -1650,16 +1670,20 @@ ShallowWrapper {
                 className="field-group offer-form"
               >
                 <Field
+                  className="title-field"
+                  displayMaxLength={true}
                   displayValue={[Function]}
                   errors={null}
                   isExpanded={true}
                   label="Titre de l’offre"
                   layout="horizontal"
+                  maxLength={90}
                   name="name"
                   readOnly={false}
                   required={true}
                   size="normal"
                   storeValue={[Function]}
+                  type="textarea"
                 />
                 <Field
                   displayValue={[Function]}
@@ -1857,16 +1881,20 @@ ShallowWrapper {
               "props": Object {
                 "children": Array [
                   <Field
+                    className="title-field"
+                    displayMaxLength={true}
                     displayValue={[Function]}
                     errors={null}
                     isExpanded={true}
                     label="Titre de l’offre"
                     layout="horizontal"
+                    maxLength={90}
                     name="name"
                     readOnly={false}
                     required={true}
                     size="normal"
                     storeValue={[Function]}
+                    type="textarea"
                   />,
                   <Field
                     displayValue={[Function]}
@@ -1955,16 +1983,20 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "class",
                   "props": Object {
+                    "className": "title-field",
+                    "displayMaxLength": true,
                     "displayValue": [Function],
                     "errors": null,
                     "isExpanded": true,
                     "label": "Titre de l’offre",
                     "layout": "horizontal",
+                    "maxLength": 90,
                     "name": "name",
                     "readOnly": false,
                     "required": true,
                     "size": "normal",
                     "storeValue": [Function],
+                    "type": "textarea",
                   },
                   "ref": null,
                   "rendered": null,
