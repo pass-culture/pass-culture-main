@@ -483,6 +483,7 @@ class CheckBookingIsKeepableTest:
         assert e.value.errors['booking'] == [
             'Cette réservation a été annulée']
 
+    @clean_database
     def test_raises_resource_gone_error_if_payement_exists(self, app):
         # Given
         offerer = create_offerer()

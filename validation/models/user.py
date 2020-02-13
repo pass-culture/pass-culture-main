@@ -15,7 +15,7 @@ def validate_user(model: Model, api_errors: ApiErrors) -> ApiErrors:
 
     if model.id is None and user_count > 0:
         api_errors.add_error('email', 'Un compte lié à cet e-mail existe déjà')
-    if model.publicName:
+    if model.publicName is not None:
         api_errors.check_min_length('publicName', model.publicName, 3)
     if model.email:
         api_errors.check_email('email', model.email)
