@@ -15,7 +15,7 @@ class Get:
 
             # Then
             assert response.status_code == 200
-            assert response.json == {'version': 'v69.0.0'}
+            assert str(response.data, 'utf-8') == 'v69.0.0'
 
         @patch('routes.health_check.read_version_from_file')
         @patch('routes.health_check.check_database_connection')
@@ -29,7 +29,7 @@ class Get:
 
             # Then
             assert response.status_code == 200
-            assert response.json == {'version': 'v69.0.0'}
+            assert str(response.data, 'utf-8') == 'v69.0.0'
 
     class Returns500:
         @patch('routes.health_check.read_version_from_file')
@@ -44,4 +44,4 @@ class Get:
 
             # then
             assert response.status_code == 500
-            assert response.json == {'version': 'v69.0.0'}
+            assert str(response.data, 'utf-8') == 'v69.0.0'
