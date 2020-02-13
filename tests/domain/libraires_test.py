@@ -1,7 +1,7 @@
 from datetime import datetime
 from unittest.mock import Mock
 
-from domain.libraires import get_libraires_stock_information, read_libraires_stocks_modifiedsince_datetime
+from domain.libraires import get_libraires_stock_information, read_last_modified_date
 
 
 class GetLibrairesStockInformationTest:
@@ -62,23 +62,23 @@ class GetLibrairesStockInformationTest:
         assert librairies_stocks_data[1] == {'available': 1, 'price': 9.15, 'ref': '0000191524088'}
 
 
-class ReadLibrairesStocksModifiedSinceDatetimeTest:
+class ReadLastModifiedDateTest:
     def test_should_read_libraires_stocks_modifiedsince_datetime_when_it_is_empty(self):
         # Given
-        date = ''
+        date = None
 
         # When
-        modified_since = read_libraires_stocks_modifiedsince_datetime(date)
+        modified_since = read_last_modified_date(date)
 
         # Then
         assert modified_since == ''
 
-    def test_should_read_libraires_stocks_modifiedsince_datetime(self):
+    def test_should_read_libraires_stocks_modifiedsince_datetime_when_it_is_not_empty(self):
         # Given
         date = datetime(2020, 2, 2, 20, 20)
 
         # When
-        modified_since = read_libraires_stocks_modifiedsince_datetime(date)
+        modified_since = read_last_modified_date(date)
 
         # Then
         assert modified_since == '2020-02-02T20:20:00Z'

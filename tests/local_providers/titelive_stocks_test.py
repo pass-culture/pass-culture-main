@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import patch, call
 
 from local_providers import TiteLiveStocks
 from models import Offer, Stock
@@ -276,6 +276,9 @@ def test_titelive_stock_provider_iterates_over_pagination(stub_get_stocks_inform
     # Then
     assert Offer.query.count() == 2
     assert Stock.query.count() == 2
+    assert stub_get_stocks_information.call_args_list == [call('77567146400110', ''),
+                                                          call('77567146400110', '0002730757438'),
+                                                          call('77567146400110', '0002736409898')]
 
 
 @clean_database

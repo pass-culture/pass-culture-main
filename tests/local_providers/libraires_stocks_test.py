@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import patch, call
 
 from local_providers.libraires_stocks import LibrairesStocks
 from models import Offer, Stock
@@ -10,26 +10,6 @@ from tests.model_creators.specific_creators import create_product_with_thing_typ
 
 
 class LibrairesStocksTest:
-    class InitTest:
-        @clean_database
-        @patch('local_providers.libraires_stocks.get_libraires_stock_information')
-        def test_should_call_libraires_api(self, mock_libraires_api_response, app):
-            # Given
-            last_processed_isbn = ''
-            modified_since = ''
-            offerer = create_offerer()
-            venue = create_venue(offerer, siret='12345678912345')
-            libraires_provider = activate_provider('LibrairesStocks')
-            venue_provider = create_venue_provider(venue, libraires_provider)
-
-            repository.save(venue_provider)
-
-            # When
-            LibrairesStocks(venue_provider)
-
-            # Then
-            mock_libraires_api_response.assert_called_once_with(venue.siret, last_processed_isbn, modified_since)
-
     class NextTest:
         @clean_database
         @patch('local_providers.libraires_stocks.get_libraires_stock_information')
@@ -57,6 +37,7 @@ class LibrairesStocksTest:
             libraires_providable_infos = next(libraires_stocks_provider)
 
             # Then
+            assert mock_libraires_api_response.call_args_list == [call('12345678912345', '', '')]
             assert len(libraires_providable_infos) == 2
 
             offer_providable_info = libraires_providable_infos[0]
@@ -173,7 +154,7 @@ class LibrairesStocksTest:
 
             # Then
             offer = Offer.query.one()
-            assert offer.isActive is False
+            assert not offer.isActive
 
         @clean_database
         @patch('local_providers.libraires_stocks.get_libraires_stock_information')
@@ -250,20 +231,16 @@ class LibrairesStocksTest:
     class WhenSynchronizedTwiceTest:
         @clean_database
         @patch('local_providers.libraires_stocks.get_libraires_stock_information')
-        def test_should_update_stocks_after_second_synchronisation(self, mock_libraires_api_response, app):
+        def test_libraires_stock_provider_iterates_over_pagination(self, mock_libraires_api_response, app):
             # Given
             mock_libraires_api_response.side_effect = [
                 iter([{
                     "ref": "9780199536986",
                     "available": 4,
                     "price": 16
-                },
-                    {"ref": "1550199555555",
-                     "available": 3,
-                     "price": 15
-                     }]),
+                }]),
                 iter([{
-                    "ref": "9780199536986",
+                    "ref": "1550199555555",
                     "available": 5,
                     "price": 14
                 }])
@@ -279,12 +256,9 @@ class LibrairesStocksTest:
             product_2 = create_product_with_thing_type(id_at_providers='1550199555555')
 
             repository.save(product_1, product_2, venue_provider)
-
             libraires_stocks = LibrairesStocks(venue_provider)
-            libraires_stocks.updateObjects()
 
             # When
-            libraires_stocks = LibrairesStocks(venue_provider)
             libraires_stocks.updateObjects()
 
             # Then
@@ -292,11 +266,6 @@ class LibrairesStocksTest:
             stocks = Stock.query.all()
             assert len(stocks) == 2
             assert len(offers) == 2
-
-            first_stock = stocks[0]
-            second_stock = stocks[1]
-
-            assert first_stock.idAtProviders == '1550199555555@12345678912345'
-            assert first_stock.available == 3
-            assert second_stock.idAtProviders == '9780199536986@12345678912345'
-            assert second_stock.available == 5
+            assert mock_libraires_api_response.call_args_list == [call('12345678912345', '', ''),
+                                                                  call('12345678912345', '9780199536986', ''),
+                                                                  call('12345678912345', '1550199555555', '')]

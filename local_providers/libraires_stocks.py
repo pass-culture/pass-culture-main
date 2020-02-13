@@ -3,7 +3,7 @@ from typing import List
 
 from sqlalchemy import Sequence
 
-from domain.libraires import get_libraires_stock_information, read_libraires_stocks_modifiedsince_datetime
+from domain.libraires import get_libraires_stock_information, read_last_modified_date
 from local_providers.local_provider import LocalProvider
 from local_providers.providable_info import ProvidableInfo
 from models import VenueProvider, Offer, Stock
@@ -21,15 +21,20 @@ class LibrairesStocks(LocalProvider):
         self.venue = venue_provider.venue
         self.siret = self.venue.siret
         self.last_processed_isbn = ''
-        self.modified_since = read_libraires_stocks_modifiedsince_datetime(venue_provider.lastSyncDate)
-        self.libraires_stock_data = get_libraires_stock_information(self.siret, self.last_processed_isbn,
-                                                                    self.modified_since)
-
+        self.libraires_stock_data = iter([])
+        self.modified_since = read_last_modified_date(venue_provider.lastSyncDate)
         self.product = None
         self.offer_id = None
 
     def __next__(self) -> List[ProvidableInfo]:
-        self.libraires_stock = next(self.libraires_stock_data)
+        try:
+            self.libraires_stock = next(self.libraires_stock_data)
+
+        except StopIteration:
+            self.libraires_stock_data = get_libraires_stock_information(self.siret, self.last_processed_isbn,
+                                                                        self.modified_since)
+            self.libraires_stock = next(self.libraires_stock_data)
+
         self.last_processed_isbn = str(self.libraires_stock['ref'])
         self.product = product_queries.find_thing_product_by_isbn_only_for_type_book(self.libraires_stock['ref'])
         if not self.product:

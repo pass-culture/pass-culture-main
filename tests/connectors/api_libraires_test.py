@@ -10,40 +10,20 @@ class GetStocksFromLibrairesApiTest:
     def test_should_raise_error_when_libraires_api_request_fails(self, mock_requests_get):
         # Given
         siret = '12345678912345'
-        response_return_value = MagicMock(status_code=400, text='', return_value={})
-        mock_requests_get.return_value = response_return_value
+        mock_requests_get.return_value = MagicMock(status_code=400)
 
         # When
         with pytest.raises(ApiLibrairesException) as exception:
             get_stocks_from_libraires_api(siret)
 
         # Then
-        assert str(exception.value) == 'Error getting Libraires stocks for siret: 12345678912345'
+        assert str(exception.value) == 'Error 400 when getting Libraires stocks for SIRET: 12345678912345'
 
     @patch('connectors.api_libraires.requests.get')
     def test_should_call_libraires_api_with_given_siret(self, mock_requests_get):
         # Given
         siret = '12345678912345'
-        response_return_value = MagicMock(status_code=200, text='')
-        response_return_value.return_value = {
-            "total": 2,
-            "limit": 20,
-            "offset": 0,
-            "stocks": [
-                {
-                    "ref": "0000001428056",
-                    "available": 1,
-                    "price": 6.36
-                },
-                {
-                    "ref": "0000191524088",
-                    "available": 1,
-                    "price": 9.15
-                }
-            ]
-        }
-
-        mock_requests_get.return_value = response_return_value
+        mock_requests_get.return_value = MagicMock(status_code=200)
 
         # When
         get_stocks_from_libraires_api(siret)
@@ -58,26 +38,7 @@ class GetStocksFromLibrairesApiTest:
         siret = '12345678912345'
         last_processed_isbn = '9780199536986'
         modified_since = ''
-        response_return_value = MagicMock(status_code=200, text='')
-        response_return_value.return_value = {
-            "total": 2,
-            "limit": 20,
-            "offset": 0,
-            "stocks": [
-                {
-                    "ref": "9780199536986",
-                    "available": 1,
-                    "price": 6.36
-                },
-                {
-                    "ref": "0000191524088",
-                    "available": 1,
-                    "price": 9.15
-                }
-            ]
-        }
-
-        mock_requests_get.return_value = response_return_value
+        mock_requests_get.return_value = MagicMock(status_code=200)
 
         # When
         get_stocks_from_libraires_api(siret, last_processed_isbn, modified_since)
@@ -92,26 +53,7 @@ class GetStocksFromLibrairesApiTest:
         siret = '12345678912345'
         last_processed_isbn = ''
         modified_since = '2019-12-16T00:00:00'
-        response_return_value = MagicMock(status_code=200, text='')
-        response_return_value.return_value = {
-            "total": 2,
-            "limit": 20,
-            "offset": 0,
-            "stocks": [
-                {
-                    "ref": "9780199536986",
-                    "available": 1,
-                    "price": 6.36
-                },
-                {
-                    "ref": "0000191524088",
-                    "available": 1,
-                    "price": 9.15
-                }
-            ]
-        }
-
-        mock_requests_get.return_value = response_return_value
+        mock_requests_get.return_value = MagicMock(status_code=200)
 
         # When
         get_stocks_from_libraires_api(siret, last_processed_isbn, modified_since)
@@ -126,26 +68,7 @@ class GetStocksFromLibrairesApiTest:
         siret = '12345678912345'
         last_processed_isbn = '9780199536986'
         modified_since = '2019-12-16T00:00:00'
-        response_return_value = MagicMock(status_code=200, text='')
-        response_return_value.return_value = {
-            "total": 2,
-            "limit": 20,
-            "offset": 0,
-            "stocks": [
-                {
-                    "ref": "9780199536986",
-                    "available": 1,
-                    "price": 6.36
-                },
-                {
-                    "ref": "0000191524088",
-                    "available": 1,
-                    "price": 9.15
-                }
-            ]
-        }
-
-        mock_requests_get.return_value = response_return_value
+        mock_requests_get.return_value = MagicMock(status_code=200)
 
         # When
         get_stocks_from_libraires_api(siret, last_processed_isbn, modified_since)
