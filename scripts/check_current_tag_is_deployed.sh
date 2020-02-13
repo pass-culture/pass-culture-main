@@ -2,7 +2,7 @@
 
 APP_URL="$1"
 if [[ "$APP_URL" == *"backend"* ]];then
-    deployed_version=$(curl -s "$APP_URL/health")
+    deployed_version=$(curl -s "$APP_URL/health/api")
 else
     deployed_version=v$(curl -s "$APP_URL/version.txt")
 fi
