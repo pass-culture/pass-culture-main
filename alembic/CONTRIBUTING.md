@@ -38,23 +38,23 @@ op.add_column('venue_provider', sa.Column('syncWorkerId', sa.VARCHAR(24), nullab
 Lorsque vous souhaitez modifier la structure de plusieurs tables en même temps, 
 il ne faut pas utiliser la même transaction pour l'ensemble.
 
-Eviter de faire:
+Eviter de faire :
 
 ```python
 op.add_column('stock', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=False, server_default="{}"))
 op.add_column('offer', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=False, server_default="{}"))
 ```
 
-Mais faire plutôt:
+Mais faire plutôt :
  
 ```python
- op.add_column('stock', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=False, server_default="{}"))
-    op.execute("COMMIT")
-    op.add_column('offer', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=False, server_default="{}"))
-    op.execute("COMMIT")
+op.add_column('stock', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=False, server_default="{}"))
+op.execute("COMMIT")
+op.add_column('offer', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=False, server_default="{}"))
+op.execute("COMMIT")
 ```
 
-Si on utilise la même transaction on risque d'avoir ce genre d'erreurs sur Scalingo:
+Si on utilise la même transaction on risque d'avoir ce genre d'erreurs sur Scalingo :
 ```
 sqlalchemy.exc.OperationalError: (psycopg2.extensions.TransactionRollbackError) deadlock detected
 ```
